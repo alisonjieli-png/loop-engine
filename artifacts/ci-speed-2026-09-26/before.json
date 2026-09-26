@@ -1,0 +1,5573 @@
+{
+  "measured_at": "2026-09-26T12:36:27+00:00",
+  "workflow": ".github/workflows/ci.yml",
+  "branch": "main",
+  "source": "gh run list + gh run view --json jobs, the ten newest completed runs",
+  "runs": [
+    {
+      "run_id": 36241365778,
+      "head_sha": "edcc77a38c81f77d8c137ffae8adbe559283a983",
+      "event": "push",
+      "title": "Draw every harness file kind into each export, read code at Community\u2026",
+      "conclusion": "failure",
+      "created_at": "2026-09-26T12:15:45Z",
+      "updated_at": "2026-09-26T12:22:38Z",
+      "wall_seconds": 413,
+      "jobs": [
+        {
+          "name": "build the distribution",
+          "conclusion": "success",
+          "started_at": "2026-09-26T12:15:47Z",
+          "completed_at": "2026-09-26T12:16:20Z",
+          "duration_seconds": 33,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 18
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 4,
+              "name": "Build",
+              "conclusion": "success",
+              "duration_seconds": 10
+            },
+            {
+              "number": 5,
+              "name": "Run actions/upload-artifact@v7",
+              "conclusion": "success",
+              "duration_seconds": 2
+            },
+            {
+              "number": 9,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 10,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 11,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "suite + conformance gates (3.10)",
+          "conclusion": "failure",
+          "started_at": "2026-09-26T12:15:47Z",
+          "completed_at": "2026-09-26T12:22:37Z",
+          "duration_seconds": 410,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 6
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 9
+            },
+            {
+              "number": 4,
+              "name": "Install",
+              "conclusion": "success",
+              "duration_seconds": 35
+            },
+            {
+              "number": 5,
+              "name": "Self-test",
+              "conclusion": "failure",
+              "duration_seconds": 357
+            },
+            {
+              "number": 6,
+              "name": "Conformance gates",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 7,
+              "name": "Experimental embodiment qualification",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 8,
+              "name": "Development command regression checks",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 9,
+              "name": "Development command and report regression checks",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 10,
+              "name": "Served website matches its site map",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 11,
+              "name": "Component guides match the source",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 12,
+              "name": "Self-orientation and hardcoding delta gates",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 13,
+              "name": "Independent component qualification lab",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 14,
+              "name": "Examples run",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 15,
+              "name": "Product solve acceptance",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 16,
+              "name": "Default-install onboarding proof",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 31,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 32,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 33,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "suite + conformance gates (3.12)",
+          "conclusion": "failure",
+          "started_at": "2026-09-26T12:15:48Z",
+          "completed_at": "2026-09-26T12:22:13Z",
+          "duration_seconds": 385,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 6
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 10
+            },
+            {
+              "number": 4,
+              "name": "Install",
+              "conclusion": "success",
+              "duration_seconds": 34
+            },
+            {
+              "number": 5,
+              "name": "Self-test",
+              "conclusion": "failure",
+              "duration_seconds": 332
+            },
+            {
+              "number": 6,
+              "name": "Conformance gates",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 7,
+              "name": "Experimental embodiment qualification",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 8,
+              "name": "Development command regression checks",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 9,
+              "name": "Development command and report regression checks",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 10,
+              "name": "Served website matches its site map",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 11,
+              "name": "Component guides match the source",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 12,
+              "name": "Self-orientation and hardcoding delta gates",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 13,
+              "name": "Independent component qualification lab",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 14,
+              "name": "Examples run",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 15,
+              "name": "Product solve acceptance",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 16,
+              "name": "Default-install onboarding proof",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 31,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 32,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 33,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "suite + conformance gates (3.11)",
+          "conclusion": "failure",
+          "started_at": "2026-09-26T12:15:47Z",
+          "completed_at": "2026-09-26T12:21:10Z",
+          "duration_seconds": 323,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 6
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 11
+            },
+            {
+              "number": 4,
+              "name": "Install",
+              "conclusion": "success",
+              "duration_seconds": 31
+            },
+            {
+              "number": 5,
+              "name": "Self-test",
+              "conclusion": "failure",
+              "duration_seconds": 273
+            },
+            {
+              "number": 6,
+              "name": "Conformance gates",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 7,
+              "name": "Experimental embodiment qualification",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 8,
+              "name": "Development command regression checks",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 9,
+              "name": "Development command and report regression checks",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 10,
+              "name": "Served website matches its site map",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 11,
+              "name": "Component guides match the source",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 12,
+              "name": "Self-orientation and hardcoding delta gates",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 13,
+              "name": "Independent component qualification lab",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 14,
+              "name": "Examples run",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 15,
+              "name": "Product solve acceptance",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 16,
+              "name": "Default-install onboarding proof",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 31,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 32,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 33,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "public documentation",
+          "conclusion": "success",
+          "started_at": "2026-09-26T12:15:47Z",
+          "completed_at": "2026-09-26T12:17:43Z",
+          "duration_seconds": 116,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 7
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-node@v7",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 4,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 5,
+              "name": "Check the publication guards",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 6,
+              "name": "Check Markdown structure",
+              "conclusion": "success",
+              "duration_seconds": 12
+            },
+            {
+              "number": 7,
+              "name": "Check public language",
+              "conclusion": "success",
+              "duration_seconds": 2
+            },
+            {
+              "number": 8,
+              "name": "Refuse retired public language",
+              "conclusion": "success",
+              "duration_seconds": 14
+            },
+            {
+              "number": 9,
+              "name": "Check local links and section anchors",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 10,
+              "name": "Validate benchmark registry",
+              "conclusion": "success",
+              "duration_seconds": 3
+            },
+            {
+              "number": 11,
+              "name": "Render current architecture diagrams",
+              "conclusion": "success",
+              "duration_seconds": 21
+            },
+            {
+              "number": 12,
+              "name": "Verify interactive architecture and video",
+              "conclusion": "success",
+              "duration_seconds": 52
+            },
+            {
+              "number": 22,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 23,
+              "name": "Post Run actions/setup-node@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 24,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 25,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "manual live Ollama orientation for five text scenarios",
+          "conclusion": "skipped",
+          "started_at": "2026-09-26T12:15:46Z",
+          "completed_at": "2026-09-26T12:15:46Z",
+          "duration_seconds": 0,
+          "steps": []
+        }
+      ]
+    },
+    {
+      "run_id": 36240037544,
+      "head_sha": "e0d965bd47d385e727e38ff0d863618285f16997",
+      "event": "workflow_dispatch",
+      "title": "CI",
+      "conclusion": "failure",
+      "created_at": "2026-09-26T11:49:51Z",
+      "updated_at": "2026-09-26T12:14:28Z",
+      "wall_seconds": 1477,
+      "jobs": [
+        {
+          "name": "public documentation",
+          "conclusion": "success",
+          "started_at": "2026-09-26T11:49:54Z",
+          "completed_at": "2026-09-26T11:51:54Z",
+          "duration_seconds": 120,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 2
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 7
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-node@v7",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 4,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 5,
+              "name": "Check the publication guards",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 6,
+              "name": "Check Markdown structure",
+              "conclusion": "success",
+              "duration_seconds": 11
+            },
+            {
+              "number": 7,
+              "name": "Check public language",
+              "conclusion": "success",
+              "duration_seconds": 2
+            },
+            {
+              "number": 8,
+              "name": "Refuse retired public language",
+              "conclusion": "success",
+              "duration_seconds": 14
+            },
+            {
+              "number": 9,
+              "name": "Check local links and section anchors",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 10,
+              "name": "Validate benchmark registry",
+              "conclusion": "success",
+              "duration_seconds": 4
+            },
+            {
+              "number": 11,
+              "name": "Render current architecture diagrams",
+              "conclusion": "success",
+              "duration_seconds": 23
+            },
+            {
+              "number": 12,
+              "name": "Verify interactive architecture and video",
+              "conclusion": "success",
+              "duration_seconds": 51
+            },
+            {
+              "number": 22,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 23,
+              "name": "Post Run actions/setup-node@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 24,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 25,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "suite + conformance gates (3.12)",
+          "conclusion": "success",
+          "started_at": "2026-09-26T11:49:54Z",
+          "completed_at": "2026-09-26T12:12:08Z",
+          "duration_seconds": 1334,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 8
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 9
+            },
+            {
+              "number": 4,
+              "name": "Install",
+              "conclusion": "success",
+              "duration_seconds": 38
+            },
+            {
+              "number": 5,
+              "name": "Self-test",
+              "conclusion": "success",
+              "duration_seconds": 333
+            },
+            {
+              "number": 6,
+              "name": "Conformance gates",
+              "conclusion": "success",
+              "duration_seconds": 79
+            },
+            {
+              "number": 7,
+              "name": "Experimental embodiment qualification",
+              "conclusion": "success",
+              "duration_seconds": 12
+            },
+            {
+              "number": 8,
+              "name": "Development command regression checks",
+              "conclusion": "success",
+              "duration_seconds": 2
+            },
+            {
+              "number": 9,
+              "name": "Development command and report regression checks",
+              "conclusion": "success",
+              "duration_seconds": 451
+            },
+            {
+              "number": 10,
+              "name": "Served website matches its site map",
+              "conclusion": "success",
+              "duration_seconds": 43
+            },
+            {
+              "number": 11,
+              "name": "Component guides match the source",
+              "conclusion": "success",
+              "duration_seconds": 124
+            },
+            {
+              "number": 12,
+              "name": "Self-orientation and hardcoding delta gates",
+              "conclusion": "success",
+              "duration_seconds": 159
+            },
+            {
+              "number": 13,
+              "name": "Independent component qualification lab",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 14,
+              "name": "Examples run",
+              "conclusion": "success",
+              "duration_seconds": 11
+            },
+            {
+              "number": 15,
+              "name": "Product solve acceptance",
+              "conclusion": "success",
+              "duration_seconds": 32
+            },
+            {
+              "number": 16,
+              "name": "Default-install onboarding proof",
+              "conclusion": "success",
+              "duration_seconds": 30
+            },
+            {
+              "number": 31,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 32,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 33,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "suite + conformance gates (3.11)",
+          "conclusion": "success",
+          "started_at": "2026-09-26T11:49:55Z",
+          "completed_at": "2026-09-26T12:10:59Z",
+          "duration_seconds": 1264,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 8
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 13
+            },
+            {
+              "number": 4,
+              "name": "Install",
+              "conclusion": "success",
+              "duration_seconds": 35
+            },
+            {
+              "number": 5,
+              "name": "Self-test",
+              "conclusion": "success",
+              "duration_seconds": 320
+            },
+            {
+              "number": 6,
+              "name": "Conformance gates",
+              "conclusion": "success",
+              "duration_seconds": 75
+            },
+            {
+              "number": 7,
+              "name": "Experimental embodiment qualification",
+              "conclusion": "success",
+              "duration_seconds": 11
+            },
+            {
+              "number": 8,
+              "name": "Development command regression checks",
+              "conclusion": "success",
+              "duration_seconds": 4
+            },
+            {
+              "number": 9,
+              "name": "Development command and report regression checks",
+              "conclusion": "success",
+              "duration_seconds": 442
+            },
+            {
+              "number": 10,
+              "name": "Served website matches its site map",
+              "conclusion": "success",
+              "duration_seconds": 43
+            },
+            {
+              "number": 11,
+              "name": "Component guides match the source",
+              "conclusion": "success",
+              "duration_seconds": 115
+            },
+            {
+              "number": 12,
+              "name": "Self-orientation and hardcoding delta gates",
+              "conclusion": "success",
+              "duration_seconds": 155
+            },
+            {
+              "number": 13,
+              "name": "Independent component qualification lab",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 14,
+              "name": "Examples run",
+              "conclusion": "success",
+              "duration_seconds": 11
+            },
+            {
+              "number": 15,
+              "name": "Product solve acceptance",
+              "conclusion": "success",
+              "duration_seconds": 29
+            },
+            {
+              "number": 16,
+              "name": "Default-install onboarding proof",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 31,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 32,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 33,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "manual live Ollama orientation for five text scenarios",
+          "conclusion": "failure",
+          "started_at": "2026-09-26T11:49:54Z",
+          "completed_at": "2026-09-26T11:50:31Z",
+          "duration_seconds": 37,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 8
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 13
+            },
+            {
+              "number": 4,
+              "name": "Install",
+              "conclusion": "success",
+              "duration_seconds": 9
+            },
+            {
+              "number": 5,
+              "name": "Run five governed Ollama scenarios",
+              "conclusion": "failure",
+              "duration_seconds": 0
+            },
+            {
+              "number": 6,
+              "name": "Upload secret-safe live evidence",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 11,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 12,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 13,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "build the distribution",
+          "conclusion": "success",
+          "started_at": "2026-09-26T11:49:54Z",
+          "completed_at": "2026-09-26T11:50:23Z",
+          "duration_seconds": 29,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 8
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 4,
+              "name": "Build",
+              "conclusion": "success",
+              "duration_seconds": 14
+            },
+            {
+              "number": 5,
+              "name": "Run actions/upload-artifact@v7",
+              "conclusion": "success",
+              "duration_seconds": 3
+            },
+            {
+              "number": 9,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 10,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 11,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "suite + conformance gates (3.10)",
+          "conclusion": "success",
+          "started_at": "2026-09-26T11:49:54Z",
+          "completed_at": "2026-09-26T12:14:27Z",
+          "duration_seconds": 1473,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 7
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 9
+            },
+            {
+              "number": 4,
+              "name": "Install",
+              "conclusion": "success",
+              "duration_seconds": 37
+            },
+            {
+              "number": 5,
+              "name": "Self-test",
+              "conclusion": "success",
+              "duration_seconds": 354
+            },
+            {
+              "number": 6,
+              "name": "Conformance gates",
+              "conclusion": "success",
+              "duration_seconds": 86
+            },
+            {
+              "number": 7,
+              "name": "Experimental embodiment qualification",
+              "conclusion": "success",
+              "duration_seconds": 12
+            },
+            {
+              "number": 8,
+              "name": "Development command regression checks",
+              "conclusion": "success",
+              "duration_seconds": 2
+            },
+            {
+              "number": 9,
+              "name": "Development command and report regression checks",
+              "conclusion": "success",
+              "duration_seconds": 523
+            },
+            {
+              "number": 10,
+              "name": "Served website matches its site map",
+              "conclusion": "success",
+              "duration_seconds": 56
+            },
+            {
+              "number": 11,
+              "name": "Component guides match the source",
+              "conclusion": "success",
+              "duration_seconds": 148
+            },
+            {
+              "number": 12,
+              "name": "Self-orientation and hardcoding delta gates",
+              "conclusion": "success",
+              "duration_seconds": 195
+            },
+            {
+              "number": 13,
+              "name": "Independent component qualification lab",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 14,
+              "name": "Examples run",
+              "conclusion": "success",
+              "duration_seconds": 10
+            },
+            {
+              "number": 15,
+              "name": "Product solve acceptance",
+              "conclusion": "success",
+              "duration_seconds": 31
+            },
+            {
+              "number": 16,
+              "name": "Default-install onboarding proof",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 31,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 32,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 33,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "run_id": 36223646184,
+      "head_sha": "4f65cd67c4e3cd21080ed0875b4b465142be5a61",
+      "event": "push",
+      "title": "Handoff: keep the export rate and measure serving at 5,000 and 10,000\u2026",
+      "conclusion": "success",
+      "created_at": "2026-09-26T06:24:18Z",
+      "updated_at": "2026-09-26T06:48:52Z",
+      "wall_seconds": 1474,
+      "jobs": [
+        {
+          "name": "public documentation",
+          "conclusion": "success",
+          "started_at": "2026-09-26T06:24:20Z",
+          "completed_at": "2026-09-26T06:26:15Z",
+          "duration_seconds": 115,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 7
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-node@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 4,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 5,
+              "name": "Check the publication guards",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 6,
+              "name": "Check Markdown structure",
+              "conclusion": "success",
+              "duration_seconds": 13
+            },
+            {
+              "number": 7,
+              "name": "Check public language",
+              "conclusion": "success",
+              "duration_seconds": 2
+            },
+            {
+              "number": 8,
+              "name": "Refuse retired public language",
+              "conclusion": "success",
+              "duration_seconds": 9
+            },
+            {
+              "number": 9,
+              "name": "Check local links and section anchors",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 10,
+              "name": "Validate benchmark registry",
+              "conclusion": "success",
+              "duration_seconds": 2
+            },
+            {
+              "number": 11,
+              "name": "Render current architecture diagrams",
+              "conclusion": "success",
+              "duration_seconds": 28
+            },
+            {
+              "number": 12,
+              "name": "Verify interactive architecture and video",
+              "conclusion": "success",
+              "duration_seconds": 48
+            },
+            {
+              "number": 22,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 23,
+              "name": "Post Run actions/setup-node@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 24,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 25,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "suite + conformance gates (3.12)",
+          "conclusion": "success",
+          "started_at": "2026-09-26T06:24:20Z",
+          "completed_at": "2026-09-26T06:47:07Z",
+          "duration_seconds": 1367,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 6
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 8
+            },
+            {
+              "number": 4,
+              "name": "Install",
+              "conclusion": "success",
+              "duration_seconds": 36
+            },
+            {
+              "number": 5,
+              "name": "Self-test",
+              "conclusion": "success",
+              "duration_seconds": 336
+            },
+            {
+              "number": 6,
+              "name": "Conformance gates",
+              "conclusion": "success",
+              "duration_seconds": 79
+            },
+            {
+              "number": 7,
+              "name": "Experimental embodiment qualification",
+              "conclusion": "success",
+              "duration_seconds": 12
+            },
+            {
+              "number": 8,
+              "name": "Development command regression checks",
+              "conclusion": "success",
+              "duration_seconds": 2
+            },
+            {
+              "number": 9,
+              "name": "Development command and report regression checks",
+              "conclusion": "success",
+              "duration_seconds": 463
+            },
+            {
+              "number": 10,
+              "name": "Served website matches its site map",
+              "conclusion": "success",
+              "duration_seconds": 40
+            },
+            {
+              "number": 11,
+              "name": "Component guides match the source",
+              "conclusion": "success",
+              "duration_seconds": 130
+            },
+            {
+              "number": 12,
+              "name": "Self-orientation and hardcoding delta gates",
+              "conclusion": "success",
+              "duration_seconds": 179
+            },
+            {
+              "number": 13,
+              "name": "Independent component qualification lab",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 14,
+              "name": "Examples run",
+              "conclusion": "success",
+              "duration_seconds": 12
+            },
+            {
+              "number": 15,
+              "name": "Product solve acceptance",
+              "conclusion": "success",
+              "duration_seconds": 31
+            },
+            {
+              "number": 16,
+              "name": "Default-install onboarding proof",
+              "conclusion": "success",
+              "duration_seconds": 31
+            },
+            {
+              "number": 31,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 32,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 33,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "suite + conformance gates (3.10)",
+          "conclusion": "success",
+          "started_at": "2026-09-26T06:24:20Z",
+          "completed_at": "2026-09-26T06:48:52Z",
+          "duration_seconds": 1472,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 5
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 11
+            },
+            {
+              "number": 4,
+              "name": "Install",
+              "conclusion": "success",
+              "duration_seconds": 36
+            },
+            {
+              "number": 5,
+              "name": "Self-test",
+              "conclusion": "success",
+              "duration_seconds": 359
+            },
+            {
+              "number": 6,
+              "name": "Conformance gates",
+              "conclusion": "success",
+              "duration_seconds": 86
+            },
+            {
+              "number": 7,
+              "name": "Experimental embodiment qualification",
+              "conclusion": "success",
+              "duration_seconds": 12
+            },
+            {
+              "number": 8,
+              "name": "Development command regression checks",
+              "conclusion": "success",
+              "duration_seconds": 2
+            },
+            {
+              "number": 9,
+              "name": "Development command and report regression checks",
+              "conclusion": "success",
+              "duration_seconds": 519
+            },
+            {
+              "number": 10,
+              "name": "Served website matches its site map",
+              "conclusion": "success",
+              "duration_seconds": 55
+            },
+            {
+              "number": 11,
+              "name": "Component guides match the source",
+              "conclusion": "success",
+              "duration_seconds": 148
+            },
+            {
+              "number": 12,
+              "name": "Self-orientation and hardcoding delta gates",
+              "conclusion": "success",
+              "duration_seconds": 195
+            },
+            {
+              "number": 13,
+              "name": "Independent component qualification lab",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 14,
+              "name": "Examples run",
+              "conclusion": "success",
+              "duration_seconds": 10
+            },
+            {
+              "number": 15,
+              "name": "Product solve acceptance",
+              "conclusion": "success",
+              "duration_seconds": 30
+            },
+            {
+              "number": 16,
+              "name": "Default-install onboarding proof",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 31,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 32,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 33,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "build the distribution",
+          "conclusion": "success",
+          "started_at": "2026-09-26T06:24:21Z",
+          "completed_at": "2026-09-26T06:24:55Z",
+          "duration_seconds": 34,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 7
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 4,
+              "name": "Build",
+              "conclusion": "success",
+              "duration_seconds": 19
+            },
+            {
+              "number": 5,
+              "name": "Run actions/upload-artifact@v7",
+              "conclusion": "success",
+              "duration_seconds": 2
+            },
+            {
+              "number": 9,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 10,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 11,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "suite + conformance gates (3.11)",
+          "conclusion": "success",
+          "started_at": "2026-09-26T06:24:21Z",
+          "completed_at": "2026-09-26T06:44:54Z",
+          "duration_seconds": 1233,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 7
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 12
+            },
+            {
+              "number": 4,
+              "name": "Install",
+              "conclusion": "success",
+              "duration_seconds": 39
+            },
+            {
+              "number": 5,
+              "name": "Self-test",
+              "conclusion": "success",
+              "duration_seconds": 322
+            },
+            {
+              "number": 6,
+              "name": "Conformance gates",
+              "conclusion": "success",
+              "duration_seconds": 76
+            },
+            {
+              "number": 7,
+              "name": "Experimental embodiment qualification",
+              "conclusion": "success",
+              "duration_seconds": 11
+            },
+            {
+              "number": 8,
+              "name": "Development command regression checks",
+              "conclusion": "success",
+              "duration_seconds": 3
+            },
+            {
+              "number": 9,
+              "name": "Development command and report regression checks",
+              "conclusion": "success",
+              "duration_seconds": 430
+            },
+            {
+              "number": 10,
+              "name": "Served website matches its site map",
+              "conclusion": "success",
+              "duration_seconds": 45
+            },
+            {
+              "number": 11,
+              "name": "Component guides match the source",
+              "conclusion": "success",
+              "duration_seconds": 111
+            },
+            {
+              "number": 12,
+              "name": "Self-orientation and hardcoding delta gates",
+              "conclusion": "success",
+              "duration_seconds": 135
+            },
+            {
+              "number": 13,
+              "name": "Independent component qualification lab",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 14,
+              "name": "Examples run",
+              "conclusion": "success",
+              "duration_seconds": 10
+            },
+            {
+              "number": 15,
+              "name": "Product solve acceptance",
+              "conclusion": "success",
+              "duration_seconds": 29
+            },
+            {
+              "number": 16,
+              "name": "Default-install onboarding proof",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 31,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 32,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 33,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "manual live Ollama orientation for five text scenarios",
+          "conclusion": "skipped",
+          "started_at": "2026-09-26T06:24:19Z",
+          "completed_at": "2026-09-26T06:24:18Z",
+          "duration_seconds": -1,
+          "steps": []
+        }
+      ]
+    },
+    {
+      "run_id": 36223622717,
+      "head_sha": "da73e9935b6810cec95d00842847f0c75fa2e430",
+      "event": "push",
+      "title": "Record the fifth Community release: 4,812 packages from the daily job\u2026",
+      "conclusion": "success",
+      "created_at": "2026-09-26T06:23:50Z",
+      "updated_at": "2026-09-26T06:48:35Z",
+      "wall_seconds": 1485,
+      "jobs": [
+        {
+          "name": "public documentation",
+          "conclusion": "success",
+          "started_at": "2026-09-26T06:23:53Z",
+          "completed_at": "2026-09-26T06:25:26Z",
+          "duration_seconds": 93,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 7
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-node@v7",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 4,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 5,
+              "name": "Check the publication guards",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 6,
+              "name": "Check Markdown structure",
+              "conclusion": "success",
+              "duration_seconds": 9
+            },
+            {
+              "number": 7,
+              "name": "Check public language",
+              "conclusion": "success",
+              "duration_seconds": 3
+            },
+            {
+              "number": 8,
+              "name": "Refuse retired public language",
+              "conclusion": "success",
+              "duration_seconds": 9
+            },
+            {
+              "number": 9,
+              "name": "Check local links and section anchors",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 10,
+              "name": "Validate benchmark registry",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 11,
+              "name": "Render current architecture diagrams",
+              "conclusion": "success",
+              "duration_seconds": 20
+            },
+            {
+              "number": 12,
+              "name": "Verify interactive architecture and video",
+              "conclusion": "success",
+              "duration_seconds": 36
+            },
+            {
+              "number": 22,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 23,
+              "name": "Post Run actions/setup-node@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 24,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 25,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "build the distribution",
+          "conclusion": "success",
+          "started_at": "2026-09-26T06:23:53Z",
+          "completed_at": "2026-09-26T06:24:18Z",
+          "duration_seconds": 25,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 7
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 4,
+              "name": "Build",
+              "conclusion": "success",
+              "duration_seconds": 14
+            },
+            {
+              "number": 5,
+              "name": "Run actions/upload-artifact@v7",
+              "conclusion": "success",
+              "duration_seconds": 2
+            },
+            {
+              "number": 9,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 10,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 11,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "suite + conformance gates (3.10)",
+          "conclusion": "success",
+          "started_at": "2026-09-26T06:23:55Z",
+          "completed_at": "2026-09-26T06:48:35Z",
+          "duration_seconds": 1480,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 7
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 15
+            },
+            {
+              "number": 4,
+              "name": "Install",
+              "conclusion": "success",
+              "duration_seconds": 35
+            },
+            {
+              "number": 5,
+              "name": "Self-test",
+              "conclusion": "success",
+              "duration_seconds": 354
+            },
+            {
+              "number": 6,
+              "name": "Conformance gates",
+              "conclusion": "success",
+              "duration_seconds": 85
+            },
+            {
+              "number": 7,
+              "name": "Experimental embodiment qualification",
+              "conclusion": "success",
+              "duration_seconds": 13
+            },
+            {
+              "number": 8,
+              "name": "Development command regression checks",
+              "conclusion": "success",
+              "duration_seconds": 2
+            },
+            {
+              "number": 9,
+              "name": "Development command and report regression checks",
+              "conclusion": "success",
+              "duration_seconds": 523
+            },
+            {
+              "number": 10,
+              "name": "Served website matches its site map",
+              "conclusion": "success",
+              "duration_seconds": 56
+            },
+            {
+              "number": 11,
+              "name": "Component guides match the source",
+              "conclusion": "success",
+              "duration_seconds": 150
+            },
+            {
+              "number": 12,
+              "name": "Self-orientation and hardcoding delta gates",
+              "conclusion": "success",
+              "duration_seconds": 194
+            },
+            {
+              "number": 13,
+              "name": "Independent component qualification lab",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 14,
+              "name": "Examples run",
+              "conclusion": "success",
+              "duration_seconds": 10
+            },
+            {
+              "number": 15,
+              "name": "Product solve acceptance",
+              "conclusion": "success",
+              "duration_seconds": 32
+            },
+            {
+              "number": 16,
+              "name": "Default-install onboarding proof",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 31,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 32,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 33,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "suite + conformance gates (3.12)",
+          "conclusion": "success",
+          "started_at": "2026-09-26T06:23:54Z",
+          "completed_at": "2026-09-26T06:46:30Z",
+          "duration_seconds": 1356,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 6
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 7
+            },
+            {
+              "number": 4,
+              "name": "Install",
+              "conclusion": "success",
+              "duration_seconds": 35
+            },
+            {
+              "number": 5,
+              "name": "Self-test",
+              "conclusion": "success",
+              "duration_seconds": 331
+            },
+            {
+              "number": 6,
+              "name": "Conformance gates",
+              "conclusion": "success",
+              "duration_seconds": 79
+            },
+            {
+              "number": 7,
+              "name": "Experimental embodiment qualification",
+              "conclusion": "success",
+              "duration_seconds": 12
+            },
+            {
+              "number": 8,
+              "name": "Development command regression checks",
+              "conclusion": "success",
+              "duration_seconds": 2
+            },
+            {
+              "number": 9,
+              "name": "Development command and report regression checks",
+              "conclusion": "success",
+              "duration_seconds": 458
+            },
+            {
+              "number": 10,
+              "name": "Served website matches its site map",
+              "conclusion": "success",
+              "duration_seconds": 41
+            },
+            {
+              "number": 11,
+              "name": "Component guides match the source",
+              "conclusion": "success",
+              "duration_seconds": 132
+            },
+            {
+              "number": 12,
+              "name": "Self-orientation and hardcoding delta gates",
+              "conclusion": "success",
+              "duration_seconds": 178
+            },
+            {
+              "number": 13,
+              "name": "Independent component qualification lab",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 14,
+              "name": "Examples run",
+              "conclusion": "success",
+              "duration_seconds": 11
+            },
+            {
+              "number": 15,
+              "name": "Product solve acceptance",
+              "conclusion": "success",
+              "duration_seconds": 32
+            },
+            {
+              "number": 16,
+              "name": "Default-install onboarding proof",
+              "conclusion": "success",
+              "duration_seconds": 29
+            },
+            {
+              "number": 31,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 32,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 33,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "suite + conformance gates (3.11)",
+          "conclusion": "success",
+          "started_at": "2026-09-26T06:23:53Z",
+          "completed_at": "2026-09-26T06:38:29Z",
+          "duration_seconds": 876,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 6
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 14
+            },
+            {
+              "number": 4,
+              "name": "Install",
+              "conclusion": "success",
+              "duration_seconds": 26
+            },
+            {
+              "number": 5,
+              "name": "Self-test",
+              "conclusion": "success",
+              "duration_seconds": 234
+            },
+            {
+              "number": 6,
+              "name": "Conformance gates",
+              "conclusion": "success",
+              "duration_seconds": 58
+            },
+            {
+              "number": 7,
+              "name": "Experimental embodiment qualification",
+              "conclusion": "success",
+              "duration_seconds": 8
+            },
+            {
+              "number": 8,
+              "name": "Development command regression checks",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 9,
+              "name": "Development command and report regression checks",
+              "conclusion": "success",
+              "duration_seconds": 322
+            },
+            {
+              "number": 10,
+              "name": "Served website matches its site map",
+              "conclusion": "success",
+              "duration_seconds": 30
+            },
+            {
+              "number": 11,
+              "name": "Component guides match the source",
+              "conclusion": "success",
+              "duration_seconds": 64
+            },
+            {
+              "number": 12,
+              "name": "Self-orientation and hardcoding delta gates",
+              "conclusion": "success",
+              "duration_seconds": 84
+            },
+            {
+              "number": 13,
+              "name": "Independent component qualification lab",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 14,
+              "name": "Examples run",
+              "conclusion": "success",
+              "duration_seconds": 6
+            },
+            {
+              "number": 15,
+              "name": "Product solve acceptance",
+              "conclusion": "success",
+              "duration_seconds": 20
+            },
+            {
+              "number": 16,
+              "name": "Default-install onboarding proof",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 31,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 32,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 33,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "manual live Ollama orientation for five text scenarios",
+          "conclusion": "skipped",
+          "started_at": "2026-09-26T06:23:51Z",
+          "completed_at": "2026-09-26T06:23:51Z",
+          "duration_seconds": 0,
+          "steps": []
+        }
+      ]
+    },
+    {
+      "run_id": 36219444128,
+      "head_sha": "9718fde2c8c93fa40fe29411120ffcc6b5b95a77",
+      "event": "push",
+      "title": "Record the calibration retry defect and the 04 slot's fresh qualifica\u2026",
+      "conclusion": "success",
+      "created_at": "2026-09-26T04:59:19Z",
+      "updated_at": "2026-09-26T05:23:57Z",
+      "wall_seconds": 1478,
+      "jobs": [
+        {
+          "name": "public documentation",
+          "conclusion": "success",
+          "started_at": "2026-09-26T04:59:21Z",
+          "completed_at": "2026-09-26T05:01:20Z",
+          "duration_seconds": 119,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 7
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-node@v7",
+              "conclusion": "success",
+              "duration_seconds": 3
+            },
+            {
+              "number": 4,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 5,
+              "name": "Check the publication guards",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 6,
+              "name": "Check Markdown structure",
+              "conclusion": "success",
+              "duration_seconds": 15
+            },
+            {
+              "number": 7,
+              "name": "Check public language",
+              "conclusion": "success",
+              "duration_seconds": 3
+            },
+            {
+              "number": 8,
+              "name": "Refuse retired public language",
+              "conclusion": "success",
+              "duration_seconds": 9
+            },
+            {
+              "number": 9,
+              "name": "Check local links and section anchors",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 10,
+              "name": "Validate benchmark registry",
+              "conclusion": "success",
+              "duration_seconds": 2
+            },
+            {
+              "number": 11,
+              "name": "Render current architecture diagrams",
+              "conclusion": "success",
+              "duration_seconds": 27
+            },
+            {
+              "number": 12,
+              "name": "Verify interactive architecture and video",
+              "conclusion": "success",
+              "duration_seconds": 48
+            },
+            {
+              "number": 22,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 23,
+              "name": "Post Run actions/setup-node@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 24,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 25,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "suite + conformance gates (3.10)",
+          "conclusion": "success",
+          "started_at": "2026-09-26T04:59:21Z",
+          "completed_at": "2026-09-26T05:23:56Z",
+          "duration_seconds": 1475,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 6
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 8
+            },
+            {
+              "number": 4,
+              "name": "Install",
+              "conclusion": "success",
+              "duration_seconds": 36
+            },
+            {
+              "number": 5,
+              "name": "Self-test",
+              "conclusion": "success",
+              "duration_seconds": 355
+            },
+            {
+              "number": 6,
+              "name": "Conformance gates",
+              "conclusion": "success",
+              "duration_seconds": 85
+            },
+            {
+              "number": 7,
+              "name": "Experimental embodiment qualification",
+              "conclusion": "success",
+              "duration_seconds": 12
+            },
+            {
+              "number": 8,
+              "name": "Development command regression checks",
+              "conclusion": "success",
+              "duration_seconds": 2
+            },
+            {
+              "number": 9,
+              "name": "Development command and report regression checks",
+              "conclusion": "success",
+              "duration_seconds": 527
+            },
+            {
+              "number": 10,
+              "name": "Served website matches its site map",
+              "conclusion": "success",
+              "duration_seconds": 56
+            },
+            {
+              "number": 11,
+              "name": "Component guides match the source",
+              "conclusion": "success",
+              "duration_seconds": 149
+            },
+            {
+              "number": 12,
+              "name": "Self-orientation and hardcoding delta gates",
+              "conclusion": "success",
+              "duration_seconds": 196
+            },
+            {
+              "number": 13,
+              "name": "Independent component qualification lab",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 14,
+              "name": "Examples run",
+              "conclusion": "success",
+              "duration_seconds": 10
+            },
+            {
+              "number": 15,
+              "name": "Product solve acceptance",
+              "conclusion": "success",
+              "duration_seconds": 31
+            },
+            {
+              "number": 16,
+              "name": "Default-install onboarding proof",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 31,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 32,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 33,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 1
+            }
+          ]
+        },
+        {
+          "name": "suite + conformance gates (3.12)",
+          "conclusion": "success",
+          "started_at": "2026-09-26T04:59:21Z",
+          "completed_at": "2026-09-26T05:15:07Z",
+          "duration_seconds": 946,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 5
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 11
+            },
+            {
+              "number": 4,
+              "name": "Install",
+              "conclusion": "success",
+              "duration_seconds": 29
+            },
+            {
+              "number": 5,
+              "name": "Self-test",
+              "conclusion": "success",
+              "duration_seconds": 249
+            },
+            {
+              "number": 6,
+              "name": "Conformance gates",
+              "conclusion": "success",
+              "duration_seconds": 48
+            },
+            {
+              "number": 7,
+              "name": "Experimental embodiment qualification",
+              "conclusion": "success",
+              "duration_seconds": 11
+            },
+            {
+              "number": 8,
+              "name": "Development command regression checks",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 9,
+              "name": "Development command and report regression checks",
+              "conclusion": "success",
+              "duration_seconds": 320
+            },
+            {
+              "number": 10,
+              "name": "Served website matches its site map",
+              "conclusion": "success",
+              "duration_seconds": 33
+            },
+            {
+              "number": 11,
+              "name": "Component guides match the source",
+              "conclusion": "success",
+              "duration_seconds": 82
+            },
+            {
+              "number": 12,
+              "name": "Self-orientation and hardcoding delta gates",
+              "conclusion": "success",
+              "duration_seconds": 102
+            },
+            {
+              "number": 13,
+              "name": "Independent component qualification lab",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 14,
+              "name": "Examples run",
+              "conclusion": "success",
+              "duration_seconds": 7
+            },
+            {
+              "number": 15,
+              "name": "Product solve acceptance",
+              "conclusion": "success",
+              "duration_seconds": 24
+            },
+            {
+              "number": 16,
+              "name": "Default-install onboarding proof",
+              "conclusion": "success",
+              "duration_seconds": 20
+            },
+            {
+              "number": 31,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 32,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 33,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "build the distribution",
+          "conclusion": "success",
+          "started_at": "2026-09-26T04:59:21Z",
+          "completed_at": "2026-09-26T04:59:49Z",
+          "duration_seconds": 28,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 2
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 7
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 4,
+              "name": "Build",
+              "conclusion": "success",
+              "duration_seconds": 16
+            },
+            {
+              "number": 5,
+              "name": "Run actions/upload-artifact@v7",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 9,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 10,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 11,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "suite + conformance gates (3.11)",
+          "conclusion": "success",
+          "started_at": "2026-09-26T04:59:21Z",
+          "completed_at": "2026-09-26T05:20:17Z",
+          "duration_seconds": 1256,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 6
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 8
+            },
+            {
+              "number": 4,
+              "name": "Install",
+              "conclusion": "success",
+              "duration_seconds": 37
+            },
+            {
+              "number": 5,
+              "name": "Self-test",
+              "conclusion": "success",
+              "duration_seconds": 321
+            },
+            {
+              "number": 6,
+              "name": "Conformance gates",
+              "conclusion": "success",
+              "duration_seconds": 75
+            },
+            {
+              "number": 7,
+              "name": "Experimental embodiment qualification",
+              "conclusion": "success",
+              "duration_seconds": 11
+            },
+            {
+              "number": 8,
+              "name": "Development command regression checks",
+              "conclusion": "success",
+              "duration_seconds": 2
+            },
+            {
+              "number": 9,
+              "name": "Development command and report regression checks",
+              "conclusion": "success",
+              "duration_seconds": 442
+            },
+            {
+              "number": 10,
+              "name": "Served website matches its site map",
+              "conclusion": "success",
+              "duration_seconds": 42
+            },
+            {
+              "number": 11,
+              "name": "Component guides match the source",
+              "conclusion": "success",
+              "duration_seconds": 116
+            },
+            {
+              "number": 12,
+              "name": "Self-orientation and hardcoding delta gates",
+              "conclusion": "success",
+              "duration_seconds": 154
+            },
+            {
+              "number": 13,
+              "name": "Independent component qualification lab",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 14,
+              "name": "Examples run",
+              "conclusion": "success",
+              "duration_seconds": 10
+            },
+            {
+              "number": 15,
+              "name": "Product solve acceptance",
+              "conclusion": "success",
+              "duration_seconds": 28
+            },
+            {
+              "number": 16,
+              "name": "Default-install onboarding proof",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 31,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 32,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 33,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "manual live Ollama orientation for five text scenarios",
+          "conclusion": "skipped",
+          "started_at": "2026-09-26T04:59:19Z",
+          "completed_at": "2026-09-26T04:59:19Z",
+          "duration_seconds": 0,
+          "steps": []
+        }
+      ]
+    },
+    {
+      "run_id": 36218485833,
+      "head_sha": "ff0e36b24977b5d46df042e15ef54835ed8a8675",
+      "event": "push",
+      "title": "Keep inline HTML out of the generated roadmap status, again",
+      "conclusion": "success",
+      "created_at": "2026-09-26T04:39:39Z",
+      "updated_at": "2026-09-26T05:04:39Z",
+      "wall_seconds": 1500,
+      "jobs": [
+        {
+          "name": "build the distribution",
+          "conclusion": "success",
+          "started_at": "2026-09-26T04:39:41Z",
+          "completed_at": "2026-09-26T04:40:09Z",
+          "duration_seconds": 28,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 7
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 4,
+              "name": "Build",
+              "conclusion": "success",
+              "duration_seconds": 15
+            },
+            {
+              "number": 5,
+              "name": "Run actions/upload-artifact@v7",
+              "conclusion": "success",
+              "duration_seconds": 2
+            },
+            {
+              "number": 9,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 10,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 11,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "suite + conformance gates (3.12)",
+          "conclusion": "success",
+          "started_at": "2026-09-26T04:39:41Z",
+          "completed_at": "2026-09-26T05:02:10Z",
+          "duration_seconds": 1349,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 6
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 10
+            },
+            {
+              "number": 4,
+              "name": "Install",
+              "conclusion": "success",
+              "duration_seconds": 38
+            },
+            {
+              "number": 5,
+              "name": "Self-test",
+              "conclusion": "success",
+              "duration_seconds": 334
+            },
+            {
+              "number": 6,
+              "name": "Conformance gates",
+              "conclusion": "success",
+              "duration_seconds": 80
+            },
+            {
+              "number": 7,
+              "name": "Experimental embodiment qualification",
+              "conclusion": "success",
+              "duration_seconds": 12
+            },
+            {
+              "number": 8,
+              "name": "Development command regression checks",
+              "conclusion": "success",
+              "duration_seconds": 8
+            },
+            {
+              "number": 9,
+              "name": "Development command and report regression checks",
+              "conclusion": "success",
+              "duration_seconds": 454
+            },
+            {
+              "number": 10,
+              "name": "Served website matches its site map",
+              "conclusion": "success",
+              "duration_seconds": 43
+            },
+            {
+              "number": 11,
+              "name": "Component guides match the source",
+              "conclusion": "success",
+              "duration_seconds": 125
+            },
+            {
+              "number": 12,
+              "name": "Self-orientation and hardcoding delta gates",
+              "conclusion": "success",
+              "duration_seconds": 160
+            },
+            {
+              "number": 13,
+              "name": "Independent component qualification lab",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 14,
+              "name": "Examples run",
+              "conclusion": "success",
+              "duration_seconds": 11
+            },
+            {
+              "number": 15,
+              "name": "Product solve acceptance",
+              "conclusion": "success",
+              "duration_seconds": 32
+            },
+            {
+              "number": 16,
+              "name": "Default-install onboarding proof",
+              "conclusion": "success",
+              "duration_seconds": 31
+            },
+            {
+              "number": 31,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 32,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 33,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "suite + conformance gates (3.11)",
+          "conclusion": "success",
+          "started_at": "2026-09-26T04:39:42Z",
+          "completed_at": "2026-09-26T04:57:14Z",
+          "duration_seconds": 1052,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 7
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 15
+            },
+            {
+              "number": 4,
+              "name": "Install",
+              "conclusion": "success",
+              "duration_seconds": 34
+            },
+            {
+              "number": 5,
+              "name": "Self-test",
+              "conclusion": "success",
+              "duration_seconds": 281
+            },
+            {
+              "number": 6,
+              "name": "Conformance gates",
+              "conclusion": "success",
+              "duration_seconds": 66
+            },
+            {
+              "number": 7,
+              "name": "Experimental embodiment qualification",
+              "conclusion": "success",
+              "duration_seconds": 10
+            },
+            {
+              "number": 8,
+              "name": "Development command regression checks",
+              "conclusion": "success",
+              "duration_seconds": 4
+            },
+            {
+              "number": 9,
+              "name": "Development command and report regression checks",
+              "conclusion": "success",
+              "duration_seconds": 368
+            },
+            {
+              "number": 10,
+              "name": "Served website matches its site map",
+              "conclusion": "success",
+              "duration_seconds": 35
+            },
+            {
+              "number": 11,
+              "name": "Component guides match the source",
+              "conclusion": "success",
+              "duration_seconds": 87
+            },
+            {
+              "number": 12,
+              "name": "Self-orientation and hardcoding delta gates",
+              "conclusion": "success",
+              "duration_seconds": 108
+            },
+            {
+              "number": 13,
+              "name": "Independent component qualification lab",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 14,
+              "name": "Examples run",
+              "conclusion": "success",
+              "duration_seconds": 8
+            },
+            {
+              "number": 15,
+              "name": "Product solve acceptance",
+              "conclusion": "success",
+              "duration_seconds": 25
+            },
+            {
+              "number": 16,
+              "name": "Default-install onboarding proof",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 31,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 32,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 33,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "suite + conformance gates (3.10)",
+          "conclusion": "success",
+          "started_at": "2026-09-26T04:39:41Z",
+          "completed_at": "2026-09-26T05:04:39Z",
+          "duration_seconds": 1498,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 5
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 8
+            },
+            {
+              "number": 4,
+              "name": "Install",
+              "conclusion": "success",
+              "duration_seconds": 38
+            },
+            {
+              "number": 5,
+              "name": "Self-test",
+              "conclusion": "success",
+              "duration_seconds": 362
+            },
+            {
+              "number": 6,
+              "name": "Conformance gates",
+              "conclusion": "success",
+              "duration_seconds": 86
+            },
+            {
+              "number": 7,
+              "name": "Experimental embodiment qualification",
+              "conclusion": "success",
+              "duration_seconds": 13
+            },
+            {
+              "number": 8,
+              "name": "Development command regression checks",
+              "conclusion": "success",
+              "duration_seconds": 5
+            },
+            {
+              "number": 9,
+              "name": "Development command and report regression checks",
+              "conclusion": "success",
+              "duration_seconds": 533
+            },
+            {
+              "number": 10,
+              "name": "Served website matches its site map",
+              "conclusion": "success",
+              "duration_seconds": 57
+            },
+            {
+              "number": 11,
+              "name": "Component guides match the source",
+              "conclusion": "success",
+              "duration_seconds": 151
+            },
+            {
+              "number": 12,
+              "name": "Self-orientation and hardcoding delta gates",
+              "conclusion": "success",
+              "duration_seconds": 196
+            },
+            {
+              "number": 13,
+              "name": "Independent component qualification lab",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 14,
+              "name": "Examples run",
+              "conclusion": "success",
+              "duration_seconds": 10
+            },
+            {
+              "number": 15,
+              "name": "Product solve acceptance",
+              "conclusion": "success",
+              "duration_seconds": 30
+            },
+            {
+              "number": 16,
+              "name": "Default-install onboarding proof",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 31,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 32,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 33,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "public documentation",
+          "conclusion": "success",
+          "started_at": "2026-09-26T04:39:41Z",
+          "completed_at": "2026-09-26T04:42:00Z",
+          "duration_seconds": 139,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 2
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 7
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-node@v7",
+              "conclusion": "success",
+              "duration_seconds": 3
+            },
+            {
+              "number": 4,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 5,
+              "name": "Check the publication guards",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 6,
+              "name": "Check Markdown structure",
+              "conclusion": "success",
+              "duration_seconds": 14
+            },
+            {
+              "number": 7,
+              "name": "Check public language",
+              "conclusion": "success",
+              "duration_seconds": 2
+            },
+            {
+              "number": 8,
+              "name": "Refuse retired public language",
+              "conclusion": "success",
+              "duration_seconds": 16
+            },
+            {
+              "number": 9,
+              "name": "Check local links and section anchors",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 10,
+              "name": "Validate benchmark registry",
+              "conclusion": "success",
+              "duration_seconds": 4
+            },
+            {
+              "number": 11,
+              "name": "Render current architecture diagrams",
+              "conclusion": "success",
+              "duration_seconds": 29
+            },
+            {
+              "number": 12,
+              "name": "Verify interactive architecture and video",
+              "conclusion": "success",
+              "duration_seconds": 57
+            },
+            {
+              "number": 22,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 23,
+              "name": "Post Run actions/setup-node@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 24,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 25,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "manual live Ollama orientation for five text scenarios",
+          "conclusion": "skipped",
+          "started_at": "2026-09-26T04:39:40Z",
+          "completed_at": "2026-09-26T04:39:39Z",
+          "duration_seconds": -1,
+          "steps": []
+        }
+      ]
+    },
+    {
+      "run_id": 36218462953,
+      "head_sha": "29016cb3446662d95a5cbce6da0aeee3e8ccc77f",
+      "event": "push",
+      "title": "Record the daily job's per-slot run names and the repaired cron entry",
+      "conclusion": "failure",
+      "created_at": "2026-09-26T04:39:11Z",
+      "updated_at": "2026-09-26T05:03:35Z",
+      "wall_seconds": 1464,
+      "jobs": [
+        {
+          "name": "suite + conformance gates (3.12)",
+          "conclusion": "success",
+          "started_at": "2026-09-26T04:39:13Z",
+          "completed_at": "2026-09-26T05:01:54Z",
+          "duration_seconds": 1361,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 7
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 14
+            },
+            {
+              "number": 4,
+              "name": "Install",
+              "conclusion": "success",
+              "duration_seconds": 39
+            },
+            {
+              "number": 5,
+              "name": "Self-test",
+              "conclusion": "success",
+              "duration_seconds": 331
+            },
+            {
+              "number": 6,
+              "name": "Conformance gates",
+              "conclusion": "success",
+              "duration_seconds": 77
+            },
+            {
+              "number": 7,
+              "name": "Experimental embodiment qualification",
+              "conclusion": "success",
+              "duration_seconds": 12
+            },
+            {
+              "number": 8,
+              "name": "Development command regression checks",
+              "conclusion": "success",
+              "duration_seconds": 2
+            },
+            {
+              "number": 9,
+              "name": "Development command and report regression checks",
+              "conclusion": "success",
+              "duration_seconds": 454
+            },
+            {
+              "number": 10,
+              "name": "Served website matches its site map",
+              "conclusion": "success",
+              "duration_seconds": 40
+            },
+            {
+              "number": 11,
+              "name": "Component guides match the source",
+              "conclusion": "success",
+              "duration_seconds": 128
+            },
+            {
+              "number": 12,
+              "name": "Self-orientation and hardcoding delta gates",
+              "conclusion": "success",
+              "duration_seconds": 178
+            },
+            {
+              "number": 13,
+              "name": "Independent component qualification lab",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 14,
+              "name": "Examples run",
+              "conclusion": "success",
+              "duration_seconds": 11
+            },
+            {
+              "number": 15,
+              "name": "Product solve acceptance",
+              "conclusion": "success",
+              "duration_seconds": 31
+            },
+            {
+              "number": 16,
+              "name": "Default-install onboarding proof",
+              "conclusion": "success",
+              "duration_seconds": 30
+            },
+            {
+              "number": 31,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 32,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 33,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "suite + conformance gates (3.11)",
+          "conclusion": "success",
+          "started_at": "2026-09-26T04:39:13Z",
+          "completed_at": "2026-09-26T04:56:20Z",
+          "duration_seconds": 1027,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 6
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 12
+            },
+            {
+              "number": 4,
+              "name": "Install",
+              "conclusion": "success",
+              "duration_seconds": 34
+            },
+            {
+              "number": 5,
+              "name": "Self-test",
+              "conclusion": "success",
+              "duration_seconds": 285
+            },
+            {
+              "number": 6,
+              "name": "Conformance gates",
+              "conclusion": "success",
+              "duration_seconds": 53
+            },
+            {
+              "number": 7,
+              "name": "Experimental embodiment qualification",
+              "conclusion": "success",
+              "duration_seconds": 11
+            },
+            {
+              "number": 8,
+              "name": "Development command regression checks",
+              "conclusion": "success",
+              "duration_seconds": 12
+            },
+            {
+              "number": 9,
+              "name": "Development command and report regression checks",
+              "conclusion": "success",
+              "duration_seconds": 366
+            },
+            {
+              "number": 10,
+              "name": "Served website matches its site map",
+              "conclusion": "success",
+              "duration_seconds": 37
+            },
+            {
+              "number": 11,
+              "name": "Component guides match the source",
+              "conclusion": "success",
+              "duration_seconds": 76
+            },
+            {
+              "number": 12,
+              "name": "Self-orientation and hardcoding delta gates",
+              "conclusion": "success",
+              "duration_seconds": 95
+            },
+            {
+              "number": 13,
+              "name": "Independent component qualification lab",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 14,
+              "name": "Examples run",
+              "conclusion": "success",
+              "duration_seconds": 7
+            },
+            {
+              "number": 15,
+              "name": "Product solve acceptance",
+              "conclusion": "success",
+              "duration_seconds": 30
+            },
+            {
+              "number": 16,
+              "name": "Default-install onboarding proof",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 31,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 32,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 33,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "suite + conformance gates (3.10)",
+          "conclusion": "success",
+          "started_at": "2026-09-26T04:39:13Z",
+          "completed_at": "2026-09-26T05:03:34Z",
+          "duration_seconds": 1461,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 5
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 9
+            },
+            {
+              "number": 4,
+              "name": "Install",
+              "conclusion": "success",
+              "duration_seconds": 35
+            },
+            {
+              "number": 5,
+              "name": "Self-test",
+              "conclusion": "success",
+              "duration_seconds": 352
+            },
+            {
+              "number": 6,
+              "name": "Conformance gates",
+              "conclusion": "success",
+              "duration_seconds": 84
+            },
+            {
+              "number": 7,
+              "name": "Experimental embodiment qualification",
+              "conclusion": "success",
+              "duration_seconds": 12
+            },
+            {
+              "number": 8,
+              "name": "Development command regression checks",
+              "conclusion": "success",
+              "duration_seconds": 3
+            },
+            {
+              "number": 9,
+              "name": "Development command and report regression checks",
+              "conclusion": "success",
+              "duration_seconds": 521
+            },
+            {
+              "number": 10,
+              "name": "Served website matches its site map",
+              "conclusion": "success",
+              "duration_seconds": 56
+            },
+            {
+              "number": 11,
+              "name": "Component guides match the source",
+              "conclusion": "success",
+              "duration_seconds": 147
+            },
+            {
+              "number": 12,
+              "name": "Self-orientation and hardcoding delta gates",
+              "conclusion": "success",
+              "duration_seconds": 194
+            },
+            {
+              "number": 13,
+              "name": "Independent component qualification lab",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 14,
+              "name": "Examples run",
+              "conclusion": "success",
+              "duration_seconds": 10
+            },
+            {
+              "number": 15,
+              "name": "Product solve acceptance",
+              "conclusion": "success",
+              "duration_seconds": 31
+            },
+            {
+              "number": 16,
+              "name": "Default-install onboarding proof",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 31,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 32,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 33,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "public documentation",
+          "conclusion": "failure",
+          "started_at": "2026-09-26T04:39:13Z",
+          "completed_at": "2026-09-26T04:39:37Z",
+          "duration_seconds": 24,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 7
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-node@v7",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 4,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 5,
+              "name": "Check the publication guards",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 6,
+              "name": "Check Markdown structure",
+              "conclusion": "failure",
+              "duration_seconds": 13
+            },
+            {
+              "number": 7,
+              "name": "Check public language",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 8,
+              "name": "Refuse retired public language",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 9,
+              "name": "Check local links and section anchors",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 10,
+              "name": "Validate benchmark registry",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 11,
+              "name": "Render current architecture diagrams",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 12,
+              "name": "Verify interactive architecture and video",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 22,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 23,
+              "name": "Post Run actions/setup-node@v7",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 24,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 25,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "build the distribution",
+          "conclusion": "success",
+          "started_at": "2026-09-26T04:39:49Z",
+          "completed_at": "2026-09-26T04:40:18Z",
+          "duration_seconds": 29,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 7
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 4,
+              "name": "Build",
+              "conclusion": "success",
+              "duration_seconds": 18
+            },
+            {
+              "number": 5,
+              "name": "Run actions/upload-artifact@v7",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 9,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 10,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 11,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "manual live Ollama orientation for five text scenarios",
+          "conclusion": "skipped",
+          "started_at": "2026-09-26T04:39:11Z",
+          "completed_at": "2026-09-26T04:39:11Z",
+          "duration_seconds": 0,
+          "steps": []
+        }
+      ]
+    },
+    {
+      "run_id": 36212334330,
+      "head_sha": "47aec2c8f59d3ef0046fe2714607b3e93abedc5a",
+      "event": "push",
+      "title": "State the daily job's cron slots in UTC: 04:17, 10:17, 16:17 and 22:17",
+      "conclusion": "success",
+      "created_at": "2026-09-26T02:38:43Z",
+      "updated_at": "2026-09-26T03:03:04Z",
+      "wall_seconds": 1461,
+      "jobs": [
+        {
+          "name": "build the distribution",
+          "conclusion": "success",
+          "started_at": "2026-09-26T02:38:45Z",
+          "completed_at": "2026-09-26T02:39:11Z",
+          "duration_seconds": 26,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 7
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 4,
+              "name": "Build",
+              "conclusion": "success",
+              "duration_seconds": 14
+            },
+            {
+              "number": 5,
+              "name": "Run actions/upload-artifact@v7",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 9,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 10,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 11,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "suite + conformance gates (3.12)",
+          "conclusion": "success",
+          "started_at": "2026-09-26T02:38:45Z",
+          "completed_at": "2026-09-26T03:00:45Z",
+          "duration_seconds": 1320,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 6
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 9
+            },
+            {
+              "number": 4,
+              "name": "Install",
+              "conclusion": "success",
+              "duration_seconds": 37
+            },
+            {
+              "number": 5,
+              "name": "Self-test",
+              "conclusion": "success",
+              "duration_seconds": 329
+            },
+            {
+              "number": 6,
+              "name": "Conformance gates",
+              "conclusion": "success",
+              "duration_seconds": 79
+            },
+            {
+              "number": 7,
+              "name": "Experimental embodiment qualification",
+              "conclusion": "success",
+              "duration_seconds": 12
+            },
+            {
+              "number": 8,
+              "name": "Development command regression checks",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 9,
+              "name": "Development command and report regression checks",
+              "conclusion": "success",
+              "duration_seconds": 448
+            },
+            {
+              "number": 10,
+              "name": "Served website matches its site map",
+              "conclusion": "success",
+              "duration_seconds": 43
+            },
+            {
+              "number": 11,
+              "name": "Component guides match the source",
+              "conclusion": "success",
+              "duration_seconds": 124
+            },
+            {
+              "number": 12,
+              "name": "Self-orientation and hardcoding delta gates",
+              "conclusion": "success",
+              "duration_seconds": 158
+            },
+            {
+              "number": 13,
+              "name": "Independent component qualification lab",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 14,
+              "name": "Examples run",
+              "conclusion": "success",
+              "duration_seconds": 10
+            },
+            {
+              "number": 15,
+              "name": "Product solve acceptance",
+              "conclusion": "success",
+              "duration_seconds": 31
+            },
+            {
+              "number": 16,
+              "name": "Default-install onboarding proof",
+              "conclusion": "success",
+              "duration_seconds": 30
+            },
+            {
+              "number": 31,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 32,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 33,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "suite + conformance gates (3.10)",
+          "conclusion": "success",
+          "started_at": "2026-09-26T02:38:45Z",
+          "completed_at": "2026-09-26T03:03:04Z",
+          "duration_seconds": 1459,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 5
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 9
+            },
+            {
+              "number": 4,
+              "name": "Install",
+              "conclusion": "success",
+              "duration_seconds": 36
+            },
+            {
+              "number": 5,
+              "name": "Self-test",
+              "conclusion": "success",
+              "duration_seconds": 348
+            },
+            {
+              "number": 6,
+              "name": "Conformance gates",
+              "conclusion": "success",
+              "duration_seconds": 85
+            },
+            {
+              "number": 7,
+              "name": "Experimental embodiment qualification",
+              "conclusion": "success",
+              "duration_seconds": 11
+            },
+            {
+              "number": 8,
+              "name": "Development command regression checks",
+              "conclusion": "success",
+              "duration_seconds": 2
+            },
+            {
+              "number": 9,
+              "name": "Development command and report regression checks",
+              "conclusion": "success",
+              "duration_seconds": 519
+            },
+            {
+              "number": 10,
+              "name": "Served website matches its site map",
+              "conclusion": "success",
+              "duration_seconds": 57
+            },
+            {
+              "number": 11,
+              "name": "Component guides match the source",
+              "conclusion": "success",
+              "duration_seconds": 148
+            },
+            {
+              "number": 12,
+              "name": "Self-orientation and hardcoding delta gates",
+              "conclusion": "success",
+              "duration_seconds": 195
+            },
+            {
+              "number": 13,
+              "name": "Independent component qualification lab",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 14,
+              "name": "Examples run",
+              "conclusion": "success",
+              "duration_seconds": 10
+            },
+            {
+              "number": 15,
+              "name": "Product solve acceptance",
+              "conclusion": "success",
+              "duration_seconds": 31
+            },
+            {
+              "number": 16,
+              "name": "Default-install onboarding proof",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 31,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 32,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 33,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "suite + conformance gates (3.11)",
+          "conclusion": "success",
+          "started_at": "2026-09-26T02:38:45Z",
+          "completed_at": "2026-09-26T02:59:43Z",
+          "duration_seconds": 1258,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 5
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 8
+            },
+            {
+              "number": 4,
+              "name": "Install",
+              "conclusion": "success",
+              "duration_seconds": 35
+            },
+            {
+              "number": 5,
+              "name": "Self-test",
+              "conclusion": "success",
+              "duration_seconds": 321
+            },
+            {
+              "number": 6,
+              "name": "Conformance gates",
+              "conclusion": "success",
+              "duration_seconds": 75
+            },
+            {
+              "number": 7,
+              "name": "Experimental embodiment qualification",
+              "conclusion": "success",
+              "duration_seconds": 11
+            },
+            {
+              "number": 8,
+              "name": "Development command regression checks",
+              "conclusion": "success",
+              "duration_seconds": 2
+            },
+            {
+              "number": 9,
+              "name": "Development command and report regression checks",
+              "conclusion": "success",
+              "duration_seconds": 445
+            },
+            {
+              "number": 10,
+              "name": "Served website matches its site map",
+              "conclusion": "success",
+              "duration_seconds": 43
+            },
+            {
+              "number": 11,
+              "name": "Component guides match the source",
+              "conclusion": "success",
+              "duration_seconds": 117
+            },
+            {
+              "number": 12,
+              "name": "Self-orientation and hardcoding delta gates",
+              "conclusion": "success",
+              "duration_seconds": 155
+            },
+            {
+              "number": 13,
+              "name": "Independent component qualification lab",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 14,
+              "name": "Examples run",
+              "conclusion": "success",
+              "duration_seconds": 10
+            },
+            {
+              "number": 15,
+              "name": "Product solve acceptance",
+              "conclusion": "success",
+              "duration_seconds": 28
+            },
+            {
+              "number": 16,
+              "name": "Default-install onboarding proof",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 31,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 32,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 33,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "public documentation",
+          "conclusion": "success",
+          "started_at": "2026-09-26T02:38:45Z",
+          "completed_at": "2026-09-26T02:40:44Z",
+          "duration_seconds": 119,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 7
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-node@v7",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 4,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 5,
+              "name": "Check the publication guards",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 6,
+              "name": "Check Markdown structure",
+              "conclusion": "success",
+              "duration_seconds": 13
+            },
+            {
+              "number": 7,
+              "name": "Check public language",
+              "conclusion": "success",
+              "duration_seconds": 2
+            },
+            {
+              "number": 8,
+              "name": "Refuse retired public language",
+              "conclusion": "success",
+              "duration_seconds": 10
+            },
+            {
+              "number": 9,
+              "name": "Check local links and section anchors",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 10,
+              "name": "Validate benchmark registry",
+              "conclusion": "success",
+              "duration_seconds": 4
+            },
+            {
+              "number": 11,
+              "name": "Render current architecture diagrams",
+              "conclusion": "success",
+              "duration_seconds": 28
+            },
+            {
+              "number": 12,
+              "name": "Verify interactive architecture and video",
+              "conclusion": "success",
+              "duration_seconds": 50
+            },
+            {
+              "number": 22,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 23,
+              "name": "Post Run actions/setup-node@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 24,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 25,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "manual live Ollama orientation for five text scenarios",
+          "conclusion": "skipped",
+          "started_at": "2026-09-26T02:38:43Z",
+          "completed_at": "2026-09-26T02:38:43Z",
+          "duration_seconds": 0,
+          "steps": []
+        }
+      ]
+    },
+    {
+      "run_id": 36207220682,
+      "head_sha": "50ac35baf732755246e44a556be8a4142055a71a",
+      "event": "push",
+      "title": "Keep inline HTML out of the generated roadmap status",
+      "conclusion": "success",
+      "created_at": "2026-09-26T01:05:29Z",
+      "updated_at": "2026-09-26T01:29:40Z",
+      "wall_seconds": 1451,
+      "jobs": [
+        {
+          "name": "public documentation",
+          "conclusion": "success",
+          "started_at": "2026-09-26T01:05:32Z",
+          "completed_at": "2026-09-26T01:07:38Z",
+          "duration_seconds": 126,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 9
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-node@v7",
+              "conclusion": "success",
+              "duration_seconds": 3
+            },
+            {
+              "number": 4,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 5,
+              "name": "Check the publication guards",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 6,
+              "name": "Check Markdown structure",
+              "conclusion": "success",
+              "duration_seconds": 15
+            },
+            {
+              "number": 7,
+              "name": "Check public language",
+              "conclusion": "success",
+              "duration_seconds": 2
+            },
+            {
+              "number": 8,
+              "name": "Refuse retired public language",
+              "conclusion": "success",
+              "duration_seconds": 9
+            },
+            {
+              "number": 9,
+              "name": "Check local links and section anchors",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 10,
+              "name": "Validate benchmark registry",
+              "conclusion": "success",
+              "duration_seconds": 5
+            },
+            {
+              "number": 11,
+              "name": "Render current architecture diagrams",
+              "conclusion": "success",
+              "duration_seconds": 27
+            },
+            {
+              "number": 12,
+              "name": "Verify interactive architecture and video",
+              "conclusion": "success",
+              "duration_seconds": 49
+            },
+            {
+              "number": 22,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 23,
+              "name": "Post Run actions/setup-node@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 24,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 25,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "suite + conformance gates (3.10)",
+          "conclusion": "success",
+          "started_at": "2026-09-26T01:05:32Z",
+          "completed_at": "2026-09-26T01:29:40Z",
+          "duration_seconds": 1448,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 6
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 11
+            },
+            {
+              "number": 4,
+              "name": "Install",
+              "conclusion": "success",
+              "duration_seconds": 36
+            },
+            {
+              "number": 5,
+              "name": "Self-test",
+              "conclusion": "success",
+              "duration_seconds": 361
+            },
+            {
+              "number": 6,
+              "name": "Conformance gates",
+              "conclusion": "success",
+              "duration_seconds": 88
+            },
+            {
+              "number": 7,
+              "name": "Experimental embodiment qualification",
+              "conclusion": "success",
+              "duration_seconds": 12
+            },
+            {
+              "number": 8,
+              "name": "Development command regression checks",
+              "conclusion": "success",
+              "duration_seconds": 2
+            },
+            {
+              "number": 9,
+              "name": "Development command and report regression checks",
+              "conclusion": "success",
+              "duration_seconds": 516
+            },
+            {
+              "number": 10,
+              "name": "Served website matches its site map",
+              "conclusion": "success",
+              "duration_seconds": 59
+            },
+            {
+              "number": 11,
+              "name": "Component guides match the source",
+              "conclusion": "success",
+              "duration_seconds": 143
+            },
+            {
+              "number": 12,
+              "name": "Self-orientation and hardcoding delta gates",
+              "conclusion": "success",
+              "duration_seconds": 172
+            },
+            {
+              "number": 13,
+              "name": "Independent component qualification lab",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 14,
+              "name": "Examples run",
+              "conclusion": "success",
+              "duration_seconds": 10
+            },
+            {
+              "number": 15,
+              "name": "Product solve acceptance",
+              "conclusion": "success",
+              "duration_seconds": 29
+            },
+            {
+              "number": 16,
+              "name": "Default-install onboarding proof",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 31,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 32,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 33,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "build the distribution",
+          "conclusion": "success",
+          "started_at": "2026-09-26T01:05:31Z",
+          "completed_at": "2026-09-26T01:06:00Z",
+          "duration_seconds": 29,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 7
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 4,
+              "name": "Build",
+              "conclusion": "success",
+              "duration_seconds": 16
+            },
+            {
+              "number": 5,
+              "name": "Run actions/upload-artifact@v7",
+              "conclusion": "success",
+              "duration_seconds": 2
+            },
+            {
+              "number": 9,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 10,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 11,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "suite + conformance gates (3.11)",
+          "conclusion": "success",
+          "started_at": "2026-09-26T01:05:31Z",
+          "completed_at": "2026-09-26T01:26:20Z",
+          "duration_seconds": 1249,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 5
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 11
+            },
+            {
+              "number": 4,
+              "name": "Install",
+              "conclusion": "success",
+              "duration_seconds": 36
+            },
+            {
+              "number": 5,
+              "name": "Self-test",
+              "conclusion": "success",
+              "duration_seconds": 318
+            },
+            {
+              "number": 6,
+              "name": "Conformance gates",
+              "conclusion": "success",
+              "duration_seconds": 73
+            },
+            {
+              "number": 7,
+              "name": "Experimental embodiment qualification",
+              "conclusion": "success",
+              "duration_seconds": 11
+            },
+            {
+              "number": 8,
+              "name": "Development command regression checks",
+              "conclusion": "success",
+              "duration_seconds": 2
+            },
+            {
+              "number": 9,
+              "name": "Development command and report regression checks",
+              "conclusion": "success",
+              "duration_seconds": 438
+            },
+            {
+              "number": 10,
+              "name": "Served website matches its site map",
+              "conclusion": "success",
+              "duration_seconds": 42
+            },
+            {
+              "number": 11,
+              "name": "Component guides match the source",
+              "conclusion": "success",
+              "duration_seconds": 117
+            },
+            {
+              "number": 12,
+              "name": "Self-orientation and hardcoding delta gates",
+              "conclusion": "success",
+              "duration_seconds": 153
+            },
+            {
+              "number": 13,
+              "name": "Independent component qualification lab",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 14,
+              "name": "Examples run",
+              "conclusion": "success",
+              "duration_seconds": 11
+            },
+            {
+              "number": 15,
+              "name": "Product solve acceptance",
+              "conclusion": "success",
+              "duration_seconds": 28
+            },
+            {
+              "number": 16,
+              "name": "Default-install onboarding proof",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 31,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 32,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 33,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "suite + conformance gates (3.12)",
+          "conclusion": "success",
+          "started_at": "2026-09-26T01:05:31Z",
+          "completed_at": "2026-09-26T01:18:57Z",
+          "duration_seconds": 806,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 5
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 8
+            },
+            {
+              "number": 4,
+              "name": "Install",
+              "conclusion": "success",
+              "duration_seconds": 24
+            },
+            {
+              "number": 5,
+              "name": "Self-test",
+              "conclusion": "success",
+              "duration_seconds": 211
+            },
+            {
+              "number": 6,
+              "name": "Conformance gates",
+              "conclusion": "success",
+              "duration_seconds": 47
+            },
+            {
+              "number": 7,
+              "name": "Experimental embodiment qualification",
+              "conclusion": "success",
+              "duration_seconds": 7
+            },
+            {
+              "number": 8,
+              "name": "Development command regression checks",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 9,
+              "name": "Development command and report regression checks",
+              "conclusion": "success",
+              "duration_seconds": 277
+            },
+            {
+              "number": 10,
+              "name": "Served website matches its site map",
+              "conclusion": "success",
+              "duration_seconds": 26
+            },
+            {
+              "number": 11,
+              "name": "Component guides match the source",
+              "conclusion": "success",
+              "duration_seconds": 66
+            },
+            {
+              "number": 12,
+              "name": "Self-orientation and hardcoding delta gates",
+              "conclusion": "success",
+              "duration_seconds": 88
+            },
+            {
+              "number": 13,
+              "name": "Independent component qualification lab",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 14,
+              "name": "Examples run",
+              "conclusion": "success",
+              "duration_seconds": 6
+            },
+            {
+              "number": 15,
+              "name": "Product solve acceptance",
+              "conclusion": "success",
+              "duration_seconds": 19
+            },
+            {
+              "number": 16,
+              "name": "Default-install onboarding proof",
+              "conclusion": "success",
+              "duration_seconds": 18
+            },
+            {
+              "number": 31,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 32,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 33,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "manual live Ollama orientation for five text scenarios",
+          "conclusion": "skipped",
+          "started_at": "2026-09-26T01:05:30Z",
+          "completed_at": "2026-09-26T01:05:29Z",
+          "duration_seconds": -1,
+          "steps": []
+        }
+      ]
+    },
+    {
+      "run_id": 36207165738,
+      "head_sha": "e199f715d26420a2437fd218a2f1ad5102c156b4",
+      "event": "push",
+      "title": "Record the fourth Community release: 3,276 packages from the daily jo\u2026",
+      "conclusion": "failure",
+      "created_at": "2026-09-26T01:04:36Z",
+      "updated_at": "2026-09-26T01:20:39Z",
+      "wall_seconds": 963,
+      "jobs": [
+        {
+          "name": "public documentation",
+          "conclusion": "failure",
+          "started_at": "2026-09-26T01:04:38Z",
+          "completed_at": "2026-09-26T01:05:02Z",
+          "duration_seconds": 24,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 7
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-node@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 4,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 5,
+              "name": "Check the publication guards",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 6,
+              "name": "Check Markdown structure",
+              "conclusion": "failure",
+              "duration_seconds": 14
+            },
+            {
+              "number": 7,
+              "name": "Check public language",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 8,
+              "name": "Refuse retired public language",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 9,
+              "name": "Check local links and section anchors",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 10,
+              "name": "Validate benchmark registry",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 11,
+              "name": "Render current architecture diagrams",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 12,
+              "name": "Verify interactive architecture and video",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 22,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 23,
+              "name": "Post Run actions/setup-node@v7",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 24,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 25,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "suite + conformance gates (3.10)",
+          "conclusion": "failure",
+          "started_at": "2026-09-26T01:04:38Z",
+          "completed_at": "2026-09-26T01:20:38Z",
+          "duration_seconds": 960,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 7
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 13
+            },
+            {
+              "number": 4,
+              "name": "Install",
+              "conclusion": "success",
+              "duration_seconds": 38
+            },
+            {
+              "number": 5,
+              "name": "Self-test",
+              "conclusion": "success",
+              "duration_seconds": 328
+            },
+            {
+              "number": 6,
+              "name": "Conformance gates",
+              "conclusion": "success",
+              "duration_seconds": 79
+            },
+            {
+              "number": 7,
+              "name": "Experimental embodiment qualification",
+              "conclusion": "success",
+              "duration_seconds": 12
+            },
+            {
+              "number": 8,
+              "name": "Development command regression checks",
+              "conclusion": "success",
+              "duration_seconds": 3
+            },
+            {
+              "number": 9,
+              "name": "Development command and report regression checks",
+              "conclusion": "failure",
+              "duration_seconds": 476
+            },
+            {
+              "number": 10,
+              "name": "Served website matches its site map",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 11,
+              "name": "Component guides match the source",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 12,
+              "name": "Self-orientation and hardcoding delta gates",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 13,
+              "name": "Independent component qualification lab",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 14,
+              "name": "Examples run",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 15,
+              "name": "Product solve acceptance",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 16,
+              "name": "Default-install onboarding proof",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 31,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 32,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 33,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "build the distribution",
+          "conclusion": "success",
+          "started_at": "2026-09-26T01:04:40Z",
+          "completed_at": "2026-09-26T01:05:09Z",
+          "duration_seconds": 29,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 7
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 4,
+              "name": "Build",
+              "conclusion": "success",
+              "duration_seconds": 15
+            },
+            {
+              "number": 5,
+              "name": "Run actions/upload-artifact@v7",
+              "conclusion": "success",
+              "duration_seconds": 2
+            },
+            {
+              "number": 9,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 10,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 11,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "suite + conformance gates (3.11)",
+          "conclusion": "failure",
+          "started_at": "2026-09-26T01:04:38Z",
+          "completed_at": "2026-09-26T01:15:40Z",
+          "duration_seconds": 662,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 5
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 11
+            },
+            {
+              "number": 4,
+              "name": "Install",
+              "conclusion": "success",
+              "duration_seconds": 28
+            },
+            {
+              "number": 5,
+              "name": "Self-test",
+              "conclusion": "success",
+              "duration_seconds": 241
+            },
+            {
+              "number": 6,
+              "name": "Conformance gates",
+              "conclusion": "success",
+              "duration_seconds": 54
+            },
+            {
+              "number": 7,
+              "name": "Experimental embodiment qualification",
+              "conclusion": "success",
+              "duration_seconds": 9
+            },
+            {
+              "number": 8,
+              "name": "Development command regression checks",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 9,
+              "name": "Development command and report regression checks",
+              "conclusion": "failure",
+              "duration_seconds": 309
+            },
+            {
+              "number": 10,
+              "name": "Served website matches its site map",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 11,
+              "name": "Component guides match the source",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 12,
+              "name": "Self-orientation and hardcoding delta gates",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 13,
+              "name": "Independent component qualification lab",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 14,
+              "name": "Examples run",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 15,
+              "name": "Product solve acceptance",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 16,
+              "name": "Default-install onboarding proof",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 31,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 32,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 33,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "suite + conformance gates (3.12)",
+          "conclusion": "failure",
+          "started_at": "2026-09-26T01:04:40Z",
+          "completed_at": "2026-09-26T01:20:26Z",
+          "duration_seconds": 946,
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 6
+            },
+            {
+              "number": 3,
+              "name": "Run actions/setup-python@v6",
+              "conclusion": "success",
+              "duration_seconds": 14
+            },
+            {
+              "number": 4,
+              "name": "Install",
+              "conclusion": "success",
+              "duration_seconds": 37
+            },
+            {
+              "number": 5,
+              "name": "Self-test",
+              "conclusion": "success",
+              "duration_seconds": 333
+            },
+            {
+              "number": 6,
+              "name": "Conformance gates",
+              "conclusion": "success",
+              "duration_seconds": 78
+            },
+            {
+              "number": 7,
+              "name": "Experimental embodiment qualification",
+              "conclusion": "success",
+              "duration_seconds": 12
+            },
+            {
+              "number": 8,
+              "name": "Development command regression checks",
+              "conclusion": "success",
+              "duration_seconds": 2
+            },
+            {
+              "number": 9,
+              "name": "Development command and report regression checks",
+              "conclusion": "failure",
+              "duration_seconds": 459
+            },
+            {
+              "number": 10,
+              "name": "Served website matches its site map",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 11,
+              "name": "Component guides match the source",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 12,
+              "name": "Self-orientation and hardcoding delta gates",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 13,
+              "name": "Independent component qualification lab",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 14,
+              "name": "Examples run",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 15,
+              "name": "Product solve acceptance",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 16,
+              "name": "Default-install onboarding proof",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 31,
+              "name": "Post Run actions/setup-python@v6",
+              "conclusion": "skipped",
+              "duration_seconds": 0
+            },
+            {
+              "number": 32,
+              "name": "Post Run actions/checkout@v7",
+              "conclusion": "success",
+              "duration_seconds": 1
+            },
+            {
+              "number": 33,
+              "name": "Complete job",
+              "conclusion": "success",
+              "duration_seconds": 0
+            }
+          ]
+        },
+        {
+          "name": "manual live Ollama orientation for five text scenarios",
+          "conclusion": "skipped",
+          "started_at": "2026-09-26T01:04:37Z",
+          "completed_at": "2026-09-26T01:04:36Z",
+          "duration_seconds": -1,
+          "steps": []
+        }
+      ]
+    }
+  ]
+}

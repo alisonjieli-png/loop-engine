@@ -1,0 +1,614 @@
+{
+  "test_adaptive_practitioner_cli": {
+    "result": "OK",
+    "seconds": 0.3,
+    "tests": 4,
+    "unittest_seconds": 0.17
+  },
+  "test_architecture_audit": {
+    "result": "FAILED",
+    "seconds": 9.7,
+    "tests": 20,
+    "unittest_seconds": 9.145
+  },
+  "test_browser_nightly_workflow": {
+    "result": "OK",
+    "seconds": 0.2,
+    "tests": 5,
+    "unittest_seconds": 0.051
+  },
+  "test_build_catalogue_release_bundle": {
+    "result": "OK",
+    "seconds": 1.6,
+    "tests": 11,
+    "unittest_seconds": 0.953
+  },
+  "test_build_continuation_status": {
+    "result": "OK",
+    "seconds": 31.9,
+    "tests": 19,
+    "unittest_seconds": 31.695
+  },
+  "test_build_development_tracker": {
+    "result": "OK",
+    "seconds": 33.6,
+    "tests": 7,
+    "unittest_seconds": 33.346
+  },
+  "test_build_host_catalogue_manifest": {
+    "result": "OK",
+    "seconds": 1.1,
+    "tests": 33,
+    "unittest_seconds": 0.731
+  },
+  "test_build_mcp_directory": {
+    "result": "OK",
+    "seconds": 2.8,
+    "tests": 27,
+    "unittest_seconds": 2.38
+  },
+  "test_build_records_index": {
+    "result": "FAILED",
+    "seconds": 0.2,
+    "tests": 7,
+    "unittest_seconds": 0.021
+  },
+  "test_build_volume_seed_ideas": {
+    "result": "OK",
+    "seconds": 0.3,
+    "tests": 4,
+    "unittest_seconds": 0.062
+  },
+  "test_candidate_review_batching": {
+    "result": "OK",
+    "seconds": 5.8,
+    "tests": 34,
+    "unittest_seconds": 4.944
+  },
+  "test_candidate_review_binding_engine": {
+    "result": "OK",
+    "seconds": 1.4,
+    "tests": 4,
+    "unittest_seconds": 0.508
+  },
+  "test_candidate_review_calibration": {
+    "result": "OK",
+    "seconds": 1.9,
+    "tests": 15,
+    "unittest_seconds": 1.144
+  },
+  "test_candidate_review_configuration": {
+    "result": "OK",
+    "seconds": 0.3,
+    "tests": 48,
+    "unittest_seconds": 0.053
+  },
+  "test_candidate_review_engines": {
+    "result": "OK",
+    "seconds": 2.8,
+    "tests": 27,
+    "unittest_seconds": 2.147
+  },
+  "test_candidate_review_imported": {
+    "result": "OK",
+    "seconds": 0.9,
+    "tests": 26,
+    "unittest_seconds": 0.236
+  },
+  "test_candidate_review_integrity": {
+    "result": "OK",
+    "seconds": 1.3,
+    "tests": 14,
+    "unittest_seconds": 0.484
+  },
+  "test_candidate_review_native": {
+    "result": "OK",
+    "seconds": 2.0,
+    "tests": 26,
+    "unittest_seconds": 1.221
+  },
+  "test_candidate_review_native_calibration": {
+    "result": "OK",
+    "seconds": 7.0,
+    "tests": 19,
+    "unittest_seconds": 6.422
+  },
+  "test_candidate_review_panel": {
+    "result": "OK",
+    "seconds": 6.5,
+    "tests": 55,
+    "unittest_seconds": 5.938
+  },
+  "test_candidate_review_prechecks": {
+    "result": "OK",
+    "seconds": 5.7,
+    "tests": 28,
+    "unittest_seconds": 5.08
+  },
+  "test_candidate_review_record": {
+    "result": "OK",
+    "seconds": 1.9,
+    "tests": 55,
+    "unittest_seconds": 0.828
+  },
+  "test_candidate_review_screen": {
+    "result": "OK",
+    "seconds": 0.6,
+    "tests": 4,
+    "unittest_seconds": 0.019
+  },
+  "test_carry_catalogue_approvals": {
+    "result": "OK",
+    "seconds": 0.7,
+    "tests": 25,
+    "unittest_seconds": 0.574
+  },
+  "test_catalogue_attributes": {
+    "result": "OK",
+    "seconds": 0.3,
+    "tests": 3,
+    "unittest_seconds": 0.001
+  },
+  "test_catalogue_release_runbook": {
+    "result": "OK",
+    "seconds": 0.4,
+    "tests": 9,
+    "unittest_seconds": 0.009
+  },
+  "test_catalogue_tiers": {
+    "result": "OK",
+    "seconds": 0.3,
+    "tests": 5,
+    "unittest_seconds": 0.007
+  },
+  "test_check_client_journey_in_containers": {
+    "result": "OK",
+    "seconds": 2.7,
+    "tests": 83,
+    "unittest_seconds": 2.29
+  },
+  "test_check_component_guides": {
+    "result": "OK",
+    "seconds": 97.7,
+    "tests": 50,
+    "unittest_seconds": 97.489
+  },
+  "test_check_harness_fresh_instances": {
+    "result": "OK",
+    "seconds": 19.0,
+    "tests": 10,
+    "unittest_seconds": 18.712
+  },
+  "test_check_hosted_catalogue": {
+    "result": "OK",
+    "seconds": 0.2,
+    "tests": 13,
+    "unittest_seconds": 0.002
+  },
+  "test_check_hosted_service": {
+    "result": "OK",
+    "seconds": 0.2,
+    "tests": 3,
+    "unittest_seconds": 0.007
+  },
+  "test_check_live_pulse": {
+    "result": "OK",
+    "seconds": 0.2,
+    "tests": 6,
+    "unittest_seconds": 0.004
+  },
+  "test_combine_reviewed_catalogues": {
+    "result": "OK",
+    "seconds": 0.5,
+    "tests": 5,
+    "unittest_seconds": 0.172
+  },
+  "test_context_routes": {
+    "result": "OK",
+    "seconds": 26.6,
+    "tests": 21,
+    "unittest_seconds": 26.468
+  },
+  "test_custom_endpoint_tls_trust": {
+    "result": "OK",
+    "seconds": 0.9,
+    "tests": 13,
+    "unittest_seconds": 0.571
+  },
+  "test_decision_engine_boundary": {
+    "result": "OK",
+    "seconds": 0.5,
+    "tests": 6,
+    "unittest_seconds": 0.363
+  },
+  "test_decision_station_cli": {
+    "result": "OK",
+    "seconds": 0.3,
+    "tests": 5,
+    "unittest_seconds": 0.115
+  },
+  "test_deck_page": {
+    "result": "OK",
+    "seconds": 12.5,
+    "tests": 17,
+    "unittest_seconds": 12.265
+  },
+  "test_documentation_index": {
+    "result": "OK",
+    "seconds": 28.7,
+    "tests": 10,
+    "unittest_seconds": 28.614
+  },
+  "test_email_signup_password_policy": {
+    "result": "OK",
+    "seconds": 0.4,
+    "tests": 2,
+    "unittest_seconds": 0.001
+  },
+  "test_export_managed_record": {
+    "result": "OK",
+    "seconds": 0.6,
+    "tests": 6,
+    "unittest_seconds": 0.283
+  },
+  "test_fly_deployment": {
+    "result": "OK",
+    "seconds": 2.8,
+    "tests": 22,
+    "unittest_seconds": 2.382
+  },
+  "test_generate_original_native_candidates": {
+    "result": "OK",
+    "seconds": 6.8,
+    "tests": 45,
+    "unittest_seconds": 6.174
+  },
+  "test_generate_original_native_provider_binding": {
+    "result": "OK",
+    "seconds": 3.2,
+    "tests": 18,
+    "unittest_seconds": 2.622
+  },
+  "test_harness_idea_matrix": {
+    "result": "OK",
+    "seconds": 5.8,
+    "tests": 21,
+    "unittest_seconds": 5.65
+  },
+  "test_homepage_demonstration": {
+    "result": "OK",
+    "seconds": 0.4,
+    "tests": 6,
+    "unittest_seconds": 0.227
+  },
+  "test_identity_qualification_host": {
+    "result": "OK",
+    "seconds": 0.2,
+    "tests": 4,
+    "unittest_seconds": 0.006
+  },
+  "test_ingest_outside_material": {
+    "result": "OK",
+    "seconds": 2.6,
+    "tests": 22,
+    "unittest_seconds": 2.127
+  },
+  "test_install_selected_material": {
+    "result": "OK",
+    "seconds": 75.2,
+    "tests": 67,
+    "unittest_seconds": 74.722
+  },
+  "test_intelligence_candidate_staging": {
+    "result": "OK",
+    "seconds": 0.4,
+    "tests": 8,
+    "unittest_seconds": 0.14
+  },
+  "test_intelligence_layer_coverage": {
+    "result": "OK",
+    "seconds": 1.3,
+    "tests": 17,
+    "unittest_seconds": 0.868
+  },
+  "test_inventory_harness_library": {
+    "result": "OK",
+    "seconds": 0.2,
+    "tests": 5,
+    "unittest_seconds": 0.005
+  },
+  "test_invite_beta_user": {
+    "result": "OK",
+    "seconds": 6.8,
+    "tests": 90,
+    "unittest_seconds": 6.496
+  },
+  "test_library_ingestion_boundary": {
+    "result": "OK",
+    "seconds": 1.3,
+    "tests": 7,
+    "unittest_seconds": 1.14
+  },
+  "test_library_page": {
+    "result": "OK",
+    "seconds": 0.5,
+    "tests": 19,
+    "unittest_seconds": 0.16
+  },
+  "test_licensed_import_discovery_dedup": {
+    "result": "OK",
+    "seconds": 0.5,
+    "tests": 12,
+    "unittest_seconds": 0.12
+  },
+  "test_licensed_import_licensing": {
+    "result": "OK",
+    "seconds": 0.3,
+    "tests": 13,
+    "unittest_seconds": 0.045
+  },
+  "test_licensed_import_packages": {
+    "result": "OK",
+    "seconds": 0.4,
+    "tests": 13,
+    "unittest_seconds": 0.08
+  },
+  "test_licensed_import_reads": {
+    "result": "OK",
+    "seconds": 0.5,
+    "tests": 14,
+    "unittest_seconds": 0.151
+  },
+  "test_licensed_import_review_export": {
+    "result": "OK",
+    "seconds": 0.5,
+    "tests": 6,
+    "unittest_seconds": 0.038
+  },
+  "test_licensed_import_sources": {
+    "result": "OK",
+    "seconds": 0.3,
+    "tests": 2,
+    "unittest_seconds": 0.005
+  },
+  "test_licensed_import_support": {
+    "result": "OK",
+    "seconds": 0.3,
+    "tests": 0,
+    "unittest_seconds": 0.0
+  },
+  "test_licensed_import_sync": {
+    "result": "OK",
+    "seconds": 1.2,
+    "tests": 11,
+    "unittest_seconds": 0.896
+  },
+  "test_make_checkpoint": {
+    "result": "OK",
+    "seconds": 0.2,
+    "tests": 20,
+    "unittest_seconds": 0.067
+  },
+  "test_model_directory": {
+    "result": "OK",
+    "seconds": 3.5,
+    "tests": 20,
+    "unittest_seconds": 3.092
+  },
+  "test_native_proposals_from_overnight_candidates": {
+    "result": "OK",
+    "seconds": 0.6,
+    "tests": 5,
+    "unittest_seconds": 0.293
+  },
+  "test_native_schema_reference_scope": {
+    "result": "OK",
+    "seconds": 0.4,
+    "tests": 2,
+    "unittest_seconds": 0.005
+  },
+  "test_opencode_generation_lanes": {
+    "result": "OK",
+    "seconds": 0.2,
+    "tests": 21,
+    "unittest_seconds": 0.008
+  },
+  "test_opencode_loop": {
+    "result": "OK",
+    "seconds": 0.8,
+    "tests": 4,
+    "unittest_seconds": 0.377
+  },
+  "test_operator_credentials": {
+    "result": "OK",
+    "seconds": 0.2,
+    "tests": 24,
+    "unittest_seconds": 0.01
+  },
+  "test_overnight": {
+    "result": "OK",
+    "seconds": 0.8,
+    "tests": 23,
+    "unittest_seconds": 0.658
+  },
+  "test_overnight_candidate_batch": {
+    "result": "OK",
+    "seconds": 9.4,
+    "tests": 17,
+    "unittest_seconds": 9.26
+  },
+  "test_overnight_queue": {
+    "result": "OK",
+    "seconds": 4.4,
+    "tests": 8,
+    "unittest_seconds": 4.242
+  },
+  "test_practitioner_runtime_boundary": {
+    "result": "OK",
+    "seconds": 4.7,
+    "tests": 3,
+    "unittest_seconds": 4.582
+  },
+  "test_prepare_harness_candidates": {
+    "result": "OK",
+    "seconds": 1.9,
+    "tests": 8,
+    "unittest_seconds": 1.631
+  },
+  "test_prepare_native_harness_candidates": {
+    "result": "OK",
+    "seconds": 4.9,
+    "tests": 25,
+    "unittest_seconds": 4.567
+  },
+  "test_promotion_codes": {
+    "result": "OK",
+    "seconds": 0.6,
+    "tests": 6,
+    "unittest_seconds": 0.238
+  },
+  "test_provider_model_identity_reporting": {
+    "result": "OK",
+    "seconds": 0.3,
+    "tests": 7,
+    "unittest_seconds": 0.074
+  },
+  "test_provider_refusal_recovery": {
+    "result": "OK",
+    "seconds": 0.3,
+    "tests": 4,
+    "unittest_seconds": 0.031
+  },
+  "test_public_asset_delivery": {
+    "result": "OK",
+    "seconds": 3.5,
+    "tests": 7,
+    "unittest_seconds": 2.898
+  },
+  "test_public_links": {
+    "result": "OK",
+    "seconds": 2.9,
+    "tests": 11,
+    "unittest_seconds": 2.418
+  },
+  "test_red_team_decisions": {
+    "result": "OK",
+    "seconds": 0.6,
+    "tests": 8,
+    "unittest_seconds": 0.26
+  },
+  "test_refresh_research_sources": {
+    "result": "OK",
+    "seconds": 0.2,
+    "tests": 13,
+    "unittest_seconds": 0.006
+  },
+  "test_reissue_service_keys": {
+    "result": "OK",
+    "seconds": 0.2,
+    "tests": 10,
+    "unittest_seconds": 0.007
+  },
+  "test_scan_local_volume": {
+    "result": "OK",
+    "seconds": 0.2,
+    "tests": 5,
+    "unittest_seconds": 0.039
+  },
+  "test_search_effect_authority": {
+    "result": "OK",
+    "seconds": 5.9,
+    "tests": 10,
+    "unittest_seconds": 5.286
+  },
+  "test_search_quality": {
+    "result": "OK",
+    "seconds": 16.2,
+    "tests": 8,
+    "unittest_seconds": 15.994
+  },
+  "test_service_documentation": {
+    "result": "OK",
+    "seconds": 64.0,
+    "tests": 27,
+    "unittest_seconds": 63.871
+  },
+  "test_service_latency": {
+    "result": "OK",
+    "seconds": 0.1,
+    "tests": 3,
+    "unittest_seconds": 0.0
+  },
+  "test_session_intake": {
+    "result": "OK",
+    "seconds": 0.1,
+    "tests": 5,
+    "unittest_seconds": 0.0
+  },
+  "test_setup_stripe_sandbox": {
+    "result": "OK",
+    "seconds": 0.4,
+    "tests": 74,
+    "unittest_seconds": 0.157
+  },
+  "test_showcase_pages": {
+    "result": "OK",
+    "seconds": 5.4,
+    "tests": 6,
+    "unittest_seconds": 4.861
+  },
+  "test_solve_cli_checkpoint": {
+    "result": "OK",
+    "seconds": 0.2,
+    "tests": 5,
+    "unittest_seconds": 0.002
+  },
+  "test_stage_service_secrets": {
+    "result": "OK",
+    "seconds": 0.2,
+    "tests": 9,
+    "unittest_seconds": 0.003
+  },
+  "test_starter_catalogue": {
+    "result": "OK",
+    "seconds": 142.2,
+    "tests": 32,
+    "unittest_seconds": 141.737
+  },
+  "test_summarize_research_watch": {
+    "result": "OK",
+    "seconds": 0.1,
+    "tests": 4,
+    "unittest_seconds": 0.003
+  },
+  "test_task_campaign": {
+    "result": "OK",
+    "seconds": 0.2,
+    "tests": 22,
+    "unittest_seconds": 0.027
+  },
+  "test_waitlist_operator": {
+    "result": "OK",
+    "seconds": 0.3,
+    "tests": 39,
+    "unittest_seconds": 0.039
+  },
+  "test_website_site_map": {
+    "result": "OK",
+    "seconds": 0.5,
+    "tests": 15,
+    "unittest_seconds": 0.198
+  },
+  "test_write_reviewed_catalogue": {
+    "result": "OK",
+    "seconds": 1.2,
+    "tests": 8,
+    "unittest_seconds": 0.587
+  },
+  "test_write_reviewed_catalogue_imported": {
+    "result": "OK",
+    "seconds": 0.7,
+    "tests": 3,
+    "unittest_seconds": 0.116
+  }
+}

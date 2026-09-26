@@ -69,6 +69,12 @@ The [developer credential handoff](developer-credential-handoff.md) explains
 prepared Claude Code connections and private keyring references. It does not
 export credential values into repository files or grant missing access.
 
+The [continuous integration guide](continuous-integration-and-pre-push-checks.md)
+explains the jobs that run on every push to `main`, the shard manifest that
+divides the tools tests across them, the cached environment, and the
+pre-push check that runs the same gates on your machine, in parallel, before
+a push.
+
 The [harness instance layout](harness-instance-context-layout.md) distinguishes
 the generated instruction and assignment files from proposed native context
 materialization and observed-loading requirements.

@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Git pre-push hook template: runs tools/pre_push_check.sh and refuses the push when a gate fails.
+#
+# Nothing installs this hook for you, and no script in this repository installs it into another checkout.
+# To use it in one checkout of your own, choose one:
+#   git config core.hooksPath tools/git-hooks
+#   cp tools/git-hooks/pre-push .git/hooks/pre-push && chmod +x .git/hooks/pre-push
+# To push once without it:  PRE_PUSH_CHECK=0 git push   or   git push --no-verify
+# The check takes about six minutes on a sixteen-core machine, most of it the self-test.
+set -u
+if [ "${PRE_PUSH_CHECK:-1}" = 0 ]; then
+  exit 0
+fi
+exec "$(git rev-parse --show-toplevel)/tools/pre_push_check.sh"

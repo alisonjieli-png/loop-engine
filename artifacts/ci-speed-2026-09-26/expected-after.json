@@ -1,0 +1,25 @@
+{
+  "record_type": "ci_expected_wall_time/v1",
+  "computed_on": "2026-09-26",
+  "basis": "Medians of the successful steps in before.json. The install step is counted at its measured duration of 36 seconds although the cached environment should take less; the gain is unmeasured. Tools test shard times are the measured one-process step time of each Python version multiplied by the share of that shard's weight in tools/ci_test_shards.json (about one quarter).",
+  "setup_seconds_per_job": {"checkout": 6, "setup_python": 10, "install": 36, "post_steps": 3, "total": 55},
+  "jobs": {
+    "self-test (3.12)": {"steps": {"Self-test": 331}, "expected_seconds": 386},
+    "conformance and hardcoding gates (3.12)": {"steps": {"Conformance gates": 79, "Self-orientation and hardcoding delta gates": 160}, "expected_seconds": 294},
+    "component guides match the source (3.12)": {"steps": {"Component guides match the source": 124}, "expected_seconds": 179},
+    "tools tests (3.10, heaviest shard)": {"steps": {"report layout dependency": 5, "shard": 131}, "expected_seconds": 191},
+    "tools tests (3.12, heaviest shard)": {"steps": {"report layout dependency": 5, "shard": 113}, "expected_seconds": 173},
+    "runtime checks (3.12)": {"steps": {"Experimental embodiment qualification": 12, "Independent component qualification lab": 1, "Served website matches its site map": 40, "Examples run": 11, "Product solve acceptance": 31, "Default-install onboarding proof": 30}, "expected_seconds": 180},
+    "runtime checks (3.10)": {"steps": {"Experimental embodiment qualification": 12, "Independent component qualification lab": 1, "Served website matches its site map": 56, "Examples run": 11, "Product solve acceptance": 31}, "expected_seconds": 166},
+    "public documentation": {"expected_seconds": 118, "note": "unchanged"},
+    "build the distribution": {"expected_seconds": 29, "note": "unchanged"}
+  },
+  "jobs_per_run": 20,
+  "concurrent_jobs_of_the_hosting_plan": 20,
+  "expected_wall_seconds": 386,
+  "measured_wall_seconds_before_median": 1466,
+  "expected_reduction": "about 3.8 times shorter; a passing run in about six and a half minutes instead of about twenty-four and a half",
+  "total_job_seconds_before": 4082,
+  "total_job_seconds_after_about": 3700,
+  "to_be_measured": "the next run of main, saved as after.json beside this file"
+}

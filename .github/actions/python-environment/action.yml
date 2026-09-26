@@ -1,0 +1,50 @@
+name: Python environment
+description: >-
+  One Python version with the project and its extras installed into a virtual
+  environment that is cached between runs, put first on PATH for the steps
+  that follow. The cache key holds the exact interpreter version and the hash
+  of pyproject.toml, so a dependency change or a new interpreter rebuilds the
+  environment from scratch; there is no partial restore.
+
+inputs:
+  python-version:
+    description: The Python version, as actions/setup-python takes it.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - id: python
+      uses: actions/setup-python@v6
+      with:
+        python-version: ${{ inputs.python-version }}
+        cache: pip
+
+    - id: environment
+      uses: actions/cache@v6
+      with:
+        path: ~/.le-venv
+        key: le-venv-2-${{ runner.os }}-${{ runner.arch }}-py${{ steps.python.outputs.python-version }}-${{ hashFiles('pyproject.toml', '.github/actions/python-environment/action.yml') }}
+
+    - name: Install the project and its extras into a new environment
+      if: steps.environment.outputs.cache-hit != 'true'
+      shell: bash
+      run: |
+        python -m venv "$HOME/.le-venv"
+        "$HOME/.le-venv/bin/python" -m pip install --upgrade pip
+        # markdown-it-py is what the context route test parses Markdown with.
+        # It used to arrive only as a dependency of another package, and not
+        # on every Python version, so it is installed here by exact version.
+        "$HOME/.le-venv/bin/python" -m pip install -e '.[all]' markdown-it-py==4.2.0
+
+    - name: Link this checkout into the cached environment
+      if: steps.environment.outputs.cache-hit == 'true'
+      shell: bash
+      run: |
+        "$HOME/.le-venv/bin/python" -m pip install --no-deps -e .
+
+    - name: Put the environment first on PATH
+      shell: bash
+      run: |
+        echo "$HOME/.le-venv/bin" >> "$GITHUB_PATH"
+        "$HOME/.le-venv/bin/python" --version

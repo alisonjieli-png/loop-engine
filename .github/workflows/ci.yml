@@ -188,8 +188,52 @@ jobs:
           wait $SHOWCASE_PID 2>/dev/null || true
           trap - EXIT INT TERM
 
-  test:
-    name: suite + conformance gates
+  # The test-derived jobs below replaced one "suite + conformance gates" job
+  # per Python version on September 26, 2026 (roadmap S-6.200). That job ran
+  # every check in sequence and took 19 to 25 minutes; the release workflow
+  # waits for this whole run. Now the tools test modules run in four shards
+  # on every Python version, the cheap runtime checks stay on every version,
+  # and the checks whose result does not depend on the Python version run
+  # once, on 3.12, the version the service image uses. Nothing was dropped:
+  # tools/test_ci_test_shards.py holds every test module to exactly one
+  # shard and every step here to the pre-push script. The measured times
+  # before the change and the arithmetic behind the new layout are in
+  # artifacts/ci-speed-2026-09-26/.
+  unit-tests:
+    name: tools tests
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+        shard: [a, b, c, d]
+
+    steps:
+      # The starter catalogue records the exact revision its cited bytes
+      # were read at, and the anchor check reads those bytes back out of
+      # git. A shallow checkout does not have that revision, so the check
+      # failed here while passing on any developer's clone. The history is
+      # what the check is about, so it is fetched rather than the check
+      # being loosened.
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: ./.github/actions/python-environment
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install the report layout dependency
+        run: npm ci --prefix tools/architecture_report --ignore-scripts --no-audit --no-fund
+
+      - name: Development command and report regression checks
+        # One shard of tools/ci_test_shards.json, loaded the way unittest
+        # discovery loads the tools folder. The shards were balanced on
+        # measured module times; tools/balance_test_shards.py rebalances them.
+        run: PYTHONPATH=src:tools python tools/run_test_shard.py --shard ${{ matrix.shard }}
+
+  runtime-checks:
+    name: runtime checks
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -207,64 +251,23 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-python@v6
+      - uses: ./.github/actions/python-environment
         with:
           python-version: ${{ matrix.python-version }}
-          cache: pip
-
-      - name: Install
-        run: |
-          python -m pip install --upgrade pip
-          pip install -e '.[all]'
-
-      - name: Self-test
-        run: python -m loop_engine --self-test
-
-      - name: Conformance gates
-        run: python -m loop_engine --conformance
 
       - name: Experimental embodiment qualification
         run: PYTHONPATH=src:devtools python -m unittest discover -s devtools/embodiment_lab/tests -v
 
-      - name: Development command regression checks
-        # The context route test parses Markdown. Its parser used to arrive
-        # only as a dependency of another package, and not on every Python
-        # version, so it is installed here by exact version.
+      - name: Independent component qualification lab
         run: |
-          python -m pip install markdown-it-py==4.2.0
-          npm ci --prefix tools/architecture_report --ignore-scripts --no-audit --no-fund
-
-      - name: Development command and report regression checks
-        run: PYTHONPATH=src:tools python -m unittest discover -s tools -p 'test_*.py'
+          cd devtools/qualification_lab
+          python -m unittest -v test_runner.py
 
       - name: Served website matches its site map
         # Every page, header entry, footer link, section and hostname of the
         # typed site map against the pages this checkout serves (roadmap
         # S-6.67). It joined this list once the restored pages were served.
         run: PYTHONPATH=src:tools python -m unittest tools/check_website_site_map.py
-
-      - name: Component guides match the source
-        # The fast rules run in the tools tests above. This step adds the slow
-        # one: it runs every self-test command the guides tell a reader to
-        # run, because a command can name a report field that only exists at
-        # run time. Needs the installed package, so it lives in this job.
-        run: |
-          PYTHONPATH=src python tools/check_component_guides.py \
-            --run-documented-checks
-
-      - name: Self-orientation and hardcoding delta gates
-        run: |
-          PYTHONPATH=devtools/src python -m loop_engine_devtools.cli --self-test
-          PYTHONPATH=devtools/src python -m loop_engine_devtools.cli \
-            --hardcoding-audit \
-            --allowlist devtools/hardcoding-allowlist.yaml \
-            --baseline devtools/hardcoding-ci-baseline.json \
-            --fail-on-new high
-
-      - name: Independent component qualification lab
-        run: |
-          cd devtools/qualification_lab
-          python -m unittest -v test_runner.py
 
       - name: Examples run
         run: |
@@ -363,6 +366,88 @@ jobs:
           "$RUNNER_TEMP/default-install/bin/python" examples/22_product_quickstart/run_cli_acceptance.py \
             --installed-package \
             --output-root "$RUNNER_TEMP/default-product-cli-acceptance"
+
+  self-test:
+    name: self-test
+    runs-on: ubuntu-latest
+
+    steps:
+      # The starter catalogue records the exact revision its cited bytes
+      # were read at, and the anchor check reads those bytes back out of
+      # git. A shallow checkout does not have that revision, so the check
+      # failed here while passing on any developer's clone. The history is
+      # what the check is about, so it is fetched rather than the check
+      # being loosened.
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: ./.github/actions/python-environment
+        with:
+          python-version: "3.12"
+
+      - name: Self-test
+        run: python -m loop_engine --self-test
+
+  conformance:
+    name: conformance and hardcoding gates
+    runs-on: ubuntu-latest
+
+    steps:
+      # The starter catalogue records the exact revision its cited bytes
+      # were read at, and the anchor check reads those bytes back out of
+      # git. A shallow checkout does not have that revision, so the check
+      # failed here while passing on any developer's clone. The history is
+      # what the check is about, so it is fetched rather than the check
+      # being loosened.
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: ./.github/actions/python-environment
+        with:
+          python-version: "3.12"
+
+      - name: Conformance gates
+        run: python -m loop_engine --conformance
+
+      - name: Self-orientation and hardcoding delta gates
+        run: |
+          PYTHONPATH=devtools/src python -m loop_engine_devtools.cli --self-test
+          PYTHONPATH=devtools/src python -m loop_engine_devtools.cli \
+            --hardcoding-audit \
+            --allowlist devtools/hardcoding-allowlist.yaml \
+            --baseline devtools/hardcoding-ci-baseline.json \
+            --fail-on-new high
+
+  component-guides:
+    name: component guides match the source
+    runs-on: ubuntu-latest
+
+    steps:
+      # The starter catalogue records the exact revision its cited bytes
+      # were read at, and the anchor check reads those bytes back out of
+      # git. A shallow checkout does not have that revision, so the check
+      # failed here while passing on any developer's clone. The history is
+      # what the check is about, so it is fetched rather than the check
+      # being loosened.
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: ./.github/actions/python-environment
+        with:
+          python-version: "3.12"
+
+      - name: Component guides match the source
+        # The fast rules run in the tools tests above. This step adds the slow
+        # one: it runs every self-test command the guides tell a reader to
+        # run, because a command can name a report field that only exists at
+        # run time. Its result does not depend on the Python version, so it
+        # runs once, on the version the service image uses.
+        run: |
+          PYTHONPATH=src python tools/check_component_guides.py \
+            --run-documented-checks
 
   live-ollama:
     name: manual live Ollama orientation for five text scenarios
