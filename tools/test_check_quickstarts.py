@@ -14,6 +14,7 @@ import hashlib
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 from pathlib import Path
+import re
 import sys
 import tempfile
 import threading
@@ -32,6 +33,8 @@ VERSION = "2025-11-25"
 TOOLS = ("provisioning_discover", "provisioning_list", "provisioning_manifest", "provisioning_read", "intelligence_search")
 PUBLISHED_BASE = "https://baltor.ai"
 RECIPES_FILE = ROOT / "src/loop_engine/core/service_runtime/web_assets/client-recipes.json"
+PI_EXTENSION = ROOT / "src/loop_engine/core/service_runtime/web_assets/pi/baltor.ts"
+HARNESS_PAGE = ROOT / "docs/guides/quickstart-baltor-harness.md"
 
 
 def committed_recipes():
@@ -59,6 +62,17 @@ class State:
         self.loads_bodies = False
         #: The recipes record served at /assets/client-recipes.json, or None for an address that is not served.
         self.recipes = committed_recipes()
+        #: A protocol answer whose event-stream frame holds text that is not JSON.
+        self.garbled_protocol = False
+        #: A download whose connection closes before any answer, as a cut-off proxy or a restarted Machine leaves it.
+        self.drop_download = False
+        #: A session answered with a redirect to a sign-in page instead of the session record.
+        self.redirect_session = False
+        #: Every body sent to the direct search and manifest addresses, in order, so a test can read what was asked.
+        self.retrieval_requests = []
+        self.manifest_requests = []
+        #: The record type of the manifest answer; the served Pi extension refuses any other than version 3.
+        self.manifest_record_type = "provisioning_manifest/v3"
         self.__dict__.update(changes)
 
 
@@ -127,6 +141,8 @@ class Handler(BaseHTTPRequestHandler):
         if not self._authorized():
             return
         if self.path == "/api/v1/session":
+            if self.state.redirect_session:
+                return self._send(302, b"", "text/html", {"Location": "/sign-in"})
             if self.state.refuse_session:
                 return self._refused(401, "unauthorized")
             return self._direct("session", {
@@ -141,14 +157,21 @@ class Handler(BaseHTTPRequestHandler):
             return
         payload = json.loads(self.rfile.read(int(self.headers.get("Content-Length") or 0)) or b"{}")
         if self.path == "/api/v1/retrieval":
+            self.state.retrieval_requests.append(payload)
+            if payload.get("record_type") != "service_retrieval_request/v2":
+                return self._refused(400, "unsupported_version")
             return self._direct("retrieval", self._search(payload))
         if self.path == "/api/v1/provisioning":
+            self.state.manifest_requests.append(payload)
             if payload.get("operation") != "manifest" or payload.get("identity") != IDENTITY:
                 return self._refused(404, "item_unavailable")
             return self._direct("manifest", {
-                "record_type": "provisioning_manifest/v3", "identity": IDENTITY, "digest": DIGEST,
+                "record_type": self.state.manifest_record_type, "identity": IDENTITY, "digest": DIGEST,
                 "size_bytes": len(BODY.encode()), "body_allowed": True})
         if self.path == "/api/v1/download":
+            if self.state.drop_download:
+                self.close_connection = True
+                return None
             if not payload.get("request_id"):
                 return self._refused(400, "request_identity_required")
             if payload.get("identity") != IDENTITY:
@@ -171,6 +194,8 @@ class Handler(BaseHTTPRequestHandler):
         method = message.get("method")
         if method == "notifications/initialized":
             return self._send(202)
+        if self.state.garbled_protocol:
+            return self._send(200, b"event: message\r\ndata: {not json\r\n\r\n", "text/event-stream")
         if method != "initialize" and self.headers.get("MCP-Protocol-Version") != VERSION:
             return self._json(400, {"jsonrpc": "2.0", "id": message.get("id"),
                                     "error": {"code": -32000, "message": "The MCP-Protocol-Version header is required"}})
@@ -496,6 +521,112 @@ class QuickstartCheckTests(unittest.TestCase):
             tool.protocol_result(200, "application/json", b'{"jsonrpc":"2.0","id":"a","error":{"code":-32000,"message":"no"}}', "a")
         with self.assertRaises(tool.StepFailed):
             tool.protocol_result(200, "application/json", b'{"jsonrpc":"2.0","id":"other","result":{}}', "a")
+
+    def test_known_wrong_an_unreachable_service_fails_every_quickstart_and_is_still_recorded(self):
+        # A nightly run during an outage must leave a dated record that says so. Before this test the first
+        # refused connection raised out of the check, so the run ended in a traceback and wrote no record.
+        import socket
+        from datetime import datetime, timezone
+        with socket.socket() as probe:
+            probe.bind(("127.0.0.1", 0))
+            port = probe.getsockname()[1]
+        record = tool.run_all(f"http://127.0.0.1:{port}", KEY, published_base=PUBLISHED_BASE, repository=ROOT)
+        self.assertFalse(record["passed"])
+        self.assertEqual(record["quickstarts_passed"], 0)
+        self.assertIsNone(record["capabilities_status"])
+        self.assertIn("did not complete", record["capabilities_error"])
+        self.assertIn("did not complete", record["recipes_error"])
+        self.assertEqual((record["usage_records_added"], record["request_ids_not_confirmed"]), (0, []))
+        for quickstart in tool.QUICKSTARTS:
+            self.assertFalse(step(record, quickstart.id, "connected")["passed"], quickstart.id)
+            self.assertFalse(step(record, quickstart.id, "page_matches_the_published_recipe")["passed"], quickstart.id)
+        for quickstart in ("pi", "baltor-harness"):
+            self.assertIn("GET /api/v1/session did not complete", step(record, quickstart, "connected")["detail"])
+        self.assertNotIn(KEY, json.dumps(record))
+        with tempfile.TemporaryDirectory(dir=Path.home() / ".le-ci-tmp" if (Path.home() / ".le-ci-tmp").is_dir() else None) as folder:
+            path = tool.write_record(record, Path(folder), datetime(2026, 9, 26, 5, 40, tzinfo=timezone.utc))
+            self.assertFalse(json.loads(path.read_text(encoding="utf-8"))["passed"])
+
+    def test_known_wrong_a_protocol_answer_that_is_not_json_fails_connected(self):
+        record = run(State(garbled_protocol=True))
+        self.assertFalse(record["passed"])
+        for quickstart in ("claude-code", "codex", "opencode"):
+            connected = step(record, quickstart, "connected")
+            self.assertFalse(connected["passed"])
+            self.assertIn("not JSON", connected["detail"])
+        for quickstart in ("pi", "baltor-harness"):
+            self.assertTrue(row(record, quickstart)["passed"], "the direct interface is not affected")
+        with self.assertRaises(tool.StepFailed):
+            tool._tool_output({"content": [{"type": "text", "text": "not json"}]}, "intelligence_search")
+
+    def test_known_wrong_a_download_cut_off_before_its_answer_fails_downloaded_and_is_not_confirmed(self):
+        # The service may have recorded the unit before the connection closed, so the request identity is kept
+        # as not confirmed instead of being counted as a usage record or as none.
+        record = run(State(drop_download=True))
+        self.assertFalse(record["passed"])
+        for quickstart in ("pi", "baltor-harness"):
+            downloaded = step(record, quickstart, "downloaded")
+            self.assertFalse(downloaded["passed"])
+            self.assertIn("POST /api/v1/download did not complete", downloaded["detail"])
+        for quickstart in ("claude-code", "codex", "opencode"):
+            self.assertTrue(row(record, quickstart)["passed"], "the protocol path is not affected")
+        self.assertEqual(record["usage_records_added"], 3)
+        self.assertEqual(sorted(record["request_ids_not_confirmed"]),
+                         sorted(row(record, quickstart)["request_id"] for quickstart in ("pi", "baltor-harness")))
+
+    def test_known_wrong_a_redirected_session_is_refused_not_followed(self):
+        record = run(State(redirect_session=True))
+        for quickstart in ("pi", "baltor-harness"):
+            connected = step(record, quickstart, "connected")
+            self.assertFalse(connected["passed"])
+            self.assertIn("redirect_refused", connected["detail"])
+        for quickstart in ("claude-code", "codex", "opencode"):
+            self.assertTrue(row(record, quickstart)["passed"], "the protocol path is not affected")
+
+    def test_known_wrong_each_direct_path_sends_the_search_its_own_client_sends(self):
+        # The Pi extension searches in the mode its source names and asks for a manifest by identity alone; the
+        # Baltor Harness page's curl command is sent as the page shows it. Before this test both paths sent one
+        # lexical search of five results, so a broken hybrid search on the live service passed the Pi quickstart.
+        extension = PI_EXTENSION.read_text(encoding="utf-8")
+        self.assertEqual(tool.EXTENSION_SEARCH_MODE, re.search(r'const SEARCH_MODE = "([^"]+)";', extension).group(1))
+        self.assertEqual(tool.MANIFEST_RECORD, re.search(r'const MANIFEST_RECORD = "([^"]+)";', extension).group(1))
+        state = State()
+        record = run(state)
+        self.assertTrue(record["passed"], json.dumps(record["quickstarts"], indent=1))
+        documented = tool.documented_request(HARNESS_PAGE.read_text(encoding="utf-8"), "/api/v1/retrieval")
+        self.assertEqual(documented["query"], tool.QUERY)
+        self.assertIn(documented, state.retrieval_requests, "the page's own search request is sent unchanged")
+        self.assertEqual([request["mode"] for request in state.retrieval_requests].count(tool.EXTENSION_SEARCH_MODE), 1)
+        self.assertEqual([sorted(request) for request in state.manifest_requests], [["identity", "operation", "record_type"]])
+
+    def test_known_wrong_a_manifest_of_another_version_fails_manifest_matches(self):
+        record = run(State(manifest_record_type="provisioning_manifest/v2"))
+        shown = step(record, "pi", "manifest_matches")
+        self.assertFalse(shown["passed"])
+        self.assertIn("provisioning_manifest/v3", shown["detail"])
+        self.assertIsNone(row(record, "pi")["request_id"], "nothing is downloaded after a refused manifest")
+        self.assertTrue(row(record, "baltor-harness")["passed"], "the page's curl path reads no manifest")
+
+    def test_known_wrong_a_page_whose_search_request_names_another_version_fails_searched(self):
+        page = HARNESS_PAGE.read_text(encoding="utf-8")
+        wrong = page.replace('"record_type":"service_retrieval_request/v2"', '"record_type":"service_retrieval_request/v9"')
+        self.assertNotEqual(page, wrong)
+        record = run(page_texts={"baltor-harness": wrong})
+        searched = step(record, "baltor-harness", "searched")
+        self.assertFalse(searched["passed"])
+        self.assertIn("400", searched["detail"])
+        self.assertTrue(row(record, "pi")["passed"], "the extension path does not read the page's command")
+
+    def test_known_wrong_a_page_whose_download_drops_the_expected_digest_fails_downloaded_before_sending(self):
+        page = HARNESS_PAGE.read_text(encoding="utf-8")
+        wrong = page.replace(',"expected_digest":"SELECTED-DIGEST"', "")
+        self.assertNotEqual(page, wrong)
+        record = run(page_texts={"baltor-harness": wrong})
+        downloaded = step(record, "baltor-harness", "downloaded")
+        self.assertFalse(downloaded["passed"])
+        self.assertIn("expected_digest", downloaded["detail"])
+        self.assertIsNone(row(record, "baltor-harness")["request_id"], "a request the page cannot bind is never sent")
+        self.assertEqual(record["request_ids_not_confirmed"], [])
 
     def test_main_refuses_an_origin_that_is_not_https(self):
         with self.assertRaises(SystemExit) as refused:

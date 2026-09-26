@@ -11,10 +11,16 @@ against the running service, in the shape each harness sends them:
   ``tools/list``, then ``tools/call`` for ``intelligence_search`` and
   ``provisioning_read``.
 - Pi connects through the served extension, which asks the direct interface:
-  ``/api/v1/session``, ``/api/v1/capabilities``, ``/api/v1/retrieval``, a
-  ``manifest`` through ``/api/v1/provisioning`` and ``/api/v1/download``.
+  ``/api/v1/session``, ``/api/v1/capabilities``, ``/api/v1/retrieval`` in the
+  search mode the extension sends, a ``manifest`` by identity through
+  ``/api/v1/provisioning`` and ``/api/v1/download``. A unit test holds the
+  mode and the manifest record type to the extension source.
 - The Baltor Harness page uses the direct interface with ``curl``:
-  ``/api/v1/session``, ``/api/v1/retrieval`` and ``/api/v1/download``.
+  ``/api/v1/session``, then the page's own ``/api/v1/retrieval`` and
+  ``/api/v1/download`` request bodies, sent as the page shows them with only
+  the chosen identity, its digest and a new ``request_id`` filled in. A page
+  whose download does not bind ``expected_digest`` and ``request_id`` fails
+  before anything is sent.
 
 Three page steps come first and hold the page itself to what the service
 publishes: every service address in its snippets is on the published base,
@@ -42,6 +48,14 @@ hit for the three protocol quickstarts while the direct interface found five.
 An answer that is not that wrapper now fails its step by name on either path,
 and the unit tests hold the fixture to the live shape.
 
+A request that does not complete, because the service cannot be reached, the
+answer is cut off, it times out or the service answers with a redirect, fails
+the step it belongs to with the method, the address and the reason, and the
+run goes on to the next quickstart, so a run during an outage still writes its
+dated record. A download whose answer never arrived may still have been
+measured by the service, so its ``request_id`` is kept among the request
+identities not confirmed instead of being counted either way.
+
 The diagnostic key resolves from this workstation's system keyring through
 ``tools/operator_credentials.py``. It is sent only in the request header and
 never printed, and any error text is scrubbed before it is recorded.
@@ -58,6 +72,7 @@ import argparse
 from dataclasses import dataclass
 from datetime import datetime, timezone
 import hashlib
+import http.client
 import json
 from pathlib import Path
 import re
@@ -79,6 +94,15 @@ SEARCH_TOOL, READ_TOOL = "intelligence_search", "provisioning_read"
 REQUIRED_TOOLS = (SEARCH_TOOL, READ_TOOL)
 DIGEST_HEADER, RECORD_HEADER = "x-content-sha256", "x-loop-engine-record-type"
 DOWNLOAD_RECORD = "service_download/v1"
+MANIFEST_RECORD = "provisioning_manifest/v3"
+#: The search mode the served Pi extension sends, its SEARCH_MODE; a unit test holds the two to each other.
+EXTENSION_SEARCH_MODE = "hybrid"
+#: How many results the check asks for when the client, not the page, picks the number.
+SEARCH_RESULTS = 5
+#: The JSON body of a documented curl command, written between single quotes after -d.
+CURL_BODY = re.compile(r"-d\s+'(\{[^']*\})'")
+#: The values the Baltor Harness page asks the reader to replace in its download command.
+PAGE_PLACEHOLDERS = {"identity": "ITEM-IDENTITY", "expected_digest": "SELECTED-DIGEST"}
 #: The record every answer of the service is wrapped in, on both paths; its `result` holds the record asked for.
 RESULT_WRAPPER = "service_http_result/v1"
 #: The reviewed connection recipes the Get set up page shows, as the website serves them.
@@ -122,9 +146,15 @@ class StepFailed(Exception):
     """One documented step did not do what the page says. The message is the detail recorded."""
 
 
+class TransportFailed(StepFailed):
+    """A request did not complete: no connection, a timeout, a cut-off answer or a refused redirect."""
+
+
 class RefuseRedirect(urllib.request.HTTPRedirectHandler):
-    def redirect_request(self, *args, **kwargs):
-        raise RuntimeError("redirect_refused")
+    """A redirect is never followed: the key would travel to the new address, and a sign-in page is not an answer."""
+
+    def redirect_request(self, request, answer, code, message, headers, new_address):
+        raise TransportFailed("redirect_refused: {} to {}".format(code, new_address[:120]))
 
 
 def snippet_addresses(text: str) -> list:
@@ -173,6 +203,20 @@ def fenced_blocks(text: str) -> list:
         if inside:
             lines.append(line)
     return blocks
+
+
+def documented_request(text: str, path: str):
+    """The JSON body of the page's curl command for one service address, exactly as the page shows it, or None."""
+    for _language, content in fenced_blocks(text):
+        for line in content.splitlines():
+            found = CURL_BODY.search(line) if "curl" in line and path in line else None
+            if found:
+                try:
+                    body = json.loads(found.group(1))
+                except ValueError:
+                    return None
+                return body if isinstance(body, dict) else None
+    return None
 
 
 def filled(value, endpoint: str):
@@ -241,14 +285,17 @@ def protocol_result(status: int, content_type: str, body: bytes, request_id):
     """The JSON-RPC result of one protocol answer, whether it came as JSON or as event-stream frames."""
     media = (content_type or "").split(";")[0].strip()
     text = body.decode("utf-8", "replace")
-    if media == "application/json" or text.lstrip().startswith("{"):
-        messages = [json.loads(text)]
-    else:
-        messages = []
-        for frame in text.replace("\r\n", "\n").split("\n\n"):
-            data = "\n".join(line[5:].lstrip() for line in frame.split("\n") if line.startswith("data:"))
-            if data.strip():
-                messages.append(json.loads(data))
+    try:
+        if media == "application/json" or text.lstrip().startswith("{"):
+            messages = [json.loads(text)]
+        else:
+            messages = []
+            for frame in text.replace("\r\n", "\n").split("\n\n"):
+                data = "\n".join(line[5:].lstrip() for line in frame.split("\n") if line.startswith("data:"))
+                if data.strip():
+                    messages.append(json.loads(data))
+    except ValueError:
+        raise StepFailed(f"the protocol answer is not JSON (status {status})") from None
     for message in messages:
         if isinstance(message, dict) and message.get("id") == request_id:
             if message.get("error"):
@@ -277,12 +324,19 @@ class Service:
             data = json.dumps(body).encode("utf-8")
         self.calls += 1
         request = urllib.request.Request(self.origin + path, data, fields)
+        verb = "GET" if data is None else "POST"
         try:
-            response = self.opener.open(request, timeout=TIMEOUT)
-        except urllib.error.HTTPError as error:
-            response = error
-        with response:
-            return response.status, {name.lower(): value for name, value in response.headers.items()}, response.read(8_000_000)
+            try:
+                response = self.opener.open(request, timeout=TIMEOUT)
+            except urllib.error.HTTPError as error:
+                response = error
+            with response:
+                return response.status, {name.lower(): value for name, value in response.headers.items()}, response.read(8_000_000)
+        except TransportFailed as failure:
+            raise TransportFailed(f"{verb} {path} did not complete: {failure}") from None
+        except (OSError, http.client.HTTPException) as error:
+            reason = scrub("{}: {}".format(type(error).__name__, error), self._key)[:160]
+            raise TransportFailed(f"{verb} {path} did not complete: {reason}") from None
 
     def json(self, path: str, body=None):
         status, _headers, raw = self.exchange(path, body)
@@ -360,9 +414,9 @@ def run_quickstart(service: Service, quickstart: Quickstart, page_text: str, pub
         if quickstart.wire_path == PROTOCOL:
             _run_protocol(service, quickstart, capabilities, stamp, step, facts)
         elif quickstart.wire_path == EXTENSION:
-            _run_direct(service, quickstart, capabilities, stamp, step, facts, manifest=True)
+            _run_direct(service, quickstart, capabilities, stamp, step, facts, extension=True, page_text=page_text)
         else:
-            _run_direct(service, quickstart, capabilities, stamp, step, facts, manifest=False)
+            _run_direct(service, quickstart, capabilities, stamp, step, facts, extension=False, page_text=page_text)
     except StepFailed as failure:
         steps[-1] = {**steps[-1], "passed": False, "detail": scrub(str(failure), service._key)[:300]}
     rows = _collapse(steps)
@@ -396,7 +450,7 @@ def _run_protocol(service, quickstart, capabilities, stamp, step, facts):
     step_pass(step, "listed", f"{len(names)} tools")
     step("searched", False, QUERY)
     _status, called = service.protocol({"jsonrpc": "2.0", "id": "qs-search", "method": "tools/call",
-        "params": {"name": SEARCH_TOOL, "arguments": {"query": QUERY, "top_n": 5}}}, version)
+        "params": {"name": SEARCH_TOOL, "arguments": {"query": QUERY, "top_n": SEARCH_RESULTS}}}, version)
     found = _tool_output(called, SEARCH_TOOL)
     hits = found.get("hits") if isinstance(found, dict) else None
     if not isinstance(hits, list) or not hits:
@@ -435,7 +489,10 @@ def _tool_output(called: dict, tool: str):
     if output is None:
         for item in called.get("content") or []:
             if isinstance(item, dict) and item.get("type") == "text":
-                output = json.loads(item["text"])
+                try:
+                    output = json.loads(item["text"])
+                except ValueError:
+                    raise StepFailed(f"{tool} answered text that is not JSON") from None
                 break
     if not isinstance(output, dict) or output.get("record_type") != RESULT_WRAPPER:
         named = output.get("record_type") if isinstance(output, dict) else type(output).__name__
@@ -445,7 +502,7 @@ def _tool_output(called: dict, tool: str):
     return output["result"]
 
 
-def _run_direct(service, quickstart, capabilities, stamp, step, facts, *, manifest: bool):
+def _run_direct(service, quickstart, capabilities, stamp, step, facts, *, extension: bool, page_text: str):
     step("connected", False, "/api/v1/session")
     status, session = service.json("/api/v1/session")
     record = wrapped_result(status, session, "session")
@@ -454,7 +511,7 @@ def _run_direct(service, quickstart, capabilities, stamp, step, facts, *, manife
     scopes = (record.get("principal") or {}).get("scopes") or []
     step_pass(step, "connected", "service_session/v1")
     step("listed", False, "/api/v1/capabilities")
-    if manifest:
+    if extension:
         delivery, retrieval = capabilities.get("delivery") or {}, capabilities.get("retrieval") or {}
         if delivery.get("download_endpoint") != "/api/v1/download" or delivery.get("body_format") != "utf8_text":
             raise StepFailed("the capabilities name another delivery than the extension expects")
@@ -467,8 +524,17 @@ def _run_direct(service, quickstart, capabilities, stamp, step, facts, *, manife
             raise StepFailed("the token lacks " + ", ".join(missing))
         step_pass(step, "listed", "scopes " + ", ".join(sorted(scopes)))
     step("searched", False, QUERY)
-    status, found = service.json("/api/v1/retrieval", {"record_type": RETRIEVAL_REQUEST, "query": QUERY,
-                                                       "mode": "lexical", "top_n": 5})
+    if extension:
+        ceiling = (capabilities.get("limits") or {}).get("search_results")
+        top_n = min(SEARCH_RESULTS, ceiling) if isinstance(ceiling, int) and ceiling > 0 else SEARCH_RESULTS
+        search = {"record_type": RETRIEVAL_REQUEST, "query": QUERY, "mode": EXTENSION_SEARCH_MODE, "top_n": top_n}
+    else:
+        search = documented_request(page_text, "/api/v1/retrieval")
+        if search is None:
+            raise StepFailed("the page shows no curl search request with a JSON body")
+        if search.get("query") != QUERY:
+            raise StepFailed("the page's search request does not ask for {!r}".format(QUERY))
+    status, found = service.json("/api/v1/retrieval", search)
     answer = wrapped_result(status, found, "search")
     hits = answer.get("hits")
     if not isinstance(hits, list) or not hits:
@@ -483,18 +549,31 @@ def _run_direct(service, quickstart, capabilities, stamp, step, facts, *, manife
     step_pass(step, "searched", f"{len(hits)} hits")
     reference = hit["reference"]
     facts["identity"] = reference["identity"]
-    if manifest:
+    if extension:
         step("manifest_matches", False, reference["identity"])
         status, shown = service.json("/api/v1/provisioning", {"record_type": PROVISIONING_REQUEST, "operation": "manifest",
-            "identity": reference["identity"], "expected_digest": reference["body_digest"]})
+                                                              "identity": reference["identity"]})
         manifest_record = wrapped_result(status, shown, "manifest")
+        if manifest_record.get("record_type") != MANIFEST_RECORD or manifest_record.get("identity") != reference["identity"]:
+            raise StepFailed("the manifest is not a {} record for {}".format(MANIFEST_RECORD, reference["identity"]))
         if manifest_record.get("digest") != reference["body_digest"]:
             raise StepFailed("the manifest answered another digest")
         step_pass(step, "manifest_matches", reference["body_digest"][:12] + "…")
-    facts["request_id"] = new_request_id(quickstart, stamp)
     step("downloaded", False, reference["identity"])
-    status, headers, raw = service.exchange("/api/v1/download", {"record_type": PROVISIONING_REQUEST, "operation": "read",
-        "identity": reference["identity"], "expected_digest": reference["body_digest"], "request_id": facts["request_id"]})
+    if extension:
+        download = {"record_type": PROVISIONING_REQUEST, "operation": "read", "identity": reference["identity"],
+                    "expected_digest": reference["body_digest"]}
+    else:
+        download = documented_request(page_text, "/api/v1/download")
+        if download is None:
+            raise StepFailed("the page shows no curl download request with a JSON body")
+        unbound = [field for field, placeholder in PAGE_PLACEHOLDERS.items() if download.get(field) != placeholder]
+        unbound += [] if download.get("request_id") else ["request_id"]
+        if unbound:
+            raise StepFailed("the page's download request does not bind " + ", ".join(unbound))
+        download = {**download, "identity": reference["identity"], "expected_digest": reference["body_digest"]}
+    facts["request_id"] = new_request_id(quickstart, stamp)
+    status, headers, raw = service.exchange("/api/v1/download", {**download, "request_id": facts["request_id"]})
     if status != 200:
         raise StepFailed(f"the download answered {status}: {scrub(raw.decode('utf-8', 'replace')[:160], service._key)}")
     if headers.get(RECORD_HEADER) != DOWNLOAD_RECORD:
@@ -526,9 +605,9 @@ def run_all(origin: str, key: str, *, published_base: str = None, repository: Pa
     stamp = now.strftime("%Y%m%d")
     published_base = (published_base or origin).rstrip("/")
     service = Service(origin, key, opener)
-    status, answer = service.json("/api/v1/capabilities")
+    status, answer, capabilities_error = _fetch(service, "/api/v1/capabilities")
     capabilities = result_of(answer) or {}
-    recipes_status, recipes = service.json(RECIPES_ADDRESS)
+    recipes_status, recipes, recipes_error = _fetch(service, RECIPES_ADDRESS)
     if recipes_status != 200 or not isinstance(recipes, dict):
         recipes = None
     rows = []
@@ -539,11 +618,13 @@ def run_all(origin: str, key: str, *, published_base: str = None, repository: Pa
             path = repository / quickstart.page
             text = path.read_text(encoding="utf-8") if path.is_file() else ""
         rows.append(run_quickstart(service, quickstart, text, published_base, capabilities, stamp, recipes))
-    downloads = [row["request_id"] for row in rows if any(
-        step["name"] == "downloaded" and step["passed"] for step in row["steps"])]
+    downloads = [row["request_id"] for row in rows if _delivered(row)]
+    #: Sent but not delivered: refused, cut off or unanswered. A refusal is not measured; a cut-off answer may be.
+    not_confirmed = [row["request_id"] for row in rows if row["request_id"] and not _delivered(row)]
     return {"record_type": RECORD_TYPE, "checked_at": now.isoformat(), "origin": origin,
             "published_base": published_base, "account": account, "query": QUERY,
-            "capabilities_status": status, "recipes_status": recipes_status,
+            "capabilities_status": status, "capabilities_error": capabilities_error,
+            "recipes_status": recipes_status, "recipes_error": recipes_error,
             "recipes_record_type": (recipes or {}).get("record_type"),
             "recipes_reviewed_at": (recipes or {}).get("reviewed_at"),
             "catalogue_release": next((row["catalogue_release"] for row in rows if row["catalogue_release"]), None),
@@ -552,9 +633,23 @@ def run_all(origin: str, key: str, *, published_base: str = None, repository: Pa
             "quickstarts": rows, "passed": all(row["passed"] for row in rows),
             "quickstarts_passed": sum(row["passed"] for row in rows), "quickstarts_planned": len(QUICKSTARTS),
             "usage_records_added": len(downloads), "request_ids": downloads,
+            "request_ids_not_confirmed": not_confirmed,
             "http_calls": service.calls, "physical_model_calls": 0,
             "credential_printed": False, "body_text_kept": False,
             "checker_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest()}
+
+
+def _fetch(service: Service, path: str):
+    """Status, JSON answer and the reason a request did not complete, which stays None when it did."""
+    try:
+        status, answer = service.json(path)
+    except TransportFailed as failure:
+        return None, None, scrub(str(failure), service._key)[:300]
+    return status, answer, None
+
+
+def _delivered(row: dict) -> bool:
+    return any(step["name"] == "downloaded" and step["passed"] for step in row["steps"])
 
 
 def record_path(directory: Path, now: datetime) -> Path:

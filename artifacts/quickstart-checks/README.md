@@ -25,8 +25,13 @@ Then the check runs each page's documented steps in the shape that harness sends
 | Quickstart | Wire path | Service steps recorded |
 |---|---|---|
 | Claude Code, Codex, OpenCode | Model Context Protocol over streamable HTTP at `/mcp` | connected (`initialize` and `notifications/initialized`), listed (`tools/list` holds `intelligence_search` and `provisioning_read`), searched (`intelligence_search`), downloaded (`provisioning_read` with a new `request_id` and the `expected_digest`), digest matches |
-| Pi | The direct interface, as the served extension asks it | connected (`/api/v1/session`), listed (`/api/v1/capabilities` names the download route and the search request version), searched (`/api/v1/retrieval`), manifest matches (`/api/v1/provisioning`), downloaded (`/api/v1/download`), digest matches |
-| Baltor Harness | The direct interface with `curl`, as the page shows | connected, listed (the token holds `provisioning:metadata` and `provisioning:read`), searched, downloaded, digest matches |
+| Pi | The direct interface, as the served extension asks it | connected (`/api/v1/session`), listed (`/api/v1/capabilities` names the download route and the search request version), searched (`/api/v1/retrieval` in the extension's own search mode, `hybrid`), manifest matches (`/api/v1/provisioning` asked by identity alone, answered as a `provisioning_manifest/v3` record with the promised digest), downloaded (`/api/v1/download`), digest matches |
+| Baltor Harness | The direct interface with `curl`, as the page shows | connected, listed (the token holds `provisioning:metadata` and `provisioning:read`), searched (the body of the page's own search command, unchanged), downloaded (the body of the page's own download command with the chosen identity, its digest and a new `request_id` filled in), digest matches |
+
+A unit test holds the Pi search mode and manifest record type to the extension
+source that the website serves. A Baltor Harness page whose download command does
+not bind `expected_digest` and `request_id` fails its downloaded step before
+anything is sent.
 
 Both paths answer a `service_http_result/v1` record whose `result` holds the
 session, search, manifest or body record, and an answer in any other shape fails
@@ -42,12 +47,26 @@ refusal text is scrubbed before it is recorded.
 Each successful download is one measured unit on the diagnostic account, so a
 full run adds five usage records to that account and none to any customer.
 
+A request that does not complete fails the step it belongs to and names the
+method, the address and the reason: the service could not be reached, the answer
+was cut off or timed out, or the service answered with a redirect, which the
+check never follows. The run goes on to the next quickstart, so a run during an
+outage still writes its record. `capabilities_error` and `recipes_error` hold the
+reason when the capabilities or the published recipes could not be read, and stay
+empty otherwise. A download that was sent but not delivered keeps its
+`request_id` in `request_ids_not_confirmed` instead of being counted: a refusal is
+not measured, but an answer cut off after the service recorded the unit may be.
+The first two records predate these three fields.
+
 ## Records
 
 | Record | Checked at (UTC) | Result | What it showed |
 |---|---|---|---|
 | `quickstart-check-2026-09-26.json` | September 26, 2026, 13:02 | 2 of 5 passed | Pi and the Baltor Harness passed. The three protocol quickstarts failed at searched because the checker read the hits off the `service_http_result/v1` wrapper instead of its `result`. The service answered correctly; the fault was in the checker, which was repaired with a named known-wrong test. This record predates the recipe page step. |
 | `quickstart-check-2026-09-26-2.json` | September 26, 2026, 17:07 | 5 of 5 passed | All five pages matched the recipes reviewed on September 24, 2026. Every path found five hits for `review inputs` in catalogue release `856bff51…` of 6,398 served items, chose `orient_on_a_task_and_write_its_contracts` and received its 2,861 bytes with the promised digest. 24 HTTP calls, five usage records, no model call. |
+| `quickstart-check-2026-09-26-3.json` | September 26, 2026, 21:30 | 5 of 5 passed | The first run of the checker that records a request that did not complete as a failed step. The same result as the run before it: the same catalogue release, item and digest, 24 HTTP calls, five usage records, no request left not confirmed, no model call. The Pi path still searched in `lexical` mode here. |
+| `quickstart-check-2026-09-26-4.json` | September 26, 2026, 21:44 | 5 of 5 passed | The first run in which the Pi path sends the extension's `hybrid` search and asks for the manifest by identity alone, and the Baltor Harness path sends the page's own curl request bodies. The live library had moved to catalogue release `add92543…` of 7,806 served items since the run before. The protocol and Pi paths found five hits and received the same 2,861-byte item; the page's own search, three results in `lexical` mode, found three hits and chose `file_path_aggregation_agent_coordination`, 3,865 bytes, with the promised digest. 24 HTTP calls, five usage records, no request left not confirmed, no model call. |
+| `quickstart-check-2026-09-26-5.json` | September 26, 2026, 21:47 | 5 of 5 passed | The cron entry's own command, run by hand without its hour gate from an environment as bare as cron's: only `HOME`, `LOGNAME`, `USER`, `PATH=/usr/bin:/bin`, `SHELL`, `DBUS_SESSION_BUS_ADDRESS` and `TMPDIR`. The key resolved from the keyring in that environment, and the result matched the run before it. No run started by cron itself has happened yet; the first is due at 05:40 UTC on September 27, 2026. |
 
 ## How it runs
 
