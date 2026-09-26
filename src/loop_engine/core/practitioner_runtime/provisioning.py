@@ -52,6 +52,14 @@ def _tags(value):
     return TagSet({key: item for key, item in value.items() if key != "record_type"})
 
 
+#: The declared effect a served record uses to say "no effect at all". A step can never hold it (the service's step
+#: effects leave it out), so an in-memory item carries no declared effect for it: kept as an effect, it withheld every
+#: item that declared it from every step, 1,988 of the 6,398 served packages on September 26, 2026. The rule lives at
+#: this boundary because the starter catalogue pins the bytes of harness_intelligence.py, whose visibility rule would
+#: otherwise be the place; moving it there waits for the next re-anchor of that catalogue.
+PURE_EFFECT = "pure"
+
+
 def _item(value):
     expected = {"record_type", "identity", "kind", "purpose", "digest", "source_layer",
                 "source_ref", "family", "size_bytes", "license", "declared_effects", "styles",
@@ -66,8 +74,8 @@ def _item(value):
         identity=value["identity"], kind=value["kind"], purpose=value["purpose"],
         digest=value["digest"], source_layer=value["source_layer"], source_ref=value["source_ref"],
         size_bytes=value["size_bytes"], license_name=value["license"],
-        declared_effects=tuple(value["declared_effects"]), styles=tuple(value["styles"]),
-        default_exposure=value["exposure"], availability=value["availability"],
+        declared_effects=tuple(effect for effect in value["declared_effects"] if effect != PURE_EFFECT),
+        styles=tuple(value["styles"]), default_exposure=value["exposure"], availability=value["availability"],
         family=value.get("family", ""), tags=_tags(value["tags"]))
 
 

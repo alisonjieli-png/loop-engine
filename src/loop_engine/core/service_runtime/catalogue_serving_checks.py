@@ -469,8 +469,32 @@ def _runbook_checks(check, root):
           and answers[-1][0] == 0 and stopped.get("tenants") == [OWNER] and stopped.get("grants") == len(FIRST_ITEMS))
 
 
+def _pure_item_checks(check):
+    """A served record that declares only `pure` asks no effect of the step that reads it.
+
+    A live probe on September 26, 2026 found 1,988 of the 6,398 served packages withheld from every step with the
+    reason "declares ['pure'], which this step does not hold": a step can never hold `pure`, so the served records'
+    marker for "no effect" must not reach the visibility rule as an effect.
+    """
+    from ..harness_intelligence import HarnessIntelligenceDraft, item_from_body, visibility
+    from ..practitioner_runtime import provisioning
+    draft = HarnessIntelligenceDraft("instructions.review_notes", "skill", "Notes for a review step that change nothing",
+                                     "context_intelligence", "ctx.instructions.review_notes", "MIT",
+                                     declared_effects=("pure",))
+    record = item_from_body(draft, "# Review notes\n\nRead the change before the summary.\n").reference()
+    writer = dict(record, identity="tool.copy_files", declared_effects=["reads_fs", "writes_fs"])
+
+    def offered(value, effects):
+        return visibility(provisioning._item(value), authority_effects=effects) == ""
+    check("a_served_record_that_declares_only_pure_is_offered_to_every_step",
+          offered(record, ()) and offered(record, ("reads_fs",)) and not offered(writer, ("reads_fs",)))
+    with patch.object(provisioning, "PURE_EFFECT", "not-an-effect"):
+        check("removed_pure_boundary_rule_is_detected", not offered(record, ("reads_fs",)))
+
+
 def run_checks(check, root):
     folder = Path(root)
+    _pure_item_checks(check)
     (folder / "serving").mkdir()
     (folder / "commands").mkdir()
     (folder / "runbook").mkdir()

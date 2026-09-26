@@ -179,6 +179,7 @@
     "core/service_runtime/http_boundary_checks.py",
     "core/service_runtime/web_surface_checks.py",
     "core/service_runtime/http_checks.py",
+    "core/service_runtime/feedback_checks.py",
     "core/service_runtime/protocol_checks.py",
     "core/service_runtime/promotion_checks.py",
     "core/service_runtime/access_checks.py",

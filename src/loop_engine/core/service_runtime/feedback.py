@@ -299,9 +299,5 @@ def feedback_rows(runtime):
                 GAP_KIND: [row["payload"] for row in catalog.rows_all(store, GAP_KIND)]}
 
 
-def self_test():
-    from .feedback_checks import run_all_checks
-    import tempfile
-    from pathlib import Path
-    with tempfile.TemporaryDirectory(prefix="service-feedback-") as directory:
-        return run_all_checks(Path(directory))
+# The checks of this module live in feedback_checks.py and run inside the HTTP suite (http_checks.self_test), as
+# every other service check module does; a second self_test here would be a registration no suite collects.

@@ -7205,6 +7205,252 @@ entries:
     classification: STRATEGY_OR_PROVIDER_BINDING
     created_on: "2026-09-25"
     expires_on: "2027-09-25"
+  - finding_id: hardcoding.0bbd9b9de4302143866fc59f
+    owner: "tools.generate_item_variations:Run.write"
+    rationale: "The repository's own src and tools folders joined into PYTHONPATH for a subprocess that runs another command of the same repository, the layout every tools command and the continuous integration workflow use. It names no provider or route and grants no authority."
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-26'
+    expires_on: '2027-09-26'
+  - finding_id: hardcoding.11c6f3e00ff44d7587844151
+    owner: "tools.pre_push_check.sh:environment"
+    rationale: "A shell variable of the local pre-push check script (roadmap S-6.200): the script's own variables for the tree root, the gate list, the chosen gates, the revision, the changed Markdown files and the virtual environment, or the user's home folder that holds each gate's scratch space. The script reads them on the developer's machine before a push; they select no provider, route or model, hold no secret and grant no authority, and continuous integration runs the same gates without the script."
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-26'
+    expires_on: '2027-09-26'
+  - finding_id: hardcoding.159479f439137fe078576e88
+    owner: "loop_engine.core.service_runtime.red_team_page:page_record_from_value"
+    rationale: "A scheme check on the packaged case study record: its source citation must be an HTTPS address before the page links it. It binds nothing."
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-26'
+    expires_on: '2027-09-26'
+  - finding_id: hardcoding.16577cf3ed5a343dab5b0b49
+    owner: "tools.pre_push_check.sh:environment"
+    rationale: "A shell variable of the local pre-push check script (roadmap S-6.200): the script's own variables for the tree root, the gate list, the chosen gates, the revision, the changed Markdown files and the virtual environment, or the user's home folder that holds each gate's scratch space. The script reads them on the developer's machine before a push; they select no provider, route or model, hold no secret and grant no authority, and continuous integration runs the same gates without the script."
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-26'
+    expires_on: '2027-09-26'
+  - finding_id: hardcoding.173f3454b9004c0247df59d0
+    owner: "tools.check_upstream_sources"
+    rationale: "The documented public GitHub REST API origin the weekly upstream check reads, only behind --authorize-network-reads, to learn whether an imported item's source repository still exists and its licence is unchanged. It is the host the item was imported from, carries no credential and grants no authority."
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-26'
+    expires_on: '2027-09-26'
+  - finding_id: hardcoding.1c27ee9d0e3b9eae2f6e6849
+    owner: "tools.pre_push_check.sh:environment"
+    rationale: "A shell variable of the local pre-push check script (roadmap S-6.200): the script's own variables for the tree root, the gate list, the chosen gates, the revision, the changed Markdown files and the virtual environment, or the user's home folder that holds each gate's scratch space. The script reads them on the developer's machine before a push; they select no provider, route or model, hold no secret and grant no authority, and continuous integration runs the same gates without the script."
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-26'
+    expires_on: '2027-09-26'
+  - finding_id: hardcoding.26700e6844872abe9f807ce3
+    owner: "tools.pre_push_check.sh:environment"
+    rationale: "A shell variable of the local pre-push check script (roadmap S-6.200): the script's own variables for the tree root, the gate list, the chosen gates, the revision, the changed Markdown files and the virtual environment, or the user's home folder that holds each gate's scratch space. The script reads them on the developer's machine before a push; they select no provider, route or model, hold no secret and grant no authority, and continuous integration runs the same gates without the script."
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-26'
+    expires_on: '2027-09-26'
+  - finding_id: hardcoding.2e126bccaf98b727eccac737
+    owner: "tools.pre_push_check.sh:environment"
+    rationale: "A shell variable of the local pre-push check script (roadmap S-6.200): the script's own variables for the tree root, the gate list, the chosen gates, the revision, the changed Markdown files and the virtual environment, or the user's home folder that holds each gate's scratch space. The script reads them on the developer's machine before a push; they select no provider, route or model, hold no secret and grant no authority, and continuous integration runs the same gates without the script."
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-26'
+    expires_on: '2027-09-26'
+  - finding_id: hardcoding.2e55e8f1789496b3594b50a0
+    owner: "tools.pre_push_check.sh:environment"
+    rationale: "A shell variable of the local pre-push check script (roadmap S-6.200): the script's own variables for the tree root, the gate list, the chosen gates, the revision, the changed Markdown files and the virtual environment, or the user's home folder that holds each gate's scratch space. The script reads them on the developer's machine before a push; they select no provider, route or model, hold no secret and grant no authority, and continuous integration runs the same gates without the script."
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-26'
+    expires_on: '2027-09-26'
+  - finding_id: hardcoding.329d712ca2a2f32e9542acce
+    owner: "tools.generate_item_variations:Run._campaign"
+    rationale: "The repository's own src and tools folders joined into PYTHONPATH for a subprocess that runs another command of the same repository, the layout every tools command and the continuous integration workflow use. It names no provider or route and grants no authority."
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-26'
+    expires_on: '2027-09-26'
+  - finding_id: hardcoding.39feb347278128c01cde5b5e
+    owner: "tools.pre_push_check.sh:environment"
+    rationale: "A shell variable of the local pre-push check script (roadmap S-6.200): the script's own variables for the tree root, the gate list, the chosen gates, the revision, the changed Markdown files and the virtual environment, or the user's home folder that holds each gate's scratch space. The script reads them on the developer's machine before a push; they select no provider, route or model, hold no secret and grant no authority, and continuous integration runs the same gates without the script."
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-26'
+    expires_on: '2027-09-26'
+  - finding_id: hardcoding.40889d9c14fe1a1296bb13b6
+    owner: "tools.pre_push_check.sh:environment"
+    rationale: "A shell variable of the local pre-push check script (roadmap S-6.200): the script's own variables for the tree root, the gate list, the chosen gates, the revision, the changed Markdown files and the virtual environment, or the user's home folder that holds each gate's scratch space. The script reads them on the developer's machine before a push; they select no provider, route or model, hold no secret and grant no authority, and continuous integration runs the same gates without the script."
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-26'
+    expires_on: '2027-09-26'
+  - finding_id: hardcoding.4422c688c85b9120c555f98f
+    owner: "tools.oracle_review_served:CampaignReviewCall.review"
+    rationale: "The repository's own src and tools folders on PYTHONPATH for the review campaign subprocess the oracle runs from the job checkout, the layout every tools command uses. It names no provider or route and grants no authority."
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-26'
+    expires_on: '2027-09-26'
+  - finding_id: hardcoding.4904e7d2d43763c00db24f64
+    owner: "tools.pre_push_check.sh:environment"
+    rationale: "A shell variable of the local pre-push check script (roadmap S-6.200): the script's own variables for the tree root, the gate list, the chosen gates, the revision, the changed Markdown files and the virtual environment, or the user's home folder that holds each gate's scratch space. The script reads them on the developer's machine before a push; they select no provider, route or model, hold no secret and grant no authority, and continuous integration runs the same gates without the script."
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-26'
+    expires_on: '2027-09-26'
+  - finding_id: hardcoding.4c1e8a44fe7073426d126613
+    owner: "tools.generate_item_variations:main"
+    rationale: "The standard TMPDIR variable the variation oracle checks so that its scratch files do not land in /tmp, whose writes are silently empty on the machine that runs it; it selects nothing and grants no authority."
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-26'
+    expires_on: '2027-09-26'
+  - finding_id: hardcoding.58d59d342527dac7bce7a4d6
+    owner: "tools.pre_push_check.sh:environment"
+    rationale: "A shell variable of the local pre-push check script (roadmap S-6.200): the script's own variables for the tree root, the gate list, the chosen gates, the revision, the changed Markdown files and the virtual environment, or the user's home folder that holds each gate's scratch space. The script reads them on the developer's machine before a push; they select no provider, route or model, hold no secret and grant no authority, and continuous integration runs the same gates without the script."
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-26'
+    expires_on: '2027-09-26'
+  - finding_id: hardcoding.6c237cf578b40afc88dc1b01
+    owner: "tools.weekly_number"
+    rationale: "The payment provider's documented API origin the weekly number reads with read-only calls (subscriptions and checkout sessions); no charge or write is made, and the key comes only through tools/operator_credentials.py."
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-26'
+    expires_on: '2027-09-26'
+  - finding_id: hardcoding.7090e08acef81527ae91fa79
+    owner: "tools.generate_item_variations:Run.write"
+    rationale: "The repository's own src and tools folders joined into PYTHONPATH for a subprocess that runs another command of the same repository, the layout every tools command and the continuous integration workflow use. It names no provider or route and grants no authority."
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-26'
+    expires_on: '2027-09-26'
+  - finding_id: hardcoding.748857d0ab9e210b479d71db
+    owner: "tools.pre_push_check.sh:environment"
+    rationale: "A shell variable of the local pre-push check script (roadmap S-6.200): the script's own variables for the tree root, the gate list, the chosen gates, the revision, the changed Markdown files and the virtual environment, or the user's home folder that holds each gate's scratch space. The script reads them on the developer's machine before a push; they select no provider, route or model, hold no secret and grant no authority, and continuous integration runs the same gates without the script."
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-26'
+    expires_on: '2027-09-26'
+  - finding_id: hardcoding.7c7894bbade480b2b78df41c
+    owner: "tools.pre_push_check.sh:environment"
+    rationale: "A shell variable of the local pre-push check script (roadmap S-6.200): the script's own variables for the tree root, the gate list, the chosen gates, the revision, the changed Markdown files and the virtual environment, or the user's home folder that holds each gate's scratch space. The script reads them on the developer's machine before a push; they select no provider, route or model, hold no secret and grant no authority, and continuous integration runs the same gates without the script."
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-26'
+    expires_on: '2027-09-26'
+  - finding_id: hardcoding.7e99e699a2ef8da2ecbf15b7
+    owner: "tools.pre_push_check.sh:environment"
+    rationale: "A shell variable of the local pre-push check script (roadmap S-6.200): the script's own variables for the tree root, the gate list, the chosen gates, the revision, the changed Markdown files and the virtual environment, or the user's home folder that holds each gate's scratch space. The script reads them on the developer's machine before a push; they select no provider, route or model, hold no secret and grant no authority, and continuous integration runs the same gates without the script."
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-26'
+    expires_on: '2027-09-26'
+  - finding_id: hardcoding.7f1c2ad8bce0f9f4eba2eeaf
+    owner: "loop_engine.core.service_runtime.web_assets.case-studies.decision-red-team.json:source.url"
+    rationale: "The citation address of the CC0 Kaggle write-up the packaged case study record restates, the same citation the existing entry allows in case-studies/decision-red-team-modern-slavery/scenarios.json; no code fetches it."
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-26'
+    expires_on: '2027-09-26'
+  - finding_id: hardcoding.7f3f37c971b39e949ec35a0e
+    owner: "tools.pre_push_check.sh:environment"
+    rationale: "A shell variable of the local pre-push check script (roadmap S-6.200): the script's own variables for the tree root, the gate list, the chosen gates, the revision, the changed Markdown files and the virtual environment, or the user's home folder that holds each gate's scratch space. The script reads them on the developer's machine before a push; they select no provider, route or model, hold no secret and grant no authority, and continuous integration runs the same gates without the script."
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-26'
+    expires_on: '2027-09-26'
+  - finding_id: hardcoding.81e224efc9af21ee7d78c0e6
+    owner: "loop_engine.core.service_runtime.red_team_page:red_team_page"
+    rationale: "The CC0 1.0 licence address of the owner's write-up whose scenarios the case study page cites; the page shows it as the licence of the cited source. It is a reference a reader follows, not a binding."
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-26'
+    expires_on: '2027-09-26'
+  - finding_id: hardcoding.8b40dcbbf755cc44b7c063af
+    owner: "tools.pre_push_check.sh:environment"
+    rationale: "A shell variable of the local pre-push check script (roadmap S-6.200): the script's own variables for the tree root, the gate list, the chosen gates, the revision, the changed Markdown files and the virtual environment, or the user's home folder that holds each gate's scratch space. The script reads them on the developer's machine before a push; they select no provider, route or model, hold no secret and grant no authority, and continuous integration runs the same gates without the script."
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-26'
+    expires_on: '2027-09-26'
+  - finding_id: hardcoding.8b8b03adc88463feaf58477d
+    owner: "tools.pre_push_check.sh:environment"
+    rationale: "A shell variable of the local pre-push check script (roadmap S-6.200): the script's own variables for the tree root, the gate list, the chosen gates, the revision, the changed Markdown files and the virtual environment, or the user's home folder that holds each gate's scratch space. The script reads them on the developer's machine before a push; they select no provider, route or model, hold no secret and grant no authority, and continuous integration runs the same gates without the script."
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-26'
+    expires_on: '2027-09-26'
+  - finding_id: hardcoding.98783af60468151761023fac
+    owner: "tools.generate_item_variations:Run._campaign"
+    rationale: "The repository's own src and tools folders joined into PYTHONPATH for a subprocess that runs another command of the same repository, the layout every tools command and the continuous integration workflow use. It names no provider or route and grants no authority."
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-26'
+    expires_on: '2027-09-26'
+  - finding_id: hardcoding.a040dba2956897d18c2b4cf4
+    owner: "tools.pre_push_check.sh:environment"
+    rationale: "A shell variable of the local pre-push check script (roadmap S-6.200): the script's own variables for the tree root, the gate list, the chosen gates, the revision, the changed Markdown files and the virtual environment, or the user's home folder that holds each gate's scratch space. The script reads them on the developer's machine before a push; they select no provider, route or model, hold no secret and grant no authority, and continuous integration runs the same gates without the script."
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-26'
+    expires_on: '2027-09-26'
+  - finding_id: hardcoding.a099a6d25801bdbdc939f945
+    owner: "tools.weekly_number:identity_origin"
+    rationale: "The URL scheme joined to the identity provider project host that the operator's credential binding names; the literal fixes only the scheme, and the host comes from the binding."
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-26'
+    expires_on: '2027-09-26'
+  - finding_id: hardcoding.a5d83eef324a908ba13a361e
+    owner: "tools.generate_item_variations:Run.write"
+    rationale: "The repository's own src and tools folders joined into PYTHONPATH for a subprocess that runs another command of the same repository, the layout every tools command and the continuous integration workflow use. It names no provider or route and grants no authority."
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-26'
+    expires_on: '2027-09-26'
+  - finding_id: hardcoding.aeb1e89577c76c78f5773ab1
+    owner: "tools.pre_push_check.sh:environment"
+    rationale: "A shell variable of the local pre-push check script (roadmap S-6.200): the script's own variables for the tree root, the gate list, the chosen gates, the revision, the changed Markdown files and the virtual environment, or the user's home folder that holds each gate's scratch space. The script reads them on the developer's machine before a push; they select no provider, route or model, hold no secret and grant no authority, and continuous integration runs the same gates without the script."
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-26'
+    expires_on: '2027-09-26'
+  - finding_id: hardcoding.c85171376d23aea8e9ed849c
+    owner: "tools.generate_item_variations:idea_for"
+    rationale: "One of the variation oracle's own declared variation axes, compared with the axis value the same module chose a few lines earlier; it picks which of the module's two placement tables applies. No other component reads it."
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-26'
+    expires_on: '2027-09-26'
+  - finding_id: hardcoding.ce396249fddc3f35f8bafe43
+    owner: "tools.pre_push_check.sh:environment"
+    rationale: "A shell variable of the local pre-push check script (roadmap S-6.200): the script's own variables for the tree root, the gate list, the chosen gates, the revision, the changed Markdown files and the virtual environment, or the user's home folder that holds each gate's scratch space. The script reads them on the developer's machine before a push; they select no provider, route or model, hold no secret and grant no authority, and continuous integration runs the same gates without the script."
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-26'
+    expires_on: '2027-09-26'
+  - finding_id: hardcoding.d449e48de0a0f645f4bef9bf
+    owner: "tools.owner_requests_ledger:build_report"
+    rationale: "One of the six states the owner request ledger document defines for its rows (live, on main, building, proposed, blocked, not started); the tool reads the ledger's state column and compares it with the names that document declares, so the document stays the one authority for the words."
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-26'
+    expires_on: '2027-09-26'
+  - finding_id: hardcoding.e04568021ffbaa0c4ddb1706
+    owner: "tools.pre_push_check.sh:environment"
+    rationale: "A shell variable of the local pre-push check script (roadmap S-6.200): the script's own variables for the tree root, the gate list, the chosen gates, the revision, the changed Markdown files and the virtual environment, or the user's home folder that holds each gate's scratch space. The script reads them on the developer's machine before a push; they select no provider, route or model, hold no secret and grant no authority, and continuous integration runs the same gates without the script."
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-26'
+    expires_on: '2027-09-26'
+  - finding_id: hardcoding.e2a763a1eee0c5daabb1dafa
+    owner: "tools.weekly_number"
+    rationale: "The public origin of the service whose capabilities and health records the weekly number reads, the same origin the live checks read; it is the product's own published address."
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-26'
+    expires_on: '2027-09-26'
+  - finding_id: hardcoding.ef5221dfdb6fcd09302971b3
+    owner: "tools.generate_item_variations:Run._campaign"
+    rationale: "The repository's own src and tools folders joined into PYTHONPATH for a subprocess that runs another command of the same repository, the layout every tools command and the continuous integration workflow use. It names no provider or route and grants no authority."
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-26'
+    expires_on: '2027-09-26'
+  - finding_id: hardcoding.ef7cfd1a953880171e67c64c
+    owner: "tools.oracle_review_served:_attempt_outcome"
+    rationale: "The outcome name the review campaign writes into its own batch report when a reviewer answered the whole batch; the oracle reads that report and mirrors the campaign's value, which the campaign owns."
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-26'
+    expires_on: '2027-09-26'
+  - finding_id: hardcoding.f4a87e1ccffffb25a396ddbd
+    owner: "tools.pre_push_check.sh:environment"
+    rationale: "A shell variable of the local pre-push check script (roadmap S-6.200): the script's own variables for the tree root, the gate list, the chosen gates, the revision, the changed Markdown files and the virtual environment, or the user's home folder that holds each gate's scratch space. The script reads them on the developer's machine before a push; they select no provider, route or model, hold no secret and grant no authority, and continuous integration runs the same gates without the script."
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-26'
+    expires_on: '2027-09-26'
+  - finding_id: hardcoding.f5b7d2e9322a5dbbdac684ca
+    owner: "tools.pre_push_check.sh:environment"
+    rationale: "A shell variable of the local pre-push check script (roadmap S-6.200): the script's own variables for the tree root, the gate list, the chosen gates, the revision, the changed Markdown files and the virtual environment, or the user's home folder that holds each gate's scratch space. The script reads them on the developer's machine before a push; they select no provider, route or model, hold no secret and grant no authority, and continuous integration runs the same gates without the script."
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-26'
+    expires_on: '2027-09-26'
+  - finding_id: hardcoding.ff1d6e4390238080c6fd2882
+    owner: "tools.pre_push_check.sh:environment"
+    rationale: "A shell variable of the local pre-push check script (roadmap S-6.200): the script's own variables for the tree root, the gate list, the chosen gates, the revision, the changed Markdown files and the virtual environment, or the user's home folder that holds each gate's scratch space. The script reads them on the developer's machine before a push; they select no provider, route or model, hold no secret and grant no authority, and continuous integration runs the same gates without the script."
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-26'
+    expires_on: '2027-09-26'
 excluded_paths:
   - path: docs/verification/assets/live-baltor-morning-2026-09-23/browser-observations.json
     owner: docs.verification.live-baltor-morning-2026-09-23
