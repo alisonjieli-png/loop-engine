@@ -135,6 +135,29 @@ class AdapterTest(unittest.TestCase):
                          "the source is the brief the batch's selection gave the producer, not the raw record")
         self.assertEqual([matrix["selected"] for matrix in record["matrices"]], [5, 5])
 
+    def test_an_omitted_idea_field_is_kept_out_of_the_committed_source_and_recorded(self):
+        def seeded(record, count):
+            return [{**entry, "applicability": {**entry["applicability"], "seed_excerpt": "README:\nprivate text",
+                                                "seed": {"project_path": "P/x", "inventory_sha256": "0" * 64}}}
+                    for entry in rotated(record, count)]
+        with mock.patch.object(adapter, "batch_selection", seeded):
+            adapter.attribute(self.batch, self.matrices, {LANE: "google"}, self.folder, ["seed_excerpt"])
+        record = json.loads((self.folder / "attribution.json").read_text())
+        self.assertEqual(record["omitted_idea_fields"], ["seed_excerpt"])
+        brief = json.loads((self.folder / "ideas" / "first-idea.json").read_text())
+        self.assertNotIn("seed_excerpt", brief["applicability"])
+        self.assertEqual(brief["applicability"]["seed"]["project_path"], "P/x", "the citation stays")
+        self.assertNotIn("private text", (self.folder / "ideas" / "first-idea.json").read_text())
+        row = next(row for row in record["candidates"] if row["idea_id"] == "first-idea")
+        self.assertEqual(row["idea_sha256"], adapter.digest((self.folder / "ideas" / "first-idea.json").read_bytes()),
+                         "the recorded digest is of the committed source, so proposals accept it")
+        # Known wrong: without the option the private excerpt would be written into the repository.
+        shutil.rmtree(self.folder)
+        with mock.patch.object(adapter, "batch_selection", seeded):
+            adapter.attribute(self.batch, self.matrices, {LANE: "google"}, self.folder)
+        self.assertIn("private text", (self.folder / "ideas" / "first-idea.json").read_text())
+        self.assertEqual(json.loads((self.folder / "attribution.json").read_text())["omitted_idea_fields"], [])
+
     def test_a_matrix_whose_pinned_source_changed_is_refused(self):
         changed = {"record_type": "harness_idea_batch/v1", "ideas": [idea("first-idea", "skill")],
                    "sources": [{"kind": "onet_pinned", "path": "LICENSE", "sha256": "0" * 64}]}

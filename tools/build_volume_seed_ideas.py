@@ -13,8 +13,9 @@ as seed material the lane may copy and adapt, because the owner wrote it.
 
 ```text
 Seed ideas from one inventory (outside the repository: they quote private paths)
-├── seed-ideas.json      harness_idea_batch/v1: one idea per kept project, with applicability.seed
-├── seed-report.json     counts by provenance class, owner index status and file kind; what was left out
+├── seed-ideas.json      harness_idea_batch/v1: one idea per kept project, with applicability.seed,
+│                        plus one media idea per project holding thirty or more media files
+├── seed-report.json     counts by provenance class, owner index status, file kind and media kind; what was left out
 └── excluded.jsonl       one row per project left out, with its reason
 ```
 
@@ -25,6 +26,18 @@ imported workspace or an incomplete archive, no source file, or an excerpt
 that could not be read. Nothing here calls a model, copies a project, or
 approves anything: the ideas are candidate material for the lanes, whose
 output still passes the prechecks and the screening call before publication.
+
+The owner, September 26, 2026, asked for the drive's media to count as seed
+material too. The inventory's file shards (``files-NNN.jsonl``) are read once
+and every media file (image, video, audio, 3D, Blender, document, notebook) is
+counted in the deepest project root above it, the same rule the scanner uses
+for a project's language counts. Each idea's excerpt then ends with an asset
+summary: counts by media kind and a few example file names. A project with
+``MEDIA_HEAVY_MINIMUM`` or more media files also seeds a second idea, a skill
+about producing or editing that kind of media in the owner's approach. Every
+idea cites the project path, the digest of ``projects.jsonl`` and one digest
+over the shards it was counted from, so a generated package can name the exact
+inventory it came from.
 
     PYTHONPATH=src python tools/build_volume_seed_ideas.py \\
         --inventory ~/baltor-library/volumes/expansion/inventory-1 --volume /run/media/username/Expansion \\
@@ -48,16 +61,31 @@ if str(HERE) not in sys.path:
     sys.path.insert(0, str(HERE))
 
 from harness_idea_matrix import DATATYPES, FACET_DIMENSIONS, FILE_KINDS, OPERATIONS, USE_CASES  # noqa: E402
-from scan_local_volume import OWNER_DECLARED, OWNER_REMOTE, PROJECT_RECORD_TYPE  # noqa: E402
+from scan_local_volume import FILE_RECORD_TYPE, OWNER_DECLARED, OWNER_REMOTE, PROJECT_RECORD_TYPE  # noqa: E402
 
 BATCH_RECORD_TYPE = "harness_idea_batch/v1"
 IDEA_RECORD_TYPE = "harness_idea_record/v1"
 REPORT_RECORD_TYPE = "volume_seed_report/v1"
 SEED_RECORD_TYPE = "volume_seed/v1"
+ASSET_RECORD_TYPE = "volume_asset_summary/v1"
 OWNER_CLASSES = (OWNER_DECLARED, OWNER_REMOTE)
 #: Statuses of the owner's own project index that mark material the owner did not write.
 INDEX_STATUSES_LEFT_OUT = ("imported_workspace", "incomplete_archive")
-IDENTITY = re.compile(r"^[a-z0-9][a-z0-9-]{2,63}$")
+#: The attribution adapter (tools/native_proposals_from_overnight_candidates.py) accepts only hyphen-separated
+#: lower-case words, so an identity never holds two hyphens in a row or ends with one.
+IDENTITY = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+IDENTITY_BOUND = 64
+#: The scanner's language names that are media, in the order the asset summary lists them.
+MEDIA_KINDS = ("image", "video", "audio", "3d", "blender", "document", "notebook")
+MEDIA_LABELS = {"image": "images", "video": "video files", "audio": "audio files", "3d": "3D models",
+                "blender": "Blender files", "document": "documents", "notebook": "notebooks"}
+#: A project holding this many media files seeds a second idea about producing or editing that media.
+MEDIA_HEAVY_MINIMUM = 30
+EXAMPLES_PER_KIND = 3
+#: The input datatype a media idea declares for its dominant media kind. A video, 3D or Blender pipeline works
+#: on files by path; a notebook is a JSON document.
+MEDIA_DATATYPES = {"image": "image", "audio": "audio", "document": "pdf_document", "notebook": "json_object",
+                   "video": "file_path", "3d": "file_path", "blender": "file_path"}
 EXCERPT_BOUND = 6000
 README_BOUND = 1500
 #: A project without a module outline seeds an idea only when it holds this many source files (a notebook or
@@ -128,6 +156,106 @@ def _read(path: Path, bound: int) -> str:
             return stream.read(bound * 4).decode("utf-8", "replace")[:bound]
     except OSError:
         return ""
+
+
+def _identity(*parts: str) -> str:
+    """The parts joined by hyphens, never two hyphens in a row and never one at either end."""
+    return re.sub(r"-+", "-", "-".join(part for part in parts if part)).strip("-")
+
+
+def asset_index(inventory: Path, project_paths) -> tuple:
+    """(media counts and example names per project path, the shards read with their digests).
+
+    A media file is counted in the deepest project root above it, as the scanner counts a project's languages; a
+    file above every project root counts nowhere. A shard line that cannot be parsed is counted and skipped,
+    because the walk may still be writing the last shard when the seeds are built."""
+    roots = set(project_paths)
+    per_project, shards = {}, []
+    for shard_path in sorted(inventory.glob("files-*.jsonl")):
+        raw = shard_path.read_bytes()
+        rows = unparsed = 0
+        for line in raw.decode("utf-8", "replace").splitlines():
+            if not line.strip():
+                continue
+            try:
+                row = json.loads(line)
+            except ValueError:
+                unparsed += 1
+                continue
+            rows += 1
+            kind = row.get("language") or ""
+            if kind not in MEDIA_KINDS or row.get("record_type") != FILE_RECORD_TYPE:
+                continue
+            parts = str(row.get("path", "")).split("/")
+            for length in range(len(parts) - 1, 0, -1):
+                prefix = "/".join(parts[:length])
+                if prefix in roots:
+                    summary = per_project.setdefault(prefix, {"by_kind": Counter(), "examples": {}})
+                    summary["by_kind"][kind] += 1
+                    # The first few distinct names in name order, whatever order the walk listed them in.
+                    names, name = summary["examples"].setdefault(kind, []), parts[-1][:60]
+                    if name not in names and (len(names) < EXAMPLES_PER_KIND or name < names[-1]):
+                        names.append(name)
+                        names.sort()
+                        del names[EXAMPLES_PER_KIND:]
+                    break
+        shards.append({"name": shard_path.name, "path": str(shard_path), "sha256": hashlib.sha256(raw).hexdigest(),
+                       "rows": rows, "unparsed_rows": unparsed})
+    return per_project, shards
+
+
+def shards_digest(shards: list) -> str:
+    """One digest over the shards read, in name order, so an idea cites the exact file rows it was counted from."""
+    return hashlib.sha256("\n".join(f"{shard['name']} {shard['sha256']}" for shard in shards).encode()).hexdigest()
+
+
+def asset_summary(summary: "dict | None", shards_sha256: str) -> dict:
+    """The typed asset record an idea's seed carries: counts by media kind and the shards they came from."""
+    by_kind = {kind: summary["by_kind"][kind] for kind in MEDIA_KINDS if summary and summary["by_kind"].get(kind)}
+    return {"record_type": ASSET_RECORD_TYPE, "media_files": sum(by_kind.values()), "by_kind": by_kind,
+            "counted_in": "this project root and its folders that are not project roots themselves",
+            "shards_sha256": shards_sha256}
+
+
+def asset_text(summary: "dict | None") -> str:
+    """The asset paragraph of an excerpt: counts by media kind, then a few example file names."""
+    by_kind = [(kind, summary["by_kind"][kind]) for kind in MEDIA_KINDS if summary and summary["by_kind"].get(kind)]
+    if not by_kind:
+        return ""
+    counts = ", ".join(f"{MEDIA_LABELS[kind]} {count}" for kind, count in by_kind)
+    examples = "; ".join(f"{MEDIA_LABELS[kind]}: " + ", ".join(summary["examples"].get(kind, []))
+                         for kind, _count in by_kind if summary["examples"].get(kind))
+    return f"Assets in this project (from the inventory): {counts}. Examples: {examples}."[:900]
+
+
+def media_idea(base: dict, project: dict, volume_name: str) -> dict:
+    """The second idea of a media-heavy project: a skill about producing or editing its dominant media kind.
+
+    The skill kind is chosen because it is the one kind with a qualified native placement in the converter
+    (tools/native_proposals_from_overnight_candidates.py); a workflow candidate would be generated and then
+    left out at conversion."""
+    seed = base["applicability"]["seed"]
+    assets = seed["assets"]
+    dominant = max(assets["by_kind"], key=lambda kind: (assets["by_kind"][kind], -MEDIA_KINDS.index(kind)))
+    label = MEDIA_LABELS[dominant]
+    counts = ", ".join(f"{MEDIA_LABELS[kind]} {count}" for kind, count in assets["by_kind"].items())
+    task = (f"The owner's own project {project['name']} at {project['path']} on the {volume_name} volume holds "
+            f"{assets['media_files']} media files ({counts}), mostly {label}. "
+            + " ".join((project.get("readme") or "").split())[:300])
+    return {
+        **base, "id": _identity(base["id"][:IDENTITY_BOUND - 6], "media"), "file_kind": "skill",
+        "datatype": MEDIA_DATATYPES[dominant], "operation": "transformation",
+        "applicability": {**base["applicability"], "task_reference": task,
+                          "seed": {**seed, "idea_role": "media", "dominant_media_kind": dominant}},
+        "method_signature": hashlib.sha256(f"{project['path']}|media|{assets['shards_sha256']}".encode()).hexdigest(),
+        "brief": (f"Write an original skill that lets a coding harness produce or edit {label} the way the owner's "
+                  f"project {project['name']} does: the tools and libraries its modules use, the steps from source "
+                  f"material to finished {label}, the naming and folder layout the asset summary shows, the effects "
+                  f"it needs, and the check that shows the output is right. Use the seed excerpt freely; it is the "
+                  f"owner's own work."),
+        "known_wrong": KNOWN_WRONG + (" For media, it names a tool, a format or a step that the project's files and "
+                                      "modules do not show."),
+    }
 
 
 def module_outline(path: Path) -> str:
@@ -275,17 +403,23 @@ def build(inventory: Path, volume: Path, registry: "Path | None", output: Path, 
         refuse("inventory_missing", f"{projects_path} is not an inventory")
     inventory_sha256 = hashlib.sha256(projects_path.read_bytes()).hexdigest()
     statuses = index_statuses(registry, volume)
-    output.mkdir(parents=True, exist_ok=False)
-    excluded_stream = (output / "excluded.jsonl").open("w", encoding="utf-8")
-    ideas, seen_ids = [], set()
-    counts = {"projects": 0, "kept": 0, "by_provenance_class": Counter(), "by_index_status": Counter(),
-              "by_file_kind": Counter(), "by_use_case": Counter(), "excluded": Counter()}
+    projects = []
     for line in projects_path.read_text(encoding="utf-8").splitlines():
         if not line.strip():
             continue
         project = json.loads(line)
         if project.get("record_type") != PROJECT_RECORD_TYPE:
             refuse("inventory_record_unsupported", f"a project row is {project.get('record_type')!r}")
+        projects.append(project)
+    assets_by_project, shards = asset_index(inventory, (project["path"] for project in projects))
+    shards_sha256 = shards_digest(shards)
+    output.mkdir(parents=True, exist_ok=False)
+    excluded_stream = (output / "excluded.jsonl").open("w", encoding="utf-8")
+    ideas, seen_ids = [], set()
+    counts = {"projects": 0, "kept": 0, "media_ideas": 0, "by_provenance_class": Counter(),
+              "by_index_status": Counter(), "by_file_kind": Counter(), "by_use_case": Counter(),
+              "media_files_by_kind": Counter(), "excluded": Counter()}
+    for project in projects:
         counts["projects"] += 1
         counts["by_provenance_class"][project["provenance_class"]] += 1
         status, domain = _index_lookup(statuses, project["path"])
@@ -307,6 +441,10 @@ def build(inventory: Path, volume: Path, registry: "Path | None", output: Path, 
             elif not modules and project.get("source_files", 0) < MINIMUM_SOURCE_FILES_WITHOUT_OUTLINE:
                 # A folder that is only a README about other folders seeds nothing a harness can use.
                 reason = "no_module_outline"
+            else:
+                assets_text = asset_text(assets_by_project.get(project["path"]))
+                if assets_text:
+                    excerpt = excerpt[:EXCERPT_BOUND - len(assets_text) - 2].rstrip() + "\n\n" + assets_text
         if reason:
             counts["excluded"][reason.split(":")[0]] += 1
             excluded_stream.write(json.dumps({"path": project["path"], "reason": reason}) + "\n")
@@ -320,13 +458,14 @@ def build(inventory: Path, volume: Path, registry: "Path | None", output: Path, 
         # identities; a further clash takes a short digest of the path.
         parts = project["path"].split("/")
         parent = _slug(parts[-2]) if len(parts) > 1 else ""
-        identity = "-".join(part for part in ("vol", _slug(volume_name), parent[:20], _slug(project["name"])[:24]) if part)
+        identity = _identity("vol", _slug(volume_name), parent[:20], _slug(project["name"])[:24])
         if identity in seen_ids:
-            identity = f"{identity[:56]}-{hashlib.sha256(project['path'].encode()).hexdigest()[:6]}"
-        if not IDENTITY.match(identity):
+            identity = _identity(identity[:56], hashlib.sha256(project["path"].encode()).hexdigest()[:6])
+        if not IDENTITY.match(identity) or len(identity) > IDENTITY_BOUND:
             refuse("identity_invalid", identity)
         seen_ids.add(identity)
         excerpt_sha256 = hashlib.sha256(excerpt.encode("utf-8")).hexdigest()
+        assets = asset_summary(assets_by_project.get(project["path"]), shards_sha256)
         task = (f"The owner's own project {project['name']} ({', '.join(sorted(project.get('languages') or {}))}) "
                 f"at {project['path']} on the {volume_name} volume. " + " ".join((project.get("readme") or "")
                                                                                  .split())[:400])
@@ -336,10 +475,11 @@ def build(inventory: Path, volume: Path, registry: "Path | None", output: Path, 
             "applicability": {
                 "occupation_code": "", "occupation_title": "", "task_reference": task,
                 "facet_dimensions": list(FACET_DIMENSIONS), "facet": {},
-                "seed": {"record_type": SEED_RECORD_TYPE, "volume": volume_name, "project_path": project["path"],
+                "seed": {"record_type": SEED_RECORD_TYPE, "idea_role": "project", "volume": volume_name,
+                         "project_path": project["path"],
                          "project_name": project["name"], "provenance_class": project["provenance_class"],
                          "owner_index_status": status, "inventory_sha256": inventory_sha256,
-                         "modules_read": modules, "excerpt_sha256": excerpt_sha256,
+                         "modules_read": modules, "excerpt_sha256": excerpt_sha256, "assets": assets,
                          "authorship_basis": ("The owner declared on September 26, 2026 that everything on the "
                                               "volume was written by the owner; no git remote, licence file or "
                                               "copyright line of this project names anyone else.")},
@@ -354,15 +494,35 @@ def build(inventory: Path, volume: Path, registry: "Path | None", output: Path, 
         counts["kept"] += 1
         counts["by_file_kind"][kind] += 1
         counts["by_use_case"][use_case] += 1
+        for media_kind, count in assets["by_kind"].items():
+            counts["media_files_by_kind"][media_kind] += count
+        if assets["media_files"] >= MEDIA_HEAVY_MINIMUM and len(ideas) < maximum:
+            second = media_idea(ideas[-1], project, volume_name)
+            if second["id"] in seen_ids or not IDENTITY.match(second["id"]) or len(second["id"]) > IDENTITY_BOUND:
+                refuse("identity_invalid", second["id"])
+            seen_ids.add(second["id"])
+            ideas.append(second)
+            counts["media_ideas"] += 1
+            counts["by_file_kind"][second["file_kind"]] += 1
     excluded_stream.close()
     if not ideas:
         refuse("no_seed_project", "no project kept its owner provenance and readable excerpt")
+    for idea in ideas:
+        seed = idea["applicability"]["seed"]
+        if not seed.get("project_path") or not seed.get("inventory_sha256") or not seed["assets"].get("shards_sha256"):
+            refuse("seed_citation_missing", idea["id"])
     batch_digest = hashlib.sha256(json.dumps(ideas, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+    # Every source keeps the kind the batch selector treats as self-grounded (tools/overnight_candidate_batch.py);
+    # the role tells the projects file from the file shards the media counts came from.
+    sources = [{"kind": "owner_volume_inventory", "role": "projects", "path": str(projects_path),
+                "sha256": inventory_sha256}]
+    sources += [{"kind": "owner_volume_inventory", "role": "files", "path": shard["path"], "sha256": shard["sha256"],
+                 "rows": shard["rows"], "unparsed_rows": shard["unparsed_rows"]} for shard in shards]
     batch = {"record_type": BATCH_RECORD_TYPE,
              "matrix": {"record_type": "harness_idea_matrix/v1", "datatypes": len(DATATYPES),
                         "operations": len(OPERATIONS), "use_cases": len(USE_CASES),
                         "facet_dimensions": list(FACET_DIMENSIONS)},
-             "sources": [{"kind": "owner_volume_inventory", "path": str(projects_path), "sha256": inventory_sha256}],
+             "sources": sources, "shards_sha256": shards_sha256,
              "ideas": ideas, "idea_count": len(ideas),
              "unique_method_signatures": len({idea["method_signature"] for idea in ideas}),
              "unique_ids": len({idea["id"] for idea in ideas}), "file_kinds": len(FILE_KINDS),
@@ -371,6 +531,7 @@ def build(inventory: Path, volume: Path, registry: "Path | None", output: Path, 
     report = {"record_type": REPORT_RECORD_TYPE, "written_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
               "inventory": str(inventory), "inventory_sha256": inventory_sha256, "volume": str(volume),
               "registry": str(registry) if registry else "", "maximum": maximum,
+              "shards_read": shards, "shards_sha256": shards_sha256, "media_heavy_minimum": MEDIA_HEAVY_MINIMUM,
               **{key: (dict(value.most_common()) if isinstance(value, Counter) else value)
                  for key, value in counts.items()},
               "batch_sha256": batch_digest, "what_this_is_not": "No model was called, no project copied, nothing approved."}
@@ -401,8 +562,8 @@ def main(argv=None) -> int:
     except SeedError as error:
         print(str(error), file=sys.stderr)
         return 1
-    print(json.dumps({key: report[key] for key in ("projects", "kept", "by_provenance_class", "by_file_kind",
-                                                     "excluded")}, indent=1))
+    print(json.dumps({key: report[key] for key in ("projects", "kept", "media_ideas", "by_provenance_class",
+                                                     "by_file_kind", "media_files_by_kind", "excluded")}, indent=1))
     return 0
 
 

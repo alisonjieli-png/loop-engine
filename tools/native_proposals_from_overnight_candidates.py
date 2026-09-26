@@ -176,8 +176,14 @@ def _matrix_at(matrices, moment: datetime):
     return chosen
 
 
-def attribute(batch: Path, matrices, lanes: dict, output: Path) -> dict:
-    """Attribute every candidate of the named lanes; write idea sources and the attribution record."""
+def attribute(batch: Path, matrices, lanes: dict, output: Path, omit_fields=()) -> dict:
+    """Attribute every candidate of the named lanes; write idea sources and the attribution record.
+
+    ``omit_fields`` names applicability fields left out of the committed idea sources. The seed wave of
+    September 26, 2026 leaves out ``seed_excerpt``, the bounded quotation of the owner's private project that
+    the producer was given: the committed source keeps the seed's project path, inventory digests and excerpt
+    digest, which cite the material without publishing it in this public repository."""
+    omit_fields = tuple(omit_fields)
     batch = batch.resolve()
     status = json.loads(_regular(batch / "status.json", 16 * 1024 * 1024))
     if status.get("record_type") != STATUS_TYPE:
@@ -205,6 +211,9 @@ def attribute(batch: Path, matrices, lanes: dict, output: Path) -> dict:
                                  "reason": "no idea record in the matrix in effect at the recorded write"})
                 continue
             raw = _regular(path, MAXIMUM_CANDIDATE_BYTES)
+            if omit_fields and type(idea.get("applicability")) is dict:
+                idea = {**idea, "applicability": {key: value for key, value in idea["applicability"].items()
+                                                  if key not in omit_fields}}
             idea_bytes = canonical(idea)
             idea_path = output / "ideas" / f"{idea_id}.json"
             if idea_path.exists():
@@ -224,8 +233,10 @@ def attribute(batch: Path, matrices, lanes: dict, output: Path) -> dict:
               "lanes": {lane: {"family": family, "provider": status["lanes"][lane]["provider"],
                                "model": status["lanes"][lane]["model"]} for lane, family in sorted(lanes.items())},
               "candidates": candidates, "excluded": excluded,
+              "omitted_idea_fields": sorted(omit_fields),
               "limits": "Attribution reads the batch journal and files as they were at the read; the batch was "
-                        "still running for other lanes. A family is the operator's declaration for the lane."}
+                        "still running for other lanes. A family is the operator's declaration for the lane. "
+                        "An omitted idea field was given to the producer but is not in the committed idea source."}
     (output / "attribution.json").write_bytes(canonical(record))
     return {"candidates": len(candidates), "excluded": len(excluded)}
 
@@ -384,6 +395,8 @@ def main(argv=None) -> int:
     first.add_argument("--batch-directory", type=Path, required=True)
     first.add_argument("--matrix", action="append", default=[], help="PATH@EFFECTIVE_FROM, one per matrix.")
     first.add_argument("--lane", action="append", default=[], help="LANE=FAMILY, one per lane to attribute.")
+    first.add_argument("--omit-idea-field", action="append", default=[],
+                       help="An applicability field left out of the committed idea sources, such as seed_excerpt.")
     first.add_argument("--output", type=Path, required=True)
     second = commands.add_parser("proposals")
     second.add_argument("--repository", type=Path, required=True)
@@ -393,7 +406,8 @@ def main(argv=None) -> int:
     options = parser.parse_args(argv)
     try:
         if options.command == "attribute":
-            summary = attribute(options.batch_directory, options.matrix, _lanes(options.lane), options.output)
+            summary = attribute(options.batch_directory, options.matrix, _lanes(options.lane), options.output,
+                                options.omit_idea_field)
         else:
             summary = proposals(options.repository, options.attribution, options.batch_directory, options.output)
     except ConversionError as error:
