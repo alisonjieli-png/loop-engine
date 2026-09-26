@@ -1,0 +1,46 @@
+<p>The Baltor Harness is Baltor's own engine: the free, open source <code>loop-engine</code> command, published on <a href="https://github.com/alisonjieli-png/loop-engine" rel="noopener noreferrer" target="_blank">GitHub</a>. It works through a task in small steps on the model you bring and keeps a record of every step. Today it does not search or download from Baltor by itself: you search and download with your token, check the digest, add the material to your task file, then run the task. Every address, field and command on this page is read from the service source, and a nightly check runs the same connection, search and download against the live service. The whole path was checked on September 23, 2026 with loop-engine 0.1.0 from GitHub main: install, doctor, the Ollama Cloud route, search, download with a digest check, and a task that used the downloaded item.</p>
+<h2 id="what-you-need">What you need</h2>
+<ul><li>A Baltor account with an active plan. Create it on <a href="/get-started">Get started</a>.</li><li>A client token from <a href="/account">your account page</a>, under Your client tokens. The service shows it once.</li><li>Python 3.10 or newer, <code>curl</code> and <code>sha256sum</code>.</li><li>A model you bring. The example below runs on Ollama Cloud with <code>OLLAMA_API_KEY</code> in your environment; a local model server works through the engine's own provider settings.</li></ul>
+<h2 id="install-the-engine">Install the engine</h2>
+<pre><code class="language-bash">python3 -m venv ~/.baltor-harness
+~/.baltor-harness/bin/pip install 'git+https://github.com/alisonjieli-png/loop-engine'
+export PATH="$HOME/.baltor-harness/bin:$PATH"
+loop-engine doctor</code></pre>
+<p>The first line of the answer ends with <code>CONFIGURATION VALID</code>. This checks the installation only: it makes no model call and does not contact Baltor. Check the installed version with <code>pip show loop-engine</code>.</p>
+<h2 id="set-the-token">Set the token</h2>
+<p>The prompt below hides the value while you enter it, and the value stays out of the command history:</p>
+<pre><code class="language-bash">read -rsp "Baltor service token: " BALTOR_SERVICE_TOKEN
+export BALTOR_SERVICE_TOKEN</code></pre>
+<h2 id="the-connection-values">The connection values</h2>
+<p>There is no configuration file yet. The steps below use these values with <code>curl</code>. The same address and variable work with the protocol client that ships with the engine (<code>McpServerSpec</code>, installed with <code>loop-engine[integrations]</code>). Keep the token in your environment, never in a file.</p>
+<pre><code class="language-json">{
+  "mcp_servers": {
+    "baltor": {
+      "transport": "streamable_http",
+      "url": "https://baltor.ai/mcp",
+      "credential_env": "BALTOR_SERVICE_TOKEN"
+    }
+  }
+}</code></pre>
+<h2 id="check-the-connection">Check the connection</h2>
+<pre><code class="language-bash">curl -sS -H "Authorization: Bearer $BALTOR_SERVICE_TOKEN" https://baltor.ai/api/v1/session</code></pre>
+<p>The answer's <code>result</code> is <code>service_session/v1</code>. Its <code>principal</code> names the account and its <code>scopes</code>: a search needs <code>provisioning:metadata</code> and a download needs <code>provisioning:read</code>.</p>
+<h2 id="your-first-search">Your first search</h2>
+<p>The first search is <code>review inputs</code>:</p>
+<pre><code class="language-bash">curl -sS -X POST https://baltor.ai/api/v1/retrieval -H "Authorization: Bearer $BALTOR_SERVICE_TOKEN" -H "Content-Type: application/json" -d '{"record_type":"service_retrieval_request/v2","query":"review inputs","mode":"lexical","top_n":3}'</code></pre>
+<p>The answer is a <code>service_http_result/v1</code> wrapper whose <code>result</code> is the <code>service_retrieval_result/v1</code> record: a list of <code>hits</code>, each with a <code>reference</code> that names the item's <code>identity</code>, its <code>body_digest</code> and its <code>size_bytes</code>, the tier label in <code>library_tier_label</code> (Verified or Community) and <code>body_allowed</code>. A search never loads a body, so <code>bodies_loaded</code> is false, and a search is not measured. Keep the <code>identity</code> and the <code>body_digest</code> of the one you choose.</p>
+<h2 id="your-first-download">Your first download</h2>
+<p>Replace the two placeholders with the values you kept, and give the download a new <code>request_id</code>:</p>
+<pre><code class="language-bash">curl -sS -X POST https://baltor.ai/api/v1/download -H "Authorization: Bearer $BALTOR_SERVICE_TOKEN" -H "Content-Type: application/json" -d '{"record_type":"service_provisioning_request/v2","operation":"read","identity":"ITEM-IDENTITY","expected_digest":"SELECTED-DIGEST","request_id":"QUICKSTART-1"}' -D headers.txt -o item.md
+sha256sum item.md
+grep -i x-content-sha256 headers.txt</code></pre>
+<p>The download answers the bytes themselves, with the <code>X-Content-SHA256</code> header that repeats their digest. The <code>expected_digest</code> binds the read to the body you chose, so a changed body is refused rather than substituted. This download is one measured unit and appears in your usage. Keep the same <code>request_id</code> if you retry an uncertain outcome; the service records one unit for one request identity.</p>
+<h2 id="run-a-task-with-it">Run a task with it</h2>
+<p>Put the downloaded material where your task reads it and name it in the task file. Then run the task, for example on Ollama Cloud:</p>
+<pre><code class="language-bash">loop-engine solve --file task.md --ollama-api-key --model-route cloud.default --unattended --max-model-calls 60 --workspace baltor-run</code></pre>
+<p><code>--workspace</code> must be an empty folder or one that does not exist yet. When the run ends it prints its output files; compare them with what you asked for. The engine's own verification is strict and can refuse a correct result, so check the output yourself.</p>
+<h2 id="check-that-it-worked">Check that it worked</h2>
+<ol><li>The two digests are equal: <code>sha256sum</code> of the downloaded file, and the <code>body_digest</code> the search returned. The header <code>X-Content-SHA256</code> repeats it.</li><li>Open <a href="/account">your account page</a>: the download is listed in your usage.</li><li>The task run names the downloaded file among its inputs and prints its output files.</li></ol>
+<h2 id="when-it-does-not-work">When it does not work</h2>
+<table><thead><tr><th>Code</th><th>Status</th><th>What to do</th></tr></thead><tbody><tr><td><code>unauthorized</code></td><td>401</td><td>The token is missing, wrong, expired or revoked. Set <code>BALTOR_SERVICE_TOKEN</code> in this terminal, then run the session check again.</td></tr><tr><td><code>insufficient_scope</code></td><td>403</td><td>The token lacks the scope this operation needs. Create a token with <code>provisioning:read</code>.</td></tr><tr><td><code>item_unavailable</code></td><td>404</td><td>The identity is not in your library, or it was withdrawn. Search again and use a fresh reference.</td></tr><tr><td><code>request_identity_required</code></td><td>400</td><td>A download needs a <code>request_id</code>. Give each logical download a new one.</td></tr><tr><td><code>download_requires_read</code></td><td>400</td><td>Only the <code>read</code> operation is answered at <code>/api/v1/download</code>. A manifest goes to <code>/api/v1/provisioning</code>.</td></tr><tr><td><code>meter_commit_unknown</code></td><td>503</td><td>The service could not confirm the usage record. Retry with the same <code>request_id</code>.</td></tr><tr><td><code>failed_attempt_limit_reached</code></td><td>429</td><td>Too many refused attempts from your address. Fix the token, then wait a minute.</td></tr></tbody></table>
+<p>A <code>loop-engine doctor</code> answer that is not valid names the setting to fix and does not involve Baltor. <a href="/docs/troubleshooting">Troubleshooting</a> explains every code, <a href="/status">Service status</a> shows a current outage, and <a href="/docs/serving-and-connections">Serving and connections</a> names the protocol versions. To run on a model on your own machine, follow the engine's <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/README.md#install" rel="noopener noreferrer" target="_blank">installation guide</a>. The nightly record of this page's steps is written under <code>artifacts/quickstart-checks/</code> in the repository by <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/tools/check_quickstarts.py" rel="noopener noreferrer" target="_blank">the quickstart check</a>.</p>

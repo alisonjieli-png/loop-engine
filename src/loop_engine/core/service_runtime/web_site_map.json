@@ -366,6 +366,76 @@
       "indexed": true
     },
     {
+      "address": "/docs/quickstart-claude-code",
+      "view": "docs",
+      "title": "Claude Code quickstart",
+      "description": "What you need, the .mcp.json entry to paste, the first search, the first download and the check that it worked, for Claude Code.",
+      "group": "Documentation",
+      "linked_from": [
+        "page"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "documentation",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/docs/quickstart-codex",
+      "view": "docs",
+      "title": "Codex quickstart",
+      "description": "What you need, the config.toml table to paste, the first search, the first download and the check that it worked, for Codex.",
+      "group": "Documentation",
+      "linked_from": [
+        "page"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "documentation",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/docs/quickstart-opencode",
+      "view": "docs",
+      "title": "OpenCode quickstart",
+      "description": "What you need, the opencode.json entry to paste, the first search, the first download and the check that it worked, for OpenCode 1.x.",
+      "group": "Documentation",
+      "linked_from": [
+        "page"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "documentation",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/docs/quickstart-pi",
+      "view": "docs",
+      "title": "Pi quickstart",
+      "description": "What you need, the extension and settings file to save, the first search, the first installed skill and the check that it worked, for Pi.",
+      "group": "Documentation",
+      "linked_from": [
+        "page"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "documentation",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/docs/quickstart-baltor-harness",
+      "view": "docs",
+      "title": "Baltor Harness quickstart",
+      "description": "Install the engine, search and download with curl, check the digest, then run a task on the model you bring.",
+      "group": "Documentation",
+      "linked_from": [
+        "page"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "documentation",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
       "address": "/security",
       "view": "security",
       "title": "Access and data boundaries",

@@ -103,6 +103,13 @@ WEB_ASSETS = {
     "/docs/serving-and-connections": ("index.html", HTML_MEDIA_TYPE),
     # The setup guide is the Get set up page. This older documentation address opens it too.
     "/docs/getting-set-up": ("index.html", HTML_MEDIA_TYPE),
+    # One quickstart for each harness (roadmap S-6.202), built from docs/guides/quickstart-*.md like the pages above
+    # and run against the live service every night by tools/check_quickstarts.py.
+    "/docs/quickstart-claude-code": ("index.html", HTML_MEDIA_TYPE),
+    "/docs/quickstart-codex": ("index.html", HTML_MEDIA_TYPE),
+    "/docs/quickstart-opencode": ("index.html", HTML_MEDIA_TYPE),
+    "/docs/quickstart-pi": ("index.html", HTML_MEDIA_TYPE),
+    "/docs/quickstart-baltor-harness": ("index.html", HTML_MEDIA_TYPE),
     "/assets/documentation-index.json": ("documentation-index.json", "application/json"),
     "/assets/documentation.js": ("documentation.js", "text/javascript"),
     "/assets/documentation.css": ("documentation.css", "text/css"),
@@ -112,6 +119,11 @@ WEB_ASSETS = {
     "/assets/docs/usage-and-what-you-pay-for.html": ("docs/usage-and-what-you-pay-for.html", HTML_MEDIA_TYPE),
     "/assets/docs/troubleshooting.html": ("docs/troubleshooting.html", HTML_MEDIA_TYPE),
     "/assets/docs/serving-and-connections.html": ("docs/serving-and-connections.html", HTML_MEDIA_TYPE),
+    "/assets/docs/quickstart-claude-code.html": ("docs/quickstart-claude-code.html", HTML_MEDIA_TYPE),
+    "/assets/docs/quickstart-codex.html": ("docs/quickstart-codex.html", HTML_MEDIA_TYPE),
+    "/assets/docs/quickstart-opencode.html": ("docs/quickstart-opencode.html", HTML_MEDIA_TYPE),
+    "/assets/docs/quickstart-pi.html": ("docs/quickstart-pi.html", HTML_MEDIA_TYPE),
+    "/assets/docs/quickstart-baltor-harness.html": ("docs/quickstart-baltor-harness.html", HTML_MEDIA_TYPE),
     # The typefaces of the website, Geist and Geist Mono, served from this origin so that no
     # visitor's address reaches a font provider. Their licence travels in the notices below.
     "/assets/geist.woff2": ("geist.woff2", "font/woff2"),

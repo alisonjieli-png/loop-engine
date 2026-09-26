@@ -252,6 +252,9 @@ class ServiceDocumentationCheck(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             root = build_copy(Path(folder))
             edit(root, DOCUMENTED_PAGES[0], "```bash\ncodex mcp list\n```\n\n", "")
+            # Since September 26, 2026 the Codex quickstart confirms the same recipe, so the known-wrong
+            # case removes the command there too; a recipe that one page still confirms is documented.
+            edit(root, "docs/guides/quickstart-codex.md", "```bash\ncodex mcp list\n```\n\n", "")
             report = check(root)
             self.assertIn("recipe", self.kinds(report))
             self.assertIn("codex", self.values(report))

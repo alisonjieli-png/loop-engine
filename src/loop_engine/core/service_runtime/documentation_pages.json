@@ -1,6 +1,61 @@
 {
- "index_digest": "c904bfe3b31ce470baa44425facc0f1fbb77388692b6e9bc31368dfcd1b20eae",
+ "index_digest": "ebbc1dd50d53afd52e5bda39ac7014abf9999199ab46050967928ac9f0476fa4",
  "pages": {
+  "quickstart-baltor-harness": {
+   "body_address": "/assets/docs/quickstart-baltor-harness.html",
+   "body_digest": "cd456bdda555f89b18fe4947b8e98e8ff15d88a0e5b9cbeada4e75b46a5381ec",
+   "heading": "Baltor Harness quickstart",
+   "id": "quickstart-baltor-harness",
+   "kind_line": "Kind: customer quickstart for the Baltor Harness. It repeats the installation and the connection values that Get set up publishes for the Baltor Harness and adds the first search, the first download and the check that it worked.",
+   "record_type": "website_documentation_page/v1",
+   "repository_path": "docs/guides/quickstart-baltor-harness.md",
+   "source_digest": "b4b068cd903c87ef66b057f6391660101c5779857ea238c3df4f802ed81a6f59",
+   "title": "Baltor Harness quickstart"
+  },
+  "quickstart-claude-code": {
+   "body_address": "/assets/docs/quickstart-claude-code.html",
+   "body_digest": "f7ec8696ebd5b483ffd1e6ab4bddf172b7f929951c4694d8d4002c8fa2da1b09",
+   "heading": "Claude Code quickstart",
+   "id": "quickstart-claude-code",
+   "kind_line": "Kind: customer quickstart for Claude Code. It repeats the connection entry that Get set up publishes for Claude Code and adds the first search, the first download and the check that it worked.",
+   "record_type": "website_documentation_page/v1",
+   "repository_path": "docs/guides/quickstart-claude-code.md",
+   "source_digest": "d3a49bc6c6b0606eb2e4e25f8765f19fd8b8e6d423dbd92528f97845d648ff96",
+   "title": "Claude Code quickstart"
+  },
+  "quickstart-codex": {
+   "body_address": "/assets/docs/quickstart-codex.html",
+   "body_digest": "c5c02fa44b32e87a32c552d692f09b23c6ee1bf169d9c0e5f89091ea5cb942d5",
+   "heading": "Codex quickstart",
+   "id": "quickstart-codex",
+   "kind_line": "Kind: customer quickstart for Codex. It repeats the connection table that Get set up publishes for Codex and adds the first search, the first download and the check that it worked.",
+   "record_type": "website_documentation_page/v1",
+   "repository_path": "docs/guides/quickstart-codex.md",
+   "source_digest": "bb5e6af56deba4e03e24c52617bd1284b292cfdb18fc2a4cf84693bff860a53d",
+   "title": "Codex quickstart"
+  },
+  "quickstart-opencode": {
+   "body_address": "/assets/docs/quickstart-opencode.html",
+   "body_digest": "18b72dfd7dc77918090ab60c624b644742854777b25cf7473e9b608702eeaea4",
+   "heading": "OpenCode quickstart",
+   "id": "quickstart-opencode",
+   "kind_line": "Kind: customer quickstart for OpenCode 1.x. It repeats the connection entry that Get set up publishes for OpenCode and adds the first search, the first download and the check that it worked.",
+   "record_type": "website_documentation_page/v1",
+   "repository_path": "docs/guides/quickstart-opencode.md",
+   "source_digest": "cd3f4fbc7b467621fdba18e66ffb97696461ea253788aebc8efceba0ca37db53",
+   "title": "OpenCode quickstart"
+  },
+  "quickstart-pi": {
+   "body_address": "/assets/docs/quickstart-pi.html",
+   "body_digest": "19384936a1e4ec9f5d586cee47474ba496027e597736346d5a3c6cfe2e1d9458",
+   "heading": "Pi quickstart",
+   "id": "quickstart-pi",
+   "kind_line": "Kind: customer quickstart for Pi. It repeats the extension setup that Get set up publishes for Pi and adds the first search, the first download and the check that it worked.",
+   "record_type": "website_documentation_page/v1",
+   "repository_path": "docs/guides/quickstart-pi.md",
+   "source_digest": "20be86e06284a37d4d54fcbdfffce7d6ad486ba7f430dc9c7837a8fd6d5a4a49",
+   "title": "Pi quickstart"
+  },
   "searching-and-retrieving": {
    "body_address": "/assets/docs/searching-and-retrieving.html",
    "body_digest": "f2a30162d6e2c8cc1327124d94cfb159bc2bfcf71aa64cf5dcbd4b179437fe70",
@@ -69,5 +124,5 @@
   }
  },
  "record_type": "website_documentation_pages/v1",
- "reviewed_at": "2026-09-23"
+ "reviewed_at": "2026-09-26"
 }

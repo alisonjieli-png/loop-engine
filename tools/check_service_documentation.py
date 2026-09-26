@@ -41,6 +41,11 @@ DOCUMENTED_PAGES = (
     "docs/guides/service-what-baltor-is.md",
     "docs/guides/service-your-account.md",
     "docs/guides/service-usage-and-what-you-pay-for.md",
+    "docs/guides/quickstart-claude-code.md",
+    "docs/guides/quickstart-codex.md",
+    "docs/guides/quickstart-opencode.md",
+    "docs/guides/quickstart-pi.md",
+    "docs/guides/quickstart-baltor-harness.md",
 )
 
 #: The service surface a customer meets. A documented name must exist in one of

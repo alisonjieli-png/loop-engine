@@ -25,7 +25,7 @@ class IndexContract(unittest.TestCase):
             return load_index(root)
 
     def test_current_index_is_valid(self):
-        self.assertEqual(len(self.read(self.index())["sections"]), 4)
+        self.assertEqual(len(self.read(self.index())["sections"]), 5)
 
     def test_unknown_version_and_fields_are_refused(self):
         for field, value in (("record_type", "website_documentation_index/v99"), ("extra", True)):
@@ -112,7 +112,7 @@ class DocumentationAgreement(unittest.TestCase):
     def test_complete_current_docs_pass(self):
         result = self.report({})
         self.assertTrue(result["passed"], result["findings"])
-        self.assertEqual(result["pages"], 7)
+        self.assertEqual(result["pages"], 12)
 
     def test_removed_guards_have_discriminating_known_wrong_cases(self):
         from build_documentation_index import BODY_DIRECTORY, PAGE_TABLE_MODULE

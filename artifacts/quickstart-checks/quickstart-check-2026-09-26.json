@@ -1,0 +1,250 @@
+{
+ "account": "pilot-owner",
+ "body_text_kept": false,
+ "capabilities_status": 200,
+ "catalogue_release": null,
+ "checked_at": "2026-09-26T13:02:48.697504+00:00",
+ "checker_sha256": "82d891626edb75e08d2a7e325ea9418e0e1c343b20fd64d0494068261e0968a7",
+ "credential_printed": false,
+ "http_calls": 20,
+ "origin": "https://baltor.ai",
+ "passed": false,
+ "physical_model_calls": 0,
+ "protocol_versions": [
+  "2025-11-25",
+  "2026-07-28"
+ ],
+ "published_base": "https://baltor.ai",
+ "query": "review inputs",
+ "quickstarts": [
+  {
+   "digest_prefix": null,
+   "harness": "Claude Code",
+   "hits": 0,
+   "http_calls": 4,
+   "id": "claude-code",
+   "identity": null,
+   "page": "docs/guides/quickstart-claude-code.md",
+   "passed": false,
+   "request_id": null,
+   "steps": [
+    {
+     "detail": "https://baltor.ai",
+     "name": "page_names_the_published_base",
+     "passed": true
+    },
+    {
+     "detail": "review inputs",
+     "name": "page_documents_the_first_search",
+     "passed": true
+    },
+    {
+     "detail": "protocol 2025-11-25",
+     "name": "connected",
+     "passed": true
+    },
+    {
+     "detail": "5 tools",
+     "name": "listed",
+     "passed": true
+    },
+    {
+     "detail": "the search returned no hit",
+     "name": "searched",
+     "passed": false
+    }
+   ],
+   "wire_path": "protocol"
+  },
+  {
+   "digest_prefix": null,
+   "harness": "Codex",
+   "hits": 0,
+   "http_calls": 4,
+   "id": "codex",
+   "identity": null,
+   "page": "docs/guides/quickstart-codex.md",
+   "passed": false,
+   "request_id": null,
+   "steps": [
+    {
+     "detail": "https://baltor.ai",
+     "name": "page_names_the_published_base",
+     "passed": true
+    },
+    {
+     "detail": "review inputs",
+     "name": "page_documents_the_first_search",
+     "passed": true
+    },
+    {
+     "detail": "protocol 2025-11-25",
+     "name": "connected",
+     "passed": true
+    },
+    {
+     "detail": "5 tools",
+     "name": "listed",
+     "passed": true
+    },
+    {
+     "detail": "the search returned no hit",
+     "name": "searched",
+     "passed": false
+    }
+   ],
+   "wire_path": "protocol"
+  },
+  {
+   "digest_prefix": null,
+   "harness": "OpenCode",
+   "hits": 0,
+   "http_calls": 4,
+   "id": "opencode",
+   "identity": null,
+   "page": "docs/guides/quickstart-opencode.md",
+   "passed": false,
+   "request_id": null,
+   "steps": [
+    {
+     "detail": "https://baltor.ai",
+     "name": "page_names_the_published_base",
+     "passed": true
+    },
+    {
+     "detail": "review inputs",
+     "name": "page_documents_the_first_search",
+     "passed": true
+    },
+    {
+     "detail": "protocol 2025-11-25",
+     "name": "connected",
+     "passed": true
+    },
+    {
+     "detail": "5 tools",
+     "name": "listed",
+     "passed": true
+    },
+    {
+     "detail": "the search returned no hit",
+     "name": "searched",
+     "passed": false
+    }
+   ],
+   "wire_path": "protocol"
+  },
+  {
+   "digest_prefix": "13c13dbc0592",
+   "harness": "Pi",
+   "hits": 5,
+   "http_calls": 4,
+   "id": "pi",
+   "identity": "orient_on_a_task_and_write_its_contracts",
+   "page": "docs/guides/quickstart-pi.md",
+   "passed": true,
+   "request_id": "quickstart-pi-20260926-203cde64e5ac",
+   "steps": [
+    {
+     "detail": "https://baltor.ai",
+     "name": "page_names_the_published_base",
+     "passed": true
+    },
+    {
+     "detail": "review inputs",
+     "name": "page_documents_the_first_search",
+     "passed": true
+    },
+    {
+     "detail": "service_session/v1",
+     "name": "connected",
+     "passed": true
+    },
+    {
+     "detail": "download at /api/v1/download, search service_retrieval_request/v2",
+     "name": "listed",
+     "passed": true
+    },
+    {
+     "detail": "5 hits",
+     "name": "searched",
+     "passed": true
+    },
+    {
+     "detail": "13c13dbc0592…",
+     "name": "manifest_matches",
+     "passed": true
+    },
+    {
+     "detail": "2861 bytes",
+     "name": "downloaded",
+     "passed": true
+    },
+    {
+     "detail": "sha256 13c13dbc0592… promised 13c13dbc0592… header 13c13dbc0592…",
+     "name": "digest_matches",
+     "passed": true
+    }
+   ],
+   "wire_path": "extension"
+  },
+  {
+   "digest_prefix": "13c13dbc0592",
+   "harness": "Baltor Harness",
+   "hits": 5,
+   "http_calls": 3,
+   "id": "baltor-harness",
+   "identity": "orient_on_a_task_and_write_its_contracts",
+   "page": "docs/guides/quickstart-baltor-harness.md",
+   "passed": true,
+   "request_id": "quickstart-baltor-harness-20260926-5e23c863bb1b",
+   "steps": [
+    {
+     "detail": "https://baltor.ai",
+     "name": "page_names_the_published_base",
+     "passed": true
+    },
+    {
+     "detail": "review inputs",
+     "name": "page_documents_the_first_search",
+     "passed": true
+    },
+    {
+     "detail": "service_session/v1",
+     "name": "connected",
+     "passed": true
+    },
+    {
+     "detail": "scopes provisioning:metadata, provisioning:read, usage:read",
+     "name": "listed",
+     "passed": true
+    },
+    {
+     "detail": "5 hits",
+     "name": "searched",
+     "passed": true
+    },
+    {
+     "detail": "2861 bytes",
+     "name": "downloaded",
+     "passed": true
+    },
+    {
+     "detail": "sha256 13c13dbc0592… promised 13c13dbc0592… header 13c13dbc0592…",
+     "name": "digest_matches",
+     "passed": true
+    }
+   ],
+   "wire_path": "direct"
+  }
+ ],
+ "quickstarts_passed": 2,
+ "quickstarts_planned": 5,
+ "record_type": "quickstart_live_check/v1",
+ "request_ids": [
+  "quickstart-pi-20260926-203cde64e5ac",
+  "quickstart-baltor-harness-20260926-5e23c863bb1b"
+ ],
+ "served_items": 6398,
+ "usage_records_added": 2
+}

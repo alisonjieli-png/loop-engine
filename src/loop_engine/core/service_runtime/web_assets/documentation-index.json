@@ -1,6 +1,6 @@
 {
   "record_type": "website_documentation_index/v1",
-  "reviewed_at": "2026-09-23",
+  "reviewed_at": "2026-09-26",
   "sections": [
     {
       "id": "start-here",
@@ -31,6 +31,52 @@
           "address": "/docs/your-account",
           "body": "/assets/docs/your-account.html",
           "repository_path": "docs/guides/service-your-account.md"
+        }
+      ]
+    },
+    {
+      "id": "quickstarts",
+      "title": "Quickstarts",
+      "pages": [
+        {
+          "id": "quickstart-claude-code",
+          "title": "Claude Code quickstart",
+          "summary": "Connect Claude Code, search, download and check it, on one page.",
+          "address": "/docs/quickstart-claude-code",
+          "body": "/assets/docs/quickstart-claude-code.html",
+          "repository_path": "docs/guides/quickstart-claude-code.md"
+        },
+        {
+          "id": "quickstart-codex",
+          "title": "Codex quickstart",
+          "summary": "Connect Codex, search, download and check it, on one page.",
+          "address": "/docs/quickstart-codex",
+          "body": "/assets/docs/quickstart-codex.html",
+          "repository_path": "docs/guides/quickstart-codex.md"
+        },
+        {
+          "id": "quickstart-opencode",
+          "title": "OpenCode quickstart",
+          "summary": "Connect OpenCode 1.x, search, download and check it, on one page.",
+          "address": "/docs/quickstart-opencode",
+          "body": "/assets/docs/quickstart-opencode.html",
+          "repository_path": "docs/guides/quickstart-opencode.md"
+        },
+        {
+          "id": "quickstart-pi",
+          "title": "Pi quickstart",
+          "summary": "Connect Pi through its extension, search, install and check it.",
+          "address": "/docs/quickstart-pi",
+          "body": "/assets/docs/quickstart-pi.html",
+          "repository_path": "docs/guides/quickstart-pi.md"
+        },
+        {
+          "id": "quickstart-baltor-harness",
+          "title": "Baltor Harness quickstart",
+          "summary": "Install the engine, search and download with curl, then run a task.",
+          "address": "/docs/quickstart-baltor-harness",
+          "body": "/assets/docs/quickstart-baltor-harness.html",
+          "repository_path": "docs/guides/quickstart-baltor-harness.md"
         }
       ]
     },
