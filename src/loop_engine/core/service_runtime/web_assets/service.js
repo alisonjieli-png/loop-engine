@@ -285,9 +285,16 @@ const applyPaymentState = name => {
       available:capabilities?.record_type === CAPABILITIES_RECORD_TYPE && capabilities.website.client_access_available === true})});
   // Browsing the permitted catalogue lives in its own file. It is given the same authenticated request
   // boundary and reads the connection state rather than keeping its own copy of the token.
+  /* Every step effect the service names in its capabilities record, or null before the record is read. Listing and
+     searching from this page are descriptions only, not a harness step, so they ask with every one of them and every
+     file the account may use is listed with the effects it declares. A fetch asks for exactly one file's effects,
+     after the reader confirms them (September 26, 2026). Harness clients keep their own rule. */
+  const stepEffects = () => capabilities?.record_type === CAPABILITIES_RECORD_TYPE && Array.isArray(capabilities.library?.step_effects)
+    && capabilities.library.step_effects.length && capabilities.library.step_effects.every(name => typeof name === "string" && name)
+    ? [...capabilities.library.step_effects] : null;
   catalogueBrowser = window.BaltorCatalogueBrowser
     ? window.BaltorCatalogueBrowser.create({request, element, message,
-        current:() => ({connected:!!token, generation, scopes:principalScopes})})
+        current:() => ({connected:!!token, generation, scopes:principalScopes, stepEffects:stepEffects()})})
     : null;
   if (!catalogueBrowser) message("browse-message", "Browsing is not available on this page. Search above still works.", true);
   async function connectService(supplied, activate = false, {stay = false} = {}) {
@@ -589,16 +596,32 @@ const applyPaymentState = name => {
     } catch (error) { message("funnel-plan-message", error.name === "AbortError" ? "The check timed out. Nothing was charged." : error.message, true); }
   });
   renderFunnel();
+  /* A file that declares more than reading files is fetched only after the reader confirms its effects, named in plain
+     words; nothing is sent before that. The fetch then asks for exactly that file's declared effects. */
+  const confirmedFetches = new Set();
+  const effectWords = window.BaltorEffects || {requested:list => (list || []).filter(name => name !== "pure"),
+    beyondReading:list => (list || []).filter(name => name !== "pure" && name !== "reads_fs"), plainly:list => (list || []).filter(name => name !== "pure").join(", ")};
   async function download(hit, button, status) {
     const identity = JSON.stringify(hit.reference), epoch = generation;
+    const beyond = effectWords.beyondReading(hit.declared_effects);
+    if (beyond.length && !confirmedFetches.has(identity)) {
+      status.textContent = "This file declares that it " + effectWords.plainly(hit.declared_effects) + ". Fetching it asks the service for exactly these effects, for this file only. Nothing runs on this page; the tool you load it into decides what it may do.";
+      if (!button.dataset.confirmation) {
+        const confirm = element("button", "Confirm and fetch", "quiet"); confirm.type = "button"; confirm.dataset.confirmEffects = "true";
+        confirm.addEventListener("click", () => { confirmedFetches.add(identity); confirm.remove(); download(hit, button, status); });
+        button.dataset.confirmation = "shown"; status.insertAdjacentElement("afterend", confirm);
+      }
+      return;
+    }
     if (!downloads.has(identity)) downloads.set(identity, crypto.randomUUID());
     button.disabled = true; status.textContent = "Fetching the selected revision…";
     try {
-      /* Version 2, like the search that found the item: both ask with the same default step effects and the account's library
-         setting, so an item the search offered is not refused here. Version 1 predates both and was refused for every item that
-         reads files (the release 30 live check, September 25, 2026). */
+      /* Version 2, like the search that found the item, with the account's library setting, so an item the search offered is
+         not refused here. Version 1 predates both and was refused for every item that reads files (the release 30 live
+         check, September 25, 2026). */
       const result = await request("/api/v1/download", {record_type:"service_provisioning_request/v2", operation:"read", identity:hit.reference.identity,
-        expected_digest:hit.reference.body_digest, request_id:downloads.get(identity)}, true, true);
+        expected_digest:hit.reference.body_digest, request_id:downloads.get(identity),
+        ...(beyond.length ? {authority_effects:effectWords.requested(hit.declared_effects)} : {})}, true, true);
       const actual = [...new Uint8Array(await crypto.subtle.digest("SHA-256", result.bytes))].map(n => n.toString(16).padStart(2, "0")).join("");
       if (actual !== hit.reference.body_digest || actual !== result.digest) throw new Error("Downloaded bytes do not match the selected reference. Nothing was saved.");
       if (epoch !== generation || result.epoch !== generation) return;
@@ -666,7 +689,7 @@ const applyPaymentState = name => {
   }
   $("search-form").addEventListener("submit", async event => {
     event.preventDefault(); $("search-button").disabled = true; message("search-message", "Searching authorized references…");
-    try { const value = await request("/api/v1/retrieval", {record_type:"service_retrieval_request/v2", query:$("query").value, mode:$("search-mode").value, top_n:10}); renderResults(value.hits);
+    try { const named = stepEffects(), value = await request("/api/v1/retrieval", {record_type:"service_retrieval_request/v2", query:$("query").value, mode:$("search-mode").value, top_n:10, ...(named ? {authority_effects:named} : {})}); renderResults(value.hits);
       // A search that found nothing carries one line from the service: the customer can ask for material, with the form below.
       message("search-message", !value.hits.length && typeof value.ask_for_material === "string" ? value.ask_for_material : "References only. No bodies loaded."); }
     catch (error) { message("search-message", error.name === "AbortError" ? "Search timed out. You can retry." : error.message, true); }

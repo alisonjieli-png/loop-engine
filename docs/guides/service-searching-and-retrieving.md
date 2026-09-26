@@ -96,6 +96,55 @@ them. A release whose schema does not declare an attribute refuses a filter on
 it with `search_filter_not_allowed`; read the active release's schema from the
 capabilities answer before filtering on it.
 
+## List the library in pages
+
+A `list` operation of `service_provisioning_request/v2` names every item your
+account is offered, as descriptions only. The library holds thousands of items,
+more than one answer carries, so ask for it in pages: add `page_size`, then send
+each `next_cursor` back unchanged until it is null.
+
+```bash
+curl -sS -X POST https://app.baltor.ai/api/v1/provisioning -H "Authorization: Bearer $BALTOR_SERVICE_TOKEN" -H "Content-Type: application/json" -d '{"record_type":"service_provisioning_request/v2","operation":"list","page_size":500}'
+```
+
+| Request field | Meaning |
+| --- | --- |
+| `page_size` | Whole number from 1 to 1000. A page holds at most this many items, and fewer when more would not fit the service's answer size. |
+| `cursor` | The `next_cursor` of the previous page, unchanged. Leave it out for the first page. |
+
+Keep every other field the same from page to page, including
+`authority_effects` and `library_tiers`, because a cursor continues only the
+list it was issued for. A page is `provisioning_list_page/v1`:
+
+| Field | Meaning |
+| --- | --- |
+| `items` | The items of this page, in the same form and order as a whole list. |
+| `next_cursor` | Send it back to read the next page. It is null after the last page. |
+| `total_offered` | How many items this list offers your account in the served library. |
+| `catalogue_release` | The served library release, or null for a library served without one. |
+| `withheld_count` | How many items this request held back. Every page states it. |
+| `withheld` | The held-back items with their reasons, at most 200, on the first page only. Later pages list none. |
+
+A list without `page_size` is still answered in one `provisioning_list/v3`
+answer while it fits. When it does not fit, the service refuses it with
+`response_limit_exceeded`, and the refusal's next action names `page_size`.
+
+| Code | Status | Meaning |
+| --- | --- | --- |
+| `list_page_size_invalid` | 400 | The page size is missing beside a cursor, not a whole number, or outside 1 to 1000. |
+| `list_cursor_invalid` | 400 | The service did not issue that cursor for your account and this list, or it restarted since. Ask again without a cursor. |
+| `list_release_changed` | 409 | The library served to your account changed after the first page. Ask again from the first page and use only the new pages. |
+
+The library table on the signed-in pages reads the library this way. A list is
+descriptions only, so the table asks with every step effect the capabilities
+record names under `step_effects`, and it lists every file your account may use
+with the effects the file declares. Before it checks or fetches a file that
+declares more than reading files, it names those effects in plain words and
+asks you to confirm. It then asks for that one file with exactly its declared
+effects. The search on the same page asks with every step effect too. Your
+harness keeps its own rule: the `Baltor-Step-Effects` header, or reading files
+when it states none.
+
 ## Read the reference
 
 Keep the complete `reference` returned for the item.

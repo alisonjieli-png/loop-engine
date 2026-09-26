@@ -120,8 +120,20 @@ CODE_GUIDANCE = {
                           "Ask for the body at the download address instead, using the same selected digest."),
     "download_limit_exceeded": ("This item is larger than the download size this service serves.",
                                 "Ask the person who runs this service whether a smaller form of the item exists."),
+    # A list names page_size to be answered in pages (roadmap S-6.203), so the answer to a list too large to
+    # send says how to ask for it in pages.
     "response_limit_exceeded": ("The answer to this request was larger than this service sends.",
-                                "Ask for fewer results or a smaller item, then repeat for the rest."),
+                                "For a list, send page_size and pass each next_cursor back to read it page by "
+                                "page; otherwise ask for fewer results or a smaller item."),
+    "list_page_size_invalid": ("The page size was missing beside a cursor, not a whole number, or outside the "
+                               "allowed range.",
+                               "Send page_size as a whole number from 1 to the maximum the setup guide names."),
+    "list_cursor_invalid": ("This service did not issue that cursor for this account and this list.",
+                            "Send the list request again without a cursor, then pass each next_cursor back "
+                            "unchanged."),
+    "list_release_changed": ("The library served to this account changed after the first page was read.",
+                             "Load the list again from the first page, without a cursor, and use only the new "
+                             "pages."),
     "selected_body_digest_mismatch": ("The stored item no longer matches the version this request selected.",
                                       "Search again, take the current digest from the result, then download that."),
     "request_limit_exceeded": ("Too many failed attempts came from this caller, so the service paused them.",

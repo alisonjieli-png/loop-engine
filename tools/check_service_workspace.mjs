@@ -11,6 +11,7 @@ import {existsSync,readFileSync,writeFileSync} from "node:fs";
 import {createHash,randomBytes} from "node:crypto";
 import {resolve} from "node:path";
 import {runDeckChecks} from "./deck_checks.mjs";
+import {runCatalogueBrowserChecks} from "./catalogue_browser_checks.mjs";
 import {LISTING_TEXT_ATTRIBUTE,listingTextPages,listingTextRegistration,registerListingText,withoutListingText} from "./listing_text.mjs";
 
 const root=resolve(new URL("..",import.meta.url).pathname);
@@ -196,26 +197,50 @@ with ExitStack() as stack:
         browse.catalogue.register(item); browse.bodies[item.identity]=body
         browse.bindings[item.identity]=ProvisioningItemBinding.from_item(item)
     browse.runtime.set_grants("alpha",tuple(ProvisioningGrant("alpha",browse.bindings[draft.identity],allowed) for draft,_body,allowed in published))
+    # Two of the items are Community items, so the label filter of the table has something to narrow.
+    from loop_engine.core.provisioning_server import COMMUNITY_TIER,VERIFIED_TIER,ProvisioningQualification,ProvisioningQualificationResolver
+    from loop_engine.core.service_runtime.provisioning import DurableProvisioningBinding
+    def browse_tier(binding):
+        if browse.bindings.get(binding.identity)!=binding:
+            return ProvisioningQualification(binding,"unknown","host_attested")
+        return ProvisioningQualification(binding,"approved","host_attested","fixture-review:exact",
+                                         COMMUNITY_TIER if binding.identity in ("code.normalise","history.retry") else VERIFIED_TIER)
+    browse.provisioning=DurableProvisioningBinding(browse.runtime,browse.catalogue,ProvisioningQualificationResolver("browse-reviewed-sources",browse_tier),lambda item:browse.bodies[item.identity])
     browse_base,_=stack.enter_context(running_http(browse,display_name="Baltor"))
+    # A service with 1,200 items, so the table loads the library in several pages (roadmap S-6.203). Every fourth item
+    # declares running a process and every fourth declares using the network, so the list carries every step effect.
+    (root/"browse-large").mkdir(); browse_large=HttpDomainFixture(root/"browse-large")
+    shapes=(("skill","context_intelligence",(),()),("instruction_file","context_intelligence",(),("codex",)),
+            ("tool","code_intelligence",("spawns_process",),()),("reusable_code","code_intelligence",("network",),("claude-code",)))
+    large=[]
+    for index in range(1200):
+        kind,layer,effects,styles=shapes[index%4]
+        item=item_from_body(HarnessIntelligenceDraft(f"large.item.{index:04d}",kind,f"Large library item {index} for a paged table",layer,
+                                                     f"fixture:large.item.{index:04d}/v1","MIT",effects,styles),f"LARGE BODY {index}")
+        browse_large.catalogue.register(item); browse_large.bodies[item.identity]=f"LARGE BODY {index}"
+        browse_large.bindings[item.identity]=ProvisioningItemBinding.from_item(item); large.append(item.identity)
+    browse_large.runtime.set_grants("alpha",tuple(ProvisioningGrant("alpha",browse_large.bindings[identity],True) for identity in large))
+    browse_large_base,_=stack.enter_context(running_http(browse_large,display_name="Baltor"))
     # A service that also answers every hostname of the site map, with this socket's port, so a browser that resolves those names to
     # the loopback address opens each hostname's own page at its root. The names come from the typed site map, never a copy.
     from loop_engine.core.service_runtime.web_site_map import load_site_map
     (root/"surfaces").mkdir(); surfaces=HttpDomainFixture(root/"surfaces")
     surface_base,_=stack.enter_context(running_http(surfaces,display_name="Baltor",hostnames=tuple(item.hostname for item in load_site_map().hostnames)))
-    print(json.dumps({"base":base,"token":held.keys["alpha"].key,"admin_token":held.admin_key.key,"billing_base":billing_base,"billing_token":billing.keys["alpha"].key,"account_base":account_base,"signup_base":signup_base,"checkout_signup_base":checkout_signup_base,"browse_base":browse_base,"browse_token":browse.keys["alpha"].key,"identity_origin":provider,"identity_token":identity_token,"identity_user":user,"account_admin_token":account_operator.key,"confirm_base":confirm_base,"confirm_identity_origin":confirm_identity_origin,"billing_invited_token":billing.keys["beta"].key,"billing_free_monthly_token":free_key.key,"billing_founding_token":founding_key.key,"staff_base":staff_base,"staff_token":staff_tokens[staff_subject],"staff_user":staff_users[staff_subject],"surface_base":surface_base}),flush=True)
+    print(json.dumps({"base":base,"token":held.keys["alpha"].key,"admin_token":held.admin_key.key,"billing_base":billing_base,"billing_token":billing.keys["alpha"].key,"account_base":account_base,"signup_base":signup_base,"checkout_signup_base":checkout_signup_base,"browse_base":browse_base,"browse_token":browse.keys["alpha"].key,"browse_large_base":browse_large_base,"browse_large_token":browse_large.keys["alpha"].key,"identity_origin":provider,"identity_token":identity_token,"identity_user":user,"account_admin_token":account_operator.key,"confirm_base":confirm_base,"confirm_identity_origin":confirm_identity_origin,"billing_invited_token":billing.keys["beta"].key,"billing_free_monthly_token":free_key.key,"billing_founding_token":founding_key.key,"staff_base":staff_base,"staff_token":staff_tokens[staff_subject],"staff_user":staff_users[staff_subject],"surface_base":surface_base}),flush=True)
     sys.stdin.readline()
 `;
 /* The Python that runs the fixture services: PYTHON when it is set, so a worktree without its own environment can name a
    qualified one, and the checkout's .venv otherwise. */
 const child=spawn(process.env.PYTHON||resolve(root,".venv/bin/python"),["-u","-c",program],{cwd:root,env:{...process.env,PYTHONPATH:"src"},stdio:["pipe","pipe","pipe"]});
 const lines=createInterface({input:child.stdout});
-const fixture=await new Promise((resolve,reject)=>{ const timer=setTimeout(()=>reject(new Error("Fixture startup deadline")),15000); lines.once("line",line=>{clearTimeout(timer);resolve(JSON.parse(line));}); child.once("exit",code=>{clearTimeout(timer);reject(new Error("Fixture stopped before startup: "+code));}); });
-const serviceOrigins=[fixture.base,fixture.billing_base,fixture.account_base,fixture.signup_base,fixture.checkout_signup_base,fixture.browse_base];
+/* The fixture services include one with 1,200 items for the paged table (September 26, 2026), so startup has a minute. */
+const fixture=await new Promise((resolve,reject)=>{ const timer=setTimeout(()=>reject(new Error("Fixture startup deadline")),60000); lines.once("line",line=>{clearTimeout(timer);resolve(JSON.parse(line));}); child.once("exit",code=>{clearTimeout(timer);reject(new Error("Fixture stopped before startup: "+code));}); });
+const serviceOrigins=[fixture.base,fixture.billing_base,fixture.account_base,fixture.signup_base,fixture.checkout_signup_base,fixture.browse_base,fixture.browse_large_base];
 const checks=[],errors=[],network=[]; let browser,directoryResult=null;
 /* The first screen as served without the page script, measured once and compared again by a removed-guard control. */
 let servedHeroBoxes={};
 const check=(name,passed,detail={})=>checks.push({name,passed:passed===true,detail});
-const secrets=[fixture.token,fixture.billing_token,fixture.admin_token,fixture.browse_token,fixture.identity_token,fixture.account_admin_token,fixture.billing_invited_token,fixture.billing_free_monthly_token,fixture.billing_founding_token,fixture.staff_token];
+const secrets=[fixture.token,fixture.billing_token,fixture.admin_token,fixture.browse_token,fixture.browse_large_token,fixture.identity_token,fixture.account_admin_token,fixture.billing_invited_token,fixture.billing_free_monthly_token,fixture.billing_founding_token,fixture.staff_token];
 const safeError=error=>secrets.reduce((text,secret)=>text.replaceAll(secret,"[redacted]"),String(error));
 const endpointMark="{{ENDPOINT}}",mutants=[];
 /* The Baltor Harness recipe names the command and package a customer types, loop-engine, exactly as written. That lowercase
@@ -580,7 +605,7 @@ async function checkRefusedRecord(context,base,note,wrong,mutation){
   if(!closed)await checkShownRecipe(page,base,wrong.served,wrong.served.recipes.find(recipe=>recipe.id===wrong.id),note);
   await page.close();return state;
 }
-const localOnly=route=>{const url=route.request().url(); if([fixture.base,fixture.billing_base,fixture.account_base,fixture.signup_base,fixture.checkout_signup_base,fixture.browse_base,fixture.identity_origin,fixture.confirm_base,fixture.confirm_identity_origin,fixture.staff_base].some(origin=>url.startsWith(origin+"/")))route.continue(); else {network.push(new URL(url).origin);route.abort();}};
+const localOnly=route=>{const url=route.request().url(); if([fixture.base,fixture.billing_base,fixture.account_base,fixture.signup_base,fixture.checkout_signup_base,fixture.browse_base,fixture.browse_large_base,fixture.identity_origin,fixture.confirm_base,fixture.confirm_identity_origin,fixture.staff_base].some(origin=>url.startsWith(origin+"/")))route.continue(); else {network.push(new URL(url).origin);route.abort();}};
 /* Planted values for the known-wrong records. Each is made for this run. The key in the standard base64 alphabet is broken by plus signs into pieces that the
    other alphabet never reports, and the short literal, the number and the shaped name are what a person could type by mistake. The header and the environment
    name that carry the short literal hold no word that names a credential, so only the rule for their table refuses them. */
@@ -2210,14 +2235,27 @@ try {
   const protocolMethods=[]; const trackProtocol=request=>{if(new URL(request.url()).pathname==="/mcp")protocolMethods.push(request.postDataJSON()?.method);};page.on("request",trackProtocol);
   await page.click("#test-protocol"); await page.waitForFunction(()=>!document.querySelector("#test-protocol").disabled);
   check("protocol_connection_check_reports_actual_success",(await page.locator("#protocol-result").innerText()).includes("Service connection passed"),{message:await page.locator("#protocol-result").innerText()});
-  check("browser_runs_real_initialize_notification_and_tools_list",JSON.stringify(protocolMethods)===JSON.stringify(["initialize","notifications/initialized","tools/list"])&&await page.locator("#protocol-tools li").count()===5);
+  /* The service lists six tools since the report tool joined them (roadmap S-6.199); this check counted five until
+     September 26, 2026 and failed at any machine load. The names are compared, not only counted. */
+  const protocolTools=await page.locator("#protocol-tools li").allInnerTexts();
+  check("browser_runs_real_initialize_notification_and_tools_list",JSON.stringify(protocolMethods)===JSON.stringify(["initialize","notifications/initialized","tools/list"])
+    &&JSON.stringify(protocolTools)===JSON.stringify(["provisioning_discover","provisioning_list","provisioning_manifest","provisioning_read","intelligence_search","provisioning_report"]),
+    {methods:protocolMethods,tools:protocolTools});
   check("browser_check_does_not_claim_native_harness_qualification",(await page.locator("#protocol-result").innerText()).includes("Native client loading is not tested"));
   await page.route("**/mcp",async route=>{const body=route.request().postDataJSON();if(body?.method==="initialize")await route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({jsonrpc:"2.0",id:"wrong-request",result:{protocolVersion:"2025-11-25"}})});else await route.continue();});
   await page.click("#test-protocol");await page.waitForFunction(()=>document.querySelector("#protocol-result").textContent.includes("did not match"));
   check("mismatched_protocol_response_never_becomes_success",await page.locator("#protocol-tools li").count()===0&&!(await page.locator("#protocol-result").innerText()).includes("passed"));await page.unroute("**/mcp");page.off("request",trackProtocol);
   await page.locator('footer a[data-page="examples"]').click(); await page.click("#try-example");
   check("first_example_prepares_query_without_submitting",new URL(page.url()).pathname==="/app"&&await page.inputValue("#query")==="review inputs"&&await page.locator("#results .result").count()===0);
+  /* A search from this page is descriptions only, not a harness step, so it names every step effect the capabilities
+     record names and every file the account may use can be found (September 26, 2026). */
+  const searchesSent=[],trackSearch=request=>{if(new URL(request.url()).pathname==="/api/v1/retrieval"){try{searchesSent.push(request.postDataJSON());}catch(_){searchesSent.push(null);}}};
+  page.on("request",trackSearch);
   await page.fill("#query","Alpha"); await page.click("#search-button"); await page.waitForFunction(()=>document.querySelector("#search-message").textContent.includes("No bodies loaded"));
+  page.off("request",trackSearch);
+  const namedStepEffects=(await (await page.request.get(fixture.base+"/api/v1/capabilities")).json()).result.library.step_effects;
+  check("browser_search_carries_every_step_effect",searchesSent.length===1&&Array.isArray(namedStepEffects)&&namedStepEffects.length===5
+    &&JSON.stringify(searchesSent[0]?.authority_effects)===JSON.stringify(namedStepEffects),{sent:searchesSent,named:namedStepEffects});
   check("browser_search_reaches_the_real_authorized_retriever",await page.locator(".result").count()===2&&!(await page.locator("#results").innerText()).includes("skill.beta"));
   const downloadEvent=page.waitForEvent("download"); await page.locator(".result button").first().click(); const download=await downloadEvent;
   const stream=await download.createReadStream(); const chunks=[]; for await (const chunk of stream) chunks.push(chunk);
@@ -3229,442 +3267,10 @@ try {
     &&!internalAddresses(pageText).includes(plantedAddress)&&plantedStatus!==200,
     {status:plantedStatus,planted_is_read:internalAddresses(plantedPage).includes(plantedAddress)});
   await plainContext.close();
-  const browseList=async (target,fields={})=>(await (await target.request.post(fixture.browse_base+"/api/v1/provisioning",
-    {headers:{Authorization:"Bearer "+fixture.browse_token,"Content-Type":"application/json"},
-     data:{record_type:"service_provisioning_request/v2",operation:"list",...fields}})).json()).result;
-  /* The harness family comes first and is named for what it is: files a development tool reads as they are.
-     It was named "Already on your own machine" until September 22, 2026, which was not true of a delivered file. */
-  const layerNames=[["harness_local","Files for your development tools"],["context_intelligence","Guidance and methods"],
-    ["code_intelligence","Reusable code and tools"],["runtime_history_solution_intelligence","What worked before"],
-    ["user_feedback_intelligence","Your own instructions"]];
-  const expectedGroups=(items,filtered)=>layerNames.map(([layer,name])=>{
-    const held=items.filter(row=>row.source_layer===layer);
-    return {layer,name,count:held.length+(held.length===1?" item":" items"),
-      empty:held.length?"":(filtered?"Nothing in this group matches your filters.":"Nothing is published in this group yet."),
-      identities:held.map(row=>row.identity)};
-  }).filter(group=>group.layer!=="harness_local"||group.identities.length>0);
-  const browseGroups=target=>target.locator("#browse-groups .browse-group").evaluateAll(items=>items.map(item=>({
-    layer:item.dataset.layer,name:item.querySelector("h3").textContent,count:item.querySelector(".badge").textContent,
-    empty:item.querySelector(".browse-empty")?.textContent||"",
-    identities:[...item.querySelectorAll(".browse-item")].map(button=>button.dataset.identity)})));
-  const browseDetail=target=>target.locator("#browse-detail dl").evaluate(node=>{
-    const pairs=[];
-    for(const item of node.children){if(item.tagName==="DT")pairs.push([item.textContent,""]);else pairs[pairs.length-1][1]=item.textContent;}
-    return Object.fromEntries(pairs);});
-  const browseStatus=page=>page.locator('#browse-detail p[role="status"]').evaluate(node=>node.textContent);
-  const settleBrowse=page=>page.waitForFunction(()=>!document.querySelector("#refresh-browse").disabled);
-  const loadBrowse=async page=>{await page.click("#refresh-browse");await settleBrowse(page);};
-  const openItem=async (page,identity)=>{
-    await page.locator('.browse-item[data-identity="'+identity+'"]').click();
-    await page.waitForFunction(id=>{const panel=document.querySelector("#browse-detail");
-      return panel.querySelector("p.caption")?.textContent===id&&!panel.textContent.includes("Checking this item");},identity);};
-  const refusedBrowse=async (page,note,name,planted)=>{
-    const groups=await browseGroups(page),message=await page.locator("#browse-message").innerText();
-    note(name,groups.length===0&&await page.locator("#browse-count").innerText()==="Nothing shown"
-      &&message.startsWith("This service answered with a catalogue record this page was not written for")
-      &&!(await page.locator(".browse").innerText()).includes(planted),{groups:groups.length,message});};
-  async function openBrowseWorkspace(mutation,holdDigest=false){
-    const context=await browser.newContext({viewport:{width:1440,height:1000},acceptDownloads:true,reducedMotion:"reduce"});
-    await context.route("**/*",localOnly);
-    if(holdDigest)await context.addInitScript(holdDigestScript);
-    const state=routeBrowseAsset(context,mutation);
-    const opened=await context.newPage();
-    opened.on("pageerror",error=>(mutation?state.errors:errors).push(safeError(error.message)));
-    await opened.goto(fixture.browse_base+"/login");
-    await opened.fill("#access-token",fixture.browse_token);
-    await opened.click("#connect-button");
-    await opened.waitForFunction(()=>document.querySelector("#connection-state").textContent==="Connected");
-    await opened.waitForFunction(()=>!document.querySelector("#refresh-browse").disabled);
-    return {context,page:opened,state};
-  }
-  const browseScenarios={
-    catalogue:async (opened,note)=>{
-      await loadBrowse(opened);
-      const reply=await browseList(opened),groups=await browseGroups(opened),want=expectedGroups(reply.items,false);
-      note("browse_shows_the_four_groups_with_plain_names",reply.items.length===6&&groups.length===5
-        &&JSON.stringify(groups.map(item=>[item.layer,item.name]))===JSON.stringify(want.map(item=>[item.layer,item.name])),
-        {shown:groups.map(item=>item.name)});
-      note("browse_counts_and_membership_match_the_service_reply",JSON.stringify(groups)===JSON.stringify(want)
-        &&await opened.locator("#browse-count").innerText()==="6 items",{groups,want});
-      /* Every row shows the item's library tier first, in the exact words the service sent (September 25, 2026). */
-      const rowFacts=await opened.locator("#browse-groups .browse-item").evaluateAll(items=>items.map(item=>
-        [item.dataset.identity,item.querySelector(".browse-item-facts").textContent]));
-      note("browse_shows_each_item_s_library_tier",rowFacts.length===reply.items.length&&rowFacts.every(([identity,text])=>{
-        const row=reply.items.find(item=>item.identity===identity);
-        return Boolean(row?.library_tier_label)&&text.startsWith(row.library_tier_label+" · ");}),{rowFacts});
-      const emptyGroup=groups.find(item=>item.layer==="user_feedback_intelligence");
-      note("browse_says_plainly_when_a_group_holds_nothing",emptyGroup!==undefined&&emptyGroup.count==="0 items"
-        &&emptyGroup.identities.length===0&&emptyGroup.empty==="Nothing is published in this group yet.",{group:emptyGroup});
-      /* The service withheld one item because it declares an effect, and no filter was chosen. Naming the
-         filters here would tell the reader to change something that is not the reason. */
-      const unfilteredMessage=await opened.locator("#browse-message").innerText();
-      note("browse_names_every_reason_material_is_not_offered",reply.withheld.length===1
-        &&reply.withheld[0].reason.includes("spawns_process")
-        &&unfilteredMessage.includes("1 item is not offered here, because of this account's permissions or a declared effect this page holds no authority for.")
-        &&!unfilteredMessage.includes("did not match the filters"),{message:unfilteredMessage,withheld:reply.withheld});
-      await openItem(opened,"context.review");
-      const detail=await browseDetail(opened),listed=reply.items.find(row=>row.identity==="context.review");
-      note("browse_detail_states_purpose_licence_size_digest_and_effects",
-        detail["What it is for"]===listed.purpose&&detail["Exact reference"]===listed.identity
-        &&detail["Where it comes from"]===listed.source_ref&&detail.Licence===listed.license
-        &&detail.Size===listed.size_bytes+" bytes"&&detail.Digest===listed.digest&&/^[0-9a-f]{64}$/.test(detail.Digest)
-        &&detail["Declared effects"]==="None declared"&&detail["Written for"]==="claude-code"
-        &&detail["The file itself"].startsWith("You may fetch it"),{detail});
-      note("browse_detail_states_the_library_tier",Boolean(listed.library_tier_label)
-        &&detail["Library tier"]===listed.library_tier_label,{detail,tier:listed.library_tier_label});
-      const saving=opened.waitForEvent("download");
-      await opened.click("#browse-download");
-      const saved=await saving,stream=await saved.createReadStream(),chunks=[];
-      for await (const chunk of stream) chunks.push(chunk);
-      note("browse_download_matches_the_selected_digest",Buffer.concat(chunks).toString()==="CONTEXT_REVIEW_BODY"
-        &&createHash("sha256").update("CONTEXT_REVIEW_BODY").digest("hex")===listed.digest
-        &&(await browseStatus(opened)).includes("Digest verified"));
-      await openItem(opened,"code.verify");
-      note("browse_detail_says_when_the_file_is_not_granted",(await browseDetail(opened))["The file itself"]==="Not granted to this account."
-        &&await opened.locator("#browse-download").count()===0
-        &&(await browseStatus(opened))==="This account may read the details above, not the file.");
-      await openItem(opened,"local.notes");
-      note("browse_detail_states_an_unstated_licence_honestly",(await browseDetail(opened)).Licence==="Not stated"
-        &&(await browseDetail(opened))["Written for"]==="No tool named, so it suits every tool");
-      const view=await opened.locator('[data-view="workspace"] .browse').innerText();
-      note("browse_view_uses_plain_words",!internalTerms.test(view)&&!/\bPractitioner\b/i.test(view),{});
-      note("browse_shows_descriptions_and_no_file_body",view.includes("No file was fetched.")
-        &&!["CONTEXT_REVIEW_BODY","CODE_NORMALISE_BODY","LOCAL_NOTES_BODY","HISTORY_RETRY_BODY"].some(body=>view.includes(body)));
-      note("browse_stores_nothing_in_the_browser",await opened.evaluate(()=>localStorage.length===0&&sessionStorage.length===0&&document.cookie==="")
-        &&!view.includes(fixture.browse_token));
-      await opened.locator("#browse-style").focus();
-      await opened.keyboard.press("Tab");
-      const afterOne=await opened.evaluate(()=>document.activeElement.id);
-      await opened.keyboard.press("Tab");
-      const reached=await opened.evaluate(()=>({className:String(document.activeElement.className),identity:document.activeElement.dataset.identity}));
-      await opened.keyboard.press("Enter");
-      await opened.waitForFunction(id=>document.querySelector("#browse-detail p.caption")?.textContent===id,reached.identity);
-      note("browse_opens_an_item_with_the_keyboard",afterOne==="refresh-browse"&&reached.className==="browse-item"
-        &&await opened.locator('.browse-item[data-identity="'+reached.identity+'"]').getAttribute("aria-current")==="true",{afterOne,reached});
-      await opened.setViewportSize({width:1440,height:1000});
-      // A removed-guard control runs this same scenario against a changed module. The saved pictures must
-      // show the page as it is, so only the unchanged run writes them.
-      const unchangedRun=note===check;
-      if(unchangedRun)await opened.screenshot({path:output.replace(/\.json$/,"-browse-desktop.png"),fullPage:true});
-      const browseFits=[];
-      for(const width of [1440,820,390,320]){
-        await opened.setViewportSize({width,height:1000});
-        for(const size of ["","200%"]){
-          await opened.evaluate(value=>document.documentElement.style.fontSize=value,size);
-          browseFits.push({width,size:size||"100%",...await opened.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth+1,
-            items:[...document.querySelectorAll('[data-view="workspace"] .browse *')].filter(item=>{const box=item.getBoundingClientRect();return box.width&&box.right>innerWidth+1;})
-              .slice(0,8).map(item=>({tag:item.tagName,id:item.id,className:String(item.className)}))}))});
-        }
-        await opened.evaluate(()=>document.documentElement.style.fontSize="");
-      }
-      await opened.setViewportSize({width:390,height:1000});
-      if(unchangedRun)await opened.screenshot({path:output.replace(/\.json$/,"-browse-mobile.png"),fullPage:true});
-      await opened.setViewportSize({width:1440,height:1000});
-      note("browse_fits_small_screens_and_enlarged_text",browseFits.length===8&&browseFits.every(item=>!item.overflow),
-        {problems:browseFits.filter(item=>item.overflow)});
-    },
-    kind_filter:async (opened,note)=>{
-      await loadBrowse(opened);
-      await opened.selectOption("#browse-kind","reusable_code");await settleBrowse(opened);
-      const reply=await browseList(opened,{kinds:["reusable_code"]}),groups=await browseGroups(opened);
-      note("browse_filters_by_kind_through_the_service",reply.items.length===1&&reply.items[0].identity==="code.normalise"
-        &&JSON.stringify(groups)===JSON.stringify(expectedGroups(reply.items,true))
-        &&await opened.locator("#browse-count").innerText()==="1 of 6 items",{groups});
-      note("browse_says_a_filter_hid_a_group_rather_than_calling_it_unpublished",
-        groups.find(item=>item.layer==="context_intelligence")?.empty==="Nothing in this group matches your filters.");
-      note("browse_names_the_filters_among_the_reasons_when_one_is_set",
-        (await opened.locator("#browse-message").innerText()).includes(
-          "did not match the filters, this account's permissions, or a declared effect this page holds no authority for."),
-        {message:await opened.locator("#browse-message").innerText()});
-    },
-    /* Pressing "Load the catalogue" asks the service for every item. A control that still named a filter
-       would describe a request the service never received, and a full group would read as an empty one. */
-    refresh_after_filter:async (opened,note)=>{
-      await loadBrowse(opened);
-      await opened.selectOption("#browse-kind","reusable_code");await settleBrowse(opened);
-      await opened.selectOption("#browse-style","codex");await settleBrowse(opened);
-      const filtered=(await browseGroups(opened)).flatMap(item=>item.identities);
-      await loadBrowse(opened);
-      const reply=await browseList(opened),groups=await browseGroups(opened);
-      const kindValue=await opened.inputValue("#browse-kind"),styleValue=await opened.inputValue("#browse-style");
-      note("browse_refresh_shows_the_request_it_actually_sent",kindValue===""&&styleValue===""
-        &&filtered.length===1&&JSON.stringify(groups)===JSON.stringify(expectedGroups(reply.items,false))
-        &&await opened.locator("#browse-count").innerText()===reply.items.length+" items"
-        &&groups.flatMap(item=>item.identities).length===reply.items.length,
-        {kindValue,styleValue,filtered,shown:groups.flatMap(item=>item.identities)});
-      note("browse_refresh_offers_every_filter_choice_again",
-        await opened.locator("#browse-kind option").count()===5&&await opened.locator("#browse-style option").count()===3
-        &&!(await opened.locator("#browse-kind").isDisabled()),
-        {kinds:await opened.locator("#browse-kind option").allInnerTexts()});
-    },
-    /* The service decides. The request that leaves this page names a revision that is not the published
-       one, so the real service refuses it with its own short code, and the reader must be told what to do
-       about it in words rather than shown the code. The same refusal is asked for separately, over the
-       same credential, so the code the page had to translate is recorded and not assumed. */
-    stale_selection:async (opened,note)=>{
-      await loadBrowse(opened);
-      const staleDigest="0".repeat(64);
-      const direct=await opened.request.post(fixture.browse_base+"/api/v1/provisioning",
-        {headers:{Authorization:"Bearer "+fixture.browse_token,"Content-Type":"application/json"},
-         data:{record_type:"service_provisioning_request/v2",operation:"manifest",identity:"context.review",expected_digest:staleDigest}});
-      const code=(await direct.json())?.error?.code||"";
-      await opened.route("**/api/v1/provisioning",async route=>{
-        const sent=route.request().postDataJSON();
-        if(sent?.operation!=="manifest")return route.continue();
-        await route.continue({postData:JSON.stringify({...sent,expected_digest:staleDigest})});});
-      await openItem(opened,"context.review");
-      const status=await browseStatus(opened);
-      note("browse_states_a_service_refusal_in_plain_words",direct.status()>=400&&code==="item_unavailable"
-        &&status==="This item is no longer available to this account. Load the catalogue again to see what is there now."
-        &&!status.includes(code)&&!/[a-z]_[a-z]/.test(status)
-        &&await opened.locator("#browse-detail dl").count()===0
-        &&await opened.locator("#browse-download").count()===0,{status,code,refused:direct.status()});
-      await opened.unroute("**/api/v1/provisioning");
-    },
-    tool_filter:async (opened,note)=>{
-      await loadBrowse(opened);
-      await opened.selectOption("#browse-style","codex");await settleBrowse(opened);
-      const reply=await browseList(opened,{style:"codex"}),groups=await browseGroups(opened);
-      const identities=groups.flatMap(item=>item.identities);
-      note("browse_filters_by_development_tool_through_the_service",reply.items.length===5
-        &&JSON.stringify(groups)===JSON.stringify(expectedGroups(reply.items,true))
-        &&identities.includes("code.normalise")&&identities.includes("context.brief")&&!identities.includes("context.review"),
-        {identities});
-    },
-    changed_download:async (opened,note)=>{
-      await loadBrowse(opened);await openItem(opened,"context.review");
-      /* Bytes that are not the revision the reader selected, with a service report that agrees with those
-         bytes. Only the comparison against the listed digest can tell this answer from a correct one. */
-      const wrongBody="CORRUPTED_LOCAL_FIXTURE",wrongDigest=createHash("sha256").update(wrongBody).digest("hex");
-      await opened.route("**/api/v1/download",async route=>{const response=await route.fetch();
-        await route.fulfill({response,headers:{...response.headers(),"x-content-sha256":wrongDigest},body:wrongBody});});
-      const saving=opened.waitForEvent("download",{timeout:1500}).then(()=>false,()=>true);
-      await opened.click("#browse-download");
-      await opened.waitForFunction(()=>document.querySelector('#browse-detail p[role="status"]').textContent!=="Fetching the selected revision…");
-      const nothingSaved=await saving;
-      note("browse_refuses_changed_download_bytes_and_saves_nothing",nothingSaved
-        &&(await browseStatus(opened)).includes("do not match the selected item")
-        &&(await browseStatus(opened)).includes("Nothing was saved."),{status:await browseStatus(opened)});
-      await opened.unroute("**/api/v1/download");
-    },
-    reported_digest:async (opened,note)=>{
-      await loadBrowse(opened);await openItem(opened,"context.review");
-      /* The bytes are the real ones; only the digest the service reports for them is changed. A page that
-         measures the bytes but trusts the reported digest cannot tell these two answers apart. */
-      await opened.route("**/api/v1/download",async route=>{const response=await route.fetch();
-        await route.fulfill({response,headers:{...response.headers(),"x-content-sha256":"0".repeat(64)}});});
-      const saving=opened.waitForEvent("download",{timeout:1500}).then(()=>false,()=>true);
-      await opened.click("#browse-download");
-      await opened.waitForFunction(()=>document.querySelector('#browse-detail p[role="status"]').textContent!=="Fetching the selected revision…");
-      const nothingSaved=await saving;
-      note("browse_refuses_a_download_whose_reported_digest_disagrees",nothingSaved
-        &&(await browseStatus(opened)).includes("Nothing was saved."),{status:await browseStatus(opened)});
-      await opened.unroute("**/api/v1/download");
-    },
-    changed_item:async (opened,note)=>{
-      await loadBrowse(opened);
-      await opened.route("**/api/v1/provisioning",async route=>{
-        const sent=route.request().postDataJSON();
-        if(sent?.operation!=="manifest")return route.continue();
-        const response=await route.fetch(),value=await response.json();
-        value.result.digest="0".repeat(64);
-        await route.fulfill({response,json:value});});
-      await openItem(opened,"context.review");
-      note("browse_refuses_an_item_that_changed_since_the_list",
-        (await browseStatus(opened))==="This item changed since the list was loaded. Load the catalogue again before fetching it."
-        &&await opened.locator("#browse-download").count()===0
-        &&await opened.locator("#browse-detail dl").count()===0,{status:await browseStatus(opened)});
-      await opened.unroute("**/api/v1/provisioning");
-    },
-    wrong_item_version:async (opened,note)=>{
-      await loadBrowse(opened);
-      await opened.route("**/api/v1/provisioning",async route=>{
-        const sent=route.request().postDataJSON();
-        if(sent?.operation!=="manifest")return route.continue();
-        const response=await route.fetch(),value=await response.json();
-        value.result.record_type="provisioning_manifest/v4";
-        await route.fulfill({response,json:value});});
-      await openItem(opened,"context.review");
-      note("browse_refuses_an_item_record_version_it_was_not_written_for",
-        (await browseStatus(opened)).includes("an unsupported item version")
-        &&await opened.locator("#browse-detail dl").count()===0
-        &&await opened.locator("#browse-download").count()===0,{status:await browseStatus(opened)});
-      await opened.unroute("**/api/v1/provisioning");
-    },
-    wrong_version:async (opened,note)=>{
-      await opened.route("**/api/v1/provisioning",async route=>{
-        const sent=route.request().postDataJSON();
-        if(sent?.operation!=="list")return route.continue();
-        const response=await route.fetch(),value=await response.json();
-        value.result.record_type="provisioning_list/v4";
-        await route.fulfill({response,json:value});});
-      await loadBrowse(opened);
-      await refusedBrowse(opened,note,"browse_refuses_a_catalogue_record_version_it_was_not_written_for","context.review");
-      await opened.unroute("**/api/v1/provisioning");
-    },
-    unknown_group:async (opened,note)=>{
-      await opened.route("**/api/v1/provisioning",async route=>{
-        const sent=route.request().postDataJSON();
-        if(sent?.operation!=="list")return route.continue();
-        const response=await route.fetch(),value=await response.json();
-        value.result.items[0].source_layer="mystery_intelligence";
-        await route.fulfill({response,json:value});});
-      await loadBrowse(opened);
-      await refusedBrowse(opened,note,"browse_refuses_a_catalogue_that_names_a_group_it_does_not_know","context.review");
-      note("browse_names_the_reason_it_refused_a_catalogue",(await opened.locator("#browse-message").innerText()).includes("a group this page does not know"));
-      await opened.unroute("**/api/v1/provisioning");
-    },
-    /* Every item names its library tier (September 25, 2026). A reply whose item has no label is a record this
-       page was not written for, so nothing of it is shown, rather than an item shown without its label. */
-    missing_tier:async (opened,note)=>{
-      await opened.route("**/api/v1/provisioning",async route=>{
-        const sent=route.request().postDataJSON();
-        if(sent?.operation!=="list")return route.continue();
-        const response=await route.fetch(),value=await response.json();
-        delete value.result.items[0].library_tier_label;
-        await route.fulfill({response,json:value});});
-      await loadBrowse(opened);
-      await refusedBrowse(opened,note,"browse_refuses_a_catalogue_item_without_its_library_tier","context.review");
-      await opened.unroute("**/api/v1/provisioning");
-    },
-    /* The count of held-back material is read out of the reply, so its shape is checked like every other
-       field the page reads. A number where a list belongs is a record this page was not written for. */
-    withheld_shape:async (opened,note)=>{
-      await opened.route("**/api/v1/provisioning",async route=>{
-        const sent=route.request().postDataJSON();
-        if(sent?.operation!=="list")return route.continue();
-        const response=await route.fetch(),value=await response.json();
-        value.result.withheld=value.result.withheld.length;
-        await route.fulfill({response,json:value});});
-      await loadBrowse(opened);
-      await refusedBrowse(opened,note,"browse_refuses_a_catalogue_that_counts_held_back_material_the_wrong_way","context.review");
-      await opened.unroute("**/api/v1/provisioning");
-    },
-    /* A download whose bytes are measured after the reader signs out. The service answered the connection
-       that has ended, so no file may reach the disk. The measurement is held by the check, because the
-       sign-out otherwise cancels the request before any bytes exist. */
-    held_download:async (opened,note)=>{
-      await loadBrowse(opened);await openItem(opened,"context.review");
-      await opened.evaluate(()=>window.__armDigestHold());
-      const saving=opened.waitForEvent("download",{timeout:2500}).then(()=>false,()=>true);
-      await opened.click("#browse-download");
-      await opened.waitForFunction(()=>window.__digestHeld===true,null,{timeout:8000});
-      await signOutFromHeader(opened);
-      await opened.waitForFunction(()=>document.querySelector("#connection-state").textContent==="Not connected");
-      await opened.evaluate(()=>window.__releaseDigest());
-      const nothingSaved=await saving;
-      note("browse_sign_out_stops_a_download_that_finishes_afterwards",nothingSaved
-        &&await opened.locator("#browse-groups .browse-group").count()===0
-        &&await opened.locator("#browse-count").innerText()==="Sign in to browse"
-        &&await opened.locator("#browse-detail dl").count()===0,
-        {nothingSaved,message:await opened.locator("#browse-message").innerText()});
-    },
-    delayed_reply:async (opened,note)=>{
-      await loadBrowse(opened);await openItem(opened,"context.review");
-      let release;const gate=new Promise(resolve=>{release=resolve;});let held=false;
-      await opened.route("**/api/v1/provisioning",async route=>{
-        if(route.request().postDataJSON()?.operation==="list"){held=true;await gate;}
-        await route.continue().catch(()=>{});});
-      await opened.click("#refresh-browse");
-      await new Promise((resolve,reject)=>{const deadline=setTimeout(()=>{clearInterval(poll);reject(new Error("No held catalogue request"));},5000);
-        const poll=setInterval(()=>{if(held){clearInterval(poll);clearTimeout(deadline);resolve();}},10);});
-      await signOutFromHeader(opened);
-      await opened.waitForFunction(()=>document.querySelector("#connection-state").textContent==="Not connected");
-      release();
-      const signedOut="Sign in to browse the material published for your account.";
-      await opened.waitForFunction(text=>document.querySelector("#browse-message").textContent!==text,signedOut,{timeout:1200}).catch(()=>{});
-      note("browse_sign_out_clears_a_delayed_catalogue_reply",
-        await opened.locator("#browse-groups .browse-group").count()===0
-        &&await opened.locator("#browse-count").innerText()==="Sign in to browse"
-        &&await opened.locator("#browse-message").innerText()===signedOut
-        &&await opened.locator("#browse-detail dl").count()===0
-        &&await opened.locator("#browse-kind").isDisabled()&&await opened.locator("#refresh-browse").isDisabled(),
-        {message:await opened.locator("#browse-message").innerText()});
-      await opened.unroute("**/api/v1/provisioning");
-    }};
-  // The held measurement is installed only where a check names it, so every other browse check runs in an
-  // unchanged page served entirely by the service.
-  const browseHoldsDigest=new Set(["held_download"]);
-  for(const name of Object.keys(browseScenarios)){
-    const {context:browseContext,page:browsePage}=await openBrowseWorkspace(null,browseHoldsDigest.has(name));
-    await browseScenarios[name](browsePage,check);
-    await browseContext.close();
-  }
-  /* Removed-guard controls for browsing. The served module is changed in memory only. A control is
-     detected when every check it names fails with the guard removed. */
-  const browseControls=[
-    {name:"accept_any_catalogue_record_version",scenario:"wrong_version",find:"value.record_type !== listVersion",replacement:"false",
-     expected:["browse_refuses_a_catalogue_record_version_it_was_not_written_for"]},
-    {name:"accept_a_group_the_page_does_not_know",scenario:"unknown_group",
-     find:'if (!knownLayers.has(row.source_layer)) return "a group this page does not know";',replacement:"",
-     expected:["browse_refuses_a_catalogue_that_names_a_group_it_does_not_know","browse_names_the_reason_it_refused_a_catalogue"]},
-    {name:"trust_the_downloaded_bytes",scenario:"changed_download",find:"measured !== row.digest || ",replacement:"",
-     expected:["browse_refuses_changed_download_bytes_and_saves_nothing"]},
-    {name:"trust_the_reported_download_digest",scenario:"reported_digest",find:" || measured !== result.digest",replacement:"",
-     expected:["browse_refuses_a_download_whose_reported_digest_disagrees"]},
-    {name:"ignore_an_item_that_changed_since_the_list",scenario:"changed_item",find:"if (value.digest !== row.digest) {",replacement:"if (false) {",
-     expected:["browse_refuses_an_item_that_changed_since_the_list"]},
-    {name:"accept_any_item_record_version",scenario:"wrong_item_version",find:"value.record_type !== manifestVersion",replacement:"false",
-     expected:["browse_refuses_an_item_record_version_it_was_not_written_for"]},
-    /* The guard this removes is the one the scenario reaches. Signing out cancels the request that is in
-       flight, so the catalogue reply arrives as a cancellation and the guard in the failure path decides
-       whether the signed-out page is written to. The matching guard on the success path of the same
-       function stays in place and has no control, because the shared request boundary already refuses a
-       reply whose connection changed before this module is given it, and no page action can reach it. */
-    {name:"keep_a_delayed_catalogue_reply_after_sign_out",scenario:"delayed_reply",
-     find:'if (epoch !== current().generation) return;\n        message("browse-message", error.name === "AbortError"',
-     replacement:'message("browse-message", error.name === "AbortError"',
-     expected:["browse_sign_out_clears_a_delayed_catalogue_reply"]},
-    {name:"save_a_download_that_finished_after_sign_out",scenario:"held_download",
-     find:"if (epoch !== current().generation || result.epoch !== current().generation) return;",replacement:"",
-     expected:["browse_sign_out_stops_a_download_that_finishes_afterwards"]},
-    {name:"show_a_filter_the_service_was_not_asked_to_apply",scenario:"refresh_after_filter",
-     find:"function options(select, values, plainName, chosen) {",
-     replacement:"function options(select, values, plainName, chosen) { chosen = select.value;",
-     expected:["browse_refresh_shows_the_request_it_actually_sent"]},
-    {name:"show_a_service_refusal_as_its_code",scenario:"stale_selection",
-     find:"return named && refusals[named[1]] ? refusals[named[1]] : text;",replacement:"return text;",
-     expected:["browse_states_a_service_refusal_in_plain_words"]},
-    {name:"count_held_back_material_from_a_shape_the_page_was_not_written_for",scenario:"withheld_shape",
-     find:"|| !Array.isArray(value.withheld) ",replacement:"",
-     expected:["browse_refuses_a_catalogue_that_counts_held_back_material_the_wrong_way"]},
-    {name:"blame_the_filters_when_no_filter_was_set",scenario:"catalogue",
-     find:'" not offered here, because of this account\'s permissions or a declared effect this page holds no authority for. "',
-     replacement:'" not offered here. "',
-     expected:["browse_names_every_reason_material_is_not_offered"]},
-    {name:"leave_the_declared_effect_out_of_the_filtered_reason",scenario:"kind_filter",
-     find:'" did not match the filters, this account\'s permissions, or a declared effect this page holds no authority for. "',
-     replacement:'" did not match the filters or this account\'s permissions. "',
-     expected:["browse_names_the_filters_among_the_reasons_when_one_is_set"]},
-    {name:"hide_a_group_that_holds_nothing",scenario:"catalogue",find:"if (group.outside && !held.length) continue;",replacement:"if (!held.length) continue;",
-     expected:["browse_shows_the_four_groups_with_plain_names","browse_counts_and_membership_match_the_service_reply","browse_says_plainly_when_a_group_holds_nothing"]},
-    {name:"ignore_the_kind_filter",scenario:"kind_filter",find:"kind ? {kinds:[kind]} : {}",replacement:"{}",
-     expected:["browse_filters_by_kind_through_the_service","browse_says_a_filter_hid_a_group_rather_than_calling_it_unpublished"]},
-    {name:"ignore_the_development_tool_filter",scenario:"tool_filter",find:"style ? {style} : {}",replacement:"{}",
-     expected:["browse_filters_by_development_tool_through_the_service"]},
-    {name:"leave_the_library_tier_off_the_list",scenario:"catalogue",
-     find:'row.library_tier_label + " · " + (kindNames',replacement:"(kindNames",
-     expected:["browse_shows_each_item_s_library_tier"]},
-    {name:"leave_the_library_tier_out_of_the_detail",scenario:"catalogue",
-     find:'["Library tier", value.library_tier_label],',replacement:"",
-     expected:["browse_detail_states_the_library_tier"]},
-    {name:"accept_an_item_without_a_library_tier",scenario:"missing_tier",
-     find:'if (!knownTiers.has(row.library_tier) || !stated(row.library_tier_label)) return "no library tier";',replacement:"",
-     expected:["browse_refuses_a_catalogue_item_without_its_library_tier"]}];
-  for(const control of browseControls){
-    const failed=new Set(),note=(name,passed)=>{if(passed!==true)failed.add(name);};
-    let applied=false,problem="";
-    try{
-      const {context:changedContext,page:changedPage,state}=await openBrowseWorkspace(
-        {find:control.find,replacement:control.replacement},browseHoldsDigest.has(control.scenario));
-      applied=state.applied;
-      await browseScenarios[control.scenario](changedPage,note);
-      await changedContext.close();
-    }catch(error){problem=safeError(error);}
-    const missed=control.expected.filter(name=>!failed.has(name)),detected=applied&&!problem&&missed.length===0;
-    mutants.push({name:control.name,applied,detected,required_checks:control.expected,missed_checks:missed,failed_checks:[...failed].sort(),...(problem?{problem}:{})});
-    check("removed_guard_is_detected_"+control.name,detected,{applied,missed_checks:missed,...(problem?{problem}:{})});
-  }
+  /* The signed-in library table, its paged load and its effect confirmation: tools/catalogue_browser_checks.mjs holds
+     the checks and their removed-guard controls (rewritten for the searchable table on September 26, 2026). */
+  await runCatalogueBrowserChecks({browser,fixture,check,mutants,errors,safeError,localOnly,output,routeBrowseAsset,holdDigestScript,
+    signOutFromHeader,internalTerms});
   /* The pages of September 24, 2026 and the page each hostname shows at its root, in tools/showcase_page_checks.mjs. */
   await runShowcasePageChecks({root,python:process.env.PYTHON||resolve(root,".venv/bin/python"),browser,context,fixture,check,mutants,output,safeError,localOnly,
     words:{retiredAccessWords,invitationWords,publicVocabulary}});

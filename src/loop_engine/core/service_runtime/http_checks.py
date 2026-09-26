@@ -560,6 +560,9 @@ def self_test():
     from .catalogue_serving_checks import run_checks as catalogue_serving_checks
     with tempfile.TemporaryDirectory(prefix="service-catalogue-serving-") as directory:
         catalogue_serving_checks(check, Path(directory))
+    from .list_paging_checks import run_checks as list_paging_checks
+    with tempfile.TemporaryDirectory(prefix="service-list-paging-") as directory:
+        list_paging_checks(check, Path(directory))
     from .web_surface_checks import run_checks as web_surface_checks
     with tempfile.TemporaryDirectory(prefix="service-web-surfaces-") as directory:
         web_surface_checks(check, Path(directory))

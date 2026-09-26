@@ -206,7 +206,8 @@
     "core/service_runtime/account_origin_checks.py",
     "core/service_runtime/account_administration_checks.py",
     "core/service_runtime/staff_sign_up_link_checks.py",
-    "core/service_runtime/catalogue_report_checks.py"
+    "core/service_runtime/catalogue_report_checks.py",
+    "core/service_runtime/list_paging_checks.py"
   ],
   "notes": [
     "The public directory's row files and link table (core/service_runtime/web_assets/directory and core/service_runtime/public_lists) hold names, descriptions and addresses written by the publishers of other products, rebuilt daily by tools/build_mcp_directory.py. They are left out of the retired nomenclature scan, as the upstream runtime copies are; the directory page, its script and every other served file stay scanned, and the browser checks read the page's own words through tools/listing_text.mjs.",
@@ -874,6 +875,7 @@
     "core/service_runtime/account_origin_checks.py": "Loopback-only checks of the one way in: an owned key set for signed browser tokens and the real service over an owned loopback socket. The identity provider is the in-process stand-in project; no provider, mailbox or external network is used.",
     "core/service_runtime/account_administration_checks.py": "Loopback-only checks of staff roles and account administration: an owned key set for signed browser tokens and the real service over an owned loopback socket. The provider user list is an injected stand-in; no provider or external network is used.",
     "core/service_runtime/staff_sign_up_link_checks.py": "Loopback-only checks of staff sign-up links: an owned key set for signed browser tokens and the real service over an owned loopback socket. The identity provider and its outbox are the in-process stand-in project; no provider, mailbox or external network is used.",
-    "core/service_runtime/catalogue_report_checks.py": "Loopback-only acceptance of customer reports, staff flags and the withdrawal rule over the owned fixture service from http_test_fixtures, with temporary records; no provider or external network is used."
+    "core/service_runtime/catalogue_report_checks.py": "Loopback-only acceptance of customer reports, staff flags and the withdrawal rule over the owned fixture service from http_test_fixtures, with temporary records; no provider or external network is used.",
+    "core/service_runtime/list_paging_checks.py": "Loopback-only acceptance of the paged list over the owned fixture services from http_test_fixtures, through the web address and the official protocol client, with temporary records; no provider or external network is used."
   }
 }

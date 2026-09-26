@@ -9,7 +9,7 @@ from __future__ import annotations
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import asynccontextmanager
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 import json
 import math
 import re
@@ -28,6 +28,8 @@ from .http_auth import (
     HttpAuthenticationError, ServiceHttpAuthentication, ServiceHttpAuthenticator, validate_public_url,
     EXTERNAL_JWT_AUTHENTICATION,
 )
+from .list_paging import (JSON_ENCODING, PROTOCOL_ENCODING, ListCursors, ListPageRequest, list_page,
+                          paging_request, paging_schema_properties)
 from .observability import (
     CAPTURED_BODY_KEY, SCOPE_REFERENCE_KEY, ServiceFailureJournal, ServiceObservabilityPolicy,
     new_request_reference, readiness_deadline_report, readiness_report,
@@ -530,12 +532,17 @@ LIBRARY_TIERS_SCHEMA = {"type": "array", "items": {"enum": ["verified", "communi
 
 
 def tiered_provisioning_schema(operation):
-    """The version 2 request and protocol tool schema: version 1's fields and the optional library tier filter."""
+    """The version 2 request and protocol tool schema: version 1's fields and the optional library tier filter.
+
+    A list also takes the optional `page_size` and `cursor` of a paged list (roadmap S-6.203): a list request
+    that names `page_size` is answered one page at a time in `provisioning_list_page/v1`."""
     if operation in FEEDBACK_OPERATIONS:
         return feedback_schema()
     schema = http_provisioning_schema(operation)
     if operation != DISCOVER_OPERATION:
         schema["properties"]["library_tiers"] = dict(LIBRARY_TIERS_SCHEMA)
+    if operation == LIST_OPERATION:
+        schema["properties"].update(paging_schema_properties())
     return schema
 
 
@@ -712,6 +719,8 @@ class ServiceHttpApplication:
         self.public_links = PublicListLinks(self.runtime)
         # Customer feedback over the same runtime records: ratings, requests for material and search gaps.
         self.feedback = ServiceFeedback(self.runtime)
+        # The key of paged list cursors, drawn once for this process and kept only in its memory.
+        self.list_cursors = ListCursors()
         self._workers = ThreadPoolExecutor(max_workers=self.configuration.maximum_concurrent_operations,
                                            thread_name_prefix="intelligence-service")
         self._slots = threading.BoundedSemaphore(self.configuration.maximum_concurrent_operations)
@@ -1014,15 +1023,22 @@ class ServiceHttpApplication:
         Removes `library_tiers` from the fields, because the provisioning boundary receives the resolved choice."""
         return narrowed(self.library_settings(principal), fields.pop("library_tiers", None))
 
-    def _invoke(self, authentication, operation, fields, *, tiered=False):
+    def _invoke(self, authentication, operation, fields, *, tiered=False, encoding=JSON_ENCODING):
         current = self.authenticator.revalidate(authentication)
         self._require_scope(current, "provisioning:read" if operation == READ_OPERATION else "provisioning:metadata")
         if "path" in fields:
             raise ServiceHttpError("package_file_requires_download")
         fields = dict(fields)
+        page_size, cursor = paging_request(fields) if tiered and operation == LIST_OPERATION else (None, None)
+        fields.pop("page_size", None)
+        fields.pop("cursor", None)
         if tiered:
             fields["community_items"] = self.community_choice(current.principal, fields)
         view = self.provisioning.current_view()
+        if page_size is not None:
+            return self._list_page(authentication, current, ListPageRequest(
+                current.principal, view, fields, page_size, cursor, self.configuration.maximum_response_bytes,
+                encoding))
         if operation == READ_OPERATION:
             manifest = self.provisioning.invoke_for_principal(current.principal, MANIFEST_OPERATION, view=view,
                 **{key: value for key, value in fields.items() if key != "request_id"})
@@ -1050,6 +1066,24 @@ class ServiceHttpApplication:
         # asked with the default community choice, which offers only verified
         # items, and it is answered in the version 2 shapes its readers check.
         return tierless_answer(result)
+
+    def _list_page(self, authentication, current, paged):
+        """One page of a paged list (roadmap S-6.203), filled under this host's answer cap.
+
+        Each row carries what a whole list's rows carry: the served attributes, and no body permission for a
+        credential without the read scope."""
+        view = paged.view
+        attributes = view.shown_attributes if callable(getattr(view, "shown_attributes", None)) else None
+        reads = "provisioning:read" in current.effective_scopes
+
+        def decorate(row):
+            if attributes is not None:
+                row = {**row, "attributes": attributes(row["identity"])}
+            return row if reads else {**row, "body_allowed": False}
+        page = list_page(replace(paged, decorate=decorate), provisioning=self.provisioning, runtime=self.runtime,
+                         cursors=self.list_cursors)
+        self.authenticator.revalidate(authentication)
+        return page
 
     def _search(self, authentication, fields):
         from dataclasses import asdict
@@ -1315,6 +1349,9 @@ class ServiceHttpApplication:
         if operation not in TOOL_OPERATIONS.values() and not (tiered and operation in FEEDBACK_OPERATIONS):
             raise ServiceHttpError("unsupported_operation")
         fields = {key: value for key, value in payload.items() if key not in ("record_type", "operation")}
+        if tiered and operation == LIST_OPERATION:
+            # A paged list's own fields are refused by name before the schema answers `invalid_request`.
+            paging_request(fields)
         from jsonschema import validate, ValidationError
         try:
             validate(fields, tiered_provisioning_schema(operation) if tiered else http_provisioning_schema(operation))
@@ -1379,13 +1416,16 @@ class ServiceHttpApplication:
                     operation = TOOL_OPERATIONS.get(name)
                     if operation is None:
                         raise ServiceHttpError("unsupported_operation")
+                    if operation == LIST_OPERATION:
+                        paging_request(arguments)
                     validate(arguments, tiered_provisioning_schema(operation))
                     if operation == READ_OPERATION and not arguments.get("request_id"):
                         raise ServiceHttpError("request_identity_required")
                     arguments = with_step_effects(arguments, effects) if operation != DISCOVER_OPERATION else arguments
                     # Protocol tools serve harnesses, which read each item's tier and label in the answer.
                     output = await self._tenant_work(context, lambda: invoke_http_service_as_loop(operation,
-                        lambda: self._invoke(context, operation, arguments, tiered=True)))
+                        lambda: self._invoke(context, operation, arguments, tiered=True,
+                                             encoding=PROTOCOL_ENCODING)))
                 response = types.CallToolResult(content=[types.TextContent(type="text", text=_json_bytes(output).decode())],
                                                 structuredContent=output, isError=False)
                 if len(response.model_dump_json(by_alias=True).encode()) > self.configuration.maximum_response_bytes:

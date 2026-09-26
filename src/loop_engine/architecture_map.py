@@ -76,6 +76,7 @@ MODULE_MAP = {
         "catalogue_release_checks", "catalogue_serving_checks", "catalogue_tiers", "catalogue_tier_checks",
         "catalogue_follow_checks", "library_page",
         "catalogue_reports", "catalogue_report_checks",
+        "list_paging", "list_paging_checks",
         "commercial_relationship", "public_links",
         "red_team_page",
         "feedback", "feedback_checks",
