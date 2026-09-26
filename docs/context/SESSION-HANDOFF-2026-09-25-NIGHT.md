@@ -62,15 +62,16 @@ Four defects in the job were fixed on the way and are listed in that record;
 the publish script now starts the publish in the background on the Machine
 and polls the store's active release.
 
-A cron entry now runs the job every six hours (at 17 minutes past 02:00,
-08:00, 14:00 and 20:00 UTC) with `--publish`,
+A cron entry now runs the job every six hours (`17 */6 * * *` in the
+machine's Eastern time: 04:17, 10:17, 16:17 and 22:17 UTC) with `--publish`,
 `REPOSITORY=/home/username/.le-import-review-20260925` (a detached
 worktree on main; move it to a permanent checkout before that worktree is
 retired) and `RUN_FOLDER=/home/username/.le-library/import-2026-09-24/run-1`
 (the import run whose `leads.jsonl` the export stage reads). Its log is
 `~/.le-ci-tmp/daily-cron.log`; each day's journal is
-`~/baltor-library/daily/<day>/journal.jsonl`. The export stage has not yet
-run unattended: the first cron run of September 26 is the check.
+the day's `journal.jsonl` under `~/baltor-library/daily/`. The export stage
+has not yet run unattended: the first cron run, at 04:17 UTC on September
+26, is the check.
 
 ## Next steps, in order
 
