@@ -3,15 +3,15 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:d6656b1eba8d7c0626926ac917fd721c096e30e0d11aa4297f6f7837c736865b`.
+Source fingerprint: `sha256:8bc0d617cf5f4d3d42d369573efc8748d2ecf5283c23113e3bcf055082cdaa15`.
 
 ## Where things stand
 
 | Lane | Steps |
 |---|---:|
-| Being built now | 49 |
+| Being built now | 50 |
 | Can start next | 15 |
-| Waiting on earlier work | 140 |
+| Waiting on earlier work | 139 |
 | Blocked | 3 |
 | Done | 48 |
 
@@ -30,6 +30,7 @@ Source fingerprint: `sha256:d6656b1eba8d7c0626926ac917fd721c096e30e0d11aa4297f6f
 | S-6.31 | The harness executor slot: delegate each step to a standard harness | building | S-6.30 |
 | S-6.42 | Harness landscape: forks of Pi and OpenCode, and independent instances in every supported harness | building | S-6.31 |
 | S-6.69 | The package factory: 10,000, then 100,000 approved packages, then 100 to 1,000 more each day | building | S-6.40, S-6.63, S-6.62 |
+| S-6.197 | One unattended daily job from the day's approvals to a checked live catalogue release, with automatic rollback | building | S-6.62, S-6.119 |
 | S-6.63 | An independent review panel of several model families | building | S-6.45 |
 | S-6.119 | Community and Verified library tiers from the review panel, written as reviewed catalogue folders for release | building | S-6.63, S-6.40 |
 | S-6.62 | Catalogue releases and library settings with good defaults | building | S-6.40 |
@@ -107,7 +108,6 @@ Source fingerprint: `sha256:d6656b1eba8d7c0626926ac917fd721c096e30e0d11aa4297f6f
 | S-6.52 | More retrieval engines behind the search slot | proposed | S-6.32 |
 | S-6.60 | A layer before every model call that decides one model or several | proposed | S-6.30 |
 | S-6.40 | Grow the library: original package factory first, scheduled source ingestion later | proposed | S-6.30 |
-| S-6.197 | One unattended daily job from the day's approvals to a checked live catalogue release, with automatic rollback | proposed | S-6.62, S-6.119 |
 | S-6.199 | Publish after one screen, then let feedback withdraw: the four-question screening review, automatic Community publication, a report button, nightly rescans, upstream checks and withdrawal rules | proposed | S-6.197, S-6.62 |
 | S-6.203 | 10,000 packages served: measured at 1,000, 5,000 and 10,000, paged listing, one indexable page per item with sitemap entries | proposed | S-6.62, S-6.184, S-6.199 |
 | S-6.200 | Continuous integration in 12 minutes or less, and fewer failed pushes: sharded self-test, cached environment, a records-only lane and a pre-push hook that runs the preflight | proposed | S-6.180 |

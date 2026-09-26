@@ -3,8 +3,8 @@
   "blocked": 3,
   "done": 48,
   "next": 15,
-  "now": 49,
-  "waiting": 140
+  "now": 50,
+  "waiting": 139
  },
  "lanes": {
   "blocked": [
@@ -1069,6 +1069,24 @@
     ]
    },
    {
+    "acceptance": "Approved packages reach customers every day without a person starting any step and without a redeploy.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.62",
+     "S-6.119",
+     "S-6.196"
+    ],
+    "id": "S-6.197",
+    "next_local_work": "Watch the first cron runs (~/.le-ci-tmp/daily-cron.log and ~/baltor-library/daily/<day>/journal.jsonl): the export stage has not yet run unattended, and one export a day at 2,000 packages is the current rate; raise EXPORT_TARGET and give each six-hour slot its own run name once the export stage is proven.",
+    "phase": 6,
+    "status": "building",
+    "title": "One unattended daily job from the day's approvals to a checked live catalogue release, with automatic rollback",
+    "waiting_on": [
+     "S-6.62",
+     "S-6.119"
+    ]
+   },
+   {
     "acceptance": "The panel reviews thousands of candidates only after its risk-specific error gate and throughput are measured; every approval names independent reviewers, and a sampled audit never grants approval to unsampled bytes.",
     "blocked_on": "",
     "depends_on": [
@@ -1854,24 +1872,6 @@
     "title": "Grow the library: original package factory first, scheduled source ingestion later",
     "waiting_on": [
      "S-6.30"
-    ]
-   },
-   {
-    "acceptance": "Approved packages reach customers every day without a person starting any step and without a redeploy.",
-    "blocked_on": "",
-    "depends_on": [
-     "S-6.62",
-     "S-6.119",
-     "S-6.196"
-    ],
-    "id": "S-6.197",
-    "next_local_work": "Dry-run the job on the next approvals, then install the cron entry every six hours with the Tactical calibration as its first stage.",
-    "phase": 6,
-    "status": "proposed",
-    "title": "One unattended daily job from the day's approvals to a checked live catalogue release, with automatic rollback",
-    "waiting_on": [
-     "S-6.62",
-     "S-6.119"
     ]
    },
    {
@@ -5040,9 +5040,9 @@
    "id": "D-26",
    "stage": "public_launch",
    "status_counts": {
-    "building": 4,
+    "building": 5,
     "live_qualified": 1,
-    "proposed": 10
+    "proposed": 9
    },
    "steps": [
     "S-6.69",
@@ -5184,5 +5184,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:d6656b1eba8d7c0626926ac917fd721c096e30e0d11aa4297f6f7837c736865b"
+ "source_fingerprint": "sha256:8bc0d617cf5f4d3d42d369573efc8748d2ecf5283c23113e3bcf055082cdaa15"
 }
