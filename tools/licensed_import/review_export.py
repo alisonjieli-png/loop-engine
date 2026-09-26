@@ -90,10 +90,14 @@ SKILL_WITH_SCRIPTS = "skill_with_scripts"
 DEFAULT_KIND_SHARES = {SKILL: 0.30, SKILL_WITH_SCRIPTS: 0.10, SUBAGENT: 0.12, COMMAND: 0.12, RULES: 0.08,
                        INSTRUCTION_FILE: 0.08, PLUGIN_MANIFEST: 0.06, HOOK: 0.05, PROTOCOL_SERVER: 0.03,
                        MARKETPLACE: 0.02, CONTRACT_SCHEMA: 0.02, CODE_MODULE: 0.01, SETTINGS: 0.01}
-#: The panel's item kinds; the harness file kind stays on the specification and in the tags.
+#: The panel's item kinds; the harness file kind stays on the specification and in the tags. An imported code module
+#: is served as a tool package in the harness_local layer, the files a harness picks up; the reusable_code kind names
+#: Code Intelligence items that keep their identity in that layer, which an imported file is not (the item model
+#: refused the first code module the balanced mix selected, on September 26, 2026, and the 16:17 UTC slot's export
+#: failed).
 REFERENCE_KINDS = {SKILL: "skill", INSTRUCTION_FILE: "instruction_file", RULES: "instruction_file",
                    SUBAGENT: "instruction_file", COMMAND: "instruction_file", HOOK: "tool", PLUGIN_MANIFEST: "tool",
-                   MARKETPLACE: "tool", PROTOCOL_SERVER: "tool", CONTRACT_SCHEMA: "tool", CODE_MODULE: "reusable_code",
+                   MARKETPLACE: "tool", PROTOCOL_SERVER: "tool", CONTRACT_SCHEMA: "tool", CODE_MODULE: "tool",
                    SETTINGS: "tool"}
 _IDENTITY = re.compile(r"[^a-z0-9]+")
 

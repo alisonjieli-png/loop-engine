@@ -109,6 +109,29 @@ class KindMixTest(unittest.TestCase):
             review_export.select([], {}, SOURCE_PRIORITY, limit=1, per_repository=1, kind_mix="random")
         self.assertAlmostEqual(sum(review_export.DEFAULT_KIND_SHARES.values()), 1.0)
 
+    def test_a_code_module_is_exported_as_a_tool_the_harness_local_layer_accepts(self):
+        # Known wrong: the reusable_code kind requires the code_intelligence layer, and an imported file lives in
+        # harness_local; the 16:17 UTC slot of September 26, 2026 failed on the first code module the mix selected.
+        from loop_engine.core.harness_intelligence import HarnessIntelligenceError
+        from loop_engine.core.service_runtime.catalogue_packages import CataloguePackage, CataloguePackageFile
+        from licensed_import.records import CODE_MODULE
+        self.assertEqual(review_export.REFERENCE_KINDS[CODE_MODULE], "tool")
+        body = b"export const answer = 42;\n"
+        package = CataloguePackage((CataloguePackageFile("index.js", "a" * 64, len(body), "text/javascript",
+                                                         "executable_tool"),))
+        payload = {**_payload(CODE_MODULE, 1), "description": "A module", "upstream_key": "k" * 12,
+                   "provenance": {"repository": "owner/js", "path": "index.js", "immutable_revision": "b" * 40},
+                   "licence": {"spdx_expression": "MIT"}, "declared_effects": ["spawns_process"],
+                   "native_format": "opencode_tool"}
+        reference = review_export._reference("import_code_module_js_kkkkkkkkkkkk", payload, package)
+        self.assertEqual((reference["kind"], reference["source_layer"]), ("tool", "harness_local"))
+        from loop_engine.core.harness_intelligence import HarnessIntelligenceItem
+        with self.assertRaises(HarnessIntelligenceError):
+            HarnessIntelligenceItem(identity=reference["identity"], kind="reusable_code", purpose="A module",
+                                    digest=package.served_digest, size_bytes=package.served_size,
+                                    source_layer="harness_local", source_ref=reference["source_ref"], license_name="MIT",
+                                    declared_effects=("spawns_process",))
+
     def test_the_reviewable_text_media_are_the_panels_and_now_include_scripts(self):
         self.assertEqual(review_export.TEXT_MEDIA, native.TEXT_MEDIA)
         shell = _payload(SKILL, 1)

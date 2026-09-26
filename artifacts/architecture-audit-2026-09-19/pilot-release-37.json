@@ -1,0 +1,72 @@
+{
+  "record_type": "deployment_evidence/v1",
+  "fly_release": 37,
+  "source_revision": "43b421f8c0be90e98ae32b0994aa8ba9ecb8e7f0",
+  "continuous_integration_run": 36243640251,
+  "deployment_workflow_run": 36244935164,
+  "image_digest": "sha256:7e0603e219fe21ca934d9459f8bc94a734ce2f31baaf4da8a8ae63c3edd382f8",
+  "deployed_at": "2026-09-26T13:25:00Z",
+  "deploy_setting_after": false,
+  "rollback_fly_release": 36,
+  "rollback_image_digest": "sha256:b1198bff6eb3d0f7175d1261098f866d1e690a5b835f1030ba08169e473a6567",
+  "rollback_note": "Release 36 serves the same catalogue store and the same accounts; it lists every Verified item one by one on the library page with its size and digest, shows the catalogue browser as grouped lists, and its list rows and search hits carry no attributes. A rollback loses the counts-by-kind page, the searchable table and the tags, nothing a paying customer depends on.",
+  "changes": [
+    "the library page counts the library by every kind of harness file and its label, lists no item before sign-up, shows no size or digest, and sends the visitor to create an account (S-6.208)",
+    "the signed-in catalogue browser is one searchable, sortable table: purpose, kind of file, label, step functions, licence, declared effects and the tools it is written for, with a search box and three filters; no size or digest column; the detail panel and the fetch flow unchanged",
+    "provisioning list rows carry the served attributes an account may see, and search hits show the step function tags on the result cards",
+    "the searching guide documents the step_functions and harness_kind filters",
+    "the MCP directory data and the model directory data refreshed by their scheduled workflows (commits e0d965bd and c1071922)",
+    "the site map's library entry describes the new page; the design briefs folder with its charter README"
+  ],
+  "failed_first_attempts": [
+    {"revision": "edcc77a3", "reason": "the zero-tolerance gate counted the new docs/design folder without a charter README"},
+    {"revision": "76e14faa", "reason": "docs/RECORDS-INDEX.md, which tools/build_records_index.py generates, did not list the day's new records"}
+  ],
+  "host_file_changes": [],
+  "live_checks": {
+    "decides": {
+      "people": {
+        "pages": 45,
+        "views": 188,
+        "hostnames": 8,
+        "links_checked": 310,
+        "problems": 0
+      },
+      "catalogue_with_homepage_digest_guard": [
+        9,
+        9
+      ],
+      "service": [
+        19,
+        19
+      ]
+    },
+    "advice": {
+      "http_addresses_200": [
+        135,
+        135
+      ],
+      "pi_extension_served_byte_for_byte": [
+        9,
+        9
+      ],
+      "detailed_browser_rules_on_baltor_ai": [
+        216,
+        216
+      ]
+    },
+    "physical_model_calls": 0,
+    "note": "The release tool ran the deploy and the live checks unattended after continuous integration passed at 13:22 UTC; the checks ran from a detached worktree of the released revision."
+  },
+  "browser_suite_on_this_revision": {
+    "where": "not run separately on this revision; the release's detailed browser rules passed 216 of 216 on baltor.ai and the nightly workflow runs the full suite",
+    "run": null,
+    "checks": null,
+    "mutants_detected": null
+  },
+  "observed_after_the_restart": {
+    "health": "ready, catalogue view from the store, release 856bff51… with 6,398 items, catalogue state revision 22",
+    "customer_visible_change": "the library page counts every kind of harness file and sends visitors to sign up; the signed-in library is a searchable table; search results show step function tags where a release carries them (none does yet: the first tagged release is the next daily slot's)"
+  },
+  "evidence_folder": "artifacts/release-37-2026-09-26"
+}
