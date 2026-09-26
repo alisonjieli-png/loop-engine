@@ -52,9 +52,12 @@ def community_folder(root: Path) -> Path:
              "source_digests": {}, "publication": "not_published",
              "items": [{"reference": item.reference(), "body_path": "bodies/check_a_sum.md", "lifecycle": "candidate",
                         "license_state": "declared", "tier": "community",
-                        "attributes": {"step_functions": ["verification"]},
+                        "attributes": {"step_functions": ["verification"], "industries": ["accounting"],
+                                       "languages": ["english"]},
                         "attribute_engines": {"step_functions": {"engine_id": "step_function_rules",
-                                                                 "engine_version": "1.0.0"}}}]}
+                                                                 "engine_version": "1.0.0"},
+                                              "industries": {"engine_id": "facet_rules", "engine_version": "1.0.0"},
+                                              "languages": {"engine_id": "facet_rules", "engine_version": "1.0.0"}}}]}
     review = {"record_type": combine.REVIEW_RECORD, "recorded_at": "2026-09-25", "catalogue_source_revision": "1" * 40,
               "reviewers": [{"reviewer_id": "claude_code.subscription", "label": "claude-opus-5-5 (anthropic)",
                              "lens": "provenance_licence_and_safety", "produced_any_item_under_review": False}],
@@ -106,6 +109,14 @@ class CombineTest(unittest.TestCase):
         tags = {line["reference"]["identity"]: line["attributes"].get("step_functions") for line in lines}
         self.assertEqual(tags["check_a_sum"], ["verification"])
         self.assertIsNone(tags[starter["identity"]], "a starter row written before the tagger carries no tag")
+        # The facets too (S-6.209): the combined schema declares all five, so the daily release can filter on
+        # them, an added row keeps the values its writer gave it, and a row written before the tagger has none.
+        declared = {attribute.name for attribute in schema.attributes}
+        self.assertLessEqual({"job_titles", "industries", "levels", "languages", "geographies"}, declared)
+        facets = {line["reference"]["identity"]: {name: line["attributes"].get(name) for name in ("industries", "languages")}
+                  for line in lines}
+        self.assertEqual(facets["check_a_sum"], {"industries": ["accounting"], "languages": ["english"]})
+        self.assertEqual(facets[starter["identity"]], {"industries": None, "languages": None})
         dates = {line["reference"]["identity"]: line["attributes"]["catalogued_on"] for line in lines}
         self.assertEqual(dates["check_a_sum"], "2026-09-25", "a Community row keeps its own review date")
         self.assertEqual(dates[starter["identity"]], "2026-09-21", "a starter row keeps the starter review date")

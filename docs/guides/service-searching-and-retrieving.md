@@ -68,8 +68,9 @@ can combine that with the library tier:
 
 ### Filter by job title, industry, level, language and geography
 
-A reviewed catalogue written on or after September 26, 2026 also carries five
-facet attributes, each a keyword list from a declared vocabulary: `job_titles`
+A reviewed catalogue that `tools/write_reviewed_catalogue.py` writes also
+carries five facet attributes, each a keyword list from a declared vocabulary
+in `src/loop_engine/data/library_facets.yaml`: `job_titles`
 (the pinned occupation grid and the packaged occupation seeds, such as
 `Software Developers`), `industries` (a declared list of thirty-four, such as
 `healthcare`), `levels` (`student`, `junior`, `mid`, `senior`, `lead`,
@@ -77,9 +78,14 @@ facet attributes, each a keyword list from a declared vocabulary: `job_titles`
 script or stopwords) and `geographies` (countries and regions, such as
 `United States` or `European Union`). Rules write them from the item's own
 words, and an item whose words name nothing has no value for that facet. The
-signed-in table filters on them; the public pages show none of them. A release
-built from an older reviewed catalogue does not carry them until that
-catalogue is written again.
+signed-in library table filters on them and each search result lists them;
+the public pages show none of them. A release built from an older reviewed
+catalogue does not carry them until that catalogue is written again. On
+September 26, 2026 no served release declares them, so a filter on them is
+refused with `search_filter_not_allowed`. A release that
+`tools/combine_reviewed_catalogues.py` combines after this change declares
+them, and its items carry values only when their reviewed catalogue was
+written after this change.
 
 ```json
 {"record_type":"service_retrieval_request/v2","query":"summarize clinical notes","mode":"lexical","filters":{"industries":{"any_of":["healthcare"]},"levels":{"equals":"senior"}}}
