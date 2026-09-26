@@ -4785,7 +4785,7 @@ steps:
       - "/todo lists the roadmap's open steps by title and status, grouped by delivery package, and leaves out every step on a reviewed exclusion list"
       - "no page, footer, docs index or sitemap links to the three pages, each carries noindex, and one command regenerates them with a currency check in continuous integration"
     adversarial: "A changelog line with no release record, a todo row from the exclusion list, a link to one of the pages from any page and a stale generated page must each fail a named check."
-    acceptance: "Anyone with the address sees what changed, what the product does and what is next, always current with the records."
+    acceptance: "Anyone with the address sees what changed, what the product does and which work is open, always current with the records."
     evidence: "September 26, 2026, the owner: 'Do we have a public changelog, feature list, and todo pages? We could add these, public links, but they can be undiscoverable (no page linking to them)'. None existed. The first builder stopped at a usage limit before writing a file; the second was resumed at 21:30 UTC."
     next_local_work: "Finish the generator and its checks, release the pages, and fold the regeneration into the release record step."
   - id: S-6.213

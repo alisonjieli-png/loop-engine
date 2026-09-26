@@ -1270,7 +1270,7 @@
     ]
    },
    {
-    "acceptance": "Anyone with the address sees what changed, what the product does and what is next, always current with the records.",
+    "acceptance": "Anyone with the address sees what changed, what the product does and which work is open, always current with the records.",
     "blocked_on": "",
     "depends_on": [
      "S-6.67",
@@ -5364,5 +5364,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:c74d1240838bb097ed20943eaa4eb2690014906d36323dd4b956d2cb82b6adac"
+ "source_fingerprint": "sha256:6a7adaafa90e8f1aa8c9be381d7e481e5161a2a8985bccf4eed95224a1f66504"
 }
