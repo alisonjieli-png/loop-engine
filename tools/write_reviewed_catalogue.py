@@ -148,6 +148,27 @@ def _same_family(reviewers, producer) -> bool:
     return any(reviewer.family == producer.family for reviewer in reviewers)
 
 
+VARIATION_RECORD = "variation_of/v1"
+
+
+def variation_of(catalogue, spec: dict) -> dict:
+    """What a native item varies: the ``variation_of`` record of the idea it cites, when its first cited source
+    is a harness idea record written by tools/generate_item_variations.py; empty for every other item."""
+    for path in spec.get("sources") or ():
+        source = catalogue._sources.get(path) if path != "LICENSE" else None
+        if source is None:
+            continue
+        try:
+            record = json.loads(source.text)
+        except ValueError:
+            continue
+        if isinstance(record, dict) and record.get("record_type") == "harness_idea_record/v1":
+            value = (record.get("applicability") or {}).get("variation_of")
+            if isinstance(value, dict) and value.get("record_type") == VARIATION_RECORD:
+                return dict(value)
+    return {}
+
+
 def served_form(package, files) -> dict:
     """What the release serves for one package, and the proof that it is the reviewed package."""
     if len(package.files) == 1 and package.files[0].media_type.startswith("text/"):
@@ -284,6 +305,11 @@ def write(options) -> dict:
                                "harness_kind": spec["provenance"]["harness_kind"]})
         else:
             provenance["authoring"] = "original_model_authored"
+            varied = variation_of(catalogue, spec)
+            if varied:
+                # A variation names the served item it varies (tools/generate_item_variations.py), so the
+                # reviewed row says what it varies: identity, digest and axis.
+                provenance["variation_of"] = varied
         attributes, attribute_engines = item_attributes(reference, spec, package, files, is_import=is_import)
         row_item = {"lifecycle": "candidate", "license_state": "declared", "tier": options.tier,
                     "provenance": provenance, "attributes": attributes,

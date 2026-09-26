@@ -296,8 +296,12 @@ def _render_prompt(idea: dict) -> str:
     # for the file, never an instruction to the model, and an idea without one renders exactly as before.
     excerpt = applicability.get("seed_excerpt")
     if isinstance(excerpt, str) and excerpt.strip():
+        # A variation idea (tools/generate_item_variations.py) names its seed's origin: a served item whose
+        # licence allows copying. An idea without one is the owner's own project, as before.
+        origin = applicability.get("seed_origin")
+        origin = origin if isinstance(origin, str) and origin.strip() else "the library owner's own project"
         prompt += (
-            " Seed material from the library owner's own project follows between the markers; it may be "
+            f" Seed material from {origin} follows between the markers; it may be "
             "copied and adapted freely, and the file must stay grounded in it and claim nothing it does not "
             "contain.\n<<<SEED>>>\n" + excerpt[:MAX_SEED_EXCERPT_CHARACTERS] + "\n<<<END SEED>>>"
         )

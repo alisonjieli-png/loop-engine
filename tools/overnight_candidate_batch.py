@@ -110,7 +110,7 @@ def load_matrix(path: Path) -> dict:
 
 #: Batch source kinds whose ideas carry their own task statement, so no occupation is rotated over them: the
 #: owner's volume seeds (tools/build_volume_seed_ideas.py) ground each idea in one of the owner's own projects.
-SELF_GROUNDED_SOURCE_KINDS = ("owner_volume_inventory",)
+SELF_GROUNDED_SOURCE_KINDS = ("owner_volume_inventory", "served_release_bundle")
 
 
 def _occupation_rotation(matrix: dict) -> list[dict]:

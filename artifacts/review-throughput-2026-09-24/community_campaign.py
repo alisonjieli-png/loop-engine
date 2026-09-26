@@ -93,7 +93,7 @@ def _identities(options, catalogue) -> list:
 
 
 def prechecks(options) -> dict:
-    catalogue = _profile(options.catalogue)[0].load(options.catalogue, ROOT)
+    catalogue = _profile(options.catalogue)[0].load(options.catalogue, options.repository)
     configuration, criteria, instructions, _panel_unused = _build(options.catalogue, options.scratch_ledger, False,
                                                                   len(catalogue.identities()))
     engine_map = engines.build_precheck_engines(configuration)
@@ -120,7 +120,7 @@ def calibrate(options) -> dict:
     An imported catalogue is calibrated on the imported controls, under the imported criteria; an original one on
     the original controls. The rule is the same: a reviewer that approves a known-wrong control is excluded."""
     reader, _content_profile = _profile(options.catalogue)
-    catalogue = reader.load(options.catalogue, ROOT)
+    catalogue = reader.load(options.catalogue, options.repository)
     configuration, criteria, instructions, panel = _build(options.catalogue, options.ledger,
                                                           options.authorize_model_calls, len(catalogue.identities()))
     if imported.is_imported_catalogue(options.catalogue):
@@ -178,7 +178,7 @@ def calibrate(options) -> dict:
 
 def review(options) -> dict:
     """Every eligible candidate that passed the prechecks, asked of the reachable family in batches of 12."""
-    catalogue = _profile(options.catalogue, options.content_profile)[0].load(options.catalogue, ROOT)
+    catalogue = _profile(options.catalogue, options.content_profile)[0].load(options.catalogue, options.repository)
     configuration, criteria, instructions, panel = _build(options.catalogue, options.ledger,
                                                           options.authorize_model_calls, len(catalogue.identities()),
                                                           options.content_profile)
@@ -212,6 +212,9 @@ def main(argv=None) -> int:
     for name in ("prechecks", "calibrate", "review"):
         command = commands.add_parser(name)
         command.add_argument("--catalogue", type=Path, required=True)
+        command.add_argument("--repository", type=Path, default=ROOT,
+                             help="The checkout whose committed files the catalogue cites; this repository by "
+                                  "default. The variation runs cite a private factory repository (tools/generate_item_variations.py).")
         command.add_argument("--output", type=Path, required=True)
         command.add_argument("--exclude-installation", action="append", default=[])
         if name == "prechecks":
