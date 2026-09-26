@@ -1077,7 +1077,7 @@
      "S-6.196"
     ],
     "id": "S-6.197",
-    "next_local_work": "Read the 04 slot's journal and the 10:17 UTC cron run (~/.le-ci-tmp/daily-cron.log, ~/baltor-library/daily/<run>/journal.jsonl); at four slots a day of 2,000 packages the served count passes 10,000 within two days, so run the serving measurement (S-6.203) before then or lower EXPORT_TARGET.",
+    "next_local_work": "Read the 04 slot's journal and the 10:17 UTC cron run (~/.le-ci-tmp/daily-cron.log and each run's journal.jsonl under ~/baltor-library/daily/); at four slots a day of 2,000 packages the served count passes 10,000 within two days, so run the serving measurement (S-6.203) before then or lower EXPORT_TARGET.",
     "phase": 6,
     "status": "building",
     "title": "One unattended daily job from the day's approvals to a checked live catalogue release, with automatic rollback",
@@ -5184,5 +5184,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:b91fc5f775506db35be419554decdaa747f0a966d3e79101e1913d57e8c97359"
+ "source_fingerprint": "sha256:6451945ee27ec6fb1e15928fa49b083aa87025972c4d945de89def881f3afb1a"
 }
