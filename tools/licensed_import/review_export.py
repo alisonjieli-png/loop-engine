@@ -62,7 +62,9 @@ from .records import (
 
 ITEMS_RECORD_TYPE = "starter_catalogue_candidate_items/v3"
 SPECIFICATIONS_RECORD_TYPE = "candidate_intelligence_specifications/v3"
-EXPORT_REPORT_RECORD_TYPE = "licensed_import_review_export/v1"
+#: Version two adds the kind mix (`mix`) and the count of packages with scripts (`with_scripts`); the review panel's
+#: imported reader serves version one, which earlier exports wrote, and version two.
+EXPORT_REPORT_RECORD_TYPE = "licensed_import_review_export/v2"
 IMPORTED_PROFILE = "imported_licensed_package/v1"
 UPSTREAM_FAMILY = "upstream_author"
 METHOD_IDENTITY = "licensed_import/github_verbatim/v1"

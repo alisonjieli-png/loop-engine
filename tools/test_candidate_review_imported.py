@@ -96,7 +96,8 @@ def fixture(folder, *, files=None, licence="MIT", edit=None):
              "publication": "not_published", "items": [row]}
     report = {"record_type": imported.EXPORT_REPORT, "by_first_source_and_licence": {}, "code_revision": EXPORT_REVISION,
               "differs_from_original_profile": [], "files": len(files), "items": 1, "items_digest": "3" * 64,
-              "kinds": {"skill": 1}, "licences": {licence: 1}, "populations": 1, "profile": imported.IMPORTED_PROFILE,
+              "kinds": {"skill": 1}, "mix": {"skill": 1}, "with_scripts": 0, "licences": {licence: 1}, "populations": 1,
+              "profile": imported.IMPORTED_PROFILE,
               "repositories": 1, "selection": {}, "written_at": "2026-09-25T00:00:00Z"}
     records = {"row": row, "spec": spec, "items": items, "report": report}
     if edit:
@@ -275,6 +276,27 @@ class ImportedPrecheckTest(unittest.TestCase):
     def test_known_wrong_an_empty_licence_text_is_refused(self):
         self.assertIn("imported_licence_text_missing",
                       codes(evaluate(files=files_of(LICENSE=(b"\n", "text/plain", "other")))))
+
+    def test_the_reader_serves_both_export_report_versions_and_refuses_a_mixed_one(self):
+        # Version one, which the exports before September 26, 2026 wrote, keeps reading; version two carries the
+        # kind mix and the script count; a report that names one version with the other's fields is refused, which
+        # is what refused the 16:17 UTC slot's prechecks that day before the reader learned version two.
+        def as_version_one(records):
+            records["report"] = {key: value for key, value in records["report"].items() if key not in ("mix", "with_scripts")}
+            records["report"]["record_type"] = imported.EXPORT_REPORT_V1
+
+        def with_mix(records):
+            records["report"].update({"mix": {"skill": 1}, "with_scripts": 0})
+
+        def mixed_up(records):
+            with_mix(records)
+            records["report"]["record_type"] = imported.EXPORT_REPORT_V1
+
+        self.assertEqual(refusal(edit=as_version_one), "")
+        self.assertEqual(refusal(edit=with_mix), "")
+        self.assertEqual(refusal(edit=mixed_up), "unknown_record_fields")
+        self.assertEqual(refusal(edit=change("report.record_type", "licensed_import_review_export/v3")),
+                         "unsupported_record_version")
 
     def test_known_wrong_code_waits_for_its_own_tests_on_the_sandbox_route(self):
         files = files_of(**{"scripts/check__py": (b"print('checked')\n", "text/x-python", "executable_tool")})

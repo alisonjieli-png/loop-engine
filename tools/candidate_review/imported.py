@@ -43,7 +43,14 @@ from .records import digest, read_part, read_record, refuse, sha256_hex
 IMPORTED_PROFILE = "imported_licensed_package/v1"
 IMPORTED_GROUNDING = "imported_licensed_package"
 IMPORTED_REQUEST = "candidate_imported_package_review_request/v1"
-EXPORT_REPORT, EXPORT_FILE = "licensed_import_review_export/v1", "export-report.json"
+#: The export report versions this reader serves: version one, which the exports before September 26, 2026 wrote,
+#: and version two, which adds the kind mix the balanced export drew (`mix`) and the count of packages with scripts
+#: (`with_scripts`). An older report keeps reading; a report of either version with the other version's fields is
+#: refused, so neither can be guessed at.
+EXPORT_REPORT, EXPORT_FILE = "licensed_import_review_export/v2", "export-report.json"
+EXPORT_REPORT_V1 = "licensed_import_review_export/v1"
+EXPORT_REPORT_VERSIONS = (EXPORT_REPORT_V1, EXPORT_REPORT)
+V2_REPORT_FIELDS = ("mix", "with_scripts")
 OUTSIDE_PROVENANCE = "outside_source_provenance/v1"
 LICENCE_EVIDENCE = "outside_licence_evidence/v1"
 #: The producer of an imported package: its upstream author, a family no reviewing installation belongs to.
@@ -118,8 +125,12 @@ class ImportedCatalogue(NativeCatalogue):
         self.source_digests = {}
 
     def _check_export_report(self):
-        report = read_record(json_document(regular_bytes(self.folder, EXPORT_FILE, MAX_METADATA_BYTES)), EXPORT_REPORT,
-                             REPORT_FIELDS)
+        document = json_document(regular_bytes(self.folder, EXPORT_FILE, MAX_METADATA_BYTES))
+        version = document.get("record_type") if type(document) is dict else None
+        if version not in EXPORT_REPORT_VERSIONS:
+            refuse("unsupported_record_version", f"expected one of {EXPORT_REPORT_VERSIONS}, found {version!r}")
+        fields = REPORT_FIELDS + (V2_REPORT_FIELDS if version == EXPORT_REPORT else ())
+        report = read_record(document, version, fields)
         populations = len(list(self.folder.glob("specifications-[0-9][0-9][0-9].json")))
         if (report["profile"] != IMPORTED_PROFILE or report["items"] != len(self._rows)
                 or report["code_revision"] != self.source_revision or report["populations"] != populations):
