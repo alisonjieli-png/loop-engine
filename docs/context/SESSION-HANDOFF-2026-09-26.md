@@ -60,9 +60,20 @@ is the snapshot before it. The roadmap remains the task authority.
 
 ## What runs unattended, and the traps of the day
 
-- The cron entry still names `REPOSITORY=/home/username/.le-import-review-20260925`,
-  a detached worktree on `main`. Move it to a permanent job checkout before
-  that worktree is retired, and update the checkout only between slots.
+- The cron entry names `REPOSITORY=/home/username/.le-library-job`, a
+  detached worktree at the day's commit `edcc77a3`, since 12:15 UTC; the
+  earlier entry named the session's own worktree. Move the job checkout to a
+  newer revision only between slots (`git -C ~/.le-library-job checkout
+  <revision>` after a slot's `counts` stage and before the next `17` past
+  the hour), and never while a slot runs.
+- A new folder under `docs/` needs a charter `README.md`: the self-test's
+  zero-tolerance gate counts every docs folder without one, and continuous
+  integration refused `edcc77a3` for the new `docs/design` folder until the
+  README followed.
+- The website redesign brief for Claude Code Design is
+  [docs/design/WEBSITE-REDESIGN-BRIEF-2026-09-26.md](../design/WEBSITE-REDESIGN-BRIEF-2026-09-26.md);
+  the owner pastes it into the design tool, and the pages it describes are
+  the ones this handoff records as live or waiting for release 37.
 - Never edit a prompt-affecting file (the criteria, the reviewer instructions,
   `prompt.py`), the writer, the combine tool or the bundle builder while a
   slot is between its review and bundle stages: the writer keys each verdict
@@ -72,6 +83,58 @@ is the snapshot before it. The roadmap remains the task authority.
   backup tree holds most of the files and few projects.
 - A folder that is only a README about other folders seeds nothing: the seed
   builder requires a module outline or five code files.
+
+## Parallel work in flight (from 12:40 UTC)
+
+The owner asked at 12:30 UTC for sub-agents to "track, review, resolve, and
+iteratively improve all aspects of this, start to finish, including
+user-level feedback, but also oracles that can run server side to review our
+files and double check them and generate variations of them automatically".
+Two workflows of the session's harness run thirteen builders, each in its
+own detached worktree of `origin/main` named `/home/username/.le-agent-<package>`,
+each followed by a skeptic verifier. A builder commits in its worktree and
+never pushes; the integrating session cherry-picks the verified commits onto
+`main`, resolves the conflicts (expected in `catalogue-browser.js`,
+`service.js`, `index.html`, `web_site_map.json`, the documentation index,
+`catalogue_attributes.py`, `engine_slots.yaml`, `architecture_map.py` and
+`_self_test.py`), runs the preflight and pushes one release train.
+
+| Package | Roadmap | What it builds |
+|---|---|---|
+| feedback-withdrawal | S-6.199 | the report and flag operations, the withdrawal rule, the report button, the nightly rescan, the weekly upstream check |
+| serving-measurement | S-6.203 | the measurement at 6,398, about 12,800 and about 25,000 with the real bundle and a labelled doubling |
+| quickstarts | S-6.202 | one quickstart per harness, the nightly checker, its cron entry |
+| red-team-page | S-6.201, S-6.198 | the showcase page generator, the served case study, the hostname row |
+| weekly-number | S-6.204 | the weekly number command, its record, its Monday cron entry |
+| ci-speed | S-6.200 | sharded continuous integration, the pre-push check, the timing record |
+| tag-precision | S-6.206 | the 100-item precision sample of the step function rules and the rule fixes |
+| facet-tags | S-6.209 | job title, industry, level, language and geography rules behind the tagging edge, the table filters |
+| seed-wave | S-6.207 | media in the seed excerpts, the full seed batch, the wave script; its generation stage started on Tactical |
+| request-tracker | (all) | the owner requests ledger and its checking tool |
+| user-feedback | S-6.199 | rate a download, request material, search gaps as metadata, the staff view |
+| oracle-review | S-6.199, S-6.178 | the hourly second-look review of served items by an eligible family, withdrawal and upgrade candidates |
+| oracle-variations | S-6.40 | variations of served items generated on Tactical, reviewed by another family, published by the daily job |
+| source-volume | S-6.40 | the true stock by kind and licence, the days of stock, eight ways to reach 100,000 sources, one new discovery source and a bounded real round into the import store |
+| code-extraction | S-6.62, S-6.44 | code_module packages extracted from the owner's projects with their import closure, a wrapper and a sandboxed smoke test, run on ten projects |
+| production-resources | S-6.40 | templates, SQL transformations, media command files and lookup tables from the owner's projects as packages with validators |
+| retrieval-and-recipes | S-6.63 | a 40-query evaluation set against the real bundle, curated recipes with conflict rules, and the abstention floor in search |
+| failure-laboratory | S-6.62 | the failure fixtures as reusable components and the activation checker run over the active release bundle |
+| factory-economics | S-6.197 | cost and time per admitted package by stage, the projection to each mark, and the smallest scheduling change the journals justify |
+
+The third workflow (six researcher-builders, from 12:55 UTC) follows the
+owner's exploration protocol of the same hour: current reality, five to ten
+alternatives, external research with dates, analogies, comparable products,
+synthesis, then a tested increment and a decision record under
+`docs/research/`, with the untouched ideas kept as a queue.
+
+Model use by the oracles and the seed wave stays inside the recorded
+authority: Tactical for generation and for imported-package reviews,
+`claude_code.subscription` for the small reviews of Tactical-produced work,
+Codex from September 29, Ollama Cloud when its allowance returns on October 1.
+The Fly Machine holds no model key and makes no model call; every oracle runs
+on this machine from cron, outside the daily slots' two-hour windows, with a
+cap per run, and publishes only through the daily job's review and publish
+path.
 
 ## Next steps, in order
 
