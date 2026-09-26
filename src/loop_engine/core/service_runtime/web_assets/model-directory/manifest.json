@@ -1,33 +1,33 @@
 {
- "built_at": "2026-09-24T22:49:23Z",
+ "built_at": "2026-09-26T12:16:02Z",
  "commercial_relationship_schema": "directory_commercial_relationship/v1",
  "counts": {
   "endpoints": 184,
-  "fit_rows": 1230,
-  "models": 2153,
+  "fit_rows": 1233,
+  "models": 2151,
   "runtimes": 6,
-  "search_rows": 2153
+  "search_rows": 2151
  },
  "files": {
   "endpoints.json": {
-   "bytes": 1342149,
-   "sha256": "200cb0418159d44ad17cf3890566c0fb904c09b31bb4b039fcc1b4c036b5e4d6"
+   "bytes": 1344512,
+   "sha256": "6fcdac14eef9227bef1660b5da5337908bbf1e7b3191c2282223718c5706a88e"
   },
   "fit-index.json": {
-   "bytes": 250070,
-   "sha256": "163c8c6e5bff90eecccd56bd4a2ee6079cf739fd18eb68ec55149cac23740788"
+   "bytes": 251618,
+   "sha256": "ecfb2c6d836b17c029c24daad968ae3d8fb6b4db9d09aaf09ee69ed88bf6fb45"
   },
   "hardware.json": {
    "bytes": 10009,
    "sha256": "5cef471389acea1215e70c060b47653ec79f37d9a723f859b1ab07b803f343c6"
   },
   "models.json": {
-   "bytes": 5985447,
-   "sha256": "af16db9d19ab297116246c00f4b01a37bf1428d75c89a9bd0a8262941368fda7"
+   "bytes": 6020870,
+   "sha256": "2531d2fbcbbd2aeb9b1e74a4a056fb98926bea3109019d1a5fba048edc6bcde5"
   },
   "search-index.json": {
-   "bytes": 268522,
-   "sha256": "44b1b9d33e1ef83640a124ece5e968cab34d33bfac81f609e11573d992e6841b"
+   "bytes": 268329,
+   "sha256": "cf3f15a54a5db6de9e08bea732f0c9ae592ec5eb9e9e18d9fc8e43d58006f6a5"
   }
  },
  "linked_only": [
@@ -40,94 +40,98 @@
  ],
  "model_rows_by_source": {
   "baltor_records": 4,
-  "huggingface": 1783,
-  "huggingface_config": 953,
-  "huggingface_gguf": 712,
-  "modelsdev": 469,
+  "huggingface": 1780,
+  "huggingface_config": 955,
+  "huggingface_gguf": 718,
+  "modelsdev": 471,
   "openrouter": 341,
   "openrouter_endpoints": 341
  },
  "record_type": "model_directory_manifest/v1",
  "report": {
-  "configurations": 953,
-  "gguf_repositories": 712,
+  "configurations": 955,
+  "gguf_repositories": 718,
   "lists": [
    {
-    "added": 477,
+    "added": 481,
     "limit": 1000,
-    "read": "2026-09-24",
+    "read": "2026-09-26",
     "sort": "downloads",
-    "state": "cached",
+    "state": "read",
     "task": "text-generation"
    },
    {
-    "added": 565,
+    "added": 559,
     "limit": 1000,
-    "read": "2026-09-24",
+    "read": "2026-09-26",
     "sort": "likes",
-    "state": "cached",
+    "state": "read",
     "task": "text-generation"
    },
    {
     "added": 103,
     "limit": 500,
-    "read": "2026-09-24",
+    "read": "2026-09-26",
     "sort": "trendingScore",
-    "state": "cached",
+    "state": "read",
     "task": "text-generation"
    },
    {
     "added": 146,
     "limit": 400,
-    "read": "2026-09-24",
+    "read": "2026-09-26",
     "sort": "downloads",
-    "state": "cached",
+    "state": "read",
     "task": "image-text-to-text"
    },
    {
-    "added": 66,
+    "added": 67,
     "limit": 200,
-    "read": "2026-09-24",
+    "read": "2026-09-26",
     "sort": "likes",
-    "state": "cached",
+    "state": "read",
     "task": "image-text-to-text"
    },
    {
-    "added": 186,
+    "added": 184,
     "limit": 250,
-    "read": "2026-09-24",
+    "read": "2026-09-26",
     "sort": "downloads",
-    "state": "cached",
+    "state": "read",
     "task": "feature-extraction"
    },
    {
-    "added": 128,
+    "added": 129,
     "limit": 250,
-    "read": "2026-09-24",
+    "read": "2026-09-26",
     "sort": "downloads",
-    "state": "cached",
+    "state": "read",
     "task": "sentence-similarity"
    },
    {
-    "added": 66,
+    "added": 64,
     "limit": 120,
-    "read": "2026-09-24",
+    "read": "2026-09-26",
     "sort": "downloads",
-    "state": "cached",
+    "state": "read",
     "task": "text-ranking"
    }
   ],
   "reader": {
    "answers": {
-    "cached": 3219,
+    "cached": 93,
     "kept": 0,
     "missing": 70,
-    "read": 0
+    "read": 3138
    },
    "requests": {
-    "by_outcome": {},
-    "bytes": 0,
-    "requests": 0
+    "by_outcome": {
+     "https_get:http_error": 61,
+     "https_get:not_found": 9,
+     "https_get:ok": 3138
+    },
+    "bytes": 65422739,
+    "requests": 3208
    },
    "stopped_by": null
   },
@@ -138,8 +142,8 @@
    "address": "openrouter.ai/api/v1/models",
    "id": "openrouter",
    "name": "OpenRouter Models API",
-   "newest_read": "2026-09-24",
-   "oldest_read": "2026-09-24",
+   "newest_read": "2026-09-26",
+   "oldest_read": "2026-09-26",
    "rows": 341,
    "terms_address": "openrouter.ai/docs/guides/overview/models",
    "use": "Context length, output limit, supported parameters and benchmark indexes of hosted models. OpenRouter's documentation says its Models API makes this information freely available; the build reads only that documented interface."
@@ -148,8 +152,8 @@
    "address": "openrouter.ai/api/v1/models",
    "id": "openrouter_endpoints",
    "name": "OpenRouter model endpoints API",
-   "newest_read": "2026-09-24",
-   "oldest_read": "2026-09-24",
+   "newest_read": "2026-09-26",
+   "oldest_read": "2026-09-26",
    "rows": 341,
    "terms_address": "openrouter.ai/docs/guides/overview/models",
    "use": "The providers that serve each model through OpenRouter, with the prices OpenRouter lists for each route."
@@ -158,9 +162,9 @@
    "address": "huggingface.co/api/models",
    "id": "huggingface",
    "name": "Hugging Face Hub API",
-   "newest_read": "2026-09-24",
-   "oldest_read": "2026-09-24",
-   "rows": 1783,
+   "newest_read": "2026-09-26",
+   "oldest_read": "2026-09-26",
+   "rows": 1780,
    "terms_address": "huggingface.co/terms-of-service",
    "use": "Licence, parameter count, publication date, downloads and task of open models, read within the API's published request limit."
   },
@@ -168,9 +172,9 @@
    "address": "huggingface.co",
    "id": "huggingface_config",
    "name": "Hugging Face model configurations",
-   "newest_read": "2026-09-24",
-   "oldest_read": "2026-09-24",
-   "rows": 953,
+   "newest_read": "2026-09-26",
+   "oldest_read": "2026-09-26",
+   "rows": 955,
    "terms_address": "huggingface.co/terms-of-service",
    "use": "Layers, key and value heads, head size and context length, the numbers the memory formula needs."
   },
@@ -178,9 +182,9 @@
    "address": "huggingface.co",
    "id": "huggingface_gguf",
    "name": "Hugging Face GGUF file lists",
-   "newest_read": "2026-09-24",
-   "oldest_read": "2026-09-24",
-   "rows": 712,
+   "newest_read": "2026-09-26",
+   "oldest_read": "2026-09-26",
+   "rows": 718,
    "terms_address": "huggingface.co/terms-of-service",
    "use": "The quantized files of a model and their sizes, from the GGUF copy its maker or the most downloaded copier publishes."
   },
@@ -188,9 +192,9 @@
    "address": "models.dev/api.json",
    "id": "modelsdev",
    "name": "models.dev",
-   "newest_read": "2026-09-24",
-   "oldest_read": "2026-09-24",
-   "rows": 653,
+   "newest_read": "2026-09-26",
+   "oldest_read": "2026-09-26",
+   "rows": 655,
    "terms_address": "github.com/sst/models.dev/blob/dev/LICENSE",
    "use": "Direct provider prices, limits and capabilities, from a public database under the MIT licence."
   },
