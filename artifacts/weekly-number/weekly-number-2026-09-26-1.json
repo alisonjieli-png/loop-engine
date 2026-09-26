@@ -1,0 +1,365 @@
+{
+ "record_type": "weekly_number/v1",
+ "recorded_at": "2026-09-26T12:50:29Z",
+ "window": {
+  "from": "2026-09-19T12:50:29Z",
+  "to": "2026-09-26T12:50:29Z",
+  "days": 7
+ },
+ "complete": true,
+ "sources": {
+  "identity": {
+   "status": "read",
+   "requests": 1,
+   "reference": "supabase-secret"
+  },
+  "billing": {
+   "status": "read",
+   "requests": 3,
+   "reference": "stripe-live",
+   "write_requests": 0,
+   "charges_made": 0
+  },
+  "public": {
+   "status": "read",
+   "requests": 2,
+   "origin": "https://baltor.ai"
+  },
+  "releases": {
+   "status": "read",
+   "records": 14,
+   "folder": "artifacts/architecture-audit-2026-09-19"
+  },
+  "library": {
+   "status": "read",
+   "slots": 3,
+   "folder": "/home/username/baltor-library/daily"
+  }
+ },
+ "counts": {
+  "accounts": {
+   "total": 18,
+   "confirmed": 9,
+   "made_this_week": 16,
+   "confirmed_this_week": 9,
+   "check_journey_total": 6,
+   "check_journey_confirmed": 4,
+   "check_journey_this_week": 5,
+   "unreadable_dates": 2,
+   "made_by_day": {
+    "2026-09-20": 2,
+    "2026-09-24": 14
+   },
+   "confirmed_by_day": {
+    "2026-09-20": 2,
+    "2026-09-24": 7
+   },
+   "data_start": "2026-09-20T19:01:55Z",
+   "mixes_test_journeys": true,
+   "note": "The identity provider holds customer accounts, the owner's and engineering's own accounts and the accounts the live journey checks make. Accounts whose address starts with baltor-check- are counted apart; the rest cannot be told apart by their fields."
+  },
+  "billing": {
+   "paying_subscriptions": 0,
+   "subscriptions_total": 0,
+   "subscriptions_by_status": {},
+   "customers_total": 0,
+   "customers_this_week": 0,
+   "checkout_sessions_started": 2,
+   "checkout_sessions_finished": 0,
+   "checkout_sessions_started_this_week": 2,
+   "checkout_sessions_finished_this_week": 0,
+   "checkout_sessions_by_status": {
+    "open": 0,
+    "complete": 0,
+    "expired": 2
+   },
+   "data_start": "2026-09-21T11:45:25Z",
+   "paying_statuses": [
+    "active",
+    "trialing",
+    "past_due"
+   ],
+   "mixes_test_journeys": true,
+   "note": "The live billing account holds every checkout session and subscription, including the ones engineering started to prove the live checkout on September 21, 2026; a session or customer made by a check cannot be told apart from a customer by its fields."
+  },
+  "library": {
+   "packages_served": 6398,
+   "active_release_id": "856bff51fac2bf8f4d70b181a8b129d4fdaa5624dffe020db06ce5239724053f",
+   "content_digest": "d0f4f7ea64ae0406f398ff0e358a3999bb27c65d2172d1254bb647d92aac757d",
+   "items_in_release": 6398,
+   "withdrawn_left_out": 0,
+   "built_at": "2026-09-26T11:54:13Z",
+   "catalogue_state_revision": 22,
+   "service_ready": true,
+   "registration_available": true,
+   "checkout_available": true,
+   "mixes_test_journeys": false,
+   "note": "Public records, no account involved. The served count is the active release's item count."
+  },
+  "visitors": {
+   "status": "not_measured",
+   "reason": "No visitor count exists. The request counter with its retention rule is planned work under S-6.204."
+  }
+ },
+ "cycle_times": {
+  "releases": {
+   "records_read": 14,
+   "latest_release": 36,
+   "count_this_week": 14,
+   "commit_to_live_minutes": {
+    "known": 14,
+    "median": 25.9,
+    "min": 20.7,
+    "max": 39.0
+   },
+   "failed_first_attempts_this_week": 10,
+   "releases_with_failed_first_attempts_recorded": 11,
+   "releases_this_week": [
+    {
+     "fly_release": 21,
+     "deployed_at": "2026-09-23T16:28:55Z",
+     "source_revision": "1920296c00ce",
+     "commit_to_live_minutes": 20.7,
+     "failed_first_attempts": null
+    },
+    {
+     "fly_release": 23,
+     "deployed_at": "2026-09-24T10:34:04Z",
+     "source_revision": "bcd05095b204",
+     "commit_to_live_minutes": 26.0,
+     "failed_first_attempts": null
+    },
+    {
+     "fly_release": 24,
+     "deployed_at": "2026-09-24T12:47:19Z",
+     "source_revision": "961dc906a452",
+     "commit_to_live_minutes": 23.9,
+     "failed_first_attempts": null
+    },
+    {
+     "fly_release": 25,
+     "deployed_at": "2026-09-24T18:34:32Z",
+     "source_revision": "c93c201f7d79",
+     "commit_to_live_minutes": 25.1,
+     "failed_first_attempts": 3
+    },
+    {
+     "fly_release": 26,
+     "deployed_at": "2026-09-25T08:46:47Z",
+     "source_revision": "f371ef2c47ea",
+     "commit_to_live_minutes": 23.5,
+     "failed_first_attempts": 1
+    },
+    {
+     "fly_release": 27,
+     "deployed_at": "2026-09-25T10:24:39Z",
+     "source_revision": "f902d915bd7f",
+     "commit_to_live_minutes": 39.0,
+     "failed_first_attempts": 3
+    },
+    {
+     "fly_release": 29,
+     "deployed_at": "2026-09-25T14:34:35Z",
+     "source_revision": "e120cdbdc64e",
+     "commit_to_live_minutes": 31.1,
+     "failed_first_attempts": 2
+    },
+    {
+     "fly_release": 30,
+     "deployed_at": "2026-09-25T15:29:37Z",
+     "source_revision": "250255676098",
+     "commit_to_live_minutes": 24.1,
+     "failed_first_attempts": 0
+    },
+    {
+     "fly_release": 31,
+     "deployed_at": "2026-09-25T16:29:39Z",
+     "source_revision": "eaabbe62aae1",
+     "commit_to_live_minutes": 27.8,
+     "failed_first_attempts": 0
+    },
+    {
+     "fly_release": 32,
+     "deployed_at": "2026-09-25T17:57:01Z",
+     "source_revision": "0d2b1da3e724",
+     "commit_to_live_minutes": 27.2,
+     "failed_first_attempts": 0
+    },
+    {
+     "fly_release": 33,
+     "deployed_at": "2026-09-25T20:13:24Z",
+     "source_revision": "88a76a6a5133",
+     "commit_to_live_minutes": 24.9,
+     "failed_first_attempts": 0
+    },
+    {
+     "fly_release": 34,
+     "deployed_at": "2026-09-25T21:17:10Z",
+     "source_revision": "ea2bc508e79d",
+     "commit_to_live_minutes": 27.4,
+     "failed_first_attempts": 1
+    },
+    {
+     "fly_release": 35,
+     "deployed_at": "2026-09-25T22:22:20Z",
+     "source_revision": "2cc06eb7810d",
+     "commit_to_live_minutes": 27.9,
+     "failed_first_attempts": 0
+    },
+    {
+     "fly_release": 36,
+     "deployed_at": "2026-09-25T23:23:00Z",
+     "source_revision": "cd0794772a9d",
+     "commit_to_live_minutes": 25.9,
+     "failed_first_attempts": 0
+    }
+   ]
+  },
+  "library": {
+   "slots_read": 3,
+   "count_this_week": 3,
+   "exported_this_week": 6000,
+   "approved_this_week": 4769,
+   "rejected_this_week": 124,
+   "published_this_week": 3,
+   "checked_live_this_week": 3,
+   "start_to_served_minutes": {
+    "known": 2,
+    "median": 100.6,
+    "min": 98.5,
+    "max": 102.7
+   },
+   "review_minutes": {
+    "known": 3,
+    "median": 64.2,
+    "min": 63.5,
+    "max": 66.6
+   },
+   "slots_this_week": [
+    {
+     "slot": "2026-09-26",
+     "started_at": "2026-09-25T23:25:35Z",
+     "start_source": "folder_birth_time",
+     "served_at": null,
+     "finished_at": "2026-09-26T01:01:51Z",
+     "start_to_served_minutes": null,
+     "start_to_finished_minutes": 96.3,
+     "review_minutes": 63.5,
+     "stage_minutes": {
+      "export": 0.0,
+      "prechecks": 13.4,
+      "calibrate": 2.0,
+      "review": 63.5,
+      "write": 11.2,
+      "combine": 0.1,
+      "bundle": 0.1,
+      "counts": 6.0
+     },
+     "exported": 2000,
+     "passed_prechecks": 1707,
+     "reviewed": 1707,
+     "review_calls": 143,
+     "approved": 1647,
+     "rejected": 29,
+     "left_out": 31,
+     "published": true,
+     "checked_live": true
+    },
+    {
+     "slot": "2026-09-26-04",
+     "started_at": "2026-09-26T04:38:23Z",
+     "start_source": "folder_birth_time",
+     "served_at": "2026-09-26T06:21:04Z",
+     "finished_at": "2026-09-26T06:21:05Z",
+     "start_to_served_minutes": 102.7,
+     "start_to_finished_minutes": 102.7,
+     "review_minutes": 66.6,
+     "stage_minutes": {
+      "export": 0.4,
+      "prechecks": 16.9,
+      "calibrate": 2.6,
+      "review": 66.6,
+      "write": 13.1,
+      "combine": 0.1,
+      "bundle": 0.1,
+      "publish": 2.9,
+      "check": 0.0,
+      "counts": 0.0
+     },
+     "exported": 2000,
+     "passed_prechecks": 1630,
+     "reviewed": 1630,
+     "review_calls": 136,
+     "approved": 1536,
+     "rejected": 50,
+     "left_out": 44,
+     "published": true,
+     "checked_live": true
+    },
+    {
+     "slot": "2026-09-26-10",
+     "started_at": "2026-09-26T10:17:01Z",
+     "start_source": "folder_birth_time",
+     "served_at": "2026-09-26T11:55:32Z",
+     "finished_at": "2026-09-26T11:55:34Z",
+     "start_to_served_minutes": 98.5,
+     "start_to_finished_minutes": 98.5,
+     "review_minutes": 64.2,
+     "stage_minutes": {
+      "export": 0.4,
+      "prechecks": 15.4,
+      "calibrate": 0.8,
+      "review": 64.2,
+      "write": 14.2,
+      "combine": 0.2,
+      "bundle": 0.2,
+      "publish": 3.1,
+      "check": 0.0,
+      "counts": 0.0
+     },
+     "exported": 2000,
+     "passed_prechecks": 1660,
+     "reviewed": 1660,
+     "review_calls": 139,
+     "approved": 1586,
+     "rejected": 45,
+     "left_out": 29,
+     "published": true,
+     "checked_live": true
+    }
+   ]
+  }
+ },
+ "funnel_rates": {
+  "visitors_to_accounts": {
+   "status": "not_measured",
+   "days_of_data": 0,
+   "reason": "No visitor count exists. The request counter with its retention rule is planned work under S-6.204.",
+   "assumed_in_plan_percent": 2
+  },
+  "accounts_to_paying": {
+   "days_of_data": 5,
+   "numerator": 0,
+   "denominator": 5,
+   "assumed_in_plan_percent": 10,
+   "status": "not_measured",
+   "reason": "5 days of data; a rate is presented as measured only after 7 days"
+  },
+  "checkout_started_to_finished": {
+   "days_of_data": 5,
+   "numerator": 0,
+   "denominator": 2,
+   "status": "not_measured",
+   "reason": "5 days of data; a rate is presented as measured only after 7 days"
+  }
+ },
+ "no_raw_content": true,
+ "credential_printed": false,
+ "physical_model_calls": 0,
+ "previous_records": [],
+ "not_in_this_command": [
+  "the visitor count: requests to customer pages by distinct address, metadata only, kept under the retention rule",
+  "the staff page that shows the week and its trend; the record is written for it"
+ ],
+ "measured_by": "tools/weekly_number.py"
+}
