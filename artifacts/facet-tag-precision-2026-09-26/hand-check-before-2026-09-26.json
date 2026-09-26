@@ -1,0 +1,813 @@
+{
+ "record_type": "facet_tag_hand_check/v1",
+ "recorded_at": "2026-09-26",
+ "attempt": "before the vocabulary repair",
+ "unit": "one evidence row (facet, value, phrase) of a tagged item; a tag with two phrases could be drawn twice",
+ "judge": "the engineering session that built the tagger, reading the item name and purpose, not the owner",
+ "seed": 20260926,
+ "right": 47,
+ "wrong": 53,
+ "precision": 0.47,
+ "rows": [
+  {
+   "identity": "sql_table_aggregation_agent_coordination",
+   "purpose": "Use this method to aggregate data from a SQL table ...",
+   "facet": "industries",
+   "value": "government",
+   "basis": "name or purpose: regulations",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "toml_config_aggregation_data_cleaning",
+   "purpose": "Use when a toml_config must be aggregated as a data-cleaning ...",
+   "facet": "industries",
+   "value": "accounting",
+   "basis": "text: invoice, 6 mentions",
+   "verdict": "right"
+  },
+  {
+   "identity": "email_address_aggregation_project_management",
+   "purpose": "Routing harness for the email-address-aggregation-project-management identity (input datatype email_address, operation ...",
+   "facet": "industries",
+   "value": "sales",
+   "basis": "text: sales, 3 mentions",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "import_command_campaign_plan_466eaa9a980d",
+   "purpose": "Generate a full multi-channel campaign plan with objectives, audience, channel ...",
+   "facet": "industries",
+   "value": "marketing",
+   "basis": "text: campaign, 1 mention",
+   "verdict": "right"
+  },
+  {
+   "identity": "import_skill_geolocate_from_pixels_9c18017ba9c7",
+   "purpose": "Geolocate and chronolocate a photo or video from visual evidence ...",
+   "facet": "industries",
+   "value": "insurance",
+   "basis": "name or purpose: claims",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "import_subagent_web_performance_auditor_164c5c536417",
+   "purpose": "Web performance engineer focused on Core Web Vitals, loading, rendering, ...",
+   "facet": "job_titles",
+   "value": "Accountants and Auditors",
+   "basis": "name or purpose: auditor",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "postal_address_aggregation_compliance_audit",
+   "purpose": "Use when a project deliverable is being prepared for submission ...",
+   "facet": "industries",
+   "value": "legal",
+   "basis": "text: compliance, 3 mentions",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "import_skill_google_analytics_287eba7faa75",
+   "purpose": "Analyze connected Google Analytics 4 traffic, acquisition, engagement, landing pages, ...",
+   "facet": "industries",
+   "value": "consulting",
+   "basis": "name or purpose: engagement",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "import_subagent_code_reviewer_fc217ac52fc0",
+   "purpose": "Expert code review for best practices, quality, maintainability, and security. ...",
+   "facet": "levels",
+   "value": "senior",
+   "basis": "name or purpose: expert",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "import_subagent_experiment_auditor_4f4167bb2068",
+   "purpose": "Audit the latest experiment round's key conclusions, execution consistency, and ...",
+   "facet": "job_titles",
+   "value": "Accountants and Auditors",
+   "basis": "name or purpose: auditor",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "import_skill_organize_280739fa7d15",
+   "purpose": "Open the Cross-Code Organizer (CCO) dashboard — view and manage ...",
+   "facet": "industries",
+   "value": "data and analytics",
+   "basis": "name or purpose: dashboard",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "import_subagent_marketing_scientist_a0be57b1ac50",
+   "purpose": "Use when the task requires marketing science — causal inference, ...",
+   "facet": "industries",
+   "value": "science and research",
+   "basis": "text: scientist, 1 mention",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "import_subagent_compliance_mapper_e71d5f9a8c28",
+   "purpose": "Delegates to this agent when the user wants to map ...",
+   "facet": "industries",
+   "value": "cybersecurity",
+   "basis": "name or purpose: iso 27001",
+   "verdict": "right"
+  },
+  {
+   "identity": "import_subagent_security_auditor_a424dcd9fd33",
+   "purpose": "Review code and architecture for security vulnerabilities, OWASP Top 10, ...",
+   "facet": "industries",
+   "value": "cybersecurity",
+   "basis": "name or purpose: vulnerabilities",
+   "verdict": "right"
+  },
+  {
+   "identity": "version_range_aggregation_data_engineering",
+   "purpose": "Use when a data_engineering task must perform an aggregation over ...",
+   "facet": "industries",
+   "value": "insurance",
+   "basis": "text: claim, 1 mention",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "import_skill_arxiv_viewer_99e90086d273",
+   "purpose": "View, search, and download academic papers from arXiv. Supports API ...",
+   "facet": "industries",
+   "value": "science and research",
+   "basis": "name or purpose: academic",
+   "verdict": "right"
+  },
+  {
+   "identity": "import_skill_paid_ads_launch_e1cc9ff1a56a",
+   "purpose": "Plan and prepare a new paid-media campaign or cross-channel test ...",
+   "facet": "industries",
+   "value": "marketing",
+   "basis": "name or purpose: campaign",
+   "verdict": "right"
+  },
+  {
+   "identity": "import_skill_env_validator_31814c2dac3b",
+   "purpose": "Validates .env files against code references and manifests for missing ...",
+   "facet": "industries",
+   "value": "environment",
+   "basis": "name or purpose: environment",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "import_subagent_attraction_specialist_cb373ca5f7c7",
+   "purpose": "Lead generation and top-of-funnel (TOFU) marketing specialist. Use for keyword ...",
+   "facet": "industries",
+   "value": "marketing",
+   "basis": "name or purpose: marketing",
+   "verdict": "right"
+  },
+  {
+   "identity": "import_skill_resume_session_cfce6559d81b",
+   "purpose": "List in-flight Ouroboros sessions and show the commands needed to ...",
+   "facet": "industries",
+   "value": "hospitality and travel",
+   "basis": "name or purpose: flight",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "import_skill_scrapecreators_api_3b125b107192",
+   "purpose": "Scrape and extract public data from 27+ social media platforms ...",
+   "facet": "industries",
+   "value": "consulting",
+   "basis": "name or purpose: engagement",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "import_skill_upstash_blob_js_02e54c9835b8",
+   "purpose": "Work with the @upstash/blob TypeScript/JavaScript SDK for S3-compatible object storage ...",
+   "facet": "industries",
+   "value": "human resources",
+   "basis": "name or purpose: resume",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "import_command_seo_audit_f5bc4687cd5d",
+   "purpose": "Run a comprehensive SEO audit — technical health, on-page, content ...",
+   "facet": "industries",
+   "value": "marketing",
+   "basis": "name or purpose: seo",
+   "verdict": "right"
+  },
+  {
+   "identity": "import_skill_generate_cds_analytical_query_2e9cd2bd343f",
+   "purpose": "Generate an analytical CDS query (transient projection view with PROVIDER ...",
+   "facet": "industries",
+   "value": "data and analytics",
+   "basis": "name or purpose: kpi",
+   "verdict": "right"
+  },
+  {
+   "identity": "import_subagent_agent_7a8a8047705a",
+   "purpose": "Business idea validation pipeline that orchestrates parallel market research, competitive ...",
+   "facet": "industries",
+   "value": "science and research",
+   "basis": "name or purpose: experiments",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "import_skill_27_personal_brand_monetize_global_ab96b965ae2f",
+   "purpose": "Use when a PERSONAL brand needs to make money — ...",
+   "facet": "industries",
+   "value": "sales",
+   "basis": "name or purpose: deal",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "import_skill_researcher_321d14771921",
+   "purpose": "Conducts investigative-grade research with primary source analysis, cross-verification, and trial-level ...",
+   "facet": "industries",
+   "value": "insurance",
+   "basis": "name or purpose: claims",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "csv_table_aggregation_devops",
+   "purpose": "Use when a devops or engineering-management task must summarize a ...",
+   "facet": "industries",
+   "value": "environment",
+   "basis": "text: conservation, 2 mentions",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "import_skill_roi_calculator_17b098fed6b3",
+   "purpose": "Use when the user asks to \"calculate influencer ROI\", \"prove ...",
+   "facet": "industries",
+   "value": "marketing",
+   "basis": "name or purpose: campaign",
+   "verdict": "right"
+  },
+  {
+   "identity": "import_subagent_seo_auditor_7929203b2d27",
+   "purpose": "Runs SEO audit with AI visibility checks (GEO + AEO ...",
+   "facet": "job_titles",
+   "value": "Accountants and Auditors",
+   "basis": "text: auditor, 1 mention",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "import_subagent_agent_7b1e9004b9ac",
+   "purpose": "Unified multi-dimensional codebase quality assessment that spawns specialized review agents ...",
+   "facet": "industries",
+   "value": "cybersecurity",
+   "basis": "name or purpose: vulnerabilities",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "image_aggregation_agentic_benchmark",
+   "purpose": "Use when an agentic benchmark requires aggregating evidence from image ...",
+   "facet": "industries",
+   "value": "data and analytics",
+   "basis": "name or purpose: dashboards",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "import_skill_brandkit_3c884fe30178",
+   "purpose": "Premium brand-kit image generation skill for creating high-end brand-guidelines boards, ...",
+   "facet": "industries",
+   "value": "media and entertainment",
+   "basis": "name or purpose: gaming",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "import_command_team_delegate_1975246d2890",
+   "purpose": "Task delegation dashboard for managing team workload, assignments, and rebalancing",
+   "facet": "industries",
+   "value": "data and analytics",
+   "basis": "name or purpose: dashboard",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "import_rules_component_pipeline_113145712059",
+   "purpose": "Take a single new component from Figma to fully-built-and-storied code, ...",
+   "facet": "industries",
+   "value": "arts and design",
+   "basis": "name or purpose: figma",
+   "verdict": "right"
+  },
+  {
+   "identity": "import_subagent_sap_qm_consultant_7feefea4bcc0",
+   "purpose": "SAP Quality Management consultant — inspection planning, quality notifications, quality ...",
+   "facet": "industries",
+   "value": "consulting",
+   "basis": "text: consultant, 1 mention",
+   "verdict": "right"
+  },
+  {
+   "identity": "import_plugin_manifest_self_media_content_workflow_plugin_388884c34a1d",
+   "purpose": "plugin_manifest self-media-content-workflow-plugin",
+   "facet": "industries",
+   "value": "media and entertainment",
+   "basis": "name or purpose: media",
+   "verdict": "right"
+  },
+  {
+   "identity": "import_skill_paper_illustration_af45d12a14b9",
+   "purpose": "Generate publication-quality AI illustrations for academic papers using Gemini image ...",
+   "facet": "industries",
+   "value": "arts and design",
+   "basis": "name or purpose: illustration",
+   "verdict": "right"
+  },
+  {
+   "identity": "import_skill_brag_slim_f7efae8269ee",
+   "purpose": "Turn a project directory or a website URL into a ...",
+   "facet": "industries",
+   "value": "media and entertainment",
+   "basis": "name or purpose: music",
+   "verdict": "right"
+  },
+  {
+   "identity": "import_subagent_build_error_resolver_c02ecece4a8f",
+   "purpose": "빌드 실패·타입 에러·컴파일 오류·import 에러·의존성 이슈를 최소 변경으로 그린 복구. ...",
+   "facet": "languages",
+   "value": "korean",
+   "basis": "script: hangul 19% of letters",
+   "verdict": "right"
+  },
+  {
+   "identity": "import_skill_local_places_066a0aa3868c",
+   "purpose": "Discovers, enriches, and scores local businesses in any neighborhood using ...",
+   "facet": "industries",
+   "value": "agriculture",
+   "basis": "name or purpose: restaurants",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "import_subagent_crm_manager_3fa95b8c2d33",
+   "purpose": "Invoke when the user needs to manage CRM operations — ...",
+   "facet": "industries",
+   "value": "marketing",
+   "basis": "name or purpose: campaign",
+   "verdict": "right"
+  },
+  {
+   "identity": "import_subagent_influencer_manager_da77a4b51c5d",
+   "purpose": "Invoke when the user needs help with influencer marketing — ...",
+   "facet": "industries",
+   "value": "marketing",
+   "basis": "name or purpose: campaign",
+   "verdict": "right"
+  },
+  {
+   "identity": "import_skill_self_media_content_brief_8db282fb803f",
+   "purpose": "为单篇或多平台自媒体创作澄清需求并生成可确认的创作简报。用于用户只给一句话选题、一个链接、一份素材、一个产品或模糊创作要求，需要确认目标受众、内容目标、核心判断、角度、深度、调性、证据、禁区和平台差异时。纯数据分析、已确认方向后的改稿和细节微调不使用此 Skill。",
+   "facet": "industries",
+   "value": "media and entertainment",
+   "basis": "name or purpose: media",
+   "verdict": "right"
+  },
+  {
+   "identity": "import_skill_experiment_bridge_9ca1e570a0da",
+   "purpose": "Workflow 1.5: Bridge between idea discovery and auto review. Reads ...",
+   "facet": "industries",
+   "value": "science and research",
+   "basis": "name or purpose: experiment",
+   "verdict": "right"
+  },
+  {
+   "identity": "yaml_config_aggregation_documentation",
+   "purpose": "Use this harness method to aggregate YAML configuration files for ...",
+   "facet": "job_titles",
+   "value": "Project Management Specialists",
+   "basis": "text: project managers, 1 mention",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "import_skill_amazon_ads_5723cd74a213",
+   "purpose": "Plan and create Amazon Sponsored Products campaigns end-to-end via the ...",
+   "facet": "industries",
+   "value": "marketing",
+   "basis": "name or purpose: campaign",
+   "verdict": "right"
+  },
+  {
+   "identity": "string_aggregation_entity_resolution",
+   "purpose": "Use when multiple free-text strings from personnel interviews and on-site ...",
+   "facet": "industries",
+   "value": "human resources",
+   "basis": "name or purpose: interview",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "graph_aggregation_compliance_audit",
+   "purpose": "Aggregates a logistics graph to audit compliance when applying new ...",
+   "facet": "industries",
+   "value": "logistics",
+   "basis": "text: logistics, 3 mentions",
+   "verdict": "right"
+  },
+  {
+   "identity": "import_subagent_creational_auditor_459ec39f2d92",
+   "purpose": "Creational patterns auditor. Analyzes Builder, Object Pool, Factory, Abstract Factory, ...",
+   "facet": "job_titles",
+   "value": "Accountants and Auditors",
+   "basis": "name or purpose: auditor",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "import_skill_amazon_global_selling_eee9ca3250fc",
+   "purpose": "Evaluate and plan Amazon marketplace expansion across countries and regions. ...",
+   "facet": "industries",
+   "value": "logistics",
+   "basis": "name or purpose: customs",
+   "verdict": "right"
+  },
+  {
+   "identity": "import_subagent_patent_illustrator_64b44bf4a280",
+   "purpose": "Expert in creating patent-style technical diagrams - flowcharts, block diagrams, ...",
+   "facet": "industries",
+   "value": "arts and design",
+   "basis": "name or purpose: illustrator",
+   "verdict": "right"
+  },
+  {
+   "identity": "import_skill_designlang_031d6fdebc29",
+   "purpose": "Use when styling UI for railway.app — references the extracted ...",
+   "facet": "industries",
+   "value": "arts and design",
+   "basis": "name or purpose: typography",
+   "verdict": "right"
+  },
+  {
+   "identity": "import_skill_etsy_seasonal_strategy_601a700471bc",
+   "purpose": "Seasonal selling calendar — holiday prep, trending categories, listing refresh ...",
+   "facet": "industries",
+   "value": "logistics",
+   "basis": "name or purpose: inventory",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "sql_table_aggregation_agentic_task",
+   "purpose": "Use when an agentic task must aggregate a sql_table of ...",
+   "facet": "industries",
+   "value": "accounting",
+   "basis": "name or purpose: accounting",
+   "verdict": "right"
+  },
+  {
+   "identity": "import_skill_tiktok_search_videos_3db6e4048a7f",
+   "purpose": "TikTok keyword search video scraper: input search keyword → output ...",
+   "facet": "industries",
+   "value": "media and entertainment",
+   "basis": "name or purpose: music",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "import_subagent_bizlogic_hunter_12652fa14a56",
+   "purpose": "Delegates to this agent when the user wants to test ...",
+   "facet": "industries",
+   "value": "finance",
+   "basis": "name or purpose: payment",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "import_skill_config_b42b51d86156",
+   "purpose": "Use to create and tune the per-project settings file `.claude/sdd.local.md` ...",
+   "facet": "industries",
+   "value": "human resources",
+   "basis": "name or purpose: interviews",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "import_subagent_seo_dataforseo_c9e753199042",
+   "purpose": "DataForSEO data analyst. Fetches live SERP data, keyword metrics, backlink ...",
+   "facet": "industries",
+   "value": "marketing",
+   "basis": "text: seo, 1 mention",
+   "verdict": "right"
+  },
+  {
+   "identity": "import_skill_linkedin_employee_advocacy_b5a103799481",
+   "purpose": "Stand up and run a LinkedIn employee advocacy program for ...",
+   "facet": "industries",
+   "value": "consulting",
+   "basis": "name or purpose: engagement",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "geolocation_aggregation_benchmarking",
+   "purpose": "Benchmarks aggregation of geolocation data as part of advertising need ...",
+   "facet": "industries",
+   "value": "marketing",
+   "basis": "text: advertising, 1 mention",
+   "verdict": "right"
+  },
+  {
+   "identity": "import_skill_ecommerce_personalization_089bee944039",
+   "purpose": "Design personalization strategies for e-commerce stores. Product recommendations, dynamic content, ...",
+   "facet": "industries",
+   "value": "retail and e-commerce",
+   "basis": "name or purpose: e-commerce",
+   "verdict": "right"
+  },
+  {
+   "identity": "import_skill_ecommerce_content_marketing_f3b6e823e582",
+   "purpose": "E-commerce content marketing strategy planner. Generates content calendars, topic ideas, ...",
+   "facet": "industries",
+   "value": "marketing",
+   "basis": "name or purpose: content marketing",
+   "verdict": "right"
+  },
+  {
+   "identity": "import_subagent_reviewer_3cf63d619c88",
+   "purpose": "Use this agent when you need rigorous, adversarial peer review ...",
+   "facet": "industries",
+   "value": "science and research",
+   "basis": "name or purpose: scientific",
+   "verdict": "right"
+  },
+  {
+   "identity": "import_skill_test_quality_1a980db6a4b5",
+   "purpose": "Apply test quality principles when generating or reviewing test code. ...",
+   "facet": "industries",
+   "value": "biotech and pharma",
+   "basis": "name or purpose: molecules",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "import_skill_financial_overview_f704f643e0d1",
+   "purpose": "Get a complete financial overview of the business including balance, ...",
+   "facet": "industries",
+   "value": "data and analytics",
+   "basis": "name or purpose: dashboard",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "text_aggregation_data_engineering",
+   "purpose": "Aggregates raw trade literature text, summarizing key industry statistics for ...",
+   "facet": "industries",
+   "value": "data and analytics",
+   "basis": "text: statistics, 3 mentions",
+   "verdict": "right"
+  },
+  {
+   "identity": "import_subagent_camera_auditor_8ee5fd772fc6",
+   "purpose": "Use this agent to scan Swift code for camera, video, ...",
+   "facet": "job_titles",
+   "value": "Accountants and Auditors",
+   "basis": "text: auditor, 1 mention",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "number_aggregation_data_engineering",
+   "purpose": "Use when a data-engineering step must produce one aggregate figure ...",
+   "facet": "industries",
+   "value": "sales",
+   "basis": "name or purpose: sales",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "import_subagent_signal_hunter_3224ae1591ea",
+   "purpose": "Use this agent to find prospects showing real buying intent ...",
+   "facet": "industries",
+   "value": "marketing",
+   "basis": "name or purpose: campaigns",
+   "verdict": "right"
+  },
+  {
+   "identity": "import_subagent_fleet_7c8789529e5e",
+   "purpose": "Parallel campaign orchestrator. Runs multiple campaigns in coordinated waves within ...",
+   "facet": "industries",
+   "value": "marketing",
+   "basis": "name or purpose: campaigns",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "import_skill_etsy_seo_tags_b7610977540e",
+   "purpose": "Etsy tag optimization — 13-tag strategy, attribute optimization, search ranking ...",
+   "facet": "industries",
+   "value": "marketing",
+   "basis": "name or purpose: seo",
+   "verdict": "right"
+  },
+  {
+   "identity": "import_skill_ta_datev_preparation_13f5d7ba2025",
+   "purpose": "Prepare a DATEV export for a client company. Verifies all ...",
+   "facet": "industries",
+   "value": "accounting",
+   "basis": "name or purpose: bookkeeping",
+   "verdict": "right"
+  },
+  {
+   "identity": "import_subagent_debian_linux_expert_9332e02a722c",
+   "purpose": "Debian Linux specialist focused on stable system administration, apt-based package ...",
+   "facet": "levels",
+   "value": "senior",
+   "basis": "name or purpose: expert",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "import_skill_openai_ads_c10793d66895",
+   "purpose": "Plan and manage OpenAI Ads (ChatGPT ads) campaigns end-to-end via ...",
+   "facet": "industries",
+   "value": "marketing",
+   "basis": "text: campaign, 1 mention",
+   "verdict": "right"
+  },
+  {
+   "identity": "import_command_dashboard_f28461a0895f",
+   "purpose": "GitHub repository dashboard — shows stars, forks, issues, PRs, commits, ...",
+   "facet": "industries",
+   "value": "data and analytics",
+   "basis": "text: dashboard, 1 mention",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "import_skill_marketing_studio_30ad81b58dda",
+   "purpose": "Use when generating any brand video, animation, image, or audio ...",
+   "facet": "industries",
+   "value": "media and entertainment",
+   "basis": "name or purpose: animation",
+   "verdict": "right"
+  },
+  {
+   "identity": "import_skill_product_ui_taste_cc15f98696dc",
+   "purpose": "Anti-slop skill for PRODUCT UI - dashboards, data tables, forms, ...",
+   "facet": "industries",
+   "value": "data and analytics",
+   "basis": "name or purpose: dashboards",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "import_marketplace_marketing_cli_marketplace_dc43bfc8f66c",
+   "purpose": "marketplace marketing-cli-marketplace",
+   "facet": "industries",
+   "value": "marketing",
+   "basis": "name or purpose: marketing",
+   "verdict": "right"
+  },
+  {
+   "identity": "numeric_column_aggregation_compliance_audit",
+   "purpose": "Compliance-audit harness method for verifying aggregations of a numeric column ...",
+   "facet": "industries",
+   "value": "legal",
+   "basis": "name or purpose: compliance",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "import_subagent_supply_chain_auditor_039797458e5c",
+   "purpose": "Delegates to this agent when the user wants to audit ...",
+   "facet": "job_titles",
+   "value": "Accountants and Auditors",
+   "basis": "text: auditor, 1 mention",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "import_skill_deliverability_qa_2d66fc63a6c3",
+   "purpose": "Use when the user asks to \"run a deliverability pre-flight ...",
+   "facet": "industries",
+   "value": "hospitality and travel",
+   "basis": "name or purpose: flight",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "import_skill_22_personal_brand_context_global_691a81d8a2de",
+   "purpose": "Use when starting work on a PERSONAL brand — a ...",
+   "facet": "industries",
+   "value": "marketing",
+   "basis": "name or purpose: brand",
+   "verdict": "right"
+  },
+  {
+   "identity": "import_plugin_manifest_pentest_ai_agents_plugin_70210e6fa192",
+   "purpose": "plugin_manifest pentest-ai-agents-plugin",
+   "facet": "industries",
+   "value": "cybersecurity",
+   "basis": "name or purpose: pentest",
+   "verdict": "right"
+  },
+  {
+   "identity": "import_skill_competitor_intel_e1969f6c397e",
+   "purpose": "Searches the live web via Nimble APIs to monitor competitors ...",
+   "facet": "industries",
+   "value": "sales",
+   "basis": "name or purpose: deals",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "csv_table_aggregation_devops",
+   "purpose": "Use when a devops or engineering-management task must summarize a ...",
+   "facet": "industries",
+   "value": "customer support",
+   "basis": "name or purpose: escalation",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "turn_an_incident_into_a_check_that_would_have_caught_it",
+   "purpose": "Convert a lesson from an outage into a check that ...",
+   "facet": "industries",
+   "value": "education",
+   "basis": "name or purpose: lesson",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "vector_aggregation_documentation",
+   "purpose": "Use when an agent must aggregate a numeric vector (transaction ...",
+   "facet": "industries",
+   "value": "accounting",
+   "basis": "name or purpose: accounting",
+   "verdict": "right"
+  },
+  {
+   "identity": "import_skill_designlang_9be468237498",
+   "purpose": "Use when styling UI for ramp.com — references the extracted ...",
+   "facet": "industries",
+   "value": "arts and design",
+   "basis": "name or purpose: typography",
+   "verdict": "right"
+  },
+  {
+   "identity": "import_skill_02_campaign_brief_global_4aaf525be29e",
+   "purpose": "Use when a specific campaign needs a brief the whole ...",
+   "facet": "industries",
+   "value": "marketing",
+   "basis": "name or purpose: campaign",
+   "verdict": "right"
+  },
+  {
+   "identity": "import_command_poc_9b702799c767",
+   "purpose": "Generate an executable proof-of-concept exploit for a confirmed High/Critical finding ...",
+   "facet": "industries",
+   "value": "cybersecurity",
+   "basis": "name or purpose: exploit",
+   "verdict": "right"
+  },
+  {
+   "identity": "import_subagent_research_781181e6a1ff",
+   "purpose": "Use this agent when the user asks an open-ended question ...",
+   "facet": "industries",
+   "value": "science and research",
+   "basis": "name or purpose: citations",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "import_subagent_security_auditor_80a72d8d83c3",
+   "purpose": "Security engineer focused on vulnerability detection, threat modeling, and secure ...",
+   "facet": "job_titles",
+   "value": "Accountants and Auditors",
+   "basis": "text: auditor, 1 mention",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "import_skill_agent_native_403689b517a6",
+   "purpose": "Dispatch independent tasks to parallel workers or selected persistent roles. ...",
+   "facet": "industries",
+   "value": "public safety",
+   "basis": "name or purpose: dispatch",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "import_subagent_sap_fi_consultant_dfba62f79847",
+   "purpose": "SAP Financial Accounting consultant — general ledger, accounts payable/receivable, asset ...",
+   "facet": "industries",
+   "value": "accounting",
+   "basis": "name or purpose: general ledger",
+   "verdict": "right"
+  },
+  {
+   "identity": "graph_aggregation_documentation",
+   "purpose": "Use when a customer-relationship task in a logistics context needs ...",
+   "facet": "industries",
+   "value": "insurance",
+   "basis": "text: claims, 1 mention",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "import_contract_schema_abc_clinical_demand_forecast_5_0_0_f2cc2776fe91",
+   "purpose": "contract_schema abc-clinical-demand-forecast-5.0.0",
+   "facet": "industries",
+   "value": "healthcare",
+   "basis": "text: clinical, 1 mention",
+   "verdict": "right"
+  },
+  {
+   "identity": "import_skill_adspirer_write_ad_copy_c9e31e0f5af5",
+   "purpose": "Write brand-voice-compliant ad copy for a specific platform. Use when ...",
+   "facet": "industries",
+   "value": "marketing",
+   "basis": "name or purpose: ad copy",
+   "verdict": "right"
+  },
+  {
+   "identity": "import_command_engage_pickup_42c1a0734dd4",
+   "purpose": "Resume an engagement from the engine trace — skip completed ...",
+   "facet": "industries",
+   "value": "consulting",
+   "basis": "name or purpose: engagement",
+   "verdict": "wrong"
+  },
+  {
+   "identity": "import_command_copilot_leak_2e98cc3b9cd2",
+   "purpose": "Copilot's auto-review escapes: find them since the last look, sanitise ...",
+   "facet": "industries",
+   "value": "education",
+   "basis": "name or purpose: lesson",
+   "verdict": "wrong"
+  }
+ ]
+}

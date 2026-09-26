@@ -29,7 +29,7 @@ LIBRARY_OWNERS = {"datasketch": {"near_duplicate_datasketch.py"}, "skills_ref": 
                   "jsonschema": {"format_json_schema.py"},
                   "tomllib": {"format_connection.py", "format_json_schema.py"},
                   "tomli": {"format_connection.py", "format_json_schema.py"},
-                  "yaml": {"skill_rendering.py", "source_github.py", "source_declarations.py"},
+                  "yaml": {"skill_rendering.py", "source_github.py", "source_declarations.py", "facet_tags.py"},
                   "urllib": {"https_transport.py"}, "subprocess": {"processes.py"}}
 #: Code the component must never reach: serving, approval and release.
 FORBIDDEN_NAMES = ("service_runtime", "provisioning", "build_host_catalogue_manifest",

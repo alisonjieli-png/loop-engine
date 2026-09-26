@@ -12,17 +12,29 @@ Well-known served attributes
 ├── harness_kind    which kind of file a harness picks up: skill, instruction_file, rules, subagent,
 │                   command, hook, plugin_manifest, marketplace, protocol_server_configuration,
 │                   harness_settings, contract_schema or code_module (the licensed import's vocabulary)
-└── step_functions  the kinds of step the item supports, from the closed vocabulary of the
-                    library_step_function_tagging engine slot (roadmap S-6.206)
+├── step_functions  the kinds of step the item supports, from the closed vocabulary of the
+│                   library_step_function_tagging engine slot (roadmap S-6.206)
+└── the five facets of the library_facet_tagging engine slot (roadmap S-6.209), each a keyword list
+    from the declared vocabulary in data/library_facets.yaml
+    ├── job_titles    the pinned occupation grid and the packaged occupation seeds
+    ├── industries    a declared list of thirty-four
+    ├── levels        student, junior, mid, senior, lead, executive
+    ├── languages     english by default, else one of twelve found by script or stopwords
+    └── geographies   countries and regions from a declared list
 ```
 
 The owner, September 26, 2026: the library page must show "ALL types of
 harness working directory component files not just SKILLS". The served item
 kinds (skill, instruction_file, tool, reusable_code) fold twelve harness
-kinds into four, so the pages count and filter by harness_kind instead.
+kinds into four, so the pages count and filter by harness_kind instead. The
+same day: "tag/label our harness component files by job title, industry,
+level, language, geography, etc, and allow people to search in the dashboard
+(when they sign up not on the home pages)". The signed-in table and the
+search hits show the facets; the public pages read only harness_kind.
 """
 from __future__ import annotations
 
+from ..library_ingestion.facet_tags import FACET_ATTRIBUTES, FACETS
 from ..library_ingestion.step_functions import STEP_FUNCTIONS, STEP_FUNCTIONS_ATTRIBUTE
 
 TIERS = ("verified", "community")
@@ -45,10 +57,11 @@ HARNESS_KIND_ATTRIBUTE = {"name": "harness_kind", "type": "choice", "choices": l
                                          "subagent, a command, a hook, a plugin manifest, a plugin marketplace, a "
                                          "protocol server configuration, harness settings, a contract schema or a "
                                          "code module."}
-WELL_KNOWN_ATTRIBUTES = (TIER_ATTRIBUTE, HARNESS_KIND_ATTRIBUTE, STEP_FUNCTIONS_ATTRIBUTE)
+WELL_KNOWN_ATTRIBUTES = (TIER_ATTRIBUTE, HARNESS_KIND_ATTRIBUTE, STEP_FUNCTIONS_ATTRIBUTE, *FACET_ATTRIBUTES)
 #: The served names, written out here so the serving side names what it serves and the documentation check
 #: can hold a page to them; a declaration that drifts from this list is refused at import.
-WELL_KNOWN_ATTRIBUTE_NAMES = ("tier", "harness_kind", "step_functions")
+WELL_KNOWN_ATTRIBUTE_NAMES = ("tier", "harness_kind", "step_functions", "job_titles", "industries", "levels",
+                              "languages", "geographies")
 if tuple(attribute["name"] for attribute in WELL_KNOWN_ATTRIBUTES) != WELL_KNOWN_ATTRIBUTE_NAMES:
     raise ImportError("the well-known attribute declarations and their names disagree")
 #: The harness kind a package file role names, for an item whose provenance does not name one.
@@ -92,5 +105,5 @@ def declare(schema: dict, *attributes: dict) -> dict:
 
 
 __all__ = ["TIERS", "TIER_ATTRIBUTE", "HARNESS_KINDS", "HARNESS_KIND_LABELS", "HARNESS_KIND_ATTRIBUTE",
-           "STEP_FUNCTIONS", "STEP_FUNCTIONS_ATTRIBUTE", "WELL_KNOWN_ATTRIBUTES", "harness_kind_of",
-           "harness_kind_label", "declare"]
+           "STEP_FUNCTIONS", "STEP_FUNCTIONS_ATTRIBUTE", "FACETS", "FACET_ATTRIBUTES", "WELL_KNOWN_ATTRIBUTES",
+           "WELL_KNOWN_ATTRIBUTE_NAMES", "harness_kind_of", "harness_kind_label", "declare"]

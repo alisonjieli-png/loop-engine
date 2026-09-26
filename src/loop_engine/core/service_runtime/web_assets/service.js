@@ -652,9 +652,14 @@ const applyPaymentState = name => {
       // rules from the item's own words; each is shown as its own badge so a reader can tell items apart at a glance.
       const functions = Array.isArray((hit.attributes || {}).step_functions) ? hit.attributes.step_functions : [];
       for (const name of functions) { const tag = element("span", String(name), "badge"); tag.dataset.stepFunction = String(name); card.append(tag); }
+      // The job titles, industries, levels, languages and geographies an item names are served attributes written by
+      // rules from its own words (roadmap S-6.209); each is a fact of the hit, shown exactly as the service sent it.
+      const facet = name => Array.isArray((hit.attributes || {})[name]) ? hit.attributes[name].map(String).join(", ") : "";
       const detail = document.createElement("details"), list = document.createElement("dl");
       detail.append(element("summary", "Source, integrity and access"));
-      facts(list, [["Library tier", hit.library_tier_label || "Not stated"], ["Step functions", functions.join(", ") || "Not tagged"], ["Source", hit.reference.source_ref], ["Digest", hit.reference.body_digest], ["License", hit.license || "Unknown"], ["Declared effects", (hit.declared_effects || []).join(", ") || "None declared"], ["Harness scope", (hit.harness_styles || []).join(", ") || "No specific harness declared"], ["Qualification basis", hit.qualification_basis], ["Bytes", hit.size_bytes], ["Body access", hit.body_allowed ? "Permitted, checked again on fetch" : "Not granted"]]); detail.append(list); card.append(detail);
+      facts(list, [["Library tier", hit.library_tier_label || "Not stated"], ["Step functions", functions.join(", ") || "Not tagged"],
+        ["Job titles", facet("job_titles") || "Not tagged"], ["Industries", facet("industries") || "Not tagged"], ["Levels", facet("levels") || "Not tagged"],
+        ["Languages", facet("languages") || "Not tagged"], ["Geographies", facet("geographies") || "Not tagged"], ["Source", hit.reference.source_ref], ["Digest", hit.reference.body_digest], ["License", hit.license || "Unknown"], ["Declared effects", (hit.declared_effects || []).join(", ") || "None declared"], ["Harness scope", (hit.harness_styles || []).join(", ") || "No specific harness declared"], ["Qualification basis", hit.qualification_basis], ["Bytes", hit.size_bytes], ["Body access", hit.body_allowed ? "Permitted, checked again on fetch" : "Not granted"]]); detail.append(list); card.append(detail);
       const button = element("button", "Fetch exact revision", "quiet"), status = element("p", "", "caption"); button.type = "button"; button.disabled = !hit.body_allowed; status.setAttribute("role", "status");
       button.addEventListener("click", () => download(hit, button, status)); card.append(button, status, reportControl(hit.reference.identity, hit.reference.body_digest)); $("results").append(card);
     }

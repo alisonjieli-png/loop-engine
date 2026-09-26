@@ -66,6 +66,25 @@ can combine that with the library tier:
 {"record_type":"service_retrieval_request/v2","query":"run the tests before merging","mode":"lexical","filters":{"step_functions":{"any_of":["verification","reviewing"]},"tier":{"equals":"verified"}}}
 ```
 
+### Filter by job title, industry, level, language and geography
+
+A reviewed catalogue written on or after September 26, 2026 also carries five
+facet attributes, each a keyword list from a declared vocabulary: `job_titles`
+(the pinned occupation grid and the packaged occupation seeds, such as
+`Software Developers`), `industries` (a declared list of thirty-four, such as
+`healthcare`), `levels` (`student`, `junior`, `mid`, `senior`, `lead`,
+`executive`), `languages` (`english` by default, else one of twelve found by
+script or stopwords) and `geographies` (countries and regions, such as
+`United States` or `European Union`). Rules write them from the item's own
+words, and an item whose words name nothing has no value for that facet. The
+signed-in table filters on them; the public pages show none of them. A release
+built from an older reviewed catalogue does not carry them until that
+catalogue is written again.
+
+```json
+{"record_type":"service_retrieval_request/v2","query":"summarize clinical notes","mode":"lexical","filters":{"industries":{"any_of":["healthcare"]},"levels":{"equals":"senior"}}}
+```
+
 Every hit returns its shown attributes under `attributes`, the tags among
 them. A release whose schema does not declare an attribute refuses a filter on
 it with `search_filter_not_allowed`; read the active release's schema from the

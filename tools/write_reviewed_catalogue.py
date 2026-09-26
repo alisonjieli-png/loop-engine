@@ -71,10 +71,11 @@ from candidate_review.prompt import build_prompt, member_prompt_sha256  # noqa: 
 from candidate_review.records import sha256_hex  # noqa: E402
 from loop_engine.core.harness_intelligence import HarnessIntelligenceDraft, item_from_body  # noqa: E402
 from loop_engine.core.intelligence_tagging import TagSet  # noqa: E402
+from loop_engine.core.library_ingestion.facet_tags import FACETS, FacetMaterial, RulesFacetTagger  # noqa: E402
 from loop_engine.core.library_ingestion.step_functions import (  # noqa: E402
     RulesStepFunctionTagger, StepFunctionMaterial, entry_text)
 from loop_engine.core.service_runtime.catalogue_attributes import (  # noqa: E402
-    HARNESS_KIND_ATTRIBUTE, STEP_FUNCTIONS_ATTRIBUTE, TIER_ATTRIBUTE, declare, harness_kind_of)
+    FACET_ATTRIBUTES, HARNESS_KIND_ATTRIBUTE, STEP_FUNCTIONS_ATTRIBUTE, TIER_ATTRIBUTE, declare, harness_kind_of)
 from loop_engine.core.service_runtime.catalogue_packages import CataloguePackage  # noqa: E402
 
 ITEMS_RECORD = "starter_catalogue_candidate_items/v2"
@@ -95,24 +96,29 @@ RULES = {
                 "approves it against the written criteria. One written objection withholds approval. Tier: "
                 "Community; it becomes Verified only through the full review."),
 }
-#: Each written item carries the kinds of step it supports and the kind of file a harness picks up, as served
-#: attributes (roadmap S-6.206, S-6.208). The rules engine names itself on every tag it writes.
+#: Each written item carries the kinds of step it supports, the kind of file a harness picks up and the job
+#: titles, industries, levels, languages and geographies its words name, as served attributes (roadmap S-6.206,
+#: S-6.208, S-6.209). Each rules engine names itself on every tag it writes.
 TAGGER = RulesStepFunctionTagger()
+FACET_TAGGER = RulesFacetTagger()
 
 
 def item_attributes(reference: dict, spec: dict, package, files, *, is_import: bool) -> tuple:
-    """(attributes, attribute engines) of one item: its harness kind and, when its words name one, its step
-    functions. The tagger reads the name, purpose, bounded entry text and file roles, never a licence text."""
+    """(attributes, attribute engines) of one item: its harness kind and, when its words name them, its step
+    functions and its facets. The taggers read the name, purpose, bounded entry text and file roles, never a
+    licence text."""
     declared = str(spec.get("provenance", {}).get("harness_kind") or "") if is_import else ""
     roles = tuple(entry.role for entry in package.files)
     kind = harness_kind_of(reference["kind"], tuple(reference.get("styles") or ()), roles, declared)
     text = entry_text([(entry.path, entry.role, entry.media_type, file.text) for entry, file in zip(package.files, files)])
-    material = StepFunctionMaterial(reference["kind"], kind, str(spec.get("title") or reference["identity"]),
-                                    reference["purpose"], text, roles)
-    tags = TAGGER.tag(material)
-    attributes = {"harness_kind": kind, **tags.attribute_values()}
+    fields = (reference["kind"], kind, str(spec.get("title") or reference["identity"]), reference["purpose"], text, roles)
+    tags = TAGGER.tag(StepFunctionMaterial(*fields))
+    facets = FACET_TAGGER.tag(FacetMaterial(*fields))
+    attributes = {"harness_kind": kind, **tags.attribute_values(), **facets.attribute_values()}
     engines = ({"step_functions": {"engine_id": tags.engine_id, "engine_version": tags.engine_version}}
                if tags.functions else {})
+    engines.update({facet: {"engine_id": facets.engine_id, "engine_version": facets.engine_version}
+                    for facet in FACETS if facets.values[facet]})
     return attributes, engines
 
 
@@ -381,7 +387,7 @@ def write(options) -> dict:
                     "previous_source_revisions": [], "source_digests": dict(catalogue.source_digests),
                     "publication": "not_published", "items": items}
     schema = declare(_json(REPOSITORY / "examples/29_intelligence_service/starter-catalogue/attribute-schema.json"),
-                     TIER_ATTRIBUTE, HARNESS_KIND_ATTRIBUTE, STEP_FUNCTIONS_ATTRIBUTE)
+                     TIER_ATTRIBUTE, HARNESS_KIND_ATTRIBUTE, STEP_FUNCTIONS_ATTRIBUTE, *FACET_ATTRIBUTES)
     output.mkdir(parents=True)
     for relative, payload in sorted(bodies.items()):
         target = output / relative
@@ -397,7 +403,12 @@ def write(options) -> dict:
               "harness_kinds": dict(sorted(Counter(values["harness_kind"] for values in tagged).items())),
               "step_functions": dict(sorted(Counter(function for values in tagged
                                                     for function in values.get("step_functions", ())).items())),
-              "untagged": sum(1 for values in tagged if not values.get("step_functions"))}
+              "untagged": sum(1 for values in tagged if not values.get("step_functions")),
+              "facets": {facet: dict(sorted(Counter(value for values in tagged
+                                                    for value in values.get(facet, ())).items()))
+                         for facet in FACETS},
+              "items_without_a_value": {facet: sum(1 for values in tagged if not values.get(facet))
+                                        for facet in FACETS}}
     (output / "writer-report.json").write_text(json.dumps(report, indent=1, sort_keys=True) + "\n")
     return {key: report[key] for key in ("output", "tier", "approved", "rejected")} | {"left_out": len(left_out)}
 

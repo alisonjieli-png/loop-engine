@@ -1,0 +1,502 @@
+{
+ "record_type": "facet_table_browser_check/v1",
+ "date": "2026-09-26",
+ "checks": {
+  "selects_start_disabled_with_only_the_empty_choice": true,
+  "selects_offer_the_values_the_rows_carry": true,
+  "no_filter_shows_every_row": true,
+  "an_industry_keeps_only_rows_that_carry_it": true,
+  "two_facets_keep_rows_that_carry_both": true,
+  "clearing_the_choices_shows_every_row": true,
+  "a_language_keeps_its_rows": true,
+  "the_search_box_finds_a_facet_value": true,
+  "the_detail_lists_each_facet": true,
+  "an_untagged_item_says_not_tagged": true,
+  "the_table_fits_small_screens_and_enlarged_text": true,
+  "no_page_errors": true,
+  "removed_facet_rule_keeps_every_row_and_fails_the_filter_comparison": true
+ },
+ "passed": 13,
+ "total": 13,
+ "real": {
+  "before": {
+   "job_titles": {
+    "disabled": true,
+    "options": [
+     "Every job title"
+    ]
+   },
+   "industries": {
+    "disabled": true,
+    "options": [
+     "Every industry"
+    ]
+   },
+   "levels": {
+    "disabled": true,
+    "options": [
+     "Every level"
+    ]
+   },
+   "languages": {
+    "disabled": true,
+    "options": [
+     "Every language"
+    ]
+   },
+   "geographies": {
+    "disabled": true,
+    "options": [
+     "Every geography"
+    ]
+   }
+  },
+  "errors": [],
+  "choices": {
+   "job_titles": {
+    "disabled": false,
+    "values": [
+     "",
+     "Lawyers"
+    ]
+   },
+   "industries": {
+    "disabled": false,
+    "values": [
+     "",
+     "healthcare",
+     "legal"
+    ]
+   },
+   "levels": {
+    "disabled": false,
+    "values": [
+     "",
+     "senior"
+    ]
+   },
+   "languages": {
+    "disabled": false,
+    "values": [
+     "",
+     "english",
+     "spanish"
+    ]
+   },
+   "geographies": {
+    "disabled": false,
+    "values": [
+     "",
+     "Spain",
+     "United States"
+    ]
+   }
+  },
+  "filters": {
+   "none": [
+    "skill.changelog",
+    "skill.ward-rota",
+    "skill.rename",
+    "skill.contract-review",
+    "instruction.notes"
+   ],
+   "industry_legal": [
+    "skill.ward-rota",
+    "skill.contract-review"
+   ],
+   "industry_legal_and_lawyers": [
+    "skill.contract-review"
+   ],
+   "count_text": "1 of 5 items",
+   "cleared": [
+    "skill.changelog",
+    "skill.ward-rota",
+    "skill.rename",
+    "skill.contract-review",
+    "instruction.notes"
+   ],
+   "language_spanish": [
+    "instruction.notes"
+   ],
+   "search_healthcare": [
+    "skill.ward-rota"
+   ]
+  },
+  "detail_tagged": {
+   "facts": {
+    "Job titles": "Lawyers",
+    "Industries": "legal",
+    "Levels": "senior",
+    "Languages": "english",
+    "Geographies": "United States"
+   },
+   "buttons": [
+    "Report a problem with this item",
+    "Send report"
+   ]
+  },
+  "detail_untagged": {
+   "facts": {
+    "Job titles": "Not tagged",
+    "Industries": "Not tagged",
+    "Levels": "Not tagged",
+    "Languages": "Not tagged",
+    "Geographies": "Not tagged"
+   },
+   "buttons": [
+    "Report a problem with this item",
+    "Send report"
+   ]
+  },
+  "fits": [
+   {
+    "width": 1440,
+    "size": "100%",
+    "overflow": false,
+    "items": []
+   },
+   {
+    "width": 1440,
+    "size": "200%",
+    "overflow": false,
+    "items": [
+     "TABLE",
+     "browse-table-head",
+     "TR",
+     "TH",
+     "BUTTON",
+     "TH"
+    ]
+   },
+   {
+    "width": 820,
+    "size": "100%",
+    "overflow": false,
+    "items": [
+     "TABLE",
+     "browse-table-head",
+     "TR",
+     "TH",
+     "BUTTON",
+     "browse-table-body"
+    ]
+   },
+   {
+    "width": 820,
+    "size": "200%",
+    "overflow": false,
+    "items": [
+     "TABLE",
+     "browse-table-head",
+     "TR",
+     "TH",
+     "BUTTON",
+     "TH"
+    ]
+   },
+   {
+    "width": 390,
+    "size": "100%",
+    "overflow": false,
+    "items": [
+     "TABLE",
+     "browse-table-head",
+     "TR",
+     "TH",
+     "BUTTON",
+     "TH"
+    ]
+   },
+   {
+    "width": 390,
+    "size": "200%",
+    "overflow": false,
+    "items": [
+     "TABLE",
+     "browse-table-head",
+     "TR",
+     "TH",
+     "BUTTON",
+     "TH"
+    ]
+   },
+   {
+    "width": 320,
+    "size": "100%",
+    "overflow": false,
+    "items": [
+     "TABLE",
+     "browse-table-head",
+     "TR",
+     "TH",
+     "BUTTON",
+     "TH"
+    ]
+   },
+   {
+    "width": 320,
+    "size": "200%",
+    "overflow": false,
+    "items": [
+     "TABLE",
+     "browse-table-head",
+     "TR",
+     "TH",
+     "TH",
+     "BUTTON"
+    ]
+   }
+  ],
+  "requests": [
+   "list",
+   "manifest",
+   "manifest"
+  ]
+ },
+ "mutant": {
+  "before": {
+   "job_titles": {
+    "disabled": true,
+    "options": [
+     "Every job title"
+    ]
+   },
+   "industries": {
+    "disabled": true,
+    "options": [
+     "Every industry"
+    ]
+   },
+   "levels": {
+    "disabled": true,
+    "options": [
+     "Every level"
+    ]
+   },
+   "languages": {
+    "disabled": true,
+    "options": [
+     "Every language"
+    ]
+   },
+   "geographies": {
+    "disabled": true,
+    "options": [
+     "Every geography"
+    ]
+   }
+  },
+  "errors": [],
+  "choices": {
+   "job_titles": {
+    "disabled": false,
+    "values": [
+     "",
+     "Lawyers"
+    ]
+   },
+   "industries": {
+    "disabled": false,
+    "values": [
+     "",
+     "healthcare",
+     "legal"
+    ]
+   },
+   "levels": {
+    "disabled": false,
+    "values": [
+     "",
+     "senior"
+    ]
+   },
+   "languages": {
+    "disabled": false,
+    "values": [
+     "",
+     "english",
+     "spanish"
+    ]
+   },
+   "geographies": {
+    "disabled": false,
+    "values": [
+     "",
+     "Spain",
+     "United States"
+    ]
+   }
+  },
+  "filters": {
+   "none": [
+    "skill.changelog",
+    "skill.ward-rota",
+    "skill.rename",
+    "skill.contract-review",
+    "instruction.notes"
+   ],
+   "industry_legal": [
+    "skill.changelog",
+    "skill.ward-rota",
+    "skill.rename",
+    "skill.contract-review",
+    "instruction.notes"
+   ],
+   "industry_legal_and_lawyers": [
+    "skill.changelog",
+    "skill.ward-rota",
+    "skill.rename",
+    "skill.contract-review",
+    "instruction.notes"
+   ],
+   "count_text": "5 items",
+   "cleared": [
+    "skill.changelog",
+    "skill.ward-rota",
+    "skill.rename",
+    "skill.contract-review",
+    "instruction.notes"
+   ],
+   "language_spanish": [
+    "skill.changelog",
+    "skill.ward-rota",
+    "skill.rename",
+    "skill.contract-review",
+    "instruction.notes"
+   ],
+   "search_healthcare": [
+    "skill.ward-rota"
+   ]
+  },
+  "detail_tagged": {
+   "facts": {
+    "Job titles": "Lawyers",
+    "Industries": "legal",
+    "Levels": "senior",
+    "Languages": "english",
+    "Geographies": "United States"
+   },
+   "buttons": [
+    "Report a problem with this item",
+    "Send report"
+   ]
+  },
+  "detail_untagged": {
+   "facts": {
+    "Job titles": "Not tagged",
+    "Industries": "Not tagged",
+    "Levels": "Not tagged",
+    "Languages": "Not tagged",
+    "Geographies": "Not tagged"
+   },
+   "buttons": [
+    "Report a problem with this item",
+    "Send report"
+   ]
+  },
+  "fits": [
+   {
+    "width": 1440,
+    "size": "100%",
+    "overflow": false,
+    "items": []
+   },
+   {
+    "width": 1440,
+    "size": "200%",
+    "overflow": false,
+    "items": [
+     "TABLE",
+     "browse-table-head",
+     "TR",
+     "TH",
+     "BUTTON",
+     "TH"
+    ]
+   },
+   {
+    "width": 820,
+    "size": "100%",
+    "overflow": false,
+    "items": [
+     "TABLE",
+     "browse-table-head",
+     "TR",
+     "TH",
+     "BUTTON",
+     "browse-table-body"
+    ]
+   },
+   {
+    "width": 820,
+    "size": "200%",
+    "overflow": false,
+    "items": [
+     "TABLE",
+     "browse-table-head",
+     "TR",
+     "TH",
+     "BUTTON",
+     "TH"
+    ]
+   },
+   {
+    "width": 390,
+    "size": "100%",
+    "overflow": false,
+    "items": [
+     "TABLE",
+     "browse-table-head",
+     "TR",
+     "TH",
+     "BUTTON",
+     "TH"
+    ]
+   },
+   {
+    "width": 390,
+    "size": "200%",
+    "overflow": false,
+    "items": [
+     "TABLE",
+     "browse-table-head",
+     "TR",
+     "TH",
+     "BUTTON",
+     "TH"
+    ]
+   },
+   {
+    "width": 320,
+    "size": "100%",
+    "overflow": false,
+    "items": [
+     "TABLE",
+     "browse-table-head",
+     "TR",
+     "TH",
+     "BUTTON",
+     "TH"
+    ]
+   },
+   {
+    "width": 320,
+    "size": "200%",
+    "overflow": false,
+    "items": [
+     "TABLE",
+     "browse-table-head",
+     "TR",
+     "TH",
+     "TH",
+     "BUTTON"
+    ]
+   }
+  ],
+  "requests": [
+   "list",
+   "manifest",
+   "manifest"
+  ]
+ }
+}

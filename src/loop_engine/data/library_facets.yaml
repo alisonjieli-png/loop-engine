@@ -1,0 +1,487 @@
+# The facet vocabulary of the library_facet_tagging engine slot: one
+# library_facet_vocabulary/v1 record, read by core/library_ingestion/facet_tags.py.
+#
+# The owner, September 26, 2026: "tag/label our harness component files by job
+# title, industry, level, language, geography, etc, and allow people to search
+# in the dashboard (when they sign up not on the home pages)". Roadmap S-6.209.
+#
+# Five facets, each a served keyword_list attribute of the same name. A value
+# is a stable word a filter can name; the rules engine tags an item with a value
+# only when the item's own words name it, so an item whose words name nothing
+# gets no value. A tag is descriptive only and grants nothing.
+#
+# job_titles: the pinned occupation grid of September 22, 2026
+# (artifacts/occupation-grid-research-2026-09-22, both task-opportunities.json
+# and task-opportunities-expanded.json, source O*NET 31.0 Database by the U.S.
+# Department of Labor, Employment and Training Administration, CC BY 4.0,
+# source digest 55033fc68b4c13ec23e7f74dc6378660f6e854e75d55d6e333ae0a761d3987cd)
+# plus the four packaged occupation seeds (data/occupation_seeds.yaml) whose
+# titles the grid does not hold; the two seeds it does hold (Customer Service
+# Representative, Database Administrator) are served under the grid's title.
+# Titles are the grid's words. The name phrases an item may use for a title
+# are derived in code: the title, its singular, and each multi-word occupation
+# a joined title names; a single word cut from a joined title (agents, records,
+# judges) is never a phrase, so a title that needs one lists it under
+# also_known_as, where a reviewer can see it. A phrase shared by several
+# titles names none of them.
+# The U.S. Department of Labor has not approved, endorsed or tested this use.
+#
+# industries: a declared list written here, one line of description each.
+# levels: the six levels the owner named, in career order.
+# languages: the twelve languages most used in web content and open source
+# repositories, a judgement recorded here and not a measurement; English is the
+# default. Six are found by their script, six Latin-script languages by a
+# bounded stopword list. A stopword shared by two languages counts for neither.
+# geographies: countries and regions, each with the names an item may use;
+# an upper-case phrase (USA, EU, APAC) is matched exactly, every other phrase
+# without regard to case. Demonyms and language names are not place names here.
+record_type: library_facet_vocabulary/v1
+version: "2026-09-26"
+facets:
+  job_titles:
+    description: The job titles an item names, from the pinned occupation grid and the packaged seeds.
+    values:
+    - {value: "Chief Executives", source: grid, code: 11-1011.00, also_known_as: [chief executive officer, chief executive officers]}
+    - {value: "Chief Sustainability Officers", source: grid, code: 11-1011.03}
+    - {value: "General and Operations Managers", source: grid, code: 11-1021.00}
+    - {value: "Legislators", source: grid, code: 11-1031.00}
+    - {value: "Advertising and Promotions Managers", source: grid, code: 11-2011.00}
+    - {value: "Marketing Managers", source: grid, code: 11-2021.00}
+    - {value: "Sales Managers", source: grid, code: 11-2022.00}
+    - {value: "Public Relations Managers", source: grid, code: 11-2032.00}
+    - {value: "Agents and Business Managers of Artists, Performers, and Athletes", source: grid, code: 13-1011.00}
+    - {value: "Buyers and Purchasing Agents, Farm Products", source: grid, code: 13-1021.00}
+    - {value: "Wholesale and Retail Buyers, Except Farm Products", source: grid, code: 13-1022.00}
+    - {value: "Purchasing Agents, Except Wholesale, Retail, and Farm Products", source: grid, code: 13-1023.00}
+    - {value: "Claims Adjusters, Examiners, and Investigators", source: grid, code: 13-1031.00}
+    - {value: "Insurance Appraisers, Auto Damage", source: grid, code: 13-1032.00}
+    - {value: "Compliance Officers", source: grid, code: 13-1041.00}
+    - {value: "Environmental Compliance Inspectors", source: grid, code: 13-1041.01}
+    - {value: "Logisticians", source: grid, code: 13-1081.00}
+    - {value: "Project Management Specialists", source: grid, code: 13-1082.00, also_known_as: [project manager, project managers]}
+    - {value: "Management Analysts", source: grid, code: 13-1111.00}
+    - {value: "Market Research Analysts and Marketing Specialists", source: grid, code: 13-1161.00}
+    - {value: "Accountants and Auditors", source: grid, code: 13-2011.00, also_known_as: [accountant, accountants]}
+    - {value: "Computer Systems Analysts", source: grid, code: 15-1211.00}
+    - {value: "Health Informatics Specialists", source: grid, code: 15-1211.01}
+    - {value: "Information Security Analysts", source: grid, code: 15-1212.00, also_known_as: [security analyst, security analysts, security engineer, security engineers]}
+    - {value: "Computer and Information Research Scientists", source: grid, code: 15-1221.00}
+    - {value: "Computer Network Support Specialists", source: grid, code: 15-1231.00}
+    - {value: "Computer User Support Specialists", source: grid, code: 15-1232.00, also_known_as: [help desk technician, help desk technicians, support technician, support technicians]}
+    - {value: "Computer Network Architects", source: grid, code: 15-1241.00}
+    - {value: "Telecommunications Engineering Specialists", source: grid, code: 15-1241.01}
+    - {value: "Database Administrators", source: grid, code: 15-1242.00, also_known_as: [dba, dbas]}
+    - {value: "Software Developers", source: grid, code: 15-1252.00, also_known_as: [software engineer, software engineers, programmer, programmers]}
+    - {value: "Data Scientists", source: grid, code: 15-2051.00, also_known_as: [machine learning engineer, machine learning engineers]}
+    - {value: "Architects, Except Landscape and Naval", source: grid, code: 17-1011.00}
+    - {value: "Landscape Architects", source: grid, code: 17-1012.00}
+    - {value: "Cartographers and Photogrammetrists", source: grid, code: 17-1021.00, also_known_as: [cartographer, cartographers, photogrammetrist, photogrammetrists]}
+    - {value: "Surveyors", source: grid, code: 17-1022.00}
+    - {value: "Geodetic Surveyors", source: grid, code: 17-1022.01}
+    - {value: "Aerospace Engineers", source: grid, code: 17-2011.00}
+    - {value: "Agricultural Engineers", source: grid, code: 17-2021.00}
+    - {value: "Bioengineers and Biomedical Engineers", source: grid, code: 17-2031.00, also_known_as: [bioengineer, bioengineers]}
+    - {value: "Animal Scientists", source: grid, code: 19-1011.00}
+    - {value: "Food Scientists and Technologists", source: grid, code: 19-1012.00}
+    - {value: "Soil and Plant Scientists", source: grid, code: 19-1013.00}
+    - {value: "Biochemists and Biophysicists", source: grid, code: 19-1021.00, also_known_as: [biochemist, biochemists, biophysicist, biophysicists]}
+    - {value: "Microbiologists", source: grid, code: 19-1022.00}
+    - {value: "Zoologists and Wildlife Biologists", source: grid, code: 19-1023.00, also_known_as: [zoologist, zoologists]}
+    - {value: "Bioinformatics Scientists", source: grid, code: 19-1029.01}
+    - {value: "Molecular and Cellular Biologists", source: grid, code: 19-1029.02}
+    - {value: "Substance Abuse and Behavioral Disorder Counselors", source: grid, code: 21-1011.00}
+    - {value: "Educational, Guidance, and Career Counselors and Advisors", source: grid, code: 21-1012.00}
+    - {value: "Marriage and Family Therapists", source: grid, code: 21-1013.00}
+    - {value: "Mental Health Counselors", source: grid, code: 21-1014.00}
+    - {value: "Rehabilitation Counselors", source: grid, code: 21-1015.00}
+    - {value: "Child, Family, and School Social Workers", source: grid, code: 21-1021.00}
+    - {value: "Healthcare Social Workers", source: grid, code: 21-1022.00}
+    - {value: "Mental Health and Substance Abuse Social Workers", source: grid, code: 21-1023.00}
+    - {value: "Lawyers", source: grid, code: 23-1011.00, also_known_as: [attorney, attorneys]}
+    - {value: "Judicial Law Clerks", source: grid, code: 23-1012.00}
+    - {value: "Administrative Law Judges, Adjudicators, and Hearing Officers", source: grid, code: 23-1021.00}
+    - {value: "Arbitrators, Mediators, and Conciliators", source: grid, code: 23-1022.00, also_known_as: [arbitrator, arbitrators, conciliator, conciliators]}
+    - {value: "Judges, Magistrate Judges, and Magistrates", source: grid, code: 23-1023.00, also_known_as: [magistrate, magistrates]}
+    - {value: "Paralegals and Legal Assistants", source: grid, code: 23-2011.00, also_known_as: [paralegal, paralegals]}
+    - {value: "Title Examiners, Abstractors, and Searchers", source: grid, code: 23-2093.00, also_known_as: [abstractor, abstractors, title examiner, title examiners]}
+    - {value: "Business Teachers, Postsecondary", source: grid, code: 25-1011.00}
+    - {value: "Computer Science Teachers, Postsecondary", source: grid, code: 25-1021.00}
+    - {value: "Mathematical Science Teachers, Postsecondary", source: grid, code: 25-1022.00}
+    - {value: "Architecture Teachers, Postsecondary", source: grid, code: 25-1031.00}
+    - {value: "Engineering Teachers, Postsecondary", source: grid, code: 25-1032.00}
+    - {value: "Agricultural Sciences Teachers, Postsecondary", source: grid, code: 25-1041.00}
+    - {value: "Biological Science Teachers, Postsecondary", source: grid, code: 25-1042.00}
+    - {value: "Forestry and Conservation Science Teachers, Postsecondary", source: grid, code: 25-1043.00}
+    - {value: "Art Directors", source: grid, code: 27-1011.00}
+    - {value: "Craft Artists", source: grid, code: 27-1012.00}
+    - {value: "Fine Artists, Including Painters, Sculptors, and Illustrators", source: grid, code: 27-1013.00, also_known_as: [sculptor, sculptors, illustrator, illustrators, painter, painters]}
+    - {value: "Special Effects Artists and Animators", source: grid, code: 27-1014.00, also_known_as: [animator, animators]}
+    - {value: "Commercial and Industrial Designers", source: grid, code: 27-1021.00}
+    - {value: "Fashion Designers", source: grid, code: 27-1022.00}
+    - {value: "Floral Designers", source: grid, code: 27-1023.00}
+    - {value: "Graphic Designers", source: grid, code: 27-1024.00}
+    - {value: "Technical Writers", source: grid, code: 27-3042.00, also_known_as: [documentation writer, documentation writers]}
+    - {value: "Chiropractors", source: grid, code: 29-1011.00}
+    - {value: "Dentists, General", source: grid, code: 29-1021.00, also_known_as: [dentist, dentists]}
+    - {value: "Oral and Maxillofacial Surgeons", source: grid, code: 29-1022.00}
+    - {value: "Orthodontists", source: grid, code: 29-1023.00}
+    - {value: "Prosthodontists", source: grid, code: 29-1024.00}
+    - {value: "Dietitians and Nutritionists", source: grid, code: 29-1031.00, also_known_as: [dietitian, dietitians, nutritionist, nutritionists]}
+    - {value: "Optometrists", source: grid, code: 29-1041.00}
+    - {value: "Pharmacists", source: grid, code: 29-1051.00}
+    - {value: "Home Health Aides", source: grid, code: 31-1121.00}
+    - {value: "Personal Care Aides", source: grid, code: 31-1122.00}
+    - {value: "Nursing Assistants", source: grid, code: 31-1131.00}
+    - {value: "Orderlies", source: grid, code: 31-1132.00}
+    - {value: "Psychiatric Aides", source: grid, code: 31-1133.00}
+    - {value: "Occupational Therapy Assistants", source: grid, code: 31-2011.00}
+    - {value: "Occupational Therapy Aides", source: grid, code: 31-2012.00}
+    - {value: "Physical Therapist Assistants", source: grid, code: 31-2021.00}
+    - {value: "First-Line Supervisors of Correctional Officers", source: grid, code: 33-1011.00}
+    - {value: "First-Line Supervisors of Police and Detectives", source: grid, code: 33-1012.00}
+    - {value: "First-Line Supervisors of Firefighting and Prevention Workers", source: grid, code: 33-1021.00}
+    - {value: "First-Line Supervisors of Security Workers", source: grid, code: 33-1091.00}
+    - {value: "Firefighters", source: grid, code: 33-2011.00}
+    - {value: "Fire Inspectors and Investigators", source: grid, code: 33-2021.00}
+    - {value: "Forest Fire Inspectors and Prevention Specialists", source: grid, code: 33-2022.00}
+    - {value: "Bailiffs", source: grid, code: 33-3011.00}
+    - {value: "Chefs and Head Cooks", source: grid, code: 35-1011.00}
+    - {value: "First-Line Supervisors of Food Preparation and Serving Workers", source: grid, code: 35-1012.00}
+    - {value: "Cooks, Fast Food", source: grid, code: 35-2011.00}
+    - {value: "Cooks, Institution and Cafeteria", source: grid, code: 35-2012.00}
+    - {value: "Cooks, Private Household", source: grid, code: 35-2013.00}
+    - {value: "Cooks, Restaurant", source: grid, code: 35-2014.00}
+    - {value: "Cooks, Short Order", source: grid, code: 35-2015.00}
+    - {value: "Food Preparation Workers", source: grid, code: 35-2021.00}
+    - {value: "First-Line Supervisors of Housekeeping and Janitorial Workers", source: grid, code: 37-1011.00}
+    - {value: "First-Line Supervisors of Landscaping, Lawn Service, and Groundskeeping Workers", source: grid, code: 37-1012.00}
+    - {value: "Janitors and Cleaners, Except Maids and Housekeeping Cleaners", source: grid, code: 37-2011.00}
+    - {value: "Maids and Housekeeping Cleaners", source: grid, code: 37-2012.00}
+    - {value: "Pest Control Workers", source: grid, code: 37-2021.00}
+    - {value: "Landscaping and Groundskeeping Workers", source: grid, code: 37-3011.00}
+    - {value: "Pesticide Handlers, Sprayers, and Applicators, Vegetation", source: grid, code: 37-3012.00}
+    - {value: "Tree Trimmers and Pruners", source: grid, code: 37-3013.00}
+    - {value: "First-Line Supervisors of Gambling Services Workers", source: grid, code: 39-1013.00}
+    - {value: "First-Line Supervisors of Entertainment and Recreation Workers, Except Gambling Services", source: grid, code: 39-1014.00}
+    - {value: "First-Line Supervisors of Personal Service Workers", source: grid, code: 39-1022.00}
+    - {value: "Animal Trainers", source: grid, code: 39-2011.00}
+    - {value: "Animal Caretakers", source: grid, code: 39-2021.00}
+    - {value: "Gambling Dealers", source: grid, code: 39-3011.00}
+    - {value: "Gambling and Sports Book Writers and Runners", source: grid, code: 39-3012.00}
+    - {value: "Motion Picture Projectionists", source: grid, code: 39-3021.00}
+    - {value: "First-Line Supervisors of Retail Sales Workers", source: grid, code: 41-1011.00}
+    - {value: "First-Line Supervisors of Non-Retail Sales Workers", source: grid, code: 41-1012.00}
+    - {value: "Cashiers", source: grid, code: 41-2011.00}
+    - {value: "Gambling Change Persons and Booth Cashiers", source: grid, code: 41-2012.00}
+    - {value: "Counter and Rental Clerks", source: grid, code: 41-2021.00}
+    - {value: "Parts Salespersons", source: grid, code: 41-2022.00}
+    - {value: "Retail Salespersons", source: grid, code: 41-2031.00}
+    - {value: "Advertising Sales Agents", source: grid, code: 41-3011.00}
+    - {value: "First-Line Supervisors of Office and Administrative Support Workers", source: grid, code: 43-1011.00}
+    - {value: "Switchboard Operators, Including Answering Service", source: grid, code: 43-2011.00}
+    - {value: "Telephone Operators", source: grid, code: 43-2021.00}
+    - {value: "Bill and Account Collectors", source: grid, code: 43-3011.00}
+    - {value: "Billing and Posting Clerks", source: grid, code: 43-3021.00}
+    - {value: "Bookkeeping, Accounting, and Auditing Clerks", source: grid, code: 43-3031.00}
+    - {value: "Gambling Cage Workers", source: grid, code: 43-3041.00}
+    - {value: "Payroll and Timekeeping Clerks", source: grid, code: 43-3051.00}
+    - {value: "Customer Service Representatives", source: grid, code: 43-4051.00, also_known_as: [customer service agent, customer service agents, customer support agent, customer support agents]}
+    - {value: "First-Line Supervisors of Farming, Fishing, and Forestry Workers", source: grid, code: 45-1011.00}
+    - {value: "Agricultural Inspectors", source: grid, code: 45-2011.00}
+    - {value: "Animal Breeders", source: grid, code: 45-2021.00}
+    - {value: "Graders and Sorters, Agricultural Products", source: grid, code: 45-2041.00}
+    - {value: "Agricultural Equipment Operators", source: grid, code: 45-2091.00}
+    - {value: "Farmworkers and Laborers, Crop, Nursery, and Greenhouse", source: grid, code: 45-2092.00}
+    - {value: "Farmworkers, Farm, Ranch, and Aquacultural Animals", source: grid, code: 45-2093.00}
+    - {value: "Fishing and Hunting Workers", source: grid, code: 45-3031.00}
+    - {value: "First-Line Supervisors of Construction Trades and Extraction Workers", source: grid, code: 47-1011.00}
+    - {value: "Solar Energy Installation Managers", source: grid, code: 47-1011.03}
+    - {value: "Boilermakers", source: grid, code: 47-2011.00}
+    - {value: "Brickmasons and Blockmasons", source: grid, code: 47-2021.00, also_known_as: [brickmason, brickmasons, blockmason, blockmasons]}
+    - {value: "Stonemasons", source: grid, code: 47-2022.00}
+    - {value: "Carpenters", source: grid, code: 47-2031.00}
+    - {value: "Carpet Installers", source: grid, code: 47-2041.00}
+    - {value: "Floor Layers, Except Carpet, Wood, and Hard Tiles", source: grid, code: 47-2042.00}
+    - {value: "First-Line Supervisors of Mechanics, Installers, and Repairers", source: grid, code: 49-1011.00}
+    - {value: "Computer, Automated Teller, and Office Machine Repairers", source: grid, code: 49-2011.00}
+    - {value: "Radio, Cellular, and Tower Equipment Installers and Repairers", source: grid, code: 49-2021.00}
+    - {value: "Telecommunications Equipment Installers and Repairers, Except Line Installers", source: grid, code: 49-2022.00}
+    - {value: "Avionics Technicians", source: grid, code: 49-2091.00}
+    - {value: "Electric Motor, Power Tool, and Related Repairers", source: grid, code: 49-2092.00}
+    - {value: "Electrical and Electronics Installers and Repairers, Transportation Equipment", source: grid, code: 49-2093.00}
+    - {value: "Electrical and Electronics Repairers, Commercial and Industrial Equipment", source: grid, code: 49-2094.00}
+    - {value: "First-Line Supervisors of Production and Operating Workers", source: grid, code: 51-1011.00}
+    - {value: "Aircraft Structure, Surfaces, Rigging, and Systems Assemblers", source: grid, code: 51-2011.00}
+    - {value: "Coil Winders, Tapers, and Finishers", source: grid, code: 51-2021.00}
+    - {value: "Electrical and Electronic Equipment Assemblers", source: grid, code: 51-2022.00}
+    - {value: "Electromechanical Equipment Assemblers", source: grid, code: 51-2023.00}
+    - {value: "Engine and Other Machine Assemblers", source: grid, code: 51-2031.00}
+    - {value: "Structural Metal Fabricators and Fitters", source: grid, code: 51-2041.00}
+    - {value: "Fiberglass Laminators and Fabricators", source: grid, code: 51-2051.00}
+    - {value: "Aircraft Cargo Handling Supervisors", source: grid, code: 53-1041.00}
+    - {value: "First-Line Supervisors of Helpers, Laborers, and Material Movers, Hand", source: grid, code: 53-1042.00}
+    - {value: "Recycling Coordinators", source: grid, code: 53-1042.01}
+    - {value: "First-Line Supervisors of Material-Moving Machine and Vehicle Operators", source: grid, code: 53-1043.00}
+    - {value: "First-Line Supervisors of Passenger Attendants", source: grid, code: 53-1044.00}
+    - {value: "Airline Pilots, Copilots, and Flight Engineers", source: grid, code: 53-2011.00}
+    - {value: "Commercial Pilots", source: grid, code: 53-2012.00}
+    - {value: "Air Traffic Controllers", source: grid, code: 53-2021.00}
+    - {value: "Data Entry Clerk", source: seed, code: LE-OCC-0001, also_known_as: [data entry clerks]}
+    - {value: "Accounts Payable Clerk", source: seed, code: LE-OCC-0002, also_known_as: [accounts payable clerks]}
+    - {value: "Records and Information Manager", source: seed, code: LE-OCC-0005, also_known_as: [records and information managers, records manager, records managers]}
+    - {value: "Data Engineer", source: seed, code: LE-OCC-0006, also_known_as: [data engineers]}
+  industries:
+    description: The industries an item names, from this declared list of thirty-four.
+    values:
+      - value: accounting
+        description: Bookkeeping, ledgers, payables, receivables, payroll, tax filing and financial statements.
+        phrases: [accounting, accountant, accountants, bookkeeping, bookkeeper, bookkeepers, general ledger, accounts payable, accounts receivable, payroll, tax return, tax returns, tax filing, gaap, ifrs, invoice, invoices, invoicing, financial statements, balance sheet, income statement, chart of accounts, expense report, expense reports]
+      - value: marketing
+        description: Advertising, campaigns, brand, search engine optimisation, copywriting and social media.
+        phrases: [marketing, advertising, campaign, campaigns, seo, brand, branding, copywriting, ad copy, social media, lead generation, marketer, marketers, advertisement, advertisements, content marketing, email marketing]
+      - value: aerospace
+        description: Aircraft, spacecraft, avionics, satellites and defence contracting.
+        phrases: [aerospace, aircraft, avionics, satellite, satellites, spacecraft, defense contractor, defence contractor, military, nasa, faa, airworthiness, flight control, flight controls]
+      - value: agriculture
+        description: Farming, crops, livestock, soil and food processing.
+        phrases: [agriculture, agricultural, farming, farm, farms, farmer, farmers, crop, crops, livestock, soil, harvest, food safety, food processing]
+      - value: automotive
+        description: Vehicles, dealerships, electric vehicles and driving systems.
+        phrases: [automotive, vehicle, vehicles, car, cars, truck, trucks, dealership, dealerships, electric vehicle, electric vehicles, ev charging, autonomous driving, automaker, automakers]
+      - value: finance
+        description: Banking, payments, lending, trading, wealth management and financial regulation.
+        phrases: [bank, banks, banking, fintech, payments, payment, loan, loans, mortgage, mortgages, credit card, credit cards, trading, stock market, brokerage, wealth management, kyc, anti-money laundering, aml, iban, portfolio management, hedge fund, hedge funds, investment, investments, investor, investors]
+      - value: biotech and pharma
+        description: Drug development, clinical trials, genomics and laboratory biology.
+        phrases: [biotech, biotechnology, pharma, pharmaceutical, pharmaceuticals, drug, drugs, clinical trial, clinical trials, fda, genomics, genome, genomes, protein, proteins, bioinformatics, assay, assays, small molecule, small molecules, drug discovery]
+      - value: construction
+        description: Building sites, contractors, building codes, drawings and civil engineering.
+        phrases: [construction industry, construction company, construction companies, construction project, construction projects, contractor, contractors, building code, building codes, blueprint, blueprints, civil engineering, hvac, plumber, plumbers, site plan, site plans, surveying, construction site, construction sites, structural engineering]
+      - value: consulting
+        description: Advisory engagements, client deliverables and statements of work.
+        phrases: [consulting, consultant, consultants, consultancy, advisory firm, advisory firms, advisory services, client deliverable, client deliverables, statement of work, statements of work, sow, consulting engagement, consulting engagements, client engagement, client engagements]
+      - value: cybersecurity
+        description: Threats, vulnerabilities, penetration testing, incident response and security standards.
+        phrases: [cybersecurity, cyber security, infosec, information security, penetration test, penetration testing, pentest, pentesting, vulnerability, vulnerabilities, threat, threats, malware, phishing, incident response, siem, soc 2, iso 27001, zero trust, owasp, cve, exploit, exploits, ransomware]
+      - value: data and analytics
+        description: Data science, machine learning, business intelligence, warehouses and pipelines.
+        phrases: [data analytics, business analytics, predictive analytics, analytics engineering, analytics engineer, analytics engineers, data science, data scientist, data scientists, machine learning, business intelligence, data warehouse, data warehouses, data pipeline, data pipelines, etl, kpi, kpis, forecasting, statistics, statistical, data analyst, data analysts, data engineer, data engineers, analytics dashboard, analytics dashboards, bi dashboard, bi dashboards]
+      - value: education
+        description: Schools, universities, courses, lessons, teaching and grading.
+        phrases: [education, educational, teacher, teachers, teaching, student, students, classroom, classrooms, curriculum, curricula, school, schools, university, universities, college, colleges, tutoring, lms, grading, syllabus, homework, lesson plan, lesson plans, online course, online courses, course material, course materials]
+      - value: energy
+        description: Electricity, electric utilities, oil and gas, renewables and energy storage.
+        phrases: [energy, electric utility, electric utilities, utility company, utility companies, power grid, electricity, solar, wind farm, wind farms, oil and gas, nuclear power, nuclear energy, nuclear plant, nuclear plants, renewable, renewables, battery storage, energy storage, smart meter, smart meters, power plant, power plants, photovoltaic, turbine, turbines]
+      - value: media and entertainment
+        description: Film, television, streaming, music, publishing, news and games.
+        phrases: [entertainment, media company, media companies, news media, film, films, movie, movies, television, tv show, tv shows, streaming service, streaming services, video streaming, music streaming, music, podcast, podcasts, publishing, journalism, news, newsroom, video game, video games, gaming, game development, animated film, animated films, animation studio, animation studios, broadcast, broadcasting]
+      - value: environment
+        description: Climate, emissions, conservation, recycling and sustainability reporting.
+        phrases: [environmental, sustainability, climate, carbon, emissions, recycling, conservation, wildlife, pollution, esg, greenhouse, biodiversity, natural environment]
+      - value: government
+        description: Public sector work, government agencies, legislation and public procurement.
+        phrases: [government, public sector, municipal, municipality, federal, state agency, state agencies, government agency, government agencies, federal agency, federal agencies, legislation, legislative, legislator, legislators, public service, civic, census, public procurement, ministry, ministries]
+      - value: healthcare
+        description: Hospitals, clinics, patients, clinicians, medical records and pharmacy.
+        phrases: [healthcare, health care, hospital, hospitals, clinic, clinics, clinical, patient, patients, physician, physicians, doctors, nurse, nurses, nursing, medical, medicine, hipaa, ehr, emr, telehealth, pharmacy, pharmacies, dental, dentist, dentists, therapist, therapists]
+      - value: hospitality and travel
+        description: Hotels, restaurants, travel, airlines, bookings and guests.
+        phrases: [hospitality, hotel, hotels, travel, tourism, airline, airlines, booking, bookings, reservation, reservations, guest, guests, cruise, cruises, itinerary, itineraries, tourist, tourists, restaurant, restaurants, cooking recipe, cooking recipes, culinary, kitchen, kitchens, flight booking, flight bookings]
+      - value: human resources
+        description: Recruiting, hiring, job descriptions, interviews, onboarding and performance reviews.
+        phrases: [human resources, hr, recruiting, recruitment, recruiter, recruiters, hiring, job posting, job postings, job description, job descriptions, onboarding, employee benefits, performance review, performance reviews, applicant, applicants, headcount, job interview, job interviews, interview questions, resume screening, cv screening, candidate screening]
+      - value: insurance
+        description: Policies, claims, underwriting and actuarial work.
+        phrases: [insurance, insurer, insurers, policyholder, policyholders, underwriting, underwriter, underwriters, actuarial, actuary, actuaries, reinsurance, deductible, deductibles, insurance claim, insurance claims, claims adjuster, claims adjusters, claims processing, insurance premium, insurance premiums]
+      - value: legal
+        description: Law firms, lawyers, contracts, litigation, courts and compliance.
+        phrases: [legal, law firm, law firms, lawyer, lawyers, attorney, attorneys, paralegal, paralegals, contract review, litigation, court, courts, statute, statutes, jurisdiction, jurisdictions, nda, gdpr, legal counsel, counsel, legal compliance, judges and magistrates]
+      - value: logistics
+        description: Supply chains, shipping, freight, warehouses, fleets and deliveries.
+        phrases: [logistics, supply chain, supply chains, shipping, shipment, shipments, freight, warehouse, warehouses, trucking, transportation, transit, customs, courier, couriers, last mile, inventory management, warehouse management, fleet management, package delivery, delivery route, delivery routes]
+      - value: manufacturing
+        description: Factories, production lines, machining, quality control and bills of materials.
+        phrases: [manufacturing, manufacturer, manufacturers, factory floor, factory worker, factory workers, manufacturing plant, manufacturing plants, assembly line, assembly lines, production line, production lines, plc, cnc, machining, six sigma, quality control, bill of materials, bom, industrial, plant floor, shop floor, fabrication]
+      - value: nonprofit
+        description: Charities, donors, fundraising, grants and volunteers.
+        phrases: [nonprofit, non-profit, nonprofits, charity, charities, charitable, donor, donors, donation, donations, fundraising, grant application, grant applications, volunteer, volunteers, ngo, ngos, philanthropy]
+      - value: real estate
+        description: Property, landlords, leases, listings and appraisals.
+        phrases: [real estate, realtor, realtors, landlord, landlords, lease, leases, leasing, listing, listings, property management, homebuyer, homebuyers, zoning, appraisal, appraisals, rental, rentals, brokerage firm]
+      - value: retail and e-commerce
+        description: Stores, online shops, catalogues, carts, points of sale and stock keeping units.
+        phrases: [retail, retailer, retailers, e-commerce, ecommerce, online store, online stores, storefront, storefronts, shopify, woocommerce, shopping cart, shopping carts, product catalog, product catalogue, merchandising, point of sale, sku, skus, cashier, cashiers, customer loyalty, shopper, shoppers]
+      - value: science and research
+        description: Laboratories, experiments, papers, peer review and academic work.
+        phrases: [research lab, research labs, laboratory, laboratories, peer review, scientific, scientist, scientists, physics, chemistry, biology, microbiology, astronomy, arxiv, research paper, research papers, academic, academia, research experiment, research experiments, lab experiment, lab experiments, scientific journal, scientific journals, academic journal, academic journals]
+      - value: technology
+        description: Software companies, subscription software, start-ups, semiconductors and cloud providers.
+        phrases: [software company, software companies, saas, tech company, tech companies, startup, startups, it services, it department, technology sector, technology industry, semiconductor, semiconductors, cloud provider, cloud providers, software vendor, software vendors]
+      - value: telecommunications
+        description: Carriers, mobile networks, broadband, fibre and voice over the internet.
+        phrases: [telecom, telecoms, telecommunications, telecommunication, carrier, carriers, 5g, 4g, lte, broadband, fiber optic, fibre optic, cellular, mobile network, mobile networks, voip, network operator, network operators, sim card, sim cards]
+      - value: customer support
+        description: Help desks, tickets, call centres, complaints and escalations.
+        phrases: [customer service, customer support, help desk, helpdesk, support ticket, support tickets, ticketing, call center, call centre, contact center, contact centre, service desk, complaint, complaints, csat, nps, zendesk, intercom, support escalation, support escalations, customer complaint, customer complaints]
+      - value: sales
+        description: Sales teams, customer relationship systems, quotas, prospects and deals.
+        phrases: [sales, sales team, sales teams, salesperson, salespeople, sales rep, sales reps, crm, salesforce, hubspot, prospect, prospects, prospecting, cold email, cold emails, cold outreach, upsell, upselling, sales pipeline, sales deal, sales deals, sales quota, sales quotas, closing deals]
+      - value: social services
+        description: Social work, counselling, therapy, mental health and case management.
+        phrases: [social work, social worker, social workers, counselor, counselors, counsellor, counsellors, counseling, counselling, therapy, mental health, substance abuse, rehabilitation, case management, caseworker, caseworkers, welfare, foster care]
+      - value: public safety
+        description: Police, fire, emergency response, corrections and security services.
+        phrases: [police, law enforcement, firefighter, firefighters, fire department, fire departments, emergency response, emergency services, correctional, security guard, security guards, first responder, first responders, paramedic, paramedics, emergency dispatch, 911 dispatch, police dispatch, correctional facility, correctional facilities]
+      - value: arts and design
+        description: Graphic and product design, illustration, typography, fashion and fine art.
+        phrases: [graphic design, graphic designer, graphic designers, illustration, illustrator, illustrators, typography, fashion, apparel, textile, textiles, fine art, fine arts, sculpture, gallery, galleries, ux design, ui design, product design, design system, design systems, figma, brand identity, artwork]
+  levels:
+    description: The experience levels an item names, in career order.
+    values:
+      - value: student
+        description: Learners, from a first course to graduate study.
+        phrases: [student, students, learner, learners, undergraduate, undergraduates, graduate student, graduate students, phd student, phd students, coursework, homework, classroom, classrooms, bootcamp, bootcamps, self-taught, study guide, study guides, exam, exams, syllabus, beginner, beginners, novice, novices]
+      - value: junior
+        description: Entry-level workers, interns, apprentices and new hires.
+        phrases: [junior, entry-level, entry level, intern, interns, internship, internships, apprentice, apprentices, apprenticeship, trainee, trainees, new hire, new hires, graduate hire, graduate hires, first job, newcomer, newcomers, early career, early-career]
+      - value: mid
+        description: Workers with several years of experience.
+        phrases: [mid-level, mid level, midlevel, intermediate, mid-career, mid career, several years of experience, 3-5 years, three to five years, mid-senior]
+      - value: senior
+        description: Experienced and expert practitioners.
+        phrases: [senior, experienced, seasoned, 10+ years, ten years of experience, senior-level, veteran practitioner, subject matter expert, subject matter experts, sme, smes, senior engineer, senior engineers, senior developer, senior developers]
+      - value: lead
+        description: Team leads, technical leads, supervisors and managers of teams.
+        phrases: [team lead, team leads, tech lead, tech leads, technical lead, technical leads, lead engineer, lead engineers, lead developer, lead developers, lead designer, engineering manager, engineering managers, team leader, team leaders, first-line supervisor, first-line supervisors, staff engineer, staff engineers, principal engineer, principal engineers, head of engineering, head of product, head of marketing, head of sales, head of design, head of data]
+      - value: executive
+        description: Chief officers, vice presidents, directors, founders and boards.
+        phrases: [executive, executives, ceo, ceos, cto, ctos, cfo, cfos, coo, cio, ciso, chief executive, chief executives, chief technology officer, chief financial officer, chief operating officer, chief information officer, chief sustainability officer, vice president, vice presidents, vp, vps, board of directors, board member, board members, founder, founders, co-founder, co-founders, c-suite, c-level, managing director, managing directors, leadership team, leadership teams, executive director, executive directors, board director, board directors]
+  languages:
+    description: The natural language of an item's text; english by default.
+    values:
+      - value: english
+        description: The default when no other language reaches its threshold in a Latin-script text.
+        stopwords: [the, and, of, to, is, that, for, with, are, this, be, by, it, from, at, not, you, your, can, will, if, when, then, than, which, their, there, these, those, would, should, could, each, into, about, after, before, other, only, its, they, them, what, how, any, some, use, does, did, has, have, had, were, been, but, we, our, my, because, while, where, here, every, must, may, might, without, within, through, during, between, against, under, over, again, same, such, very, just, more, most, many, much, own, out, up, down, "off", new, first, last]
+      - value: chinese
+        description: Text in Han characters without kana.
+        script: han
+      - value: japanese
+        description: Text with hiragana or katakana.
+        script: kana
+      - value: korean
+        description: Text in Hangul.
+        script: hangul
+      - value: russian
+        description: Text in Cyrillic without the letters that mark Ukrainian.
+        script: cyrillic
+      - value: arabic
+        description: Text in Arabic script without the letters that mark Persian or Urdu.
+        script: arabic
+      - value: hindi
+        description: Text in Devanagari.
+        script: devanagari
+      - value: spanish
+        description: Found by its stopwords.
+        stopwords: [el, los, las, pero, sus, más, también, muy, sin, cuando, hay, esto, ese, esa, nosotros, usted, ustedes, ellos, ellas, donde, aunque, mientras, siempre, ahora, aquí, hasta, tiene, tienen, puede, pueden, debe, deben, hacer, hace, hecho, están, ya, sí, qué, cómo, otro, otra, otros, otras, ejemplo, archivo, archivos, y, además, según, así, entonces, después]
+      - value: portuguese
+        description: Found by its stopwords.
+        stopwords: [os, as, um, uma, não, mas, seu, sua, seus, suas, ele, ela, eles, elas, você, vocês, também, muito, sem, aqui, até, tem, têm, pode, podem, deve, devem, fazer, faz, feito, estão, isso, isto, essa, esse, nós, já, ainda, depois, então, onde, do, dos, na, nas, ao, aos, pelo, pela, em, é, são, foi, há, exemplo, arquivo, arquivos, mesmo, qual, quais, bem, outro, outra, outros, precisa]
+      - value: french
+        description: Found by its stopwords.
+        stopwords: [des, du, une, est, sont, dans, pour, pas, avec, ce, cette, ces, elle, ils, elles, nous, vous, leur, leurs, ne, tout, tous, toute, toutes, aussi, comme, où, quand, très, sans, sous, être, avoir, fait, faire, peut, peuvent, doit, doivent, après, avant, au, aux, et, à, sa, ses, par, cela, ceci, votre, vos, notre, exemple, fichier, fichiers, utiliser, chaque, même, déjà, ici, donc, alors, encore, jamais, toujours, pourquoi, parce]
+      - value: german
+        description: Found by its stopwords.
+        stopwords: [der, die, das, und, ist, sind, nicht, ein, eine, einer, eines, einem, einen, mit, von, zu, auf, für, auch, als, bei, nach, aus, über, unter, zwischen, wenn, aber, oder, dass, sich, sie, wir, ihr, ihre, ihren, werden, wird, wurde, kann, können, muss, müssen, haben, hatte, sein, seine, seiner, durch, noch, schon, sehr, dem, den, im, zum, zur, nur, mehr, kein, keine, diese, dieser, dieses, alle, wie, wo, was, dann, hier, jetzt, immer, beispiel, datei, dateien, er]
+      - value: italian
+        description: Found by its stopwords.
+        stopwords: [gli, della, dello, delle, degli, dei, nel, nella, nelle, negli, sul, sulla, sulle, sono, è, per, anche, più, che, chi, questo, questa, questi, queste, quello, quella, essere, avere, fatto, fare, può, possono, devono, dopo, prima, mai, ancora, già, molto, senza, tra, fra, ogni, tutto, tutti, tutte, altro, altri, esempio, usare, utilizzare, dove, perché, quindi, allora, però, cioè, sia, cui, nei, alla, allo, agli, dalla, dalle, dal, dai, uno]
+  geographies:
+    description: The countries and regions an item names, from this declared list.
+    values:
+      - {value: "United States", kind: country, phrases: [united states, united states of america, USA, U.S., U.S.A.]}
+      - {value: "Canada", kind: country, phrases: [canada]}
+      - {value: "Mexico", kind: country, phrases: [mexico, méxico]}
+      - {value: "Brazil", kind: country, phrases: [brazil, brasil]}
+      - {value: "Argentina", kind: country, phrases: [argentina]}
+      - {value: "Chile", kind: country, phrases: [chile]}
+      - {value: "Colombia", kind: country, phrases: [colombia]}
+      - {value: "Peru", kind: country, phrases: [peru, perú]}
+      - {value: "United Kingdom", kind: country, phrases: [united kingdom, UK, U.K., britain, great britain, england, scotland, wales, northern ireland]}
+      - {value: "Ireland", kind: country, phrases: [ireland, republic of ireland]}
+      - {value: "France", kind: country, phrases: [france]}
+      - {value: "Germany", kind: country, phrases: [germany, deutschland]}
+      - {value: "Spain", kind: country, phrases: [spain, españa]}
+      - {value: "Portugal", kind: country, phrases: [portugal]}
+      - {value: "Italy", kind: country, phrases: [italy, italia]}
+      - {value: "Netherlands", kind: country, phrases: [netherlands, holland, nederland]}
+      - {value: "Belgium", kind: country, phrases: [belgium]}
+      - {value: "Switzerland", kind: country, phrases: [switzerland, schweiz, suisse]}
+      - {value: "Austria", kind: country, phrases: [austria, österreich]}
+      - {value: "Sweden", kind: country, phrases: [sweden, sverige]}
+      - {value: "Norway", kind: country, phrases: [norway, norge]}
+      - {value: "Denmark", kind: country, phrases: [denmark, danmark]}
+      - {value: "Finland", kind: country, phrases: [finland, suomi]}
+      - {value: "Poland", kind: country, phrases: [poland, polska]}
+      - {value: "Czech Republic", kind: country, phrases: [czech republic, czechia]}
+      - {value: "Hungary", kind: country, phrases: [hungary]}
+      - {value: "Romania", kind: country, phrases: [romania]}
+      - {value: "Greece", kind: country, phrases: [greece]}
+      - {value: "Ukraine", kind: country, phrases: [ukraine]}
+      - {value: "Russia", kind: country, phrases: [russia, russian federation]}
+      - {value: "Turkey", kind: country, phrases: [turkey, türkiye]}
+      - {value: "Israel", kind: country, phrases: [israel]}
+      - {value: "Saudi Arabia", kind: country, phrases: [saudi arabia]}
+      - {value: "United Arab Emirates", kind: country, phrases: [united arab emirates, UAE, dubai, abu dhabi]}
+      - {value: "Qatar", kind: country, phrases: [qatar]}
+      - {value: "Egypt", kind: country, phrases: [egypt]}
+      - {value: "Morocco", kind: country, phrases: [morocco]}
+      - {value: "Nigeria", kind: country, phrases: [nigeria]}
+      - {value: "Kenya", kind: country, phrases: [kenya]}
+      - {value: "Ghana", kind: country, phrases: [ghana]}
+      - {value: "Ethiopia", kind: country, phrases: [ethiopia]}
+      - {value: "South Africa", kind: country, phrases: [south africa]}
+      - {value: "India", kind: country, phrases: [india]}
+      - {value: "Pakistan", kind: country, phrases: [pakistan]}
+      - {value: "Bangladesh", kind: country, phrases: [bangladesh]}
+      - {value: "Sri Lanka", kind: country, phrases: [sri lanka]}
+      - {value: "Nepal", kind: country, phrases: [nepal]}
+      - {value: "China", kind: country, phrases: [china, mainland china, PRC]}
+      - {value: "Hong Kong", kind: country, phrases: [hong kong]}
+      - {value: "Taiwan", kind: country, phrases: [taiwan]}
+      - {value: "Japan", kind: country, phrases: [japan]}
+      - {value: "South Korea", kind: country, phrases: [south korea, korea, republic of korea]}
+      - {value: "North Korea", kind: country, phrases: [north korea]}
+      - {value: "Singapore", kind: country, phrases: [singapore]}
+      - {value: "Malaysia", kind: country, phrases: [malaysia]}
+      - {value: "Indonesia", kind: country, phrases: [indonesia]}
+      - {value: "Thailand", kind: country, phrases: [thailand]}
+      - {value: "Vietnam", kind: country, phrases: [vietnam, viet nam]}
+      - {value: "Philippines", kind: country, phrases: [philippines]}
+      - {value: "Australia", kind: country, phrases: [australia]}
+      - {value: "New Zealand", kind: country, phrases: [new zealand, aotearoa]}
+      - {value: "Iran", kind: country, phrases: [iran]}
+      - {value: "Iraq", kind: country, phrases: [iraq]}
+      - {value: "Kazakhstan", kind: country, phrases: [kazakhstan]}
+      - {value: "North America", kind: region, phrases: [north america]}
+      - {value: "Latin America", kind: region, phrases: [latin america, latam]}
+      - {value: "South America", kind: region, phrases: [south america]}
+      - {value: "Central America", kind: region, phrases: [central america]}
+      - {value: "Caribbean", kind: region, phrases: [caribbean]}
+      - {value: "Europe", kind: region, phrases: [europe]}
+      - {value: "European Union", kind: region, phrases: [european union, EU]}
+      - {value: "Eastern Europe", kind: region, phrases: [eastern europe]}
+      - {value: "Western Europe", kind: region, phrases: [western europe]}
+      - {value: "Nordics", kind: region, phrases: [nordics, nordic countries, scandinavia]}
+      - {value: "Balkans", kind: region, phrases: [balkans]}
+      - {value: "Middle East", kind: region, phrases: [middle east]}
+      - {value: "Africa", kind: region, phrases: [africa]}
+      - {value: "Sub-Saharan Africa", kind: region, phrases: [sub-saharan africa]}
+      - {value: "North Africa", kind: region, phrases: [north africa]}
+      - {value: "Asia", kind: region, phrases: [asia]}
+      - {value: "East Asia", kind: region, phrases: [east asia]}
+      - {value: "Southeast Asia", kind: region, phrases: [southeast asia, south east asia, asean]}
+      - {value: "South Asia", kind: region, phrases: [south asia]}
+      - {value: "Central Asia", kind: region, phrases: [central asia]}
+      - {value: "Asia-Pacific", kind: region, phrases: [asia-pacific, asia pacific, APAC]}
+      - {value: "Oceania", kind: region, phrases: [oceania]}
+      - {value: "Europe, the Middle East and Africa", kind: region, phrases: [EMEA]}

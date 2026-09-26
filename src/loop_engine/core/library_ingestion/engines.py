@@ -9,6 +9,7 @@ is in selection.py and grants no authority.
 """
 from __future__ import annotations
 
+from .facet_tags import RulesFacetTagger
 from .format_builtin import AgentSkillsBuiltinRules
 from .format_connection import ConnectionFileRules
 from .format_json_schema import ConnectionSchemaValidator
@@ -45,8 +46,11 @@ OUTLINE_SLOT = EngineSlot(
 STEP_FUNCTION_SLOT = EngineSlot(
     "library_step_function_tagging", "1.0.0", "tag(step_function_material/v1) -> step_function_tags/v1",
     ("function_tagger",), ONE_OF, ("step_function_rules",))
+FACET_SLOT = EngineSlot(
+    "library_facet_tagging", "1.0.0", "tag(facet_material/v1) -> facet_tags/v1",
+    ("facet_tagger",), ONE_OF, ("facet_rules",))
 
-SLOTS = (SOURCE_SLOT, FORMAT_SLOT, SAFETY_SLOT, NEAR_DUPLICATE_SLOT, OUTLINE_SLOT, STEP_FUNCTION_SLOT)
+SLOTS = (SOURCE_SLOT, FORMAT_SLOT, SAFETY_SLOT, NEAR_DUPLICATE_SLOT, OUTLINE_SLOT, STEP_FUNCTION_SLOT, FACET_SLOT)
 FACTORIES = {
     SOURCE_SLOT.slot_id: {"github_pinned_repositories": GitHubPinnedRepositoriesSource,
                           "mcp_official_registry": McpOfficialRegistrySource},
@@ -60,4 +64,5 @@ FACTORIES = {
                                   "builtin_minhash_lsh": BuiltinMinHashLsh},
     OUTLINE_SLOT.slot_id: {"model_outline": ModelOutline, "deterministic_outline": DeterministicOutline},
     STEP_FUNCTION_SLOT.slot_id: {"step_function_rules": RulesStepFunctionTagger},
+    FACET_SLOT.slot_id: {"facet_rules": RulesFacetTagger},
 }

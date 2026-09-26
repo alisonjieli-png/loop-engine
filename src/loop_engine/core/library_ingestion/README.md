@@ -108,10 +108,14 @@ Library ingestion (functional component)
 ├── library_outline, one_of
 │   ├── model_outline: one model sentence per outline, under model authority only
 │   └── deterministic_outline: a template sentence that needs no authority
-└── library_step_function_tagging, one_of
-    └── step_function_rules: the kinds of step an item supports (acting, analysis,
-        building, operating, planning, reasoning, research, reviewing, verification,
-        writing) from its words and file roles, served as the step_functions attribute
+├── library_step_function_tagging, one_of
+│   └── step_function_rules: the kinds of step an item supports (acting, analysis,
+│       building, operating, planning, reasoning, research, reviewing, verification,
+│       writing) from its words and file roles, served as the step_functions attribute
+└── library_facet_tagging, one_of
+    └── facet_rules: the job titles, industries, levels, languages and geographies an
+        item names, from the declared vocabulary in data/library_facets.yaml, served as
+        the job_titles, industries, levels, languages and geographies attributes
 ```
 
 `engines.py` is the factory table and the only module that names the

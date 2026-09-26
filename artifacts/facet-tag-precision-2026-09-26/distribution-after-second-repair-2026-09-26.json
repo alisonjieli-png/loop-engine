@@ -1,0 +1,704 @@
+{
+ "record_type": "facet_tag_distribution/v1",
+ "recorded_at": "2026-09-26",
+ "attempt": "after the second vocabulary repair",
+ "engine": {
+  "engine_id": "facet_rules",
+  "engine_version": "1.0.0",
+  "vocabulary_version": "2026-09-26",
+  "minimum_score": 2,
+  "maximum_values": {
+   "job_titles": 6,
+   "industries": 4,
+   "levels": 3,
+   "languages": 2,
+   "geographies": 6
+  },
+  "text_bound": 6000,
+  "default_language": "english"
+ },
+ "population": {
+  "source": "/home/username/baltor-library/reviewed-2026-09-26-10/imported",
+  "items_in_folder": 1631,
+  "approved_items_tagged": 1586,
+  "elapsed_seconds": 226.4
+ },
+ "items_with_a_value": {
+  "job_titles": 13,
+  "industries": 605,
+  "levels": 61,
+  "languages": 1586,
+  "geographies": 7
+ },
+ "share_with_a_value": {
+  "job_titles": 0.008,
+  "industries": 0.381,
+  "levels": 0.038,
+  "languages": 1.0,
+  "geographies": 0.004
+ },
+ "top_values": {
+  "job_titles": [
+   [
+    "Special Effects Artists and Animators",
+    4
+   ],
+   [
+    "Software Developers",
+    2
+   ],
+   [
+    "Lawyers",
+    2
+   ],
+   [
+    "Project Management Specialists",
+    1
+   ],
+   [
+    "Data Scientists",
+    1
+   ],
+   [
+    "Dentists, General",
+    1
+   ],
+   [
+    "Chief Executives",
+    1
+   ],
+   [
+    "Fine Artists, Including Painters, Sculptors, and Illustrators",
+    1
+   ]
+  ],
+  "industries": [
+   [
+    "marketing",
+    176
+   ],
+   [
+    "cybersecurity",
+    89
+   ],
+   [
+    "finance",
+    62
+   ],
+   [
+    "media and entertainment",
+    44
+   ],
+   [
+    "arts and design",
+    43
+   ],
+   [
+    "human resources",
+    42
+   ],
+   [
+    "data and analytics",
+    42
+   ],
+   [
+    "science and research",
+    40
+   ],
+   [
+    "sales",
+    29
+   ],
+   [
+    "retail and e-commerce",
+    27
+   ],
+   [
+    "technology",
+    26
+   ],
+   [
+    "consulting",
+    26
+   ],
+   [
+    "legal",
+    26
+   ],
+   [
+    "healthcare",
+    24
+   ],
+   [
+    "real estate",
+    23
+   ],
+   [
+    "energy",
+    23
+   ],
+   [
+    "hospitality and travel",
+    20
+   ],
+   [
+    "logistics",
+    19
+   ],
+   [
+    "accounting",
+    19
+   ],
+   [
+    "manufacturing",
+    16
+   ],
+   [
+    "education",
+    12
+   ],
+   [
+    "construction",
+    12
+   ],
+   [
+    "government",
+    9
+   ],
+   [
+    "agriculture",
+    6
+   ],
+   [
+    "automotive",
+    6
+   ]
+  ],
+  "levels": [
+   [
+    "executive",
+    27
+   ],
+   [
+    "senior",
+    25
+   ],
+   [
+    "student",
+    5
+   ],
+   [
+    "mid",
+    4
+   ],
+   [
+    "junior",
+    1
+   ],
+   [
+    "lead",
+    1
+   ]
+  ],
+  "languages": [
+   [
+    "english",
+    1520
+   ],
+   [
+    "chinese",
+    45
+   ],
+   [
+    "russian",
+    13
+   ],
+   [
+    "korean",
+    5
+   ],
+   [
+    "japanese",
+    3
+   ],
+   [
+    "spanish",
+    1
+   ],
+   [
+    "portuguese",
+    1
+   ]
+  ],
+  "geographies": [
+   [
+    "European Union",
+    3
+   ],
+   [
+    "United Kingdom",
+    2
+   ],
+   [
+    "Latin America",
+    1
+   ],
+   [
+    "Spain",
+    1
+   ],
+   [
+    "United States",
+    1
+   ],
+   [
+    "Europe",
+    1
+   ],
+   [
+    "Asia",
+    1
+   ]
+  ]
+ },
+ "top_evidence_phrases": {
+  "job_titles": [
+   [
+    "animator",
+    5
+   ],
+   [
+    "programmer",
+    2
+   ],
+   [
+    "project manager",
+    2
+   ],
+   [
+    "lawyer",
+    2
+   ],
+   [
+    "programmers",
+    1
+   ],
+   [
+    "software developers",
+    1
+   ],
+   [
+    "software engineer",
+    1
+   ],
+   [
+    "attorney",
+    1
+   ],
+   [
+    "attorneys",
+    1
+   ],
+   [
+    "data scientist",
+    1
+   ],
+   [
+    "dentists",
+    1
+   ],
+   [
+    "chief executive officer",
+    1
+   ],
+   [
+    "painter",
+    1
+   ],
+   [
+    "animators",
+    1
+   ]
+  ],
+  "industries": [
+   [
+    "marketing",
+    141
+   ],
+   [
+    "brand",
+    128
+   ],
+   [
+    "campaign",
+    101
+   ],
+   [
+    "seo",
+    60
+   ],
+   [
+    "campaigns",
+    58
+   ],
+   [
+    "vulnerabilities",
+    39
+   ],
+   [
+    "vulnerability",
+    39
+   ],
+   [
+    "threat",
+    38
+   ],
+   [
+    "design system",
+    36
+   ],
+   [
+    "owasp",
+    34
+   ],
+   [
+    "exploit",
+    34
+   ],
+   [
+    "typography",
+    30
+   ],
+   [
+    "sales",
+    29
+   ],
+   [
+    "bank",
+    28
+   ],
+   [
+    "onboarding",
+    27
+   ],
+   [
+    "consultant",
+    26
+   ],
+   [
+    "payment",
+    24
+   ],
+   [
+    "saas",
+    23
+   ],
+   [
+    "doctor",
+    23
+   ],
+   [
+    "legal",
+    23
+   ],
+   [
+    "listing",
+    20
+   ],
+   [
+    "news",
+    20
+   ],
+   [
+    "figma",
+    20
+   ],
+   [
+    "scientific",
+    19
+   ],
+   [
+    "academic",
+    19
+   ],
+   [
+    "advertising",
+    19
+   ],
+   [
+    "jurisdiction",
+    18
+   ],
+   [
+    "copywriting",
+    18
+   ],
+   [
+    "payments",
+    18
+   ],
+   [
+    "music",
+    18
+   ]
+  ],
+  "levels": [
+   [
+    "senior",
+    24
+   ],
+   [
+    "founder",
+    16
+   ],
+   [
+    "executive",
+    15
+   ],
+   [
+    "founders",
+    12
+   ],
+   [
+    "10+ years",
+    11
+   ],
+   [
+    "sme",
+    5
+   ],
+   [
+    "intermediate",
+    3
+   ],
+   [
+    "learner",
+    3
+   ],
+   [
+    "vp",
+    2
+   ],
+   [
+    "co-founders",
+    2
+   ],
+   [
+    "ceo",
+    2
+   ],
+   [
+    "smes",
+    1
+   ],
+   [
+    "experienced",
+    1
+   ],
+   [
+    "novice",
+    1
+   ],
+   [
+    "junior",
+    1
+   ],
+   [
+    "senior developer",
+    1
+   ],
+   [
+    "team lead",
+    1
+   ],
+   [
+    "cto",
+    1
+   ],
+   [
+    "senior engineer",
+    1
+   ],
+   [
+    "exam",
+    1
+   ],
+   [
+    "beginner",
+    1
+   ],
+   [
+    "beginners",
+    1
+   ],
+   [
+    "c-level",
+    1
+   ],
+   [
+    "executives",
+    1
+   ],
+   [
+    "chief executive",
+    1
+   ],
+   [
+    "mid-level",
+    1
+   ]
+  ],
+  "languages": [
+   [
+    "default: no other language reached its threshold",
+    310
+   ],
+   [
+    "script: han 45% of letters",
+    5
+   ],
+   [
+    "script: cyrillic 75% of letters",
+    4
+   ],
+   [
+    "stopwords: 35 of 239 latin words",
+    3
+   ],
+   [
+    "script: han 64% of letters",
+    3
+   ],
+   [
+    "script: han 67% of letters",
+    3
+   ],
+   [
+    "script: han 26% of letters",
+    3
+   ],
+   [
+    "script: cyrillic 77% of letters",
+    3
+   ],
+   [
+    "stopwords: 59 of 344 latin words",
+    2
+   ],
+   [
+    "stopwords: 70 of 331 latin words",
+    2
+   ],
+   [
+    "stopwords: 27 of 164 latin words",
+    2
+   ],
+   [
+    "script: han 42% of letters",
+    2
+   ],
+   [
+    "stopwords: 26 of 147 latin words",
+    2
+   ],
+   [
+    "stopwords: 140 of 817 latin words",
+    2
+   ],
+   [
+    "stopwords: 35 of 236 latin words",
+    2
+   ],
+   [
+    "stopwords: 35 of 242 latin words",
+    2
+   ],
+   [
+    "stopwords: 156 of 723 latin words",
+    2
+   ],
+   [
+    "stopwords: 234 of 1024 latin words",
+    2
+   ],
+   [
+    "stopwords: 77 of 393 latin words",
+    2
+   ],
+   [
+    "script: han 61% of letters",
+    2
+   ],
+   [
+    "script: han 58% of letters",
+    2
+   ],
+   [
+    "script: han 25% of letters",
+    2
+   ],
+   [
+    "stopwords: 12 of 115 latin words",
+    2
+   ],
+   [
+    "stopwords: 38 of 374 latin words",
+    2
+   ],
+   [
+    "script: han 32% of letters",
+    2
+   ],
+   [
+    "script: han 43% of letters",
+    2
+   ],
+   [
+    "stopwords: 88 of 368 latin words",
+    1
+   ],
+   [
+    "stopwords: 48 of 343 latin words",
+    1
+   ],
+   [
+    "stopwords: 85 of 349 latin words",
+    1
+   ],
+   [
+    "stopwords: 123 of 700 latin words",
+    1
+   ]
+  ],
+  "geographies": [
+   [
+    "EU",
+    4
+   ],
+   [
+    "UK",
+    3
+   ],
+   [
+    "latam",
+    1
+   ],
+   [
+    "spain",
+    1
+   ],
+   [
+    "USA",
+    1
+   ],
+   [
+    "europe",
+    1
+   ],
+   [
+    "asia",
+    1
+   ]
+  ]
+ }
+}

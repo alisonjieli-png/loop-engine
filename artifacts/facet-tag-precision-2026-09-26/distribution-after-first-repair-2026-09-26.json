@@ -1,0 +1,719 @@
+{
+ "record_type": "facet_tag_sample_report/v1",
+ "recorded_at": "2026-09-26",
+ "attempt": "after the vocabulary repair",
+ "engine": {
+  "engine_id": "facet_rules",
+  "engine_version": "1.0.0",
+  "vocabulary_version": "2026-09-26",
+  "minimum_score": 2,
+  "maximum_values": {
+   "job_titles": 6,
+   "industries": 4,
+   "levels": 3,
+   "languages": 2,
+   "geographies": 6
+  },
+  "text_bound": 6000,
+  "default_language": "english"
+ },
+ "population": {
+  "source": "candidate snapshot starter_catalogue_candidate_items/v2 of the 10,000-idea batch",
+  "items_tagged": 6877,
+  "elapsed_seconds": 55.7
+ },
+ "items_with_a_value": {
+  "job_titles": 20,
+  "industries": 1449,
+  "levels": 82,
+  "languages": 6877,
+  "geographies": 20
+ },
+ "share_with_a_value": {
+  "job_titles": 0.003,
+  "industries": 0.211,
+  "levels": 0.012,
+  "languages": 1.0,
+  "geographies": 0.003
+ },
+ "top_values": {
+  "job_titles": [
+   [
+    "Software Developers",
+    5
+   ],
+   [
+    "Project Management Specialists",
+    4
+   ],
+   [
+    "Special Effects Artists and Animators",
+    2
+   ],
+   [
+    "Technical Writers",
+    2
+   ],
+   [
+    "Accountants and Auditors",
+    1
+   ],
+   [
+    "Market Research Analysts and Marketing Specialists",
+    1
+   ],
+   [
+    "Art Directors",
+    1
+   ],
+   [
+    "Information Security Analysts",
+    1
+   ],
+   [
+    "Fine Artists, Including Painters, Sculptors, and Illustrators",
+    1
+   ],
+   [
+    "Sales Managers",
+    1
+   ],
+   [
+    "Data Engineer",
+    1
+   ]
+  ],
+  "industries": [
+   [
+    "marketing",
+    436
+   ],
+   [
+    "media and entertainment",
+    167
+   ],
+   [
+    "data and analytics",
+    130
+   ],
+   [
+    "arts and design",
+    121
+   ],
+   [
+    "cybersecurity",
+    113
+   ],
+   [
+    "finance",
+    76
+   ],
+   [
+    "sales",
+    73
+   ],
+   [
+    "human resources",
+    70
+   ],
+   [
+    "science and research",
+    61
+   ],
+   [
+    "construction",
+    47
+   ],
+   [
+    "logistics",
+    44
+   ],
+   [
+    "retail and e-commerce",
+    44
+   ],
+   [
+    "consulting",
+    42
+   ],
+   [
+    "manufacturing",
+    39
+   ],
+   [
+    "real estate",
+    39
+   ],
+   [
+    "accounting",
+    37
+   ],
+   [
+    "healthcare",
+    35
+   ],
+   [
+    "government",
+    32
+   ],
+   [
+    "customer support",
+    31
+   ],
+   [
+    "legal",
+    29
+   ]
+  ],
+  "levels": [
+   [
+    "executive",
+    46
+   ],
+   [
+    "senior",
+    16
+   ],
+   [
+    "lead",
+    13
+   ],
+   [
+    "student",
+    7
+   ],
+   [
+    "mid",
+    1
+   ]
+  ],
+  "languages": [
+   [
+    "english",
+    6813
+   ],
+   [
+    "chinese",
+    29
+   ],
+   [
+    "korean",
+    17
+   ],
+   [
+    "russian",
+    14
+   ],
+   [
+    "japanese",
+    3
+   ],
+   [
+    "spanish",
+    1
+   ]
+  ],
+  "geographies": [
+   [
+    "European Union",
+    11
+   ],
+   [
+    "Latin America",
+    9
+   ],
+   [
+    "United Kingdom",
+    4
+   ],
+   [
+    "China",
+    3
+   ],
+   [
+    "United States",
+    2
+   ],
+   [
+    "Germany",
+    2
+   ],
+   [
+    "Canada",
+    1
+   ],
+   [
+    "Hong Kong",
+    1
+   ],
+   [
+    "Netherlands",
+    1
+   ],
+   [
+    "Switzerland",
+    1
+   ],
+   [
+    "Japan",
+    1
+   ],
+   [
+    "Australia",
+    1
+   ]
+  ]
+ },
+ "top_evidence_phrases": {
+  "job_titles": [
+   [
+    "programmers",
+    8
+   ],
+   [
+    "project managers",
+    4
+   ],
+   [
+    "animator",
+    4
+   ],
+   [
+    "programmer",
+    2
+   ],
+   [
+    "accountants and auditors",
+    2
+   ],
+   [
+    "documentation writer",
+    2
+   ],
+   [
+    "project manager",
+    2
+   ],
+   [
+    "illustrator",
+    2
+   ],
+   [
+    "accountant",
+    1
+   ],
+   [
+    "marketing specialist",
+    1
+   ],
+   [
+    "art director",
+    1
+   ],
+   [
+    "security engineer",
+    1
+   ],
+   [
+    "sales manager",
+    1
+   ],
+   [
+    "data engineer",
+    1
+   ]
+  ],
+  "industries": [
+   [
+    "marketing",
+    164
+   ],
+   [
+    "seo",
+    130
+   ],
+   [
+    "brand",
+    127
+   ],
+   [
+    "campaign",
+    119
+   ],
+   [
+    "analytics",
+    55
+   ],
+   [
+    "campaigns",
+    54
+   ],
+   [
+    "design system",
+    53
+   ],
+   [
+    "media",
+    51
+   ],
+   [
+    "figma",
+    45
+   ],
+   [
+    "animation",
+    45
+   ],
+   [
+    "typography",
+    44
+   ],
+   [
+    "sales",
+    42
+   ],
+   [
+    "onboarding",
+    39
+   ],
+   [
+    "consultant",
+    37
+   ],
+   [
+    "dataset",
+    34
+   ],
+   [
+    "machine learning",
+    34
+   ],
+   [
+    "owasp",
+    30
+   ],
+   [
+    "doctor",
+    27
+   ],
+   [
+    "advertising",
+    26
+   ],
+   [
+    "ecommerce",
+    26
+   ],
+   [
+    "blueprint",
+    26
+   ],
+   [
+    "customer support",
+    25
+   ],
+   [
+    "saas",
+    24
+   ],
+   [
+    "listing",
+    23
+   ],
+   [
+    "social media",
+    23
+   ],
+   [
+    "vulnerabilities",
+    23
+   ],
+   [
+    "statistics",
+    22
+   ],
+   [
+    "publishing",
+    22
+   ],
+   [
+    "academic",
+    22
+   ],
+   [
+    "exploit",
+    22
+   ]
+  ],
+  "levels": [
+   [
+    "founder",
+    21
+   ],
+   [
+    "executive",
+    16
+   ],
+   [
+    "senior",
+    15
+   ],
+   [
+    "founders",
+    11
+   ],
+   [
+    "project managers",
+    4
+   ],
+   [
+    "learner",
+    4
+   ],
+   [
+    "project manager",
+    3
+   ],
+   [
+    "team lead",
+    3
+   ],
+   [
+    "executives",
+    2
+   ],
+   [
+    "intermediate",
+    2
+   ],
+   [
+    "classroom",
+    2
+   ],
+   [
+    "ceo",
+    2
+   ],
+   [
+    "product manager",
+    2
+   ],
+   [
+    "sme",
+    2
+   ],
+   [
+    "coursework",
+    1
+   ],
+   [
+    "engineering manager",
+    1
+   ],
+   [
+    "technical lead",
+    1
+   ],
+   [
+    "cto",
+    1
+   ],
+   [
+    "head of sales",
+    1
+   ],
+   [
+    "tech lead",
+    1
+   ],
+   [
+    "learners",
+    1
+   ],
+   [
+    "exam",
+    1
+   ]
+  ],
+  "languages": [
+   [
+    "default: no other language reached its threshold",
+    5663
+   ],
+   [
+    "stopwords: 14 of 140 latin words",
+    7
+   ],
+   [
+    "stopwords: 17 of 145 latin words",
+    6
+   ],
+   [
+    "script: han 18% of letters",
+    6
+   ],
+   [
+    "stopwords: 13 of 130 latin words",
+    5
+   ],
+   [
+    "stopwords: 15 of 145 latin words",
+    4
+   ],
+   [
+    "stopwords: 16 of 135 latin words",
+    4
+   ],
+   [
+    "stopwords: 16 of 158 latin words",
+    4
+   ],
+   [
+    "stopwords: 16 of 139 latin words",
+    4
+   ],
+   [
+    "script: han 15% of letters",
+    4
+   ],
+   [
+    "stopwords: 13 of 124 latin words",
+    4
+   ],
+   [
+    "stopwords: 27 of 188 latin words",
+    4
+   ],
+   [
+    "stopwords: 24 of 202 latin words",
+    4
+   ],
+   [
+    "stopwords: 21 of 195 latin words",
+    3
+   ],
+   [
+    "stopwords: 15 of 140 latin words",
+    3
+   ],
+   [
+    "stopwords: 12 of 118 latin words",
+    3
+   ],
+   [
+    "script: hangul 16% of letters",
+    3
+   ],
+   [
+    "stopwords: 14 of 128 latin words",
+    3
+   ],
+   [
+    "stopwords: 14 of 136 latin words",
+    3
+   ],
+   [
+    "stopwords: 15 of 136 latin words",
+    3
+   ],
+   [
+    "stopwords: 21 of 180 latin words",
+    3
+   ],
+   [
+    "stopwords: 21 of 176 latin words",
+    3
+   ],
+   [
+    "stopwords: 19 of 160 latin words",
+    3
+   ],
+   [
+    "stopwords: 18 of 159 latin words",
+    3
+   ],
+   [
+    "stopwords: 19 of 157 latin words",
+    3
+   ],
+   [
+    "stopwords: 15 of 148 latin words",
+    3
+   ],
+   [
+    "script: han 21% of letters",
+    3
+   ],
+   [
+    "stopwords: 15 of 146 latin words",
+    3
+   ],
+   [
+    "stopwords: 18 of 175 latin words",
+    3
+   ],
+   [
+    "stopwords: 16 of 148 latin words",
+    3
+   ]
+  ],
+  "geographies": [
+   [
+    "latam",
+    17
+   ],
+   [
+    "EU",
+    11
+   ],
+   [
+    "china",
+    3
+   ],
+   [
+    "UK",
+    3
+   ],
+   [
+    "united states",
+    2
+   ],
+   [
+    "USA",
+    2
+   ],
+   [
+    "canada",
+    2
+   ],
+   [
+    "great britain",
+    2
+   ],
+   [
+    "germany",
+    2
+   ],
+   [
+    "hong kong",
+    1
+   ],
+   [
+    "netherlands",
+    1
+   ],
+   [
+    "switzerland",
+    1
+   ],
+   [
+    "japan",
+    1
+   ],
+   [
+    "australia",
+    1
+   ]
+  ]
+ }
+}

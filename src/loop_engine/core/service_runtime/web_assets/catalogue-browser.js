@@ -9,9 +9,34 @@
    of harness working directory component files not just SKILLS". So the table names every file's purpose,
    the kind of file a harness picks up, its label, the kinds of step it supports, its licence, its declared
    effects and the tools it is written for; it shows no size and no digest; and a search box, three filters
-   and sortable columns narrow it without a second request (roadmap S-6.208). */
+   and sortable columns narrow it without a second request (roadmap S-6.208). The same day: "tag/label our
+   harness component files by job title, industry, level, language, geography, etc, and allow people to
+   search in the dashboard (when they sign up not on the home pages)". So five more filters, one for each
+   facet the service serves as an attribute, are filled from the loaded rows and applied here; the public
+   pages show none of them (roadmap S-6.209). */
 window.BaltorCatalogueBrowser = {
+  /* The five facets, each a served keyword list under its attribute name: the select that filters on it,
+     the plain name of the facet and the wording of its empty choice. A value is shown exactly as the
+     service sent it, because the vocabulary is the service's, not this page's. The three functions below
+     hold the whole filtering rule, so a check can run them without a page. */
+  facets: [["job_titles", "browse-job-title", "Job titles", "Every job title"],
+    ["industries", "browse-industry", "Industries", "Every industry"], ["levels", "browse-level", "Levels", "Every level"],
+    ["languages", "browse-language", "Languages", "Every language"], ["geographies", "browse-geography", "Geographies", "Every geography"]],
+  /* The values of one facet a row carries; a row without the attribute, or with anything but a list, has none. */
+  facetValues(row, name) {
+    const values = row && row.attributes && typeof row.attributes === "object" ? row.attributes[name] : undefined;
+    return Array.isArray(values) ? values.map(String) : [];
+  },
+  /* What a facet select offers: exactly the values the loaded rows carry, once each, in alphabetical order. */
+  facetChoices(rows, name) {
+    return [...new Set(rows.flatMap(row => this.facetValues(row, name)))].sort((left, right) => left.localeCompare(right));
+  },
+  /* Whether a row carries every chosen value, as [name, value] pairs; an empty choice keeps every row. */
+  keepsFacets(row, chosen) {
+    return chosen.every(([name, value]) => !value || this.facetValues(row, name).includes(value));
+  },
   create({request, element, message, current}) {
+    const facetRules = window.BaltorCatalogueBrowser;
     const $ = id => document.getElementById(id);
     const path = "/api/v1/provisioning", downloadPath = "/api/v1/download";
     /* Version 2, as search asks: the same default step effects and the account's library setting, so this
@@ -45,6 +70,7 @@ window.BaltorCatalogueBrowser = {
     const knownKinds = Object.keys(servedKindFallback);
     const columns = [["purpose", "What it is for"], ["harness_kind", "Kind of file"], ["tier", "Label"],
       ["step_functions", "Step functions"], ["license", "Licence"], ["effects", "Declared effects"], ["styles", "Written for"]];
+    const facets = facetRules.facets, facetSelects = facets.map(([, id]) => id);
     let listed = null, shown = null, selected = "", active = false, sortKey = "harness_kind", sortAscending = true;
     const downloads = new Map();
     const eligible = () => current().connected && current().scopes.includes(metadataScope);
@@ -118,6 +144,7 @@ window.BaltorCatalogueBrowser = {
       return style || servedKindFallback[row.kind] || "code_module";
     };
     const functionsOf = row => Array.isArray(attributesOf(row).step_functions) ? attributesOf(row).step_functions.map(String) : [];
+    const facetOf = (row, name) => facetRules.facetValues(row, name);
     const toolsOf = row => (row.styles || []).filter(name => stated(name) && !harnessKindNames[name] && !/^[a-z_]+_(format|skill|agent|command|rule|manifest|hooks|settings|config|marketplace|schema|module)$/.test(name));
     const cells = row => ({
       purpose: row.purpose, harness_kind: harnessKindNames[harnessKindOf(row)], tier: row.library_tier_label,
@@ -125,7 +152,8 @@ window.BaltorCatalogueBrowser = {
       effects: row.declared_effects.length ? row.declared_effects.join(", ") : "None declared",
       styles: toolsOf(row).join(", ") || "Every tool"});
     const searchable = row => [row.purpose, row.identity, harnessKindOf(row), harnessKindNames[harnessKindOf(row)],
-      row.library_tier_label, ...functionsOf(row), row.license || "", ...(row.declared_effects || []), ...(row.styles || [])]
+      row.library_tier_label, ...functionsOf(row), row.license || "", ...(row.declared_effects || []), ...(row.styles || []),
+      ...facets.flatMap(([name]) => facetOf(row, name))]
       .join(" ").toLowerCase();
     const clearDetail = text => $("browse-detail").replaceChildren(element("p", text, "caption"));
     /* A reader who finds a problem reports the exact item version they saw. The service withdraws a Community
@@ -167,13 +195,14 @@ window.BaltorCatalogueBrowser = {
     function controls() {
       const ready = eligible() && !active;
       $("refresh-browse").disabled = !ready;
-      for (const id of ["browse-search", "browse-kind", "browse-tier", "browse-style"]) $(id).disabled = !ready || !listed;
+      for (const id of ["browse-search", "browse-kind", "browse-tier", "browse-style", ...facetSelects]) $(id).disabled = !ready || !listed;
     }
     function reset() {
       listed = null; shown = null; selected = ""; active = false; downloads.clear();
       $("browse-table-body").replaceChildren(); $("browse-count").textContent = "Sign in to browse";
       $("browse-search").value = "";
       options($("browse-kind"), [], "Every kind of file"); options($("browse-tier"), [], "Every label"); options($("browse-style"), [], "Every tool");
+      for (const [, id, , everything] of facets) options($(id), [], everything);
       clearDetail("Open an item to read its details.");
       message("browse-message", "Sign in to browse the library published for your account.");
       controls();
@@ -206,8 +235,10 @@ window.BaltorCatalogueBrowser = {
     function filtered() {
       const words = $("browse-search").value.trim().toLowerCase().split(/\s+/).filter(Boolean);
       const kind = $("browse-kind").value, tier = $("browse-tier").value, style = $("browse-style").value;
+      const wanted = facets.map(([name, id]) => [name, $(id).value]);
       return listed.filter(row => (!kind || harnessKindOf(row) === kind) && (!tier || row.library_tier === tier)
         && (!style || (row.styles || []).includes(style))
+        && facetRules.keepsFacets(row, wanted)
         && (!words.length || words.every(word => searchable(row).includes(word))));
     }
     function renderHead() {
@@ -293,6 +324,7 @@ window.BaltorCatalogueBrowser = {
           ["Kind of file", shownValues.harness_kind],
           ["Label", value.library_tier_label],
           ["Step functions", shownValues.step_functions],
+          ...facets.map(([name, , label]) => [label, facetOf(row, name).join(", ") || "Not tagged"]),
           ["Exact reference", row.identity],
           ["Where it comes from", value.source_ref],
           ["Licence", stated(value.license) ? value.license : "Not stated"],
@@ -393,6 +425,10 @@ window.BaltorCatalogueBrowser = {
         options($("browse-tier"), [["verified", "Verified"], ["community", "Community"]].filter(([name]) => listed.some(row => row.library_tier === name)), "Every label");
         // A development tool names itself. The page shows that name as it was published, never one it invented.
         options($("browse-style"), [...new Set(listed.flatMap(toolsOf))].sort().map(name => [name, name]), "Every tool");
+        // Each facet filter offers exactly the values the loaded rows carry, in alphabetical order.
+        for (const [name, id, , everything] of facets) {
+          options($(id), facetRules.facetChoices(listed, name).map(value => [value, value]), everything);
+        }
         apply();
         /* The service holds material back for more than one reason: material this account may not see,
            and material that declares an effect such as running a command, for which this page carries no
@@ -410,7 +446,7 @@ window.BaltorCatalogueBrowser = {
     }
     $("refresh-browse").addEventListener("click", () => load());
     $("browse-search").addEventListener("input", () => apply());
-    for (const id of ["browse-kind", "browse-tier", "browse-style"]) $(id).addEventListener("change", () => apply());
+    for (const id of ["browse-kind", "browse-tier", "browse-style", ...facetSelects]) $(id).addEventListener("change", () => apply());
     reset();
     return {reset, connectionChanged, load};
   }

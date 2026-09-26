@@ -73,15 +73,29 @@ class ImportedWriterTest(unittest.TestCase):
         [row] = json.loads((reviewed / "reviews.json").read_text())["rows"]
         self.assertEqual((row["outcome"], row["tier"], row["producer"]["family"]),
                          ("approved", "community", imported.UPSTREAM_FAMILY))
-        # The writer tags each approved item with the kinds of step it supports (S-6.206): the fixture is a
-        # review skill, so it carries reviewing; the tag names the rules engine and reaches the bundle line.
-        self.assertEqual(item["attributes"], {"harness_kind": "skill", "step_functions": ["reviewing"]})
-        self.assertEqual(item["attribute_engines"]["step_functions"]["engine_id"], "step_function_rules")
+        # The writer tags each approved item with the kinds of step it supports (S-6.206) and its facets
+        # (S-6.209): the fixture is an English review skill whose words name no job title, industry, level or
+        # place, so it carries reviewing and english and nothing else; each tag names its rules engine and
+        # reaches the bundle line, and the schema declares every facet.
+        self.assertEqual(item["attributes"], {"harness_kind": "skill", "step_functions": ["reviewing"],
+                                              "languages": ["english"]})
+        self.assertEqual(item["attribute_engines"],
+                         {"step_functions": {"engine_id": "step_function_rules",
+                                             "engine_version": writer.TAGGER.engine_version},
+                          "languages": {"engine_id": "facet_rules",
+                                        "engine_version": writer.FACET_TAGGER.engine_version}})
         schema = json.loads((reviewed / "attribute-schema.json").read_text())
-        self.assertIn("step_functions", [attribute["name"] for attribute in schema["attributes"]])
+        declared = [attribute["name"] for attribute in schema["attributes"]]
+        for name in ("step_functions", "job_titles", "industries", "levels", "languages", "geographies"):
+            self.assertIn(name, declared)
+        report = json.loads((reviewed / "writer-report.json").read_text())
+        self.assertEqual(report["facets"]["languages"], {"english": 1})
+        self.assertEqual(report["items_without_a_value"]["job_titles"], 1)
         _schema, lines, _payloads = bundle_tool.build(reviewed, accepted_licenses=("MIT",))
         self.assertEqual([line["attributes"]["tier"] for line in lines], ["community"])
         self.assertEqual(lines[0]["attributes"]["step_functions"], ["reviewing"])
+        self.assertEqual(lines[0]["attributes"]["languages"], ["english"])
+        self.assertNotIn("job_titles", lines[0]["attributes"])
         self.assertEqual(len(lines[0]["package"]["files"]), 3)
 
     def test_an_imported_rejection_is_written_as_rejected(self):

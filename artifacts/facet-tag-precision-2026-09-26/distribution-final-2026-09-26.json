@@ -1,0 +1,595 @@
+{
+ "record_type": "facet_tag_distribution/v1",
+ "recorded_at": "2026-09-26",
+ "attempt": "final rules: after the third repair",
+ "engine": {
+  "engine_id": "facet_rules",
+  "engine_version": "1.0.0",
+  "vocabulary_version": "2026-09-26",
+  "minimum_body_phrases": 2,
+  "maximum_values": {
+   "job_titles": 6,
+   "industries": 4,
+   "levels": 3,
+   "languages": 2,
+   "geographies": 6
+  },
+  "text_bound": 6000,
+  "default_language": "english"
+ },
+ "population": {
+  "source": "/home/username/baltor-library/reviewed-2026-09-26-10/imported",
+  "items_in_folder": 1631,
+  "approved_items_tagged": 1586,
+  "elapsed_seconds": 412.4
+ },
+ "items_with_a_value": {
+  "job_titles": 5,
+  "industries": 413,
+  "levels": 35,
+  "languages": 1586,
+  "geographies": 2
+ },
+ "share_with_a_value": {
+  "job_titles": 0.003,
+  "industries": 0.26,
+  "levels": 0.022,
+  "languages": 1.0,
+  "geographies": 0.001
+ },
+ "tags": {
+  "job_titles": 5,
+  "industries": 544,
+  "levels": 35,
+  "languages": 1588,
+  "geographies": 2
+ },
+ "top_values": {
+  "job_titles": [
+   [
+    "Software Developers",
+    2
+   ],
+   [
+    "Project Management Specialists",
+    1
+   ],
+   [
+    "Lawyers",
+    1
+   ],
+   [
+    "Special Effects Artists and Animators",
+    1
+   ]
+  ],
+  "industries": [
+   [
+    "marketing",
+    151
+   ],
+   [
+    "cybersecurity",
+    65
+   ],
+   [
+    "finance",
+    40
+   ],
+   [
+    "arts and design",
+    39
+   ],
+   [
+    "science and research",
+    25
+   ],
+   [
+    "human resources",
+    25
+   ],
+   [
+    "sales",
+    22
+   ],
+   [
+    "media and entertainment",
+    20
+   ],
+   [
+    "logistics",
+    17
+   ],
+   [
+    "retail and e-commerce",
+    17
+   ],
+   [
+    "legal",
+    15
+   ],
+   [
+    "real estate",
+    15
+   ],
+   [
+    "data and analytics",
+    15
+   ],
+   [
+    "technology",
+    14
+   ],
+   [
+    "accounting",
+    12
+   ],
+   [
+    "consulting",
+    12
+   ],
+   [
+    "education",
+    9
+   ],
+   [
+    "manufacturing",
+    5
+   ],
+   [
+    "construction",
+    4
+   ],
+   [
+    "insurance",
+    4
+   ],
+   [
+    "hospitality and travel",
+    4
+   ],
+   [
+    "automotive",
+    4
+   ],
+   [
+    "government",
+    2
+   ],
+   [
+    "healthcare",
+    2
+   ],
+   [
+    "agriculture",
+    2
+   ]
+  ],
+  "levels": [
+   [
+    "senior",
+    18
+   ],
+   [
+    "executive",
+    15
+   ],
+   [
+    "student",
+    2
+   ]
+  ],
+  "languages": [
+   [
+    "english",
+    1520
+   ],
+   [
+    "chinese",
+    45
+   ],
+   [
+    "russian",
+    13
+   ],
+   [
+    "korean",
+    5
+   ],
+   [
+    "japanese",
+    3
+   ],
+   [
+    "spanish",
+    1
+   ],
+   [
+    "portuguese",
+    1
+   ]
+  ],
+  "geographies": [
+   [
+    "European Union",
+    1
+   ],
+   [
+    "United Kingdom",
+    1
+   ]
+  ]
+ },
+ "top_evidence_phrases": {
+  "job_titles": [
+   [
+    "programmer",
+    2
+   ],
+   [
+    "project manager",
+    2
+   ],
+   [
+    "animator",
+    2
+   ],
+   [
+    "programmers",
+    1
+   ],
+   [
+    "software developers",
+    1
+   ],
+   [
+    "software engineer",
+    1
+   ],
+   [
+    "attorney",
+    1
+   ],
+   [
+    "attorneys",
+    1
+   ],
+   [
+    "lawyer",
+    1
+   ]
+  ],
+  "industries": [
+   [
+    "marketing",
+    138
+   ],
+   [
+    "brand",
+    116
+   ],
+   [
+    "campaign",
+    95
+   ],
+   [
+    "seo",
+    59
+   ],
+   [
+    "campaigns",
+    54
+   ],
+   [
+    "design system",
+    35
+   ],
+   [
+    "threat",
+    34
+   ],
+   [
+    "exploit",
+    33
+   ],
+   [
+    "vulnerability",
+    33
+   ],
+   [
+    "vulnerabilities",
+    31
+   ],
+   [
+    "owasp",
+    30
+   ],
+   [
+    "typography",
+    30
+   ],
+   [
+    "bank",
+    27
+   ],
+   [
+    "sales",
+    25
+   ],
+   [
+    "consultant",
+    23
+   ],
+   [
+    "scientific",
+    19
+   ],
+   [
+    "advertising",
+    19
+   ],
+   [
+    "ad copy",
+    18
+   ],
+   [
+    "figma",
+    18
+   ],
+   [
+    "academic",
+    17
+   ],
+   [
+    "saas",
+    17
+   ],
+   [
+    "legal",
+    17
+   ],
+   [
+    "copywriting",
+    17
+   ],
+   [
+    "payment",
+    17
+   ],
+   [
+    "crm",
+    17
+   ],
+   [
+    "job description",
+    17
+   ],
+   [
+    "news",
+    16
+   ],
+   [
+    "cve",
+    15
+   ],
+   [
+    "jurisdiction",
+    15
+   ],
+   [
+    "pentest",
+    15
+   ]
+  ],
+  "levels": [
+   [
+    "senior",
+    19
+   ],
+   [
+    "executive",
+    12
+   ],
+   [
+    "10+ years",
+    11
+   ],
+   [
+    "founder",
+    8
+   ],
+   [
+    "founders",
+    8
+   ],
+   [
+    "sme",
+    3
+   ],
+   [
+    "vp",
+    2
+   ],
+   [
+    "co-founders",
+    2
+   ],
+   [
+    "learner",
+    2
+   ],
+   [
+    "smes",
+    1
+   ],
+   [
+    "experienced",
+    1
+   ],
+   [
+    "senior developer",
+    1
+   ],
+   [
+    "cto",
+    1
+   ],
+   [
+    "senior engineer",
+    1
+   ],
+   [
+    "exam",
+    1
+   ],
+   [
+    "c-level",
+    1
+   ],
+   [
+    "executives",
+    1
+   ],
+   [
+    "ceo",
+    1
+   ],
+   [
+    "chief executive",
+    1
+   ]
+  ],
+  "languages": [
+   [
+    "default: no other language reached its threshold",
+    310
+   ],
+   [
+    "script: han 45% of letters",
+    5
+   ],
+   [
+    "script: cyrillic 75% of letters",
+    4
+   ],
+   [
+    "stopwords: 35 of 239 latin words",
+    3
+   ],
+   [
+    "script: han 64% of letters",
+    3
+   ],
+   [
+    "script: han 67% of letters",
+    3
+   ],
+   [
+    "script: han 26% of letters",
+    3
+   ],
+   [
+    "script: cyrillic 77% of letters",
+    3
+   ],
+   [
+    "stopwords: 59 of 344 latin words",
+    2
+   ],
+   [
+    "stopwords: 70 of 331 latin words",
+    2
+   ],
+   [
+    "stopwords: 27 of 164 latin words",
+    2
+   ],
+   [
+    "script: han 42% of letters",
+    2
+   ],
+   [
+    "stopwords: 26 of 147 latin words",
+    2
+   ],
+   [
+    "stopwords: 140 of 817 latin words",
+    2
+   ],
+   [
+    "stopwords: 35 of 236 latin words",
+    2
+   ],
+   [
+    "stopwords: 35 of 242 latin words",
+    2
+   ],
+   [
+    "stopwords: 156 of 723 latin words",
+    2
+   ],
+   [
+    "stopwords: 234 of 1024 latin words",
+    2
+   ],
+   [
+    "stopwords: 77 of 393 latin words",
+    2
+   ],
+   [
+    "script: han 61% of letters",
+    2
+   ],
+   [
+    "script: han 58% of letters",
+    2
+   ],
+   [
+    "script: han 25% of letters",
+    2
+   ],
+   [
+    "stopwords: 12 of 115 latin words",
+    2
+   ],
+   [
+    "stopwords: 38 of 374 latin words",
+    2
+   ],
+   [
+    "script: han 32% of letters",
+    2
+   ],
+   [
+    "script: han 43% of letters",
+    2
+   ],
+   [
+    "stopwords: 88 of 368 latin words",
+    1
+   ],
+   [
+    "stopwords: 48 of 343 latin words",
+    1
+   ],
+   [
+    "stopwords: 85 of 349 latin words",
+    1
+   ],
+   [
+    "stopwords: 123 of 700 latin words",
+    1
+   ]
+  ],
+  "geographies": [
+   [
+    "EU",
+    2
+   ],
+   [
+    "UK",
+    2
+   ]
+  ]
+ }
+}

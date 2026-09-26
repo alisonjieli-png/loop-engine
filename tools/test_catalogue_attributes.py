@@ -21,12 +21,23 @@ class CatalogueAttributeTest(unittest.TestCase):
     def test_every_well_known_attribute_is_a_valid_declaration(self):
         schema = CatalogueAttributeSchema.from_dict(attributes.declare({"record_type": "catalogue_attribute_schema/v1",
                                                                         "attributes": []}))
-        self.assertEqual([item.name for item in schema.attributes], ["harness_kind", "step_functions", "tier"])
-        values = schema.validate_values({"tier": "community", "harness_kind": "hook", "step_functions": ["acting"]})
+        self.assertEqual([item.name for item in schema.attributes],
+                         ["geographies", "harness_kind", "industries", "job_titles", "languages", "levels",
+                          "step_functions", "tier"])
+        self.assertEqual(tuple(item["name"] for item in attributes.WELL_KNOWN_ATTRIBUTES),
+                         attributes.WELL_KNOWN_ATTRIBUTE_NAMES)
+        values = schema.validate_values({"tier": "community", "harness_kind": "hook", "step_functions": ["acting"],
+                                         "job_titles": ["Software Developers"], "industries": ["healthcare"],
+                                         "levels": ["senior"], "languages": ["english"], "geographies": ["Canada"]})
         self.assertEqual(values["harness_kind"], "hook")
         self.assertEqual(schema.shown_values(values), values)
         self.assertEqual(schema.filter_request({"harness_kind": {"any_of": ["hook", "command"]}}),
                          (("harness_kind", "any_of", ("hook", "command")),))
+        self.assertEqual(schema.filter_request({"industries": {"any_of": ["healthcare"]}, "levels": {"equals": "senior"}}),
+                         (("industries", "any_of", ("healthcare",)), ("levels", "any_of", ("senior",))))
+        # The language is filtered and shown but not searched, so the default does not enter every item's index.
+        self.assertNotIn("english", schema.search_text(values).split())
+        self.assertIn("Software Developers", schema.search_text(values))
         with self.assertRaises(ServiceRuntimeError):
             schema.validate_values({"harness_kind": "dance"})
 
@@ -37,7 +48,7 @@ class CatalogueAttributeTest(unittest.TestCase):
         self.assertEqual([item["name"] for item in declared["attributes"]], ["cited_source", "tier"])
         self.assertEqual(declared["attributes"][-1]["type"], "choice")
         twice = attributes.declare(attributes.declare(older))
-        self.assertEqual(len(twice["attributes"]), 4)
+        self.assertEqual(len(twice["attributes"]), 1 + len(attributes.WELL_KNOWN_ATTRIBUTES))
 
     def test_the_harness_kind_comes_from_provenance_then_styles_then_roles_then_the_served_kind(self):
         kind = attributes.harness_kind_of

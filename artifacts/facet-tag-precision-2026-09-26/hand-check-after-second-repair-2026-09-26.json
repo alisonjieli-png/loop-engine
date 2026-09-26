@@ -1,0 +1,1452 @@
+{
+ "record_type": "facet_tag_hand_check/v2",
+ "recorded_at": "2026-09-26",
+ "check": "third",
+ "rules": "after the second vocabulary repair",
+ "population": "the 1,586 approved items of /home/username/baltor-library/reviewed-2026-09-26-10/imported, material built as tools/write_reviewed_catalogue.py builds it (read with tools/measure_step_function_tags.py's helpers)",
+ "unit": "one tag (item, facet, value); the english default is not drawn",
+ "judge": "Claude Opus 5.5, the engineering session that finished the tagger, reading each item's title, purpose, the head of its entry text and the evidence phrase; not the owner and not an independent reviewer",
+ "seed": 20260926,
+ "verdicts": [
+  "correct",
+  "wrong",
+  "arguable"
+ ],
+ "precision": {
+  "all": {
+   "tags": 100,
+   "correct": 47,
+   "wrong": 31,
+   "arguable": 22,
+   "strict_precision": 0.47,
+   "lenient_precision": 0.69
+  },
+  "industries": {
+   "tags": 88,
+   "correct": 42,
+   "wrong": 30,
+   "arguable": 16,
+   "strict_precision": 0.48,
+   "lenient_precision": 0.66
+  },
+  "job_titles": {
+   "tags": 1,
+   "correct": 0,
+   "wrong": 0,
+   "arguable": 1,
+   "strict_precision": 0.0,
+   "lenient_precision": 1.0
+  },
+  "languages": {
+   "tags": 3,
+   "correct": 3,
+   "wrong": 0,
+   "arguable": 0,
+   "strict_precision": 1.0,
+   "lenient_precision": 1.0
+  },
+  "levels": {
+   "tags": 8,
+   "correct": 2,
+   "wrong": 1,
+   "arguable": 5,
+   "strict_precision": 0.25,
+   "lenient_precision": 0.88
+  }
+ },
+ "by_evidence_source": {
+  "body_only": {
+   "tags": 49,
+   "correct": 14,
+   "wrong": 19,
+   "arguable": 16,
+   "strict_precision": 0.29,
+   "lenient_precision": 0.61
+  },
+  "name_or_purpose": {
+   "tags": 48,
+   "correct": 30,
+   "wrong": 12,
+   "arguable": 6,
+   "strict_precision": 0.62,
+   "lenient_precision": 0.75
+  }
+ },
+ "same_sample_under_the_final_rules": {
+  "tags_kept": 61,
+  "removed_by_verdict": {
+   "wrong": 23,
+   "arguable": 13,
+   "correct": 3
+  },
+  "precision_of_kept_tags": {
+   "tags": 61,
+   "correct": 44,
+   "wrong": 8,
+   "arguable": 9,
+   "strict_precision": 0.72,
+   "lenient_precision": 0.87
+  }
+ },
+ "rows": [
+  {
+   "identity": "import_subagent_cloudbase_architect_6e3b20f58782",
+   "title": "cloudbase-architect",
+   "purpose": "Specializes in CloudBase project architecture — scenario selection (Web/Mini Program/CloudRun/Database), ...",
+   "facet": "languages",
+   "value": "chinese",
+   "basis": [
+    "script: han 28% of letters"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_skill_seo_page_b55f1b0b1fb7",
+   "title": "seo-page",
+   "purpose": "Single-page SEO audit: content quality under Google's E-E-A-T framework and ...",
+   "facet": "industries",
+   "value": "marketing",
+   "basis": [
+    "name or purpose: seo",
+    "text: seo, 10 mentions"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_skill_paper_illustration_af45d12a14b9",
+   "title": "paper-illustration",
+   "purpose": "Generate publication-quality AI illustrations for academic papers using Gemini image ...",
+   "facet": "industries",
+   "value": "science and research",
+   "basis": [
+    "name or purpose: academic",
+    "text: academic, 1 mention"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_skill_adspirer_agent_f145f312d956",
+   "title": "adspirer-agent",
+   "purpose": "Paid-media advertising agent behavior for Adspirer — create, analyze, and ...",
+   "facet": "industries",
+   "value": "marketing",
+   "basis": [
+    "name or purpose: advertising",
+    "name or purpose: campaigns",
+    "text: advertising, 2 mentions",
+    "text: campaign, 10 mentions",
+    "text: campaigns, 5 mentions",
+    "text: marketer, 1 mention"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_skill_jack_sparrow_e65844607193",
+   "title": "jack-sparrow",
+   "purpose": "Write flamboyant, mischievously grand, baroque-pirate prose in the voice of ...",
+   "facet": "industries",
+   "value": "cybersecurity",
+   "basis": [
+    "text: threat, 2 mentions"
+   ],
+   "verdict": "wrong",
+   "kept_by_the_final_rules": false
+  },
+  {
+   "identity": "import_rules_token_sync_layer_f26acc29dd23",
+   "title": "token-sync-layer",
+   "purpose": "Sync Figma design variables into code-ready token files via DTCG ...",
+   "facet": "industries",
+   "value": "arts and design",
+   "basis": [
+    "name or purpose: figma",
+    "text: figma, 18 mentions"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_marketplace_writing_skills_marketplace_24d4b70290a9",
+   "title": "writing-skills-marketplace",
+   "purpose": "marketplace writing-skills-marketplace",
+   "facet": "industries",
+   "value": "media and entertainment",
+   "basis": [
+    "text: journalism, 2 mentions"
+   ],
+   "verdict": "arguable",
+   "kept_by_the_final_rules": false
+  },
+  {
+   "identity": "import_skill_session_handoff_c0ebbb22ce26",
+   "title": "session-handoff",
+   "purpose": "Synthesizes the current session into a structured HANDOFF block for ...",
+   "facet": "industries",
+   "value": "marketing",
+   "basis": [
+    "text: campaign, 14 mentions",
+    "text: campaigns, 4 mentions"
+   ],
+   "verdict": "wrong",
+   "kept_by_the_final_rules": false
+  },
+  {
+   "identity": "import_skill_market_finder_4b9b404c9195",
+   "title": "market-finder",
+   "purpose": "Discovers all businesses of a given type in any geography ...",
+   "facet": "industries",
+   "value": "legal",
+   "basis": [
+    "name or purpose: legal",
+    "text: legal, 2 mentions"
+   ],
+   "verdict": "arguable",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_skill_patent_pipeline_15da44607ce8",
+   "title": "patent-pipeline",
+   "purpose": "Full patent drafting pipeline from invention description to jurisdiction-formatted filing ...",
+   "facet": "industries",
+   "value": "legal",
+   "basis": [
+    "name or purpose: jurisdiction",
+    "text: jurisdiction, 11 mentions",
+    "text: legal, 1 mention"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_skill_message_house_builder_d9a9d655dec8",
+   "title": "message-house-builder",
+   "purpose": "Use when the user asks to \"build a message house\", ...",
+   "facet": "industries",
+   "value": "marketing",
+   "basis": [
+    "text: brand, 2 mentions",
+    "text: marketing, 3 mentions",
+    "text: seo, 1 mention"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_skill_legal_b4fc0589924a",
+   "title": "legal",
+   "purpose": "Use this skill when the user needs to form a ...",
+   "facet": "levels",
+   "value": "executive",
+   "basis": [
+    "text: founder, 1 mention",
+    "text: founders, 4 mentions"
+   ],
+   "verdict": "arguable",
+   "kept_by_the_final_rules": false
+  },
+  {
+   "identity": "import_skill_find_jobs_a5fd843f0775",
+   "title": "find-jobs",
+   "purpose": "Search live job boards for roles that match the master ...",
+   "facet": "levels",
+   "value": "senior",
+   "basis": [
+    "text: senior, 4 mentions"
+   ],
+   "verdict": "arguable",
+   "kept_by_the_final_rules": false
+  },
+  {
+   "identity": "import_skill_api_discovery_188e8f040ae3",
+   "title": "api-discovery",
+   "purpose": "Finds what APIs, collections, specs, or requests already exist before ...",
+   "facet": "industries",
+   "value": "construction",
+   "basis": [
+    "name or purpose: scaffolding",
+    "text: scaffolding, 1 mention"
+   ],
+   "verdict": "wrong",
+   "kept_by_the_final_rules": false
+  },
+  {
+   "identity": "import_command_email_eb475c3b5cf5",
+   "title": "email",
+   "purpose": "Create email copy with sequences",
+   "facet": "industries",
+   "value": "education",
+   "basis": [
+    "text: educational, 2 mentions",
+    "text: teaching, 1 mention"
+   ],
+   "verdict": "wrong",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_skill_paddington_64b290f9c1ac",
+   "title": "paddington",
+   "purpose": "Write exceedingly polite, earnestly kind prose in the voice of ...",
+   "facet": "industries",
+   "value": "accounting",
+   "basis": [
+    "text: invoice, 2 mentions"
+   ],
+   "verdict": "wrong",
+   "kept_by_the_final_rules": false
+  },
+  {
+   "identity": "import_skill_math_essentials_00c4cb68661a",
+   "title": "math-essentials",
+   "purpose": "Use when implementing game math — vectors, transforms, interpolation, curves, ...",
+   "facet": "industries",
+   "value": "hospitality and travel",
+   "basis": [
+    "name or purpose: recipes",
+    "text: recipes, 1 mention"
+   ],
+   "verdict": "wrong",
+   "kept_by_the_final_rules": false
+  },
+  {
+   "identity": "import_command_agents_for_1a1f519d63f8",
+   "title": "agents-for",
+   "purpose": "List pentest-ai agents relevant to a domain or tag (web, ...",
+   "facet": "industries",
+   "value": "cybersecurity",
+   "basis": [
+    "name or purpose: pentest",
+    "text: exploit, 4 mentions",
+    "text: malware, 5 mentions",
+    "text: pentest, 2 mentions",
+    "text: phishing, 2 mentions",
+    "text: siem, 1 mention",
+    "text: threat, 4 mentions"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_command_audit_software_f51880e7bdbb",
+   "title": "audit-software",
+   "purpose": "Audit software inventory across devices using ZDX data for compliance ...",
+   "facet": "industries",
+   "value": "cybersecurity",
+   "basis": [
+    "name or purpose: vulnerability",
+    "text: cve, 1 mention",
+    "text: vulnerability, 1 mention"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_skill_appstore_ads_operator_1ff4221dbe2f",
+   "title": "appstore-ads-operator",
+   "purpose": "Apple Ads campaigns: inspect and manage separate auth, orgs, ad ...",
+   "facet": "industries",
+   "value": "marketing",
+   "basis": [
+    "name or purpose: campaigns",
+    "text: campaign, 11 mentions",
+    "text: campaigns, 8 mentions",
+    "text: marketing, 1 mention"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_skill_patent_reviewer_660c8a4ca8d0",
+   "title": "patent-reviewer",
+   "purpose": "Expert system for reviewing utility patent applications against USPTO MPEP ...",
+   "facet": "industries",
+   "value": "energy",
+   "basis": [
+    "name or purpose: utility",
+    "text: utility, 1 mention"
+   ],
+   "verdict": "wrong",
+   "kept_by_the_final_rules": false
+  },
+  {
+   "identity": "import_command_deep_lit_tick_aab1797c7d22",
+   "title": "deep-lit-tick",
+   "purpose": "Run the scoped deep literature loop until relevant papers are ...",
+   "facet": "industries",
+   "value": "data and analytics",
+   "basis": [
+    "text: dataset, 2 mentions",
+    "text: datasets, 1 mention"
+   ],
+   "verdict": "arguable",
+   "kept_by_the_final_rules": false
+  },
+  {
+   "identity": "import_skill_typeset_0919d2d50c61",
+   "title": "typeset",
+   "purpose": "Improves typography by fixing font choices, hierarchy, sizing, weight, and ...",
+   "facet": "industries",
+   "value": "marketing",
+   "basis": [
+    "text: brand, 5 mentions",
+    "text: marketing, 2 mentions"
+   ],
+   "verdict": "wrong",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_command_diagnose_underperformer_33c6bcc83fec",
+   "title": "diagnose-underperformer",
+   "purpose": "Diagnose why a specific Google Ads or Meta Ads campaign ...",
+   "facet": "industries",
+   "value": "marketing",
+   "basis": [
+    "name or purpose: campaign",
+    "text: ad copy, 1 mention",
+    "text: brand, 3 mentions",
+    "text: campaign, 8 mentions",
+    "text: campaigns, 1 mention"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_skill_sheet_music_publisher_07cb148ce2d4",
+   "title": "sheet-music-publisher",
+   "purpose": "Converts mastered audio to sheet music and creates printable songbooks. ...",
+   "facet": "industries",
+   "value": "media and entertainment",
+   "basis": [
+    "name or purpose: music",
+    "text: music, 21 mentions",
+    "text: publishing, 3 mentions"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_instruction_file_markifact_mcp_gemini_ad4e358e6459",
+   "title": "markifact-mcp-GEMINI",
+   "purpose": "instruction_file markifact-mcp-GEMINI",
+   "facet": "industries",
+   "value": "marketing",
+   "basis": [
+    "text: campaign, 3 mentions",
+    "text: marketing, 1 mention"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_subagent_style_analyzer_41ca0486162c",
+   "title": "style-analyzer",
+   "purpose": "Use this agent after UI implementation or when the user ...",
+   "facet": "industries",
+   "value": "arts and design",
+   "basis": [
+    "name or purpose: design system",
+    "text: design system, 1 mention",
+    "text: design systems, 1 mention",
+    "text: typography, 1 mention"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_skill_monthly_reconciliation_24fa14e30b77",
+   "title": "monthly-reconciliation",
+   "purpose": "Perform a complete monthly financial reconciliation - review all transactions, ...",
+   "facet": "industries",
+   "value": "accounting",
+   "basis": [
+    "name or purpose: bookkeeping",
+    "name or purpose: invoices",
+    "name or purpose: tax filing",
+    "text: bookkeeping, 2 mentions",
+    "text: invoice, 1 mention",
+    "text: invoices, 5 mentions",
+    "text: tax filing, 1 mention"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_skill_business_writing_fbbdba984149",
+   "title": "business-writing",
+   "purpose": "Write executive-grade business communication with BLUF (bottom line up front), ...",
+   "facet": "levels",
+   "value": "executive",
+   "basis": [
+    "name or purpose: executive",
+    "text: executive, 1 mention",
+    "text: executives, 1 mention"
+   ],
+   "verdict": "arguable",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_skill_add_integration_3f65ff291a61",
+   "title": "add-integration",
+   "purpose": "Walk through adding a custom MCP server integration to the ...",
+   "facet": "industries",
+   "value": "marketing",
+   "basis": [
+    "name or purpose: brand",
+    "name or purpose: marketing",
+    "text: brand, 7 mentions",
+    "text: marketing, 10 mentions"
+   ],
+   "verdict": "arguable",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_subagent_sap_pp_consultant_a60cf3c28322",
+   "title": "sap-pp-consultant",
+   "purpose": "SAP Production Planning consultant — MRP, production orders, capacity planning, ...",
+   "facet": "levels",
+   "value": "senior",
+   "basis": [
+    "text: 10+ years, 1 mention",
+    "text: senior, 1 mention"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_subagent_sap_wm_consultant_e111beb6d048",
+   "title": "sap-wm-consultant",
+   "purpose": "SAP Warehouse Management consultant — storage bin management, goods movements, ...",
+   "facet": "levels",
+   "value": "senior",
+   "basis": [
+    "text: 10+ years, 1 mention",
+    "text: senior, 1 mention"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_subagent_firecrawl_expert_1e6b405a5d84",
+   "title": "firecrawl-expert",
+   "purpose": "Expert in Firecrawl API for web scraping, crawling, and structured ...",
+   "facet": "industries",
+   "value": "marketing",
+   "basis": [
+    "text: lead generation, 1 mention",
+    "text: seo, 1 mention"
+   ],
+   "verdict": "arguable",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_command_write_ad_copy_3f53a483bcfd",
+   "title": "write-ad-copy",
+   "purpose": "Write brand-voice-compliant ad copy for a specific platform",
+   "facet": "industries",
+   "value": "marketing",
+   "basis": [
+    "name or purpose: ad copy",
+    "name or purpose: brand",
+    "text: ad copy, 2 mentions",
+    "text: brand, 4 mentions",
+    "text: campaign, 1 mention"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_subagent_experiment_screener_2125ae9cb3bd",
+   "title": "experiment-screener",
+   "purpose": "Screen experiment plans before implementation, blocking unnecessary scale and meaningless ...",
+   "facet": "languages",
+   "value": "chinese",
+   "basis": [
+    "script: han 64% of letters"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_skill_etsy_seo_tags_b7610977540e",
+   "title": "etsy-seo-tags",
+   "purpose": "Etsy tag optimization — 13-tag strategy, attribute optimization, search ranking ...",
+   "facet": "industries",
+   "value": "retail and e-commerce",
+   "basis": [
+    "text: e-commerce, 1 mention",
+    "text: ecommerce, 1 mention"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_skill_blind_spot_pass_c0bfdd9e7a95",
+   "title": "blind-spot-pass",
+   "purpose": "Use *before* starting work in a domain you don't know ...",
+   "facet": "industries",
+   "value": "education",
+   "basis": [
+    "name or purpose: grading",
+    "text: curriculum, 1 mention",
+    "text: grading, 2 mentions",
+    "text: teaching, 2 mentions"
+   ],
+   "verdict": "arguable",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_rules_cursorrules_8d6a1124551c",
+   "title": "cursorrules",
+   "purpose": "rules cursorrules",
+   "facet": "industries",
+   "value": "marketing",
+   "basis": [
+    "text: advertising, 4 mentions",
+    "text: marketer, 4 mentions",
+    "text: marketers, 2 mentions",
+    "text: marketing, 19 mentions",
+    "text: social media, 1 mention"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_skill_follow_the_crypto_2ea785e367e6",
+   "title": "follow-the-crypto",
+   "purpose": "Trace cryptocurrency addresses and transactions on public blockchains using block ...",
+   "facet": "industries",
+   "value": "cybersecurity",
+   "basis": [
+    "name or purpose: incident response",
+    "name or purpose: ransomware",
+    "text: incident response, 1 mention",
+    "text: ransomware, 1 mention"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_subagent_vuln_scanner_055b3a3d4e36",
+   "title": "vuln-scanner",
+   "purpose": "Delegates to this agent when the user wants to run ...",
+   "facet": "industries",
+   "value": "consulting",
+   "basis": [
+    "text: advisory, 2 mentions"
+   ],
+   "verdict": "wrong",
+   "kept_by_the_final_rules": false
+  },
+  {
+   "identity": "import_subagent_cite_31a956c4f4ce",
+   "title": "cite",
+   "purpose": "Legal research — case law synthesis, statute analysis, regulatory guidance, ...",
+   "facet": "industries",
+   "value": "legal",
+   "basis": [
+    "name or purpose: jurisdiction",
+    "name or purpose: legal",
+    "name or purpose: statute",
+    "text: counsel, 1 mention",
+    "text: jurisdiction, 6 mentions",
+    "text: legal, 17 mentions",
+    "text: litigation, 1 mention",
+    "text: statute, 3 mentions",
+    "text: statutes, 1 mention"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_instruction_file_cli_output_claude_68d75f9c64c5",
+   "title": "cli-output-claude",
+   "purpose": "instruction_file cli-output-claude",
+   "facet": "industries",
+   "value": "healthcare",
+   "basis": [
+    "text: doctor, 2 mentions"
+   ],
+   "verdict": "wrong",
+   "kept_by_the_final_rules": false
+  },
+  {
+   "identity": "import_skill_feasibility_assessor_87dec287f95a",
+   "title": "feasibility-assessor",
+   "purpose": "Evaluates whether a business idea is technically buildable and financially ...",
+   "facet": "industries",
+   "value": "technology",
+   "basis": [
+    "text: saas, 2 mentions"
+   ],
+   "verdict": "arguable",
+   "kept_by_the_final_rules": false
+  },
+  {
+   "identity": "import_command_landing_27b6294aa7d4",
+   "title": "landing",
+   "purpose": "Create high-converting landing page copy",
+   "facet": "industries",
+   "value": "marketing",
+   "basis": [
+    "text: brand, 4 mentions",
+    "text: copywriting, 3 mentions",
+    "text: marketing, 3 mentions",
+    "text: seo, 2 mentions"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_skill_outdated_4cc8a7cf55cb",
+   "title": "outdated",
+   "purpose": "Dependency health report for .NET solutions: outdated NuGet packages, vulnerable ...",
+   "facet": "industries",
+   "value": "cybersecurity",
+   "basis": [
+    "text: cve, 2 mentions",
+    "text: vulnerabilities, 3 mentions",
+    "text: vulnerability, 1 mention"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_skill_scope_discipline_8257d34f6de3",
+   "title": "scope-discipline",
+   "purpose": "Use when about to send a request to, scan, enumerate, ...",
+   "facet": "industries",
+   "value": "cybersecurity",
+   "basis": [
+    "name or purpose: exploit",
+    "text: exploit, 1 mention"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_subagent_business_rules_extractor_3501a453ad59",
+   "title": "business-rules-extractor",
+   "purpose": "Mines domain logic, calculations, validations, and policies from legacy code ...",
+   "facet": "levels",
+   "value": "senior",
+   "basis": [
+    "text: sme, 2 mentions"
+   ],
+   "verdict": "arguable",
+   "kept_by_the_final_rules": false
+  },
+  {
+   "identity": "import_command_vocab_drift_3c8fd310817d",
+   "title": "vocab-drift",
+   "purpose": "Find vocabulary drift in a corpus without a declared registry ...",
+   "facet": "industries",
+   "value": "consulting",
+   "basis": [
+    "name or purpose: advisory",
+    "text: advisory, 3 mentions"
+   ],
+   "verdict": "wrong",
+   "kept_by_the_final_rules": false
+  },
+  {
+   "identity": "import_skill_tbank_travel_3dfbdd98135b",
+   "title": "tbank-travel",
+   "purpose": "Поездки через T-Bank MCP: поезда и самолёты — от поиска ...",
+   "facet": "industries",
+   "value": "finance",
+   "basis": [
+    "name or purpose: bank",
+    "text: bank, 1 mention"
+   ],
+   "verdict": "arguable",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_plugin_manifest_marketing_cli_plugin_9722e5ed105d",
+   "title": "marketing-cli-plugin",
+   "purpose": "plugin_manifest marketing-cli-plugin",
+   "facet": "industries",
+   "value": "marketing",
+   "basis": [
+    "name or purpose: marketing",
+    "text: brand, 2 mentions",
+    "text: marketing, 6 mentions"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_skill_journey_82a29ba0955c",
+   "title": "journey",
+   "purpose": "Use this skill when the user is new and doesn't ...",
+   "facet": "industries",
+   "value": "sales",
+   "basis": [
+    "text: sales, 2 mentions"
+   ],
+   "verdict": "arguable",
+   "kept_by_the_final_rules": false
+  },
+  {
+   "identity": "import_instruction_file_oh_my_claudecode_research_claude_0241c70c2ae2",
+   "title": "oh-my-claudecode-research-CLAUDE",
+   "purpose": "instruction_file oh-my-claudecode-research-CLAUDE",
+   "facet": "industries",
+   "value": "media and entertainment",
+   "basis": [
+    "text: movie, 3 mentions"
+   ],
+   "verdict": "wrong",
+   "kept_by_the_final_rules": false
+  },
+  {
+   "identity": "import_subagent_release_validator_9e7cd45e94f3",
+   "title": "release-validator",
+   "purpose": "Validates release readiness by checking tests, build, dependencies, and changelog. ...",
+   "facet": "industries",
+   "value": "cybersecurity",
+   "basis": [
+    "text: vulnerabilities, 1 mention",
+    "text: vulnerability, 1 mention"
+   ],
+   "verdict": "arguable",
+   "kept_by_the_final_rules": false
+  },
+  {
+   "identity": "import_command_setup_oidc_3aafe147cc68",
+   "title": "setup-oidc",
+   "purpose": "Walkthrough: Replace long-lived cloud credentials with OIDC in GitHub Actions",
+   "facet": "industries",
+   "value": "technology",
+   "basis": [
+    "text: cloud provider, 3 mentions"
+   ],
+   "verdict": "arguable",
+   "kept_by_the_final_rules": false
+  },
+  {
+   "identity": "import_skill_hyperliquid_setup_c79398b0662f",
+   "title": "hyperliquid-setup",
+   "purpose": "Prepare the desk computer to work with Hyperliquid - install ...",
+   "facet": "industries",
+   "value": "finance",
+   "basis": [
+    "text: trading, 4 mentions"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": false
+  },
+  {
+   "identity": "import_command_good_089862b0e992",
+   "title": "good",
+   "purpose": "Write good creative & smart copy [GOOD]",
+   "facet": "industries",
+   "value": "marketing",
+   "basis": [
+    "text: brand, 5 mentions",
+    "text: campaigns, 1 mention",
+    "text: copywriting, 1 mention",
+    "text: marketing, 3 mentions"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_command_figure_bake_ed9d6a544825",
+   "title": "figure-bake",
+   "purpose": "Drive one figure from design brief to manuscript-ready PDF + ...",
+   "facet": "industries",
+   "value": "data and analytics",
+   "basis": [
+    "text: dataset, 1 mention",
+    "text: datasets, 1 mention"
+   ],
+   "verdict": "arguable",
+   "kept_by_the_final_rules": false
+  },
+  {
+   "identity": "import_subagent_planner_69d68d973d48",
+   "title": "planner",
+   "purpose": "Autonomous plan quality reviewer using Universal Planning Framework",
+   "facet": "industries",
+   "value": "automotive",
+   "basis": [
+    "text: vehicle, 4 mentions"
+   ],
+   "verdict": "wrong",
+   "kept_by_the_final_rules": false
+  },
+  {
+   "identity": "import_skill_contact_center_24c81a69334b",
+   "title": "contact-center",
+   "purpose": "Use when using Contact Center.",
+   "facet": "industries",
+   "value": "customer support",
+   "basis": [
+    "name or purpose: contact center",
+    "text: contact center, 4 mentions",
+    "text: ticketing, 1 mention"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_skill_follow_the_crypto_2ea785e367e6",
+   "title": "follow-the-crypto",
+   "purpose": "Trace cryptocurrency addresses and transactions on public blockchains using block ...",
+   "facet": "industries",
+   "value": "finance",
+   "basis": [
+    "name or purpose: aml",
+    "name or purpose: payment",
+    "text: aml, 1 mention",
+    "text: kyc, 1 mention",
+    "text: payment, 2 mentions"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_skill_programmatic_seo_ba4e7181d73e",
+   "title": "programmatic-seo",
+   "purpose": "Programmatic SEO planning and audit: building or evaluating large sets ...",
+   "facet": "industries",
+   "value": "data and analytics",
+   "basis": [
+    "name or purpose: dataset",
+    "text: dataset, 1 mention"
+   ],
+   "verdict": "wrong",
+   "kept_by_the_final_rules": false
+  },
+  {
+   "identity": "import_skill_etsy_star_seller_9607d3ad9e22",
+   "title": "etsy-star-seller",
+   "purpose": "Star Seller achievement guide — response time, shipping tracking, 5-star ...",
+   "facet": "industries",
+   "value": "retail and e-commerce",
+   "basis": [
+    "text: e-commerce, 1 mention",
+    "text: ecommerce, 1 mention"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_skill_security_review_b9967c4d9995",
+   "title": "security-review",
+   "purpose": "USE BEFORE committing security-sensitive changes (auth, crypto, routes, user-input handling, ...",
+   "facet": "industries",
+   "value": "cybersecurity",
+   "basis": [
+    "name or purpose: owasp",
+    "text: cve, 1 mention",
+    "text: owasp, 2 mentions",
+    "text: pentest, 1 mention",
+    "text: vulnerability, 1 mention"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_skill_monitor_a561e639425c",
+   "title": "monitor",
+   "purpose": "Use this skill when the user needs to set up ...",
+   "facet": "industries",
+   "value": "cybersecurity",
+   "basis": [
+    "name or purpose: incident response",
+    "text: incident response, 2 mentions"
+   ],
+   "verdict": "wrong",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_skill_wan_2_7_c0f86fb44b65",
+   "title": "wan-2-7",
+   "purpose": "Generate text-to-video with Wan 2.7 (Wan-AI's flagship motion model) on ...",
+   "facet": "industries",
+   "value": "science and research",
+   "basis": [
+    "text: physics, 3 mentions"
+   ],
+   "verdict": "wrong",
+   "kept_by_the_final_rules": false
+  },
+  {
+   "identity": "import_skill_tiktok_ads_b716652e5d7a",
+   "title": "tiktok-ads",
+   "purpose": "Plan and create TikTok advertising campaigns end-to-end via the Hyper ...",
+   "facet": "industries",
+   "value": "marketing",
+   "basis": [
+    "name or purpose: advertising",
+    "name or purpose: campaign",
+    "name or purpose: campaigns",
+    "name or purpose: marketing",
+    "text: ad copy, 1 mention",
+    "text: advertising, 2 mentions",
+    "text: brand, 1 mention",
+    "text: campaign, 7 mentions",
+    "text: campaigns, 5 mentions",
+    "text: marketing, 4 mentions"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_command_plan_review_59fbfc519aea",
+   "title": "plan-review",
+   "purpose": "Check plan quality against Universal Planning Framework standards",
+   "facet": "industries",
+   "value": "marketing",
+   "basis": [
+    "text: campaigns, 1 mention",
+    "text: marketing, 2 mentions",
+    "text: seo, 1 mention"
+   ],
+   "verdict": "wrong",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_skill_api_monitoring_899158135a0e",
+   "title": "api-monitoring",
+   "purpose": "Creates, schedules, and manages Postman Monitors — recurring checks against ...",
+   "facet": "industries",
+   "value": "data and analytics",
+   "basis": [
+    "text: dataset, 3 mentions"
+   ],
+   "verdict": "wrong",
+   "kept_by_the_final_rules": false
+  },
+  {
+   "identity": "import_skill_investigate_without_getting_made_0ad6cdda7021",
+   "title": "investigate-without-getting-made",
+   "purpose": "Investigator OPSEC — threat-model who might notice you, control your ...",
+   "facet": "industries",
+   "value": "media and entertainment",
+   "basis": [
+    "name or purpose: journalism",
+    "text: journalism, 1 mention"
+   ],
+   "verdict": "arguable",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_skill_etsy_social_media_marketing_fc2c6bfc1bf0",
+   "title": "etsy-social-media-marketing",
+   "purpose": "Social media marketing for Etsy — Pinterest, Instagram, TikTok strategies ...",
+   "facet": "industries",
+   "value": "marketing",
+   "basis": [
+    "name or purpose: marketing",
+    "name or purpose: social media",
+    "text: marketing, 8 mentions",
+    "text: social media, 6 mentions"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_command_explain_bfe7d76c2eec",
+   "title": "explain",
+   "purpose": "Explain ADVPL/TLPP code in plain language for developers and functional ...",
+   "facet": "levels",
+   "value": "junior",
+   "basis": [
+    "text: junior, 5 mentions"
+   ],
+   "verdict": "arguable",
+   "kept_by_the_final_rules": false
+  },
+  {
+   "identity": "import_skill_simple_task_20b9deed3cdf",
+   "title": "simple-task",
+   "purpose": "Implement simple features with best practices. Use when adding small ...",
+   "facet": "industries",
+   "value": "cybersecurity",
+   "basis": [
+    "text: owasp, 3 mentions"
+   ],
+   "verdict": "wrong",
+   "kept_by_the_final_rules": false
+  },
+  {
+   "identity": "import_skill_roi_calculator_17b098fed6b3",
+   "title": "roi-calculator",
+   "purpose": "Use when the user asks to \"calculate influencer ROI\", \"prove ...",
+   "facet": "industries",
+   "value": "finance",
+   "basis": [
+    "text: investment, 6 mentions"
+   ],
+   "verdict": "arguable",
+   "kept_by_the_final_rules": false
+  },
+  {
+   "identity": "import_skill_hypergrok_bootstrap_ee09315c1b81",
+   "title": "hypergrok-bootstrap",
+   "purpose": "Build and verify a HyperGrok trading desk from the pinned ...",
+   "facet": "industries",
+   "value": "finance",
+   "basis": [
+    "name or purpose: trading",
+    "text: trading, 13 mentions"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_skill_ux_audit_06cec1ebe382",
+   "title": "ux-audit",
+   "purpose": "Walk through a live web app AS a real user ...",
+   "facet": "industries",
+   "value": "energy",
+   "basis": [
+    "name or purpose: battery",
+    "text: battery, 3 mentions"
+   ],
+   "verdict": "wrong",
+   "kept_by_the_final_rules": false
+  },
+  {
+   "identity": "import_skill_codex_setup_95dcbbf1fefe",
+   "title": "codex-setup",
+   "purpose": "Initialize sd0x-dev-flow infrastructure for Codex CLI and other non-Claude agents. ...",
+   "facet": "industries",
+   "value": "healthcare",
+   "basis": [
+    "text: doctor, 3 mentions"
+   ],
+   "verdict": "wrong",
+   "kept_by_the_final_rules": false
+  },
+  {
+   "identity": "import_skill_vitest_2b0a66fb478e",
+   "title": "vitest",
+   "purpose": "Set up Vitest testing in any project — detects type ...",
+   "facet": "industries",
+   "value": "energy",
+   "basis": [
+    "name or purpose: utilities",
+    "text: utilities, 3 mentions"
+   ],
+   "verdict": "wrong",
+   "kept_by_the_final_rules": false
+  },
+  {
+   "identity": "import_command_product_showcase_74544b6ce0df",
+   "title": "product-showcase",
+   "purpose": "Generate a marketing website for a web app — multi-page ...",
+   "facet": "industries",
+   "value": "marketing",
+   "basis": [
+    "name or purpose: marketing",
+    "text: marketing, 1 mention"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_skill_tbank_transfer_money_025bcb703e91",
+   "title": "tbank-transfer-money",
+   "purpose": "Как переводить деньги через T-Bank MCP — P2P по телефону, ...",
+   "facet": "languages",
+   "value": "russian",
+   "basis": [
+    "script: cyrillic 75% of letters"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_command_launch_pmax_14deea610db7",
+   "title": "launch-pmax",
+   "purpose": "Launch a Google Ads Performance Max campaign with a complete ...",
+   "facet": "industries",
+   "value": "marketing",
+   "basis": [
+    "name or purpose: campaign",
+    "text: brand, 3 mentions",
+    "text: campaign, 8 mentions",
+    "text: campaigns, 1 mention"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_subagent_analyst_68040a004d12",
+   "title": "analyst",
+   "purpose": "Research analyst agent — writes and runs R/Stata/Python scripts, saves ...",
+   "facet": "industries",
+   "value": "data and analytics",
+   "basis": [
+    "text: dataset, 4 mentions"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": false
+  },
+  {
+   "identity": "import_skill_find_leaks_in_the_wild_e9a4e9a1d791",
+   "title": "find-leaks-in-the-wild",
+   "purpose": "Find leaked or mentioned selectors circulating in pastes, leak forums, ...",
+   "facet": "industries",
+   "value": "data and analytics",
+   "basis": [
+    "text: dataset, 2 mentions",
+    "text: datasets, 1 mention"
+   ],
+   "verdict": "wrong",
+   "kept_by_the_final_rules": false
+  },
+  {
+   "identity": "import_command_worktree_start_a44972c5ef43",
+   "title": "worktree-start",
+   "purpose": "병렬 개발용 Git Worktree 생성 + 도메인 템플릿 (v6)",
+   "facet": "industries",
+   "value": "finance",
+   "basis": [
+    "text: payment, 2 mentions"
+   ],
+   "verdict": "wrong",
+   "kept_by_the_final_rules": false
+  },
+  {
+   "identity": "import_instruction_file_supabase_com_agents_30cbfc0cf2cb",
+   "title": "supabase-com-agents",
+   "purpose": "instruction_file supabase-com-agents",
+   "facet": "industries",
+   "value": "arts and design",
+   "basis": [
+    "text: design system, 2 mentions",
+    "text: typography, 1 mention"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_instruction_file_marketing_mindset_agents_399c85eb3ed8",
+   "title": "marketing-mindset-AGENTS",
+   "purpose": "instruction_file marketing-mindset-AGENTS",
+   "facet": "industries",
+   "value": "technology",
+   "basis": [
+    "text: saas, 1 mention",
+    "text: startup, 1 mention"
+   ],
+   "verdict": "arguable",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_skill_legal_b4fc0589924a",
+   "title": "legal",
+   "purpose": "Use this skill when the user needs to form a ...",
+   "facet": "job_titles",
+   "value": "Lawyers",
+   "basis": [
+    "text: attorney, 3 mentions",
+    "text: attorneys, 1 mention",
+    "text: lawyer, 2 mentions"
+   ],
+   "verdict": "arguable",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_plugin_manifest_stockbit_mcp_plugin_0f4ab34d27de",
+   "title": "stockbit-mcp-plugin",
+   "purpose": "plugin_manifest stockbit-mcp-plugin",
+   "facet": "industries",
+   "value": "finance",
+   "basis": [
+    "text: trading, 2 mentions"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": false
+  },
+  {
+   "identity": "import_skill_proof_orchestrator_cf3cb364e0ee",
+   "title": "proof-orchestrator",
+   "purpose": "Manage a stateful, run-directory-based proof project: continuation across runs, run-local ...",
+   "facet": "industries",
+   "value": "accounting",
+   "basis": [
+    "name or purpose: bookkeeping",
+    "text: bookkeeping, 1 mention"
+   ],
+   "verdict": "wrong",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_subagent_mobile_performance_reviewer_d1312c3c9257",
+   "title": "mobile-performance-reviewer",
+   "purpose": "Android performance optimization specialist. Reviews for app startup, memory efficiency, ...",
+   "facet": "industries",
+   "value": "technology",
+   "basis": [
+    "name or purpose: startup",
+    "text: startup, 6 mentions"
+   ],
+   "verdict": "wrong",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_skill_crud_2e2b77e9266f",
+   "title": "crud",
+   "purpose": "Explicit helper for CRUD scaffolding and API endpoint generation. Do ...",
+   "facet": "industries",
+   "value": "construction",
+   "basis": [
+    "name or purpose: scaffolding",
+    "text: scaffolding, 2 mentions"
+   ],
+   "verdict": "wrong",
+   "kept_by_the_final_rules": false
+  },
+  {
+   "identity": "import_subagent_supervisor_64b27e22d30c",
+   "title": "supervisor",
+   "purpose": "Use this agent when you need high-level direction for a ...",
+   "facet": "industries",
+   "value": "science and research",
+   "basis": [
+    "name or purpose: scientific",
+    "text: academic, 1 mention",
+    "text: scientific, 6 mentions"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_command_improve_70cfb8d09b35",
+   "title": "improve",
+   "purpose": "Apply systematic improvements to code quality, performance, and maintainability",
+   "facet": "industries",
+   "value": "cybersecurity",
+   "basis": [
+    "text: vulnerabilities, 1 mention",
+    "text: vulnerability, 1 mention"
+   ],
+   "verdict": "wrong",
+   "kept_by_the_final_rules": false
+  },
+  {
+   "identity": "import_skill_adspirer_chatgpt_ads_4d43091bf4b7",
+   "title": "adspirer-chatgpt-ads",
+   "purpose": "Create and manage ChatGPT Ads (OpenAI Ads) through Adspirer — ...",
+   "facet": "industries",
+   "value": "marketing",
+   "basis": [
+    "name or purpose: advertising",
+    "text: advertising, 1 mention",
+    "text: campaign, 6 mentions"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_skill_earnings_monitor_f967b743e8ed",
+   "title": "earnings-monitor",
+   "purpose": "Monitor upcoming and recent earnings — calendar, trends, news context, ...",
+   "facet": "industries",
+   "value": "media and entertainment",
+   "basis": [
+    "name or purpose: news",
+    "text: news, 8 mentions"
+   ],
+   "verdict": "wrong",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_plugin_manifest_marketing_cli_plugin_993aea7e6864",
+   "title": "marketing-cli-plugin",
+   "purpose": "plugin_manifest marketing-cli-plugin",
+   "facet": "industries",
+   "value": "marketing",
+   "basis": [
+    "name or purpose: marketing",
+    "text: brand, 3 mentions",
+    "text: marketing, 10 mentions"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_skill_dotnet_init_65ea88273432",
+   "title": "dotnet-init",
+   "purpose": "Interactive project initialization. Detects project type, asks architecture questions, and ...",
+   "facet": "levels",
+   "value": "student",
+   "basis": [
+    "text: learner, 2 mentions"
+   ],
+   "verdict": "wrong",
+   "kept_by_the_final_rules": false
+  },
+  {
+   "identity": "import_skill_21_ads_audit_global_841e2b025d06",
+   "title": "21-ads-audit-global",
+   "purpose": "Use when an ad account needs a systematic CONFIGURATION audit ...",
+   "facet": "industries",
+   "value": "marketing",
+   "basis": [
+    "name or purpose: campaign",
+    "text: campaign, 8 mentions",
+    "text: marketing, 2 mentions"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_subagent_code_reviewer_20f2c78c8090",
+   "title": "code-reviewer",
+   "purpose": "Expert code review specialist. Proactively reviews code for quality, security, ...",
+   "facet": "industries",
+   "value": "cybersecurity",
+   "basis": [
+    "text: vulnerabilities, 3 mentions"
+   ],
+   "verdict": "arguable",
+   "kept_by_the_final_rules": false
+  },
+  {
+   "identity": "import_skill_researchers_security_0078aec2bf21",
+   "title": "researchers-security",
+   "purpose": "Researches malware analysis, CVEs, attribution reports, and hacker community sources. ...",
+   "facet": "industries",
+   "value": "cybersecurity",
+   "basis": [
+    "name or purpose: cybersecurity",
+    "name or purpose: malware",
+    "name or purpose: threat",
+    "text: cve, 6 mentions",
+    "text: cybersecurity, 4 mentions",
+    "text: exploit, 3 mentions",
+    "text: exploits, 1 mention",
+    "text: incident response, 1 mention",
+    "text: malware, 8 mentions",
+    "text: threat, 4 mentions",
+    "text: vulnerabilities, 2 mentions",
+    "text: vulnerability, 1 mention"
+   ],
+   "verdict": "correct",
+   "kept_by_the_final_rules": true
+  },
+  {
+   "identity": "import_skill_demo_de731fe04a9c",
+   "title": "demo",
+   "purpose": "Demo-Ready Mode — prepare your app for demos, screenshots, and ...",
+   "facet": "industries",
+   "value": "marketing",
+   "basis": [
+    "text: brand, 1 mention",
+    "text: branding, 1 mention"
+   ],
+   "verdict": "wrong",
+   "kept_by_the_final_rules": true
+  }
+ ]
+}
