@@ -4,6 +4,16 @@
  "changelog": {
   "releases": [
    {
+    "kind": "library",
+    "number": 7,
+    "at": "2026-09-26T21:38:00Z",
+    "lines": [
+     "7,806 packages served."
+    ],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
     "kind": "service",
     "number": 37,
     "at": "2026-09-26T13:25:00Z",
@@ -673,6 +683,31 @@
       "description": "The plan, what counts as one download, and how to read the usage record of your account."
      },
      {
+      "address": "/docs/quickstart-claude-code",
+      "title": "Claude Code quickstart",
+      "description": "What you need, the .mcp.json entry to paste, the first search, the first download and the check that it worked, for Claude Code."
+     },
+     {
+      "address": "/docs/quickstart-codex",
+      "title": "Codex quickstart",
+      "description": "What you need, the config.toml table to paste, the first search, the first download and the check that it worked, for Codex."
+     },
+     {
+      "address": "/docs/quickstart-opencode",
+      "title": "OpenCode quickstart",
+      "description": "What you need, the opencode.json entry to paste, the first search, the first download and the check that it worked, for OpenCode 1.x."
+     },
+     {
+      "address": "/docs/quickstart-pi",
+      "title": "Pi quickstart",
+      "description": "What you need, the extension and settings file to save, the first search, the first installed skill and the check that it worked, for Pi."
+     },
+     {
+      "address": "/docs/quickstart-baltor-harness",
+      "title": "Baltor Harness quickstart",
+      "description": "Install the engine, search and download with curl, check the digest, then run a task on the model you bring."
+     },
+     {
       "address": "/security",
       "title": "Access and data boundaries",
       "description": "What you share when you connect, what the service stores, and why connecting never lets Baltor run anything on your computer."
@@ -788,6 +823,41 @@
    {
     "name": "Step functions",
     "description": "The kinds of step the item supports: acting, analysis, building, operating, planning, reasoning, research, reviewing, verification or writing. Tagged by rules from the item's own words and file roles, so a tag says what the item talks about, not that it was judged.",
+    "searchable": true,
+    "filterable": true,
+    "choices": []
+   },
+   {
+    "name": "Job titles",
+    "description": "The job titles the item names, from the pinned occupation grid (O*NET titles) and the packaged occupation seeds. Tagged by rules from the item's own words, so a tag says whom the item talks about, not that it was judged.",
+    "searchable": true,
+    "filterable": true,
+    "choices": []
+   },
+   {
+    "name": "Industries",
+    "description": "The industries the item names, from a declared list of thirty-four. Tagged by rules from the item's own words, so a tag says what the item talks about, not that it was judged.",
+    "searchable": true,
+    "filterable": true,
+    "choices": []
+   },
+   {
+    "name": "Levels",
+    "description": "The experience levels the item names: student, junior, mid, senior, lead or executive. Tagged by rules from the item's own words.",
+    "searchable": true,
+    "filterable": true,
+    "choices": []
+   },
+   {
+    "name": "Languages",
+    "description": "The natural language of the item's text: english by default, or one of twelve languages found by its script or its stopwords. Not searched, because nearly every item would answer to english.",
+    "searchable": false,
+    "filterable": true,
+    "choices": []
+   },
+   {
+    "name": "Geographies",
+    "description": "The countries and regions the item names, from a declared list. Tagged by rules from the item's own words, so a tag says where the item talks about, not that it was judged.",
     "searchable": true,
     "filterable": true,
     "choices": []
@@ -1104,11 +1174,11 @@
   ]
  },
  "todo": {
-  "steps": 261,
+  "steps": 266,
   "live": 4,
   "checked": 35,
-  "open": 222,
-  "listed": 190,
+  "open": 227,
+  "listed": 195,
   "groups": [
    {
     "title": "Ship the September 22 review: one main line, live checks and launch readiness",
@@ -1141,7 +1211,7 @@
      {
       "step": "S-6.200",
       "title": "Continuous integration in 12 minutes or less, and fewer failed pushes: sharded self-test, cached environment, a records-only lane and a pre-push hook that runs the preflight",
-      "status": "Named, not scheduled yet"
+      "status": "In progress"
      },
      {
       "step": "S-6.37",
@@ -1191,7 +1261,7 @@
      {
       "step": "S-6.201",
       "title": "A page or a demo from one typed record, live on its own hostname within an hour: the page generator, the demo generator and hostname automation",
-      "status": "Named, not scheduled yet"
+      "status": "In progress"
      },
      {
       "step": "S-6.202",
@@ -1201,6 +1271,26 @@
      {
       "step": "S-6.204",
       "title": "The weekly number: visitors, accounts, paying subscribers and served packages, read from the service's own records and published to staff",
+      "status": "In progress"
+     },
+     {
+      "step": "S-6.210",
+      "title": "Every owner request tracked: one ledger row per request with its steps and live state, checked against the roadmap and reported daily",
+      "status": "In progress"
+     },
+     {
+      "step": "S-6.212",
+      "title": "Unlinked public changelog, feature list and todo pages generated from the release records and the roadmap",
+      "status": "In progress"
+     },
+     {
+      "step": "S-6.213",
+      "title": "The product as a harness file: a first-party Baltor skill any harness installs to search and fetch from the library, plus a daily public library snapshot from each catalogue release",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.214",
+      "title": "Daily distillations: new papers, skills, plugins, protocol servers, services and repositories, each served as a summary page, RSS, JSON and downloadable components",
       "status": "Named, not scheduled yet"
      }
     ]
@@ -1416,12 +1506,12 @@
      {
       "step": "S-6.199",
       "title": "Publish after one screen, then let feedback withdraw: the four-question screening review, automatic Community publication, a report button, nightly rescans, upstream checks and withdrawal rules",
-      "status": "Named, not scheduled yet"
+      "status": "In progress"
      },
      {
       "step": "S-6.203",
       "title": "10,000 packages served: measured at 1,000, 5,000 and 10,000, paged listing, one indexable page per item with sitemap entries",
-      "status": "Named, not scheduled yet"
+      "status": "In progress"
      },
      {
       "step": "S-6.205",
@@ -1447,6 +1537,11 @@
       "step": "S-6.209",
       "title": "Occupation, industry, level, language and geography tags on every served file, searchable in the signed-in dashboard",
       "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.211",
+      "title": "User Feedback Intelligence on the hosted service: a rating of each download, requests for material and search gap counts, read by staff and turned into generation ideas",
+      "status": "In progress"
      },
      {
       "step": "S-6.81",

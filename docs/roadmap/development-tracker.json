@@ -1112,7 +1112,7 @@
      "S-6.199"
     ],
     "id": "S-6.203",
-    "next_local_work": "Release paging and the table's progressive load, extend the volume to 3 GB before the release that crosses 10,000, add a release-document retention rule, then build the item pages with sitemap entries.",
+    "next_local_work": "Release paging and the table's progressive load, cite this measurement from the release that crosses 10,000, add a release-document retention rule, then build the item pages with sitemap entries.",
     "phase": 6,
     "status": "building",
     "title": "10,000 packages served: measured at 1,000, 5,000 and 10,000, paged listing, one indexable page per item with sitemap entries",
@@ -1162,7 +1162,7 @@
      "S-6.205"
     ],
     "id": "S-6.207",
-    "next_local_work": "Read the seed wave's counts, carry its attribution commit to main so the packages' cited sources resolve publicly, check the reviewed folder reached the next daily release, and build seeds-2 from the finished inventory with the corrected media task statements.",
+    "next_local_work": "Give the reviewer the private seed excerpt as review-only context (never published), require generated packages to include every file they cite and a check that can fail, and move drive-derived generation to a stronger producer (the Codex lane reads the real projects; a Claude Code cohort is another option) before the next wave; the 15 ideas left and the corrected media statements go into seeds-2.",
     "phase": 6,
     "status": "building",
     "title": "The owner's own volumes as seed material: a read-only inventory with provenance classes, seed records per project, and generated harness files reviewed and published under the owner's authorship declaration",
@@ -5364,5 +5364,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:e5e623c355f6d41e0415ff520eafe7fe42413bcb96931b5e21dc228c68d4c5f7"
+ "source_fingerprint": "sha256:c74d1240838bb097ed20943eaa4eb2690014906d36323dd4b956d2cb82b6adac"
 }
