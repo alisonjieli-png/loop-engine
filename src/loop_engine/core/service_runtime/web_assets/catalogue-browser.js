@@ -166,6 +166,7 @@ window.BaltorCatalogueBrowser = {
       scope_required:"This account may not do that. Ask the person who runs this service for permission.",
       item_withdrawn:"This item was withdrawn from the library. Load the library again to see what is there now.",
       report_reason_invalid:"Write what is wrong in plain words, up to 400 characters.",
+      report_requires_download:"Fetch this item before you report it. A report counts only for a file your account received.",
       catalogue_reports_unavailable:"This service does not take reports at the moment. Nothing was recorded.",
       staff_role_required:"Only a staff member can flag an item. A report from your account still counts.",
       list_release_changed:"The library changed again while it was loading. Load the library again to see the current list.",

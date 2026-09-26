@@ -50,7 +50,7 @@ WHAT_IS_MEASURED = (
 #: recorded identity and a sentence from how it answers.
 ENGINE_WORDS = {
     "rules": ("Rules", "A written list of patterns, checked inside the service. No model call."),
-    "tactical": ("Gemma 4 on Tactical", "A text model on the owner's Tactical endpoint, answering the three questions in JSON."),
+    "tactical": ("Gemma 4, self-hosted", "A text model on a self-hosted model server, answering the three questions in JSON."),
     "jev": ("Jev by TypeSafe", "TypeSafe's decision service, asked the same three questions."),
     "ollama_cloud": ("A model on Ollama Cloud", "A text model on Ollama Cloud, answering the three questions in JSON."),
 }
@@ -60,7 +60,17 @@ KIND_WORDS = {
     "decision_endpoint": "A decision service asked the same three questions.",
 }
 CONFIGURATIONS = {False: "the written patterns given to every decision maker",
-                  True: "the written patterns withheld from the models; the rules keep them"}
+                  True: "the written patterns withheld from the models (the rules keep them)"}
+#: The run record says engine; the page says decision maker. Longest phrases first, so an article keeps its grammar.
+PAGE_WORDS = (("an engine", "a decision maker"), ("An engine", "A decision maker"), ("engines", "decision makers"),
+              ("Engines", "Decision makers"), ("engine", "decision maker"), ("Engine", "Decision maker"))
+
+
+def page_words(text: str) -> str:
+    """A run record's own sentence in the page's words."""
+    for old, new in PAGE_WORDS:
+        text = text.replace(old, new)
+    return text
 
 
 class ShowcaseError(ValueError):
@@ -90,7 +100,7 @@ def _not_measured_reason(engine: dict, rows) -> str:
     if not engine["reached"]:
         return engine["reason"] or "it could not be built"
     if engine["detail"].get("credential_present") is False:
-        return "no credential for it was in the environment, so each of its rows records the refusal, not an answer"
+        return "no credential for it was in the environment, so a run that asked it records the refusal, not an answer"
     codes = sorted({(row.get("attempt") or {}).get("error_code") or row.get("reason") or "" for row in rows}) - {""}
     return "every call failed" + (f" ({', '.join(page.words(code) for code in codes)})" if codes else "")
 
@@ -181,7 +191,7 @@ def build_record(runs, loaded: dict) -> dict:
                    "indicator_threshold": policy.indicator_threshold, "pattern_count": len(policy.patterns)},
         "engines": engine_rows, "scenarios": scenarios,
         "runs": [_run(run, order, scenario_ids) for run in runs],
-        "not_measured": list(runs[-1]["not_measured"]),
+        "not_measured": [page_words(line) for line in runs[-1]["not_measured"]],
     }
     page.page_record_from_value(record)
     return record

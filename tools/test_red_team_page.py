@@ -176,6 +176,28 @@ class RenderedPage(unittest.TestCase):
         # Known-wrong: the study's own page rule refuses a page that presents a decision as generated text.
         self.assertIn("decision_presented_as_text", study.page_violations(text.replace(page.DECISION_SENTENCE, "The model wrote each answer.")))
 
+    def test_a_decision_maker_a_run_never_asked_reads_not_asked_in_that_run(self):
+        """Release 38 review: run 3 never asked Jev, yet its rows said a refusal was recorded."""
+        record = page.load_page_record()
+        skipped = [(run["run_id"], engine["engine_id"]) for run in record.runs for engine in record.value["engines"]
+                   if page._not_asked_in(run, engine)]
+        self.assertTrue(skipped)
+
+        def rows(text, run_id, engine_id):
+            key = re.escape(run_id + ":" + engine_id)
+            return re.findall(r'<tr data-red-team-(?:total="' + key + r'"|row="' + key + r':[^"]+")>.*?</tr>', text)
+        text = self.body.decode("utf-8")
+        for run_id, engine_id in skipped:
+            found = rows(text, run_id, engine_id)
+            self.assertEqual(len(found), 1 + len(record.value["scenarios"]))
+            self.assertTrue(all("not asked in this run" in row.lower() and "not measured" not in row.lower() for row in found))
+        self.assertNotIn("Every decision maker answered", self.words)
+        self.assertNotIn(".,", self.words)
+        # Removed-rule control: without the not-asked rule the summary row states a refusal that never happened.
+        with mock.patch.object(page, "_not_asked_in", lambda run, engine: False):
+            earlier = page.red_team_page(page.load_page_record(), load_site_map(), "Baltor")
+        self.assertTrue(any("Not measured" in row for run_id, engine_id in skipped for row in rows(earlier, run_id, engine_id)))
+
     def test_the_page_uses_no_retired_or_runtime_word(self):
         rules = wording_rules()
         found = {name: rule.search(self.words).group(0) for name, rule in rules.items() if rule.search(self.words)}

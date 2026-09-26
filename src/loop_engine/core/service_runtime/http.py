@@ -626,7 +626,7 @@ def _status(error):
                 "waitlist_transition_refused", "waitlist_decision_identity_conflict",
                 "free_monthly_already_held", "free_monthly_not_held", "account_state_unchanged",
                 "account_administration_request_identity_conflict", "sign_up_links_in_progress",
-                "rating_requires_download", "material_request_identity_conflict"):
+                "rating_requires_download", "report_requires_download", "material_request_identity_conflict"):
         return 409, code
     # Accepted requests to join the waiting list, counted for one declared
     # source. It is a wait like the failed-attempt limit, not a bad request.
@@ -1391,8 +1391,10 @@ class ServiceHttpApplication:
             tools.append(types.Tool(name="intelligence_search", description="Search authorized metadata only",
                 inputSchema=http_retrieval_schema()))
             # A harness reports an item it was served; a Community item is withdrawn at once and a Verified one on
-            # the second report from another account (roadmap S-6.199).
-            tools.append(types.Tool(name=REPORT_TOOL, description="Report a problem with an item you were served",
+            # the second report from another account (roadmap S-6.199). Only an account that read the item's body
+            # at that digest may report it.
+            tools.append(types.Tool(name=REPORT_TOOL,
+                description="Report a problem with an item your account downloaded, at the digest you received",
                 inputSchema=feedback_schema(), annotations=types.ToolAnnotations(
                     readOnlyHint=False, destructiveHint=False, idempotentHint=True)))
             return types.ListToolsResult(tools=tools)

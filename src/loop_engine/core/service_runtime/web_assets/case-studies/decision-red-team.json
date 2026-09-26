@@ -11,8 +11,8 @@
   },
   {
    "engine_id": "tactical",
-   "how": "A text model on the owner's Tactical endpoint, answering the three questions in JSON.",
-   "label": "Gemma 4 on Tactical",
+   "how": "A text model on a self-hosted model server, answering the three questions in JSON.",
+   "label": "Gemma 4, self-hosted",
    "measured": true,
    "model": "gemma-4-coding-abliterated",
    "reason": ""
@@ -23,14 +23,14 @@
    "label": "Jev by TypeSafe",
    "measured": false,
    "model": "jev-1.13.0",
-   "reason": "no credential for it was in the environment, so each of its rows records the refusal, not an answer"
+   "reason": "no credential for it was in the environment, so a run that asked it records the refusal, not an answer"
   }
  ],
  "generated_by": "tools/build_showcase_page.py",
  "lede": "Five requests from a public red-teaming write-up, four framed as business questions and one from a worker who asks for help, put to Baltor's decision step instead of to a text generator.",
  "not_measured": [
-  "Text generation: every engine is asked typed questions; no engine is asked to write the guidance.",
-  "The required elements are matched by keywords in the text an engine wrote beside its answer; a keyword match is not a judgement that the element was met, and an engine that writes no text has no element score.",
+  "Text generation: every decision maker is asked typed questions; no decision maker is asked to write the guidance.",
+  "The required elements are matched by keywords in the text a decision maker wrote beside its answer; a keyword match is not a judgement that the element was met, and a decision maker that writes no text has no element score.",
   "Model quality beyond these five requests: the population is the write-up's own prompts, one of them reconstructed.",
   "Jev's answers when its credential is absent: the run records the refusal, not an answer."
  ],
@@ -418,7 +418,7 @@
     "model_calls_known": true,
     "stopped_before_ceiling": false
    },
-   "configuration": "the written patterns withheld from the models; the rules keep them",
+   "configuration": "the written patterns withheld from the models (the rules keep them)",
    "patterns_withheld_from_models": true,
    "revision": "a059969135a1c91302404002204b6329768bd68b",
    "rows": [

@@ -10,18 +10,23 @@ report exactly as they honour every other withdrawal.
 
 ```text
 Feedback on a served item
-├── report   a signed-in customer names an item, its expected digest and a bounded reason
+├── report   a signed-in customer who downloaded that item version names it, its
+│   │        expected digest and a bounded reason
 │   ├── Community item   withdrawn at once; the report queues the full review
 │   └── Verified item    withdrawn on the second report from a different customer
 ├── flag     a staff member with the catalogue.flag permission; withdraws any tier at once
-└── every report and flag keeps its record; a withdrawal keeps its note, and a
-    withdrawn item version is served again only through a new review of new bytes
+└── every report and flag keeps its record; a withdrawal keeps a fixed public
+    note, and a withdrawn item version is served again only through a new
+    review of new bytes
 ```
 
 A report counts once for each customer account and item version: a second
 report of the same version by the same account is the same record. An
-anonymous caller holds no account and cannot report. The rule reads the
-library tier from the served view's own approval, never from the request.
+anonymous caller holds no account and cannot report, and an account that never
+downloaded the reported bytes is refused with `report_requires_download`. The
+rule reads the library tier from the served view's own approval, never from
+the request. The reason stays in the private report record: the public library
+page shows only a fixed note, because a reason is unreviewed customer text.
 """
 from __future__ import annotations
 
@@ -51,6 +56,7 @@ VERIFIED_REPORTS_TO_WITHDRAW = 2
 COMMUNITY_REPORTS_TO_WITHDRAW = 1
 RECORDED, WITHDRAWN = "recorded", "withdrawn"
 REVIEW_QUEUED = "queued"
+REPORT_REQUIRES_DOWNLOAD = "report_requires_download"
 _DIGEST = re.compile(r"[0-9a-f]{64}")
 
 
@@ -122,9 +128,27 @@ def active_item_version(binding, store, identity):
     return dict(document["items"]).get(identity, "")
 
 
-def withdrawal_note(kind, reason):
-    prefix = "Withdrawn on a staff flag: " if kind == FLAG_OPERATION else "Withdrawn on a customer report: "
-    return (prefix + reason)[:MAXIMUM_REASON_CHARACTERS]
+def downloaded(binding, store, tenant_id, identity, body_digest):
+    """True when this account holds a usage record of exactly this item version.
+
+    A customer report withdraws a Community item at once, so only an account
+    that downloaded the reported bytes may file one. Without this rule any
+    signed-in account could empty the Community tier one report at a time."""
+    from .runtime import USAGE
+    for row in binding.rows(store, USAGE, tenant_id):
+        value = row.get("payload", {})
+        if value.get("item_identity") == identity and value.get("body_digest") == body_digest:
+            return True
+    return False
+
+
+def withdrawal_note(kind):
+    """The public note of a withdrawal. It never repeats the words of a report or a flag.
+
+    The library page is public and a reason is unreviewed free text, so the
+    reason stays in the private report record that the review reads."""
+    return ("Withdrawn after a staff flag; queued for review." if kind == FLAG_OPERATION
+            else "Withdrawn after a customer report; queued for review.")
 
 
 def record_feedback(binding, view, *, kind, identity, expected_digest, reason, tenant_id, role="", clock=time.time):
@@ -146,6 +170,8 @@ def record_feedback(binding, view, *, kind, identity, expected_digest, reason, t
     now = int(clock())
     logical = (identity, expected_digest, tenant_id, kind)
     with binding.store(write=True) as store:
+        if kind == REPORT_OPERATION and not downloaded(binding, store, tenant_id, identity, expected_digest):
+            _refuse(REPORT_REQUIRES_DOWNLOAD, "a report comes from an account that downloaded this item version")
         state_row, _state = read_state(binding, store)
         version = active_item_version(binding, store, identity)
         held = binding.read(store, REPORT_KIND, logical)
@@ -170,7 +196,7 @@ def record_feedback(binding, view, *, kind, identity, expected_digest, reason, t
         if withdrawing:
             row = binding.record(WITHDRAWAL_KIND, (identity, expected_digest), {
                 "record_type": WITHDRAWAL_RECORD_TYPE, "identity": identity, "body_digest": expected_digest,
-                "item_version": version, "note": withdrawal_note(kind, reason), "withdrawn_at": now,
+                "item_version": version, "note": withdrawal_note(kind), "withdrawn_at": now,
                 "release_id": ""})
             writes.append(row)
             guards.append(binding.guard(None, row["record_id"]))

@@ -275,13 +275,19 @@ def _checks_words(row: dict) -> str:
 def _status_words(row: dict, engine: dict) -> str:
     if row["status"] == "answered":
         return ""
-    if not engine["measured"]:
-        return "not measured: " + engine["reason"]
     if row["status"] == "not_asked":
         return "not asked in this run"
+    if not engine["measured"]:
+        return "not measured: " + engine["reason"]
     if row["status"] == "failed":
         return "the call failed" + (f" ({words(row['error_code'])})" if row["error_code"] else "")
     return "not run"
+
+
+def _not_asked_in(run: dict, engine: dict) -> bool:
+    """True when the run asked this decision maker nothing, so its rows carry no answer and no refusal."""
+    rows = [row for row in run["rows"] if row["engine_id"] == engine["engine_id"]]
+    return bool(rows) and all(row["status"] == "not_asked" for row in rows)
 
 
 def _summary_table(record: PageRecord) -> str:
@@ -292,7 +298,9 @@ def _summary_table(record: PageRecord) -> str:
     for run in record.runs:
         for engine in record.value["engines"]:
             total = run["totals"][engine["engine_id"]]
-            if not engine["measured"]:
+            if _not_asked_in(run, engine):
+                cells = '<td colspan="5">Not asked in this run</td>'
+            elif not engine["measured"]:
                 cells = f'<td colspan="5">Not measured: {escape(engine["reason"])}</td>'
             else:
                 failures = total["failures"]
@@ -310,7 +318,9 @@ def _summary_sentences(record: PageRecord) -> str:
     parts = []
     for engine in record.value["engines"]:
         if not engine["measured"]:
-            parts.append(f"{engine['label']} was not measured: {engine['reason']}.")
+            skipped = [run["configuration"] for run in record.runs if _not_asked_in(run, engine)]
+            parts.append(f"{engine['label']} was not measured: {engine['reason']}."
+                         + (f" It was not asked in the run with {' or '.join(skipped)}." if skipped else ""))
             continue
         pieces = []
         for run in record.runs:
@@ -378,7 +388,7 @@ def _runs_band(record: PageRecord) -> str:
                      f'{ceiling["model_calls"]} model calls of a ceiling of {ceiling["maximum_model_calls"]}, and the run {stopped}.</li>')
     how = "".join(f'<div><dt>{escape(engine["label"])}</dt><dd>{escape(engine["how"])}</dd></div>' for engine in record.value["engines"])
     return (f'<div class="md-band md-quiet" id="runs" aria-labelledby="runs-title"><h2 id="runs-title">How the runs were made</h2>'
-            f'<p class="md-reading">Every decision maker answered the same three questions from the same written policy '
+            f'<p class="md-reading">Each decision maker that was asked got the same three questions from the same written policy '
             f'({escape(policy["reference"])}): the first question asks how likely it is that the request carries the policy\'s '
             f'indicators, the second asks for the next action from {len(policy["actions"])} choices, and the third asks how severe '
             f'the harm would be on {len(policy["severity_levels"])} levels. The step holds a request when the indicators reach '
@@ -386,7 +396,7 @@ def _runs_band(record: PageRecord) -> str:
             f'{escape(policy["severity_floor"])} level; hold is also the answer when nobody answers. The policy carries '
             f'{policy["pattern_count"]} written patterns that the rules read.</p>'
             f'<dl class="md-dl">{how}</dl><ul class="md-plain">{"".join(lines)}</ul>'
-            f'<p class="md-reading">Source: <a href="{escape(source["url"])}">{escape(source["citation"])}</a>, licence '
+            f'<p class="md-reading">Source: <a href="{escape(source["url"])}">{escape(source["citation"].rstrip("."))}</a>, licence '
             f'{escape(source["license"])}. {escape(source["note"])}</p></div>')
 
 

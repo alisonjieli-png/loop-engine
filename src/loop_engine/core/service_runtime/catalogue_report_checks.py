@@ -6,8 +6,11 @@ refresher. No network, model or provider is used. The known-wrong cases are
 the ones the roadmap step names: a report on an unknown item, a second report
 from the same customer counted twice, a Verified item withdrawn on one report,
 an anonymous or unstaffed caller withdrawing anything, and a withdrawal that
-loses the item's record. Each rule is shown twice: the case is refused or
-honoured, and a removed-guard control reruns it with the rule patched away.
+loses the item's record. Two more came from the release 38 review: a report
+from an account that never downloaded the reported bytes, and a public
+withdrawal note that repeats the customer's own words. Each rule is shown
+twice: the case is refused or honoured, and a removed-guard control reruns it
+with the rule patched away.
 """
 from __future__ import annotations
 
@@ -16,12 +19,13 @@ import tempfile
 import time
 from unittest.mock import patch
 
+from ..provisioning_server import COMMUNITY_INCLUDED
 from . import catalogue_reports, library_page
 from .catalogue_grants import follow_active_release
 from .catalogue_release_checks import Fixture, refused
 from .catalogue_releases import is_withdrawn
-from .catalogue_reports import (FLAG_OPERATION, RECORDED, REPORT_OPERATION, REPORT_TOOL, WITHDRAWN, record_feedback,
-                                review_queue)
+from .catalogue_reports import (FLAG_OPERATION, RECORDED, REPORT_OPERATION, REPORT_REQUIRES_DOWNLOAD, REPORT_TOOL,
+                                WITHDRAWN, record_feedback, review_queue, withdrawal_note)
 from .catalogue_serving import CatalogueRefresher, next_view, state_token
 from .http import TIERED_PROVISIONING_REQUEST_VERSION
 from .records import TenantKeyIssue, TenantRegistration
@@ -57,12 +61,19 @@ def _rule_checks(check, root):
              _community(case, "community_one", "# Community one\n"),
              _community(case, "community_two", "# Community two\n")]
     case.publish(lines)
-    _customer(case, "beta")
+    keys = {"alpha": case.key.key, "beta": _customer(case, "beta").key}
     binding = ServiceCatalogBinding(case.config)
     view = case.view()
+    reads = []
 
     def digest(identity):
         return view.catalogue.items[identity].digest
+
+    def download(tenant, identity):
+        """The account reads the body the view serves, which records its usage of exactly that version."""
+        reads.append((tenant, identity))
+        case.binding(view).invoke(keys[tenant], "read", identity=identity, request_id=f"report-check-{len(reads)}",
+                                  community_items=COMMUNITY_INCLUDED)
 
     def feedback(named, **fields):
         return record_feedback(binding, view, **{"kind": REPORT_OPERATION, "tenant_id": "alpha", "reason": REASON,
@@ -88,20 +99,27 @@ def _rule_checks(check, root):
           refused(lambda: feedback("verified_one", kind=FLAG_OPERATION), "staff_role_required")
           and refused(lambda: feedback("verified_one", kind=FLAG_OPERATION, role="customer"), "staff_role_required")
           and not withdrawn_in_store("verified_one"))
+    check("a_report_from_an_account_that_never_downloaded_the_item_version_is_refused_and_withdraws_nothing",
+          refused(lambda: feedback("community_one"), REPORT_REQUIRES_DOWNLOAD)
+          and not withdrawn_in_store("community_one") and not review_queue(binding)["queued"])
 
+    download("alpha", "community_one")
     first = feedback("community_one")
     served = _served_now(case, view)
     queue = review_queue(binding)
+    note = served.withdrawal_notes[("community_one", digest("community_one"))]["note"]
     check("a_customer_report_withdraws_a_community_item_and_queues_its_review",
           first["state"] == WITHDRAWN and first["withdrawn_now"] and first["library_tier"] == "community"
           and first["reports"] == 1 and withdrawn_in_store("community_one")
           and "community_one" not in served.catalogue.items
-          and served.withdrawal_notes[("community_one", digest("community_one"))]["note"].endswith(REASON)
+          and note == withdrawal_note(REPORT_OPERATION) and REASON not in note
           and any(row["identity"] == "community_one" and row["reports"] == 1 and row["withdrawn"]
                   and row["reasons"] == [REASON] for row in queue["queued"]))
     check("a_reported_item_is_refused_at_read_on_the_view_that_still_lists_it",
           refused(lambda: case.binding(view).invoke(case.key.key, "manifest", identity="community_one"),
                   "item_withdrawn"))
+    download("alpha", "verified_one")
+    download("beta", "verified_one")
     one = feedback("verified_one")
     again = feedback("verified_one", reason="a second time from the same account")
     check("one_report_does_not_withdraw_a_verified_item_and_a_repeat_from_the_same_account_counts_once",
@@ -119,9 +137,10 @@ def _rule_checks(check, root):
     page = library_page.library_body(_served_now(case, view))
     with binding.store() as store:
         kept = [row["payload"] for row in binding.rows_all(store, catalogue_reports.REPORT_KIND)]
-    check("every_withdrawal_keeps_its_record_and_its_note_on_the_library_page",
-          'data-library-withdrawn="community_one"' in page and REASON in page
-          and 'data-library-withdrawn="verified_two"' in page and "staff flag: unsafe instruction" in page
+    check("every_withdrawal_keeps_its_record_and_a_fixed_note_on_the_public_library_page_without_the_reason",
+          'data-library-withdrawn="community_one"' in page and withdrawal_note(REPORT_OPERATION) in page
+          and 'data-library-withdrawn="verified_two"' in page and withdrawal_note(FLAG_OPERATION) in page
+          and REASON not in page and "unsafe instruction" not in page
           and sorted((row["identity"], row["reporter_tenant_id"], row["kind"]) for row in kept)
           == [("community_one", "alpha", "report"), ("verified_one", "alpha", "report"),
               ("verified_one", "beta", "report"), ("verified_two", "alpha", "flag")]
@@ -134,13 +153,26 @@ def _rule_checks(check, root):
     check("a_new_review_of_new_bytes_serves_the_item_again",
           "verified_one" in case.view().catalogue.items and "community_one" not in case.view().catalogue.items)
 
-    # Removed-guard controls. Each reruns a case above with the rule patched away and requires the predicate to fail.
     view = case.view()
+    check("a_download_of_an_earlier_version_does_not_let_the_account_report_new_bytes",
+          ("alpha", "verified_one") in reads and refused(lambda: feedback("verified_one"), REPORT_REQUIRES_DOWNLOAD))
+
+    # Removed-guard controls. Each reruns a case above with the rule patched away and requires the predicate to fail.
+    download("alpha", "community_two")
+    download("beta", "verified_three")
     with patch.object(catalogue_reports, "withdrawal_due", lambda tier, records: False):
         check("removed_report_withdrawal_rule_is_detected", not feedback("community_two")["withdrawn"])
     with patch.object(catalogue_reports, "VERIFIED_REPORTS_TO_WITHDRAW", 1):
         check("a_verified_item_withdrawn_on_one_report_is_detected",
               feedback("verified_three", tenant_id="beta")["withdrawn"])
+    with patch.object(catalogue_reports, "downloaded", lambda *arguments: True):
+        check("removed_download_before_report_rule_is_detected",
+              not refused(lambda: feedback("verified_one", tenant_id="beta"), REPORT_REQUIRES_DOWNLOAD))
+    with patch.object(catalogue_reports, "withdrawal_note", lambda kind: "Withdrawn: " + REASON):
+        download("beta", "community_two")
+        feedback("community_two", tenant_id="beta")
+    check("a_public_note_that_repeats_the_report_is_detected",
+          REASON in library_page.library_body(_served_now(case, view)))
 
 
 class _Served:
@@ -200,6 +232,16 @@ def _transport_checks(check, root):
                 "/api/v1/provisioning", json={"record_type": TIERED_PROVISIONING_REQUEST_VERSION, "operation": "list"},
                 headers=headers).json()["result"]["items"])
             before = listed(alpha)
+
+            def read_body(headers, identity, request_id):
+                return client.post("/api/v1/provisioning", headers=headers, json={
+                    "record_type": TIERED_PROVISIONING_REQUEST_VERSION, "operation": "read", "identity": identity,
+                    "request_id": request_id, "expected_digest": digests[identity]})
+            unread = client.post("/api/v1/provisioning", json=report("report", "community_one"), headers=alpha)
+            check("a_report_over_http_from_an_account_that_never_downloaded_the_item_answers_409",
+                  unread.status_code == 409 and unread.json()["error"]["code"] == REPORT_REQUIRES_DOWNLOAD
+                  and "community_one" in listed(alpha))
+            fetched = read_body(alpha, "community_one", "report-transport-1")
             answer = client.post("/api/v1/provisioning", json=report("report", "community_one"), headers=alpha)
             # Before the refresher swaps the view, the read-time withdrawal check refuses the item; after the swap the
             # view no longer lists it. Either way the item is gone within the refresher's interval.
@@ -211,7 +253,8 @@ def _transport_checks(check, root):
                 time.sleep(0.02)
             after = listed(alpha)
             check("a_report_over_http_withdraws_a_community_item_within_the_refresher_interval",
-                  answer.status_code == 200 and answer.json()["result"]["withdrawn"] is True
+                  fetched.status_code == 200
+                  and answer.status_code == 200 and answer.json()["result"]["withdrawn"] is True
                   and answer.json()["result"]["record_type"] == "service_catalogue_report_result/v1"
                   and "community_one" in before and "community_one" not in after
                   and manifest.status_code == 404
@@ -233,6 +276,7 @@ def _transport_checks(check, root):
                   customer_flag.status_code == 403 and customer_flag.json()["error"]["code"] == "staff_role_required"
                   and staff_flag.status_code == 200 and staff_flag.json()["result"]["withdrawn"] is True
                   and staff_flag.json()["result"]["flags"] == 1)
+            beta_read = read_body({"Authorization": "Bearer " + beta.key}, "verified_two", "report-transport-2")
             protocol = {"Authorization": "Bearer " + beta.key, "Accept": "application/json, text/event-stream",
                         "MCP-Protocol-Version": "2025-11-25"}
             tools = _protocol_message(client.post("/mcp", headers=protocol, json={
@@ -244,7 +288,8 @@ def _transport_checks(check, root):
             names = [tool["name"] for tool in ((tools or {}).get("result") or {}).get("tools", [])]
             structured = ((called or {}).get("result") or {}).get("structuredContent") or {}
             check("a_report_over_the_protocol_tool_is_recorded_against_the_exact_item_version",
-                  REPORT_TOOL in names and structured.get("result", {}).get("state") == RECORDED
+                  beta_read.status_code == 200
+                  and REPORT_TOOL in names and structured.get("result", {}).get("state") == RECORDED
                   and structured["result"]["reports"] == 1 and structured["result"]["library_tier"] == "verified"
                   and "verified_two" in listed(alpha))
     from pathlib import Path
