@@ -69,6 +69,7 @@ correctness. Read the evidence limits beside each view.
 | [Reports](guides/reports.md) | Saved Run History, reports, and playback. |
 | [Harness service onboarding](guides/harness-service-onboarding.md) | Existing local commands and planned subscriber/client acceptance. |
 | [What Baltor is](guides/service-what-baltor-is.md), [your account](guides/service-your-account.md), [getting set up](guides/service-getting-set-up.md), [searching and retrieving](guides/service-searching-and-retrieving.md), [usage and what you pay for](guides/service-usage-and-what-you-pay-for.md), [serving and connections](guides/service-serving-and-connections.md) and [troubleshooting](guides/service-troubleshooting.md) | The hosted service as a paying customer meets it: what it is, the account and its permissions, client token, client settings, search, download, what is measured, protocol, and every refusal code. |
+| [Customer feedback and requests](guides/customer-feedback-and-requests.md) | Rating a download, asking for material, the search gap count, what staff read, and the dated feedback report. |
 | [Hosting procedures](guides/hosting-and-deployment-procedures.md) | Preparation for deployment families. Only the Fly.io profile is deployed, as a private pilot. The other profiles are not proof of a live deployment. |
 | [Owner launch checklist](guides/launch-owner-checklist.md) | Account, payment, hosting, and live-model decisions that need explicit authority. |
 

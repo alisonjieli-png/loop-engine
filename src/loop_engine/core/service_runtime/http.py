@@ -37,6 +37,10 @@ from .refusals import guidance as _refusal_guidance
 from .request_limits import LIMIT_REACHED_CODE, FailedAttemptLimiter, ServiceRequestLimits
 from .retention import RetentionSchedule, ServiceRetentionPolicy
 from .waitlist import ServiceWaitlist, administer_waitlist, join_request
+# The customer feedback operations (a rating, a request for material) are distinct from the catalogue feedback
+# operations above (a report, a staff flag), so they are imported under their own name.
+from .feedback import (ASK_FOR_MATERIAL_LINE, FEEDBACK_OPERATIONS as CUSTOMER_FEEDBACK_OPERATIONS, RATE_OPERATION,
+                       ServiceFeedback)
 from .model_directory_pages import rendered_page
 from . import library_page
 from .web_pages import (CACHEABLE_WEB_ASSETS, GENERATED_WEB_FILES, HTML_MEDIA_TYPE, PUBLIC_ASSET_CACHE_CONTROL,
@@ -121,6 +125,10 @@ WAITLIST_PATH, ADMIN_WAITLIST_PATH = "/api/v1/waitlist", "/api/v1/admin/waitlist
 ADMIN_OVERVIEW_PATH, ADMIN_ACCOUNTS_PATH = "/api/v1/admin/overview", "/api/v1/admin/accounts"
 #: A superadmin starts Baltor's own sign-up for a few addresses at once.
 ADMIN_SIGN_UP_LINKS_PATH = "/api/v1/admin/sign-up-links"
+#: The staff view of customer feedback: ratings of downloads, requests for
+#: material and the hours in which searches found nothing. A staff role that
+#: reads usage counts reads it, as does an operator with the administration scope.
+ADMIN_FEEDBACK_PATH = "/api/v1/admin/feedback"
 # Every address the interface router answers, with the methods it answers for
 # it. The router reads this before it asks who is calling, so that an address
 # the service does not serve is a missing page rather than a credential
@@ -148,6 +156,7 @@ API_ROUTES = {
     ADMIN_OVERVIEW_PATH: ("GET",),
     ADMIN_ACCOUNTS_PATH: ("GET", "POST"),
     ADMIN_SIGN_UP_LINKS_PATH: ("POST",),
+    ADMIN_FEEDBACK_PATH: ("GET",),
     "/api/v1/session": ("GET",),
     "/api/v1/usage": ("GET",),
     "/api/v1/provisioning": ("POST",),
@@ -607,7 +616,8 @@ def _status(error):
                 "waitlist_address_already_listed", "waitlist_address_has_account",
                 "waitlist_transition_refused", "waitlist_decision_identity_conflict",
                 "free_monthly_already_held", "free_monthly_not_held", "account_state_unchanged",
-                "account_administration_request_identity_conflict", "sign_up_links_in_progress"):
+                "account_administration_request_identity_conflict", "sign_up_links_in_progress",
+                "rating_requires_download", "material_request_identity_conflict"):
         return 409, code
     # Accepted requests to join the waiting list, counted for one declared
     # source. It is a wait like the failed-attempt limit, not a bad request.
@@ -698,6 +708,8 @@ class ServiceHttpApplication:
         # The counted links of the public lists: one count per link per day, read from the path alone.
         from .public_links import PublicListLinks
         self.public_links = PublicListLinks(self.runtime)
+        # Customer feedback over the same runtime records: ratings, requests for material and search gaps.
+        self.feedback = ServiceFeedback(self.runtime)
         self._workers = ThreadPoolExecutor(max_workers=self.configuration.maximum_concurrent_operations,
                                            thread_name_prefix="intelligence-service")
         self._slots = threading.BoundedSemaphore(self.configuration.maximum_concurrent_operations)
@@ -1051,6 +1063,9 @@ class ServiceHttpApplication:
         view = self.provisioning.current_view()
 
         fields = dict(fields)
+        # The request as it was asked, kept before the library tier filter is resolved out of the fields, so a
+        # search that finds nothing is counted with the tiers it asked for.
+        requested = dict(fields)
         community = self.community_choice(current.principal, fields)
 
         def authorize(candidates):
@@ -1079,12 +1094,41 @@ class ServiceHttpApplication:
                          "attributes": view.shown_attributes(identity),
                          "package": view.package_summary(identity)})
         self._verify_search_snapshot(authentication, current, grant_guard)
-        return {"record_type": "service_retrieval_result/v1", "hits": hits,
-                "mode": fields.get("mode", "lexical"), "bodies_loaded": False,
-                "backend": self.capabilities()["retrieval"],
-                "catalogue_release": view.release_id or None,
-                "limitations": ["Hash vectors measure character similarity, not learned semantic understanding.",
-                                "Distribution references do not grant local code execution or independent Code admission."]}
+        result = {"record_type": "service_retrieval_result/v1", "hits": hits,
+                  "mode": fields.get("mode", "lexical"), "bodies_loaded": False,
+                  "backend": self.capabilities()["retrieval"],
+                  "catalogue_release": view.release_id or None,
+                  "limitations": ["Hash vectors measure character similarity, not learned semantic understanding.",
+                                  "Distribution references do not grant local code execution or independent Code admission."]}
+        if not hits:
+            # A search that found nothing is counted as metadata only, without
+            # the account and without the query text, and the answer says in
+            # one line that the customer can ask for material.
+            self.feedback.record_search_gap(requested)
+            result["ask_for_material"] = ASK_FOR_MATERIAL_LINE
+        return result
+
+    def _customer_feedback(self, authentication, operation, fields):
+        """Revalidate the account, then record its rating or its request for material."""
+        current = self.authenticator.revalidate(authentication)
+        self._require_scope(current, "provisioning:metadata")
+        if operation == RATE_OPERATION:
+            result = self.feedback.rate(current.principal, fields)
+        else:
+            result = self.feedback.request_material(current.principal, fields)
+        self.authenticator.revalidate(authentication)
+        return result
+
+    def _staff_feedback(self, context):
+        """The feedback view for an operator with the administration scope or a staff role that reads usage counts."""
+        current = self.authenticator.revalidate(context)
+        if ACCESS_MANAGE_SCOPE in current.effective_scopes:
+            return self.feedback.staff_view(current.principal)
+        if self.account_administration is None:
+            # No staff role can exist on a host that installs no administration, so the caller is not staff.
+            raise ServiceRuntimeError("account_administration_forbidden")
+        staff = self.account_administration.staff_session(current, self.authenticator.credential_digest(current))
+        return self.feedback.staff_view(current.principal, staff=staff, administration=self.account_administration)
 
     def _verify_search_snapshot(self, authentication, initial, grant_guard):
         """Authorize the completed metadata response before releasing any result.
@@ -1756,8 +1800,28 @@ class ServiceHttpApplication:
                 output = await self._work(lambda: invoke_http_service_as_loop(operation,
                     lambda: self._create_billing_session(context, payload)),
                     shares=(context.principal.tenant_id, EXTERNAL_PROVIDER_SHARE))
+            elif path == ADMIN_FEEDBACK_PATH and method == "GET":
+                if request.query_params:
+                    raise ServiceHttpError("unknown_request_field")
+                # A staff session is rechecked at the identity provider's records, so this read draws on the
+                # share of work that waits on another service, as every other staff route does.
+                output = await self._work(lambda: invoke_http_service_as_loop("feedback_administration",
+                    lambda: self._staff_feedback(context)),
+                    shares=(context.principal.tenant_id, EXTERNAL_PROVIDER_SHARE))
+            elif (path == "/api/v1/provisioning" and method == "POST"
+                  and (payload := _parse_json(await self._body(request))).get("operation") in CUSTOMER_FEEDBACK_OPERATIONS):
+                # The two feedback operations of the tier-aware request version: a rating of a downloaded
+                # item and a request for material. Version 1 predates them and is refused as unsupported.
+                if payload.get("record_type") != TIERED_PROVISIONING_REQUEST_VERSION:
+                    raise ServiceHttpError("unsupported_version")
+                operation = payload["operation"]
+                fields = {key: value for key, value in payload.items() if key not in ("record_type", "operation")}
+                output = await self._tenant_work(context, lambda: invoke_http_service_as_loop(operation,
+                    lambda: self._customer_feedback(context, operation, fields)))
             elif path in ("/api/v1/provisioning", "/api/v1/download") and method == "POST":
-                operation, fields, tiered = self._validate_provisioning(_parse_json(await self._body(request)))
+                # The customer feedback branch above has already read the provisioning body, so it is reused here.
+                operation, fields, tiered = self._validate_provisioning(
+                    payload if path == "/api/v1/provisioning" else _parse_json(await self._body(request)))
                 if operation in FEEDBACK_OPERATIONS:
                     # A report or a flag carries no step effects and returns no body, so it is answered here.
                     if path.endswith("download"):

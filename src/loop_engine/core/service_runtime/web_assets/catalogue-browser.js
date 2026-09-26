@@ -337,11 +337,37 @@ window.BaltorCatalogueBrowser = {
         link.href = objectUrl; link.download = "intelligence-" + measured.slice(0, 12) + ".txt"; link.click();
         setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
         status.textContent = "Downloaded and checked. Loading it into your own tool and accepting the result are separate steps.";
+        ratingPair(row, status);
       } catch (error) {
         status.textContent = error.name === "AbortError"
           ? "The wait ended. Usage may have been recorded. Repeat this exact selection to reconcile it."
           : plainly(error.message);
       } finally { if (epoch === current().generation) button.disabled = false; }
+    }
+    /* After a download the status line offers one rating, useful or not useful, of the exact revision that was
+       fetched. The service refuses a rating of an item this account never downloaded, and a second rating of
+       the same item replaces the first, so the pair can be pressed again. The note field is not offered here;
+       the workspace's search results carry it. */
+    function ratingPair(row, status) {
+      const pair = element("span", "", "rating-pair"); pair.setAttribute("role", "group"); pair.setAttribute("aria-label", "Rate this download");
+      for (const [value, label] of [["useful", "Useful"], ["not_useful", "Not useful"]]) {
+        const button = element("button", label, "quiet"); button.type = "button"; button.dataset.ratingValue = value;
+        button.addEventListener("click", async () => {
+          const epoch = current().generation;
+          for (const other of pair.querySelectorAll("button")) other.disabled = true;
+          try {
+            const result = await request(path, {record_type:requestVersion, operation:"rate", identity:row.identity,
+              expected_digest:row.digest, value});
+            if (epoch !== current().generation) return;
+            status.textContent = result.replaced ? "Your rating was changed to " + label.toLowerCase() + "." : "Thank you. Your rating, " + label.toLowerCase() + ", was recorded.";
+          } catch (error) {
+            if (epoch !== current().generation) return;
+            status.textContent = error.name === "AbortError" ? "The wait ended. The rating may not have been recorded." : plainly(error.message);
+          } finally { if (epoch === current().generation) for (const other of pair.querySelectorAll("button")) other.disabled = false; }
+        });
+        pair.append(button);
+      }
+      status.insertAdjacentElement("afterend", pair);
     }
     /* One load brings the whole library this account may see; the search box and the filters narrow it
        here, so the service answers once. The page sends no authority over effects, so the service applies

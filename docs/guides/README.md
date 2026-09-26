@@ -53,6 +53,13 @@ The first-release guides are [hosting procedures](hosting-and-deployment-procedu
 service paths are labeled separately from commands available today. The
 hosting procedures name the [current host](hosting-and-deployment-procedures.md#current-host).
 
+The [customer feedback guide](customer-feedback-and-requests.md) describes
+the three feedback signals of the hosted service: rating a download, asking
+for material, and the count of searches that found nothing, with what staff
+read and the dated report that feeds the weekly number and the idea matrix.
+Its fields, records, addresses and refusal codes are held to the service
+source by `tools/test_feedback_report.py`.
+
 The [service failure diagnosis guide](service-failure-diagnosis.md) is the
 operator procedure for the deployed service: the reference that names one
 request in both the customer's refusal and the durable record, the read-only

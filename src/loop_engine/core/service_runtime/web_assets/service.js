@@ -187,7 +187,7 @@ const applyPaymentState = name => {
     confirmation = null; $("confirm-password").value = ""; $("confirm-password-again").value = ""; showConfirmation();
     generation++; token = ""; keptSession.clear(); principalScopes = []; authenticationMode = "host_key"; for (const controller of pending) controller.abort(); pending.clear(); downloads.clear(); billingRequests.clear();
     $("access-token").value = ""; $("identity").hidden = true; $("connect-form").hidden = false; $("connection-state").textContent = "Not connected";
-    ["query", "search-button", "search-mode", "refresh-usage", "refresh-billing"].forEach(id => { $(id).disabled = true; });
+    ["query", "search-button", "search-mode", "refresh-usage", "refresh-billing", "material-request-description", "material-request-button"].forEach(id => { $(id).disabled = true; });
     $("results").replaceChildren(element("p", "Connect to search permitted material.", "empty")); $("identity-facts").replaceChildren();
     showUsageNote("Sign in to see the downloads recorded for your account."); $("billing").textContent = "Connect to check this service's billing configuration.";
     $("result-count").textContent = "Connect to search"; $("query").value = ""; message("search-message", ""); message("billing-message", "");
@@ -198,6 +198,8 @@ const applyPaymentState = name => {
     showSignedIn(false);
     accessOptions = null; accessRequest = null; $("admin-nav").hidden = true; $("admin-controls").hidden = true; $("admin-login").hidden = false; $("refresh-access").disabled = true;
     staffRole = ""; $("staff-admin").hidden = true; $("staff-counts").replaceChildren(); $("staff-accounts").replaceChildren(); $("account-plan").hidden = true;
+    $("feedback-admin").hidden = true; $("feedback-counts").replaceChildren(); $("feedback-requests").replaceChildren(); $("feedback-gaps").replaceChildren(); message("feedback-message", "");
+    $("material-request-description").value = ""; message("material-request-message", materialRequestNote);
     $("issued-token").value = ""; $("issued-access").hidden = true; $("access-list").replaceChildren(); $("token-label").value = "";
     message("admin-message", "Sign in with an administrator service token. Email is not required.");
     $("test-protocol").disabled = true; $("setup-identity").textContent = "Sign in with a client token to run the connection check.";
@@ -305,7 +307,7 @@ const applyPaymentState = name => {
       $("workspace-access-link").textContent = "Manage this connection"; $("account-access-link").textContent = "Disconnect or change account";
       $("identity").hidden = false; $("connect-form").hidden = true; $("connection-state").textContent = "Connected";
       showSignedIn(true); showUsageNote("Select Refresh to see the downloads recorded for this account.");
-      ["query", "search-button", "search-mode", "refresh-usage", "refresh-billing"].forEach(id => { $(id).disabled = false; });
+      ["query", "search-button", "search-mode", "refresh-usage", "refresh-billing", "material-request-description", "material-request-button"].forEach(id => { $(id).disabled = false; });
       $("result-count").textContent = "Ready"; message("connection-message", "Access confirmed for this tenant.");
       const administrator = value.principal.scopes.includes("access:manage");
       principalScopes = value.principal.scopes;
@@ -320,6 +322,7 @@ const applyPaymentState = name => {
       if (!stay) { const destination = afterLogin; afterLogin = null; navigate(destination || (administrator ? "/admin" : "/app")); }
       if (administrator) await loadAccess();
       if (staffRole) await loadStaff().catch(error => message("staff-message", error.message, true));
+      if (administrator || staffRole) await loadFeedback().catch(error => message("feedback-message", error.message, true));
       clientAccess.connectionChanged(); catalogueBrowser?.connectionChanged();
     } catch (error) { disconnect(); message("connection-message", error.name === "AbortError" ? "Connection timed out. No automatic retry was made." : error.message, true); }
   }
@@ -602,6 +605,7 @@ const applyPaymentState = name => {
       const objectUrl = URL.createObjectURL(new Blob([result.bytes], {type:"application/octet-stream"}));
       const link = element("a", "Download"); link.href = objectUrl; link.download = "intelligence-" + actual.slice(0, 12) + ".txt"; link.click(); setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
       status.textContent = "Downloaded. Digest verified. Native loading and task acceptance are separate checks.";
+      ratingPair(status, hit.reference.identity, hit.reference.body_digest);
     } catch (error) { status.textContent = error.name === "AbortError" ? "The wait ended. Usage may have been recorded. Retry this exact selection to reconcile." : error.message; }
     finally { button.disabled = false; }
   }
@@ -657,10 +661,78 @@ const applyPaymentState = name => {
   }
   $("search-form").addEventListener("submit", async event => {
     event.preventDefault(); $("search-button").disabled = true; message("search-message", "Searching authorized references…");
-    try { const value = await request("/api/v1/retrieval", {record_type:"service_retrieval_request/v2", query:$("query").value, mode:$("search-mode").value, top_n:10}); renderResults(value.hits); message("search-message", "References only. No bodies loaded."); }
+    try { const value = await request("/api/v1/retrieval", {record_type:"service_retrieval_request/v2", query:$("query").value, mode:$("search-mode").value, top_n:10}); renderResults(value.hits);
+      // A search that found nothing carries one line from the service: the customer can ask for material, with the form below.
+      message("search-message", !value.hits.length && typeof value.ask_for_material === "string" ? value.ask_for_material : "References only. No bodies loaded."); }
     catch (error) { message("search-message", error.name === "AbortError" ? "Search timed out. You can retry." : error.message, true); }
     finally { $("search-button").disabled = !token; }
   });
+  /* Feedback on the library (September 26, 2026). After a download, the status line offers one rating of the exact
+     revision that was fetched, useful or not useful; the service refuses a rating of an item this account never
+     downloaded, and a second rating of the same item replaces the first. The form under the results asks for material
+     the library does not have; the text is written on purpose for staff and is kept with the account. Both go to the
+     provisioning address as the two feedback operations of the tier-aware request version. */
+  const materialRequestNote = "Staff read every request. Write only what a step needs; the text is kept with your account.";
+  function ratingPair(status, identity, digest) {
+    const pair = element("span", "", "rating-pair"); pair.setAttribute("role", "group"); pair.setAttribute("aria-label", "Rate this download");
+    for (const [value, label] of [["useful", "Useful"], ["not_useful", "Not useful"]]) {
+      const button = element("button", label, "quiet"); button.type = "button"; button.dataset.ratingValue = value;
+      button.addEventListener("click", async () => {
+        const epoch = generation;
+        for (const other of pair.querySelectorAll("button")) other.disabled = true;
+        try {
+          const result = await request("/api/v1/provisioning", {record_type:"service_provisioning_request/v2", operation:"rate", identity, expected_digest:digest, value});
+          if (epoch !== generation) return;
+          status.textContent = result.replaced ? "Your rating was changed to " + label.toLowerCase() + "." : "Thank you. Your rating, " + label.toLowerCase() + ", was recorded.";
+        } catch (error) { if (epoch === generation) status.textContent = error.name === "AbortError" ? "The wait ended. The rating may not have been recorded." : error.message; }
+        finally { if (epoch === generation) for (const other of pair.querySelectorAll("button")) other.disabled = false; }
+      });
+      pair.append(button);
+    }
+    status.insertAdjacentElement("afterend", pair);
+  }
+  let materialRequest = null;
+  $("material-request-form").addEventListener("submit", async event => {
+    event.preventDefault();
+    const description = $("material-request-description").value.trim();
+    if (!description) { message("material-request-message", "Describe the material a step needs before asking.", true); return; }
+    // One request identity for one text, so a retry after a timeout repeats the request instead of making a second one.
+    if (!materialRequest || materialRequest.description !== description) materialRequest = {description, id:crypto.randomUUID()};
+    $("material-request-button").disabled = true; message("material-request-message", "Sending your request…");
+    try {
+      const result = await request("/api/v1/provisioning", {record_type:"service_provisioning_request/v2", operation:"request_material", request_id:materialRequest.id, description});
+      materialRequest = null; $("material-request-description").value = "";
+      message("material-request-message", result.repeated ? "This request was already recorded. Staff read it." : "Thank you. Staff read every request; nothing is promised in return.");
+    } catch (error) { message("material-request-message", error.name === "AbortError" ? "The wait ended. Send the same text again to reconcile; it is not recorded twice." : error.message, true); }
+    finally { $("material-request-button").disabled = !token; }
+  });
+  /* The staff view of feedback: how downloads were rated, what customers asked for, and the hours in which searches
+     found nothing. The service decides who may read it: a staff role that reads usage counts, or an administrator token. */
+  async function loadFeedback() {
+    const view = await request("/api/v1/admin/feedback");
+    $("feedback-admin").hidden = false;
+    facts($("feedback-counts"), [["Rated useful", String(view.ratings.useful)], ["Rated not useful", String(view.ratings.not_useful)],
+      ["Items rated", String(view.ratings.items.length)], ["Requests for material", String(view.material_requests.length)],
+      ["Hours with a search that found nothing", String(view.search_gaps.length)]]);
+    $("feedback-requests").replaceChildren();
+    for (const row of view.material_requests) {
+      const item = element("article", "", "result"); item.append(element("h3", row.description), element("p", "Account " + row.tenant_id + " · " + when(row.at) + " · " + row.state, "caption"));
+      $("feedback-requests").append(item);
+    }
+    if (!view.material_requests.length) $("feedback-requests").append(element("p", "No request yet.", "caption"));
+    $("feedback-gaps").replaceChildren();
+    for (const row of view.search_gaps) {
+      const filters = Object.entries(row.filters || {}).map(([name, values]) => name + " " + values.join(", ")).join("; ") || "no filter";
+      $("feedback-gaps").append(element("p", row.hour + " · " + row.mode + " · " + filters + " · " + row.searches + (row.searches === 1 ? " search" : " searches") + " with no hit", "caption"));
+    }
+    if (!view.search_gaps.length) $("feedback-gaps").append(element("p", "Every search found something.", "caption"));
+    for (const item of view.ratings.items) {
+      const line = element("p", item.item_identity + ": " + item.useful + " useful, " + item.not_useful + " not useful" + (item.notes.length ? ". Notes: " + item.notes.join(" | ") : ""), "caption");
+      $("feedback-counts").append(line);
+    }
+    message("feedback-message", "Ratings, requests and search gaps, read from the service records. Search gaps hold no account and no search text.");
+  }
+  $("refresh-feedback").addEventListener("click", () => loadFeedback().catch(error => message("feedback-message", error.message, true)));
   /* Recorded usage, item by item: one row for each item, with its number of recorded downloads and the time of the latest, in
      the order the service gives. The table is drawn only from the record version this page was written against, with a list of
      items it can read; any other record is left to the raw view. The raw record always stays behind the disclosure below the
