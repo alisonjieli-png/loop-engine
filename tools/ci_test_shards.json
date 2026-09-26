@@ -11,7 +11,7 @@
     "a": 178.9,
     "b": 178.8,
     "c": 178.9,
-    "d": 177.9
+    "d": 178.9
   },
   "shards": {
     "a": [
@@ -123,6 +123,7 @@
       "test_licensed_import_licensing",
       "test_licensed_import_review_export",
       "test_measure_catalogue_serving",
+      "test_measure_paged_listing",
       "test_model_directory",
       "test_native_schema_reference_scope",
       "test_overnight_candidate_batch",
