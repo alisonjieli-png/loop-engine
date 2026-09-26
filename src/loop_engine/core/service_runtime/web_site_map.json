@@ -685,6 +685,42 @@
       "scroll_budget": "documentation",
       "price_in_first_screen": false,
       "indexed": true
+    },
+    {
+      "address": "/changelog",
+      "view": "changelog",
+      "title": "Changelog",
+      "description": "Every release of the Baltor service and its library, newest first, one line for each change, taken from each release's own record.",
+      "group": "Company",
+      "linked_from": [],
+      "unlinked_reason": "The owner, September 26, 2026: \"We could add these, public links, but they can be undiscoverable (no page linking to them)\". Reached by its address only.",
+      "scroll_budget": "documentation",
+      "price_in_first_screen": false,
+      "indexed": false
+    },
+    {
+      "address": "/features",
+      "view": "features",
+      "title": "What Baltor does today",
+      "description": "The pages, the library, the harnesses Baltor connects, what the service reports about itself and the plan, read from the service's own records.",
+      "group": "Product",
+      "linked_from": [],
+      "unlinked_reason": "The owner, September 26, 2026: \"We could add these, public links, but they can be undiscoverable (no page linking to them)\". Reached by its address only.",
+      "scroll_budget": "documentation",
+      "price_in_first_screen": false,
+      "indexed": false
+    },
+    {
+      "address": "/todo",
+      "view": "todo",
+      "title": "Open work",
+      "description": "The open steps of Baltor's development plan, grouped by delivery package in launch order, each with its status in plain words.",
+      "group": "Company",
+      "linked_from": [],
+      "unlinked_reason": "The owner, September 26, 2026: \"We could add these, public links, but they can be undiscoverable (no page linking to them)\". Reached by its address only.",
+      "scroll_budget": "documentation",
+      "price_in_first_screen": false,
+      "indexed": false
     }
   ],
   "header": {

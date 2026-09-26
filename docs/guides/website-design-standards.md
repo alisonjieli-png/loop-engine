@@ -253,6 +253,40 @@ shows its own page on every hostname, and every page names its address on
 from the site map: the sitemap lists each page marked `indexed`, and
 robots.txt leaves out the interface routes and each page that is not.
 
+## Pages reached by their address only
+
+The owner, September 26, 2026, asked for a public changelog, feature list and
+to-do page that "can be undiscoverable (no page linking to them)". Since that
+day `/changelog`, `/features` and `/todo` are pages of the site map with no
+place that links to them, that sentence as their reason, and `indexed` false,
+so they carry `noindex` and stay out of `sitemap.xml`. Like every page the
+site map does not list, `robots.txt` still names them, because the rule that
+writes it has no second kind of unlisted page; the owner's words define
+undiscoverable as no page linking to them, and no page does. They use the site's
+frame, header and footer, open with the introduction band, hold no primary
+action of their own and follow the documentation scroll budget with an
+in-page contents list.
+
+`status_pages.py` renders them from one packaged record that
+`tools/build_public_status_pages.py` writes from the release records, the
+Community release records, `CHANGELOG.md`, the site map, the capabilities
+builder, the attribute declarations, the client recipes and the roadmap. The
+continuation status generator and the records index builder run the same
+command, so their `--check` fails while the pages are stale. The roadmap steps,
+release lines and `CHANGELOG.md` lines that describe an open security or
+privacy weakness, an abuse path, a staff-only route or a private matter of the
+owner are named, each with its reason, in the reviewed
+[exclusion list](../roadmap/public-status-exclusions.json), with the parts of
+the capabilities record that the feature list leaves out, such as the search
+backend, which no page names. That list, not a match on words, decides what
+those pages leave out for those reasons. A line or
+a title that carries an internal term, such as a file name, a revision or a
+word the public wording rules refuse, is also left out, and the page says how
+many lines it does not repeat.
+`tools/test_build_public_status_pages.py` fails when a page, the header, the
+footer, the documentation index, `sitemap.xml` or a packaged file links to one
+of the three addresses.
+
 ## Accessibility
 
 - All text, large text included, meets 4.5 to 1 against its ground.

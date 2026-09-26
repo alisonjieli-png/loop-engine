@@ -46,6 +46,7 @@
     "b": [
       "test_build_catalogue_release_bundle",
       "test_build_mcp_directory",
+      "test_build_public_status_pages",
       "test_candidate_review_batching",
       "test_catalogue_attributes",
       "test_check_component_guides",

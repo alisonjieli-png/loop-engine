@@ -360,10 +360,21 @@ def main(argv=None) -> int:
             print(f"{output} is stale; regenerate it")
             return 1
         print(f"{output} is current")
-        return 0
+        return public_status_pages(args, ["--check"])
     output.write_text(text, encoding="utf-8")
     print(f"wrote {output}")
-    return 0
+    return public_status_pages(args, [])
+
+
+def public_status_pages(args, argv) -> int:
+    """The open work page at /todo reads this roadmap, so the default run writes or checks the public status pages too
+    (tools/build_public_status_pages.py), and a session that edits the roadmap has no second command to forget."""
+    if args.roadmap != ROADMAP or args.output is not None:
+        return 0
+    import sys
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import build_public_status_pages
+    return build_public_status_pages.main(argv)
 
 
 if __name__ == "__main__":

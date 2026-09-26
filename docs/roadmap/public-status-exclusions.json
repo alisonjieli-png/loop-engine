@@ -1,0 +1,46 @@
+{
+ "record_type": "public_status_exclusions/v1",
+ "purpose": "What the public changelog, feature list and open work pages at /changelog, /features and /todo leave out, named by exact identity and never by matching words. tools/build_public_status_pages.py reads this file; the service never does.",
+ "rule": "A roadmap step, a line of a release record or a line of CHANGELOG.md is left off the public pages when it describes a security or privacy weakness that is not fixed yet, a way to abuse the service, a staff-only route, or a private matter of the owner. Each entry names one roadmap step, one exact line of one release, or one exact line of one CHANGELOG.md section, and gives its reason in one line. A part of the capabilities record is left off the feature list when it names the search backend, which no page names (roadmap S-6.39 and S-6.184), or when its value in the code contradicts how the live service works; each entry names one part by its path in the record. An entry that names nothing the records hold is refused, so the list cannot go stale unseen.",
+ "review": "This list is reviewed by a person or by an independent verifier. The session that drafts an entry never approves it, and a change to the list is reviewed before the pages it feeds are released. Each review is recorded in reviews with the reviewer, the date and the entries it covered.",
+ "reviews": [],
+ "todo_steps": [
+  {"step": "S-5.3", "reason": "The owner's own career research, a private matter of the owner."},
+  {"step": "S-6.1", "reason": "Describes confinement of the files provisioning writes, which is not complete yet."},
+  {"step": "S-6.2", "reason": "Describes a safety stop that does not yet hold for every dependent effect."},
+  {"step": "S-6.3", "reason": "Concerns the retention of recorded model calls, a privacy matter that is not repaired yet."},
+  {"step": "S-6.4", "reason": "Concerns which account may see which item; the binding to durable records is not finished."},
+  {"step": "S-6.8", "reason": "Describes credentials that can outlive the step they were issued for."},
+  {"step": "S-6.22", "reason": "The owner's funding, acquisition and strategic-path research, a private matter of the owner."},
+  {"step": "S-6.27", "reason": "Names reproduced data-integrity defects that are not closed yet."},
+  {"step": "S-6.36", "reason": "The owner's fundraising application, a private matter of the owner."},
+  {"step": "S-6.39", "reason": "Describes a scraping path through search that is not limited yet."},
+  {"step": "S-6.45", "reason": "Describes screening of served files for malicious content that is not complete yet."},
+  {"step": "S-6.65", "reason": "Its acceptance names an account takeover path through the identity provider's own sign-up."},
+  {"step": "S-6.85", "reason": "Concerns ways to open an account other than Baltor's own sign-up that are not all closed yet."},
+  {"step": "S-6.120", "reason": "Names staff-only routes and endpoints."},
+  {"step": "S-6.168", "reason": "Describes secret and network limits for a step that are not in place yet."},
+  {"step": "S-6.187", "reason": "Describes a second review of security-sensitive changes that is not in place yet."},
+  {"step": "S-6.188", "reason": "Concerns whether the site names the person who runs Baltor, which the owner has not decided."},
+  {"step": "S-6.189", "reason": "Describes certificate checks that some generation lanes do not make yet."},
+  {"step": "S-6.190", "reason": "Describes supply-chain protections for served files that are not in place yet."},
+  {"step": "S-6.192", "reason": "Its evidence names statements of the published privacy notice that the live service no longer matches; the revision is the owner's to publish."},
+  {"step": "S-6.193", "reason": "Describes staff sign-in without a second factor."},
+  {"step": "S-6.194", "reason": "Names domain and mail protections that are not set up yet."}
+ ],
+ "changelog_lines": [
+  {"release": 25, "line": "Superadmin sign-up links with optional free monthly Baltor Pro.", "reason": "Names a staff-only sign-up route."},
+  {"release": 26, "line": "Research record: referral income from infrastructure and AI services.", "reason": "An internal business research record, a private matter of the owner rather than a change to the product."}
+ ],
+ "earlier_lines": [
+  {"section": "Added on 2026-09-18", "line": "The business paths record reads the latest funding or acquisition, partner programs, and open roles of seventeen landscape companies with a source and date per cell, lays out own startup, partnering, joining for equity, and licensing with decision criteria, lists every fact that stayed unverified, and recommends a sequence; it decides nothing.", "reason": "The owner's business and career paths, a private matter of the owner."},
+  {"section": "Added on 2026-09-18", "line": "Four of the five open attacks in the adversarial validation plan are closed.", "reason": "Counts the attacks of the adversarial validation plan and leaves one open."},
+  {"section": "Added", "line": "A private, staged Kaggle access campaign. A read-only preflight froze 120 entered competition identifiers and received 120 readable file-list responses.", "reason": "Concerns the competitions the owner's own Kaggle account entered, a private matter of the owner."}
+ ],
+ "capability_rows": [
+  {"path": "retrieval.lexical_backend", "reason": "Names the search backend, which no page names (roadmap S-6.39 and S-6.184)."},
+  {"path": "retrieval.vector_backend", "reason": "Names the search backend, which no page names (roadmap S-6.39 and S-6.184)."},
+  {"path": "retrieval.semantic_embedding_model_installed", "reason": "Describes the search backend, which no page names (roadmap S-6.39 and S-6.184)."},
+  {"path": "website.access_profile", "reason": "The code still writes operator_provisioned, a value from before registration opened, while Baltor's own sign-up is the one way in."}
+ ]
+}

@@ -125,10 +125,20 @@ def main(argv=None) -> int:
             sys.stderr.write(f"{output} is stale; run python tools/build_records_index.py\n")
             return 1
         print(f"{output} is current")
-        return 0
+        return public_status_pages(docs, args.output, ["--check"])
     output.write_text(text, "utf-8")
     print(f"wrote {output}")
-    return 0
+    return public_status_pages(docs, args.output, [])
+
+
+def public_status_pages(docs: Path, output: str, argv) -> int:
+    """The public changelog at /changelog reads the release records a session adds with its dated records, so the
+    default run writes or checks the public status pages too (tools/build_public_status_pages.py)."""
+    if output or docs.resolve() != (Path(__file__).resolve().parents[1] / "docs").resolve():
+        return 0
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import build_public_status_pages
+    return build_public_status_pages.main(argv)
 
 
 if __name__ == "__main__":

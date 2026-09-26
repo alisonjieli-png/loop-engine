@@ -19,7 +19,9 @@ mkdirSync(folder,{recursive:true});
 const root=resolve(new URL("..",import.meta.url).pathname);
 const siteMap=JSON.parse(readFileSync(resolve(root,"src/loop_engine/core/service_runtime/web_site_map.json"),"utf8"));
 /* Pages a visitor can reach: linked from the header, the footer or another page. Old addresses kept for earlier links are
-   opened too, because a person can still follow one. Pages behind sign-in are opened as a signed-out visitor sees them. */
+   opened too, because a person can still follow one, and so are the pages reached by their address only (the changelog,
+   the feature list and the open work of September 26, 2026), which the site map lists with no place that links to them.
+   Pages behind sign-in are opened as a signed-out visitor sees them. */
 const pages=siteMap.pages.filter(page=>!page.address.startsWith("/auth/")).map(page=>page.address);
 const hostnames=(siteMap.hostnames||[]).map(item=>item.hostname).filter(Boolean);
 const problems=[],rows=[],linkStatus=new Map();

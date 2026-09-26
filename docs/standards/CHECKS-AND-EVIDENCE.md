@@ -82,7 +82,7 @@ first confirm that `loop_engine.__file__` resolves inside that worktree.
 | Tool tests | `PYTHONPATH=src:tools .venv/bin/python -m unittest discover -s tools -p 'test_*.py'` | Development commands and generated reports. | `tools/test_overnight.py` can wait on an external binary. Run your own test modules directly if it hangs. |
 | Embodiment suite | `PYTHONPATH=src:devtools .venv/bin/python -m unittest discover -s devtools/embodiment_lab/tests` | Experimental embodiments, and links that the route documents must keep. | |
 | Hardcoding audit | `PYTHONPATH=devtools/src .venv/bin/python -m loop_engine_devtools.cli --hardcoding-audit --allowlist devtools/hardcoding-allowlist.yaml --baseline devtools/hardcoding-ci-baseline.json --fail-on-new high` | Literals in source that were not reviewed, compared with a baseline. It fails on a new finding of high severity. Add `--triage PATH.yaml` for a worklist ([devtools README](../../devtools/README.md#self-orientation-and-abstraction-audit)). | Findings already in the baseline. |
-| Roadmap status | `PYTHONPATH=src:tools .venv/bin/python tools/build_continuation_status.py --check` | The generated status matches `roadmap.yaml`. | |
+| Roadmap status | `PYTHONPATH=src:tools .venv/bin/python tools/build_continuation_status.py --check` | The generated status matches `roadmap.yaml`, and the packaged record behind `/changelog`, `/features` and `/todo` matches the roadmap, the release records and the site map (`tools/build_public_status_pages.py --check`, which the command runs). | |
 | Rollback drill | `.venv/bin/python tools/check_rollback_key_version.py --older-image IMAGE --output NEW_REPORT_PATH` | An older image refuses records it must not honor. | The deployed volume. |
 | Browser checks | `node tools/check_service_workspace.mjs NEW_REPORT_PATH` | The website in a real browser against a local service. | Live hostnames. `tools/check_hosted_website.mjs` reads those. |
 
@@ -123,7 +123,9 @@ The same job also validates the benchmark registry and renders the Mermaid
 diagrams. Those cover data files and diagrams rather than prose. After you add
 a document under `docs/`, run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_records_index.py` and commit
-`docs/RECORDS-INDEX.md`.
+`docs/RECORDS-INDEX.md`. The same command rewrites the packaged record behind
+the public `/changelog`, `/features` and `/todo` pages; commit it too when it
+changes.
 
 ## Continuous integration traps
 

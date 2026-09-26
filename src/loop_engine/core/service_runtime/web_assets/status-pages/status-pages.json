@@ -1,0 +1,2180 @@
+{
+ "record_type": "public_status_pages/v1",
+ "generated_by": "tools/build_public_status_pages.py",
+ "changelog": {
+  "releases": [
+   {
+    "kind": "service",
+    "number": 37,
+    "at": "2026-09-26T13:25:00Z",
+    "lines": [
+     "The library page counts the library by every kind of harness file and its label, lists no item before sign-up, shows no size or digest, and sends the visitor to create an account.",
+     "The signed-in catalogue browser is one searchable, sortable table: purpose, kind of file, label, step functions, licence, declared effects and the tools it is written for, with a search box and three filters; no size or digest column; the detail panel and the fetch flow unchanged.",
+     "Provisioning list rows carry the served attributes an account may see, and search hits show the step function tags on the result cards.",
+     "The MCP directory data and the model directory data refreshed by their scheduled workflows.",
+     "The site map's library entry describes the new page; the design briefs folder with its charter README."
+    ],
+    "seen_after_release": "The library page counts every kind of harness file and sends visitors to sign up; the signed-in library is a searchable table; search results show step function tags where a release carries them (none does yet: the first tagged release is the next daily slot's).",
+    "not_shown": 1
+   },
+   {
+    "kind": "library",
+    "number": 6,
+    "at": "2026-09-26T11:55:00Z",
+    "lines": [
+     "6,398 packages served."
+    ],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "library",
+    "number": 5,
+    "at": "2026-09-26T06:18:00Z",
+    "lines": [
+     "4,812 packages served."
+    ],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "library",
+    "number": 4,
+    "at": "2026-09-26T00:58:00Z",
+    "lines": [
+     "3,276 packages served."
+    ],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
+    "number": 36,
+    "at": "2026-09-25T23:23:00Z",
+    "lines": [
+     "The conformance manifest refreshed for the three new decision modules."
+    ],
+    "seen_after_release": "None on the website; the change is inside the engine.",
+    "not_shown": 4
+   },
+   {
+    "kind": "library",
+    "number": 3,
+    "at": "2026-09-25T23:22:00Z",
+    "lines": [
+     "1,629 packages served."
+    ],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "library",
+    "number": 2,
+    "at": "2026-09-25T22:35:00Z",
+    "lines": [
+     "316 packages served."
+    ],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
+    "number": 35,
+    "at": "2026-09-25T22:22:20Z",
+    "lines": [
+     "The review panel reads imported licensed packages: the imported-layout reader, criteria written for imported material, calibration controls, the writer's provenance for imports.",
+     "The wording rules reconciled with the open, library-first product: the retired trial words and the Verified and Community customer words in both terminology files, and the public website guide's funnel text."
+    ],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
+    "number": 34,
+    "at": "2026-09-25T21:17:10Z",
+    "lines": [
+     "The public library page at /library, rendered from the served catalogue view: every Verified item with its purpose, identity, kind, licence, size, digest and review record, the Community items counted by kind and tier, one item in full, and the served release's additions, changes and withdrawals.",
+     "The Library links of the header, for every access state, and of the footer's Product group open /library instead of the homepage band; the site map records the change as dated removal rows.",
+     "The packaging metadata gains the Repository project URL, which the library page reads at run time to link review records."
+    ],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
+    "number": 33,
+    "at": "2026-09-25T20:13:24Z",
+    "lines": [
+     "The workspace keeps the retrieval note the service serves and no longer prints the name of the search backend.",
+     "The browser suite checks that no page names the search backend, with a control that restores the old note.",
+     "A nightly workflow runs the browser suite on main, keeps its report, and opens or updates one issue when a check fails."
+    ],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
+    "number": 32,
+    "at": "2026-09-25T17:57:01Z",
+    "lines": [
+     "The signed-in catalogue browser asks with version 2 and lists Community items, each row and detail showing its library tier.",
+     "The browser suite's homepage count check follows the live count the service reports.",
+     "The live catalogue check asks each query narrowed to Verified and with the account's own setting (9 checks)."
+    ],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "library",
+    "number": 1,
+    "at": "2026-09-25T16:38:00Z",
+    "lines": [
+     "93 packages served."
+    ],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
+    "number": 31,
+    "at": "2026-09-25T16:29:39Z",
+    "lines": [
+     "The website's download button, the Pi extension and the documentation ask with version 2 of the provisioning request, as search does.",
+     "Each search result on the website shows its library tier, Verified or Community.",
+     "The published meaning of Verified states that the first catalogue lacks its two-family review, and the README says what is true.",
+     "The public wording rules live in one file that every page check imports."
+    ],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
+    "number": 30,
+    "at": "2026-09-25T15:29:37Z",
+    "lines": [
+     "Tier-aware provisioning requests, the account's library setting and the Baltor-Step-Effects header, with reading files as the default step effect; protocol tools use them.",
+     "The homepage shows the live number of served library items from the capabilities record.",
+     "Two demonstration steps show the search results a harness now receives.",
+     "The release preflight lives with the operator tools, and the post-deploy steps wait for the started Machine.",
+     "The live catalogue check accepts deliberate withdrawals and published additions."
+    ],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
+    "number": 29,
+    "at": "2026-09-25T14:34:35Z",
+    "lines": [
+     "The models, endpoints and can-I-run directory at /models, /endpoints and /can-i-run, refreshed daily.",
+     "A larger hero example: the working directory of the find-duplicates step with five vetted skills.",
+     "The pricing card carries no status badge; the team account question has a plain answer."
+    ],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
+    "number": 27,
+    "at": "2026-09-25T10:24:39Z",
+    "lines": [
+     "The homepage hero shows the working directory one step gets, with three demonstrations start to finish (a simple task, a long job overnight, a Kaggle solution).",
+     "The site-wide removal of phrases the owner retired, checked on every rendered page.",
+     "Persona fixes 1 to 8: the password card stays while the account opens, an email sign-in lasts for the tab, prices follow the account's plan, Get set up leads a signed-in visitor to a client token, Security explains how review works, the Pi extension link can be copied, and one Menu button at phone width.",
+     "The deck at deck.baltor.ai and /deck, linked from the footer, with its own shared-link card.",
+     "The free public directory of protocol servers and agent APIs at /directory.",
+     "The live check of what a person sees."
+    ],
+    "seen_after_release": "",
+    "not_shown": 1
+   },
+   {
+    "kind": "service",
+    "number": 26,
+    "at": "2026-09-25T08:46:47Z",
+    "lines": [
+     "The functional component standard, its words and rule 6, and the four library ingestion slots.",
+     "Decision stations beside the build step with swappable engines.",
+     "Three-family review engines, batched review, the two-family quorum and the reviewed catalogue writer with library tiers.",
+     "Licensed import of harness files as review candidates with a per-file licence gate and parallel scanners.",
+     "Library tiers Verified and Community carried through approvals, releases and provisioning answers; new accounts can follow catalogue releases once the host setting is switched on.",
+     "The homepage filler the owner retired is gone, with a check that keeps it from returning.",
+     "The deploy workflow releases any checked revision on main, even after main moves on (the owner, September 25, 2026)."
+    ],
+    "seen_after_release": "",
+    "not_shown": 1
+   },
+   {
+    "kind": "service",
+    "number": 25,
+    "at": "2026-09-24T18:34:32Z",
+    "lines": [
+     "The confirmation page keeps Confirm disabled until its sign-in settings load.",
+     "Library inventory record and tool.",
+     "Persona journeys record."
+    ],
+    "seen_after_release": "",
+    "not_shown": 1
+   },
+   {
+    "kind": "service",
+    "number": 24,
+    "at": "2026-09-24T12:47:19Z",
+    "lines": [],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
+    "number": 23,
+    "at": "2026-09-24T10:34:04Z",
+    "lines": [],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
+    "number": 21,
+    "at": "2026-09-23T16:28:55Z",
+    "lines": [],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
+    "number": 20,
+    "at": "2026-09-23T10:55:00Z",
+    "lines": [
+     "The signed-in usage panel shows a table of items, downloads and last use, with an empty state and the raw record behind a disclosure."
+    ],
+    "seen_after_release": "",
+    "not_shown": 3
+   },
+   {
+    "kind": "service",
+    "number": 19,
+    "at": "2026-09-23T09:45:00Z",
+    "lines": [],
+    "seen_after_release": "",
+    "not_shown": 1
+   },
+   {
+    "kind": "service",
+    "number": 18,
+    "at": "2026-09-23T09:05:00Z",
+    "lines": [],
+    "seen_after_release": "",
+    "not_shown": 1
+   },
+   {
+    "kind": "service",
+    "number": 17,
+    "at": "2026-09-23T06:25:00Z",
+    "lines": [
+     "Catalogue releases without a redeploy: a content-addressed body store, releases with an active pointer and durable withdrawals, an attribute schema defined as data, search filters, grants that can follow the active release, and five new service commands (publish-catalogue, rollback-catalogue, withdraw-catalogue-item, catalogue-status, follow-catalogue-release).",
+     "The data cleanup demonstration and its negative result."
+    ],
+    "seen_after_release": "",
+    "not_shown": 3
+   },
+   {
+    "kind": "service",
+    "number": 16,
+    "at": "2026-09-23T05:45:00Z",
+    "lines": [],
+    "seen_after_release": "",
+    "not_shown": 6
+   },
+   {
+    "kind": "service",
+    "number": 15,
+    "at": "2026-09-23T03:40:00Z",
+    "lines": [
+     "Model Context Protocol revision 2026-07-28 served beside 2025-11-25 through version 2.2.0 of the protocol library, with the service choosing the version of every request.",
+     "The protocol checks in their own module.",
+     "The owner-approved privacy notice at /privacy with a footer link."
+    ],
+    "seen_after_release": "",
+    "not_shown": 1
+   },
+   {
+    "kind": "service",
+    "number": 14,
+    "at": "2026-09-23T03:40:00Z",
+    "lines": [
+     "The homepage hero redesign, two columns with a real search of the live library beside the headline, after the owner found the single narrow column empty.",
+     "A release workflow that polls readiness every five seconds for up to two minutes."
+    ],
+    "seen_after_release": "",
+    "not_shown": 1
+   },
+   {
+    "kind": "service",
+    "number": 13,
+    "at": "2026-09-23T03:40:00Z",
+    "lines": [
+     "The health record version 2, which reports alive and ready separately, refusal references and the failure journal.",
+     "The restored web route checks.",
+     "The catalogue grant step inside the release workflow.",
+     "The repaired payment customer path.",
+     "Catalogue browsing after sign-in.",
+     "The homepage with the working steps first.",
+     "The README retitled Baltor."
+    ],
+    "seen_after_release": "",
+    "not_shown": 2
+   },
+   {
+    "kind": "service",
+    "number": 12,
+    "at": "2026-09-22T18:10:00Z",
+    "lines": [],
+    "seen_after_release": "",
+    "not_shown": 2
+   },
+   {
+    "kind": "service",
+    "number": 11,
+    "at": "2026-09-21T16:05:00Z",
+    "lines": [
+     "The service serves the independently reviewed starter catalogue from the release image instead of the single diagnostic record that release 8 carried.",
+     "The catalogue travels in the image, not on the storage volume, because a volume holds state and this is release content."
+    ],
+    "seen_after_release": "",
+    "not_shown": 1
+   },
+   {
+    "kind": "service",
+    "number": 8,
+    "at": "2026-09-20T21:42:11Z",
+    "lines": [],
+    "seen_after_release": "",
+    "not_shown": 0
+   }
+  ],
+  "earlier": [
+   {
+    "heading": "Added on 2026-09-18",
+    "lines": [
+     "Three records for the September 18 direction: the fabric roadmap with its machine-readable copy, the intelligence storage and serving decision with the measured adapter table, the dimension inventory at every level, the pre-packaged intelligence research with verified package and occupation-database facts, and the branding options.",
+     "Email recovery and malformed field detection joined the family.",
+     "The hosting and resource management record answers where the engine runs and how nodes are bounded: the documented Kubernetes limits, pod overhead, quotas, Indexed Jobs, autoscaling, and container checkpointing; batch queueing with Kueue, Argo Workflows, and Volcano; Ray, Dask, Celery, and Temporal for many small tasks on shared workers; sandbox shapes and their documented overhead; Linux detection and control with a live test of an unprivileged systemd scope on this machine; the budget chain from currency to quotas; a four-shape decision table (local processes with scopes, one pod per node, a worker pool hosting many nodes, and a queue with quotas for thousands of nodes) with every figure labeled documented, measured, or estimate; and the administrator needs mapped to what exists.",
+     "The hosting record gains a measurement instead of an estimate for the shape comparison: on this machine a container from the published worker image starts and exits in a median 230.4 milliseconds over ten runs, against 10.4 milliseconds for a process.",
+     "A strict total token ceiling now refuses with a code that names its cause and a remedy that names an existing control.",
+     "The live route probe record reports a failed live trial and a folder rehearsal.",
+     "The skill repositories record answers whether public skill repositories can enter as Context Intelligence.",
+     "The publish workflow pulls the digest-pinned base image with up to five retries before building, on the plain Docker driver, after one run failed on a transient token fetch at the registry (connection reset) with no change to the image; that run was rerun by hand.",
+     "Address component extraction completes the family.",
+     "Database copy with corrections and a dedupe proposal completes the data path of the family.",
+     "The repository layout is chartered.",
+     "The worker image is digest-pinned and published.",
+     "The feature matrix has seventy-four columns across its six tables.",
+     "The feature component breakdown maps the four intelligence layers to the modules that realize them and breaks every matrix feature into subcomponents, dependencies, prerequisites, and the layers it reads and writes; the feature matrix gains an intelligence layers band.",
+     "Four records for the September 18 review requests: the per-feature adversarial validation plan, the component interfaces and intelligence flow record with nine inconsistencies, the deployment shapes and substitution guide, and the typed-decision model integration record.",
+     "Engineering-lab question forms.",
+     "A dependency-direction ratchet.",
+     "Six terminology entries: SolutioningSpace, SolutionsSpace, ModelProfile, ModelCallRequest, SuggestedOutput, and ResponseContract, with the dictionary projection and rendered dictionary regenerated."
+    ],
+    "not_shown": 36
+   },
+   {
+    "heading": "Added on 2026-09-15",
+    "lines": [
+     "The independent verifier refuses a probe that infers the subject location.",
+     "A model-led solve may declare a fast path.",
+     "A supervision policy can declare budget-phase routing."
+    ],
+    "not_shown": 0
+   },
+   {
+    "heading": "Changed on 2026-09-14",
+    "lines": [
+     "A best-available resolution now assesses every registered safe method exactly once and requires mapped content for every completed method.",
+     "A stalled format repair no longer ends a run.",
+     "A rejected orientation no longer ends a run.",
+     "A recovery panel directive now passes the same action vector guard and final acceptance binding as the model's route.",
+     "The independent verifier now repairs a response whose format is not admitted.",
+     "An unverified run now presents its latest execution whose checks passed as the best available result when a later execution failed its checks.",
+     "The independent verifier's oracle review prompt is a governed constant beside its design prompt.",
+     "A model recovery that independent verification declines is now recorded in the verifier's Run History with its phase, error code, whether it was reasoned, the selected option, the blocker, and the reason, and the refusal then stands.",
+     "The independent verifier can judge a natural-language deliverable, such as a customer message, a report, or a plan, against its registered acceptance criteria.",
+     "The independent verifier's review prompt states that an expected value stated by the task or its criteria is independent evidence and that one copied from the subject is not.",
+     "A failed independent check is now reviewed before it forces repair.",
+     "A criterion judgment response may carry additional fields."
+    ],
+    "not_shown": 8
+   },
+   {
+    "heading": "Fixed on 2026-09-14",
+    "lines": [
+     "An independent oracle review can now approve checks for a task with several acceptance criteria.",
+     "Recovery reasoning now runs for every model session the model authority admits.",
+     "The independent verifier now names each undeclared file when it refuses a subject, and says how to repair it.",
+     "A malformed method assessment from the model no longer discards a finished run's outcome.",
+     "The integrated resolution and vector work passes the gates."
+    ],
+    "not_shown": 10
+   },
+   {
+    "heading": "Fixed on 2026-09-13",
+    "lines": [
+     "The self-improvement review counts its run population exactly.",
+     "Schema repair is told which declared field failed.",
+     "A fallback order that names an uninstalled harness no longer fails the assignment before any attempt.",
+     "A provider's stated wait is honoured.",
+     "Hardcoding gate, third batch: closed vocabularies compared by name.",
+     "Hardcoding gate, fifth batch: the last shared vocabularies and the laboratory.",
+     "Hardcoding gate, sixth batch: the last twenty-four, and the gate is green.",
+     "Hardcoding gate, second batch.",
+     "Hardcoding audit precision.",
+     "Claude Fable 5.1 review of 2026-09-13, fixes applied the same day."
+    ],
+    "not_shown": 10
+   },
+   {
+    "heading": "Added",
+    "lines": [
+     "Confined environment record.",
+     "Search records read back, and a cursor that knows where it belongs.",
+     "Provider failure classes.",
+     "Task-database campaign runner: the two high findings of its review are fixed.",
+     "Configuration setters and preferences, after a same-day probe-verified review (report).",
+     "Task-database campaign runner: one trial now runs end to end offline in a laboratory test, through a fixture gateway whose only endpoint answers from a canned transport, with a fabricated task directory.",
+     "Trial evidence report: for one campaign trial cell, whether each evidence link is present (the trial state, the task sources and their digests, the configuration applied per model call, the step-history checkpoints, the outcome with an intact Run History, physical model calls counted against the calls claimed, delivered artifacts, and an independent evaluation), the gaps by name, and a campaign-wide summary counting trials by completeness and by the gap that keeps them incomplete.",
+     "Unseen novel-task campaign.",
+     "Adaptive completion, dependencies, and restart checks.",
+     "Live tabular model portfolios.",
+     "Host execution and source admission.",
+     "Independent executable task feedback.",
+     "External-caller and code-only delivery repairs.",
+     "A primary-source long-horizon skills and recurrence review. The dated report separates Agent Skills packaging, explicit execution state, recursive inference, neural recurrence, test-time learning, and persistent memory.",
+     "Offline predictive-state and procedural-control evidence. New passive records distinguish unissued Shannon and Bayesian surprise calculations, empirical predictive information, and paired context compression with task loss.",
+     "A fail-closed Kaggle source-qualification layer. An exact preflight and population digest now bind page retrieval, private content-addressed source artifacts, legal and data-use candidates, deadline assessment, evaluator candidates, completeness, and a passive download plan.",
+     "An explicit-only GPT-6 Astra Responses adapter and route quarantine. The internal adapter binds the exact model, official output maximum, supported reasoning efforts, request fields, response status, and provider-reported usage.",
+     "Fail-closed Kaggle tabular admission. The current narrow executor now rejects multi-output submissions, duplicate headers, absent or test-visible targets, unexplained train-only columns, and preprocessing that leaves no usable feature.",
+     "Fail-closed stage credit and advisory plumbing. The earlier product path applied one pass verdict to every stage, treated admission as help, contaminated a nominal fresh control, and suppressed missing evidence.",
+     "Cross-run stage recording and shadow consultation are connected. Prior stages are loaded once at the start of a run, and shadow mode consults the model ladder for each shape.",
+     "The fingerprint stack is live, and runs now accumulate stages. Every model step names its cognitive situation.",
+     "Decisions are joined forward to what became of them. A decision record says what was chosen and who chose it, which supports one finding, how often something was picked, and not the one that matters.",
+     "A response shape a caller may argue with. A schema handed to a model is a hypothesis about how an answer should look, and it is sometimes wrong: a template asking for one root cause forces a single answer from evidence supporting three, and one asking for a single next action discards the topology of a task needing two experiments and a join.",
+     "Recovery is chosen by reasoning, with the table demoted to continuity behaviour. The retry policy added earlier the same day decided which failures were worth another attempt, how many, and how long to wait, task-conditioned choices frozen from a handful of runs.",
+     "A run now states which questions it is eligible to answer. Six live runs were used to reason about behaviour; every one had transport failures and three had zero completed model calls, yet all six were read as evidence about task difficulty.",
+     "The portfolio is now judged on use, not on intent. Every packet offers the model a portfolio it may draw on, with selection authority its own and the active step only a hint."
+    ],
+    "not_shown": 38
+   },
+   {
+    "heading": "Changed",
+    "lines": [],
+    "not_shown": 2
+   },
+   {
+    "heading": "Fixed",
+    "lines": [
+     "Evidence could vanish without saying so. Write failures were suppressed and unreadable rows skipped, which kept a degraded store from failing a run and also made \"no prior stages\" indistinguishable from \"the recorder broke\".",
+     "A run that fails hard no longer loses its stages. Stage persistence was wired into the normal completion path only, and three failure exits return before it.",
+     "A route no longer refuses every request because of a ceiling nobody asked for. When a caller names no output ceiling the gateway defaults to the model's declared maximum.",
+     "A run that was asked to reason and could not now says so. When no model execution is configured the solve silently became a deterministic run, and the outcome recorded only the mode it used, so a demoted run and a run nobody ever asked to reason produced identical records.",
+     "What a run reports is heard, whether or not anyone named it first. Four layers each kept only what they already knew about, and the loss compounded in silence.",
+     "An empty answer and an unreachable provider no longer share a retry budget. They say opposite things.",
+     "A model could type the results it claimed to have produced. A generated project could declare the same path as both an authored file and an expected artifact, which made the artifact check vacuous: the bytes existed before any command ran.",
+     "A real competition could not be placed in the workspace at all. The generated-project workspace capped every file at a flat 16 MB.",
+     "Closed vocabularies were enforced without stating themselves. A refused next-action kind said only \"NextActionDecision kind is invalid\", naming neither the rejected value nor the admitted set, and a live run spent seven passes proposing semantic step ids as action kinds because the packet's question portfolio names those far more prominently than the schema string does.",
+     "LLM-first open-task solving. Public solve preserves an unbound typed task, gives templates and prior solutions to the model as optional candidates, and requires the model to select the next action.",
+     "Model-selected source inspection. Repository and dataset runs can inspect a manifest, select exact text bodies with digests, then use those same inputs in a later build or repair pass.",
+     "Answerable material questions. A blocked solve returns typed question and answer-slot records.",
+     "Optional work ceilings. Pass, model-call, token, recursion, spawned-work, candidate, and provider-attempt ceilings are unset unless an owner, provider, or policy supplies one.",
+     "Model-selected context and portfolios. Step affinity, retrieval scores, evaluation metrics, and generation templates now produce passive candidates.",
+     "Reusable Capability Flywheel. Accepted generated code can emit an asynchronous reuse opportunity, remain isolated as a candidate, pass exact independent qualification and promotion, enter a rebuildable search view, and execute on a future exact task with zero model calls.",
+     "Self-orienting abstraction governance. The Development Assurance Plane can build a digest-bound live authority map and run a contextual whole-repository hardcoding audit.",
+     "Product quickstart acceptance. Four changed tasks create a utility, transform local data, index documents, and reproduce and repair a failing Python package through real Docker execution.",
+     "Saved product outcomes. Each completed or blocked solve now binds its typed terminal result, verification, artifacts, workspace, limitations, and selected Canvas to the saved Run History manifest by digest.",
+     "Added-file extensions. Reviewed provider routes, capability candidates, skills, plugins, and intelligence can be discovered from extension folders without editing the package.",
+     "Downloadable task library. Plain text tasks and sample inputs can be downloaded from GitHub.",
+     "Typed API conformance that refuses new public interfaces above the parameter cap unless they use an approved compatibility plan.",
+     "Benchmark candidate registry with 144 cataloged tracks across ten task families.",
+     "Model classification from vendor-declared price, context, and reasoning support.",
+     "Hash-chained Run History over a closed vocabulary of canonical event families.",
+     "Five-problem campaign CLI with frozen inputs and evaluators, deterministic, hybrid, and model-led arms, provider pinning, Run History storage, live console events, and Studio playback.",
+     "Zero-tolerance conformance gates and a built-in behavior suite.",
+     "Seventeen documented example folders.",
+     "A live run could propose the same rejected capability call for twenty passes.",
+     "Capability refusals reached the model as prose.",
+     "Every Kaggle cell assumed a competition data layout and named the input file names in its task text, so a differently mounted dataset, a different slug, or a competition using other file names sent an unreadable path into the solve and spent the time budget on nothing.",
+     "The Kaggle cell headers named a commit that had moved on.",
+     "A compatibility rewrite of a contract's role or execution mode was silent.",
+     "Command stdout and stderr from every prior attempt entered every later model packet without bound; one run averaged 122k input tokens per call.",
+     "Format repair retried without bound on novel invalid output; it is bounded and fails with a typed repair-exhausted result.",
+     "The post-run workspace copy into Run History followed symlinks created by generated code.",
+     "Generated command timeouts must be finite and bounded, and pip setup arguments are limited to requirement specifiers and reviewed options.",
+     "OpenRouter zero-price selection could choose a non-text or extremely wide route merely because it advertised the largest completion maximum.",
+     "The parameter inference prompt named output fields but did not state their types.",
+     "A generic structured-data solve could report success after whitespace normalization even when the requested transform and output artifacts were not produced.",
+     "The task compiler selected the nearest template even for weak lexical matches.",
+     "The base wheel self-test treated optional data, MCP, telemetry, and vector adapters as missing required dependencies.",
+     "Broad package-data patterns could include ignored local Run History and Studio state in a distribution.",
+     "Saved run IDs were used as path components without a portable segment check.",
+     "Semantic mode labels were counted as model calls even when no provider was contacted.",
+     "A model-output validator exception escaped the gateway and stopped provider fallback."
+    ],
+    "not_shown": 70
+   }
+  ]
+ },
+ "features": {
+  "plan": "$29 a month",
+  "page_groups": [
+   {
+    "group": "Product",
+    "pages": [
+     {
+      "address": "/",
+      "title": "The perfect harness working directory for each task",
+      "description": "The working directory each step of your task needs, built on demand from a vetted library and placed where your harness reads it."
+     },
+     {
+      "address": "/get-started",
+      "title": "Get started",
+      "description": "Create your Baltor account with your email address, choose a password, subscribe to Baltor Pro for $29 a month and connect your harness."
+     },
+     {
+      "address": "/setup",
+      "title": "Get set up",
+      "description": "Connect Claude Code, Codex, OpenCode, Pi or the Baltor Harness to the library, then search and download your first item."
+     },
+     {
+      "address": "/how-it-works",
+      "title": "How it works",
+      "description": "How Baltor gives each step of a task the skills, instructions and tools it needs, and what stays on your own machine."
+     },
+     {
+      "address": "/pricing",
+      "title": "Pricing",
+      "description": "One plan, Baltor Pro, $29 a month for the whole library. One downloaded item is the measured unit, with no overage billing."
+     },
+     {
+      "address": "/examples",
+      "title": "Examples and case studies",
+      "description": "Watch one task run step by step, read what happened in four real cases, and try a first search yourself."
+     },
+     {
+      "address": "/library",
+      "title": "The library",
+      "description": "What the library holds, counted by every kind of harness file and its label, one item in full, and what the served release changed."
+     },
+     {
+      "address": "/demo",
+      "title": "One task, step by step",
+      "description": "One data cleanup task in five small steps. Each step searches the library, downloads only what it chose and puts it where the harness reads it."
+     },
+     {
+      "address": "/demo/kaggle",
+      "title": "A Kaggle competition, start to finish",
+      "description": "Six steps of a tabular competition, from fixing the metric to writing the submission, each with the skill it needs from the library."
+     }
+    ]
+   },
+   {
+    "group": "Use cases",
+    "pages": [
+     {
+      "address": "/use-cases",
+      "title": "Use cases",
+      "description": "Three ways teams use Baltor: solve complex problems overnight, operate more efficiently, and learn from every run."
+     },
+     {
+      "address": "/overnight",
+      "title": "Solve complex problems overnight",
+      "description": "Hand a long job to a small or local model before you log off, with each step getting only the files it needs."
+     },
+     {
+      "address": "/efficiency",
+      "title": "More efficient operation",
+      "description": "Give every step only the context it needs, reuse proven code and run each decision on the smallest model that does it well."
+     },
+     {
+      "address": "/learning",
+      "title": "Learning and optimization, built in",
+      "description": "Every run leaves a record of what worked and what failed, and Baltor is designed to set up the next task with it."
+     },
+     {
+      "address": "/for/coding-agents",
+      "title": "Stop starting from nothing",
+      "description": "For a developer whose coding agent starts every task from nothing: give each step the guidance and reusable code it needs."
+     },
+     {
+      "address": "/for/engineering-teams",
+      "title": "Expertise for the whole team",
+      "description": "For a team lead who wants the same reviewed expertise available to every person and every agent on the team."
+     },
+     {
+      "address": "/for/comparing-tools",
+      "title": "What it is and what it costs",
+      "description": "What Baltor is, what it is not and what it costs, for someone comparing tools before anything else."
+     },
+     {
+      "address": "/for/protocol-and-client",
+      "title": "Protocol, client and setup",
+      "description": "The protocol, the endpoint, the credential and the client setup, for a developer who wants the technical facts first."
+     },
+     {
+      "address": "/case-studies/data-cleanup",
+      "title": "Data cleanup with and without Baltor",
+      "description": "We measured library items against no item on a data cleanup task. They did not help on this test, and one item made results worse."
+     },
+     {
+      "address": "/case-studies/pi-and-gemma-4",
+      "title": "Pi and Gemma 4 on Ollama Cloud",
+      "description": "Pi with Gemma 4 31B on Ollama Cloud searched the library, installed a skill, and a new Pi session loaded and used it."
+     },
+     {
+      "address": "/case-studies/sign-up-protection",
+      "title": "How sign-up is protected",
+      "description": "How email-first sign-up keeps an address with its real owner, and the live checks of September 24, 2026 that showed it working."
+     },
+     {
+      "address": "/case-studies/decision-red-team",
+      "title": "Modern slavery indicators in business-framed requests",
+      "description": "Five requests from a CC0 red-teaming write-up, put to rules and to a model as typed decisions: what each decided, what failed and what was not measured."
+     }
+    ]
+   },
+   {
+    "group": "Documentation",
+    "pages": [
+     {
+      "address": "/docs",
+      "title": "Documentation",
+      "description": "Set up your harness, search the library, download checked files, and understand your account and your usage."
+     },
+     {
+      "address": "/docs/searching-and-retrieving",
+      "title": "Searching and retrieving",
+      "description": "How to search the library, inspect a reference and download the exact version you chose, checked against its digest."
+     },
+     {
+      "address": "/docs/serving-and-connections",
+      "title": "Serving and connections",
+      "description": "How the service answers your harness: the endpoint, the protocol versions, the key header and the limits of each request."
+     },
+     {
+      "address": "/docs/troubleshooting",
+      "title": "Troubleshooting",
+      "description": "What to check when a connection, a search or a download is refused, and what each answer from the service means."
+     },
+     {
+      "address": "/docs/your-account",
+      "title": "Your account",
+      "description": "Your Baltor account, your personal keys and how the service checks your access to the library."
+     },
+     {
+      "address": "/docs/usage-and-what-you-pay-for",
+      "title": "Usage and what you pay for",
+      "description": "The plan, what counts as one download, and how to read the usage record of your account."
+     },
+     {
+      "address": "/security",
+      "title": "Access and data boundaries",
+      "description": "What you share when you connect, what the service stores, and why connecting never lets Baltor run anything on your computer."
+     },
+     {
+      "address": "/status",
+      "title": "Service status",
+      "description": "Live readings of the Baltor service: whether it is working, each required check, the library release and whether new accounts are open."
+     },
+     {
+      "address": "/models",
+      "title": "Models, open and hosted",
+      "description": "Context windows, prices, licences, quantizations and hardware needs for open and hosted models, each fact with its source and the day it was read."
+     },
+     {
+      "address": "/endpoints",
+      "title": "Endpoints and local runtimes",
+      "description": "Hosted model services and local runtimes: the API each speaks, how it takes a key, its rate limits, prices and data rules, and harness setup."
+     },
+     {
+      "address": "/can-i-run",
+      "title": "Can I run it?",
+      "description": "Enter a GPU, unified memory or computer memory and see which open models and quantizations fit, at which context length, with a speed estimate."
+     }
+    ]
+   },
+   {
+    "group": "Company",
+    "pages": [
+     {
+      "address": "/docs/what-baltor-is",
+      "title": "What Baltor is",
+      "description": "What Baltor is: the hosted library, the Baltor Harness you can install, and the models you bring yourself."
+     },
+     {
+      "address": "/login",
+      "title": "Sign in",
+      "description": "Sign in to your Baltor account to search the library, download checked items and manage your keys."
+     },
+     {
+      "address": "/privacy",
+      "title": "Privacy notice",
+      "description": "What the Baltor service stores about you, why it stores it, where it is kept and for how long."
+     },
+     {
+      "address": "/terms",
+      "title": "Terms of service",
+      "description": "The terms of service of Baltor, operated by Baltor.AI."
+     },
+     {
+      "address": "/deck",
+      "title": "Deck",
+      "description": "The Baltor deck: the problem, the product, the market and the plan, with every number tied to a saved record."
+     }
+    ]
+   }
+  ],
+  "harness_kinds": [
+   "Skill",
+   "Instruction file",
+   "Rules",
+   "Subagent",
+   "Command",
+   "Hook",
+   "Plugin manifest",
+   "Plugin marketplace",
+   "Protocol server configuration",
+   "Harness settings",
+   "Contract schema",
+   "Code module"
+  ],
+  "tiers": [
+   {
+    "label": "Verified",
+    "meaning": "Approved by independent reviewers of at least two model families that did not produce it, with every automated check passing. The first catalogue, approved on September 21, 2026 before this rule, is the exception: its items were written with Claude models and approved by three reviewers that did not write them, and those reviews do not show two other model families. They are reviewed again by two other model families as soon as those reviewers are available."
+   },
+   {
+    "label": "Community",
+    "meaning": "Passed every automated check (licence allowlist, provenance, secret and safety scanners, and its own tests where it has code) and one independent review by a model family that did not produce it."
+   }
+  ],
+  "attributes": [
+   {
+    "name": "Tier",
+    "description": "Verified: approved by independent reviewers of at least two model families. Community: automated checks and one independent review.",
+    "searchable": false,
+    "filterable": true,
+    "choices": [
+     "Verified",
+     "Community"
+    ]
+   },
+   {
+    "name": "Harness kind",
+    "description": "The kind of file a harness picks up: a skill, an instruction file, rules, a subagent, a command, a hook, a plugin manifest, a plugin marketplace, a protocol server configuration, harness settings, a contract schema or a code module.",
+    "searchable": true,
+    "filterable": true,
+    "choices": [
+     "Skill",
+     "Instruction file",
+     "Rules",
+     "Subagent",
+     "Command",
+     "Hook",
+     "Plugin manifest",
+     "Plugin marketplace",
+     "Protocol server configuration",
+     "Harness settings",
+     "Contract schema",
+     "Code module"
+    ]
+   },
+   {
+    "name": "Step functions",
+    "description": "The kinds of step the item supports: acting, analysis, building, operating, planning, reasoning, research, reviewing, verification or writing. Tagged by rules from the item's own words and file roles, so a tag says what the item talks about, not that it was judged.",
+    "searchable": true,
+    "filterable": true,
+    "choices": []
+   }
+  ],
+  "harnesses": [
+   "Codex",
+   "OpenCode 1.x",
+   "Claude Code",
+   "Pi",
+   "Baltor Harness"
+  ],
+  "capabilities": [
+   {
+    "section": "Website",
+    "feature": "Display name",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Website",
+    "feature": "Registration available",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Website",
+    "feature": "Browser identity available",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Website",
+    "feature": "Access administration available",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Website",
+    "feature": "Client access available",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Website",
+    "feature": "Promotion redemption available",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Website",
+    "feature": "Founding offer open",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Protocol",
+    "feature": "Transport",
+    "value": "streamable http",
+    "fixed": true
+   },
+   {
+    "section": "Protocol",
+    "feature": "Versions",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Protocol",
+    "feature": "Handshake versions",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Protocol",
+    "feature": "Per request versions",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Protocol",
+    "feature": "Sdk version",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Protocol",
+    "feature": "Session state",
+    "value": "stateless",
+    "fixed": true
+   },
+   {
+    "section": "Protocol",
+    "feature": "Oauth resource metadata",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Protocol",
+    "feature": "Oauth authorization server installed",
+    "value": "No",
+    "fixed": true
+   },
+   {
+    "section": "Protocol",
+    "feature": "External authorization flow qualified",
+    "value": "No",
+    "fixed": true
+   },
+   {
+    "section": "Authentication",
+    "feature": "Authentication",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Operation scopes",
+    "feature": "Metadata and search",
+    "value": "provisioning:metadata",
+    "fixed": true
+   },
+   {
+    "section": "Operation scopes",
+    "feature": "Body and download",
+    "value": "provisioning:read",
+    "fixed": true
+   },
+   {
+    "section": "Operation scopes",
+    "feature": "Usage",
+    "value": "usage:read",
+    "fixed": true
+   },
+   {
+    "section": "Operation scopes",
+    "feature": "Billing sessions",
+    "value": "billing:manage",
+    "fixed": true
+   },
+   {
+    "section": "Library",
+    "feature": "Tiers",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Library",
+    "feature": "Step effects header",
+    "value": "Baltor-Step-Effects",
+    "fixed": true
+   },
+   {
+    "section": "Library",
+    "feature": "Step effects",
+    "value": "reads fs, writes fs, reads secret, network, spawns process",
+    "fixed": true
+   },
+   {
+    "section": "Library",
+    "feature": "Default step effects",
+    "value": "reads fs",
+    "fixed": true
+   },
+   {
+    "section": "Library",
+    "feature": "Served items",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Retrieval",
+    "feature": "Authority effects",
+    "value": "metadata eligibility only",
+    "fixed": true
+   },
+   {
+    "section": "Retrieval",
+    "feature": "Modes",
+    "value": "lexical, hybrid",
+    "fixed": true
+   },
+   {
+    "section": "Retrieval",
+    "feature": "Scope",
+    "value": "authorized catalogue metadata",
+    "fixed": true
+   },
+   {
+    "section": "Retrieval",
+    "feature": "Returns bodies",
+    "value": "No",
+    "fixed": true
+   },
+   {
+    "section": "Retrieval",
+    "feature": "Index",
+    "value": "one reusable index for each catalogue view",
+    "fixed": true
+   },
+   {
+    "section": "Retrieval",
+    "feature": "Filters",
+    "value": "declared filterable public attributes",
+    "fixed": true
+   },
+   {
+    "section": "Delivery",
+    "feature": "Inline body bytes",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Delivery",
+    "feature": "Download bytes",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Delivery",
+    "feature": "Requires reauthorization",
+    "value": "Yes",
+    "fixed": true
+   },
+   {
+    "section": "Delivery",
+    "feature": "Body format",
+    "value": "utf8 text",
+    "fixed": true
+   },
+   {
+    "section": "Delivery",
+    "feature": "Package files",
+    "value": "download by path",
+    "fixed": true
+   },
+   {
+    "section": "Limits",
+    "feature": "Request bytes",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Limits",
+    "feature": "Response bytes",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Limits",
+    "feature": "Search results",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Limits",
+    "feature": "Concurrent operations",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Limits",
+    "feature": "Concurrent operations for each account",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Limits",
+    "feature": "Concurrent operations waiting on another service",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Limits",
+    "feature": "Request nesting depth",
+    "value": "64",
+    "fixed": true
+   },
+   {
+    "section": "Limits",
+    "feature": "Failed attempts per address",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Billing",
+    "feature": "Webhook",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Billing",
+    "feature": "Checkout",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Billing",
+    "feature": "Portal",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Billing",
+    "feature": "Discount code",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Cancellation",
+    "feature": "Cancellation",
+    "value": "bounded response wait; running callbacks may finish; no automatic replay",
+    "fixed": true
+   }
+  ]
+ },
+ "todo": {
+  "steps": 261,
+  "live": 4,
+  "checked": 35,
+  "open": 222,
+  "listed": 190,
+  "groups": [
+   {
+    "title": "Ship the September 22 review: one main line, live checks and launch readiness",
+    "steps": [
+     {
+      "step": "S-6.29",
+      "title": "Consolidate every branch and worktree onto main, restore what the September 22 merges dropped, and keep only the snapshot branch",
+      "status": "In progress"
+     },
+     {
+      "step": "S-6.35",
+      "title": "Release automation and automated live checks after every release",
+      "status": "In progress"
+     },
+     {
+      "step": "S-6.33",
+      "title": "Website fixes from the persona and interface reviews",
+      "status": "In progress"
+     },
+     {
+      "step": "S-6.34",
+      "title": "One home for rules and authority, and a documentation cleanup",
+      "status": "In progress"
+     },
+     {
+      "step": "S-6.38",
+      "title": "A familiar customer dashboard with the full account lifecycle",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.200",
+      "title": "Continuous integration in 12 minutes or less, and fewer failed pushes: sharded self-test, cached environment, a records-only lane and a pre-push hook that runs the preflight",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.37",
+      "title": "Demonstrations, case studies and benchmarks with and without Baltor, each on its own subdomain",
+      "status": "Named, not scheduled yet"
+     }
+    ]
+   },
+   {
+    "title": "A release train for upgrades, features, packages and engines",
+    "steps": [
+     {
+      "step": "S-6.57",
+      "title": "A scale plan from one machine to many services",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.78",
+      "title": "A release train for the service, the catalogue, client recipes and plugins, and the local engine",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.79",
+      "title": "Feature flags and staged rollout through versioned host configuration",
+      "status": "Named, not scheduled yet"
+     }
+    ]
+   },
+   {
+    "title": "Go fully live: open registration and self-serve paid onboarding",
+    "steps": [
+     {
+      "step": "S-6.68",
+      "title": "Support, status and incident response for paying customers",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.67",
+      "title": "Serve every built page and hostname surface",
+      "status": "In progress"
+     },
+     {
+      "step": "S-6.66",
+      "title": "Self-serve paid onboarding with a verified first load in the customer's harness",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.201",
+      "title": "A page or a demo from one typed record, live on its own hostname within an hour: the page generator, the demo generator and hostname automation",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.202",
+      "title": "Quickstarts that are checked every night: one copy-paste setup per harness on Get set up, each run against the live endpoint",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.204",
+      "title": "The weekly number: visitors, accounts, paying subscribers and served packages, read from the service's own records and published to staff",
+      "status": "Named, not scheduled yet"
+     }
+    ]
+   },
+   {
+    "title": "Meet the open standards and make served files safe to trust",
+    "steps": [
+     {
+      "step": "S-6.44",
+      "title": "Harness Working Directory Compiler and native package compatibility",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.47",
+      "title": "Measure each item against a no-skill arm and a raw-source arm before claiming a benefit",
+      "status": "Named, not scheduled yet"
+     }
+    ]
+   },
+   {
+    "title": "Meet customers in the harness they already use",
+    "steps": [
+     {
+      "step": "S-6.48",
+      "title": "Setup paths for every kind of customer, with seeded starter files",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.49",
+      "title": "Subscription plugins for Hermes Agent and OpenClaw",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.50",
+      "title": "Baltor forks of OpenCode and Pi",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.61",
+      "title": "One place for the customer's credentials and connections, with scoped access for every step",
+      "status": "Named, not scheduled yet"
+     }
+    ]
+   },
+   {
+    "title": "Show, review, reach and scale",
+    "steps": [
+     {
+      "step": "S-6.55",
+      "title": "Persona reviews after every release",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.56",
+      "title": "Landing pages and demonstration pages by role",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.59",
+      "title": "Go-to-market: early, useful replies under popular posts, approved by a person",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.90",
+      "title": "Side project: an entry to the Kaggle Gemma 4 Developer Agent competition and paper track",
+      "status": "Named, not scheduled yet"
+     }
+    ]
+   },
+   {
+    "title": "Agents that manage and improve the system",
+    "steps": [
+     {
+      "step": "S-6.41",
+      "title": "Harness run records for self-improvement",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.51",
+      "title": "Learn from retrieval: wrong context, repeated asks and items fetched together",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.76",
+      "title": "Reusable development workflows and recurring reviews with declared effect policies",
+      "status": "Ready to start"
+     },
+     {
+      "step": "S-6.80",
+      "title": "Keep every Harness File Profile current with a verified weekly refresh",
+      "status": "Named, not scheduled yet"
+     }
+    ]
+   },
+   {
+    "title": "Selectable engines at every slot, with a Baltor-native engine beside every adopted project",
+    "steps": [
+     {
+      "step": "S-6.30",
+      "title": "Engines behind fixed edges: the shared engine framework",
+      "status": "In progress"
+     },
+     {
+      "step": "S-6.31",
+      "title": "The harness executor slot: delegate each step to a standard harness",
+      "status": "In progress"
+     },
+     {
+      "step": "S-6.32",
+      "title": "Hosted search as an engine slot with the measured policy and a relevance floor",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.52",
+      "title": "More retrieval engines behind the search slot",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.74",
+      "title": "Pinned, preferred and automatic engine selection at every slot",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.75",
+      "title": "An upstream engine and a Baltor-native engine for every adopted outside project",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.86",
+      "title": "Task decomposition as a functional component with several engines",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.87",
+      "title": "Step graph expansion: steps between steps, substeps, breadth, depth and advanced steps",
+      "status": "Named, not scheduled yet"
+     }
+    ]
+   },
+   {
+    "title": "Engines behind fixed edges for every functional component",
+    "steps": [
+     {
+      "step": "S-6.42",
+      "title": "Harness landscape: forks of Pi and OpenCode, and independent instances in every supported harness",
+      "status": "In progress"
+     },
+     {
+      "step": "S-6.60",
+      "title": "A layer before every model call that decides one model or several",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.40",
+      "title": "Grow the library: original package factory first, scheduled source ingestion later",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.100",
+      "title": "Decision stations around the build step: typed judgments with swappable engines, measured",
+      "status": "In progress"
+     },
+     {
+      "step": "S-6.198",
+      "title": "Red-team the typed decision engines with the modern slavery scenarios: a request-screening station, every engine scored on the same five requests, and a showcase page",
+      "status": "In progress"
+     }
+    ]
+   },
+   {
+    "title": "Learn from every request and grow the library by occupation and data work",
+    "steps": [
+     {
+      "step": "S-6.63",
+      "title": "An independent review panel of several model families",
+      "status": "In progress"
+     },
+     {
+      "step": "S-6.62",
+      "title": "Catalogue releases and library settings with good defaults",
+      "status": "In progress"
+     },
+     {
+      "step": "S-6.64",
+      "title": "Independently authored alternatives to restricted-source ideas",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.54",
+      "title": "Data-work intelligence packs as text and as tested code",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.53",
+      "title": "Generate intelligence along the occupation grid",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.58",
+      "title": "Choose the model and the decision method for each step",
+      "status": "Named, not scheduled yet"
+     }
+    ]
+   },
+   {
+    "title": "Reach 10,000 and then 100,000 approved harness packages, then add 100 to 1,000 a day",
+    "steps": [
+     {
+      "step": "S-6.69",
+      "title": "The package factory: 10,000, then 100,000 approved packages, then 100 to 1,000 more each day",
+      "status": "In progress"
+     },
+     {
+      "step": "S-6.199",
+      "title": "Publish after one screen, then let feedback withdraw: the four-question screening review, automatic Community publication, a report button, nightly rescans, upstream checks and withdrawal rules",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.203",
+      "title": "10,000 packages served: measured at 1,000, 5,000 and 10,000, paged listing, one indexable page per item with sitemap entries",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.205",
+      "title": "Library composition: every kind a harness picks up in every export, code read by the reviewer at Community, and the mix recorded per release",
+      "status": "In progress"
+     },
+     {
+      "step": "S-6.206",
+      "title": "Step function tags: each served item carries the kinds of step it supports (acting, analysis, building, operating, planning, reasoning, research, reviewing, verification, writing), filterable in search and shown on the pages",
+      "status": "In progress"
+     },
+     {
+      "step": "S-6.207",
+      "title": "The owner's own volumes as seed material: a read-only inventory with provenance classes, seed records per project, and generated harness files reviewed and published under the owner's authorship declaration",
+      "status": "In progress"
+     },
+     {
+      "step": "S-6.208",
+      "title": "The library page counts every harness file kind and sends visitors to sign up; the signed-in library is one searchable table without size or digest columns",
+      "status": "In progress"
+     },
+     {
+      "step": "S-6.209",
+      "title": "Occupation, industry, level, language and geography tags on every served file, searchable in the signed-in dashboard",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.81",
+      "title": "Source scouts: search tools for skills, plugins, protocol servers and harness files",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.119",
+      "title": "Community and Verified library tiers from the review panel, written as reviewed catalogue folders for release",
+      "status": "In progress"
+     },
+     {
+      "step": "S-6.70",
+      "title": "Serve 100,000 packages: pass the capacity probe with paged listing and an indexed search",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.83",
+      "title": "Maintain 100,000 packages: re-verification, near-duplicates, deprecation and withdrawal",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.82",
+      "title": "News and release watchers that turn changes into component work",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.88",
+      "title": "Machine learning tools in the harness working directory, and when to use or train them",
+      "status": "Named, not scheduled yet"
+     }
+    ]
+   },
+   {
+    "title": "Freeze the handoff and repair release blockers",
+    "steps": [
+     {
+      "step": "S-6.26",
+      "title": "Remove unused pre-launch compatibility while retaining versioned handshakes",
+      "status": "In progress"
+     }
+    ]
+   },
+   {
+    "title": "Connect cloud records, files and retrieval",
+    "steps": [
+     {
+      "step": "S-6.5",
+      "title": "Expose provisioning through a versioned Model Context Protocol service",
+      "status": "In progress"
+     },
+     {
+      "step": "S-6.6",
+      "title": "Persist usage and telemetry with acknowledgments and reconciliation",
+      "status": "In progress"
+     }
+    ]
+   },
+   {
+    "title": "Operate intelligence ingestion, review and withdrawal",
+    "steps": [
+     {
+      "step": "S-6.10",
+      "title": "Publish qualified starter packages and prove client retrieval",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.20",
+      "title": "Complete the classification-grid generation and improvement pipeline",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.11",
+      "title": "Publish solutions and verify standalone reuse on fresh inputs",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.23",
+      "title": "Exercise every required internal component through its actual owning entry point",
+      "status": "Named, not scheduled yet"
+     }
+    ]
+   },
+   {
+    "title": "Qualify overnight local work and recovery",
+    "steps": [
+     {
+      "step": "S-6.13",
+      "title": "Prepare portable deployment definitions and procedures for every hosting family",
+      "status": "In progress"
+     },
+     {
+      "step": "S-6.9",
+      "title": "Qualify actual instruction and capability use in native harnesses",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.24",
+      "title": "Deliver client, authentication, endpoint-based model and native-harness onboarding",
+      "status": "In progress"
+     }
+    ]
+   },
+   {
+    "title": "Exercise operations and make the release decision",
+    "steps": [
+     {
+      "step": "S-6.14",
+      "title": "Qualify the release candidate on the exact exported tree",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.16",
+      "title": "Activate approved paid access and publish the release decision",
+      "status": "Named, not scheduled yet"
+     }
+    ]
+   },
+   {
+    "title": "Prove selected material reaches each step",
+    "steps": [
+     {
+      "step": "S-6.7",
+      "title": "Wire public solving to the declared provisioning dependencies",
+      "status": "In progress"
+     }
+    ]
+   },
+   {
+    "title": "Measure token savings and context usefulness",
+    "steps": [
+     {
+      "step": "S-6.19",
+      "title": "Continue flexible composition and controlled improvement research",
+      "status": "Named, not scheduled yet"
+     }
+    ]
+   },
+   {
+    "title": "Delivery package 17",
+    "steps": [
+     {
+      "step": "S-6.28",
+      "title": "Streamline the main line to harness intelligence and delegate every step to a harness",
+      "status": "In progress"
+     },
+     {
+      "step": "S-6.12",
+      "title": "Build the website, subscriber dashboard, and operator workflows",
+      "status": "In progress"
+     }
+    ]
+   },
+   {
+    "title": "Complete sandbox subscriptions",
+    "steps": [
+     {
+      "step": "S-6.21",
+      "title": "Connect payment lifecycle to durable subscription entitlements",
+      "status": "In progress"
+     }
+    ]
+   },
+   {
+    "title": "Continue interchangeable engines and governed improvement",
+    "steps": [
+     {
+      "step": "S-6.25",
+      "title": "Expand the system map to every source file with explicit evidence limits",
+      "status": "In progress"
+     },
+     {
+      "step": "S-6.18",
+      "title": "Reorganize coherent code families and update current callers",
+      "status": "In progress"
+     }
+    ]
+   },
+   {
+    "title": "Clear components: one index, contract test kits and one home for every topic and term",
+    "steps": [
+     {
+      "step": "S-6.84",
+      "title": "Write the functional component standard into the development rules, with a check for each rule",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.71",
+      "title": "One generated component index with a drift check",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.72",
+      "title": "Contract test kits: every engine alone, components in groups, the system end to end",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.73",
+      "title": "One topic and decision index, with a term conflict check",
+      "status": "Named, not scheduled yet"
+     }
+    ]
+   },
+   {
+    "title": "Other open work",
+    "steps": [
+     {
+      "step": "S-6.186",
+      "title": "Design partners and one weekly number: outside developers and teams through a finished task of their own, counted without tracking people",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.184",
+      "title": "A library page anyone can open: Verified item cards, counts by kind and tier, one full sample and the release and withdrawal log, with downloads kept behind an account",
+      "status": "In progress"
+     },
+     {
+      "step": "S-6.183",
+      "title": "The front door outside baltor.ai: the GitHub page, a tagged release with a pinned install, and a listing in the official protocol server registry",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.182",
+      "title": "The whole first journey on baltor.ai: the public base address, the emailed link, the published connection address and a check on every release",
+      "status": "In progress"
+     },
+     {
+      "step": "S-6.181",
+      "title": "One truth on every public surface: a claims register that feeds a dated evidence page, each harness's recorded state beside its name, and a check over the website, the README, the deck and the capabilities record",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.177",
+      "title": "Every Baltor client asks with version 2 of the provisioning request, so an item a search offers is never refused on download",
+      "status": "In progress"
+     },
+     {
+      "step": "S-6.178",
+      "title": "Two other model families review the first catalogue, whose September 21 approvals do not show them",
+      "status": "Waiting on the owner"
+     },
+     {
+      "step": "S-6.91",
+      "title": "A step that lacks a tool reports a typed capability need, and search runs before any build",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.93",
+      "title": "The step tool menu: a small, stable, permitted and relevant tool set for each step, with an abstention answer",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.94",
+      "title": "Tool run contracts: duration class, timeout, heartbeat, polling, cancellation and idempotency, with task handles for long tools",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.95",
+      "title": "Tool reliability and quarantine from recorded outcomes, with history kept",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.96",
+      "title": "Failure fingerprints and known fixes, and a changed approach when a fingerprint repeats",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.97",
+      "title": "The decision outcome review: tool decisions joined to their later outcomes and scored by an independent evaluator",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.98",
+      "title": "Consented run traces as training and evaluation examples",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.110",
+      "title": "Replayable showcase run records: step working directories, trajectories in the Agent Trajectory Interchange Format, and a cost and time ledger",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.112",
+      "title": "DueCare rebuilt per step, with and without Baltor, on DueCare's own scorer and judges",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.113",
+      "title": "The 2025 red-team finding tracked on current models, and the safety framework's checks repaired",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.114",
+      "title": "Recreate and reuse: the owner's small tools rebuilt from their READMEs by small models, checked by the original tests",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.115",
+      "title": "Configuration search on the owner's entity resolution pipeline, scored by an exact metric",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.117",
+      "title": "Original first-party media packages from the owner's MIT tools, through the independent review",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.118",
+      "title": "Baltor's own social posts, made step by step and approved by a person",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.140",
+      "title": "Author namespaces and a publish scope that a download key never carries",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.141",
+      "title": "Submission intake: staged by form, interface or command line, confirmed by a signed-in person, kept where nothing serves it",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.142",
+      "title": "Automated checks on every submission on a worker, and the same deterministic checks on the author's machine",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.143",
+      "title": "A package's own tests in an offline sandbox on a worker that holds no Baltor secret",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.144",
+      "title": "Independent review of submissions into the Community tier, never by the author or a declared model family",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.145",
+      "title": "Versions, deprecation, yanking, withdrawal, reports, quarantine and takedown",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.146",
+      "title": "Author pages, package pages and the publishing dashboard",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.147",
+      "title": "Contributor terms and the privacy notice addition, published with the feature",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.148",
+      "title": "Provenance for submitted packages: verified source links, trusted publishing and a signed publish record",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.149",
+      "title": "A public recipe search: at most three Verified, body-free recipe cards per query, and public recipe pages, inside the search allowance",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.150",
+      "title": "Recipe Rescue core: a chat request channel slot, a request gate and a deterministic recipe card answer, behind a host setting that is off",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.153",
+      "title": "Community spaces: the Discord layout applied from a spec by a one-time setup app, declared bot credentials, ordinary member checks and a measures log",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.154",
+      "title": "Solution cards: consented write-ups of solved community threads on Baltor's own pages",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.155",
+      "title": "Unmet recipe requests become consented demand records that feed the package factory",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.156",
+      "title": "Nothing is sold inside chat apps until the Telegram Stars and Discord Premium Apps flows are qualified",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.157",
+      "title": "Research watch sources for the chat platforms",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.160",
+      "title": "Reproducible step materialization (experiment E01): every placement engine proves byte, mode, identity, home-folder and repeatability fidelity, with Microsoft APM as the first upstream engine",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.161",
+      "title": "Installed, listed, loaded, used and useful (experiment E02): native skill placement measured against no material and forced inclusion",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.162",
+      "title": "Reuse versus repeated model work (experiment E03): verified code packages against model-written code and a deterministic run",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.163",
+      "title": "A lifecycle watch for every outside engine candidate: archival, licence change, acquisition and discontinuation hold its selection",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.164",
+      "title": "Original harness packages from the agent stack research, through independent review",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.165",
+      "title": "Token accounting by billing class, dated prices and price-weighted cost per accepted step",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.166",
+      "title": "Cache-stable step files: shared material first, the step's own assignment last, and no volatile values before the shared part ends",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.167",
+      "title": "The step proxy as an independent recorder and live limiter: an append-only exchange log written before forwarding, live call and token limits, and preserved reasoning items",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.169",
+      "title": "Failure records with the interaction edge, the fault side and the repair owner, labelled at the earliest unrecovered failure",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.170",
+      "title": "A compaction policy slot with native, drop-only, model summary and fresh-restart engines, checked for instruction survival",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.171",
+      "title": "A typed-decision provisioning engine that decides which skills, tools and context files the next step receives",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.173",
+      "title": "A harness efficiency benchmark with and without Baltor on the HarnessTax method, cheap models first",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.174",
+      "title": "An evidence section on the efficiency page: outside evidence with its population and limits, and Baltor numbers only from run records",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.175",
+      "title": "A harness engineering package family: ten candidates with their licence basis, review criteria and regression cases for published items",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.176",
+      "title": "Baltor harness defaults for the Baltor forks and the step executor: file offload, asynchronous tools, constrained output with a capability check and a progress bound",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.195",
+      "title": "Payable outside the United States: Managed Payments requested on every checkout, sandbox renewals with addresses abroad, and one pricing answer from that evidence",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.191",
+      "title": "The Team plan, built and checked before it is sold",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.185",
+      "title": "A pre-registered with-and-without study on an outside population: SkillsBench v1.1 with no material, the raw skill, Baltor's selection allowed to add nothing, the forced bundle and the oracle",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-6.180",
+      "title": "The browser suite runs every night on main and reports a failure without gating a deploy",
+      "status": "In progress"
+     },
+     {
+      "step": "S-0.5",
+      "title": "Text conformance, standalone export, example 26, export command",
+      "status": "Released, not yet verified"
+     },
+     {
+      "step": "S-1.1",
+      "title": "Temporal fact graph in Context Intelligence",
+      "status": "Released, not yet verified"
+     },
+     {
+      "step": "S-1.2",
+      "title": "Memory versioning with history, diff, and rollback",
+      "status": "Released, not yet verified"
+     },
+     {
+      "step": "S-1.3",
+      "title": "Shared memory scopes with writer identity",
+      "status": "Released, not yet verified"
+     },
+     {
+      "step": "S-1.4",
+      "title": "Evaluation product command over a frozen suite",
+      "status": "In progress"
+     },
+     {
+      "step": "S-1.5",
+      "title": "Operation cost records wired into invocations and calls",
+      "status": "Released, not yet verified"
+     },
+     {
+      "step": "S-1.6",
+      "title": "Model-versus-not decision record per operation",
+      "status": "Released, not yet verified"
+     },
+     {
+      "step": "S-1.7",
+      "title": "Runnable prompt and harness optimization command",
+      "status": "In progress"
+     },
+     {
+      "step": "S-1.8",
+      "title": "Specialist training from learnable call records",
+      "status": "Released, not yet verified"
+     },
+     {
+      "step": "S-2.21",
+      "title": "Browser harness adapter with an element table reader and independent outcome verification",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-2.25",
+      "title": "Execution profile per workload class instead of one shape for every node",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-2.26",
+      "title": "Orphan recovery and shared model residency",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-2.27",
+      "title": "Skill pack importer from public repositories into candidate Context Intelligence",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-2.23",
+      "title": "Cluster placement decision, one pod per node against a worker pool that hosts many nodes",
+      "status": "Ready to start"
+     },
+     {
+      "step": "S-4.10",
+      "title": "Cost reservation ledger before work, reconciled after",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-4.8",
+      "title": "Cloud capacity within a client budget, quotas, and spin-up policy",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-4.9",
+      "title": "Administrator surfaces for system and client administrators",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-2.8",
+      "title": "Middleware and wrapper abstractions for microservice hosting",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-2.10",
+      "title": "Intelligence access contract and no-direct-edit conformance rule",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-2.11",
+      "title": "Search characteristics sidecar and hybrid retrieval over two adapters",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-2.16",
+      "title": "Dated record folders by document type with generated indexes and link rewriting",
+      "status": "Replaced by later work"
+     },
+     {
+      "step": "S-2.18",
+      "title": "Relayer each declared boundary package from core one boundary at a time",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-2.19",
+      "title": "Move the specifications at the docs root into their kind folders with redirect stubs",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-2.15",
+      "title": "Noise injection and explorative optimization over the evaluation product",
+      "status": "In progress"
+     },
+     {
+      "step": "S-2.1",
+      "title": "Step efficiency review record with a deterministic judge",
+      "status": "Released, not yet verified"
+     },
+     {
+      "step": "S-2.2",
+      "title": "Harness instance provisioning manifest verified against loaded files",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-4.13",
+      "title": "First release hosts serving and deterministic work, not customer harnesses",
+      "status": "Ready to start"
+     },
+     {
+      "step": "S-4.16",
+      "title": "Define the deployment in the repository, not in a console",
+      "status": "Ready to start"
+     },
+     {
+      "step": "S-4.14",
+      "title": "Measure occupancy and egress from one instrumented deployment before choosing a host",
+      "status": "Ready to start"
+     },
+     {
+      "step": "S-4.15",
+      "title": "Honest units for a release the customer executes",
+      "status": "Ready to start"
+     },
+     {
+      "step": "S-3.7",
+      "title": "Mirror the name families in core into folders, one tranche at a time",
+      "status": "Ready to start"
+     },
+     {
+      "step": "S-2.29",
+      "title": "Harness capability profile with a confirmation that the instance loaded what it was given",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-2.30",
+      "title": "Portable capability package, written and read in the published plugin layout",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-2.31",
+      "title": "Provisioning set record, separating what was offered, fetched, exposed to the model, used, and verified",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-2.3",
+      "title": "Iterative publication with consumer output digests",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-2.4",
+      "title": "Node grid over typed input parameters with separate counts",
+      "status": "In progress"
+     },
+     {
+      "step": "S-2.5",
+      "title": "Versioned training data store and heuristic adoption policy",
+      "status": "Released, not yet verified"
+     },
+     {
+      "step": "S-3.1",
+      "title": "Offline convergence run over a grid with deterministic graders",
+      "status": "In progress"
+     },
+     {
+      "step": "S-3.2",
+      "title": "Live convergence run on an authorized Ollama Cloud route",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-3.3",
+      "title": "Adversarial validation of claimed improvements",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-3.4",
+      "title": "Runnable optimizer proof on the live suite",
+      "status": "Named, not scheduled yet"
+     },
+     {
+      "step": "S-3.5",
+      "title": "Unseen tasks on an authorized frontier model and Kaggle export",
+      "status": "Waiting on the owner"
+     },
+     {
+      "step": "S-4.7",
+      "title": "Worker image publication to the GitHub Container Registry",
+      "status": "Released, not yet verified"
+     },
+     {
+      "step": "S-4.2",
+      "title": "Service software with tenants, keys, and metering",
+      "status": "In progress"
+     },
+     {
+      "step": "S-4.3",
+      "title": "Packaging tiers and pricing draft",
+      "status": "In progress"
+     },
+     {
+      "step": "S-4.4",
+      "title": "Deployment to the owner's cloud account",
+      "status": "In progress"
+     },
+     {
+      "step": "S-4.5",
+      "title": "Billing with metered usage",
+      "status": "In progress"
+     },
+     {
+      "step": "S-4.6",
+      "title": "Package index publication",
+      "status": "Waiting on the owner"
+     }
+    ]
+   }
+  ]
+ }
+}
