@@ -1,0 +1,529 @@
+{
+ "record_type": "catalogue_serving_measurement/v1",
+ "label": "local measurement on one workstation of a real release bundle and labelled synthetic doublings of it; not a production claim",
+ "measured_at": "2026-09-26T09:12:57-0400",
+ "bundle": {
+  "folder": "/home/username/baltor-bundles/daily-2026-09-26-10",
+  "items": 6398,
+  "items_digest": "58f03c9f34fa1e7acca2837c879fc5702cfc96778f48fe4bb36007844f917f79",
+  "notes": "Daily release 2026-09-26-10: imported packages reviewed by tactical.gemma-4-coding-abliterated under the imported criteria join the library.",
+  "read_only": true
+ },
+ "accepted_licenses": [
+  "MIT",
+  "Apache-2.0",
+  "BSD-2-Clause",
+  "BSD-3-Clause",
+  "ISC",
+  "CC0-1.0",
+  "CC-BY-4.0"
+ ],
+ "machine": {
+  "processors": 16,
+  "python": "3.10.20",
+  "platform": "Linux-7.0.0-31-generic-x86_64-with-glibc2.43",
+  "kernel": "7.0.0-31-generic",
+  "cpu_model": "11th Gen Intel(R) Core(TM) i7-11700 @ 2.50GHz",
+  "memory_total_kib": 64550844,
+  "load_average_at_end": [
+   8.26,
+   17.35,
+   22.8
+  ]
+ },
+ "queries": {
+  "count": 50,
+  "seed": 20260926,
+  "words_from": "the purposes of the real items",
+  "top_n": 10,
+  "list": [
+   "measure",
+   "direct quotes",
+   "marketplace",
+   "where topic discussed pull",
+   "plugin manifest",
+   "focuses asset bridges this",
+   "produces unified report",
+   "layered telemetry use red sli",
+   "provisioning destroy flow async status",
+   "after code",
+   "instruction file actionbook claude",
+   "planning through structured",
+   "with",
+   "dark mode perceived performance enforces",
+   "commentary",
+   "gets corrupted",
+   "compare spoofed profile against",
+   "str bytes",
+   "format",
+   "instruction file docs claude",
+   "not gemini",
+   "prompt",
+   "verifying",
+   "refresh scaffold integrity registry",
+   "manifest skills plugin",
+   "changes",
+   "extraction edit",
+   "warehouse",
+   "aware translation that preserves tone",
+   "project roam",
+   "marketplace skills marketplace",
+   "should",
+   "cowork team usage",
+   "use elevates functional delightful",
+   "and systematization not concept",
+   "plugin manifest learn",
+   "brief deck report",
+   "com agents",
+   "gera laudo cnico profissional completo",
+   "subnets",
+   "plugin manifest council high",
+   "skills marketplace",
+   "security spawned gsd secure phase",
+   "them",
+   "driving the browser",
+   "workflow before any design work",
+   "and inconsistent signals across html",
+   "scaffolding",
+   "fix build and typescript errors",
+   "into debt ledger"
+  ]
+ },
+ "second_release": {
+  "changed_items": 10,
+  "added_synthetic_items": 100
+ },
+ "sizes": [
+  {
+   "factor": 1,
+   "items": 6398,
+   "synthetic_items": 0,
+   "prepare": {
+    "factor": 1,
+    "items": 6398,
+    "real_items": 6398,
+    "synthetic_items": 0,
+    "files": 22720,
+    "multi_file_items": 6305,
+    "bundle_source": "the real bundle, read in place",
+    "seconds": {
+     "read_bundle": 1.91,
+     "publish": 15.26
+    },
+    "release_id": "2c956026d504b6b0fb96e237f70924f2914328e7f1357f1f539a4e08b06f48a5",
+    "publish_state": "published",
+    "bodies_written": 16570,
+    "second_bundle": {
+     "items": 6498,
+     "changed": 10,
+     "added": 100
+    },
+    "bundle_bytes_on_disk": null,
+    "store": {
+     "service_database_bytes": 22921216,
+     "service_database_parts": {
+      "": 22921216,
+      "-wal": 0,
+      "-shm": 0,
+      "-journal": 0
+     },
+     "body_store_bytes": 67554954,
+     "body_store_bytes_allocated": 111681536,
+     "body_store_files": 16570,
+     "total_bytes": 90476170,
+     "total_bytes_allocated": 134602752
+    },
+    "memory": {
+     "peak_rss_kib_resource": 174800,
+     "peak_rss_kib_proc": 174800,
+     "current_rss_kib": 154828,
+     "load_average": [
+      15.44,
+      27.66,
+      26.83
+     ]
+    }
+   },
+   "serve": {
+    "view_build_seconds": 4.787,
+    "items_in_view": 6398,
+    "memory_before_build": {
+     "peak_rss_kib_resource": 77072,
+     "peak_rss_kib_proc": 32824,
+     "current_rss_kib": 32824,
+     "load_average": [
+      14.65,
+      26.89,
+      26.59
+     ]
+    },
+    "memory_after_build": {
+     "peak_rss_kib_resource": 177396,
+     "peak_rss_kib_proc": 178048,
+     "current_rss_kib": 178048,
+     "load_average": [
+      14.36,
+      26.63,
+      26.51
+     ]
+    },
+    "index": {
+     "record_type": "catalogue_view_index/v1",
+     "entries": 6398,
+     "vector_bytes": 13103104,
+     "filterable_attributes": [
+      "catalogued_on",
+      "cited_source",
+      "origin_layer",
+      "tier"
+     ],
+     "full_text_bytes_in_memory": 6033408
+    },
+    "search_lexical": {
+     "samples": 50,
+     "p50_ms": 6.32,
+     "p95_ms": 11.04,
+     "mean_ms": 6.98,
+     "max_ms": 13.58,
+     "queries_with_hits": 50,
+     "hits_total": 479,
+     "first_query_ms": 5.63,
+     "first_query_hits": 10
+    },
+    "search_hybrid": {
+     "samples": 50,
+     "p50_ms": 21.23,
+     "p95_ms": 30.47,
+     "mean_ms": 20.47,
+     "max_ms": 33.22,
+     "queries_with_hits": 50,
+     "hits_total": 500,
+     "first_query_ms": 11.08,
+     "first_query_hits": 10
+    },
+    "search_lexical_with_filter": {
+     "samples": 50,
+     "p50_ms": 7.15,
+     "p95_ms": 20.64,
+     "mean_ms": 9.23,
+     "max_ms": 23.85,
+     "queries_with_hits": 50,
+     "hits_total": 479,
+     "first_query_ms": 4.79,
+     "first_query_hits": 10
+    },
+    "search_lexical_client_declares_no_effects": {
+     "samples": 50,
+     "p50_ms": 75.12,
+     "p95_ms": 487.94,
+     "mean_ms": 145.6,
+     "max_ms": 1124.98,
+     "queries_with_hits": 26,
+     "hits_total": 118,
+     "first_query_ms": 5.22,
+     "first_query_hits": 1
+    },
+    "listing": {
+     "samples": 5,
+     "p50_ms": 540.59,
+     "p95_ms": 578.35,
+     "max_ms": 578.35,
+     "items_offered": 6398,
+     "items_withheld": 0,
+     "response_bytes": 6753912,
+     "items_offered_when_no_effect_is_declared": 33
+    },
+    "memory_after_searches": {
+     "peak_rss_kib_resource": 177396,
+     "peak_rss_kib_proc": 177396,
+     "current_rss_kib": 159528,
+     "load_average": [
+      13.84,
+      26.11,
+      26.34
+     ]
+    },
+    "second_publish": {
+     "seconds": 11.17,
+     "release_id": "e8008b496aa3e7d7ae0da71457948c231caddec08fffd522cdfd88b36344caa1",
+     "added": 100,
+     "changed": 10,
+     "bodies_written": 202
+    },
+    "hot_swap": {
+     "seconds": 4.696,
+     "changed": true,
+     "failure": null,
+     "release_is_second": true,
+     "items_in_view": 6498,
+     "memory_after_swap": {
+      "peak_rss_kib_resource": 252628,
+      "peak_rss_kib_proc": 253732,
+      "current_rss_kib": 253732,
+      "load_average": [
+       14.47,
+       25.66,
+       26.19
+      ]
+     }
+    },
+    "search_hybrid_after_swap": {
+     "samples": 20,
+     "p50_ms": 21.06,
+     "p95_ms": 31.57,
+     "mean_ms": 21.92,
+     "max_ms": 33.28,
+     "queries_with_hits": 20,
+     "hits_total": 200
+    },
+    "store_after_second_release": {
+     "service_database_bytes": 24076288,
+     "service_database_parts": {
+      "": 24076288,
+      "-wal": 0,
+      "-shm": 0,
+      "-journal": 0
+     },
+     "body_store_bytes": 68158070,
+     "body_store_bytes_allocated": 112807936,
+     "body_store_files": 16772,
+     "total_bytes": 92234358,
+     "total_bytes_allocated": 136884224
+    }
+   },
+   "trace": {
+    "tracemalloc_peak_bytes": 128345723,
+    "tracemalloc_bytes_after_build": 62009149,
+    "view_build_seconds_under_tracing": 10.798,
+    "items_in_view": 6398,
+    "memory": {
+     "peak_rss_kib_resource": 340440,
+     "peak_rss_kib_proc": 340440,
+     "current_rss_kib": 308584,
+     "load_average": [
+      14.65,
+      26.89,
+      26.59
+     ]
+    },
+    "note": "tracemalloc counts Python allocations only; the full-text table lives in SQLite outside it, and tracing slows the build and raises this process's resident memory"
+   }
+  },
+  {
+   "factor": 4,
+   "items": 25592,
+   "synthetic_items": 19194,
+   "prepare": {
+    "factor": 4,
+    "items": 25592,
+    "real_items": 6398,
+    "synthetic_items": 19194,
+    "files": 90880,
+    "multi_file_items": 25220,
+    "bundle_source": "a synthetic bundle under the root: the real items and 3 labelled copies of each",
+    "seconds": {
+     "write_synthetic_bundle": 22.53,
+     "read_bundle": 7.49,
+     "publish": 35.99
+    },
+    "release_id": "a51fcd4af9fc82ceae1159e4bd7ca01cd9ed341d2eee9c9b2078b5fd22fac08c",
+    "publish_state": "published",
+    "bodies_written": 66280,
+    "second_bundle": {
+     "items": 25692,
+     "changed": 10,
+     "added": 100
+    },
+    "bundle_bytes_on_disk": 327734207,
+    "store": {
+     "service_database_bytes": 100777984,
+     "service_database_parts": {
+      "": 100777984,
+      "-wal": 0,
+      "-shm": 0,
+      "-journal": 0
+     },
+     "body_store_bytes": 274644006,
+     "body_store_bytes_allocated": 448815104,
+     "body_store_files": 66280,
+     "total_bytes": 375421990,
+     "total_bytes_allocated": 549593088
+    },
+    "memory": {
+     "peak_rss_kib_resource": 463368,
+     "peak_rss_kib_proc": 463368,
+     "current_rss_kib": 369372,
+     "load_average": [
+      11.82,
+      22.33,
+      24.98
+     ]
+    }
+   },
+   "serve": {
+    "view_build_seconds": 15.497,
+    "items_in_view": 25592,
+    "memory_before_build": {
+     "peak_rss_kib_resource": 77072,
+     "peak_rss_kib_proc": 32696,
+     "current_rss_kib": 32696,
+     "load_average": [
+      10.32,
+      20.8,
+      24.37
+     ]
+    },
+    "memory_after_build": {
+     "peak_rss_kib_resource": 511940,
+     "peak_rss_kib_proc": 511940,
+     "current_rss_kib": 508676,
+     "load_average": [
+      10.17,
+      20.26,
+      24.14
+     ]
+    },
+    "index": {
+     "record_type": "catalogue_view_index/v1",
+     "entries": 25592,
+     "vector_bytes": 52412416,
+     "filterable_attributes": [
+      "catalogued_on",
+      "cited_source",
+      "origin_layer",
+      "tier"
+     ],
+     "full_text_bytes_in_memory": 25047040
+    },
+    "search_lexical": {
+     "samples": 50,
+     "p50_ms": 7.99,
+     "p95_ms": 26.76,
+     "mean_ms": 11.42,
+     "max_ms": 33.0,
+     "queries_with_hits": 50,
+     "hits_total": 494,
+     "first_query_ms": 5.54,
+     "first_query_hits": 10
+    },
+    "search_hybrid": {
+     "samples": 50,
+     "p50_ms": 63.37,
+     "p95_ms": 95.14,
+     "mean_ms": 59.06,
+     "max_ms": 107.38,
+     "queries_with_hits": 50,
+     "hits_total": 500,
+     "first_query_ms": 28.27,
+     "first_query_hits": 10
+    },
+    "search_lexical_with_filter": {
+     "samples": 50,
+     "p50_ms": 10.58,
+     "p95_ms": 54.45,
+     "mean_ms": 19.27,
+     "max_ms": 79.05,
+     "queries_with_hits": 50,
+     "hits_total": 494,
+     "first_query_ms": 6.52,
+     "first_query_hits": 10
+    },
+    "search_lexical_client_declares_no_effects": {
+     "samples": 50,
+     "p50_ms": 140.17,
+     "p95_ms": 1789.01,
+     "mean_ms": 454.43,
+     "max_ms": 4334.72,
+     "queries_with_hits": 26,
+     "hits_total": 206,
+     "first_query_ms": 11.9,
+     "first_query_hits": 4
+    },
+    "listing": {
+     "samples": 5,
+     "p50_ms": 2071.84,
+     "p95_ms": 2404.89,
+     "max_ms": 2404.89,
+     "items_offered": 25592,
+     "items_withheld": 0,
+     "response_bytes": 27917310,
+     "items_offered_when_no_effect_is_declared": 132
+    },
+    "memory_after_searches": {
+     "peak_rss_kib_resource": 543184,
+     "peak_rss_kib_proc": 543184,
+     "current_rss_kib": 501896,
+     "load_average": [
+      9.76,
+      18.88,
+      23.51
+     ]
+    },
+    "second_publish": {
+     "seconds": 19.7,
+     "release_id": "9e1d0dbdeeb8387a6089d6e461dafd30f257c73ec64ea99bee931fca78c24b23",
+     "added": 100,
+     "changed": 10,
+     "bodies_written": 202
+    },
+    "hot_swap": {
+     "seconds": 15.083,
+     "changed": true,
+     "failure": null,
+     "release_is_second": true,
+     "items_in_view": 25692,
+     "memory_after_swap": {
+      "peak_rss_kib_resource": 803084,
+      "peak_rss_kib_proc": 804080,
+      "current_rss_kib": 804080,
+      "load_average": [
+       8.26,
+       17.35,
+       22.8
+      ]
+     }
+    },
+    "search_hybrid_after_swap": {
+     "samples": 20,
+     "p50_ms": 80.33,
+     "p95_ms": 123.08,
+     "mean_ms": 78.61,
+     "max_ms": 155.84,
+     "queries_with_hits": 20,
+     "hits_total": 200
+    },
+    "store_after_second_release": {
+     "service_database_bytes": 104448000,
+     "service_database_parts": {
+      "": 104448000,
+      "-wal": 0,
+      "-shm": 0,
+      "-journal": 0
+     },
+     "body_store_bytes": 275247122,
+     "body_store_bytes_allocated": 449941504,
+     "body_store_files": 66482,
+     "total_bytes": 379695122,
+     "total_bytes_allocated": 554389504
+    }
+   },
+   "trace": {
+    "tracemalloc_peak_bytes": 431471092,
+    "tracemalloc_bytes_after_build": 237398246,
+    "view_build_seconds_under_tracing": 37.882,
+    "items_in_view": 25592,
+    "memory": {
+     "peak_rss_kib_resource": 1015396,
+     "peak_rss_kib_proc": 1015396,
+     "current_rss_kib": 880392,
+     "load_average": [
+      10.32,
+      20.8,
+      24.37
+     ]
+    },
+    "note": "tracemalloc counts Python allocations only; the full-text table lives in SQLite outside it, and tracing slows the build and raises this process's resident memory"
+   }
+  }
+ ]
+}
