@@ -40,7 +40,7 @@ main.deck-main{max-width:none;margin:0;padding:0}
 .deck-cover-folder{display:flex;flex-direction:column;gap:.875rem;padding:1.5rem;background:var(--code-bg);color:var(--code-ink);border-radius:var(--radius-panel);box-shadow:var(--panel-shadow)}
 .deck-cover-folder figcaption{color:#FFFFFF;font-weight:650;font-size:.9375rem}
 .deck-slide pre.deck-tree{margin:0;padding:0;border:0;background:none;color:var(--code-ink);font-family:var(--font-mono);font-size:.9375rem;line-height:1.7;white-space:pre;overflow-x:auto;max-height:none}
-.deck-tree-dim{color:#A3AEC2}
+.deck-tree-dim{color:var(--night-muted)}
 .deck-cover-check{display:flex;align-items:center;gap:.5rem;color:var(--night-live);font-size:.9375rem;font-weight:600}
 .deck-cover-check svg{flex:none;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
 
@@ -184,7 +184,7 @@ main.deck-main{max-width:none;margin:0;padding:0}
 }
 @media (max-width:900px){
   .deck-cards,.deck-kinds,.deck-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .deck-cover .deck-slide-inner,.deck-split,.deck-contact{grid-template-columns:1fr}
+  .deck-cover .deck-slide-inner,.deck-split,.deck-contact{grid-template-columns:minmax(0,1fr)}
   .deck-principles{grid-template-columns:1fr;gap:1rem}
   .deck-hint{display:none}
   .deck-controls .deck-position{margin-right:auto}

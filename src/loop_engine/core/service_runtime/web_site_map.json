@@ -135,8 +135,10 @@
       "title": "MCP server and agent API directory",
       "description": "A free, searchable list of MCP servers and agent APIs, with where to get each one, how it connects and how it signs in.",
       "group": "Product",
-      "linked_from": [],
-      "unlinked_reason": "Added on September 24, 2026 as a page that stands on its own, because another session was editing the one-page app's index.html. The footer link goes in with that work; until then the page is reached by its address.",
+      "linked_from": [
+        "footer"
+      ],
+      "unlinked_reason": "",
       "scroll_budget": "page",
       "price_in_first_screen": false,
       "indexed": false
@@ -944,11 +946,6 @@
           },
           {
             "role": "link",
-            "label": "Library",
-            "href": "/library"
-          },
-          {
-            "role": "link",
             "label": "Pricing",
             "href": "/pricing"
           },
@@ -961,6 +958,41 @@
             "role": "link",
             "label": "Examples",
             "href": "/examples"
+          },
+          {
+            "role": "link",
+            "label": "Status",
+            "href": "/status"
+          }
+        ]
+      },
+      {
+        "name": "Library",
+        "links": [
+          {
+            "role": "link",
+            "label": "Browse the library",
+            "href": "/library"
+          },
+          {
+            "role": "link",
+            "label": "MCP directory",
+            "href": "/directory"
+          },
+          {
+            "role": "link",
+            "label": "Models",
+            "href": "/models"
+          },
+          {
+            "role": "link",
+            "label": "Endpoints",
+            "href": "/endpoints"
+          },
+          {
+            "role": "link",
+            "label": "Can I run it?",
+            "href": "/can-i-run"
           }
         ]
       },
@@ -1051,31 +1083,6 @@
             "role": "link",
             "label": "Usage and what you pay for",
             "href": "/docs/usage-and-what-you-pay-for"
-          },
-          {
-            "role": "link",
-            "label": "Access and data",
-            "href": "/security"
-          },
-          {
-            "role": "link",
-            "label": "Status",
-            "href": "/status"
-          },
-          {
-            "role": "link",
-            "label": "Models",
-            "href": "/models"
-          },
-          {
-            "role": "link",
-            "label": "Endpoints",
-            "href": "/endpoints"
-          },
-          {
-            "role": "link",
-            "label": "Can I run it?",
-            "href": "/can-i-run"
           }
         ]
       },
@@ -1091,6 +1098,11 @@
             "role": "link",
             "label": "Deck",
             "href": "/deck"
+          },
+          {
+            "role": "link",
+            "label": "Access and data",
+            "href": "/security"
           },
           {
             "role": "link",

@@ -1132,7 +1132,7 @@ try {
      state this pass never reaches, and a class name can carry a retired word into the served stylesheet. Every file
      the browser fetches for a customer page is therefore read, not only the markup and the main script. The two typefaces
      and the page icons are binary files; they are read like the rest, so the coverage rule below needs no exception. */
-  const servedFiles=["/assets/public-pages.js","/assets/public-pages.css","/assets/documentation-index.json","/assets/documentation.js","/assets/documentation.css","/assets/docs/what-baltor-is.html","/assets/docs/your-account.html","/assets/docs/searching-and-retrieving.html","/assets/docs/usage-and-what-you-pay-for.html","/assets/docs/troubleshooting.html","/assets/docs/serving-and-connections.html","/","/assets/service.js","/assets/client-access.js","/assets/pi/baltor.ts","/assets/catalogue-browser.js","/assets/architecture-story.js","/assets/supabase-client.js","/assets/service.css","/assets/architecture.css","/assets/client-recipes.json","/assets/third-party-notices.txt","/assets/geist.woff2","/assets/geist-mono.woff2","/assets/baltor-mark.svg","/assets/favicon-32.png","/assets/favicon-192.png","/assets/apple-touch-icon.png"];
+  const servedFiles=["/assets/public-pages.js","/assets/public-pages.css","/assets/site-chrome.js","/assets/documentation-index.json","/assets/documentation.js","/assets/documentation.css","/assets/docs/what-baltor-is.html","/assets/docs/your-account.html","/assets/docs/searching-and-retrieving.html","/assets/docs/usage-and-what-you-pay-for.html","/assets/docs/troubleshooting.html","/assets/docs/serving-and-connections.html","/","/assets/service.js","/assets/client-access.js","/assets/pi/baltor.ts","/assets/catalogue-browser.js","/assets/architecture-story.js","/assets/supabase-client.js","/assets/service.css","/assets/architecture.css","/assets/client-recipes.json","/assets/third-party-notices.txt","/assets/geist.woff2","/assets/geist-mono.woff2","/assets/baltor-mark.svg","/assets/favicon-32.png","/assets/favicon-192.png","/assets/apple-touch-icon.png"];
   /* The list is compared with the route table the service actually serves. The footer links to the open-source notices,
      so a customer reaches that file from every page, and a served asset added in the route table alone is a named
      failure here rather than a file nobody scans. The table lives in web_pages.py since September 21, 2026; this scan
@@ -1296,7 +1296,8 @@ try {
     &&barProblems({...bars[0],primary:[]}).length===1&&barProblems({...bars[0],pages:barPages}).length===0);
   check("top_bar_stays_one_compact_row",bars.length===3&&!bars[0].folded&&!bars[1].folded&&bars[2].folded&&bars.every(state=>barRowProblems(state).length===0),{bars:bars.map(({pages,...rest})=>rest),problems:bars.flatMap(barRowProblems)});
   check("top_bar_row_check_rejects_a_second_row",barRowProblems({...bars[1],folded:false,barHeight:130}).length===1&&barRowProblems({...bars[2],folded:true,barHeight:254}).length===1);
-  /* The footer: the brand column, then four groups with stable ids, and the base row with the mark. A group shows once it holds a
+  /* The footer: the brand column, then five groups with stable ids (the orange design of September 26, 2026 added Library),
+     and the base row with the mark. A group shows once it holds a
      link. Product starts with Get started and the guide, Get set up, by name. Use cases links the hub and the three use cases the
      owner named on September 23, 2026. The footer no longer links /waitlist, which since that day opens the funnel as an older
      address. */
@@ -1304,18 +1305,19 @@ try {
       shown:group.getClientRects().length>0,links:[...group.querySelectorAll("a")].map(link=>[link.textContent.trim(),link.getAttribute("href")])})),
     mark:Boolean(document.querySelector("footer .footer-bottom img.brand-mark"))}));
   const footerState=await readFooter(page);
-  const footerGroups=[["footer-product","Product"],["footer-use-cases","Use cases"],["footer-documentation","Documentation"],["footer-company","Company"]];
+  const footerGroups=[["footer-product","Product"],["footer-library","Library"],["footer-use-cases","Use cases"],["footer-documentation","Documentation"],["footer-company","Company"]];
   const groupLinks=(state,id)=>state.groups.find(group=>group.id===id)?.links||[];
   const footerProblems=state=>[...(JSON.stringify(state.groups.map(group=>[group.id,group.heading]))===JSON.stringify(footerGroups)?[]:["the footer groups are "+JSON.stringify(state.groups.map(group=>group.id))]),
     ...state.groups.filter(group=>group.shown!==(group.links.length>0)).map(group=>group.id+(group.shown?" shows with no link":" holds links and is hidden")),
     ...(JSON.stringify(groupLinks(state,"footer-product").slice(0,2))===JSON.stringify([[accessLabels.closed,accessPaths.closed],["Get set up",getStartedPage]])?[]:["Product does not start with Get started and Get set up"]),
-    ...["/how-it-works","/library","/pricing","/examples"].filter(href=>!groupLinks(state,"footer-product").some(([,target])=>target===href)).map(href=>"Product lacks "+href),
+    ...["/how-it-works","/pricing","/examples","/status"].filter(href=>!groupLinks(state,"footer-product").some(([,target])=>target===href)).map(href=>"Product lacks "+href),
+    ...["/library","/directory","/models","/endpoints","/can-i-run"].filter(href=>!groupLinks(state,"footer-library").some(([,target])=>target===href)).map(href=>"Library lacks "+href),
     ...useCasePaths.filter(href=>!groupLinks(state,"footer-use-cases").some(([,target])=>target===href)).map(href=>"Use cases lacks "+href),
-    ...["/docs","/security"].filter(href=>!groupLinks(state,"footer-documentation").some(([,target])=>target===href)).map(href=>"Documentation lacks "+href),
-    ...["/login","/privacy","/terms","/assets/third-party-notices.txt"].filter(href=>!groupLinks(state,"footer-company").some(([,target])=>href.startsWith("/assets/")?sameOriginAsset(target,fixture.base,href):target===href)).map(href=>"Company lacks "+href),
+    ...["/docs"].filter(href=>!groupLinks(state,"footer-documentation").some(([,target])=>target===href)).map(href=>"Documentation lacks "+href),
+    ...["/security","/login","/privacy","/terms","/assets/third-party-notices.txt"].filter(href=>!groupLinks(state,"footer-company").some(([,target])=>href.startsWith("/assets/")?sameOriginAsset(target,fixture.base,href):target===href)).map(href=>"Company lacks "+href),
     ...state.groups.flatMap(group=>group.links).filter(([,target])=>(target||"").split("#")[0]==="/waitlist").map(([name])=>"the footer still links /waitlist as "+JSON.stringify(name)),
     ...(state.mark?[]:["the base row carries no mark"])];
-  check("footer_carries_four_groups_with_get_started_get_set_up_the_use_cases_and_the_mark",footerProblems(footerState).length===0,{footer:footerState,problems:footerProblems(footerState)});
+  check("footer_carries_five_groups_with_get_started_get_set_up_the_use_cases_and_the_mark",footerProblems(footerState).length===0,{footer:footerState,problems:footerProblems(footerState)});
   const withoutProduct=structuredClone(footerState);withoutProduct.groups[0].links=withoutProduct.groups[0].links.filter(([name])=>name!=="Get set up");
   const withWaitlist=structuredClone(footerState);withWaitlist.groups.find(group=>group.id==="footer-company")?.links.unshift(["Request an invitation","/waitlist"]);
   const withoutLearning=structuredClone(footerState);for(const group of withoutLearning.groups)if(group.id==="footer-use-cases")group.links=group.links.filter(([,target])=>target!=="/learning");
@@ -1926,8 +1928,8 @@ try {
        const states=[];for(const width of [1440,980,390])states.push(await barState(opened,width));note("top_bar_lists_the_pages_and_the_get_started_action",states.every(state=>barProblems(state).length===0));},
      expected:["header_offers_one_primary_action_and_the_guide_beside_the_navigation","top_bar_lists_the_pages_and_the_get_started_action"]},
     {name:"link_the_waiting_list_again_from_the_footer",changes:[{path:"/",find:'<a href="/login" data-page="login">Sign in</a><a href="/privacy" data-page="privacy">Privacy notice</a>',replacement:'<a href="/waitlist" data-page="start">Request an invitation</a><a href="/login" data-page="login">Sign in</a><a href="/privacy" data-page="privacy">Privacy notice</a>'}],
-     run:async (opened,note)=>note("footer_carries_four_groups_with_get_started_get_set_up_the_use_cases_and_the_mark",footerProblems(await readFooter(opened)).length===0),
-     expected:["footer_carries_four_groups_with_get_started_get_set_up_the_use_cases_and_the_mark"]},
+     run:async (opened,note)=>note("footer_carries_five_groups_with_get_started_get_set_up_the_use_cases_and_the_mark",footerProblems(await readFooter(opened)).length===0),
+     expected:["footer_carries_five_groups_with_get_started_get_set_up_the_use_cases_and_the_mark"]},
     {name:"unfold_the_phone_menu_into_the_header",changes:[{path:"/assets/architecture.css",find:"  .header nav{display:none;position:absolute;",replacement:"  .header nav{display:flex;flex-wrap:wrap;flex-basis:100%;position:static;"}],
      run:async (opened,note)=>{await opened.setViewportSize({width:390,height:844});note("phone_first_screen_holds_the_whole_primary_action_under_a_compact_header",phoneFirstScreen(await firstScreen(opened)));},
      expected:["phone_first_screen_holds_the_whole_primary_action_under_a_compact_header"]},
@@ -1941,8 +1943,8 @@ try {
      run:async (opened,note)=>{const states=[];for(const width of [1440,980,390])states.push(await barState(opened,width));note("top_bar_lists_the_pages_and_the_get_started_action",states.every(state=>barProblems(state).length===0));},
      expected:["top_bar_lists_the_pages_and_the_get_started_action"]},
     {name:"drop_get_set_up_from_the_footer",changes:[{path:"/",find:'<a href="/setup" data-page="setup" data-nav="get-set-up">Get set up</a><a href="/how-it-works" data-page="about">How it works</a>',replacement:'<a href="/how-it-works" data-page="about">How it works</a>'}],
-     run:async (opened,note)=>note("footer_carries_four_groups_with_get_started_get_set_up_the_use_cases_and_the_mark",footerProblems(await readFooter(opened)).length===0),
-     expected:["footer_carries_four_groups_with_get_started_get_set_up_the_use_cases_and_the_mark"]},
+     run:async (opened,note)=>note("footer_carries_five_groups_with_get_started_get_set_up_the_use_cases_and_the_mark",footerProblems(await readFooter(opened)).length===0),
+     expected:["footer_carries_five_groups_with_get_started_get_set_up_the_use_cases_and_the_mark"]},
     {name:"leave_the_phone_menu_open_after_a_choice",changes:[{path:"/assets/service.js",find:'show(name); setMenu(false);',replacement:"show(name);"}],
      run:async (opened,note)=>{await opened.setViewportSize({width:390,height:1000});await opened.locator("header .menu-button").click();await opened.locator('header nav a[data-page="pricing"]').click();
        const state=await menuState(opened);note("phone_menu_opens_by_press_and_keyboard_and_closes_on_a_choice",state.path==="/pricing"&&!state.open&&state.links.length===0);},
@@ -2473,7 +2475,7 @@ try {
      with Overview marked as the current page. The design's settings page is left out, because this service has none yet. */
   const dashboardNav=await page.evaluate(()=>[...(document.querySelector('[data-view="account"]')?.querySelectorAll(".dashboard-nav a")||[])].map(link=>{const href=link.getAttribute("href")||"",part=href.split("#")[1]||"";
     return {label:link.textContent.trim(),href,current:link.getAttribute("aria-current")==="page",target:part?Boolean(document.getElementById(part)):href.startsWith("/")};}));
-  const navProblems=items=>[...(JSON.stringify(items.map(item=>item.label))===JSON.stringify(["Overview","Connect","Keys","Library","Usage","Billing"])?[]:["the sections are "+JSON.stringify(items.map(item=>item.label))]),
+  const navProblems=items=>[...(JSON.stringify(items.map(item=>item.label))===JSON.stringify(["Overview","Usage","Library","Connect","Keys","Billing"])?[]:["the sections are "+JSON.stringify(items.map(item=>item.label))]),
     ...items.filter(item=>!item.target).map(item=>item.label+" points at a section the page does not have"),...(items.filter(item=>item.current).map(item=>item.label).join()==="Overview"?[]:["Overview is not marked as the current page"])];
   check("account_page_carries_the_dashboard_navigation",navProblems(dashboardNav).length===0,{problems:navProblems(dashboardNav)});
   check("dashboard_navigation_check_rejects_a_link_to_a_missing_section",dashboardNav.length===6&&navProblems([...dashboardNav.slice(0,5),{...dashboardNav[5],target:false}]).length===1&&navProblems(dashboardNav.map(item=>({...item,current:false}))).length===1);

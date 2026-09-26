@@ -65,7 +65,7 @@ main:has(> [data-view="directory"]:not([hidden])){max-width:none;padding:0}
 .directory-source-list{margin:0 0 .75rem;padding-left:1.25rem}
 .directory-source-list li{margin-bottom:.4rem}
 .directory-detail{width:min(44rem,calc(100vw - 2rem));max-height:calc(100svh - 2rem);padding:0;border:1px solid var(--border);border-radius:var(--radius-panel);background:var(--paper);color:var(--ink);box-shadow:var(--panel-shadow)}
-.directory-detail::backdrop{background:rgba(10,16,32,.45)}
+.directory-detail::backdrop{background:rgba(32,22,16,.45)}
 .detail-head{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;padding:1.25rem 1.5rem;border-bottom:1px solid var(--border)}
 .detail-head h2{font-size:1.25rem;margin:.4rem 0 0}
 .detail-close{flex:none}

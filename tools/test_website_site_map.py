@@ -852,7 +852,7 @@ class SiteMapRecords(unittest.TestCase):
         site_map, layout = load_site_map(), load_layout_standard()
         self.assertEqual(site_map.record_type, "service_web_site_map/v2")
         self.assertEqual(layout.record_type, "service_web_layout_standard/v1")
-        self.assertEqual([group.name for group in site_map.footer_groups], ["Product", "Use cases", "Documentation", "Company"])
+        self.assertEqual([group.name for group in site_map.footer_groups], ["Product", "Library", "Use cases", "Documentation", "Company"])
         self.assertEqual(max(layout.section_padding_px["desktop"]), 64)
         self.assertEqual(max(layout.section_padding_px["phone"]), 40)
 

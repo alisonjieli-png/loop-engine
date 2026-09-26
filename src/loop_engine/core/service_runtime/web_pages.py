@@ -80,6 +80,9 @@ WEB_ASSETS = {
     "/case-studies/sign-up-protection": ("index.html", HTML_MEDIA_TYPE),
     "/assets/public-pages.css": ("public-pages.css", "text/css"),
     "/assets/public-pages.js": ("public-pages.js", "text/javascript"),
+    # The shared footer's disclosure groups and its compact form in the signed-in views, on every page that carries the
+    # shared header and footer. The orange design of September 26, 2026.
+    "/assets/site-chrome.js": ("site-chrome.js", "text/javascript"),
     "/assets/client-recipes.json": ("client-recipes.json", "application/json"),
     # The Baltor extension for Pi, one TypeScript file the Pi recipe tells a customer to save in .pi/extensions.
     # It is served as text so a browser shows it for reading before it is saved.

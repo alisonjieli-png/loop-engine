@@ -91,17 +91,50 @@ The header, signed out, lists How it works, Library, Pricing and Docs, then
 Sign in and "Get started"; signed in, it lists Workspace, Get set up, Library
 and Docs, then Account, Administration for an operator, and Sign out. A
 comment in the header marks where Use cases goes once that page exists. The
-footer holds the brand column and four groups with stable ids,
-`footer-product`, `footer-use-cases`, `footer-documentation` and
-`footer-company`, with comments that mark where the pages still to come go; a
-group shows once it holds a link.
+footer holds the brand column and five groups with stable ids,
+`footer-product`, `footer-library` (added with the orange design on
+September 26, 2026), `footer-use-cases`, `footer-documentation` and
+`footer-company`; a group shows once it holds a link.
 
 ## The design
 
-The public pages follow the design of September 23, 2026: a white header with
-the mark, the name, five links and the one primary action, and a homepage made
-of bands. Each band is set off from the next by a change of ground and a one
-pixel rule, and a dark band carries how it works and the closing action.
+Since September 26, 2026 every page wears the orange design of the owner's
+archive (`site/` of the Claude Design project; `site-blue/` is its backup and
+is not used). The shared visual layer is:
+
+- the tokens at the top of `service.css`: the ember primary,
+  `oklch(0.55 0.18 42)`, warm neutrals of hue 50 to 75, the type scale, the
+  spacing steps (sections 40 or 64 pixels, edges 16 or 64, a 1312 pixel
+  container, 640 pixel reading width) and the radii, for the light and the dark
+  theme. Each colour is written as a hex value every browser reads and again in
+  oklch for a wide-gamut screen whose browser reads oklch (`@media
+  (color-gamut:p3)` around `@supports`), so an sRGB screen, and every browser
+  check that reads computed colours as `rgb()`, sees the hex value;
+  `tools/test_design_tokens.py` holds the two to the same colour and every
+  text colour to 4.5 to 1 on its ground;
+- in `architecture.css`, the header (the design's SiteHeader: pills of 44
+  pixels on one row above 860 pixels, a Menu button and a panel at 860 and
+  below, and a dark tone that a view asks for with `data-header-tone="dark"`
+  on its section), the footer (the design's SiteFooter: the brand column and
+  five groups, Product, Library, Use cases, Documentation and Company, each a
+  disclosure that is closed on a phone, and a compact footer of Status, Docs,
+  Privacy notice and Terms of service in the signed-in views), the account
+  shell (the design's AppNav: a 240 pixel column of grouped sections above 860
+  pixels, a row of pills below), and the shared components: ember, ink and
+  white buttons, fields, cards, tables and the `label-verified` and
+  `label-community` labels;
+- `site-chrome.js`, loaded by every page that carries the shared header and
+  footer, which opens and closes the footer's groups. Without it every group
+  stays open.
+
+The design's placeholder mark is not used: the header, the footer and the page
+icons keep the traced husky head of September 23, 2026.
+
+Before that the public pages followed the design of September 23, 2026: a white
+header with the mark, the name, five links and the one primary action, and a
+homepage made of bands. Each band is set off from the next by a change of
+ground and a one pixel rule, and a dark band carries how it works and the
+closing action.
 Every colour, typeface, radius and shadow is a custom property in the token
 block at the top of `service.css`, so a change of design edits that block.
 Below 860 pixels the header links fold into a menu behind one visible button
