@@ -1077,7 +1077,7 @@
      "S-6.196"
     ],
     "id": "S-6.197",
-    "next_local_work": "Watch the first cron runs (~/.le-ci-tmp/daily-cron.log and ~/baltor-library/daily/<day>/journal.jsonl): the export stage has not yet run unattended, and one export a day at 2,000 packages is the current rate; raise EXPORT_TARGET and give each six-hour slot its own run name once the export stage is proven.",
+    "next_local_work": "Watch the first cron runs (~/.le-ci-tmp/daily-cron.log and each day's journal.jsonl under ~/baltor-library/daily/): the export stage has not yet run unattended, and one export a day at 2,000 packages is the current rate; raise EXPORT_TARGET and give each six-hour slot its own run name once the export stage is proven.",
     "phase": 6,
     "status": "building",
     "title": "One unattended daily job from the day's approvals to a checked live catalogue release, with automatic rollback",
@@ -5184,5 +5184,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:8bc0d617cf5f4d3d42d369573efc8748d2ecf5283c23113e3bcf055082cdaa15"
+ "source_fingerprint": "sha256:554fa815225da7a022d4aa411a8a7753f1e7c5eacb3e0832ed507099816ad49c"
 }
