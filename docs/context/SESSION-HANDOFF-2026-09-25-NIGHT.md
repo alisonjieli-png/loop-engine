@@ -85,8 +85,14 @@ fresh attempt qualified at 04:58 UTC (the first attempt is kept under
 
 ## Next steps, in order
 
-1. Read the first cron runs; raise `EXPORT_TARGET` and give each six-hour
-   slot its own run name once the export stage is proven (S-6.197).
+1. Read the 10:17 UTC cron run, the first that cron starts itself
+   (S-6.197). The rate stays at 2,000 packages a slot, four slots a day:
+   at 4,812 served the swap takes about two seconds and the volume is under
+   a tenth full, the job rolls the catalogue back by itself on a failed
+   check, and the 100,000-row probe of September 22 puts 10,000 rows well
+   inside the Machine's 2 GB; the serving measurement at 5,000 and 10,000
+   (S-6.203) is still the next session's first engineering task, before the
+   count passes 10,000 on September 27.
 2. Build the report route, flag records and withdrawal rules (S-6.199),
    then the serving measurement at 1,000, 5,000 and 10,000 (S-6.203); the
    live service already serves 1,629 with the view current.
