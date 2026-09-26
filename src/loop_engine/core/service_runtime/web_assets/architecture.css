@@ -98,6 +98,10 @@ a{color:var(--accent)}a:hover{color:var(--accent-hover)}
 .label,[data-label-tier]{display:inline-flex;align-items:center;min-height:24px;padding:0 .5rem;border-radius:var(--radius-label);font-size:.75rem;font-weight:600;line-height:1.4;white-space:nowrap}
 .label-verified,[data-label-tier=verified]{background:var(--verified-bg);color:var(--verified-ink)}
 .label-community,[data-label-tier=community]{background:var(--community-bg);color:var(--community-ink)}
+/* The library table's labels, which catalogue-browser.js writes as a badge carrying data-library-tier, take the same two colours. */
+.badge[data-library-tier]{white-space:nowrap;overflow-wrap:normal;word-break:normal}
+.badge[data-library-tier=verified]{background:var(--verified-bg);color:var(--verified-ink)}
+.badge[data-library-tier=community]{background:var(--community-bg);color:var(--community-ink)}
 
 /* Buttons and fields. One ember action for Get started, ink for the main action of a signed-in view, a white secondary with
    a warm edge, and field edges that stand out from the ground. */
@@ -153,6 +157,9 @@ pre{background:var(--bg);border-color:var(--border);border-radius:var(--radius-f
 .header .brand,.site-footer .brand{display:inline-flex;align-items:center;gap:.625rem;min-height:44px;color:var(--ink);font-size:1.1875rem;font-weight:600;letter-spacing:-.015em;text-decoration:none;white-space:nowrap}
 /* The mark, traced from the owner's logo sheet of September 23, 2026: one file, baltor-mark.svg, used here and as the page icon. */
 .brand .brand-mark{display:block;flex-shrink:0;width:32px;height:32px;background:none;border-radius:8px}
+/* On a dark ground the mark's navy tile would lose its corners, so the dark theme draws a hairline around it. */
+:root[data-theme=dark] .brand-mark{box-shadow:0 0 0 1px var(--line-strong)}
+@media(prefers-color-scheme:dark){:root:not([data-theme]) .brand-mark{box-shadow:0 0 0 1px var(--line-strong)}}
 .header nav{display:flex;flex-wrap:wrap;align-items:center;gap:2px;flex:1;order:0;flex-basis:auto;min-width:0;overflow:visible}
 .header nav a{display:inline-flex;align-items:center;gap:.5rem;min-height:44px;padding:0 .75rem;border-radius:8px;color:var(--muted);font-size:.9375rem;font-weight:450;text-decoration:none;white-space:nowrap}
 .header nav a:hover{background:var(--tint);color:var(--ink);text-decoration:none}
@@ -402,11 +409,13 @@ main:has(> [data-view="home"]:not([hidden])){max-width:none;padding:0}
 .site-footer .footer-links a{display:flex;align-items:center;min-height:32px;padding:.25rem 0;color:var(--muted);font-size:.875rem;line-height:1.35;text-decoration:none}
 .site-footer .footer-links a:hover{color:var(--ink);text-decoration:none}
 .site-footer .footer-links a[aria-current=page]{box-shadow:none;color:var(--ink);font-weight:600}
-.site-footer .footer-links span{display:flex;align-items:center;min-height:32px;padding:.25rem 0;color:var(--subtle);line-height:1.35}
+/* A line of text in a group, such as the contact line, sits like a link. Only a direct child: the label inside the Get started
+   link is a span too, and it must keep the link's colour and height. */
+.site-footer .footer-group-links>span{display:flex;align-items:center;min-height:32px;padding:.25rem 0;color:var(--subtle);line-height:1.35}
 .footer-bottom{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.75rem 2rem;max-width:var(--content-max);margin:3rem auto 0;padding-top:1.5rem;border-top:1px solid var(--border);color:var(--subtle);font-size:.8125rem}
 .footer-bottom p{margin:0}
 .footer-base{display:inline-flex;align-items:center;gap:.5rem}
-.footer-base .brand-mark{width:20px;height:20px;border-radius:5px}
+.footer-base .brand-mark{width:20px;height:20px;background:none;border-radius:5px}
 .site-footer #theme{min-height:44px;margin:0;padding:0 .875rem;border:1px solid var(--line-strong);border-radius:var(--radius-button);background:transparent;color:var(--muted);font-size:.8125rem;font-weight:500}
 .site-footer #theme:not(:disabled):hover{border-color:var(--ink);color:var(--ink)}
 @media(min-width:861px){.footer-group>summary{pointer-events:none;cursor:default}}
@@ -421,7 +430,7 @@ main:has(> [data-view="home"]:not([hidden])){max-width:none;padding:0}
   .footer-chevron{display:block;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
   .footer-group[open] .footer-chevron{transform:rotate(180deg)}
   .footer-group-links{padding-bottom:.75rem}
-  .site-footer .footer-links a,.site-footer .footer-links span{min-height:44px;font-size:.9375rem}
+  .site-footer .footer-links a,.site-footer .footer-group-links>span{min-height:44px;font-size:.9375rem}
   .footer-bottom{margin-top:0;flex-direction:column;align-items:flex-start}
 }
 /* The signed-in views, the workspace, the account page and the administration page, carry the compact footer the review of
