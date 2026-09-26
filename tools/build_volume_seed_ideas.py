@@ -61,7 +61,8 @@ if str(HERE) not in sys.path:
     sys.path.insert(0, str(HERE))
 
 from harness_idea_matrix import DATATYPES, FACET_DIMENSIONS, FILE_KINDS, OPERATIONS, USE_CASES  # noqa: E402
-from scan_local_volume import FILE_RECORD_TYPE, OWNER_DECLARED, OWNER_REMOTE, PROJECT_RECORD_TYPE  # noqa: E402
+from scan_local_volume import (  # noqa: E402
+    FILE_RECORD_TYPE, GIT_MARKER, OWNER_DECLARED, OWNER_REMOTE, PROJECT_MARKERS, PROJECT_RECORD_TYPE)
 
 BATCH_RECORD_TYPE = "harness_idea_batch/v1"
 IDEA_RECORD_TYPE = "harness_idea_record/v1"
@@ -233,18 +234,23 @@ def media_idea(base: dict, project: dict, volume_name: str) -> dict:
 
     The skill kind is chosen because it is the one kind with a qualified native placement in the converter
     (tools/native_proposals_from_overnight_candidates.py); a workflow candidate would be generated and then
-    left out at conversion."""
+    left out at conversion. The use case is the general agentic task, because a project's own use case (chosen
+    from words such as "email" or "newsletter") pulled the producer away from the media work."""
     seed = base["applicability"]["seed"]
     assets = seed["assets"]
     dominant = max(assets["by_kind"], key=lambda kind: (assets["by_kind"][kind], -MEDIA_KINDS.index(kind)))
     label = MEDIA_LABELS[dominant]
     counts = ", ".join(f"{MEDIA_LABELS[kind]} {count}" for kind, count in assets["by_kind"].items())
-    task = (f"The owner's own project {project['name']} at {project['path']} on the {volume_name} volume holds "
-            f"{assets['media_files']} media files ({counts}), mostly {label}. "
-            + " ".join((project.get("readme") or "").split())[:300])
+    # The lane prompt carries the task statement, not the brief (tools/opencode_generation_lanes.py), so the
+    # statement itself says what the skill is for. Seen on September 26, 2026: a statement that only described the
+    # project produced a skill about transforming path strings.
+    task = (f"Write a skill about producing or editing {label} the way the owner's own project {project['name']} "
+            f"does, from the steps its modules take and the asset layout the inventory shows. The project at "
+            f"{project['path']} on the {volume_name} volume holds {assets['media_files']} media files ({counts}), "
+            f"mostly {label}. " + " ".join((project.get("readme") or "").split())[:300])
     return {
         **base, "id": _identity(base["id"][:IDENTITY_BOUND - 6], "media"), "file_kind": "skill",
-        "datatype": MEDIA_DATATYPES[dominant], "operation": "transformation",
+        "datatype": MEDIA_DATATYPES[dominant], "operation": "transformation", "use_case": "agentic_task",
         "applicability": {**base["applicability"], "task_reference": task,
                           "seed": {**seed, "idea_role": "media", "dominant_media_kind": dominant}},
         "method_signature": hashlib.sha256(f"{project['path']}|media|{assets['shards_sha256']}".encode()).hexdigest(),
@@ -286,6 +292,14 @@ def module_outline(path: Path) -> str:
     return "\n".join(lines)[:OUTLINE_BOUND]
 
 
+def _is_project_root(folder: str) -> bool:
+    """A nested project root keeps its own inventory row and its own provenance; its modules stay out of the parent's excerpt."""
+    try:
+        return any(name in PROJECT_MARKERS or name == GIT_MARKER for name in os.listdir(folder))
+    except OSError:
+        return False
+
+
 def _entries(root: Path) -> list:
     """Python modules at the project root and one level down, entry files first, bounded."""
     found = []
@@ -297,7 +311,8 @@ def _entries(root: Path) -> list:
         if entry.is_file(follow_symlinks=False) and entry.name.endswith(".py"):
             found.append(Path(entry.path))
         elif entry.is_dir(follow_symlinks=False) and not entry.name.startswith(".") and entry.name not in (
-                "node_modules", "venv", ".venv", "__pycache__", "tests", "test", "build", "dist"):
+                "node_modules", "venv", ".venv", "__pycache__", "tests", "test", "build", "dist") \
+                and not _is_project_root(entry.path):
             try:
                 for inner in sorted(os.scandir(entry.path), key=lambda item: item.name)[:60]:
                     if inner.is_file(follow_symlinks=False) and inner.name.endswith(".py"):

@@ -55,6 +55,12 @@ class SeedIdeasTest(unittest.TestCase):
         for name in ("a.jpg", "b.jpg", "c.jpg"):
             _write(self.volume, f"PROJECTS/own-remote/shots/{name}", "jpg")
         _write(self.volume, "PROJECTS/loose.png", "png")
+        # A nested project root under the resizer, written by someone else: its images belong to it, not to
+        # the resizer, and it seeds nothing.
+        _write(self.volume, "PROJECTS/resizer/plugin/README.md", "# Plugin\n")
+        _write(self.volume, "PROJECTS/resizer/plugin/tool.py", "# Copyright (c) 2020 Another Author\nprint('p')\n")
+        for name in ("p1.png", "p2.png"):
+            _write(self.volume, f"PROJECTS/resizer/plugin/art/{name}", "png")
         self.inventory = self.root / "inventory"
         self.assertEqual(scanner.main(["--volume", str(self.volume), "--output", str(self.inventory),
                                        "--owner-account", "owner-account", "--owner-name", "amarel"]), 0)
@@ -73,6 +79,15 @@ class SeedIdeasTest(unittest.TestCase):
         self.assertEqual(resizer["record_type"], seeds.ASSET_RECORD_TYPE)
         own = self._idea("vol-fixture-projects-own-remote")["applicability"]["seed"]["assets"]
         self.assertEqual(own["by_kind"], {"image": 3}, "own-remote's shots are not the resizer's, and loose.png counts nowhere")
+        per_project, _shards = seeds.asset_index(self.inventory, ["PROJECTS/resizer", "PROJECTS/resizer/plugin"])
+        self.assertEqual(per_project["PROJECTS/resizer/plugin"]["by_kind"], {"image": 2},
+                         "the nested project's images count in the deepest root, not in the resizer")
+        self.assertEqual(per_project["PROJECTS/resizer"]["by_kind"]["image"], 35)
+        excluded = {row["path"] for row in map(json.loads, (self.output / "excluded.jsonl").read_text().splitlines())}
+        self.assertIn("PROJECTS/resizer/plugin", excluded, "another author's project seeds nothing")
+        resizer_seed = self._idea("vol-fixture-projects-resizer")["applicability"]["seed"]
+        self.assertEqual(resizer_seed["modules_read"], ["main.py"], "a nested project's modules stay out of the parent's excerpt")
+        self.assertNotIn("Another Author", self._idea("vol-fixture-projects-resizer")["applicability"]["seed_excerpt"])
         excerpt = self._idea("vol-fixture-projects-resizer")["applicability"]["seed_excerpt"]
         self.assertIn("Assets in this project (from the inventory): images 35, video files 2, Blender files 1.", excerpt)
         self.assertIn("Examples: images: frame-000.png, frame-001.png, frame-002.png; video files: reel.mp4, teaser.mov;"
@@ -88,7 +103,8 @@ class SeedIdeasTest(unittest.TestCase):
         # Known wrong: a shard line that is not a file row, or is still being written, is skipped and counted.
         with (self.inventory / "files-001.jsonl").open("a") as stream:
             stream.write('{"record_type": "local_volume_file/v1", "path": "PROJECTS/resizer/x.png", "lang')
-        per_project, read = seeds.asset_index(self.inventory, ["PROJECTS/resizer", "PROJECTS/own-remote"])
+        per_project, read = seeds.asset_index(self.inventory, ["PROJECTS/resizer", "PROJECTS/resizer/plugin",
+                                                               "PROJECTS/own-remote"])
         self.assertEqual(read[0]["unparsed_rows"], 1)
         self.assertEqual(per_project["PROJECTS/resizer"]["by_kind"]["image"], 35)
 
@@ -98,10 +114,14 @@ class SeedIdeasTest(unittest.TestCase):
         self.assertNotIn("vol-fixture-projects-own-remote-media", ids, "three media files are under the minimum")
         base, media = self._idea("vol-fixture-projects-resizer"), self._idea("vol-fixture-projects-resizer-media")
         self.assertEqual(media["file_kind"], "skill")
-        self.assertEqual((media["datatype"], media["operation"], media["use_case"]), ("image", "transformation", base["use_case"]))
+        self.assertEqual((media["datatype"], media["operation"], media["use_case"]), ("image", "transformation", "agentic_task"))
         self.assertNotEqual(media["method_signature"], base["method_signature"])
         self.assertIn("produce or edit images the way the owner's project resizer does", media["brief"])
-        self.assertIn("holds 38 media files (images 35, video files 2, Blender files 1), mostly images", media["applicability"]["task_reference"])
+        task = media["applicability"]["task_reference"]
+        self.assertTrue(task.startswith("Write a skill about producing or editing images the way the owner's own project resizer does"),
+                        "the lane prompt carries the task statement, so the statement names the media work")
+        self.assertIn("holds 38 media files (images 35, video files 2, Blender files 1), mostly images", task)
+        self.assertIn(task, _render_prompt(media))
         self.assertEqual(media["applicability"]["seed"]["idea_role"], "media")
         self.assertEqual(media["applicability"]["seed"]["dominant_media_kind"], "image")
         self.assertEqual(base["applicability"]["seed"]["idea_role"], "project")
