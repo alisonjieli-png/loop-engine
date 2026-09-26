@@ -1,0 +1,3842 @@
+{
+ "record_type": "owner_requests_report/v1",
+ "created_at": "2026-09-26T12:57:17+00:00",
+ "report_date": "2026-09-26",
+ "ledger": "docs/context/OWNER-REQUESTS-LEDGER-2026-09.md",
+ "roadmap": "docs/roadmap/roadmap.yaml",
+ "live_step_statuses": [
+  "live_qualified",
+  "published"
+ ],
+ "ledger_states": [
+  "live",
+  "on main",
+  "building",
+  "proposed",
+  "blocked",
+  "not started"
+ ],
+ "counts": {
+  "requests": 96,
+  "requests_live": 33,
+  "requests_not_live": 63,
+  "requests_with_steps_not_live": 90,
+  "requests_without_step": 5,
+  "steps_in_roadmap": 261,
+  "steps_named": 117,
+  "steps_without_request": 144,
+  "unknown_step_ids": 0
+ },
+ "by_state": {
+  "building": 28,
+  "on main": 13,
+  "live": 33,
+  "proposed": 17,
+  "blocked": 4,
+  "not started": 1
+ },
+ "requests_with_steps_not_live": [
+  {
+   "id": "R-01",
+   "date": "2026-09-22",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.29",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "32 worktrees held commits not on main at the September 25 audit, and the paused lines wait for the weekly limit reset on October 1."
+  },
+  {
+   "id": "R-02",
+   "date": "2026-09-22",
+   "state": "on main",
+   "steps": [
+    {
+     "id": "S-6.34",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "S-6.34 stays building for the documentation clean-up beyond the authority section."
+  },
+  {
+   "id": "R-03",
+   "date": "2026-09-22",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.29",
+     "status": "building",
+     "live": false
+    },
+    {
+     "id": "S-6.35",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "Twelve paused lines (stack starters, staff tools, engine selector, search engine optimization and blog, sample tasks, support pages and others) hold work that is not live (worktree audit, September 25)."
+  },
+  {
+   "id": "R-04",
+   "date": "2026-09-22",
+   "state": "on main",
+   "steps": [
+    {
+     "id": "S-6.17",
+     "status": "offline_verified",
+     "live": false
+    },
+    {
+     "id": "S-6.25",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "S-6.25 (the system map to every source file) is building; S-6.17 is offline_verified because the status file is a repository page, not a served page."
+  },
+  {
+   "id": "R-05",
+   "date": "2026-09-22",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.30",
+     "status": "building",
+     "live": false
+    },
+    {
+     "id": "S-6.31",
+     "status": "building",
+     "live": false
+    },
+    {
+     "id": "S-6.74",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.75",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "The run-time engine selector (S-6.74) is proposed and its line was held out of release 26 with 37 new high hardcoding findings; the harness executor slot (S-6.31) is building."
+  },
+  {
+   "id": "R-06",
+   "date": "2026-09-22",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.34",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "No record says the 72 updates and 8 archivals were made."
+  },
+  {
+   "id": "R-07",
+   "date": "2026-09-22",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.36",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "The fact-checked application package is not finished, and the audiences only the owner reaches are the owner's part (ninety-day plan)."
+  },
+  {
+   "id": "R-08",
+   "date": "2026-09-22",
+   "state": "live",
+   "steps": [
+    {
+     "id": "S-6.35",
+     "status": "building",
+     "live": false
+    },
+    {
+     "id": "S-6.180",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "The release record is still written by hand (ninety-day plan target: the train writes it), so S-6.35 stays building."
+  },
+  {
+   "id": "R-09",
+   "date": "2026-09-22",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.75",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.84",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.163",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "An upstream engine beside a Baltor-native engine for every adopted project (S-6.75), the component standard as checked development rules (S-6.84) and the lifecycle watch (S-6.163) are proposed."
+  },
+  {
+   "id": "R-10",
+   "date": "2026-09-22",
+   "state": "on main",
+   "steps": [
+    {
+     "id": "S-6.34",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "S-6.34 stays building for the documentation clean-up beyond the authority section."
+  },
+  {
+   "id": "R-12",
+   "date": "2026-09-22",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.40",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.62",
+     "status": "building",
+     "live": false
+    },
+    {
+     "id": "S-6.63",
+     "status": "building",
+     "live": false
+    },
+    {
+     "id": "S-6.69",
+     "status": "building",
+     "live": false
+    },
+    {
+     "id": "S-6.203",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "6,398 of the first 10,000 are served, the serving measurement at 5,000 and 10,000 (S-6.203) has not run, and only one outside review family (Tactical) is reachable until October 1."
+  },
+  {
+   "id": "R-13",
+   "date": "2026-09-22",
+   "state": "live",
+   "steps": [
+    {
+     "id": "S-6.62",
+     "status": "building",
+     "live": false
+    },
+    {
+     "id": "S-6.197",
+     "status": "live_qualified",
+     "live": true
+    }
+   ],
+   "gap": "S-6.62 stays building for library settings with good defaults; the kind and step function attributes added on September 26 reach the pages with Fly release 37."
+  },
+  {
+   "id": "R-14",
+   "date": "2026-09-22",
+   "state": "live",
+   "steps": [
+    {
+     "id": "S-6.33",
+     "status": "building",
+     "live": false
+    },
+    {
+     "id": "S-6.37",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "S-6.33 stays building (the Strict-Transport-Security header is an open verify item) and S-6.37 (demonstrations and benchmarks on their own subdomains) is proposed."
+  },
+  {
+   "id": "R-15",
+   "date": "2026-09-22",
+   "state": "proposed",
+   "steps": [
+    {
+     "id": "S-6.48",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.49",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.50",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.51",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.52",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.53",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.54",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.55",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.56",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.57",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.58",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.59",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.60",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.61",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "Fourteen steps are proposed; the stack starters line is paused until October 1, and no other line is recorded."
+  },
+  {
+   "id": "R-16",
+   "date": "2026-09-22",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.43",
+     "status": "live_qualified",
+     "live": true
+    },
+    {
+     "id": "S-6.44",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.45",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.46",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.47",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "S-6.44, S-6.45, S-6.46 and S-6.47 are proposed; multi-file package placement is partly built and unmeasured."
+  },
+  {
+   "id": "R-17",
+   "date": "2026-09-23",
+   "state": "live",
+   "steps": [
+    {
+     "id": "S-6.65",
+     "status": "building",
+     "live": false
+    },
+    {
+     "id": "S-6.85",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "S-6.65 stays building because the identity provider's own sign-up could not be closed at the source (the authorization refresh was refused with status 422); the service guard covers it."
+  },
+  {
+   "id": "R-18",
+   "date": "2026-09-23",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.24",
+     "status": "building",
+     "live": false
+    },
+    {
+     "id": "S-6.8",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.9",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.101",
+     "status": "offline_verified",
+     "live": false
+    }
+   ],
+   "gap": "The overnight proof with Gemma 4 on Ollama Cloud has not run, because the Ollama Cloud weekly allowance is spent until October 1, 2026 at 13:00 Eastern, so the overnight benefit still has no evidence (D-07)."
+  },
+  {
+   "id": "R-19",
+   "date": "2026-09-23",
+   "state": "live",
+   "steps": [
+    {
+     "id": "S-6.33",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "None recorded; the live icon was not re-checked for this ledger."
+  },
+  {
+   "id": "R-20",
+   "date": "2026-09-23",
+   "state": "live",
+   "steps": [
+    {
+     "id": "S-6.33",
+     "status": "building",
+     "live": false
+    },
+    {
+     "id": "S-6.67",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "S-6.33 stays building; the phone homepage measured 7,816 pixels at 390 wide against a budget of 7,502 on September 24 (S-6.33 evidence)."
+  },
+  {
+   "id": "R-21",
+   "date": "2026-09-23",
+   "state": "live",
+   "steps": [
+    {
+     "id": "S-6.33",
+     "status": "building",
+     "live": false
+    },
+    {
+     "id": "S-6.67",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "S-6.67 stays building; no record confirms that all 60 restore rows reached the live site."
+  },
+  {
+   "id": "R-22",
+   "date": "2026-09-23",
+   "state": "live",
+   "steps": [
+    {
+     "id": "S-6.67",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "S-6.67 stays building; the paused lines (support and help centre, stack starters, sample tasks, the blog) hold pages that are not live."
+  },
+  {
+   "id": "R-23",
+   "date": "2026-09-23",
+   "state": "live",
+   "steps": [
+    {
+     "id": "S-6.66",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.182",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "S-6.66 (self-serve paid onboarding with a verified first load in the customer's harness) is proposed; 0 paying subscribers, 2 checkout sessions started and none finished (ninety-day plan)."
+  },
+  {
+   "id": "R-24",
+   "date": "2026-09-23",
+   "state": "live",
+   "steps": [
+    {
+     "id": "S-6.33",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "The phone homepage measured 7,816 pixels against a budget of 7,502, and tools/check_website_layout.mjs was written but never run (LINES.md)."
+  },
+  {
+   "id": "R-25",
+   "date": "2026-09-23",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.55",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.180",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "Persona reviews after every release (S-6.55) are proposed; the 250-persona review of September 24 finished 37 of 41 agents with no synthesis, and no persona run is recorded after release 27."
+  },
+  {
+   "id": "R-26",
+   "date": "2026-09-23",
+   "state": "on main",
+   "steps": [
+    {
+     "id": "S-6.34",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "None for the rule; S-6.34 stays building for the wider documentation clean-up."
+  },
+  {
+   "id": "R-27",
+   "date": "2026-09-23",
+   "state": "live",
+   "steps": [
+    {
+     "id": "S-6.65",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "The provider's own public sign-up is still open at the provider because the authorization refresh is refused; the owner's optional provider sign-in would let engineering close it there too."
+  },
+  {
+   "id": "R-28",
+   "date": "2026-09-23",
+   "state": "live",
+   "steps": [
+    {
+     "id": "S-6.85",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "S-6.85 stays building because the provider's own sign-up is still open at the provider."
+  },
+  {
+   "id": "R-30",
+   "date": "2026-09-23",
+   "state": "proposed",
+   "steps": [
+    {
+     "id": "S-6.90",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "Nothing is submitted or posted, and the entry stays behind the SaaS work by the owner's own rule."
+  },
+  {
+   "id": "R-31",
+   "date": "2026-09-23",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.69",
+     "status": "building",
+     "live": false
+    },
+    {
+     "id": "S-6.83",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.197",
+     "status": "live_qualified",
+     "live": true
+    }
+   ],
+   "gap": "Maintenance of 100,000 (re-verification, near-duplicates, deprecation and withdrawal, S-6.83) is proposed, and supply beyond the 58,787 imported candidates depends on generation lanes whose Ollama Cloud allowance is spent until October 1."
+  },
+  {
+   "id": "R-32",
+   "date": "2026-09-23",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.72",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.84",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "Contract test kits for every engine alone, in groups and end to end (S-6.72) and the standard written into the development rules with a check per rule (S-6.84) are proposed."
+  },
+  {
+   "id": "R-33",
+   "date": "2026-09-23",
+   "state": "proposed",
+   "steps": [
+    {
+     "id": "S-6.71",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.73",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "No generated component index with a drift check and no topic and decision index with a term conflict check exist."
+  },
+  {
+   "id": "R-34",
+   "date": "2026-09-23",
+   "state": "proposed",
+   "steps": [
+    {
+     "id": "S-6.74",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.75",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "The engine selector line is paused with 7 commits and 26 files missing from main, and no adopted outside project has a Baltor-native engine beside it."
+  },
+  {
+   "id": "R-35",
+   "date": "2026-09-23",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.76",
+     "status": "ready",
+     "live": false
+    },
+    {
+     "id": "S-6.77",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "S-6.76 is ready and S-6.77 is proposed; the model-backed research team schedule stopped with its session on September 25 and has not been re-armed."
+  },
+  {
+   "id": "R-36",
+   "date": "2026-09-23",
+   "state": "proposed",
+   "steps": [
+    {
+     "id": "S-6.78",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.79",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "A release train for client recipes, plugins and the local engine (S-6.78) and feature flags with staged rollout (S-6.79) are proposed."
+  },
+  {
+   "id": "R-37",
+   "date": "2026-09-23",
+   "state": "proposed",
+   "steps": [
+    {
+     "id": "S-6.80",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "No weekly refresh of the harness profiles runs."
+  },
+  {
+   "id": "R-38",
+   "date": "2026-09-23",
+   "state": "proposed",
+   "steps": [
+    {
+     "id": "S-6.81",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.82",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "Source scouts (S-6.81) and watchers that turn a change into component work (S-6.82) are proposed; the watch only opens an issue."
+  },
+  {
+   "id": "R-39",
+   "date": "2026-09-23",
+   "state": "proposed",
+   "steps": [
+    {
+     "id": "S-6.86",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.87",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "No task decomposition slot and no step graph expansion engine exist."
+  },
+  {
+   "id": "R-40",
+   "date": "2026-09-23",
+   "state": "proposed",
+   "steps": [
+    {
+     "id": "S-6.88",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "Nothing beyond the step exists."
+  },
+  {
+   "id": "R-41",
+   "date": "2026-09-23",
+   "state": "live",
+   "steps": [
+    {
+     "id": "S-6.33",
+     "status": "building",
+     "live": false
+    },
+    {
+     "id": "S-6.85",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "None recorded."
+  },
+  {
+   "id": "R-42",
+   "date": "2026-09-24",
+   "state": "live",
+   "steps": [
+    {
+     "id": "S-6.35",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "S-6.35 stays building because the release record is written by hand."
+  },
+  {
+   "id": "R-43",
+   "date": "2026-09-24",
+   "state": "live",
+   "steps": [
+    {
+     "id": "S-6.89",
+     "status": "live_qualified",
+     "live": true
+    },
+    {
+     "id": "S-6.85",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "None for free accounts; the wider staff tools (S-6.120) are building."
+  },
+  {
+   "id": "R-44",
+   "date": "2026-09-24",
+   "state": "on main",
+   "steps": [
+    {
+     "id": "S-6.99",
+     "status": "offline_verified",
+     "live": false
+    }
+   ],
+   "gap": "The invitation release was retired for one way in (worktree audit), the staff tools line that carries the sign-up links was held out of release 26, and no release record names it live."
+  },
+  {
+   "id": "R-45",
+   "date": "2026-09-24",
+   "state": "live",
+   "steps": [
+    {
+     "id": "S-6.63",
+     "status": "building",
+     "live": false
+    },
+    {
+     "id": "S-6.196",
+     "status": "live_qualified",
+     "live": true
+    },
+    {
+     "id": "S-6.199",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "Only the Tactical family reviews today; second-family reviews that upgrade an item to Verified wait for Codex (September 29) and Ollama Cloud (October 1), and S-6.63 stays building."
+  },
+  {
+   "id": "R-46",
+   "date": "2026-09-24",
+   "state": "live",
+   "steps": [
+    {
+     "id": "S-6.184",
+     "status": "building",
+     "live": false
+    },
+    {
+     "id": "S-6.208",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "The counts by harness kind wait for Fly release 37."
+  },
+  {
+   "id": "R-47",
+   "date": "2026-09-24",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.34",
+     "status": "building",
+     "live": false
+    },
+    {
+     "id": "S-6.183",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "No record of the README update exists, and S-6.183 (the front door outside baltor.ai) is proposed."
+  },
+  {
+   "id": "R-48",
+   "date": "2026-09-24",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.37",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.201",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.111",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "The page and demo generators (S-6.201) and demonstrations on their own subdomains (S-6.37, S-6.111) are proposed; the red-team page is being built by a parallel package."
+  },
+  {
+   "id": "R-49",
+   "date": "2026-09-24",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.69",
+     "status": "building",
+     "live": false
+    },
+    {
+     "id": "S-6.197",
+     "status": "live_qualified",
+     "live": true
+    },
+    {
+     "id": "S-6.203",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "The 10,000 mark by October 5 waits for the serving measurement (S-6.203) that a parallel package is building."
+  },
+  {
+   "id": "R-51",
+   "date": "2026-09-24",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.40",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.70",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.81",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.83",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "Serving 100,000 (S-6.70: paged listing, indexed search, the capacity probe) is proposed, and the September 22 probe failed at a synthetic 100,000 rows."
+  },
+  {
+   "id": "R-52",
+   "date": "2026-09-24",
+   "state": "proposed",
+   "steps": [
+    {
+     "id": "S-6.55",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "S-6.55 is proposed; no persona run happens after every release."
+  },
+  {
+   "id": "R-54",
+   "date": "2026-09-24",
+   "state": "live",
+   "steps": [
+    {
+     "id": "S-6.121",
+     "status": "offline_verified",
+     "live": false
+    },
+    {
+     "id": "S-6.67",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "S-6.121 is offline_verified in the roadmap although the page is live, so its record needs the live evidence."
+  },
+  {
+   "id": "R-55",
+   "date": "2026-09-24",
+   "state": "proposed",
+   "steps": [
+    {
+     "id": "S-6.57",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.74",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "A scale plan (S-6.57) and the engine selector (S-6.74) are proposed."
+  },
+  {
+   "id": "R-56",
+   "date": "2026-09-24",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.42",
+     "status": "building",
+     "live": false
+    },
+    {
+     "id": "S-6.31",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "The line is paused until October 1, and the custom loop-node engine is not on main."
+  },
+  {
+   "id": "R-57",
+   "date": "2026-09-24",
+   "state": "live",
+   "steps": [
+    {
+     "id": "S-6.102",
+     "status": "offline_verified",
+     "live": false
+    }
+   ],
+   "gap": "S-6.102 is offline_verified in the roadmap although the page is live, so its record needs the live evidence."
+  },
+  {
+   "id": "R-58",
+   "date": "2026-09-24",
+   "state": "blocked",
+   "steps": [
+    {
+     "id": "S-6.48",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "The line waits for October 1 and a rebase after the models line; nothing is live."
+  },
+  {
+   "id": "R-59",
+   "date": "2026-09-24",
+   "state": "live",
+   "steps": [
+    {
+     "id": "S-6.100",
+     "status": "building",
+     "live": false
+    },
+    {
+     "id": "S-6.198",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "S-6.100 stays building because the run-time engine selector has not reached main, so stations use their declared order."
+  },
+  {
+   "id": "R-60",
+   "date": "2026-09-24",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.91",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.92",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.93",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.94",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.95",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.96",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.97",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.98",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "The eight toolsmith steps are proposed, and the model-backed research team stopped with its session on September 25 and needs re-arming with the prompt in the September 24 handoff."
+  },
+  {
+   "id": "R-61",
+   "date": "2026-09-24",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.100",
+     "status": "building",
+     "live": false
+    },
+    {
+     "id": "S-6.58",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "S-6.58 (choose the model and the decision method for each step) is proposed."
+  },
+  {
+   "id": "R-62",
+   "date": "2026-09-24",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.120",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "The staff tools line is paused with 3 commits and 15 files missing from main and goes in a release of its own."
+  },
+  {
+   "id": "R-63",
+   "date": "2026-09-24",
+   "state": "live",
+   "steps": [
+    {
+     "id": "S-6.197",
+     "status": "live_qualified",
+     "live": true
+    },
+    {
+     "id": "S-6.62",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "None for files; the searchable kind and step function attributes of September 26 show on the pages after Fly release 37."
+  },
+  {
+   "id": "R-64",
+   "date": "2026-09-24",
+   "state": "live",
+   "steps": [
+    {
+     "id": "S-6.101",
+     "status": "offline_verified",
+     "live": false
+    },
+    {
+     "id": "S-6.58",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "S-6.101 is offline_verified in the roadmap although the pages are live, and other Jev-like providers (S-6.58) are proposed."
+  },
+  {
+   "id": "R-65",
+   "date": "2026-09-24",
+   "state": "live",
+   "steps": [
+    {
+     "id": "S-6.33",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "None recorded."
+  },
+  {
+   "id": "R-66",
+   "date": "2026-09-24",
+   "state": "proposed",
+   "steps": [
+    {
+     "id": "S-6.110",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.111",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.112",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.113",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.114",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.115",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.90",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "No showcase hostname serves a publication, and the steps are proposed."
+  },
+  {
+   "id": "R-67",
+   "date": "2026-09-24",
+   "state": "blocked",
+   "steps": [
+    {
+     "id": "S-6.202",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "The line waits for October 1 or the quickstarts package; nothing is live."
+  },
+  {
+   "id": "R-69",
+   "date": "2026-09-24",
+   "state": "on main",
+   "steps": [
+    {
+     "id": "S-6.102",
+     "status": "offline_verified",
+     "live": false
+    }
+   ],
+   "gap": "Every row ships with no commercial relationship until the owner joins programmes, which needs the owner's tax and payout details; the affiliate line still holds 2 commits not on main."
+  },
+  {
+   "id": "R-70",
+   "date": "2026-09-24",
+   "state": "proposed",
+   "steps": [
+    {
+     "id": "S-6.191",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "No organization, member or seat code exists on main (S-6.191 evidence), and nothing above Baltor Pro is sold."
+  },
+  {
+   "id": "R-71",
+   "date": "2026-09-24",
+   "state": "proposed",
+   "steps": [
+    {
+     "id": "S-6.90",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.115",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "No competition entry, notebook or OpenML task is recorded."
+  },
+  {
+   "id": "R-72",
+   "date": "2026-09-24",
+   "state": "proposed",
+   "steps": [
+    {
+     "id": "S-6.116",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.117",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.118",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "No media page, package or post exists."
+  },
+  {
+   "id": "R-73",
+   "date": "2026-09-24",
+   "state": "proposed",
+   "steps": [
+    {
+     "id": "S-6.140",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.141",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.142",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.143",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.144",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.145",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.146",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.147",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.148",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "No submission route exists."
+  },
+  {
+   "id": "R-74",
+   "date": "2026-09-24",
+   "state": "live",
+   "steps": [
+    {
+     "id": "S-6.119",
+     "status": "building",
+     "live": false
+    },
+    {
+     "id": "S-6.205",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "The first slot with the balanced mix is the 16:17 UTC slot of September 26, after this ledger was written, and S-6.119 and S-6.205 stay building."
+  },
+  {
+   "id": "R-75",
+   "date": "2026-09-25",
+   "state": "live",
+   "steps": [
+    {
+     "id": "S-6.200",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.35",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "Continuous integration still takes 22 to 25 minutes (S-6.200 proposed; a parallel package is building it)."
+  },
+  {
+   "id": "R-76",
+   "date": "2026-09-25",
+   "state": "live",
+   "steps": [
+    {
+     "id": "S-6.35",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "None recorded."
+  },
+  {
+   "id": "R-77",
+   "date": "2026-09-25",
+   "state": "live",
+   "steps": [
+    {
+     "id": "S-6.63",
+     "status": "building",
+     "live": false
+    },
+    {
+     "id": "S-6.53",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "The probe is a cron entry on one workstation, not a repository workflow, and its results live only in lane-probes.log."
+  },
+  {
+   "id": "R-78",
+   "date": "2026-09-25",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.53",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.69",
+     "status": "building",
+     "live": false
+    },
+    {
+     "id": "S-6.179",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "The 8,904 candidates wait for the native review path as a second input of the daily job, and none is served."
+  },
+  {
+   "id": "R-79",
+   "date": "2026-09-25",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.199",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.200",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.201",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.202",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.203",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.204",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "0 paying subscribers; S-6.199 to S-6.204 are proposed, five of them in parallel packages started on September 26."
+  },
+  {
+   "id": "R-80",
+   "date": "2026-09-25",
+   "state": "live",
+   "steps": [
+    {
+     "id": "S-6.33",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "None recorded."
+  },
+  {
+   "id": "R-81",
+   "date": "2026-09-25",
+   "state": "blocked",
+   "steps": [
+    {
+     "id": "S-6.63",
+     "status": "building",
+     "live": false
+    },
+    {
+     "id": "S-6.178",
+     "status": "blocked",
+     "live": false
+    },
+    {
+     "id": "S-6.179",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "Codex is refused until September 29 and Ollama Cloud until October 1, and Tactical failed native calibration, so the 607 candidates and the first catalogue's second-family review (S-6.178) wait."
+  },
+  {
+   "id": "R-82",
+   "date": "2026-09-25",
+   "state": "live",
+   "steps": [
+    {
+     "id": "S-6.184",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "None recorded."
+  },
+  {
+   "id": "R-83",
+   "date": "2026-09-25",
+   "state": "live",
+   "steps": [
+    {
+     "id": "S-6.181",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "S-6.181 (a claims register that feeds a dated evidence page) is still proposed in the roadmap."
+  },
+  {
+   "id": "R-84",
+   "date": "2026-09-25",
+   "state": "live",
+   "steps": [
+    {
+     "id": "S-6.197",
+     "status": "live_qualified",
+     "live": true
+    },
+    {
+     "id": "S-6.200",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.79",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "Feature flags and staged rollout (S-6.79) are proposed, and continuous integration still takes 22 to 25 minutes."
+  },
+  {
+   "id": "R-85",
+   "date": "2026-09-25",
+   "state": "live",
+   "steps": [
+    {
+     "id": "S-6.69",
+     "status": "building",
+     "live": false
+    },
+    {
+     "id": "S-6.197",
+     "status": "live_qualified",
+     "live": true
+    }
+   ],
+   "gap": "The rate is not yet measured over a week, and supply depends on the import store and the paused generation lanes."
+  },
+  {
+   "id": "R-86",
+   "date": "2026-09-25",
+   "state": "on main",
+   "steps": [
+    {
+     "id": "S-6.199",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.200",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.201",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.202",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.203",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.204",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "The plan's first week (the report route, sharded continuous integration, serving measured at 1,000 and 5,000) is in flight in parallel packages and not on main."
+  },
+  {
+   "id": "R-87",
+   "date": "2026-09-25",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.199",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "The report button, the withdrawal rules, the nightly rescan and the weekly upstream check are not built; the parallel package feedback-withdrawal started on September 26."
+  },
+  {
+   "id": "R-89",
+   "date": "2026-09-25",
+   "state": "on main",
+   "steps": [
+    {
+     "id": "S-6.198",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "The showcase page on its own hostname is not live (the parallel package red-team-page started on September 26), and Jev itself is not answered without a TypeSafe credential."
+  },
+  {
+   "id": "R-90",
+   "date": "2026-09-25",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.203",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.201",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.202",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "Serving at 5,000 and 10,000 is unmeasured, the quickstarts are not checked nightly and no demo generator exists; three parallel packages started on September 26."
+  },
+  {
+   "id": "R-91",
+   "date": "2026-09-26",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.205",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "The 16:17 UTC slot of September 26 is the first export with the mix, and its counts record did not exist when this ledger was written at 12:45 UTC."
+  },
+  {
+   "id": "R-92",
+   "date": "2026-09-26",
+   "state": "on main",
+   "steps": [
+    {
+     "id": "S-6.206",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "The tags reach customers with the 16:17 UTC slot's release and the pages with Fly release 37; the parallel package tag-precision measures the rules engine."
+  },
+  {
+   "id": "R-93",
+   "date": "2026-09-26",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.207",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "No generated package from the drive is reviewed or served; the first generation wave of fifty seeds on the Tactical lane waits for the inventory to finish (the parallel package seed-wave)."
+  },
+  {
+   "id": "R-94",
+   "date": "2026-09-26",
+   "state": "on main",
+   "steps": [
+    {
+     "id": "S-6.208",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "Waits for Fly release 37; Fly release 36 is live unchanged since 23:23 UTC on September 25."
+  },
+  {
+   "id": "R-95",
+   "date": "2026-09-26",
+   "state": "proposed",
+   "steps": [
+    {
+     "id": "S-6.209",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "The parallel package facet-tags started on September 26; nothing is served with these tags."
+  },
+  {
+   "id": "R-96",
+   "date": "2026-09-26",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.76",
+     "status": "ready",
+     "live": false
+    },
+    {
+     "id": "S-6.77",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.199",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.55",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.63",
+     "status": "building",
+     "live": false
+    },
+    {
+     "id": "S-6.83",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "Server-side oracles that review files and generate variations do not exist on main; the hosted service makes no model call by design, so oracles run on this workstation's schedules, and Ollama Cloud is refused until October 1."
+  }
+ ],
+ "requests_not_live": [
+  {
+   "id": "R-01",
+   "date": "2026-09-22",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.29",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "32 worktrees held commits not on main at the September 25 audit, and the paused lines wait for the weekly limit reset on October 1."
+  },
+  {
+   "id": "R-02",
+   "date": "2026-09-22",
+   "state": "on main",
+   "steps": [
+    {
+     "id": "S-6.34",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "S-6.34 stays building for the documentation clean-up beyond the authority section."
+  },
+  {
+   "id": "R-03",
+   "date": "2026-09-22",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.29",
+     "status": "building",
+     "live": false
+    },
+    {
+     "id": "S-6.35",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "Twelve paused lines (stack starters, staff tools, engine selector, search engine optimization and blog, sample tasks, support pages and others) hold work that is not live (worktree audit, September 25)."
+  },
+  {
+   "id": "R-04",
+   "date": "2026-09-22",
+   "state": "on main",
+   "steps": [
+    {
+     "id": "S-6.17",
+     "status": "offline_verified",
+     "live": false
+    },
+    {
+     "id": "S-6.25",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "S-6.25 (the system map to every source file) is building; S-6.17 is offline_verified because the status file is a repository page, not a served page."
+  },
+  {
+   "id": "R-05",
+   "date": "2026-09-22",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.30",
+     "status": "building",
+     "live": false
+    },
+    {
+     "id": "S-6.31",
+     "status": "building",
+     "live": false
+    },
+    {
+     "id": "S-6.74",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.75",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "The run-time engine selector (S-6.74) is proposed and its line was held out of release 26 with 37 new high hardcoding findings; the harness executor slot (S-6.31) is building."
+  },
+  {
+   "id": "R-06",
+   "date": "2026-09-22",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.34",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "No record says the 72 updates and 8 archivals were made."
+  },
+  {
+   "id": "R-07",
+   "date": "2026-09-22",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.36",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "The fact-checked application package is not finished, and the audiences only the owner reaches are the owner's part (ninety-day plan)."
+  },
+  {
+   "id": "R-09",
+   "date": "2026-09-22",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.75",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.84",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.163",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "An upstream engine beside a Baltor-native engine for every adopted project (S-6.75), the component standard as checked development rules (S-6.84) and the lifecycle watch (S-6.163) are proposed."
+  },
+  {
+   "id": "R-10",
+   "date": "2026-09-22",
+   "state": "on main",
+   "steps": [
+    {
+     "id": "S-6.34",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "S-6.34 stays building for the documentation clean-up beyond the authority section."
+  },
+  {
+   "id": "R-11",
+   "date": "2026-09-22",
+   "state": "on main",
+   "steps": [],
+   "gap": "No roadmap step names the free-plan limits; the 100 emails a day cap is watched by hand."
+  },
+  {
+   "id": "R-12",
+   "date": "2026-09-22",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.40",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.62",
+     "status": "building",
+     "live": false
+    },
+    {
+     "id": "S-6.63",
+     "status": "building",
+     "live": false
+    },
+    {
+     "id": "S-6.69",
+     "status": "building",
+     "live": false
+    },
+    {
+     "id": "S-6.203",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "6,398 of the first 10,000 are served, the serving measurement at 5,000 and 10,000 (S-6.203) has not run, and only one outside review family (Tactical) is reachable until October 1."
+  },
+  {
+   "id": "R-15",
+   "date": "2026-09-22",
+   "state": "proposed",
+   "steps": [
+    {
+     "id": "S-6.48",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.49",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.50",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.51",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.52",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.53",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.54",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.55",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.56",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.57",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.58",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.59",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.60",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.61",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "Fourteen steps are proposed; the stack starters line is paused until October 1, and no other line is recorded."
+  },
+  {
+   "id": "R-16",
+   "date": "2026-09-22",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.43",
+     "status": "live_qualified",
+     "live": true
+    },
+    {
+     "id": "S-6.44",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.45",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.46",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.47",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "S-6.44, S-6.45, S-6.46 and S-6.47 are proposed; multi-file package placement is partly built and unmeasured."
+  },
+  {
+   "id": "R-18",
+   "date": "2026-09-23",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.24",
+     "status": "building",
+     "live": false
+    },
+    {
+     "id": "S-6.8",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.9",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.101",
+     "status": "offline_verified",
+     "live": false
+    }
+   ],
+   "gap": "The overnight proof with Gemma 4 on Ollama Cloud has not run, because the Ollama Cloud weekly allowance is spent until October 1, 2026 at 13:00 Eastern, so the overnight benefit still has no evidence (D-07)."
+  },
+  {
+   "id": "R-25",
+   "date": "2026-09-23",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.55",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.180",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "Persona reviews after every release (S-6.55) are proposed; the 250-persona review of September 24 finished 37 of 41 agents with no synthesis, and no persona run is recorded after release 27."
+  },
+  {
+   "id": "R-26",
+   "date": "2026-09-23",
+   "state": "on main",
+   "steps": [
+    {
+     "id": "S-6.34",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "None for the rule; S-6.34 stays building for the wider documentation clean-up."
+  },
+  {
+   "id": "R-30",
+   "date": "2026-09-23",
+   "state": "proposed",
+   "steps": [
+    {
+     "id": "S-6.90",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "Nothing is submitted or posted, and the entry stays behind the SaaS work by the owner's own rule."
+  },
+  {
+   "id": "R-31",
+   "date": "2026-09-23",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.69",
+     "status": "building",
+     "live": false
+    },
+    {
+     "id": "S-6.83",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.197",
+     "status": "live_qualified",
+     "live": true
+    }
+   ],
+   "gap": "Maintenance of 100,000 (re-verification, near-duplicates, deprecation and withdrawal, S-6.83) is proposed, and supply beyond the 58,787 imported candidates depends on generation lanes whose Ollama Cloud allowance is spent until October 1."
+  },
+  {
+   "id": "R-32",
+   "date": "2026-09-23",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.72",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.84",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "Contract test kits for every engine alone, in groups and end to end (S-6.72) and the standard written into the development rules with a check per rule (S-6.84) are proposed."
+  },
+  {
+   "id": "R-33",
+   "date": "2026-09-23",
+   "state": "proposed",
+   "steps": [
+    {
+     "id": "S-6.71",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.73",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "No generated component index with a drift check and no topic and decision index with a term conflict check exist."
+  },
+  {
+   "id": "R-34",
+   "date": "2026-09-23",
+   "state": "proposed",
+   "steps": [
+    {
+     "id": "S-6.74",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.75",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "The engine selector line is paused with 7 commits and 26 files missing from main, and no adopted outside project has a Baltor-native engine beside it."
+  },
+  {
+   "id": "R-35",
+   "date": "2026-09-23",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.76",
+     "status": "ready",
+     "live": false
+    },
+    {
+     "id": "S-6.77",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "S-6.76 is ready and S-6.77 is proposed; the model-backed research team schedule stopped with its session on September 25 and has not been re-armed."
+  },
+  {
+   "id": "R-36",
+   "date": "2026-09-23",
+   "state": "proposed",
+   "steps": [
+    {
+     "id": "S-6.78",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.79",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "A release train for client recipes, plugins and the local engine (S-6.78) and feature flags with staged rollout (S-6.79) are proposed."
+  },
+  {
+   "id": "R-37",
+   "date": "2026-09-23",
+   "state": "proposed",
+   "steps": [
+    {
+     "id": "S-6.80",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "No weekly refresh of the harness profiles runs."
+  },
+  {
+   "id": "R-38",
+   "date": "2026-09-23",
+   "state": "proposed",
+   "steps": [
+    {
+     "id": "S-6.81",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.82",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "Source scouts (S-6.81) and watchers that turn a change into component work (S-6.82) are proposed; the watch only opens an issue."
+  },
+  {
+   "id": "R-39",
+   "date": "2026-09-23",
+   "state": "proposed",
+   "steps": [
+    {
+     "id": "S-6.86",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.87",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "No task decomposition slot and no step graph expansion engine exist."
+  },
+  {
+   "id": "R-40",
+   "date": "2026-09-23",
+   "state": "proposed",
+   "steps": [
+    {
+     "id": "S-6.88",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "Nothing beyond the step exists."
+  },
+  {
+   "id": "R-44",
+   "date": "2026-09-24",
+   "state": "on main",
+   "steps": [
+    {
+     "id": "S-6.99",
+     "status": "offline_verified",
+     "live": false
+    }
+   ],
+   "gap": "The invitation release was retired for one way in (worktree audit), the staff tools line that carries the sign-up links was held out of release 26, and no release record names it live."
+  },
+  {
+   "id": "R-47",
+   "date": "2026-09-24",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.34",
+     "status": "building",
+     "live": false
+    },
+    {
+     "id": "S-6.183",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "No record of the README update exists, and S-6.183 (the front door outside baltor.ai) is proposed."
+  },
+  {
+   "id": "R-48",
+   "date": "2026-09-24",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.37",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.201",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.111",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "The page and demo generators (S-6.201) and demonstrations on their own subdomains (S-6.37, S-6.111) are proposed; the red-team page is being built by a parallel package."
+  },
+  {
+   "id": "R-49",
+   "date": "2026-09-24",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.69",
+     "status": "building",
+     "live": false
+    },
+    {
+     "id": "S-6.197",
+     "status": "live_qualified",
+     "live": true
+    },
+    {
+     "id": "S-6.203",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "The 10,000 mark by October 5 waits for the serving measurement (S-6.203) that a parallel package is building."
+  },
+  {
+   "id": "R-50",
+   "date": "2026-09-24",
+   "state": "on main",
+   "steps": [],
+   "gap": "No roadmap step records the free-service inventory or the limits watched."
+  },
+  {
+   "id": "R-51",
+   "date": "2026-09-24",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.40",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.70",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.81",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.83",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "Serving 100,000 (S-6.70: paged listing, indexed search, the capacity probe) is proposed, and the September 22 probe failed at a synthetic 100,000 rows."
+  },
+  {
+   "id": "R-52",
+   "date": "2026-09-24",
+   "state": "proposed",
+   "steps": [
+    {
+     "id": "S-6.55",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "S-6.55 is proposed; no persona run happens after every release."
+  },
+  {
+   "id": "R-53",
+   "date": "2026-09-24",
+   "state": "blocked",
+   "steps": [],
+   "gap": "No roadmap step names search engine optimization or a blog, and the line waits for October 1."
+  },
+  {
+   "id": "R-55",
+   "date": "2026-09-24",
+   "state": "proposed",
+   "steps": [
+    {
+     "id": "S-6.57",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.74",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "A scale plan (S-6.57) and the engine selector (S-6.74) are proposed."
+  },
+  {
+   "id": "R-56",
+   "date": "2026-09-24",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.42",
+     "status": "building",
+     "live": false
+    },
+    {
+     "id": "S-6.31",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "The line is paused until October 1, and the custom loop-node engine is not on main."
+  },
+  {
+   "id": "R-58",
+   "date": "2026-09-24",
+   "state": "blocked",
+   "steps": [
+    {
+     "id": "S-6.48",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "The line waits for October 1 and a rebase after the models line; nothing is live."
+  },
+  {
+   "id": "R-60",
+   "date": "2026-09-24",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.91",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.92",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.93",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.94",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.95",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.96",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.97",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.98",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "The eight toolsmith steps are proposed, and the model-backed research team stopped with its session on September 25 and needs re-arming with the prompt in the September 24 handoff."
+  },
+  {
+   "id": "R-61",
+   "date": "2026-09-24",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.100",
+     "status": "building",
+     "live": false
+    },
+    {
+     "id": "S-6.58",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "S-6.58 (choose the model and the decision method for each step) is proposed."
+  },
+  {
+   "id": "R-62",
+   "date": "2026-09-24",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.120",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "The staff tools line is paused with 3 commits and 15 files missing from main and goes in a release of its own."
+  },
+  {
+   "id": "R-66",
+   "date": "2026-09-24",
+   "state": "proposed",
+   "steps": [
+    {
+     "id": "S-6.110",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.111",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.112",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.113",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.114",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.115",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.90",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "No showcase hostname serves a publication, and the steps are proposed."
+  },
+  {
+   "id": "R-67",
+   "date": "2026-09-24",
+   "state": "blocked",
+   "steps": [
+    {
+     "id": "S-6.202",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "The line waits for October 1 or the quickstarts package; nothing is live."
+  },
+  {
+   "id": "R-68",
+   "date": "2026-09-24",
+   "state": "not started",
+   "steps": [],
+   "gap": "The research never reached main, and the September 24 order \"Turn the research records into roadmap steps: Procedural Graphs\" is not done."
+  },
+  {
+   "id": "R-69",
+   "date": "2026-09-24",
+   "state": "on main",
+   "steps": [
+    {
+     "id": "S-6.102",
+     "status": "offline_verified",
+     "live": false
+    }
+   ],
+   "gap": "Every row ships with no commercial relationship until the owner joins programmes, which needs the owner's tax and payout details; the affiliate line still holds 2 commits not on main."
+  },
+  {
+   "id": "R-70",
+   "date": "2026-09-24",
+   "state": "proposed",
+   "steps": [
+    {
+     "id": "S-6.191",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "No organization, member or seat code exists on main (S-6.191 evidence), and nothing above Baltor Pro is sold."
+  },
+  {
+   "id": "R-71",
+   "date": "2026-09-24",
+   "state": "proposed",
+   "steps": [
+    {
+     "id": "S-6.90",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.115",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "No competition entry, notebook or OpenML task is recorded."
+  },
+  {
+   "id": "R-72",
+   "date": "2026-09-24",
+   "state": "proposed",
+   "steps": [
+    {
+     "id": "S-6.116",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.117",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.118",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "No media page, package or post exists."
+  },
+  {
+   "id": "R-73",
+   "date": "2026-09-24",
+   "state": "proposed",
+   "steps": [
+    {
+     "id": "S-6.140",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.141",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.142",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.143",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.144",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.145",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.146",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.147",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.148",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "No submission route exists."
+  },
+  {
+   "id": "R-78",
+   "date": "2026-09-25",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.53",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.69",
+     "status": "building",
+     "live": false
+    },
+    {
+     "id": "S-6.179",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "The 8,904 candidates wait for the native review path as a second input of the daily job, and none is served."
+  },
+  {
+   "id": "R-79",
+   "date": "2026-09-25",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.199",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.200",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.201",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.202",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.203",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.204",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "0 paying subscribers; S-6.199 to S-6.204 are proposed, five of them in parallel packages started on September 26."
+  },
+  {
+   "id": "R-81",
+   "date": "2026-09-25",
+   "state": "blocked",
+   "steps": [
+    {
+     "id": "S-6.63",
+     "status": "building",
+     "live": false
+    },
+    {
+     "id": "S-6.178",
+     "status": "blocked",
+     "live": false
+    },
+    {
+     "id": "S-6.179",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "Codex is refused until September 29 and Ollama Cloud until October 1, and Tactical failed native calibration, so the 607 candidates and the first catalogue's second-family review (S-6.178) wait."
+  },
+  {
+   "id": "R-86",
+   "date": "2026-09-25",
+   "state": "on main",
+   "steps": [
+    {
+     "id": "S-6.199",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.200",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.201",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.202",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.203",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.204",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "The plan's first week (the report route, sharded continuous integration, serving measured at 1,000 and 5,000) is in flight in parallel packages and not on main."
+  },
+  {
+   "id": "R-87",
+   "date": "2026-09-25",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.199",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "The report button, the withdrawal rules, the nightly rescan and the weekly upstream check are not built; the parallel package feedback-withdrawal started on September 26."
+  },
+  {
+   "id": "R-88",
+   "date": "2026-09-25",
+   "state": "on main",
+   "steps": [],
+   "gap": "None; a rule needs no roadmap step."
+  },
+  {
+   "id": "R-89",
+   "date": "2026-09-25",
+   "state": "on main",
+   "steps": [
+    {
+     "id": "S-6.198",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "The showcase page on its own hostname is not live (the parallel package red-team-page started on September 26), and Jev itself is not answered without a TypeSafe credential."
+  },
+  {
+   "id": "R-90",
+   "date": "2026-09-25",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.203",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.201",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.202",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "Serving at 5,000 and 10,000 is unmeasured, the quickstarts are not checked nightly and no demo generator exists; three parallel packages started on September 26."
+  },
+  {
+   "id": "R-91",
+   "date": "2026-09-26",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.205",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "The 16:17 UTC slot of September 26 is the first export with the mix, and its counts record did not exist when this ledger was written at 12:45 UTC."
+  },
+  {
+   "id": "R-92",
+   "date": "2026-09-26",
+   "state": "on main",
+   "steps": [
+    {
+     "id": "S-6.206",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "The tags reach customers with the 16:17 UTC slot's release and the pages with Fly release 37; the parallel package tag-precision measures the rules engine."
+  },
+  {
+   "id": "R-93",
+   "date": "2026-09-26",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.207",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "No generated package from the drive is reviewed or served; the first generation wave of fifty seeds on the Tactical lane waits for the inventory to finish (the parallel package seed-wave)."
+  },
+  {
+   "id": "R-94",
+   "date": "2026-09-26",
+   "state": "on main",
+   "steps": [
+    {
+     "id": "S-6.208",
+     "status": "building",
+     "live": false
+    }
+   ],
+   "gap": "Waits for Fly release 37; Fly release 36 is live unchanged since 23:23 UTC on September 25."
+  },
+  {
+   "id": "R-95",
+   "date": "2026-09-26",
+   "state": "proposed",
+   "steps": [
+    {
+     "id": "S-6.209",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "The parallel package facet-tags started on September 26; nothing is served with these tags."
+  },
+  {
+   "id": "R-96",
+   "date": "2026-09-26",
+   "state": "building",
+   "steps": [
+    {
+     "id": "S-6.76",
+     "status": "ready",
+     "live": false
+    },
+    {
+     "id": "S-6.77",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.199",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.55",
+     "status": "proposed",
+     "live": false
+    },
+    {
+     "id": "S-6.63",
+     "status": "building",
+     "live": false
+    },
+    {
+     "id": "S-6.83",
+     "status": "proposed",
+     "live": false
+    }
+   ],
+   "gap": "Server-side oracles that review files and generate variations do not exist on main; the hosted service makes no model call by design, so oracles run on this workstation's schedules, and Ollama Cloud is refused until October 1."
+  }
+ ],
+ "requests_without_step": [
+  {
+   "id": "R-11",
+   "date": "2026-09-22",
+   "state": "on main",
+   "source": "decision table, Hosting plans",
+   "gap": "No roadmap step names the free-plan limits; the 100 emails a day cap is watched by hand."
+  },
+  {
+   "id": "R-50",
+   "date": "2026-09-24",
+   "state": "on main",
+   "source": "handoff 09-24 item 5",
+   "gap": "No roadmap step records the free-service inventory or the limits watched."
+  },
+  {
+   "id": "R-53",
+   "date": "2026-09-24",
+   "state": "blocked",
+   "source": "handoff 09-24 item 7",
+   "gap": "No roadmap step names search engine optimization or a blog, and the line waits for October 1."
+  },
+  {
+   "id": "R-68",
+   "date": "2026-09-24",
+   "state": "not started",
+   "source": "handoff 09-24 item 14",
+   "gap": "The research never reached main, and the September 24 order \"Turn the research records into roadmap steps: Procedural Graphs\" is not done."
+  },
+  {
+   "id": "R-88",
+   "date": "2026-09-25",
+   "state": "on main",
+   "source": "decision table, Delegated decisions",
+   "gap": "None; a rule needs no roadmap step."
+  }
+ ],
+ "steps_without_request": [
+  {
+   "id": "S-0.5",
+   "status": "published",
+   "title": "Text conformance, standalone export, example 26, export command"
+  },
+  {
+   "id": "S-1.1",
+   "status": "published",
+   "title": "Temporal fact graph in Context Intelligence"
+  },
+  {
+   "id": "S-1.2",
+   "status": "published",
+   "title": "Memory versioning with history, diff, and rollback"
+  },
+  {
+   "id": "S-1.3",
+   "status": "published",
+   "title": "Shared memory scopes with writer identity"
+  },
+  {
+   "id": "S-1.4",
+   "status": "building",
+   "title": "Evaluation product command over a frozen suite"
+  },
+  {
+   "id": "S-1.5",
+   "status": "published",
+   "title": "Operation cost records wired into invocations and calls"
+  },
+  {
+   "id": "S-1.6",
+   "status": "published",
+   "title": "Model-versus-not decision record per operation"
+  },
+  {
+   "id": "S-1.7",
+   "status": "building",
+   "title": "Runnable prompt and harness optimization command"
+  },
+  {
+   "id": "S-1.8",
+   "status": "published",
+   "title": "Specialist training from learnable call records"
+  },
+  {
+   "id": "S-1.9",
+   "status": "offline_verified",
+   "title": "Feature matrix regeneration with evidence links"
+  },
+  {
+   "id": "S-1.10",
+   "status": "offline_verified",
+   "title": "Detection and correction node family with confidence"
+  },
+  {
+   "id": "S-1.11",
+   "status": "offline_verified",
+   "title": "Job-description-seeded intelligence pipeline and first seeds"
+  },
+  {
+   "id": "S-2.6",
+   "status": "offline_verified",
+   "title": "Dimension inventory at every level"
+  },
+  {
+   "id": "S-2.7",
+   "status": "offline_verified",
+   "title": "Prompt element and response-style dimensions as grid axes"
+  },
+  {
+   "id": "S-2.20",
+   "status": "offline_verified",
+   "title": "Typed action decisions over an element table"
+  },
+  {
+   "id": "S-2.21",
+   "status": "proposed",
+   "title": "Browser harness adapter with an element table reader and independent outcome verification"
+  },
+  {
+   "id": "S-2.22",
+   "status": "offline_verified",
+   "title": "Local resource detection and a supervisor for harness instances"
+  },
+  {
+   "id": "S-2.24",
+   "status": "offline_verified",
+   "title": "Hibernation protocol, capacity reservation, and progress-aware stalls"
+  },
+  {
+   "id": "S-2.25",
+   "status": "proposed",
+   "title": "Execution profile per workload class instead of one shape for every node"
+  },
+  {
+   "id": "S-2.26",
+   "status": "proposed",
+   "title": "Orphan recovery and shared model residency"
+  },
+  {
+   "id": "S-2.27",
+   "status": "proposed",
+   "title": "Skill pack importer from public repositories into candidate Context Intelligence"
+  },
+  {
+   "id": "S-2.23",
+   "status": "ready",
+   "title": "Cluster placement decision, one pod per node against a worker pool that hosts many nodes"
+  },
+  {
+   "id": "S-4.11",
+   "status": "offline_verified",
+   "title": "A usable total token ceiling, or an honest refusal that names what it needs"
+  },
+  {
+   "id": "S-4.10",
+   "status": "proposed",
+   "title": "Cost reservation ledger before work, reconciled after"
+  },
+  {
+   "id": "S-4.8",
+   "status": "proposed",
+   "title": "Cloud capacity within a client budget, quotas, and spin-up policy"
+  },
+  {
+   "id": "S-4.9",
+   "status": "proposed",
+   "title": "Administrator surfaces for system and client administrators"
+  },
+  {
+   "id": "S-2.8",
+   "status": "proposed",
+   "title": "Middleware and wrapper abstractions for microservice hosting"
+  },
+  {
+   "id": "S-2.9",
+   "status": "offline_verified",
+   "title": "Intelligence storage analysis and measurement"
+  },
+  {
+   "id": "S-2.10",
+   "status": "proposed",
+   "title": "Intelligence access contract and no-direct-edit conformance rule"
+  },
+  {
+   "id": "S-2.11",
+   "status": "proposed",
+   "title": "Search characteristics sidecar and hybrid retrieval over two adapters"
+  },
+  {
+   "id": "S-1.12",
+   "status": "offline_verified",
+   "title": "Adversarial validation and audit of every matrix feature"
+  },
+  {
+   "id": "S-2.12",
+   "status": "offline_verified",
+   "title": "Component interface and intelligence flow documentation with inconsistencies"
+  },
+  {
+   "id": "S-2.14",
+   "status": "offline_verified",
+   "title": "Feature component breakdown with the four intelligence layers as areas"
+  },
+  {
+   "id": "S-2.16",
+   "status": "superseded",
+   "title": "Dated record folders by document type with generated indexes and link rewriting"
+  },
+  {
+   "id": "S-2.17",
+   "status": "offline_verified",
+   "title": "Records index and folder charters"
+  },
+  {
+   "id": "S-2.18",
+   "status": "proposed",
+   "title": "Relayer each declared boundary package from core one boundary at a time"
+  },
+  {
+   "id": "S-2.19",
+   "status": "proposed",
+   "title": "Move the specifications at the docs root into their kind folders with redirect stubs"
+  },
+  {
+   "id": "S-2.15",
+   "status": "building",
+   "title": "Noise injection and explorative optimization over the evaluation product"
+  },
+  {
+   "id": "S-2.13",
+   "status": "offline_verified",
+   "title": "Typed-decision model route (a Jev-class judge) behind the model call boundary"
+  },
+  {
+   "id": "S-2.1",
+   "status": "published",
+   "title": "Step efficiency review record with a deterministic judge"
+  },
+  {
+   "id": "S-2.28",
+   "status": "offline_verified",
+   "title": "One instruction file per harness instance, in the name every harness reads"
+  },
+  {
+   "id": "S-2.2",
+   "status": "proposed",
+   "title": "Harness instance provisioning manifest verified against loaded files"
+  },
+  {
+   "id": "S-4.13",
+   "status": "ready",
+   "title": "First release hosts serving and deterministic work, not customer harnesses"
+  },
+  {
+   "id": "S-4.16",
+   "status": "ready",
+   "title": "Define the deployment in the repository, not in a console"
+  },
+  {
+   "id": "S-4.14",
+   "status": "ready",
+   "title": "Measure occupancy and egress from one instrumented deployment before choosing a host"
+  },
+  {
+   "id": "S-4.15",
+   "status": "ready",
+   "title": "Honest units for a release the customer executes"
+  },
+  {
+   "id": "S-4.12",
+   "status": "offline_verified",
+   "title": "The first paid surface serves what goes into a harness instance"
+  },
+  {
+   "id": "S-2.34",
+   "status": "offline_verified",
+   "title": "External service capabilities, recorded without their credentials"
+  },
+  {
+   "id": "S-3.7",
+   "status": "ready",
+   "title": "Mirror the name families in core into folders, one tranche at a time"
+  },
+  {
+   "id": "S-2.37",
+   "status": "offline_verified",
+   "title": "One atomic node provisioned into one harness folder"
+  },
+  {
+   "id": "S-2.41",
+   "status": "offline_verified",
+   "title": "Keep what a run's model calls can teach, without keeping what must not be kept"
+  },
+  {
+   "id": "S-2.40",
+   "status": "offline_verified",
+   "title": "A spawned node's folder is filled before the node starts"
+  },
+  {
+   "id": "S-2.39",
+   "status": "offline_verified",
+   "title": "Guardrails as records a run carries, evaluated at declared points"
+  },
+  {
+   "id": "S-2.38",
+   "status": "offline_verified",
+   "title": "A queue of exact capability gaps, each one precise enough to build against"
+  },
+  {
+   "id": "S-2.35",
+   "status": "offline_verified",
+   "title": "Tag dimensions for intelligence, so it can be found and its gaps named"
+  },
+  {
+   "id": "S-2.36",
+   "status": "offline_verified",
+   "title": "One authentication shared across every harness instance, by lease"
+  },
+  {
+   "id": "S-2.32",
+   "status": "offline_verified",
+   "title": "Harness Intelligence, one catalogue of what a harness instance can be given"
+  },
+  {
+   "id": "S-2.33",
+   "status": "offline_verified",
+   "title": "A run searches all four intelligence layers rather than one"
+  },
+  {
+   "id": "S-2.29",
+   "status": "proposed",
+   "title": "Harness capability profile with a confirmation that the instance loaded what it was given"
+  },
+  {
+   "id": "S-2.30",
+   "status": "proposed",
+   "title": "Portable capability package, written and read in the published plugin layout"
+  },
+  {
+   "id": "S-2.31",
+   "status": "proposed",
+   "title": "Provisioning set record, separating what was offered, fetched, exposed to the model, used, and verified"
+  },
+  {
+   "id": "S-2.3",
+   "status": "proposed",
+   "title": "Iterative publication with consumer output digests"
+  },
+  {
+   "id": "S-2.4",
+   "status": "building",
+   "title": "Node grid over typed input parameters with separate counts"
+  },
+  {
+   "id": "S-2.5",
+   "status": "published",
+   "title": "Versioned training data store and heuristic adoption policy"
+  },
+  {
+   "id": "S-3.1",
+   "status": "building",
+   "title": "Offline convergence run over a grid with deterministic graders"
+  },
+  {
+   "id": "S-3.2",
+   "status": "proposed",
+   "title": "Live convergence run on an authorized Ollama Cloud route"
+  },
+  {
+   "id": "S-3.3",
+   "status": "proposed",
+   "title": "Adversarial validation of claimed improvements"
+  },
+  {
+   "id": "S-3.4",
+   "status": "proposed",
+   "title": "Runnable optimizer proof on the live suite"
+  },
+  {
+   "id": "S-3.5",
+   "status": "blocked",
+   "title": "Unseen tasks on an authorized frontier model and Kaggle export"
+  },
+  {
+   "id": "S-4.1",
+   "status": "offline_verified",
+   "title": "Worker image, Kubernetes manifests, placement policy"
+  },
+  {
+   "id": "S-4.7",
+   "status": "published",
+   "title": "Worker image publication to the GitHub Container Registry"
+  },
+  {
+   "id": "S-4.2",
+   "status": "building",
+   "title": "Service software with tenants, keys, and metering"
+  },
+  {
+   "id": "S-4.3",
+   "status": "building",
+   "title": "Packaging tiers and pricing draft"
+  },
+  {
+   "id": "S-4.4",
+   "status": "building",
+   "title": "Deployment to the owner's cloud account"
+  },
+  {
+   "id": "S-4.5",
+   "status": "building",
+   "title": "Billing with metered usage"
+  },
+  {
+   "id": "S-4.6",
+   "status": "blocked",
+   "title": "Package index publication"
+  },
+  {
+   "id": "S-5.1",
+   "status": "offline_verified",
+   "title": "Branding record"
+  },
+  {
+   "id": "S-5.2",
+   "status": "offline_verified",
+   "title": "Business paths record"
+  },
+  {
+   "id": "S-5.3",
+   "status": "proposed",
+   "title": "Career research"
+  },
+  {
+   "id": "S-6.1",
+   "status": "building",
+   "title": "Confine the complete provisioning write set"
+  },
+  {
+   "id": "S-6.2",
+   "status": "building",
+   "title": "Make unresolved guardrail decisions stop dependent effects"
+  },
+  {
+   "id": "S-6.3",
+   "status": "building",
+   "title": "Repair model-call occurrence identity, retention, and training persistence"
+  },
+  {
+   "id": "S-6.4",
+   "status": "building",
+   "title": "Bind the provisioning catalogue to durable records and tenant disclosure authority"
+  },
+  {
+   "id": "S-6.5",
+   "status": "building",
+   "title": "Expose provisioning through a versioned Model Context Protocol service"
+  },
+  {
+   "id": "S-6.6",
+   "status": "building",
+   "title": "Persist usage and telemetry with acknowledgments and reconciliation"
+  },
+  {
+   "id": "S-6.7",
+   "status": "building",
+   "title": "Wire public solving to the declared provisioning dependencies"
+  },
+  {
+   "id": "S-6.10",
+   "status": "proposed",
+   "title": "Publish qualified starter packages and prove client retrieval"
+  },
+  {
+   "id": "S-6.11",
+   "status": "proposed",
+   "title": "Publish solutions and verify standalone reuse on fresh inputs"
+  },
+  {
+   "id": "S-6.12",
+   "status": "building",
+   "title": "Build the website, subscriber dashboard, and operator workflows"
+  },
+  {
+   "id": "S-6.13",
+   "status": "building",
+   "title": "Prepare portable deployment definitions and procedures for every hosting family"
+  },
+  {
+   "id": "S-6.14",
+   "status": "proposed",
+   "title": "Qualify the release candidate on the exact exported tree"
+  },
+  {
+   "id": "S-6.15",
+   "status": "building",
+   "title": "Deploy an authorized pilot and qualify its real request path"
+  },
+  {
+   "id": "S-6.16",
+   "status": "proposed",
+   "title": "Activate approved paid access and publish the release decision"
+  },
+  {
+   "id": "S-6.18",
+   "status": "building",
+   "title": "Reorganize coherent code families and update current callers"
+  },
+  {
+   "id": "S-6.19",
+   "status": "proposed",
+   "title": "Continue flexible composition and controlled improvement research"
+  },
+  {
+   "id": "S-6.20",
+   "status": "proposed",
+   "title": "Complete the classification-grid generation and improvement pipeline"
+  },
+  {
+   "id": "S-6.21",
+   "status": "building",
+   "title": "Connect payment lifecycle to durable subscription entitlements"
+  },
+  {
+   "id": "S-6.22",
+   "status": "building",
+   "title": "Maintain sourced competitor, prior-art, funding, and strategic-path research"
+  },
+  {
+   "id": "S-6.23",
+   "status": "proposed",
+   "title": "Exercise every required internal component through its actual owning entry point"
+  },
+  {
+   "id": "S-6.26",
+   "status": "building",
+   "title": "Remove unused pre-launch compatibility while retaining versioned handshakes"
+  },
+  {
+   "id": "S-6.27",
+   "status": "building",
+   "title": "Close independently reproduced contract and data-integrity defects"
+  },
+  {
+   "id": "S-6.28",
+   "status": "building",
+   "title": "Streamline the main line to harness intelligence and delegate every step to a harness"
+  },
+  {
+   "id": "S-6.32",
+   "status": "proposed",
+   "title": "Hosted search as an engine slot with the measured policy and a relevance floor"
+  },
+  {
+   "id": "S-6.38",
+   "status": "proposed",
+   "title": "A familiar customer dashboard with the full account lifecycle"
+  },
+  {
+   "id": "S-6.39",
+   "status": "proposed",
+   "title": "Search access policy: protect the library from scraping, with a free quota to start"
+  },
+  {
+   "id": "S-6.41",
+   "status": "proposed",
+   "title": "Harness run records for self-improvement"
+  },
+  {
+   "id": "S-6.64",
+   "status": "proposed",
+   "title": "Independently authored alternatives to restricted-source ideas"
+  },
+  {
+   "id": "S-6.68",
+   "status": "proposed",
+   "title": "Support, status and incident response for paying customers"
+  },
+  {
+   "id": "S-6.149",
+   "status": "proposed",
+   "title": "A public recipe search: at most three Verified, body-free recipe cards per query, and public recipe pages, inside the search allowance"
+  },
+  {
+   "id": "S-6.150",
+   "status": "proposed",
+   "title": "Recipe Rescue core: a chat request channel slot, a request gate and a deterministic recipe card answer, behind a host setting that is off"
+  },
+  {
+   "id": "S-6.151",
+   "status": "proposed",
+   "title": "Recipe Rescue on Telegram: guest mode in any chat and an ephemeral /recipe command in the owned group"
+  },
+  {
+   "id": "S-6.152",
+   "status": "proposed",
+   "title": "Recipe Rescue on Discord: a user-installed and server-installed app with /recipe and a message command, private answers first"
+  },
+  {
+   "id": "S-6.153",
+   "status": "proposed",
+   "title": "Community spaces: the Discord layout applied from a spec by a one-time setup app, declared bot credentials, ordinary member checks and a measures log"
+  },
+  {
+   "id": "S-6.154",
+   "status": "proposed",
+   "title": "Solution cards: consented write-ups of solved community threads on Baltor's own pages"
+  },
+  {
+   "id": "S-6.155",
+   "status": "proposed",
+   "title": "Unmet recipe requests become consented demand records that feed the package factory"
+  },
+  {
+   "id": "S-6.156",
+   "status": "proposed",
+   "title": "Nothing is sold inside chat apps until the Telegram Stars and Discord Premium Apps flows are qualified"
+  },
+  {
+   "id": "S-6.157",
+   "status": "proposed",
+   "title": "Research watch sources for the chat platforms"
+  },
+  {
+   "id": "S-6.160",
+   "status": "proposed",
+   "title": "Reproducible step materialization (experiment E01): every placement engine proves byte, mode, identity, home-folder and repeatability fidelity, with Microsoft APM as the first upstream engine"
+  },
+  {
+   "id": "S-6.161",
+   "status": "proposed",
+   "title": "Installed, listed, loaded, used and useful (experiment E02): native skill placement measured against no material and forced inclusion"
+  },
+  {
+   "id": "S-6.162",
+   "status": "proposed",
+   "title": "Reuse versus repeated model work (experiment E03): verified code packages against model-written code and a deterministic run"
+  },
+  {
+   "id": "S-6.164",
+   "status": "proposed",
+   "title": "Original harness packages from the agent stack research, through independent review"
+  },
+  {
+   "id": "S-6.165",
+   "status": "proposed",
+   "title": "Token accounting by billing class, dated prices and price-weighted cost per accepted step"
+  },
+  {
+   "id": "S-6.166",
+   "status": "proposed",
+   "title": "Cache-stable step files: shared material first, the step's own assignment last, and no volatile values before the shared part ends"
+  },
+  {
+   "id": "S-6.167",
+   "status": "proposed",
+   "title": "The step proxy as an independent recorder and live limiter: an append-only exchange log written before forwarding, live call and token limits, and preserved reasoning items"
+  },
+  {
+   "id": "S-6.168",
+   "status": "proposed",
+   "title": "Step reach controls: no secret reachable from a step, built-in tools counted in the step menu, deny-by-default egress and a data policy at each tool call"
+  },
+  {
+   "id": "S-6.169",
+   "status": "proposed",
+   "title": "Failure records with the interaction edge, the fault side and the repair owner, labelled at the earliest unrecovered failure"
+  },
+  {
+   "id": "S-6.170",
+   "status": "proposed",
+   "title": "A compaction policy slot with native, drop-only, model summary and fresh-restart engines, checked for instruction survival"
+  },
+  {
+   "id": "S-6.171",
+   "status": "proposed",
+   "title": "A typed-decision provisioning engine that decides which skills, tools and context files the next step receives"
+  },
+  {
+   "id": "S-6.172",
+   "status": "proposed",
+   "title": "Regularized selection for improvement Loops: an edit budget, a noise floor, a cost rule, a leakage review before evaluation and pruning"
+  },
+  {
+   "id": "S-6.173",
+   "status": "proposed",
+   "title": "A harness efficiency benchmark with and without Baltor on the HarnessTax method, cheap models first"
+  },
+  {
+   "id": "S-6.174",
+   "status": "proposed",
+   "title": "An evidence section on the efficiency page: outside evidence with its population and limits, and Baltor numbers only from run records"
+  },
+  {
+   "id": "S-6.175",
+   "status": "proposed",
+   "title": "A harness engineering package family: ten candidates with their licence basis, review criteria and regression cases for published items"
+  },
+  {
+   "id": "S-6.176",
+   "status": "proposed",
+   "title": "Baltor harness defaults for the Baltor forks and the step executor: file offload, asynchronous tools, constrained output with a capability check and a progress bound"
+  },
+  {
+   "id": "S-6.177",
+   "status": "building",
+   "title": "Every Baltor client asks with version 2 of the provisioning request, so an item a search offers is never refused on download"
+  },
+  {
+   "id": "S-6.185",
+   "status": "proposed",
+   "title": "A pre-registered with-and-without study on an outside population: SkillsBench v1.1 with no material, the raw skill, Baltor's selection allowed to add nothing, the forced bundle and the oracle"
+  },
+  {
+   "id": "S-6.186",
+   "status": "proposed",
+   "title": "Design partners and one weekly number: outside developers and teams through a finished task of their own, counted without tracking people"
+  },
+  {
+   "id": "S-6.187",
+   "status": "proposed",
+   "title": "How Baltor is built with AI coding agents: a public statement, and a review by a second model family before a change to identity, billing, access or deployment code is pushed"
+  },
+  {
+   "id": "S-6.188",
+   "status": "proposed",
+   "title": "Company pages: About, Work with us and Press from public facts, with the block that names who runs Baltor held until the owner decides"
+  },
+  {
+   "id": "S-6.189",
+   "status": "proposed",
+   "title": "Generation hygiene: certificate checks on every generation lane, a repository hygiene check, and a published note on how generated candidates are screened"
+  },
+  {
+   "id": "S-6.190",
+   "status": "proposed",
+   "title": "Supply-chain trust for served material: a working disclosure route, a published threat model, signed catalogue releases verified before writing, and scan results per item"
+  },
+  {
+   "id": "S-6.192",
+   "status": "proposed",
+   "title": "One privacy notice and terms revision for a paid service, drafted by engineering and approved by the owner before it is published"
+  },
+  {
+   "id": "S-6.193",
+   "status": "proposed",
+   "title": "Identity controls: a second factor for every staff role, then OAuth for the protocol endpoint"
+  },
+  {
+   "id": "S-6.194",
+   "status": "proposed",
+   "title": "A trust section and the web basics a reviewer checks first: CAA, DMARC reports, subprocessors, a dated list of what does not exist yet and a continuity answer"
+  },
+  {
+   "id": "S-6.195",
+   "status": "proposed",
+   "title": "Payable outside the United States: Managed Payments requested on every checkout, sandbox renewals with addresses abroad, and one pricing answer from that evidence"
+  }
+ ],
+ "unknown_step_ids": [],
+ "note": "A count of live steps is not a working customer journey; the ledger's state column and the roadmap's status may disagree, and each disagreement is a finding for the integrating session."
+}
