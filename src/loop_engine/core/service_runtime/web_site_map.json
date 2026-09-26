@@ -103,7 +103,7 @@
       "address": "/examples",
       "view": "examples",
       "title": "Examples and case studies",
-      "description": "Watch one task run step by step, read what happened in three real cases, and try a first search yourself.",
+      "description": "Watch one task run step by step, read what happened in four real cases, and try a first search yourself.",
       "group": "Product",
       "linked_from": [
         "footer"
@@ -671,6 +671,20 @@
       "scroll_budget": "page",
       "price_in_first_screen": false,
       "indexed": true
+    },
+    {
+      "address": "/case-studies/decision-red-team",
+      "view": "case-studies-decision-red-team",
+      "title": "Modern slavery indicators in business-framed requests",
+      "description": "Five requests from a CC0 red-teaming write-up, put to rules and to a model as typed decisions: what each decided, what failed and what was not measured.",
+      "group": "Use cases",
+      "linked_from": [
+        "page"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "documentation",
+      "price_in_first_screen": false,
+      "indexed": true
     }
   ],
   "header": {
@@ -1040,6 +1054,11 @@
     {
       "hostname": "deck.baltor.ai",
       "address": "/deck",
+      "anchor": ""
+    },
+    {
+      "hostname": "redteam.baltor.ai",
+      "address": "/case-studies/decision-red-team",
       "anchor": ""
     }
   ],

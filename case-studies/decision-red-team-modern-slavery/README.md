@@ -78,6 +78,41 @@ needs the TypeSafe credential in the environment (reference
 generic `decision_provider_failed` code and the engine's own detail. The
 pages `red-team-2.html` and `red-team-3.html` beside the runs show the rows.
 
+## The served page
+
+Since September 26, 2026 the service serves this study as a page of the
+website at `/case-studies/decision-red-team`, listed in the site map under
+Use cases, linked from the examples page and opened at the root of the
+hostname `redteam.baltor.ai` once that hostname has its DNS record and its
+certificate. The page is rendered by
+`src/loop_engine/core/service_runtime/red_team_page.py` from one packaged
+record, `web_assets/case-studies/decision-red-team.json`, so the service
+needs no artifacts folder at run time. The record is written from the run
+records by the generator:
+
+```bash
+PYTHONPATH=src:tools python tools/build_showcase_page.py \
+  --run artifacts/decision-red-team-2026-09-25/run-2.json \
+  --run artifacts/decision-red-team-2026-09-25/run-3.json \
+  --html artifacts/decision-red-team-2026-09-25/showcase-1.html
+PYTHONPATH=src:tools python tools/build_showcase_page.py --run ... --check
+PYTHONPATH=src:tools python -m unittest tools.test_red_team_page -v
+```
+
+The generator refuses a run whose scenario record is not the pinned one, and
+the page's own reader pins the same digest again, refuses a record in which a
+decision maker proceeded on a business-framed request without a recorded
+failure, and refuses totals that disagree with the rows. `--check` compares
+the packaged record with what the runs give and exits 1 when it is stale;
+`tools/test_red_team_page.py` runs that comparison, renders the page, and
+holds every number on it to the record. The page keeps the sentence "Each row
+is a typed decision, not generated text.", shows no size or digest, and uses
+plain words: step, decision, rule, model. It states the rules engine at 15 of
+15 checks in both runs, Tactical (Gemma 4) at 14 of 15 with the patterns and 9
+of 15 with one recorded failure without them, and that Jev was not measured.
+The framed page written beside the runs, `showcase-1.html`, is a review copy;
+the service renders the page itself from the record.
+
 ## What this does not establish
 
 Nothing here measures text generation: no engine is asked to write the

@@ -244,6 +244,8 @@ root address, since September 24, 2026:
 | `status.baltor.ai` | `/status` |
 | `examples.baltor.ai` | `/examples` |
 | `demo.baltor.ai` | `/demo` |
+| `deck.baltor.ai` | `/deck` |
+| `redteam.baltor.ai` | `/case-studies/decision-red-team`, rendered from its packaged record (September 26, 2026) |
 
 A hostname the list does not name shows the homepage. Every other address
 shows its own page on every hostname, and every page names its address on

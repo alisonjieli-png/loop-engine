@@ -188,7 +188,7 @@ def listing_problems(site_map, serve) -> list:
 def _served(site_map=None):
     """Serve an address as the service does: its page table first, then the pages the model directory renders, then
     the library page, rendered here from a view that serves nothing because no catalogue runs in a check."""
-    from . import library_page
+    from . import library_page, red_team_page
     from .model_directory_pages import rendered_page
 
     def serve(address, host):
@@ -197,6 +197,8 @@ def _served(site_map=None):
             answer = rendered_page(address, "GET", DISPLAY_NAME, host)
         if answer is None and library_page.handles(address):
             answer = library_page.rendered(library_page.empty_view(), address, "GET", DISPLAY_NAME, host)
+        if answer is None:
+            answer = red_team_page.rendered(address, "GET", DISPLAY_NAME, host)
         return answer
     return serve
 

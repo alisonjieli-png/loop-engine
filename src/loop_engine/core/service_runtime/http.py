@@ -43,6 +43,7 @@ from .feedback import (ASK_FOR_MATERIAL_LINE, FEEDBACK_OPERATIONS as CUSTOMER_FE
                        ServiceFeedback)
 from .model_directory_pages import rendered_page
 from . import library_page
+from . import red_team_page
 from .web_pages import (CACHEABLE_WEB_ASSETS, GENERATED_WEB_FILES, HTML_MEDIA_TYPE, PUBLIC_ASSET_CACHE_CONTROL,
                         WEB_ASSETS, asset_etag, missing_address_page, served_asset, validator_matches)
 
@@ -1610,6 +1611,9 @@ class ServiceHttpApplication:
             # published without a redeploy reaches it within the refresher's minute.
             asset = library_page.rendered(self.provisioning.current_view(), path, method,
                                           self.configuration.display_name, request.headers.get("host"))
+        if asset is None:
+            # The decision red team page is rendered from its packaged record, at its address and at the root of its hostname.
+            asset = red_team_page.rendered(path, method, self.configuration.display_name, request.headers.get("host"))
         if asset is not None:
             body, media_type = asset
             headers = self._page_headers()

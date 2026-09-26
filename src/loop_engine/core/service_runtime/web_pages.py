@@ -357,9 +357,13 @@ def served_asset(path, method, display_name, host=None, site_map=None):
     if path not in WEB_ASSETS:
         return None
     # A hostname whose root is another page serves that page's own file at its root, so a page with a file of its
-    # own opens there as surely as a view of the one page application does.
+    # own opens there as surely as a view of the one page application does. A root page that is not a packaged file
+    # (the decision red team page, rendered from its record) is left to its renderer, which the transport asks after
+    # this table; until September 26, 2026 such a root served the homepage's bytes under the other page's head.
     root = site_map.root_address(host) if path == "/" else path
-    name, media_type = WEB_ASSETS[root if root in WEB_ASSETS else path]
+    if root not in WEB_ASSETS:
+        return None
+    name, media_type = WEB_ASSETS[root]
     body = read_packaged_asset(name)
     if media_type == HTML_MEDIA_TYPE:
         body = body.replace(SERVICE_NAME_PLACEHOLDER, escape(display_name, quote=True).encode("utf-8"))
