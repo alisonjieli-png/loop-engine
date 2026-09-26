@@ -140,7 +140,8 @@ class VariationTest(unittest.TestCase):
                 "--factory", str(self.library / "oracle" / "factory"),
                 "--claude-counter", str(self.library / "oracle" / "claude.jsonl"),
                 "--folder-list", str(self.library / "release-folders" / "reviewed-folders.txt"),
-                "--lane-root", str(self.root / "lanes"), "--licence-script", str(self.script)]
+                "--lane-root", str(self.root / "lanes"), "--licence-script", str(self.script),
+                "--authorize-model-calls"]
 
     def select(self, run: str = "run-1", count: int = 10) -> tuple:
         self.assertEqual(tool.main(self.argv(run, "select", count)), 0)
@@ -301,6 +302,19 @@ class VariationTest(unittest.TestCase):
         outages = [(event["stage"], event["reason"]) for event in events if event["event"] == "outage"]
         self.assertEqual(outages, [("review", "program_missing"), ("review", "review_call_cap_reached")])
         self.assertFalse((folder / "review.done").exists())
+
+    def test_a_model_stage_without_the_explicit_authority_stops_before_any_call(self):
+        # Known-wrong case: a run that names no model-call authority must not reach the generation lane or the
+        # review panel. The check fails if the refusal in main() is removed.
+        argv = [value for value in self.argv("run-1", "generate") if value != "--authorize-model-calls"]
+        with mock.patch.object(tool.Run, "generate", side_effect=AssertionError("a model stage ran")), \
+                mock.patch.object(tool.Run, "review", side_effect=AssertionError("a model stage ran")):
+            self.assertEqual(tool.main(argv), 2)
+            review = [value for value in self.argv("run-1", "review") if value != "--authorize-model-calls"]
+            self.assertEqual(tool.main(review), 2)
+        # A stage that calls no model needs no authority.
+        self.assertEqual(tool.main([value for value in self.argv("run-1", "select")
+                                    if value != "--authorize-model-calls"]), 0)
 
 
 if __name__ == "__main__":

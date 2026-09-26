@@ -715,6 +715,9 @@ class Run:
 
 
 STAGES = ("select", "generate", "attribute", "prepare", "prechecks", "review", "write")
+#: The stages that call a model (generation on the Tactical lane, the one screening review). They run only with
+#: --authorize-model-calls, so a run without that explicit authority stops before any call.
+MODEL_STAGES = ("generate", "review")
 
 
 def main(argv=None) -> int:
@@ -732,14 +735,20 @@ def main(argv=None) -> int:
     parser.add_argument("--licence-script", default=str(DEFAULT_LICENCE_SCRIPT))
     parser.add_argument("--recorded-at", default=time.strftime("%Y-%m-%d", time.gmtime()))
     parser.add_argument("--review-timeout", type=float, default=3600.0)
+    parser.add_argument("--authorize-model-calls", action="store_true",
+                        help="the explicit authority for the generation and review stages, which call models")
     options = parser.parse_args(argv)
+    stages = STAGES if options.stage == "all" else (options.stage,)
+    if any(stage in MODEL_STAGES for stage in stages) and not options.authorize_model_calls:
+        print(json.dumps({"refused": True, "code": "model_calls_not_authorized",
+                          "stages": [stage for stage in stages if stage in MODEL_STAGES]}))
+        return 2
     if not os.environ.get("TMPDIR"):
         scratch = Path.home() / ".le-ci-tmp" / "oracle-variations"
         scratch.mkdir(parents=True, exist_ok=True)
         os.environ["TMPDIR"] = str(scratch)
         tempfile.tempdir = str(scratch)
     run = Run(options)
-    stages = STAGES if options.stage == "all" else (options.stage,)
     try:
         for stage in stages:
             getattr(run, stage)()
