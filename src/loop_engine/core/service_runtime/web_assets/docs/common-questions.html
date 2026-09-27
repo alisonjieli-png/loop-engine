@@ -1,0 +1,14 @@
+<h2 id="using-an-existing-harness">Using an existing harness</h2>
+<p>You can connect an existing client to the hosted library without installing the local engine. Use the published recipe for your client, then confirm its account and available tools. See <a href="/setup">Get set up</a>.</p>
+<h2 id="choosing-a-model">Choosing a model</h2>
+<p>Configure models in your harness. Your Baltor service token authorizes library operations; model-provider credentials and charges remain separate. Connecting the library does not select a model or start a task for you.</p>
+<h2 id="getting-an-empty-search-result">Getting an empty search result</h2>
+<p>An empty result can reflect the query, account access, withdrawn material or selection filters. Check the effects the step is already allowed to use and the current request format. Read the service's capabilities before using a filter.</p>
+<p>Selecting material with declared effects does not grant permission to execute it. See <a href="/docs/searching-and-retrieving">Searching and retrieving</a>.</p>
+<h2 id="checking-a-downloaded-package">Checking a downloaded package</h2>
+<p>Compare the received bytes with the selected digest. For a package, inspect its file list and verify each retrieved file against its own digest. Preserve the relative paths and inspect required dependencies before loading the material.</p>
+<p>File presence, successful loading and a checked task result are separate facts.</p>
+<h2 id="understanding-usage">Understanding usage</h2>
+<p>The service records applicable item reads. That count does not measure model tokens or successful tasks. Keep the same request identity when retrying the same uncertain read, as <a href="/docs/usage-and-what-you-pay-for">Usage and what you pay for</a> explains.</p>
+<h2 id="reporting-a-problem">Reporting a problem</h2>
+<p>Keep the endpoint, time, error code, request reference, item identity and digest. Describe whether the failure occurred during connection, search, download or native loading. Leave credentials and private task content out of the report. See <a href="/docs/troubleshooting">Troubleshooting</a>.</p>

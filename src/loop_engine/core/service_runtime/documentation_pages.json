@@ -1,6 +1,28 @@
 {
- "index_digest": "ebbc1dd50d53afd52e5bda39ac7014abf9999199ab46050967928ac9f0476fa4",
+ "index_digest": "79aa43a0db28cded45670600aec2914d001c34cc811654c7fb06c970cf79858d",
  "pages": {
+  "common-questions": {
+   "body_address": "/assets/docs/common-questions.html",
+   "body_digest": "f38d9b0f5cfaf3bc869e2090fa14610eaa2e29334e499ed26b6253ae6a7e8bf9",
+   "heading": "Common questions",
+   "id": "common-questions",
+   "kind_line": "Kind: customer answers about connecting, retrieving and using library material.",
+   "record_type": "website_documentation_page/v1",
+   "repository_path": "docs/guides/service-common-questions.md",
+   "source_digest": "d02a6dbe8b4c7239e01f9752a403103e695960250285e3a8ec345e59424562d3",
+   "title": "Common questions"
+  },
+  "component-concepts": {
+   "body_address": "/assets/docs/component-concepts.html",
+   "body_digest": "c4150f6690c334c74b0dfb21be0fee9ef585919281b45ec066700d947a612d92",
+   "heading": "Components, packages and files",
+   "id": "component-concepts",
+   "kind_line": "Kind: customer guide to selecting and checking library material.",
+   "record_type": "website_documentation_page/v1",
+   "repository_path": "docs/guides/service-component-concepts.md",
+   "source_digest": "efe2bf7b6a769721c6a457d8961ba010701bb47bd733f6ff80c47d860f90e918",
+   "title": "Components, packages and files"
+  },
   "quickstart-baltor-harness": {
    "body_address": "/assets/docs/quickstart-baltor-harness.html",
    "body_digest": "ebb66e52edb9fff8a6e2c47250e6a2722cddce7da6261d20e782ef5c5ce111fb",
@@ -80,24 +102,35 @@
   },
   "troubleshooting": {
    "body_address": "/assets/docs/troubleshooting.html",
-   "body_digest": "b2370d5ce36aca856d391b8d12d63353850da49b2c3063af243837f9c5f445d8",
+   "body_digest": "365b3746e999475e1d2a3cef935b67a2083204e1d0adf49c0be3ba84ece10b3d",
    "heading": "Troubleshooting",
    "id": "troubleshooting",
    "kind_line": "Kind: customer guide to connection, access, selection and uncertain download outcomes.",
    "record_type": "website_documentation_page/v1",
    "repository_path": "docs/guides/service-troubleshooting.md",
-   "source_digest": "1bf56ad52c22e6b147558908b349732f5877860c3db351091fde43eae2e3c836",
+   "source_digest": "8d1c949764249208256c6769fa774b260329b7ac0d57937cdcf919d66b7db833",
    "title": "Troubleshooting"
+  },
+  "updates-and-withdrawals": {
+   "body_address": "/assets/docs/updates-and-withdrawals.html",
+   "body_digest": "5cfde0f1babdc2c7187b968cbbc935291580a8c2025e08c98642fd855453f797",
+   "heading": "Updates and withdrawals",
+   "id": "updates-and-withdrawals",
+   "kind_line": "Kind: customer guide to selecting a current version and handling withdrawn material.",
+   "record_type": "website_documentation_page/v1",
+   "repository_path": "docs/guides/service-updates-and-withdrawals.md",
+   "source_digest": "063da19894383eb7dc272a29cdf6ec037c282a0093251a32f9b672ecfed567d6",
+   "title": "Updates and withdrawals"
   },
   "usage-and-what-you-pay-for": {
    "body_address": "/assets/docs/usage-and-what-you-pay-for.html",
-   "body_digest": "e687fd65f59fa8a161bd8d7c1f589af119a02b5ac31d6aaad6d18a374dc4d112",
+   "body_digest": "af9fc70ed7bad23ba8a77c8dbaa64cb47ca45e5f7beb56ff814fce6b8147fdf3",
    "heading": "Usage and what you pay for",
    "id": "usage-and-what-you-pay-for",
    "kind_line": "Kind: customer guide to the plan, download usage and uncertain outcomes.",
    "record_type": "website_documentation_page/v1",
    "repository_path": "docs/guides/service-usage-and-what-you-pay-for.md",
-   "source_digest": "0f3e71cccf7ca4bf6cc66aab4954bb70ba852dcb809583b996b7b686a11acdf4",
+   "source_digest": "9e00aac2c26089df1f0a7e87820af38f36433a22a8260c2dfb7610c70dc8d5c5",
    "title": "Usage and what you pay for"
   },
   "what-baltor-is": {
