@@ -93,6 +93,19 @@ FENCE = re.compile(r"^```([A-Za-z0-9+-]*)\s*$")
 TABLE_ROW = re.compile(r"^\|(.+)\|\s*$")
 #: Programs whose command lines this check verifies.
 CHECKED_PROGRAMS = ("loop-engine", "codex", "opencode", "claude", "pi")
+#: Two claims whose words all exist in the source and can still be wrong. Each
+#: rule reads a paragraph and is held to values read from the source.
+#:
+#: A current request that omits `authority_effects` receives the effects its
+#: client configuration names in a header, or the source's default. Only a
+#: version 1 provisioning request withholds effect-declaring material without
+#: the field. A paragraph that says an omitted selection withholds material
+#: must name version 1 or state that default.
+PROVISIONING_MODULE = "src/loop_engine/core/provisioning_server.py"
+OMITTED_SELECTION = re.compile(r"\b(?:omit|omits|omitted|without)\b", re.IGNORECASE)
+EFFECT_WORD = re.compile(r"\beffects?\b", re.IGNORECASE)
+WITHHOLDING = re.compile(r"\b(?:withhold|withholds|withheld|receives no item)\b", re.IGNORECASE)
+VERSION_ONE = re.compile(r"\bversion 1\b", re.IGNORECASE)
 
 
 class DocumentationDrift(Exception):
@@ -351,7 +364,24 @@ def source_facts(root: Path) -> dict:
     record_types = {value for value in strings if RECORD_TYPE.match(value)}
     record_types.add(recipes["record_type"])
     http_tree = trees[root / HTTP_MODULE]
+    default_effects = None
+    for node in http_tree.body:
+        if (isinstance(node, ast.Assign) and any(isinstance(target, ast.Name) and target.id == "DEFAULT_STEP_EFFECTS"
+                                                 for target in node.targets)):
+            default_effects = tuple(ast.literal_eval(node.value))
+    if default_effects is None:
+        raise DocumentationDrift("the transport module declares no DEFAULT_STEP_EFFECTS")
+    provisioning = {}
+    for node in trees[root / PROVISIONING_MODULE].body:
+        if isinstance(node, ast.Assign) and isinstance(node.value, ast.Constant):
+            for target in node.targets:
+                if isinstance(target, ast.Name) and target.id in ("BODY_RECORD_TYPE", "TIERED_BODY_RECORD_TYPE"):
+                    provisioning[target.id] = node.value.value
+    if set(provisioning) != {"BODY_RECORD_TYPE", "TIERED_BODY_RECORD_TYPE"}:
+        raise DocumentationDrift("the provisioning module declares no version 1 and version 2 body record types")
     return {"refusal_codes": refusals, "addresses": addresses, "scopes": scopes,
+            "default_step_effects": default_effects,
+            "body_record_types": (provisioning["BODY_RECORD_TYPE"], provisioning["TIERED_BODY_RECORD_TYPE"]),
             "refusal_statuses": _refusal_statuses(http_tree, raise_sites),
             "record_types": record_types, "strings": strings, "names": names,
             "service_commands": service_commands, "root_commands": root_commands,
@@ -399,6 +429,49 @@ def page_facts(text: str) -> dict:
             "refusal_codes": refusal_rows, "refusal_statuses": status_rows}
 
 
+def paragraphs(text: str) -> list:
+    """The prose blocks of a page, split at blank lines, with fenced blocks left out."""
+    blocks, current, inside = [], [], False
+    for line in text.splitlines():
+        if FENCE.match(line):
+            inside = not inside
+            continue
+        if inside:
+            continue
+        if line.strip():
+            current.append(line.strip())
+        elif current:
+            blocks.append(" ".join(current))
+            current = []
+    if current:
+        blocks.append(" ".join(current))
+    return blocks
+
+
+def claim_findings(text: str, facts: dict) -> list:
+    """The paragraphs of one page whose claim contradicts a value read from the source.
+
+    Each finding is (kind, value, note). A paragraph names the claim it makes in
+    its own words, so this reads only the two claims whose drift was observed.
+    """
+    findings = []
+    legacy_body, current_body = facts["body_record_types"]
+    defaults = facts["default_step_effects"]
+    for block in paragraphs(text):
+        if (defaults and OMITTED_SELECTION.search(block) and EFFECT_WORD.search(block)
+                and WITHHOLDING.search(block) and not VERSION_ONE.search(block)
+                and not all(effect in block for effect in defaults)):
+            findings.append(("effect_default", block[:120],
+                             "a current request that omits authority_effects receives the client header's "
+                             "effects or {}; only a version 1 provisioning request withholds material "
+                             "without the field".format(", ".join(defaults))))
+        if legacy_body in block and not VERSION_ONE.search(block):
+            findings.append(("body_record_version", legacy_body,
+                             f"a version 2 request returns {current_body}; {legacy_body} answers only a "
+                             "version 1 request, so the page must say which version it describes"))
+    return findings
+
+
 def check(root: Path, pages=DOCUMENTED_PAGES) -> dict:
     """Return one report; every finding names the page, the fact and its kind."""
     facts = source_facts(root)
@@ -413,7 +486,10 @@ def check(root: Path, pages=DOCUMENTED_PAGES) -> dict:
         if not path.is_file():
             refuse(page, "page", page, "the documented page is missing")
             continue
-        found = page_facts(path.read_text(encoding="utf-8"))
+        text = path.read_text(encoding="utf-8")
+        found = page_facts(text)
+        for kind, value, note in claim_findings(text, facts):
+            refuse(page, kind, value, note)
         for value in found["refusal_codes"]:
             checked += 1
             if value not in facts["refusal_codes"]:
@@ -483,7 +559,7 @@ def main(argv=None) -> int:
         print("checked {facts_checked} documented facts; {result}".format(
             facts_checked=report["facts_checked"],
             result="all exist in the service source" if report["passed"]
-            else f"{len(report['findings'])} absent from the service source"))
+            else f"{len(report['findings'])} absent from or contradicted by the service source"))
     return 0 if report["passed"] else 1
 
 

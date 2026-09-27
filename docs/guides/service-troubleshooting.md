@@ -40,9 +40,13 @@ a token scope and an item grant are separate checks.
 An empty result is not a connection failure. It can mean the query has no match,
 the account lacks grants, the item is withdrawn, or the current selection excludes
 it. Search with `authority_effects` only for effects already permitted for your
-step. Omitted or empty effect selection withholds material that declares effects.
-This choice does not authorize executing the material. Read the current request
-version from `/api/v1/capabilities` and update an older client when it is refused.
+step. When a current request omits the field, the service uses the effects that
+your client configuration names in the `Baltor-Step-Effects` header, or reading
+files (`reads_fs`) when there is no header. An empty array withholds material
+that declares effects, and so does a version 1 provisioning request without the
+field. This choice does not authorize executing the material. Read the current
+request version from `/api/v1/capabilities` and update an older client when it
+is refused.
 
 | Code | Status | Next step |
 | --- | --- | --- |

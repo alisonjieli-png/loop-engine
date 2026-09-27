@@ -18,6 +18,7 @@ from check_service_documentation import (
     DOCUMENTED_PAGES,
     _raised_status,
     check,
+    claim_findings,
     page_facts,
     source_facts,
 )
@@ -46,6 +47,19 @@ HTTP_MODULE = "src/loop_engine/core/service_runtime/http.py"
 STATUS_BRANCH = '    if code in ("item_unavailable", "managed_access_token_not_found",'
 MOVED_STATUS_BRANCH = ('    if code == "item_unavailable":\n        return 410, code\n'
                        '    if code in ("managed_access_token_not_found",')
+#: The two paragraphs repaired on September 27, 2026, and the sentences they held before. The old
+#: sentences name only facts the source has, so only the claim rules can refuse them.
+USAGE_PAGE = "docs/guides/service-usage-and-what-you-pay-for.md"
+CURRENT_EFFECT_TEXT = """step. When a current request omits the field, the service uses the effects that
+your client configuration names in the `Baltor-Step-Effects` header, or reading
+files (`reads_fs`) when there is no header. An empty array withholds material
+that declares effects, and so does a version 1 provisioning request without the
+field. This choice does not authorize executing the material."""
+OLD_EFFECT_TEXT = """step. Omitted or empty effect selection withholds material that declares effects.
+This choice does not authorize executing the material."""
+CURRENT_BODY_TEXT = """An inline `read` through `/api/v1/provisioning` returns `provisioning_body/v3`
+for a version 2 request, and `provisioning_body/v2` for a version 1 request."""
+OLD_BODY_TEXT = """An inline `read` through `/api/v1/provisioning` returns `provisioning_body/v2`."""
 #: The default status of the transport refusal, and the same default moved.
 DEFAULT_STATUS = "def __init__(self, code, status=400, *,"
 MOVED_DEFAULT_STATUS = "def __init__(self, code, status=422, *,"
@@ -99,6 +113,47 @@ class ServiceDocumentationCheck(unittest.TestCase):
             "the service pages name facts the service source does not have; "
             "run tools/check_service_documentation.py for the list"))
         self.assertGreater(report["facts_checked"], 200)
+
+    def test_the_old_omitted_effects_sentence_is_refused(self):
+        """Known-wrong: the troubleshooting sentence said an omitted selection withholds material."""
+        with tempfile.TemporaryDirectory() as folder:
+            root = build_copy(Path(folder))
+            edit(root, STATUS_PAGE, CURRENT_EFFECT_TEXT, OLD_EFFECT_TEXT)
+            report = check(root)
+            self.assertEqual(self.kinds(report), ["effect_default"])
+            self.assertEqual({finding["page"] for finding in report["findings"]}, {STATUS_PAGE})
+
+    def test_the_effects_rule_follows_the_source_default(self):
+        """With no default in the source the old sentence would be true, so the rule stays silent."""
+        with tempfile.TemporaryDirectory() as folder:
+            root = build_copy(Path(folder))
+            edit(root, STATUS_PAGE, CURRENT_EFFECT_TEXT, OLD_EFFECT_TEXT)
+            edit(root, HTTP_MODULE, 'DEFAULT_STEP_EFFECTS = ("reads_fs",)', "DEFAULT_STEP_EFFECTS = ()")
+            self.assertNotIn("effect_default", self.kinds(check(root)))
+
+    def test_the_old_unqualified_inline_body_version_is_refused(self):
+        """Known-wrong: the usage page named the version 1 body record for every inline read."""
+        with tempfile.TemporaryDirectory() as folder:
+            root = build_copy(Path(folder))
+            edit(root, USAGE_PAGE, CURRENT_BODY_TEXT, OLD_BODY_TEXT)
+            report = check(root)
+            self.assertEqual(self.kinds(report), ["body_record_version"])
+            self.assertEqual(self.values(report), ["provisioning_body/v2"])
+
+    def test_the_claim_rules_read_paragraphs_and_their_qualifications(self):
+        facts = {"default_step_effects": ("reads_fs",), "body_record_types": ("fixture_body/v1", "fixture_body/v2")}
+        cases = {
+            "Omitted effects withhold material.": ["effect_default"],
+            "Omitted effects withhold material in version 1.": [],
+            "Omitted effects mean `reads_fs`, and an empty list withholds material that declares effects.": [],
+            "Without effects the answer receives no item\nthat declares an effect.": ["effect_default"],
+            "A read returns `fixture_body/v1`.": ["body_record_version"],
+            "A version 1 read returns `fixture_body/v1`.": [],
+            "```text\nOmitted effects withhold material. fixture_body/v1\n```": [],
+        }
+        for text, kinds in cases.items():
+            with self.subTest(text=text):
+                self.assertEqual([kind for kind, _value, _note in claim_findings(text, facts)], kinds)
 
     def test_every_documented_page_exists(self):
         for page in DOCUMENTED_PAGES:

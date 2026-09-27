@@ -78,7 +78,8 @@ version. On the current service that conflict reaches the client as
 `X-Loop-Engine-Record-Type` headers. It does not return a JSON metering
 acknowledgment. Compare the bytes with the manifest's digest.
 
-An inline `read` through `/api/v1/provisioning` returns `provisioning_body/v2`.
+An inline `read` through `/api/v1/provisioning` returns `provisioning_body/v3`
+for a version 2 request, and `provisioning_body/v2` for a version 1 request.
 Its `metered` flag says whether a meter was used. `metered_unit` is
 `provisioned_item` when metered and null otherwise; `metering_acknowledgment`
 is also null for an unmetered read. An accepted metered response requires a
