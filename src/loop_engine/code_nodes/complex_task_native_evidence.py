@@ -301,11 +301,17 @@ def self_test() -> dict:
     check("saved_native_catalog_has_two_verified_full_system_smoke_results",
           len(native.records) == 2
           and all(item.eligible_for_published_match for item in native.records))
+    # Both statements below read every match. An empty match list would satisfy
+    # each of them while proving nothing, so each one first requires that the
+    # report covers the whole saved population.
     check("no_unmatched_population_is_reported_as_a_fair_comparison",
-          report.comparison_ready == 0
+          len(report.matches) == len(native.records)
+          and report.comparison_ready == 0
           and all(not item.comparison_ready for item in report.matches))
     check("matching_requires_the_full_exact_comparison_key",
-          all(len(item.comparison_key) == 13 for item in report.matches))
+          len(report.matches) == len(native.records)
+          and bool(report.matches)
+          and all(len(item.comparison_key) == 13 for item in report.matches))
     passed = sum(item["passed"] for item in tests)
     return {"tests": tests, "passed": passed, "total": len(tests),
             "all_passed": passed == len(tests)}

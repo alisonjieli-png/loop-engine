@@ -117,6 +117,9 @@ class ContinuationTests(unittest.TestCase):
         rendered = tool.render(self.data, "fixture")
         self.assertIn("## Delivery packages", rendered)
         self.assertIn("## Launch benefit drafts", rendered)
+        # An emptied gate list would satisfy the statement below while proving
+        # that no gate had been read, so the population is named first.
+        self.assertGreaterEqual(len(plan["launch_gates"]), 1)
         self.assertTrue(all("Not verified" in tool.gate_status(self.data, gate) for gate in plan["launch_gates"]))
 
     def test_delivery_package_refuses_unknown_owners_cycles_and_missing_controls(self):

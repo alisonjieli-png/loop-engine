@@ -57,6 +57,7 @@ jobs:
           files: '["AGENTS.md","README.md","CHANGELOG.md","CONTRIBUTING.md","SECURITY.md","humanizer-context.md","showcase/README.md","docs","case-studies","examples"]'
 
       - name: Refuse retired public language
+        id: retired-language
         run: |
           if ! command -v rg >/dev/null 2>&1; then
             echo "ripgrep (rg) is required for retired-language checks but was not found."
@@ -64,6 +65,24 @@ jobs:
             sudo apt-get update -y && sudo apt-get install -y ripgrep
           fi
           rg --version
+          # ripgrep answers with three different exit statuses: 0 when it
+          # matched, 1 when it searched and found nothing, and 2 when it could
+          # not search at all, for example a renamed folder or a glob it
+          # rejects. Reading 2 as "found nothing" turns this guard into
+          # decoration that reports success while searching nothing, so the
+          # search is run through this function and 2 fails the check.
+          refuse_language() {
+            local advice="$1"
+            shift
+            local status=0
+            rg "$@" || status=$?
+            case "${status}" in
+              0) echo "${advice}"; return 1 ;;
+              1) return 0 ;;
+              *) echo "ripgrep could not complete this search (exit ${status}). No conclusion was reached, so the check fails."
+                 return 1 ;;
+            esac
+          }
           # Source terminology is owned by the conformance gate
           # (python -m loop_engine --conformance), which applies the
           # machine-readable allowed_fragments contract in
@@ -72,29 +91,27 @@ jobs:
           # point-in-time evidence, not current public language. A report
           # whose finding is that a retired term was used has to quote the
           # term, so these paths cannot be held to the live vocabulary.
-          if rg --hidden -n -i \
+          refuse_language \
+            "Retired public language found. Use Run History, event log, record, report, or evidence." \
+            --hidden -n -i \
             --glob '!src/loop_engine/forbidden_paths.json' \
             --glob '!docs/prompts/**' --glob '!docs/evidence/**' \
             --glob '!docs/verification/**' \
             --glob '!showcase/node_modules/**' --glob '!**/.cache/**' \
             '\bchronicles?\b|\breceipts?\b' \
             README.md CHANGELOG.md humanizer-context.md docs examples \
-            case-studies benchmarks showcase; then
-            echo "Retired public language found. Use Run History, event log, record, report, or evidence."
-            exit 1
-          fi
+            case-studies benchmarks showcase
 
-          if rg --hidden -n -i \
+          refuse_language \
+            "Retired topology or decision language found. Use Starting, Spawned by, Queried by, Retrieved by, Connected from, or select next action." \
+            --hidden -n -i \
             --glob '!docs/prompts/**' --glob '!docs/evidence/**' \
             --glob '!docs/verification/**' \
             --glob '!showcase/assets/**' \
             --glob '!showcase/node_modules/**' --glob '!**/.cache/**' \
             '\bchild(?:ren)?\b|\broot[[:space:]_-]+loop\b|what[[:space:]_-]*is[[:space:]_-]*next|what[[:space:]_-]+next|whats[[:space:]_-]*next|whatnext' \
             README.md CHANGELOG.md humanizer-context.md docs examples \
-            case-studies showcase; then
-            echo "Retired topology or decision language found. Use Starting, Spawned by, Queried by, Retrieved by, Connected from, or select next action."
-            exit 1
-          fi
+            case-studies showcase
 
       - name: Check local links and section anchors
         uses: lycheeverse/lychee-action@v2
@@ -133,22 +150,37 @@ jobs:
               native_schema = json.load(stream)
           validate(native, native_schema)
           native_ids = [item["record_id"] for item in native["records"]]
+          # A uniqueness test passes on an empty list. Without this line the
+          # step would report success over a document that had lost every
+          # record. The schema refuses an empty document as well.
+          assert native_ids, "the Loop Engine benchmark evidence has no records"
           assert len(native_ids) == len(set(native_ids))
           print(f"validated {len(native_ids)} Loop Engine benchmark records")
           PY
 
       - name: Render current architecture diagrams
+        id: architecture-diagrams
         run: |
-          awk 'BEGIN{inside=0} /^```mermaid$/{if(!inside){inside=1; next}} inside && /^```$/{exit} inside{print}' docs/components/self-improvement/README.md > "$RUNNER_TEMP/self-improvement.mmd"
-          npx --yes @mermaid-js/mermaid-cli@11.16.0 -p .github/puppeteer-config.json -i "$RUNNER_TEMP/self-improvement.mmd" -o "$RUNNER_TEMP/self-improvement.png" --quiet
-          awk 'BEGIN{inside=0} /^```mermaid$/{if(!inside){inside=1; next}} inside && /^```$/{exit} inside{print}' docs/components/intelligence-layers/INTELLIGENCE-AS-LOOPS.md > "$RUNNER_TEMP/intelligence-loops.mmd"
-          npx --yes @mermaid-js/mermaid-cli@11.16.0 -p .github/puppeteer-config.json -i "$RUNNER_TEMP/intelligence-loops.mmd" -o "$RUNNER_TEMP/intelligence-loops.png" --quiet
-          awk 'BEGIN{inside=0} /^```mermaid$/{if(!inside){inside=1; next}} inside && /^```$/{exit} inside{print}' docs/components/core-architecture/BRAVE-SEARCH-PLUGIN.md > "$RUNNER_TEMP/brave-plugin.mmd"
-          npx --yes @mermaid-js/mermaid-cli@11.16.0 -p .github/puppeteer-config.json -i "$RUNNER_TEMP/brave-plugin.mmd" -o "$RUNNER_TEMP/brave-plugin.png" --quiet
-          awk 'BEGIN{inside=0} /^```mermaid$/{if(!inside){inside=1; next}} inside && /^```$/{exit} inside{print}' docs/components/core-architecture/MODEL-GATEWAY.md > "$RUNNER_TEMP/model-gateway.mmd"
-          npx --yes @mermaid-js/mermaid-cli@11.16.0 -p .github/puppeteer-config.json -i "$RUNNER_TEMP/model-gateway.mmd" -o "$RUNNER_TEMP/model-gateway.png" --quiet
-          awk 'BEGIN{inside=0} /^```mermaid$/{if(!inside){inside=1; next}} inside && /^```$/{exit} inside{print}' docs/components/loop-object/LOOP-PROFILE-ONTOLOGY.md > "$RUNNER_TEMP/loop-profiles.mmd"
-          npx --yes @mermaid-js/mermaid-cli@11.16.0 -p .github/puppeteer-config.json -i "$RUNNER_TEMP/loop-profiles.mmd" -o "$RUNNER_TEMP/loop-profiles.png" --quiet
+          # An empty extraction is the failure this step exists to catch: a
+          # document whose diagram was removed or whose fence was renamed would
+          # otherwise hand the renderer nothing and the step would look like it
+          # had checked a diagram. The extraction has to produce content first.
+          render_diagram() {
+            local source="$1" name="$2"
+            awk 'BEGIN{inside=0} /^```mermaid$/{if(!inside){inside=1; next}} inside && /^```$/{exit} inside{print}' \
+              "${source}" > "${RUNNER_TEMP}/${name}.mmd"
+            if [ ! -s "${RUNNER_TEMP}/${name}.mmd" ]; then
+              echo "No mermaid diagram was extracted from ${source}. Nothing was rendered, so nothing was checked."
+              return 1
+            fi
+            npx --yes @mermaid-js/mermaid-cli@11.16.0 -p .github/puppeteer-config.json \
+              -i "${RUNNER_TEMP}/${name}.mmd" -o "${RUNNER_TEMP}/${name}.png" --quiet
+          }
+          render_diagram docs/components/self-improvement/README.md self-improvement
+          render_diagram docs/components/intelligence-layers/INTELLIGENCE-AS-LOOPS.md intelligence-loops
+          render_diagram docs/components/core-architecture/BRAVE-SEARCH-PLUGIN.md brave-plugin
+          render_diagram docs/components/core-architecture/MODEL-GATEWAY.md model-gateway
+          render_diagram docs/components/loop-object/LOOP-PROFILE-ONTOLOGY.md loop-profiles
 
       - name: Verify interactive architecture and video
         run: |
@@ -184,12 +216,28 @@ jobs:
             > "$RUNNER_TEMP/studio-server.log" 2>&1 &
           STUDIO_PID=$!
           trap 'kill $STUDIO_PID $SHOWCASE_PID 2>/dev/null || true; wait $STUDIO_PID $SHOWCASE_PID 2>/dev/null || true' EXIT INT TERM
-          for i in $(seq 1 40); do
+          # The previous ten-second window assumed a warm interpreter and never
+          # said what had happened when it ran out. A slow import then reached
+          # the browser check as a connection error with no server log. Wait
+          # for readiness, watch the process, and report the log on failure.
+          STUDIO_READY=no
+          for i in $(seq 1 120); do
             if curl -fsS http://127.0.0.1:8766/app >/dev/null 2>&1; then
+              STUDIO_READY=yes
               break
             fi
-            sleep 0.25
+            if ! kill -0 $STUDIO_PID 2>/dev/null; then
+              echo "The Studio server stopped before it answered. Log:"
+              cat "$RUNNER_TEMP/studio-server.log" || true
+              exit 1
+            fi
+            sleep 0.5
           done
+          if [ "$STUDIO_READY" != "yes" ]; then
+            echo "The Studio server did not answer http://127.0.0.1:8766/app within 60s. Log:"
+            cat "$RUNNER_TEMP/studio-server.log" || true
+            exit 1
+          fi
           node showcase/tests/studio-visual-audit.mjs \
             --base-url http://127.0.0.1:8766 \
             --run-id studio-browser-fixture
@@ -257,7 +305,9 @@ jobs:
       # git. A shallow checkout does not have that revision, so the check
       # failed here while passing on any developer's clone. The history is
       # what the check is about, so it is fetched rather than the check
-      # being loosened.
+      # being loosened. tools/test_continuous_integration_workflow.py holds
+      # the depth, because the depth is a property of the workflow and the
+      # check that needs it cannot state it for itself.
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
@@ -330,6 +380,7 @@ jobs:
             --repository "$GITHUB_WORKSPACE"
 
       - name: Default-install onboarding proof
+        id: default-install
         if: matrix.python-version == '3.12'
         run: |
           python -m pip install build
@@ -372,6 +423,12 @@ jobs:
           from loop_engine.core.studio_server import self_test
 
           report = self_test()
+          # all_passed is passed == total, which is true of a report that ran
+          # nothing. An installation that packaged no Studio check at all would
+          # have reported success here, which is the one thing this step exists
+          # to notice, so the population is named before the result is read.
+          assert report["total"] > 0, report
+          assert report["passed"] == report["total"], report
           assert report["all_passed"], report
           print(f"installed Studio checks: {report['passed']}/{report['total']}")
           PY

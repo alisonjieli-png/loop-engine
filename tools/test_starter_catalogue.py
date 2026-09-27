@@ -1068,6 +1068,10 @@ class StarterCatalogueChecks(unittest.TestCase):
         review = review_search(records)
         self.assertEqual(review["normal_search_hits"], 0)
         self.assertEqual(review["normal_search_excluded"], len(records))
+        # Both statements below read every probe. With no probes at all they
+        # would report a search that found everything and called no model,
+        # which is exactly the reading this test exists to refuse.
+        self.assertEqual(len(review["probes"]), len(records))
         self.assertTrue(all(probe["found_in_first_three"] for probe in review["probes"]))
         self.assertEqual(sum(probe["physical_model_calls"] for probe in review["probes"]), 0)
 

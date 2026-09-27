@@ -99,6 +99,9 @@ class StructureTests(unittest.TestCase):
         self.assertEqual(result["roadmap"]["source"], "docs/roadmap/roadmap.yaml")
         self.assertEqual(len(result["roadmap"]["source_sha256"]), 64)
         self.assertTrue(any(step["id"] == "S-6.21" for step in result["roadmap"]["steps"]))
+        # An emptied gate list would satisfy the statement below while proving
+        # that no gate had been read, so the population is named first.
+        self.assertGreaterEqual(len(result["roadmap"]["gates"]), 1)
         self.assertTrue(all("Not verified" in gate["state"] for gate in result["roadmap"]["gates"]))
         self.assertIn("owner_checklist", result["documents"])
         self.assertIn("developer_handoff", result["documents"])
