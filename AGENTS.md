@@ -83,23 +83,34 @@ executor edge.
 On September 27, 2026 the owner added four things to this north star. Each
 stands until the owner changes it.
 
-**Knowledge that stays current.** The owner observed that a developer's edge
-is "knowledge on recent papers", which "isn't something that's moated", and
-asked Baltor to keep watching and serving "top benchmarks ... top specialized
-language models, top decision and thinking and reasoning models ... top
-pipelines for everything", infrastructure choices ("Fly.io versus Render ...
-uptime monitors"), and to expand into "3D, 2D, CAD, design, image scraping";
-"every time it ages, ask questions like, Is this the most efficient way of
-doing things". In the owner's words: "top papers, top use cases, top
-solutions for X, Y, Z problems. Those are going to be more valuable than
-anything else we provide users." Baltor therefore serves two kinds of
-material side by side through the same search, retrieval and review: the
-component library of files a harness picks up, and a knowledge feed of
-dated, sourced briefs that answer which paper, model, benchmark, pipeline,
-tool or service is the best current choice for a job. Every brief carries
-the date it was checked and the date it must be asked again, and an aged
-brief is re-asked, not silently kept. Roadmap step S-6.214 is the first
-piece.
+**Knowledge that stays current, kept as decisions and capabilities.** The
+owner observed that a developer's edge is "knowledge on recent papers", which
+"isn't something that's moated", and asked Baltor to keep watching and
+serving "top benchmarks ... top specialized language models, top decision
+and thinking and reasoning models ... top pipelines for everything",
+infrastructure choices ("Fly.io versus Render ... uptime monitors"), and to
+expand into "3D, 2D, CAD, design, image scraping"; "every time it ages, ask
+questions like, Is this the most efficient way of doing things". In the
+owner's words: "top papers, top use cases, top solutions for X, Y, Z
+problems. Those are going to be more valuable than anything else we provide
+users." The same day the owner endorsed the central claim of a design for a
+daily research and capability release pipeline: "The central product is
+therefore not a daily digest or a directory. It is a maintained library of
+engineering decisions and executable capabilities: research once per
+relevant task and configuration, preserve the evidence, test the
+implementation, and let many harnesses reuse the result without repeating
+the investigation." The owner's rule for what becomes a file: research that
+takes an engineer more than about five minutes across several sources is
+done once and served as a file, and a volatile fact, such as a stock price,
+is served as a tool that fetches it, never as a stored value. Beside the
+component library, Baltor therefore maintains engineering decisions and
+executable capabilities: decision cards with their evidence, data files,
+tested code in Python or TypeScript, and tools for volatile facts. Each one
+carries the date it was checked and the date it must be checked again, and
+an aged item is researched again, not silently kept. Research workers
+propose claims and bundles; they hold no publishing credential, and
+publication goes through the independent review and the catalogue release
+path like every other package. Roadmap step S-6.214 is the first piece.
 
 **Four zones, run by agent teams.** The owner asked for "splitting the
 website server side that's public that interacts with the customer and the
@@ -149,9 +160,10 @@ external effects are never loosened this way. The
 lists the current candidates.
 
 In one sentence: Baltor gives each step of a customer's harness the best
-current files and the best current knowledge for that step, proven with and
-without Baltor, under the customer's own budget and permissions, and
-engineering picks the work that brings paying developers and teams soonest.
+current files, decisions and tested capabilities for that step, researched
+once, checked again as they age and proven with and without Baltor, under
+the customer's own budget and permissions, and engineering picks the work
+that brings paying developers and teams soonest.
 
 ```text
 Current initiatives, in priority order (September 27, 2026)
@@ -173,9 +185,11 @@ Current initiatives, in priority order (September 27, 2026)
 │   │   downloads
 │   └── Listings in the plugin directories, the Model Context Protocol
 │       Registry and skills.sh (S-6.183)
-├── 3. The knowledge feed (S-6.214)
-│   ├── Dated, sourced briefs on papers, models, benchmarks, pipelines,
-│   │   tools and infrastructure, asked again when they age
+├── 3. Maintained engineering decisions and capabilities (S-6.214)
+│   ├── Decision cards, data files, tested Python or TypeScript code and
+│   │   tools for volatile facts, each dated and checked again as it ages
+│   ├── Researched once per task and configuration; research workers
+│   │   propose, the independent review and catalogue release publish
 │   └── Served to harnesses beside the component library, then new fields
 │       such as 3D, 2D, CAD and design
 ├── 4. The Team plan (S-6.191, S-6.186)
