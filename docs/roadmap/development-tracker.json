@@ -954,7 +954,7 @@
      "S-6.12"
     ],
     "id": "S-6.33",
-    "next_local_work": "Distinct surfaces for the four newer hostnames, per-page crawler titles and descriptions, robots.txt and sitemap.xml from the typed site map, HEAD on every page, and the site map and layout checks switched on in continuous integration (S-6.67). The account release (S-6.89) replaces the list path of the funnel with direct account creation once the sign-up guard is live.",
+    "next_local_work": "Finish the interrupted orange-design release through exact-tree checks and the guarded Fly workflow, qualify every site-map hostname including redteam.baltor.ai, and record the deployed revision, rollback image and visitor/customer evidence. Detailed layout advice remains recorded for later refinement.",
     "phase": 6,
     "status": "building",
     "title": "Website fixes from the persona and interface reviews",
@@ -5364,5 +5364,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:fc1b608df314e8d0bd8323e38f469e6e29766545fbbe504f0bf6cb77dd23eed2"
+ "source_fingerprint": "sha256:2183e63cd53d7e5b26b329b1778c995ca3d0decb71c3d2f4952cef6787446e83"
 }

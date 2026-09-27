@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 import os
 from pathlib import Path
 import secrets
@@ -562,7 +563,14 @@ def _invitation_section(page):
 def _funnel_card(page):
     """The card of the Get started funnel, the one form that takes a new address since September 23, 2026; empty when there is none."""
     marker = '<div class="funnel-card" id="funnel-card">'
-    return page.split(marker, 1)[1].split('<ol class="funnel-steps"', 1)[0].lower() if marker in page else ""
+    if marker not in page:
+        return ""
+    remainder, depth = page.split(marker, 1)[1], 1
+    for tag in re.finditer(r"</?div\b[^>]*>", remainder, re.IGNORECASE):
+        depth += -1 if tag.group().startswith("</") else 1
+        if depth == 0:
+            return remainder[:tag.start()].lower()
+    return ""
 
 
 def page_checks(check, _root):
@@ -584,6 +592,10 @@ def page_checks(check, _root):
           _invitation_section(page.replace('<section class="panel waitlist-card"', '<section class="moved-away"')) == "")
     check("KNOWN_WRONG_the_funnel_reader_finds_nothing_on_a_page_without_the_funnel",
           _funnel_card(page.replace('<div class="funnel-card" id="funnel-card">', '<div class="moved-away">')) == "")
+    check("the_funnel_reader_keeps_nested_content_and_excludes_other_pages",
+          _funnel_card('<div class="funnel-card" id="funnel-card"><div>Inside</div>Kept</div>Outside days')
+          == "<div>inside</div>kept"
+          and _funnel_card('<div class="funnel-card" id="funnel-card"><div>Unclosed</div>') == "")
     found = sorted(word for word in FORBIDDEN_PAGE_WORDS if word in section or word in funnel)
     check("the_waiting_list_words_name_no_release_stage_and_promise_no_date", not found)
     check("KNOWN_WRONG_the_word_guard_finds_a_promise_when_the_words_carry_one",

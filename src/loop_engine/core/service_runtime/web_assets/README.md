@@ -122,10 +122,14 @@ is not used). The shared visual layer is:
   shell (the design's AppNav: a 240 pixel column of grouped sections above 860
   pixels, a row of pills below), and the shared components: ember, ink and
   white buttons, fields, cards, tables and the `label-verified` and
-  `label-community` labels;
+  `label-community` labels, which the library table's badges
+  (`.badge[data-library-tier]`) share; in the dark theme the mark has a one
+  pixel edge, so its navy tile keeps its corners on the dark ground;
 - `site-chrome.js`, loaded by every page that carries the shared header and
-  footer, which opens and closes the footer's groups. Without it every group
-  stays open.
+  footer, which opens and closes the footer's groups (without it every group
+  stays open) and, on a page the service renders on its own, marks the
+  header and footer links to that very page as the current page. The
+  one-page app marks its own links, the ones with `data-page`, itself.
 
 The design's placeholder mark is not used: the header, the footer and the page
 icons keep the traced husky head of September 23, 2026.
@@ -197,29 +201,22 @@ developers.
 
 ## The homepage hero and its demonstrations
 
-Since September 24, 2026 the hero shows no worked example. The owner asked for
-the working directory of each task or subtask, built on demand, with no manual
-search and no manual setup, and for links to demonstrations that show a run
-start to finish. The hero's figure is the directory of one step: an
-instruction file with only that step's context, the skill it needs, its
-protocol server settings and reused code, labelled "Example layout", with the
-words that the files were placed with no manual search and no manual setup.
-What works today stays apart from what is built but not shipped: a person's
-agent searches and Baltor places the chosen files, and assembling a directory
-for every step is written only as what the local engine is built to do; a
-named check refuses a sentence that states it as a current capability. Three
-cards follow it: a simple
-task at `/demo`, a long task that runs overnight at `/overnight`, and a Kaggle
-competition at `/demo/kaggle`.
+Since September 26, 2026 the hero opens with centered copy above a terminal
+showing a library search, an exact-version download and the directory of one
+step. The search and download are labelled "Real results from the library";
+the directory is labelled "Example layout". The directory contains an
+instruction file, the skill, protocol server settings and reused code, and
+states that the local engine is built to assemble a directory like this for
+every step. The terminal switches between Claude Code, Codex, OpenCode and Pi.
 
-`tools/test_homepage_demonstration.py` refuses a hero that shows a search, a
-reference, a digest or a download again, and a demonstration card that opens a
-page this service does not serve. The one-step demonstration that stood beside
-the hero until then, splitting the address lines of a customer file, is step 2
-of the demonstration at `/demo`; its markup is archived in
-`artifacts/website-archive-2026-09-24`. The same test holds the library count
-on the homepage to the number of items in
-`examples/29_intelligence_service/starter-catalogue/host-release/manifest.json`.
+`tools/test_homepage_demonstration.py` checks those separate evidence labels,
+the terminal and its harness tabs, the available links and the boundary
+between current service behavior and the local engine's intended behavior.
+Three cards follow the hero: a simple task at `/demo`, an overnight task at
+`/overnight`, and a Kaggle competition at `/demo/kaggle`. The one-step customer
+address example that appeared in the earlier hero remains step 2 of `/demo`;
+its old markup is archived in `artifacts/website-archive-2026-09-24`. The same
+test holds the homepage library count to the packaged catalogue manifest.
 
 Each step of the two demonstration pages shows its search and its download
 under the label "Real results from the library". Their item names,

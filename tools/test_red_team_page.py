@@ -234,6 +234,16 @@ class RenderedPage(unittest.TestCase):
         homepage = lambda address, host: serve("/", None)
         self.assertTrue(web_surface_checks.hostname_problems(site_map, homepage))
 
+    def test_the_home_header_tone_does_not_prevent_another_view_being_shown(self):
+        body = (b'<section data-view="home" data-header-tone="dark"><h1>Home</h1></section>'
+                b'<section data-view="pricing" hidden class="pricing-page"><h1>Pricing</h1></section>')
+        shown = web_pages.with_view_shown(body, "pricing")
+        self.assertIn(b'data-view="home" hidden data-header-tone="dark">', shown)
+        self.assertIn(b'data-view="pricing" class="pricing-page">', shown)
+        self.assertNotEqual(shown, body)
+        self.assertEqual(web_pages.with_view_shown(body, "unknown"), body)
+        self.assertEqual(web_pages.with_view_shown(body + body, "pricing"), body + body)
+
     def test_the_examples_page_links_the_study_without_switching_views(self):
         index = INDEX.read_text("utf-8")
         links = re.findall(r'<a[^>]*href="' + re.escape(page.ADDRESS) + r'"[^>]*>', index)

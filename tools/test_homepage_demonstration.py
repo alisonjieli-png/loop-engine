@@ -1,6 +1,17 @@
-"""The homepage hero shows the working directory one step gets, and the homepage's facts are this release's.
+"""The homepage hero shows one step: a real search and download of this release, and the directory the step gets.
 
-Since September 24, 2026 the hero shows no worked example. The owner: "instead of showing a simple example, we
+On September 26, 2026 the owner supplied a Claude Design project for the website and asked for it to be built: "we need to
+aggressively implement the new design and get it deployed". Its homepage hero (site/Home.dc.html) is a terminal of three
+panes: the search a harness sends, the download of the one reference it chose, and the folder the files are placed in. The
+archive wrote those panes with placeholder commands (baltor.search, baltor.fetch) and made-up references. The hero here shows
+the protocol tools a harness really calls on this service, intelligence_search and provisioning_read, with a search whose
+references this check reruns against this release's library, in the same places with the same kind, licence, size and
+digest, and a download of the reference the search marked as chosen whose packaged bytes match its digest. The search and the
+download say "Real results from the library"; the folder stays an example layout with its built-to note, as below. A placeholder
+command, a reference this release does not return in that place, a digest it does not hold, a download of another reference
+and a folder that places another skill are each a known-wrong hero.
+
+Until September 26 the hero showed no worked example. The owner: "instead of showing a simple example, we
 should show the directory structure emphasize that it is built on demand efficiently, no manual searches, no manual
 setup, etc. Then we can have 3 links to specific demos". The hero's figure is the working directory of one step: an
 instruction file with only that step's context, the skill it needs, its protocol server settings and reused code,
@@ -319,16 +330,23 @@ def _planted(page, old, new):
 
 #: The parts of one step's working directory the hero shows, in order.
 HERO_PARTS = ("instructions", "skills", "tools", "code")
+#: The protocol tools the hero's terminal calls, in order: the search, then the read of the exact version it chose. The search
+#: tool is listed by name in http.py and the read tool is a key of provisioning_mcp.TOOL_OPERATIONS; the tests read both.
+HERO_TOOLS = ("intelligence_search", "provisioning_read")
+HTTP_SOURCE = ROOT / "src" / "loop_engine" / "core" / "service_runtime" / "http.py"
+
+
+def served_tool_names():
+    """The names of the protocol tools this service lists to a harness."""
+    from loop_engine.core.provisioning_mcp import TOOL_OPERATIONS
+    listed = set(re.findall(r'types\.Tool\(name="([a-z_]+)"', HTTP_SOURCE.read_text(encoding="utf-8")))
+    return listed | set(TOOL_OPERATIONS)
 #: A sentence that assembles or builds something for each step. What works today stays apart from what is built but not
 #: shipped: a person's agent searches and Baltor places the chosen files, while assembling a directory for every step is what
 #: the local engine is built to do. Such a sentence must say "built to".
 PER_STEP = re.compile(r"\b(?:assembl|build|built)\w*\b[^.!?]*\b(?:each|every|this|one)\s+(?:step|subtask)\b", re.IGNORECASE)
 #: The three demonstrations under the hero, in order, with the page each one opens.
 DEMONSTRATIONS = (("simple", "/demo"), ("overnight", "/overnight"), ("kaggle", "/demo/kaggle"))
-#: What a worked example leaves in the hero: a demonstration panel, a search, its references, their facts or a download.
-WORKED_EXAMPLE = ("data-step-demo", "data-demo-item", "data-demo-query", "data-demo-download", "data-demo-stage",
-                  "data-task-demo", "data-fact=")
-WORKED_EXAMPLE_WORDS = re.compile(r"\bsearch:|\bsha256\b|Bytes match the digest|Recorded from this release", re.IGNORECASE)
 
 
 def hero_markup(page):
@@ -337,8 +355,12 @@ def hero_markup(page):
     return found.group(1) if found else ""
 
 
-def hero_problems(page):
-    """The hero shows the working directory of one step, labelled as an example, and no worked example."""
+def hero_problems(page, served_tools=HERO_TOOLS):
+    """The hero shows one step: its search and download as recorded parts and its working directory as an example.
+
+    What this reads from the page source alone: the three parts in order with their labels, the tools the terminal calls, the four
+    parts of the directory, its example label and built-to note, and the words about manual search and setup. That the search and
+    the download are this release's own is `hero_result_problems`, which runs the search."""
     hero = hero_markup(page)
     if not hero:
         return ["the homepage has no hero band"]
@@ -357,9 +379,20 @@ def hero_problems(page):
     claims = [sentence for sentence in re.split(r"(?<=[.!?])\s+", words) if PER_STEP.search(sentence) and "built to" not in sentence.lower()]
     if claims or "built to" not in note.lower():
         problems.append(f"the hero states assembly for each step as a current capability: {claims}")
-    if any(marker in hero for marker in WORKED_EXAMPLE) or WORKED_EXAMPLE_WORDS.search(re.sub(r"<[^>]+>", " ", hero)):
-        problems.append("the hero shows a worked example again")
+    problems.extend(label_problems(read_demonstration(hero)))
+    tools = tuple(re.findall(r'data-demo-tool="([^"]*)"', hero))
+    if tools != HERO_TOOLS or any(tool not in served_tools for tool in tools):
+        problems.append(f"the terminal calls {list(tools)}, and a harness calls {list(HERO_TOOLS)} on this service")
     return problems
+
+
+def hero_result_problems(page, items, harmful):
+    """The hero's search is a real search of this release, its download the chosen reference, its folder places that skill."""
+    demonstration = read_demonstration(hero_markup(page))
+    if not demonstration["query"]:
+        return ["the hero terminal shows no search"]
+    return (search_problems(demonstration, release_search(demonstration["query"])) + download_problems(demonstration, items)
+            + folder_problems(demonstration) + harmful_choice_problems(demonstration, harmful))
 
 
 def demonstration_problems(page, served):
@@ -405,27 +438,50 @@ class HomepageHeroTest(unittest.TestCase):
         cls.served = set(WEB_ASSETS)
         cls.archived = (ROOT / "artifacts" / "website-archive-2026-09-24" / "homepage-before-2026-09-24-hero.html").read_text(encoding="utf-8")
 
-    def test_the_hero_shows_a_working_directory_and_no_worked_example(self):
-        self.assertEqual(hero_problems(self.page), [])
-        hero = hero_markup(self.page)
-        # KNOWN_WRONG: the one-step demonstration of September 23, as archived, back beside the hero copy.
+    def test_the_hero_shows_one_step_with_its_parts_labels_and_tools(self):
+        self.assertIn('types.Tool(name="intelligence_search"', HTTP_SOURCE.read_text(encoding="utf-8"))
+        self.assertEqual(hero_problems(self.page, served_tool_names()), [])
+        self.assertTrue(hero_markup(self.page))
+        # KNOWN_WRONG: the archive's placeholder commands, and a tool this service does not list under the right name.
+        planted = _planted(self.page, 'data-demo-tool="intelligence_search">intelligence_search<', 'data-demo-tool="baltor.search">baltor.search<')
+        self.assertEqual(len(hero_problems(planted, served_tool_names())), 1)
+        self.assertEqual(len(hero_problems(self.page, {"intelligence_search"})), 1)
+        # KNOWN_WRONG: the one-step demonstration of September 23, as archived, planted as a second search beside the terminal.
         demonstration = self.archived.split("<!-- The Ask, get, place band")[0].split("-->", 2)[-1]
-        planted = _planted(self.page, '<figure class="hero-directory"', demonstration + '<figure class="hero-directory"')
-        self.assertIn("the hero shows a worked example again", hero_problems(planted))
-        # KNOWN_WRONG: a search and its digest written as words, a directory without its protocol server settings, and a
-        # hero that no longer says the files are placed without manual setup.
-        self.assertEqual(len(hero_problems(_planted(self.page, '<p class="hero-directory-note"', '<p>search: split address lines, sha256 53dc74e3</p><p class="hero-directory-note"'))), 1)
-        self.assertEqual(len(hero_problems(_planted(self.page, '<span data-hero-part="tools">', "<span>"))), 1)
-        self.assertEqual(len(hero_problems(_planted(self.page, "No manual search, no manual setup, nothing copied by hand.",
-                                                    "No manual search, nothing copied by hand."))), 1)
-        self.assertTrue(hero)
+        self.assertIn("data-step-demo", demonstration)
+        planted = _planted(self.page, '<figure class="hero-terminal"', demonstration + '<figure class="hero-terminal"')
+        self.assertTrue(any(problem.startswith("the parts are") for problem in hero_problems(planted, served_tool_names())))
+        # KNOWN_WRONG: the recorded label gone from the terminal, a directory without its protocol server settings, and a hero that
+        # no longer says the files are placed without manual setup.
+        # The terminal's label covers the search and the download, so its loss is reported for each of the two.
+        self.assertEqual(len(hero_problems(_planted(self.page, ">Real results from the library<", ">Results<"), served_tool_names())), 2)
+        self.assertEqual(len(hero_problems(_planted(self.page, '<span data-hero-part="tools"', "<span"), served_tool_names())), 1)
+        self.assertEqual(len(hero_problems(_planted(self.page, "No manual search, no manual setup.", "No manual search."), served_tool_names())), 1)
+
+    def test_the_hero_search_and_download_are_this_release_own(self):
+        harmful = recorded_harm()
+        self.assertEqual(hero_result_problems(self.page, self.items, harmful), [])
+        # KNOWN_WRONG: a digest this release does not hold, the two references in the other order, a download of the reference the
+        # search did not choose, and a folder that places another skill.
+        first = re.search(r'data-demo-item="([a-z_]+)" class="is-chosen">.*?data-fact="digest">([0-9a-f]+)<', hero_markup(self.page), re.S)
+        identity, digest = first.group(1), first.group(2)
+        wrong_digest = digest[:-1] + ("0" if digest[-1] != "0" else "1")
+        self.assertTrue(hero_result_problems(_planted(self.page, 'data-fact="digest">' + digest + "<", 'data-fact="digest">' + wrong_digest + "<"), self.items, harmful))
+        shown = re.findall(r'data-demo-item="([a-z_]+)"', hero_markup(self.page))
+        swapped = self.page.replace('data-demo-item="' + shown[0] + '"', "data-demo-item=\"PLACEHOLDER\"", 1).replace(
+            'data-demo-item="' + shown[1] + '"', 'data-demo-item="' + shown[0] + '"', 1).replace("data-demo-item=\"PLACEHOLDER\"", 'data-demo-item="' + shown[1] + '"', 1)
+        self.assertTrue(hero_result_problems(swapped, self.items, harmful))
+        self.assertTrue(hero_result_problems(_planted(self.page, 'data-demo-download="' + identity + '"', 'data-demo-download="' + shown[1] + '"'), self.items, harmful))
+        placed = identity.replace("_", "-")
+        self.assertEqual(len(hero_result_problems(_planted(self.page, 'data-demo-path=".claude/skills/' + placed + '/SKILL.md"',
+                                                             'data-demo-path=".claude/skills/' + shown[1].replace("_", "-") + '/SKILL.md"'), self.items, harmful)), 1)
 
     def test_the_hero_keeps_assembly_for_each_step_to_built_to_wording(self):
         # KNOWN_WRONG, the owner's constraint of September 24, 2026: assembly for each step stated as what Baltor does today, as a
         # label beside the directory, as a sentence of the introduction, and as a note that no longer says the engine is built to.
         for planted in (_planted(self.page, '<p class="hero-directory-note"', '<p>Assembled for this step.</p><p class="hero-directory-note"'),
-                        _planted(self.page, "No manual search, no manual setup, nothing copied by hand.</p>",
-                                 "No manual search, no manual setup, nothing copied by hand. Baltor assembles one for every step.</p>"),
+                        _planted(self.page, "No manual search, no manual setup.</p>",
+                                 "No manual search, no manual setup. Baltor assembles one for every step.</p>"),
                         _planted(self.page, "The local engine is built to assemble a directory", "The local engine assembles a directory")):
             with self.subTest(planted=len(planted)):
                 self.assertTrue(any("current capability" in problem for problem in hero_problems(planted)))

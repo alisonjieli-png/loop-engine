@@ -268,6 +268,44 @@ def _web_checks(check, root):
                   revoked.status_code == 401 and "LARGE_BODY_" not in revoked.text)
 
 
+def _server_failure_page_checks(check, root):
+    """A failure on the service's side, met by a person in a browser, is a page; a program still reads the record.
+
+    The page carries the record's two sentences and a request reference, and
+    nothing from the failure itself. Until September 26, 2026 a browser that met
+    a failure was shown the JSON record, with no way back to the site.
+    """
+    import httpx
+    import re as _re
+    from html import escape as _escape
+    from .observability import REFERENCE_PREFIX
+    fixture = HttpDomainFixture(root)
+    with running_http(fixture) as (base, service):
+        # The page router itself fails, as an unexpected fault would: the
+        # transport, the refusal wording and the failure record stay real.
+        async def _fail(*_arguments):
+            raise RuntimeError("FIXTURE_FAILURE_DETAIL")
+        service._web_route = _fail
+        page = httpx.get(base + "/pricing", trust_env=False, timeout=5,
+                         headers={"Accept": "text/html,application/xhtml+xml,*/*;q=0.8"})
+        record = httpx.get(base + "/pricing", trust_env=False, timeout=5)
+    words = record.json().get("error", {}) if record.headers.get("content-type", "").startswith("application/json") else {}
+    check("a_failure_on_the_service_side_shows_a_browser_the_record_words_and_its_reference",
+          page.status_code == record.status_code and page.status_code >= 500
+          and page.headers["content-type"].startswith("text/html")
+          and bool(words) and _escape(words["message"]) in page.text and _escape(words["next_action"]) in page.text
+          and _re.search(r"Reference <code>" + _re.escape(REFERENCE_PREFIX) + r"[a-z0-9]+</code>", page.text) is not None
+          and 'href="/status"' in page.text and 'href="/"' in page.text
+          and "FIXTURE_FAILURE_DETAIL" not in page.text and words.get("code", "?") not in page.text
+          and "frame-ancestors 'none'" in page.headers["content-security-policy"])
+    # The page is only for a reader in a browser: a program that did not ask for
+    # a page still reads the record, whatever the status.
+    check("a_failure_on_the_service_side_still_answers_a_program_with_the_record",
+          record.headers.get("content-type", "").startswith("application/json")
+          and record.json().get("record_type") == "service_http_error/v1"
+          and str(record.json().get("request_reference", "")).startswith(REFERENCE_PREFIX))
+
+
 def _retrieval_snapshot_checks(check, root):
     import httpx
     # The ranking seam is the view's reusable index since catalogue releases.
@@ -367,8 +405,12 @@ def _identity_checks(check, root):
                       all(row.status_code == 401 for row in forged) and key_set["requests"] - reads <= 1)
                 # Known-wrong control: a clock on which the pause has always
                 # passed is the unbounded behavior, and the count must show it.
-                keys, ticks, reads = service.authenticator._keys, iter(range(10**6, 10**9, 3600)), key_set["requests"]
-                keys.clock = lambda: next(ticks)
+                keys, reads = service.authenticator._keys, key_set["requests"]
+                # Advance relative to the recorded attempt. Starting at a fixed
+                # million seconds moves backwards on a long-running host and
+                # leaves the pause active, so that control tests the wrong case.
+                keys.clock = lambda: (keys.last_attempt if keys.last_attempt is not None else time.monotonic()) \
+                    + service.authentication.minimum_key_refresh_seconds + 1
                 for index in range(4):
                     session(token(second_key, "unpaused-" + str(index)))
                 check("removed_key_refresh_pause_is_detected", key_set["requests"] - reads >= 4)
@@ -510,7 +552,8 @@ def self_test():
         tests.append({"test": name, "passed": bool(passed), "detail": "real loopback transport; no external provider"})
     for name, function in (("web", _web_checks), ("identity", _identity_checks),
                            ("retrieval_snapshot", _retrieval_snapshot_checks),
-                           ("request_limits", _request_limit_checks)):
+                           ("request_limits", _request_limit_checks),
+                           ("server_failure_page", _server_failure_page_checks)):
         with tempfile.TemporaryDirectory(prefix="service-http-" + name + "-") as directory:
             function(check, Path(directory))
     from .protocol_checks import run_checks as protocol_checks

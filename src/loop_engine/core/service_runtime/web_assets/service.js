@@ -12,7 +12,24 @@
   let staffRole = "", staffBusy = false;
   const coveredSources = ["operator_grant", "free_monthly", "founding_free_monthly"];
   const pending = new Set(), downloads = new Map(), billingRequests = new Map();
-  const message = (id, text, error = false) => { $(id).textContent = text; $(id).classList.toggle("error", error); };
+  /* A status line states one of four things: nothing wrong, work under way ("loading"), a refusal the service sent ("refused"),
+     or a failure ("error", passed as true), such as a lost connection or a service fault. The state is an attribute, so the view
+     draws each one differently; a refusal and a failure also keep the class "error" they always had. */
+  const message = (id, text, state = false) => {
+    const node = $(id), failed = state === true || state === "refused";
+    node.textContent = text; node.classList.toggle("error", failed);
+    if (state) node.dataset.state = state === true ? "error" : state; else delete node.dataset.state;
+  };
+  /* A refusal the service sends carries two sentences from refusals.py, what happened and what to do next, and a reference an
+     operator can search for. request() keeps them on the error it throws, beside the short message that names the code, which
+     catalogue-browser.js reads. A signed-in view shows the service's own sentences and the reference. A failure that never
+     reached the service, such as a lost connection or a check on this page, keeps this page's own words. */
+  const said = error => {
+    const refusal = error && error.refusal;
+    if (!refusal) return (error && error.message) || "The request did not finish. Nothing was recorded by this page.";
+    return [refusal.message, refusal.next, refusal.reference ? "Reference " + refusal.reference + "." : ""].filter(Boolean).join(" ");
+  };
+  const failureState = error => error && error.refusal && error.refusal.status < 500 ? "refused" : true;
   const element = (tag, text, className = "") => { const item = document.createElement(tag); item.textContent = text; if (className) item.className = className; return item; };
   const show = name => {
     document.body.dataset.page = name;
@@ -178,8 +195,11 @@ const applyPaymentState = name => {
   };
   /* The usage panel says in words what it holds until a usage record is drawn, and keeps no raw record while it does. */
   const showUsageNote = (text, error = false) => {
-    $("usage-view").replaceChildren(element("p", text, error ? "usage-note error" : "usage-note"));
+    const note = element("p", text, error ? "usage-note error" : "usage-note");
+    if (error) note.dataset.state = error === "refused" ? "refused" : "error";
+    $("usage-view").replaceChildren(note);
     $("usage-raw").hidden = true; $("usage-raw").open = false; $("usage").textContent = "";
+    downloadsTile("Not loaded", "Counted once for each download.");
   };
   function disconnect() {
     // A pending confirmation belongs to the identity session that verified its link.
@@ -192,6 +212,7 @@ const applyPaymentState = name => {
     showUsageNote("Sign in to see the downloads recorded for your account."); $("billing").textContent = "Connect to check this service's billing configuration.";
     $("result-count").textContent = "Connect to search"; $("query").value = ""; message("search-message", ""); message("billing-message", "");
     $("account-facts").replaceChildren(); $("account-state").textContent = "Not connected";
+    $("account-tile-plan").textContent = "Not signed in"; $("account-tile-plan-note").textContent = "Sign in to see your plan.";
     $("account-note").textContent = "Sign in to see your service identity, usage and available subscription settings.";
     $("workspace-access").textContent = "Sign in to search"; $("workspace-access-note").textContent = "Search and downloads are scoped to your service account.";
     $("workspace-access-link").textContent = "Sign in to this service"; $("account-access-link").textContent = "Sign in";
@@ -266,9 +287,15 @@ const applyPaymentState = name => {
         headers:{...(authenticated ? {Authorization:"Bearer " + token} : {}), ...(body ? {"Content-Type":"application/json"} : {}), ...(profile.protocol ? {Accept:"application/json, text/event-stream", "MCP-Protocol-Version":profile.protocol} : {})}, ...(body ? {body:JSON.stringify(body)} : {})});
       if (authenticated && epoch !== generation) throw new Error("The connection changed. This response was discarded.");
       if (!response.ok) {
-        let code = "request_failed"; try { code = (await response.json()).error?.code || code; } catch (_) {}
+        let record = null; try { record = await response.json(); } catch (_) {}
+        const code = typeof record?.error?.code === "string" && record.error.code ? record.error.code : "request_failed";
         if (response.status === 401 && authenticated) disconnect();
-        throw new Error("Service refused the request: " + String(code).slice(0, 100) + ".");
+        const refused = new Error("Service refused the request: " + String(code).slice(0, 100) + ".");
+        /* The service's own words for this refusal, taken only as plain sentences of a bounded length. */
+        const sentence = value => typeof value === "string" && value.trim() && value.length <= 400 && !/[<>]/.test(value) ? value.trim() : "";
+        if (sentence(record?.error?.message)) refused.refusal = {code, status:response.status, message:sentence(record.error.message), next:sentence(record.error.next_action),
+          reference:/^ref_[a-z0-9]{1,64}$/.test(record?.request_reference || "") ? record.request_reference : ""};
+        throw refused;
       }
       if (binary) return {bytes:await response.arrayBuffer(), digest:response.headers.get("x-content-sha256"), epoch};
       if (profile.notification && response.status === 202) return null;
@@ -280,7 +307,21 @@ const applyPaymentState = name => {
     } finally { clearTimeout(timer); pending.delete(controller); }
   }
   function facts(target, entries) { target.replaceChildren(); for (const [name, value] of entries) target.append(element("dt", name), element("dd", value ?? "Unknown")); }
-  clientAccess = window.BaltorClientAccess.create({request, element, message,
+  /* A fact list drawn as tiles, such as the staff figures, keeps each name and its value together in one group. */
+  const tiles = (target, entries) => { facts(target, entries); for (const name of [...target.querySelectorAll("dt")]) { const value = name.nextElementSibling, group = document.createElement("div"); name.before(group); group.append(name, value); } };
+  /* The plan tile of the account overview names what covers the account, as the session record states it, and what the
+     account may do. A subscription is named as one, because the session record does not name its plan. */
+  const sourceNames = {founding_free_monthly:"Baltor Pro", free_monthly:"Baltor Pro", operator_grant:"Baltor Pro", subscription:"Subscription", promotion_code:"Promotion code", none:"No plan"};
+  const sourceNotes = {founding_free_monthly:"A founding place, free each month.", free_monthly:"Free each month.", operator_grant:"Granted by Baltor.",
+    subscription:"Paid through Stripe.", promotion_code:"From a redeemed code.", none:"Choose a plan under Subscription access."};
+  const entitlementNotes = {bodies:"Search and download.", metadata:"Search only."};
+  function planTile(source, entitlement) {
+    $("account-tile-plan").textContent = sourceNames[source] || "Service access";
+    $("account-tile-plan-note").textContent = [sourceNotes[source], entitlementNotes[entitlement] || (entitlement ? "Access: " + entitlement + "." : "")].filter(Boolean).join(" ");
+  }
+  /* The downloads tile of the account overview is drawn from the same usage record as the table, or says it is not loaded. */
+  function downloadsTile(value, note) { $("account-tile-downloads").textContent = value; $("account-tile-downloads-note").textContent = note; }
+  clientAccess = window.BaltorClientAccess.create({request, element, message, said, failureState,
     current:() => ({connected:!!token, mode:authenticationMode, generation, known:capabilities !== null,
       available:capabilities?.record_type === CAPABILITIES_RECORD_TYPE && capabilities.website.client_access_available === true})});
   // Browsing the permitted catalogue lives in its own file. It is given the same authenticated request
@@ -298,7 +339,7 @@ const applyPaymentState = name => {
     : null;
   if (!catalogueBrowser) message("browse-message", "Browsing is not available on this page. Search above still works.", true);
   async function connectService(supplied, activate = false, {stay = false} = {}) {
-    disconnect(); token = supplied; message("connection-message", "Checking access…");
+    disconnect(); token = supplied; message("connection-message", "Checking access…", "loading");
     try {
       if (activate) await request("/api/v1/account/activate", {record_type:"service_account_activation_request/v1"});
       const value = await request("/api/v1/session");
@@ -307,6 +348,7 @@ const applyPaymentState = name => {
       accessSource = typeof value.access_source === "string" ? value.access_source : "";
       staffRole = typeof value.staff_role === "string" ? value.staff_role : "";
       $("account-plan").hidden = !coveredSources.includes(accessSource); $("account-plan").textContent = "Your account includes Baltor Pro.";
+      planTile(accessSource, value.principal.entitlement);
       const entries = [["Tenant", value.principal.tenant_id], ["Namespace", value.principal.namespace], ["Scopes", value.principal.scopes.join(", ")], ["Access", value.principal.entitlement]];
       facts($("identity-facts"), entries); facts($("account-facts"), entries);
       $("account-state").textContent = "Connected"; $("account-note").textContent = "This connection is scoped to the identity below. Access and subscriptions are checked by the service.";
@@ -328,10 +370,10 @@ const applyPaymentState = name => {
       // A kept sign-in opened again by a reload stays on the page the person asked for.
       if (!stay) { const destination = afterLogin; afterLogin = null; navigate(destination || (administrator ? "/admin" : "/app")); }
       if (administrator) await loadAccess();
-      if (staffRole) await loadStaff().catch(error => message("staff-message", error.message, true));
-      if (administrator || staffRole) await loadFeedback().catch(error => message("feedback-message", error.message, true));
+      if (staffRole) await loadStaff().catch(error => message("staff-message", said(error), failureState(error)));
+      if (administrator || staffRole) await loadFeedback().catch(error => message("feedback-message", said(error), failureState(error)));
       clientAccess.connectionChanged(); catalogueBrowser?.connectionChanged();
-    } catch (error) { disconnect(); message("connection-message", error.name === "AbortError" ? "Connection timed out. No automatic retry was made." : error.message, true); }
+    } catch (error) { disconnect(); message("connection-message", error.name === "AbortError" ? "Connection timed out. No automatic retry was made." : said(error), failureState(error)); }
   }
   $("connect-form").addEventListener("submit", async event => {
     event.preventDefault(); if (busy) return; busy = true; $("connect-button").disabled = true;
@@ -584,6 +626,15 @@ const applyPaymentState = name => {
       item.classList.toggle("is-done", place < here); item.classList.toggle("is-current", place === here);
       if (place === here) item.setAttribute("aria-current", "step"); else item.removeAttribute("aria-current");
     }
+    /* The card sits inside the step it serves, as the September 26, 2026 design draws the list: account creation or sign-in in the
+       first step, the subscription in the fourth, and the setup guide in the fifth once Baltor Pro is covered. The served page
+       already holds it in the first step, so a visitor who is not signed in sees no move. A signed-in account is welcomed. */
+    const holder = document.querySelector('[data-funnel-step="' + (signedIn ? (plan.covered ? "setup" : "plan") : "account") + '"]');
+    if (holder && $("funnel-card").parentElement !== holder) holder.append($("funnel-card"));
+    for (const item of document.querySelectorAll("[data-funnel-step]")) item.classList.toggle("holds-card", item === holder);
+    $("funnel").dataset.funnelCovered = String(Boolean(plan?.covered));
+    $("funnel-title").textContent = signedIn ? "Welcome to Baltor." : "Get started with Baltor.";
+    if (signedIn && !coveredStep) $("funnel-price").textContent = "Your account is open. Subscribe to Baltor Pro for $29 a month, then connect your harness.";
   }
   // Subscribing uses the checkout the account page uses, for the first plan the service offers; the host offers one plan.
   $("funnel-subscribe").addEventListener("click", async () => {
@@ -629,7 +680,7 @@ const applyPaymentState = name => {
       const link = element("a", "Download"); link.href = objectUrl; link.download = "intelligence-" + actual.slice(0, 12) + ".txt"; link.click(); setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
       status.textContent = "Downloaded. Digest verified. Native loading and task acceptance are separate checks.";
       ratingPair(status, hit.reference.identity, hit.reference.body_digest);
-    } catch (error) { status.textContent = error.name === "AbortError" ? "The wait ended. Usage may have been recorded. Retry this exact selection to reconcile." : error.message; }
+    } catch (error) { status.textContent = error.name === "AbortError" ? "The wait ended. Usage may have been recorded. Retry this exact selection to reconcile." : said(error); }
     finally { button.disabled = false; }
   }
   /* A reader reports the exact item version a result card shows. The service withdraws a Community item on the first
@@ -659,7 +710,7 @@ const applyPaymentState = name => {
         const value = await request("/api/v1/provisioning", {record_type:"service_provisioning_request/v2", operation:"report", identity, expected_digest:digest, reason});
         if (epoch !== generation) return;
         outcome.textContent = reportOutcome(value); form.hidden = true; box.value = "";
-      } catch (error) { if (epoch === generation) outcome.textContent = error.name === "AbortError" ? "The wait ended. Your report may not have been recorded. Send it again." : error.message; }
+      } catch (error) { if (epoch === generation) outcome.textContent = error.name === "AbortError" ? "The wait ended. Your report may not have been recorded. Send it again." : said(error); }
       finally { if (epoch === generation) send.disabled = false; }
     });
     return holder;
@@ -683,16 +734,16 @@ const applyPaymentState = name => {
       facts(list, [["Library tier", hit.library_tier_label || "Not stated"], ["Step functions", functions.join(", ") || "Not tagged"],
         ["Job titles", facet("job_titles") || "Not tagged"], ["Industries", facet("industries") || "Not tagged"], ["Levels", facet("levels") || "Not tagged"],
         ["Languages", facet("languages") || "Not tagged"], ["Geographies", facet("geographies") || "Not tagged"], ["Source", hit.reference.source_ref], ["Digest", hit.reference.body_digest], ["License", hit.license || "Unknown"], ["Declared effects", (hit.declared_effects || []).join(", ") || "None declared"], ["Harness scope", (hit.harness_styles || []).join(", ") || "No specific harness declared"], ["Qualification basis", hit.qualification_basis], ["Bytes", hit.size_bytes], ["Body access", hit.body_allowed ? "Permitted, checked again on fetch" : "Not granted"]]); detail.append(list); card.append(detail);
-      const button = element("button", "Fetch exact revision", "quiet"), status = element("p", "", "caption"); button.type = "button"; button.disabled = !hit.body_allowed; status.setAttribute("role", "status");
+      const button = element("button", "Download this version", "quiet"), status = element("p", "", "caption"); button.type = "button"; button.disabled = !hit.body_allowed; status.setAttribute("role", "status");
       button.addEventListener("click", () => download(hit, button, status)); card.append(button, status, reportControl(hit.reference.identity, hit.reference.body_digest)); $("results").append(card);
     }
   }
   $("search-form").addEventListener("submit", async event => {
-    event.preventDefault(); $("search-button").disabled = true; message("search-message", "Searching authorized references…");
+    event.preventDefault(); $("search-button").disabled = true; message("search-message", "Searching authorized references…", "loading");
     try { const named = stepEffects(), value = await request("/api/v1/retrieval", {record_type:"service_retrieval_request/v2", query:$("query").value, mode:$("search-mode").value, top_n:10, ...(named ? {authority_effects:named} : {})}); renderResults(value.hits);
       // A search that found nothing carries one line from the service: the customer can ask for material, with the form below.
       message("search-message", !value.hits.length && typeof value.ask_for_material === "string" ? value.ask_for_material : "References only. No bodies loaded."); }
-    catch (error) { message("search-message", error.name === "AbortError" ? "Search timed out. You can retry." : error.message, true); }
+    catch (error) { message("search-message", error.name === "AbortError" ? "Search timed out. You can retry." : said(error), failureState(error)); }
     finally { $("search-button").disabled = !token; }
   });
   /* Feedback on the library (September 26, 2026). After a download, the status line offers one rating of the exact
@@ -712,7 +763,7 @@ const applyPaymentState = name => {
           const result = await request("/api/v1/provisioning", {record_type:"service_provisioning_request/v2", operation:"rate", identity, expected_digest:digest, value});
           if (epoch !== generation) return;
           status.textContent = result.replaced ? "Your rating was changed to " + label.toLowerCase() + "." : "Thank you. Your rating, " + label.toLowerCase() + ", was recorded.";
-        } catch (error) { if (epoch === generation) status.textContent = error.name === "AbortError" ? "The wait ended. The rating may not have been recorded." : error.message; }
+        } catch (error) { if (epoch === generation) status.textContent = error.name === "AbortError" ? "The wait ended. The rating may not have been recorded." : said(error); }
         finally { if (epoch === generation) for (const other of pair.querySelectorAll("button")) other.disabled = false; }
       });
       pair.append(button);
@@ -731,7 +782,7 @@ const applyPaymentState = name => {
       const result = await request("/api/v1/provisioning", {record_type:"service_provisioning_request/v2", operation:"request_material", request_id:materialRequest.id, description});
       materialRequest = null; $("material-request-description").value = "";
       message("material-request-message", result.repeated ? "This request was already recorded. Staff read it." : "Thank you. Staff read every request; nothing is promised in return.");
-    } catch (error) { message("material-request-message", error.name === "AbortError" ? "The wait ended. Send the same text again to reconcile; it is not recorded twice." : error.message, true); }
+    } catch (error) { message("material-request-message", error.name === "AbortError" ? "The wait ended. Send the same text again to reconcile; it is not recorded twice." : said(error), failureState(error)); }
     finally { $("material-request-button").disabled = !token; }
   });
   /* The staff view of feedback: how downloads were rated, what customers asked for, and the hours in which searches
@@ -739,7 +790,7 @@ const applyPaymentState = name => {
   async function loadFeedback() {
     const view = await request("/api/v1/admin/feedback");
     $("feedback-admin").hidden = false;
-    facts($("feedback-counts"), [["Rated useful", String(view.ratings.useful)], ["Rated not useful", String(view.ratings.not_useful)],
+    tiles($("feedback-counts"), [["Rated useful", String(view.ratings.useful)], ["Rated not useful", String(view.ratings.not_useful)],
       ["Items rated", String(view.ratings.items.length)], ["Requests for material", String(view.material_requests.length)],
       ["Hours with a search that found nothing", String(view.search_gaps.length)]]);
     $("feedback-requests").replaceChildren();
@@ -760,7 +811,7 @@ const applyPaymentState = name => {
     }
     message("feedback-message", "Ratings, requests and search gaps, read from the service records. Search gaps hold no account and no search text.");
   }
-  $("refresh-feedback").addEventListener("click", () => loadFeedback().catch(error => message("feedback-message", error.message, true)));
+  $("refresh-feedback").addEventListener("click", () => loadFeedback().catch(error => message("feedback-message", said(error), failureState(error))));
   /* Recorded usage, item by item: one row for each item, with its number of recorded downloads and the time of the latest, in
      the order the service gives. The table is drawn only from the record version this page was written against, with a list of
      items it can read; any other record is left to the raw view. The raw record always stays behind the disclosure below the
@@ -773,8 +824,8 @@ const applyPaymentState = name => {
   function renderUsage(value) {
     const rows = usageItems(value), view = $("usage-view");
     $("usage").textContent = JSON.stringify(value, null, 2); $("usage-raw").hidden = false;
-    if (!rows) { view.replaceChildren(element("p", "This service answered with a usage record this page was not written for, so no table is shown. The raw record is below.", "usage-note")); return; }
-    if (!rows.length) { view.replaceChildren(element("p", "No downloads are recorded for this account yet. Each item your tools download appears here.", "usage-empty")); return; }
+    if (!rows) { downloadsTile("Unknown", "The usage record is in a version this page does not read."); view.replaceChildren(element("p", "This service answered with a usage record this page was not written for, so no table is shown. The raw record is below.", "usage-note")); return; }
+    if (!rows.length) { downloadsTile("0", "Nothing downloaded yet."); view.replaceChildren(element("p", "No downloads are recorded for this account yet. Each item your tools download appears here.", "usage-empty")); return; }
     const labels = ["Item", "Downloads", "Last used"], total = rows.reduce((sum, row) => sum + row.records, 0);
     const table = element("table", "", "usage-table"), head = document.createElement("thead"), heading = document.createElement("tr"), body = document.createElement("tbody");
     for (const label of labels) { const cell = element("th", label); cell.scope = "col"; heading.append(cell); }
@@ -791,11 +842,12 @@ const applyPaymentState = name => {
     }
     table.append(element("caption", "Downloads recorded for this account, item by item", "sr-only"), head, body);
     view.replaceChildren(element("p", total + (total === 1 ? " download of " : " downloads of ") + rows.length + (rows.length === 1 ? " item." : " items."), "usage-summary"), table);
+    downloadsTile(String(total), rows.length + (rows.length === 1 ? " item" : " different items") + ", from your usage record.");
   }
   $("refresh-usage").addEventListener("click", async () => {
     const epoch = generation;
     try { renderUsage(await request("/api/v1/usage")); }
-    catch (error) { if (epoch === generation) showUsageNote(error.name === "AbortError" ? "The usage request timed out. You can refresh again." : error.message, true); }
+    catch (error) { if (epoch === generation) showUsageNote(error.name === "AbortError" ? "The usage request timed out. You can refresh again." : said(error), failureState(error)); }
   });
   async function createSession(operation, options, plan, button, target = "billing-message") {
     const key = JSON.stringify([operation, options.policy_digest, plan]), epoch = generation;
@@ -806,7 +858,7 @@ const applyPaymentState = name => {
       if (epoch !== generation) return;
       const url = new URL(result.redirect_url); if (url.protocol !== "https:" || !["checkout.stripe.com", "billing.stripe.com"].includes(url.hostname) || url.username || url.password) throw new Error("The service returned an unsupported payment destination.");
       const link = element("a", "Open secure " + operation); link.href = url.href; link.rel = "noopener noreferrer"; link.target = "_blank"; $(target).replaceChildren(link);
-    } catch (error) { message(target, error.name === "AbortError" ? "The outcome is uncertain. Check the provider before trying again. This page retains the same request identity." : error.message, true); }
+    } catch (error) { message(target, error.name === "AbortError" ? "The outcome is uncertain. Check the provider before trying again. This page retains the same request identity." : said(error), failureState(error)); }
     finally { button.disabled = !token; }
   }
   $("refresh-billing").addEventListener("click", async () => {
@@ -815,7 +867,7 @@ const applyPaymentState = name => {
       if (!options.checkout_available && !options.portal_available) { $("billing").textContent = "Billing is unavailable: " + (options.unavailable_reason || "not configured") + "."; return; }
       if (options.checkout_available) for (const plan of options.plans) { const button = element("button", "Choose " + plan.label, "quiet"); button.type = "button"; button.addEventListener("click", () => createSession("checkout", options, plan.plan_ref, button)); $("billing").append(button); }
       if (options.portal_available) { const button = element("button", "Manage subscription", "quiet"); button.type = "button"; button.addEventListener("click", () => createSession("portal", options, "", button)); $("billing").append(button); }
-    } catch (error) { message("billing-message", error.message, true); }
+    } catch (error) { message("billing-message", said(error), failureState(error)); }
   });
   async function loadAccess() {
     const options = await request("/api/v1/admin/access"); accessOptions = options;
@@ -841,14 +893,14 @@ const applyPaymentState = name => {
           if (accessBusy || !confirm("Revoke the token “" + row.label + "”? Its next service request will be refused.")) return;
           accessBusy = true; button.disabled = true;
           try { await request("/api/v1/admin/access", {record_type:"service_access_request/v1", operation:"revoke", request_id:crypto.randomUUID(), tenant_id:row.tenant_id, key_id:row.key_id}); await loadAccess(); message("admin-message", "Token revoked."); }
-          catch (error) { message("admin-message", error.message + " Refresh to inspect the current state before retrying.", true); }
+          catch (error) { message("admin-message", said(error) + " Refresh to inspect the current state before retrying.", failureState(error)); }
           finally { accessBusy = false; button.disabled = false; }
         }); item.append(button); }
       $("access-list").append(item);
     }
     message("admin-message", "Administrator access confirmed. Test tokens cannot delegate administration or billing management.");
   }
-  $("refresh-access").addEventListener("click", () => loadAccess().catch(error => message("admin-message", error.message, true)));
+  $("refresh-access").addEventListener("click", () => loadAccess().catch(error => message("admin-message", said(error), failureState(error))));
   /* Staff administration. The overview shows what the role may read; a superadmin also sees every account and acts on one
      at a time, each action under a new request identity. The service checks the role, the session and the time again. */
   const planNames = {paid:"Paid", free_monthly:"Free monthly", founding_free_monthly:"Founding, free monthly", other_comped:"Other free access", none:"None"};
@@ -857,7 +909,7 @@ const applyPaymentState = name => {
     const overview = await request("/api/v1/admin/overview");
     $("staff-admin").hidden = false; $("admin-login").hidden = true; $("staff-role").textContent = overview.role;
     const counts = overview.account_counts, usage = overview.usage_counts, health = overview.diagnostics?.health;
-    facts($("staff-counts"), [...(counts ? [["Accounts", String(counts.accounts)], ["Paid", String(counts.plans.paid)],
+    tiles($("staff-counts"), [...(counts ? [["Accounts", String(counts.accounts)], ["Paid", String(counts.plans.paid)],
       ["Free monthly", String(counts.plans.free_monthly + counts.plans.founding_free_monthly)], ["Founding places", counts.founding_holders + " of " + counts.founding_limit],
       ["Switched off", String(counts.switched_off)]] : []), ...(usage ? [["Downloads in 30 days", String(usage.downloads_in_the_last_30_days)]] : []),
       ...(health ? [["Service ready", health.ready ? "Yes" : "No"], ["Checks failing", health.checks.filter(row => !row.passed).map(row => row.name).join(", ") || "None"]] : [])]);
@@ -884,7 +936,7 @@ const applyPaymentState = name => {
           staffBusy = true; button.disabled = true;
           try { await request("/api/v1/admin/accounts", {record_type:"service_account_administration_request/v1", operation, request_id:crypto.randomUUID(), tenant_id:row.tenant_id});
             await loadStaff(); message("staff-message", label + " is done."); }
-          catch (error) { message("staff-message", error.message + " Refresh to see the current state before trying again.", true); }
+          catch (error) { message("staff-message", said(error) + " Refresh to see the current state before trying again.", failureState(error)); }
           finally { staffBusy = false; button.disabled = false; }
         }); item.append(button);
       }
@@ -892,7 +944,7 @@ const applyPaymentState = name => {
     }
     message("staff-message", listing.total + " accounts. Founding places used: " + listing.founding_holders + " of " + listing.founding_limit + ".");
   }
-  $("refresh-staff").addEventListener("click", () => loadStaff().catch(error => message("staff-message", error.message, true)));
+  $("refresh-staff").addEventListener("click", () => loadStaff().catch(error => message("staff-message", said(error), failureState(error))));
   /* A superadmin starts Baltor's own sign-up for a few addresses. Each person gets one message from this service and chooses
      their own password on the confirmation page; an address that already has an account gets nothing. */
   let staffLinkRequest = null;
@@ -912,7 +964,7 @@ const applyPaymentState = name => {
       staffLinkRequest = null; $("staff-link-addresses").value = ""; $("staff-link-free").checked = false;
       await loadStaff();
       message("staff-message", result.links.map(row => (linkOutcomes[row.outcome] || row.outcome + ": ") + row.address + ".").join(" "));
-    } catch (error) { message("staff-message", error.message + " Refresh to see the current state; an exact retry reuses this request identity.", true); }
+    } catch (error) { message("staff-message", said(error) + " Refresh to see the current state; an exact retry reuses this request identity.", failureState(error)); }
     finally { staffBusy = false; $("staff-link-button").disabled = false; }
   });
   $("issue-access").addEventListener("submit", async event => {
@@ -929,7 +981,7 @@ const applyPaymentState = name => {
       if (result.token) { $("issued-token").value = result.token; $("issued-access").hidden = false; message("admin-message", "Token created. Save it before closing or reloading this page."); }
       else message("admin-message", "This request already created a token. The secret cannot be shown again. Revoke that token before creating a replacement.");
       accessRequest = null;
-    } catch (error) { message("admin-message", error.message + " No automatic retry was made. Refresh the list; an exact retry reuses this request identity.", true); }
+    } catch (error) { message("admin-message", said(error) + " No automatic retry was made. Refresh the list; an exact retry reuses this request identity.", failureState(error)); }
     finally { accessBusy = false; $("issue-access-button").disabled = !token || !accessOptions?.writes_authorized || accessOptions.active_tokens >= accessOptions.maximum_active_tokens; }
   });
   $("copy-token").addEventListener("click", async () => { try { await navigator.clipboard.writeText($("issued-token").value); message("admin-message", "Token copied. Store it privately."); } catch (_) { $("issued-token").type = "text"; $("issued-token").select(); message("admin-message", "Copy the selected token, then clear it from this page."); } });
@@ -1095,7 +1147,7 @@ const applyPaymentState = name => {
   $("test-protocol").addEventListener("click", async () => {
     if (connectionBusy || !token || !capabilities) return;
     connectionBusy = true; const epoch = generation, version = (capabilities.protocol.handshake_versions || [])[0];
-    $("test-protocol").disabled = true; $("protocol-tools").replaceChildren(); message("protocol-result", "Checking the protocol handshake and available tools…");
+    $("test-protocol").disabled = true; $("protocol-tools").replaceChildren(); message("protocol-result", "Checking the protocol handshake and available tools…", "loading");
     try {
       if (!version) throw new Error("This service offers no handshake protocol version, so this browser check cannot run.");
       const profile = {protocol:version};
@@ -1107,7 +1159,7 @@ const applyPaymentState = name => {
       if (epoch !== generation) return;
       for (const tool of listed.tools) $("protocol-tools").append(element("li", tool.name));
       message("protocol-result", "Service connection passed. Protocol " + version + "; " + listed.tools.length + " tools available. No file bodies fetched or models called. Native client loading is not tested here.");
-    } catch (error) { if (epoch === generation) message("protocol-result", error.name === "AbortError" ? "The check timed out. No automatic retry was made." : error.message, true); }
+    } catch (error) { if (epoch === generation) message("protocol-result", error.name === "AbortError" ? "The check timed out. No automatic retry was made." : said(error), failureState(error)); }
     finally { connectionBusy = false; if (epoch === generation) $("test-protocol").disabled = !token || !principalScopes.includes("provisioning:metadata"); }
   });
   /* Signed in, Get set up offers "Create a client token" where a visitor sees "Sign in to check access": the connection check
@@ -1153,6 +1205,8 @@ const applyPaymentState = name => {
         const signupOpen = settings.email_signup_enabled === true && settings.signup_available === true;
         $("email-login").hidden = false; $("email-signup").hidden = !signupOpen; $("signup-closed").hidden = signupOpen;
         $("email-recovery").hidden = settings.recovery_available !== true;
+        // Once email sign-in is offered it is the page's one primary action, and the service key form below it is a quiet one.
+        $("connect-button").classList.remove("primary");
         $("login-access-description").textContent = "Sign in with your email address and password.";
         $("email-access-note").textContent = "Email credentials are checked by the configured identity provider. Model keys are separate.";
         $("email-signin-limit").textContent = signupOpen ? "Email sign-in is available. Account creation and subscription access are separate." : "Email sign-in is available for prepared accounts. Public account creation remains closed; a service token does not create an account or subscription.";

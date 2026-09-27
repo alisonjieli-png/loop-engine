@@ -73,7 +73,9 @@ const vp=layout.viewports,desktop=vp.desktop,phone=vp.phone;
 const edgeTolerance=layout.shared_edge_tolerance_px;
 
 /* Decisions, kept apart from the measurements so the known-wrong controls below can prove each one refuses. */
-const key=entry=>entry.href??("button:"+entry.label);
+/* The server appends only this content digest to immutable public assets. Other query parameters remain significant. */
+const key=entry=>entry.href?.replace(/^(\/assets\/[^?#]+)\?v=[a-f0-9]{64}$/, "$1")??("button:"+entry.label);
+const skipFocusAccepted=state=>Boolean(state.shown&&state.target==="main"&&state.focused==="main"&&state.hash==="#main");
 const compareEntries=(expected,actual)=>{
   const wanted=expected.map(key),found=actual.map(key),problems=[];
   const missing=wanted.filter(item=>!found.includes(item)),extra=found.filter(item=>!wanted.includes(item));
@@ -98,10 +100,13 @@ const oneRow=(boxes,bar)=>boxes.length>0&&Math.max(...boxes.map(item=>item.top))
 const inFirstScreen=(box,height)=>Boolean(box)&&box.top>=0&&box.bottom<=height+0.5;
 const tapSized=box=>box.width>=layout.tap_target_min_px-0.5&&box.height>=layout.tap_target_min_px-0.5;
 const knownWrong=[
+  ["asset_identity_ignores_only_the_served_digest",key({href:"/assets/notice.txt?v="+"a".repeat(64)})==="/assets/notice.txt"&&key({href:"/assets/notice.txt?v=other"})!=="/assets/notice.txt"&&key({href:"/docs?v="+"a".repeat(64)})!=="/docs"],
+  ["skip_link_rule_refuses_focus_left_in_the_header",!skipFocusAccepted({shown:true,target:"main",focused:"menu-button",hash:"#main"})&&skipFocusAccepted({shown:true,target:"main",focused:"main",hash:"#main"})],
   ["padding_rule_refuses_112_pixels_on_a_desktop",!paddingAllowed(112,layout.section_padding_px.desktop)&&paddingAllowed(64,layout.section_padding_px.desktop)],
   ["padding_rule_refuses_87_84_pixels_on_a_desktop",!paddingAllowed(87.84,layout.section_padding_px.desktop)],
   ["entry_rule_refuses_a_missing_an_extra_and_a_reordered_link",
-    compareEntries([{role:"link",label:"A",href:"/a"},{role:"link",label:"B",href:"/b"}],[{role:"link",label:"B",href:"/b"},{role:"link",label:"C",href:"/c"}]).length===3
+    compareEntries([{role:"link",label:"A",href:"/a"},{role:"link",label:"B",href:"/b"},{role:"link",label:"C",href:"/c"}],
+      [{role:"link",label:"C",href:"/c"},{role:"link",label:"B",href:"/b"},{role:"link",label:"D",href:"/d"}]).length===3
     &&compareEntries([{role:"link",label:"A",href:"/a"},{role:"link",label:"B",href:"/b"}],[{role:"link",label:"B",href:"/b"},{role:"link",label:"A",href:"/a"}]).length===1],
   ["contrast_rule_refuses_grey_8a8a8a_on_white",contrast([138,138,138],[255,255,255])<layout.text_contrast_min&&contrast([85,96,112],[255,255,255])>=layout.text_contrast_min],
   ["scroll_budget_refuses_a_homepage_of_7046_pixels",heightBudget({scroll_budget:"long"},desktop)<7046],
@@ -126,7 +131,7 @@ function measure({base,price,lineMax,menu}){
   const header=document.querySelector("header"),footer=document.querySelector("footer"),main=document.querySelector("main");
   const view=[...document.querySelectorAll("[data-view]")].find(shown)||null,scope=view||main||document.body;
   const role=el=>el.classList.contains("brand")?"brand":el.classList.contains("primary")?"primary":el.tagName==="BUTTON"?"button":"link";
-  const entries=header?[...header.querySelectorAll("a[href], button")].filter(shown).map(el=>({role:role(el),label:words(el),href:el.tagName==="A"?el.getAttribute("href"):null,box:box(el)})):null;
+  const entries=header?[...header.querySelectorAll("a[href], button")].filter(el=>shown(el)&&!el.matches("[aria-controls=main-nav]")).map(el=>({role:role(el),label:words(el),href:el.tagName==="A"?el.getAttribute("href"):null,box:box(el)})):null;
   const menuControl=header?[...header.querySelectorAll("label[for], button[aria-controls]")].find(el=>el.tagName==="LABEL"||el.getAttribute("aria-controls")):null;
   const result={view:view?.dataset.view??null,title:document.title,canonical:document.querySelector('link[rel="canonical"]')?.getAttribute("href")??null,
     height:document.documentElement.scrollHeight,overflow:Math.round(document.documentElement.scrollWidth-vw),header:header?{box:box(header),
@@ -135,13 +140,13 @@ function measure({base,price,lineMax,menu}){
     .map(el=>({element:name(el),right:Math.round(el.getBoundingClientRect().right)}));
   if(footer){
     const groups=[...footer.querySelectorAll("nav")].filter(shown).map(nav=>({name:nav.getAttribute("aria-label")||"",
-      links:[...nav.querySelectorAll("a[href]")].filter(shown).map(a=>({role:"link",label:words(a),href:a.getAttribute("href")}))}));
+      links:[...nav.querySelectorAll("a[href]")].map(a=>({role:"link",label:(a.textContent||"").replace(/\s+/g," ").trim(),href:a.getAttribute("href")}))}));
     const outside=[...footer.querySelectorAll("a[href]")].filter(a=>shown(a)&&!a.closest("nav"));
     const rows=[...footer.querySelectorAll("*")].filter(el=>!el.closest("nav")&&shown(el)&&el.textContent.includes(base.operator)&&el.textContent.includes(base.operator_line))
       .sort((a,b)=>a.querySelectorAll("*").length-b.querySelectorAll("*").length);
     result.footer={groups,brand:outside.filter(a=>a.classList.contains("brand")).map(a=>a.getAttribute("href")),
       extra:outside.filter(a=>!a.classList.contains("brand")).map(a=>a.getAttribute("href")),
-      base:rows[0]?{text:sample(rows[0].textContent),mark:[...rows[0].querySelectorAll("img")].some(img=>img.getAttribute("src")===base.mark),
+      base:rows[0]?{text:sample(rows[0].textContent),mark:[...rows[0].querySelectorAll("img")].some(img=>img.getAttribute("src")?.replace(/^(\/assets\/[^?#]+)\?v=[a-f0-9]{64}$/, "$1")===base.mark),
         year:/\b20[0-9]{2}\b/.test(rows[0].textContent)}:null};
   }else result.footer=null;
   /* Sections: the page frame, the footer, and every block inside the main column that spans the window or paints a band that does. */
@@ -222,7 +227,11 @@ function measure({base,price,lineMax,menu}){
   result.any_primary_in_first_screen=[headerPrimary,...primaries].filter(Boolean).some(el=>{const r=el.getBoundingClientRect();return r.top>=0&&r.bottom<=vh+0.5;});
   const brand=header?.querySelector("a.brand"),footerBrand=footer?.querySelector("a.brand");
   result.edges={brand:brand&&shown(brand)?Math.round(brand.getBoundingClientRect().left*10)/10:null,h1:h1?Math.round(h1.getBoundingClientRect().left*10)/10:null,
-    footer_brand:footerBrand&&shown(footerBrand)?Math.round(footerBrand.getBoundingClientRect().left*10)/10:null};
+    footer_brand:footerBrand&&shown(footerBrand)?Math.round(footerBrand.getBoundingClientRect().left*10)/10:null,
+    heading_center:h1?(h1.getBoundingClientRect().left+h1.getBoundingClientRect().right)/2:null,
+    heading_right:h1?h1.getBoundingClientRect().right:null,
+    centered_heading:h1?getComputedStyle(h1).textAlign==="center":false,
+    documentation_frame:h1?.closest(".docs-layout")?.getBoundingClientRect().left??null};
   result.price=null;const texts=document.createTreeWalker(scope,NodeFilter.SHOW_TEXT);
   for(let node=texts.nextNode();node;node=texts.nextNode()){const at=node.textContent.indexOf(price.marker);if(at<0||!shown(node.parentElement))continue;
     const range=document.createRange();range.setStart(node,at);range.setEnd(node,at+price.marker.length);const r=range.getBoundingClientRect();
@@ -232,7 +241,8 @@ function measure({base,price,lineMax,menu}){
     const url=new URL(a.getAttribute("href"),location.href);return url.pathname===location.pathname&&ids.has(decodeURIComponent(url.hash.slice(1)));}).length}))
     .filter(item=>item.count>=2);
   result.contents_list=lists[0]?{top:Math.round(box(lists[0].nav).top),links:lists[0].count}:null;
-  result.in_page_links=[...document.querySelectorAll("a[href*='#']")].filter(a=>{if(!shown(a))return false;const url=new URL(a.getAttribute("href"),location.href);
+  result.skip_link=document.querySelector("a.skip[href]")?.getAttribute("href")??null;
+  result.in_page_links=[...document.querySelectorAll("a[href*='#']")].filter(a=>{if(a.matches(".skip")||!shown(a))return false;const url=new URL(a.getAttribute("href"),location.href);
     return url.pathname===location.pathname&&url.hash.length>1&&ids.has(decodeURIComponent(url.hash.slice(1)));}).slice(0,2).map(a=>a.getAttribute("href"));
   return result;
 }
@@ -273,7 +283,7 @@ try{
     await page.evaluate(()=>document.fonts.ready.then(()=>true));
     return response;
   };
-  const arguments_=menu=>({base:siteMap.footer.base_row,price:layout.price,lineMax:layout.line_characters_max,menu});
+  const arguments_=menu=>({base:siteMap.footer_base_row,price:layout.price,lineMax:layout.line_characters_max,menu});
   const byWidth={};
   for(const [label,viewport] of Object.entries(vp))byWidth[label]=await open(viewport);
   for(const page of siteMap.pages){
@@ -300,9 +310,9 @@ try{
       check("page_shows_exactly_one_h1",m.h1.count===1,at,{count:m.h1.count,text:m.h1.text});
       check("view_shows_at_most_one_primary_action",m.primary_actions.length<=layout.primary_actions_per_view_max,at,{actions:m.primary_actions});
       check("footer_groups_and_links_match_the_site_map",Boolean(m.footer)&&(()=>{const problems=[];
-        problems.push(...compareEntries(siteMap.footer.groups.map(group=>({role:"group",label:group.name,href:group.name})),m.footer.groups.map(group=>({role:"group",label:group.name,href:group.name}))));
-        for(const group of siteMap.footer.groups){const shown=m.footer.groups.find(item=>item.name===group.name);if(shown)problems.push(...compareEntries(group.links,shown.links).map(problem=>group.name+": "+problem));}
-        if(JSON.stringify(m.footer.brand)!==JSON.stringify([siteMap.footer.brand_href]))problems.push("the footer brand links to "+JSON.stringify(m.footer.brand));
+        problems.push(...compareEntries(siteMap.footer_groups.map(group=>({role:"group",label:group.name,href:group.name})),m.footer.groups.map(group=>({role:"group",label:group.name,href:group.name}))));
+        for(const group of siteMap.footer_groups){const shown=m.footer.groups.find(item=>item.name===group.name);if(shown)problems.push(...compareEntries(group.links,shown.links).map(problem=>group.name+": "+problem));}
+        if(JSON.stringify(m.footer.brand)!==JSON.stringify([siteMap.footer_brand]))problems.push("the footer brand links to "+JSON.stringify(m.footer.brand));
         if(m.footer.extra.length)problems.push("links outside the groups "+JSON.stringify(m.footer.extra));
         if(!m.footer.base||!m.footer.base.mark||!m.footer.base.year)problems.push("base row "+JSON.stringify(m.footer.base));
         at.problems=problems;return problems.length===0;})(),{...at},{problems:at.problems});
@@ -313,7 +323,14 @@ try{
       check("sampled_text_meets_the_contrast_minimum",m.low_contrast.length===0,at,{minimum:layout.text_contrast_min,refused:m.low_contrast});
       const edge=m.edges,edgeProblems=[];
       if(edge.brand===null||edge.h1===null)edgeProblems.push("no brand or no h1 to measure");
-      else{if(Math.abs(edge.h1-edge.brand)>edgeTolerance)edgeProblems.push(`the h1 starts at ${edge.h1} and the brand at ${edge.brand}`);
+      else{
+        if(page.view==="home"){
+          if(!edge.centered_heading||Math.abs(edge.heading_center-viewport.width/2)>edgeTolerance)edgeProblems.push("the homepage heading is not centered in the viewport");
+        }else{
+          const left=page.address.startsWith("/docs/")&&edge.documentation_frame!==null?edge.documentation_frame:edge.h1;
+          if(Math.abs(left-edge.brand)>edgeTolerance)edgeProblems.push(`the heading's content frame starts at ${left} and the brand at ${edge.brand}`);
+        }
+        if(edge.h1<edge.brand-edgeTolerance||edge.heading_right>viewport.width-edge.brand+edgeTolerance)edgeProblems.push("the heading extends beyond the shared content edges");
         if(edge.footer_brand!==null&&Math.abs(edge.footer_brand-edge.brand)>edgeTolerance)edgeProblems.push(`the footer brand starts at ${edge.footer_brand} and the header brand at ${edge.brand}`);}
       check("page_content_starts_on_the_shared_left_edge",edgeProblems.length===0,at,{edges:edge,problems:edgeProblems});
       const budget=heightBudget(page,viewport);
@@ -393,12 +410,37 @@ try{
         check("first_screen_shows_a_primary_action",m.any_primary_in_first_screen,at,{page_primary:m.page_primary});
       }
     }
-    /* A jump to a part of the page lands below the header. */
+    /* Closed phone disclosures still own their links. Prove the links can be revealed, instead of requiring them all open. */
+    await load(phoneTab,page.address);
+    const footerProblems=[];
+    for(const group of siteMap.footer_groups){
+      const nav=phoneTab.locator("footer nav").filter({has:phoneTab.locator("summary",{hasText:group.name})});
+      if(await nav.count()!==1){footerProblems.push(group.name+": no unique disclosure");continue;}
+      const details=nav.locator("details"),summary=nav.locator("summary");
+      const wasOpen=await details.evaluate(el=>el.open);
+      if(!wasOpen)await summary.click({timeout:5000});
+      const links=await nav.locator("a[href]").evaluateAll(items=>items.filter(a=>a.checkVisibility()).map(a=>({role:"link",label:(a.innerText||a.textContent).replace(/\s+/g," ").trim(),href:a.getAttribute("href")})));
+      footerProblems.push(...compareEntries(group.links,links).map(problem=>group.name+": "+problem));
+      if(!wasOpen)await summary.click({timeout:5000});
+    }
+    check("phone_footer_disclosures_reveal_their_links",footerProblems.length===0,pw,{problems:footerProblems});
+    /* A skip link is deliberately above the viewport until keyboard focus reaches it. Never try to mouse-click it there. */
+    await load(tab,page.address);
+    check("pointer_jump_sample_excludes_keyboard_skip_link",!d.skip_link||!d.in_page_links.includes(d.skip_link),w,{skip_link:d.skip_link,samples:d.in_page_links});
+    try{
+      const skipLink=tab.locator("a.skip[href]");
+      await skipLink.focus({timeout:5000});
+      const before=await skipLink.evaluate(el=>{const r=el.getBoundingClientRect();return {shown:r.top>=0&&r.bottom<=innerHeight,target:new URL(el.href).hash.slice(1)};});
+      await tab.keyboard.press("Enter");
+      const after=await tab.evaluate(()=>({focused:document.activeElement?.id,hash:location.hash}));
+      check("keyboard_skip_link_moves_focus_to_main",skipFocusAccepted({...before,...after}),w,{...before,...after});
+    }catch(error){check("keyboard_skip_link_moves_focus_to_main",false,w,{error:String(error).slice(0,200)});}
+    /* A pointer jump to a part of the page lands below the header. */
     await load(tab,page.address);
     for(const href of d.in_page_links){
       const at={...where,width:desktop.width,link:href};
       try{
-        await tab.locator(`a[href="${href}"]`).filter({visible:true}).first().click();await tab.waitForTimeout(400);
+        await tab.locator(`a[href="${href}"]`).filter({visible:true}).first().click({timeout:5000});await tab.waitForTimeout(400);
         const landing=await tab.evaluate(target=>{const id=decodeURIComponent(new URL(target,location.href).hash.slice(1)),element=document.getElementById(id),header=document.querySelector("header");
           if(!element)return null;const r=element.getBoundingClientRect(),bar=header?header.getBoundingClientRect():null;
           return {target_top:Math.round(r.top),header_bottom:bar?Math.round(bar.bottom):null};},href);

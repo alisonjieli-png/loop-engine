@@ -1,6 +1,7 @@
 # Operator-tool resources
 
-This folder holds versioned passive resources used by repository operator tools.
+This folder holds versioned passive resources used by repository operator tools
+and offline fixtures used by their development checks.
 It is not a catalogue, engine registry or runtime component.
 
 `original-native-generation-prompt-v1.json` owns the original native generator's
@@ -21,3 +22,11 @@ Ship the resource beside its operator module in a source checkout. Change prompt
 semantics through a new reviewed version, not by editing an active campaign's
 resource and bypassing its binding. No key, candidate body or model output
 belongs in this resource.
+
+`client-access-autoload-check.cjs` is the offline JavaScript fixture for
+`tools/test_client_access_autoload.py`. It loads the supplied client-access page
+module into a Node VM with a minimal DOM and deferred request promises. Its
+checks cover both session/capability response orders and sign-out between
+request generations. It opens no network connection and uses no provider. The
+Python owner also removes each repaired guard in memory and requires its named
+behavior check to fail.

@@ -48,7 +48,8 @@ from . import library_page
 from . import red_team_page
 from . import status_pages
 from .web_pages import (CACHEABLE_WEB_ASSETS, GENERATED_WEB_FILES, HTML_MEDIA_TYPE, PUBLIC_ASSET_CACHE_CONTROL,
-                        WEB_ASSETS, asset_etag, missing_address_page, served_asset, validator_matches)
+                        WEB_ASSETS, asset_etag, missing_address_page, served_asset, server_error_page,
+                        validator_matches)
 
 RESULT_VERSION = "service_http_result/v1"
 ERROR_VERSION = "service_http_error/v1"
@@ -1580,6 +1581,15 @@ class ServiceHttpApplication:
                         missing_address_page(config.display_name),
                         status_code=404, media_type=HTML_MEDIA_TYPE,
                         headers={**cors, **self._page_headers()})
+                elif status >= 500 and "text/html" in request.headers.get("accept", ""):
+                    # A failure on this side, met by a person in a browser: the
+                    # same two sentences and the same reference the record
+                    # carries, on a page with a way back.
+                    message, next_action = _refusal_guidance(code, status)
+                    response = Response(
+                        server_error_page(config.display_name, status, message, next_action, reference.value),
+                        status_code=status, media_type=HTML_MEDIA_TYPE,
+                        headers={**cors, **self._page_headers(), **(added or {})})
                 else:
                     response = JSONResponse(_error_record(code, status, details, reference.value),
                                             status_code=status, headers={**cors, **(added or {})})

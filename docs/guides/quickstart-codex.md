@@ -62,7 +62,7 @@ Download ITEM-IDENTITY from Baltor with provisioning_read. Use its body digest a
 
 `provisioning_read` takes the `identity`, a new `request_id` for each logical download and the `expected_digest` from the search, so a changed body is refused rather than substituted. The tool answers the same wrapper; its `result` is `provisioning_body/v3`, with the `body` inline and its `digest`. This download is one measured unit and appears in your usage. An item larger than the `inline_body_bytes` limit that `/api/v1/capabilities` reports answers `download_required`; fetch it through `/api/v1/download` as the [Baltor Harness quickstart](quickstart-baltor-harness.md) shows.
 
-Codex reads repository skills from `.agents/skills/`. Today the file is written by the agent or by you, as the prompt above asks; the service does not place it. Placing served files into each harness's own layout is planned work.
+Codex reads repository skills from `.agents/skills/`. Today the file is written by the agent or by you, as the prompt above asks; the service does not place it. Automatic placement remains under development.
 
 ## Check that it worked
 

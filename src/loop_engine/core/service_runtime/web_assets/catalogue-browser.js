@@ -377,11 +377,18 @@ window.BaltorCatalogueBrowser = {
       button.addEventListener("click", () => { confirmed.add(row.identity + ":" + row.digest); choose(row); });
       $("browse-detail").insertBefore(button, note);
     }
+    /* On a narrow screen the detail panel stands under the table, so opening a row brings the panel into view. Beside
+       the table on a wide screen it is already in view, and nothing moves. */
+    function revealDetail() {
+      const panel = $("browse-detail"), box = panel.getBoundingClientRect();
+      if (box.top >= window.innerHeight || box.bottom <= 0) panel.scrollIntoView({block:"start"});
+    }
     async function choose(row) {
       selected = row.identity;
       for (const line of $("browse-table-body").querySelectorAll("tr[data-identity]")) {
         line.setAttribute("aria-selected", line.dataset.identity === selected ? "true" : "false");
       }
+      revealDetail();
       if (effects.beyondReading(row.declared_effects).length && !confirmed.has(row.identity + ":" + row.digest)) {
         askToConfirm(row);
         return;
@@ -415,7 +422,7 @@ window.BaltorCatalogueBrowser = {
           ["The file itself", value.body_allowed ? "You may fetch it. Access is checked again on the way." : "Not granted to this account."]], "");
         $("browse-detail").append(reportControl(row));
         if (!value.body_allowed) { note.textContent = "This account may read the details above, not the file."; return; }
-        const button = element("button", "Fetch exact revision", "quiet");
+        const button = element("button", "Download this version", "quiet");
         button.type = "button"; button.id = "browse-download";
         button.addEventListener("click", () => fetchBody(row, button, note));
         note.textContent = "Fetching this file records usage. The bytes are checked against the exact version that was listed.";

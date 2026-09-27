@@ -180,6 +180,25 @@
   });
   const stopPlaying = () => players.forEach(stop => stop());
 
+  /* The homepage terminal, September 26, 2026: the folder of one step for the harness the reader picks. The skill folder is the
+     placement tool's own, SKILL_ROOTS above; the instruction file is the one that harness reads, and the connection entry is the
+     file its reviewed recipe in client-recipes.json names. The search and the download above the folder are the same for every
+     harness, so they do not change. Without this script the folder stays the Claude Code one the page serves. */
+  const HERO_FILES = {"claude-code": {instructions: "CLAUDE.md", tools: ".mcp.json"}, codex: {instructions: "AGENTS.md", tools: ".codex/config.toml"},
+    opencode: {instructions: "AGENTS.md", tools: "opencode.json"}, pi: {instructions: "AGENTS.md", tools: ".pi/baltor.json"}};
+  const heroHarnesses = document.querySelector("[data-hero-harnesses]");
+  const pickHeroHarness = harness => {
+    const files = HERO_FILES[harness], root = SKILL_ROOTS[harness];
+    if (!files || !root) return;
+    heroHarnesses.querySelectorAll("[data-hero-harness]").forEach(button => button.setAttribute("aria-pressed", String(button.dataset.heroHarness === harness)));
+    const write = (name, text) => document.querySelectorAll('[data-hero-file="' + name + '"]').forEach(node => { node.textContent = text; });
+    write("instructions", files.instructions); write("skills", root); write("tools", files.tools);
+  };
+  heroHarnesses?.addEventListener("click", event => {
+    const button = event.target.closest("[data-hero-harness]");
+    if (button) pickHeroHarness(button.dataset.heroHarness);
+  });
+
   /* Each view acts when it opens: service.js marks the open view on the body. */
   let opened = "";
   const onView = () => {

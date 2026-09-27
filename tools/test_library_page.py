@@ -130,10 +130,28 @@ class LibraryPageTests(unittest.TestCase):
         self.assertIn("data-library-counts", self.html)
         self.assertEqual(counted_kinds(self.html), ["skill", "subagent", "hook"])
         self.assertEqual(listed(self.html), set())
-        self.assertIn("5 files a coding agent can fetch today, of 3 kinds", self.html)
+        self.assertIn("5 packages a coding agent can fetch today, of 3 kinds", self.html)
         self.assertIn("2 Verified and 3 Community", self.html)
         self.assertIn('href="/get-started"', self.html)
         self.assertIn('href="/app#browse-heading"', self.html)
+
+    def test_every_counted_kind_has_a_bar_drawn_to_scale(self):
+        """The orange design draws each kind as a bar. It is an SVG shape, because the page's content security policy
+        refuses style attributes, and its length is the kind's share of the largest kind."""
+        bars = re.findall(r'<tr data-harness-kind="([^"]+)">[\s\S]*?<rect class="lib-bar-fill" width="(\d+)%"', self.html)
+        self.assertEqual(bars, [("skill", "100"), ("subagent", "33"), ("hook", "33")])
+        self.assertNotRegex(self.html, r'\sstyle="')
+
+    def test_the_lede_writes_each_kind_in_its_plural(self):
+        view = fixture_view(attributes={"find_duplicate_records_with_blocking_keys": {"harness_kind": "rules"}})
+        html = library_page.library_body(view)
+        self.assertIn("(skills, rules, subagents, hooks)", html)
+        self.assertNotIn("ruless", html)
+
+    def test_one_primary_action_named_get_started(self):
+        """One primary action, Get started, to the sign-up funnel; the second way in is a plain link."""
+        primaries = set(re.findall(r'<a class="button primary" href="([^"]+)">([^<]+)</a>', self.html))
+        self.assertEqual(primaries, {("/get-started", "Get started")})
 
     def test_a_served_harness_kind_attribute_wins_over_the_styles(self):
         view = fixture_view(attributes={"find_duplicate_records_with_blocking_keys": {"harness_kind": "rules"}})

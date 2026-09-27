@@ -34,3 +34,32 @@
   new MutationObserver(apply).observe(document.body, {attributes: true, attributeFilter: ["data-page"]});
   apply();
 })();
+
+/* A dedicated hostname can open a standalone page at its root, as redteam.baltor.ai does. Its Home and library-section
+   links lead to the canonical homepage, using the same service-written metadata as service.js and deck.js. */
+(() => {
+  const rootAddress = document.querySelector('meta[name="baltor-root-address"]')?.getAttribute("content") || "/";
+  if (rootAddress === "/") return;
+  const canonical = document.querySelector('link[rel="canonical"]')?.getAttribute("href");
+  if (!canonical) return;
+  const origin = new URL(canonical, location.href).origin;
+  if (origin === location.origin) return;
+  document.querySelectorAll('a[href="/"], a[href^="/#"]').forEach(link => {
+    link.setAttribute("href", origin + link.getAttribute("href"));
+    delete link.dataset.page;
+  });
+})();
+
+/* Where the visitor is, on a page the service renders on its own: the library, the model directory, the MCP directory, the
+   deck and the others that carry this header and footer. The one-page app marks its own links (the ones with data-page), and
+   no script marked these, so on the library page the header's Library link looked like any other. A header or footer link
+   without data-page whose address is this very page, with no fragment, is marked as the current page, which the header and
+   the footer show in ink and bold. It adds an attribute and changes no link, address or text. */
+(() => {
+  const trimmed = path => path.replace(/\/+$/, "") || "/";
+  const here = trimmed(location.pathname);
+  for (const link of document.querySelectorAll(".header nav a[href]:not([data-page]), .site-footer a[href]:not([data-page])")) {
+    const address = new URL(link.getAttribute("href"), location.href);
+    if (address.origin === location.origin && !address.hash && trimmed(address.pathname) === here) link.setAttribute("aria-current", "page");
+  }
+})();

@@ -215,8 +215,7 @@ def run_checks(check, root):
           len(head_problems(site_map, home_everywhere)) >= len(site_map.pages) - 1)
     check("every_page_is_served_with_its_own_view_shown", not view_problems(site_map, serve))
     # Known-wrong case: every address served with the homepage shown, as every release up to 24 was.
-    from .web_pages import HOME_VIEW
-    homepage_shown = lambda address, host: (lambda answer: answer and (answer[0].replace(b"<section data-view=\"home\" hidden>", HOME_VIEW)
+    homepage_shown = lambda address, host: (lambda answer: answer and (answer[0].replace(b'<section data-view="home" hidden', b'<section data-view="home"', 1)
         .replace(b'data-view="' + site_map.page(address).view.encode() + b'"', b'data-view="' + site_map.page(address).view.encode() + b'" hidden', 1)
         if site_map.page(address) and site_map.page(address).view != "home" else answer[0], answer[1]))(serve(address, host))
     check("view_check_rejects_a_page_served_with_the_homepage_shown",

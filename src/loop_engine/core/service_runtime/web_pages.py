@@ -185,22 +185,44 @@ EXTRA_SITEMAPS = ("/models/sitemap.xml",)
 CACHEABLE_WEB_ASSETS = frozenset(path for path, (_name, media) in WEB_ASSETS.items()
                                  if media != HTML_MEDIA_TYPE) | frozenset(GENERATED_WEB_FILES)
 PUBLIC_ASSET_CACHE_CONTROL = "public, max-age=300"
-MISSING_ADDRESS_PAGE = """<!doctype html>
+#: The frame of the two pages the service writes for a reader in a browser when it cannot show the page asked for: the
+#: missing address and the failure on the service's side. Both carry the orange design of September 26, 2026: the brand
+#: mark and name above, the status number, one plain sentence, the way back, and the operator's line below. They load
+#: only the site's own stylesheets, because their Content-Security-Policy allows no inline style, and no script, so they
+#: read the same when the page script cannot load.
+_STATUS_PAGE = """<!doctype html>
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>{name} | Address not found</title><link rel="stylesheet" href="/assets/service.css"></head>
-<body><main id="main" class="reading" style="padding:4rem 4vw">
-<p class="eyebrow">Address not found</p>
-<h1>This service has no page at that address.</h1>
+<title>{name} | {title}</title><link rel="stylesheet" href="/assets/service.css"><link rel="stylesheet" href="/assets/architecture.css">
+<link rel="icon" type="image/svg+xml" href="/assets/baltor-mark.svg"></head>
+<body class="status-page-body"><div class="status-page-top"><a class="status-page-brand" href="/"><img src="/assets/baltor-mark.svg" width="30" height="30" alt=""><span>{name}</span></a></div>
+<main id="main" class="status-page" data-status-page="{kind}">
+<p class="status-page-code">{code}</p>
+{body}
+</main>
+<div class="status-page-foot"><p>\u00a9 2026 Baltor.AI \u00b7 1428 Bryn Mawr St, Saxton, PA 16678</p>
+<p class="status-page-links"><a href="/status">Status</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a></p></div>
+</body></html>
+"""
+MISSING_ADDRESS_PAGE = """<h1>There is no page at this address.</h1>
 <p class="lede">The address in your browser is not one {name} serves. It may have been
 mistyped, or it may be an older address that has since changed. Nothing is wrong with
 your account or your key.</p>
-<div class="actions"><a class="button primary" href="/">Go to the home page</a>
-<a class="button quiet" href="/docs">Open the setup guide</a></div>
+<div class="actions"><a class="button" href="/">Go home</a>
+<a class="button" href="/docs">Search the docs</a></div>
 <p class="caption">If you followed a link from {name} to get here, the link is wrong and
 we would like to know. Tell the person who runs this service which page you came from.</p>
-</main></body></html>
+"""
+#: The page for a failure on the service's side. Its sentences are the refusal wording of refusals.py for the exact code
+#: and status, so the page and the record a program reads say the same thing. The reference is the one the service
+#: issued for this request and recorded before answering; the page repeats nothing from the request.
+SERVER_ERROR_PAGE = """<h1>Something broke on our side.</h1>
+<p class="lede">{message} Nothing ran on your computer.</p>
+<p>{action}</p>
+<div class="actions"><a class="button" href="/status">Check the service status</a>
+<a class="button" href="/">Go to the home page</a></div>
+<p class="status-page-reference">Reference <code>{reference}</code></p>
 """
 
 
@@ -263,7 +285,7 @@ def page_head(site_map: SiteMap, path: str, host: str | None, display_name: str)
 
 
 #: The one view the packaged one-page application shows before its script runs, and the mark of a hidden view.
-HOME_VIEW = b'<section data-view="home">'
+_HOME_VIEW_TAG = re.compile(rb'<section data-view="home"(?:\s[^>]*)?>')
 _HIDDEN_VIEW = b'<section data-view="%s" hidden'
 
 
@@ -277,9 +299,12 @@ def with_view_shown(body: bytes, view: str) -> bytes:
     not each found once, is returned unchanged.
     """
     hidden = _HIDDEN_VIEW % view.encode("ascii")
-    if view == "home" or body.count(HOME_VIEW) != 1 or body.count(hidden) != 1:
+    home_tags = tuple(_HOME_VIEW_TAG.finditer(body))
+    if view == "home" or len(home_tags) != 1 or body.count(hidden) != 1:
         return body
-    return body.replace(HOME_VIEW, b'<section data-view="home" hidden>', 1).replace(hidden, hidden[:-len(b" hidden")], 1)
+    home = home_tags[0]
+    return (body[:home.start()] + home.group().replace(b'data-view="home"', b'data-view="home" hidden', 1) + body[home.end():]) \
+        .replace(hidden, hidden[:-len(b" hidden")], 1)
 
 
 def with_page_head(body: bytes, head) -> bytes:
@@ -395,4 +420,20 @@ def missing_address_page(display_name):
     The page names no address and repeats nothing from the request, so nothing
     can be reflected into it.
     """
-    return MISSING_ADDRESS_PAGE.format(name=escape(display_name)).encode("utf-8")
+    name = escape(display_name)
+    return _STATUS_PAGE.format(name=name, title="Address not found", kind="missing", code="404",
+                               body=MISSING_ADDRESS_PAGE.format(name=name)).encode("utf-8")
+
+
+def server_error_page(display_name, status, message, action, reference):
+    """Return the bytes of the page a reader in a browser sees when the service failed its request.
+
+    `status` is the status the transport chose, `message` and `action` are the
+    refusal wording for the code, and `reference` names this request in the
+    failure record. None of them comes from the request, and each is escaped.
+    """
+    name = escape(display_name)
+    body = SERVER_ERROR_PAGE.format(message=escape(message), action=escape(action),
+                                    reference=escape(reference or "not issued"))
+    return _STATUS_PAGE.format(name=name, title="Service failure", kind="failure", code=escape(str(int(status))),
+                               body=body).encode("utf-8")

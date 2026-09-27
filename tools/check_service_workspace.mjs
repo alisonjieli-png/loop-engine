@@ -415,9 +415,12 @@ const primaryProblems=(actions,registrationOpen=false)=>[...(actions.length?[]:[
    context, the skill it needs, its protocol server settings and reused code, says it is an example layout, and says the files were
    placed with no manual search and no manual setup. What works today stays apart from what is built but not shipped: a person's
    agent searches and Baltor places the chosen files, while assembling a directory for every step is what the local engine is built
-   to do, so a sentence about assembling or building for each step says "built to". A worked example anywhere in the hero, a
-   search, its references, its digests or a download, is the known-wrong page; the demonstrations show those. */
-const heroDirectoryParts=["instructions","skills","tools","code"];
+   to do, so a sentence about assembling or building for each step says "built to". Since September 26, 2026 the directory is the
+   third pane of the terminal of the owner's design (site/Home.dc.html of the Claude Design project): the search a harness sends,
+   the download of the reference it chose and the folder, in that order, with the protocol tools this service lists,
+   intelligence_search and provisioning_read, never the archive's placeholder commands. tools/test_homepage_demonstration.py reruns
+   the search against this release's library; here the order of the three panes and the tool names are read from the page. */
+const heroDirectoryParts=["instructions","skills","tools","code"],heroStages=["search","download","folder"],heroTools=["intelligence_search","provisioning_read"];
 /* A sentence that assembles or builds something for each or every step, or for this step, without saying the engine is built to. */
 const perStepClaim=text=>text.split(/(?<=[.!?])\s+/).filter(sentence=>/\b(?:assembl|build|built)\w*\b[^.!?]*\b(?:each|every|this|one)\s+(?:step|subtask)\b/i.test(sentence)&&!/\bbuilt to\b/i.test(sentence));
 const heroDirectory=target=>target.evaluate(()=>{
@@ -425,14 +428,16 @@ const heroDirectory=target=>target.evaluate(()=>{
   return {shown:shown(figure),parts:figure?[...figure.querySelectorAll("[data-hero-part]")].map(node=>node.dataset.heroPart):[],
     label:figure?.querySelector("[data-hero-label]")?.textContent.replace(/\s+/g," ").trim()||"",
     note:figure?.querySelector("[data-hero-note]")?.textContent.replace(/\s+/g," ").trim()||"",
-    example:band?band.querySelectorAll("[data-step-demo], [data-demo-item], [data-demo-query], [data-demo-download], [data-demo-stage], [data-task-demo]").length:0,
+    stages:band?[...band.querySelectorAll("[data-demo-stage]")].map(node=>node.dataset.demoStage):[],
+    tools:band?[...band.querySelectorAll("[data-demo-tool]")].map(node=>node.dataset.demoTool):[],
     text:band?.textContent.replace(/\s+/g," ")||""};});
 const heroDirectoryProblems=state=>[...(state.shown?[]:["the hero shows no working directory"]),
   ...(JSON.stringify(state.parts)===JSON.stringify(heroDirectoryParts)?[]:["the directory holds the parts "+JSON.stringify(state.parts)]),
   ...(state.label==="Example layout"&&!invitationWords.test(state.label)?[]:["the directory is labelled "+JSON.stringify(state.label)]),
   ...(/no manual search/i.test(state.text)&&/no manual setup/i.test(state.text)?[]:["the hero does not say the files are placed with no manual search and no manual setup"]),
   ...(perStepClaim(state.text).length===0&&/\bbuilt to\b/i.test(state.note)?[]:["the hero states assembly for each step as a current capability: "+JSON.stringify(perStepClaim(state.text))]),
-  ...(state.example===0&&!/\bsearch:|\bsha256\b|Bytes match the digest|Recorded from this release/i.test(state.text)?[]:["the hero shows a worked example again"])];
+  ...(JSON.stringify(state.stages)===JSON.stringify(heroStages)?[]:["the terminal shows the parts "+JSON.stringify(state.stages)]),
+  ...(JSON.stringify(state.tools)===JSON.stringify(heroTools)?[]:["the terminal calls "+JSON.stringify(state.tools)])];
 /* The demonstration pages show each step's search and download, recorded from this release's library: the names, kinds, licences,
    sizes and digests are compared with this release's packaged manifest, read from the source tree, and each step downloads the
    reference its search chose. tools/test_showcase_pages.py compares the order of each search with a real search of that library. */
@@ -761,7 +766,7 @@ try {
   const heroCopy=await page.locator('[data-view="home"] .hero-copy').evaluate(node=>({headline:node.querySelector("h1")?.textContent.replace(/\s+/g," ").trim()||"",
     subhead:node.querySelector(".hero-subhead")?.textContent.replace(/\s+/g," ").trim()||"",text:node.textContent.replace(/\s+/g," ").trim()}));
   const saysWhatBaltorIs=copy=>/\bharness\b/i.test(copy.headline+" "+copy.subhead)&&/\bskills\b/i.test(copy.subhead)&&/\btools\b/i.test(copy.subhead)&&/where (?:your|the|each) harness reads/i.test(copy.subhead);
-  const saysThePain=copy=>/\bby hand\b/i.test(copy.subhead);
+  const saysThePain=copy=>/\bby hand\b|\bno manual search\b/i.test(copy.subhead);
   const keepsThePerStepOptionOut=copy=>!/fresh harness|harness (?:for|per) (?:each|every) step|one harness per step/i.test(copy.text);
   const heroProblems=copy=>[...(saysWhatBaltorIs(copy)?[]:["the hero does not say what Baltor is and where the files go"]),...(saysThePain(copy)?[]:["the hero does not name the work it removes"]),
     ...(keepsThePerStepOptionOut(copy)?[]:["the hero promises a fresh harness for each step"])];
@@ -868,10 +873,10 @@ try {
     return {copyTop:Math.round(box(copy).top),copyBottom:Math.round(box(copy).bottom),copyRight:Math.round(box(copy).right),exampleTop:Math.round(box(example).top),
       exampleBottom:Math.round(box(example).bottom),exampleLeft:Math.round(box(example).left),hasExample:Boolean(example),hasCopy:Boolean(copy),viewport:innerWidth};
   });
-  const directoryBesideTheCopy=m=>m.hasExample&&m.hasCopy&&m.viewport>=1100&&m.exampleLeft>=m.copyRight-1&&m.exampleTop<m.copyBottom&&m.exampleBottom>m.copyTop;
-  check("homepage_directory_sits_beside_the_copy_in_the_hero",directoryBesideTheCopy(heroLayout),heroLayout);
-  check("hero_layout_check_rejects_a_directory_below_the_copy_or_missing",!directoryBesideTheCopy({...heroLayout,exampleTop:heroLayout.copyBottom+24,exampleBottom:heroLayout.copyBottom+624,exampleLeft:heroLayout.copyRight-600})
-    &&!directoryBesideTheCopy({...heroLayout,hasExample:false}));
+  const terminalBelowCopy=m=>m.hasExample&&m.hasCopy&&m.viewport>=1100&&m.exampleTop>=m.copyBottom&&m.exampleBottom>m.exampleTop;
+  check("homepage_terminal_follows_the_copy_in_the_hero",terminalBelowCopy(heroLayout),heroLayout);
+  check("hero_layout_check_rejects_an_overlapping_or_missing_terminal",!terminalBelowCopy({...heroLayout,exampleTop:heroLayout.copyTop,exampleBottom:heroLayout.copyBottom,exampleLeft:heroLayout.copyRight-600})
+    &&!terminalBelowCopy({...heroLayout,hasExample:false}));
   /* One harness per step is a runtime option since September 23, 2026: the overnight page says it can be turned on for long runs and
      off for quick ones, since the homepage's How it works band left on September 24, and the hero does not promise it. */
   const optionText=await page.locator('[data-view="overnight"]').evaluate(node=>node.textContent.replace(/\s+/g," "));
@@ -883,13 +888,14 @@ try {
   const heroGuide=await page.evaluate(()=>({path:location.pathname,views:[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).map(item=>item.dataset.view),title:document.title}));
   check("hero_get_set_up_opens_the_guide",heroGuide.path==="/setup"&&JSON.stringify(heroGuide.views)===JSON.stringify(["setup"])&&heroGuide.title.endsWith("| Get set up"),heroGuide);
   await page.goto(fixture.base+"/"); await page.waitForFunction(()=>document.querySelector("#service-status").textContent.includes("Service available"));
-  /* The hero shows the working directory one step gets and no worked example, as the owner decided on September 24, 2026. The
-     known-wrong heroes: the one-step demonstration back in it, a search with its digests, a directory without its protocol server
-     settings, and a directory that no longer says it was built without manual search or setup. */
+  /* The hero shows one step, its search, its download and the working directory it gets, as the owner's design of September 26,
+     2026 draws it. The known-wrong heroes: the archive's placeholder commands, a terminal without its download, a second search
+     beside it, a directory without its protocol server settings, and a directory that no longer says it was built without manual
+     search or setup. */
   const hero=await heroDirectory(page);
-  check("homepage_hero_shows_a_directory_not_a_worked_example",heroDirectoryProblems(hero).length===0,{parts:hero.parts,label:hero.label,note:hero.note,example:hero.example,problems:heroDirectoryProblems(hero)});
-  check("hero_directory_check_rejects_a_worked_example_a_missing_part_and_missing_words",heroDirectoryProblems({...hero,example:1}).length===1
-    &&heroDirectoryProblems({...hero,text:hero.text+" search: split address lines, sha256 53dc74e3"}).length===1
+  check("homepage_hero_shows_the_search_download_and_directory_of_one_step",heroDirectoryProblems(hero).length===0,{parts:hero.parts,label:hero.label,note:hero.note,stages:hero.stages,tools:hero.tools,problems:heroDirectoryProblems(hero)});
+  check("hero_directory_check_rejects_placeholder_commands_a_missing_part_and_missing_words",heroDirectoryProblems({...hero,tools:["baltor.search","baltor.fetch"]}).length===1
+    &&heroDirectoryProblems({...hero,stages:["search","folder"]}).length===1&&heroDirectoryProblems({...hero,stages:["search","search","download","folder"]}).length===1
     &&heroDirectoryProblems({...hero,parts:hero.parts.filter(part=>part!=="tools")}).length===1
     &&heroDirectoryProblems({...hero,text:hero.text.replace(/no manual setup/ig,"")}).length===1);
   /* The known-wrong heroes of the owner's constraint of September 24, 2026: assembly for each step stated as what Baltor does today,
@@ -1090,6 +1096,35 @@ try {
      view keeps the exact runtime terms, so it and its pages are scanned for the other rules only. */
   const docsIndex=JSON.parse(readFileSync(resolve(root,"src/loop_engine/core/service_runtime/web_assets/documentation-index.json"),"utf8"));
   const docsPagePaths=docsIndex.sections.flatMap(section=>section.pages).filter(entry=>entry.body&&entry.address.startsWith("/docs/")).map(entry=>entry.address);
+  /* Returning through Overview keeps the cached article and restores its section tab. The removed guard changes only
+     documentation.js in memory; the same user clicks then expose Overview incorrectly marked as the current section. */
+  const cachedDocsEntry=docsIndex.sections.flatMap(section=>section.pages.map(entry=>({...entry,sectionId:section.id}))).find(entry=>entry.id==="quickstart-codex");
+  const readCachedDocsTab=async target=>{
+    let bodyRequests=0;
+    const requested=request=>{if(new URL(request.url()).pathname===cachedDocsEntry.body)bodyRequests++;};
+    target.on("request",requested);
+    try {
+      await target.goto(fixture.base+cachedDocsEntry.address);
+      await target.waitForSelector("#docs-article h2");
+      const before=await target.locator("#docs-article").textContent();
+      await target.locator('#docs-tabs [data-docs-tab="overview"]').click();
+      await target.locator('#docs-cards [data-docs-page="quickstart-codex"] a').click();
+      await target.waitForSelector("#docs-page:not([hidden]) #docs-article h2");
+      const tab=await target.locator("#docs-tabs [aria-current]").getAttribute("data-docs-tab");
+      return {tab,expected:cachedDocsEntry.sectionId,bodyUnchanged:before===await target.locator("#docs-article").textContent(),bodyRequests};
+    } finally {target.off("request",requested);}
+  };
+  const cachedDocsTab=await readCachedDocsTab(page);
+  check("cached_documentation_article_restores_its_section_tab",cachedDocsTab.tab===cachedDocsTab.expected&&cachedDocsTab.bodyUnchanged&&cachedDocsTab.bodyRequests===1,cachedDocsTab);
+  const docsSource=readFileSync(resolve(root,"src/loop_engine/core/service_runtime/web_assets/documentation.js"),"utf8");
+  const docsTabGuard='      drawTabs(entries().find(entry => entry.body && (entry.address === path || entry.aliases?.includes(path)))?.sectionId || "");';
+  const docsWithoutTabGuard=docsSource.replace(docsTabGuard,"");
+  const docsMutant=await browser.newPage();
+  try {
+    await docsMutant.route(assetRoute("/assets/documentation.js"),route=>route.fulfill({status:200,contentType:"text/javascript",body:docsWithoutTabGuard}));
+    const wrong=await readCachedDocsTab(docsMutant);
+    check("removed_cached_documentation_tab_guard_is_detected",docsWithoutTabGuard!==docsSource&&wrong.tab!==wrong.expected&&wrong.bodyUnchanged&&wrong.bodyRequests===1,wrong);
+  } finally {await docsMutant.close();}
   const servedRoutes=["/",...useCasePaths,"/how-it-works","/pricing","/setup","/connect","/get-started","/waitlist","/signup","/login","/examples","/security","/privacy","/terms","/app","/account","/docs",...docsPagePaths,...showcasePaths];
   /* The directory page is read like every other page, with the listings other publishers wrote left out (tools/listing_text.mjs). */
   servedRoutes.push("/directory");
@@ -1132,7 +1167,7 @@ try {
      state this pass never reaches, and a class name can carry a retired word into the served stylesheet. Every file
      the browser fetches for a customer page is therefore read, not only the markup and the main script. The two typefaces
      and the page icons are binary files; they are read like the rest, so the coverage rule below needs no exception. */
-  const servedFiles=["/assets/public-pages.js","/assets/public-pages.css","/assets/site-chrome.js","/assets/documentation-index.json","/assets/documentation.js","/assets/documentation.css","/assets/docs/what-baltor-is.html","/assets/docs/your-account.html","/assets/docs/searching-and-retrieving.html","/assets/docs/usage-and-what-you-pay-for.html","/assets/docs/troubleshooting.html","/assets/docs/serving-and-connections.html","/","/assets/service.js","/assets/client-access.js","/assets/pi/baltor.ts","/assets/catalogue-browser.js","/assets/architecture-story.js","/assets/supabase-client.js","/assets/service.css","/assets/architecture.css","/assets/client-recipes.json","/assets/third-party-notices.txt","/assets/geist.woff2","/assets/geist-mono.woff2","/assets/baltor-mark.svg","/assets/favicon-32.png","/assets/favicon-192.png","/assets/apple-touch-icon.png"];
+  const servedFiles=["/assets/public-pages.js","/assets/public-pages.css","/assets/site-chrome.js","/assets/documentation-index.json","/assets/documentation.js","/assets/documentation.css","/assets/docs/what-baltor-is.html","/assets/docs/your-account.html","/assets/docs/searching-and-retrieving.html","/assets/docs/usage-and-what-you-pay-for.html","/assets/docs/troubleshooting.html","/assets/docs/serving-and-connections.html","/assets/docs/quickstart-claude-code.html","/assets/docs/quickstart-codex.html","/assets/docs/quickstart-opencode.html","/assets/docs/quickstart-pi.html","/assets/docs/quickstart-baltor-harness.html","/","/assets/service.js","/assets/client-access.js","/assets/pi/baltor.ts","/assets/catalogue-browser.js","/assets/architecture-story.js","/assets/supabase-client.js","/assets/service.css","/assets/architecture.css","/assets/client-recipes.json","/assets/third-party-notices.txt","/assets/geist.woff2","/assets/geist-mono.woff2","/assets/baltor-mark.svg","/assets/favicon-32.png","/assets/favicon-192.png","/assets/apple-touch-icon.png"];
   /* The list is compared with the route table the service actually serves. The footer links to the open-source notices,
      so a customer reaches that file from every page, and a served asset added in the route table alone is a named
      failure here rather than a file nobody scans. The table lives in web_pages.py since September 21, 2026; this scan
@@ -1892,12 +1927,12 @@ try {
     {name:"change_one_digest_in_the_demonstration",address:"/demo",changes:[{path:"/demo",find:'data-fact="digest">'+firstShown+"<",replacement:'data-fact="digest">'+firstShown.replace(/.$/,last=>last==="0"?"1":"0")+"<"}],
      run:async (opened,note)=>note("demo_names_sizes_and_digests_agree_with_this_release_manifest",demoFactProblems(await demoFacts(opened,"demo")).length===0),
      expected:["demo_names_sizes_and_digests_agree_with_this_release_manifest"]},
-    /* The owner's decision of September 24, 2026 undone: a worked example back in the hero, beside the working directory. */
-    {name:"bring_a_worked_example_back_into_the_hero",changes:[{path:"/",find:'<figure class="hero-directory"',
-      replacement:'<section class="step-demo" data-step-demo><p class="step-demo-query">search: <code data-demo-query>split address lines in a customer file</code></p><ol class="step-demo-results"><li data-demo-item="split_address_lines_into_components">sha256 <span data-fact="digest">53dc74e3</span></li></ol></section><figure class="hero-directory"'}],
-     run:async (opened,note)=>note("homepage_hero_shows_a_directory_not_a_worked_example",heroDirectoryProblems(await heroDirectory(opened)).length===0),
-     expected:["homepage_hero_shows_a_directory_not_a_worked_example"]},
-    {name:"paint_every_band_alike_without_rules",changes:[{path:"/assets/service.css",find:"--band:#FFFFFF;",replacement:"--band:#F5F6F8;"},{path:"/assets/service.css",find:"--rule:#E2E6EC;",replacement:"--rule:transparent;"}],
+    /* The owner's design of September 26, 2026 served as the archive wrote it: a placeholder command in place of the tool a harness calls. */
+    {name:"serve_the_archive_placeholder_command_in_the_hero",changes:[{path:"/",find:'data-demo-tool="intelligence_search">intelligence_search<',
+      replacement:'data-demo-tool="baltor.search">baltor.search<'}],
+     run:async (opened,note)=>note("homepage_hero_shows_the_search_download_and_directory_of_one_step",heroDirectoryProblems(await heroDirectory(opened)).length===0),
+     expected:["homepage_hero_shows_the_search_download_and_directory_of_one_step"]},
+    {name:"paint_every_band_alike_without_rules",changes:[{path:"/assets/service.css",find:'html [data-view="home"]>.home-band{padding-top:2rem;padding-bottom:2rem}',replacement:'html [data-view="home"]>.home-band{padding-top:2rem;padding-bottom:2rem;background:var(--paper)!important;border:0!important}'}],
      run:async (opened,note)=>note("homepage_sets_every_band_apart_on_an_off_white_ground",bandProblems(await homeBands(opened)).length===0),
      expected:["homepage_sets_every_band_apart_on_an_off_white_ground"]},
     /* The owner's decisions of September 23, 2026, each undone in the served bytes: a status word back on a card, the price out of
@@ -1909,17 +1944,17 @@ try {
     {name:"take_the_price_out_of_the_hero",changes:[{path:"/",find:'<span class="hero-price-amount">$29 a month</span>',replacement:'<span class="hero-price-amount"></span>'}],
      run:async (opened,note)=>note("homepage_hero_states_the_plan_and_the_price",statesThePlanAndPrice(await opened.evaluate(()=>document.querySelector('[data-view="home"] .hero-price')?.textContent.replace(/\s+/g," ").trim()||""))),
      expected:["homepage_hero_states_the_plan_and_the_price"]},
-    {name:"bring_back_see_one_step_in_place_of_the_guide",changes:[{path:"/",find:'<a class="button secondary" id="hero-setup" href="/setup" data-page="setup">Get set up</a>',replacement:'<a class="button secondary" id="hero-see-step" href="#step-demo">See one step work</a>'}],
+    {name:"bring_back_see_one_step_in_place_of_the_guide",changes:[{path:"/",find:'<a class="button secondary on-night" id="hero-setup" href="/setup" data-page="setup">Get set up</a>',replacement:'<a class="button secondary" id="hero-see-step" href="#step-demo">See one step work</a>'}],
      run:async (opened,note)=>note("homepage_hero_offers_get_started_and_get_set_up_and_says_how_they_differ",heroActionProblems(await readHeroActions(opened)).length===0),
      expected:["homepage_hero_offers_get_started_and_get_set_up_and_says_how_they_differ"]},
-    {name:"write_the_retired_words_beside_the_hero_actions",changes:[{path:"/",find:'<a class="button secondary" id="hero-setup" href="/setup" data-page="setup">Get set up</a>',replacement:'<a class="button secondary" id="hero-setup" href="/setup" data-page="setup">Get set up</a> <span>Invitation only while we open in small groups. Search is free.</span>'}],
+    {name:"write_the_retired_words_beside_the_hero_actions",changes:[{path:"/",find:'<a class="button secondary on-night" id="hero-setup" href="/setup" data-page="setup">Get set up</a>',replacement:'<a class="button secondary on-night" id="hero-setup" href="/setup" data-page="setup">Get set up</a> <span>Invitation only while we open in small groups. Search is free.</span>'}],
      run:async (opened,note)=>note("homepage_carries_no_invitation_word_while_registration_is_closed",(await homepageWordProblems(opened)).length===0),
      expected:["homepage_carries_no_invitation_word_while_registration_is_closed"]},
-    {name:"move_the_directory_below_the_copy",changes:[{path:"/assets/architecture.css",find:"@media(min-width:1100px){.band-hero .hero.product-hero>.hero-directory{grid-column:auto;align-self:center}}",replacement:"@media(min-width:1100px){.band-hero .hero.product-hero>.hero-directory{grid-column:1/-1;align-self:center}}"}],
-     run:async (opened,note)=>{await opened.setViewportSize({width:1440,height:1000});note("homepage_directory_sits_beside_the_copy_in_the_hero",directoryBesideTheCopy(await opened.locator('[data-view="home"]').evaluate(home=>{
+    {name:"overlap_the_terminal_with_the_copy",changes:[{path:"/assets/service.css",find:".hero.product-hero{display:flex;flex-direction:column;align-items:stretch;gap:2rem;",replacement:".hero.product-hero{display:flex;flex-direction:row;align-items:stretch;gap:2rem;"}],
+     run:async (opened,note)=>{await opened.setViewportSize({width:1440,height:1000});note("homepage_terminal_follows_the_copy_in_the_hero",terminalBelowCopy(await opened.locator('[data-view="home"]').evaluate(home=>{
        const hero=home.querySelector(".product-hero"),copy=hero?.querySelector(".hero-copy"),example=hero?.querySelector(".hero-directory");const box=node=>node?node.getBoundingClientRect():{left:0,right:0,top:0,bottom:0};
        return {copyTop:Math.round(box(copy).top),copyBottom:Math.round(box(copy).bottom),copyRight:Math.round(box(copy).right),exampleTop:Math.round(box(example).top),exampleBottom:Math.round(box(example).bottom),exampleLeft:Math.round(box(example).left),hasExample:Boolean(example),hasCopy:Boolean(copy),viewport:innerWidth};})));},
-     expected:["homepage_directory_sits_beside_the_copy_in_the_hero"]},
+     expected:["homepage_terminal_follows_the_copy_in_the_hero"]},
     {name:"hide_the_learning_use_case",changes:[{path:"/",find:'<li class="use-case" data-use-case="learning">',replacement:'<li class="use-case" data-use-case="learning" hidden>'}],
      run:async (opened,note)=>note("homepage_links_the_three_use_cases_the_owner_named",useCaseProblems(await homeCards(opened,'[data-view="home"] [data-use-case]',"useCase")).length===0),
      expected:["homepage_links_the_three_use_cases_the_owner_named"]},
@@ -2228,7 +2263,7 @@ try {
   };
   if(reviewedState.shown)await checkConnectionRecipes();else check("connection_recipe_checks_ran",false,skipped);
   await page.locator('[data-view="setup"] a[data-after-login]').click();
-  await page.fill("#access-token","WRONG_LOCAL_TEST_KEY"); await page.click("#connect-button"); await page.waitForFunction(()=>document.querySelector("#connection-message").textContent.includes("refused"));
+  await page.fill("#access-token","WRONG_LOCAL_TEST_KEY"); await page.click("#connect-button"); await page.waitForFunction(()=>document.querySelector("#connection-message").dataset.state==="refused");
   check("wrong_key_does_not_enter_the_workspace",await page.locator("#query").isDisabled()&&await page.locator("#access-token").inputValue()==="");
   await page.fill("#access-token",fixture.token); await page.click("#connect-button"); await page.waitForFunction(()=>document.querySelector("#connection-state").textContent==="Connected");
   check("real_durable_tenant_authentication_reaches_the_workspace",(await page.locator("#identity-facts").innerText()).includes("alpha")&&await page.locator("#access-token").inputValue()==="");
@@ -2454,7 +2489,8 @@ try {
   await page.goto(fixture.account_base+"/login");await page.waitForSelector("#email-login:not([hidden])");
   await page.fill("#login-email",fixture.identity_user.email);await page.fill("#login-password","local-browser-fixture-password");await page.click("#email-login-button");
   await page.waitForFunction(()=>document.querySelector("#connection-state").textContent==="Connected");
-  await headerLink(page,"account");await page.click("#refresh-client-access");
+  // Opening Account loads personal tokens. A second Refresh would re-disable the already visible creation controls.
+  await headerLink(page,"account");
   await page.waitForSelector("#client-access-controls:not([hidden])");
   check("verified_customer_can_open_personal_token_controls",await page.locator("#create-client-token").isEnabled()&&await page.locator("#client-token-scopes input").count()===3);
   await page.fill("#client-token-label","My laptop");await page.fill("#client-token-minutes","60");await page.click("#create-client-token");

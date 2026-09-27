@@ -13,12 +13,19 @@ sends the visitor to sign up; the searchable table of every item is the signed-i
 
 ```text
 /library
-├── the counts by harness kind and tier, from the served view (every kind a harness picks up)
-├── what the two labels mean, in the words the service publishes
+├── the total in large type, the sentence that counts it by kind and label, and the one primary action
+├── the counts by harness kind and tier, from the served view (every kind a harness picks up), each kind with a
+│   bar drawn to scale, beside what the two labels mean in the words the service publishes
 ├── one item in full, read through the view like any served body
-├── the searchable table: after sign-up, in the app
+├── the searchable table: after sign-up, in the app, at the plan's price from the layout standard record
 └── the served release: what it added, changed and withdrew
 ```
+
+The owner's orange design of September 26, 2026 (the Claude Design archive, view Library) sets the layout: the
+large total, the kinds as bars, the labels as two cards, the item on a dark panel beside its explanation, one call to
+sign up and the release as three numbers above its withdrawals. Its sample numbers and its release cadence are not
+copied; every number here is read from the served view. The page's styles are the `design: library` block of
+service.css, scoped to this view.
 """
 from __future__ import annotations
 
@@ -161,15 +168,57 @@ def counts_by_harness_kind(rows) -> "list[tuple[str, dict]]":
     return [(kind, {tier: counted[(kind, tier)] for tier in LIBRARY_TIERS}) for kind in present]
 
 
+def _plural(label: str) -> str:
+    """The plural of a kind's label in running text: "rules" and "harness settings" are plural already."""
+    word = label.lower()
+    return word if word.endswith("s") else word + "s"
+
+
+def _share(count: int, largest: int) -> str:
+    """How long a kind's bar is drawn, as a percentage of the largest kind; a kind that holds anything shows a sliver."""
+    if count <= 0 or largest <= 0:
+        return "0%"
+    return f"{max(2, round(count * 100 / largest))}%"
+
+
+def _bar(count: int, largest: int) -> str:
+    """A bar drawn to scale. It is an SVG shape, because the page's content security policy refuses style attributes;
+    the counts beside it carry the same fact for a reader who cannot see it."""
+    return (f'<svg class="lib-bar" aria-hidden="true" focusable="false"><rect class="lib-bar-fill" width="{_share(count, largest)}"'
+            ' height="100%" rx="4"/></svg>')
+
+
 def _counts_table(rows) -> str:
-    head = "".join(f'<th scope="col">{escape(TIER_LABELS[tier])}</th>' for tier in LIBRARY_TIERS)
+    kinds = counts_by_harness_kind(rows)
+    largest = max((sum(counts.values()) for _kind, counts in kinds), default=0)
+    head = "".join(f'<th scope="col" class="lib-num">{escape(TIER_LABELS[tier])}</th>' for tier in LIBRARY_TIERS)
     body = "".join(f'<tr data-harness-kind="{escape(kind)}"><th scope="row">{escape(harness_kind_label(kind))}</th>'
-                   + "".join(f"<td>{counts[tier]:,}</td>" for tier in LIBRARY_TIERS)
-                   + f"<td>{sum(counts.values()):,}</td></tr>" for kind, counts in counts_by_harness_kind(rows))
-    totals = "".join(f"<td>{sum(1 for row in rows if row.tier == tier):,}</td>" for tier in LIBRARY_TIERS)
-    return ('<div class="md-table-wrap"><table class="md-table" data-library-counts><thead><tr><th scope="col">Kind of '
-            f'file</th>{head}<th scope="col">All</th></tr></thead><tbody>{body}<tr><th scope="row">All kinds</th>'
-            f"{totals}<td>{len(rows):,}</td></tr></tbody></table></div>")
+                   f'<td class="lib-bar-cell">{_bar(sum(counts.values()), largest)}</td>'
+                   + "".join(f'<td class="lib-num">{counts[tier]:,}</td>' for tier in LIBRARY_TIERS)
+                   + f'<td class="lib-num lib-all">{sum(counts.values()):,}</td></tr>' for kind, counts in kinds)
+    totals = "".join(f'<td class="lib-num">{sum(1 for row in rows if row.tier == tier):,}</td>' for tier in LIBRARY_TIERS)
+    return ('<div class="md-table-wrap lib-kinds"><table class="md-table lib-kind-table" data-library-counts><thead><tr>'
+            '<th scope="col">Kind of file</th><th scope="col" class="lib-bar-cell"><span class="sr-only">Share of the '
+            f'largest kind</span></th>{head}<th scope="col" class="lib-num">All</th></tr></thead><tbody>{body}'
+            f'<tr class="lib-total-row"><th scope="row">All kinds</th><td class="lib-bar-cell"></td>{totals}'
+            f'<td class="lib-num lib-all">{len(rows):,}</td></tr></tbody></table></div>')
+
+
+def _tier_cards(rows) -> str:
+    """What the two labels mean, in the words the service publishes, each with how many served items carry it."""
+    cards = "".join(f'<div class="lib-tier" data-library-tier="{escape(tier)}"><dt><span class="lib-tier-name">'
+                    f'{escape(TIER_LABELS[tier])}</span><span class="lib-tier-count">'
+                    f'{sum(1 for row in rows if row.tier == tier):,}</span></dt><dd>{escape(TIER_MEANINGS[tier])}</dd></div>'
+                    for tier in LIBRARY_TIERS)
+    return ('<div class="lib-labels" id="labels" aria-labelledby="labels-title"><h3 id="labels-title">What the labels mean'
+            f'</h3><dl class="lib-tiers">{cards}</dl></div>')
+
+
+def _withdrawn_list(heading: str, rows) -> str:
+    items = "".join(f'<li data-library-withdrawn="{escape(row["identity"])}"><code>{escape(row["identity"])}</code>'
+                    + (f'<span>{escape(str(row.get("note") or ""))}</span>' if row.get("note") else "") + "</li>"
+                    for row in rows)
+    return f'<div class="lib-withdrawn"><h3>{escape(heading)}</h3><ul class="md-plain">{items}</ul></div>'
 
 
 def _release_band(view, rows) -> str:
@@ -179,22 +228,23 @@ def _release_band(view, rows) -> str:
     built = summary.get("built_at")
     served_since = (datetime.fromtimestamp(built, tz=timezone.utc).strftime("%B %d, %Y at %H:%M UTC").replace(" 0", " ")
                     if isinstance(built, (int, float)) and built > 0 else "")
-    lines = []
+    head = ['<h2 id="releases-title">Releases and withdrawals</h2>']
     if release:
-        lines.append(f'<p class="md-reading">This page shows catalogue release <code>{escape(release[:12])}</code>'
-                     + (f", served since {escape(served_since)}" if served_since else "") + ". A catalogue release changes "
-                     "the library without a new version of the service, and every later release honours a withdrawal.</p>")
+        head.append(f'<p class="md-reading">This page shows catalogue release <code>{escape(release[:12])}</code>'
+                    + (f", served since {escape(served_since)}" if served_since else "") + ". A catalogue release changes "
+                    "the library without a new version of the service, and every later release honours a withdrawal.</p>")
     else:
-        lines.append('<p class="md-reading">A catalogue release changes the library without a new version of the service, '
-                     "and every later release honours a withdrawal.</p>")
+        head.append('<p class="md-reading">A catalogue release changes the library without a new version of the service, '
+                    "and every later release honours a withdrawal.</p>")
+    lines = []
     if any(changes.values()):
+        stats = "".join(f'<div><dt>{name}</dt><dd>{len(changes[key]):,}</dd></div>'
+                        for key, name in (("added", "Added"), ("changed", "Changed"), ("withdrawn", "Withdrawn")))
+        lines.append(f'<dl class="lib-stats">{stats}</dl>')
         lines.append(f'<p class="md-reading">This release added {_items(len(changes["added"]))} and changed '
                      f'{_items(len(changes["changed"]))}.</p>')
     if changes["withdrawn"]:
-        withdrawn = "".join(f'<li data-library-withdrawn="{escape(row["identity"])}"><code>{escape(row["identity"])}</code>'
-                            + (f": {escape(str(row.get('note') or ''))}" if row.get("note") else "") + "</li>"
-                            for row in changes["withdrawn"])
-        lines.append(f'<h3>Withdrawn in this release</h3><ul class="md-plain">{withdrawn}</ul>')
+        lines.append(_withdrawn_list("Withdrawn in this release", changes["withdrawn"]))
     else:
         lines.append('<p class="md-reading">This release withdrew no item.</p>')
     # An item withdrawn after the release was published, on a customer report, a staff flag, a rescan or an
@@ -204,11 +254,15 @@ def _release_band(view, rows) -> str:
                     if isinstance(row, dict) and row.get("identity") and row["identity"] not in listed),
                    key=lambda row: (row.get("withdrawn_at") or 0, row["identity"]))
     if later:
-        items = "".join(f'<li data-library-withdrawn="{escape(row["identity"])}"><code>{escape(row["identity"])}</code>'
-                        + (f": {escape(str(row.get('note') or ''))}" if row.get("note") else "") + "</li>" for row in later)
-        lines.append(f'<h3>Withdrawn since this release was published</h3><ul class="md-plain">{items}</ul>')
-    return ('<div class="md-band" id="releases" aria-labelledby="releases-title"><h2 id="releases-title">Releases and '
-            "withdrawals</h2>" + "".join(lines) + "</div>")
+        lines.append(_withdrawn_list("Withdrawn since this release was published", later))
+    return ('<div class="md-band lib-band" id="releases" aria-labelledby="releases-title"><div class="lib-split">'
+            f'<div class="lib-split-head">{"".join(head)}</div><div class="lib-split-body">{"".join(lines)}</div></div></div>')
+
+
+def _plan_price() -> str:
+    """The plan's price as the layout standard record writes it, the one record every page's price is checked against."""
+    from .web_site_map import load_layout_standard
+    return str(load_layout_standard().price.get("phrase") or "")
 
 
 def library_body(view, rows=None) -> str:
@@ -218,38 +272,51 @@ def library_body(view, rows=None) -> str:
     community = [row for row in rows if row.tier == COMMUNITY_TIER]
     kinds = counts_by_harness_kind(rows)
     chosen, body = sample(view, rows)
-    meanings = "".join(f"<div><dt>{escape(TIER_LABELS[tier])}</dt><dd>{escape(TIER_MEANINGS[tier])}</dd></div>"
-                       for tier in LIBRARY_TIERS)
-    kind_names = ", ".join(harness_kind_label(kind).lower() + "s" for kind, _counts in kinds[:6])
-    intro = ('<div class="md-band md-intro"><h1 id="library-title">The library</h1>'
-             f'<p class="lede">{len(rows):,} files a coding agent can fetch today, of {len(kinds)} kinds'
-             + (f" ({escape(kind_names)}" + (", and more" if len(kinds) > 6 else "") + ")" if kinds else "")
-             + f": {len(verified):,} Verified and {len(community):,} Community. Every file names its source, its "
-             "licence and its review. Create an account to search the whole library as a table and download the "
-             "exact file your agent chose.</p>"
-             f'<div class="md-actions"><a class="button primary" href="{SIGN_UP_ADDRESS}">Create an account</a>'
-             f'<a class="button secondary" href="{APP_LIBRARY_ADDRESS}">Sign in and browse</a></div></div>')
-    counts = ('<div class="md-band" id="counts" aria-labelledby="counts-title"><h2 id="counts-title">What is in it</h2>'
-              '<p class="md-reading">Every kind of file a harness picks up from its working directory, counted by the '
-              "label it carries.</p>" + _counts_table(rows) + "</div>")
-    labels = ('<div class="md-band" id="labels" aria-labelledby="labels-title"><h2 id="labels-title">What the labels mean'
-              f'</h2><dl class="md-dl">{meanings}</dl></div>')
-    table = ('<div class="md-band" id="browse" aria-labelledby="browse-title"><h2 id="browse-title">Search it as a table'
-             '</h2><p class="md-reading">A signed-in account sees every file in one searchable table: its purpose, the '
-             "kind of file, its label, the kinds of step it supports, its licence and the effects it declares, with a "
-             "search box and sortable columns. Each row opens to the file's details and, with Baltor Pro, to the file "
-             f'itself.</p><div class="md-actions"><a class="button primary" href="{SIGN_UP_ADDRESS}">Create an account'
-             f'</a><a class="button secondary" href="{APP_LIBRARY_ADDRESS}">Sign in and browse</a></div></div>')
+    kind_names = ", ".join(_plural(harness_kind_label(kind)) for kind, _counts in kinds[:6])
+    contents = [("counts", "What is in it"), ("labels", "What the labels mean")]
     if chosen is not None and body is not None:
-        shown = ('<div class="md-band" id="sample" aria-labelledby="sample-title"><h2 id="sample-title">One item in full'
-                 f'</h2><p class="md-reading">{escape(chosen.purpose)}: a {escape(harness_kind_label(chosen.harness_kind).lower())}, '
+        contents.append(("sample", "One item in full"))
+    contents += [("browse", "Search it as a table"), ("releases", "Releases")]
+    intro = ('<div class="md-band md-intro lib-hero"><div class="lib-hero-grid"><h1 id="library-title">'
+             f'<span class="lib-total">{len(rows):,}</span> <span class="lib-title-words">reviewed packages, ready for '
+             'your harness</span></h1><div class="lib-hero-copy">'
+             f'<p class="lede">{len(rows):,} packages a coding agent can fetch today, of {len(kinds)} kinds'
+             + (f" ({escape(kind_names)}" + (", and more" if len(kinds) > 6 else "") + ")" if kinds else "")
+             + f": {len(verified):,} Verified and {len(community):,} Community. Every package names its source, its "
+             "licence and its review. Create an account to search the whole library as a table and download the "
+             "exact version your agent chose.</p>"
+             f'<div class="md-actions"><a class="button primary" href="{SIGN_UP_ADDRESS}">Get started</a>'
+             f'<a class="lib-text-link" href="{APP_LIBRARY_ADDRESS}">Sign in and browse</a></div></div></div>'
+             '<nav class="md-contents lib-contents" aria-label="On this page">'
+             + "".join(f'<a href="#{anchor}">{escape(text)}</a>' for anchor, text in contents) + "</nav></div>")
+    counts = ('<div class="md-band lib-band" id="counts" aria-labelledby="counts-title"><div class="lib-section-head">'
+              '<h2 id="counts-title">What is in it</h2><p class="md-reading">Every kind of file a harness picks up from its '
+              'working directory, counted by the label it carries.</p></div><div class="lib-counts">'
+              + _counts_table(rows) + _tier_cards(rows) + "</div></div>")
+    price = _plan_price()
+    table = ('<div class="md-band lib-band lib-cta-band" id="browse" aria-labelledby="browse-title"><div class="lib-cta">'
+             '<div class="lib-cta-copy"><h2 id="browse-title">Search it as a table</h2><p class="md-reading">A signed-in '
+             "account sees every file in one searchable table: its purpose, the kind of file, its label, the kinds of "
+             "step it supports, its licence and the effects it declares, with a search box and sortable columns. Each "
+             "row opens to the file's details and, with Baltor Pro, to the file itself.</p>"
+             + (f'<p class="lib-cta-price">Baltor Pro, {escape(price)}. <a href="{APP_LIBRARY_ADDRESS}">Sign in and '
+                'browse</a></p>' if price else "")
+             + f'</div><div class="md-actions"><a class="button primary" href="{SIGN_UP_ADDRESS}">Get started</a></div>'
+             "</div></div>")
+    if chosen is not None and body is not None:
+        shown = ('<div class="md-band lib-band" id="sample" aria-labelledby="sample-title"><div class="lib-split">'
+                 '<div class="lib-split-head"><h2 id="sample-title">One item in full</h2>'
+                 f'<p class="md-reading">{escape(chosen.purpose)}: a {escape(harness_kind_label(chosen.harness_kind).lower())}, '
                  f'{escape(TIER_LABELS[chosen.tier])}, licence {escape(chosen.licence or "not stated")}, {_review_link(chosen)}. '
-                 'Every other body comes through an account and is checked against its exact version.</p>'
+                 'Every other body comes through an account and is checked against its exact version.</p></div>'
+                 '<figure class="lib-sample"><figcaption class="lib-sample-head"><span>'
+                 f'{escape(harness_kind_label(chosen.harness_kind))}</span><span>{escape(TIER_LABELS[chosen.tier])} · '
+                 f'{escape(chosen.licence or "Licence not stated")}</span></figcaption>'
                  f'<pre class="md-code md-code-wrap" data-library-sample="{escape(chosen.identity)}">'
-                 f"<code>{escape(body)}</code></pre></div>")
+                 f"<code>{escape(body)}</code></pre></figure></div></div>")
     else:
         shown = ""
-    return intro + counts + labels + table + shown + _release_band(view, rows)
+    return intro + counts + shown + table + _release_band(view, rows)
 
 
 def library_page(view, site_map, display_name: str) -> str:

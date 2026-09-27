@@ -1,5 +1,16 @@
 schema: hardcoding_allowlist/v1
 entries:
+  - finding_id: hardcoding.cdec358b6a6fd775d7895bf4
+    owner: loop_engine.core.service_runtime.web_assets.documentation.js:url
+    rationale: The documentation view owns this first-party source-edit link. Its destination is the
+      public repository named in this repository's instructions, and its suffix must match a declared
+      docs/guides Markdown path from the validated documentation index. It is a navigation link for
+      the reader, not an API provider binding; constructing it sends no request, credential or model
+      call. The integration review checked the destination and the path validation against the
+      current source. A different repository or edit route requires a new review.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-26'
+    expires_on: '2027-09-26'
   - finding_id: hardcoding.bb9e87ced4a289932ef9b7ba
     owner: case-studies.decision-red-team-modern-slavery.scenarios.json:source.url
     rationale: The citation address of the CC0 Kaggle write-up whose prompts the frozen scenario record
