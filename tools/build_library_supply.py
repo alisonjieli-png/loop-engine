@@ -175,6 +175,24 @@ def programs(args) -> dict:
                   reader, facts, complete=not args.formula)
 
 
+def data_tables(args) -> dict:
+    from supply_lines import data_tables as line
+    run_folder = _outside(args.run_folder)
+    run_folder.mkdir(parents=True, exist_ok=True)
+    revision = code_revision(args.authorize_store_writes)
+    reader = FactReader(run_folder, line.HOSTS, maximum_requests=args.maximum_requests,
+                        pause_seconds=args.pause_seconds)
+    rows = line.read_sources()
+    if args.table:
+        rows = [row for row in rows if row["table_id"] in args.table]
+    facts_by_repository = reader.repository_facts(sorted({row["repository"] for row in rows}))
+    built, refusals, facts = line.generate(reader, rows, code_revision=revision,
+                                           licence_text=LICENCE_FILE.read_bytes(), generated_on=now_utc()[:10],
+                                           staging=run_folder / "staging", repository_facts=facts_by_repository)
+    return finish(args, records.DATA_TABLES, built, refusals, {"tables_declared": len(rows)}, reader, facts,
+                  complete=not args.table)
+
+
 def parser() -> argparse.ArgumentParser:
     main = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     commands = main.add_subparsers(dest="command", required=True)
@@ -201,12 +219,16 @@ def parser() -> argparse.ArgumentParser:
     three = commands.add_parser("programs")
     common(three)
     three.add_argument("--formula", action="append", help="only these formulae of program_sources.json")
+    four = commands.add_parser("data-tables")
+    common(four)
+    four.add_argument("--table", action="append", help="only these table identities of data_table_sources.json")
     return main
 
 
 def main(argv=None) -> int:
     args = parser().parse_args(argv)
-    {"mcp-registry": mcp_registry, "openapi": openapi, "programs": programs}[args.command](args)
+    {"mcp-registry": mcp_registry, "openapi": openapi, "programs": programs,
+     "data-tables": data_tables}[args.command](args)
     return 0
 
 

@@ -25,11 +25,12 @@ import re
 import time
 from dataclasses import dataclass
 from pathlib import Path
+import urllib.parse
 from urllib.parse import parse_qsl, urlsplit
 
 from loop_engine.core.library_ingestion.github_reader import GITHUB_HOST, GhCliReader, parse_included_response
 from loop_engine.core.library_ingestion.https_transport import HttpsGetTransport
-from loop_engine.core.library_ingestion.record_rules import now_utc
+from loop_engine.core.library_ingestion.record_rules import git_blob_identity, now_utc
 from loop_engine.core.library_ingestion.request_log import RequestBudget, RequestLog, RequestObservation
 
 from licensed_import.processes import gh_environment, run
@@ -44,6 +45,8 @@ RELEASE_FIELDS = ("nameWithOwner isFork isArchived isPrivate stargazerCount lice
                   "latestRelease { tagName publishedAt tagCommit { oid } "
                   "releaseAssets(first: 100) { nodes { name size downloadUrl digest } } }")
 MAXIMUM_BATCH = 25
+#: The host that serves a GitHub file's exact bytes at a commit.
+RAW_HOST = "raw.githubusercontent.com"
 
 
 @dataclass(frozen=True)
@@ -209,6 +212,23 @@ class FactReader:
         except (ValueError, TypeError):
             return None
         return document.get("path"), data, ((document.get("license") or {}).get("spdx_id") or "NOASSERTION")
+
+    def pinned_file(self, repository: str, branch: str, path: str) -> dict:
+        """A GitHub file at its branch's head commit, its bytes proven by git blob identity; raises LookupError."""
+        head = self.github(f"repos/{repository}/commits/{branch}")
+        if head.status != 200:
+            raise LookupError(f"{repository}: the branch {branch} has no readable head commit")
+        commit = json.loads(head.body)["sha"]
+        meta = self.github(f"repos/{repository}/contents/{urllib.parse.quote(path)}?ref={commit}")
+        if meta.status != 200:
+            raise LookupError(f"{repository}/{path}: no file at {commit[:12]}")
+        blob = json.loads(meta.body).get("sha")
+        url = f"https://{RAW_HOST}/{repository}/{commit}/{urllib.parse.quote(path)}"
+        raw = self.get(url)
+        if raw.status != 200 or git_blob_identity(raw.body) != blob:
+            raise LookupError(f"{repository}/{path}: the bytes differ from the blob {blob}")
+        return {"repository": repository, "commit": commit, "path": path, "blob": blob, "url": url,
+                "bytes": raw.body, "sha256": raw.sha256, "retrieved_at": raw.retrieved_at}
 
     def requests(self) -> dict:
         return {"network_requests": self.network_requests, "cache_hits": self.cache_hits,

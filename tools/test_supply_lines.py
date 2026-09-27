@@ -441,5 +441,60 @@ class ProgramLineTest(unittest.TestCase):
             self.assertFalse(run_tests(target, module)[0])
 
 
+class DataTableLineTest(unittest.TestCase):
+    def test_each_declared_shape_is_read_as_rows_and_known_wrong_files_are_refused(self):
+        from supply_lines import data_tables as line
+        self.assertEqual(line.table_rows({"200": "OK", "404": "Not Found"}, "mapping", "code", "message"),
+                         [{"code": "200", "message": "OK"}, {"code": "404", "message": "Not Found"}])
+        self.assertEqual(line.table_rows({"cm": {"status": "standard"}}, "keyed_records", "unit", None),
+                         [{"unit": "cm", "status": "standard"}])
+        self.assertEqual(line.table_rows(["a", "b"], "values", "tag", None), [{"tag": "a"}, {"tag": "b"}])
+        self.assertEqual(line.table_rows([{"country": "Chad", "code": 235}], "records", "country", None),
+                         [{"country": "Chad", "code": 235}])
+        wrong = [({"a": 1}, "records", "row_violates_schema"),
+                 ([{"country": "Chad"}, {"country": "Chad"}], "records", "row_violates_schema"),
+                 ([{"code": 1}], "records", "row_violates_schema"),
+                 ({"cm": {"unit": "mm"}}, "keyed_records", "row_violates_schema"),
+                 ([{"a": 1}], "values", "row_violates_schema"),
+                 ([], "records", "table_empty")]
+        for document, shape, reason in wrong:
+            with self.assertRaises(line.TableRefused, msg=(document, shape)) as caught:
+                line.table_rows(document, shape, "country" if shape == "records" else "unit", None)
+            self.assertEqual(caught.exception.reason, reason)
+        fields, required = line.infer_schema([{"code": "a", "n": 1}, {"code": "b", "n": 1.5, "x": None}])
+        self.assertEqual((fields, required), ({"code": ["string"], "n": ["integer", "number"], "x": ["null"]},
+                                              ["code", "n"]))
+
+    def test_the_generated_loader_passes_its_tests_and_one_without_its_checks_fails_them(self):
+        from supply_lines import data_tables as line
+        from supply_lines.openapi_operations import literal, run_tests
+        document = {"100": "Continue", "200": "OK", "404": "Not Found"}
+        data = json.dumps(document).encode()
+        table = line.table_rows(document, "mapping", "code", "message")
+        fields, required = line.infer_schema(table)
+        loader = line.LOADER.format(title="Status codes", count=len(table), file_name="codes.json",
+                                    repository="example/statuses", commit="c" * 40, path="codes.json", licence="MIT",
+                                    sha256=_digest(data), key_field="code", value_line="VALUE_FIELD = 'message'\n",
+                                    fields=literal(fields), required=literal(required),
+                                    shape_line=line.SHAPE_LINES["mapping"])
+        tests = line.TESTS.format(table_id="status_codes", module="status_codes_table", class_name="StatusTest",
+                                  first_key="100", missing_key="999", wrong_key=12345)
+        with tempfile.TemporaryDirectory() as folder:
+            target = Path(folder) / "status_codes_table"
+            (target / "data").mkdir(parents=True)
+            (target / "data" / "codes.json").write_bytes(data)
+            (target / "status_codes_table.py").write_text(loader, encoding="utf-8")
+            (target / "test_status_codes_table.py").write_text(tests, encoding="utf-8")
+            passed, count, output = run_tests(target, "status_codes_table")
+            self.assertTrue(passed, output)
+            self.assertEqual(count, 5)
+            for broken in (loader.replace("if hashlib.sha256(data).hexdigest() != DATA_SHA256:", "if False:"),
+                           loader.replace("        if kinds is None:\n", "        if False:\n"),
+                           loader.replace("    if missing:\n", "    if False:\n")):
+                self.assertNotEqual(broken, loader)
+                (target / "status_codes_table.py").write_text(broken, encoding="utf-8")
+                self.assertFalse(run_tests(target, "status_codes_table")[0])
+
+
 if __name__ == "__main__":
     unittest.main()
