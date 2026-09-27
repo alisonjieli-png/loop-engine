@@ -106,12 +106,22 @@ learnable call records carry digests and sizes by contract.
 The engine image is built from the repository `Dockerfile`, which pins its
 base image by digest; example 28 carries the Kubernetes manifests for a
 worker and a Job and validates them offline. The publish workflow
-(`.github/workflows/publish-image.yml`) builds the image on every push to
-`main`, pushes it to the GitHub Container Registry under this repository
-as `ghcr.io/alisonjieli-png/loop-engine:main` and `:sha-<commit>`, pulls it
-back by digest, runs `doctor`, and writes the digest to the job summary;
-a deployment manifest should pin that digest. The first published image,
-from commit `855ab32` on 2026-09-18, is
+(`.github/workflows/publish-image.yml`) runs after the continuous
+integration workflow finishes on `main`. It publishes only when a trusted
+successful check run covers the revision and that revision is still the
+head of `main`. It pushes the image to the GitHub Container Registry under
+this repository as `ghcr.io/alisonjieli-png/loop-engine:main` and
+`:sha-<commit>`, pulls it back by digest, runs `doctor`, and writes the
+digest to the job summary; a deployment manifest should pin that digest.
+
+When several commits land close together, an earlier run finds that `main`
+has moved on. That run skips its remaining steps, publishes nothing, and
+records the reason as a run annotation, and the image for the newer
+revision is published by its own run. A run that finds no trusted
+successful check run for its revision still fails, because that is a
+missing check and not a race. `tools/check_publish_guard.mjs` runs both
+guards against a fake repository and keeps the two outcomes apart. The
+first published image, from commit `855ab32` on 2026-09-18, is
 `ghcr.io/alisonjieli-png/loop-engine@sha256:5e97636b9e0e4d2301d4d0f7489dfe58a7c4b4e9760f91be0802039ef4002d01`,
 and the package is public. Deployment to a cloud account, billing, and
 package index publication are blocked on accounts the owner supplies
