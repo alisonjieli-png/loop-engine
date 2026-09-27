@@ -1034,7 +1034,7 @@ def readme_source(operation: Operation, spec: dict, schema_bytes: int) -> str:
 ## What it does and refuses
 
 - Sends one HTTPS request to `{operation.base_url}` (or the address in `{spec['base_url_variable']}`
-  or `base_url`) and returns {('the parsed JSON answer' if operation.response_kind == 'json' else 'the answer')}.
+  or `base_url`) and returns {('the parsed JSON answer' if operation.response_kind == JSON_ANSWER else 'the answer')}.
 - Checks types, allowed values and required fields before sending, and raises `TypeError` or
   `ValueError` without sending anything when an argument breaks the specification.
 - Raises `ApiError` with the status, the documented meaning and the body for any answer outside the
