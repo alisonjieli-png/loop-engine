@@ -173,7 +173,9 @@ considered and worked into a flexible North Star."
 Weigh each choice by what it does for the ninety-day revenue plan: a visitor
 who reaches a first download in their own harness, a developer or team that
 pays, a channel that brings people who stay, and a claim proven with and
-without Baltor. Library size is supply, not the goal. The plan's targets, its
+without Baltor. The library counts as distinct useful components in the
+balanced mix the decision table sets, with the owner's goal of 100,000; a
+count of files or near copies is not progress. The plan's targets, its
 revenue analysis and the persona panel stay in the owner's private folder on
 the development workstation (`~/baltor-private/`), outside this public
 repository.
@@ -233,10 +235,14 @@ Current initiatives, in priority order (September 27, 2026)
 ├── 5. Proof with and without Baltor (S-6.173, S-6.185, D-07 to D-09)
 │   ├── Per-step selection against native skill search, abstention measured
 │   └── Overnight work on a cheap model under the same budget
-├── 6. Engines behind fixed edges for every functional component (D-19, D-28)
-└── 7. Continuing work: library growth by the daily job (D-26), durable
-       cloud records (D-05), research, the Y Combinator package and removal
-       of unused pre-launch compatibility (D-12)
+├── 6. The 100,000-component library in a balanced mix (D-26)
+│   ├── More functions, tools, programs, binaries, plugins and protocol
+│   │   servers; skills capped at a fifth
+│   └── A family short of supply exports fewer packages, never more skills
+├── 7. Engines behind fixed edges for every functional component (D-19, D-28)
+└── 8. Continuing work: durable cloud records (D-05), research, the Y
+       Combinator package and removal of unused pre-launch compatibility
+       (D-12)
 ```
 
 The authoritative task state is [roadmap.yaml](docs/roadmap/roadmap.yaml) and
