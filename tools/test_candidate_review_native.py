@@ -36,8 +36,9 @@ from loop_engine.core.service_runtime.catalogue_packages import (
 )
 
 ROOT = HERE.parent
-SOURCE = "src/loop_engine/core/service_runtime/catalogue_packages.py"
-REVISION = "9c57c9a4c813578bffa504108ef9d785b308bb86"
+# The cited sample is a dedicated file, not a production module, so a change to production code never breaks
+# these review tests; tools/review_sample_source.py says why and how the revision is chosen.
+from review_sample_source import REVISION, SOURCE  # noqa: E402
 IDENTITY = "sum_checked_integers"
 
 
@@ -98,6 +99,34 @@ def load_request(folder):
 
 def codes(outcome):
     return {finding.code for result in outcome.results for finding in result.findings}
+
+
+#: Where the review tests' cited sample may live: the dedicated test sample folder, never a production module.
+SAMPLE_FOLDER = "tools/candidate_review/resources/test-sample/"
+
+
+def cited_sample_problems(source):
+    """Why a cited sample would tie these tests to production bytes, or nothing."""
+    if not source.startswith(SAMPLE_FOLDER):
+        return [f"{source} is not in {SAMPLE_FOLDER}, so a change to it would break the review tests"]
+    return []
+
+
+class CitedSampleTest(unittest.TestCase):
+    """The tests cite a dedicated sample at a revision that holds its working-tree bytes (September 27, 2026)."""
+
+    def test_the_cited_sample_is_the_dedicated_file_and_not_a_production_module(self):
+        self.assertEqual(cited_sample_problems(SOURCE), [])
+        # KNOWN_WRONG: the production module the tests cited until September 27, 2026.
+        self.assertEqual(len(cited_sample_problems("src/loop_engine/core/service_runtime/catalogue_packages.py")), 1)
+
+    def test_the_pinned_revision_holds_the_working_tree_bytes_of_every_cited_file(self):
+        import subprocess
+        for name in (SOURCE, "LICENSE"):
+            with self.subTest(name=name):
+                committed = subprocess.run(["git", "-C", str(ROOT), "show", f"{REVISION}:{name}"],
+                                           capture_output=True, check=True, timeout=60).stdout
+                self.assertEqual(committed, (ROOT / name).read_bytes())
 
 
 class NativeReaderTest(unittest.TestCase):

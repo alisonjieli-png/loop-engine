@@ -43,8 +43,9 @@ from loop_engine.core.harness_intelligence import HarnessIntelligenceItem  # noq
 from loop_engine.core.service_runtime.catalogue_packages import CataloguePackage, CataloguePackageFile  # noqa: E402
 
 ROOT = HERE.parent
-SOURCE = "src/loop_engine/core/service_runtime/catalogue_packages.py"
-REVISION = "9c57c9a4c813578bffa504108ef9d785b308bb86"
+# The cited sample is a dedicated file, not a production module, so a change to production code never breaks
+# these review tests; tools/review_sample_source.py says why and how the revision is chosen.
+from review_sample_source import REVISION, SOURCE  # noqa: E402
 PANEL = json.loads((HERE / "candidate_review/resources/panel.json").read_text())
 SKILL = (b"---\nname: check-a-sum\ndescription: Use when a supplied list of integers must be summed and the sum "
          b"checked against a recomputation before it is reported.\nlicense: MIT\n---\n\n# Check a sum\n\n"
