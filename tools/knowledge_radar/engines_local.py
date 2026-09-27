@@ -130,45 +130,62 @@ class CollectorState:
         return EngineAnswer(status, reason, tuple(chosen[:limit_of(context)]), 0, (), tuple(excluded))
 
 
-def _first(values, name="value"):
-    if isinstance(values, list):
-        for item in values:
-            if isinstance(item, dict) and name in item:
-                return item[name]
-        return None
-    if isinstance(values, dict):
-        return values.get(name)
+def _first(values, name="value", allowed=None):
+    """The first value of a fact that a permitted source gave; a fact from an excluded source counts as unknown."""
+    entries = values if isinstance(values, list) else [values] if isinstance(values, dict) else []
+    for item in entries:
+        if isinstance(item, dict) and name in item and (allowed is None or allowed(item)):
+            return item[name]
     return None
 
 
-def model_facts(row: dict) -> dict:
-    """The plain, sourced facts of one model directory row, with unknown values left out."""
+def source_filter(row: dict, contract) -> "tuple":
+    """A predicate that keeps a value only when its source is not excluded by the contract, and whether any source is."""
+    excluded = {name.lower() for name in contract.excluded_upstreams}
+    identities = [str(source.get("id", "")).lower() for source in row.get("sources", []) if isinstance(source, dict)]
+
+    def allowed(entry) -> bool:
+        index = entry.get("source") if isinstance(entry, dict) else None
+        if type(index) is not int or not 0 <= index < len(identities):
+            return False
+        return identities[index] not in excluded
+    return allowed, any(name not in excluded for name in identities)
+
+
+def model_facts(row: dict, allowed=None, excluded_publishers=(), excluded_routes=()) -> dict:
+    """The plain, sourced facts of one model directory row, with unknown and excluded values left out."""
+    keep = allowed or (lambda entry: True)
+    publishers = {name.lower() for name in excluded_publishers}
+    routes = {name.lower() for name in excluded_routes}
     facts = row.get("facts", {})
-    prices = [price for price in row.get("prices", []) if number(price.get("output")) is not None]
+    prices = [price for price in row.get("prices", []) if number(price.get("output")) is not None and keep(price)
+              and str(price.get("route", "")).lower() not in routes]
     cheapest = min(prices, key=lambda price: (price["output"], price.get("input") or 0, price.get("provider", "")),
                    default=None)
     indexes = {INDEXES[item["name"]]: number(item.get("value")) for item in row.get("benchmarks", [])
-               if item.get("name") in INDEXES}
-    quants = [item for item in row.get("quantizations", []) if number(item.get("bytes"))]
+               if item.get("name") in INDEXES and keep(item)
+               and str(item.get("publisher", "")).lower() not in publishers}
+    quants = [item for item in row.get("quantizations", []) if number(item.get("bytes")) and keep(item)]
     smallest = min(quants, key=lambda item: (item["bytes"], item.get("name", "")), default=None)
-    uses = sorted({item.get("value") for item in row.get("use_cases", []) if isinstance(item.get("value"), str)})
-    released = facts.get("released")
-    released = released.get("value") if isinstance(released, dict) else _first(released)
+    uses = sorted({item.get("value") for item in row.get("use_cases", []) if isinstance(item.get("value"), str)
+                   and keep(item)})
+    released = _first(facts.get("released"), allowed=keep)
     output = cheapest["output"] if cheapest else None
     intelligence = indexes.get("intelligence_index")
+    popularity = row.get("popularity") if isinstance(row.get("popularity"), dict) and keep(row.get("popularity")) else {}
     return {
         "maker": text_fact(row.get("maker")),
-        "parameters": number((facts.get("parameters") or {}).get("value")),
-        "active_parameters": number((facts.get("active_parameters") or {}).get("value")),
-        "context": number(_first(facts.get("context"))),
-        "max_output": number(_first(facts.get("max_output"))),
-        "open_weights": (facts.get("open_weights") or {}).get("value"),
-        "tool_calling": _first(facts.get("tool_calling")),
-        "structured_output": _first(facts.get("structured_output")),
-        "reasoning": _first(facts.get("reasoning")),
+        "parameters": number(_first(facts.get("parameters"), allowed=keep)),
+        "active_parameters": number(_first(facts.get("active_parameters"), allowed=keep)),
+        "context": number(_first(facts.get("context"), allowed=keep)),
+        "max_output": number(_first(facts.get("max_output"), allowed=keep)),
+        "open_weights": _first(facts.get("open_weights"), allowed=keep),
+        "tool_calling": _first(facts.get("tool_calling"), allowed=keep),
+        "structured_output": _first(facts.get("structured_output"), allowed=keep),
+        "reasoning": _first(facts.get("reasoning"), allowed=keep),
         "released": released if isinstance(released, str) else None,
-        "downloads": number((row.get("popularity") or {}).get("downloads")),
-        "likes": number((row.get("popularity") or {}).get("likes")),
+        "downloads": number(popularity.get("downloads")),
+        "likes": number(popularity.get("likes")),
         "intelligence_index": intelligence,
         "coding_index": indexes.get("coding_index"),
         "agentic_index": indexes.get("agentic_index"),
@@ -187,8 +204,6 @@ def _model_url(row: dict):
     ids = row.get("ids") or {}
     if isinstance(ids.get("huggingface"), str):
         return "https://huggingface.co/" + ids["huggingface"]
-    if isinstance(ids.get("openrouter"), str):
-        return "https://openrouter.ai/" + ids["openrouter"]
     return None
 
 
@@ -215,7 +230,10 @@ class ModelDirectory:
         built = str(manifest.get("built_at", ""))[:10]
         rows = []
         for row in data.get("models", []):
-            facts = model_facts(row)
+            allowed, permitted = source_filter(row, context.contract)
+            if not permitted:
+                continue
+            facts = model_facts(row, allowed, context.contract.excluded_publishers, context.contract.excluded_upstreams)
             uses = facts["uses"] or ""
             if use_case and use_case not in uses.split(", "):
                 continue
@@ -237,8 +255,9 @@ class ModelDirectory:
             url = _model_url(row)
             if reason or not url:
                 continue
-            read_days = sorted(source.get("read") for source in row.get("sources", []) if isinstance(source.get("read"), str))
-            licence = (row.get("facts", {}).get("licence") or {}).get("value")
+            read_days = sorted(source.get("read") for index, source in enumerate(row.get("sources", []))
+                               if isinstance(source.get("read"), str) and allowed({"source": index}))
+            licence = _first(row.get("facts", {}).get("licence"), allowed=allowed)
             rows.append(observation(
                 context, self, key="model:" + str(row.get("slug")), origin="model:" + str(row.get("slug")),
                 title=title, url=url, source_address=f"https://baltor.ai/models (directory built {built})",
@@ -395,33 +414,39 @@ class EndpointDirectory:
         for row in data.get("endpoints", []):
             if not isinstance(row, dict) or (kind and row.get("kind") != kind):
                 continue
-            facts = row.get("facts") if isinstance(row.get("facts"), dict) else {}
+            allowed, permitted = source_filter(row, context.contract)
+            if not permitted:
+                continue
+            raw = row.get("facts") if isinstance(row.get("facts"), dict) else {}
+            facts = {name: value for name, value in raw.items() if isinstance(value, dict) and allowed(value)}
             documentation = _address((facts.get("documentation") or {}).get("address"))
             if documentation is None:
                 # A local runtime has no hosted documentation fact; its first recorded source page is its documentation.
-                documentation = next((_address(source.get("address")) for source in row.get("sources", [])
-                                      if isinstance(source, dict) and _address(source.get("address"))), None)
+                documentation = next((_address(source.get("address")) for index, source in enumerate(row.get("sources", []))
+                                      if isinstance(source, dict) and allowed({"source": index})
+                                      and _address(source.get("address"))), None)
             title, reason = clean_title(row.get("name"))
             if reason or not documentation:
                 continue
-            styles = sorted({api.get("style") for api in row.get("apis", []) if isinstance(api, dict)
+            styles = sorted({api.get("style") for api in row.get("apis", []) if isinstance(api, dict) and allowed(api)
                              and isinstance(api.get("style"), str)})
             values = {
                 "kind": text_fact(row.get("kind")),
                 "api_styles": ", ".join(styles) if styles else None,
                 "local_address": next((api.get("base") for api in row.get("apis", []) if isinstance(api, dict)
-                                       and str(api.get("base", "")).startswith("localhost:")), None),
+                                       and allowed(api) and str(api.get("base", "")).startswith("localhost:")), None),
                 "tool_calling": (facts.get("tool_calling") or {}).get("value"),
                 "structured_output": (facts.get("structured_output") or {}).get("value"),
-                "models_listed": len(row.get("models", [])) or None,
+                "models_listed": sum(1 for model in row.get("models", []) if allowed(model)) or None,
                 "pricing_page": _address((facts.get("pricing") or {}).get("address")),
                 "rate_limits_page": _address((facts.get("rate_limits") or {}).get("address")),
                 "data_policy_page": _address((facts.get("data_policy") or {}).get("address")),
             }
             if any(values.get(name) is None for name in needs):
                 continue
-            read_days = sorted(source.get("read") for source in row.get("sources", [])
-                               if isinstance(source, dict) and isinstance(source.get("read"), str))
+            read_days = sorted(source.get("read") for index, source in enumerate(row.get("sources", []))
+                               if isinstance(source, dict) and isinstance(source.get("read"), str)
+                               and allowed({"source": index}))
             host = documentation.split("/")[2]
             rows.append(observation(
                 context, self, key="endpoint:" + str(row.get("slug")), origin="site:" + host, title=title,

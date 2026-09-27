@@ -236,8 +236,8 @@
    "question": "Which models lead the published general, coding and agentic indices today, and at what listed price?",
    "title": "Model leaders on published indices",
    "area": "benchmarks",
-   "status": "active",
-   "gap_reason": "",
+   "status": "declared_gap",
+   "gap_reason": "Published index values from Artificial Analysis may not be stored in served files under its terms. The openly licensed candidates are the Arena leaderboard dataset (CC BY 4.0) and the Epoch AI Benchmarking Hub (CC BY 4.0); neither engine is built in this version.",
    "audience": "developers and coding harnesses choosing what to build with",
    "constraints": [
     "Facts come from public listings and are dated; nothing is estimated."
@@ -277,41 +277,7 @@
     "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
    ],
    "limit": 10,
-   "sources": [
-    {
-     "engine": "model_directory",
-     "section": "Highest intelligence index",
-     "parameters": {
-      "needs_facts": [
-       "intelligence_index"
-      ],
-      "rank_by": "intelligence_index",
-      "limit": 10
-     }
-    },
-    {
-     "engine": "model_directory",
-     "section": "Highest coding index",
-     "parameters": {
-      "needs_facts": [
-       "coding_index"
-      ],
-      "rank_by": "coding_index",
-      "limit": 10
-     }
-    },
-    {
-     "engine": "model_directory",
-     "section": "Highest agentic index",
-     "parameters": {
-      "needs_facts": [
-       "agentic_index"
-      ],
-      "rank_by": "agentic_index",
-      "limit": 10
-     }
-    }
-   ],
+   "sources": [],
    "seeds": [],
    "assets": {}
   },
@@ -402,7 +368,7 @@
     "The source's own identifiers, dates, licences and counts, with a link to the source."
    ],
    "intended_output": "A dated decision card with ranked, source-linked evidence, a data file with its schema.",
-   "purpose": "Rank reasoning models that call tools and return structured output by published intelligence index and by listed price per index point.",
+   "purpose": "List reasoning models that call tools and return structured output, lowest listed price first, from models.dev and the LiteLLM price map.",
    "use_when": "Use when a step needs careful reasoning or a decision with typed output and the harness must pick a model.",
    "sensitivity": "general",
    "research_cost": {
@@ -425,7 +391,8 @@
    ],
    "not_established": [
     "No source used here measured these options on your own task, data or budget.",
-    "Reasoning effort settings and their cost differences are not recorded here."
+    "A listed price is not a cost per accepted task; reasoning effort settings and their cost are not recorded here.",
+    "docs/research/SHARED-RESEARCH-SERVICE-LANDSCAPE-2026-09-27.md (decision 7): values from OpenRouter and Artificial Analysis are not stored in served files; openly licensed sources are used instead."
    ],
    "would_change": [
     "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
@@ -433,32 +400,28 @@
    "limit": 10,
    "sources": [
     {
-     "engine": "model_directory",
-     "section": "Highest intelligence index with tools and structured output",
+     "engine": "models_dev_catalogue",
+     "section": "Reasoning models with tools and structured output (models.dev)",
      "parameters": {
       "require": [
        "reasoning",
        "tool_calling",
        "structured_output"
       ],
-      "needs_facts": [
-       "intelligence_index"
-      ],
-      "rank_by": "intelligence_index"
+      "rank_by": "output_price",
+      "limit": 10
      }
     },
     {
-     "engine": "model_directory",
-     "section": "Lowest listed price per index point",
+     "engine": "litellm_prices",
+     "section": "Reasoning models with tool calling (LiteLLM price map)",
      "parameters": {
       "require": [
-       "reasoning"
+       "reasoning",
+       "tool_calling"
       ],
-      "needs_facts": [
-       "price_per_intelligence_point"
-      ],
-      "rank_by": "price_per_intelligence_point",
-      "ascending": true
+      "rank_by": "output_price",
+      "limit": 10
      }
     }
    ],
@@ -479,10 +442,10 @@
    ],
    "baseline": "An engineer watches lab announcements, the OpenRouter listing and Hugging Face by hand, several times a day.",
    "acceptable_evidence": [
-    "The host's own listing entry with its identifier, the time it was added, its prices and its end date where one is announced."
+    "The catalogue or host's own entry with its identifier, release date, prices and retirement date where one is announced."
    ],
    "intended_output": "A dated brief and a typed table of the newest models on OpenRouter and from major labs on Hugging Face.",
-   "purpose": "List the newest models added to OpenRouter and the newest model repositories of major labs on Hugging Face, with prices, context sizes, licences and dates.",
+   "purpose": "List the newest models in the models.dev catalogue and the newest model repositories of major labs on Hugging Face, and newly announced retirement dates, with prices, context sizes, licences and dates.",
    "use_when": "Use when a task should consider a model released in the last days, or when a model a step depends on may have changed.",
    "sensitivity": "general",
    "research_cost": {
@@ -506,7 +469,8 @@
    ],
    "not_established": [
     "A new listing is not an evaluation: nothing here measured the new models.",
-    "Labs that publish neither on OpenRouter nor on Hugging Face are not covered."
+    "Labs that publish neither in models.dev nor on Hugging Face are not covered.",
+    "docs/research/SHARED-RESEARCH-SERVICE-LANDSCAPE-2026-09-27.md (decision 7): values from OpenRouter and Artificial Analysis are not stored in served files; openly licensed sources are used instead."
    ],
    "would_change": [
     "A published evaluation of the new model on a shared task, or the lab's own release notes."
@@ -514,9 +478,10 @@
    "limit": 20,
    "sources": [
     {
-     "engine": "openrouter_models",
-     "section": "Newest on OpenRouter",
+     "engine": "models_dev_catalogue",
+     "section": "Newest in the models.dev catalogue",
      "parameters": {
+      "rank_by": "event_at",
       "limit": 20
      }
     },
@@ -538,6 +503,14 @@
       "per_author": 10,
       "limit": 20
      }
+    },
+    {
+     "engine": "litellm_prices",
+     "section": "Retirement dates in the LiteLLM price map",
+     "parameters": {
+      "only_deprecating": true,
+      "limit": 20
+     }
     }
    ],
    "seeds": [],
@@ -545,12 +518,92 @@
   },
   {
    "record_type": "knowledge_radar_question/v1",
+   "id": "models_structured_extraction",
+   "question": "Which small, cheap models can return schema-valid structured extraction on a route a customer brings, at the lowest listed price, and which pass an exact acceptance check?",
+   "title": "Small models for structured extraction",
+   "area": "models",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and harnesses that extract typed records from text with small or cheap models",
+   "constraints": [
+    "Candidates come from openly licensed catalogues (models.dev and the LiteLLM price map).",
+    "A listing that says a route supports structured output is a lead, not a measurement."
+   ],
+   "baseline": "An engineer compares provider pages, model cards and price lists by hand and tries models one by one.",
+   "acceptable_evidence": [
+    "The catalogue's own capability flags and listed prices with their read dates.",
+    "Field accuracy of at least 0.95 on held-out records and valid JSON after at most one repair, measured on the customer's own route."
+   ],
+   "intended_output": "A dated decision card, a typed table of candidates and a helper that shortlists them under the caller's constraints for the acceptance check.",
+   "purpose": "List models that the openly licensed catalogues mark as supporting structured output, lowest listed price first, with context sizes and dates, and ship a helper that shortlists candidates for an exact acceptance check.",
+   "use_when": "Use when a step extracts typed fields from text and should use the cheapest model that passes a schema check on the harness's own route.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 45,
+    "sources": 6
+   },
+   "volatility": "days",
+   "refresh": "daily",
+   "delivery": [
+    "brief",
+    "data_file",
+    "decision_helper"
+   ],
+   "valid_days": 3,
+   "reask": [
+    "Does the route the harness uses enforce the schema, or only request it?",
+    "Does the shortlisted model pass the acceptance check on the task's own records?",
+    "Would a parser or a regular expression extract these fields with no model call?"
+   ],
+   "recheck": [
+    "Prices and capability flags change often; the table is valid only until its valid-until date."
+   ],
+   "not_established": [
+    "No model here was measured on extraction; a listed capability is not a passed acceptance check.",
+    "Ollama's own documentation has said since April 22, 2026 that its cloud does not support structured outputs; a route can differ from the model's listing.",
+    "docs/research/SHARED-RESEARCH-SERVICE-LANDSCAPE-2026-09-27.md (decision 7): values from OpenRouter and Artificial Analysis are not stored in served files; openly licensed sources are used instead."
+   ],
+   "would_change": [
+    "The acceptance check (field accuracy of at least 0.95 on held-out records, valid JSON after at most one repair) on the customer's own route."
+   ],
+   "limit": 25,
+   "sources": [
+    {
+     "engine": "models_dev_catalogue",
+     "section": "Structured output, lowest listed price (models.dev)",
+     "parameters": {
+      "require": [
+       "structured_output"
+      ],
+      "rank_by": "output_price",
+      "limit": 25
+     }
+    },
+    {
+     "engine": "litellm_prices",
+     "section": "Structured output, lowest listed price (LiteLLM price map)",
+     "parameters": {
+      "require": [
+       "structured_output"
+      ],
+      "rank_by": "output_price",
+      "limit": 25
+     }
+    }
+   ],
+   "seeds": [],
+   "assets": {
+    "decision_helper": "choose_model"
+   }
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
    "id": "models_cheapest_thinking",
    "question": "What is the cheapest model per unit of published thinking for a task, under my constraints?",
    "title": "Cheapest model per unit of published thinking",
    "area": "models",
-   "status": "active",
-   "gap_reason": "",
+   "status": "declared_gap",
+   "gap_reason": "The cheapest model per unit of thinking needs a measured cost per accepted task on a frozen evaluation set, and published index values from Artificial Analysis may not be stored under its terms. The structured extraction question (models_structured_extraction) measures it first for one task family, as the first end-to-end demonstration.",
    "audience": "developers and coding harnesses choosing what to build with",
    "constraints": [
     "Facts come from public listings and are dated; nothing is estimated."
@@ -571,8 +624,7 @@
    "refresh": "daily",
    "delivery": [
     "brief",
-    "data_file",
-    "decision_helper"
+    "data_file"
    ],
    "valid_days": 3,
    "reask": [
@@ -591,24 +643,9 @@
     "A measured cost per accepted task on a frozen evaluation set for the same step."
    ],
    "limit": 25,
-   "sources": [
-    {
-     "engine": "model_directory",
-     "section": "Lowest listed price per index point",
-     "parameters": {
-      "needs_facts": [
-       "price_per_intelligence_point"
-      ],
-      "rank_by": "price_per_intelligence_point",
-      "ascending": true,
-      "limit": 25
-     }
-    }
-   ],
+   "sources": [],
    "seeds": [],
-   "assets": {
-    "decision_helper": "choose_model"
-   }
+   "assets": {}
   },
   {
    "record_type": "knowledge_radar_question/v1",
@@ -627,7 +664,7 @@
     "The source's own identifiers, dates, licences and counts, with a link to the source."
    ],
    "intended_output": "A dated decision card with ranked, source-linked evidence, a data file with its schema.",
-   "purpose": "Rank models by the published coding index with listed prices, and open-weight coding models by downloads.",
+   "purpose": "List the most downloaded open-weight coding models with their sizes, licences and quantized files.",
    "use_when": "Use when choosing a model for code generation, repair or review.",
    "sensitivity": "general",
    "research_cost": {
@@ -649,23 +686,14 @@
     "Confirm the context window covers the files the step must read."
    ],
    "not_established": [
-    "No source used here measured these options on your own task, data or budget."
+    "No source used here measured these options on your own task, data or budget.",
+    "docs/research/SHARED-RESEARCH-SERVICE-LANDSCAPE-2026-09-27.md (decision 7): values from OpenRouter and Artificial Analysis are not stored in served files; openly licensed sources are used instead."
    ],
    "would_change": [
     "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
    ],
    "limit": 10,
    "sources": [
-    {
-     "engine": "model_directory",
-     "section": "Highest coding index",
-     "parameters": {
-      "needs_facts": [
-       "coding_index"
-      ],
-      "rank_by": "coding_index"
-     }
-    },
     {
      "engine": "model_directory",
      "section": "Most downloaded open-weight coding models",
@@ -1043,7 +1071,7 @@
     "The source's own identifiers, dates, licences and counts, with a link to the source."
    ],
    "intended_output": "A dated decision card with ranked, source-linked evidence, a data file with its schema.",
-   "purpose": "Rank models that support structured output and tool calling by listed price per index point, and list new models in the Jev family as the model directory records them.",
+   "purpose": "List models that support structured output and tool calling, lowest listed price first, and new models of the Jev family as the model directory records them.",
    "use_when": "Use when a step must return a typed decision that a validator checks.",
    "sensitivity": "general",
    "research_cost": {
@@ -1066,7 +1094,8 @@
    ],
    "not_established": [
     "No source used here measured these options on your own task, data or budget.",
-    "Whether a model honours a schema under load is not measured here."
+    "Whether a model honours a schema under load is not measured here.",
+    "docs/research/SHARED-RESEARCH-SERVICE-LANDSCAPE-2026-09-27.md (decision 7): values from OpenRouter and Artificial Analysis are not stored in served files; openly licensed sources are used instead."
    ],
    "would_change": [
     "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
@@ -1074,18 +1103,15 @@
    "limit": 10,
    "sources": [
     {
-     "engine": "model_directory",
-     "section": "Structured output and tools, lowest price per index point",
+     "engine": "models_dev_catalogue",
+     "section": "Structured output and tools, lowest listed price (models.dev)",
      "parameters": {
       "require": [
        "structured_output",
        "tool_calling"
       ],
-      "needs_facts": [
-       "price_per_intelligence_point"
-      ],
-      "rank_by": "price_per_intelligence_point",
-      "ascending": true
+      "rank_by": "output_price",
+      "limit": 10
      }
     },
     {
@@ -3739,7 +3765,7 @@
     "The source's own identifiers, dates, licences and counts, with a link to the source."
    ],
    "intended_output": "A dated decision card with ranked, source-linked evidence, a data file with its schema.",
-   "purpose": "List the models that OpenRouter serves with an announced end date, soonest first, with a table of the dates.",
+   "purpose": "List hosted model versions with an announced retirement date in the LiteLLM price map, soonest first, with a table of the dates.",
    "use_when": "Use before pinning a model version in a long-lived project.",
    "sensitivity": "general",
    "research_cost": {
@@ -3760,8 +3786,8 @@
     "Read the provider's deprecation page."
    ],
    "not_established": [
-    "Only models served through OpenRouter are covered; each provider's own deprecation page is authoritative.",
-    "A model without an announced end date may still be retired without notice."
+    "Only models the LiteLLM price map records are covered; each provider's own deprecation page is authoritative.",
+    "A model without an announced date may still be retired without notice."
    ],
    "would_change": [
     "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
@@ -3769,10 +3795,10 @@
    "limit": 40,
    "sources": [
     {
-     "engine": "openrouter_models",
-     "section": "Models on OpenRouter with an announced end date",
+     "engine": "litellm_prices",
+     "section": "Announced retirement dates (LiteLLM price map)",
      "parameters": {
-      "only_expiring": true,
+      "only_deprecating": true,
       "limit": 40
      }
     }

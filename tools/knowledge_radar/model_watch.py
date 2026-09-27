@@ -11,10 +11,13 @@ listing for re-evaluation; the next radar run answers only those.
 
 ```text
 tick (hourly)
-├── read each watched binding of the registry's hourly question, through the same engines
+├── read each watched binding of the registry's hourly question, through the same engines,
+│   sending back the validators (ETag, Last-Modified) of the last complete read
+├── a 304 answer is a validated "no change": the snapshot stays, the success time moves
 ├── outcome per source: checked with no relevant change, checked with a material change,
 │   partially checked, could not check, source disappeared or access changed
-├── snapshot: replaced only after a complete read; a partial read adds and changes, never removes
+├── snapshot: replaced only after a complete read; a partial or incomplete read adds and
+│   changes, never removes
 ├── four freshness times per source: last attempted retrieval, last successful retrieval,
 │   last material change, last successful evaluation (written by the daily run, never here)
 └── on a material change: a change record, and one invalidation per question that reads the source
@@ -33,7 +36,7 @@ import os
 from datetime import datetime, timezone
 from pathlib import Path
 
-from .engines import FAILED, GONE, OK, PARTIAL, RadarEngineError, ReadContext, default_registry
+from .engines import FAILED, GONE, NOT_MODIFIED, OK, PARTIAL, RadarEngineError, ReadContext, default_registry
 
 CHANGE_RECORD_TYPE = "knowledge_radar_model_change/v1"
 TICK_RECORD_TYPE = "knowledge_radar_model_watch_tick/v1"
@@ -47,12 +50,15 @@ def now_utc() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
+MATERIAL_FACTS = ("model_id", "provider", "input_price", "output_price", "context", "max_output", "structured_output",
+                  "tool_calling", "reasoning", "open_weights", "deprecation_date", "gated")
+
+
 def fingerprint(observation) -> str:
     """The digest of the facts whose change is material; a count such as downloads is not one of them."""
     material = {"title": observation.title, "licence": observation.licence, "event_at": observation.event_at,
                 "effective_until": observation.effective_until,
-                **{name: observation.facts.get(name) for name in ("input_price", "output_price", "context",
-                                                                   "expiration_date", "gated", "model_id")}}
+                **{name: observation.facts.get(name) for name in MATERIAL_FACTS}}
     return hashlib.sha256(json.dumps(material, sort_keys=True).encode("utf-8")).hexdigest()
 
 
@@ -70,18 +76,27 @@ def _write(path: Path, value) -> None:
     os.replace(temporary, path)
 
 
-def outcome_of(status: str, previous: "dict | None", current: dict) -> "tuple[str, dict]":
-    """The check outcome and the change lists. Removal counts only after a complete read."""
+def outcome_of(status: str, previous: "dict | None", current: dict, complete: bool = True) -> "tuple[str, dict]":
+    """The check outcome and the change lists. Removal counts only after a complete read.
+
+    A 304 answer to the validators of the last complete read is the one kind of "no change" that needs no
+    body: the source itself confirmed it. Without an earlier snapshot a 304 proves nothing.
+    """
     if status == FAILED:
         return "could_not_check", {}
     if status == GONE:
         return "source_disappeared_or_access_changed", {}
+    if status == NOT_MODIFIED:
+        if previous is None:
+            return "could_not_check", {}
+        return "checked_no_relevant_change", {"baseline": False, "added": [], "removed": [], "changed": [],
+                                              "validated": True}
     if previous is None:
         baseline = {"baseline": True, "added": [], "removed": [], "changed": []}
         return ("partially_checked" if status == PARTIAL else "checked_material_change"), baseline
     added = sorted(key for key in current if key not in previous)
     changed = sorted(key for key in current if key in previous and previous[key] != current[key])
-    removed = sorted(key for key in previous if key not in current) if status == OK else []
+    removed = sorted(key for key in previous if key not in current) if status == OK and complete else []
     changes = {"baseline": False, "added": added, "removed": removed, "changed": changed}
     if status == PARTIAL:
         return "partially_checked", changes
@@ -114,30 +129,43 @@ def tick(registry, contracts, repository: Path, library: Path, network, *, now: 
             snapshot = _read(snapshot_path, {})
             freshness = dict(snapshot.get("freshness") or {})
             freshness["last_attempted_retrieval"] = moment
+            previous = snapshot.get("fingerprints") if snapshot.get("record_type") == SNAPSHOT_RECORD_TYPE else None
+            validators = snapshot.get("validators") if previous is not None and isinstance(snapshot.get("validators"), dict) else {}
+            complete = True
             if network is None or binding.engine not in engines.engines:
                 status, reason, observations = FAILED, "the watch holds no network authority", ()
             else:
                 context = ReadContext(question, binding, moment, moment[:10], contracts[binding.engine],
                                       Path(repository), None, network)
+                # Send back only the validators of this binding's last complete read.
+                network.conditional = dict(validators)
+                network.observed_validators = {}
                 try:
                     answer = engines.engine(binding.engine).read(context)
                     status, reason, observations = answer.status, answer.reason, answer.observations
+                    complete = answer.complete
                 except RadarEngineError as error:
                     status, reason, observations = FAILED, str(error), ()
                 except Exception as error:  # noqa: BLE001 - a failing engine is recorded, never trusted
                     status, reason, observations = FAILED, f"the engine failed: {type(error).__name__}", ()
+                finally:
+                    network.conditional = {}
             current = {item.key: fingerprint(item) for item in observations}
             titles = {item.key: item.title for item in observations}
-            previous = snapshot.get("fingerprints") if snapshot.get("record_type") == SNAPSHOT_RECORD_TYPE else None
-            outcome, changes = outcome_of(status, previous, current)
-            if status in (OK, PARTIAL):
+            outcome, changes = outcome_of(status, previous, current, complete)
+            if status in (OK, PARTIAL) or (status == NOT_MODIFIED and previous is not None):
                 freshness["last_successful_retrieval"] = moment
-                merged = dict(current) if status == OK or previous is None else {**previous, **current}
-                if outcome == "checked_material_change" or (status == PARTIAL and (changes.get("added") or changes.get("changed"))):
+                whole = status == OK and complete
+                merged = previous if status == NOT_MODIFIED else (
+                    dict(current) if whole or previous is None else {**previous, **current})
+                if changes.get("added") or changes.get("changed") or changes.get("removed") or changes.get("baseline"):
                     freshness["last_material_change"] = moment
+                # Validators are kept only from a complete read, so a later 304 always means "same as a whole list".
+                kept = dict(network.observed_validators) if network is not None and (whole or status == NOT_MODIFIED) else {}
                 _write(snapshot_path, {"record_type": SNAPSHOT_RECORD_TYPE, "engine_id": binding.engine,
                                        "section": binding.section, "fingerprints": merged,
-                                       "titles": {**(snapshot.get("titles") or {}), **titles}, "freshness": freshness})
+                                       "titles": {**(snapshot.get("titles") or {}), **titles}, "freshness": freshness,
+                                       "validators": {**(validators if status == NOT_MODIFIED else {}), **kept}})
             else:
                 # The snapshot and its success time stay as they were; only the attempt is recorded.
                 _write(snapshot_path, {**snapshot, "freshness": freshness} if snapshot else
@@ -146,6 +174,7 @@ def tick(registry, contracts, repository: Path, library: Path, network, *, now: 
             material = (not changes.get("baseline")) and any(changes.get(name) for name in ("added", "removed", "changed"))
             result = {"source": key, "engine_id": binding.engine, "status": status, "outcome": outcome, "reason": reason,
                       "observations": len(observations), "freshness": freshness,
+                      "validated_by_source": bool(changes.get("validated")),
                       "added": [titles.get(item, item) for item in changes.get("added", [])][:50],
                       "removed": [(snapshot.get("titles") or {}).get(item, item) for item in changes.get("removed", [])][:50],
                       "changed": [titles.get(item, item) for item in changes.get("changed", [])][:50],

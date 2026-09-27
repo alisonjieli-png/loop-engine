@@ -53,8 +53,8 @@ def claim(key="model:a", origin="model:a", title="Alpha", *, review_after="2026-
 
 
 class FakeResponse:
-    def __init__(self, status, body):
-        self.status, self.body = status, body
+    def __init__(self, status, body, etag=None):
+        self.status, self.body, self.etag, self.last_modified = status, body, etag, None
 
 
 class FakeNetwork:
@@ -271,13 +271,136 @@ class EngineChecks(unittest.TestCase):
 
     def test_model_directory_filters_and_ranks_the_packaged_data(self):
         answer = engines.default_registry(network_allowed=False).engine("model_directory").read(
-            context_for("models_cheapest_thinking"))
-        values = [item.facts["price_per_intelligence_point"] for item in answer.observations]
-        self.assertEqual(values, sorted(values))
+            context_for("models_small_open"))
+        values = [item.facts["downloads"] for item in answer.observations]
+        self.assertEqual(values, sorted(values, reverse=True))
         self.assertTrue(answer.observations)
+        self.assertLessEqual(max(item.facts["parameters"] for item in answer.observations), 10_000_000_000)
+
+    def test_known_wrong_values_from_an_excluded_upstream_never_reach_a_claim(self):
+        from knowledge_radar import engines_local
+        row = {"name": "Mixed", "slug": "mixed", "maker": "Maker", "ids": {"huggingface": "maker/mixed"},
+               "sources": [{"id": "huggingface", "read": "2026-09-27"}, {"id": "openrouter", "read": "2026-09-27"}],
+               "facts": {"licence": {"value": "mit", "source": 0}, "tool_calling": [{"value": True, "source": 1}],
+                         "context": [{"value": 1000, "source": 1}, {"value": 2000, "source": 0}]},
+               "popularity": {"downloads": 5, "source": 0},
+               "benchmarks": [{"name": "Artificial Analysis Intelligence Index", "publisher": "Artificial Analysis",
+                               "value": 40.0, "source": 1}],
+               "prices": [{"output": 1.0, "input": 0.5, "route": "openrouter", "source": 1}],
+               "use_cases": [{"value": "coding", "source": 1}], "quantizations": []}
+        contract = read_contracts(CONTRACTS)["model_directory"]
+        allowed, permitted = engines_local.source_filter(row, contract)
+        facts = engines_local.model_facts(row, allowed, contract.excluded_publishers, contract.excluded_upstreams)
+        self.assertTrue(permitted)
+        self.assertEqual((facts["context"], facts["downloads"]), (2000, 5))
+        for name in ("tool_calling", "intelligence_index", "output_price", "uses", "price_per_intelligence_point"):
+            self.assertIsNone(facts[name], name)
+        only = {**row, "sources": [{"id": "openrouter", "read": "2026-09-27"}]}
+        self.assertFalse(engines_local.source_filter(only, contract)[1])
+        unfiltered = engines_local.model_facts(row)
+        self.assertEqual(unfiltered["intelligence_index"], 40.0)  # removed-guard control: the filter is what drops it
+
+    def test_models_dev_keeps_the_cheapest_route_per_model_and_skips_excluded_providers(self):
+        body = json.dumps({
+            "a": {"name": "Host A", "doc": "https://a.example.org/docs", "models": {
+                "lab/m1": {"id": "lab/m1", "name": "M1", "structured_output": True, "tool_call": True,
+                           "cost": {"input": 0.2, "output": 0.8}, "limit": {"context": 64000},
+                           "release_date": "2026-09-01", "description": "Never copied prose about this model."},
+                "lab/m2": {"id": "lab/m2", "name": "M2", "structured_output": False, "cost": {"input": 0.01, "output": 0.02}}}},
+            "b": {"name": "Host B", "models": {"m1": {"id": "m1", "name": "M1", "structured_output": True,
+                                                      "cost": {"input": 0.1, "output": 0.5}, "limit": {"context": 64000}}}},
+            "openrouter": {"name": "OpenRouter", "models": {"x/free": {"id": "x/free", "name": "Free",
+                                                                       "structured_output": True, "cost": {"input": 0, "output": 0}}}}}).encode()
+        network = FakeNetwork({"models.dev/api.json": (200, body)})
+        answer = engines_network.ModelsDevCatalogue().read(context_for("models_structured_extraction", network=network))
+        self.assertEqual([item.title for item in answer.observations], ["M1 (Host B)"])
+        item = answer.observations[0]
+        self.assertEqual((item.origin, item.facts["output_price"], item.url), ("model:m1", 0.5, "https://models.dev"))
+        self.assertTrue(any("Never copied prose" in text for text in answer.guard_texts))
+
+    def test_litellm_prices_are_per_million_tokens_and_retirements_rank_soonest_first(self):
+        body = json.dumps({"sample_spec": {"mode": "chat"},
+                           "host/late": {"litellm_provider": "host", "mode": "chat", "input_cost_per_token": 2e-07,
+                                         "output_cost_per_token": 8e-07, "deprecation_date": "2027-01-01",
+                                         "supports_response_schema": True},
+                           "host/soon": {"litellm_provider": "host", "mode": "chat", "input_cost_per_token": 1e-06,
+                                         "output_cost_per_token": 3e-06, "deprecation_date": "2026-10-15"},
+                           "openrouter/x": {"litellm_provider": "openrouter", "mode": "chat", "deprecation_date": "2026-10-01"},
+                           "host/embed": {"litellm_provider": "host", "mode": "embedding", "deprecation_date": "2026-10-02"}}).encode()
+        network = FakeNetwork({"raw.githubusercontent.com/BerriAI": (200, body)})
+        answer = engines_network.LiteLLMPrices().read(context_for("calendar_model_deprecations", network=network))
+        self.assertEqual([item.title for item in answer.observations], ["host/soon", "host/late"])
+        self.assertEqual(answer.observations[1].facts["output_price"], 0.8)
+        self.assertEqual(answer.observations[0].effective_until, "2026-10-15")
+
+    def test_a_304_answer_is_not_modified_and_never_a_list(self):
+        answer = engines_network._status_answer(304, "a source")
+        self.assertEqual(answer.status, "not_modified")
+        self.assertEqual(briefs.check_outcome(answer, None, ())[0], "could_not_check")
+
+
+class RepublicationChecks(unittest.TestCase):
+    def test_the_committed_registry_stores_no_live_lookup_source(self):
+        self.assertEqual(records.republication_findings(read_registry(REGISTRY), read_contracts(CONTRACTS)), [])
+
+    def test_known_wrong_a_brief_that_binds_a_live_lookup_source_is_refused(self):
+        registry = deepcopy(REGISTRY)
+        for row in registry["questions"]:
+            if row["id"] == "models_new_releases":
+                row["sources"][0] = {"engine": "openrouter_models", "section": "Newest on OpenRouter", "parameters": {}}
+        findings = records.republication_findings(read_registry(registry), read_contracts(CONTRACTS))
+        self.assertEqual(findings[0][0], "radar_live_lookup_source_stored")
+        contracts = deepcopy(CONTRACTS)
+        for row in contracts["contracts"]:
+            if row["engine_id"] == "openrouter_models":
+                row["republication"] = "stored_facts"
+        self.assertEqual(records.republication_findings(read_registry(registry), read_contracts(contracts)), [])
 
 
 class TransportChecks(unittest.TestCase):
+    def test_validators_are_sent_back_and_a_304_is_recorded_as_not_modified(self):
+        import urllib.error
+        from email.message import Message
+        from loop_engine.core.library_ingestion.https_transport import HttpsGetTransport
+        from loop_engine.core.library_ingestion.request_log import RequestBudget, RequestLog
+        seen = []
+
+        class Opener:
+            def open(self, request, timeout):
+                seen.append((request.get_header("If-none-match"), request.get_header("If-modified-since")))
+                headers = Message()
+                headers["ETag"] = '"v1"'
+                raise urllib.error.HTTPError(request.full_url, 304, "Not Modified", headers, None)
+
+        log = RequestLog()
+        transport = HttpsGetTransport(("models.dev",), RequestBudget(3), log)
+        transport._opener = Opener()
+        response = transport.get("models.dev", "/api.json", validators={"etag": '"v1"', "last_modified": None})
+        self.assertEqual(seen, [('"v1"', None)])
+        self.assertEqual((response.status, response.etag), (304, '"v1"'))
+        self.assertEqual(log.records[-1]["outcome"], "not_modified")
+
+    def test_the_run_network_sends_validators_only_to_the_same_request(self):
+        calls = []
+
+        class Transport:
+            def __init__(self, *arguments, **options):
+                pass
+
+            def get(self, host, path, query=None, validators=None):
+                calls.append(validators)
+                return FakeResponse(200, b"{}", etag='"v2"')
+
+        from loop_engine.core.library_ingestion.request_log import RequestBudget, RequestLog
+        network = engines_network.RadarNetwork(RequestBudget(5), RequestLog(), read_contracts(CONTRACTS), sleep=lambda _: None)
+        network.conditional = {engines_network.request_key("models.dev", "/api.json"): {"etag": '"v1"'}}
+        with mock.patch.object(engines_network, "HttpsGetTransport", Transport):
+            network.get("models_dev_catalogue", "models.dev", "/api.json")
+            network.get("huggingface_models", "huggingface.co", "/api/models", {"limit": 1})
+        self.assertEqual(calls, [{"etag": '"v1"'}, None])
+        self.assertEqual(network.observed_validators[engines_network.request_key("models.dev", "/api.json")]["etag"], '"v2"')
+
+
     def test_the_transport_asks_for_the_declared_media_type(self):
         from loop_engine.core.library_ingestion.https_transport import HttpsGetTransport
         from loop_engine.core.library_ingestion.request_log import RequestBudget, RequestLog

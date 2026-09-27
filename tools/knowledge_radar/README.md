@@ -106,7 +106,7 @@ again never renews it: its review date counts from the claim's own date.
 
 ## Engines behind one source edge
 
-`knowledge_radar_source/v1` has fourteen Baltor-native engines. Local
+`knowledge_radar_source/v1` has eighteen Baltor-native engines. Local
 engines read files: `collector_state` (the source discovery collector's
 latest private exports, read only), `model_directory`,
 `endpoint_directory`, `mcp_directory` (the directory data this repository
@@ -116,12 +116,40 @@ make bounded read-only requests through the library ingestion transport,
 budget and request log: `github_search`, `github_advisories`,
 `github_releases` and `owner_directory` through the gh login with the
 radar's own read-only allow list, and `huggingface_models`,
-`arxiv_listing`, `openalex_works`, `endoflife_calendar` and
-`federal_register` over HTTPS GET. Source prose that an answer carries
+`huggingface_new_models`, `arxiv_listing`, `openalex_works`,
+`endoflife_calendar`, `federal_register`, `models_dev_catalogue` (models.dev,
+MIT) and `litellm_prices` (the LiteLLM price map, MIT) over HTTPS GET.
+`openrouter_models` exists as a live lookup only.
+
+Each source contract says whether the source's facts may be stored in a
+served file (`republication`) and which upstream values its engine drops
+(`excluded_upstreams`, `excluded_publishers`). A run refuses to start when a
+question that stores an answer binds a live-lookup-only source, and the
+directory engines drop every value the packaged directories took from
+OpenRouter or that Artificial Analysis published. The reason is decision 7
+of `docs/research/SHARED-RESEARCH-SERVICE-LANDSCAPE-2026-09-27.md`. Source prose that an answer carries
 (descriptions, abstracts, release notes, advisory summaries) is kept only
 as hashed eight-word runs, so the vetting stage can refuse a brief that
 repeats it. A title that tries to steer a reader is excluded, never
 rewritten.
+
+## Hourly model watch
+
+[`tools/watch_model_releases.py`](../watch_model_releases.py) checks the
+bindings of the hourly question `models_new_releases` once: models.dev, the
+newest Hugging Face repositories of major labs and the LiteLLM price map. It
+sends back the validators of each source's last complete read, so an
+unchanged source answers 304, which is the only "no change" that needs no
+body. A failed read is "could not check" and changes nothing; a partial read
+never counts a removal. On a material change it writes a change record under
+`<library>/model-watch/<day>/` and marks every question that reads that
+source; the daily planner answers those questions before they are due. It
+never reads a model card and makes no model call.
+
+```text
+PYTHONPATH=src:tools python tools/watch_model_releases.py \
+  --library /home/username/baltor-library/radar --authorize-network-reads --authorize-local-writes
+```
 
 ## Stages of one day
 
@@ -183,7 +211,10 @@ and [`tools/test_knowledge_radar_assets.py`](../test_knowledge_radar_assets.py).
 |---|---|
 | Research cost, volatility, delivery and refresh per question, with the rule | Implemented: typed fields; the reader refuses a delivery that breaks the rule; known-wrong checks and a removed-guard control |
 | Deliverable kinds | Implemented: skill packages with the brief and its metadata, typed tables with schemas, two decision helpers (`choose_model`, `check_support_window`) and four tools (`check_service_status`, `query_package_advisories`, `fetch_reference_rates`, `lookup_legal_entity`) |
-| A wider question list | Implemented: 61 questions, 52 with a source and 9 declared gaps with reasons |
+| A wider question list | Implemented: 65 questions, 54 with a source and 11 declared gaps with reasons, including retrieval methods with the STAIR paper as a lead |
+| Hourly checks for model releases | Implemented: the hourly question, the change-detecting watch with validators sent back over three openly licensed sources, and invalidation of the dependent questions; the schedule is proposed, not installed |
+| First demonstration: small models for structured extraction | Implemented: the question `models_structured_extraction` and the `choose_model` helper 2.0.0 over openly licensed data; the measurement and release are the demonstration's own steps |
+| Stored facts only from openly licensed sources | Implemented: the republication field, the run guard and the directory engines' exclusions, each with a known-wrong check |
 | Vetting before the context layer | Implemented: native prechecks, seed link checks, schema validation, copied-text refusal, sandbox tests with known-wrong cases, the stricter review requirement on sensitive questions. Independent review stays with the existing panel |
 | Question registry and planner | Implemented |
 | Check outcomes, time fields, "no currently validated recommendation" | Implemented and tested |
@@ -209,6 +240,10 @@ and [`tools/test_knowledge_radar_assets.py`](../test_knowledge_radar_assets.py).
   only under the step's own network authority.
 - The producer family is anthropic, because Claude wrote the generator and the assets, so reviewers come
   from another family.
+- The hourly watch reads models.dev, Hugging Face and the LiteLLM price map, not OpenRouter, whose terms
+  leave even private copying disputed.
+- The cheapest model per unit of thinking stays a declared gap until it is measured: a listed price divided
+  by a published index is neither allowed under the terms nor a measurement of thinking on a task.
 - High confidence needs two independent source engines; one source gives at most medium.
 - Seeds hold names and links only; the reader refuses a seed name that holds a number with a unit.
 - Public-service files are not edited by this component; the routes are designed in the research record.

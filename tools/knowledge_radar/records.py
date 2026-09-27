@@ -113,7 +113,10 @@ _SEED_KINDS = ("hosted_service", "open_source_project", "official_source", "stan
 _SEED_LINK_NAMES = ("documentation", "pricing", "status", "repository", "terms", "changelog")
 _CONTRACT_FIELDS = ("record_type", "engine_id", "parser_version", "access_method", "hosts", "permitted_uses",
                     "never_used", "attribution", "terms_address", "minimum_seconds_between_requests",
-                    "maximum_requests_per_run", "failure_policy")
+                    "maximum_requests_per_run", "maximum_response_bytes", "failure_policy", "republication",
+                    "excluded_upstreams", "excluded_publishers")
+#: Whether a source's facts may be stored in a served file, or may only be looked up live by the customer.
+REPUBLICATION = ("stored_facts", "live_lookup_only")
 _OBSERVATION_FIELDS = ("record_type", "key", "origin", "title", "url", "engine_id", "engine_version", "section",
                        "source_address", "licence", "licence_basis", "facts", *TIME_FIELDS)
 _FACT_VALUE = (str, int, float, bool, type(None))
@@ -455,6 +458,11 @@ class SourceContract:
     minimum_seconds_between_requests: float
     maximum_requests_per_run: int
     failure_policy: str
+    maximum_response_bytes: int = 4 * 1024 * 1024
+    republication: str = "stored_facts"
+    #: Upstream source identifiers whose values this engine drops even when its own source carries them.
+    excluded_upstreams: tuple = ()
+    excluded_publishers: tuple = ()
 
     def to_dict(self) -> dict:
         return {"record_type": CONTRACT_RECORD_TYPE, "engine_id": self.engine_id,
@@ -462,7 +470,10 @@ class SourceContract:
                 "hosts": list(self.hosts), "permitted_uses": self.permitted_uses, "never_used": self.never_used,
                 "attribution": self.attribution, "terms_address": self.terms_address,
                 "minimum_seconds_between_requests": self.minimum_seconds_between_requests,
-                "maximum_requests_per_run": self.maximum_requests_per_run, "failure_policy": self.failure_policy}
+                "maximum_requests_per_run": self.maximum_requests_per_run,
+                "maximum_response_bytes": self.maximum_response_bytes, "failure_policy": self.failure_policy,
+                "republication": self.republication, "excluded_upstreams": list(self.excluded_upstreams),
+                "excluded_publishers": list(self.excluded_publishers)}
 
 
 def read_contracts(value) -> dict:
@@ -487,6 +498,16 @@ def read_contracts(value) -> dict:
         pause = item["minimum_seconds_between_requests"]
         if type(pause) not in (int, float) or not 0 <= pause <= 60:
             refuse("radar_contract_invalid", f"{engine} minimum_seconds_between_requests is 0 to 60")
+        excluded = {}
+        for name in ("excluded_upstreams", "excluded_publishers"):
+            values = item[name]
+            if type(values) is not list or any(type(value) is not str or not value.strip() or len(value) > 80
+                                               for value in values):
+                refuse("radar_contract_invalid", f"{engine} {name} is a list of names")
+            excluded[name] = tuple(values)
+        ceiling = count(item["maximum_response_bytes"], f"{engine} maximum_response_bytes", maximum=64 * 1024 * 1024)
+        if ceiling < 1024:
+            refuse("radar_contract_invalid", f"{engine} maximum_response_bytes is at least 1024")
         contracts[engine] = SourceContract(
             engine, text_value(item["parser_version"], f"{engine} parser_version", limit=20), method, tuple(hosts),
             text_value(item["permitted_uses"], f"{engine} permitted_uses", limit=400),
@@ -494,8 +515,30 @@ def read_contracts(value) -> dict:
             text_value(item["attribution"], f"{engine} attribution", limit=300),
             https_address(item["terms_address"], f"{engine} terms_address"), float(pause),
             count(item["maximum_requests_per_run"], f"{engine} maximum_requests_per_run", maximum=500),
-            text_value(item["failure_policy"], f"{engine} failure_policy", limit=300))
+            text_value(item["failure_policy"], f"{engine} failure_policy", limit=300), ceiling,
+            member(item["republication"], f"{engine} republication", REPUBLICATION),
+            excluded["excluded_upstreams"], excluded["excluded_publishers"])
     return contracts
+
+
+def republication_findings(registry: QuestionRegistry, contracts: dict) -> list:
+    """A question that stores an answer may not bind a source whose terms allow only a live lookup.
+
+    Decision of September 27, 2026 (docs/research/SHARED-RESEARCH-SERVICE-LANDSCAPE-2026-09-27.md,
+    decision 7): stored facts come from openly licensed sources; the others are live, attributed lookups.
+    """
+    findings = []
+    for question in registry.active():
+        if not any(kind in STORED for kind in question.delivery):
+            continue
+        for binding in question.sources:
+            contract = contracts.get(binding.engine)
+            if contract is None:
+                findings.append(("radar_engine_without_contract", f"{question.id} binds {binding.engine}, which has no contract"))
+            elif contract.republication != "stored_facts":
+                findings.append(("radar_live_lookup_source_stored",
+                                 f"{question.id} would store facts from {binding.engine}, whose terms allow only a live lookup"))
+    return findings
 
 
 @dataclass(frozen=True)

@@ -14,7 +14,11 @@
    "terms_address": "https://huggingface.co/terms-of-service",
    "minimum_seconds_between_requests": 0,
    "maximum_requests_per_run": 50,
-   "failure_policy": "A read that fails is recorded as could not check, never as no change; the previous brief is not renewed. A partial collector run is recorded as partially checked."
+   "maximum_response_bytes": 4194304,
+   "failure_policy": "A read that fails is recorded as could not check, never as no change; the previous brief is not renewed. A partial collector run is recorded as partially checked.",
+   "republication": "stored_facts",
+   "excluded_upstreams": [],
+   "excluded_publishers": []
   },
   {
    "record_type": "knowledge_radar_source_contract/v1",
@@ -22,13 +26,22 @@
    "parser_version": "1.0.0",
    "access_method": "local_file",
    "hosts": [],
-   "permitted_uses": "Model names, makers, licences, parameter counts, context sizes, listed prices with their dates and published index values with their publisher, as the packaged model directory records them.",
-   "never_used": "Model card prose.",
-   "attribution": "Baltor model directory (baltor.ai/models), built from OpenRouter, Hugging Face, models.dev and published Artificial Analysis index values.",
+   "permitted_uses": "Model names, makers, licences, parameter counts, context sizes, file sizes, download counts and capability flags that the packaged directory took from Hugging Face or models.dev.",
+   "never_used": "Model card prose, and every value the directory took from OpenRouter or published by Artificial Analysis. Decision 7 of docs/research/SHARED-RESEARCH-SERVICE-LANDSCAPE-2026-09-27.md: stored facts come from openly licensed sources.",
+   "attribution": "Baltor model directory (baltor.ai/models), for the values it took from the Hugging Face Hub and models.dev.",
    "terms_address": "https://baltor.ai/models",
    "minimum_seconds_between_requests": 0,
    "maximum_requests_per_run": 50,
-   "failure_policy": "A read that fails is recorded as could not check, never as no change; the previous brief is not renewed."
+   "maximum_response_bytes": 33554432,
+   "failure_policy": "A read that fails is recorded as could not check, never as no change; the previous brief is not renewed.",
+   "republication": "stored_facts",
+   "excluded_upstreams": [
+    "openrouter",
+    "openrouter_endpoints"
+   ],
+   "excluded_publishers": [
+    "Artificial Analysis"
+   ]
   },
   {
    "record_type": "knowledge_radar_source_contract/v1",
@@ -37,12 +50,19 @@
    "access_method": "local_file",
    "hosts": [],
    "permitted_uses": "Endpoint names, interface styles, tool and structured output support and the addresses of documentation, pricing, rate limit and data policy pages.",
-   "never_used": "Policy text beyond the page addresses.",
-   "attribution": "Baltor endpoint directory (baltor.ai/endpoints), built from provider documentation and OpenRouter.",
+   "never_used": "Policy text beyond the page addresses, and every value the directory took from OpenRouter. Decision 7 of docs/research/SHARED-RESEARCH-SERVICE-LANDSCAPE-2026-09-27.md: stored facts come from openly licensed sources.",
+   "attribution": "Baltor endpoint directory (baltor.ai/endpoints), for the values it took from provider documentation.",
    "terms_address": "https://baltor.ai/endpoints",
    "minimum_seconds_between_requests": 0,
    "maximum_requests_per_run": 10,
-   "failure_policy": "A read that fails is recorded as could not check, never as no change; the previous brief is not renewed."
+   "maximum_response_bytes": 8388608,
+   "failure_policy": "A read that fails is recorded as could not check, never as no change; the previous brief is not renewed.",
+   "republication": "stored_facts",
+   "excluded_upstreams": [
+    "openrouter",
+    "openrouter_endpoints"
+   ],
+   "excluded_publishers": []
   },
   {
    "record_type": "knowledge_radar_source_contract/v1",
@@ -56,7 +76,11 @@
    "terms_address": "https://baltor.ai/directory",
    "minimum_seconds_between_requests": 0,
    "maximum_requests_per_run": 20,
-   "failure_policy": "A read that fails is recorded as could not check, never as no change; the previous brief is not renewed."
+   "maximum_response_bytes": 8388608,
+   "failure_policy": "A read that fails is recorded as could not check, never as no change; the previous brief is not renewed.",
+   "republication": "stored_facts",
+   "excluded_upstreams": [],
+   "excluded_publishers": []
   },
   {
    "record_type": "knowledge_radar_source_contract/v1",
@@ -70,7 +94,11 @@
    "terms_address": "https://baltor.ai/terms",
    "minimum_seconds_between_requests": 0,
    "maximum_requests_per_run": 20,
-   "failure_policy": "A seed whose link check fails keeps no verification date and is shown as not verified."
+   "maximum_response_bytes": 4194304,
+   "failure_policy": "A seed whose link check fails keeps no verification date and is shown as not verified.",
+   "republication": "stored_facts",
+   "excluded_upstreams": [],
+   "excluded_publishers": []
   },
   {
    "record_type": "knowledge_radar_source_contract/v1",
@@ -158,7 +186,11 @@
    "terms_address": "https://baltor.ai/terms",
    "minimum_seconds_between_requests": 0.3,
    "maximum_requests_per_run": 200,
-   "failure_policy": "A failed or refused link check leaves the seed unverified; it is never counted as resolved."
+   "maximum_response_bytes": 4194304,
+   "failure_policy": "A failed or refused link check leaves the seed unverified; it is never counted as resolved.",
+   "republication": "stored_facts",
+   "excluded_upstreams": [],
+   "excluded_publishers": []
   },
   {
    "record_type": "knowledge_radar_source_contract/v1",
@@ -174,7 +206,11 @@
    "terms_address": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service",
    "minimum_seconds_between_requests": 2.5,
    "maximum_requests_per_run": 60,
-   "failure_policy": "A read that fails is recorded as could not check, never as no change; the previous brief is not renewed. A 404, 410, 401 or 403 answer is recorded as source disappeared or access changed and needs a person to review the binding."
+   "maximum_response_bytes": 4194304,
+   "failure_policy": "A read that fails is recorded as could not check, never as no change; the previous brief is not renewed. A 404, 410, 401 or 403 answer is recorded as source disappeared or access changed and needs a person to review the binding.",
+   "republication": "stored_facts",
+   "excluded_upstreams": [],
+   "excluded_publishers": []
   },
   {
    "record_type": "knowledge_radar_source_contract/v1",
@@ -190,7 +226,11 @@
    "terms_address": "https://github.com/github/advisory-database/blob/main/LICENSE.md",
    "minimum_seconds_between_requests": 1.0,
    "maximum_requests_per_run": 10,
-   "failure_policy": "A read that fails is recorded as could not check, never as no change; the previous brief is not renewed."
+   "maximum_response_bytes": 4194304,
+   "failure_policy": "A read that fails is recorded as could not check, never as no change; the previous brief is not renewed.",
+   "republication": "stored_facts",
+   "excluded_upstreams": [],
+   "excluded_publishers": []
   },
   {
    "record_type": "knowledge_radar_source_contract/v1",
@@ -206,7 +246,11 @@
    "terms_address": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service",
    "minimum_seconds_between_requests": 0.5,
    "maximum_requests_per_run": 40,
-   "failure_policy": "A read that fails is recorded as could not check, never as no change; the previous brief is not renewed. A 404, 410, 401 or 403 answer is recorded as source disappeared or access changed and needs a person to review the binding."
+   "maximum_response_bytes": 4194304,
+   "failure_policy": "A read that fails is recorded as could not check, never as no change; the previous brief is not renewed. A 404, 410, 401 or 403 answer is recorded as source disappeared or access changed and needs a person to review the binding.",
+   "republication": "stored_facts",
+   "excluded_upstreams": [],
+   "excluded_publishers": []
   },
   {
    "record_type": "knowledge_radar_source_contract/v1",
@@ -222,7 +266,11 @@
    "terms_address": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service",
    "minimum_seconds_between_requests": 0.5,
    "maximum_requests_per_run": 12,
-   "failure_policy": "A read that fails is recorded as could not check, never as no change; the previous brief is not renewed."
+   "maximum_response_bytes": 4194304,
+   "failure_policy": "A read that fails is recorded as could not check, never as no change; the previous brief is not renewed.",
+   "republication": "stored_facts",
+   "excluded_upstreams": [],
+   "excluded_publishers": []
   },
   {
    "record_type": "knowledge_radar_source_contract/v1",
@@ -238,7 +286,11 @@
    "terms_address": "https://huggingface.co/terms-of-service",
    "minimum_seconds_between_requests": 1.0,
    "maximum_requests_per_run": 20,
-   "failure_policy": "A read that fails is recorded as could not check, never as no change; the previous brief is not renewed. A 404, 410, 401 or 403 answer is recorded as source disappeared or access changed and needs a person to review the binding."
+   "maximum_response_bytes": 4194304,
+   "failure_policy": "A read that fails is recorded as could not check, never as no change; the previous brief is not renewed. A 404, 410, 401 or 403 answer is recorded as source disappeared or access changed and needs a person to review the binding.",
+   "republication": "stored_facts",
+   "excluded_upstreams": [],
+   "excluded_publishers": []
   },
   {
    "record_type": "knowledge_radar_source_contract/v1",
@@ -254,7 +306,11 @@
    "terms_address": "https://info.arxiv.org/help/api/tou.html",
    "minimum_seconds_between_requests": 3.0,
    "maximum_requests_per_run": 10,
-   "failure_policy": "A read that fails is recorded as could not check, never as no change; the previous brief is not renewed."
+   "maximum_response_bytes": 4194304,
+   "failure_policy": "A read that fails is recorded as could not check, never as no change; the previous brief is not renewed.",
+   "republication": "stored_facts",
+   "excluded_upstreams": [],
+   "excluded_publishers": []
   },
   {
    "record_type": "knowledge_radar_source_contract/v1",
@@ -270,7 +326,11 @@
    "terms_address": "https://help.openalex.org/access/pricing/",
    "minimum_seconds_between_requests": 1.0,
    "maximum_requests_per_run": 10,
-   "failure_policy": "A read that fails is recorded as could not check, never as no change; the previous brief is not renewed. Requests stay inside the free daily allowance; the run spends nothing."
+   "maximum_response_bytes": 4194304,
+   "failure_policy": "A read that fails is recorded as could not check, never as no change; the previous brief is not renewed. Requests stay inside the free daily allowance; the run spends nothing.",
+   "republication": "stored_facts",
+   "excluded_upstreams": [],
+   "excluded_publishers": []
   },
   {
    "record_type": "knowledge_radar_source_contract/v1",
@@ -286,7 +346,11 @@
    "terms_address": "https://github.com/endoflife-date/endoflife.date/blob/main/LICENSE",
    "minimum_seconds_between_requests": 0.5,
    "maximum_requests_per_run": 40,
-   "failure_policy": "A read that fails is recorded as could not check, never as no change; the previous brief is not renewed. A 404, 410, 401 or 403 answer is recorded as source disappeared or access changed and needs a person to review the binding."
+   "maximum_response_bytes": 4194304,
+   "failure_policy": "A read that fails is recorded as could not check, never as no change; the previous brief is not renewed. A 404, 410, 401 or 403 answer is recorded as source disappeared or access changed and needs a person to review the binding.",
+   "republication": "stored_facts",
+   "excluded_upstreams": [],
+   "excluded_publishers": []
   },
   {
    "record_type": "knowledge_radar_source_contract/v1",
@@ -302,7 +366,11 @@
    "terms_address": "https://www.federalregister.gov/reader-aids/policy/privacy",
    "minimum_seconds_between_requests": 1.0,
    "maximum_requests_per_run": 6,
-   "failure_policy": "A read that fails is recorded as could not check, never as no change; the previous brief is not renewed."
+   "maximum_response_bytes": 4194304,
+   "failure_policy": "A read that fails is recorded as could not check, never as no change; the previous brief is not renewed.",
+   "republication": "stored_facts",
+   "excluded_upstreams": [],
+   "excluded_publishers": []
   },
   {
    "record_type": "knowledge_radar_source_contract/v1",
@@ -312,13 +380,17 @@
    "hosts": [
     "openrouter.ai"
    ],
-   "permitted_uses": "Model identifiers, names, the time each was added, context sizes, listed prices and announced end dates.",
-   "never_used": "Model descriptions; they are kept in memory only as a guard against copying.",
+   "permitted_uses": "A live lookup only: identifiers and fingerprints for private change detection. Nothing from the listing is stored in a served file.",
+   "never_used": "Stored in any brief, table or served file: the terms of August 31, 2026, section 7, forbid software that copies information from the service and uses that develop a competing service. Decision 7 of docs/research/SHARED-RESEARCH-SERVICE-LANDSCAPE-2026-09-27.md: stored facts come from openly licensed sources.",
    "attribution": "OpenRouter model listing.",
    "terms_address": "https://openrouter.ai/terms",
    "minimum_seconds_between_requests": 1.0,
    "maximum_requests_per_run": 4,
-   "failure_policy": "A read that fails is recorded as could not check, never as no change; the previous brief is not renewed. The listing sends no validators, so each check reads it whole."
+   "maximum_response_bytes": 8388608,
+   "failure_policy": "A read that fails is recorded as could not check, never as no change; the previous brief is not renewed. The listing sends no validators, so each check reads it whole.",
+   "republication": "live_lookup_only",
+   "excluded_upstreams": [],
+   "excluded_publishers": []
   },
   {
    "record_type": "knowledge_radar_source_contract/v1",
@@ -334,7 +406,55 @@
    "terms_address": "https://huggingface.co/terms-of-service",
    "minimum_seconds_between_requests": 1.0,
    "maximum_requests_per_run": 20,
-   "failure_policy": "A read that fails is recorded as could not check, never as no change; the previous brief is not renewed. A publisher whose listing fails is named, and the check is partial."
+   "maximum_response_bytes": 4194304,
+   "failure_policy": "A read that fails is recorded as could not check, never as no change; the previous brief is not renewed. A publisher whose listing fails is named, and the check is partial.",
+   "republication": "stored_facts",
+   "excluded_upstreams": [],
+   "excluded_publishers": []
+  },
+  {
+   "record_type": "knowledge_radar_source_contract/v1",
+   "engine_id": "models_dev_catalogue",
+   "parser_version": "1.0.0",
+   "access_method": "https_get",
+   "hosts": [
+    "models.dev"
+   ],
+   "permitted_uses": "Model and provider identifiers, capability flags (tool calling, structured output, reasoning, open weights), context and output limits, listed prices, release and update dates. The catalogue is MIT licensed.",
+   "never_used": "Model descriptions, and the entries models.dev keeps for the OpenRouter provider. Decision 7 of docs/research/SHARED-RESEARCH-SERVICE-LANDSCAPE-2026-09-27.md: stored facts come from openly licensed sources.",
+   "attribution": "models.dev (SST), MIT licence.",
+   "terms_address": "https://github.com/sst/models.dev",
+   "minimum_seconds_between_requests": 1.0,
+   "maximum_requests_per_run": 4,
+   "maximum_response_bytes": 16777216,
+   "failure_policy": "A read that fails is recorded as could not check, never as no change; the previous brief is not renewed. The catalogue sends an ETag, so the hourly watch reads it again only when it changed.",
+   "republication": "stored_facts",
+   "excluded_upstreams": [
+    "openrouter"
+   ],
+   "excluded_publishers": []
+  },
+  {
+   "record_type": "knowledge_radar_source_contract/v1",
+   "engine_id": "litellm_prices",
+   "parser_version": "1.0.0",
+   "access_method": "https_get",
+   "hosts": [
+    "raw.githubusercontent.com"
+   ],
+   "permitted_uses": "Model keys, providers, per-token prices, context and output limits, capability flags and retirement dates from the LiteLLM price map, which is MIT licensed outside the enterprise folder.",
+   "never_used": "Notes text, and the entries for the OpenRouter provider. Decision 7 of docs/research/SHARED-RESEARCH-SERVICE-LANDSCAPE-2026-09-27.md: stored facts come from openly licensed sources.",
+   "attribution": "LiteLLM model price map (BerriAI), MIT licence.",
+   "terms_address": "https://github.com/BerriAI/litellm/blob/main/LICENSE",
+   "minimum_seconds_between_requests": 1.0,
+   "maximum_requests_per_run": 4,
+   "maximum_response_bytes": 16777216,
+   "failure_policy": "A read that fails is recorded as could not check, never as no change; the previous brief is not renewed. The file sends an ETag, so the hourly watch reads it again only when it changed.",
+   "republication": "stored_facts",
+   "excluded_upstreams": [
+    "openrouter"
+   ],
+   "excluded_publishers": []
   }
  ]
 }

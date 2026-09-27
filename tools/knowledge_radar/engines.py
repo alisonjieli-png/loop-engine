@@ -25,8 +25,10 @@ knowledge_radar_source/v1
     ├── openalex_works       the OpenAlex works listing
     ├── endoflife_calendar   the endoflife.date release and support calendar
     ├── federal_register     the FederalRegister.gov documents interface
-    ├── openrouter_models    the OpenRouter model listing, with prices and announced end dates
-    └── huggingface_new_models  the newest model repositories of named publishers
+    ├── openrouter_models    the OpenRouter model listing: a live lookup only, never stored (its terms)
+    ├── huggingface_new_models  the newest model repositories of named publishers
+    ├── models_dev_catalogue  models.dev (MIT): hosted models with capabilities, limits and prices
+    └── litellm_prices       the LiteLLM price map (MIT): prices, limits and retirement dates
 ```
 
 An engine is an adapter the radar's Practitioner run uses. It is not a graph
@@ -43,8 +45,9 @@ from typing import Protocol
 from .records import Observation, RadarQuestion, SourceBinding, SourceContract
 
 EDGE_VERSION = "knowledge_radar_source/v1"
-OK, PARTIAL, FAILED, GONE = "ok", "partial", "failed", "gone"
-ANSWER_STATUSES = (OK, PARTIAL, FAILED, GONE)
+OK, PARTIAL, FAILED, GONE, NOT_MODIFIED = "ok", "partial", "failed", "gone", "not_modified"
+#: not_modified: the source answered 304 to the validators of the last complete read, so nothing changed.
+ANSWER_STATUSES = (OK, PARTIAL, FAILED, GONE, NOT_MODIFIED)
 MAXIMUM_TITLE = 200
 
 # Source text that tries to steer a reader is data, never an instruction. The patterns are the
@@ -91,6 +94,9 @@ class EngineAnswer:
     requests: int = 0
     guard_texts: tuple = ()
     excluded: tuple = ()
+    #: False when the observations are not the whole current list (some scopes answered 304 or failed),
+    #: so a missing entry must not be read as a removal.
+    complete: bool = True
 
 
 class RadarSourceEngine(Protocol):

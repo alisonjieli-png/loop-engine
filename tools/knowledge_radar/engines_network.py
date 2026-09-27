@@ -39,6 +39,7 @@ from loop_engine.core.library_ingestion.request_log import (
 from .engines import (
     FAILED,
     GONE,
+    NOT_MODIFIED,
     OK,
     PARTIAL,
     EngineAnswer,
@@ -91,6 +92,10 @@ class RadarNetwork:
     used: dict = field(default_factory=dict)
     last: dict = field(default_factory=dict)
     transports: dict = field(default_factory=dict)
+    #: Validators of earlier complete reads, by request key, sent back so an unchanged source answers 304.
+    conditional: dict = field(default_factory=dict)
+    #: Validators the sources sent in this run, by request key, for the next run to send back.
+    observed_validators: dict = field(default_factory=dict)
 
     def _admit(self, engine_id: str) -> None:
         contract = self.contracts[engine_id]
@@ -110,10 +115,16 @@ class RadarNetwork:
         self._admit(engine_id)
         transport = self.transports.get((engine_id, accept))
         if transport is None:
-            transport = HttpsGetTransport(contract.hosts, self.budget, self.log, timeout_seconds=30.0,
-                                          maximum_bytes=4 * 1024 * 1024, accept=accept)
+            transport = HttpsGetTransport(contract.hosts, self.budget, self.log, timeout_seconds=60.0,
+                                          maximum_bytes=contract.maximum_response_bytes, accept=accept)
             self.transports[(engine_id, accept)] = transport
-        return transport.get(host, path, query)
+        key = request_key(host, path, query)
+        response = transport.get(host, path, query, validators=self.conditional.get(key))
+        if response.status == 200 and (response.etag or response.last_modified):
+            self.observed_validators[key] = {"etag": response.etag, "last_modified": response.last_modified}
+        elif response.status == 304 and key in self.conditional:
+            self.observed_validators[key] = dict(self.conditional[key])
+        return response
 
     def gh_get(self, engine_id: str, path: str):
         contract = self.contracts[engine_id]
@@ -140,6 +151,11 @@ class RadarNetwork:
         return response.status, response.body
 
 
+def request_key(host: str, path: str, query=None) -> str:
+    """One stable name for a request, so validators of one read are sent back only to the same request."""
+    return host + path + ("?" + urlencode(sorted((str(key), str(value)) for key, value in query.items())) if query else "")
+
+
 def _resolve_since(text: str, today: str) -> str:
     return _SINCE.sub(lambda match: (date.fromisoformat(today) - timedelta(days=int(match.group(1)))).isoformat(), text)
 
@@ -152,7 +168,9 @@ def _json(body: bytes):
 
 
 def _status_answer(status, what: str) -> EngineAnswer:
-    """The answer for a read that did not return a usable page. Nothing here is ever "no change"."""
+    """The answer for a read that did not return a usable page. Only a 304 to sent validators means "no change"."""
+    if status == 304:
+        return EngineAnswer(NOT_MODIFIED, f"{what} answered 304: unchanged since the last complete read")
     if status in (404, 410):
         return EngineAnswer(GONE, f"{what} answered {status}: the source is gone or moved")
     if status in (401, 403):
@@ -775,7 +793,7 @@ class HuggingFaceNewModels:
         per_author = parameter(context, "per_author", 10, kind=int)
         if not 1 <= per_author <= 30 or any(not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,95}", item) for item in authors):
             raise RadarEngineError("radar_parameter_invalid", "authors are Hugging Face account names; per_author is 1 to 30")
-        rows, failures, gone, requests = [], [], [], 0
+        rows, failures, gone, unchanged, requests = [], [], [], [], 0
         for author in authors:
             query = {"author": author, "sort": "createdAt", "direction": -1, "limit": per_author}
             try:
@@ -784,6 +802,9 @@ class HuggingFaceNewModels:
                 failures.append(f"{author}: {error}")
                 continue
             requests += 1
+            if response.status == 304:
+                unchanged.append(author)
+                continue
             data = _json(response.body) if response.status == 200 else None
             if not isinstance(data, list):
                 (gone if response.status in (404, 410, 401, 403) else failures).append(f"{author}: answered {response.status}")
@@ -805,14 +826,186 @@ class HuggingFaceNewModels:
                            "pipeline_tag": text_fact(item.get("pipeline_tag")),
                            "gated": item.get("gated") if isinstance(item.get("gated"), bool) else bool(item.get("gated"))},
                     event_at=iso_time(item.get("createdAt")), source_published_at=iso_time(item.get("lastModified"))))
-        if not rows:
-            return EngineAnswer(GONE if gone and not failures else FAILED, "; ".join(gone + failures) or "no model read",
+        problems = gone + failures
+        if not rows and unchanged and not problems:
+            return EngineAnswer(NOT_MODIFIED, "every publisher answered 304", requests=requests)
+        if not rows and not unchanged:
+            return EngineAnswer(GONE if gone and not failures else FAILED, "; ".join(problems) or "no model read",
                                 requests=requests)
         chosen = ranked(rows, "event_at")
-        problems = gone + failures
-        return EngineAnswer(PARTIAL if problems else OK, "; ".join(problems), tuple(chosen[:limit_of(context)]), requests)
+        return EngineAnswer(PARTIAL if problems else OK, "; ".join(problems), tuple(chosen[:limit_of(context)]),
+                            requests, complete=not (problems or unchanged))
+
+
+_MODEL_ORIGIN = re.compile(r"[^a-z0-9._-]+")
+
+
+def model_origin(identifier: str) -> str:
+    """The common origin of a model across hosts: its name without the host or publisher prefix."""
+    return "model:" + _MODEL_ORIGIN.sub("-", identifier.rsplit("/", 1)[-1].lower()).strip("-")
+
+
+def _price(value):
+    return round(float(value), 6) if type(value) in (int, float) and value >= 0 else None
+
+
+def _cheapest_per_origin(rows: list) -> list:
+    """Keep one row per model origin: the lowest listed output price, then input price, then key."""
+    best = {}
+    for row in rows:
+        key = (row.facts.get("output_price") is None, row.facts.get("output_price") or 0,
+               row.facts.get("input_price") or 0, row.key)
+        if row.origin not in best or key < best[row.origin][0]:
+            best[row.origin] = (key, row)
+    return [value[1] for value in best.values()]
+
+
+def _capability_filters(context: ReadContext, facts: dict) -> bool:
+    """True when a row meets the binding's declared capability, context and price filters."""
+    for flag in parameter(context, "require", [], kind=list):
+        if facts.get(str(flag)) is not True:
+            return False
+    maximum = parameter(context, "max_output_price", None, kind=(int, float))
+    if maximum is not None and (facts.get("output_price") is None or facts["output_price"] > maximum):
+        return False
+    minimum = parameter(context, "min_context", None, kind=int)
+    if minimum is not None and (not isinstance(facts.get("context"), int) or facts["context"] < minimum):
+        return False
+    if parameter(context, "open_weights_only", False, kind=bool) and facts.get("open_weights") is not True:
+        return False
+    return True
+
+
+class ModelsDevCatalogue:
+    """models.dev (MIT): one catalogue of hosted models with capabilities, limits, prices and dates."""
+
+    engine_id, engine_version = "models_dev_catalogue", "1.0.0"
+    material_facts = ("output_price", "input_price", "context", "structured_output", "tool_calling")
+
+    def read(self, context: ReadContext) -> EngineAnswer:
+        try:
+            response = context.network.get(self.engine_id, "models.dev", "/api.json")
+        except (RadarEngineError, RequestCeilingReached, OSError) as error:
+            return EngineAnswer(FAILED, str(error))
+        data = _json(response.body) if response.status == 200 else None
+        if not isinstance(data, dict):
+            answer = _status_answer(response.status, "the models.dev catalogue")
+            return EngineAnswer(answer.status, answer.reason, requests=1)
+        excluded = {name.lower() for name in context.contract.excluded_upstreams}
+        wanted = {str(name).lower() for name in parameter(context, "providers", [], kind=list)}
+        rows, guards = [], []
+        for provider_id, provider in sorted(data.items()):
+            if not isinstance(provider, dict) or not isinstance(provider.get("models"), dict):
+                continue
+            if provider_id.lower() in excluded or (wanted and provider_id.lower() not in wanted):
+                continue
+            documentation = provider.get("doc") if isinstance(provider.get("doc"), str) else ""
+            try:
+                address = https_address(documentation, "provider documentation")
+            except ValueError:
+                address = "https://models.dev"
+            for model_id, model in sorted(provider["models"].items()):
+                if not isinstance(model, dict):
+                    continue
+                title, reason = clean_title(model.get("name") or model_id)
+                if reason:
+                    continue
+                if isinstance(model.get("description"), str):
+                    guards.append(model["description"])
+                limit = model.get("limit") if isinstance(model.get("limit"), dict) else {}
+                cost = model.get("cost") if isinstance(model.get("cost"), dict) else {}
+                facts = {"provider": text_fact(provider.get("name")) or provider_id, "model_id": text_fact(model_id),
+                         "family": text_fact(model.get("family")),
+                         "tool_calling": model.get("tool_call") if isinstance(model.get("tool_call"), bool) else None,
+                         "structured_output": model.get("structured_output")
+                         if isinstance(model.get("structured_output"), bool) else None,
+                         "reasoning": model.get("reasoning") if isinstance(model.get("reasoning"), bool) else None,
+                         "open_weights": model.get("open_weights") if isinstance(model.get("open_weights"), bool) else None,
+                         "context": number(limit.get("context")), "max_output": number(limit.get("output")),
+                         "input_price": _price(cost.get("input")), "output_price": _price(cost.get("output"))}
+                if not _capability_filters(context, facts):
+                    continue
+                rows.append(observation(
+                    context, self, key=f"models.dev:{provider_id}/{model_id}", origin=model_origin(str(model_id)),
+                    title=f"{title} ({facts['provider']})", url=address, source_address="https://models.dev/api.json",
+                    licence_basis="models.dev (MIT) lists the model; the model's own terms apply", facts=facts,
+                    event_at=iso_time(model.get("release_date")), source_published_at=iso_time(model.get("last_updated"))))
+        if parameter(context, "one_per_model", True, kind=bool):
+            rows = _cheapest_per_origin(rows)
+        rank = parameter(context, "rank_by", "output_price", kind=str)
+        chosen = ranked(rows, rank, descending=not parameter(context, "ascending", rank == "output_price", kind=bool))
+        return EngineAnswer(OK, "" if rows else "no model matched the declared filter",
+                            tuple(chosen[:limit_of(context)]), 1, tuple(guards[:2000]))
+
+
+LITELLM_PATH = "/BerriAI/litellm/main/model_prices_and_context_window.json"
+LITELLM_PAGE = "https://github.com/BerriAI/litellm/blob/main/model_prices_and_context_window.json"
+
+
+class LiteLLMPrices:
+    """The LiteLLM price map (MIT): per-token prices, limits, capability flags and retirement dates."""
+
+    engine_id, engine_version = "litellm_prices", "1.0.0"
+    material_facts = ("output_price", "input_price", "deprecation_date", "structured_output")
+    FLAGS = {"supports_function_calling": "tool_calling", "supports_response_schema": "structured_output",
+             "supports_reasoning": "reasoning"}
+
+    def read(self, context: ReadContext) -> EngineAnswer:
+        try:
+            response = context.network.get(self.engine_id, "raw.githubusercontent.com", LITELLM_PATH)
+        except (RadarEngineError, RequestCeilingReached, OSError) as error:
+            return EngineAnswer(FAILED, str(error))
+        data = _json(response.body) if response.status == 200 else None
+        if not isinstance(data, dict):
+            answer = _status_answer(response.status, "the LiteLLM price map")
+            return EngineAnswer(answer.status, answer.reason, requests=1)
+        excluded = {name.lower() for name in context.contract.excluded_upstreams}
+        mode = parameter(context, "mode", "chat", kind=str)
+        deprecating = parameter(context, "only_deprecating", False, kind=bool)
+        rows, guards = [], []
+        for key, row in sorted(data.items()):
+            if key == "sample_spec" or not isinstance(row, dict) or (mode and row.get("mode") != mode):
+                continue
+            provider = str(row.get("litellm_provider") or "")
+            if provider.lower() in excluded or key.split("/", 1)[0].lower() in excluded:
+                continue
+            metadata = row.get("metadata") if isinstance(row.get("metadata"), dict) else {}
+            if isinstance(metadata.get("notes"), str):
+                guards.append(metadata["notes"])
+            retires = row.get("deprecation_date") if isinstance(row.get("deprecation_date"), str) else None
+            if deprecating and not retires:
+                continue
+            title, reason = clean_title(key)
+            if reason:
+                continue
+            per_token_in, per_token_out = row.get("input_cost_per_token"), row.get("output_cost_per_token")
+            facts = {"provider": text_fact(provider), "model_id": text_fact(key),
+                     "context": number(row.get("max_input_tokens")), "max_output": number(row.get("max_output_tokens")),
+                     "input_price": _price(per_token_in * 1_000_000) if type(per_token_in) in (int, float) else None,
+                     "output_price": _price(per_token_out * 1_000_000) if type(per_token_out) in (int, float) else None,
+                     "deprecation_date": retires}
+            facts.update({name: row.get(flag) if isinstance(row.get(flag), bool) else None
+                          for flag, name in self.FLAGS.items()})
+            if not _capability_filters(context, facts):
+                continue
+            source = row.get("source") if isinstance(row.get("source"), str) else ""
+            try:
+                address = https_address(source, "price source")
+            except ValueError:
+                address = LITELLM_PAGE
+            rows.append(observation(
+                context, self, key="litellm:" + key, origin=model_origin(key), title=title, url=address,
+                source_address=LITELLM_PAGE, facts=facts,
+                licence_basis="the LiteLLM price map (MIT) lists the model; the model's own terms apply",
+                effective_until=iso_time(retires)))
+        if parameter(context, "one_per_model", not deprecating, kind=bool):
+            rows = _cheapest_per_origin(rows)
+        rank = parameter(context, "rank_by", "effective_until" if deprecating else "output_price", kind=str)
+        chosen = ranked(rows, rank, descending=False)
+        return EngineAnswer(OK, "" if rows else "no model matched the declared filter",
+                            tuple(chosen[:limit_of(context)]), 1, tuple(guards[:2000]))
 
 
 ENGINES = (GitHubSearch(), GitHubAdvisories(), GitHubReleases(), OwnerDirectory(), HuggingFaceModels(),
            ArxivListing(), OpenAlexWorks(), EndOfLifeCalendar(), FederalRegister(), OpenRouterModels(),
-           HuggingFaceNewModels())
+           HuggingFaceNewModels(), ModelsDevCatalogue(), LiteLLMPrices())

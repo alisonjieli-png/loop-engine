@@ -35,17 +35,25 @@ Three later additions the same day shaped the design:
 3. A principle: "Research once, validate for defined conditions, distribute
    many times, and repeat only the work invalidated by a meaningful change",
    with honest answer states, four freshness times per source, invalidation
-   relationships, request coalescing and three data layers. A separate
-   researcher is checking the competitor claims of that analysis in
-   `docs/research/SHARED-RESEARCH-SERVICE-LANDSCAPE-2026-09-27.md`; this
-   record does not repeat that work.
+   relationships, request coalescing and three data layers. The verified
+   landscape of that analysis is the companion record,
+   `docs/research/SHARED-RESEARCH-SERVICE-LANDSCAPE-2026-09-27.md` (on `main` since September 27, 2026; link it
+   when both records share a tree). This record does not repeat its
+   competitor checks and follows its decisions.
+4. Hourly checks for model releases: "Some things such as model drops, brand
+   new models, Gemini 4, etc may need hourly checks since these are super
+   important". The hourly run only detects change; the expensive work runs
+   when a change is found.
+5. Retrieval methods as a question, with the STAIR paper (arXiv 2609.03874)
+   as its first lead. A separate review is verifying that paper and writing a
+   research intake protocol.
 
 ## What exists and how the design reuses it
 
 | Existing piece | How the design uses it |
 |---|---|
 | Codex's source discovery collector (private state, eight source families, four runs a day, twenty requests a run, no model calls) | Read only, through the `collector_state` engine: Hugging Face daily papers and blog, the official Model Context Protocol registry, skills and plugins. The radar never writes to it. |
-| The model directory (2,145 models and 190 endpoints, rebuilt daily by `model-directory.yml`) | The `model_directory` and `endpoint_directory` engines read the packaged data: prices with dates, published index values, licences, sizes, quantizations. |
+| The model directory (2,145 models and 190 endpoints, rebuilt daily by `model-directory.yml`) | The `model_directory` and `endpoint_directory` engines read the packaged data (licences, sizes, quantizations, download counts, capability flags and documentation addresses) and drop every value the directory took from OpenRouter or that Artificial Analysis published (see "Terms of the model data sources"). |
 | The directory of protocol servers and agent interfaces (36,231 rows, rebuilt daily by `mcp-directory.yml`) | The `mcp_directory` engine reads names, categories, licences and update days. Descriptions are read only to prove a brief does not repeat them. |
 | The library ingestion component (bounded HTTPS transport, request budget, request log, gh reader, sandbox commands) | Every network engine uses its transport, budget and log. The radar keeps its own read-only gh allow list, because the ingestion reader does not allow search, advisories or releases. Package tests run through its bubblewrap command with no network. |
 | The native candidate format and its preparation factory | Every deliverable is a `harness_candidate_batch_proposals/v2` proposal; the factory writes the candidate catalogue and pins cited repository files to the committed revision. |
@@ -154,6 +162,30 @@ native, no expiry, how-to rather than which), Guru (expiry model, private),
 the lifecycle data sets (dated facts, no advice), the model comparison data
 (no validity date) and the change trackers (one kind of fact each).
 
+## Terms of the model data sources
+
+The companion landscape record read the terms of the model data sources on
+September 27, 2026. OpenRouter's terms of August 31, 2026 (section 7) forbid
+software that copies information from the service and uses that develop a
+competing service; Artificial Analysis grants its website content for
+personal, noncommercial use and requires attribution for its free
+interface. Its decision 7 follows: facts stored in served files come from
+openly licensed sources (models.dev and the LiteLLM price map, both MIT;
+Portkey's models, MIT; the Arena leaderboard dataset and the Epoch AI
+Benchmarking Hub, both CC BY 4.0), and the others are live, attributed
+lookups until either company gives written permission.
+
+The radar follows it as typed fields, not prose. Each source contract says
+whether its facts may be stored (`republication`), and a run refuses to
+start when a question that stores an answer binds a source whose terms allow
+only a live lookup. The model and endpoint directory engines drop every value
+their packaged data took from OpenRouter, and every value published by
+Artificial Analysis, even while the directory still carries them. The model
+catalogue engines read models.dev and the LiteLLM price map directly and skip
+their OpenRouter entries. Questions that depended on published index values
+are declared gaps until an openly licensed engine (Arena or Epoch AI) is
+built.
+
 ## What is different about the radar
 
 The design differs from these analogues in six ways.
@@ -229,12 +261,40 @@ a benefit is the one to serve: if condition C does not beat A on accepted
 choices or cost, the radar must shrink or change the packet rather than add
 more context.
 
+### The demonstration sequence
+
+The companion landscape record chose small-model selection for structured
+extraction as the first demonstration, ahead of retrieval and reranking
+(second) and document extraction (third): its trigger already fires daily,
+its acceptance check is exact and needs no graphics processor, and its model
+calls fit the authority already granted for Ollama Cloud. The radar's part:
+
+```text
+model watch (hourly)            a model appears or a price or capability changes in models.dev or
+                                the LiteLLM price map -> models_structured_extraction is invalidated
+daily radar run                 the question is answered again: a dated card, a typed table of
+                                candidates with structured output, lowest listed price first
+choose_model helper (2.0.0)     the customer's harness shortlists candidates under its own
+                                constraints (context, tool calling, price ceilings, token sizes)
+acceptance check (the           field accuracy of at least 0.95 on held-out records and valid JSON
+demonstration's own package)    after at most one repair, on the customer's own route
+```
+
+The radar never claims that a listed capability works: Ollama's own
+documentation has said since April 22, 2026 that its cloud does not support
+structured outputs, and the brief says so. The measurement, the release of
+the tested extraction package and its revocation are the demonstration's
+steps, recorded in the landscape record, and they need model authority that
+this pass did not use.
+
 ### The cheapest model per unit of thinking, as an evaluation product
 
-The owner asked for "the cheapest model per unit of thinking per task". The
-first version ships an honest proxy: the listed output price divided by the
-published intelligence index, with a helper that applies the caller's
-constraints, and it says it is a proxy. The product is a measured frontier:
+The owner asked for "the cheapest model per unit of thinking per task". A
+proxy that divides a listed price by a published index is not available
+under the terms above, and it would not measure thinking on a task anyway.
+The question is therefore a declared gap until the measurement exists; the
+structured extraction demonstration measures it first for one task family.
+The product is a measured frontier:
 
 ```text
 configuration record: model, provider, version, reasoning setting, context strategy, tools, validators,
@@ -277,17 +337,19 @@ It needs model authority and an evaluation budget before any run.
 ## Questions declared on September 27, 2026
 
 The registry, [`questions-v1.json`](../../tools/knowledge_radar/questions-v1.json),
-declares 61 questions: 52 with a source today and 9 declared gaps, each with
+declares 65 questions: 54 with a source today and 11 declared gaps, each with
 its reason.
 
 | Question | Area | Minutes, sources | Volatility, refresh | Delivery | Sensitivity | Status |
 |---|---|---|---|---|---|---|
 | New AI and machine learning papers (`papers_ai_ml_daily`) | papers | 20, 3 | days, daily | brief | general | active |
 | New and most cited papers across the sciences (`papers_across_sciences`) | papers | 45, 9 | weeks, weekly | brief | general | active |
-| Model leaders on published indices (`benchmarks_model_indices`) | benchmarks | 20, 4 | days, daily | brief, data file | general | active |
+| Model leaders on published indices (`benchmarks_model_indices`) | benchmarks | 20, 4 | days, daily | brief, data file | general | declared gap |
 | New benchmarks and evaluation suites (`benchmarks_new_evaluation_suites`) | benchmarks | 30, 3 | weeks, weekly | brief | general | active |
 | Reasoning and decision models (`models_reasoning_decision`) | models | 30, 4 | days, daily | brief, data file | general | active |
-| Cheapest model per unit of published thinking (`models_cheapest_thinking`) | models | 40, 5 | days, daily | brief, data file, decision helper | general | active |
+| New model releases and availability (`models_new_releases`) | models | 15, 10 | hours, hourly | brief, data file | general | active |
+| Small models for structured extraction (`models_structured_extraction`) | models | 45, 6 | days, daily | brief, data file, decision helper | general | active |
+| Cheapest model per unit of published thinking (`models_cheapest_thinking`) | models | 40, 5 | days, daily | brief, data file | general | declared gap |
 | Coding models (`models_coding`) | models | 25, 4 | days, daily | brief, data file | general | active |
 | Small open-weight models (`models_small_open`) | models | 25, 3 | weeks, weekly | brief, data file | general | active |
 | Models for laptops and CPU-only machines (`models_cpu_laptop`) | models | 30, 3 | weeks, weekly | brief, data file | general | active |
@@ -298,6 +360,7 @@ its reason.
 | Text classification models (`models_text_classification`) | models | 20, 2 | weeks, weekly | brief | general | active |
 | Entity extraction, linking and resolution (`models_entity_extraction_linking`) | models | 35, 3 | weeks, weekly | brief | general | active |
 | Time series forecasting (`models_time_series_forecasting`) | models | 30, 3 | weeks, weekly | brief | general | active |
+| Retrieval methods (`methods_retrieval`) | pipelines | 45, 5 | weeks, weekly | brief | general | active |
 | Document extraction pipelines (`pipelines_document_extraction`) | pipelines | 40, 4 | weeks, weekly | brief | general | active |
 | Web scraping and crawling (`pipelines_web_scraping`) | pipelines | 40, 4 | weeks, weekly | brief | general | active |
 | Browser automation for agents (`pipelines_browser_automation`) | pipelines | 30, 3 | weeks, weekly | brief | general | active |
@@ -324,7 +387,7 @@ its reason.
 | Image generation interfaces (`infra_image_generation_apis`) | infrastructure | 40, 5 | weeks, weekly | brief | general | active |
 | Developer service status (`infra_service_status`) | infrastructure | 2, 1 | hours, daily | tool | general | active |
 | Runtime, framework and database support calendar (`calendar_runtime_support`) | calendars | 20, 6 | weeks, weekly | brief, data file, decision helper | general | active |
-| Model and interface deprecation dates (`calendar_model_deprecations`) | calendars | 30, 8 | weeks, weekly | brief, data file | general | declared gap |
+| Model and interface deprecation dates (`calendar_model_deprecations`) | calendars | 30, 8 | weeks, daily | brief, data file | general | active |
 | Conference and competition deadlines (`calendar_conference_deadlines`) | calendars | 20, 6 | weeks, weekly | brief, data file | general | declared gap |
 | Recent critical and high security advisories (`security_recent_advisories`) | security | 30, 3 | days, daily | brief, tool | security | active |
 | Malicious package reports (`security_malicious_packages`) | security | 20, 2 | days, daily | brief | security | active |
@@ -343,6 +406,7 @@ its reason.
 | Coding harness releases (`harness_releases`) | tools | 25, 8 | days, daily | brief | general | active |
 | Local inference hardware fit (`hardware_local_inference_fit`) | models | 30, 4 | weeks, weekly | brief, data file | general | declared gap |
 | Public data source availability (`data_public_sources`) | pipelines | 45, 6 | weeks, weekly | brief | general | declared gap |
+| Public contract awards and opportunities (`markets_government_contracts`) | markets | 40, 3 | days, daily | brief, data file | financial | declared gap |
 
 ## How the owner's additions map onto the design
 
@@ -360,8 +424,79 @@ its reason.
 | Honest answer states | Approved result, candidate, needs research, needs local evaluation, blocked by policy, no eligible option established |
 | Three data layers and coalescing | Public shared, organization-private and case-private layers, with only the public layer pooled; one research job per question, constraints and evidence version |
 | Suggested sources | arXiv, OpenAlex, Hugging Face Hub, models.dev, GitHub releases, the official protocol server registry, OSV, FederalRegister.gov and eCFR (whose web rendition is not the official legal edition), SEC EDGAR, SAM.gov and USAspending, and GLEIF |
+| Hourly model releases | Cheap change detection every hour with validators sent back; expensive work only on a material change, through recorded invalidations |
+| Stored model facts | Only from openly licensed sources; a run refuses to store facts from a source whose terms allow only a live lookup |
 | Durable scheduling | A timer starts work; stages with done markers, a journal and stable work identities give durability; DBOS (named in roadmap step S-6.75) and Temporal are candidate engines for a later durable scheduler behind a typed edge |
 | Proof before scale | One complete loop on a few recurring questions compared with a harness doing its own research, and five readiness demonstrations: a resumed campaign, a duplicate trigger, a steering source, an expired claim and a revoked release |
+
+## Hourly change detection for model releases
+
+The question `models_new_releases` refreshes hourly. Its run is cheap
+change detection only, following the landscape record's decision 2 (the
+plain engine first):
+
+- The watch reads each watched source once: the models.dev catalogue, the
+  newest model repositories of major labs on Hugging Face (Google, OpenAI,
+  Meta, Mistral, Qwen, DeepSeek, xAI, Microsoft and NVIDIA) and the LiteLLM
+  price map with its retirement dates.
+- It sends back the validators of the last complete read (`If-None-Match`
+  and `If-Modified-Since`). A 304 answer is a "no change" the source itself
+  confirmed. Nothing else counts as no change: a failed read is "could not
+  check", the snapshot and its success time stay as they were, and nothing is
+  invalidated.
+- It keys every model by its identity and compares a fingerprint of its
+  material facts (prices, limits, capability flags, retirement date, name and
+  release date); a download count is not material.
+- It keeps four freshness times per source: last attempted retrieval, last
+  successful retrieval, last material change, and last successful evaluation
+  (written by the daily run).
+- On a material change it writes a change record and marks for
+  re-evaluation every question that reads the changed source; the next daily
+  run answers those questions before their cadence is due. Reading model
+  cards, comparing models and updating decision cards and tables happen only
+  then.
+
+Proposed schedule: minute 7 of every hour, outside the heavy windows of the
+daily library slots. A server-side scheduled worker is preferred over one
+workstation: a scheduled workflow that keeps the watch state in the Actions
+cache, in the shape of the directory refresh workflows, or a scheduled
+machine on the service host. The fallback is a user timer on the operator
+workstation with the same command. Nothing is installed by this record.
+
+OpenRouter's model listing would detect new hosted models sooner, but its
+terms leave even private copying disputed, so the watch does not read it;
+its engine remains available as a live lookup only, and a run refuses to
+store its facts.
+
+## Engine slots proposed for two stages
+
+The landscape record proposes two engine slots under delivery package D-19,
+and the radar's code fills their first engines:
+
+- `source_change_detection`: the plain engine is the model watch (validators
+  sent back, catalogue differences keyed by identity, feed cursors, and
+  normalised text hashes still to come). Optional engines: Firecrawl change
+  tracking, changedetection.io and Parallel snapshot monitors.
+- `claim_extraction`: the deterministic engine is the radar's metadata
+  extraction (identifiers, titles, dates, licences and counts with their
+  source addresses); the model-led engine to add under model authority is
+  LangExtract, which maps each extraction to a source span. A claim without a
+  source is refused.
+
+Both slots belong in `src/loop_engine/data/engine_slots.yaml` with their
+conformance kits; this record proposes them and does not add them.
+
+## Alignment with the research intake protocol
+
+A separate review is writing `docs/guides/research-intake-protocol.md` with a
+machine-readable record (claim table, verification status, decision,
+experiment and time fields). The radar's claim record uses the same names
+for the five time fields the protocol names: `event_at`,
+`source_published_at`, `observed_at`, `last_verified_at` and `review_after`.
+It adds `effective_from` and `effective_until` for dated windows (a support
+window or a rule's effective day). Where the protocol keeps one verification
+status, the radar keeps six vetting dimensions; its decision card is the
+brief's `decision` field; it has no experiment record yet.
 
 ## Serving design
 
@@ -408,16 +543,25 @@ feeds should carry only what the teaser shows.
 
 ## The first end-to-end demonstration
 
-The analysis proposes document extraction as the first capability family; the
-separate researcher will confirm or replace that choice. The demonstration to
-design toward: an upstream document parsing project publishes a release; one
-shared job investigates it; a candidate helper is tested on a frozen set of
-documents with known-wrong cases; one immutable release is published; two
-different harnesses retrieve it without repeating the browsing and both pass
-local acceptance; a later bad release is revoked through the withdrawal path,
-and both harnesses see the revocation.
+The analysis first proposed document extraction; the companion landscape
+record replaced it with small-model selection for structured extraction
+(see "The first end-to-end demonstration" under the evaluation section), with retrieval and
+reranking second and document extraction third. The sequence stays the same:
+an upstream change triggers one shared job, a candidate is tested with
+known-wrong cases, one immutable release is published, two different
+harnesses retrieve it without repeating the browsing and both pass local
+acceptance, and a later bad release is revoked through the withdrawal path.
+The landscape record's real example of a bad release is a directory fact
+that said Ollama Cloud supports structured output.
 
 ## Open design work
+
+- An openly licensed index engine (the Arena leaderboard dataset or the Epoch
+  AI Benchmarking Hub) for the questions that are gaps under the terms above.
+- The daily research watch sending back the validators it already records;
+  the shared transport now accepts them.
+- The hourly watch installed on a server-side schedule, with its state kept
+  between runs.
 
 - Independent review of the day's catalogue and its inclusion in a daily
   release.

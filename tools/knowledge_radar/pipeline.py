@@ -54,6 +54,7 @@ from .records import (
     read_contracts,
     read_observation,
     read_registry,
+    republication_findings,
 )
 
 RUN_RECORD_TYPE = "knowledge_radar_run/v1"
@@ -67,7 +68,8 @@ REGISTRY = Path("tools/knowledge_radar/questions-v1.json")
 CONTRACTS = Path("tools/knowledge_radar/source-contracts-v1.json")
 NETWORK_ENGINES = frozenset(("github_search", "github_advisories", "github_releases", "owner_directory",
                              "huggingface_models", "arxiv_listing", "openalex_works", "endoflife_calendar",
-                             "federal_register", "openrouter_models", "huggingface_new_models"))
+                             "federal_register", "openrouter_models", "huggingface_new_models",
+                             "models_dev_catalogue", "litellm_prices"))
 
 
 class RadarRunError(RuntimeError):
@@ -612,6 +614,9 @@ def run(request: RunRequest) -> dict:
     repository = Path(request.repository).resolve()
     registry = read_registry(read_json(repository / REGISTRY))
     contracts = read_contracts(read_json(repository / CONTRACTS))
+    findings = republication_findings(registry, contracts)
+    if findings:
+        raise RadarRunError(findings[0][0], findings[0][1])
     revision = revision_of(repository)
     options = {"network_allowed": request.network_allowed, "maximum_requests": request.maximum_requests,
                "only": list(request.only), "link_checks": request.link_checks, "sandbox_tests": request.sandbox_tests,

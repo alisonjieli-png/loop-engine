@@ -1,16 +1,19 @@
-"""Choose models from the radar's dated model table under the caller's constraints.
+"""Shortlist models for a structured extraction step from the radar's dated table, under the caller's constraints.
 
 Standard library only. It reads the table this package carries
 (references/models-table.json), never the network, and writes nothing.
 
-    python scripts/choose_model.py '{"needs_tool_calling": true, "maximum_output_price": 2}'
+    python scripts/choose_model.py '{"expected_input_tokens": 1500, "expected_output_tokens": 200, "count": 3}'
 
-Rule: among models that meet every constraint, the lowest listed output price
-per published intelligence index point wins; ties go to the lower output
-price, then the name. A value the table does not know counts as not meeting a
-constraint that needs it. The answer is built from published prices and
-published index values: it is not a cost per accepted task on the caller's
-own work, and it says so.
+Rule: among models that meet every constraint, the lowest estimated listed
+cost per call wins (listed input price times the expected input tokens plus
+listed output price times the expected output tokens); ties go to the lower
+output price, then the name. A value the table does not know counts as not
+meeting a constraint that needs it, and a model whose retirement date has
+passed is never chosen. The table holds listed prices and capability flags
+from openly licensed catalogues (models.dev and the LiteLLM price map): the
+answer is a shortlist for an acceptance check on the caller's own route, not
+a measured cost per accepted task, and it says so.
 """
 from __future__ import annotations
 
@@ -20,14 +23,17 @@ from datetime import date, datetime, timezone
 from pathlib import Path
 
 TABLE = Path(__file__).resolve().parent.parent / "references" / "models-table.json"
-RESULT = "knowledge_radar_choose_model_result/v1"
+RESULT = "knowledge_radar_choose_model_result/v2"
 ERROR = "knowledge_radar_tool_error/v1"
-FIELDS = {"needs_tool_calling": bool, "needs_structured_output": bool, "needs_reasoning": bool,
-          "minimum_context": int, "maximum_output_price": (int, float), "minimum_intelligence_index": (int, float),
-          "open_weights_only": bool, "allowed_licences": list, "count": int, "today": str}
-DEFAULTS = {"needs_tool_calling": True, "needs_structured_output": False, "needs_reasoning": False,
-            "minimum_context": 0, "maximum_output_price": None, "minimum_intelligence_index": None,
-            "open_weights_only": False, "allowed_licences": None, "count": 3, "today": None}
+FIELDS = {"needs_structured_output": bool, "needs_tool_calling": bool, "needs_reasoning": bool,
+          "minimum_context": int, "maximum_output_price": (int, float), "maximum_cost_per_call": (int, float),
+          "expected_input_tokens": int, "expected_output_tokens": int, "open_weights_only": bool,
+          "allowed_providers": list, "count": int, "today": str}
+DEFAULTS = {"needs_structured_output": True, "needs_tool_calling": False, "needs_reasoning": False,
+            "minimum_context": 0, "maximum_output_price": None, "maximum_cost_per_call": None,
+            "expected_input_tokens": 1000, "expected_output_tokens": 300, "open_weights_only": False,
+            "allowed_providers": None, "count": 5, "today": None}
+NULLABLE = ("maximum_output_price", "maximum_cost_per_call", "allowed_providers", "today")
 
 
 class RequestInvalid(ValueError):
@@ -44,21 +50,23 @@ def check_request(request) -> dict:
     value = dict(DEFAULTS)
     for name, item in request.items():
         kind = FIELDS[name]
-        if item is None and name in ("maximum_output_price", "minimum_intelligence_index", "allowed_licences", "today"):
+        if item is None and name in NULLABLE:
             continue
         if isinstance(item, bool) and kind is not bool:
             raise RequestInvalid(f"{name} has the wrong type")
         if not isinstance(item, kind):
             raise RequestInvalid(f"{name} has the wrong type")
         value[name] = item
-    if not 1 <= value["count"] <= 10:
-        raise RequestInvalid("count is 1 to 10")
-    if value["minimum_context"] < 0:
-        raise RequestInvalid("minimum_context is zero or more")
-    if value["maximum_output_price"] is not None and value["maximum_output_price"] < 0:
-        raise RequestInvalid("maximum_output_price is zero or more")
-    if value["allowed_licences"] is not None and any(type(item) is not str for item in value["allowed_licences"]):
-        raise RequestInvalid("allowed_licences is a list of licence names")
+    if not 1 <= value["count"] <= 20:
+        raise RequestInvalid("count is 1 to 20")
+    for name in ("minimum_context", "expected_input_tokens", "expected_output_tokens"):
+        if value[name] < 0:
+            raise RequestInvalid(f"{name} is zero or more")
+    for name in ("maximum_output_price", "maximum_cost_per_call"):
+        if value[name] is not None and value[name] < 0:
+            raise RequestInvalid(f"{name} is zero or more")
+    if value["allowed_providers"] is not None and any(type(item) is not str for item in value["allowed_providers"]):
+        raise RequestInvalid("allowed_providers is a list of provider names")
     if value["today"] is not None:
         try:
             date.fromisoformat(value["today"])
@@ -73,28 +81,39 @@ def check_table(table) -> None:
         raise TableInvalid("the model table is not a knowledge_radar_table/v1 record")
 
 
-def _reject(row: dict, need: dict):
+def cost_per_call(row: dict, need: dict):
+    """Listed US dollars for one call of the expected size, or None when a price is unknown."""
+    output = row.get("output_price")
+    given = row.get("input_price")
+    if not isinstance(output, (int, float)) or isinstance(output, bool):
+        return None
+    if not isinstance(given, (int, float)) or isinstance(given, bool):
+        return None
+    return round((given * need["expected_input_tokens"] + output * need["expected_output_tokens"]) / 1_000_000, 8)
+
+
+def _reject(row: dict, need: dict, day: str):
     """The first reason a row fails the constraints, or None when it meets them all."""
-    for flag, name in (("needs_tool_calling", "tool_calling"), ("needs_structured_output", "structured_output"),
+    for flag, name in (("needs_structured_output", "structured_output"), ("needs_tool_calling", "tool_calling"),
                        ("needs_reasoning", "reasoning")):
         if need[flag] and row.get(name) is not True:
             return f"{name.replace('_', ' ')} not listed"
+    retires = row.get("deprecation_date")
+    if isinstance(retires, str) and retires[:10] <= day:
+        return "retirement date reached"
     if need["open_weights_only"] and row.get("open_weights") is not True:
         return "open weights not listed"
     if need["minimum_context"] and not (isinstance(row.get("context"), int) and row["context"] >= need["minimum_context"]):
         return "context unknown or too small"
-    points = row.get("price_per_intelligence_point")
-    price = row.get("output_price")
-    if not isinstance(points, (int, float)) or not isinstance(price, (int, float)):
-        return "price or index unknown"
-    if need["maximum_output_price"] is not None and price > need["maximum_output_price"]:
+    if need["allowed_providers"] is not None and row.get("provider") not in need["allowed_providers"]:
+        return "provider not allowed"
+    cost = cost_per_call(row, need)
+    if cost is None:
+        return "price unknown"
+    if need["maximum_output_price"] is not None and row["output_price"] > need["maximum_output_price"]:
         return "output price above the maximum"
-    index = row.get("intelligence_index")
-    if need["minimum_intelligence_index"] is not None and not (isinstance(index, (int, float))
-                                                               and index >= need["minimum_intelligence_index"]):
-        return "intelligence index unknown or below the minimum"
-    if need["allowed_licences"] is not None and row.get("licence") not in need["allowed_licences"]:
-        return "licence not allowed"
+    if need["maximum_cost_per_call"] is not None and cost > need["maximum_cost_per_call"]:
+        return "cost per call above the maximum"
     return None
 
 
@@ -103,9 +122,11 @@ def run(request, table, today: "str | None" = None) -> dict:
     check_table(table)
     day = need["today"] or today or datetime.now(timezone.utc).strftime("%Y-%m-%d")
     result = {"record_type": RESULT, "as_of": table.get("as_of"), "valid_until": table["valid_until"], "on": day,
-              "rule": "lowest listed output price per published intelligence index point; ties by output price, then name",
-              "basis": "published list prices and published index values; not a cost per accepted task on your work",
-              "chosen": [], "rejected": {}}
+              "rule": "lowest estimated listed cost per call; ties by output price, then name",
+              "basis": "listed prices and capability flags from openly licensed catalogues; a shortlist for the "
+                       "acceptance check on your own route, not a measured cost per accepted task",
+              "expected_input_tokens": need["expected_input_tokens"],
+              "expected_output_tokens": need["expected_output_tokens"], "chosen": [], "rejected": {}}
     if date.fromisoformat(day) > date.fromisoformat(table["valid_until"]):
         result["state"] = "table_expired"
         result["note"] = "The table is past its valid-until day; search Baltor for a newer radar table."
@@ -114,16 +135,16 @@ def run(request, table, today: "str | None" = None) -> dict:
     for row in table["rows"]:
         if not isinstance(row, dict):
             continue
-        reason = _reject(row, need)
+        reason = _reject(row, need, day)
         if reason:
             result["rejected"][reason] = result["rejected"].get(reason, 0) + 1
         else:
-            eligible.append(row)
-    eligible.sort(key=lambda row: (row["price_per_intelligence_point"], row["output_price"], str(row.get("title"))))
-    result["chosen"] = [{name: row.get(name) for name in ("title", "url", "output_price", "input_price", "price_provider",
-                                                          "price_as_of", "intelligence_index",
-                                                          "price_per_intelligence_point", "context", "licence")}
-                        for row in eligible[:need["count"]]]
+            eligible.append((cost_per_call(row, need), row))
+    eligible.sort(key=lambda pair: (pair[0], pair[1]["output_price"], str(pair[1].get("title"))))
+    result["chosen"] = [{**{name: row.get(name) for name in ("title", "url", "provider", "model_id", "input_price",
+                                                            "output_price", "context", "structured_output",
+                                                            "tool_calling", "deprecation_date")},
+                         "estimated_cost_per_call": cost} for cost, row in eligible[:need["count"]]]
     result["state"] = "chosen" if result["chosen"] else "no_eligible_option"
     return result
 

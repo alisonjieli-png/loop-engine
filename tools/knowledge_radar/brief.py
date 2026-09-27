@@ -27,7 +27,7 @@ import json
 from dataclasses import dataclass
 from datetime import date
 
-from .engines import FAILED, GONE, OK, PARTIAL
+from .engines import FAILED, GONE, NOT_MODIFIED, OK, PARTIAL
 from .records import (
     BRIEF_RECORD_TYPE,
     CHECKED_OUTCOMES,
@@ -79,6 +79,14 @@ SHOWN_FACTS = {
                           ("expiration_date", "end date")),
     "huggingface_new_models": (("publisher", "publisher"), ("pipeline_tag", "task"), ("downloads", "downloads"),
                                ("likes", "likes"), ("gated", "gated")),
+    "models_dev_catalogue": (("provider", "provider"), ("output_price", "output price per million tokens (USD)"),
+                             ("input_price", "input price per million tokens (USD)"), ("context", "context tokens"),
+                             ("structured_output", "structured output"), ("tool_calling", "tool calling"),
+                             ("open_weights", "open weights")),
+    "litellm_prices": (("provider", "provider"), ("output_price", "output price per million tokens (USD)"),
+                       ("input_price", "input price per million tokens (USD)"), ("context", "context tokens"),
+                       ("deprecation_date", "retirement date"), ("structured_output", "structured output"),
+                       ("tool_calling", "tool calling")),
 }
 RANK_WORDS = {"source_published_at": "last change, newest first", "event_at": "date, newest first",
               "effective_until": "end date, soonest first", "stars": "stars, most first",
@@ -89,7 +97,8 @@ RANK_WORDS = {"source_published_at": "last change, newest first", "event_at": "d
               "released": "release date, newest first", "updated": "last update, newest first",
               "servers": "number of servers, most first", "cited_by": "citations, most first",
               "likes": "likes, most first",
-              "directory_position": "position in the directory listing", "models_listed": "models listed, most first"}
+              "directory_position": "position in the directory listing", "models_listed": "models listed, most first",
+              "output_price": "listed output price per million tokens, lowest first"}
 
 
 @dataclass(frozen=True)
@@ -110,6 +119,9 @@ class Section:
 def check_outcome(answer, previous: "SourceCheck | None", material_facts) -> "tuple[str, tuple]":
     """The outcome of one binding's read, with its change lines. A failed read is never "no change"."""
     if answer.status == FAILED:
+        return "could_not_check", ()
+    if answer.status == NOT_MODIFIED:
+        # The daily run sends no validators, so a 304 here proves nothing about today's list.
         return "could_not_check", ()
     if answer.status == GONE:
         return "source_disappeared_or_access_changed", ()
@@ -167,7 +179,8 @@ DEFAULT_RANK = {"collector_state": "source_published_at", "model_directory": "do
                 "endpoint_directory": "models_listed", "github_search": "stars", "github_advisories": "event_at",
                 "github_releases": "event_at", "owner_directory": "", "arxiv_listing": "event_at",
                 "openalex_works": "cited_by", "endoflife_calendar": "effective_until", "federal_register": "event_at",
-                "curated_seed": "", "openrouter_models": "event_at", "huggingface_new_models": "event_at"}
+                "curated_seed": "", "openrouter_models": "event_at", "huggingface_new_models": "event_at",
+                "models_dev_catalogue": "output_price", "litellm_prices": "output_price"}
 HUGGING_FACE_SORTS = {"downloads": "downloads", "likes": "likes", "trendingScore": "trending_score",
                       "lastModified": "source_published_at", "createdAt": "event_at"}
 
@@ -182,6 +195,8 @@ def rank_fact(binding) -> str:
     if binding.engine == "mcp_directory" and parameters.get("mode") == "category_counts":
         return "servers"
     if binding.engine == "openrouter_models" and parameters.get("only_expiring"):
+        return "effective_until"
+    if binding.engine == "litellm_prices" and parameters.get("only_deprecating"):
         return "effective_until"
     return DEFAULT_RANK.get(binding.engine, "")
 
@@ -282,17 +297,16 @@ def default_decision(question: RadarQuestion, current) -> str:
     """The decision a declared helper makes with its default constraints, or the explicit absence of one."""
     helper = question.assets.get("decision_helper")
     if helper == "choose_model":
-        eligible = [item for item in current if item.engine_id == "model_directory"
-                    and isinstance(item.facts.get("price_per_intelligence_point"), (int, float))
-                    and item.facts.get("tool_calling") is True]
+        eligible = [item for item in current if item.facts.get("structured_output") is True
+                    and isinstance(item.facts.get("output_price"), (int, float))
+                    and not (item.facts.get("deprecation_date") and str(item.facts["deprecation_date"]) <= current_day(current))]
         if eligible:
-            best = min(eligible, key=lambda item: (item.facts["price_per_intelligence_point"], item.key))
-            return (f"With the helper's default constraints (tool calling required, a published intelligence index "
-                    f"and a listed price), the lowest listed output price per index point is {best.title} "
-                    f"({_format(best.facts.get('output_price'))} US dollars per million output tokens through "
-                    f"{best.facts.get('price_provider') or 'the listed provider'}, intelligence index "
-                    f"{_format(best.facts.get('intelligence_index'))}), read {_day(best.last_verified_at)}. Run the "
-                    f"helper with the step's own constraints before relying on it.")
+            best = min(eligible, key=lambda item: (item.facts["output_price"], item.facts.get("input_price") or 0, item.key))
+            return (f"Shortlist, not a measured result: with the helper's default constraints (structured output "
+                    f"required), the lowest listed output price is {best.title} ({_format(best.facts['output_price'])} "
+                    f"US dollars per million output tokens), read {_day(best.last_verified_at)}. Run the helper with "
+                    f"the step's own constraints, then the acceptance check on the harness's own route, before "
+                    f"relying on any candidate.")
     if helper == "check_support_window":
         soon = sorted((item for item in current if item.engine_id == "endoflife_calendar" and item.effective_until
                        and item.facts.get("maintained") and _day(item.effective_until) >= current_day(current)),

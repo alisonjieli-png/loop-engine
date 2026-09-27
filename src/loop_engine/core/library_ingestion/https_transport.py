@@ -54,6 +54,9 @@ class HttpsResponse:
     status: "int | None"
     body: bytes
     retry_after: "float | None" = None
+    #: The validators the source sent, so a later read can ask whether anything changed (a 304 answer).
+    etag: "str | None" = None
+    last_modified: "str | None" = None
 
 
 class _NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -83,29 +86,33 @@ class HttpsGetTransport:
         self.accept = accept
         self._opener = urllib.request.build_opener(_NoRedirect)
 
-    def get(self, host: str, path: str, query: "dict | None" = None) -> HttpsResponse:
+    def get(self, host: str, path: str, query: "dict | None" = None, *,
+            validators: "dict | None" = None) -> HttpsResponse:
+        """One GET. ``validators`` (``etag`` and ``last_modified`` from an earlier answer) make it conditional:
+        a source that has not changed answers 304 with no body, and the answer says so."""
         if host not in self.hosts:
             raise HostNotDeclared(f"{host} is not a declared host of this run")
         if not path.startswith("/") or ".." in path.split("/"):
             raise HostNotDeclared("a request path is absolute within its host and has no parent step")
         target = urlunsplit((HTTPS_SCHEME, host, path, urlencode(query or {}), ""))
-        response = self._send(host, target)
+        conditions = _conditions(validators)
+        response = self._send(host, target, conditions)
         if response.status == 429 and response.retry_after is not None:
             self.budget.pause(response.retry_after + 1.0, f"{host} asked to retry later")
-            response = self._send(host, target)
+            response = self._send(host, target, conditions)
         return response
 
-    def _send(self, host: str, target: str) -> HttpsResponse:
+    def _send(self, host: str, target: str, conditions: "dict | None" = None) -> HttpsResponse:
         self.budget.admit()
         started, clock = now_utc(), time.monotonic()
         request = urllib.request.Request(target, method="GET", headers={
-            "User-Agent": _USER_AGENT, "Accept": self.accept})
-        status, body, retry, error_class = None, None, None, ""
+            "User-Agent": _USER_AGENT, "Accept": self.accept, **(conditions or {})})
+        status, body, retry, error_class, headers = None, None, None, "", None
         try:
             with self._opener.open(request, timeout=self.timeout_seconds) as answer:
-                status, body = answer.status, answer.read(self.maximum_bytes + 1)
+                status, body, headers = answer.status, answer.read(self.maximum_bytes + 1), answer.headers
         except urllib.error.HTTPError as error:
-            status, retry = error.code, _retry_after(error.headers)
+            status, retry, headers = error.code, _retry_after(error.headers), error.headers
             try:
                 body = error.read(self.maximum_bytes + 1)
             except OSError:
@@ -117,11 +124,28 @@ class HttpsGetTransport:
             body, error_class, status = None, "response_too_large", None
         self.log.record(RequestObservation(self.transport, host, target, status, body, started, elapsed,
                                            outcome_for(status), error_class=error_class))
-        return HttpsResponse(status, body or b"", retry)
+        return HttpsResponse(status, body or b"", retry, _header(headers, "ETag"), _header(headers, "Last-Modified"))
+
+
+def _conditions(validators) -> dict:
+    """The conditional request headers for the validators of an earlier answer; nothing else is sent."""
+    if not isinstance(validators, dict):
+        return {}
+    conditions = {}
+    for key, header in (("etag", "If-None-Match"), ("last_modified", "If-Modified-Since")):
+        value = validators.get(key)
+        if isinstance(value, str) and value and len(value) <= 200 and "\n" not in value and "\r" not in value:
+            conditions[header] = value
+    return conditions
+
+
+def _header(headers, name: str) -> "str | None":
+    value = headers.get(name) if headers is not None else None
+    return value if isinstance(value, str) and value and len(value) <= 200 else None
 
 
 def outcome_for(status: "int | None") -> str:
-    """The recorded outcome of one answer: ok, not_found, rate_limited, http_error or transport_error."""
+    """The recorded outcome of one answer: ok, not_modified, not_found, rate_limited, http_error or transport_error."""
     if status is None:
         return "transport_error"
-    return {200: "ok", 404: "not_found", 429: "rate_limited"}.get(status, "http_error")
+    return {200: "ok", 304: "not_modified", 404: "not_found", 429: "rate_limited"}.get(status, "http_error")

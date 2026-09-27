@@ -1,32 +1,37 @@
 ---
 name: radar-choose-model
-description: Choose the model with the lowest listed output price per published intelligence index point that meets your constraints (tool calling, structured output, reasoning, context size, price ceiling, licence), from the dated model table this package carries. Use when a harness must pick a model under a budget and wants a reproducible choice from dated data. It reads only its own files and makes no network call.
+description: Shortlist the models that openly licensed catalogues (models.dev and the LiteLLM price map) mark as supporting structured output, cheapest estimated cost per call first, under your constraints (tool calling, reasoning, context size, price ceilings, providers), from the dated table this package carries. Use when a step extracts typed fields from text and should try the cheapest candidates first; then run your own acceptance check on your own route. It reads only its own files and makes no network call.
 license: MIT
 metadata:
-  asset_version: "1.0.0"
+  asset_version: "2.0.0"
   data_file: "references/models-table.json"
 ---
 
-# Choose a model from the dated radar table
+# Shortlist models for structured extraction from the dated radar table
 
 ## What it returns
 
-The models that meet every constraint you give, ordered by the listed output
-price per published intelligence index point, lowest first. Ties go to the
-lower output price, then to the name. The answer names the table's as-of and
-valid-until days. After the valid-until day the helper refuses to choose and
-answers `table_expired`, because an old table must not look current.
+The models that meet every constraint you give, ordered by the estimated
+listed cost of one call: the listed input price times your expected input
+tokens plus the listed output price times your expected output tokens. Ties
+go to the lower output price, then to the name. The answer names the table's
+as-of and valid-until days. After the valid-until day the helper refuses to
+choose and answers `table_expired`, because an old table must not look
+current.
 
-The rule uses published list prices and published index values. It is not a
-cost per accepted task on your own work. Check the chosen model against the
-step's own acceptance test before relying on it.
+This is a shortlist, not a result. A catalogue that says a route supports
+structured output has not shown that the route honours your schema: Ollama's
+own documentation has said since April 22, 2026 that its cloud does not
+support structured outputs. Run your acceptance check (for example field
+accuracy of at least 0.95 on held-out records and valid JSON after at most
+one repair) on your own route before relying on any candidate.
 
 ## How to call it
 
 Pass one JSON object as the only argument, or `-` to read it from standard input:
 
 ```text
-python scripts/choose_model.py '{"needs_tool_calling": true, "needs_structured_output": true, "minimum_context": 100000, "maximum_output_price": 2, "count": 3}'
+python scripts/choose_model.py '{"needs_tool_calling": true, "minimum_context": 32000, "expected_input_tokens": 1500, "expected_output_tokens": 200, "count": 3}'
 ```
 
 Every field is optional. The fields and their defaults are in
@@ -35,14 +40,15 @@ Every field is optional. The fields and their defaults are in
 ## Output fields
 
 `state` is `chosen`, `no_eligible_option` or `table_expired`. `chosen` lists
-each model's title, address, output and input price in US dollars per
-million tokens, price provider and price date, intelligence index, price per
-index point, context size and licence. `rejected` counts the models left out,
-by reason. The full contract is in
+each model's title, address, provider, model identifier, input and output
+price in US dollars per million tokens, context size, capability flags,
+retirement date and estimated cost per call. `rejected` counts the models
+left out, by reason. The full contract is in
 [contracts/output.schema.json](contracts/output.schema.json).
 
-A value the table does not know never counts as support: a model whose tool
-calling is unknown is not chosen when tool calling is required.
+A value the table does not know never counts as support: a model whose
+structured output support is unknown is not chosen when it is required. A
+model whose retirement date has passed is never chosen.
 
 ## Effects
 
@@ -52,14 +58,15 @@ writes nothing.
 
 ## Source and attribution
 
-The table is built daily by the Baltor knowledge radar from the Baltor model
-directory, which records OpenRouter prices with their dates and Artificial
-Analysis index values as published. Each row keeps its address and dates.
+The table is built daily by the Baltor knowledge radar from models.dev (MIT)
+and the LiteLLM price map (MIT). Each row keeps its address and dates.
+Values from OpenRouter and Artificial Analysis are not in the table, because
+their terms do not allow storing them in a served file.
 
 ## Limits
 
 - Prices change often; the table is valid only until its valid-until day.
-- Index values measure general ability, not your task.
+- Listed prices are not a measured cost per accepted task.
 - Reasoning effort settings and their cost are not in the table.
 
 ## How to check it

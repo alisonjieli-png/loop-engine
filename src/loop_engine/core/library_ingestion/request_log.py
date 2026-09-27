@@ -25,7 +25,7 @@ from .record_rules import bytes_digest, canonical_digest, now_utc
 NETWORK_REQUEST_RECORD_TYPE = "library_network_request/v1"
 PAUSE_RECORD_TYPE = "library_request_pause/v1"
 TRANSPORTS = ("gh_api", "https_get")
-OUTCOMES = ("ok", "not_found", "http_error", "transport_error", "rate_limited")
+OUTCOMES = ("ok", "not_modified", "not_found", "http_error", "transport_error", "rate_limited")
 
 
 class RequestCeilingReached(RuntimeError):
