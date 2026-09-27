@@ -18,7 +18,7 @@ import hashlib
 import json
 from datetime import date
 
-from .records import PLAN_RECORD_TYPE, REFRESH_DAYS, STORED
+from .records import ACTIVE, PLAN_RECORD_TYPE, REFRESH_DAYS, STORED
 
 LOCAL_SIGNAL_ENGINES = ("collector_state", "model_directory", "mcp_directory", "endpoint_directory")
 
@@ -54,7 +54,7 @@ def plan(registry, state: dict, as_of: str, *, evidence: "dict | None" = None, d
     for question in registry.questions:
         if only and question.id not in only:
             continue
-        if question.status != "active":
+        if question.status != ACTIVE:
             deferred.append({"question_id": question.id, "reason": "declared_gap", "detail": question.gap_reason})
             continue
         last = (state.get(question.id) or {}).get("last_built_as_of")

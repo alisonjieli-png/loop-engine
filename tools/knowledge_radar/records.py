@@ -40,6 +40,7 @@ import re
 from dataclasses import dataclass, field
 from datetime import date, timedelta
 
+from loop_engine.core.library_ingestion.https_transport import HTTPS_SCHEME
 from loop_engine.core.library_ingestion.record_rules import (
     LibraryRecordError,
     count,
@@ -71,12 +72,17 @@ VOLATILITIES = ("hours", "days", "weeks", "months")
 REFRESHES = ("hourly", "daily", "weekly", "monthly")
 REFRESH_DAYS = {"hourly": 0, "daily": 1, "weekly": 7, "monthly": 30}
 DELIVERIES = ("brief", "data_file", "decision_helper", "tool")
+BRIEF, DATA_FILE, DECISION_HELPER, TOOL = DELIVERIES
 STORED = frozenset(("brief", "data_file", "decision_helper"))
 STATUSES = ("active", "declared_gap")
+ACTIVE, DECLARED_GAP = STATUSES
 #: The outcome of checking one source binding. A failed read is never "no change".
 CHECK_OUTCOMES = ("checked_no_relevant_change", "checked_material_change", "partially_checked",
                   "could_not_check", "source_disappeared_or_access_changed")
-CHECKED_OUTCOMES = frozenset(("checked_no_relevant_change", "checked_material_change"))
+CHECKED_NO_CHANGE, CHECKED_CHANGE, PARTIALLY_CHECKED, COULD_NOT_CHECK, SOURCE_GONE = CHECK_OUTCOMES
+CHECKED_OUTCOMES = frozenset((CHECKED_NO_CHANGE, CHECKED_CHANGE))
+#: Outcomes of a binding that produced no claims this run: its earlier claims are carried, never renewed.
+UNREAD_OUTCOMES = frozenset((COULD_NOT_CHECK, SOURCE_GONE))
 #: Why the planner selected a question for a run.
 PLAN_REASONS = ("first_run", "overdue", "changed_source", "demand", "exploration", "operator_rerun")
 CONFIDENCE = ("high", "medium", "low")
@@ -98,7 +104,7 @@ _ENGINE_ID = re.compile(r"[a-z][a-z0-9_]{1,40}\Z")
 _ASSET_ID = re.compile(r"[a-z][a-z0-9_]{1,40}\Z")
 _DAY = re.compile(r"\d{4}-\d{2}-\d{2}\Z")
 _TIME = re.compile(r"\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z)?\Z")
-_HTTPS = re.compile(r"https://[a-z0-9.-]+\.[a-z]{2,}(?:[/?#][^\s<>\"'`]*)?\Z", re.IGNORECASE)
+_HTTPS = re.compile(re.escape(HTTPS_SCHEME) + r"://[a-z0-9.-]+\.[a-z]{2,}(?:[/?#][^\s<>\"'`]*)?\Z", re.IGNORECASE)
 _NUMBER_BESIDE_UNIT = re.compile(r"\d+\s*(?:%|\$|usd|gb|mb|ms|per\b|/)", re.IGNORECASE)
 _QUESTION_FIELDS = ("record_type", "id", "question", "title", "area", "status", "gap_reason", "audience",
                     "constraints", "baseline", "acceptable_evidence", "intended_output", "purpose",
@@ -280,7 +286,7 @@ class QuestionRegistry:
         refuse("radar_question_unknown", f"{identity!r} is not a declared question")
 
     def active(self) -> tuple:
-        return tuple(question for question in self.questions if question.status == "active")
+        return tuple(question for question in self.questions if question.status == ACTIVE)
 
 
 def _binding(value, question_id: str) -> SourceBinding:
@@ -320,7 +326,7 @@ def read_question(value, rule: "DeliveryRule | None" = None) -> RadarQuestion:
         refuse("radar_question_identity_invalid", "a question identity is a short lowercase snake_case token")
     status = member(part["status"], f"{identity} status", STATUSES)
     gap_reason = part["gap_reason"]
-    if type(gap_reason) is not str or len(gap_reason) > 600 or (status == "declared_gap") != bool(gap_reason.strip()):
+    if type(gap_reason) is not str or len(gap_reason) > 600 or (status == DECLARED_GAP) != bool(gap_reason.strip()):
         refuse("radar_gap_reason_invalid", f"{identity} states a gap reason exactly when it is a declared gap")
     cost = read_part(part["research_cost"], f"{identity} research_cost", ("engineer_minutes", "sources"))
     delivery = part["delivery"]
@@ -369,7 +375,7 @@ def read_question(value, rule: "DeliveryRule | None" = None) -> RadarQuestion:
         assets=dict(assets),
     )
     stored = [kind for kind in question.delivery if kind in STORED]
-    if status == "active" and stored and not question.sources and not question.seeds:
+    if status == ACTIVE and stored and not question.sources and not question.seeds:
         refuse("radar_question_without_source", f"{identity} stores an answer but names no source engine and no seed")
     if not stored and (question.sources or question.seeds):
         refuse("radar_tool_question_with_sources", f"{identity} delivers only a tool, which reads its source when called")
@@ -649,7 +655,7 @@ def read_check(value) -> SourceCheck:
                                                    "checked_at", "changes"))
     outcome = member(part["outcome"], "outcome", CHECK_OUTCOMES)
     rows = part["observations"]
-    if type(rows) is not list or (outcome not in CHECKED_OUTCOMES and outcome != "partially_checked" and rows):
+    if type(rows) is not list or (outcome not in CHECKED_OUTCOMES and outcome != PARTIALLY_CHECKED and rows):
         refuse("radar_check_invalid", "only a completed or partial check carries observations")
     changes = part["changes"]
     if type(changes) is not list or any(type(item) is not str for item in changes):

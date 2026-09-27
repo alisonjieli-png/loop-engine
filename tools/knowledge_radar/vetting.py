@@ -23,6 +23,9 @@ import json
 import re
 import sys
 from pathlib import Path
+from urllib.parse import urlsplit
+
+from loop_engine.core.library_ingestion.https_transport import HTTPS_SCHEME
 
 from .records import STRICT_REVIEW, VETTING_DIMENSIONS, VETTING_RECORD_TYPE
 
@@ -61,7 +64,7 @@ def claim_findings(brief: dict) -> list:
         if not section["checked_at"]:
             findings.append(("section_not_dated", f"{section['title']} has no check time"))
         for claim in section["claims"] + section["carried_claims"]:
-            if not claim["url"].startswith("https://") or not claim["observed_at"]:
+            if urlsplit(claim["url"]).scheme != HTTPS_SCHEME or not claim["observed_at"]:
                 findings.append(("claim_without_source", f"{claim['key']} lacks a link or an observation time"))
             if brief["review_requirement"] == STRICT_REVIEW and not claim["source_address"]:
                 findings.append(("sensitive_claim_without_source", f"{claim['key']} names no source address"))

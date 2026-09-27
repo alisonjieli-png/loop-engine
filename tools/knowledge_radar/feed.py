@@ -23,6 +23,8 @@ from __future__ import annotations
 import json
 from xml.sax.saxutils import escape
 
+from .records import DECLARED_GAP
+
 INDEX_RECORD_TYPE = "knowledge_radar_index/v1"
 ANSWER_STATES = ("approved_result_available", "candidate_available", "needs_research", "needs_local_evaluation",
                  "blocked_by_policy", "no_eligible_option_established")
@@ -31,7 +33,7 @@ PUBLIC_PAGE = "https://baltor.ai/radar"
 
 
 def answer_state(question, brief: "dict | None", vetting: "dict | None", prechecks: "dict | None") -> str:
-    if question.status == "declared_gap":
+    if question.status == DECLARED_GAP:
         return "needs_research"
     if brief is not None and brief.get("state") != "current":
         return "no_eligible_option_established"

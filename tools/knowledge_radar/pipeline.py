@@ -46,7 +46,9 @@ from . import packages, planner, vetting
 from .engines import FAILED, EngineAnswer, RadarEngineError, ReadContext, default_registry
 from .engines_network import RadarNetwork
 from .records import (
+    ACTIVE,
     CHECK_OUTCOMES,
+    TOOL,
     CHECKED_OUTCOMES,
     STORED,
     SourceCheck,
@@ -400,7 +402,7 @@ def stage_package(run: Run) -> dict:
                                                           checks=checks)
                 proposals.append(proposal)
         for kind, asset in sorted(question.assets.items()):
-            if kind == "tool" and asset in tools_done:
+            if kind == TOOL and asset in tools_done:
                 continue
             try:
                 proposals.append(packages.asset_proposal(repository, asset, as_of=run.request.as_of,
@@ -497,7 +499,7 @@ def stage_feed(run: Run) -> dict:
         if path.is_file():
             record = read_json(path)
         identity = _package_for(question, proposals) if question.id in selected else None
-        if question.id in selected or question.status != "active":
+        if question.id in selected or question.status != ACTIVE:
             state = feeds.answer_state(question, record, vetted.get(identity) if identity else None,
                                        prechecked.get(identity) if identity else None)
         else:

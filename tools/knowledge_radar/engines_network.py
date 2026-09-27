@@ -26,7 +26,7 @@ from datetime import date, timedelta
 from urllib.parse import quote, urlencode, urlsplit
 
 from loop_engine.core.library_ingestion.github_reader import parse_included_response
-from loop_engine.core.library_ingestion.https_transport import HttpsGetTransport
+from loop_engine.core.library_ingestion.https_transport import HTTPS_SCHEME, HttpsGetTransport
 from loop_engine.core.library_ingestion.processes import passthrough_environment, run_command
 from loop_engine.core.library_ingestion.record_rules import now_utc
 from loop_engine.core.library_ingestion.request_log import (
@@ -432,7 +432,7 @@ class OwnerDirectory:
                 excluded.append((str(provider.get("name")), reason))
                 continue
             url = next((provider[name] for name in ("github_url", "signup_url") if isinstance(provider.get(name), str)
-                        and provider[name].startswith("https://")), None)
+                        and urlsplit(provider[name]).scheme == HTTPS_SCHEME), None)
             try:
                 url = https_address(url, "provider address")
             except ValueError:

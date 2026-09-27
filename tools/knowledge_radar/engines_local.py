@@ -12,6 +12,9 @@ from __future__ import annotations
 import json
 from datetime import date, timedelta
 from pathlib import Path
+from urllib.parse import urlsplit
+
+from loop_engine.core.library_ingestion.https_transport import HTTPS_SCHEME
 
 from .engines import (
     FAILED,
@@ -61,17 +64,26 @@ def _json(root: Path, relative) -> dict:
         raise RadarEngineError("radar_local_file_unreadable", f"{relative}: {type(error).__name__}") from None
 
 
+#: How each listing's key becomes the common origin of its claim, by the key's kind.
+_ORIGINS = {
+    "paper": lambda rest, title, url: "arxiv:" + rest.split("v")[0],
+    "github-repository": lambda rest, title, url: "github:" + title.lower(),
+    "mcp": lambda rest, title, url: "mcp:" + rest.rsplit("@", 1)[0].lower(),
+    "npm": lambda rest, title, url: "npm:" + rest.rsplit("@", 1)[0].lower(),
+    "skills_directory": lambda rest, title, url: "skills.sh:" + rest.lower(),
+}
+#: The collector's word for a run and a family that finished every source.
+COLLECTOR_COMPLETE = "complete"
+#: What an MCP directory binding reads: rows of one category, or the count of servers per category.
+MCP_MODES = ("rows", "category_counts")
+ROWS_MODE, COUNTS_MODE = MCP_MODES
+SECURE = HTTPS_SCHEME + "://"
+
+
 def _origin(key: str, title: str, url: str) -> str:
     kind, _, rest = key.partition(":")
-    if kind == "paper":
-        return "arxiv:" + rest.split("v")[0]
-    if kind == "github-repository":
-        return "github:" + title.lower()
-    if kind in ("mcp", "npm"):
-        return kind + ":" + rest.rsplit("@", 1)[0].lower()
-    if kind == "skills_directory":
-        return "skills.sh:" + rest.lower()
-    return "web:" + url
+    rule = _ORIGINS.get(kind)
+    return rule(rest, title, url) if rule else "web:" + url
 
 
 class CollectorState:
@@ -127,7 +139,7 @@ class CollectorState:
                 observed_at=iso_time(row.get("observed_at")) or context.observed_at))
         rank_by = parameter(context, "rank_by", "source_published_at", kind=str)
         chosen = ranked(rows, rank_by, descending=not parameter(context, "ascending", False, kind=bool))
-        status = OK if distilled.get("status") == "complete" and latest.get("status") == "complete" else PARTIAL
+        status = OK if distilled.get("status") == COLLECTOR_COMPLETE and latest.get("status") == COLLECTOR_COMPLETE else PARTIAL
         reason = "" if status == OK else "the collector marked its latest run or this family partial"
         return EngineAnswer(status, reason, tuple(chosen[:limit_of(context)]), 0, (), tuple(excluded))
 
@@ -302,8 +314,8 @@ class McpDirectory:
         labels = manifest.get("labels", {})
         day_zero = date.fromisoformat(manifest.get("day_zero", "1970-01-01"))
         generated = iso_time(manifest.get("generated_at")) or context.observed_at
-        mode = parameter(context, "mode", "rows", kind=str, choices=("rows", "category_counts"))
-        if mode == "category_counts":
+        mode = parameter(context, "mode", ROWS_MODE, kind=str, choices=MCP_MODES)
+        if mode == COUNTS_MODE:
             rows = [observation(
                 context, self, key="mcp-category:" + str(item.get("id")), origin="mcp-category:" + str(item.get("id")),
                 title=str(item.get("label")), url="https://baltor.ai/directory",
@@ -334,7 +346,7 @@ class McpDirectory:
                     continue
                 repository = row.get("repository") or ""
                 website = row.get("website") or ""
-                address = ("https://" + repository) if repository else ("https://" + website) if website else ""
+                address = (SECURE + repository) if repository else (SECURE + website) if website else ""
                 try:
                     address = https_address(address, "directory address")
                 except ValueError:
@@ -403,7 +415,7 @@ def _address(value):
     if not isinstance(value, str) or not value:
         return None
     try:
-        return https_address(value if value.startswith("https://") else "https://" + value, "endpoint address")
+        return https_address(value if urlsplit(value).scheme == HTTPS_SCHEME else SECURE + value, "endpoint address")
     except ValueError:
         return None
 

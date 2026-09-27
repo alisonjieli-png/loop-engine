@@ -26,11 +26,14 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from datetime import date
+from urllib.parse import urlsplit
 
 from .engines import FAILED, GONE, NOT_MODIFIED, OK, PARTIAL
 from .records import (
     BRIEF_RECORD_TYPE,
     CHECKED_OUTCOMES,
+    PARTIALLY_CHECKED,
+    UNREAD_OUTCOMES,
     NOTICE_RECORD_TYPE,
     RadarQuestion,
     SourceCheck,
@@ -209,7 +212,7 @@ def build_sections(question: RadarQuestion, checks, previous_checks, as_of: str,
         elif binding.parameters.get("ascending") and rank in RANK_WORDS and rank != "price_per_intelligence_point":
             words = rank.replace("_", " ") + ", lowest first"
         claims, carried = list(check.observations), []
-        if check.outcome in ("could_not_check", "source_disappeared_or_access_changed"):
+        if check.outcome in UNREAD_OUTCOMES:
             previous = previous_checks[index] if index < len(previous_checks) else None
             carried = list(previous.observations) if previous is not None else []
         sections.append(Section(binding.section, binding.engine, check.outcome, check.reason, words,
@@ -334,11 +337,11 @@ def build_brief(question: RadarQuestion, sections, as_of: str, *, excluded=(), c
     last_verified = sorted(item.last_verified_at for item in verified)[-1] if verified else None
     generated_limits = []
     for section in sections:
-        if section.outcome in ("could_not_check", "source_disappeared_or_access_changed"):
+        if section.outcome in UNREAD_OUTCOMES:
             generated_limits.append(f"{section.title}: {section.outcome.replace('_', ' ')} ({section.reason or 'no reason given'}); "
                                     + ("claims from the last successful check are shown with their old dates"
                                        if section.carried else "no earlier claims exist"))
-        elif section.outcome == "partially_checked":
+        elif section.outcome == PARTIALLY_CHECKED:
             generated_limits.append(f"{section.title}: checked in part ({section.reason or 'the source marked it partial'})")
     if expired:
         generated_limits.append(f"{len(expired)} claims are past their review date and are listed as not established, "
@@ -395,7 +398,7 @@ def source_hosts(brief: dict) -> list:
     for section in brief["sections"]:
         for claim in section["claims"][:1]:
             address = claim["source_address"]
-            host = address.split("/")[2] if address.startswith("https://") else address.split(" ")[0]
+            host = urlsplit(address).hostname or address.split(" ")[0]
             if host not in hosts:
                 hosts.append(host)
     return hosts
