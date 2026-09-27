@@ -80,7 +80,7 @@ executor edge.
 
 ### The September 27 direction
 
-On September 27, 2026 the owner added four things to this north star. Each
+On September 27, 2026 the owner added five things to this north star. Each
 stands until the owner changes it.
 
 **Knowledge that stays current, kept as decisions and capabilities.** The
