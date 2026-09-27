@@ -117,7 +117,10 @@ def recipe(row: dict, formula: dict, release: "dict | None") -> dict:
             "platforms": platforms, "source": source,
             "release": ({"repository": row["repository"], "tag": release["tagName"], "assets": assets}
                         if assets else None),
-            "verify": {"arguments": [row["program"], *row["version_arguments"]]},
+            "executables": list(row.get("executables") or [row["program"]]),
+            "verify": {"arguments": [row["program"], *row["version_arguments"]],
+                       "basis": "declared_version_arguments" if row.get("declared", True) else
+                       "default_version_flag_the_program_may_not_support"},
             "checksums": "published by Homebrew (bottles and source archive) and by GitHub (release asset digests); "
                          "Baltor re-hosts no binary"}
 
@@ -286,14 +289,26 @@ class {class_name}(unittest.TestCase):
         for asset in (RECIPE.get("release") or {{}}).get("assets", []):
             self.assertRegex(asset["sha256"], "^[0-9a-f]{{64}}$")
 
-    @unittest.skipUnless(shutil.which("{program}"), "{program} is not installed on this machine")
-    def test_smoke_the_installed_program_prints_its_version(self):
-        wrapper.locate = self.located
-        self.assertTrue(wrapper.version())
-
+{smoke}
 
 if __name__ == "__main__":
     unittest.main()
+'''
+
+
+#: The smoke test of a program whose version arguments a person declared: it prints its version.
+SMOKE_DECLARED = '''    @unittest.skipUnless(shutil.which("{program}"), "{program} is not installed on this machine")
+    def test_smoke_the_installed_program_prints_its_version(self):
+        wrapper.locate = self.located
+        self.assertTrue(wrapper.version())
+'''
+#: The smoke test of a program taken from the whole catalogue, whose version flag nobody declared: it starts and
+#: ends within the time limit, whatever its exit status.
+SMOKE_CATALOGUE = '''    @unittest.skipUnless(shutil.which("{program}"), "{program} is not installed on this machine")
+    def test_smoke_the_installed_program_starts_and_ends(self):
+        wrapper.locate = self.located
+        completed = wrapper.run(list(wrapper.VERSION_ARGUMENTS), timeout=60, check=False)
+        self.assertIsInstance(completed.returncode, int)
 '''
 
 
@@ -316,6 +331,11 @@ def readme(row: dict, formula: dict, plan: dict, installs: "int | None", program
                             *[f"| `{asset['name']}` | `{asset['sha256']}` |" for asset in release["assets"][:40]]])
     words = {"network": "uses the network", "writes_fs": "writes files", "reads_secret": "reads credentials"}
     effects = ", ".join(["starts a process", *(words[effect] for effect in row["effects"])])
+    if not row.get("declared", True):
+        effects += (". The formula does not say what the program does, so this package declares the network and "
+                    "file writes to be safe")
+    executables = row.get("executables") or [row["program"]]
+    others = [name for name in executables if name != row["program"]]
     module = f"{snake(row['program'])}_program"
     return f"""# {row['program']} {plan['version']}: install recipe and typed wrapper
 
@@ -344,6 +364,7 @@ completed = {module}.run(["--help"])
 print(completed.stdout)
 ```
 
+{('The formula also installs ' + ', '.join(f'`{name}`' for name in others[:20]) + '; the wrapper runs `' + row['program'] + '`.' + chr(10)) if others else ''}
 `run` checks that the arguments are a list of strings without NUL bytes,
 that the working folder exists and that the time limit is sane before it
 starts `{row['program']}`, and it never uses a shell. It raises
@@ -362,9 +383,49 @@ The smoke test is skipped when `{row['program']}` is not installed.
 """
 
 
+CATALOGUE_URL = https_address(FORMULAE_HOST, "api/formula.json")
+DEFAULT_VERSION_ARGUMENTS = ("--version",)
+#: What a program from the whole catalogue is declared to do: its formula does not say, so the package declares the
+#: network and file writes, which a step must authorize before it is offered the package.
+UNDECLARED_EFFECTS = ("network", "writes_fs")
+_GITHUB_PROJECT = re.compile(r"https://github\.com/([A-Za-z0-9][A-Za-z0-9-]{0,38})/([A-Za-z0-9._-]{1,100}?)(?:\.git)?(?:/|$)")
+
+
+def github_project(formula: dict) -> "str | None":
+    """The formula's GitHub repository, from its homepage or its stable source address."""
+    for address in (formula.get("homepage"), ((formula.get("urls") or {}).get("stable") or {}).get("url")):
+        match = _GITHUB_PROJECT.match(str(address or ""))
+        if match:
+            return f"{match.group(1)}/{match.group(2)}"
+    return None
+
+
+def catalogue_rows(formulae, curated) -> tuple:
+    """(rows, skipped) for every formula of the catalogue the curated declaration does not describe."""
+    rows, skipped = [], Counter()
+    for formula in formulae:
+        name = formula.get("name")
+        if not name or name in curated:
+            skipped["curated_or_unnamed"] += 1
+            continue
+        executables = sorted({value for value in formula.get("executables") or () if isinstance(value, str) and
+                              re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._+-]{0,60}", value)})
+        if not executables:
+            skipped["no_executables"] += 1
+            continue
+        program = name if name in executables else executables[0]
+        rows.append({"formula": name, "program": program, "version_arguments": list(DEFAULT_VERSION_ARGUMENTS),
+                     "repository": github_project(formula), "effects": list(UNDECLARED_EFFECTS), "category": "catalogue",
+                     "executables": executables, "declared": False, "formula_document": formula})
+    return rows, dict(skipped)
+
+
 def generate(reader, rows, *, code_revision: str, licence_text: bytes, generated_on: str, staging: Path,
-             repository_facts: dict) -> tuple:
-    """(built, refusals, facts, summary) of every declared program."""
+             repository_facts: dict, catalogue=None) -> tuple:
+    """(built, refusals, facts, summary) of every declared program, and of the catalogue's rows when given.
+
+    A catalogue row carries its formula from the one catalogue read (formula.json); its licence is the formula's
+    license field, and its repository gives only the release assets, so no licence read is made per program."""
     built, refused, facts, summary = [], [], {}, Counter()
     generator = {"identity": "tools/supply_lines/program_installs.py", "version": GENERATOR_VERSION,
                  "code_revision": code_revision}
@@ -383,14 +444,20 @@ def generate(reader, rows, *, code_revision: str, licence_text: bytes, generated
             except ValueError:
                 continue
     seen = set()
+    if catalogue is not None:
+        facts[catalogue.sha256] = catalogue.body
     for row in rows:
         name = row["formula"]
-        answer = reader.get(https_address(FORMULAE_HOST, f"api/formula/{urllib.parse.quote(name)}.json"))
-        if answer.status != 200:
-            refused.append(refusal(PROGRAM_INSTALLS, "not_a_command_line_program", name, f"formula answered {answer.status}"))
-            continue
-        facts[answer.sha256] = answer.body
-        formula = json.loads(answer.body)
+        if row.get("formula_document") is not None:
+            answer, formula = catalogue, row["formula_document"]
+        else:
+            answer = reader.get(https_address(FORMULAE_HOST, f"api/formula/{urllib.parse.quote(name)}.json"))
+            if answer.status != 200:
+                refused.append(refusal(PROGRAM_INSTALLS, "not_a_command_line_program", name,
+                                       f"formula answered {answer.status}"))
+                continue
+            facts[answer.sha256] = answer.body
+            formula = json.loads(answer.body)
         if formula.get("deprecated") or formula.get("disabled"):
             refused.append(refusal(PROGRAM_INSTALLS, "formula_deprecated_or_disabled", name))
             continue
@@ -399,7 +466,9 @@ def generate(reader, rows, *, code_revision: str, licence_text: bytes, generated
             refused.append(refusal(PROGRAM_INSTALLS, "formula_licence_not_on_allowlist", name, str(program_licence)))
             continue
         release, repository_decision, repository_text = None, None, ""
-        if row["repository"]:
+        if row["repository"] and not row.get("declared", True):
+            release = (repository_facts.get(row["repository"].lower()) or {}).get("latestRelease")
+        elif row["repository"]:
             facts_row = repository_facts.get(row["repository"].lower())
             commit = (((facts_row or {}).get("defaultBranchRef") or {}).get("target") or {}).get("oid")
             if not facts_row or not commit:
@@ -444,7 +513,8 @@ def _package(row, formula, plan, installs, program_licence, repository_text, rep
                              description=str(formula.get("desc") or "")[:120].replace("\\", "/").replace('"', "'"),
                              version_arguments=literal(tuple(row["version_arguments"])), hint=hint)
     class_name = "".join(part.capitalize() for part in module.split("_") if part)[:60] + "Test"
-    tests = TESTS.format(program=row["program"], module=module, class_name=class_name)
+    smoke = (SMOKE_DECLARED if row.get("declared", True) else SMOKE_CATALOGUE).format(program=row["program"])
+    tests = TESTS.format(program=row["program"], module=module, class_name=class_name, smoke=smoke)
     recipe_text = json.dumps(plan, indent=1, ensure_ascii=False) + "\n"
     folder = staging / module
     folder.mkdir(parents=True, exist_ok=True)
@@ -452,6 +522,7 @@ def _package(row, formula, plan, installs, program_licence, repository_text, rep
     (folder / f"test_{module}.py").write_text(tests, encoding="utf-8")
     (folder / "install.json").write_text(recipe_text, encoding="utf-8")
     passed, count, output = run_tests(folder, module)
+    shutil.rmtree(folder, ignore_errors=True)  # the package keeps the files; the staging copy is not needed
     if not passed:
         raise SupplyRecordError("generated_test_failed", output[-280:])
     text = readme(row, formula, plan, installs, program_licence, repository_text)
@@ -480,7 +551,9 @@ def _package(row, formula, plan, installs, program_licence, repository_text, rep
     effects = [("spawns_process", f"the wrapper starts {row['program']}")]
     rules = {"network": "the program uses the network", "writes_fs": "the program writes files",
              "reads_secret": "the program reads credentials"}
-    effects += [(effect, f"{rules[effect]} (declared in program_sources.json)") for effect in row["effects"]]
+    basis = "declared in program_sources.json" if row.get("declared", True) else \
+        "the formula does not say what the program does, so it is declared conservatively"
+    effects += [(effect, f"{rules[effect]} ({basis})") for effect in row["effects"]]
     name = f"{snake(row['program']).replace('_', '-')}-program"
     stars = ((repository_facts.get((row["repository"] or "").lower()) or {}).get("stargazerCount")) or 0
     supply = SupplyPackage(

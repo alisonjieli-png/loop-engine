@@ -188,17 +188,26 @@ def programs(args) -> dict:
     reader = FactReader(run_folder, line.HOSTS, maximum_requests=args.maximum_requests,
                         pause_seconds=args.pause_seconds)
     rows = line.read_sources()
+    catalogue, skipped = None, {}
+    if args.catalogue:
+        catalogue = reader.get(line.CATALOGUE_URL)
+        if catalogue.status != 200:
+            raise SystemExit("the Homebrew formula catalogue did not answer")
+        extra, skipped = line.catalogue_rows(json.loads(catalogue.body), {row["formula"] for row in rows})
+        rows = rows + extra
     if args.formula:
         rows = [row for row in rows if row["formula"] in args.formula]
+    if args.maximum_programs:
+        rows = rows[:args.maximum_programs]
     repositories = sorted({row["repository"] for row in rows if row["repository"]} | {line.HOMEBREW_CORE})
     facts_by_repository = reader.repository_facts(repositories)
     built, refusals, facts, summary = line.generate(reader, rows, code_revision=revision,
                                                     licence_text=LICENCE_FILE.read_bytes(),
                                                     generated_on=now_utc()[:10], staging=run_folder / "staging",
-                                                    repository_facts=facts_by_repository)
-    return finish(args, records.PROGRAM_INSTALLS, built, refusals, {"smoke_tests": summary,
-                                                                    "programs_declared": len(rows)},
-                  reader, facts, complete=not args.formula)
+                                                    repository_facts=facts_by_repository, catalogue=catalogue)
+    return finish(args, records.PROGRAM_INSTALLS, built, refusals,
+                  {"smoke_tests": summary, "programs_considered": len(rows), "catalogue_skipped": skipped},
+                  reader, facts, complete=not args.formula and not args.maximum_programs and bool(args.catalogue))
 
 
 def data_tables(args) -> dict:
@@ -268,7 +277,10 @@ def parser() -> argparse.ArgumentParser:
     directory.add_argument("--maximum-apis", type=int, default=0, help="at most this many APIs, in name order")
     three = commands.add_parser("programs")
     common(three)
-    three.add_argument("--formula", action="append", help="only these formulae of program_sources.json")
+    three.add_argument("--formula", action="append", help="only these formulae")
+    three.add_argument("--catalogue", action="store_true",
+                       help="also every formula of Homebrew's catalogue with an allowlisted licence and executables")
+    three.add_argument("--maximum-programs", type=int, default=0)
     four = commands.add_parser("data-tables")
     common(four)
     four.add_argument("--table", action="append", help="only these table identities of data_table_sources.json")

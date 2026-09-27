@@ -498,8 +498,11 @@ class ProgramLineTest(unittest.TestCase):
         target = Path(folder) / module
         target.mkdir()
         (target / f"{module}.py").write_text(wrapper, encoding="utf-8")
+        smoke = (line.SMOKE_DECLARED if row.get("declared", True) else line.SMOKE_CATALOGUE).format(
+            program=row["program"])
         (target / f"test_{module}.py").write_text(line.TESTS.format(program=row["program"], module=module,
-                                                                    class_name="SampleTest"), encoding="utf-8")
+                                                                    class_name="SampleTest", smoke=smoke),
+                                                  encoding="utf-8")
         (target / "install.json").write_text(json.dumps(plan), encoding="utf-8")
         return target, module, plan
 
@@ -527,6 +530,29 @@ class ProgramLineTest(unittest.TestCase):
                 self.assertNotEqual(broken, source)
                 (target / f"{module}.py").write_text(broken, encoding="utf-8")
                 self.assertFalse(run_tests(target, module)[0])
+
+    def test_catalogue_rows_take_every_formula_the_curated_list_does_not_hold(self):
+        from supply_lines import program_installs as line
+        formulae = [{**FORMULA, "name": "sample", "executables": ["sample"]},
+                    {**FORMULA, "name": "multi-tool", "executables": ["mt-b", "mt-a", "bad name;rm"],
+                     "homepage": "https://github.com/example/multi-tool"},
+                    {**FORMULA, "name": "library-only", "executables": []}]
+        rows, skipped = line.catalogue_rows(formulae, {"sample"})
+        self.assertEqual([(row["formula"], row["program"], row["executables"]) for row in rows],
+                         [("multi-tool", "mt-a", ["mt-a", "mt-b"])])
+        self.assertEqual(rows[0]["repository"], "example/multi-tool")
+        self.assertEqual((rows[0]["declared"], rows[0]["effects"]), (False, ["network", "writes_fs"]))
+        self.assertEqual(skipped, {"curated_or_unnamed": 1, "no_executables": 1})
+        self.assertEqual(line.github_project({"homepage": "https://example.org",
+                                              "urls": {"stable": {"url": "https://github.com/a/b/archive/v1.tar.gz"}}}),
+                         "a/b")
+        from supply_lines.openapi_operations import run_tests
+        with tempfile.TemporaryDirectory() as folder:
+            target, module, plan = self._write(folder, row={**PROGRAM_ROW, **rows[0], "program": "mt-no-such-program"})
+            passed, count, output = run_tests(target, module)
+            self.assertTrue(passed, output)
+            self.assertEqual(plan["verify"]["basis"], "default_version_flag_the_program_may_not_support")
+            self.assertEqual(plan["executables"], ["mt-a", "mt-b"])
 
     def test_a_recipe_whose_checksum_is_not_published_fails_its_own_test(self):
         from supply_lines.openapi_operations import run_tests
