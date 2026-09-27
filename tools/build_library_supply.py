@@ -203,7 +203,7 @@ def report(args) -> dict:
     store = ImportStore(Path(args.store_root), writes_authorized=False)
     try:
         result = build_report(store, targets, library, review_batches=Path(args.review_batches),
-                              daily=Path(args.daily), slot=args.slot)
+                              daily=Path(args.daily), slot=args.slot, ceiling=args.per_repository)
     finally:
         store.close()
     result["written_at"] = now_utc()
@@ -248,6 +248,7 @@ def parser() -> argparse.ArgumentParser:
     five.add_argument("--review-batches", default="/home/username/baltor-library/review-batches")
     five.add_argument("--daily", default="/home/username/baltor-library/daily")
     five.add_argument("--slot", type=int, default=2000)
+    five.add_argument("--per-repository", type=int, default=15, help="the daily export's ceiling per repository")
     five.add_argument("--output", required=True, help="the report file (counts only, no third-party text)")
     return main
 

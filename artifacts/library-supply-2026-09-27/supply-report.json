@@ -15,6 +15,7 @@
  },
  "assumptions": [
   "Each slot draws the composition mix with supply-aware shares and refills nothing.",
+  "Each slot takes at most 15 candidates from one repository, the daily export's ceiling; the projections named without_ceiling drop that rule.",
   "Every family is approved at the same share, the mean of the daily slots so far.",
   "No new supply arrives; the imported supply is what the import store holds today.",
   "with_generated assumes a review profile for the supply lines' packages exists."
@@ -365,6 +366,85 @@
    "end": {
     "families": {
      "agents_and_commands": {
+      "count": 9976,
+      "share": 0.364
+     },
+     "connectors_and_extensions": {
+      "count": 7054,
+      "share": 0.2574
+     },
+     "data_and_contracts": {
+      "count": 598,
+      "share": 0.0218
+     },
+     "executable_code": {
+      "count": 1864,
+      "share": 0.068
+     },
+     "instructions_and_rules": {
+      "count": 2192,
+      "share": 0.08
+     },
+     "skills": {
+      "count": 5723,
+      "share": 0.2088
+     }
+    },
+    "library": 27407,
+    "supply_left": {
+     "agents_and_commands": 4605,
+     "connectors_and_extensions": 0,
+     "data_and_contracts": 0,
+     "executable_code": 0,
+     "instructions_and_rules": 5064,
+     "skills": 32772
+    }
+   },
+   "not_reached": [
+    "50000",
+    "100000"
+   ],
+   "reached": {
+    "25000": {
+     "families": {
+      "agents_and_commands": {
+       "count": 7989,
+       "share": 0.3192
+      },
+      "connectors_and_extensions": {
+       "count": 7054,
+       "share": 0.2818
+      },
+      "data_and_contracts": {
+       "count": 598,
+       "share": 0.0239
+      },
+      "executable_code": {
+       "count": 1665,
+       "share": 0.0665
+      },
+      "instructions_and_rules": {
+       "count": 2003,
+       "share": 0.08
+      },
+      "skills": {
+       "count": 5723,
+       "share": 0.2286
+      }
+     },
+     "library": 25032,
+     "slots": 57
+    }
+   },
+   "repository_ceiling": 15,
+   "slot_size": 2000,
+   "slots_run": 258
+  },
+  "imported_only_without_ceiling": {
+   "approval_share": 0.7541,
+   "end": {
+    "families": {
+     "agents_and_commands": {
       "count": 9973,
       "share": 0.3636
      },
@@ -435,10 +515,90 @@
      "slots": 51
     }
    },
+   "repository_ceiling": null,
    "slot_size": 2000,
    "slots_run": 259
   },
   "with_generated": {
+   "approval_share": 0.7541,
+   "end": {
+    "families": {
+     "agents_and_commands": {
+      "count": 9979,
+      "share": 0.2887
+     },
+     "connectors_and_extensions": {
+      "count": 11264,
+      "share": 0.3259
+     },
+     "data_and_contracts": {
+      "count": 633,
+      "share": 0.0183
+     },
+     "executable_code": {
+      "count": 3014,
+      "share": 0.0872
+     },
+     "instructions_and_rules": {
+      "count": 2765,
+      "share": 0.08
+     },
+     "skills": {
+      "count": 6913,
+      "share": 0.2
+     }
+    },
+    "library": 34568,
+    "supply_left": {
+     "agents_and_commands": 4596,
+     "connectors_and_extensions": 0,
+     "data_and_contracts": 0,
+     "executable_code": 0,
+     "instructions_and_rules": 4303,
+     "skills": 31213
+    }
+   },
+   "not_reached": [
+    "50000",
+    "100000"
+   ],
+   "reached": {
+    "25000": {
+     "families": {
+      "agents_and_commands": {
+       "count": 6141,
+       "share": 0.2429
+      },
+      "connectors_and_extensions": {
+       "count": 8575,
+       "share": 0.3392
+      },
+      "data_and_contracts": {
+       "count": 413,
+       "share": 0.0163
+      },
+      "executable_code": {
+       "count": 2409,
+       "share": 0.0953
+      },
+      "instructions_and_rules": {
+       "count": 2022,
+       "share": 0.08
+      },
+      "skills": {
+       "count": 5723,
+       "share": 0.2264
+      }
+     },
+     "library": 25283,
+     "slots": 24
+    }
+   },
+   "repository_ceiling": 15,
+   "slot_size": 2000,
+   "slots_run": 247
+  },
+  "with_generated_without_ceiling": {
    "approval_share": 0.7541,
    "end": {
     "families": {
@@ -513,6 +673,7 @@
      "slots": 21
     }
    },
+   "repository_ceiling": null,
    "slot_size": 2000,
    "slots_run": 245
   }
@@ -536,6 +697,11 @@
     "mcp_registry": 5592,
     "openapi_operations": 1339,
     "program_installs": 189
+   },
+   "repositories_per_family": {
+    "connectors_and_extensions": 5211,
+    "data_and_contracts": 17,
+    "executable_code": 195
    },
    "total": 7166
   },
@@ -568,9 +734,17 @@
     "a_file_is_above_the_review_bound": 37,
     "a_file_is_not_reviewable_text": 1160
    },
+   "repositories_per_family": {
+    "agents_and_commands": 643,
+    "connectors_and_extensions": 1330,
+    "data_and_contracts": 13,
+    "executable_code": 8,
+    "instructions_and_rules": 1477,
+    "skills": 1550
+   },
    "total": 60664
   }
  },
  "targets_digest": "8e270ea8184fc0cbc091086882e18e3f78b01d7219e7cab828deb4405c4c77a9",
- "written_at": "2026-09-27T19:54:02Z"
+ "written_at": "2026-09-27T20:00:06Z"
 }

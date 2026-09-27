@@ -589,6 +589,14 @@ class SupplyReportTest(unittest.TestCase):
         # The executable supply is drawn and ends; the skills stay undrawn, because the library is over their cap.
         self.assertEqual((short["not_reached"], short["end"]["supply_left"]["executable_code"],
                           short["end"]["supply_left"]["skills"]), (["25000", "50000", "100000"], 0, 10))
+        # The export takes at most 15 candidates from one repository a slot: executable supply held by two
+        # repositories gives at most 30 a slot, so it lasts many more slots than its quota alone would suggest.
+        pools = {"executable_code": {"a/one": 600, "b/two": 600}}
+        few = project(targets, library, {"executable_code": 1200}, 0.75, repositories=pools, ceiling=15)
+        free = project(targets, library, {"executable_code": 1200}, 0.75)
+        self.assertEqual(few["repository_ceiling"], 15)
+        self.assertEqual(few["slots_run"], 40)
+        self.assertLess(free["slots_run"], few["slots_run"])
         gaps = needs(targets, library, {"executable_code": 1000}, 0.75)
         self.assertEqual(gaps["100000"]["executable_code"]["approved_needed"], 35000 - 970)
         self.assertEqual(gaps["100000"]["executable_code"]["gap"], math.ceil((35000 - 970) / 0.75) - 1000)

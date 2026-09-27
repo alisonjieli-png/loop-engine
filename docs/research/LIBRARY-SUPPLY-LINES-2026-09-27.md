@@ -172,18 +172,22 @@ and web scrapers were left out by the declaration.
 
 The projection runs the composition mix slot after slot: 2,000 packages a
 slot, supply-aware shares, the library-level cap on skills and on
-instruction files and rules, and no refill. Every family is approved at
-0.754, the share of 14,000 exported packages that seven daily slots approved
+instruction files and rules, no refill, and the daily export's ceiling of 15
+candidates from one repository a slot. Every family is approved at 0.754,
+the share of 14,000 exported packages that seven daily slots approved
 (10,557). No new supply arrives in it.
 
 | Scenario | 25,000 reached after | Families at 25,000 | Where it stops |
 |---|---|---|---|
-| Imported only (today's review path) | 51 slots | subagents and commands 31.0%, connectors 28.2%, skills 22.9%, instructions 8.0%, executable 7.5%, data 2.4% | 27,427: executable, connector and data supply run out |
-| With a review profile for generated packages | 21 slots | connectors 31.5%, subagents and commands 23.4%, skills 22.6%, executable 12.0%, instructions 8.0%, data 2.6% | 34,607: executable, connector and data supply run out |
+| Imported only (today's review path) | 57 slots | subagents and commands 31.9%, connectors 28.2%, skills 22.9%, instructions 8.0%, executable 6.7%, data 2.4% | 27,407: executable, connector and data supply run out |
+| With a review profile for generated packages | 24 slots | connectors 33.9%, subagents and commands 24.3%, skills 22.6%, executable 9.5%, instructions 8.0%, data 1.6% | 34,568: executable, connector and data supply run out |
 
-Before the verbatim code modules were stored, the same projection needed
-138 slots (imported only) and 27 slots (with generated packages) to reach
-25,000, with executable code at 0.1 and 4.7 percent.
+Without the repository ceiling the two scenarios need 51 and 21 slots. The
+executable supply sits in few repositories (8 for the imported modules, 195
+for the generated packages), so the ceiling slows it most. Before the
+verbatim code modules were stored, the projection without the ceiling
+needed 138 slots (imported only) and 27 slots (with generated packages) to
+reach 25,000, with executable code at 0.1 and 4.7 percent.
 
 Neither scenario reaches 50,000 or 100,000 with the supply on hand. Skills
 stay above 20 percent at 25,000 only because the library already held 5,723

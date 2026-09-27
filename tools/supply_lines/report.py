@@ -52,6 +52,7 @@ def store_supply(store, targets: CompositionTargets, exported: set) -> dict:
     result = {}
     for label, namespace in (("imported", NAMESPACE), ("generated", SUPPLY_NAMESPACE)):
         forms, lines, not_reviewable = Counter(), Counter(), Counter()
+        repositories = {}
         for row in store.records.query(IntelligenceQuery(namespaces=(namespace,), lifecycle=("candidate",))):
             payload = row["payload"]
             if payload.get("record_id") in exported:
@@ -61,33 +62,55 @@ def store_supply(store, targets: CompositionTargets, exported: set) -> dict:
                 if reason:
                     not_reviewable[reason] += 1
                     continue
-            forms[payload_form(payload)] += 1
+            form = payload_form(payload)
+            forms[form] += 1
+            family = targets.family_of(form)
+            repository = str((payload.get("provenance") or {}).get("repository") or "").lower()
+            repositories.setdefault(family, Counter())[repository] += 1
             if label == "generated":
                 lines[payload.get("line", "")] += 1
         families = Counter()
         for form, count in forms.items():
             families[targets.family_of(form)] += count
         result[label] = {"total": sum(forms.values()), "families": dict(families), "forms": dict(forms),
+                         "repositories_per_family": {name: len(rows) for name, rows in repositories.items()},
                          **({"lines": dict(lines)} if label == "generated" else {}),
                          **({"not_reviewable": dict(not_reviewable)} if label == "imported" else {})}
+        result[label]["_repositories"] = repositories
     return result
 
 
 def project(targets: CompositionTargets, library: dict, supply: dict, approval: float, *, slot: int = 2000,
-            maximum_slots: int = 2000) -> dict:
-    """Slots of the composition mix until every milestone is passed or the supply ends; the mix at each milestone."""
+            maximum_slots: int = 2000, repositories: "dict | None" = None, ceiling: "int | None" = None) -> dict:
+    """Slots of the composition mix until every milestone is passed or the supply ends; the mix at each milestone.
+
+    With each family's candidates per repository and the export's ceiling per repository, a family can give a
+    slot at most the ceiling from each repository (the export's own rule), so a family held by a few large
+    repositories fills slowly."""
     counts = {family.name: int(library.get(family.name, 0)) for family in targets.families}
     remaining = {family.name: int(supply.get(family.name, 0)) for family in targets.families}
+    pools = ({name: Counter(rows) for name, rows in repositories.items()} if repositories is not None and ceiling
+             else None)
     reached, slots, approved_total = {}, 0, 0
     milestones = [milestone for milestone in targets.milestones if milestone > sum(counts.values())]
     while milestones and slots < maximum_slots:
-        quotas = slot_quotas(targets, slot, counts, remaining)
-        kept = {name: min(quotas[name], remaining[name]) for name in counts}
+        available = dict(remaining) if pools is None else {
+            name: sum(min(ceiling, count) for count in pools.get(name, Counter()).values()) for name in counts}
+        quotas = slot_quotas(targets, slot, counts, available)
+        kept = {name: min(quotas[name], available[name]) for name in counts}
         if not any(kept.values()):
             break
         slots += 1
         for name, value in kept.items():
             remaining[name] -= value
+            if pools is not None:
+                left = value
+                for repository, count in pools.get(name, Counter()).most_common():
+                    if left <= 0:
+                        break
+                    taken = min(ceiling, count, left)
+                    pools[name][repository] -= taken
+                    left -= taken
             gained = int(round(value * approval))
             counts[name] += gained
             approved_total += gained
@@ -97,7 +120,8 @@ def project(targets: CompositionTargets, library: dict, supply: dict, approval: 
                                                "families": {name: {"count": value, "share": round(value / total, 4)}
                                                             for name, value in counts.items()}}
     total = sum(counts.values())
-    return {"slot_size": slot, "approval_share": approval, "slots_run": slots, "reached": reached,
+    return {"slot_size": slot, "approval_share": approval, "repository_ceiling": ceiling if pools is not None else None,
+            "slots_run": slots, "reached": reached,
             "not_reached": [str(milestone) for milestone in milestones],
             "end": {"library": total, "families": {name: {"count": value, "share": round(value / total, 4)}
                                                    for name, value in counts.items()},
@@ -122,10 +146,14 @@ def needs(targets: CompositionTargets, library: dict, supply: dict, approval: fl
 
 
 def build_report(store, targets: CompositionTargets, library: dict, *, review_batches: Path, daily: Path,
-                 slot: int = 2000) -> dict:
+                 slot: int = 2000, ceiling: int = 15) -> dict:
     earlier = [folder for folder in sorted(Path(review_batches).glob("*")) if (folder / "export-report.json").is_file()]
     exported = exported_record_ids(earlier)
     supply = store_supply(store, targets, exported)
+    imported_pools = supply["imported"].pop("_repositories")
+    generated_pools = supply["generated"].pop("_repositories")
+    combined_pools = {name: Counter(imported_pools.get(name, {})) + Counter(generated_pools.get(name, {}))
+                      for name in set(imported_pools) | set(generated_pools)}
     approval = approval_share(daily)
     share = approval["share"] or 0.75
     combined = Counter(supply["imported"]["families"])
@@ -134,12 +162,19 @@ def build_report(store, targets: CompositionTargets, library: dict, *, review_ba
             "milestones": list(targets.milestones), "library": library,
             "exported_to_review_already": len(exported), "supply": supply, "approval": approval,
             "projection": {"imported_only": project(targets, library["families"], supply["imported"]["families"],
-                                                    share, slot=slot),
-                           "with_generated": project(targets, library["families"], dict(combined), share, slot=slot)},
+                                                    share, slot=slot, repositories=imported_pools, ceiling=ceiling),
+                           "with_generated": project(targets, library["families"], dict(combined), share, slot=slot,
+                                                     repositories=combined_pools, ceiling=ceiling),
+                           "imported_only_without_ceiling": project(targets, library["families"],
+                                                                    supply["imported"]["families"], share, slot=slot),
+                           "with_generated_without_ceiling": project(targets, library["families"], dict(combined),
+                                                                     share, slot=slot)},
             "needs": {"imported_only": needs(targets, library["families"], supply["imported"]["families"], share),
                       "with_generated": needs(targets, library["families"], dict(combined), share)},
             "assumptions": [
                 "Each slot draws the composition mix with supply-aware shares and refills nothing.",
+                f"Each slot takes at most {ceiling} candidates from one repository, the daily export's ceiling; the "
+                "projections named without_ceiling drop that rule.",
                 "Every family is approved at the same share, the mean of the daily slots so far.",
                 "No new supply arrives; the imported supply is what the import store holds today.",
                 "with_generated assumes a review profile for the supply lines' packages exists."]}
