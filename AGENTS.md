@@ -187,8 +187,8 @@ case. A check that pins whole-file bytes, page copy, counts, dates or the
 newest file name, where a narrower test of the same invariant exists, is
 replaced by the narrower test, which must still fail the known-wrong case.
 The guards of the authority section, secrets, permissions, spending and
-external effects are never loosened this way. The
-[rules flexibility audit](docs/architecture/RULES-FLEXIBILITY-AUDIT-2026-09-27.md)
+external effects are never loosened this way. The rules flexibility audit
+(`docs/architecture/RULES-FLEXIBILITY-AUDIT-2026-09-27.md`, in preparation)
 lists the current candidates.
 
 In one sentence: Baltor researches once what thousands of harnesses would
