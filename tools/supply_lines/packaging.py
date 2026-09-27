@@ -23,7 +23,7 @@ from loop_engine.core.service_runtime.catalogue_attributes import FORM_DECLARED,
 from loop_engine.core.service_runtime.catalogue_packages import (
     EXECUTABLE_EFFECT, EXECUTABLE_ROLES, PACKAGE_BODY, CataloguePackage, CataloguePackageFile)
 
-from licensed_import.checks import StaticChecks, blocking_rules
+from licensed_import.checks import StaticChecks, blocking_rules, package_cautions
 from licensed_import.harness_kinds import media_type
 
 from .records import (
@@ -126,7 +126,9 @@ def build(package: SupplyPackage, *, check: bool = True) -> tuple:
     findings = list(package.findings)
     if check:
         scanned = static_checks().scan({"package": [(row.path, row.data) for row in files]})
-        findings += scanned.get("package", [])
+        # The cautions the licensed import gives by kind: a hook runs on harness events, settings change the
+        # harness, a server configuration that downloads and runs a package says so.
+        findings += scanned.get("package", []) + package_cautions(package.kind, {row.path: row.data for row in files})
         blocked = blocking_rules(findings)
         if blocked:
             raise SupplyRecordError("blocked_by_static_check", ",".join(blocked))

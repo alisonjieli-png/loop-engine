@@ -225,6 +225,8 @@ class McpRegistryLineTest(unittest.TestCase):
         self.assertEqual((payload["kind"], payload["component_form"]["form"]),
                          ("protocol_server_configuration", "mcp_server"))
         self.assertEqual(payload["provenance"]["origin"], "mcp_official_registry")
+        # The reviewer is told that the configuration downloads and runs a package.
+        self.assertIn("downloads_and_runs_a_package", {finding["rule"] for finding in payload["findings"]})
         self.assertEqual([fact["role"] for fact in payload["provenance"]["facts"]],
                          ["registry_entry", "licence_text", "package_metadata"])
         # The author's description is never copied into the files.
