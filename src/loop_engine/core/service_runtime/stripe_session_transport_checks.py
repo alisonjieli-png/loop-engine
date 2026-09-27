@@ -34,6 +34,11 @@ from .stripe_session_checks import (
 )
 from .stripe_sessions import ACCOUNT_PATH, MINIMUM_RECONCILIATION_SECONDS
 
+#: How long a deliberately held provider call may stay held before the run gives
+#: up on itself. It is a bound on a wedged run, not a length the checks measure:
+#: a check that needed this to expire would be measuring the machine's speed.
+WEDGED_HOLD_SECONDS = 120.0
+
 
 def _response_checks(check):
     with tempfile.TemporaryDirectory(prefix="session-response-") as root:
@@ -299,7 +304,27 @@ def _timeout_checks(check):
     with tempfile.TemporaryDirectory(prefix="session-timeout-") as root:
         held = fixture(root)
         entered, release = threading.Event(), threading.Event()
-        held.provider.after_read = lambda call: (entered.set(), release.wait(2)) if call.path == sessions.ACCOUNT_PATH else None
+        # The creation is held inside the provider read until this test releases
+        # it, which is what makes the first answer a timeout and the second a
+        # busy refusal. The bound below only stops a wedged run from hanging: it
+        # is not the length of the hold, and nothing here may depend on it
+        # expiring. It used to be two seconds, close enough to the time two
+        # local requests take that a slow runner reached the second request
+        # after the worker had already been let go, and the busy refusal the
+        # check asks for never happened. That is why the hold is released
+        # explicitly and why `released_by_the_test` is part of the answer.
+        left_the_hold = threading.Event()
+        held_release = {"released_by_the_test": False}
+
+        def hold(call):
+            if call.path != sessions.ACCOUNT_PATH:
+                return None
+            entered.set()
+            held_release["released_by_the_test"] = release.wait(WEDGED_HOLD_SECONDS)
+            left_the_hold.set()
+            return None
+
+        held.provider.after_read = hold
         with running_http(held, application_factory=lambda config: _application(held, config),
                           request_timeout_seconds=0.1, maximum_concurrent_operations=1) as (base, _service):
             body = {"record_type": sessions.SESSION_REQUEST_VERSION, "request_id": "timeout-session",
@@ -313,7 +338,14 @@ def _timeout_checks(check):
                           entered.is_set() and timeout.status_code == 504 and busy.status_code == 503
                           and timeout.json()["automatic_retry"] is False and not held.provider.effects)
                     release.set()
-                    deadline = time.monotonic() + 2
+                    left_the_hold.wait(WEDGED_HOLD_SECONDS)
+                    # Without this the two checks around it could both be read as
+                    # a statement about the service while the run had really let
+                    # the held creation go on its own, under a slow machine, and
+                    # measured a service that was not busy at all.
+                    check("the_held_creation_was_released_by_this_check_and_not_by_a_bound_running_out",
+                          left_the_hold.is_set() and held_release["released_by_the_test"])
+                    deadline = time.monotonic() + 10
                     while time.monotonic() < deadline:
                         if any(row["payload"]["status"] == EFFECT_CONFIRMED for row in rows(held)):
                             break
