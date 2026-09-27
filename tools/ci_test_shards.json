@@ -10,7 +10,7 @@
   "measured_seconds": {
     "a": 180.9,
     "b": 180.8,
-    "c": 179.9,
+    "c": 180.9,
     "d": 179.9
   },
   "shards": {
@@ -108,6 +108,7 @@
       "test_provider_model_identity_reporting",
       "test_red_team_page",
       "test_search_effect_authority",
+      "test_served_library_count",
       "test_session_intake",
       "test_solve_cli_checkpoint",
       "test_source_discovery_rotation",

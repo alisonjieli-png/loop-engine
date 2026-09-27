@@ -1655,7 +1655,9 @@ class ServiceHttpApplication:
         path, method, status_code = request.url.path, request.method, 200
         # The Host was checked against the allowed hosts before this route ran,
         # so it only chooses which page a hostname shows at its root address.
-        asset = served_asset(path, method, self.configuration.display_name, request.headers.get("host"))
+        # A page that shows the library's size shows the count served now, not the packaged one.
+        asset = served_asset(path, method, self.configuration.display_name, request.headers.get("host"),
+                             library_count=self.served_item_count)
         if asset is None:
             # The model directory's pages are rendered from packaged records rather than listed as files.
             asset = rendered_page(path, method, self.configuration.display_name, request.headers.get("host"))

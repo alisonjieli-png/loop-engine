@@ -367,6 +367,29 @@ def sitemap_xml(site_map: SiteMap) -> bytes:
 GENERATORS = {"/robots.txt": robots_text, "/sitemap.xml": sitemap_xml}
 
 
+#: The mark of an element that shows how many packages the library holds. The packaged page carries the count of the
+#: release it was built with; the page script writes the count the service serves now, once it has asked the service.
+LIBRARY_COUNT_MARK = b"data-library-count"
+_LIBRARY_COUNT = re.compile(rb"(?P<open><(?P<tag>[a-z][a-z0-9]*)\b[^>]*?\s" + LIBRARY_COUNT_MARK
+                            + rb"(?=[\s=/>])[^>]*>)[^<]*(?P<close></(?P=tag)\s*>)", re.IGNORECASE)
+
+
+def with_library_count(body: bytes, count) -> bytes:
+    """The page with `count` written into every element marked `data-library-count`.
+
+    Until September 27, 2026 the served page kept the packaged number (43, the
+    count of the first release) and only the page script wrote the live one, so
+    a shared-link preview, a crawler and a reader without the script read 43
+    while the service served 12,191. The number is written the way the page
+    script writes it, with English digit grouping. A count that is not a whole
+    number above zero leaves the packaged number, as the script does.
+    """
+    if not isinstance(count, int) or isinstance(count, bool) or count < 1:
+        return body
+    text = f"{count:,}".encode("ascii")
+    return _LIBRARY_COUNT.sub(lambda match: match.group("open") + text + match.group("close"), body)
+
+
 def version_asset_references(body):
     """Fresh pages select fresh assets even while browsers cache the earlier release."""
     for path, version in packaged_asset_versions():
@@ -381,13 +404,16 @@ def validator_matches(value, etag):
                for part in value.split(","))
 
 
-def served_asset(path, method, display_name, host=None, site_map=None):
+def served_asset(path, method, display_name, host=None, site_map=None, library_count=None):
     """Return `(body, media_type)` for a served address, or None when this service serves none.
 
     The deployment's name is written into a served page here, so that a caller
     does not have to know which packaged files carry the placeholder. So are the
     page's own head values, for the page the address shows on the request's
     Host. `site_map` replaces the packaged site map for a check only.
+    `library_count` is a function without arguments that returns how many
+    packages the active catalogue serves now, or None; it is asked only for a
+    page that shows that number, and its answer is written into the page.
     """
     if method not in ("GET", "HEAD"):
         return None
@@ -407,6 +433,8 @@ def served_asset(path, method, display_name, host=None, site_map=None):
     body = read_packaged_asset(name)
     if media_type == HTML_MEDIA_TYPE:
         body = body.replace(SERVICE_NAME_PLACEHOLDER, escape(display_name, quote=True).encode("utf-8"))
+        if library_count is not None and LIBRARY_COUNT_MARK in body:
+            body = with_library_count(body, library_count())
         body = version_asset_references(body)
         head = page_head(site_map, path, host, display_name)
         if head is not None:
