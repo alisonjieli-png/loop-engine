@@ -24,6 +24,7 @@ from __future__ import annotations
 import json
 import re
 import unittest
+from pathlib import Path
 from unittest import mock
 
 from loop_engine.core.service_runtime import commercial_relationship as commercial
@@ -35,7 +36,9 @@ from loop_engine.core.service_runtime import model_directory_pages as pages
 from loop_engine.core.service_runtime import model_directory_setup as setup
 from loop_engine.core.service_runtime import model_directory_views as views
 from loop_engine.core.service_runtime import web_pages
+from model_directory import endpoints as endpoint_rows
 from model_directory import models as model_rows
+from model_directory import sources as source_engines
 from model_directory.fetch import Answer
 from model_directory.rows import RowSources
 
@@ -265,6 +268,65 @@ class PaymentNeverOrders(unittest.TestCase):
         self.assertIn(">Ad<", pages.ads_band(_with_relationship([_row()], ad)))
         self.assertEqual(pages.commercial_link(_with_relationship([_row()], ad)[0]), "")
         self.assertIn("No link in this directory is a paid link", pages.disclosure([_row()]))
+
+
+#: Where Ollama states, in the source of its own documentation, that its cloud does not support structured outputs.
+#: Ollama's terms refuse automated access to its site, so the GitHub repository source is the citation.
+OLLAMA_STRUCTURED_SOURCE = "github.com/ollama/ollama/blob/main/docs/capabilities/structured-outputs.mdx"
+REVIEWED_PATH = Path(__file__).resolve().parent / "model_directory" / "provider_documentation.json"
+
+
+def ollama_cloud_structured_output_problems(endpoint: dict) -> list:
+    """What is wrong with the structured output fact of the Ollama Cloud row, as plain sentences; empty when it is right."""
+    fact = endpoint["facts"].get("structured_output")
+    if fact is None:
+        return ["the row has no structured output fact"]
+    problems = []
+    if fact.get("value") is not False:
+        problems.append(f"structured output reads {fact.get('value')!r}; Ollama's documentation says its cloud does not support it")
+    source = endpoint["sources"][fact["source"]]
+    if source["address"] != OLLAMA_STRUCTURED_SOURCE:
+        problems.append(f"the fact cites {source['address']}, not the documentation source {OLLAMA_STRUCTURED_SOURCE}")
+    if source["read"] < "2026-09-27":
+        problems.append(f"the source was read on {source['read']}, before the correction was checked on 2026-09-27")
+    if "April 22, 2026" not in fact.get("note", ""):
+        problems.append("the note does not give the day Ollama added its statement, April 22, 2026")
+    return problems
+
+
+class OllamaCloudStructuredOutput(unittest.TestCase):
+    """Ollama's documentation has said since April 22, 2026 that its cloud does not support structured outputs."""
+
+    @staticmethod
+    def _built(entry: dict) -> dict:
+        missing = Answer(None, "", "missing", "models.dev/api.json")
+        return records.validate_endpoint_row(endpoint_rows._hosted_row(entry, {}, missing, {}, []))
+
+    @staticmethod
+    def _entry() -> dict:
+        return next(entry for entry in source_engines.read_reviewed(REVIEWED_PATH)["hosted"] if entry["slug"] == "ollama-cloud")
+
+    def test_the_curated_record_builds_a_row_that_says_no_with_its_dated_citation(self):
+        self.assertEqual(ollama_cloud_structured_output_problems(self._built(self._entry())), [])
+
+    def test_the_record_as_it_was_before_the_correction_is_caught(self):
+        """The known-wrong control: the September 24 record said yes and cited the website page."""
+        old = json.loads(json.dumps(self._entry()))
+        old["sources"]["structured"] = ["docs.ollama.com/capabilities/structured-outputs", "2026-09-24"]
+        old["facts"]["structured_output"] = {"value": True, "source": "structured"}
+        self.assertEqual(len(ollama_cloud_structured_output_problems(self._built(old))), 4)
+
+    def test_the_packaged_row_and_its_pages_say_no_with_the_citation(self):
+        directory = records.load_directory()
+        endpoint = directory.endpoint("ollama-cloud")
+        self.assertEqual(ollama_cloud_structured_output_problems(endpoint), [])
+        page = pages.rendered_page("/endpoints/ollama-cloud", "GET", "Baltor")[0].decode("utf-8")
+        self.assertRegex(page, r"<dt>Structured output</dt><dd>No ")
+        self.assertIn('href="https://' + OLLAMA_STRUCTURED_SOURCE + '"', page)
+        self.assertIn('href="https://github.com/ollama/ollama/issues/12362"', page)
+        card = re.search(r'<li class="md-card"><a class="md-row-link" href="/endpoints/ollama-cloud">.*?</li>',
+                         pages.rendered_page("/endpoints", "GET", "Baltor")[0].decode("utf-8"), re.S).group(0)
+        self.assertIn("Structured output: No", card)
 
 
 class PagesAndSetup(unittest.TestCase):

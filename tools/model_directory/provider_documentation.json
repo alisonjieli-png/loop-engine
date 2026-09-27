@@ -243,7 +243,7 @@
         "cloud": ["docs.ollama.com/cloud", "2026-09-24"],
         "compat": ["docs.ollama.com/api/openai-compatibility", "2026-09-24"],
         "anthropic": ["docs.ollama.com/api/anthropic-compatibility", "2026-09-24"],
-        "structured": ["docs.ollama.com/capabilities/structured-outputs", "2026-09-24"],
+        "structured": ["github.com/ollama/ollama/blob/main/docs/capabilities/structured-outputs.mdx", "2026-09-27"],
         "tools": ["docs.ollama.com/capabilities/tool-calling", "2026-09-24"],
         "pricing": ["ollama.com/pricing", "2026-09-24"],
         "data": ["ollama.com/privacy", "2026-09-24"]
@@ -256,7 +256,7 @@
       ],
       "auth": {"header": "Authorization: Bearer", "variable": ["OLLAMA", "API_KEY"], "source": "compat"},
       "facts": {
-        "structured_output": {"value": true, "source": "structured"},
+        "structured_output": {"value": false, "note": "Ollama's documentation source says: \"Ollama's Cloud currently does not support structured outputs.\" The commit of April 22, 2026 added that note, and issue 12362, \"JSON reply schema is ignored by Cloud model\", has been open since September 21, 2025. Check each reply against your schema yourself.", "address": "github.com/ollama/ollama/issues/12362", "source": "structured"},
         "tool_calling": {"value": true, "source": "tools"},
         "rate_limits": {"address": "docs.ollama.com/cloud", "note": "Usage is limited by the plan; the account's usage page shows it.", "source": "cloud"},
         "pricing": {"address": "ollama.com/pricing", "source": "pricing"},
