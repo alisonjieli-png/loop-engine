@@ -49,7 +49,7 @@ from .records import (
     GENERATED_CODE_LICENCE, LICENCE_TEXT, OPENAPI_OPERATIONS, SupplyRecordError, fact_source, provenance, refusal,
     upstream_key)
 
-GENERATOR_VERSION = "1.0.0"
+GENERATOR_VERSION = "1.1.0"
 SOURCES_FILE = Path(__file__).with_name("openapi_sources.json")
 SOURCES_RECORD_TYPE = "library_supply_openapi_sources/v1"
 RAW_HOST = "raw.githubusercontent.com"
@@ -347,6 +347,10 @@ class Operation:
     auth: "dict | None" = None
     auth_optional: bool = False
     deprecated: bool = False
+    #: Query items a specification writes into the path key itself (/responses?beta=true); sent on every call.
+    fixed_query: tuple = ()
+    #: The path key as the specification writes it, when it differs from the path sent (a query or a fragment).
+    path_key: str = ""
 
 
 def snake(value: str) -> str:
@@ -498,14 +502,20 @@ def _operation(document, resolver, source, path, method, item, node, top_servers
             example = _first_example(parameter.get("schema") or {})
         parameters.append(Parameter(python, name, location, required, schema, check,
                                     re.sub(r"\s+", " ", str(parameter.get("description") or ""))[:300], plain(example)))
-    placeholders = re.findall(r"{([^}]+)}", path)
+    # Some specifications tell operations on one path apart by a fragment (/files/{id}#add_shared_link) or write a
+    # fixed query into the path key (/responses?beta=true). Neither belongs to the path that is sent: a fragment
+    # is never sent, and a fixed query travels as query items on every call.
+    sent_path, _separator, fixed_text = path.partition("#")[0].partition("?")
+    fixed = urllib.parse.parse_qsl(fixed_text, keep_blank_values=True)
+    placeholders = re.findall(r"{([^}]+)}", sent_path)
     declared = {parameter.wire for parameter in parameters if parameter.location == "path"}
     if set(placeholders) - declared:
         raise OperationRefused("operation_parameters_unsupported", f"undeclared path parameters {placeholders}")
     parameters.sort(key=lambda row: (not row.required, ("path", "query", "header").index(row.location), row.python))
-    operation = Operation(method.upper(), path, operation_id, function, module, _description(node)[:300],
+    operation = Operation(method.upper(), sent_path, operation_id, function, module, _description(node)[:300],
                           re.sub(r"\s+", " ", str(node.get("description") or ""))[:600], parameters,
-                          deprecated=bool(node.get("deprecated")))
+                          deprecated=bool(node.get("deprecated")), fixed_query=tuple(fixed),
+                          path_key=path if path != sent_path else "")
     body = node.get("requestBody")
     if body is not None:
         body = resolver.follow(body)
@@ -623,7 +633,7 @@ def _decode(content_type, payload):
 
 
 def _call(arguments, body, base_url, timeout, transport):
-    path, query = OPERATION["path"], []
+    path, query = OPERATION["path"], list(FIXED_QUERY)
     headers = {"Accept": "application/json", "User-Agent": USER_AGENT}
     for python_name, wire_name, location, _required, _schema in PARAMETERS:
         value = arguments[python_name]
@@ -739,6 +749,8 @@ def client_source(operation: Operation, spec: dict) -> str:
     constants = [
         f'OPERATION = {literal({"method": operation.method, "path": operation.path, "operation_id": operation.operation_id})}',
         f"BASE_URL = {operation.base_url!r}", f"BASE_URL_VARIABLE = {spec['base_url_variable']!r}",
+        "#: Query items the specification writes into this operation's path key; sent on every call.",
+        f"FIXED_QUERY = {literal(operation.fixed_query)}",
         f"USER_AGENT = {USER_AGENT!r}",
         f"AUTH = {literal(operation.auth)}", f"AUTH_OPTIONAL = {operation.auth_optional!r}",
         "#: (python name, wire name, location, required, checked schema) of every parameter.",
@@ -845,6 +857,9 @@ def test_source(operation: Operation, call: dict, example) -> str:
         if parameter.location == "query":
             tests[-1] += f'''
         self.assertIn({parameter.wire!r}, dict(urllib.parse.parse_qsl(address.query)))'''
+    for name, value in operation.fixed_query:
+        tests[-1] += f'''
+        self.assertIn(({name!r}, {value!r}), urllib.parse.parse_qsl(address.query, keep_blank_values=True))'''
     if "body" in call:
         tests[-1] += '''
         self.assertEqual(json.loads(request.data.decode("utf-8")), CALL["body"])'''
@@ -953,7 +968,7 @@ def readme_source(operation: Operation, spec: dict, schema_bytes: int) -> str:
                 "its schema is `input.body` in `schema.json`.\n")
     return f"""# {spec['title']}: {operation.summary or operation.operation_id}
 
-`{operation.method} {operation.path}` (operation `{operation.operation_id}`) as one Python function,
+`{operation.method} {operation.path}` (operation `{operation.operation_id}`{f', path key `{operation.path_key}`' if operation.path_key else ''}) as one Python function,
 `{operation.function}` in `{operation.module}.py`. Baltor generated it and its tests from the
 {spec['title']} OpenAPI specification {spec['version']} at `{spec['repository']}` commit
 `{spec['commit']}`, file `{spec['path']}` (SHA-256 `{spec['sha256']}`), licensed {spec['licence']}.
@@ -1108,6 +1123,26 @@ def generate(reader, sources, *, code_revision: str, licence_text: bytes, genera
     return built, refused, facts, summary
 
 
+_PROSE_KEYS = frozenset({"description", "example", "examples", "title", "summary", "externalDocs"})
+#: Keys whose value maps names to schemas: every name is kept, even one spelled like a prose key.
+_NAME_MAPS = frozenset({"properties", "patternProperties", "$defs", "definitions"})
+
+
+def compact(value, depth_limit: "int | None", depth: int = 0, names: bool = False):
+    """A schema without prose, examples or extension keys, and cut below depth_limit when one is given."""
+    if isinstance(value, dict):
+        if names:
+            return {key: compact(item, depth_limit, depth + 1) for key, item in value.items()}
+        if depth_limit is not None and depth >= depth_limit:
+            kept = {key: value[key] for key in ("type", "format", "enum", "nullable") if key in value}
+            return {**kept, "$comment": "deeper levels are in the specification"} if len(value) > len(kept) else kept
+        return {key: compact(item, depth_limit, depth + 1, names=key in _NAME_MAPS) for key, item in value.items()
+                if key not in _PROSE_KEYS and not str(key).startswith("x-")}
+    if isinstance(value, list):
+        return [compact(item, depth_limit, depth + 1) for item in value]
+    return value
+
+
 def _package(operation, spec, source, licence, generator, licence_text, generated_on, staging, repository_facts):
     try:
         call = _example_arguments(operation)
@@ -1122,6 +1157,14 @@ def _package(operation, spec, source, licence, generator, licence_text, generate
                          "schema": operation.response_schema},
               "errors": {str(code): meaning for code, meaning in sorted(operation.errors.items())}}
     schema_text = json.dumps(schema, indent=1, ensure_ascii=False, sort_keys=False) + "\n"
+    # A schema above the review bound is written again without its prose and examples, then with fewer levels,
+    # before the operation is refused; the full schema stays in the pinned specification.
+    for depth in (None, 5, 3):
+        if len(schema_text.encode("utf-8")) <= MAXIMUM_REVIEW_FILE_BYTES:
+            break
+        schema = {**compact(schema, depth), "$comment": "descriptions and examples are omitted to stay within the "
+                  "review bound; the pinned specification holds them"}
+        schema_text = json.dumps(schema, indent=1, ensure_ascii=False, sort_keys=False) + "\n"
     client = client_source(operation, spec)
     tests = test_source(operation, call, example)
     folder = staging / operation.module
@@ -1156,7 +1199,7 @@ def _package(operation, spec, source, licence, generator, licence_text, generate
         effects.append(("reads_secret", f"reads_{operation.auth['variable']}_from_the_environment"))
         credentials.append(operation.auth["variable"])
     name = f"{source['vendor']}-{operation.function.replace('_', '-')}"[:90]
-    identity = f"{spec['repository']}:{spec['path']}:{operation.method} {operation.path}"
+    identity = f"{spec['repository']}:{spec['path']}:{operation.method} {operation.path_key or operation.path}"
     stars = ((repository_facts.get(spec["repository"].lower()) or {}).get("stargazerCount")) or 0
     supply = SupplyPackage(
         line=OPENAPI_OPERATIONS, identity=identity, key=upstream_key(OPENAPI_OPERATIONS, identity), kind="code_module",

@@ -299,6 +299,13 @@ SPECIFICATION = {
         "/cookie": {"get": {"operationId": "withCookie", "parameters": [
             {"name": "session", "in": "cookie", "required": True, "schema": {"type": "string"}}],
             "responses": {"200": {"description": "ok"}}}},
+        # Path keys that are not paths: a fragment that tells operations apart, a fixed query.
+        "/things/{thing_id}#rename": {"put": {"operationId": "renameThing", "parameters": [
+            {"name": "thing_id", "in": "path", "required": True, "schema": {"type": "string"}}],
+            "responses": {"200": {"description": "ok"}}}},
+        "/things/search?beta=true": {"post": {"operationId": "searchThings", "parameters": [
+            {"name": "q", "in": "query", "required": True, "schema": {"type": "string"}}],
+            "responses": {"200": {"description": "ok"}}}},
     }}
 SOURCE = {"source_id": "example", "repository": "example/api", "branch": "main", "paths": ["openapi.json"],
           "vendor": "example", "credential_variable": "EXAMPLE_TOKEN", "maximum_operations": 50}
@@ -311,7 +318,12 @@ class OpenApiLineTest(unittest.TestCase):
         from supply_lines import openapi_operations as line
         found, refused = line.operations(SPECIFICATION, SOURCE)
         self.assertEqual(sorted(operation.function for operation in found),
-                         ["create_thing", "delete_thing", "get_thing"])
+                         ["create_thing", "delete_thing", "get_thing", "rename_thing", "search_things"])
+        rename = next(operation for operation in found if operation.function == "rename_thing")
+        self.assertEqual((rename.path, rename.path_key, rename.fixed_query),
+                         ("/things/{thing_id}", "/things/{thing_id}#rename", ()))
+        search = next(operation for operation in found if operation.function == "search_things")
+        self.assertEqual((search.path, search.fixed_query), ("/things/search", (("beta", "true"),)))
         self.assertEqual(sorted(row["reason"] for row in refused),
                          ["operation_body_not_json", "operation_parameters_unsupported",
                           "operation_parameters_unsupported"])
@@ -357,6 +369,20 @@ class OpenApiLineTest(unittest.TestCase):
                                                                  'if not root.startswith("http"):')
             (Path(folder) / get.module / f"{get.module}.py").write_text(broken, encoding="utf-8")
             self.assertFalse(line.run_tests(Path(folder) / get.module, get.module)[0])
+
+    def test_a_compacted_schema_keeps_every_property_name_and_drops_prose(self):
+        from supply_lines import openapi_operations as line
+        schema = {"type": "object", "description": "A thing.", "x-internal": True,
+                  "properties": {"description": {"type": "string", "description": "Its text."},
+                                 "deep": {"type": "object", "properties": {"a": {"type": "object", "properties": {
+                                     "b": {"type": "string"}}}}}}}
+        flat = line.compact(schema, None)
+        self.assertEqual(flat["properties"]["description"], {"type": "string"})
+        self.assertNotIn("description", flat)
+        self.assertNotIn("x-internal", flat)
+        shallow = line.compact(schema, 3)
+        self.assertIn("$comment", json.dumps(shallow))
+        self.assertIn("description", shallow["properties"])
 
     def test_the_network_is_closed_while_generated_tests_run(self):
         from supply_lines import openapi_operations as line
