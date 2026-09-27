@@ -732,7 +732,7 @@
      "S-6.43"
     ],
     "id": "S-6.44",
-    "next_local_work": "Extend ClientLayoutProfile and the existing material_install_layout slot into the Harness Working Directory Compiler: a Baltor engine and optional upstream engine consume passive versioned compatibility profiles. Keep compilation separate from authorized placement; preserve opaque bytes and modes, validate final merged effects, refuse required semantic losses and stale existing-file state. Distinguish near-daily candidate profile checks from per-launch runtime binding and protocol negotiation. Qualify the connection preset per CLI/editor surface before publishing it. An affected known-bad profile must stop new starts; active attempts retain their frozen binding and supervisor policy.",
+    "next_local_work": "Extend the existing compiler and ClientLayoutProfile to carry activation, dependencies, entry points, reload behavior and exact native checks for executable packages. Preserve bytes, declared file modes and authority; qualify hosted retrieval through installation and native task acceptance before offering full support. Retain unsupported surfaces as explicit findings.",
     "phase": 6,
     "status": "proposed",
     "title": "Harness Working Directory Compiler and native package compatibility",
@@ -1162,7 +1162,7 @@
      "S-6.205"
     ],
     "id": "S-6.207",
-    "next_local_work": "Give the reviewer the private seed excerpt as review-only context (never published), require generated packages to include every file they cite and a check that can fail, and move drive-derived generation to a stronger producer (the Codex lane reads the real projects; a Claude Code cohort is another option) before the next wave; the 15 ideas left and the corrected media statements go into seeds-2.",
+    "next_local_work": "Continue bounded source and session interrogation from recorded coverage gaps, preserving redacted source bindings. Include runtime dependencies and workable tests in derived packages; distinguish provenance citations from files actually needed at execution. Reuse delivered candidates instead of counting briefs or layouts as capabilities.",
     "phase": 6,
     "status": "building",
     "title": "The owner's own volumes as seed material: a read-only inventory with provenance classes, seed records per project, and generated harness files reviewed and published under the owner's authorship declaration",
@@ -1179,7 +1179,7 @@
      "S-6.206"
     ],
     "id": "S-6.208",
-    "next_local_work": "Check the unified public library, homepage, search results, searchable table and onboarding docs in the browser, then deploy the checked revision and verify the live pages.",
+    "next_local_work": "Deploy the reviewed compact-source and signed-phone repair from a checked main revision, then repeat the real account phone path and public source-details interactions.",
     "phase": 6,
     "status": "building",
     "title": "One component library with combined kind counts, source and review details, and no customer-facing review classes",
@@ -2155,7 +2155,7 @@
      "S-6.197"
     ],
     "id": "S-6.213",
-    "next_local_work": "Codex drafts the skill content and its tests as a candidate package; Claude integrates it into the integrations folder, the library and Get set up, and adds the snapshot and digest to the daily job after the public changelog lands.",
+    "next_local_work": "Run the existing independent admission process on the delivered skill and qualify native installation plus a real customer task. Then integrate approved bytes into Get set up and the catalogue; keep daily snapshot work tied to the release records.",
     "phase": 6,
     "status": "proposed",
     "title": "The product as a harness file: a first-party Baltor skill any harness installs to search and fetch from the library, plus a daily public library snapshot from each catalogue release",
@@ -2680,7 +2680,7 @@
      "S-6.14"
     ],
     "id": "S-6.19",
-    "next_local_work": "Qualify an explicit Pi extension profile for SoL-Pi without changing the text-only default; keep its four mechanisms separately configured. Define an honest uncalibrated-score contract and actual endpoint mapping before any SemIf adapter. Preserve independent evaluation and shared budgets.",
+    "next_local_work": "Review the recorded semantic gaps at the existing contracts; implement bounded changes with original failure preservation and independent known-wrong checks. Preserve the existing SoL-Pi and SemIf follow-ups.",
     "phase": 6,
     "status": "proposed",
     "title": "Continue flexible composition and controlled improvement research",
@@ -2798,7 +2798,7 @@
      "S-6.41"
     ],
     "id": "S-6.77",
-    "next_local_work": "Model the daily state review as the first maintenance Loop profile.",
+    "next_local_work": "Finish independent activation review, bind programme, procedure and code-bundle identity in replay, then install the bounded metadata worker through the existing collector and user service manager. Keep model workers held until their own exact resource authority is recorded. Stage roadmap proposals for review rather than replacing task authority.",
     "phase": 6,
     "status": "proposed",
     "title": "Maintenance as Practitioner Loops that stage candidates for independent review",
@@ -5364,5 +5364,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:1c420af9138924e17e5f7043f77ca5d12eece13a7616b8d243f598263d259c08"
+ "source_fingerprint": "sha256:2623208144692a1ddf84bac31c7f4c31fbf3758dff9bf603e0f1a916581b8fa4"
 }

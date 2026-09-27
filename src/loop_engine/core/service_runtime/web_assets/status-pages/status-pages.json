@@ -5,6 +5,14 @@
   "releases": [
    {
     "kind": "service",
+    "number": 39,
+    "at": "2026-09-27T03:58:55Z",
+    "lines": [],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
     "number": 38,
     "at": "2026-09-27T01:19:33Z",
     "lines": [],

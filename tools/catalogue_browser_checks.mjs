@@ -85,6 +85,40 @@ export async function runCatalogueBrowserChecks({browser, fixture, check, mutant
     return {context, page:opened, state, sent};
   }
   const browseScenarios = {
+    long_customer_identity:async (opened, note) => {
+      await loadBrowse(opened);
+      await openItem(opened, "context.brief");
+      await opened.locator("#workspace-access").evaluate(node => {
+        node.textContent = "customer." + "a".repeat(64);
+      });
+      const measured = () => opened.evaluate(() => {
+        const heading = document.querySelector("#workspace-access"), range = document.createRange();
+        range.selectNodeContents(heading);
+        const text = range.getBoundingClientRect(), box = heading.getBoundingClientRect();
+        return {viewport:innerWidth, documentWidth:document.documentElement.scrollWidth, scrollX,
+          textRight:text.right, boxRight:box.right, textFits:text.right <= box.right + 1};
+      });
+      for (const width of [1440, 390, 320]) {
+        await opened.setViewportSize({width, height:1000});
+        await opened.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+        await opened.evaluate(() => window.scrollTo({left:300, top:scrollY, behavior:"instant"}));
+        const value = await measured();
+        note("long_customer_identity_wraps_without_page_scroll_" + width,
+          value.documentWidth <= width + 1 && value.scrollX === 0 && value.textFits, value);
+        await opened.evaluate(() => window.scrollTo({left:0, top:scrollY, behavior:"instant"}));
+      }
+      const regions = await opened.evaluate(() => [".dashboard-nav", ".browse-table-wrap"].map(selector => {
+        const node = document.querySelector(selector); node.scrollLeft = 100;
+        return {selector, available:node.scrollWidth > node.clientWidth, scrolled:node.scrollLeft > 0};
+      }));
+      note("customer_identity_wrap_preserves_navigation_and_table_scrolling",
+        regions.every(region => region.available && region.scrolled), {regions});
+      await opened.locator("#workspace-access").evaluate(node => { node.style.overflowWrap = "normal"; });
+      const wrong = await measured();
+      note("known_wrong_unwrapped_customer_identity_is_detected",
+        wrong.documentWidth > wrong.viewport + 1 && !wrong.textFits, wrong);
+      await opened.locator("#workspace-access").evaluate(node => { node.style.removeProperty("overflow-wrap"); });
+    },
     catalogue:async (opened, note, sent) => {
       await loadBrowse(opened);
       const named = await stepEffects(opened, small), reply = await browseList(opened, small, {authority_effects:named});

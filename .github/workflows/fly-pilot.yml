@@ -223,7 +223,7 @@ jobs:
             sleep 5
           done
           [[ "${machine}" =~ ^[0-9a-f]{8,32}$ ]] || exit 1
-          applied="$(flyctl machine exec "${machine}" "${GRANT_COMMAND}" --app "${FLY_APP}" --json)"
+          applied="$(flyctl machine exec "${machine}" "${GRANT_COMMAND}" --app "${FLY_APP}" --json --timeout 120)"
           printf '%s\n' "${applied}" | jq -e --arg manifest "${PACKAGED_MANIFEST}" '(.exit_code // 0) == 0 and (((.stdout // "") | fromjson?) // null | .record_type == "service_host_grant_application/v1" and .manifest_path == $manifest and .tenants_registered == 0 and .remote_accounts_created == false and (.granted_items_by_tenant | type == "object" and length > 0 and all(.[]; type == "number" and . > 0)))' >/dev/null
           curl --fail --silent --show-error --max-time 20 \
             "https://${FLY_APP}.fly.dev/api/v1/health" | jq -e "${SERVICE_READINESS_GATE}" >/dev/null
@@ -260,7 +260,7 @@ jobs:
             sleep 5
           done
           [[ "${machine}" =~ ^[0-9a-f]{8,32}$ ]] || exit 1
-          applied="$(flyctl machine exec "${machine}" "${BILLING_POLICY_COMMAND}" --app "${FLY_APP}" --json)"
+          applied="$(flyctl machine exec "${machine}" "${BILLING_POLICY_COMMAND}" --app "${FLY_APP}" --json --timeout 120)"
           # The record holds record versions, digests and, on a refusal, its
           # code. It holds no secret, and it is the release record's evidence.
           printf '%s\n' "${applied}" | jq -r '.stdout // ""'

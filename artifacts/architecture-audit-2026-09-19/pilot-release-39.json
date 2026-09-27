@@ -1,0 +1,69 @@
+{
+  "record_type": "pilot_release_record/v1",
+  "release": 39,
+  "source_revision": "e5d21e899c6d6c8b7791288aa9ef762917e483bc",
+  "source_tree": "63e1463462957e844977b531563893ae89451363",
+  "image": "registry.fly.io/baltor-pilot@sha256:0b20d84c7fd72053b9f4e70d57f5820d9220afbf57b4b6c34a2707c71b99c0bd",
+  "rollback_image": "registry.fly.io/baltor-pilot@sha256:e3af395c828eeea9726369cd08c70deb7dcb13096abdfe47edab26b7ea684e7e",
+  "ci_run": 36292492189,
+  "ci_conclusion": "success",
+  "deploy_workflow": 36292845987,
+  "deploy_workflow_conclusion": "failure_after_image_applied_due_to_grant_exec_deadline",
+  "operator_followup": "grants_read_back_and_billing_policies_confirmed_with_extended_exec_timeout",
+  "grant_following_items": 7806,
+  "billing_changed": false,
+  "remote_accounts_created": false,
+  "paid_access_ended_for_accounts": 0,
+  "public_checks_passed": true,
+  "public_result_sha256": "18073c8e6e636bb5842c51b73379d0e16b792802a5ee76c51c1eda7553de1e85",
+  "transport_checks": {
+    "postdeploy-e5-catalogue-v2.json": {
+      "sha256": "8104fdb2da5836dbf9f4fb80f025e722a18a45bfe1d553ce079cae1085fbc306",
+      "passed": 9,
+      "all_passed": true
+    },
+    "postdeploy-e5-service-v2.json": {
+      "sha256": "cd9c04447706e156d7be68698d942ce06bbf0aa1b1f45f6444cd8fbd7ce14c80",
+      "passed": 19,
+      "all_passed": true
+    }
+  },
+  "live_customer_classes_removed": true,
+  "known_open_finding": "The long customer identifier heading causes horizontal page scrolling at 390 pixels. A separately reviewed source patch is not part of release 39.",
+  "deployment_gate": "closed_false",
+  "fully_verified_customer_mobile_journey": false,
+  "recorded_at": "2026-09-27T04:48:54.063802+00:00",
+  "app": "baltor-pilot",
+  "machine": "83733ea7779068",
+  "region": "iad",
+  "deployed_at": "2026-09-27T03:58:55Z",
+  "deploy_run": 36292845987,
+  "deployment_gate_after": "false",
+  "public_hosts_passed": 10,
+  "visitor_pages": 54,
+  "visitor_views": 225,
+  "visitor_links": 319,
+  "visitor_problems": 0,
+  "catalogue_checks_passed": 9,
+  "catalogue_checks_planned": 9,
+  "service_checks_passed": 19,
+  "service_checks_planned": 19,
+  "checks": {
+    "public": {
+      "source_sha256": "18073c8e6e636bb5842c51b73379d0e16b792802a5ee76c51c1eda7553de1e85",
+      "evidence_scope": "Private source report retained; this release record contains aggregate results only."
+    },
+    "reconciliation": {
+      "source_sha256": "f5583ce21a894021cad60b1f626dbc5f9c40a46a6eeb99ae5f122e47884662cd",
+      "evidence_scope": "Private source report retained; this release record contains aggregate results only."
+    },
+    "catalogue": {
+      "source_sha256": "8104fdb2da5836dbf9f4fb80f025e722a18a45bfe1d553ce079cae1085fbc306",
+      "evidence_scope": "Private source report retained; this release record contains aggregate results only."
+    },
+    "service": {
+      "source_sha256": "cd9c04447706e156d7be68698d942ce06bbf0aa1b1f45f6444cd8fbd7ce14c80",
+      "evidence_scope": "Private source report retained; this release record contains aggregate results only."
+    }
+  }
+}

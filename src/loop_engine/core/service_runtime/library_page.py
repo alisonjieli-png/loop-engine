@@ -33,6 +33,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from functools import lru_cache
 from html import escape
+import re
 
 from ..provisioning_server import LIBRARY_TIERS, QUALIFICATION_APPROVED, VERIFIED_TIER
 from .catalogue_attributes import HARNESS_KINDS, harness_kind_label, harness_kind_of
@@ -113,6 +114,42 @@ def sample(view, rows):
     except Exception:  # noqa: BLE001 - a body that cannot be read now is left out, never guessed
         return chosen, None
     return chosen, body if isinstance(body, str) else None
+
+
+
+def _sample_display_parts(body: str) -> tuple[str, str, str]:
+    """Read a display title and an optional terminal source appendix without changing any body byte.
+
+    Only unfenced ATX headings are considered. A later H1/H2 keeps the whole
+    document visible, so a Source heading in the middle cannot hide a later
+    instruction section. Possible raw HTML blocks also keep the document whole.
+    This changes presentation only, never served material.
+    """
+    title, final_section, offset, fence, raw_html = "", None, 0, "", False
+    for line in body.splitlines(keepends=True):
+        text = line.rstrip("\r\n")
+        marker = re.fullmatch(r" {0,3}(`{3,}|~{3,})(.*)", text)
+        if fence:
+            if marker and marker[1][0] == fence[0] and len(marker[1]) >= len(fence) and not marker[2].strip(" \t"):
+                fence = ""
+        elif marker:
+            fence = marker[1]
+        elif re.match(r" {0,3}<(?=[!/?A-Za-z])", text):
+            raw_html = True
+        elif not raw_html:
+            heading = re.fullmatch(r" {0,3}(#{1,6})[ \t]+(.*)", text)
+            if heading:
+                label = re.sub(r"[ \t]+#+[ \t]*$", "", heading[2]).strip()
+                level = len(heading[1])
+                if level == 1 and not title:
+                    title = label
+                if level <= 2:
+                    final_section = (level, label.casefold(), offset)
+        offset += len(line)
+    if not raw_html and final_section and final_section[0] == 2 and final_section[1] in {"source", "sources"}:
+        split = final_section[2]
+        return title or "Sample component", body[:split], body[split:]
+    return title or "Sample component", body, ""
 
 
 def release_changes(view) -> dict:
@@ -287,16 +324,21 @@ def library_body(view, rows=None) -> str:
              + f'</div><div class="md-actions"><a class="button primary" href="{SIGN_UP_ADDRESS}">Get started</a></div>'
              "</div></div>")
     if chosen is not None and body is not None:
+        title, instructions, sources = _sample_display_parts(body)
+        source_details = (
+            '<details class="lib-source-details"><summary>Source details</summary>'
+            '<pre class="md-code md-code-wrap" data-sample-content="source">'
+            f'<code>{escape(sources)}</code></pre></details>' if sources else "")
         shown = ('<div class="md-band lib-band" id="sample" aria-labelledby="sample-title"><div class="lib-split">'
-                 '<div class="lib-split-head"><h2 id="sample-title">One item in full</h2>'
-                 f'<p class="md-reading">{escape(chosen.purpose)}: a {escape(harness_kind_label(chosen.harness_kind).lower())}, '
-                 f'licence {escape(chosen.licence or "not stated")}, {_review_link(chosen)}. '
-                 'Every other body comes through an account and is checked against its exact version.</p></div>'
-                 '<figure class="lib-sample"><figcaption class="lib-sample-head"><span>'
-                 f'{escape(harness_kind_label(chosen.harness_kind))}</span><span>'
-                 f'{escape(chosen.licence or "Licence not stated")}</span></figcaption>'
-                 f'<pre class="md-code md-code-wrap" data-library-sample="{escape(chosen.identity)}">'
-                 f"<code>{escape(body)}</code></pre></figure></div></div>")
+                 '<div class="lib-split-head"><p class="lib-sample-label">One item in full</p>'
+                 f'<h2 id="sample-title">{escape(title)}</h2>'
+                 f'<p class="md-reading">{escape(harness_kind_label(chosen.harness_kind))} · '
+                 f'{escape(chosen.licence or "Licence not stated")} · {_review_link(chosen)}</p>'
+                 '<p class="md-reading">Every other body comes through an account and is checked against its exact version.</p></div>'
+                 '<figure class="lib-sample"><figcaption class="lib-sample-head">Instructions</figcaption>'
+                 f'<pre class="md-code md-code-wrap" data-library-sample="{escape(chosen.identity)}" '
+                 f'data-sample-content="instructions"><code>{escape(instructions)}</code></pre>'
+                 f'{source_details}</figure></div></div>')
     else:
         shown = ""
     return intro + counts + shown + table + _release_band(view, rows)

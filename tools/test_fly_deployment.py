@@ -32,10 +32,10 @@ READINESS = 'jq -e "${SERVICE_READINESS_GATE}" >/dev/null'
 #: call, the way it was run by hand after release 12. The JSON form carries the
 #: command's exit code and its exact standard output, with nothing of the
 #: command line tool's own mixed in.
-GRANT_CALL = 'flyctl machine exec "${machine}" "${GRANT_COMMAND}" --app "${FLY_APP}" --json'
+GRANT_CALL = 'flyctl machine exec "${machine}" "${GRANT_COMMAND}" --app "${FLY_APP}" --json --timeout 120'
 GRANT_GATE = re.compile(r"""jq -e --arg manifest "\$\{PACKAGED_MANIFEST\}" '(.+?)' >/dev/null""")
 BILLING_STEP = "Apply the host billing policy on the one Machine"
-BILLING_CALL = 'flyctl machine exec "${machine}" "${BILLING_POLICY_COMMAND}" --app "${FLY_APP}" --json'
+BILLING_CALL = 'flyctl machine exec "${machine}" "${BILLING_POLICY_COMMAND}" --app "${FLY_APP}" --json --timeout 120'
 #: The billing step reads three filters out of its script: the gate on what the
 #: command printed, the filter that takes from that record what the host file
 #: offers, and the gate on the live capabilities record.
@@ -165,6 +165,34 @@ def billing_step_problems(workflow):
         order = [run.find(BILLING_CALL), gate.start(), capabilities.start(), run.rfind(READINESS)]
         if order != sorted(order) or len(set(order)) != len(order):
             problems.append("the billing policy step does not read the command, then the capabilities, then readiness")
+    return problems
+
+
+
+def post_deploy_exec_timeout_problems(workflow):
+    """Observe the actual shell arguments with a fake flyctl; never contact Fly.
+
+    Release 39's grants exec hit the default deadline after about 20 seconds.
+    Both reconciliation calls need the explicit, finite 120-second setting.
+    A comment containing that setting is not an execution argument.
+    """
+    problems = []
+    for name in (GRANT_STEP, BILLING_STEP):
+        row = next(step for step in workflow["jobs"]["pilot"]["steps"] if step.get("name") == name)
+        calls = re.findall(r'^\s*applied="\$\((flyctl machine exec .*)\)"$', row["run"], re.MULTILINE)
+        if len(calls) != 1:
+            problems.append(name + ": expected one exec call")
+            continue
+        environment = {"PATH": os.environ["PATH"], "machine": "0123456789ab", "FLY_APP": "fixture-pilot",
+                       "GRANT_COMMAND": "fixture-grants", "BILLING_POLICY_COMMAND": "fixture-billing"}
+        result = subprocess.run(["bash", "-euo", "pipefail", "-c",
+            'flyctl() { printf \'%s\\n\' "$@"; }\n' + calls[0]],
+            env=environment, capture_output=True, text=True, timeout=5)
+        arguments = result.stdout.splitlines()
+        values = [arguments[index + 1] if index + 1 < len(arguments) else ""
+                  for index, value in enumerate(arguments) if value == "--timeout"]
+        if result.returncode or values != ["120"]:
+            problems.append(name + ": exec must carry one explicit 120-second timeout")
     return problems
 
 
@@ -436,6 +464,20 @@ class FlyDeploymentTests(unittest.TestCase):
                        readiness_before_the_grant, continue_after_a_failure):
             with self.subTest(mutant=mutant.__name__):
                 self.assertNotEqual(changed(mutant), [])
+
+    def test_post_deploy_execs_use_the_bounded_reconciliation_timeout(self):
+        self.assertEqual(post_deploy_exec_timeout_problems(self.workflow), [])
+
+    def test_missing_default_or_unbounded_exec_timeouts_are_refused(self):
+        for name in (GRANT_STEP, BILLING_STEP):
+            for replacement in ("", "--timeout 20", "--timeout 0"):
+                with self.subTest(step=name, timeout=replacement):
+                    workflow = copy.deepcopy(self.workflow)
+                    row = next(step for step in workflow["jobs"]["pilot"]["steps"] if step.get("name") == name)
+                    row["run"] = row["run"].replace("--timeout 120", replacement)
+                    # A stale comment must never satisfy the argument check.
+                    row["run"] += "\n# --timeout 120\n"
+                    self.assertTrue(post_deploy_exec_timeout_problems(workflow))
 
     def test_every_release_step_ends_with_the_one_shared_readiness_gate(self):
         """The deploy step and the grant step decide readiness with the gate the job holds."""

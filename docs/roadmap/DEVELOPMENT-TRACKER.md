@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:1c420af9138924e17e5f7043f77ca5d12eece13a7616b8d243f598263d259c08`.
+Source fingerprint: `sha256:2623208144692a1ddf84bac31c7f4c31fbf3758dff9bf603e0f1a916581b8fa4`.
 
 ## Where things stand
 
@@ -87,7 +87,7 @@ Source fingerprint: `sha256:1c420af9138924e17e5f7043f77ca5d12eece13a7616b8d243f5
 
 | Step | Title | Status | Waiting on or next work |
 |---|---|---|---|
-| S-6.44 | Harness Working Directory Compiler and native package compatibility | proposed | Extend ClientLayoutProfile and the existing material_install_layout slot into the Harness Working Directory Compiler: a Baltor engine and optional upstream engine consume passive versioned compatibility profiles. Keep co |
+| S-6.44 | Harness Working Directory Compiler and native package compatibility | proposed | Extend the existing compiler and ClientLayoutProfile to carry activation, dependencies, entry points, reload behavior and exact native checks for executable packages. Preserve bytes, declared file modes and authority; qu |
 | S-6.76 | Reusable development workflows and recurring reviews with declared effect policies | ready | Choose a scheduler that can run the workflows against this machine (a timer that starts a headless harness, or a hosted routine for read-only jobs) and record the first scheduled runs. |
 | S-6.153 | Community spaces: the Discord layout applied from a spec by a one-time setup app, declared bot credentials, ordinary member checks and a measures log | proposed | Declare the three credential references, write the setup tool against a recorded dry run of the spec, and hand the owner the account steps in the private kit. |
 | S-6.157 | Research watch sources for the chat platforms | proposed | Add the four sources and raise the limits, with tests. |

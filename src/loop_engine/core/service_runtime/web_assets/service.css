@@ -402,6 +402,11 @@ main:has(> [data-view=pricing]:not([hidden])){max-width:none;padding:0}
 [data-view=library] .lib-sample{margin:0;min-width:0;border-radius:var(--radius-card);background:var(--code-bg);color:var(--code-ink);overflow:hidden}
 [data-view=library] .lib-sample-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;padding:12px 16px;border-bottom:1px solid var(--code-rule);font-family:var(--font-mono);font-size:.75rem;color:var(--code-ink)}
 [data-view=library] .lib-sample .md-code{margin:0;padding:18px;border-radius:0;font-size:.8125rem;line-height:1.7}
+[data-view=library] .lib-sample-label{margin:0;color:var(--muted);font-size:.8125rem;font-weight:600}
+[data-view=library] .lib-source-details{border-top:1px solid var(--code-rule)}
+[data-view=library] .lib-source-details>summary{padding:14px 18px;min-height:48px;cursor:pointer;font-weight:600;overflow-wrap:anywhere}
+[data-view=library] .lib-source-details>summary:focus-visible{outline:2px solid currentColor;outline-offset:-4px}
+[data-view=library] .lib-source-details[open]>summary{border-bottom:1px solid var(--code-rule)}
 [data-view=library] .lib-cta{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:24px;padding:40px;border-radius:var(--radius-panel);background:var(--tint,var(--soft))}
 [data-view=library] .lib-cta-copy{flex:1 1 480px;min-width:0;display:flex;flex-direction:column;gap:8px}
 [data-view=library] .lib-cta h2{margin:0;font-size:1.75rem;letter-spacing:-.02em}
@@ -422,6 +427,7 @@ main:has(> [data-view=pricing]:not([hidden])){max-width:none;padding:0}
 @media(max-width:860px){[data-view=library] .lib-cta{padding:32px}}
 @media(max-width:600px){[data-view=library] .lib-band{padding-top:24px;padding-bottom:24px}[data-view=library] .lib-hero{padding-top:40px;padding-bottom:24px}[data-view=library] .lib-band:last-child{padding-bottom:40px}[data-view=library] .lib-bar-cell{display:none}[data-view=library] .lib-kinds{padding:4px 8px}[data-view=library] .lib-kind-table th,[data-view=library] .lib-kind-table td{padding:.5rem}[data-view=library] .lib-cta{padding:24px}[data-view=library] .lib-cta .md-actions,[data-view=library] .lib-cta .button.primary{width:100%}[data-view=library] #sample .lib-split{padding-top:24px}[data-view=library] .lib-stats>div{padding:14px}}
 
+[data-view=workspace] #workspace-access{overflow-wrap:anywhere}
 [data-view=workspace] .catalogue #search-form>label{margin-top:0}
 [data-view=workspace] .catalogue .search-row{flex-wrap:wrap;gap:8px}
 [data-view=workspace] .catalogue .search-row input{flex:1 1 16rem;min-height:52px;padding:0 18px;border-color:var(--line-strong);border-radius:12px;font-size:1rem}
