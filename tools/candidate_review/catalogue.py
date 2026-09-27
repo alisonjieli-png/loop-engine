@@ -15,6 +15,7 @@ from dataclasses import dataclass, replace
 import hashlib
 import json
 from pathlib import Path, PurePosixPath
+import subprocess
 from types import MappingProxyType
 
 from carry_catalogue_approvals import ITEMS_RECORD_TYPE, REVIEW_RECORD_TYPE
@@ -133,6 +134,26 @@ def _json_file(path: Path, label: str) -> dict:
         refuse("catalogue_file_unreadable", f"{label} is not UTF-8 JSON")
 
 
+#: Seconds allowed for reading one cited file from the repository history.
+HISTORY_SECONDS = 30
+
+
+def _pinned_bytes(repository: Path, revision: str, relative: str, tree_path: Path) -> bytes:
+    """The bytes of one cited file at the catalogue's anchor revision, from the repository history.
+
+    The reviewer compares a body with the source it was written against, so the source
+    is read at the anchor revision, not from a working tree that may have moved on
+    since. A checkout without that history falls back to the tree. Either way the
+    caller compares the bytes with the pinned digest, so a wrong pin is still refused.
+    """
+    try:
+        finished = subprocess.run(["git", "-C", str(repository), "show", f"{revision}:{relative}"],
+                                  capture_output=True, timeout=HISTORY_SECONDS, check=False)
+    except (OSError, subprocess.SubprocessError):
+        return tree_path.read_bytes()
+    return finished.stdout if finished.returncode == 0 else tree_path.read_bytes()
+
+
 def _confined(root: Path, relative: str, label: str) -> Path:
     if type(relative) is not str or not relative:
         refuse("unsafe_path", f"{label} names no path")
@@ -218,7 +239,12 @@ class StarterCatalogue:
         return MappingProxyType({identity: self.body_bytes(identity) for identity in self._order})
 
     def cited_sources(self, identity: str) -> tuple:
-        """Every file the item cites, each at the pinned revision and checked against its pinned digest."""
+        """Every file the item cites, read at the pinned revision and checked against its pinned digest.
+
+        The bytes come from the repository history at the anchor revision, so a later
+        edit of a cited file in the working tree no longer stops a review of a body
+        written against the earlier bytes. The file must still exist in the tree.
+        """
         reference = self.item(identity)["reference"]
         first, separator, revision = str(reference.get("source_ref") or "").rpartition(SOURCE_SEPARATOR)
         if not separator or revision != self.source_revision:
@@ -229,7 +255,7 @@ class StarterCatalogue:
             refuse("source_list_inconsistent", f"the specification of {identity} does not start with its cited source")
         cited = []
         for path in paths:
-            data = _confined(self.repository, path, "cited source").read_bytes()
+            data = _pinned_bytes(self.repository, revision, path, _confined(self.repository, path, "cited source"))
             measured = hashlib.sha256(data).hexdigest()
             if self.source_digests.get(path) != measured:
                 refuse("source_digest_mismatch", f"a cited source of {identity} is not the pinned bytes")

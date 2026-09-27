@@ -144,6 +144,9 @@ class CatalogueSnapshot:
     review: str
     repository: Path
     examples: dict
+    #: The repository whose history holds the anchor revision. A known-wrong copy may
+    #: replace ``repository`` with a temporary tree, which has no history of its own.
+    history: Path = ROOT
 
     @property
     def specifications(self) -> dict:
@@ -436,20 +439,34 @@ def rule_source_references_are_pinned(snapshot):
 
 
 def rule_cited_source_bytes_are_the_pinned_bytes(snapshot):
-    """Every cited file in the tree is byte for byte the file the record pins.
+    """Every pinned digest is the cited file at the anchor, and a restated file has not moved.
 
     ``compile_candidates`` hashes the working tree into ``sources[].sha256`` of the
-    staged record, while ``reference.source_ref`` names a revision. If the tree moves
-    on, one staged record carries two provenance facts about different bytes. The
-    items record therefore pins the digest of every cited file at its own
-    ``source_revision``, and this rule compares those digests with the tree. When a
-    cited file changes, anchor the catalogue again with the refresh tool, which reads
-    the file at the new revision before it writes anything.
+    staged record, while ``reference.source_ref`` names a revision. The items record
+    therefore pins the digest of every cited file at its own ``source_revision``.
+
+    A body graded ``restates_cited_source`` restates the file it cites, so that file
+    in the tree must still be the pinned bytes; when it changes, anchor the catalogue
+    again with the refresh tool, which reads the file at the new revision before it
+    writes anything. A body graded ``general_practice_beside_cited_source`` is written
+    in its own words beside the file and does not depend on the file's later bytes.
+    For a file that only such bodies cite, the pin must be the file as the repository
+    history holds it at ``source_revision``, and a later edit in the tree is not a
+    finding. An item without a recorded grounding counts as restating. Every cited file
+    must still be a file of the tree.
+
+    Until September 27, 2026 every cited file was compared with the tree. All
+    fourteen anchor moves before that date were forced by files that only
+    general-practice bodies cite, and each move rewrote every body digest.
     """
     digests = snapshot.items.get("source_digests")
     if not isinstance(digests, dict):
         return ["the items record must pin the digest of every cited source"]
     cited = sorted({source for row, _item in snapshot.rows() for source in row.get("sources") or ()})
+    restated = {source for row, item in snapshot.rows()
+                if ((item or {}).get("provenance") or {}).get("grounding") != GENERAL_PRACTICE
+                for source in row.get("sources") or ()}
+    revision = str(snapshot.items.get("source_revision") or "")
     found = [f"{source}: no digest is pinned for a cited source" for source in cited if source not in digests]
     found += [f"{source}: a digest is pinned for a file that no item cites" for source in sorted(digests)
               if source not in cited]
@@ -460,10 +477,20 @@ def rule_cited_source_bytes_are_the_pinned_bytes(snapshot):
         if not path.is_file():
             found.append(f"{source}: a cited source is not a file of this repository")
             continue
-        measured = hashlib.sha256(path.read_bytes()).hexdigest()
-        if measured != digests[source]:
-            found.append(f"{source}: the file in the tree is not the file the record pins at "
-                         f"{str(snapshot.items.get('source_revision'))[:7]}; anchor the catalogue again")
+        if source in restated:
+            measured = hashlib.sha256(path.read_bytes()).hexdigest()
+            if measured != digests[source]:
+                found.append(f"{source}: a body restates this file, and the file in the tree is not the file "
+                             f"the record pins at {revision[:7]}; anchor the catalogue again")
+            continue
+        refresh = _refresh_module()
+        try:
+            committed = refresh._bytes_at_revision(snapshot.history, revision, source)
+        except refresh.CatalogueRefreshError as error:
+            found.append(f"{source}: the pinned revision cannot be read from the history: {error}")
+            continue
+        if hashlib.sha256(committed).hexdigest() != digests[source]:
+            found.append(f"{source}: the pinned digest is not the file at {revision[:7]}")
     return found
 
 
@@ -1157,18 +1184,29 @@ class StarterCatalogueChecks(unittest.TestCase):
             target.write_bytes((ROOT / source).read_bytes())
         return root
 
+    def _cited_by_grounding(self):
+        """The cited files that a restating body cites, and those that only general-practice bodies cite."""
+        restated, practice = set(), set()
+        for row, item in self.snapshot.rows():
+            general = (item.get("provenance") or {}).get("grounding") == GENERAL_PRACTICE
+            for source in row.get("sources") or ():
+                (practice if general else restated).add(source)
+        return sorted(restated), sorted(practice - restated)
+
     def test_the_pinned_digests_are_read_from_the_tree_and_not_from_the_record(self):
-        """The known-wrong tree: one cited file is edited, and the rule names that file.
+        """The known-wrong tree: a file that a body restates is edited, and the rule names that file.
 
         The rule hashes the files of the repository it is given, so a copy of the
         cited files with one byte changed must be reported. Without this the rule
         could be comparing the record with itself.
         """
         rule = RULES["cited_source_bytes_are_the_pinned_bytes"]
+        restated, _practice = self._cited_by_grounding()
+        self.assertTrue(restated, "the catalogue holds restating bodies, so this known-wrong case can run")
         with tempfile.TemporaryDirectory() as directory:
             root = self._cited_tree(directory)
             self.assertEqual(rule(replace(self.snapshot, repository=root)), [])
-            edited = sorted(self.snapshot.items["source_digests"])[0]
+            edited = restated[0]
             (root / edited).write_bytes((root / edited).read_bytes() + b"\n# one more line\n")
             found = rule(replace(self.snapshot, repository=root))
             self.assertEqual(len(found), 1)
@@ -1251,6 +1289,37 @@ class StarterCatalogueChecks(unittest.TestCase):
             found = refresh.anchor(refresh.AnchorRequest(folder, ROOT, revision))["review_sheet_still_to_edit"]
             self.assertEqual(len(found), 1)
             self.assertIn(f"does not name revision {revision[:refresh.SHORT_REVISION]}", found[0])
+    def test_a_file_cited_only_beside_general_practice_may_change_without_a_new_anchor(self):
+        """The flexible side of the rule, and the wrong pin it still refuses.
+
+        A general-practice body is written in its own words beside the file it cites,
+        so an edit of that file in the tree is not a finding. The pin must still be the
+        file at the anchor revision in the history: a wrong pin is refused, and a file
+        missing from the tree is still reported. An item that loses its grounding is
+        held to the strict side.
+        """
+        rule = RULES["cited_source_bytes_are_the_pinned_bytes"]
+        _restated, practice = self._cited_by_grounding()
+        self.assertTrue(practice, "the catalogue holds files that only general-practice bodies cite")
+        edited = practice[0]
+        with tempfile.TemporaryDirectory() as directory:
+            root = self._cited_tree(directory)
+            (root / edited).write_bytes((root / edited).read_bytes() + b"\n# a later edit\n")
+            self.assertEqual(rule(replace(self.snapshot, repository=root)), [])
+            wrong = deepcopy(self.snapshot.items)
+            wrong["source_digests"][edited] = "0" * 64
+            found = rule(replace(self.snapshot, repository=root, items=wrong))
+            self.assertEqual(len(found), 1)
+            self.assertIn(edited, found[0])
+            ungrounded = deepcopy(self.snapshot.items)
+            for row, item in zip(self.snapshot.specifications["specifications"], ungrounded["items"]):
+                if edited in (row.get("sources") or ()):
+                    item.get("provenance", {}).pop("grounding", None)
+            found = rule(replace(self.snapshot, repository=root, items=ungrounded))
+            self.assertEqual(len(found), 1)
+            self.assertIn("a body restates this file", found[0])
+            (root / edited).unlink()
+            self.assertIn("is not a file of this repository", " ".join(rule(replace(self.snapshot, repository=root))))
 
     def test_the_anchor_tool_refuses_a_revision_whose_cited_bytes_differ(self):
         """Anchoring reads each cited file at the named revision before it writes anything."""

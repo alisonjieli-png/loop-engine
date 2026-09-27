@@ -540,6 +540,23 @@ class CatalogueReaderTest(unittest.TestCase):
             changed.cited_sources(PRACTICE)
         self.assertEqual(caught.exception.code, "source_digest_mismatch")
 
+    def test_a_cited_source_is_read_at_the_anchor_revision_not_from_the_tree(self):
+        """The review reads the history, so a later tree edit does not change what the reviewer sees.
+
+        Known-wrong control: a directory without history falls back to the tree, and
+        then the tree bytes, not the committed ones, are what the pinned digest judges.
+        """
+        first = CATALOGUE_DATA.cited_sources(PRACTICE)[0]
+        with tempfile.TemporaryDirectory() as directory:
+            later = Path(directory) / "later-edit.py"
+            later.write_bytes(first.text.encode("utf-8") + b"\n# a later edit in the tree\n")
+            committed = catalogue_reader._pinned_bytes(CATALOGUE_DATA.repository, first.revision, first.path, later)
+            self.assertEqual(hashlib.sha256(committed).hexdigest(), CATALOGUE_DATA.source_digests[first.path])
+            with mock.patch.object(catalogue_reader.subprocess, "run", side_effect=OSError("no history")):
+                fallback = catalogue_reader._pinned_bytes(CATALOGUE_DATA.repository, first.revision, first.path, later)
+            self.assertEqual(fallback, later.read_bytes())
+            self.assertNotEqual(hashlib.sha256(fallback).hexdigest(), CATALOGUE_DATA.source_digests[first.path])
+
     def test_a_cited_source_at_another_revision_than_the_anchor_is_refused(self):
         changed = copy.copy(CATALOGUE_DATA)
         changed.source_revision = "0" * 40
