@@ -1,0 +1,8 @@
+{
+  "record_type": "knowledge_radar_fixture/v1",
+  "status": 200,
+  "content_type": "text/plain",
+  "body_text": "Service temporarily unavailable",
+  "recorded_on": "2026-09-27",
+  "note": "Hand-made. A 200 answer that is plain text, not XML."
+}

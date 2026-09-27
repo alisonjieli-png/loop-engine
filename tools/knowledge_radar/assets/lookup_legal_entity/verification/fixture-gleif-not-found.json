@@ -1,0 +1,8 @@
+{
+  "record_type": "knowledge_radar_fixture/v1",
+  "status": 404,
+  "content_type": "application/vnd.api+json",
+  "body_text": "{\"errors\":[{\"status\":\"404\",\"title\":\"Not Found\",\"detail\":\"Resource lei-records with id ZZZZ00RADARTEST00016 does not exist.\"}]}",
+  "recorded_on": "2026-09-27",
+  "note": "Recorded from https://api.gleif.org/api/v1/lei-records/ZZZZ00RADARTEST00016 at 2026-09-27T15:10:26Z. The identifier has valid check digits but GLEIF holds no record for it."
+}

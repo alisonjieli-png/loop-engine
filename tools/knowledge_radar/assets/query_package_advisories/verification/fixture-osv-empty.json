@@ -1,0 +1,8 @@
+{
+  "record_type": "knowledge_radar_fixture/v1",
+  "status": 200,
+  "content_type": "application/json",
+  "body_text": "{}",
+  "recorded_on": "2026-09-27",
+  "note": "Recorded shape: POST https://api.osv.dev/v1/query for the PyPI name baltor-radar-no-such-package, version 1.0.0, answered with exactly {} at 2026-09-27T15:34:00Z. OSV leaves out the vulns list when no advisory matches."
+}

@@ -1,0 +1,102 @@
+{
+  "record_type": "knowledge_radar_asset/v1",
+  "asset_id": "check_service_status",
+  "asset_version": "1.0.0",
+  "kind": "tool",
+  "title": "Check the current status of a developer service",
+  "purpose": "Reads the public Statuspage v2 summary of one allowed provider at call time and returns the overall indicator, the components that are not operational and the open incidents, so a harness never relies on a stored status.",
+  "declared_effects": [
+    "network",
+    "reads_fs",
+    "spawns_process"
+  ],
+  "dependencies": [
+    "python>=3.10"
+  ],
+  "styles": [
+    "claude",
+    "codex",
+    "opencode",
+    "pi"
+  ],
+  "entrypoint": "scripts/check_service_status.py",
+  "test": "scripts/test_check_service_status.py",
+  "data_file": null,
+  "files": [
+    {
+      "path": "SKILL.md",
+      "role": "skill_definition",
+      "media_type": "text/markdown"
+    },
+    {
+      "path": "LICENSE",
+      "role": "other",
+      "media_type": "text/plain"
+    },
+    {
+      "path": "contracts/input.schema.json",
+      "role": "configuration",
+      "media_type": "application/schema+json"
+    },
+    {
+      "path": "contracts/output.schema.json",
+      "role": "configuration",
+      "media_type": "application/schema+json"
+    },
+    {
+      "path": "scripts/check_service_status.py",
+      "role": "skill_script",
+      "media_type": "text/x-python"
+    },
+    {
+      "path": "scripts/test_check_service_status.py",
+      "role": "skill_script",
+      "media_type": "text/x-python"
+    },
+    {
+      "path": "verification/cases.json",
+      "role": "other",
+      "media_type": "application/json"
+    },
+    {
+      "path": "verification/dependencies.lock.json",
+      "role": "other",
+      "media_type": "application/json"
+    },
+    {
+      "path": "verification/fixture-cloudflare-summary.json",
+      "role": "other",
+      "media_type": "application/json"
+    },
+    {
+      "path": "verification/fixture-github-summary.json",
+      "role": "other",
+      "media_type": "application/json"
+    },
+    {
+      "path": "verification/fixture-html-page.json",
+      "role": "other",
+      "media_type": "application/json"
+    },
+    {
+      "path": "verification/fixture-http-503.json",
+      "role": "other",
+      "media_type": "application/json"
+    },
+    {
+      "path": "verification/fixture-missing-fields-summary.json",
+      "role": "other",
+      "media_type": "application/json"
+    },
+    {
+      "path": "verification/fixture-openai-summary.json",
+      "role": "other",
+      "media_type": "application/json"
+    },
+    {
+      "path": "verification/fixture-supabase-summary.json",
+      "role": "other",
+      "media_type": "application/json"
+    }
+  ]
+}

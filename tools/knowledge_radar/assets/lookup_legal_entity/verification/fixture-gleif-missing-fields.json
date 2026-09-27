@@ -1,0 +1,8 @@
+{
+  "record_type": "knowledge_radar_fixture/v1",
+  "status": 200,
+  "content_type": "application/vnd.api+json",
+  "body_text": "{\"meta\": {\"goldenCopy\": {}}, \"data\": [{\"type\": \"lei-records\", \"id\": \"506700GE1G29325QX363\", \"attributes\": {\"lei\": \"506700GE1G29325QX363\", \"entity\": {\"legalName\": {\"name\": \"Global Legal Entity Identifier Foundation\"}, \"status\": \"ACTIVE\"}}}]}",
+  "recorded_on": "2026-09-27",
+  "note": "Hand-made. A name search answer whose record has no registration, jurisdiction or legal form, and whose meta has no pagination and no publish date."
+}

@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "check_service_status result",
+  "description": "The status of one provider as its Statuspage v2 summary reported it at observed_at. A value the page leaves out is null.",
+  "type": "object",
+  "properties": {
+    "record_type": {"const": "knowledge_radar_check_service_status_result/v1"},
+    "provider": {
+      "type": "string",
+      "enum": ["anthropic", "cloudflare", "digitalocean", "flyio", "github", "netlify", "npm", "render", "supabase", "vercel"]
+    },
+    "indicator": {
+      "description": "status.indicator as the page gives it, for example none, minor, major, critical or maintenance.",
+      "type": ["string", "null"]
+    },
+    "description": {"description": "status.description as the page gives it.", "type": ["string", "null"]},
+    "updated_at": {"description": "page.updated_at as the page gives it.", "type": ["string", "null"]},
+    "non_operational_components": {
+      "description": "Every component, including component groups, whose status is not operational, in page order.",
+      "type": "array",
+      "items": {"$ref": "#/$defs/component"}
+    },
+    "open_incidents": {
+      "description": "Incidents in the summary whose status is not resolved or postmortem, in page order.",
+      "type": "array",
+      "items": {"$ref": "#/$defs/incident"}
+    },
+    "source": {
+      "description": "The https address the tool read.",
+      "type": "string",
+      "pattern": "^https://[a-z0-9.-]+/api/v2/summary\\.json$"
+    },
+    "observed_at": {
+      "description": "UTC time of the read.",
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+    }
+  },
+  "required": ["record_type", "provider", "indicator", "description", "updated_at", "non_operational_components",
+               "open_incidents", "source", "observed_at"],
+  "additionalProperties": false,
+  "$defs": {
+    "component": {
+      "type": "object",
+      "properties": {
+        "name": {"type": "string"},
+        "status": {"description": "For example degraded_performance, partial_outage, major_outage or under_maintenance.", "type": "string"}
+      },
+      "required": ["name", "status"],
+      "additionalProperties": false
+    },
+    "incident": {
+      "type": "object",
+      "properties": {
+        "name": {"type": ["string", "null"]},
+        "status": {"description": "For example investigating, identified or monitoring.", "type": ["string", "null"]},
+        "impact": {"description": "For example none, minor, major or critical.", "type": ["string", "null"]},
+        "started_at": {"type": ["string", "null"]},
+        "shortlink": {"type": ["string", "null"]}
+      },
+      "required": ["name", "status", "impact", "started_at", "shortlink"],
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,0 +1,253 @@
+{
+  "record_type": "knowledge_radar_tool_cases/v1",
+  "cases": [
+    {
+      "name": "euro_base_returns_the_published_rates",
+      "request": {"base": "EUR", "symbols": ["USD", "JPY", "GBP"]},
+      "request_matches_input_schema": true,
+      "fixtures": ["fixture-ecb-daily.json"],
+      "now": "2026-09-27T15:10:17Z",
+      "expected_requests": [{"url": "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml", "body": null}],
+      "expected": {
+        "outcome": "result",
+        "result": {
+          "record_type": "knowledge_radar_fetch_reference_rates_result/v1",
+          "base": "EUR",
+          "reference_date": "2026-09-25",
+          "rates": {"USD": 1.1403, "JPY": 179.7, "GBP": 0.86045},
+          "stale": false,
+          "attribution": "Source: European Central Bank, euro foreign exchange reference rates. The reference rates are published for information purposes only. Using the rates for transaction purposes is strongly discouraged.",
+          "source": "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml",
+          "observed_at": "2026-09-27T15:10:17Z"
+        }
+      }
+    },
+    {
+      "name": "dollar_base_cross_rates_through_the_euro",
+      "request": {"base": "USD", "symbols": ["EUR", "JPY", "GBP", "CHF", "IDR"]},
+      "request_matches_input_schema": true,
+      "fixtures": ["fixture-ecb-daily.json"],
+      "now": "2026-09-27T15:10:17Z",
+      "expected": {
+        "outcome": "result",
+        "result": {
+          "record_type": "knowledge_radar_fetch_reference_rates_result/v1",
+          "base": "USD",
+          "reference_date": "2026-09-25",
+          "rates": {"EUR": 0.876962, "JPY": 157.590108, "GBP": 0.754582, "CHF": 0.828291, "IDR": 17913.899851},
+          "stale": false,
+          "attribution": "Source: European Central Bank, euro foreign exchange reference rates. The reference rates are published for information purposes only. Using the rates for transaction purposes is strongly discouraged.",
+          "source": "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml",
+          "observed_at": "2026-09-27T15:10:17Z"
+        }
+      }
+    },
+    {
+      "name": "without_symbols_every_published_currency_except_the_base",
+      "request": {"base": "GBP"},
+      "request_matches_input_schema": true,
+      "fixtures": ["fixture-ecb-daily.json"],
+      "now": "2026-09-27T15:10:17Z",
+      "expected": {
+        "outcome": "result",
+        "result": {
+          "record_type": "knowledge_radar_fetch_reference_rates_result/v1",
+          "base": "GBP",
+          "reference_date": "2026-09-25",
+          "rates": {"EUR": 1.162183, "USD": 1.325237, "JPY": 208.844209, "CHF": 1.097681, "IDR": 23740.159219},
+          "stale": false,
+          "attribution": "Source: European Central Bank, euro foreign exchange reference rates. The reference rates are published for information purposes only. Using the rates for transaction purposes is strongly discouraged.",
+          "source": "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml",
+          "observed_at": "2026-09-27T15:10:17Z"
+        }
+      }
+    },
+    {
+      "name": "small_rates_keep_six_decimal_places",
+      "request": {"base": "IDR", "symbols": ["EUR", "GBP", "USD"]},
+      "request_matches_input_schema": true,
+      "fixtures": ["fixture-ecb-daily.json"],
+      "now": "2026-09-27T15:10:17Z",
+      "via_stdin": true,
+      "expected": {
+        "outcome": "result",
+        "fields": {"base": "IDR", "rates": {"EUR": 0.000049, "GBP": 0.000042, "USD": 0.000056}}
+      }
+    },
+    {
+      "name": "exact_half_way_value_is_rounded_up",
+      "request": {"base": "USD", "symbols": ["JPY", "EUR"]},
+      "fixtures": ["fixture-ecb-half-way.json"],
+      "now": "2026-09-27T12:00:00Z",
+      "expected": {"outcome": "result", "fields": {"rates": {"JPY": 0.123457, "EUR": 0.5}}}
+    },
+    {
+      "name": "network_timeout_is_a_source_failure",
+      "request": {"base": "EUR", "symbols": ["USD"]},
+      "fixtures": [],
+      "fetch_error": "timeout",
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 1,
+      "expected": {"outcome": "error", "exit_code": 3, "code": "source_unreachable"}
+    },
+    {
+      "name": "four_days_after_the_reference_date_is_not_stale",
+      "request": {"base": "EUR", "symbols": ["USD"]},
+      "fixtures": ["fixture-ecb-daily.json"],
+      "now": "2026-09-29T23:59:59Z",
+      "expected": {"outcome": "result", "fields": {"reference_date": "2026-09-25", "stale": false}}
+    },
+    {
+      "name": "five_days_after_the_reference_date_is_stale",
+      "request": {"base": "EUR", "symbols": ["USD"]},
+      "fixtures": ["fixture-ecb-daily.json"],
+      "now": "2026-09-30T00:00:00Z",
+      "expected": {"outcome": "result", "fields": {"reference_date": "2026-09-25", "stale": true, "rates": {"USD": 1.1403}}}
+    },
+    {
+      "name": "known_wrong_cross_rate_computed_the_wrong_way_round",
+      "known_wrong": true,
+      "request": {"base": "USD", "symbols": ["JPY"]},
+      "fixtures": ["fixture-ecb-daily.json"],
+      "now": "2026-09-27T15:10:17Z",
+      "expected": {"outcome": "result", "fields": {"rates": {"JPY": 0.006346}}}
+    },
+    {
+      "name": "known_wrong_weekend_rates_marked_stale",
+      "known_wrong": true,
+      "request": {"base": "EUR", "symbols": ["USD"]},
+      "fixtures": ["fixture-ecb-daily.json"],
+      "now": "2026-09-27T15:10:17Z",
+      "expected": {"outcome": "result", "fields": {"stale": true}}
+    },
+    {
+      "name": "currency_the_bank_did_not_publish_is_refused_after_the_read",
+      "request": {"base": "BGN", "symbols": ["EUR"]},
+      "request_matches_input_schema": true,
+      "fixtures": ["fixture-ecb-daily.json"],
+      "now": "2026-09-27T15:10:17Z",
+      "fetch_calls": 1,
+      "expected": {"outcome": "error", "exit_code": 2, "code": "currency_not_published"}
+    },
+    {
+      "name": "plain_text_instead_of_xml_is_refused",
+      "request": {"base": "EUR", "symbols": ["USD"]},
+      "fixtures": ["fixture-ecb-not-xml.json"],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 1,
+      "expected": {"outcome": "error", "exit_code": 3, "code": "unexpected_source_shape"}
+    },
+    {
+      "name": "document_type_with_an_entity_is_refused",
+      "request": {"base": "EUR", "symbols": ["USD"]},
+      "fixtures": ["fixture-ecb-entity.json"],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 1,
+      "expected": {"outcome": "error", "exit_code": 3, "code": "unexpected_source_shape"}
+    },
+    {
+      "name": "rate_that_is_not_a_number_is_refused",
+      "request": {"base": "EUR", "symbols": ["USD"]},
+      "fixtures": ["fixture-ecb-bad-rate.json"],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 1,
+      "expected": {"outcome": "error", "exit_code": 3, "code": "unexpected_source_shape"}
+    },
+    {
+      "name": "two_days_of_rates_in_one_answer_are_refused",
+      "request": {"base": "EUR", "symbols": ["USD"]},
+      "fixtures": ["fixture-ecb-two-days.json"],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 1,
+      "expected": {"outcome": "error", "exit_code": 3, "code": "unexpected_source_shape"}
+    },
+    {
+      "name": "http_503_is_a_source_failure",
+      "request": {"base": "EUR", "symbols": ["USD"]},
+      "fixtures": ["fixture-ecb-http-503.json"],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 1,
+      "expected": {"outcome": "error", "exit_code": 3, "code": "source_http_error"}
+    },
+    {
+      "name": "lower_case_base_is_refused_before_any_request",
+      "request": {"base": "usd", "symbols": ["EUR"]},
+      "request_matches_input_schema": false,
+      "fixtures": [],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 0,
+      "expected": {"outcome": "error", "exit_code": 2, "code": "invalid_request"}
+    },
+    {
+      "name": "missing_base_is_refused_before_any_request",
+      "request": {"symbols": ["USD"]},
+      "request_matches_input_schema": false,
+      "fixtures": [],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 0,
+      "expected": {"outcome": "error", "exit_code": 2, "code": "invalid_request"}
+    },
+    {
+      "name": "empty_symbols_list_is_refused_before_any_request",
+      "request": {"base": "EUR", "symbols": []},
+      "request_matches_input_schema": false,
+      "fixtures": [],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 0,
+      "expected": {"outcome": "error", "exit_code": 2, "code": "invalid_request"}
+    },
+    {
+      "name": "repeated_symbol_is_refused_before_any_request",
+      "request": {"base": "EUR", "symbols": ["USD", "USD"]},
+      "request_matches_input_schema": false,
+      "fixtures": [],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 0,
+      "expected": {"outcome": "error", "exit_code": 2, "code": "invalid_request"}
+    },
+    {
+      "name": "symbols_as_text_is_refused_before_any_request",
+      "request": {"base": "EUR", "symbols": "USD,JPY"},
+      "request_matches_input_schema": false,
+      "fixtures": [],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 0,
+      "expected": {"outcome": "error", "exit_code": 2, "code": "invalid_request"}
+    },
+    {
+      "name": "amount_field_is_refused_before_any_request",
+      "request": {"base": "EUR", "symbols": ["USD"], "amount": 100},
+      "request_matches_input_schema": false,
+      "fixtures": [],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 0,
+      "expected": {"outcome": "error", "exit_code": 2, "code": "invalid_request"}
+    },
+    {
+      "name": "redirect_to_another_host_is_refused",
+      "kind": "redirect",
+      "from": "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml",
+      "to": "https://example.com/stats/eurofxref/eurofxref-daily.xml",
+      "expected": {"outcome": "error", "exit_code": 3, "code": "redirect_refused"}
+    },
+    {
+      "name": "redirect_on_the_same_host_is_followed",
+      "kind": "redirect",
+      "from": "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml",
+      "to": "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml?refresh=1",
+      "expected": {"outcome": "followed"}
+    },
+    {
+      "name": "answer_of_exactly_two_megabytes_is_read",
+      "kind": "size_limit",
+      "bytes": 2097152,
+      "expected": {"outcome": "read"}
+    },
+    {
+      "name": "answer_over_two_megabytes_is_refused",
+      "kind": "size_limit",
+      "bytes": 2097153,
+      "expected": {"outcome": "error", "exit_code": 3, "code": "source_too_large"}
+    }
+  ]
+}

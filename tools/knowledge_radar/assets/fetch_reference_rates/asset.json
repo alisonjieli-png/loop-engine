@@ -1,0 +1,102 @@
+{
+  "record_type": "knowledge_radar_asset/v1",
+  "asset_id": "fetch_reference_rates",
+  "asset_version": "1.0.0",
+  "kind": "tool",
+  "title": "Fetch the European Central Bank euro reference rates",
+  "purpose": "Reads the daily euro foreign exchange reference rates of the European Central Bank at call time and returns the requested rates for a chosen base currency, with cross rates through the euro, the reference date and a stale flag.",
+  "declared_effects": [
+    "network",
+    "reads_fs",
+    "spawns_process"
+  ],
+  "dependencies": [
+    "python>=3.10"
+  ],
+  "styles": [
+    "claude",
+    "codex",
+    "opencode",
+    "pi"
+  ],
+  "entrypoint": "scripts/fetch_reference_rates.py",
+  "test": "scripts/test_fetch_reference_rates.py",
+  "data_file": null,
+  "files": [
+    {
+      "path": "SKILL.md",
+      "role": "skill_definition",
+      "media_type": "text/markdown"
+    },
+    {
+      "path": "LICENSE",
+      "role": "other",
+      "media_type": "text/plain"
+    },
+    {
+      "path": "contracts/input.schema.json",
+      "role": "configuration",
+      "media_type": "application/schema+json"
+    },
+    {
+      "path": "contracts/output.schema.json",
+      "role": "configuration",
+      "media_type": "application/schema+json"
+    },
+    {
+      "path": "scripts/fetch_reference_rates.py",
+      "role": "skill_script",
+      "media_type": "text/x-python"
+    },
+    {
+      "path": "scripts/test_fetch_reference_rates.py",
+      "role": "skill_script",
+      "media_type": "text/x-python"
+    },
+    {
+      "path": "verification/cases.json",
+      "role": "other",
+      "media_type": "application/json"
+    },
+    {
+      "path": "verification/dependencies.lock.json",
+      "role": "other",
+      "media_type": "application/json"
+    },
+    {
+      "path": "verification/fixture-ecb-bad-rate.json",
+      "role": "other",
+      "media_type": "application/json"
+    },
+    {
+      "path": "verification/fixture-ecb-daily.json",
+      "role": "other",
+      "media_type": "application/json"
+    },
+    {
+      "path": "verification/fixture-ecb-entity.json",
+      "role": "other",
+      "media_type": "application/json"
+    },
+    {
+      "path": "verification/fixture-ecb-half-way.json",
+      "role": "other",
+      "media_type": "application/json"
+    },
+    {
+      "path": "verification/fixture-ecb-http-503.json",
+      "role": "other",
+      "media_type": "application/json"
+    },
+    {
+      "path": "verification/fixture-ecb-not-xml.json",
+      "role": "other",
+      "media_type": "application/json"
+    },
+    {
+      "path": "verification/fixture-ecb-two-days.json",
+      "role": "other",
+      "media_type": "application/json"
+    }
+  ]
+}

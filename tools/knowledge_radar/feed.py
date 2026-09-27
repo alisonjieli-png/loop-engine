@@ -92,5 +92,30 @@ def rss(index: dict) -> str:
     return "\n".join(lines)
 
 
+STATE_WORDS = {"approved_result_available": "Approved", "candidate_available": "Ready for review",
+               "needs_research": "Not answered yet", "needs_local_evaluation": "Answer depends on your constraints",
+               "blocked_by_policy": "Held by a policy check", "no_eligible_option_established": "No current answer"}
+
+
+def teaser_html(index: dict) -> str:
+    """A static public teaser: question titles, areas, answer states and dates. No brief body is shown."""
+    rows = []
+    for row in sorted(index["questions"], key=lambda item: (item["area"], item["title"])):
+        rows.append("<tr id=\"{0}\"><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td><td>{5}</td></tr>".format(
+            escape(row["question_id"]), escape(row["title"]), escape(row["area"].replace("_", " ")),
+            escape(STATE_WORDS.get(row["answer_state"], row["answer_state"])), escape(row["as_of"] or ""),
+            escape(row.get("valid_until") or "")))
+    return "\n".join([
+        "<!doctype html>", '<html lang="en">', "<head>", '<meta charset="utf-8">',
+        '<meta name="viewport" content="width=device-width, initial-scale=1">',
+        "<title>Knowledge radar</title>", "<style>body{font-family:system-ui,sans-serif;margin:16px;max-width:960px}"
+        "table{border-collapse:collapse;width:100%}td,th{border-bottom:1px solid #ccc;padding:6px;text-align:left;"
+        "vertical-align:top}</style>", "</head>", "<body>", "<h1>Knowledge radar</h1>",
+        f"<p>Dated answers to recurring engineering questions, as of {escape(index['as_of'])}. Each answer names the "
+        "day it stops being current. Signed-in harnesses fetch the full briefs, data files and tools through Baltor.</p>",
+        "<table>", "<thead><tr><th>Question</th><th>Area</th><th>State</th><th>As of</th><th>Valid until</th></tr></thead>",
+        "<tbody>", *rows, "</tbody>", "</table>", "</body>", "</html>", ""])
+
+
 def dumps(value) -> bytes:
     return (json.dumps(value, indent=1, ensure_ascii=False) + "\n").encode("utf-8")

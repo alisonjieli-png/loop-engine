@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "check_service_status request",
+  "description": "One JSON object that names a provider on the allow list. The tool reads https://<status host>/api/v2/summary.json for that provider.",
+  "type": "object",
+  "properties": {
+    "provider": {
+      "description": "Short provider name. anthropic reads status.claude.com, cloudflare www.cloudflarestatus.com, digitalocean status.digitalocean.com, flyio status.flyio.net, github www.githubstatus.com, netlify www.netlifystatus.com, npm status.npmjs.org, render status.render.com, supabase status.supabase.com, vercel www.vercel-status.com.",
+      "type": "string",
+      "enum": ["anthropic", "cloudflare", "digitalocean", "flyio", "github", "netlify", "npm", "render", "supabase", "vercel"]
+    }
+  },
+  "required": ["provider"],
+  "additionalProperties": false
+}

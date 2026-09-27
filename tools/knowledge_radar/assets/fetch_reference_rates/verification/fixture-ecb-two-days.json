@@ -1,0 +1,8 @@
+{
+  "record_type": "knowledge_radar_fixture/v1",
+  "status": 200,
+  "content_type": "text/xml",
+  "body_text": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<gesmes:Envelope xmlns:gesmes=\"http://www.gesmes.org/xml/2002-08-01\" xmlns=\"http://www.ecb.int/vocabulary/2002-08-01/eurofxref\">\n\t<gesmes:subject>Reference rates</gesmes:subject>\n\t<gesmes:Sender>\n\t\t<gesmes:name>European Central Bank</gesmes:name>\n\t</gesmes:Sender>\n\t<Cube>\n\t\t<Cube time='2026-09-24'>\n\t\t\t<Cube currency='USD' rate='1.1390'/>\n\t\t</Cube>\n\t\t<Cube time='2026-09-25'>\n\t\t\t<Cube currency='USD' rate='1.1403'/>\n\t\t\t<Cube currency='JPY' rate='179.70'/>\n\t\t\t<Cube currency='GBP' rate='0.86045'/>\n\t\t\t<Cube currency='CHF' rate='0.9445'/>\n\t\t\t<Cube currency='IDR' rate='20427.22'/>\n\t\t</Cube>\n\t</Cube>\n</gesmes:Envelope>\n",
+  "recorded_on": "2026-09-27",
+  "note": "Hand-made from the recorded file: two dated sets of rates in one answer, which the daily file never holds."
+}

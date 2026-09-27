@@ -1,0 +1,8 @@
+{
+  "record_type": "knowledge_radar_fixture/v1",
+  "status": 200,
+  "content_type": "application/json",
+  "body_text": "{\"vulns\": [{\"id\": \"HANDMADE-2026-0001\", \"modified\": \"2026-09-01T00:00:00Z\", \"affected\": [{\"package\": {\"name\": \"markupsafe\", \"ecosystem\": \"PyPI\"}, \"ranges\": [{\"type\": \"ECOSYSTEM\", \"events\": [{\"introduced\": \"0\"}, {\"fixed\": \"2.0.0\"}]}]}, {\"package\": {\"name\": \"Jinja2\", \"ecosystem\": \"PyPI\"}, \"ranges\": [{\"type\": \"GIT\", \"repo\": \"https://example.com/jinja.git\", \"events\": [{\"introduced\": \"0\"}, {\"fixed\": \"0123456789abcdef0123456789abcdef01234567\"}]}, {\"type\": \"ECOSYSTEM\", \"events\": [{\"introduced\": \"0\"}, {\"fixed\": \"3.0.0\"}]}, {\"type\": \"SEMVER\", \"events\": [{\"introduced\": \"3.1.0\"}, {\"last_affected\": \"3.1.2\"}]}, {\"type\": \"ECOSYSTEM\", \"events\": [{\"introduced\": \"3.2.0\"}, {\"fixed\": \"3.2.1\"}, {\"fixed\": \"3.0.0\"}]}]}, {\"package\": {\"name\": \"jinja2\", \"ecosystem\": \"Debian:12\"}, \"ranges\": [{\"type\": \"ECOSYSTEM\", \"events\": [{\"introduced\": \"0\"}, {\"fixed\": \"3.1.2-1\"}]}]}]}]}",
+  "recorded_on": "2026-09-27",
+  "note": "Hand-made. One advisory that names another package, a GIT range, a last_affected event, another ecosystem and a repeated fixed version, and leaves out aliases, published and severity."
+}

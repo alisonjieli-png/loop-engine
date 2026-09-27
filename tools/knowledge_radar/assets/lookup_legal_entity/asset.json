@@ -1,0 +1,107 @@
+{
+  "record_type": "knowledge_radar_asset/v1",
+  "asset_id": "lookup_legal_entity",
+  "asset_version": "1.0.0",
+  "kind": "tool",
+  "title": "Look up a legal entity in the GLEIF LEI database",
+  "purpose": "Looks up legal entities in the GLEIF LEI API at call time by identifier, after a local ISO 17442 check, or by legal name, and returns registration status, dates, legal form and the managing issuer for each record.",
+  "declared_effects": [
+    "network",
+    "reads_fs",
+    "spawns_process"
+  ],
+  "dependencies": [
+    "python>=3.10"
+  ],
+  "styles": [
+    "claude",
+    "codex",
+    "opencode",
+    "pi"
+  ],
+  "entrypoint": "scripts/lookup_legal_entity.py",
+  "test": "scripts/test_lookup_legal_entity.py",
+  "data_file": null,
+  "files": [
+    {
+      "path": "SKILL.md",
+      "role": "skill_definition",
+      "media_type": "text/markdown"
+    },
+    {
+      "path": "LICENSE",
+      "role": "other",
+      "media_type": "text/plain"
+    },
+    {
+      "path": "contracts/input.schema.json",
+      "role": "configuration",
+      "media_type": "application/schema+json"
+    },
+    {
+      "path": "contracts/output.schema.json",
+      "role": "configuration",
+      "media_type": "application/schema+json"
+    },
+    {
+      "path": "scripts/lookup_legal_entity.py",
+      "role": "skill_script",
+      "media_type": "text/x-python"
+    },
+    {
+      "path": "scripts/test_lookup_legal_entity.py",
+      "role": "skill_script",
+      "media_type": "text/x-python"
+    },
+    {
+      "path": "verification/cases.json",
+      "role": "other",
+      "media_type": "application/json"
+    },
+    {
+      "path": "verification/dependencies.lock.json",
+      "role": "other",
+      "media_type": "application/json"
+    },
+    {
+      "path": "verification/fixture-gleif-bad-lei-in-record.json",
+      "role": "other",
+      "media_type": "application/json"
+    },
+    {
+      "path": "verification/fixture-gleif-html-404.json",
+      "role": "other",
+      "media_type": "application/json"
+    },
+    {
+      "path": "verification/fixture-gleif-json-404-other.json",
+      "role": "other",
+      "media_type": "application/json"
+    },
+    {
+      "path": "verification/fixture-gleif-lei-record.json",
+      "role": "other",
+      "media_type": "application/json"
+    },
+    {
+      "path": "verification/fixture-gleif-missing-fields.json",
+      "role": "other",
+      "media_type": "application/json"
+    },
+    {
+      "path": "verification/fixture-gleif-name-search.json",
+      "role": "other",
+      "media_type": "application/json"
+    },
+    {
+      "path": "verification/fixture-gleif-not-found.json",
+      "role": "other",
+      "media_type": "application/json"
+    },
+    {
+      "path": "verification/fixture-gleif-other-lei.json",
+      "role": "other",
+      "media_type": "application/json"
+    }
+  ]
+}

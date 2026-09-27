@@ -1,0 +1,286 @@
+{
+  "record_type": "knowledge_radar_tool_cases/v1",
+  "cases": [
+    {
+      "name": "supabase_degraded_with_open_incident",
+      "request": {"provider": "supabase"},
+      "request_matches_input_schema": true,
+      "fixtures": ["fixture-supabase-summary.json"],
+      "now": "2026-09-27T15:05:45Z",
+      "expected_requests": [{"url": "https://status.supabase.com/api/v2/summary.json", "body": null}],
+      "expected": {
+        "outcome": "result",
+        "result": {
+          "record_type": "knowledge_radar_check_service_status_result/v1",
+          "provider": "supabase",
+          "indicator": "minor",
+          "description": "Partially Degraded Service",
+          "updated_at": "2026-09-27T14:59:19.729Z",
+          "non_operational_components": [{"name": "API Gateway", "status": "degraded_performance"}],
+          "open_incidents": [
+            {
+              "name": "401 errors due to JWT rejections",
+              "status": "identified",
+              "impact": "minor",
+              "started_at": "2026-08-14T02:23:18.361Z",
+              "shortlink": "https://stspg.io/18v97b9scdh2"
+            }
+          ],
+          "source": "https://status.supabase.com/api/v2/summary.json",
+          "observed_at": "2026-09-27T15:05:45Z"
+        }
+      }
+    },
+    {
+      "name": "github_all_operational",
+      "request": {"provider": "github"},
+      "request_matches_input_schema": true,
+      "fixtures": ["fixture-github-summary.json"],
+      "now": "2026-09-27T15:05:35Z",
+      "expected_requests": [{"url": "https://www.githubstatus.com/api/v2/summary.json", "body": null}],
+      "expected": {
+        "outcome": "result",
+        "result": {
+          "record_type": "knowledge_radar_check_service_status_result/v1",
+          "provider": "github",
+          "indicator": "none",
+          "description": "All Systems Operational",
+          "updated_at": "2026-09-27T14:18:50.034Z",
+          "non_operational_components": [],
+          "open_incidents": [],
+          "source": "https://www.githubstatus.com/api/v2/summary.json",
+          "observed_at": "2026-09-27T15:05:35Z"
+        }
+      }
+    },
+    {
+      "name": "cloudflare_groups_outage_and_maintenance",
+      "request": {"provider": "cloudflare"},
+      "request_matches_input_schema": true,
+      "fixtures": ["fixture-cloudflare-summary.json"],
+      "now": "2026-09-27T15:05:37Z",
+      "via_stdin": true,
+      "expected_requests": [{"url": "https://www.cloudflarestatus.com/api/v2/summary.json", "body": null}],
+      "expected": {
+        "outcome": "result",
+        "result": {
+          "record_type": "knowledge_radar_check_service_status_result/v1",
+          "provider": "cloudflare",
+          "indicator": "minor",
+          "description": "Minor Service Outage",
+          "updated_at": "2026-08-27T00:00:00.000Z",
+          "non_operational_components": [
+            {"name": "Cloudflare Sites and Services", "status": "degraded_performance"},
+            {"name": "Asia", "status": "partial_outage"},
+            {"name": "Canberra, ACT, Australia - (CBR)", "status": "partial_outage"},
+            {"name": "Bangalore, India - (BLR)", "status": "under_maintenance"}
+          ],
+          "open_incidents": [
+            {
+              "name": "Cloudflare One Clients are incorrectly challenged on some sites",
+              "status": "identified",
+              "impact": "minor",
+              "started_at": "2026-09-22T19:23:17.000Z",
+              "shortlink": "https://www.cloudflarestatus.com/incidents/tl0vrgjy99r0"
+            },
+            {
+              "name": "Incorrect geo location for some Cloudflare WARP users",
+              "status": "identified",
+              "impact": "minor",
+              "started_at": "2026-08-27T18:46:19.000Z",
+              "shortlink": "https://www.cloudflarestatus.com/incidents/9g65dxfbcjln"
+            }
+          ],
+          "source": "https://www.cloudflarestatus.com/api/v2/summary.json",
+          "observed_at": "2026-09-27T15:05:37Z"
+        }
+      }
+    },
+    {
+      "name": "missing_fields_stay_null_and_closed_incidents_left_out",
+      "request": {"provider": "render"},
+      "request_matches_input_schema": true,
+      "fixtures": ["fixture-missing-fields-summary.json"],
+      "now": "2026-09-27T12:00:00Z",
+      "expected": {
+        "outcome": "result",
+        "result": {
+          "record_type": "knowledge_radar_check_service_status_result/v1",
+          "provider": "render",
+          "indicator": "major",
+          "description": null,
+          "updated_at": null,
+          "non_operational_components": [{"name": "Builds", "status": "major_outage"}],
+          "open_incidents": [
+            {
+              "name": "Builds fail to start",
+              "status": "investigating",
+              "impact": "major",
+              "started_at": "2026-09-27T10:00:00.000Z",
+              "shortlink": null
+            }
+          ],
+          "source": "https://status.render.com/api/v2/summary.json",
+          "observed_at": "2026-09-27T12:00:00Z"
+        }
+      }
+    },
+    {
+      "name": "known_wrong_supabase_reported_as_operational",
+      "known_wrong": true,
+      "request": {"provider": "supabase"},
+      "fixtures": ["fixture-supabase-summary.json"],
+      "now": "2026-09-27T15:05:45Z",
+      "expected": {
+        "outcome": "result",
+        "fields": {"indicator": "none", "non_operational_components": [], "open_incidents": []}
+      }
+    },
+    {
+      "name": "known_wrong_resolved_incident_reported_as_open",
+      "known_wrong": true,
+      "request": {"provider": "render"},
+      "fixtures": ["fixture-missing-fields-summary.json"],
+      "now": "2026-09-27T12:00:00Z",
+      "expected": {
+        "outcome": "result",
+        "fields": {
+          "open_incidents": [
+            {
+              "name": "Builds fail to start",
+              "status": "investigating",
+              "impact": "major",
+              "started_at": "2026-09-27T10:00:00.000Z",
+              "shortlink": null
+            },
+            {
+              "name": "Slow dashboard",
+              "status": "resolved",
+              "impact": "minor",
+              "started_at": "2026-09-26T08:00:00.000Z",
+              "shortlink": "https://example.com/incidents/2"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "html_page_instead_of_json_is_refused",
+      "request": {"provider": "netlify"},
+      "fixtures": ["fixture-html-page.json"],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 1,
+      "expected": {"outcome": "error", "exit_code": 3, "code": "unexpected_source_shape"}
+    },
+    {
+      "name": "answer_without_incidents_list_is_refused",
+      "request": {"provider": "github"},
+      "fixtures": ["fixture-openai-summary.json"],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 1,
+      "expected": {"outcome": "error", "exit_code": 3, "code": "unexpected_source_shape"}
+    },
+    {
+      "name": "http_503_is_a_source_failure",
+      "request": {"provider": "vercel"},
+      "fixtures": ["fixture-http-503.json"],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 1,
+      "expected": {"outcome": "error", "exit_code": 3, "code": "source_http_error"}
+    },
+    {
+      "name": "network_timeout_is_a_source_failure",
+      "request": {"provider": "npm"},
+      "fixtures": [],
+      "fetch_error": "timeout",
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 1,
+      "expected": {"outcome": "error", "exit_code": 3, "code": "source_unreachable"}
+    },
+    {
+      "name": "provider_not_on_allow_list_is_refused_before_any_request",
+      "request": {"provider": "openai"},
+      "request_matches_input_schema": false,
+      "fixtures": [],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 0,
+      "expected": {"outcome": "error", "exit_code": 2, "code": "unknown_provider"}
+    },
+    {
+      "name": "host_instead_of_provider_is_refused_before_any_request",
+      "request": {"provider": "github", "host": "example.com"},
+      "request_matches_input_schema": false,
+      "fixtures": [],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 0,
+      "expected": {"outcome": "error", "exit_code": 2, "code": "invalid_request"}
+    },
+    {
+      "name": "empty_object_is_refused_before_any_request",
+      "request": {},
+      "request_matches_input_schema": false,
+      "fixtures": [],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 0,
+      "expected": {"outcome": "error", "exit_code": 2, "code": "invalid_request"}
+    },
+    {
+      "name": "list_instead_of_object_is_refused_before_any_request",
+      "request": ["github"],
+      "request_matches_input_schema": false,
+      "fixtures": [],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 0,
+      "expected": {"outcome": "error", "exit_code": 2, "code": "invalid_request"}
+    },
+    {
+      "name": "text_that_is_not_json_is_refused_before_any_request",
+      "arguments": ["{provider: github}"],
+      "fixtures": [],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 0,
+      "expected": {"outcome": "error", "exit_code": 2, "code": "invalid_request"}
+    },
+    {
+      "name": "two_arguments_are_refused_before_any_request",
+      "arguments": ["{\"provider\": \"github\"}", "{\"provider\": \"npm\"}"],
+      "fixtures": [],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 0,
+      "expected": {"outcome": "error", "exit_code": 2, "code": "invalid_request"}
+    },
+    {
+      "name": "redirect_to_another_host_is_refused",
+      "kind": "redirect",
+      "from": "https://www.githubstatus.com/api/v2/summary.json",
+      "to": "https://example.com/api/v2/summary.json",
+      "expected": {"outcome": "error", "exit_code": 3, "code": "redirect_refused"}
+    },
+    {
+      "name": "redirect_to_plain_http_is_refused",
+      "kind": "redirect",
+      "from": "https://www.githubstatus.com/api/v2/summary.json",
+      "to": "http://www.githubstatus.com/api/v2/summary.json",
+      "expected": {"outcome": "error", "exit_code": 3, "code": "redirect_refused"}
+    },
+    {
+      "name": "redirect_on_the_same_host_is_followed",
+      "kind": "redirect",
+      "from": "https://www.githubstatus.com/api/v2/summary.json",
+      "to": "https://www.githubstatus.com/api/v2/summary.json?page=1",
+      "expected": {"outcome": "followed"}
+    },
+    {
+      "name": "answer_of_exactly_two_megabytes_is_read",
+      "kind": "size_limit",
+      "bytes": 2097152,
+      "expected": {"outcome": "read"}
+    },
+    {
+      "name": "answer_over_two_megabytes_is_refused",
+      "kind": "size_limit",
+      "bytes": 2097153,
+      "expected": {"outcome": "error", "exit_code": 3, "code": "source_too_large"}
+    }
+  ]
+}

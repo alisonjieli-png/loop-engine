@@ -1,0 +1,8 @@
+{
+  "record_type": "knowledge_radar_fixture/v1",
+  "status": 200,
+  "content_type": "application/json",
+  "body_text": "{\"page\": {\"id\": \"handmade0001\", \"name\": \"Example\"}, \"status\": {\"indicator\": \"major\"}, \"components\": [{\"id\": \"handmadec001\", \"name\": \"Builds\", \"status\": \"major_outage\", \"group\": false}, {\"id\": \"handmadec002\", \"name\": \"Web\", \"status\": \"operational\", \"group\": false}], \"incidents\": [{\"id\": \"handmadei001\", \"name\": \"Builds fail to start\", \"status\": \"investigating\", \"impact\": \"major\", \"started_at\": \"2026-09-27T10:00:00.000Z\"}, {\"id\": \"handmadei002\", \"name\": \"Slow dashboard\", \"status\": \"resolved\", \"impact\": \"minor\", \"started_at\": \"2026-09-26T08:00:00.000Z\", \"shortlink\": \"https://example.com/incidents/2\"}, {\"id\": \"handmadei003\", \"name\": \"Old report\", \"status\": \"postmortem\", \"impact\": \"none\", \"started_at\": \"2026-09-20T08:00:00.000Z\", \"shortlink\": \"https://example.com/incidents/3\"}], \"scheduled_maintenances\": []}",
+  "recorded_on": "2026-09-27",
+  "note": "Hand-made. The page leaves out page.updated_at, status.description and one incident shortlink; one incident is resolved and one is in postmortem."
+}

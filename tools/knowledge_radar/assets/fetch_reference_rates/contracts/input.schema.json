@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "fetch_reference_rates request",
+  "description": "One JSON object that names a base currency and, if you want only some rates, the currencies to return. The tool reads https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml. A currency that the European Central Bank did not publish on the reference date is refused with the code currency_not_published after the read.",
+  "type": "object",
+  "properties": {
+    "base": {
+      "description": "Three-letter currency code in capital letters, for example EUR or USD. The rates are units of each symbol for one unit of this currency.",
+      "type": "string",
+      "pattern": "^[A-Z]{3}$"
+    },
+    "symbols": {
+      "description": "The currencies to return, 1 to 40 codes without repeats. Leave the field out to get every published currency except the base.",
+      "type": "array",
+      "items": {"type": "string", "pattern": "^[A-Z]{3}$"},
+      "minItems": 1,
+      "maxItems": 40,
+      "uniqueItems": true
+    }
+  },
+  "required": ["base"],
+  "additionalProperties": false
+}

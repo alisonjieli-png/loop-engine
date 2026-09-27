@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "lookup_legal_entity request",
+  "description": "One JSON object with either lei, to read one record, or name, to search by legal name. The tool reads api.gleif.org. Besides this contract, the tool checks the ISO 17442 check digits of an LEI (mod 97 must equal 1) and refuses a bad LEI with the code invalid_lei before any request.",
+  "type": "object",
+  "properties": {
+    "lei": {
+      "description": "Legal Entity Identifier: 20 characters, 18 capital letters or digits and then 2 check digits.",
+      "type": "string",
+      "pattern": "^[A-Z0-9]{18}[0-9]{2}$"
+    },
+    "name": {
+      "description": "Legal name to search for, 1 to 200 characters, not only spaces, without control characters. GLEIF decides which names match.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]*[^\\s\\u0000-\\u001f\\u007f][^\\u0000-\\u001f\\u007f]*$"
+    },
+    "page_size": {
+      "description": "How many records a name search returns, from 1 to 10. Only with name.",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10,
+      "default": 5
+    }
+  },
+  "additionalProperties": false,
+  "oneOf": [
+    {"required": ["lei"], "properties": {"name": false, "page_size": false}},
+    {"required": ["name"], "properties": {"lei": false}}
+  ]
+}

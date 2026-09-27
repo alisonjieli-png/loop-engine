@@ -1,0 +1,8 @@
+{
+  "record_type": "knowledge_radar_fixture/v1",
+  "status": 503,
+  "content_type": "text/plain",
+  "body_text": "Service Unavailable",
+  "recorded_on": "2026-09-27",
+  "note": "Hand-made. The status host answers with HTTP status 503."
+}

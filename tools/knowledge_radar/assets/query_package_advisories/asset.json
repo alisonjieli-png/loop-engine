@@ -1,0 +1,112 @@
+{
+  "record_type": "knowledge_radar_asset/v1",
+  "asset_id": "query_package_advisories",
+  "asset_version": "1.0.0",
+  "kind": "tool",
+  "title": "Query open source advisories for one package version",
+  "purpose": "Asks the OSV.dev API at call time which published advisories affect one exact package version and returns identifiers, aliases, dates, severity entries and fixed versions, so a harness never relies on a stored advisory list.",
+  "declared_effects": [
+    "network",
+    "reads_fs",
+    "spawns_process"
+  ],
+  "dependencies": [
+    "python>=3.10"
+  ],
+  "styles": [
+    "claude",
+    "codex",
+    "opencode",
+    "pi"
+  ],
+  "entrypoint": "scripts/query_package_advisories.py",
+  "test": "scripts/test_query_package_advisories.py",
+  "data_file": null,
+  "files": [
+    {
+      "path": "SKILL.md",
+      "role": "skill_definition",
+      "media_type": "text/markdown"
+    },
+    {
+      "path": "LICENSE",
+      "role": "other",
+      "media_type": "text/plain"
+    },
+    {
+      "path": "contracts/input.schema.json",
+      "role": "configuration",
+      "media_type": "application/schema+json"
+    },
+    {
+      "path": "contracts/output.schema.json",
+      "role": "configuration",
+      "media_type": "application/schema+json"
+    },
+    {
+      "path": "scripts/query_package_advisories.py",
+      "role": "skill_script",
+      "media_type": "text/x-python"
+    },
+    {
+      "path": "scripts/test_query_package_advisories.py",
+      "role": "skill_script",
+      "media_type": "text/x-python"
+    },
+    {
+      "path": "verification/cases.json",
+      "role": "other",
+      "media_type": "application/json"
+    },
+    {
+      "path": "verification/dependencies.lock.json",
+      "role": "other",
+      "media_type": "application/json"
+    },
+    {
+      "path": "verification/fixture-osv-bad-identifier.json",
+      "role": "other",
+      "media_type": "application/json"
+    },
+    {
+      "path": "verification/fixture-osv-empty.json",
+      "role": "other",
+      "media_type": "application/json"
+    },
+    {
+      "path": "verification/fixture-osv-filtering.json",
+      "role": "other",
+      "media_type": "application/json"
+    },
+    {
+      "path": "verification/fixture-osv-http-400.json",
+      "role": "other",
+      "media_type": "application/json"
+    },
+    {
+      "path": "verification/fixture-osv-jinja2-2-4-1.json",
+      "role": "other",
+      "media_type": "application/json"
+    },
+    {
+      "path": "verification/fixture-osv-page-1.json",
+      "role": "other",
+      "media_type": "application/json"
+    },
+    {
+      "path": "verification/fixture-osv-page-2-repeat.json",
+      "role": "other",
+      "media_type": "application/json"
+    },
+    {
+      "path": "verification/fixture-osv-page-2.json",
+      "role": "other",
+      "media_type": "application/json"
+    },
+    {
+      "path": "verification/fixture-osv-vulns-not-list.json",
+      "role": "other",
+      "media_type": "application/json"
+    }
+  ]
+}

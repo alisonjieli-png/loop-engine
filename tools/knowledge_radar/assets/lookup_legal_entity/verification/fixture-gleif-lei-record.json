@@ -1,0 +1,8 @@
+{
+  "record_type": "knowledge_radar_fixture/v1",
+  "status": 200,
+  "content_type": "application/vnd.api+json",
+  "body_text": "{\"meta\": {\"goldenCopy\": {\"publishDate\": \"2026-09-27T00:00:00Z\"}}, \"data\": {\"type\": \"lei-records\", \"id\": \"506700GE1G29325QX363\", \"attributes\": {\"lei\": \"506700GE1G29325QX363\", \"entity\": {\"legalName\": {\"name\": \"Global Legal Entity Identifier Foundation\", \"language\": \"de-CH\"}, \"otherNames\": [{\"name\": \"Global Legal Entity Identifier Stiftung\", \"language\": \"de-CH\", \"type\": \"ALTERNATIVE_LANGUAGE_LEGAL_NAME\"}], \"jurisdiction\": \"CH\", \"category\": \"GENERAL\", \"legalForm\": {\"id\": \"2JZ4\", \"other\": null}, \"status\": \"ACTIVE\", \"creationDate\": \"2014-07-31T00:00:00Z\"}, \"registration\": {\"initialRegistrationDate\": \"2018-03-16T00:00:00Z\", \"lastUpdateDate\": \"2026-04-23T05:00:06Z\", \"status\": \"ISSUED\", \"nextRenewalDate\": \"2027-03-15T00:00:00Z\", \"managingLou\": \"506700LOLO7M6V0E4247\", \"corroborationLevel\": \"FULLY_CORROBORATED\", \"validatedAt\": {\"id\": \"RA000548\", \"other\": null}, \"validatedAs\": \"CHE200595965\", \"otherValidationAuthorities\": []}, \"bic\": null, \"conformityFlag\": \"CONFORMING\"}}}",
+  "recorded_on": "2026-09-27",
+  "note": "Recorded from https://api.gleif.org/api/v1/lei-records/506700GE1G29325QX363 at 2026-09-27T15:10:21Z. Trimmed: addresses, events, relationships and links removed."
+}

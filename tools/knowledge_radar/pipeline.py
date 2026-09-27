@@ -509,6 +509,7 @@ def stage_feed(run: Run) -> dict:
     (run.folder / "feed" / "radar-index.json").write_bytes(feeds.dumps(index))
     (run.folder / "feed" / "radar-feed.json").write_bytes(feeds.dumps(feeds.json_feed(index)))
     (run.folder / "feed" / "radar.xml").write_text(feeds.rss(index), encoding="utf-8")
+    (run.folder / "feed" / "radar.html").write_text(feeds.teaser_html(index), encoding="utf-8")
     return index["answer_states"]
 
 

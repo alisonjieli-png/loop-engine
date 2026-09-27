@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "fetch_reference_rates result",
+  "description": "Euro foreign exchange reference rates of the European Central Bank for one reference date, expressed for the requested base currency.",
+  "type": "object",
+  "properties": {
+    "record_type": {"const": "knowledge_radar_fetch_reference_rates_result/v1"},
+    "base": {"type": "string", "pattern": "^[A-Z]{3}$"},
+    "reference_date": {
+      "description": "The day of the rates, as the European Central Bank gives it.",
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "rates": {
+      "description": "Units of each currency for one unit of the base. A rate between two currencies other than the euro is computed through the euro and rounded half up to 6 decimal places.",
+      "type": "object",
+      "patternProperties": {"^[A-Z]{3}$": {"type": "number", "minimum": 0}},
+      "additionalProperties": false
+    },
+    "stale": {
+      "description": "true when the reference date is more than 4 calendar days before the UTC date of observed_at.",
+      "type": "boolean"
+    },
+    "attribution": {"const": "Source: European Central Bank, euro foreign exchange reference rates. The reference rates are published for information purposes only. Using the rates for transaction purposes is strongly discouraged."},
+    "source": {"const": "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml"},
+    "observed_at": {
+      "description": "UTC time of the read.",
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+    }
+  },
+  "required": ["record_type", "base", "reference_date", "rates", "stale", "attribution", "source", "observed_at"],
+  "additionalProperties": false
+}

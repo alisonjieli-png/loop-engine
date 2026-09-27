@@ -1,0 +1,8 @@
+{
+  "record_type": "knowledge_radar_fixture/v1",
+  "status": 200,
+  "content_type": "application/json",
+  "body_text": "{\"page\": {\"id\": \"01JMDK9XYNY6RXSED6SDWW50WY\", \"name\": \"OpenAI\", \"url\": \"https://status.openai.com/\", \"updated_at\": \"2026-09-24T23:39:27Z\"}, \"status\": {\"description\": \"All Systems Operational\", \"indicator\": \"none\"}, \"components\": [{\"id\": \"01KTQBYVARFJ5KMCSECM06VKCF\", \"name\": \"Ads Manager\", \"status\": \"operational\", \"created_at\": \"2026-06-09T23:37:21Z\", \"updated_at\": \"2026-09-24T23:39:27Z\", \"position\": 0, \"page_id\": \"01JMDK9XYNY6RXSED6SDWW50WY\"}, {\"id\": \"01JMXBRMFE4MAP2BHSJNZ787WX\", \"name\": \"Images\", \"status\": \"operational\", \"created_at\": \"2025-02-25T01:32:55Z\", \"updated_at\": \"2026-09-24T23:39:27Z\", \"position\": 1, \"page_id\": \"01JMDK9XYNY6RXSED6SDWW50WY\"}]}",
+  "recorded_on": "2026-09-27",
+  "note": "Recorded from https://status.openai.com/api/v2/summary.json at 2026-09-27T15:05:49Z. Trimmed to two of 25 components. The answer has no incidents list, which is why openai is not on the allow list."
+}

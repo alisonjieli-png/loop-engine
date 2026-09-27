@@ -1,0 +1,8 @@
+{
+  "record_type": "knowledge_radar_fixture/v1",
+  "status": 404,
+  "content_type": "text/html",
+  "body_text": "<!DOCTYPE html><html><head><title>Not Found</title></head><body><p>Not Found</p></body></html>",
+  "recorded_on": "2026-09-27",
+  "note": "Hand-made. A 404 answer that is an HTML page, not GLEIF's JSON errors list."
+}

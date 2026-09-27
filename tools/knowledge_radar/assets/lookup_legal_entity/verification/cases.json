@@ -1,0 +1,382 @@
+{
+  "record_type": "knowledge_radar_tool_cases/v1",
+  "cases": [
+    {
+      "name": "lookup_by_lei_recorded_record",
+      "request": {"lei": "506700GE1G29325QX363"},
+      "request_matches_input_schema": true,
+      "fixtures": ["fixture-gleif-lei-record.json"],
+      "now": "2026-09-27T15:10:21Z",
+      "expected_requests": [{"url": "https://api.gleif.org/api/v1/lei-records/506700GE1G29325QX363", "body": null}],
+      "expected": {
+        "outcome": "result",
+        "result": {
+          "record_type": "knowledge_radar_lookup_legal_entity_result/v1",
+          "query": {"lei": "506700GE1G29325QX363"},
+          "count": 1,
+          "total_matches": null,
+          "golden_copy_published_at": "2026-09-27T00:00:00Z",
+          "records": [
+            {
+              "lei": "506700GE1G29325QX363",
+              "legal_name": "Global Legal Entity Identifier Foundation",
+              "jurisdiction": "CH",
+              "legal_form_id": "2JZ4",
+              "entity_status": "ACTIVE",
+              "registration_status": "ISSUED",
+              "initial_registration_date": "2018-03-16T00:00:00Z",
+              "last_update_date": "2026-04-23T05:00:06Z",
+              "next_renewal_date": "2027-03-15T00:00:00Z",
+              "managing_lou": "506700LOLO7M6V0E4247",
+              "record_address": "https://search.gleif.org/#/record/506700GE1G29325QX363"
+            }
+          ],
+          "source": "https://api.gleif.org/api/v1/lei-records/506700GE1G29325QX363",
+          "observed_at": "2026-09-27T15:10:21Z"
+        }
+      }
+    },
+    {
+      "name": "search_by_name_recorded_records",
+      "request": {"name": "Global Legal Entity Identifier Foundation", "page_size": 3},
+      "request_matches_input_schema": true,
+      "fixtures": ["fixture-gleif-name-search.json"],
+      "now": "2026-09-27T15:10:24Z",
+      "expected_requests": [
+        {"url": "https://api.gleif.org/api/v1/lei-records?filter[entity.legalName]=Global%20Legal%20Entity%20Identifier%20Foundation&page[size]=3", "body": null}
+      ],
+      "expected": {
+        "outcome": "result",
+        "result": {
+          "record_type": "knowledge_radar_lookup_legal_entity_result/v1",
+          "query": {"name": "Global Legal Entity Identifier Foundation", "page_size": 3},
+          "count": 2,
+          "total_matches": 2,
+          "golden_copy_published_at": "2026-09-27T00:00:00Z",
+          "records": [
+            {
+              "lei": "506700GE1G29325QX363",
+              "legal_name": "Global Legal Entity Identifier Foundation",
+              "jurisdiction": "CH",
+              "legal_form_id": "2JZ4",
+              "entity_status": "ACTIVE",
+              "registration_status": "ISSUED",
+              "initial_registration_date": "2018-03-16T00:00:00Z",
+              "last_update_date": "2026-04-23T05:00:06Z",
+              "next_renewal_date": "2027-03-15T00:00:00Z",
+              "managing_lou": "506700LOLO7M6V0E4247",
+              "record_address": "https://search.gleif.org/#/record/506700GE1G29325QX363"
+            },
+            {
+              "lei": "875500ELOZEL05BVXV37",
+              "legal_name": "Global Legal Entity Identifier Foundation Singapore Branch",
+              "jurisdiction": "CH",
+              "legal_form_id": "2JZ4",
+              "entity_status": "ACTIVE",
+              "registration_status": "ISSUED",
+              "initial_registration_date": "2022-12-12T12:30:42Z",
+              "last_update_date": "2026-04-19T07:56:06Z",
+              "next_renewal_date": "2026-12-15T13:20:10Z",
+              "managing_lou": "52990034RLKT0WSOAM90",
+              "record_address": "https://search.gleif.org/#/record/875500ELOZEL05BVXV37"
+            }
+          ],
+          "source": "https://api.gleif.org/api/v1/lei-records?filter[entity.legalName]=Global%20Legal%20Entity%20Identifier%20Foundation&page[size]=3",
+          "observed_at": "2026-09-27T15:10:24Z"
+        }
+      }
+    },
+    {
+      "name": "lei_that_gleif_does_not_hold_gives_an_empty_list",
+      "request": {"lei": "ZZZZ00RADARTEST00016"},
+      "request_matches_input_schema": true,
+      "fixtures": ["fixture-gleif-not-found.json"],
+      "now": "2026-09-27T15:10:26Z",
+      "via_stdin": true,
+      "expected": {
+        "outcome": "result",
+        "result": {
+          "record_type": "knowledge_radar_lookup_legal_entity_result/v1",
+          "query": {"lei": "ZZZZ00RADARTEST00016"},
+          "count": 0,
+          "total_matches": null,
+          "golden_copy_published_at": null,
+          "records": [],
+          "source": "https://api.gleif.org/api/v1/lei-records/ZZZZ00RADARTEST00016",
+          "observed_at": "2026-09-27T15:10:26Z"
+        }
+      }
+    },
+    {
+      "name": "name_search_without_page_size_asks_for_five",
+      "request": {"name": "Global Legal Entity Identifier Foundation"},
+      "request_matches_input_schema": true,
+      "fixtures": ["fixture-gleif-name-search.json"],
+      "now": "2026-09-27T12:00:00Z",
+      "expected_requests": [
+        {"url": "https://api.gleif.org/api/v1/lei-records?filter[entity.legalName]=Global%20Legal%20Entity%20Identifier%20Foundation&page[size]=5", "body": null}
+      ],
+      "expected": {
+        "outcome": "result",
+        "fields": {"query": {"name": "Global Legal Entity Identifier Foundation", "page_size": 5}, "count": 2}
+      }
+    },
+    {
+      "name": "name_with_spaces_ampersand_and_accents_is_percent_encoded",
+      "request": {"name": "Müller & Söhne GmbH", "page_size": 2},
+      "request_matches_input_schema": true,
+      "fixtures": ["fixture-gleif-missing-fields.json"],
+      "now": "2026-09-27T12:00:00Z",
+      "expected_requests": [
+        {"url": "https://api.gleif.org/api/v1/lei-records?filter[entity.legalName]=M%C3%BCller%20%26%20S%C3%B6hne%20GmbH&page[size]=2", "body": null}
+      ],
+      "expected": {"outcome": "result", "fields": {"query": {"name": "Müller & Söhne GmbH", "page_size": 2}}}
+    },
+    {
+      "name": "whole_number_written_as_decimal_is_one_page_size",
+      "request": {"name": "Global Legal Entity Identifier Foundation", "page_size": 2.0},
+      "request_matches_input_schema": true,
+      "fixtures": ["fixture-gleif-name-search.json"],
+      "now": "2026-09-27T12:00:00Z",
+      "expected_requests": [
+        {"url": "https://api.gleif.org/api/v1/lei-records?filter[entity.legalName]=Global%20Legal%20Entity%20Identifier%20Foundation&page[size]=2", "body": null}
+      ],
+      "expected": {"outcome": "result", "fields": {"query": {"name": "Global Legal Entity Identifier Foundation", "page_size": 2}}}
+    },
+    {
+      "name": "missing_fields_stay_null",
+      "request": {"name": "Global Legal Entity Identifier Foundation", "page_size": 1},
+      "request_matches_input_schema": true,
+      "fixtures": ["fixture-gleif-missing-fields.json"],
+      "now": "2026-09-27T12:00:00Z",
+      "expected": {
+        "outcome": "result",
+        "result": {
+          "record_type": "knowledge_radar_lookup_legal_entity_result/v1",
+          "query": {"name": "Global Legal Entity Identifier Foundation", "page_size": 1},
+          "count": 1,
+          "total_matches": null,
+          "golden_copy_published_at": null,
+          "records": [
+            {
+              "lei": "506700GE1G29325QX363",
+              "legal_name": "Global Legal Entity Identifier Foundation",
+              "jurisdiction": null,
+              "legal_form_id": null,
+              "entity_status": "ACTIVE",
+              "registration_status": null,
+              "initial_registration_date": null,
+              "last_update_date": null,
+              "next_renewal_date": null,
+              "managing_lou": null,
+              "record_address": "https://search.gleif.org/#/record/506700GE1G29325QX363"
+            }
+          ],
+          "source": "https://api.gleif.org/api/v1/lei-records?filter[entity.legalName]=Global%20Legal%20Entity%20Identifier%20Foundation&page[size]=1",
+          "observed_at": "2026-09-27T12:00:00Z"
+        }
+      }
+    },
+    {
+      "name": "known_wrong_other_language_name_reported_as_legal_name",
+      "known_wrong": true,
+      "request": {"lei": "506700GE1G29325QX363"},
+      "fixtures": ["fixture-gleif-lei-record.json"],
+      "now": "2026-09-27T15:10:21Z",
+      "expected": {
+        "outcome": "result",
+        "fields": {
+          "records": [
+            {
+              "lei": "506700GE1G29325QX363",
+              "legal_name": "Global Legal Entity Identifier Stiftung",
+              "jurisdiction": "CH",
+              "legal_form_id": "2JZ4",
+              "entity_status": "ACTIVE",
+              "registration_status": "ISSUED",
+              "initial_registration_date": "2018-03-16T00:00:00Z",
+              "last_update_date": "2026-04-23T05:00:06Z",
+              "next_renewal_date": "2027-03-15T00:00:00Z",
+              "managing_lou": "506700LOLO7M6V0E4247",
+              "record_address": "https://search.gleif.org/#/record/506700GE1G29325QX363"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "known_wrong_page_size_reported_as_total_matches",
+      "known_wrong": true,
+      "request": {"name": "Global Legal Entity Identifier Foundation", "page_size": 3},
+      "fixtures": ["fixture-gleif-name-search.json"],
+      "now": "2026-09-27T15:10:24Z",
+      "expected": {"outcome": "result", "fields": {"total_matches": 3}}
+    },
+    {
+      "name": "lei_with_a_wrong_check_digit_is_refused_before_any_request",
+      "request": {"lei": "506700GE1G29325QX364"},
+      "request_matches_input_schema": true,
+      "fixtures": [],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 0,
+      "expected": {"outcome": "error", "exit_code": 2, "code": "invalid_lei"}
+    },
+    {
+      "name": "lei_with_swapped_check_digits_is_refused_before_any_request",
+      "request": {"lei": "506700GE1G29325QX336"},
+      "request_matches_input_schema": true,
+      "fixtures": [],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 0,
+      "expected": {"outcome": "error", "exit_code": 2, "code": "invalid_lei"}
+    },
+    {
+      "name": "lei_with_swapped_letters_is_refused_before_any_request",
+      "request": {"lei": "506700GE1G29325XQ363"},
+      "request_matches_input_schema": true,
+      "fixtures": [],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 0,
+      "expected": {"outcome": "error", "exit_code": 2, "code": "invalid_lei"}
+    },
+    {
+      "name": "lower_case_lei_is_refused_before_any_request",
+      "request": {"lei": "506700ge1g29325qx363"},
+      "request_matches_input_schema": false,
+      "fixtures": [],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 0,
+      "expected": {"outcome": "error", "exit_code": 2, "code": "invalid_lei"}
+    },
+    {
+      "name": "lei_of_nineteen_characters_is_refused_before_any_request",
+      "request": {"lei": "506700GE1G29325QX36"},
+      "request_matches_input_schema": false,
+      "fixtures": [],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 0,
+      "expected": {"outcome": "error", "exit_code": 2, "code": "invalid_lei"}
+    },
+    {
+      "name": "lei_and_name_together_are_refused_before_any_request",
+      "request": {"lei": "506700GE1G29325QX363", "name": "Global Legal Entity Identifier Foundation"},
+      "request_matches_input_schema": false,
+      "fixtures": [],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 0,
+      "expected": {"outcome": "error", "exit_code": 2, "code": "invalid_request"}
+    },
+    {
+      "name": "empty_request_is_refused_before_any_request",
+      "request": {},
+      "request_matches_input_schema": false,
+      "fixtures": [],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 0,
+      "expected": {"outcome": "error", "exit_code": 2, "code": "invalid_request"}
+    },
+    {
+      "name": "page_size_with_lei_is_refused_before_any_request",
+      "request": {"lei": "506700GE1G29325QX363", "page_size": 5},
+      "request_matches_input_schema": false,
+      "fixtures": [],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 0,
+      "expected": {"outcome": "error", "exit_code": 2, "code": "invalid_request"}
+    },
+    {
+      "name": "page_size_eleven_is_refused_before_any_request",
+      "request": {"name": "Global Legal Entity Identifier Foundation", "page_size": 11},
+      "request_matches_input_schema": false,
+      "fixtures": [],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 0,
+      "expected": {"outcome": "error", "exit_code": 2, "code": "invalid_request"}
+    },
+    {
+      "name": "blank_name_is_refused_before_any_request",
+      "request": {"name": "   "},
+      "request_matches_input_schema": false,
+      "fixtures": [],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 0,
+      "expected": {"outcome": "error", "exit_code": 2, "code": "invalid_request"}
+    },
+    {
+      "name": "name_with_a_line_break_is_refused_before_any_request",
+      "request": {"name": "Global Legal\nEntity"},
+      "request_matches_input_schema": false,
+      "fixtures": [],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 0,
+      "expected": {"outcome": "error", "exit_code": 2, "code": "invalid_request"}
+    },
+    {
+      "name": "record_for_another_lei_is_refused",
+      "request": {"lei": "506700GE1G29325QX363"},
+      "fixtures": ["fixture-gleif-other-lei.json"],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 1,
+      "expected": {"outcome": "error", "exit_code": 3, "code": "unexpected_source_shape"}
+    },
+    {
+      "name": "html_404_is_a_source_failure_not_an_empty_result",
+      "request": {"lei": "506700GE1G29325QX363"},
+      "fixtures": ["fixture-gleif-html-404.json"],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 1,
+      "expected": {"outcome": "error", "exit_code": 3, "code": "source_http_error"}
+    },
+    {
+      "name": "json_404_that_is_not_the_gleif_errors_list_is_a_source_failure",
+      "request": {"lei": "506700GE1G29325QX363"},
+      "fixtures": ["fixture-gleif-json-404-other.json"],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 1,
+      "expected": {"outcome": "error", "exit_code": 3, "code": "source_http_error"}
+    },
+    {
+      "name": "refused_connection_is_a_source_failure",
+      "request": {"name": "Global Legal Entity Identifier Foundation"},
+      "fixtures": [],
+      "fetch_error": "connection_refused",
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 1,
+      "expected": {"outcome": "error", "exit_code": 3, "code": "source_unreachable"}
+    },
+    {
+      "name": "record_without_a_usable_lei_is_refused",
+      "request": {"name": "Global Legal Entity Identifier Foundation", "page_size": 3},
+      "fixtures": ["fixture-gleif-bad-lei-in-record.json"],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 1,
+      "expected": {"outcome": "error", "exit_code": 3, "code": "unexpected_source_shape"}
+    },
+    {
+      "name": "redirect_to_another_host_is_refused",
+      "kind": "redirect",
+      "from": "https://api.gleif.org/api/v1/lei-records/506700GE1G29325QX363",
+      "to": "https://example.com/api/v1/lei-records/506700GE1G29325QX363",
+      "expected": {"outcome": "error", "exit_code": 3, "code": "redirect_refused"}
+    },
+    {
+      "name": "redirect_on_the_same_host_is_followed",
+      "kind": "redirect",
+      "from": "https://api.gleif.org/api/v1/lei-records/506700GE1G29325QX363",
+      "to": "https://api.gleif.org/api/v1/lei-records/506700GE1G29325QX363?cache=0",
+      "expected": {"outcome": "followed"}
+    },
+    {
+      "name": "answer_of_exactly_two_megabytes_is_read",
+      "kind": "size_limit",
+      "bytes": 2097152,
+      "expected": {"outcome": "read"}
+    },
+    {
+      "name": "answer_over_two_megabytes_is_refused",
+      "kind": "size_limit",
+      "bytes": 2097153,
+      "expected": {"outcome": "error", "exit_code": 3, "code": "source_too_large"}
+    }
+  ]
+}

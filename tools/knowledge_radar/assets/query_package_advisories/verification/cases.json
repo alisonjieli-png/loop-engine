@@ -1,0 +1,420 @@
+{
+  "record_type": "knowledge_radar_tool_cases/v1",
+  "cases": [
+    {
+      "name": "jinja2_2_4_1_recorded_advisories",
+      "request": {"ecosystem": "PyPI", "name": "jinja2", "version": "2.4.1"},
+      "request_matches_input_schema": true,
+      "fixtures": ["fixture-osv-jinja2-2-4-1.json"],
+      "now": "2026-09-27T15:10:15Z",
+      "expected_requests": [
+        {"url": "https://api.osv.dev/v1/query", "body": {"package": {"name": "jinja2", "ecosystem": "PyPI"}, "version": "2.4.1"}}
+      ],
+      "expected": {
+        "outcome": "result",
+        "result": {
+          "record_type": "knowledge_radar_query_package_advisories_result/v1",
+          "ecosystem": "PyPI",
+          "name": "jinja2",
+          "version": "2.4.1",
+          "count": 3,
+          "vulnerabilities": [
+            {
+              "id": "GHSA-462w-v97r-4m45",
+              "aliases": ["CVE-2019-10906", "PYSEC-2019-217"],
+              "published": "2019-04-10T14:30:24Z",
+              "modified": "2024-09-24T21:03:59.802687Z",
+              "severity": [
+                {"type": "CVSS_V3", "score": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:N/A:N"},
+                {"type": "CVSS_V4", "score": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:N/SC:H/SI:N/SA:N"}
+              ],
+              "fixed_versions": ["2.10.1"],
+              "details_address": "https://osv.dev/vulnerability/GHSA-462w-v97r-4m45"
+            },
+            {
+              "id": "GHSA-h5c8-rqwp-cp95",
+              "aliases": ["CVE-2024-22195", "PYSEC-2026-1473"],
+              "published": "2024-01-11T15:20:48Z",
+              "modified": "2026-09-10T03:50:00.236017440Z",
+              "severity": [{"type": "CVSS_V3", "score": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:L/I:L/A:N"}],
+              "fixed_versions": ["3.1.3"],
+              "details_address": "https://osv.dev/vulnerability/GHSA-h5c8-rqwp-cp95"
+            },
+            {
+              "id": "PYSEC-2014-82",
+              "aliases": ["CVE-2014-0012", "GHSA-fqh9-2qgg-h84h"],
+              "published": "2014-05-19T14:55:00Z",
+              "modified": "2026-06-10T17:01:55.953302840Z",
+              "severity": null,
+              "fixed_versions": ["2.7.3"],
+              "details_address": "https://osv.dev/vulnerability/PYSEC-2014-82"
+            }
+          ],
+          "source": "https://api.osv.dev/v1/query",
+          "observed_at": "2026-09-27T15:10:15Z"
+        }
+      }
+    },
+    {
+      "name": "capitalised_pypi_name_still_finds_fixed_versions",
+      "request": {"ecosystem": "PyPI", "name": "Jinja2", "version": "2.4.1"},
+      "request_matches_input_schema": true,
+      "fixtures": ["fixture-osv-jinja2-2-4-1.json"],
+      "now": "2026-09-27T15:10:15Z",
+      "expected": {
+        "outcome": "result",
+        "fields": {
+          "name": "Jinja2",
+          "count": 3,
+          "vulnerabilities": [
+            {
+              "id": "GHSA-462w-v97r-4m45",
+              "aliases": ["CVE-2019-10906", "PYSEC-2019-217"],
+              "published": "2019-04-10T14:30:24Z",
+              "modified": "2024-09-24T21:03:59.802687Z",
+              "severity": [
+                {"type": "CVSS_V3", "score": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:N/A:N"},
+                {"type": "CVSS_V4", "score": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:N/SC:H/SI:N/SA:N"}
+              ],
+              "fixed_versions": ["2.10.1"],
+              "details_address": "https://osv.dev/vulnerability/GHSA-462w-v97r-4m45"
+            },
+            {
+              "id": "GHSA-h5c8-rqwp-cp95",
+              "aliases": ["CVE-2024-22195", "PYSEC-2026-1473"],
+              "published": "2024-01-11T15:20:48Z",
+              "modified": "2026-09-10T03:50:00.236017440Z",
+              "severity": [{"type": "CVSS_V3", "score": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:L/I:L/A:N"}],
+              "fixed_versions": ["3.1.3"],
+              "details_address": "https://osv.dev/vulnerability/GHSA-h5c8-rqwp-cp95"
+            },
+            {
+              "id": "PYSEC-2014-82",
+              "aliases": ["CVE-2014-0012", "GHSA-fqh9-2qgg-h84h"],
+              "published": "2014-05-19T14:55:00Z",
+              "modified": "2026-06-10T17:01:55.953302840Z",
+              "severity": null,
+              "fixed_versions": ["2.7.3"],
+              "details_address": "https://osv.dev/vulnerability/PYSEC-2014-82"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "no_advisory_found",
+      "request": {"ecosystem": "npm", "name": "@types/node", "version": "22.5.0"},
+      "request_matches_input_schema": true,
+      "fixtures": ["fixture-osv-empty.json"],
+      "now": "2026-09-27T12:00:00Z",
+      "via_stdin": true,
+      "expected_requests": [
+        {"url": "https://api.osv.dev/v1/query", "body": {"package": {"name": "@types/node", "ecosystem": "npm"}, "version": "22.5.0"}}
+      ],
+      "expected": {
+        "outcome": "result",
+        "result": {
+          "record_type": "knowledge_radar_query_package_advisories_result/v1",
+          "ecosystem": "npm",
+          "name": "@types/node",
+          "version": "22.5.0",
+          "count": 0,
+          "vulnerabilities": [],
+          "source": "https://api.osv.dev/v1/query",
+          "observed_at": "2026-09-27T12:00:00Z"
+        }
+      }
+    },
+    {
+      "name": "two_pages_are_joined_with_the_page_token",
+      "request": {"ecosystem": "PyPI", "name": "jinja2", "version": "2.4.1"},
+      "request_matches_input_schema": true,
+      "fixtures": ["fixture-osv-page-1.json", "fixture-osv-page-2.json"],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 2,
+      "expected_requests": [
+        {"url": "https://api.osv.dev/v1/query", "body": {"package": {"name": "jinja2", "ecosystem": "PyPI"}, "version": "2.4.1"}},
+        {"url": "https://api.osv.dev/v1/query", "body": {"package": {"name": "jinja2", "ecosystem": "PyPI"}, "version": "2.4.1", "page_token": "handmade-token-2"}}
+      ],
+      "expected": {
+        "outcome": "result",
+        "result": {
+          "record_type": "knowledge_radar_query_package_advisories_result/v1",
+          "ecosystem": "PyPI",
+          "name": "jinja2",
+          "version": "2.4.1",
+          "count": 2,
+          "vulnerabilities": [
+            {
+              "id": "GHSA-8r7q-cvjq-x353",
+              "aliases": ["CVE-2014-1402", "PYSEC-2014-8"],
+              "published": "2022-05-14T04:04:14Z",
+              "modified": "2024-09-24T18:48:44.375484Z",
+              "severity": [
+                {"type": "CVSS_V3", "score": "CVSS:3.1/AV:L/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"},
+                {"type": "CVSS_V4", "score": "CVSS:4.0/AV:L/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N"}
+              ],
+              "fixed_versions": ["2.7.2"],
+              "details_address": "https://osv.dev/vulnerability/GHSA-8r7q-cvjq-x353"
+            },
+            {
+              "id": "GHSA-g3rq-g295-4j3m",
+              "aliases": ["CVE-2020-28493", "PYSEC-2021-66", "SNYK-PYTHON-JINJA2-1012994"],
+              "published": "2021-03-19T21:28:05Z",
+              "modified": "2025-02-14T05:26:14.565160Z",
+              "severity": [
+                {"type": "CVSS_V3", "score": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L"},
+                {"type": "CVSS_V4", "score": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:L/SC:N/SI:N/SA:N"}
+              ],
+              "fixed_versions": ["2.11.3"],
+              "details_address": "https://osv.dev/vulnerability/GHSA-g3rq-g295-4j3m"
+            }
+          ],
+          "source": "https://api.osv.dev/v1/query",
+          "observed_at": "2026-09-27T12:00:00Z"
+        }
+      }
+    },
+    {
+      "name": "only_version_ranges_of_the_asked_package_give_fixed_versions",
+      "request": {"ecosystem": "PyPI", "name": "jinja2", "version": "3.1.2"},
+      "request_matches_input_schema": true,
+      "fixtures": ["fixture-osv-filtering.json"],
+      "now": "2026-09-27T12:00:00Z",
+      "expected": {
+        "outcome": "result",
+        "result": {
+          "record_type": "knowledge_radar_query_package_advisories_result/v1",
+          "ecosystem": "PyPI",
+          "name": "jinja2",
+          "version": "3.1.2",
+          "count": 1,
+          "vulnerabilities": [
+            {
+              "id": "HANDMADE-2026-0001",
+              "aliases": null,
+              "published": null,
+              "modified": "2026-09-01T00:00:00Z",
+              "severity": null,
+              "fixed_versions": ["3.0.0", "3.2.1"],
+              "details_address": "https://osv.dev/vulnerability/HANDMADE-2026-0001"
+            }
+          ],
+          "source": "https://api.osv.dev/v1/query",
+          "observed_at": "2026-09-27T12:00:00Z"
+        }
+      }
+    },
+    {
+      "name": "known_wrong_git_commit_reported_as_fixed_version",
+      "known_wrong": true,
+      "request": {"ecosystem": "PyPI", "name": "jinja2", "version": "2.4.1"},
+      "fixtures": ["fixture-osv-jinja2-2-4-1.json"],
+      "now": "2026-09-27T15:10:15Z",
+      "expected": {
+        "outcome": "result",
+        "fields": {
+          "vulnerabilities": [
+            {
+              "id": "GHSA-462w-v97r-4m45",
+              "aliases": ["CVE-2019-10906", "PYSEC-2019-217"],
+              "published": "2019-04-10T14:30:24Z",
+              "modified": "2024-09-24T21:03:59.802687Z",
+              "severity": [
+                {"type": "CVSS_V3", "score": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:N/A:N"},
+                {"type": "CVSS_V4", "score": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:N/SC:H/SI:N/SA:N"}
+              ],
+              "fixed_versions": ["2.10.1"],
+              "details_address": "https://osv.dev/vulnerability/GHSA-462w-v97r-4m45"
+            },
+            {
+              "id": "GHSA-h5c8-rqwp-cp95",
+              "aliases": ["CVE-2024-22195", "PYSEC-2026-1473"],
+              "published": "2024-01-11T15:20:48Z",
+              "modified": "2026-09-10T03:50:00.236017440Z",
+              "severity": [{"type": "CVSS_V3", "score": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:L/I:L/A:N"}],
+              "fixed_versions": ["3.1.3"],
+              "details_address": "https://osv.dev/vulnerability/GHSA-h5c8-rqwp-cp95"
+            },
+            {
+              "id": "PYSEC-2014-82",
+              "aliases": ["CVE-2014-0012", "GHSA-fqh9-2qgg-h84h"],
+              "published": "2014-05-19T14:55:00Z",
+              "modified": "2026-06-10T17:01:55.953302840Z",
+              "severity": null,
+              "fixed_versions": ["acb672b6a179567632e032f547582f30fa2f4aa7", "2.7.3"],
+              "details_address": "https://osv.dev/vulnerability/PYSEC-2014-82"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "known_wrong_alias_records_merged_into_one",
+      "known_wrong": true,
+      "request": {"ecosystem": "PyPI", "name": "jinja2", "version": "2.4.1"},
+      "fixtures": ["fixture-osv-jinja2-2-4-1.json"],
+      "now": "2026-09-27T15:10:15Z",
+      "expected": {"outcome": "result", "fields": {"count": 2}}
+    },
+    {
+      "name": "vulns_object_instead_of_list_is_refused",
+      "request": {"ecosystem": "PyPI", "name": "jinja2", "version": "2.4.1"},
+      "fixtures": ["fixture-osv-vulns-not-list.json"],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 1,
+      "expected": {"outcome": "error", "exit_code": 3, "code": "unexpected_source_shape"}
+    },
+    {
+      "name": "identifier_that_cannot_be_an_address_is_refused",
+      "request": {"ecosystem": "PyPI", "name": "jinja2", "version": "2.4.1"},
+      "fixtures": ["fixture-osv-bad-identifier.json"],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 1,
+      "expected": {"outcome": "error", "exit_code": 3, "code": "unexpected_source_shape"}
+    },
+    {
+      "name": "http_400_is_a_source_failure",
+      "request": {"ecosystem": "Go", "name": "golang.org/x/net", "version": "v0.0.1"},
+      "request_matches_input_schema": true,
+      "fixtures": ["fixture-osv-http-400.json"],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 1,
+      "expected": {"outcome": "error", "exit_code": 3, "code": "source_http_error"}
+    },
+    {
+      "name": "more_than_five_pages_is_refused_without_a_partial_list",
+      "request": {"ecosystem": "PyPI", "name": "jinja2", "version": "2.4.1"},
+      "fixtures": ["fixture-osv-page-1.json", "fixture-osv-page-1.json", "fixture-osv-page-1.json",
+                   "fixture-osv-page-1.json", "fixture-osv-page-1.json", "fixture-osv-page-1.json"],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 5,
+      "expected": {"outcome": "error", "exit_code": 3, "code": "too_many_pages"}
+    },
+    {
+      "name": "identifier_repeated_on_a_later_page_is_listed_once",
+      "request": {"ecosystem": "PyPI", "name": "jinja2", "version": "2.4.1"},
+      "fixtures": ["fixture-osv-page-1.json", "fixture-osv-page-2-repeat.json"],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 2,
+      "expected": {
+        "outcome": "result",
+        "fields": {
+          "count": 1,
+          "vulnerabilities": [
+            {
+              "id": "GHSA-8r7q-cvjq-x353",
+              "aliases": ["CVE-2014-1402", "PYSEC-2014-8"],
+              "published": "2022-05-14T04:04:14Z",
+              "modified": "2024-09-24T18:48:44.375484Z",
+              "severity": [
+                {"type": "CVSS_V3", "score": "CVSS:3.1/AV:L/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"},
+                {"type": "CVSS_V4", "score": "CVSS:4.0/AV:L/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N"}
+              ],
+              "fixed_versions": ["2.7.2"],
+              "details_address": "https://osv.dev/vulnerability/GHSA-8r7q-cvjq-x353"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "refused_connection_is_a_source_failure",
+      "request": {"ecosystem": "crates.io", "name": "serde_json", "version": "1.0.100"},
+      "request_matches_input_schema": true,
+      "fixtures": [],
+      "fetch_error": "connection_refused",
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 1,
+      "expected": {"outcome": "error", "exit_code": 3, "code": "source_unreachable"}
+    },
+    {
+      "name": "ecosystem_not_on_the_list_is_refused_before_any_request",
+      "request": {"ecosystem": "Debian", "name": "openssl", "version": "3.0.11-1"},
+      "request_matches_input_schema": false,
+      "fixtures": [],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 0,
+      "expected": {"outcome": "error", "exit_code": 2, "code": "unsupported_ecosystem"}
+    },
+    {
+      "name": "missing_version_is_refused_before_any_request",
+      "request": {"ecosystem": "PyPI", "name": "jinja2"},
+      "request_matches_input_schema": false,
+      "fixtures": [],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 0,
+      "expected": {"outcome": "error", "exit_code": 2, "code": "invalid_request"}
+    },
+    {
+      "name": "version_range_is_refused_before_any_request",
+      "request": {"ecosystem": "npm", "name": "lodash", "version": ">=4.0.0 <4.17.21"},
+      "request_matches_input_schema": false,
+      "fixtures": [],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 0,
+      "expected": {"outcome": "error", "exit_code": 2, "code": "invalid_request"}
+    },
+    {
+      "name": "name_with_shell_characters_is_refused_before_any_request",
+      "request": {"ecosystem": "PyPI", "name": "jinja2;ls", "version": "2.4.1"},
+      "request_matches_input_schema": false,
+      "fixtures": [],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 0,
+      "expected": {"outcome": "error", "exit_code": 2, "code": "invalid_request"}
+    },
+    {
+      "name": "version_as_a_number_is_refused_before_any_request",
+      "request": {"ecosystem": "PyPI", "name": "jinja2", "version": 2.4},
+      "request_matches_input_schema": false,
+      "fixtures": [],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 0,
+      "expected": {"outcome": "error", "exit_code": 2, "code": "invalid_request"}
+    },
+    {
+      "name": "unknown_field_is_refused_before_any_request",
+      "request": {"ecosystem": "PyPI", "name": "jinja2", "version": "2.4.1", "include_details": true},
+      "request_matches_input_schema": false,
+      "fixtures": [],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 0,
+      "expected": {"outcome": "error", "exit_code": 2, "code": "invalid_request"}
+    },
+    {
+      "name": "repeated_key_is_refused_before_any_request",
+      "arguments": ["{\"ecosystem\": \"PyPI\", \"name\": \"jinja2\", \"version\": \"2.4.1\", \"version\": \"3.1.6\"}"],
+      "fixtures": [],
+      "now": "2026-09-27T12:00:00Z",
+      "fetch_calls": 0,
+      "expected": {"outcome": "error", "exit_code": 2, "code": "invalid_request"}
+    },
+    {
+      "name": "redirect_to_another_host_is_refused",
+      "kind": "redirect",
+      "from": "https://api.osv.dev/v1/query",
+      "to": "https://example.com/v1/query",
+      "expected": {"outcome": "error", "exit_code": 3, "code": "redirect_refused"}
+    },
+    {
+      "name": "redirect_on_the_same_host_is_followed",
+      "kind": "redirect",
+      "from": "https://api.osv.dev/v1/query",
+      "to": "https://api.osv.dev/v1/query?retry=1",
+      "expected": {"outcome": "followed"}
+    },
+    {
+      "name": "answer_of_exactly_two_megabytes_is_read",
+      "kind": "size_limit",
+      "bytes": 2097152,
+      "expected": {"outcome": "read"}
+    },
+    {
+      "name": "answer_over_two_megabytes_is_refused",
+      "kind": "size_limit",
+      "bytes": 2097153,
+      "expected": {"outcome": "error", "exit_code": 3, "code": "source_too_large"}
+    }
+  ]
+}

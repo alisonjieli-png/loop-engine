@@ -1,0 +1,8 @@
+{
+  "record_type": "knowledge_radar_fixture/v1",
+  "status": 200,
+  "content_type": "application/vnd.api+json",
+  "body_text": "{\"meta\": {\"goldenCopy\": {\"publishDate\": \"2026-09-27T00:00:00Z\"}}, \"data\": {\"type\": \"lei-records\", \"id\": \"875500ELOZEL05BVXV37\", \"attributes\": {\"lei\": \"875500ELOZEL05BVXV37\", \"entity\": {\"legalName\": {\"name\": \"Global Legal Entity Identifier Foundation Singapore Branch\", \"language\": \"de\"}, \"otherNames\": [], \"jurisdiction\": \"CH\", \"category\": \"BRANCH\", \"legalForm\": {\"id\": \"2JZ4\", \"other\": null}, \"status\": \"ACTIVE\", \"creationDate\": \"2022-11-24T00:00:00Z\"}, \"registration\": {\"initialRegistrationDate\": \"2022-12-12T12:30:42Z\", \"lastUpdateDate\": \"2026-04-19T07:56:06Z\", \"status\": \"ISSUED\", \"nextRenewalDate\": \"2026-12-15T13:20:10Z\", \"managingLou\": \"52990034RLKT0WSOAM90\", \"corroborationLevel\": \"FULLY_CORROBORATED\", \"validatedAt\": {\"id\": \"RA000523\", \"other\": null}, \"validatedAs\": \"T22FC0077A\", \"otherValidationAuthorities\": []}, \"bic\": null, \"conformityFlag\": \"CONFORMING\"}}}",
+  "recorded_on": "2026-09-27",
+  "note": "Hand-made from the recorded name search: a single-record answer that holds the record of another LEI."
+}

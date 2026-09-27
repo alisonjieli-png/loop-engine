@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "lookup_legal_entity result",
+  "description": "GLEIF LEI records as the GLEIF API answered at observed_at. A value that GLEIF leaves out is null. An LEI that GLEIF does not hold gives count 0 and an empty records list.",
+  "type": "object",
+  "properties": {
+    "record_type": {"const": "knowledge_radar_lookup_legal_entity_result/v1"},
+    "query": {
+      "description": "The checked request: the LEI, or the name and the page size that the tool used.",
+      "type": "object",
+      "oneOf": [
+        {
+          "properties": {"lei": {"type": "string", "pattern": "^[A-Z0-9]{18}[0-9]{2}$"}},
+          "required": ["lei"],
+          "additionalProperties": false
+        },
+        {
+          "properties": {
+            "name": {"type": "string", "minLength": 1, "maxLength": 200},
+            "page_size": {"type": "integer", "minimum": 1, "maximum": 10}
+          },
+          "required": ["name", "page_size"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "count": {"description": "Number of entries in records.", "type": "integer", "minimum": 0},
+    "total_matches": {
+      "description": "For a name search, the number of matching records that GLEIF reports, which can be larger than count. null for an LEI lookup or when GLEIF leaves it out.",
+      "type": ["integer", "null"],
+      "minimum": 0
+    },
+    "golden_copy_published_at": {
+      "description": "meta.goldenCopy.publishDate as GLEIF gives it: the publication time of the data set that answered.",
+      "type": ["string", "null"]
+    },
+    "records": {"type": "array", "items": {"$ref": "#/$defs/record"}},
+    "source": {
+      "description": "The https address the tool read.",
+      "type": "string",
+      "pattern": "^https://api\\.gleif\\.org/api/v1/lei-records"
+    },
+    "observed_at": {
+      "description": "UTC time of the read.",
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+    }
+  },
+  "required": ["record_type", "query", "count", "total_matches", "golden_copy_published_at", "records", "source", "observed_at"],
+  "additionalProperties": false,
+  "$defs": {
+    "record": {
+      "type": "object",
+      "properties": {
+        "lei": {"type": "string", "pattern": "^[A-Z0-9]{18}[0-9]{2}$"},
+        "legal_name": {"description": "entity.legalName.name", "type": ["string", "null"]},
+        "jurisdiction": {"description": "entity.jurisdiction, for example CH or US-DE.", "type": ["string", "null"]},
+        "legal_form_id": {"description": "entity.legalForm.id, an ISO 20275 entity legal form code.", "type": ["string", "null"]},
+        "entity_status": {"description": "entity.status, for example ACTIVE or INACTIVE.", "type": ["string", "null"]},
+        "registration_status": {"description": "registration.status, for example ISSUED, LAPSED or RETIRED.", "type": ["string", "null"]},
+        "initial_registration_date": {"type": ["string", "null"]},
+        "last_update_date": {"type": ["string", "null"]},
+        "next_renewal_date": {"type": ["string", "null"]},
+        "managing_lou": {"description": "registration.managingLou, the LEI of the issuing organisation that manages the record.", "type": ["string", "null"]},
+        "record_address": {"type": "string", "pattern": "^https://search\\.gleif\\.org/#/record/[A-Z0-9]{18}[0-9]{2}$"}
+      },
+      "required": ["lei", "legal_name", "jurisdiction", "legal_form_id", "entity_status", "registration_status",
+                   "initial_registration_date", "last_update_date", "next_renewal_date", "managing_lou", "record_address"],
+      "additionalProperties": false
+    }
+  }
+}

@@ -889,7 +889,7 @@
    ],
    "intended_output": "A dated decision card with ranked, source-linked evidence.",
    "purpose": "Rank image-to-text and document models by downloads and by trend, with licences and published evaluation results where the model repository lists them.",
-   "use_when": "Use when extracting text or fields from scanned documents, receipts, forms or screenshots.",
+   "use_when": "Use when extracting text or fields from scanned documents, invoices, forms or screenshots.",
    "sensitivity": "general",
    "research_cost": {
     "engineer_minutes": 30,
@@ -2636,7 +2636,7 @@
    ],
    "intended_output": "A dated decision card with ranked, source-linked evidence.",
    "purpose": "List transactional email services with official documentation and pricing pages, and open-source mail projects by stars.",
-   "use_when": "Use when a product sends sign-up links, receipts or alerts by email.",
+   "use_when": "Use when a product sends sign-up links, invoices or alerts by email.",
    "sensitivity": "general",
    "research_cost": {
     "engineer_minutes": 45,

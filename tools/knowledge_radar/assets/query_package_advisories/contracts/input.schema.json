@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "query_package_advisories request",
+  "description": "One JSON object that names one exact version of one package in one ecosystem. The tool sends it to https://api.osv.dev/v1/query.",
+  "type": "object",
+  "properties": {
+    "ecosystem": {
+      "description": "OSV ecosystem name, written exactly as OSV writes it.",
+      "type": "string",
+      "enum": ["PyPI", "npm", "Go", "crates.io", "Maven", "NuGet", "RubyGems", "Packagist", "Hex", "Pub"]
+    },
+    "name": {
+      "description": "Package name as the ecosystem writes it, for example jinja2, @types/node, golang.org/x/net, org.slf4j:slf4j-api or symfony/http-kernel.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 300,
+      "pattern": "^[A-Za-z0-9@][A-Za-z0-9._/:@+~-]*$"
+    },
+    "version": {
+      "description": "One exact version, for example 2.4.1, 1.0.0-beta.1 or v1.2.3. A range is not accepted.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._+:~!-]*$"
+    }
+  },
+  "required": ["ecosystem", "name", "version"],
+  "additionalProperties": false
+}
