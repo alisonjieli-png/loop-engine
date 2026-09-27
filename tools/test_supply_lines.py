@@ -593,6 +593,125 @@ class DataTableLineTest(unittest.TestCase):
                 self.assertFalse(run_tests(target, "status_codes_table")[0])
 
 
+SWAGGER2 = {
+    "swagger": "2.0", "info": {"title": "Old", "version": "1"}, "host": "api.example.com", "basePath": "/v2",
+    "schemes": ["http", "https"], "consumes": ["application/json"], "produces": ["application/json"],
+    "securityDefinitions": {"key": {"type": "apiKey", "name": "api_key", "in": "query"},
+                            "login": {"type": "basic"}},
+    "security": [{"key": []}],
+    "parameters": {"Limit": {"name": "limit", "in": "query", "type": "integer", "minimum": 1}},
+    "definitions": {"Pet": {"type": "object", "required": ["name"], "properties": {"name": {"type": "string"},
+                                                                                  "tag": {"type": "string"}}}},
+    "paths": {
+        "/pets": {
+            "get": {"operationId": "listPets", "parameters": [{"$ref": "#/parameters/Limit"}],
+                    "responses": {"200": {"description": "ok", "schema": {"type": "array",
+                                                                          "items": {"$ref": "#/definitions/Pet"}}}}},
+            "post": {"operationId": "addPet", "security": [{"login": []}],
+                     "parameters": [{"name": "pet", "in": "body", "required": True,
+                                     "schema": {"$ref": "#/definitions/Pet"}}],
+                     "responses": {"201": {"description": "created", "schema": {"$ref": "#/definitions/Pet"}}}}},
+        "/pets/{petId}/photo": {
+            "post": {"operationId": "uploadPhoto", "consumes": ["multipart/form-data"],
+                     "parameters": [{"name": "petId", "in": "path", "required": True, "type": "string"},
+                                    {"name": "file", "in": "formData", "type": "file"}],
+                     "responses": {"200": {"description": "ok"}}}}}}
+
+
+class OpenApiDirectoryTest(unittest.TestCase):
+    def test_declared_licences_map_only_by_exact_name_and_a_matching_address(self):
+        from supply_lines import openapi_directory as line
+        self.assertEqual(line.declared_licence({"license": {"name": "Apache 2.0 License",
+                                                             "url": "http://www.apache.org/licenses/LICENSE-2.0.html"}}),
+                         ("Apache-2.0", "Apache 2.0 License", "http://www.apache.org/licenses/LICENSE-2.0.html"))
+        self.assertEqual(line.declared_licence({"license": {"name": "The MIT License (MIT)"}})[0], "MIT")
+        # Known wrong: a licence named by words the table does not hold, and a name whose address says otherwise.
+        for info in ({"license": {"name": "Creative Commons Attribution 3.0"}}, {"license": {"name": "Microsoft"}},
+                     {"license": {"name": "MIT", "url": "https://www.gnu.org/licenses/gpl-3.0.html"}},
+                     {"license": {"name": "Apache 2.0", "url": "https://opensource.org/licenses/MIT"}}):
+            self.assertIsNone(line.declared_licence(info)[0], info)
+        self.assertIsNone(line.declared_licence({"title": "no licence"}))
+        self.assertEqual(line.origin_repository({"x-origin": [{"url": "https://raw.githubusercontent.com/Azure/"
+                                                                        "azure-rest-api-specs/master/x/compute.json"}]}),
+                         "Azure/azure-rest-api-specs")
+        self.assertIsNone(line.origin_repository({"x-origin": [{"url": "https://developer.example.com/spec.yaml"}]}))
+        self.assertEqual(line.vendor_of("azure.com:compute"), "azure_compute")
+        self.assertEqual(line.vendor_of("1password.local:connect"), "api_1password_connect")
+
+    def test_a_declared_licence_needs_no_repository_and_an_undeclared_one_needs_an_agreed_origin(self):
+        from supply_lines import openapi_directory as line
+        from supply_lines.licences import RepositoryLicence
+
+        class Texts:
+            def text(self, spdx):
+                return RepositoryLicence("github/choosealicense.com", "c" * 40, spdx, "agreed", "_licenses/x.txt",
+                                         b"text", spdx, spdx, 1.0)
+
+        class Reader:
+            def __init__(self, licence):
+                self.licence, self.asked = licence, 0
+
+            def repository_facts(self, repositories):
+                self.asked += 1
+                return {repository.lower(): {"defaultBranchRef": {"target": {"oid": "d" * 40}}}
+                        for repository in repositories}
+
+            def licence_text(self, repository, commit):
+                return self.licence
+
+        mit = ("LICENSE", LICENCE, "MIT")
+        declared = line.decide("a.com", {"license": {"name": "MIT"}}, Reader(None), Texts(), {})
+        self.assertEqual((declared["decision"], declared["spdx"], declared["basis"]), ("agreed", "MIT", line.DIRECTORY_BASIS))
+        origin = {"x-origin": [{"url": "https://raw.githubusercontent.com/example/specs/main/api.json"}]}
+        agreed = line.decide("b.com", origin, Reader(mit), Texts(), {})
+        self.assertEqual((agreed["decision"], agreed["spdx"], agreed["basis"]), ("agreed", "MIT", line.ORIGIN_BASIS))
+        # Known wrong: a declared licence off the allowlist is refused even when the origin repository is MIT.
+        refused = line.decide("c.com", {"license": {"name": "Microsoft"}, **origin}, Reader(mit), Texts(), {})
+        self.assertEqual(refused["decision"], "licence_not_on_allowlist")
+        self.assertEqual(line.decide("d.com", {"title": "x"}, Reader(mit), Texts(), {})["decision"], "licence_unknown")
+        unreadable = line.decide("e.com", origin, Reader(None), Texts(), {})
+        self.assertEqual(unreadable["decision"], "licence_unknown")
+
+    def test_a_swagger_2_document_becomes_operations_with_body_auth_and_servers(self):
+        from supply_lines import openapi_directory as line
+        from supply_lines import openapi_operations as generator
+        document = line.swagger2_to_openapi3(SWAGGER2)
+        source = {"source_id": "old", "vendor": "old", "credential_prefix": "OLD", "maximum_operations": 50}
+        found, refused = generator.operations(document, source)
+        by_name = {operation.function: operation for operation in found}
+        self.assertEqual(sorted(by_name), ["add_pet", "list_pets"])
+        self.assertEqual([row["reason"] for row in refused], ["operation_body_not_json"])
+        self.assertEqual(by_name["list_pets"].base_url, "https://api.example.com/v2")
+        self.assertEqual(by_name["list_pets"].auth, {"scheme": "key", "placement": "query", "name": "api_key",
+                                                     "prefix": "", "variable": "OLD_API_KEY"})
+        self.assertEqual(by_name["add_pet"].auth["variable"], "OLD_CREDENTIALS")
+        self.assertEqual(by_name["add_pet"].body_check["required"], ["name"])
+        self.assertEqual(by_name["list_pets"].parameters[0].check, {"type": ["integer"], "minimum": 1})
+        with tempfile.TemporaryDirectory() as folder:
+            for operation in found:
+                target = Path(folder) / operation.module
+                target.mkdir()
+                (target / f"{operation.module}.py").write_text(generator.client_source(operation, SPEC_FACTS),
+                                                               encoding="utf-8")
+                (target / f"test_{operation.module}.py").write_text(generator.test_source(
+                    operation, generator._example_arguments(operation), generator._response_example(operation)),
+                    encoding="utf-8")
+                passed, _count, output = generator.run_tests(target, operation.module)
+                self.assertTrue(passed, output)
+
+    def test_a_request_signing_scheme_is_refused_by_name(self):
+        from supply_lines import openapi_operations as generator
+        document = {"openapi": "3.0.0", "info": {"title": "AWS", "version": "1"},
+                    "servers": [{"url": "https://service.example.amazonaws.com"}], "security": [{"hmac": []}],
+                    "components": {"securitySchemes": {"hmac": {"type": "apiKey", "name": "Authorization",
+                                                                "in": "header",
+                                                                "x-amazon-apigateway-authtype": "awsSigv4"}}},
+                    "paths": {"/": {"get": {"operationId": "listThings", "responses": {"200": {"description": "ok"}}}}}}
+        found, refused = generator.operations(document, {"source_id": "aws", "vendor": "aws", "credential_prefix": "AWS",
+                                                         "maximum_operations": 5})
+        self.assertEqual((found, [row["reason"] for row in refused]), ([], ["security_scheme_unsupported"]))
+
+
 class VerbatimCodeSourcesTest(unittest.TestCase):
     def test_the_declaration_is_a_valid_import_source_of_code_modules_only(self):
         from licensed_import.harness_kinds import SourceScope, declared_kind

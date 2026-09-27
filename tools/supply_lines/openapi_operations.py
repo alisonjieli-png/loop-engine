@@ -32,6 +32,7 @@ import keyword
 import math
 import pprint
 import re
+import shutil
 import sys
 import textwrap
 import unittest
@@ -428,12 +429,28 @@ def _server(servers) -> str:
 HTTP_SCHEME_TYPE, API_KEY_SCHEME_TYPE = "http", "apiKey"
 #: The scheme name a client records when the sources declaration, not the specification, names the credential.
 DECLARED_SCHEME = "declared_in_openapi_sources"
+#: The extension prefix AWS specifications use to mark a request-signing scheme (awsSigv4).
+SIGNATURE_EXTENSION_PREFIX = "x-amazon-apigateway-authtype"
 _BEARER = {"placement": "header", "name": "Authorization", "prefix": "Bearer "}
 SCHEME_PLACEMENTS = {
     (HTTP_SCHEME_TYPE, "bearer"): _BEARER, ("oauth2", ""): _BEARER, ("openIdConnect", ""): _BEARER,
     (HTTP_SCHEME_TYPE, "basic"): {"placement": "basic", "name": "Authorization", "prefix": "Basic "},
     (API_KEY_SCHEME_TYPE, "header"): {"placement": "header", "name": "", "prefix": ""},
     (API_KEY_SCHEME_TYPE, "query"): {"placement": "query", "name": "", "prefix": ""}}
+
+
+#: The suffix of a credential variable named by rule (a directory source names a prefix, not each variable).
+CREDENTIAL_SUFFIXES = {API_KEY_SCHEME_TYPE: "_API_KEY", HTTP_SCHEME_TYPE + ":basic": "_CREDENTIALS"}
+TOKEN_SUFFIX = "_ACCESS_TOKEN"
+
+
+def credential_variable(source: dict, key: tuple) -> str:
+    """The declared variable, or one named by rule: the prefix and a suffix for the scheme's kind."""
+    if source.get("credential_variable"):
+        return source["credential_variable"]
+    kind, detail = key
+    suffix = CREDENTIAL_SUFFIXES.get(kind) or CREDENTIAL_SUFFIXES.get(f"{kind}:{detail}") or TOKEN_SUFFIX
+    return source["credential_prefix"] + suffix
 
 
 def _auth(document: dict, requirements, source: dict) -> tuple:
@@ -445,7 +462,7 @@ def _auth(document: dict, requirements, source: dict) -> tuple:
     if not requirements and not schemes_declared and fallback:
         # The specification declares no security at all; the sources declaration names how the API takes a
         # credential (for example GitHub's bearer token), and whether a call may go without one.
-        return {"scheme": DECLARED_SCHEME, **_BEARER, "variable": source["credential_variable"]}, \
+        return {"scheme": DECLARED_SCHEME, **_BEARER, "variable": credential_variable(source, ("oauth2", ""))}, \
             bool(fallback.get("optional"))
     if not requirements:
         return None, True
@@ -460,10 +477,13 @@ def _auth(document: dict, requirements, source: dict) -> tuple:
             scheme = Resolver(document).follow(scheme)
         if not isinstance(scheme, dict):
             continue
-        variable = (source.get("scheme_variables") or {}).get(name) or source["credential_variable"]
         kind = scheme.get("type")
+        if any(str(field).startswith(SIGNATURE_EXTENSION_PREFIX) for field in scheme):
+            # A request-signing scheme (AWS Signature Version 4) cannot be met by sending a stored credential.
+            raise OperationRefused("security_scheme_unsupported", f"security scheme {name} signs each request")
         key = (kind, str(scheme.get("scheme", "")).lower() if kind == HTTP_SCHEME_TYPE else
                str(scheme.get("in", "")) if kind == API_KEY_SCHEME_TYPE else "")
+        variable = (source.get("scheme_variables") or {}).get(name) or credential_variable(source, key)
         placement = SCHEME_PLACEMENTS.get(key)
         if placement is None or (kind == API_KEY_SCHEME_TYPE and not isinstance(scheme.get("name"), str)):
             raise OperationRefused("operation_parameters_unsupported", f"security scheme {name} of type {kind}")
@@ -1219,27 +1239,29 @@ def _package(operation, spec, source, licence, generator, licence_text, generate
     (folder / f"{operation.module}.py").write_text(client, encoding="utf-8")
     (folder / f"test_{operation.module}.py").write_text(tests, encoding="utf-8")
     passed, count, output = run_tests(folder, operation.module)
+    shutil.rmtree(folder, ignore_errors=True)  # the package keeps the files; the staging copy is not needed
     if not passed:
         raise OperationRefused(GENERATED_TEST_FAILED, output[-300:])
     readme = readme_source(operation, spec, len(schema_text.encode()))
     upstream = licence.text
+    licence_address = github_blob_address(licence.repository, licence.commit, licence.path)
     files = [PackageFile(f"{operation.module}.py", client.encode(), "executable_tool"),
              PackageFile(f"test_{operation.module}.py", tests.encode(), "executable_tool"),
              PackageFile("schema.json", schema_text.encode(), "other"),
              PackageFile("README.md", readme.encode(), "other"),
              PackageFile(LICENCE_NAME, licence_text, "other", LICENCE_TEXT),
              PackageFile(UPSTREAM_LICENCE_NAME, upstream, "other", LICENCE_TEXT,
-                         {"url": github_blob_address(spec["repository"], spec["commit"], licence.path),
-                          "sha256": licence.sha256})]
+                         {"url": licence_address, "sha256": licence.sha256})]
     expression = GENERATED_CODE_LICENCE if licence.spdx == GENERATED_CODE_LICENCE else \
         f"{GENERATED_CODE_LICENCE} AND {licence.spdx}"
-    raw_url = https_address(RAW_HOST, f"{spec['repository']}/{spec['commit']}/{urllib.parse.quote(spec['path'])}")
-    facts = [fact_source(raw_url, spec["retrieved_at"], spec["sha256"], spec["size_bytes"], "specification",
-                         spdx=licence.spdx, basis="github_licence_interface_and_text_agree",
+    spec_url = spec.get("url") or https_address(
+        RAW_HOST, f"{spec['repository']}/{spec['commit']}/{urllib.parse.quote(spec['path'])}")
+    facts = [fact_source(spec_url, spec["retrieved_at"], spec["sha256"], spec["size_bytes"], "specification",
+                         spdx=licence.spdx, basis=spec.get("licence_basis", "github_licence_interface_and_text_agree"),
                          evidence_sha256=licence.sha256),
-             fact_source(github_blob_address(spec["repository"], spec["commit"], licence.path),
-                         spec["retrieved_at"], licence.sha256, len(upstream), "licence_text", spdx=licence.spdx,
-                         basis="licence_file_at_the_pinned_commit")]
+             fact_source(licence_address, spec["retrieved_at"], licence.sha256, len(upstream), "licence_text",
+                         spdx=licence.spdx, basis=spec.get("licence_text_basis", "licence_file_at_the_pinned_commit"))]
+    facts += list(spec.get("extra_facts") or ())
     effects = [("network", "sends_one_https_request_to_the_api")]
     credentials = []
     if operation.auth:
@@ -1254,7 +1276,8 @@ def _package(operation, spec, source, licence, generator, licence_text, generate
         description=(f"{spec['title']} API: {operation.summary or operation.operation_id} "
                      f"({operation.method} {operation.path}), one tested Python function."),
         files=files, licence_expression=expression,
-        provenance=provenance("github_repository", spec["repository"], spec["path"], spec["commit"], facts, generator),
+        provenance=provenance(spec.get("origin", "github_repository"), spec["repository"], spec["path"], spec["commit"],
+                              facts, generator),
         placements=[{"harness": "reference", "path": f"tools/{name}/", "basis": "documented_layout",
                      "scope": "project", "support": "unverified"}],
         effects=effects, credentials=credentials,

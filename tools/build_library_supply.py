@@ -159,6 +159,27 @@ def openapi(args) -> dict:
                   complete=not args.source)
 
 
+def openapi_directory(args) -> dict:
+    from supply_lines import openapi_directory as line
+    run_folder = _outside(args.run_folder)
+    run_folder.mkdir(parents=True, exist_ok=True)
+    revision = code_revision(args.authorize_store_writes)
+    reader = FactReader(run_folder, line.HOSTS, maximum_requests=args.maximum_requests,
+                        pause_seconds=args.pause_seconds, maximum_bytes=128 * 1024 * 1024)
+    built, refusals, facts, decisions, summary = line.generate(
+        reader, code_revision=revision, licence_text=LICENCE_FILE.read_bytes(), generated_on=now_utc()[:10],
+        staging=run_folder / "staging", only=args.api, maximum_apis=args.maximum_apis)
+    (run_folder / "licences.jsonl").write_text("".join(json.dumps(row, sort_keys=True) + "\n" for row in decisions),
+                                                encoding="utf-8")
+    licences = Counter((row["decision"], row.get("spdx"), row.get("basis")) for row in decisions)
+    return finish(args, records.OPENAPI_OPERATIONS, built, refusals,
+                  {"directory": summary, "licence_decisions": [{"decision": decision, "spdx": spdx, "basis": basis,
+                                                                "apis": count}
+                                                               for (decision, spdx, basis), count in
+                                                               sorted(licences.items(), key=lambda item: -item[1])]},
+                  reader, facts, complete=False)
+
+
 def programs(args) -> dict:
     from supply_lines import program_installs as line
     run_folder = _outside(args.run_folder)
@@ -241,6 +262,10 @@ def parser() -> argparse.ArgumentParser:
     common(two)
     two.add_argument("--source", action="append", help="only these source identities of openapi_sources.json")
     two.add_argument("--stars", action="store_true", help="read each repository's stars (GraphQL)")
+    directory = commands.add_parser("openapi-directory")
+    common(directory)
+    directory.add_argument("--api", action="append", help="only these APIs (name or provider) of the directory")
+    directory.add_argument("--maximum-apis", type=int, default=0, help="at most this many APIs, in name order")
     three = commands.add_parser("programs")
     common(three)
     three.add_argument("--formula", action="append", help="only these formulae of program_sources.json")
@@ -260,7 +285,7 @@ def parser() -> argparse.ArgumentParser:
 
 def main(argv=None) -> int:
     args = parser().parse_args(argv)
-    {"mcp-registry": mcp_registry, "openapi": openapi, "programs": programs,
+    {"mcp-registry": mcp_registry, "openapi": openapi, "openapi-directory": openapi_directory, "programs": programs,
      "data-tables": data_tables, "report": report}[args.command](args)
     return 0
 

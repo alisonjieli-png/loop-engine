@@ -52,7 +52,7 @@ GENERATED, UPSTREAM_VERBATIM, LICENCE_TEXT, ATTRIBUTION = FILE_ORIGINS = (
     "generated", "upstream_verbatim", "licence_text", "attribution")
 #: Where the facts came from; each names the host the facts were read from.
 ORIGINS = {"mcp_official_registry": "registry.modelcontextprotocol.io", "github_repository": "github.com",
-           "homebrew_formulae": "formulae.brew.sh"}
+           "homebrew_formulae": "formulae.brew.sh", "apis_guru_directory": "api.apis.guru"}
 #: What one fact source is to the package.
 FACT_ROLES = ("registry_entry", "package_metadata", "specification", "formula", "release", "licence_text",
               "data_source", "repository_facts", "analytics")
@@ -75,9 +75,10 @@ REFUSAL_REASONS = {
                    "package_version_not_published", "package_version_unknown", "package_licence_not_on_allowlist",
                    "duplicate_package", "blocked_by_static_check", "connection_files_invalid"),
     OPENAPI_OPERATIONS: ("specification_unreadable", "specification_version_unsupported", "licence_not_on_allowlist",
-                         "licence_signals_disagree", "operation_identity_missing", "operation_body_not_json",
-                         "operation_parameters_unsupported", "example_not_constructible", "duplicate_operation",
-                         "blocked_by_static_check", "generated_test_failed", "package_above_review_bound"),
+                         "licence_signals_disagree", "licence_unknown", "operation_identity_missing",
+                         "operation_body_not_json", "operation_parameters_unsupported", "security_scheme_unsupported",
+                         "example_not_constructible", "duplicate_operation", "blocked_by_static_check",
+                         "generated_test_failed", "package_above_review_bound"),
     PROGRAM_INSTALLS: ("formula_licence_not_on_allowlist", "formula_deprecated_or_disabled", "not_a_command_line_program",
                        "no_published_checksum", "upstream_repository_unreadable", "licence_signals_disagree",
                        "blocked_by_static_check", "generated_test_failed", "duplicate_program"),
