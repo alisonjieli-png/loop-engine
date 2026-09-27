@@ -7834,6 +7834,416 @@ entries:
     classification: DEPLOYMENT_CONFIGURATION
     created_on: '2026-09-26'
     expires_on: '2027-09-26'
+  - finding_id: hardcoding.935c3264286651275bad0ac8
+    owner: integrations.baltor-library..claude-plugin.marketplace.json:plugins[0].homepage
+    rationale: >-
+      Packaging metadata of the first-party Baltor library plugin, the public product homepage that Claude
+      Code shows beside the plugin. Nothing fetches it, selects a provider with it or sends a credential
+      to it. tools/test_baltor_library_integration.py pins every manifest of this folder and its version.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.b47c9faad48b26e77106a626
+    owner: integrations.baltor-library..claude-plugin.plugin.json:homepage
+    rationale: >-
+      Packaging metadata of the first-party Baltor library plugin, the public product homepage and the
+      public repository address, which Claude Code shows as plugin metadata. Nothing fetches them, selects
+      a provider with them or sends a credential to them. tools/test_baltor_library_integration.py pins
+      every manifest of this folder and its version.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.9f64312fbbaab434610e067b
+    owner: integrations.baltor-library..claude-plugin.plugin.json:repository
+    rationale: >-
+      Packaging metadata of the first-party Baltor library plugin, the public product homepage and the
+      public repository address, which Claude Code shows as plugin metadata. Nothing fetches them, selects
+      a provider with them or sends a credential to them. tools/test_baltor_library_integration.py pins
+      every manifest of this folder and its version.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.bd5d5fc54696f115627c2e30
+    owner: integrations.baltor-library..codex-plugin.plugin.json:homepage
+    rationale: >-
+      Packaging metadata of the first-party Baltor library plugin, the public product homepage and the
+      public repository address, which Codex shows as plugin metadata. Nothing fetches them, selects a
+      provider with them or sends a credential to them. tools/test_baltor_library_integration.py pins
+      every manifest of this folder and its version.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.de81722ac4e8ce46a4434bdf
+    owner: integrations.baltor-library..codex-plugin.plugin.json:repository
+    rationale: >-
+      Packaging metadata of the first-party Baltor library plugin, the public product homepage and the
+      public repository address, which Codex shows as plugin metadata. Nothing fetches them, selects a
+      provider with them or sends a credential to them. tools/test_baltor_library_integration.py pins
+      every manifest of this folder and its version.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.fd3ef2f6a363fc670b905669
+    owner: integrations.baltor-library.package.json:homepage
+    rationale: >-
+      Packaging metadata of the first-party Baltor library Pi package, marked private so no registry
+      publishes it, the public product homepage and the public repository address. Nothing fetches them,
+      selects a provider with them or sends a credential to them. tools/test_baltor_library_integration.py
+      pins every manifest of this folder and its version.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.2953810342337a82550780bf
+    owner: integrations.baltor-library.package.json:repository
+    rationale: >-
+      Packaging metadata of the first-party Baltor library Pi package, marked private so no registry
+      publishes it, the public product homepage and the public repository address. Nothing fetches them,
+      selects a provider with them or sends a credential to them. tools/test_baltor_library_integration.py
+      pins every manifest of this folder and its version.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.16487f9f722b2670aefe03ad
+    owner: integrations.baltor-library.skills.baltor-library.assets.client.example.json:origin
+    rationale: >-
+      The example configuration of the pinned Baltor library skill names the public Baltor service origin,
+      which a customer copies into their own configuration. The customer's configuration decides the
+      origin at run time, and the client accepts only an exact HTTPS origin, ignores proxies and refuses
+      redirects. The file is part of the package bytes that release.json pins and
+      tools/test_baltor_library_integration.py checks, so a change needs a new version and a new review.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.09a2849892714be74f9d71a2
+    owner: integrations.baltor-library.skills.baltor-library.scripts.baltor:main
+    rationale: >-
+      The pinned Baltor library client reads the customer's token from the environment variable that the
+      customer's own configuration names in credential_environment, and an empty value means the token is
+      not set. That is the documented credential route. The token never appears in a file, an argument or
+      the output, and tools/test_baltor_library_integration.py holds those rules. release.json pins these
+      exact bytes, so a change needs a new version and a new review.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.ccc6b712b2ff2164daa674dc
+    owner: integrations.baltor-library.skills.baltor-library.scripts.baltor:main
+    rationale: >-
+      The pinned Baltor library client reads the customer's token from the environment variable that the
+      customer's own configuration names in credential_environment, and an empty value means the token is
+      not set. That is the documented credential route. The token never appears in a file, an argument or
+      the output, and tools/test_baltor_library_integration.py holds those rules. release.json pins these
+      exact bytes, so a change needs a new version and a new review.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.f4409f5d97e7633c680aab3b
+    owner: tools.adapted_reference_candidates:compile_adapted_candidates
+    rationale: >-
+      Closed values of the library ingestion licence records, the provenance decision verbatim_permitted
+      and the match reason recognized from match_licence. Only a source whose decision permits verbatim
+      use, under a recognized licence text of the declared expression, may be staged as an adapted
+      reference, and every other value refuses. Making these configurable would widen adaptation rights.
+      The known-wrong checks in tools/test_adapted_reference_candidates.py cover each branch.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.0c1cea0d08cc29a1c3dfeddb
+    owner: tools.adapted_reference_candidates:source_evidence
+    rationale: >-
+      Closed values of the library ingestion licence records, the provenance decision verbatim_permitted
+      and the match reason recognized from match_licence. Only a source whose decision permits verbatim
+      use, under a recognized licence text of the declared expression, may be staged as an adapted
+      reference, and every other value refuses. Making these configurable would widen adaptation rights.
+      The known-wrong checks in tools/test_adapted_reference_candidates.py cover each branch.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.c9cd5a7e4a79722e592a7ab0
+    owner: tools.adapted_reference_candidates:source_evidence
+    rationale: >-
+      Closed values of the library ingestion licence records, the provenance decision verbatim_permitted
+      and the match reason recognized from match_licence. Only a source whose decision permits verbatim
+      use, under a recognized licence text of the declared expression, may be staged as an adapted
+      reference, and every other value refuses. Making these configurable would widen adaptation rights.
+      The known-wrong checks in tools/test_adapted_reference_candidates.py cover each branch.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.2fd1e524ede03b29353f4ce3
+    owner: tools.candidate_review.shared_profiles:ReferenceCheckReceipt.__post_init__
+    rationale: >-
+      Closed vocabulary of shared_reference_review_resolution/v1, the check receipt statuses passed,
+      failed and pending, the resolution status eligible, and the fixed path contracts/shared-profile.json
+      at which a reviewed profile package carries its scope document. The receipt refuses any other
+      status, only passed counts, and the review binds to that exact scope file's digest, so a
+      configurable value would let a changed scope borrow an old approval. OldApprovalReuseChecks proves
+      the binding refuses reuse. A resolution grants no approval, publication or execution.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.95541fb1cdd415f5c4f0bec7
+    owner: tools.candidate_review.shared_profiles:ReferenceCheckReceipt.__post_init__
+    rationale: >-
+      Closed vocabulary of shared_reference_review_resolution/v1, the check receipt statuses passed,
+      failed and pending, the resolution status eligible, and the fixed path contracts/shared-profile.json
+      at which a reviewed profile package carries its scope document. The receipt refuses any other
+      status, only passed counts, and the review binds to that exact scope file's digest, so a
+      configurable value would let a changed scope borrow an old approval. OldApprovalReuseChecks proves
+      the binding refuses reuse. A resolution grants no approval, publication or execution.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.bc67670521bd502e0e2b99db
+    owner: tools.candidate_review.shared_profiles:ReferenceCheckReceipt.__post_init__
+    rationale: >-
+      Closed vocabulary of shared_reference_review_resolution/v1, the check receipt statuses passed,
+      failed and pending, the resolution status eligible, and the fixed path contracts/shared-profile.json
+      at which a reviewed profile package carries its scope document. The receipt refuses any other
+      status, only passed counts, and the review binds to that exact scope file's digest, so a
+      configurable value would let a changed scope borrow an old approval. OldApprovalReuseChecks proves
+      the binding refuses reuse. A resolution grants no approval, publication or execution.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.14d97432047e6cf1d8f76a88
+    owner: tools.candidate_review.shared_profiles:resolve_shared_review
+    rationale: >-
+      Closed vocabulary of shared_reference_review_resolution/v1, the check receipt statuses passed,
+      failed and pending, the resolution status eligible, and the fixed path contracts/shared-profile.json
+      at which a reviewed profile package carries its scope document. The receipt refuses any other
+      status, only passed counts, and the review binds to that exact scope file's digest, so a
+      configurable value would let a changed scope borrow an old approval. OldApprovalReuseChecks proves
+      the binding refuses reuse. A resolution grants no approval, publication or execution.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.53fa01c387b0d40ff2bad699
+    owner: tools.candidate_review.shared_profiles:resolve_shared_review
+    rationale: >-
+      Closed vocabulary of shared_reference_review_resolution/v1, the check receipt statuses passed,
+      failed and pending, the resolution status eligible, and the fixed path contracts/shared-profile.json
+      at which a reviewed profile package carries its scope document. The receipt refuses any other
+      status, only passed counts, and the review binds to that exact scope file's digest, so a
+      configurable value would let a changed scope borrow an old approval. OldApprovalReuseChecks proves
+      the binding refuses reuse. A resolution grants no approval, publication or execution.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.8d715a9d5c490be14fbb05c8
+    owner: tools.candidate_review.shared_profiles:resolve_shared_review
+    rationale: >-
+      Closed vocabulary of shared_reference_review_resolution/v1, the check receipt statuses passed,
+      failed and pending, the resolution status eligible, and the fixed path contracts/shared-profile.json
+      at which a reviewed profile package carries its scope document. The receipt refuses any other
+      status, only passed counts, and the review binds to that exact scope file's digest, so a
+      configurable value would let a changed scope borrow an old approval. OldApprovalReuseChecks proves
+      the binding refuses reuse. A resolution grants no approval, publication or execution.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.2684cde4a10d88d0de48d04e
+    owner: tools.component_verification_plan:plan_verification
+    rationale: >-
+      Closed component kinds of component_verification_plan/v1. Each branch selects the checks and the
+      review scope for one kind, and an unknown kind receives the explicit generic route instead of a
+      guess. The plan approves nothing and grants no authority, and the planner checks in
+      tools/test_component_verification_plan.py cover every branch.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.4484fe0e272088e3e200c4f8
+    owner: tools.component_verification_plan:plan_verification
+    rationale: >-
+      Closed component kinds of component_verification_plan/v1. Each branch selects the checks and the
+      review scope for one kind, and an unknown kind receives the explicit generic route instead of a
+      guess. The plan approves nothing and grants no authority, and the planner checks in
+      tools/test_component_verification_plan.py cover every branch.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.7ea24850164ee87d1419fee4
+    owner: tools.component_verification_plan:plan_verification
+    rationale: >-
+      Closed component kinds of component_verification_plan/v1. Each branch selects the checks and the
+      review scope for one kind, and an unknown kind receives the explicit generic route instead of a
+      guess. The plan approves nothing and grants no authority, and the planner checks in
+      tools/test_component_verification_plan.py cover every branch.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.99a35b169c38dc4085060871
+    owner: tools.component_verification_plan:plan_verification
+    rationale: >-
+      Closed component kinds of component_verification_plan/v1. Each branch selects the checks and the
+      review scope for one kind, and an unknown kind receives the explicit generic route instead of a
+      guess. The plan approves nothing and grants no authority, and the planner checks in
+      tools/test_component_verification_plan.py cover every branch.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.be7be6fd49b539df7caadcc7
+    owner: tools.component_verification_plan:plan_verification
+    rationale: >-
+      Closed component kinds of component_verification_plan/v1. Each branch selects the checks and the
+      review scope for one kind, and an unknown kind receives the explicit generic route instead of a
+      guess. The plan approves nothing and grants no authority, and the planner checks in
+      tools/test_component_verification_plan.py cover every branch.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.edef2b416d24ebc169714691
+    owner: tools.component_verification_plan:plan_verification
+    rationale: >-
+      Closed component kinds of component_verification_plan/v1. Each branch selects the checks and the
+      review scope for one kind, and an unknown kind receives the explicit generic route instead of a
+      guess. The plan approves nothing and grants no authority, and the planner checks in
+      tools/test_component_verification_plan.py cover every branch.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.432b9b51f2a862271177de24
+    owner: tools.global_component_duplicate_disk:DiskComparison.build_profiles
+    rationale: >-
+      Closed phase vocabulary of the private resumable comparison cache, collecting, profiling, joining
+      and finished. Each step refuses an out-of-order phase, so a resumed run cannot skip interrupted work
+      or call an incomplete collection a snapshot. The cache is a report artifact, never a catalogue, and
+      tools/test_global_component_duplicate_disk.py covers resumption and the refusals.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.9e98185a8ab10735268ad943
+    owner: tools.global_component_duplicate_disk:DiskComparison.build_profiles
+    rationale: >-
+      Closed phase vocabulary of the private resumable comparison cache, collecting, profiling, joining
+      and finished. Each step refuses an out-of-order phase, so a resumed run cannot skip interrupted work
+      or call an incomplete collection a snapshot. The cache is a report artifact, never a catalogue, and
+      tools/test_global_component_duplicate_disk.py covers resumption and the refusals.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.d7910c943c1cf0715cc4ef1d
+    owner: tools.global_component_duplicate_disk:DiskComparison.build_profiles
+    rationale: >-
+      Closed phase vocabulary of the private resumable comparison cache, collecting, profiling, joining
+      and finished. Each step refuses an out-of-order phase, so a resumed run cannot skip interrupted work
+      or call an incomplete collection a snapshot. The cache is a report artifact, never a catalogue, and
+      tools/test_global_component_duplicate_disk.py covers resumption and the refusals.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.5bdaa5f5680210b54dbc439c
+    owner: tools.global_component_duplicate_sources:SourceReader.subject
+    rationale: >-
+      Closed component types whose comparison view is not the entry text. An API operation reference
+      compares its documented operation and a service reference its service map, so shared guidance text
+      does not make distinct operations look like copies. Every other type uses the entry view. The
+      comparison approves, merges and withdraws nothing, and
+      test_api_view_compares_operation_not_shared_guidance covers it.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.e292501b2423d6c4ff27391d
+    owner: tools.global_component_duplicate_sources:SourceReader.subject
+    rationale: >-
+      Closed component types whose comparison view is not the entry text. An API operation reference
+      compares its documented operation and a service reference its service map, so shared guidance text
+      does not make distinct operations look like copies. Every other type uses the entry view. The
+      comparison approves, merges and withdraws nothing, and
+      test_api_view_compares_operation_not_shared_guidance covers it.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.82ebf1a26dbd4618e70f7dfb
+    owner: tools.install_selected_material:NativePackageBinding.__post_init__
+    rationale: >-
+      Closed discriminants of the package compiler candidate, the served kind tool from the harness
+      intelligence KINDS registry, the client kind opencode of the two qualified loader shapes, and the
+      file role executable_tool from CataloguePackage FILE_ROLES. Each branch selects the exact placement
+      rule of one qualified loader shape and refuses every other value, so making them configurable would
+      widen placement authority. The known-wrong compiler checks and their mutation controls in
+      tools/test_install_selected_material.py cover each branch, and a new loader shape needs its own
+      qualification.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.a8dcf6cbab0098487c1f4435
+    owner: tools.install_selected_material:NativePackageBinding.__post_init__
+    rationale: >-
+      Closed discriminants of the package compiler candidate, the served kind tool from the harness
+      intelligence KINDS registry, the client kind opencode of the two qualified loader shapes, and the
+      file role executable_tool from CataloguePackage FILE_ROLES. Each branch selects the exact placement
+      rule of one qualified loader shape and refuses every other value, so making them configurable would
+      widen placement authority. The known-wrong compiler checks and their mutation controls in
+      tools/test_install_selected_material.py cover each branch, and a new loader shape needs its own
+      qualification.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.13bbd6d6167b2c27d8d94d56
+    owner: tools.install_selected_material:compile_native_package_plan
+    rationale: >-
+      Closed discriminants of the package compiler candidate, the served kind tool from the harness
+      intelligence KINDS registry, the client kind opencode of the two qualified loader shapes, and the
+      file role executable_tool from CataloguePackage FILE_ROLES. Each branch selects the exact placement
+      rule of one qualified loader shape and refuses every other value, so making them configurable would
+      widen placement authority. The known-wrong compiler checks and their mutation controls in
+      tools/test_install_selected_material.py cover each branch, and a new loader shape needs its own
+      qualification.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.131c047ff0e0bdc84076bd8a
+    owner: tools.install_selected_material:fetch_selected_native_package
+    rationale: >-
+      Closed discriminants of the package compiler candidate, the served kind tool from the harness
+      intelligence KINDS registry, the client kind opencode of the two qualified loader shapes, and the
+      file role executable_tool from CataloguePackage FILE_ROLES. Each branch selects the exact placement
+      rule of one qualified loader shape and refuses every other value, so making them configurable would
+      widen placement authority. The known-wrong compiler checks and their mutation controls in
+      tools/test_install_selected_material.py cover each branch, and a new loader shape needs its own
+      qualification.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.e49384fd71696b58e6fb38e3
+    owner: tools.install_selected_material:require_native_placements
+    rationale: >-
+      Closed discriminants of the package compiler candidate, the served kind tool from the harness
+      intelligence KINDS registry, the client kind opencode of the two qualified loader shapes, and the
+      file role executable_tool from CataloguePackage FILE_ROLES. Each branch selects the exact placement
+      rule of one qualified loader shape and refuses every other value, so making them configurable would
+      widen placement authority. The known-wrong compiler checks and their mutation controls in
+      tools/test_install_selected_material.py cover each branch, and a new loader shape needs its own
+      qualification.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.70b4ca4bb9475d13ee801aa9
+    owner: tools.install_selected_material:validate_native_stage_plan
+    rationale: >-
+      Closed discriminants of the package compiler candidate, the served kind tool from the harness
+      intelligence KINDS registry, the client kind opencode of the two qualified loader shapes, and the
+      file role executable_tool from CataloguePackage FILE_ROLES. Each branch selects the exact placement
+      rule of one qualified loader shape and refuses every other value, so making them configurable would
+      widen placement authority. The known-wrong compiler checks and their mutation controls in
+      tools/test_install_selected_material.py cover each branch, and a new loader shape needs its own
+      qualification.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.af74a9f5db82b1177670bc02
+    owner: tools.install_selected_material:validate_native_stage_plan
+    rationale: >-
+      Closed discriminants of the package compiler candidate, the served kind tool from the harness
+      intelligence KINDS registry, the client kind opencode of the two qualified loader shapes, and the
+      file role executable_tool from CataloguePackage FILE_ROLES. Each branch selects the exact placement
+      rule of one qualified loader shape and refuses every other value, so making them configurable would
+      widen placement authority. The known-wrong compiler checks and their mutation controls in
+      tools/test_install_selected_material.py cover each branch, and a new loader shape needs its own
+      qualification.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
 excluded_paths:
   - path: docs/verification/assets/live-baltor-morning-2026-09-23/browser-observations.json
     owner: docs.verification.live-baltor-morning-2026-09-23
