@@ -1,0 +1,4611 @@
+{
+ "record_type": "knowledge_radar_question_registry/v1",
+ "registry_version": "1.0.0",
+ "revised_on": "2026-09-27",
+ "rule": {
+  "research_minutes_threshold": 5,
+  "research_sources_threshold": 1
+ },
+ "planner": {
+  "maximum_questions": 60,
+  "exploration_share": 0.1
+ },
+ "questions": [
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "papers_ai_ml_daily",
+   "question": "Which new AI and machine learning papers appeared in the last few days?",
+   "title": "New AI and machine learning papers",
+   "area": "papers",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "engineers and researchers who need to know what is new",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence.",
+   "purpose": "List the newest AI and machine learning papers from the Hugging Face daily list and arXiv, with links and dates.",
+   "use_when": "Use when a task needs recent research on models, agents or learning methods before choosing an approach.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 20,
+    "sources": 3
+   },
+   "volatility": "days",
+   "refresh": "daily",
+   "delivery": [
+    "brief"
+   ],
+   "valid_days": 3,
+   "reask": [
+    "Does any paper here solve the exact problem of the current task better than the method already chosen?",
+    "Is there released code, and under which licence?",
+    "Has anyone reproduced the result?"
+   ],
+   "recheck": [
+    "Open the paper page and confirm the version and date before citing it."
+   ],
+   "not_established": [
+    "A listing is not a result: no paper here was read, reproduced or judged by the radar."
+   ],
+   "would_change": [
+    "A reproduction, a benchmark result on a shared task or released code with tests."
+   ],
+   "limit": 12,
+   "sources": [
+    {
+     "engine": "collector_state",
+     "section": "Hugging Face daily papers",
+     "parameters": {
+      "family": "papers",
+      "source_id": "daily-papers",
+      "rank_by": "source_published_at"
+     }
+    },
+    {
+     "engine": "arxiv_listing",
+     "section": "Newest on arXiv in AI, learning and language",
+     "parameters": {
+      "categories": [
+       "cs.AI",
+       "cs.LG",
+       "cs.CL"
+      ],
+      "limit": 12
+     }
+    },
+    {
+     "engine": "collector_state",
+     "section": "Hugging Face blog",
+     "parameters": {
+      "family": "news",
+      "source_id": "huggingface-news",
+      "rank_by": "source_published_at",
+      "limit": 6
+     }
+    }
+   ],
+   "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "papers_across_sciences",
+   "question": "Which recent papers across the sciences are most cited or newest, by field?",
+   "title": "New and most cited papers across the sciences",
+   "area": "papers",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "engineers and researchers who need to know what is new",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence.",
+   "purpose": "List the most cited articles of the last six months in several scientific fields from OpenAlex, and the newest arXiv papers outside computer science.",
+   "use_when": "Use when a task touches a scientific field (medicine, biology, chemistry, physics, materials, environment, economics, engineering) and needs current literature.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 45,
+    "sources": 9
+   },
+   "volatility": "weeks",
+   "refresh": "weekly",
+   "delivery": [
+    "brief"
+   ],
+   "valid_days": 7,
+   "reask": [
+    "Which of these fields does the current task actually depend on?",
+    "Is the finding peer reviewed, and is the full text open?",
+    "Would a review article serve the task better than a single new study?"
+   ],
+   "recheck": [
+    "Citation counts grow every week; read the count again before ranking by it."
+   ],
+   "not_established": [
+    "Citation counts measure attention, not correctness.",
+    "No paper here was read by the radar."
+   ],
+   "would_change": [
+    "A systematic review or a replication in the same field."
+   ],
+   "limit": 5,
+   "sources": [
+    {
+     "engine": "openalex_works",
+     "section": "Medicine",
+     "parameters": {
+      "field": "fields/27",
+      "window_days": 180,
+      "limit": 5
+     }
+    },
+    {
+     "engine": "openalex_works",
+     "section": "Biochemistry, genetics and molecular biology",
+     "parameters": {
+      "field": "fields/13",
+      "window_days": 180,
+      "limit": 5
+     }
+    },
+    {
+     "engine": "openalex_works",
+     "section": "Chemistry",
+     "parameters": {
+      "field": "fields/16",
+      "window_days": 180,
+      "limit": 5
+     }
+    },
+    {
+     "engine": "openalex_works",
+     "section": "Materials science",
+     "parameters": {
+      "field": "fields/25",
+      "window_days": 180,
+      "limit": 5
+     }
+    },
+    {
+     "engine": "openalex_works",
+     "section": "Environmental science",
+     "parameters": {
+      "field": "fields/23",
+      "window_days": 180,
+      "limit": 5
+     }
+    },
+    {
+     "engine": "openalex_works",
+     "section": "Economics, econometrics and finance",
+     "parameters": {
+      "field": "fields/20",
+      "window_days": 180,
+      "limit": 5
+     }
+    },
+    {
+     "engine": "arxiv_listing",
+     "section": "Newest on arXiv in quantitative biology",
+     "parameters": {
+      "categories": [
+       "q-bio.*"
+      ],
+      "limit": 5
+     }
+    },
+    {
+     "engine": "arxiv_listing",
+     "section": "Newest on arXiv in physics and astronomy",
+     "parameters": {
+      "categories": [
+       "physics.*",
+       "astro-ph.*",
+       "cond-mat.*"
+      ],
+      "limit": 5
+     }
+    },
+    {
+     "engine": "arxiv_listing",
+     "section": "Newest on arXiv in economics and quantitative finance",
+     "parameters": {
+      "categories": [
+       "econ.*",
+       "q-fin.*"
+      ],
+      "limit": 5
+     }
+    }
+   ],
+   "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "benchmarks_model_indices",
+   "question": "Which models lead the published general, coding and agentic indices today, and at what listed price?",
+   "title": "Model leaders on published indices",
+   "area": "benchmarks",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and coding harnesses choosing what to build with",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence, a data file with its schema.",
+   "purpose": "Rank models by the Artificial Analysis intelligence, coding and agentic index values that the model directory records, with the cheapest listed price.",
+   "use_when": "Use when choosing a model for a task and a published, comparable quality number is needed as a first filter.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 20,
+    "sources": 4
+   },
+   "volatility": "days",
+   "refresh": "daily",
+   "delivery": [
+    "brief",
+    "data_file"
+   ],
+   "valid_days": 3,
+   "reask": [
+    "Does the task need the top model, or does a cheaper one pass the same acceptance check?",
+    "Is the listed price for the provider the harness will actually call?",
+    "Has a newer model been released since this brief?"
+   ],
+   "recheck": [
+    "Prices and index values change when models are released; read the directory again after the valid-until date."
+   ],
+   "not_established": [
+    "No source used here measured these options on your own task, data or budget.",
+    "The source does not state when each index value was measured."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 10,
+   "sources": [
+    {
+     "engine": "model_directory",
+     "section": "Highest intelligence index",
+     "parameters": {
+      "needs_facts": [
+       "intelligence_index"
+      ],
+      "rank_by": "intelligence_index",
+      "limit": 10
+     }
+    },
+    {
+     "engine": "model_directory",
+     "section": "Highest coding index",
+     "parameters": {
+      "needs_facts": [
+       "coding_index"
+      ],
+      "rank_by": "coding_index",
+      "limit": 10
+     }
+    },
+    {
+     "engine": "model_directory",
+     "section": "Highest agentic index",
+     "parameters": {
+      "needs_facts": [
+       "agentic_index"
+      ],
+      "rank_by": "agentic_index",
+      "limit": 10
+     }
+    }
+   ],
+   "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "benchmarks_new_evaluation_suites",
+   "question": "Which new benchmarks and evaluation suites appeared recently, and which are being adopted?",
+   "title": "New benchmarks and evaluation suites",
+   "area": "benchmarks",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and coding harnesses choosing what to build with",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence.",
+   "purpose": "List benchmark and evaluation repositories created or active recently, ranked by stars, with licences and dates.",
+   "use_when": "Use when a task needs a way to measure a model, agent or pipeline and should reuse an existing benchmark.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 30,
+    "sources": 3
+   },
+   "volatility": "weeks",
+   "refresh": "weekly",
+   "delivery": [
+    "brief"
+   ],
+   "valid_days": 7,
+   "reask": [
+    "Does the benchmark measure what the task needs, or only something nearby?",
+    "Is its data licence compatible with the use?",
+    "Is there a public leaderboard with dated submissions?"
+   ],
+   "recheck": [
+    "Confirm the repository is still maintained and the data is downloadable."
+   ],
+   "not_established": [
+    "No source used here measured these options on your own task, data or budget."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 10,
+   "sources": [
+    {
+     "engine": "github_search",
+     "section": "New benchmark repositories",
+     "parameters": {
+      "q": "topic:benchmark archived:false created:>={since_120d} stars:>=20",
+      "sort": "stars",
+      "per_page": 20,
+      "limit": 10
+     }
+    },
+    {
+     "engine": "github_search",
+     "section": "Active evaluation frameworks",
+     "parameters": {
+      "q": "topic:llm-evaluation archived:false pushed:>={since_30d} stars:>=100",
+      "sort": "stars",
+      "per_page": 20,
+      "limit": 10
+     }
+    }
+   ],
+   "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "models_reasoning_decision",
+   "question": "Which reasoning models score highest on the published index while supporting tools and structured output?",
+   "title": "Reasoning and decision models",
+   "area": "models",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and coding harnesses choosing what to build with",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence, a data file with its schema.",
+   "purpose": "Rank reasoning models that call tools and return structured output by published intelligence index and by listed price per index point.",
+   "use_when": "Use when a step needs careful reasoning or a decision with typed output and the harness must pick a model.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 30,
+    "sources": 4
+   },
+   "volatility": "days",
+   "refresh": "daily",
+   "delivery": [
+    "brief",
+    "data_file"
+   ],
+   "valid_days": 3,
+   "reask": [
+    "Does this step need a reasoning model at all, or would a smaller model with a validator pass?",
+    "What reasoning effort setting does the provider default to, and what does it cost?"
+   ],
+   "recheck": [
+    "Confirm tool calling and structured output on the exact provider route the harness uses."
+   ],
+   "not_established": [
+    "No source used here measured these options on your own task, data or budget.",
+    "Reasoning effort settings and their cost differences are not recorded here."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 10,
+   "sources": [
+    {
+     "engine": "model_directory",
+     "section": "Highest intelligence index with tools and structured output",
+     "parameters": {
+      "require": [
+       "reasoning",
+       "tool_calling",
+       "structured_output"
+      ],
+      "needs_facts": [
+       "intelligence_index"
+      ],
+      "rank_by": "intelligence_index"
+     }
+    },
+    {
+     "engine": "model_directory",
+     "section": "Lowest listed price per index point",
+     "parameters": {
+      "require": [
+       "reasoning"
+      ],
+      "needs_facts": [
+       "price_per_intelligence_point"
+      ],
+      "rank_by": "price_per_intelligence_point",
+      "ascending": true
+     }
+    }
+   ],
+   "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "models_cheapest_thinking",
+   "question": "What is the cheapest model per unit of published thinking for a task, under my constraints?",
+   "title": "Cheapest model per unit of published thinking",
+   "area": "models",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and coding harnesses choosing what to build with",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence, a data file with its schema, a decision helper.",
+   "purpose": "Publish a model price and capability table and a helper that chooses the lowest listed price per published intelligence index point under the caller's constraints.",
+   "use_when": "Use when a harness must choose a model under a budget and wants the choice reproducible from dated data.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 40,
+    "sources": 5
+   },
+   "volatility": "days",
+   "refresh": "daily",
+   "delivery": [
+    "brief",
+    "data_file",
+    "decision_helper"
+   ],
+   "valid_days": 3,
+   "reask": [
+    "Is cost per accepted task on a frozen evaluation set available? It outranks this table.",
+    "Would a parser, a SQL query or a classical model do this step with no model call?",
+    "Does the chosen model pass the step's own acceptance check?"
+   ],
+   "recheck": [
+    "Prices change often; the table is valid only until its valid-until date."
+   ],
+   "not_established": [
+    "Cost per accepted task is not measured here; the helper divides a listed price by a published index.",
+    "No source used here measured these options on your own task, data or budget."
+   ],
+   "would_change": [
+    "A measured cost per accepted task on a frozen evaluation set for the same step."
+   ],
+   "limit": 25,
+   "sources": [
+    {
+     "engine": "model_directory",
+     "section": "Lowest listed price per index point",
+     "parameters": {
+      "needs_facts": [
+       "price_per_intelligence_point"
+      ],
+      "rank_by": "price_per_intelligence_point",
+      "ascending": true,
+      "limit": 25
+     }
+    }
+   ],
+   "seeds": [],
+   "assets": {
+    "decision_helper": "choose_model"
+   }
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "models_coding",
+   "question": "Which coding models lead the published coding index, and which open-weight coding models are most used?",
+   "title": "Coding models",
+   "area": "models",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and coding harnesses choosing what to build with",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence, a data file with its schema.",
+   "purpose": "Rank models by the published coding index with listed prices, and open-weight coding models by downloads.",
+   "use_when": "Use when choosing a model for code generation, repair or review.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 25,
+    "sources": 4
+   },
+   "volatility": "days",
+   "refresh": "daily",
+   "delivery": [
+    "brief",
+    "data_file"
+   ],
+   "valid_days": 3,
+   "reask": [
+    "Does the harness's own test suite accept the model's patches?",
+    "Is a smaller local coding model good enough for this repository?"
+   ],
+   "recheck": [
+    "Confirm the context window covers the files the step must read."
+   ],
+   "not_established": [
+    "No source used here measured these options on your own task, data or budget."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 10,
+   "sources": [
+    {
+     "engine": "model_directory",
+     "section": "Highest coding index",
+     "parameters": {
+      "needs_facts": [
+       "coding_index"
+      ],
+      "rank_by": "coding_index"
+     }
+    },
+    {
+     "engine": "model_directory",
+     "section": "Most downloaded open-weight coding models",
+     "parameters": {
+      "use_case": "coding",
+      "require": [
+       "open_weights"
+      ],
+      "rank_by": "downloads"
+     }
+    }
+   ],
+   "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "models_small_open",
+   "question": "Which small open-weight models (up to about ten billion parameters) are most used, and which are new?",
+   "title": "Small open-weight models",
+   "area": "models",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and coding harnesses choosing what to build with",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence, a data file with its schema.",
+   "purpose": "List open-weight models of ten billion parameters or fewer by downloads and by release date, with licences.",
+   "use_when": "Use when a step should run on modest hardware or at low cost with an open licence.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 25,
+    "sources": 3
+   },
+   "volatility": "weeks",
+   "refresh": "weekly",
+   "delivery": [
+    "brief",
+    "data_file"
+   ],
+   "valid_days": 7,
+   "reask": [
+    "Does the licence allow the intended use?",
+    "Is a quantized file available for the target hardware?"
+   ],
+   "recheck": [
+    "Download counts move weekly; confirm the model is still maintained."
+   ],
+   "not_established": [
+    "No source used here measured these options on your own task, data or budget."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 10,
+   "sources": [
+    {
+     "engine": "model_directory",
+     "section": "Most downloaded",
+     "parameters": {
+      "require": [
+       "open_weights"
+      ],
+      "max_parameters": 10000000000,
+      "rank_by": "downloads"
+     }
+    },
+    {
+     "engine": "model_directory",
+     "section": "Newest",
+     "parameters": {
+      "require": [
+       "open_weights"
+      ],
+      "max_parameters": 10000000000,
+      "needs_facts": [
+       "released"
+      ],
+      "rank_by": "released"
+     }
+    }
+   ],
+   "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "models_cpu_laptop",
+   "question": "Which models run on a laptop or a machine without a graphics card?",
+   "title": "Models for laptops and CPU-only machines",
+   "area": "models",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and coding harnesses choosing what to build with",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence, a data file with its schema.",
+   "purpose": "List models whose smallest quantized file is six gigabytes or less, by downloads, with parameter counts and licences.",
+   "use_when": "Use when a harness runs a local model overnight on an ordinary computer.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 30,
+    "sources": 3
+   },
+   "volatility": "weeks",
+   "refresh": "weekly",
+   "delivery": [
+    "brief",
+    "data_file"
+   ],
+   "valid_days": 7,
+   "reask": [
+    "How much memory does the machine have free, including the context cache?",
+    "Is the output quality acceptable at this quantization?"
+   ],
+   "recheck": [
+    "Use the /can-i-run page for an exact fit on a given device."
+   ],
+   "not_established": [
+    "Speed on a given processor is not measured here."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 12,
+   "sources": [
+    {
+     "engine": "model_directory",
+     "section": "Smallest files, most downloaded",
+     "parameters": {
+      "max_quant_bytes": 6000000000,
+      "rank_by": "downloads"
+     }
+    }
+   ],
+   "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "models_embeddings",
+   "question": "Which embedding models are most used and trending for search and retrieval?",
+   "title": "Embedding models",
+   "area": "models",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and coding harnesses choosing what to build with",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence, a data file with its schema.",
+   "purpose": "Rank embedding models by downloads from the model directory and by trend on Hugging Face, with licences.",
+   "use_when": "Use when building semantic search, retrieval or clustering and choosing an embedding model.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 25,
+    "sources": 3
+   },
+   "volatility": "weeks",
+   "refresh": "weekly",
+   "delivery": [
+    "brief",
+    "data_file"
+   ],
+   "valid_days": 7,
+   "reask": [
+    "Which languages must the embeddings cover?",
+    "Does the vector size fit the store and its cost?",
+    "Has the model been evaluated on a retrieval set close to the task?"
+   ],
+   "recheck": [
+    "Confirm the licence tag on the model page before shipping."
+   ],
+   "not_established": [
+    "No source used here measured these options on your own task, data or budget."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 10,
+   "sources": [
+    {
+     "engine": "model_directory",
+     "section": "Most downloaded",
+     "parameters": {
+      "use_case": "embeddings",
+      "rank_by": "downloads"
+     }
+    },
+    {
+     "engine": "huggingface_models",
+     "section": "Trending on Hugging Face",
+     "parameters": {
+      "pipeline_tag": "feature-extraction",
+      "sort": "trendingScore",
+      "limit": 10
+     }
+    }
+   ],
+   "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "models_rerankers",
+   "question": "Which rerankers are most used for improving retrieval results?",
+   "title": "Rerankers",
+   "area": "models",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and coding harnesses choosing what to build with",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence, a data file with its schema.",
+   "purpose": "Rank rerankers by downloads and by trend, with licences.",
+   "use_when": "Use when a retrieval step returns good candidates in the wrong order.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 20,
+    "sources": 3
+   },
+   "volatility": "weeks",
+   "refresh": "weekly",
+   "delivery": [
+    "brief",
+    "data_file"
+   ],
+   "valid_days": 7,
+   "reask": [
+    "Is the extra latency of a reranker acceptable for this step?",
+    "Does the reranker support the task's languages?"
+   ],
+   "recheck": [
+    "Confirm maximum input length on the model page."
+   ],
+   "not_established": [
+    "No source used here measured these options on your own task, data or budget."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 10,
+   "sources": [
+    {
+     "engine": "model_directory",
+     "section": "Most downloaded",
+     "parameters": {
+      "use_case": "rerank",
+      "rank_by": "downloads"
+     }
+    },
+    {
+     "engine": "huggingface_models",
+     "section": "Trending on Hugging Face",
+     "parameters": {
+      "pipeline_tag": "text-ranking",
+      "sort": "trendingScore",
+      "limit": 10
+     }
+    }
+   ],
+   "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "models_document_reading",
+   "question": "Which open models read documents and images into text, and which are trending?",
+   "title": "Document reading and text recognition models",
+   "area": "models",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and coding harnesses choosing what to build with",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence.",
+   "purpose": "Rank image-to-text and document models by downloads and by trend, with licences and published evaluation results where the model repository lists them.",
+   "use_when": "Use when extracting text or fields from scanned documents, receipts, forms or screenshots.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 30,
+    "sources": 4
+   },
+   "volatility": "weeks",
+   "refresh": "weekly",
+   "delivery": [
+    "brief"
+   ],
+   "valid_days": 7,
+   "reask": [
+    "Does the task need layout and tables, or plain text only?",
+    "Is a classical text recognition engine enough for clean scans?"
+   ],
+   "recheck": [
+    "Check the model's published results on a document benchmark before trusting a ranking by downloads."
+   ],
+   "not_established": [
+    "No source used here measured these options on your own task, data or budget."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 10,
+   "sources": [
+    {
+     "engine": "huggingface_models",
+     "section": "Most downloaded image-to-text models",
+     "parameters": {
+      "pipeline_tag": "image-to-text",
+      "sort": "downloads",
+      "limit": 10
+     }
+    },
+    {
+     "engine": "huggingface_models",
+     "section": "Trending image-to-text models",
+     "parameters": {
+      "pipeline_tag": "image-to-text",
+      "sort": "trendingScore",
+      "limit": 10
+     }
+    },
+    {
+     "engine": "huggingface_models",
+     "section": "Document models among image and text models",
+     "parameters": {
+      "pipeline_tag": "image-text-to-text",
+      "sort": "downloads",
+      "limit": 10,
+      "search": "ocr"
+     }
+    }
+   ],
+   "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "models_typed_decision",
+   "question": "Which models return schema-constrained output for typed decisions, and what is new in this group?",
+   "title": "Typed decision and structured output models",
+   "area": "models",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and coding harnesses choosing what to build with",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence, a data file with its schema.",
+   "purpose": "Rank models that support structured output and tool calling by listed price per index point, and list new models in the Jev family as the model directory records them.",
+   "use_when": "Use when a step must return a typed decision that a validator checks.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 25,
+    "sources": 4
+   },
+   "volatility": "days",
+   "refresh": "daily",
+   "delivery": [
+    "brief",
+    "data_file"
+   ],
+   "valid_days": 3,
+   "reask": [
+    "Does the provider enforce the schema, or only request it?",
+    "What happens on a refusal or a truncated answer?"
+   ],
+   "recheck": [
+    "Confirm structured output support on the exact route; the directory reads it from the provider's listed parameters."
+   ],
+   "not_established": [
+    "No source used here measured these options on your own task, data or budget.",
+    "Whether a model honours a schema under load is not measured here."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 10,
+   "sources": [
+    {
+     "engine": "model_directory",
+     "section": "Structured output and tools, lowest price per index point",
+     "parameters": {
+      "require": [
+       "structured_output",
+       "tool_calling"
+      ],
+      "needs_facts": [
+       "price_per_intelligence_point"
+      ],
+      "rank_by": "price_per_intelligence_point",
+      "ascending": true
+     }
+    },
+    {
+     "engine": "model_directory",
+     "section": "Jev family, newest first",
+     "parameters": {
+      "name_contains": [
+       "jev"
+      ],
+      "needs_facts": [
+       "released"
+      ],
+      "rank_by": "released"
+     }
+    }
+   ],
+   "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "models_text_classification",
+   "question": "Which efficient text classification models are most used?",
+   "title": "Text classification models",
+   "area": "models",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and coding harnesses choosing what to build with",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence.",
+   "purpose": "Rank text classification and zero-shot classification models by downloads, with licences.",
+   "use_when": "Use when a step labels text and a small classifier could replace a large model call.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 20,
+    "sources": 2
+   },
+   "volatility": "weeks",
+   "refresh": "weekly",
+   "delivery": [
+    "brief"
+   ],
+   "valid_days": 7,
+   "reask": [
+    "Is there labelled data to fine-tune a small classifier instead?",
+    "What accuracy does the step need?"
+   ],
+   "recheck": [
+    "Confirm the label set of the model matches the task."
+   ],
+   "not_established": [
+    "No source used here measured these options on your own task, data or budget."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 10,
+   "sources": [
+    {
+     "engine": "huggingface_models",
+     "section": "Text classification",
+     "parameters": {
+      "pipeline_tag": "text-classification",
+      "sort": "downloads",
+      "limit": 10
+     }
+    },
+    {
+     "engine": "huggingface_models",
+     "section": "Zero-shot classification",
+     "parameters": {
+      "pipeline_tag": "zero-shot-classification",
+      "sort": "downloads",
+      "limit": 10
+     }
+    }
+   ],
+   "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "models_entity_extraction_linking",
+   "question": "Which models and systems extract and link named entities from text?",
+   "title": "Entity extraction, linking and resolution",
+   "area": "models",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and coding harnesses choosing what to build with",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence.",
+   "purpose": "List token classification models by downloads and entity linking and resolution projects by stars.",
+   "use_when": "Use when a step must find people, organisations or places in text, or decide that two records name the same entity.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 35,
+    "sources": 3
+   },
+   "volatility": "weeks",
+   "refresh": "weekly",
+   "delivery": [
+    "brief"
+   ],
+   "valid_days": 7,
+   "reask": [
+    "Is there a registry (for example the legal entity identifier database) that answers the question exactly?",
+    "Which quality threshold must the matching meet, and on what labelled pairs?"
+   ],
+   "recheck": [
+    "Measure precision and recall on the task's own pairs before relying on a project."
+   ],
+   "not_established": [
+    "No source used here measured these options on your own task, data or budget."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 8,
+   "sources": [
+    {
+     "engine": "huggingface_models",
+     "section": "Named entity models",
+     "parameters": {
+      "pipeline_tag": "token-classification",
+      "sort": "downloads",
+      "limit": 10
+     }
+    },
+    {
+     "engine": "github_search",
+     "section": "Entity linking projects",
+     "parameters": {
+      "q": "topic:entity-linking archived:false pushed:>={since_365d}",
+      "sort": "stars",
+      "per_page": 20,
+      "limit": 8
+     }
+    },
+    {
+     "engine": "github_search",
+     "section": "Entity resolution projects",
+     "parameters": {
+      "q": "topic:entity-resolution archived:false pushed:>={since_365d}",
+      "sort": "stars",
+      "per_page": 20,
+      "limit": 8
+     }
+    }
+   ],
+   "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "models_time_series_forecasting",
+   "question": "Which time series forecasting models and libraries are most used and trending?",
+   "title": "Time series forecasting",
+   "area": "models",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and coding harnesses choosing what to build with",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence.",
+   "purpose": "Rank forecasting models by downloads and trend, and forecasting libraries by stars.",
+   "use_when": "Use when a task forecasts demand, prices, traffic or any series over time.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 30,
+    "sources": 3
+   },
+   "volatility": "weeks",
+   "refresh": "weekly",
+   "delivery": [
+    "brief"
+   ],
+   "valid_days": 7,
+   "reask": [
+    "Does a simple seasonal baseline already meet the accuracy target?",
+    "Is the series long enough for the model's context?"
+   ],
+   "recheck": [
+    "Compare against a naive baseline on held-out periods before adopting a model."
+   ],
+   "not_established": [
+    "No source used here measured these options on your own task, data or budget."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 8,
+   "sources": [
+    {
+     "engine": "huggingface_models",
+     "section": "Most downloaded forecasting models",
+     "parameters": {
+      "pipeline_tag": "time-series-forecasting",
+      "sort": "downloads",
+      "limit": 10
+     }
+    },
+    {
+     "engine": "huggingface_models",
+     "section": "Trending forecasting models",
+     "parameters": {
+      "pipeline_tag": "time-series-forecasting",
+      "sort": "trendingScore",
+      "limit": 10
+     }
+    },
+    {
+     "engine": "github_search",
+     "section": "Forecasting libraries",
+     "parameters": {
+      "q": "topic:time-series-forecasting archived:false pushed:>={since_90d}",
+      "sort": "stars",
+      "per_page": 20,
+      "limit": 8
+     }
+    }
+   ],
+   "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "pipelines_document_extraction",
+   "question": "Which open pipelines extract structured data from PDFs and scanned documents, and which are maintained?",
+   "title": "Document extraction pipelines",
+   "area": "pipelines",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and coding harnesses choosing what to build with",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence.",
+   "purpose": "List maintained document parsing and extraction projects by stars, and protocol servers for documents.",
+   "use_when": "Use when a task turns PDFs, scans or office files into structured data.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 40,
+    "sources": 4
+   },
+   "volatility": "weeks",
+   "refresh": "weekly",
+   "delivery": [
+    "brief"
+   ],
+   "valid_days": 7,
+   "reask": [
+    "Are the documents born digital or scanned?",
+    "Does the output need tables and reading order?",
+    "Can the pipeline run where the data is allowed to go?"
+   ],
+   "recheck": [
+    "Run the candidate on five of the task's own documents before choosing."
+   ],
+   "not_established": [
+    "No source used here measured these options on your own task, data or budget."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 8,
+   "sources": [
+    {
+     "engine": "github_search",
+     "section": "Document parsing projects",
+     "parameters": {
+      "q": "topic:document-parsing archived:false pushed:>={since_60d}",
+      "sort": "stars",
+      "per_page": 20,
+      "limit": 8
+     }
+    },
+    {
+     "engine": "github_search",
+     "section": "PDF extraction projects",
+     "parameters": {
+      "q": "topic:pdf-extraction archived:false pushed:>={since_60d}",
+      "sort": "stars",
+      "per_page": 20,
+      "limit": 8
+     }
+    },
+    {
+     "engine": "mcp_directory",
+     "section": "Protocol servers for documents and files",
+     "parameters": {
+      "category": "documents",
+      "limit": 6
+     }
+    }
+   ],
+   "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "pipelines_web_scraping",
+   "question": "Which web scraping and crawling tools are maintained and most used?",
+   "title": "Web scraping and crawling",
+   "area": "pipelines",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and coding harnesses choosing what to build with",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence.",
+   "purpose": "List maintained scraping and crawling projects by stars, scraping services from the owner's agent tools directory, and protocol servers for web data.",
+   "use_when": "Use when a task collects data from websites.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 40,
+    "sources": 4
+   },
+   "volatility": "weeks",
+   "refresh": "weekly",
+   "delivery": [
+    "brief"
+   ],
+   "valid_days": 7,
+   "reask": [
+    "Do the site's terms and robots rules allow automated reading?",
+    "Is there an official interface that makes scraping unnecessary?"
+   ],
+   "recheck": [
+    "Confirm the tool handles the site's rendering (static pages or scripts)."
+   ],
+   "not_established": [
+    "No source used here measured these options on your own task, data or budget.",
+    "Whether a given site permits scraping is not established here."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 8,
+   "sources": [
+    {
+     "engine": "github_search",
+     "section": "Scraping and crawling projects",
+     "parameters": {
+      "q": "topic:web-scraping archived:false pushed:>={since_30d} stars:>=200",
+      "sort": "stars",
+      "per_page": 20,
+      "limit": 8
+     }
+    },
+    {
+     "engine": "owner_directory",
+     "section": "Scraping services in the owner's agent tools directory",
+     "parameters": {
+      "repository": "TaylorAmarelTech/ai-agent-tools-directory",
+      "branch": "master",
+      "path": "providers.py",
+      "categories": [
+       "web_scraping"
+      ],
+      "limit": 8
+     }
+    },
+    {
+     "engine": "mcp_directory",
+     "section": "Protocol servers for search and web data",
+     "parameters": {
+      "category": "search-web",
+      "limit": 6
+     }
+    }
+   ],
+   "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "pipelines_browser_automation",
+   "question": "Which browser automation tools for agents are maintained?",
+   "title": "Browser automation for agents",
+   "area": "pipelines",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and coding harnesses choosing what to build with",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence.",
+   "purpose": "List browser automation projects by stars and protocol servers for browser control.",
+   "use_when": "Use when a step must operate a website that has no interface for programs.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 30,
+    "sources": 3
+   },
+   "volatility": "weeks",
+   "refresh": "weekly",
+   "delivery": [
+    "brief"
+   ],
+   "valid_days": 7,
+   "reask": [
+    "Does the step need a real browser, or does a plain request work?",
+    "Where do credentials for the site come from, and who approves their use?"
+   ],
+   "recheck": [
+    "Run the tool in the harness's sandbox before relying on it."
+   ],
+   "not_established": [
+    "No source used here measured these options on your own task, data or budget."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 8,
+   "sources": [
+    {
+     "engine": "github_search",
+     "section": "Browser automation projects",
+     "parameters": {
+      "q": "topic:browser-automation archived:false pushed:>={since_30d} stars:>=500",
+      "sort": "stars",
+      "per_page": 20,
+      "limit": 8
+     }
+    },
+    {
+     "engine": "mcp_directory",
+     "section": "Protocol servers for browser automation",
+     "parameters": {
+      "category": "browser",
+      "limit": 6
+     }
+    }
+   ],
+   "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "pipelines_image_collection",
+   "question": "Which tools collect images and build image datasets, and under which licences?",
+   "title": "Image collection and dataset building",
+   "area": "pipelines",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and coding harnesses choosing what to build with",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence.",
+   "purpose": "List image scraping, downloading and dataset tools by stars, with licences.",
+   "use_when": "Use when a task gathers images for training, evaluation or search.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 30,
+    "sources": 2
+   },
+   "volatility": "weeks",
+   "refresh": "weekly",
+   "delivery": [
+    "brief"
+   ],
+   "valid_days": 7,
+   "reask": [
+    "Do the image sources' terms and licences allow the intended use?",
+    "Is a public licensed dataset already available?"
+   ],
+   "recheck": [
+    "Record the licence of every collected image source."
+   ],
+   "not_established": [
+    "Rights to the collected images are not established by any tool here."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 8,
+   "sources": [
+    {
+     "engine": "github_search",
+     "section": "Image collection tools",
+     "parameters": {
+      "q": "topic:image-scraper archived:false pushed:>={since_365d}",
+      "sort": "stars",
+      "per_page": 20,
+      "limit": 8
+     }
+    },
+    {
+     "engine": "github_search",
+     "section": "Dataset building tools",
+     "parameters": {
+      "q": "topic:dataset-generation archived:false pushed:>={since_180d}",
+      "sort": "stars",
+      "per_page": 20,
+      "limit": 8
+     }
+    }
+   ],
+   "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "pipelines_risk_evaluation",
+   "question": "Which open projects evaluate risk (credit, operational, model and security risk)?",
+   "title": "Risk evaluation pipelines",
+   "area": "pipelines",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and coding harnesses choosing what to build with",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence.",
+   "purpose": "List maintained risk assessment, credit risk and model risk projects by stars, with licences.",
+   "use_when": "Use when a task scores, ranks or monitors risk.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 40,
+    "sources": 3
+   },
+   "volatility": "weeks",
+   "refresh": "weekly",
+   "delivery": [
+    "brief"
+   ],
+   "valid_days": 14,
+   "reask": [
+    "Which regulation applies to the decision the score supports?",
+    "How will the model be validated and monitored?"
+   ],
+   "recheck": [
+    "Check whether the project documents its validation data."
+   ],
+   "not_established": [
+    "No source used here measured these options on your own task, data or budget."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 8,
+   "sources": [
+    {
+     "engine": "github_search",
+     "section": "Risk assessment projects",
+     "parameters": {
+      "q": "topic:risk-assessment archived:false pushed:>={since_180d}",
+      "sort": "stars",
+      "per_page": 20,
+      "limit": 8
+     }
+    },
+    {
+     "engine": "github_search",
+     "section": "Credit risk projects",
+     "parameters": {
+      "q": "topic:credit-risk archived:false pushed:>={since_180d}",
+      "sort": "stars",
+      "per_page": 20,
+      "limit": 8
+     }
+    }
+   ],
+   "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "pipelines_geospatial",
+   "question": "Which geospatial and mapping libraries and pipelines are maintained and most used?",
+   "title": "Geospatial pipelines",
+   "area": "pipelines",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and coding harnesses choosing what to build with",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence.",
+   "purpose": "List geographic information system and geospatial projects by stars, with licences.",
+   "use_when": "Use when a task reads, transforms, analyses or maps location data.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 40,
+    "sources": 3
+   },
+   "volatility": "weeks",
+   "refresh": "weekly",
+   "delivery": [
+    "brief"
+   ],
+   "valid_days": 14,
+   "reask": [
+    "Which coordinate reference systems does the data use?",
+    "Is the data vector, raster or point cloud?"
+   ],
+   "recheck": [
+    "Confirm the library reads the task's file formats."
+   ],
+   "not_established": [
+    "No source used here measured these options on your own task, data or budget."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 8,
+   "sources": [
+    {
+     "engine": "github_search",
+     "section": "Geographic information system projects",
+     "parameters": {
+      "q": "topic:gis archived:false pushed:>={since_30d} stars:>=300",
+      "sort": "stars",
+      "per_page": 20,
+      "limit": 8
+     }
+    },
+    {
+     "engine": "github_search",
+     "section": "Geospatial projects",
+     "parameters": {
+      "q": "topic:geospatial archived:false pushed:>={since_30d} stars:>=300",
+      "sort": "stars",
+      "per_page": 20,
+      "limit": 8
+     }
+    }
+   ],
+   "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "pipelines_three_dimensional",
+   "question": "Which 3D reconstruction, rendering and generation projects and models are current?",
+   "title": "3D reconstruction and generation",
+   "area": "pipelines",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and coding harnesses choosing what to build with",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence.",
+   "purpose": "List 3D reconstruction and Gaussian splatting projects by stars and image-to-3D models by trend.",
+   "use_when": "Use when a task builds, renders or generates 3D content.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 40,
+    "sources": 4
+   },
+   "volatility": "weeks",
+   "refresh": "weekly",
+   "delivery": [
+    "brief"
+   ],
+   "valid_days": 14,
+   "reask": [
+    "Does the output need to be a mesh, a point cloud or a rendered view?",
+    "What hardware does the method need?"
+   ],
+   "recheck": [
+    "Confirm the licence of model weights separately from the code."
+   ],
+   "not_established": [
+    "No source used here measured these options on your own task, data or budget."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 8,
+   "sources": [
+    {
+     "engine": "github_search",
+     "section": "3D reconstruction projects",
+     "parameters": {
+      "q": "topic:3d-reconstruction archived:false pushed:>={since_90d}",
+      "sort": "stars",
+      "per_page": 20,
+      "limit": 8
+     }
+    },
+    {
+     "engine": "github_search",
+     "section": "Gaussian splatting projects",
+     "parameters": {
+      "q": "topic:gaussian-splatting archived:false pushed:>={since_90d}",
+      "sort": "stars",
+      "per_page": 20,
+      "limit": 8
+     }
+    },
+    {
+     "engine": "huggingface_models",
+     "section": "Image to 3D models",
+     "parameters": {
+      "pipeline_tag": "image-to-3d",
+      "sort": "trendingScore",
+      "limit": 8
+     }
+    }
+   ],
+   "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "pipelines_cad",
+   "question": "Which open computer-aided design tools and libraries are maintained?",
+   "title": "Computer-aided design tools",
+   "area": "pipelines",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and coding harnesses choosing what to build with",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence.",
+   "purpose": "List computer-aided design (CAD) and parametric modelling projects by stars, with licences.",
+   "use_when": "Use when a task creates or edits mechanical or architectural designs with code.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 40,
+    "sources": 3
+   },
+   "volatility": "weeks",
+   "refresh": "weekly",
+   "delivery": [
+    "brief"
+   ],
+   "valid_days": 14,
+   "reask": [
+    "Which exchange formats (for example STEP) must the output support?",
+    "Is a scriptable kernel needed, or an editor?"
+   ],
+   "recheck": [
+    "Open a sample file in the chosen tool before committing to it."
+   ],
+   "not_established": [
+    "No source used here measured these options on your own task, data or budget."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 8,
+   "sources": [
+    {
+     "engine": "github_search",
+     "section": "Computer-aided design projects",
+     "parameters": {
+      "q": "topic:cad archived:false pushed:>={since_90d} stars:>=100",
+      "sort": "stars",
+      "per_page": 20,
+      "limit": 8
+     }
+    },
+    {
+     "engine": "github_search",
+     "section": "Parametric modelling projects",
+     "parameters": {
+      "q": "topic:parametric-modeling archived:false pushed:>={since_180d}",
+      "sort": "stars",
+      "per_page": 20,
+      "limit": 8
+     }
+    }
+   ],
+   "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "pipelines_two_dimensional_design",
+   "question": "Which open tools generate or edit 2D graphics, vector art and design files?",
+   "title": "2D graphics and design tools",
+   "area": "pipelines",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and coding harnesses choosing what to build with",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence.",
+   "purpose": "List vector graphics and design tool projects by stars, with licences.",
+   "use_when": "Use when a task produces diagrams, icons, layouts or other 2D design output.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 30,
+    "sources": 3
+   },
+   "volatility": "weeks",
+   "refresh": "weekly",
+   "delivery": [
+    "brief"
+   ],
+   "valid_days": 14,
+   "reask": [
+    "Must the output be editable by a person in a design tool?",
+    "Which file format does the next step read?"
+   ],
+   "recheck": [
+    "Render one sample and inspect it before adopting a tool."
+   ],
+   "not_established": [
+    "No source used here measured these options on your own task, data or budget."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 8,
+   "sources": [
+    {
+     "engine": "github_search",
+     "section": "Vector graphics projects",
+     "parameters": {
+      "q": "topic:svg archived:false pushed:>={since_30d} stars:>=500",
+      "sort": "stars",
+      "per_page": 20,
+      "limit": 8
+     }
+    },
+    {
+     "engine": "github_search",
+     "section": "Design tool projects",
+     "parameters": {
+      "q": "topic:design-tools archived:false pushed:>={since_90d}",
+      "sort": "stars",
+      "per_page": 20,
+      "limit": 8
+     }
+    }
+   ],
+   "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "pipelines_prediction_systems",
+   "question": "Which open prediction systems (automated machine learning and tabular prediction) are maintained?",
+   "title": "Prediction systems",
+   "area": "pipelines",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and coding harnesses choosing what to build with",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence.",
+   "purpose": "List automated machine learning and tabular prediction projects by stars, with licences.",
+   "use_when": "Use when a task predicts a value or a class from tables and should start from a proven system.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 35,
+    "sources": 3
+   },
+   "volatility": "weeks",
+   "refresh": "weekly",
+   "delivery": [
+    "brief"
+   ],
+   "valid_days": 14,
+   "reask": [
+    "Is there a simple baseline (for example gradient boosting) to beat?",
+    "How will the prediction be validated over time?"
+   ],
+   "recheck": [
+    "Measure on a held-out split of the task's own data."
+   ],
+   "not_established": [
+    "No source used here measured these options on your own task, data or budget."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 8,
+   "sources": [
+    {
+     "engine": "github_search",
+     "section": "Automated machine learning projects",
+     "parameters": {
+      "q": "topic:automl archived:false pushed:>={since_90d}",
+      "sort": "stars",
+      "per_page": 20,
+      "limit": 8
+     }
+    },
+    {
+     "engine": "github_search",
+     "section": "Tabular prediction projects",
+     "parameters": {
+      "q": "topic:tabular-data archived:false pushed:>={since_90d} stars:>=100",
+      "sort": "stars",
+      "per_page": 20,
+      "limit": 8
+     }
+    }
+   ],
+   "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "tools_rust_rewrites",
+   "question": "Which fast developer tools written in Rust are most used and active?",
+   "title": "Fast tools written in Rust",
+   "area": "tools",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and coding harnesses choosing what to build with",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence.",
+   "purpose": "List active Rust command line tools and Rust-built Python tooling by stars, with licences.",
+   "use_when": "Use when a step runs a slow tool (linting, packaging, searching, formatting) and a faster equivalent may exist.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 30,
+    "sources": 2
+   },
+   "volatility": "weeks",
+   "refresh": "weekly",
+   "delivery": [
+    "brief"
+   ],
+   "valid_days": 14,
+   "reask": [
+    "Does the faster tool produce the same results as the current one on this repository?",
+    "Is it installable in the harness's sandbox?"
+   ],
+   "recheck": [
+    "Compare outputs on the repository before switching."
+   ],
+   "not_established": [
+    "No source used here measured these options on your own task, data or budget."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 10,
+   "sources": [
+    {
+     "engine": "github_search",
+     "section": "Rust command line tools",
+     "parameters": {
+      "q": "language:rust topic:cli archived:false pushed:>={since_30d} stars:>=2000",
+      "sort": "stars",
+      "per_page": 20,
+      "limit": 10
+     }
+    },
+    {
+     "engine": "github_search",
+     "section": "Rust tools for Python projects",
+     "parameters": {
+      "q": "language:rust topic:python archived:false pushed:>={since_30d} stars:>=1000",
+      "sort": "stars",
+      "per_page": 20,
+      "limit": 8
+     }
+    }
+   ],
+   "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "tools_agent_frameworks",
+   "question": "Which agent frameworks and orchestration libraries are maintained and most used?",
+   "title": "Agent frameworks",
+   "area": "tools",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and coding harnesses choosing what to build with",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence.",
+   "purpose": "List agent framework projects by stars and the frameworks the owner's agent tools directory records.",
+   "use_when": "Use when a task needs an agent loop, tool calling or multi-agent orchestration library.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 40,
+    "sources": 3
+   },
+   "volatility": "weeks",
+   "refresh": "weekly",
+   "delivery": [
+    "brief"
+   ],
+   "valid_days": 14,
+   "reask": [
+    "Does the harness already provide the loop the framework offers?",
+    "Can the framework's steps be replaced without rewriting callers?"
+   ],
+   "recheck": [
+    "Confirm the framework's latest release date before adopting it."
+   ],
+   "not_established": [
+    "No source used here measured these options on your own task, data or budget."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 10,
+   "sources": [
+    {
+     "engine": "github_search",
+     "section": "Agent framework projects",
+     "parameters": {
+      "q": "topic:ai-agents archived:false pushed:>={since_30d} stars:>=5000",
+      "sort": "stars",
+      "per_page": 20,
+      "limit": 10
+     }
+    },
+    {
+     "engine": "owner_directory",
+     "section": "Frameworks in the owner's agent tools directory",
+     "parameters": {
+      "repository": "TaylorAmarelTech/ai-agent-tools-directory",
+      "branch": "master",
+      "path": "providers.py",
+      "categories": [
+       "agent_framework",
+       "multi_agent",
+       "orchestration"
+      ],
+      "limit": 10
+     }
+    }
+   ],
+   "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "tools_protocol_servers_by_category",
+   "question": "Which kinds of Model Context Protocol servers exist, and which are newest in the official registry?",
+   "title": "Model Context Protocol servers by category",
+   "area": "tools",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and coding harnesses choosing what to build with",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence.",
+   "purpose": "Count protocol servers and agent interfaces by category in the packaged directory and list the newest official registry entries.",
+   "use_when": "Use when a harness needs a tool for a service and should first check whether a protocol server exists.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 20,
+    "sources": 3
+   },
+   "volatility": "weeks",
+   "refresh": "weekly",
+   "delivery": [
+    "brief"
+   ],
+   "valid_days": 7,
+   "reask": [
+    "Is the server published by the service's own maker?",
+    "Which authentication does it need, and who holds the credential?"
+   ],
+   "recheck": [
+    "Read the server's own repository before installing it."
+   ],
+   "not_established": [
+    "No source used here measured these options on your own task, data or budget."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 12,
+   "sources": [
+    {
+     "engine": "mcp_directory",
+     "section": "Servers per category",
+     "parameters": {
+      "mode": "category_counts",
+      "limit": 25
+     }
+    },
+    {
+     "engine": "collector_state",
+     "section": "Newest in the official registry",
+     "parameters": {
+      "family": "protocol_servers",
+      "rank_by": "source_published_at",
+      "limit": 10
+     }
+    }
+   ],
+   "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "tools_agent_skills_and_plugins",
+   "question": "Which agent skills and harness plugins are newly listed or most active?",
+   "title": "Agent skills and harness plugins",
+   "area": "tools",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and coding harnesses choosing what to build with",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence.",
+   "purpose": "List skills from the public skill directory by position and harness plugin repositories by recent activity.",
+   "use_when": "Use when a harness could reuse a skill or plugin instead of writing one.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 20,
+    "sources": 2
+   },
+   "volatility": "days",
+   "refresh": "daily",
+   "delivery": [
+    "brief"
+   ],
+   "valid_days": 3,
+   "reask": [
+    "Does the skill declare every effect it needs?",
+    "Is its licence compatible with the project?"
+   ],
+   "recheck": [
+    "Search Baltor for a reviewed package before installing an unreviewed one."
+   ],
+   "not_established": [
+    "No skill or plugin listed here was reviewed by the radar."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 10,
+   "sources": [
+    {
+     "engine": "collector_state",
+     "section": "Skill directory listing",
+     "parameters": {
+      "family": "skills",
+      "rank_by": "directory_position",
+      "ascending": true,
+      "limit": 10
+     }
+    },
+    {
+     "engine": "collector_state",
+     "section": "Plugin repositories",
+     "parameters": {
+      "family": "plugins",
+      "rank_by": "stars",
+      "limit": 10
+     }
+    }
+   ],
+   "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "infra_app_hosting",
+   "question": "Where should a small team host a web application or service, and what are the open-source alternatives?",
+   "title": "Application hosting",
+   "area": "infrastructure",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and small teams choosing a hosted service",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence.",
+   "purpose": "List application hosting services with their official documentation, pricing and status pages, and self-hosted platform projects by stars.",
+   "use_when": "Use when deploying a web service, worker or container for a startup or side project.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 60,
+    "sources": 10
+   },
+   "volatility": "weeks",
+   "refresh": "weekly",
+   "delivery": [
+    "brief"
+   ],
+   "valid_days": 14,
+   "reask": [
+    "Does the service run the workload shape (long-running process, container, function, static site)?",
+    "Where must the data live, and does the service offer that region?",
+    "What does the free or smallest paid plan include today?"
+   ],
+   "recheck": [
+    "Read the pricing page on the day of the decision; prices are not stored here."
+   ],
+   "not_established": [
+    "Prices and free plans are not stored here: they change without notice.",
+    "No source used here measured these options on your own task, data or budget."
+   ],
+   "would_change": [
+    "A measured deployment of the task's own service on two candidates, with cost after a month."
+   ],
+   "limit": 12,
+   "sources": [
+    {
+     "engine": "curated_seed",
+     "section": "Hosted services",
+     "parameters": {
+      "kind": "hosted_service"
+     }
+    },
+    {
+     "engine": "github_search",
+     "section": "Self-hosted platforms",
+     "parameters": {
+      "q": "topic:paas archived:false pushed:>={since_30d} stars:>=1000",
+      "sort": "stars",
+      "per_page": 20,
+      "limit": 6
+     }
+    }
+   ],
+   "seeds": [
+    {
+     "name": "Fly.io",
+     "url": "https://fly.io",
+     "kind": "hosted_service",
+     "links": {
+      "documentation": "https://fly.io/docs/",
+      "pricing": "https://fly.io/docs/about/pricing/",
+      "status": "https://status.flyio.net"
+     }
+    },
+    {
+     "name": "Render",
+     "url": "https://render.com",
+     "kind": "hosted_service",
+     "links": {
+      "documentation": "https://render.com/docs",
+      "pricing": "https://render.com/pricing",
+      "status": "https://status.render.com"
+     }
+    },
+    {
+     "name": "Railway",
+     "url": "https://railway.com",
+     "kind": "hosted_service",
+     "links": {
+      "documentation": "https://docs.railway.com",
+      "pricing": "https://railway.com/pricing"
+     }
+    },
+    {
+     "name": "Vercel",
+     "url": "https://vercel.com",
+     "kind": "hosted_service",
+     "links": {
+      "documentation": "https://vercel.com/docs",
+      "pricing": "https://vercel.com/pricing",
+      "status": "https://www.vercel-status.com"
+     }
+    },
+    {
+     "name": "Netlify",
+     "url": "https://www.netlify.com",
+     "kind": "hosted_service",
+     "links": {
+      "documentation": "https://docs.netlify.com",
+      "pricing": "https://www.netlify.com/pricing/",
+      "status": "https://www.netlifystatus.com"
+     }
+    },
+    {
+     "name": "Cloudflare Workers",
+     "url": "https://workers.cloudflare.com",
+     "kind": "hosted_service",
+     "links": {
+      "documentation": "https://developers.cloudflare.com/workers/",
+      "pricing": "https://developers.cloudflare.com/workers/platform/pricing/",
+      "status": "https://www.cloudflarestatus.com"
+     }
+    },
+    {
+     "name": "Google Cloud Run",
+     "url": "https://cloud.google.com/run",
+     "kind": "hosted_service",
+     "links": {
+      "documentation": "https://cloud.google.com/run/docs",
+      "pricing": "https://cloud.google.com/run/pricing"
+     }
+    },
+    {
+     "name": "Heroku",
+     "url": "https://www.heroku.com",
+     "kind": "hosted_service",
+     "links": {
+      "documentation": "https://devcenter.heroku.com",
+      "pricing": "https://www.heroku.com/pricing"
+     }
+    },
+    {
+     "name": "Koyeb",
+     "url": "https://www.koyeb.com",
+     "kind": "hosted_service",
+     "links": {
+      "documentation": "https://www.koyeb.com/docs",
+      "pricing": "https://www.koyeb.com/pricing"
+     }
+    }
+   ],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "infra_vector_search",
+   "question": "Which vector and semantic search services and databases should a project consider?",
+   "title": "Vector and semantic search",
+   "area": "infrastructure",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and small teams choosing a hosted service",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence.",
+   "purpose": "List hosted vector search services with official pages, and open-source vector databases by stars.",
+   "use_when": "Use when storing embeddings for retrieval, recommendation or deduplication.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 60,
+    "sources": 8
+   },
+   "volatility": "weeks",
+   "refresh": "weekly",
+   "delivery": [
+    "brief"
+   ],
+   "valid_days": 14,
+   "reask": [
+    "How many vectors, of what size, and how many queries per second?",
+    "Is filtering on metadata needed with the vector search?",
+    "Would the existing database with a vector extension be enough?"
+   ],
+   "recheck": [
+    "Read the pricing page on the day of the decision."
+   ],
+   "not_established": [
+    "Prices are not stored here.",
+    "No source used here measured these options on your own task, data or budget."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 10,
+   "sources": [
+    {
+     "engine": "curated_seed",
+     "section": "Hosted services",
+     "parameters": {
+      "kind": "hosted_service"
+     }
+    },
+    {
+     "engine": "curated_seed",
+     "section": "Open-source extension",
+     "parameters": {
+      "kind": "open_source_project"
+     }
+    },
+    {
+     "engine": "github_search",
+     "section": "Open-source vector databases",
+     "parameters": {
+      "q": "topic:vector-database archived:false pushed:>={since_30d} stars:>=1000",
+      "sort": "stars",
+      "per_page": 20,
+      "limit": 8
+     }
+    },
+    {
+     "engine": "owner_directory",
+     "section": "Vector stores in the owner's agent tools directory",
+     "parameters": {
+      "repository": "TaylorAmarelTech/ai-agent-tools-directory",
+      "branch": "master",
+      "path": "providers.py",
+      "categories": [
+       "vector_db"
+      ],
+      "limit": 8
+     }
+    }
+   ],
+   "seeds": [
+    {
+     "name": "Pinecone",
+     "url": "https://www.pinecone.io",
+     "kind": "hosted_service",
+     "links": {
+      "documentation": "https://docs.pinecone.io",
+      "pricing": "https://www.pinecone.io/pricing/"
+     }
+    },
+    {
+     "name": "Weaviate Cloud",
+     "url": "https://weaviate.io",
+     "kind": "hosted_service",
+     "links": {
+      "documentation": "https://docs.weaviate.io",
+      "pricing": "https://weaviate.io/pricing"
+     }
+    },
+    {
+     "name": "Qdrant Cloud",
+     "url": "https://qdrant.tech",
+     "kind": "hosted_service",
+     "links": {
+      "documentation": "https://qdrant.tech/documentation/",
+      "pricing": "https://qdrant.tech/pricing/"
+     }
+    },
+    {
+     "name": "Zilliz Cloud",
+     "url": "https://zilliz.com",
+     "kind": "hosted_service",
+     "links": {
+      "documentation": "https://docs.zilliz.com",
+      "pricing": "https://zilliz.com/pricing"
+     }
+    },
+    {
+     "name": "Turbopuffer",
+     "url": "https://turbopuffer.com",
+     "kind": "hosted_service",
+     "links": {
+      "documentation": "https://turbopuffer.com/docs",
+      "pricing": "https://turbopuffer.com/pricing"
+     }
+    },
+    {
+     "name": "pgvector",
+     "url": "https://github.com/pgvector/pgvector",
+     "kind": "open_source_project",
+     "links": {}
+    }
+   ],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "infra_model_endpoints",
+   "question": "Which hosted model endpoints and local runtimes exist, and which support tools and structured output?",
+   "title": "Model endpoints and local runtimes",
+   "area": "infrastructure",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and small teams choosing a hosted service",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence, a data file with its schema.",
+   "purpose": "List hosted model endpoints and local runtimes from the endpoint directory with their interface styles and documentation, and the free endpoints the owner's directory recorded.",
+   "use_when": "Use when choosing where a harness sends its model calls.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 60,
+    "sources": 6
+   },
+   "volatility": "weeks",
+   "refresh": "weekly",
+   "delivery": [
+    "brief",
+    "data_file"
+   ],
+   "valid_days": 7,
+   "reask": [
+    "Does the endpoint keep or train on the data sent to it?",
+    "Which rate limits apply at the planned volume?",
+    "Is the same model cheaper on another provider?"
+   ],
+   "recheck": [
+    "Free tiers change often; the owner's directory values are shown with their own date."
+   ],
+   "not_established": [
+    "Free tier limits older than the valid period are not current and are marked so.",
+    "No source used here measured these options on your own task, data or budget."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 15,
+   "sources": [
+    {
+     "engine": "endpoint_directory",
+     "section": "Hosted endpoints with the most listed models",
+     "parameters": {
+      "kind": "hosted",
+      "rank_by": "models_listed",
+      "limit": 15
+     }
+    },
+    {
+     "engine": "endpoint_directory",
+     "section": "Local runtimes",
+     "parameters": {
+      "kind": "local",
+      "limit": 6
+     }
+    },
+    {
+     "engine": "owner_directory",
+     "section": "Endpoints in the owner's model endpoint directory",
+     "parameters": {
+      "repository": "TaylorAmarelTech/text-generation-ai-llm-tools-endpoints-api-list-repository",
+      "branch": "main",
+      "path": "providers.py",
+      "limit": 12
+     }
+    }
+   ],
+   "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "infra_email_sending",
+   "question": "Which service should send transactional email for a product?",
+   "title": "Email sending",
+   "area": "infrastructure",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and small teams choosing a hosted service",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence.",
+   "purpose": "List transactional email services with official documentation and pricing pages, and open-source mail projects by stars.",
+   "use_when": "Use when a product sends sign-up links, receipts or alerts by email.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 45,
+    "sources": 6
+   },
+   "volatility": "weeks",
+   "refresh": "weekly",
+   "delivery": [
+    "brief"
+   ],
+   "valid_days": 14,
+   "reask": [
+    "How many emails a day now, and in a year?",
+    "Does the domain's sender authentication (SPF, DKIM, DMARC) need setup help?",
+    "Is marketing email needed as well, or only transactional?"
+   ],
+   "recheck": [
+    "Read the pricing and sending limits on the day of the decision."
+   ],
+   "not_established": [
+    "Deliverability is not measured here.",
+    "Prices are not stored here."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 10,
+   "sources": [
+    {
+     "engine": "curated_seed",
+     "section": "Hosted services",
+     "parameters": {
+      "kind": "hosted_service"
+     }
+    },
+    {
+     "engine": "github_search",
+     "section": "Open-source mail servers and senders",
+     "parameters": {
+      "q": "topic:email archived:false pushed:>={since_30d} stars:>=3000",
+      "sort": "stars",
+      "per_page": 20,
+      "limit": 6
+     }
+    }
+   ],
+   "seeds": [
+    {
+     "name": "Resend",
+     "url": "https://resend.com",
+     "kind": "hosted_service",
+     "links": {
+      "documentation": "https://resend.com/docs",
+      "pricing": "https://resend.com/pricing"
+     }
+    },
+    {
+     "name": "Postmark",
+     "url": "https://postmarkapp.com",
+     "kind": "hosted_service",
+     "links": {
+      "documentation": "https://postmarkapp.com/developer",
+      "pricing": "https://postmarkapp.com/pricing"
+     }
+    },
+    {
+     "name": "Amazon SES",
+     "url": "https://aws.amazon.com/ses/",
+     "kind": "hosted_service",
+     "links": {
+      "documentation": "https://docs.aws.amazon.com/ses/",
+      "pricing": "https://aws.amazon.com/ses/pricing/"
+     }
+    },
+    {
+     "name": "SendGrid",
+     "url": "https://sendgrid.com",
+     "kind": "hosted_service",
+     "links": {
+      "documentation": "https://www.twilio.com/docs/sendgrid",
+      "pricing": "https://sendgrid.com/en-us/pricing"
+     }
+    },
+    {
+     "name": "Mailgun",
+     "url": "https://www.mailgun.com",
+     "kind": "hosted_service",
+     "links": {
+      "documentation": "https://documentation.mailgun.com",
+      "pricing": "https://www.mailgun.com/pricing/"
+     }
+    },
+    {
+     "name": "Brevo",
+     "url": "https://www.brevo.com",
+     "kind": "hosted_service",
+     "links": {
+      "documentation": "https://developers.brevo.com",
+      "pricing": "https://www.brevo.com/pricing/"
+     }
+    }
+   ],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "infra_logging_observability",
+   "question": "Which logging and observability service or open-source stack should a project use?",
+   "title": "Logging and observability",
+   "area": "infrastructure",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and small teams choosing a hosted service",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence.",
+   "purpose": "List logging and observability services with official pages, open-source observability projects by stars, and protocol servers for monitoring.",
+   "use_when": "Use when a service needs logs, metrics, traces or error tracking.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 60,
+    "sources": 8
+   },
+   "volatility": "weeks",
+   "refresh": "weekly",
+   "delivery": [
+    "brief"
+   ],
+   "valid_days": 14,
+   "reask": [
+    "Does the service accept OpenTelemetry, so the choice can change later?",
+    "How long must logs be kept, and at what volume?"
+   ],
+   "recheck": [
+    "Read the pricing page on the day of the decision; ingestion prices are not stored here."
+   ],
+   "not_established": [
+    "Prices are not stored here.",
+    "No source used here measured these options on your own task, data or budget."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 10,
+   "sources": [
+    {
+     "engine": "curated_seed",
+     "section": "Hosted services",
+     "parameters": {
+      "kind": "hosted_service"
+     }
+    },
+    {
+     "engine": "github_search",
+     "section": "Open-source observability projects",
+     "parameters": {
+      "q": "topic:observability archived:false pushed:>={since_30d} stars:>=2000",
+      "sort": "stars",
+      "per_page": 20,
+      "limit": 8
+     }
+    },
+    {
+     "engine": "mcp_directory",
+     "section": "Protocol servers for monitoring and observability",
+     "parameters": {
+      "category": "observability",
+      "limit": 6
+     }
+    }
+   ],
+   "seeds": [
+    {
+     "name": "Better Stack",
+     "url": "https://betterstack.com",
+     "kind": "hosted_service",
+     "links": {
+      "documentation": "https://betterstack.com/docs",
+      "pricing": "https://betterstack.com/pricing"
+     }
+    },
+    {
+     "name": "Axiom",
+     "url": "https://axiom.co",
+     "kind": "hosted_service",
+     "links": {
+      "documentation": "https://axiom.co/docs",
+      "pricing": "https://axiom.co/pricing"
+     }
+    },
+    {
+     "name": "Grafana Cloud",
+     "url": "https://grafana.com/products/cloud/",
+     "kind": "hosted_service",
+     "links": {
+      "documentation": "https://grafana.com/docs/grafana-cloud/",
+      "pricing": "https://grafana.com/pricing/"
+     }
+    },
+    {
+     "name": "Sentry",
+     "url": "https://sentry.io",
+     "kind": "hosted_service",
+     "links": {
+      "documentation": "https://docs.sentry.io",
+      "pricing": "https://sentry.io/pricing/"
+     }
+    },
+    {
+     "name": "Datadog",
+     "url": "https://www.datadoghq.com",
+     "kind": "hosted_service",
+     "links": {
+      "documentation": "https://docs.datadoghq.com",
+      "pricing": "https://www.datadoghq.com/pricing/"
+     }
+    },
+    {
+     "name": "Honeycomb",
+     "url": "https://www.honeycomb.io",
+     "kind": "hosted_service",
+     "links": {
+      "documentation": "https://docs.honeycomb.io",
+      "pricing": "https://www.honeycomb.io/pricing"
+     }
+    }
+   ],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "infra_uptime_monitoring",
+   "question": "Which uptime monitoring service or self-hosted monitor should a project use?",
+   "title": "Uptime monitoring",
+   "area": "infrastructure",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and small teams choosing a hosted service",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence.",
+   "purpose": "List uptime and cron monitoring services with official pages and self-hosted monitors by stars.",
+   "use_when": "Use when a service needs alerts when it stops answering or a scheduled job does not run.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 45,
+    "sources": 6
+   },
+   "volatility": "weeks",
+   "refresh": "weekly",
+   "delivery": [
+    "brief"
+   ],
+   "valid_days": 14,
+   "reask": [
+    "From how many regions must the check run?",
+    "Who is alerted, by which channel, and at what hours?"
+   ],
+   "recheck": [
+    "The status of a service right now is a tool question: use the service status tool."
+   ],
+   "not_established": [
+    "Prices are not stored here."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 10,
+   "sources": [
+    {
+     "engine": "curated_seed",
+     "section": "Hosted services",
+     "parameters": {
+      "kind": "hosted_service"
+     }
+    },
+    {
+     "engine": "github_search",
+     "section": "Self-hosted monitors",
+     "parameters": {
+      "q": "topic:uptime-monitoring archived:false pushed:>={since_90d} stars:>=200",
+      "sort": "stars",
+      "per_page": 20,
+      "limit": 6
+     }
+    }
+   ],
+   "seeds": [
+    {
+     "name": "Better Stack Uptime",
+     "url": "https://betterstack.com/uptime",
+     "kind": "hosted_service",
+     "links": {
+      "pricing": "https://betterstack.com/pricing"
+     }
+    },
+    {
+     "name": "UptimeRobot",
+     "url": "https://uptimerobot.com",
+     "kind": "hosted_service",
+     "links": {
+      "pricing": "https://uptimerobot.com/pricing/"
+     }
+    },
+    {
+     "name": "Checkly",
+     "url": "https://www.checklyhq.com",
+     "kind": "hosted_service",
+     "links": {
+      "documentation": "https://www.checklyhq.com/docs/",
+      "pricing": "https://www.checklyhq.com/pricing/"
+     }
+    },
+    {
+     "name": "Cronitor",
+     "url": "https://cronitor.io",
+     "kind": "hosted_service",
+     "links": {
+      "documentation": "https://cronitor.io/docs",
+      "pricing": "https://cronitor.io/pricing"
+     }
+    },
+    {
+     "name": "Healthchecks.io",
+     "url": "https://healthchecks.io",
+     "kind": "hosted_service",
+     "links": {
+      "documentation": "https://healthchecks.io/docs/",
+      "pricing": "https://healthchecks.io/pricing/"
+     }
+    }
+   ],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "infra_authentication",
+   "question": "Which authentication service or self-hosted identity provider should a product use?",
+   "title": "Authentication",
+   "area": "infrastructure",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and small teams choosing a hosted service",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence.",
+   "purpose": "List hosted authentication services with official pages and self-hosted identity providers by stars.",
+   "use_when": "Use when a product needs sign-up, sign-in, sessions or single sign-on.",
+   "sensitivity": "security",
+   "research_cost": {
+    "engineer_minutes": 60,
+    "sources": 8
+   },
+   "volatility": "weeks",
+   "refresh": "weekly",
+   "delivery": [
+    "brief"
+   ],
+   "valid_days": 14,
+   "reask": [
+    "Which sign-in methods and enterprise single sign-on are required now?",
+    "Where are user records stored, and can they be exported?"
+   ],
+   "recheck": [
+    "Read the security and compliance pages of the chosen service; they are not summarised here."
+   ],
+   "not_established": [
+    "Security claims of the services are not verified here.",
+    "Prices are not stored here."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 10,
+   "sources": [
+    {
+     "engine": "curated_seed",
+     "section": "Hosted services",
+     "parameters": {
+      "kind": "hosted_service"
+     }
+    },
+    {
+     "engine": "github_search",
+     "section": "Self-hosted identity providers",
+     "parameters": {
+      "q": "topic:identity-provider archived:false pushed:>={since_30d} stars:>=1000",
+      "sort": "stars",
+      "per_page": 20,
+      "limit": 8
+     }
+    }
+   ],
+   "seeds": [
+    {
+     "name": "Clerk",
+     "url": "https://clerk.com",
+     "kind": "hosted_service",
+     "links": {
+      "documentation": "https://clerk.com/docs",
+      "pricing": "https://clerk.com/pricing"
+     }
+    },
+    {
+     "name": "Auth0",
+     "url": "https://auth0.com",
+     "kind": "hosted_service",
+     "links": {
+      "documentation": "https://auth0.com/docs",
+      "pricing": "https://auth0.com/pricing"
+     }
+    },
+    {
+     "name": "WorkOS",
+     "url": "https://workos.com",
+     "kind": "hosted_service",
+     "links": {
+      "documentation": "https://workos.com/docs",
+      "pricing": "https://workos.com/pricing"
+     }
+    },
+    {
+     "name": "Stytch",
+     "url": "https://stytch.com",
+     "kind": "hosted_service",
+     "links": {
+      "documentation": "https://stytch.com/docs",
+      "pricing": "https://stytch.com/pricing"
+     }
+    },
+    {
+     "name": "Supabase Auth",
+     "url": "https://supabase.com/auth",
+     "kind": "hosted_service",
+     "links": {
+      "documentation": "https://supabase.com/docs/guides/auth",
+      "pricing": "https://supabase.com/pricing"
+     }
+    },
+    {
+     "name": "Firebase Authentication",
+     "url": "https://firebase.google.com/products/auth",
+     "kind": "hosted_service",
+     "links": {
+      "documentation": "https://firebase.google.com/docs/auth",
+      "pricing": "https://firebase.google.com/pricing"
+     }
+    }
+   ],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "infra_payments",
+   "question": "Which payment provider should a software product use to take subscriptions?",
+   "title": "Payments and subscriptions",
+   "area": "infrastructure",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and small teams choosing a hosted service",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence.",
+   "purpose": "List payment and subscription billing providers with official documentation and pricing pages.",
+   "use_when": "Use when a product charges customers once or by subscription.",
+   "sensitivity": "financial",
+   "research_cost": {
+    "engineer_minutes": 60,
+    "sources": 6
+   },
+   "volatility": "weeks",
+   "refresh": "weekly",
+   "delivery": [
+    "brief"
+   ],
+   "valid_days": 14,
+   "reask": [
+    "Does the provider act as merchant of record and handle sales tax, or must the product?",
+    "Which countries and currencies must be supported?",
+    "What are the payout schedule and the dispute fees?"
+   ],
+   "recheck": [
+    "Fees are not stored here; read the pricing page and the tax terms on the day of the decision."
+   ],
+   "not_established": [
+    "Fees, tax handling and eligibility are not established here; this is not financial advice."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 10,
+   "sources": [
+    {
+     "engine": "curated_seed",
+     "section": "Hosted services",
+     "parameters": {
+      "kind": "hosted_service"
+     }
+    }
+   ],
+   "seeds": [
+    {
+     "name": "Stripe",
+     "url": "https://stripe.com",
+     "kind": "hosted_service",
+     "links": {
+      "documentation": "https://docs.stripe.com",
+      "pricing": "https://stripe.com/pricing"
+     }
+    },
+    {
+     "name": "Paddle",
+     "url": "https://www.paddle.com",
+     "kind": "hosted_service",
+     "links": {
+      "documentation": "https://developer.paddle.com",
+      "pricing": "https://www.paddle.com/pricing"
+     }
+    },
+    {
+     "name": "Lemon Squeezy",
+     "url": "https://www.lemonsqueezy.com",
+     "kind": "hosted_service",
+     "links": {
+      "documentation": "https://docs.lemonsqueezy.com",
+      "pricing": "https://www.lemonsqueezy.com/pricing"
+     }
+    },
+    {
+     "name": "Polar",
+     "url": "https://polar.sh",
+     "kind": "hosted_service",
+     "links": {
+      "documentation": "https://docs.polar.sh",
+      "pricing": "https://polar.sh/resources/pricing"
+     }
+    },
+    {
+     "name": "Adyen",
+     "url": "https://www.adyen.com",
+     "kind": "hosted_service",
+     "links": {
+      "documentation": "https://docs.adyen.com",
+      "pricing": "https://www.adyen.com/pricing"
+     }
+    }
+   ],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "infra_product_analytics",
+   "question": "Which product analytics service or self-hosted analytics tool should a project use?",
+   "title": "Product analytics",
+   "area": "infrastructure",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and small teams choosing a hosted service",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence.",
+   "purpose": "List product and web analytics services with official pages and self-hosted analytics projects by stars.",
+   "use_when": "Use when a product needs page views, funnels or events, and privacy rules matter.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 45,
+    "sources": 6
+   },
+   "volatility": "weeks",
+   "refresh": "weekly",
+   "delivery": [
+    "brief"
+   ],
+   "valid_days": 14,
+   "reask": [
+    "Does the product need consent banners for this tool in the customer's jurisdiction?",
+    "Are events needed, or page views only?"
+   ],
+   "recheck": [
+    "Read the privacy and data residency terms on the day of the decision."
+   ],
+   "not_established": [
+    "Compliance with a given privacy law is not established here."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 10,
+   "sources": [
+    {
+     "engine": "curated_seed",
+     "section": "Hosted services",
+     "parameters": {
+      "kind": "hosted_service"
+     }
+    },
+    {
+     "engine": "github_search",
+     "section": "Self-hosted analytics",
+     "parameters": {
+      "q": "topic:analytics archived:false pushed:>={since_30d} stars:>=5000",
+      "sort": "stars",
+      "per_page": 20,
+      "limit": 6
+     }
+    }
+   ],
+   "seeds": [
+    {
+     "name": "PostHog",
+     "url": "https://posthog.com",
+     "kind": "hosted_service",
+     "links": {
+      "documentation": "https://posthog.com/docs",
+      "pricing": "https://posthog.com/pricing"
+     }
+    },
+    {
+     "name": "Plausible",
+     "url": "https://plausible.io",
+     "kind": "hosted_service",
+     "links": {
+      "documentation": "https://plausible.io/docs",
+      "pricing": "https://plausible.io/#pricing"
+     }
+    },
+    {
+     "name": "Umami",
+     "url": "https://umami.is",
+     "kind": "hosted_service",
+     "links": {
+      "documentation": "https://umami.is/docs",
+      "pricing": "https://umami.is/pricing"
+     }
+    },
+    {
+     "name": "Mixpanel",
+     "url": "https://mixpanel.com",
+     "kind": "hosted_service",
+     "links": {
+      "documentation": "https://docs.mixpanel.com",
+      "pricing": "https://mixpanel.com/pricing/"
+     }
+    },
+    {
+     "name": "Amplitude",
+     "url": "https://amplitude.com",
+     "kind": "hosted_service",
+     "links": {
+      "documentation": "https://amplitude.com/docs",
+      "pricing": "https://amplitude.com/pricing"
+     }
+    }
+   ],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "infra_image_generation_apis",
+   "question": "Which image generation interfaces and models can a product call, and which are trending?",
+   "title": "Image generation interfaces",
+   "area": "infrastructure",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and small teams choosing a hosted service",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence.",
+   "purpose": "List the image generation interfaces the owner's directory records and trending text-to-image models.",
+   "use_when": "Use when a product or pipeline generates images.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 40,
+    "sources": 5
+   },
+   "volatility": "weeks",
+   "refresh": "weekly",
+   "delivery": [
+    "brief"
+   ],
+   "valid_days": 14,
+   "reask": [
+    "Do the output rights of the service fit the product?",
+    "Is a local model acceptable for the volume?"
+   ],
+   "recheck": [
+    "The owner's directory values are dated; confirm free limits on the service's page."
+   ],
+   "not_established": [
+    "No source used here measured these options on your own task, data or budget."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 10,
+   "sources": [
+    {
+     "engine": "owner_directory",
+     "section": "Interfaces in the owner's image generation directory",
+     "parameters": {
+      "repository": "TaylorAmarelTech/ai-image-generation-api-endpoints-directory",
+      "branch": "main",
+      "path": "providers.py",
+      "limit": 12
+     }
+    },
+    {
+     "engine": "huggingface_models",
+     "section": "Trending text-to-image models",
+     "parameters": {
+      "pipeline_tag": "text-to-image",
+      "sort": "trendingScore",
+      "limit": 8
+     }
+    }
+   ],
+   "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "infra_service_status",
+   "question": "Is a developer service up right now?",
+   "title": "Developer service status",
+   "area": "infrastructure",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and small teams choosing a hosted service",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A tool with typed input and output that reads the status page when called; no status is stored.",
+   "purpose": "Serve a tool that reads a developer service's public status page at the moment of the question.",
+   "use_when": "Use when a step fails and the cause may be the provider, or before a deployment.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 2,
+    "sources": 1
+   },
+   "volatility": "hours",
+   "refresh": "daily",
+   "delivery": [
+    "tool"
+   ],
+   "valid_days": 1,
+   "reask": [
+    "Is the failure on the provider's side, or in the step's own request?"
+   ],
+   "recheck": [
+    "Status changes within minutes; call the tool again rather than reusing an answer."
+   ],
+   "not_established": [
+    "A green status page does not prove a given request will succeed."
+   ],
+   "would_change": [
+    "The provider's own incident report."
+   ],
+   "limit": 1,
+   "sources": [],
+   "seeds": [],
+   "assets": {
+    "tool": "check_service_status"
+   }
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "calendar_runtime_support",
+   "question": "Is my runtime, framework or database version still supported, and when does support end?",
+   "title": "Runtime, framework and database support calendar",
+   "area": "calendars",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and coding harnesses choosing what to build with",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence, a data file with its schema, a decision helper.",
+   "purpose": "Publish the release and end-of-support calendar of common runtimes, frameworks, databases and operating systems, and a helper that answers whether a version is supported on a date.",
+   "use_when": "Use before choosing a version for a new project, and before upgrading or pinning a dependency.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 20,
+    "sources": 6
+   },
+   "volatility": "weeks",
+   "refresh": "weekly",
+   "delivery": [
+    "brief",
+    "data_file",
+    "decision_helper"
+   ],
+   "valid_days": 7,
+   "reask": [
+    "Is the version the project pins supported for the whole planned life of the release?",
+    "Does a dependency require a newer version than the one chosen?"
+   ],
+   "recheck": [
+    "Support dates can be extended or cut; read the calendar again before a release."
+   ],
+   "not_established": [
+    "Vendor extended support contracts are not included."
+   ],
+   "would_change": [
+    "An announcement by the project changing its support policy."
+   ],
+   "limit": 60,
+   "sources": [
+    {
+     "engine": "endoflife_calendar",
+     "section": "Runtimes and languages",
+     "parameters": {
+      "products": [
+       "python",
+       "nodejs",
+       "go",
+       "rust",
+       "eclipse-temurin",
+       "dotnet",
+       "ruby",
+       "php",
+       "deno",
+       "bun",
+       "kotlin"
+      ],
+      "limit": 60
+     }
+    },
+    {
+     "engine": "endoflife_calendar",
+     "section": "Frameworks",
+     "parameters": {
+      "products": [
+       "django",
+       "rails",
+       "laravel",
+       "spring-boot",
+       "angular",
+       "vue",
+       "react",
+       "nextjs",
+       "electron",
+       "numpy"
+      ],
+      "limit": 60
+     }
+    },
+    {
+     "engine": "endoflife_calendar",
+     "section": "Databases, systems and platforms",
+     "parameters": {
+      "products": [
+       "postgresql",
+       "mysql",
+       "redis",
+       "valkey",
+       "mongodb",
+       "elasticsearch",
+       "ubuntu",
+       "debian",
+       "alpine-linux",
+       "amazon-linux",
+       "kubernetes",
+       "docker-engine",
+       "nginx",
+       "terraform"
+      ],
+      "limit": 60
+     }
+    }
+   ],
+   "seeds": [],
+   "assets": {
+    "decision_helper": "check_support_window"
+   }
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "calendar_model_deprecations",
+   "question": "When do the model versions and interfaces a harness uses stop working?",
+   "title": "Model and interface deprecation dates",
+   "area": "calendars",
+   "status": "declared_gap",
+   "gap_reason": "No single structured public source lists deprecation dates across providers; each provider publishes its own page. The next engine reads each provider's deprecation page as a dated seed with two-family review.",
+   "audience": "developers and coding harnesses choosing what to build with",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence, a data file with its schema.",
+   "purpose": "Serve dated retirement dates of hosted model versions and provider interfaces.",
+   "use_when": "Use before pinning a model version in a long-lived project.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 30,
+    "sources": 8
+   },
+   "volatility": "weeks",
+   "refresh": "weekly",
+   "delivery": [
+    "brief",
+    "data_file"
+   ],
+   "valid_days": 7,
+   "reask": [
+    "Which model version does the project pin?"
+   ],
+   "recheck": [
+    "Read the provider's deprecation page."
+   ],
+   "not_established": [
+    "No source used here measured these options on your own task, data or budget."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 12,
+   "sources": [],
+   "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "calendar_conference_deadlines",
+   "question": "Which conference and competition deadlines are coming up in my field?",
+   "title": "Conference and competition deadlines",
+   "area": "calendars",
+   "status": "declared_gap",
+   "gap_reason": "A licence-clear, maintained deadline data set was not selected in this version; candidates are community deadline repositories and the competition platforms' own listings.",
+   "audience": "developers and coding harnesses choosing what to build with",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence, a data file with its schema.",
+   "purpose": "Serve upcoming paper and competition deadlines with their official pages.",
+   "use_when": "Use when planning a submission.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 20,
+    "sources": 6
+   },
+   "volatility": "weeks",
+   "refresh": "weekly",
+   "delivery": [
+    "brief",
+    "data_file"
+   ],
+   "valid_days": 7,
+   "reask": [
+    "Which venues matter for the work?"
+   ],
+   "recheck": [
+    "Confirm the deadline and time zone on the official page."
+   ],
+   "not_established": [
+    "No source used here measured these options on your own task, data or budget."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 12,
+   "sources": [],
+   "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "security_recent_advisories",
+   "question": "Which critical and high security advisories were published this week, for which packages, and which version fixes them?",
+   "title": "Recent critical and high security advisories",
+   "area": "security",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and harnesses that install and upgrade packages",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence, a tool.",
+   "purpose": "List reviewed critical and high advisories of the last seven days from the GitHub Advisory Database, and serve a tool that checks one package version against OSV when called.",
+   "use_when": "Use before adding or upgrading a dependency, and when reviewing a lock file.",
+   "sensitivity": "security",
+   "research_cost": {
+    "engineer_minutes": 30,
+    "sources": 3
+   },
+   "volatility": "days",
+   "refresh": "daily",
+   "delivery": [
+    "brief",
+    "tool"
+   ],
+   "valid_days": 2,
+   "reask": [
+    "Does the project use an affected package and version?",
+    "Is the fixed version compatible with the rest of the lock file?"
+   ],
+   "recheck": [
+    "Advisories are updated and withdrawn; use the advisory tool for the exact version before deciding."
+   ],
+   "not_established": [
+    "Whether the project is affected is not established by a listing; the tool answers for one exact version."
+   ],
+   "would_change": [
+    "A withdrawal or a changed affected range in the advisory itself."
+   ],
+   "limit": 12,
+   "sources": [
+    {
+     "engine": "github_advisories",
+     "section": "Critical, last seven days",
+     "parameters": {
+      "type": "reviewed",
+      "severity": "critical",
+      "window_days": 7,
+      "per_page": 30,
+      "limit": 12
+     }
+    },
+    {
+     "engine": "github_advisories",
+     "section": "High, last seven days",
+     "parameters": {
+      "type": "reviewed",
+      "severity": "high",
+      "window_days": 7,
+      "per_page": 30,
+      "limit": 12
+     }
+    }
+   ],
+   "seeds": [],
+   "assets": {
+    "tool": "query_package_advisories"
+   }
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "security_malicious_packages",
+   "question": "Which malicious packages were reported this week?",
+   "title": "Malicious package reports",
+   "area": "security",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and harnesses that install and upgrade packages",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence.",
+   "purpose": "List malware advisories of the last seven days from the GitHub Advisory Database with ecosystems and package names.",
+   "use_when": "Use when installing new dependencies, especially ones suggested by a model.",
+   "sensitivity": "security",
+   "research_cost": {
+    "engineer_minutes": 20,
+    "sources": 2
+   },
+   "volatility": "days",
+   "refresh": "daily",
+   "delivery": [
+    "brief"
+   ],
+   "valid_days": 2,
+   "reask": [
+    "Was any listed package name suggested by a model or copied from a web page?",
+    "Is the package name one letter away from a popular one?"
+   ],
+   "recheck": [
+    "Search the advisory database for the exact name before installing."
+   ],
+   "not_established": [
+    "A package missing from this list is not thereby safe."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 15,
+   "sources": [
+    {
+     "engine": "github_advisories",
+     "section": "Malware reports, last seven days",
+     "parameters": {
+      "type": "malware",
+      "window_days": 7,
+      "per_page": 30,
+      "limit": 15
+     }
+    }
+   ],
+   "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "licences_popular_projects",
+   "question": "Which licences do the most starred active projects use, and did any change?",
+   "title": "Licences of popular projects",
+   "area": "licences_and_pricing",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and coding harnesses choosing what to build with",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence.",
+   "purpose": "Record the licences of the most starred active repositories and mark any licence that changed since the previous run.",
+   "use_when": "Use before adopting or upgrading a popular dependency whose licence may have changed.",
+   "sensitivity": "legal",
+   "research_cost": {
+    "engineer_minutes": 40,
+    "sources": 30
+   },
+   "volatility": "weeks",
+   "refresh": "weekly",
+   "delivery": [
+    "brief"
+   ],
+   "valid_days": 14,
+   "reask": [
+    "Does the licence allow the planned commercial or hosted use?",
+    "Did the project move to a source-available licence in a recent release?"
+   ],
+   "recheck": [
+    "Read the licence file at the exact version the project pins."
+   ],
+   "not_established": [
+    "The licence GitHub detects is not a legal opinion.",
+    "A change is detected only from the second run on; the first run records the baseline."
+   ],
+   "would_change": [
+    "The licence file at the pinned version."
+   ],
+   "limit": 30,
+   "sources": [
+    {
+     "engine": "github_search",
+     "section": "Most starred active repositories",
+     "parameters": {
+      "q": "stars:>=30000 archived:false pushed:>={since_30d}",
+      "sort": "stars",
+      "per_page": 30,
+      "limit": 30
+     }
+    }
+   ],
+   "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "pricing_developer_services",
+   "question": "Did the price or free plan of a developer service change?",
+   "title": "Developer service pricing changes",
+   "area": "licences_and_pricing",
+   "status": "declared_gap",
+   "gap_reason": "Pricing pages are free-form and many forbid automated reading; no tool is built in this version. Paid change trackers exist (for example PricingSaaS); the owner's rule makes this a tool, never a stored price.",
+   "audience": "developers and small teams choosing a hosted service",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence, a tool.",
+   "purpose": "Serve a tool that reads one named pricing page when called and reports what it can parse.",
+   "use_when": "Use before committing to a service on cost grounds.",
+   "sensitivity": "financial",
+   "research_cost": {
+    "engineer_minutes": 3,
+    "sources": 1
+   },
+   "volatility": "hours",
+   "refresh": "daily",
+   "delivery": [
+    "tool"
+   ],
+   "valid_days": 1,
+   "reask": [
+    "Which plan would the project be on in a year?"
+   ],
+   "recheck": [
+    "Read the pricing page on the day of the decision."
+   ],
+   "not_established": [
+    "No source used here measured these options on your own task, data or budget."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 12,
+   "sources": [],
+   "seeds": [],
+   "assets": {
+    "tool": "fetch_pricing_page"
+   }
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "regulation_us_federal_ai",
+   "question": "Which United States federal rules and proposed rules about artificial intelligence were published recently?",
+   "title": "United States federal rules on artificial intelligence",
+   "area": "regulation",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and teams whose product touches regulated data or uses",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence.",
+   "purpose": "List rules and proposed rules that mention artificial intelligence from the FederalRegister.gov interface, with agencies, dates and comment deadlines.",
+   "use_when": "Use when a product's use of models may fall under a new federal rule, or before a comment deadline.",
+   "sensitivity": "legal",
+   "research_cost": {
+    "engineer_minutes": 30,
+    "sources": 2
+   },
+   "volatility": "weeks",
+   "refresh": "weekly",
+   "delivery": [
+    "brief"
+   ],
+   "valid_days": 7,
+   "reask": [
+    "Does the rule apply to the product's sector and size?",
+    "When does it take effect, and is the comment period open?"
+   ],
+   "recheck": [
+    "Read the official Federal Register edition; the web rendition is not the official legal edition."
+   ],
+   "not_established": [
+    "Whether a rule applies to a given product is not established here; this is not legal advice."
+   ],
+   "would_change": [
+    "The official edition, a court decision or agency guidance."
+   ],
+   "limit": 12,
+   "sources": [
+    {
+     "engine": "federal_register",
+     "section": "Rules and proposed rules, last ninety days",
+     "parameters": {
+      "term": "artificial intelligence",
+      "types": [
+       "RULE",
+       "PRORULE"
+      ],
+      "window_days": 90,
+      "limit": 12
+     }
+    }
+   ],
+   "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "regulation_us_federal_privacy",
+   "question": "Which United States federal rules and proposed rules about privacy were published recently?",
+   "title": "United States federal rules on privacy",
+   "area": "regulation",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and teams whose product touches regulated data or uses",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence.",
+   "purpose": "List rules and proposed rules that mention privacy from the FederalRegister.gov interface, with agencies, dates and comment deadlines.",
+   "use_when": "Use when a product stores or processes personal data in the United States.",
+   "sensitivity": "legal",
+   "research_cost": {
+    "engineer_minutes": 30,
+    "sources": 2
+   },
+   "volatility": "weeks",
+   "refresh": "weekly",
+   "delivery": [
+    "brief"
+   ],
+   "valid_days": 7,
+   "reask": [
+    "Does the rule cover the kind of data the product holds?",
+    "Is the comment period open?"
+   ],
+   "recheck": [
+    "Read the official Federal Register edition; the web rendition is not the official legal edition."
+   ],
+   "not_established": [
+    "Applicability is not established here; this is not legal advice."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 12,
+   "sources": [
+    {
+     "engine": "federal_register",
+     "section": "Rules and proposed rules, last ninety days",
+     "parameters": {
+      "term": "privacy",
+      "types": [
+       "RULE",
+       "PRORULE"
+      ],
+      "window_days": 90,
+      "limit": 12
+     }
+    }
+   ],
+   "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "regulation_ai_privacy_by_jurisdiction",
+   "question": "What are the dated obligations of AI and privacy laws by jurisdiction?",
+   "title": "AI and privacy law timelines by jurisdiction",
+   "area": "regulation",
+   "status": "declared_gap",
+   "gap_reason": "Official legal sources outside the United States federal register (for example EUR-Lex and national gazettes) need their own engines, and every claim needs two independent reviewers; not built in this version.",
+   "audience": "developers and teams whose product touches regulated data or uses",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence, a data file with its schema.",
+   "purpose": "Serve dated obligations of AI and privacy laws per jurisdiction, each with its official source.",
+   "use_when": "Use when a product launches in a new jurisdiction.",
+   "sensitivity": "legal",
+   "research_cost": {
+    "engineer_minutes": 90,
+    "sources": 12
+   },
+   "volatility": "weeks",
+   "refresh": "weekly",
+   "delivery": [
+    "brief",
+    "data_file"
+   ],
+   "valid_days": 7,
+   "reask": [
+    "Which jurisdictions does the product serve?"
+   ],
+   "recheck": [
+    "Read the official legal text."
+   ],
+   "not_established": [
+    "No source used here measured these options on your own task, data or budget."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 12,
+   "sources": [],
+   "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "events_geopolitical",
+   "question": "Which major geopolitical developments affect technology supply, data flows or trade this week?",
+   "title": "Geopolitical developments affecting technology",
+   "area": "events",
+   "status": "declared_gap",
+   "gap_reason": "No deterministic, licence-clear source was selected; news needs model reading, common-origin checks and two-family review. The GDELT event database is a candidate for counts only.",
+   "audience": "developers and coding harnesses choosing what to build with",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence.",
+   "purpose": "Serve dated, sourced summaries of developments that affect technology supply and data flows.",
+   "use_when": "Use when a plan depends on a supplier, region or trade route.",
+   "sensitivity": "legal",
+   "research_cost": {
+    "engineer_minutes": 60,
+    "sources": 10
+   },
+   "volatility": "days",
+   "refresh": "daily",
+   "delivery": [
+    "brief"
+   ],
+   "valid_days": 2,
+   "reask": [
+    "Which supplier or region does the plan depend on?"
+   ],
+   "recheck": [
+    "Read the primary source of each development."
+   ],
+   "not_established": [
+    "No source used here measured these options on your own task, data or budget."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 12,
+   "sources": [],
+   "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "markets_exchange_rates",
+   "question": "What is the reference exchange rate between two currencies today?",
+   "title": "Reference exchange rates",
+   "area": "markets",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and coding harnesses choosing what to build with",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A tool with typed input and output that reads the rates when called; no rate is stored.",
+   "purpose": "Serve a tool that reads the European Central Bank's daily reference rates when called and computes cross rates.",
+   "use_when": "Use when a step converts amounts for reporting or estimates.",
+   "sensitivity": "financial",
+   "research_cost": {
+    "engineer_minutes": 2,
+    "sources": 1
+   },
+   "volatility": "days",
+   "refresh": "daily",
+   "delivery": [
+    "tool"
+   ],
+   "valid_days": 1,
+   "reask": [
+    "Is a reference rate acceptable, or does the step need a transaction rate from the payment provider?"
+   ],
+   "recheck": [
+    "Reference rates are published once a working day; the tool reports the rate date."
+   ],
+   "not_established": [
+    "Reference rates are for information only and are not transaction rates."
+   ],
+   "would_change": [
+    "The rate the payment provider actually applies."
+   ],
+   "limit": 1,
+   "sources": [],
+   "seeds": [],
+   "assets": {
+    "tool": "fetch_reference_rates"
+   }
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "markets_stock_quotes",
+   "question": "What is the latest price of a listed stock?",
+   "title": "Stock quotes",
+   "area": "markets",
+   "status": "declared_gap",
+   "gap_reason": "No keyless quote source with clear reuse terms was selected; the tool will take the customer's own provider and key, following the rule that customers bring their own access.",
+   "audience": "developers and coding harnesses choosing what to build with",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence, a tool.",
+   "purpose": "Serve a tool that fetches a quote from the customer's own market data provider when called.",
+   "use_when": "Use when a step needs a current price.",
+   "sensitivity": "financial",
+   "research_cost": {
+    "engineer_minutes": 2,
+    "sources": 1
+   },
+   "volatility": "hours",
+   "refresh": "daily",
+   "delivery": [
+    "tool"
+   ],
+   "valid_days": 1,
+   "reask": [
+    "Is a delayed quote acceptable?"
+   ],
+   "recheck": [
+    "Quotes change by the second."
+   ],
+   "not_established": [
+    "No source used here measured these options on your own task, data or budget."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 12,
+   "sources": [],
+   "seeds": [],
+   "assets": {
+    "tool": "fetch_stock_quote"
+   }
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "markets_sanctions_screening",
+   "question": "Is a person or company on a sanctions or export control list?",
+   "title": "Sanctions and export control screening",
+   "area": "markets",
+   "status": "declared_gap",
+   "gap_reason": "Official lists are published as files by each authority; a screening tool that reads them on request is not built in this version.",
+   "audience": "developers and coding harnesses choosing what to build with",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence, a tool.",
+   "purpose": "Serve a tool that screens a name against official lists when called.",
+   "use_when": "Use before onboarding a customer or supplier in a regulated flow.",
+   "sensitivity": "legal",
+   "research_cost": {
+    "engineer_minutes": 4,
+    "sources": 1
+   },
+   "volatility": "hours",
+   "refresh": "daily",
+   "delivery": [
+    "tool"
+   ],
+   "valid_days": 1,
+   "reask": [
+    "Which authorities' lists apply to the flow?"
+   ],
+   "recheck": [
+    "Lists change daily; screen at the time of the decision."
+   ],
+   "not_established": [
+    "No source used here measured these options on your own task, data or budget."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 12,
+   "sources": [],
+   "seeds": [],
+   "assets": {
+    "tool": "screen_sanctions_lists"
+   }
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "markets_legal_entity_lookup",
+   "question": "What is the registered legal entity behind a company name or identifier?",
+   "title": "Legal entity lookup",
+   "area": "markets",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and coding harnesses choosing what to build with",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A tool with typed input and output that reads GLEIF records when called; no record is stored.",
+   "purpose": "Serve a tool that looks up legal entity identifier records in the GLEIF database when called.",
+   "use_when": "Use when a step must resolve a company to its registered legal entity.",
+   "sensitivity": "financial",
+   "research_cost": {
+    "engineer_minutes": 4,
+    "sources": 1
+   },
+   "volatility": "days",
+   "refresh": "daily",
+   "delivery": [
+    "tool"
+   ],
+   "valid_days": 1,
+   "reask": [
+    "Does the name match more than one entity, and which jurisdiction is expected?"
+   ],
+   "recheck": [
+    "Registration status changes; read the record at the time of the decision."
+   ],
+   "not_established": [
+    "A name match is not proof of identity."
+   ],
+   "would_change": [
+    "The entity's own registration record."
+   ],
+   "limit": 1,
+   "sources": [],
+   "seeds": [],
+   "assets": {
+    "tool": "lookup_legal_entity"
+   }
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "standards_protocol_releases",
+   "question": "Which versions of the agent protocols and their software kits changed recently?",
+   "title": "Agent protocol and specification releases",
+   "area": "standards",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and coding harnesses choosing what to build with",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence.",
+   "purpose": "List the latest releases of the Model Context Protocol software kits and related agent protocol projects, and flag major version changes.",
+   "use_when": "Use before building or upgrading a protocol server or client.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 20,
+    "sources": 5
+   },
+   "volatility": "weeks",
+   "refresh": "weekly",
+   "delivery": [
+    "brief"
+   ],
+   "valid_days": 7,
+   "reask": [
+    "Which protocol version do the harness and the server negotiate?",
+    "Does the new version change a field the project reads?"
+   ],
+   "recheck": [
+    "Read the release notes on the release page before upgrading."
+   ],
+   "not_established": [
+    "No source used here measured these options on your own task, data or budget."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 10,
+   "sources": [
+    {
+     "engine": "github_releases",
+     "section": "Protocol software kits and specifications",
+     "parameters": {
+      "repositories": [
+       "modelcontextprotocol/python-sdk",
+       "modelcontextprotocol/typescript-sdk",
+       "modelcontextprotocol/go-sdk",
+       "a2aproject/A2A",
+       "OAI/OpenAPI-Specification"
+      ],
+      "per_page": 5
+     }
+    }
+   ],
+   "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "sdk_major_version_changes",
+   "question": "Which widely used AI and web software kits published a new major version recently?",
+   "title": "Major version changes in widely used software kits",
+   "area": "standards",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and coding harnesses choosing what to build with",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence.",
+   "purpose": "List the latest releases of widely used AI and web software kits and flag a changed major version, which usually means breaking changes.",
+   "use_when": "Use before upgrading a dependency or when generated code fails against a new version.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 30,
+    "sources": 14
+   },
+   "volatility": "days",
+   "refresh": "daily",
+   "delivery": [
+    "brief"
+   ],
+   "valid_days": 3,
+   "reask": [
+    "Does the project pin the old major version, and does it need the new one?",
+    "Is there a migration guide for this version?"
+   ],
+   "recheck": [
+    "Read the release notes and migration guide on the release page."
+   ],
+   "not_established": [
+    "What exactly broke is not summarised here; release notes are not copied."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 14,
+   "sources": [
+    {
+     "engine": "github_releases",
+     "section": "AI software kits",
+     "parameters": {
+      "repositories": [
+       "openai/openai-python",
+       "openai/openai-node",
+       "anthropics/anthropic-sdk-python",
+       "anthropics/anthropic-sdk-typescript",
+       "langchain-ai/langchain",
+       "run-llama/llama_index",
+       "huggingface/transformers",
+       "vercel/ai"
+      ],
+      "per_page": 5
+     }
+    },
+    {
+     "engine": "github_releases",
+     "section": "Web and data software kits",
+     "parameters": {
+      "repositories": [
+       "pydantic/pydantic",
+       "fastapi/fastapi",
+       "vercel/next.js",
+       "microsoft/playwright",
+       "prisma/prisma",
+       "supabase/supabase-js"
+      ],
+      "per_page": 5
+     }
+    }
+   ],
+   "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "harness_releases",
+   "question": "Which coding harnesses and agent command lines shipped new versions recently?",
+   "title": "Coding harness releases",
+   "area": "tools",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and coding harnesses choosing what to build with",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence.",
+   "purpose": "List the latest releases of coding harnesses and agent command lines and flag changed major versions.",
+   "use_when": "Use when a harness behaves differently after an update, or before choosing which harness to run a step in.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 25,
+    "sources": 8
+   },
+   "volatility": "days",
+   "refresh": "daily",
+   "delivery": [
+    "brief"
+   ],
+   "valid_days": 3,
+   "reask": [
+    "Did the update change how the harness reads skills, instruction files or protocol servers?"
+   ],
+   "recheck": [
+    "Read the release notes before updating a harness a scheduled job depends on."
+   ],
+   "not_established": [
+    "No source used here measured these options on your own task, data or budget."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 10,
+   "sources": [
+    {
+     "engine": "github_releases",
+     "section": "Coding harnesses",
+     "parameters": {
+      "repositories": [
+       "openai/codex",
+       "anthropics/claude-code",
+       "google-gemini/gemini-cli",
+       "sst/opencode",
+       "block/goose",
+       "cline/cline",
+       "Aider-AI/aider",
+       "continuedev/continue"
+      ],
+      "per_page": 5
+     }
+    }
+   ],
+   "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "hardware_local_inference_fit",
+   "question": "Which models fit a given computer's memory for local inference?",
+   "title": "Local inference hardware fit",
+   "area": "models",
+   "status": "declared_gap",
+   "gap_reason": "The public /can-i-run page already computes fit per device from the model directory; a brief per device class from the same formula is the next step.",
+   "audience": "developers and coding harnesses choosing what to build with",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence, a data file with its schema.",
+   "purpose": "Serve per-device lists of models that fit, from the same formula as the public can-I-run page.",
+   "use_when": "Use when choosing a local model for a specific machine.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 30,
+    "sources": 4
+   },
+   "volatility": "weeks",
+   "refresh": "weekly",
+   "delivery": [
+    "brief",
+    "data_file"
+   ],
+   "valid_days": 14,
+   "reask": [
+    "How much memory is free after the operating system and other programs?"
+   ],
+   "recheck": [
+    "Use the /can-i-run page for the exact device."
+   ],
+   "not_established": [
+    "No source used here measured these options on your own task, data or budget."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 12,
+   "sources": [],
+   "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "data_public_sources",
+   "question": "Which public data sources for a domain are available and maintained?",
+   "title": "Public data source availability",
+   "area": "pipelines",
+   "status": "declared_gap",
+   "gap_reason": "Portal catalogues differ per country and domain; a data catalogue engine (for example the CKAN interfaces of public data portals) is not built in this version.",
+   "audience": "developers and coding harnesses choosing what to build with",
+   "constraints": [
+    "Facts come from public listings and are dated; nothing is estimated."
+   ],
+   "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
+   "acceptable_evidence": [
+    "The source's own identifiers, dates, licences and counts, with a link to the source."
+   ],
+   "intended_output": "A dated decision card with ranked, source-linked evidence.",
+   "purpose": "Serve dated lists of public data sources per domain with their licences and availability.",
+   "use_when": "Use when a task needs open data.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 45,
+    "sources": 6
+   },
+   "volatility": "weeks",
+   "refresh": "weekly",
+   "delivery": [
+    "brief"
+   ],
+   "valid_days": 14,
+   "reask": [
+    "Which licence does the data carry?"
+   ],
+   "recheck": [
+    "Download a sample before relying on a source."
+   ],
+   "not_established": [
+    "No source used here measured these options on your own task, data or budget."
+   ],
+   "would_change": [
+    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 12,
+   "sources": [],
+   "seeds": [],
+   "assets": {}
+  }
+ ]
+}
