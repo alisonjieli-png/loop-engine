@@ -11,7 +11,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import os
 import shutil
 import subprocess
 import sys
@@ -203,6 +202,26 @@ class RadarRunChecks(unittest.TestCase):
         self.assertIn("last_attempted_retrieval", failed)
         self.assertNotIn("last_successful_retrieval", failed)
         self.assertEqual(json.loads((self.library / "state/checks/fixture_network.json").read_text()), [None])
+
+    def test_the_preview_plans_from_the_library_state_and_writes_nothing(self):
+        before = {path: hashlib.sha256(path.read_bytes()).hexdigest() for path in self.library.rglob("*")
+                  if path.is_file() and path.name not in ("journal.jsonl", "run.lock")}
+        same_day = pipeline.preview(pipeline.RunRequest(self.repository, self.library, "2026-09-27"))
+        reasons = {row["question_id"]: row["reason"] for row in same_day["selected"]}
+        # Every active fixture question was answered on this day. A preview that ignores the state (the
+        # known-wrong answer) calls all three a first run; the real plan explores at most one.
+        self.assertNotIn("first_run", reasons.values())
+        self.assertLessEqual(len(reasons), 1)
+        self.assertTrue(all(reason == "exploration" for reason in reasons.values()))
+        empty = pipeline.preview(pipeline.RunRequest(self.repository, self.root / "no-library", "2026-09-27"))
+        self.assertEqual({row["reason"] for row in empty["selected"]}, {"first_run"})
+        rerun = pipeline.preview(pipeline.RunRequest(self.repository, self.library, "2026-09-27", rerun=True))
+        self.assertEqual({row["reason"] for row in rerun["selected"]}, {"operator_rerun"})
+        self.assertEqual(len(rerun["selected"]), 3)
+        after = {path: hashlib.sha256(path.read_bytes()).hexdigest() for path in self.library.rglob("*")
+                 if path.is_file() and path.name not in ("journal.jsonl", "run.lock")}
+        self.assertEqual(before, after)
+        self.assertFalse((self.root / "no-library").exists())
 
     def test_a_resume_reads_only_the_binding_that_was_missing(self):
         library = self.root / "radar-resume"

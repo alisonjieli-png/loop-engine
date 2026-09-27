@@ -170,7 +170,7 @@ class EngineChecks(unittest.TestCase):
             title, reason = clean_title(text)
             self.assertEqual(title, "")
             self.assertTrue(reason)
-        self.assertEqual(clean_title("Plain​ name | with [markup]")[0], "Plain name with markup")
+        self.assertEqual(clean_title("Plain\u200b name | with [markup]")[0], "Plain name with markup")
         self.assertEqual(clean_title("together_ai/model_name C#")[0], "together_ai/model_name C#")
 
     def test_known_wrong_a_version_range_keeps_its_comparison_signs(self):

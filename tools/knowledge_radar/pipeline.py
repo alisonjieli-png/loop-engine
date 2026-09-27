@@ -185,11 +185,16 @@ class Run:
             return []
 
     def state(self) -> dict:
-        path = self.request.state_folder / "questions.json"
-        if not path.is_file():
-            return {}
-        value = read_json(path)
-        return value.get("questions", {}) if isinstance(value, dict) else {}
+        return read_state(self.request)
+
+
+def read_state(request: RunRequest) -> dict:
+    """The last build record of each question in the library's shared state; empty before the first run."""
+    path = request.state_folder / "questions.json"
+    if not path.is_file():
+        return {}
+    value = read_json(path)
+    return value.get("questions", {}) if isinstance(value, dict) else {}
 
 
 def _evidence(request: RunRequest) -> dict:
@@ -227,16 +232,26 @@ def _asset_digests(repository: Path, registry) -> dict:
     return digests
 
 
-def stage_plan(run: Run) -> dict:
+def plan_request(request: RunRequest, registry, state: dict) -> dict:
+    """The plan of one request: the library's state, demand, local source times, asset digests and invalidations."""
     demand = {}
-    if run.request.demand:
-        value = read_json(run.request.demand)
+    if request.demand:
+        value = read_json(request.demand)
         demand = {key: value for key, value in value.items() if isinstance(value, (int, float))} if isinstance(value, dict) else {}
     from .model_watch import latest_invalidations
-    record = planner.plan(run.registry, run.state(), run.request.as_of, evidence=_evidence(run.request), demand=demand,
-                          only=tuple(run.request.only) or None,
-                          asset_digests=_asset_digests(run.request.repository, run.registry),
-                          invalidations=latest_invalidations(run.request.library), force=run.request.rerun)
+    return planner.plan(registry, state, request.as_of, evidence=_evidence(request), demand=demand,
+                        only=tuple(request.only) or None, asset_digests=_asset_digests(request.repository, registry),
+                        invalidations=latest_invalidations(request.library), force=request.rerun)
+
+
+def preview(request: RunRequest) -> dict:
+    """The plan a run of this request would make now, from the library's state. Reads only; writes nothing."""
+    registry = read_registry(read_json(Path(request.repository) / REGISTRY))
+    return plan_request(request, registry, read_state(request))
+
+
+def stage_plan(run: Run) -> dict:
+    record = plan_request(run.request, run.registry, run.state())
     write_json(run.folder / "plan.json", record)
     return {"selected": len(record["selected"]), "deferred": len(record["deferred"])}
 

@@ -12,7 +12,8 @@ publishes nothing, and it makes no model call.
       --collector-state /home/username/baltor-private/source-discovery-2026-09-26/state \\
       --authorize-network-reads --authorize-local-writes
 
-Without --authorize-local-writes the command prints the plan and stops. A
+Without --authorize-local-writes the command prints the plan that a run
+would make now, read from the library's state, and stops without writing. A
 second run of the same day with the same revision, registry and options
 resumes the first one's unfinished stages; a finished day answers
 already_complete. See tools/knowledge_radar/README.md.
@@ -30,9 +31,7 @@ for entry in (ROOT / "src", ROOT, ROOT / "tools"):
     if str(entry) not in sys.path:
         sys.path.insert(0, str(entry))
 
-from knowledge_radar import planner  # noqa: E402
-from knowledge_radar.pipeline import REGISTRY, RadarRunError, RunRequest, read_json, run  # noqa: E402
-from knowledge_radar.records import read_registry  # noqa: E402
+from knowledge_radar.pipeline import RadarRunError, RunRequest, preview, run  # noqa: E402
 
 
 def main(argv=None) -> int:
@@ -59,10 +58,11 @@ def main(argv=None) -> int:
                          options.maximum_requests, tuple(options.only), not options.skip_link_checks,
                          not options.skip_sandbox_tests, options.demand, options.stop_after, rerun=options.rerun)
     if not options.authorize_local_writes:
-        registry = read_registry(read_json(request.repository / REGISTRY))
-        preview = planner.plan(registry, {}, options.as_of, only=tuple(options.only) or None)
-        print(json.dumps({"preview": True, "selected": [row["question_id"] for row in preview["selected"]],
-                          "deferred": len(preview["deferred"]), "network_reads": options.authorize_network_reads}))
+        plan = preview(request)
+        print(json.dumps({"preview": True, "as_of": plan["as_of"],
+                          "selected": [{"question_id": row["question_id"], "reason": row["reason"]}
+                                       for row in plan["selected"]],
+                          "deferred": len(plan["deferred"]), "network_reads": options.authorize_network_reads}))
         return 0
     try:
         result = run(request)

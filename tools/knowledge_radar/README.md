@@ -202,7 +202,9 @@ PYTHONPATH=src:tools python tools/build_knowledge_radar.py \
   --authorize-network-reads --authorize-local-writes
 ```
 
-Without `--authorize-local-writes` it prints the plan. `--only` limits a run
+Without `--authorize-local-writes` it prints the plan that a run would make
+now, read from the library's state, with the reason for each selected
+question, and writes nothing. `--only` limits a run
 to named questions, `--skip-link-checks` and `--skip-sandbox-tests` leave
 those dimensions not done, and `--stop-after` stops after a stage.
 `--rerun` answers every planned question again, for example after a fix;
