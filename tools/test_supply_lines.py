@@ -372,6 +372,32 @@ class OpenApiLineTest(unittest.TestCase):
             (Path(folder) / get.module / f"{get.module}.py").write_text(broken, encoding="utf-8")
             self.assertFalse(line.run_tests(Path(folder) / get.module, get.module)[0])
 
+    def test_a_declared_fallback_applies_only_when_the_specification_declares_no_security(self):
+        from supply_lines import openapi_operations as line
+        bare = {"openapi": "3.0.3", "info": {"title": "Bare", "version": "1"},
+                "servers": [{"url": "https://api.example.com"}],
+                "paths": {"/repos": {"get": {"operationId": "listRepos", "responses": {"200": {"description": "ok"}}}}}}
+        source = {**SOURCE, "fallback_security": {"type": "http", "scheme": "bearer", "optional": True}}
+        [operation], _refused = line.operations(bare, source)
+        self.assertEqual((operation.auth["prefix"], operation.auth["variable"], operation.auth_optional),
+                         ("Bearer ", "EXAMPLE_TOKEN", True))
+        # Known wrong: a specification that declares its own schemes keeps them; the fallback never overrides.
+        found, _refused = line.operations(SPECIFICATION, source)
+        delete = next(item for item in found if item.function == "delete_thing")
+        self.assertEqual(delete.auth["name"], "X-Api-Key")
+        # Without a fallback, a bare specification's clients send no credential.
+        [plain], _refused = line.operations(bare, SOURCE)
+        self.assertIsNone(plain.auth)
+        with tempfile.TemporaryDirectory() as folder:
+            target = Path(folder) / operation.module
+            target.mkdir()
+            (target / f"{operation.module}.py").write_text(line.client_source(operation, SPEC_FACTS), encoding="utf-8")
+            (target / f"test_{operation.module}.py").write_text(
+                line.test_source(operation, line._example_arguments(operation), line._response_example(operation)),
+                encoding="utf-8")
+            passed, _count, output = line.run_tests(target, operation.module)
+            self.assertTrue(passed, output)
+
     def test_a_compacted_schema_keeps_every_property_name_and_drops_prose(self):
         from supply_lines import openapi_operations as line
         schema = {"type": "object", "description": "A thing.", "x-internal": True,

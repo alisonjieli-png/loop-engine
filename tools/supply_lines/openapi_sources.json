@@ -21,6 +21,17 @@
    "vendor": "sendgrid", "credential_variable": "SENDGRID_API_KEY", "maximum_operations": 400},
   {"source_id": "xero_accounting", "repository": "XeroAPI/Xero-OpenAPI", "branch": "master",
    "paths": ["xero_accounting.yaml"], "vendor": "xero", "credential_variable": "XERO_ACCESS_TOKEN",
-   "maximum_operations": 400}
+   "maximum_operations": 400},
+  {"source_id": "github", "repository": "github/rest-api-description", "branch": "main",
+   "paths": ["descriptions/api.github.com/api.github.com.json"], "vendor": "github",
+   "credential_variable": "GITHUB_TOKEN", "maximum_operations": 1500,
+   "fallback_security": {"type": "http", "scheme": "bearer", "optional": true,
+                         "note": "The description declares no security scheme; GitHub takes a bearer token and answers public reads without one."}},
+  {"source_id": "twilio", "repository": "twilio/twilio-oai", "branch": "main",
+   "paths": ["spec/json/twilio_api_v2010.json", "spec/json/twilio_messaging_v1.json", "spec/json/twilio_verify_v2.json",
+             "spec/json/twilio_conversations_v1.json", "spec/json/twilio_lookups_v2.json", "spec/json/twilio_studio_v2.json",
+             "spec/json/twilio_serverless_v1.json", "spec/json/twilio_sync_v1.json", "spec/json/twilio_taskrouter_v1.json",
+             "spec/json/twilio_video_v1.json", "spec/json/twilio_voice_v1.json", "spec/json/twilio_numbers_v2.json"],
+   "vendor": "twilio", "credential_variable": "TWILIO_ACCOUNT_CREDENTIALS", "maximum_operations": 1500}
  ]
 }

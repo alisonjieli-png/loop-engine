@@ -50,7 +50,7 @@ from .records import (
     GENERATED_CODE_LICENCE, LICENCE_TEXT, OPENAPI_OPERATIONS, SupplyRecordError, fact_source, provenance, refusal,
     upstream_key)
 
-GENERATOR_VERSION = "1.1.0"
+GENERATOR_VERSION = "1.2.0"
 SOURCES_FILE = Path(__file__).with_name("openapi_sources.json")
 SOURCES_RECORD_TYPE = "library_supply_openapi_sources/v1"
 RAW_HOST = "raw.githubusercontent.com"
@@ -411,6 +411,13 @@ def _auth(document: dict, requirements, source: dict) -> tuple:
     """(auth, optional): how the credential travels, from the first security requirement, or (None, True)."""
     if requirements is None:
         requirements = document.get("security") or []
+    schemes_declared = bool((document.get("components") or {}).get("securitySchemes"))
+    fallback = source.get("fallback_security")
+    if not requirements and not schemes_declared and fallback:
+        # The specification declares no security at all; the sources declaration names how the API takes a
+        # credential (for example GitHub's bearer token), and whether a call may go without one.
+        return {"scheme": "declared_in_openapi_sources", "placement": "header", "name": "Authorization",
+                "prefix": "Bearer ", "variable": source["credential_variable"]}, bool(fallback.get("optional"))
     if not requirements:
         return None, True
     optional = any(requirement == {} for requirement in requirements)
@@ -960,8 +967,10 @@ def readme_source(operation: Operation, spec: dict, schema_bytes: int) -> str:
                                                              if auth["prefix"] else " (the value as set)"),
                  "basic": "the `Authorization` header as Basic credentials (set the variable to `user:password`)",
                  "query": f"the query parameter `{auth['name']}`"}[auth["placement"]]
+        origin = ("the specification declares no security scheme, so Baltor's sources declaration names it"
+                  if auth["scheme"] == "declared_in_openapi_sources" else f"security scheme `{auth['scheme']}`")
         credential = (f"The client reads the credential from the environment variable `{auth['variable']}` "
-                      f"(security scheme `{auth['scheme']}`) and sends it in {where}. It is never written to a file"
+                      f"({origin}) and sends it in {where}. It is never written to a file"
                       + (". The credential is optional for this operation." if operation.auth_optional else "."))
     body = ""
     if operation.body_schema is not None:
