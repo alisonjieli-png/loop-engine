@@ -283,3 +283,15 @@ are listed there.
 - [Cohere partners](https://cohere.com/partners), [LangChain Partner Network](https://www.langchain.com/langchain-partner-network), [Langfuse partners](https://langfuse.com/partners)
 - Sitemaps and home pages of fal, SambaNova, Baseten, Modal, Smithery, Klavis, Glama, turbomcp.ai (where `mcp.run` now leads), MongoDB, SendGrid, Mailjet, SparkPost, OVHcloud, Scaleway, Helicone and Portkey
 - The directory and models directory rows, read from their working trees at about 18:00 Coordinated Universal Time (35,278 directory rows)
+
+## Later on September 24, 2026: more categories and a machine-readable list
+
+This section was added after the text above and changes none of it. The
+owner asked for more hosting, Kubernetes, email sending, AI coding and
+developer tool programmes, a list of them on the website and a context file
+for harness working directories. The
+[third record](DEVELOPER-TOOL-HOSTING-AND-KUBERNETES-REFERRAL-PROGRAMMES-2026-09-24.md)
+covers them, replaces the ranking above with one ranking for all three
+records, sets the rules for the harness context file, and describes
+`artifacts/affiliate-programmes-2026-09-24/programmes.json`, which holds one
+row for each of the 145 services checked.
