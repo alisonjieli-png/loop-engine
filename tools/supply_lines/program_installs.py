@@ -34,12 +34,13 @@ import urllib.parse
 from collections import Counter
 from pathlib import Path
 
-from .licences import decide, repository_licence
+from .licences import KNOWN_LICENCE_REFUSALS, decide, repository_licence
 from .openapi_operations import literal, run_tests, snake
 from .packaging import LICENCE_NAME, UPSTREAM_LICENCE_NAME, PackageFile, SupplyPackage, build
+from .reading import github_blob_address, https_address
 from .records import (
-    GENERATED_CODE_LICENCE, LICENCE_TEXT, PROGRAM_INSTALLS, SupplyRecordError, fact_source, licence_allowed,
-    provenance, refusal, upstream_key)
+    BLOCKED_BY_STATIC_CHECK, GENERATED_CODE_LICENCE, GENERATED_TEST_FAILED, LICENCE_TEXT, PROGRAM_INSTALLS,
+    SupplyRecordError, fact_source, licence_allowed, provenance, refusal, upstream_key)
 
 GENERATOR_VERSION = "1.0.0"
 SOURCES_FILE = Path(__file__).with_name("program_sources.json")
@@ -48,7 +49,7 @@ RECIPE_RECORD_TYPE = "program_install_recipe/v1"
 FORMULAE_HOST = "formulae.brew.sh"
 HOSTS = (FORMULAE_HOST,)
 HOMEBREW_CORE = "Homebrew/homebrew-core"
-ANALYTICS_URL = f"https://{FORMULAE_HOST}/api/analytics/install-on-request/365d.json"
+ANALYTICS_URL = https_address(FORMULAE_HOST, "api/analytics/install-on-request/365d.json")
 NATIVE_FORMAT = "program_install_recipe"
 EFFECTS = ("network", "writes_fs", "reads_secret")
 _DIGEST = re.compile(r"[0-9a-f]{64}\Z")
@@ -384,7 +385,7 @@ def generate(reader, rows, *, code_revision: str, licence_text: bytes, generated
     seen = set()
     for row in rows:
         name = row["formula"]
-        answer = reader.get(f"https://{FORMULAE_HOST}/api/formula/{urllib.parse.quote(name)}.json")
+        answer = reader.get(https_address(FORMULAE_HOST, f"api/formula/{urllib.parse.quote(name)}.json"))
         if answer.status != 200:
             refused.append(refusal(PROGRAM_INSTALLS, "not_a_command_line_program", name, f"formula answered {answer.status}"))
             continue
@@ -405,7 +406,7 @@ def generate(reader, rows, *, code_revision: str, licence_text: bytes, generated
                 refused.append(refusal(PROGRAM_INSTALLS, "upstream_repository_unreadable", name, row["repository"]))
                 continue
             repository_decision = decide(row["repository"], commit, reader.licence_text(row["repository"], commit))
-            if repository_decision.reason in ("licence_not_on_allowlist", "licence_signals_disagree"):
+            if repository_decision.reason in KNOWN_LICENCE_REFUSALS:
                 refused.append(refusal(PROGRAM_INSTALLS, "licence_signals_disagree", name,
                                        f"{row['repository']}: {repository_decision.reason} "
                                        f"{repository_decision.github_spdx}"))
@@ -425,7 +426,7 @@ def generate(reader, rows, *, code_revision: str, licence_text: bytes, generated
                                   repository_decision, core_licence, core_commit, answer, analytics, generator,
                                   licence_text, generated_on, staging, repository_facts))
         except SupplyRecordError as error:
-            reason = error.code if error.code in ("blocked_by_static_check",) else "generated_test_failed"
+            reason = error.code if error.code == BLOCKED_BY_STATIC_CHECK else GENERATED_TEST_FAILED
             refused.append(refusal(PROGRAM_INSTALLS, reason, name, str(error)[:280]))
             continue
         seen.add(row["program"])
@@ -460,20 +461,20 @@ def _package(row, formula, plan, installs, program_licence, repository_text, rep
              PackageFile("README.md", text.encode(), "other"),
              PackageFile(LICENCE_NAME, licence_text, "other", LICENCE_TEXT),
              PackageFile(UPSTREAM_LICENCE_NAME, core_licence.text, "other", LICENCE_TEXT,
-                         {"url": f"https://github.com/{HOMEBREW_CORE}/blob/{core_commit}/{core_licence.path}",
+                         {"url": github_blob_address(HOMEBREW_CORE, core_commit, core_licence.path),
                           "sha256": core_licence.sha256})]
     facts = [fact_source(answer.url, answer.retrieved_at, answer.sha256, len(answer.body), "formula",
                          spdx=core_licence.spdx, basis="homebrew_core_licence_at_its_head_commit",
                          evidence_sha256=core_licence.sha256),
-             fact_source(f"https://github.com/{HOMEBREW_CORE}/blob/{core_commit}/{core_licence.path}",
+             fact_source(github_blob_address(HOMEBREW_CORE, core_commit, core_licence.path),
                          answer.retrieved_at, core_licence.sha256, len(core_licence.text), "licence_text",
                          spdx=core_licence.spdx, basis="github_licence_interface_and_text_agree")]
     if analytics.status == 200:
         facts.append(fact_source(analytics.url, analytics.retrieved_at, analytics.sha256, len(analytics.body),
                                  "analytics", spdx=core_licence.spdx, basis="homebrew_public_analytics"))
     if repository_decision is not None and repository_decision.text:
-        facts.append(fact_source(f"https://github.com/{row['repository']}/blob/{repository_decision.commit}/"
-                                 f"{repository_decision.path}", answer.retrieved_at, repository_decision.sha256,
+        facts.append(fact_source(github_blob_address(row["repository"], repository_decision.commit,
+                                                     repository_decision.path), answer.retrieved_at, repository_decision.sha256,
                                  len(repository_decision.text), "repository_facts",
                                  spdx=repository_decision.spdx or "NOASSERTION", basis=repository_decision.reason))
     effects = [("spawns_process", f"the wrapper starts {row['program']}")]

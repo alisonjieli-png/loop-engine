@@ -117,8 +117,13 @@ _KIND_FORMS = {"skill": "skill", "instruction_file": "instructions", "rules": "r
                "command": "command", "hook": "hook", "plugin_manifest": "plugin", "marketplace": "marketplace",
                "protocol_server_configuration": "mcp_server", "harness_settings": "settings",
                "contract_schema": "schema", "code_module": "library_module"}
-#: Native formats of the licensed import's code modules whose form is known from the format alone.
-_CODE_MODULE_FORMATS = {"opencode_tool": "function", "opencode_plugin": "plugin"}
+#: Native formats whose form is known from the format alone, by harness kind: the licensed import's OpenCode tools
+#: are functions and its OpenCode plugin modules are plugins.
+_FORMAT_FORMS = {"code_module": {"opencode_tool": "function", "opencode_plugin": "plugin"}}
+#: The form of a package of this harness kind that holds a file a harness may run.
+_SCRIPT_FORMS = {"skill": "skill_with_scripts"}
+#: The harness kind of an item whose kind is unknown, as harness_kind_of falls back.
+_FALLBACK_KIND = "code_module"
 #: Package file roles a harness may run (catalogue_packages.EXECUTABLE_ROLES, restated so this module reads no
 #: package code).
 _RUNNABLE_ROLES = ("skill_script", "hook", "executable_tool")
@@ -202,12 +207,10 @@ def component_form_of(harness_kind: str, file_roles=(), native_format: str = "",
     the file roles (a skill that holds a script) and the native format (an OpenCode tool is a function)."""
     if declared:
         return check_form(declared, harness_kind)
-    kind = harness_kind if harness_kind in HARNESS_KINDS else "code_module"
-    if kind == "skill" and any(role in _RUNNABLE_ROLES for role in file_roles or ()):
-        return "skill_with_scripts"
-    if kind == "code_module":
-        return _CODE_MODULE_FORMATS.get(native_format, "library_module")
-    return _KIND_FORMS[kind]
+    kind = harness_kind if harness_kind in HARNESS_KINDS else _FALLBACK_KIND
+    if kind in _SCRIPT_FORMS and any(role in _RUNNABLE_ROLES for role in file_roles or ()):
+        return _SCRIPT_FORMS[kind]
+    return _FORMAT_FORMS.get(kind, {}).get(native_format, _KIND_FORMS[kind])
 
 
 def component_form_record(form: str, harness_kind: str, basis: str) -> dict:

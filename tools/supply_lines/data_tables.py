@@ -30,10 +30,10 @@ from .licences import repository_licence
 from .openapi_operations import literal, run_tests
 from .packaging import (
     LICENCE_NAME, MAXIMUM_REVIEW_FILE_BYTES, UPSTREAM_LICENCE_NAME, PackageFile, SupplyPackage, build)
-from .reading import RAW_HOST
+from .reading import RAW_HOST, github_blob_address
 from .records import (
-    DATA_TABLES, GENERATED_CODE_LICENCE, LICENCE_TEXT, UPSTREAM_VERBATIM, SupplyRecordError, fact_source,
-    provenance, refusal, upstream_key)
+    BLOCKED_BY_STATIC_CHECK, DATA_TABLES, GENERATED_CODE_LICENCE, GENERATED_TEST_FAILED, LICENCE_TEXT,
+    REFUSAL_REASONS, UPSTREAM_VERBATIM, SupplyRecordError, fact_source, provenance, refusal, upstream_key)
 
 GENERATOR_VERSION = "1.0.0"
 SOURCES_FILE = Path(__file__).with_name("data_table_sources.json")
@@ -42,6 +42,8 @@ SHAPES = ("records", "keyed_records", "mapping", "values")
 NATIVE_FORMAT = "reference_data_table"
 HOSTS = (RAW_HOST,)
 _IDENTIFIER = re.compile(r"[a-z][a-z0-9_]{1,60}\Z")
+#: The JSON Schema dialect every table's schema.json declares (the standard's own identifier).
+JSON_SCHEMA_DIALECT = "https://json-schema.org/draft/2020-12/schema"
 
 
 class TableRefused(ValueError):
@@ -349,8 +351,7 @@ def generate(reader, rows, *, code_revision: str, licence_text: bytes, generated
             licences[key] = repository_licence(reader, row["repository"], pinned["commit"])
         licence = licences[key]
         if not licence.allowed:
-            reason = "licence_signals_disagree" if licence.reason == "licence_signals_disagree" \
-                else "licence_not_on_allowlist"
+            reason = licence.refusal_reason(REFUSAL_REASONS[DATA_TABLES])
             refused.append(refusal(DATA_TABLES, reason, row["table_id"], f"{licence.reason} {licence.github_spdx}"))
             continue
         if len(pinned["bytes"]) > MAXIMUM_REVIEW_FILE_BYTES:
@@ -363,7 +364,7 @@ def generate(reader, rows, *, code_revision: str, licence_text: bytes, generated
         except TableRefused as error:
             refused.append(refusal(DATA_TABLES, error.reason, row["table_id"], error.detail))
         except SupplyRecordError as error:
-            reason = error.code if error.code in ("blocked_by_static_check",) else "generated_test_failed"
+            reason = error.code if error.code == BLOCKED_BY_STATIC_CHECK else GENERATED_TEST_FAILED
             refused.append(refusal(DATA_TABLES, reason, row["table_id"], str(error)[:280]))
     return built, refused, facts
 
@@ -387,7 +388,7 @@ def _package(row, pinned, licence, generator, licence_text, generated_on, stagin
     tests = TESTS.format(table_id=row["table_id"], module=module, class_name=class_name,
                          first_key=table[0][row["key_field"]], missing_key=_missing_key(table, row["key_field"], key_kinds),
                          wrong_key=_wrong_key(key_kinds))
-    schema = {"$schema": "https://json-schema.org/draft/2020-12/schema", "title": row["title"], "type": "object",
+    schema = {"$schema": JSON_SCHEMA_DIALECT, "title": row["title"], "type": "object",
               "properties": {name: {"type": kinds if len(kinds) > 1 else kinds[0]} for name, kinds in fields.items()},
               "required": required, "additionalProperties": False,
               "x-baltor-table": {"key_field": row["key_field"], "rows": len(table), "shape": row["shape"],
@@ -410,14 +411,14 @@ def _package(row, pinned, licence, generator, licence_text, generated_on, stagin
              PackageFile("README.md", text.encode(), "other"),
              PackageFile(LICENCE_NAME, licence_text, "other", LICENCE_TEXT),
              PackageFile(UPSTREAM_LICENCE_NAME, licence.text, "other", LICENCE_TEXT,
-                         {"url": f"https://github.com/{row['repository']}/blob/{pinned['commit']}/{licence.path}",
+                         {"url": github_blob_address(row["repository"], pinned["commit"], licence.path),
                           "sha256": licence.sha256})]
     expression = GENERATED_CODE_LICENCE if licence.spdx == GENERATED_CODE_LICENCE else \
         f"{licence.spdx} AND {GENERATED_CODE_LICENCE}"
     facts = [fact_source(pinned["url"], pinned["retrieved_at"], pinned["sha256"], len(pinned["bytes"]), "data_source",
                          spdx=licence.spdx, basis="github_licence_interface_and_text_agree",
                          evidence_sha256=licence.sha256),
-             fact_source(f"https://github.com/{row['repository']}/blob/{pinned['commit']}/{licence.path}",
+             fact_source(github_blob_address(row["repository"], pinned["commit"], licence.path),
                          pinned["retrieved_at"], licence.sha256, len(licence.text), "licence_text", spdx=licence.spdx,
                          basis="licence_file_at_the_pinned_commit")]
     name = f"{row['table_id'].replace('_', '-')}-table"

@@ -37,12 +37,15 @@ from loop_engine.core.library_ingestion.source_mcp_registry import (
     McpOfficialRegistrySource, upstream_github_repository)
 
 from .packaging import LICENCE_NAME, PackageFile, SupplyPackage, build
+from .reading import github_blob_address, https_address
 from .records import (
-    GENERATED_CODE_LICENCE, LICENCE_TEXT, MCP_REGISTRY, REFUSAL_REASONS, SupplyRecordError, fact_source,
-    licence_allowed, provenance, refusal, upstream_key)
+    BLOCKED_BY_STATIC_CHECK, CONNECTION_FILES_INVALID, GENERATED_CODE_LICENCE, LICENCE_TEXT, MCP_REGISTRY,
+    REFUSAL_REASONS, SupplyRecordError, fact_source, licence_allowed, provenance, refusal, upstream_key)
 
 GENERATOR_VERSION = "1.0.0"
 REGISTRY_HOST = "registry.modelcontextprotocol.io"
+#: The registry engine's reason when GitHub's licence interface and the licence text name different licences.
+UPSTREAM_SIGNALS_DISAGREE = "upstream_licence_signals_disagree"
 NPM_HOST, PYPI_HOST = "registry.npmjs.org", "pypi.org"
 HOSTS = (REGISTRY_HOST, NPM_HOST, PYPI_HOST)
 NATIVE_FORMAT = "mcp_connection_bundle"
@@ -119,9 +122,9 @@ def package_metadata(reader, package: dict) -> dict:
     """What npm or PyPI says of the exact version: published or not, its declared licence and the fact source."""
     registry, identifier, version = package["registry"], package["identifier"], package["version"]
     if registry == "npm":
-        url = f"https://{NPM_HOST}/{quote_part(identifier, safe='@')}/{quote_part(version)}"
+        url = https_address(NPM_HOST, f"{quote_part(identifier, safe='@')}/{quote_part(version)}")
     else:
-        url = f"https://{PYPI_HOST}/pypi/{quote_part(identifier)}/{quote_part(version)}/json"
+        url = https_address(PYPI_HOST, f"pypi/{quote_part(identifier)}/{quote_part(version)}/json")
     answer = reader.get(url, cache_errors=True)
     if answer.status == 404:
         return {"published": False, "url": url}
@@ -220,7 +223,7 @@ def generate(entries, reader, *, code_revision: str, licence_text: bytes, genera
             refusals.append(refusal(MCP_REGISTRY, "upstream_repository_not_on_github", name))
             continue
         spdx, reason = evidence["spdx_expression"], evidence["reason"]
-        if reason == "upstream_licence_signals_disagree":
+        if reason == UPSTREAM_SIGNALS_DISAGREE:
             refusals.append(refusal(MCP_REGISTRY, "licence_signals_disagree", name, repository))
             continue
         if spdx in ("NOASSERTION", "NONE"):
@@ -280,10 +283,10 @@ def generate(entries, reader, *, code_revision: str, licence_text: bytes, genera
                  PackageFile(LICENCE_NAME, licence_text, "other", LICENCE_TEXT)]
         if "codex" in texts:
             files.append(PackageFile(".codex/config.toml", texts["codex"].encode(), "protocol_server_configuration"))
-        facts = [fact_source(f"https://{REGISTRY_HOST}/{source.path}", source.fetched_at, source.source_digest,
+        facts = [fact_source(https_address(REGISTRY_HOST, source.path), source.fetched_at, source.source_digest,
                              source.source_size_bytes, "registry_entry", spdx="NOASSERTION",
                              basis="link_only_facts_no_text_copied"),
-                 fact_source(f"https://github.com/{repository}/blob/HEAD/{part.get('path') or 'LICENSE'}",
+                 fact_source(github_blob_address(repository, "HEAD", part.get("path") or "LICENSE"),
                              source.fetched_at, part["sha256"], 0, "licence_text", spdx=spdx,
                              basis="github_licence_interface_and_text_agree", evidence_sha256=part["sha256"]),
                  fact_source(metadata["url"], metadata["retrieved_at"], metadata["sha256"], metadata["size_bytes"],
@@ -312,7 +315,7 @@ def generate(entries, reader, *, code_revision: str, licence_text: bytes, genera
         try:
             built.append(build(supply))
         except SupplyRecordError as error:
-            code = error.code if error.code in ("blocked_by_static_check",) else "connection_files_invalid"
+            code = error.code if error.code == BLOCKED_BY_STATIC_CHECK else CONNECTION_FILES_INVALID
             refusals.append(refusal(MCP_REGISTRY, code, name, str(error)))
             continue
         seen[identity] = name

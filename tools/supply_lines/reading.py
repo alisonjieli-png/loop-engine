@@ -29,7 +29,7 @@ import urllib.parse
 from urllib.parse import parse_qsl, urlsplit
 
 from loop_engine.core.library_ingestion.github_reader import GITHUB_HOST, GhCliReader, parse_included_response
-from loop_engine.core.library_ingestion.https_transport import HttpsGetTransport
+from loop_engine.core.library_ingestion.https_transport import HTTPS_SCHEME, HttpsGetTransport
 from loop_engine.core.library_ingestion.record_rules import git_blob_identity, now_utc
 from loop_engine.core.library_ingestion.request_log import RequestBudget, RequestLog, RequestObservation
 
@@ -45,8 +45,23 @@ RELEASE_FIELDS = ("nameWithOwner isFork isArchived isPrivate stargazerCount lice
                   "latestRelease { tagName publishedAt tagCommit { oid } "
                   "releaseAssets(first: 100) { nodes { name size downloadUrl digest } } }")
 MAXIMUM_BATCH = 25
-#: The host that serves a GitHub file's exact bytes at a commit.
+#: The host that serves a GitHub file's exact bytes at a commit, and the host of GitHub's web pages.
 RAW_HOST = "raw.githubusercontent.com"
+GITHUB_WEB_HOST = "github.com"
+
+
+def https_address(host: str, path: str) -> str:
+    """An HTTPS address on a host: every address a supply line reads or records is built here."""
+    return urllib.parse.urlunsplit((HTTPS_SCHEME, host, "/" + str(path).lstrip("/"), "", ""))
+
+
+def github_blob_address(repository: str, revision: str, path: str) -> str:
+    """The web address of one file of a GitHub repository at a revision, for attribution."""
+    return https_address(GITHUB_WEB_HOST, f"{repository}/blob/{revision}/{path}")
+
+
+def is_https(address) -> bool:
+    return urllib.parse.urlsplit(str(address)).scheme == HTTPS_SCHEME
 
 
 @dataclass(frozen=True)
@@ -145,7 +160,7 @@ class FactReader:
         if found is not None:
             return found
         parts = urlsplit(url)
-        if parts.scheme != "https" or not parts.hostname:
+        if parts.scheme != HTTPS_SCHEME or not parts.hostname:
             raise ValueError(f"not an HTTPS address: {url[:120]}")
         self._pace()
         response = self.https.get(parts.hostname, parts.path or "/", dict(parse_qsl(parts.query)))
@@ -155,7 +170,7 @@ class FactReader:
 
     def github(self, path: str) -> Fetched:
         """A read-only GitHub REST read from the library ingestion allow list, cached when it answers."""
-        key = f"https://{GITHUB_HOST}/{path}"
+        key = https_address(GITHUB_HOST, path)
         found = self._cached(key)
         if found is not None:
             return found
@@ -223,7 +238,7 @@ class FactReader:
         if meta.status != 200:
             raise LookupError(f"{repository}/{path}: no file at {commit[:12]}")
         blob = json.loads(meta.body).get("sha")
-        url = f"https://{RAW_HOST}/{repository}/{commit}/{urllib.parse.quote(path)}"
+        url = https_address(RAW_HOST, f"{repository}/{commit}/{urllib.parse.quote(path)}")
         raw = self.get(url)
         if raw.status != 200 or git_blob_identity(raw.body) != blob:
             raise LookupError(f"{repository}/{path}: the bytes differ from the blob {blob}")

@@ -46,14 +46,18 @@ from loop_engine.core.library_ingestion.record_rules import git_blob_identity
 from .licences import repository_licence
 from .packaging import (
     LICENCE_NAME, MAXIMUM_REVIEW_FILE_BYTES, UPSTREAM_LICENCE_NAME, PackageFile, SupplyPackage, build)
+from .reading import RAW_HOST, github_blob_address, https_address, is_https
 from .records import (
-    GENERATED_CODE_LICENCE, LICENCE_TEXT, OPENAPI_OPERATIONS, SupplyRecordError, fact_source, provenance, refusal,
-    upstream_key)
+    BLOCKED_BY_STATIC_CHECK, GENERATED_CODE_LICENCE, GENERATED_TEST_FAILED, LICENCE_TEXT, OPENAPI_OPERATIONS,
+    PACKAGE_ABOVE_REVIEW_BOUND, REFUSAL_REASONS, SupplyRecordError, fact_source, provenance, refusal, upstream_key)
 
-GENERATOR_VERSION = "1.2.0"
+GENERATOR_VERSION = "1.2.1"
+#: What the first success answer holds: JSON, text, other bytes, or nothing.
+JSON_ANSWER, TEXT_ANSWER, BINARY_ANSWER, NO_ANSWER = "json", "text", "binary", "empty"
+#: Refusal codes a package build may raise that the line keeps as they are; any other means its tests failed.
+KEPT_CODES = (BLOCKED_BY_STATIC_CHECK, PACKAGE_ABOVE_REVIEW_BOUND)
 SOURCES_FILE = Path(__file__).with_name("openapi_sources.json")
 SOURCES_RECORD_TYPE = "library_supply_openapi_sources/v1"
-RAW_HOST = "raw.githubusercontent.com"
 HOSTS = (RAW_HOST,)
 NATIVE_FORMAT = "openapi_operation_python"
 METHODS = ("get", "put", "post", "delete", "patch", "head", "options")
@@ -219,22 +223,21 @@ def check_schema(schema, depth: int = 0, *, request: bool = True) -> dict:
     return result
 
 
+#: JSON Schema's instance types (the standard's closed vocabulary), each with the test a value passes.
+SCHEMA_TYPE_TESTS = {
+    "integer": lambda value: isinstance(value, int) and not isinstance(value, bool),
+    "number": lambda value: isinstance(value, (int, float)) and not isinstance(value, bool),
+    "boolean": lambda value: isinstance(value, bool),
+    "string": lambda value: isinstance(value, str),
+    "array": lambda value: isinstance(value, (list, tuple)),
+    "object": lambda value: isinstance(value, dict),
+    "null": lambda value: value is None}
+NULL_TYPE, OBJECT_TYPE, STRING_TYPE = "null", "object", "string"
+
+
 def _is(value, kind: str) -> bool:
-    if kind == "integer":
-        return isinstance(value, int) and not isinstance(value, bool)
-    if kind == "number":
-        return isinstance(value, (int, float)) and not isinstance(value, bool)
-    if kind == "boolean":
-        return isinstance(value, bool)
-    if kind == "string":
-        return isinstance(value, str)
-    if kind == "array":
-        return isinstance(value, (list, tuple))
-    if kind == "object":
-        return isinstance(value, dict)
-    if kind == "null":
-        return value is None
-    return True
+    """True when the value is of the JSON Schema type; an unknown type allows any value."""
+    return SCHEMA_TYPE_TESTS.get(kind, lambda _value: True)(value)
 
 
 def check_value(value, schema: dict, name: str) -> None:
@@ -267,8 +270,40 @@ def check_value(value, schema: dict, name: str) -> None:
 
 
 _FORMAT_EXAMPLES = {"date-time": "2026-01-01T00:00:00Z", "date": "2026-01-01", "email": "user@example.com",
-                    "uri": "https://example.com", "url": "https://example.com", "uuid": "00000000-0000-4000-8000-000000000000",
-                    "ipv4": "192.0.2.1", "hostname": "example.com", "binary": "", "byte": "ZXhhbXBsZQ=="}
+                    "uri": https_address("example.com", ""), "url": https_address("example.com", ""),
+                    "uuid": "00000000-0000-4000-8000-000000000000", "ipv4": "192.0.2.1", "hostname": "example.com",
+                    "binary": "", "byte": "ZXhhbXBsZQ=="}
+
+
+def _number_example(schema: dict, floor: float, whole: bool):
+    minimum = schema.get("minimum")
+    if not isinstance(minimum, (int, float)) or isinstance(minimum, bool):
+        return int(floor) if whole else floor
+    return max(int(floor), int(math.ceil(minimum))) if whole else max(floor, float(minimum))
+
+
+def _array_example(schema: dict, depth: int, every_property: bool):
+    items = schema.get("items")
+    return [synthesize(items, depth + 1, every_property=every_property)] if isinstance(items, dict) and depth < 6 \
+        else []
+
+
+def _object_example(schema: dict, depth: int, every_property: bool):
+    properties = schema.get("properties") or {}
+    names = list(schema.get("required", ()))
+    if every_property and depth < 3:
+        names += [name for name in properties if name not in names]
+    return {name: synthesize(properties.get(name) or {}, depth + 1, every_property=every_property) for name in names}
+
+
+#: One small value per JSON Schema type, each a function of the schema, the depth and whether to fill every field.
+TYPE_EXAMPLES = {
+    "string": lambda schema, depth, every: _FORMAT_EXAMPLES.get(schema.get("format", ""), "example"),
+    "integer": lambda schema, depth, every: _number_example(schema, 1, True),
+    "number": lambda schema, depth, every: _number_example(schema, 1.5, False),
+    "boolean": lambda schema, depth, every: True,
+    "array": _array_example,
+    "object": _object_example}
 
 
 def synthesize(schema: dict, depth: int = 0, *, every_property: bool = False):
@@ -287,29 +322,10 @@ def synthesize(schema: dict, depth: int = 0, *, every_property: bool = False):
                 return candidate
             except (TypeError, ValueError):
                 continue
-    kinds = [kind for kind in schema.get("type") or [] if kind != "null"]
-    kind = kinds[0] if kinds else ("object" if "properties" in schema else "string")
-    if kind == "string":
-        return _FORMAT_EXAMPLES.get(schema.get("format", ""), "example")
-    if kind == "integer":
-        minimum = schema.get("minimum")
-        return max(1, int(math.ceil(minimum))) if isinstance(minimum, (int, float)) else 1
-    if kind == "number":
-        minimum = schema.get("minimum")
-        return max(1.5, float(minimum)) if isinstance(minimum, (int, float)) else 1.5
-    if kind == "boolean":
-        return True
-    if kind == "array":
-        return ([synthesize(schema["items"], depth + 1, every_property=every_property)]
-                if isinstance(schema.get("items"), dict) and depth < 6 else [])
-    if kind == "object":
-        properties = schema.get("properties") or {}
-        names = list(schema.get("required", ()))
-        if every_property and depth < 3:
-            names += [name for name in properties if name not in names]
-        return {name: synthesize(properties.get(name) or {}, depth + 1, every_property=every_property)
-                for name in names}
-    return None
+    kinds = [kind for kind in schema.get("type") or [] if kind != NULL_TYPE]
+    kind = kinds[0] if kinds else (OBJECT_TYPE if isinstance(schema.get("properties"), dict) else STRING_TYPE)
+    example = TYPE_EXAMPLES.get(kind)
+    return example(schema, depth, every_property) if example is not None else None
 
 
 # -- operations ----------------------------------------------------------------------------------------------------
@@ -340,7 +356,7 @@ class Operation:
     body_check: "dict | None" = None
     body_example: object = None
     success_statuses: tuple = (200,)
-    response_kind: str = "json"
+    response_kind: str = JSON_ANSWER
     response_schema: "dict | None" = None
     response_example: object = None
     errors: dict = field(default_factory=dict)
@@ -402,9 +418,22 @@ def _server(servers) -> str:
         for name, variable in (server.get("variables") or {}).items():
             if isinstance(variable, dict) and "default" in variable:
                 url = url.replace("{" + name + "}", str(variable["default"]))
-        if url.startswith("https://") and "{" not in url:
+        if is_https(url) and "{" not in url:
             return url.rstrip("/")
     return ""
+
+
+#: OpenAPI's security scheme types this client can send, keyed by (type, HTTP scheme or key location): where the
+#: credential goes. Any other scheme (a cookie key, mutual TLS) is refused by name.
+HTTP_SCHEME_TYPE, API_KEY_SCHEME_TYPE = "http", "apiKey"
+#: The scheme name a client records when the sources declaration, not the specification, names the credential.
+DECLARED_SCHEME = "declared_in_openapi_sources"
+_BEARER = {"placement": "header", "name": "Authorization", "prefix": "Bearer "}
+SCHEME_PLACEMENTS = {
+    (HTTP_SCHEME_TYPE, "bearer"): _BEARER, ("oauth2", ""): _BEARER, ("openIdConnect", ""): _BEARER,
+    (HTTP_SCHEME_TYPE, "basic"): {"placement": "basic", "name": "Authorization", "prefix": "Basic "},
+    (API_KEY_SCHEME_TYPE, "header"): {"placement": "header", "name": "", "prefix": ""},
+    (API_KEY_SCHEME_TYPE, "query"): {"placement": "query", "name": "", "prefix": ""}}
 
 
 def _auth(document: dict, requirements, source: dict) -> tuple:
@@ -416,8 +445,8 @@ def _auth(document: dict, requirements, source: dict) -> tuple:
     if not requirements and not schemes_declared and fallback:
         # The specification declares no security at all; the sources declaration names how the API takes a
         # credential (for example GitHub's bearer token), and whether a call may go without one.
-        return {"scheme": "declared_in_openapi_sources", "placement": "header", "name": "Authorization",
-                "prefix": "Bearer ", "variable": source["credential_variable"]}, bool(fallback.get("optional"))
+        return {"scheme": DECLARED_SCHEME, **_BEARER, "variable": source["credential_variable"]}, \
+            bool(fallback.get("optional"))
     if not requirements:
         return None, True
     optional = any(requirement == {} for requirement in requirements)
@@ -433,16 +462,13 @@ def _auth(document: dict, requirements, source: dict) -> tuple:
             continue
         variable = (source.get("scheme_variables") or {}).get(name) or source["credential_variable"]
         kind = scheme.get("type")
-        if kind == "http" and str(scheme.get("scheme", "")).lower() == "bearer" or kind in ("oauth2", "openIdConnect"):
-            return {"scheme": name, "placement": "header", "name": "Authorization", "prefix": "Bearer ",
-                    "variable": variable}, optional
-        if kind == "http" and str(scheme.get("scheme", "")).lower() == "basic":
-            return {"scheme": name, "placement": "basic", "name": "Authorization", "prefix": "Basic ",
-                    "variable": variable}, optional
-        if kind == "apiKey" and scheme.get("in") in ("header", "query") and isinstance(scheme.get("name"), str):
-            return {"scheme": name, "placement": scheme["in"], "name": scheme["name"], "prefix": "",
-                    "variable": variable}, optional
-        raise OperationRefused("operation_parameters_unsupported", f"security scheme {name} of type {kind}")
+        key = (kind, str(scheme.get("scheme", "")).lower() if kind == HTTP_SCHEME_TYPE else
+               str(scheme.get("in", "")) if kind == API_KEY_SCHEME_TYPE else "")
+        placement = SCHEME_PLACEMENTS.get(key)
+        if placement is None or (kind == API_KEY_SCHEME_TYPE and not isinstance(scheme.get("name"), str)):
+            raise OperationRefused("operation_parameters_unsupported", f"security scheme {name} of type {kind}")
+        return {"scheme": name, **placement, "name": scheme["name"] if kind == API_KEY_SCHEME_TYPE else placement["name"],
+                "variable": variable}, optional
     return None, True
 
 
@@ -545,12 +571,12 @@ def _operation(document, resolver, source, path, method, item, node, top_servers
         _media, media = found
         operation.response_schema = resolver.schema(media.get("schema") or {})
         operation.response_example = plain(_first_example(media) or _first_example(media.get("schema") or {}))
-        operation.response_kind = "json"
+        operation.response_kind = JSON_ANSWER
     elif isinstance(content, dict) and content:
         media = str(next(iter(content))).split(";")[0].lower()
-        operation.response_kind = "text" if media.startswith("text/") else "binary"
+        operation.response_kind = TEXT_ANSWER if media.startswith("text/") else BINARY_ANSWER
     else:
-        operation.response_kind = "empty"
+        operation.response_kind = NO_ANSWER
     for code, response in responses.items():
         if str(code).isdigit() and int(code) >= 400:
             response = resolver.follow(response) if isinstance(response, dict) else {}
@@ -728,9 +754,9 @@ def client_source(operation: Operation, spec: dict) -> str:
     if operation.auth:
         credential = (f", PermissionError when {operation.auth['variable']} is not set" if not operation.auth_optional
                       else "")
-    returns = {"json": f"the parsed JSON answer of status {operation.success_statuses[0]}",
-               "text": "the text of the answer", "binary": "the bytes of the answer",
-               "empty": "None (the answer has no body)"}[operation.response_kind]
+    returns = {JSON_ANSWER: f"the parsed JSON answer of status {operation.success_statuses[0]}",
+               TEXT_ANSWER: "the text of the answer", BINARY_ANSWER: "the bytes of the answer",
+               NO_ANSWER: "None (the answer has no body)"}[operation.response_kind]
     closing = textwrap.fill(f"Returns {returns}. Raises TypeError or ValueError before any request when an argument "
                             f"breaks the specification{credential}, and ApiError for any answer outside the documented "
                             "successes.", width=100)
@@ -815,13 +841,22 @@ def _example_arguments(operation: Operation) -> dict:
 
 
 def _response_example(operation: Operation):
-    if operation.response_kind != "json":
+    if operation.response_kind != JSON_ANSWER:
         return None
     example = operation.response_example
     if example is None or len(json.dumps(example)) > MAXIMUM_EXAMPLE_CHARACTERS:
         example = synthesize(check_schema(operation.response_schema or {}, request=False), every_property=True) \
             if operation.response_schema else {"ok": True}
     return example if example is not None else {"ok": True}
+
+
+def _breaks(schema: "dict | None", value) -> bool:
+    """True when the client's own check refuses the value."""
+    try:
+        check_value(value, schema or {}, "body")
+    except (TypeError, ValueError):
+        return True
+    return False
 
 
 def test_source(operation: Operation, call: dict, example) -> str:
@@ -832,12 +867,12 @@ def test_source(operation: Operation, call: dict, example) -> str:
             value = call[parameter.python]
             text = ("true" if value else "false") if isinstance(value, bool) else str(value)
             expected_path = expected_path.replace("{" + parameter.wire + "}", urllib.parse.quote(text, safe=""))
-    content_type = {"json": "application/json", "text": "text/plain", "binary": "application/octet-stream",
-                    "empty": ""}[operation.response_kind]
-    payload = {"json": "json.dumps(EXAMPLE).encode('utf-8')", "text": "b'example text'", "binary": "b'\\x00\\x01'",
-               "empty": "b''"}[operation.response_kind]
-    expected_answer = {"json": "EXAMPLE", "text": "'example text'", "binary": "b'\\x00\\x01'",
-                       "empty": "None"}[operation.response_kind]
+    content_type = {JSON_ANSWER: "application/json", TEXT_ANSWER: "text/plain",
+                    BINARY_ANSWER: "application/octet-stream", NO_ANSWER: ""}[operation.response_kind]
+    payload = {JSON_ANSWER: "json.dumps(EXAMPLE).encode('utf-8')", TEXT_ANSWER: "b'example text'",
+               BINARY_ANSWER: "b'\\x00\\x01'", NO_ANSWER: "b''"}[operation.response_kind]
+    expected_answer = {JSON_ANSWER: "EXAMPLE", TEXT_ANSWER: "'example text'", BINARY_ANSWER: "b'\\x00\\x01'",
+                       NO_ANSWER: "None"}[operation.response_kind]
     error_status = min(operation.errors) if operation.errors else 500
     required = [parameter for parameter in operation.parameters if parameter.required]
     auth = operation.auth
@@ -892,7 +927,10 @@ def test_source(operation: Operation, call: dict, example) -> str:
             client.{operation.function}(**{{**CALL, {typed.python!r}: {wrong!r}}}, transport=mock)
         self.assertEqual(mock.requests, [])''')
     body_required = (operation.body_check or {}).get("required") or []
-    if isinstance(call.get("body"), dict) and body_required and body_required[0] in call["body"]:
+    if isinstance(call.get("body"), dict) and body_required and body_required[0] in call["body"] and \
+            _breaks(operation.body_check, {key: value for key, value in call["body"].items() if key != body_required[0]}):
+        # Written only when the body without that field really breaks the schema: a body whose other allowed
+        # shapes (anyOf) do not require the field is no known-wrong case.
         tests.append(f'''
     def test_known_wrong_a_body_without_a_required_field_sends_nothing(self):
         mock = _Mock()
@@ -968,7 +1006,7 @@ def readme_source(operation: Operation, spec: dict, schema_bytes: int) -> str:
                  "basic": "the `Authorization` header as Basic credentials (set the variable to `user:password`)",
                  "query": f"the query parameter `{auth['name']}`"}[auth["placement"]]
         origin = ("the specification declares no security scheme, so Baltor's sources declaration names it"
-                  if auth["scheme"] == "declared_in_openapi_sources" else f"security scheme `{auth['scheme']}`")
+                  if auth["scheme"] == DECLARED_SCHEME else f"security scheme `{auth['scheme']}`")
         credential = (f"The client reads the credential from the environment variable `{auth['variable']}` "
                       f"({origin}) and sends it in {where}. It is never written to a file"
                       + (". The credential is optional for this operation." if operation.auth_optional else "."))
@@ -1053,12 +1091,12 @@ def read_specification(reader, source: dict, path: str) -> dict:
     if meta.status != 200:
         raise OperationRefused("specification_unreadable", f"{repository}/{path}: no file at {commit[:12]}")
     blob = json.loads(meta.body).get("sha")
-    raw = reader.get(f"https://{RAW_HOST}/{repository}/{commit}/{urllib.parse.quote(path)}")
+    raw = reader.get(https_address(RAW_HOST, f"{repository}/{commit}/{urllib.parse.quote(path)}"))
     if raw.status != 200 or git_blob_identity(raw.body) != blob:
         raise OperationRefused("specification_unreadable", f"{repository}/{path}: bytes differ from blob {blob}")
     licence = repository_licence(reader, repository, commit)
     if not licence.allowed:
-        reason = "licence_signals_disagree" if licence.reason == "licence_signals_disagree" else "licence_not_on_allowlist"
+        reason = licence.refusal_reason(REFUSAL_REASONS[OPENAPI_OPERATIONS])
         raise OperationRefused(reason, f"{repository}: {licence.reason} {licence.github_spdx}")
     try:
         if path.endswith((".yaml", ".yml")):
@@ -1118,8 +1156,7 @@ def generate(reader, sources, *, code_revision: str, licence_text: bytes, genera
                                            f"{source['source_id']} {operation.method} {operation.path}", error.detail))
                     continue
                 except SupplyRecordError as error:
-                    reason = error.code if error.code in ("blocked_by_static_check", "package_above_review_bound") \
-                        else "generated_test_failed"
+                    reason = error.code if error.code in KEPT_CODES else GENERATED_TEST_FAILED
                     refused.append(refusal(OPENAPI_OPERATIONS, reason,
                                            f"{source['source_id']} {operation.method} {operation.path}", str(error)))
                     continue
@@ -1183,7 +1220,7 @@ def _package(operation, spec, source, licence, generator, licence_text, generate
     (folder / f"test_{operation.module}.py").write_text(tests, encoding="utf-8")
     passed, count, output = run_tests(folder, operation.module)
     if not passed:
-        raise OperationRefused("generated_test_failed", output[-300:])
+        raise OperationRefused(GENERATED_TEST_FAILED, output[-300:])
     readme = readme_source(operation, spec, len(schema_text.encode()))
     upstream = licence.text
     files = [PackageFile(f"{operation.module}.py", client.encode(), "executable_tool"),
@@ -1192,15 +1229,15 @@ def _package(operation, spec, source, licence, generator, licence_text, generate
              PackageFile("README.md", readme.encode(), "other"),
              PackageFile(LICENCE_NAME, licence_text, "other", LICENCE_TEXT),
              PackageFile(UPSTREAM_LICENCE_NAME, upstream, "other", LICENCE_TEXT,
-                         {"url": f"https://github.com/{spec['repository']}/blob/{spec['commit']}/{licence.path}",
+                         {"url": github_blob_address(spec["repository"], spec["commit"], licence.path),
                           "sha256": licence.sha256})]
     expression = GENERATED_CODE_LICENCE if licence.spdx == GENERATED_CODE_LICENCE else \
         f"{GENERATED_CODE_LICENCE} AND {licence.spdx}"
-    raw_url = f"https://{RAW_HOST}/{spec['repository']}/{spec['commit']}/{urllib.parse.quote(spec['path'])}"
+    raw_url = https_address(RAW_HOST, f"{spec['repository']}/{spec['commit']}/{urllib.parse.quote(spec['path'])}")
     facts = [fact_source(raw_url, spec["retrieved_at"], spec["sha256"], spec["size_bytes"], "specification",
                          spdx=licence.spdx, basis="github_licence_interface_and_text_agree",
                          evidence_sha256=licence.sha256),
-             fact_source(f"https://github.com/{spec['repository']}/blob/{spec['commit']}/{licence.path}",
+             fact_source(github_blob_address(spec["repository"], spec["commit"], licence.path),
                          spec["retrieved_at"], licence.sha256, len(upstream), "licence_text", spdx=licence.spdx,
                          basis="licence_file_at_the_pinned_commit")]
     effects = [("network", "sends_one_https_request_to_the_api")]

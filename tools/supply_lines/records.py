@@ -25,7 +25,9 @@ library_supply_candidate/v1 (one package version)
 from __future__ import annotations
 
 import re
+from urllib.parse import urlsplit
 
+from loop_engine.core.library_ingestion.https_transport import HTTPS_SCHEME
 from loop_engine.core.library_ingestion.record_rules import canonical_digest
 from loop_engine.core.service_runtime.catalogue_attributes import (
     FORM_DECLARED, ComponentFormError, read_component_form)
@@ -59,6 +61,9 @@ ALLOWED_LICENCES = ("MIT", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause", "ISC", 
                     "Unlicense")
 #: The licence of every file Baltor's generators write (this repository's licence).
 GENERATED_CODE_LICENCE = "MIT"
+#: Reasons several lines give, named once so code compares against the vocabulary, never a spelled token.
+BLOCKED_BY_STATIC_CHECK, GENERATED_TEST_FAILED, PACKAGE_ABOVE_REVIEW_BOUND, CONNECTION_FILES_INVALID = (
+    "blocked_by_static_check", "generated_test_failed", "package_above_review_bound", "connection_files_invalid")
 #: Why a line leaves a candidate out, per line; a closed vocabulary so a report can count them.
 REFUSAL_REASONS = {
     MCP_REGISTRY: ("registry_status_not_active", "registry_entry_not_latest", "entry_unreadable",
@@ -184,7 +189,7 @@ def fact_source(url: str, retrieved_at: str, sha256: str, size_bytes: int, role:
         raise SupplyRecordError("fact_role_unknown", role)
     if not _DIGEST.match(str(sha256)) or type(size_bytes) is not int or size_bytes < 0:
         raise SupplyRecordError("fact_digest_invalid", url)
-    if not str(url).startswith("https://"):
+    if urlsplit(str(url)).scheme != HTTPS_SCHEME:
         raise SupplyRecordError("fact_address_invalid", "a fact source is an HTTPS address")
     return {"record_type": FACT_SOURCE_RECORD_TYPE, "url": url, "retrieved_at": retrieved_at, "sha256": sha256,
             "size_bytes": size_bytes, "role": role,

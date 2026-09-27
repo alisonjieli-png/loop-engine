@@ -60,12 +60,24 @@ Supply lines (each writes library_supply_candidate/v1 records)
 │   ├── files for Claude Code, Codex, OpenCode and Cursor, written from the entry's facts
 │   └── an upstream GitHub licence on the allowlist and an npm or PyPI version that is published
 ├── openapi_operations: one client function per operation of a licensed OpenAPI specification
-│   └── kind code_module, form api_operation
+│   ├── kind code_module, form api_operation; sources in openapi_sources.json
+│   ├── the file at the branch's head commit, proven by git blob identity, licence text agreed
+│   └── a stdlib client with argument checks, the credential by variable name, ApiError, and
+│       generated tests against a local mock that must pass before the package is kept
 ├── program_installs: one install recipe and typed wrapper per command-line program
-│   └── kind code_module, form binary_install
+│   ├── kind code_module, form binary_install; programs in program_sources.json
+│   └── Homebrew bottles and source archive by published SHA-256, release assets by GitHub's
+│       published digests; no binary re-hosted; a smoke test skipped when not installed
 └── data_tables: one reference data table with its schema, loader and tests
-    └── kind code_module, form data_table
+    ├── kind code_module, form data_table; tables in data_table_sources.json
+    └── the upstream file byte for byte, its licence text beside it, a loader that refuses a
+        changed file or a row that breaks the schema
 ```
+
+Beside the lines, `verbatim_code_sources.json` declares MIT code
+repositories for the licensed import itself (`--sources`): those modules are
+byte-for-byte copies in `library.import`, which the imported review profile
+reads today.
 
 ## One package
 
@@ -105,6 +117,9 @@ what it no longer supplies.
 | core/library_ingestion `mcp_official_registry` engine, `render_connection`, `connection_builtin_rules`, `PackageResolver` idea | Adopted for the protocol server line: paging, status and latest-version rules, link-only provenance, the three harness files and their shape checks. Adapted: licence reads only for servers the line can package; Cursor's file added here. |
 | tools/licensed_import storage, static checks, media types | Adopted: the store, the write path and the checks every imported package passes. |
 | Official registry `server.json` | Adopted as the source of facts; its text is never copied (link mode). |
+| OpenAPI generators (openapi-generator, openapi-python-client) | Rejected as engines here: they write whole client libraries with runtime dependencies, not one self-contained function per operation that a reviewer reads in one file. The line keeps the standard's own rules (local references, security schemes, servers). |
+| Homebrew formula JSON and analytics (formulae.brew.sh) | Adopted as facts: versions, licences, bottles and source archives with their SHA-256, install counts. homebrew-core's BSD-2-Clause text travels with each recipe. |
+| GitHub release asset digests (GraphQL `digest`) | Adopted: GitHub publishes a SHA-256 per asset; assets without one are left out. |
 
 ## Commands
 
@@ -112,11 +127,30 @@ what it no longer supplies.
 PYTHONPATH=src:tools python tools/build_library_supply.py mcp-registry \
   --run-folder /home/username/baltor-library/supply/mcp-registry/DATE \
   --authorize-network-reads --authorize-store-writes --stars
+PYTHONPATH=src:tools python tools/build_library_supply.py openapi \
+  --run-folder /home/username/baltor-library/supply/openapi-operations/DATE \
+  --authorize-network-reads --authorize-store-writes --stars [--source ID]
+PYTHONPATH=src:tools python tools/build_library_supply.py programs \
+  --run-folder /home/username/baltor-library/supply/program-installs/DATE \
+  --authorize-network-reads --authorize-store-writes [--formula NAME]
+PYTHONPATH=src:tools python tools/build_library_supply.py data-tables \
+  --run-folder /home/username/baltor-library/supply/data-tables/DATE \
+  --authorize-network-reads --authorize-store-writes [--table ID]
+PYTHONPATH=src:tools python tools/build_library_supply.py report \
+  --library-bundle /home/username/baltor-bundles/RELEASE --output REPORT.json
 ```
 
 Run folders hold every fetched fact and stay outside the repository. A run
-refuses to store packages while the generator code has uncommitted changes,
-so every stored package names a revision its generator can be read from.
+refuses to store packages while the generators' own code has uncommitted
+changes, so every stored package names a revision its generator can be read
+from. `--materialize` also writes every package under the run folder for
+inspection. A run limited to some sources (`--source`, `--formula`,
+`--table`) is not complete, so it withdraws nothing.
+
+The report counts the served library and the import store's supply by
+composition family and form, and projects the composition mix slot by slot
+with the export's per-repository ceiling; see
+`docs/research/LIBRARY-SUPPLY-LINES-2026-09-27.md` for the first report.
 
 ## Checks
 
@@ -131,4 +165,7 @@ PYTHONPATH=src:tools python -m unittest tools.test_supply_lines
 - A protocol server's own effects are not declared by its registry entry.
   The package declares that the harness starts a process and downloads the
   pinned package, and says in its README that the server is third-party code.
+- API clients are Python only, and no specification of the first eight
+  declares pagination, so no client pages through results.
+- Program recipes cover macOS and Linux through Homebrew; no Windows recipe.
 - Nothing here was loaded by a harness.

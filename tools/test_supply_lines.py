@@ -398,6 +398,28 @@ class OpenApiLineTest(unittest.TestCase):
             passed, _count, output = line.run_tests(target, operation.module)
             self.assertTrue(passed, output)
 
+    def test_a_body_whose_other_shapes_allow_the_field_gets_no_false_known_wrong_test(self):
+        from supply_lines import openapi_operations as line
+        spec = {"openapi": "3.0.3", "info": {"title": "Shapes", "version": "1"},
+                "servers": [{"url": "https://api.example.com"}],
+                "paths": {"/items": {"post": {"operationId": "addItem", "requestBody": {"required": True, "content": {
+                    "application/json": {"schema": {"type": "object", "required": ["content_id"],
+                                                    "properties": {"content_id": {"type": "integer"}},
+                                                    "anyOf": [{"required": ["content_id"]},
+                                                              {"properties": {"note": {"type": "string"}}}]}}}},
+                    "responses": {"201": {"description": "created"}}}}}}
+        [operation], _refused = line.operations(spec, SOURCE)
+        call = line._example_arguments(operation)
+        source = line.test_source(operation, call, line._response_example(operation))
+        self.assertNotIn("a_body_without_a_required_field", source)
+        with tempfile.TemporaryDirectory() as folder:
+            target = Path(folder) / operation.module
+            target.mkdir()
+            (target / f"{operation.module}.py").write_text(line.client_source(operation, SPEC_FACTS), encoding="utf-8")
+            (target / f"test_{operation.module}.py").write_text(source, encoding="utf-8")
+            passed, _count, output = line.run_tests(target, operation.module)
+        self.assertTrue(passed, output)
+
     def test_a_compacted_schema_keeps_every_property_name_and_drops_prose(self):
         from supply_lines import openapi_operations as line
         schema = {"type": "object", "description": "A thing.", "x-internal": True,

@@ -16,13 +16,21 @@ from loop_engine.core.library_ingestion.record_rules import bytes_digest
 
 from .records import ALLOWED_LICENCES
 
+#: The decisions, in one closed vocabulary: the refusal reasons are the supply lines' own reason names.
+AGREED, LICENCE_UNKNOWN, LICENCE_SIGNALS_DISAGREE, LICENCE_NOT_ON_ALLOWLIST = DECISIONS = (
+    "agreed", "licence_unknown", "licence_signals_disagree", "licence_not_on_allowlist")
+#: The refusals a licence that exists but cannot be copied gives, as opposed to one nobody could read.
+KNOWN_LICENCE_REFUSALS = (LICENCE_SIGNALS_DISAGREE, LICENCE_NOT_ON_ALLOWLIST)
+#: GitHub's own words for a licence it could not name.
+_UNNAMED = (None, "NOASSERTION", "NONE")
+
 
 @dataclass(frozen=True)
 class RepositoryLicence:
     repository: str
     commit: str
     spdx: "str | None"  # the agreed licence, or None
-    reason: str  # "agreed" or the refusal reason
+    reason: str  # AGREED or the refusal reason
     path: "str | None" = None
     text: bytes = b""
     github_spdx: "str | None" = None
@@ -31,7 +39,12 @@ class RepositoryLicence:
 
     @property
     def allowed(self) -> bool:
-        return self.reason == "agreed"
+        return self.reason == AGREED
+
+    def refusal_reason(self, vocabulary) -> str:
+        """The line's own reason for this decision: the decision itself when the line names it, else the
+        allowlist refusal, which every line names."""
+        return self.reason if self.reason in vocabulary else LICENCE_NOT_ON_ALLOWLIST
 
     @property
     def sha256(self) -> "str | None":
@@ -46,20 +59,20 @@ class RepositoryLicence:
 def decide(repository: str, commit: str, found) -> RepositoryLicence:
     """Decide from what the reader found: (path, bytes, GitHub's SPDX identifier) or None."""
     if found is None:
-        return RepositoryLicence(repository, commit, None, "licence_unknown")
+        return RepositoryLicence(repository, commit, None, LICENCE_UNKNOWN)
     path, text, github = found
     try:
         matched = match_licence(text.decode("utf-8", "replace"))
     except Exception:  # noqa: BLE001 - an unreadable text is an unknown licence, never a pass
-        return RepositoryLicence(repository, commit, None, "licence_unknown", path, text, github)
+        return RepositoryLicence(repository, commit, None, LICENCE_UNKNOWN, path, text, github)
     base = dict(path=path, text=text, github_spdx=github, matched_spdx=matched.spdx, similarity=matched.similarity)
-    if github in (None, "NOASSERTION", "NONE") or matched.spdx is None:
-        return RepositoryLicence(repository, commit, None, "licence_unknown", **base)
+    if github in _UNNAMED or matched.spdx is None:
+        return RepositoryLicence(repository, commit, None, LICENCE_UNKNOWN, **base)
     if github != matched.spdx:
-        return RepositoryLicence(repository, commit, None, "licence_signals_disagree", **base)
+        return RepositoryLicence(repository, commit, None, LICENCE_SIGNALS_DISAGREE, **base)
     if github not in ALLOWED_LICENCES:
-        return RepositoryLicence(repository, commit, github, "licence_not_on_allowlist", **base)
-    return RepositoryLicence(repository, commit, github, "agreed", **base)
+        return RepositoryLicence(repository, commit, github, LICENCE_NOT_ON_ALLOWLIST, **base)
+    return RepositoryLicence(repository, commit, github, AGREED, **base)
 
 
 def repository_licence(reader, repository: str, commit: str) -> RepositoryLicence:
