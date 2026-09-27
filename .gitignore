@@ -55,7 +55,11 @@ docs/evidence/architecture-mesh-audit-20260904/registered-conversation-sources.j
 # are reference material, not Loop Engine source. Measured sizes are in the
 # review record docs/verification/CLAUDE-FABLE-5.1-REVIEW-2026-09-13.md.
 /taedri/
-/taedri.dev/
+# No trailing slash: a pattern that ends in a slash matches only a directory,
+# and taedri.dev and task_database are being moved to another disk and
+# replaced by symbolic links (September 27, 2026), which git reads as files.
+# tools/test_gitignore_moved_folders.py checks both forms.
+/taedri.dev
 /taedri-*/
 /solver-lab/
 /scratch-*/
@@ -149,7 +153,7 @@ node_modules/
 # 6 GB) now live inside this checkout. They are data, not source, and tools
 # that list untracked files must not walk them. stub-test is the moved
 # Capability-Reuse Harness workspace, which keeps its own history.
-/task_database/
+/task_database
 /task-campaign-runs/
 /stub-test/
 

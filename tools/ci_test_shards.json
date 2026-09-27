@@ -11,7 +11,7 @@
     "a": 180.9,
     "b": 180.8,
     "c": 180.9,
-    "d": 179.9
+    "d": 180.9
   },
   "shards": {
     "a": [
@@ -126,6 +126,7 @@
       "test_documentation_index",
       "test_export_managed_record",
       "test_factory_report",
+      "test_gitignore_moved_folders",
       "test_homepage_demonstration",
       "test_intelligence_layer_coverage",
       "test_inventory_harness_library",
