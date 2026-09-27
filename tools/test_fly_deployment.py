@@ -858,5 +858,143 @@ class FlyDeploymentTests(unittest.TestCase):
         loose["jobs"]["pilot"]["steps"] = [unchecked if row is step else row for row in self.workflow["jobs"]["pilot"]["steps"]]
         self.assertFalse(deploy_readiness_is_polled(loose), "a loop whose failure is ignored must be refused")
 
+
+class StorageTargetGuardTests(unittest.TestCase):
+    """The deployment target check reads the structured provider listing.
+
+    An earlier version of this step compared the approved application name
+    against the padded output of the quiet listing, so the comparison could
+    never succeed and the step could only ever refuse. The replacement reads
+    the structured listing, and these cases hold both directions closed: the
+    approved application in the approved organization is accepted, and every
+    other shape is refused.
+    """
+
+    APPROVED = [{"Name": "example-pilot",
+                 "Organization": {"Slug": "example"}},
+                {"Name": "another-app", "Organization": {"Slug": "example"}}]
+    ONE_MACHINE = [{"id": "3d8d1e0f1a2b3c"}]
+    ONE_VOLUME = [{"name": "loop_engine_service", "region": "iad",
+                   "state": "created"}]
+
+    @classmethod
+    def setUpClass(cls):
+        document = yaml.load((ROOT / ".github/workflows/fly-pilot.yml").read_text(),
+                             Loader=yaml.BaseLoader)
+        cls.guard = next(
+            row["run"] for row in document["jobs"]["pilot"]["steps"]
+            if row["name"] == "Require an existing single-Machine storage target")
+        for command in ("jq", "bash"):
+            if shutil.which(command) is None:
+                raise AssertionError(
+                    f"{command} is required to run this workflow step as the "
+                    "runner runs it. Install it rather than passing the check "
+                    "over, which would leave the guard unverified.")
+
+    def setUp(self):
+        holder = tempfile.TemporaryDirectory()
+        self.addCleanup(holder.cleanup)
+        self.workdir = Path(holder.name)
+        stubs = self.workdir / "stubs"
+        stubs.mkdir()
+        self.stubs = stubs
+        stub = stubs / "flyctl"
+        stub.write_text(
+            "#!/usr/bin/env bash\n"
+            'case "$1 $2" in\n'
+            '  "apps list") cat "$FIXTURE_DIR/apps.json" ;;\n'
+            '  "machine list") cat "$FIXTURE_DIR/machines.json" ;;\n'
+            '  "volumes list") cat "$FIXTURE_DIR/volumes.json" ;;\n'
+            '  "config validate") exit "${FIXTURE_CONFIG_STATUS:-0}" ;;\n'
+            '  *) echo "unexpected flyctl call: $*" >&2; exit 64 ;;\n'
+            "esac\n")
+        stub.chmod(0o755)
+        (self.workdir / "fly.toml").write_text("# fixture\n")
+
+    def run_guard(self, script=None, apps=None, machines=None, volumes=None,
+                  config_status=0, app="example-pilot"):
+        fixtures = self.workdir / "fixtures"
+        fixtures.mkdir(exist_ok=True)
+        (fixtures / "apps.json").write_text(json.dumps(
+            self.APPROVED if apps is None else apps))
+        (fixtures / "machines.json").write_text(json.dumps(
+            self.ONE_MACHINE if machines is None else machines))
+        (fixtures / "volumes.json").write_text(json.dumps(
+            self.ONE_VOLUME if volumes is None else volumes))
+        env = {"PATH": f"{self.stubs}:{os.environ['PATH']}",
+               "FIXTURE_DIR": str(fixtures),
+               "FIXTURE_CONFIG_STATUS": str(config_status),
+               "FLY_ORG": "example", "FLY_APP": app,
+               "FLY_PRIMARY_REGION": "iad"}
+        return subprocess.run(["bash", "-c", script or self.guard],
+                              cwd=str(self.workdir), env=env,
+                              capture_output=True, text=True, timeout=30)
+
+    def test_the_approved_application_in_the_approved_organization_passes(self):
+        finished = self.run_guard()
+        self.assertEqual(finished.returncode, 0,
+                         finished.stdout + finished.stderr)
+
+    def test_a_padded_name_listing_is_not_accepted_as_the_structured_listing(self):
+        # The output shape the earlier comparison was written against.
+        finished = self.run_guard(apps=["example-pilot   ", "another-app    "])
+        self.assertNotEqual(finished.returncode, 0)
+
+    def test_every_other_listing_shape_is_refused(self):
+        cases = {
+            "the application is absent": {"apps": [
+                {"Name": "another-app", "Organization": {"Slug": "example"}}]},
+            "the application is in another organization": {"apps": [
+                {"Name": "example-pilot",
+                 "Organization": {"Slug": "someone-else"}}]},
+            "the listing is not an array": {"apps": {
+                "example-pilot": {"Organization": {"Slug": "example"}}}},
+            "the listing is empty": {"apps": []},
+            "a second machine holds the volume": {
+                "machines": [{"id": "1a"}, {"id": "2b"}]},
+            "there is no volume": {"volumes": []},
+            "there are two volumes": {"volumes": [
+                dict(ONE, name="loop_engine_service")
+                for ONE in ({"region": "iad", "state": "created"},
+                            {"region": "iad", "state": "created"})]},
+            "the volume is in another region": {"volumes": [
+                {"name": "loop_engine_service", "region": "lhr",
+                 "state": "created"}]},
+            "the volume is not created": {"volumes": [
+                {"name": "loop_engine_service", "region": "iad",
+                 "state": "pending"}]},
+            "the volume has another name": {"volumes": [
+                {"name": "scratch", "region": "iad", "state": "created"}]},
+            "the deployment profile is invalid": {"config_status": 1},
+        }
+        for description, scenario in cases.items():
+            with self.subTest(case=description):
+                self.assertNotEqual(self.run_guard(**scenario).returncode, 0)
+
+    def test_removed_guards_are_detected_by_their_counterexamples(self):
+        mutants = (
+            (".Organization.Slug == $org", "true",
+             {"apps": [{"Name": "example-pilot",
+                        "Organization": {"Slug": "someone-else"}}]}),
+            (".Name == $app", "true",
+             {"apps": [{"Name": "another-app",
+                        "Organization": {"Slug": "example"}}]}),
+            ('.[0].region == $region', "true",
+             {"volumes": [{"name": "loop_engine_service", "region": "lhr",
+                           "state": "created"}]}),
+            ('.[0].state == "created"', "true",
+             {"volumes": [{"name": "loop_engine_service", "region": "iad",
+                           "state": "pending"}]}),
+            ("length <= 1", "true", {"machines": [{"id": "1a"}, {"id": "2b"}]}),
+        )
+        for fragment, replacement, scenario in mutants:
+            with self.subTest(guard=fragment):
+                self.assertIn(fragment, self.guard)
+                mutant = self.guard.replace(fragment, replacement)
+                self.assertNotEqual(self.run_guard(**scenario).returncode, 0)
+                self.assertEqual(
+                    self.run_guard(script=mutant, **scenario).returncode, 0)
+
+
 if __name__ == "__main__":
     unittest.main()
