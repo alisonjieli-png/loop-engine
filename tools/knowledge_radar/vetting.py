@@ -28,10 +28,13 @@ from .records import STRICT_REVIEW, VETTING_DIMENSIONS, VETTING_RECORD_TYPE
 
 SHINGLE_WORDS = 8
 _WORD = re.compile(r"[a-z0-9]+")
+#: Web addresses are identifiers, not prose: a brief and a release note that link to the same page share
+#: an address, not a sentence. They are left out before the text is cut into word runs.
+_ADDRESS = re.compile(r"(?:https?://|www\.)\S+", re.IGNORECASE)
 
 
 def shingles(text: str, size: int = SHINGLE_WORDS) -> set:
-    words = _WORD.findall(text.lower())
+    words = _WORD.findall(_ADDRESS.sub(" ", text).lower())
     return {" ".join(words[index:index + size]) for index in range(0, max(0, len(words) - size + 1))}
 
 

@@ -510,6 +510,7 @@ class HuggingFaceModels:
 
 
 _ATOM = "{http://www.w3.org/2005/Atom}"
+ARXIV_RETRY_SECONDS = 20.0
 _ARXIV = "{http://arxiv.org/schemas/atom}"
 
 
@@ -524,18 +525,26 @@ class ArxivListing:
         search = " OR ".join("cat:" + item for item in categories)
         query = {"search_query": search, "sortBy": "submittedDate", "sortOrder": "descending",
                  "max_results": limit_of(context, 30)}
+        requests = 0
         try:
             response = context.network.get(self.engine_id, "export.arxiv.org", "/api/query", query,
                                            accept="application/atom+xml")
+            requests += 1
+            if response.status == 406:
+                # arXiv's edge answers 406 when it is shedding automated reads; one later try, then give up.
+                context.network.sleep(ARXIV_RETRY_SECONDS)
+                response = context.network.get(self.engine_id, "export.arxiv.org", "/api/query", query,
+                                               accept="application/atom+xml")
+                requests += 1
         except (RadarEngineError, RequestCeilingReached, OSError) as error:
-            return EngineAnswer(FAILED, str(error))
+            return EngineAnswer(FAILED, str(error), requests=requests)
         if response.status != 200:
             answer = _status_answer(response.status, "the arXiv query interface")
-            return EngineAnswer(answer.status, answer.reason, requests=1)
+            return EngineAnswer(answer.status, answer.reason + (" twice" if requests > 1 else ""), requests=requests)
         try:
             feed = ElementTree.fromstring(response.body)
         except ElementTree.ParseError:
-            return EngineAnswer(FAILED, "the arXiv answer is not a readable Atom feed", requests=1)
+            return EngineAnswer(FAILED, "the arXiv answer is not a readable Atom feed", requests=requests)
         rows, guards = [], []
         for entry in feed.findall(_ATOM + "entry"):
             identity = (entry.findtext(_ATOM + "id") or "").rsplit("/abs/", 1)[-1]
@@ -560,7 +569,7 @@ class ArxivListing:
                        "version": match.group(2) or None},
                 event_at=iso_time(entry.findtext(_ATOM + "published")),
                 source_published_at=iso_time(entry.findtext(_ATOM + "updated"))))
-        return EngineAnswer(OK, "", tuple(rows[:limit_of(context)]), 1, tuple(guards))
+        return EngineAnswer(OK, "", tuple(rows[:limit_of(context)]), requests, tuple(guards))
 
 
 class OpenAlexWorks:

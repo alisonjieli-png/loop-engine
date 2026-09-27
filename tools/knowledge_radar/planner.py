@@ -39,7 +39,7 @@ def _days_between(earlier: str, later: str) -> int:
 
 def plan(registry, state: dict, as_of: str, *, evidence: "dict | None" = None, demand: "dict | None" = None,
          only: "tuple | None" = None, maximum: "int | None" = None, asset_digests: "dict | None" = None,
-         invalidations: "dict | None" = None) -> dict:
+         invalidations: "dict | None" = None, force: bool = False) -> dict:
     """The knowledge_radar_plan/v1 of one run. ``state`` maps question ids to their last build record.
 
     ``asset_digests`` maps a question to the digest of the helper and tool assets it delivers, so a changed
@@ -59,6 +59,9 @@ def plan(registry, state: dict, as_of: str, *, evidence: "dict | None" = None, d
             continue
         last = (state.get(question.id) or {}).get("last_built_as_of")
         stored = any(kind in STORED for kind in question.delivery)
+        if force:
+            candidates.append((0, question, "operator_rerun", "an operator asked for every planned question again"))
+            continue
         if last is None:
             candidates.append((0, question, "first_run", "never answered"))
             continue

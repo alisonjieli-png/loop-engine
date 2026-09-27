@@ -96,6 +96,9 @@ class RunRequest:
     demand: "Path | None" = None
     stop_after: str = ""
     gh: str = "gh"
+    #: An operator re-run: every planned question is answered again even when it is not due, for example
+    #: after a fix, into a new day folder beside the earlier attempt.
+    rerun: bool = False
 
     @property
     def day_folder(self) -> Path:
@@ -231,7 +234,7 @@ def stage_plan(run: Run) -> dict:
     record = planner.plan(run.registry, run.state(), run.request.as_of, evidence=_evidence(run.request), demand=demand,
                           only=tuple(run.request.only) or None,
                           asset_digests=_asset_digests(run.request.repository, run.registry),
-                          invalidations=latest_invalidations(run.request.library))
+                          invalidations=latest_invalidations(run.request.library), force=run.request.rerun)
     write_json(run.folder / "plan.json", record)
     return {"selected": len(record["selected"]), "deferred": len(record["deferred"])}
 
@@ -300,7 +303,8 @@ def stage_links(run: Run) -> dict:
                         parts = address.split("/", 3)
                         host, path = parts[2], "/" + (parts[3] if len(parts) > 3 else "")
                         try:
-                            response = run.network.get("seed_link_check", host, path.split("#", 1)[0] or "/")
+                            # A link check asks for any type: some sites refuse a request that accepts only JSON.
+                            response = run.network.get("seed_link_check", host, path.split("#", 1)[0] or "/", accept="*/*")
                             status = response.status
                         except Exception as error:  # noqa: BLE001 - recorded as unchecked, never as resolved
                             status, error_name = None, type(error).__name__
@@ -621,6 +625,7 @@ def run(request: RunRequest) -> dict:
     revision = revision_of(repository)
     options = {"network_allowed": request.network_allowed, "maximum_requests": request.maximum_requests,
                "only": list(request.only), "link_checks": request.link_checks, "sandbox_tests": request.sandbox_tests,
+               "rerun": request.rerun,
                "collector_state": str(request.collector_state or "")}
     identity = planner.digest({"as_of": request.as_of, "revision": revision, "registry": sha256_file(repository / REGISTRY),
                                "contracts": sha256_file(repository / CONTRACTS), "options": options})

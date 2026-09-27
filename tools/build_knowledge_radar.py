@@ -49,13 +49,15 @@ def main(argv=None) -> int:
     parser.add_argument("--skip-link-checks", action="store_true")
     parser.add_argument("--skip-sandbox-tests", action="store_true")
     parser.add_argument("--stop-after", default="", help="Stop after this stage (used to prove a resume works).")
+    parser.add_argument("--rerun", action="store_true", help="Answer every planned question again even when it is "
+                        "not due, for example after a fix; use a new --output folder beside the earlier attempt.")
     parser.add_argument("--authorize-network-reads", action="store_true")
     parser.add_argument("--authorize-local-writes", action="store_true")
     options = parser.parse_args(argv)
     request = RunRequest(options.repository.resolve(), options.library, options.as_of, options.output,
                          options.collector_state, options.authorize_network_reads, options.authorize_local_writes,
                          options.maximum_requests, tuple(options.only), not options.skip_link_checks,
-                         not options.skip_sandbox_tests, options.demand, options.stop_after)
+                         not options.skip_sandbox_tests, options.demand, options.stop_after, rerun=options.rerun)
     if not options.authorize_local_writes:
         registry = read_registry(read_json(request.repository / REGISTRY))
         preview = planner.plan(registry, {}, options.as_of, only=tuple(options.only) or None)

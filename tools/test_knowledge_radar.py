@@ -61,7 +61,10 @@ class FakeNetwork:
     """Answers recorded bodies by host and path prefix; counts every request."""
 
     def __init__(self, answers):
-        self.answers, self.requests = answers, []
+        self.answers, self.requests, self.slept = answers, [], []
+
+    def sleep(self, seconds):
+        self.slept.append(seconds)
 
     def _find(self, key):
         for prefix, (status, body) in self.answers.items():
@@ -239,6 +242,26 @@ class EngineChecks(unittest.TestCase):
         self.assertEqual((item.title, item.url, item.facts["authors"], item.event_at),
                          ("A Study of Things", "https://arxiv.org/abs/2609.12345", 2, "2026-09-20T10:00:00Z"))
         self.assertTrue(any("abstract is long prose" in text for text in answer.guard_texts))
+
+    def test_arxiv_tries_once_more_after_a_406_and_then_gives_up(self):
+        atom = b"<feed xmlns='http://www.w3.org/2005/Atom'/>"
+
+        class Throttled(FakeNetwork):
+            def __init__(self, statuses):
+                super().__init__({})
+                self.statuses = list(statuses)
+
+            def get(self, engine_id, host, path, query=None, accept="application/json"):
+                self.requests.append((engine_id, host, path, query, accept))
+                return FakeResponse(self.statuses.pop(0), atom)
+
+        recovered = Throttled([406, 200])
+        answer = engines_network.ArxivListing().read(context_for("papers_ai_ml_daily", 1, network=recovered))
+        self.assertEqual((answer.status, answer.requests, recovered.slept), ("ok", 2, [engines_network.ARXIV_RETRY_SECONDS]))
+        refused = Throttled([406, 406])
+        answer = engines_network.ArxivListing().read(context_for("papers_ai_ml_daily", 1, network=refused))
+        self.assertEqual((answer.status, answer.requests), ("failed", 2))
+        self.assertIn("406 twice", answer.reason)
 
     def test_owner_directory_is_parsed_without_running_and_dated_by_its_commit(self):
         source = b'''PROVIDERS = [
@@ -583,6 +606,14 @@ class CopiedTextChecks(unittest.TestCase):
         text = "The paper says we propose a novel method that improves retrieval quality across twelve benchmarks."
         self.assertEqual(vetting.copied_text_findings(text, [self.ABSTRACT], [])[0][0], "copied_source_text")
 
+    def test_a_shared_web_address_is_not_copied_prose(self):
+        notes = "Full Changelog: https://github.com/owner/project/compare/v1.2.0...v1.3.0 and https://github.com/owner/project/releases/tag/v1.3.0"
+        brief = "| 1 | [owner/project v1.3.0](https://github.com/owner/project/releases/tag/v1.3.0) | latest v1.3.0 |"
+        self.assertEqual(vetting.copied_text_findings(brief, [notes], []), [])
+        prose = notes + " This release rewrites the streaming client so that every response is validated twice."
+        copied = brief + " It rewrites the streaming client so that every response is validated twice."
+        self.assertEqual(vetting.copied_text_findings(copied, [prose], [])[0][0], "copied_source_text")
+
     def test_titles_and_composed_text_are_allowed(self):
         title = "We propose a novel method that improves retrieval quality"
         self.assertEqual(vetting.copied_text_findings(f"Listed: {title}.", [self.ABSTRACT], [title]), [])
@@ -607,6 +638,17 @@ class PlannerChecks(unittest.TestCase):
         self.assertEqual(reasons.get("papers_ai_ml_daily"), "overdue")
         self.assertEqual(reasons.get("models_small_open"), "changed_source")
         self.assertNotIn("infra_app_hosting", {key for key, value in reasons.items() if value != "exploration"})
+
+    def test_an_operator_rerun_answers_every_planned_question_again(self):
+        registry = read_registry(REGISTRY)
+        state = {question.id: {"last_built_as_of": "2026-09-27", "last_built_at": "2026-09-27T19:50:00Z"}
+                 for question in registry.active()}
+        quiet = planner.plan(registry, state, "2026-09-27", maximum=400)
+        hourly = {question.id for question in registry.active() if question.refresh == "hourly"}
+        self.assertEqual({row["question_id"] for row in quiet["selected"] if row["reason"] != "exploration"}, hourly)
+        again = planner.plan(registry, state, "2026-09-27", maximum=400, force=True)
+        self.assertEqual({row["question_id"] for row in again["selected"]}, {question.id for question in registry.active()})
+        self.assertEqual({row["reason"] for row in again["selected"]}, {"operator_rerun"})
 
     def test_work_identity_is_stable_and_follows_the_question(self):
         question = _question()

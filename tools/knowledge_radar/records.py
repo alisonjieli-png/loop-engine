@@ -78,7 +78,7 @@ CHECK_OUTCOMES = ("checked_no_relevant_change", "checked_material_change", "part
                   "could_not_check", "source_disappeared_or_access_changed")
 CHECKED_OUTCOMES = frozenset(("checked_no_relevant_change", "checked_material_change"))
 #: Why the planner selected a question for a run.
-PLAN_REASONS = ("first_run", "overdue", "changed_source", "demand", "exploration")
+PLAN_REASONS = ("first_run", "overdue", "changed_source", "demand", "exploration", "operator_rerun")
 CONFIDENCE = ("high", "medium", "low")
 #: The separate vetting dimensions of a package. There is no single "vetted" flag.
 VETTING_DIMENSIONS = ("source_identity_checked", "claim_supported_by_cited_evidence",
