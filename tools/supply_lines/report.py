@@ -168,7 +168,11 @@ def build_report(store, targets: CompositionTargets, library: dict, *, review_ba
                            "imported_only_without_ceiling": project(targets, library["families"],
                                                                     supply["imported"]["families"], share, slot=slot),
                            "with_generated_without_ceiling": project(targets, library["families"], dict(combined),
-                                                                     share, slot=slot)},
+                                                                     share, slot=slot),
+                           # The path the mix takes when every family has supply: the composition at each milestone.
+                           "unlimited_supply": project(targets, library["families"],
+                                                       {family.name: 10 ** 7 for family in targets.families}, share,
+                                                       slot=slot)},
             "needs": {"imported_only": needs(targets, library["families"], supply["imported"]["families"], share),
                       "with_generated": needs(targets, library["families"], dict(combined), share)},
             "assumptions": [

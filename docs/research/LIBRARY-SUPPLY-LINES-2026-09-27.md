@@ -189,6 +189,28 @@ verbatim code modules were stored, the projection without the ceiling
 needed 138 slots (imported only) and 27 slots (with generated packages) to
 reach 25,000, with executable code at 0.1 and 4.7 percent.
 
+The path the mix takes when every family has enough supply, from the same
+library and at the same approval share:
+
+| Milestone | Reached after | Executable | Connectors | Skills | Subagents and commands | Instructions and rules | Data and contracts |
+|---:|---:|---:|---:|---:|---:|---:|---:|
+| 25,000 | 10 slots | 24.0% | 20.2% | 22.9% | 19.8% | 8.0% | 5.1% |
+| 50,000 | 28 slots | 32.0% | 20.3% | 20.0% | 13.2% | 8.0% | 6.5% |
+| 100,000 | 61 slots | 35.0% | 20.0% | 20.0% | 10.0% | 8.0% | 7.0% |
+
+So the mix itself reaches the target composition at 100,000; the supply on
+hand, not the mix, is what stops the library short of 50,000.
+
+An export of the real import store with the served library's counts (a
+slot of 2,000, the ceiling of 15 a repository, every earlier export
+excluded) kept 691 packages: 417 connectors, 141 subagents and commands, 101
+executable modules, 32 data and contract packages, and no skill and no
+instruction file, because both families are over their caps in the library.
+The executable quota was 810 and the data quota 160: the ceiling of 15 a
+repository, not the supply, left them short, because those families sit in
+few repositories. The same export without the library's counts keeps the
+per-slot caps (400 skills and 160 instruction files and rules a slot).
+
 Neither scenario reaches 50,000 or 100,000 with the supply on hand. Skills
 stay above 20 percent at 25,000 only because the library already held 5,723
 of them: the cap lets no skill in until the library passes 28,615.
