@@ -8,7 +8,7 @@
   "balanced_on": "2026-09-26",
   "basis": "Wall seconds of each module run alone in its own process on the development machine on September 26, 2026, six modules at a time, recorded in artifacts/ci-speed-2026-09-26/module-times-2026-09-26.json. The sum was 702 seconds there against 452 seconds for the one-process continuous integration step on Python 3.12, so the numbers are weights, not predictions.",
   "measured_seconds": {
-    "a": 180.9,
+    "a": 181.9,
     "b": 181.8,
     "c": 180.9,
     "d": 180.9
@@ -43,6 +43,7 @@
       "test_practitioner_runtime_boundary",
       "test_scan_local_volume",
       "test_service_latency",
+      "test_settings_provider_names",
       "test_starter_catalogue",
       "test_write_reviewed_catalogue_imported"
     ],

@@ -33,7 +33,14 @@ SETTINGS_VERSION = 1
 SEARCH_MODES = ("lexical", "vector", "hybrid")
 LEXICAL_BACKENDS = ("store", "fts5", "lancedb")
 VECTOR_BACKENDS = ("hash", "model2vec")
-PROVIDER_KINDS = ("builtin", "custom")
+#: The two provider kinds, named so a guard that must apply to exactly one of
+#: them reads the vocabulary rather than repeating its token at the decision.
+#: A first-party provider this repository configures is `builtin`; a provider
+#: whose endpoint, model and identity the operator chooses is `custom`, and
+#: that difference decides which name collisions have to be refused.
+PROVIDER_KIND_BUILTIN = "builtin"
+PROVIDER_KIND_CUSTOM = "custom"
+PROVIDER_KINDS = (PROVIDER_KIND_BUILTIN, PROVIDER_KIND_CUSTOM)
 ESCALATION_ERROR_CODES = (
     "rate_limited", "usage_limit_reached", "timeout", "network_unreachable",
     "provider_unavailable", "provider_failed", "output_limit_reached",
@@ -221,6 +228,18 @@ class ProviderSettings:
                 "numbers, or underscores")
         if self.kind not in PROVIDER_KINDS:
             raise SettingsError(f"provider.kind must be one of {PROVIDER_KINDS}")
+        if self.kind == PROVIDER_KIND_CUSTOM:
+            # The same refusal the programmatic registration makes. A settings
+            # file used to reach the endpoint constructor directly, so a
+            # custom provider could take a first-party name and every route,
+            # inventory row and Run History record would then say that name
+            # while another server answered.
+            from .provider_failover import BUILTIN_PROVIDER_NAMES
+            if self.provider_id in BUILTIN_PROVIDER_NAMES:
+                raise SettingsError(
+                    f"provider id {self.provider_id!r} is a built-in "
+                    "provider; choose another id rather than shadowing it, "
+                    "because a record naming that provider must mean it")
         if self.credential_env and not re.fullmatch(
                 r"[A-Z][A-Z0-9_]*", self.credential_env):
             raise SettingsError(

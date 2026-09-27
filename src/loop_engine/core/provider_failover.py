@@ -59,6 +59,12 @@ PROVIDERS = {
     "openrouter": openrouter_client,
 }
 
+#: The first-party provider names, captured before anything can register a
+#: custom endpoint into the table above. Every boundary that has to refuse a
+#: name collision reads this one constant, so the settings file and the
+#: programmatic registration cannot disagree about which names are taken.
+BUILTIN_PROVIDER_NAMES = frozenset(PROVIDERS)
+
 #: Default order. Ollama first because its counts drive the existing campaign
 #: records; Mistral second because it is verified live; OpenRouter last
 #: because its key was dead when this was written (2026-08-24) — an order is a

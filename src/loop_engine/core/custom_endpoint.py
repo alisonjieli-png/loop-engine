@@ -71,7 +71,7 @@ from .model_capabilities import (
     ModelOutputCapability, ModelOutputLimitMismatch,
     UnknownModelOutputLimit, require_declared_maximum,
 )
-from .provider_failover import PROVIDERS
+from .provider_failover import BUILTIN_PROVIDER_NAMES, PROVIDERS
 from .run_history_usage import optional_token
 
 #: Wire formats understood. "openai" covers the overwhelming majority of
@@ -1328,8 +1328,7 @@ def register_endpoint(ep: CustomEndpoint, *, order_hint: str = "append"):
     A name that collides with a built-in provider is REFUSED rather than
     silently shadowing it — quietly replacing a sanctioned provider is exactly
     the kind of substitution a record would then misattribute."""
-    builtins = {"ollama_cloud", "mistral", "openrouter"}
-    if ep.name in builtins:
+    if ep.name in BUILTIN_PROVIDER_NAMES:
         raise EndpointError(
             f"{ep.name!r} is a built-in provider; choose another name rather "
             "than shadowing it — a record naming that provider must mean it")
@@ -1340,7 +1339,7 @@ def register_endpoint(ep: CustomEndpoint, *, order_hint: str = "append"):
 
 def unregister_endpoint(name: str) -> bool:
     """Remove a custom endpoint. Built-ins cannot be removed this way."""
-    if name in {"ollama_cloud", "mistral", "openrouter"}:
+    if name in BUILTIN_PROVIDER_NAMES:
         raise EndpointError(f"{name!r} is a built-in provider, not a custom "
                             "endpoint")
     return PROVIDERS.pop(name, None) is not None
