@@ -568,10 +568,12 @@ class OpenlyLicensedJoins(unittest.TestCase):
         self.assertEqual(unserved, {"maker/plain-7b", "mistralai/Listed-1B", "openai/gpt-x"})
 
     def test_the_builder_refuses_a_reviewed_record_of_another_version(self):
-        old = Path(__import__("tempfile").mkdtemp()) / "provider_documentation.json"
-        old.write_text(json.dumps({**source_engines.read_reviewed(REVIEWED_PATH), "record_type": "model_directory_provider_documentation/v1"}))
-        with self.assertRaises(ValueError):
-            source_engines.read_provider_documentation(old)
+        import tempfile
+        with tempfile.TemporaryDirectory() as folder:
+            old = Path(folder) / "provider_documentation.json"
+            old.write_text(json.dumps({**source_engines.read_reviewed(REVIEWED_PATH), "record_type": "model_directory_provider_documentation/v1"}))
+            with self.assertRaises(ValueError):
+                source_engines.read_provider_documentation(old)
         self.assertEqual(source_engines.read_provider_documentation(REVIEWED_PATH)["record_type"], source_engines.REVIEWED_RECORD_TYPE)
 
 
