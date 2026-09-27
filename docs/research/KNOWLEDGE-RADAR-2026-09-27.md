@@ -3,9 +3,11 @@
 Kind: research record and design. Roadmap step S-6.214 (daily distillations).
 Prior art was checked on September 27, 2026; every address below loaded that
 day unless it is marked otherwise. This record reports what was read and the
-design it leads to. What the first version implements, point by point, and
-the evidence of its first run are in the component guide,
+design it leads to. What the first version implements, point by point, is in
+the component guide,
 [`tools/knowledge_radar/README.md`](../../tools/knowledge_radar/README.md).
+The first day's four runs are summarized under
+[The first day's runs](#the-first-days-runs).
 
 ## What the owner asked for
 
@@ -538,10 +540,15 @@ feeds should carry only what the teaser shows.
 
 ## Proposed schedule (not installed)
 
-- A user timer at 08:30 UTC every day, after the collector's early run and
-  before the 10:00 UTC library slot, running the command with network reads
-  and local writes. The planner then answers only the questions that are due
-  or whose sources changed.
+- The hourly model watch at minute 7 of every hour, from a checkout that
+  follows main. It sends conditional requests, so an unchanged source costs
+  one short answer.
+- The daily run at 09:30 UTC, after the source discovery collector's
+  08:35 UTC run and before the library slot that starts at 10:17 UTC while
+  daylight time holds, with network reads and local writes. The planner then
+  answers only the questions that are due or whose sources changed. The
+  candidates cite the files of the checkout's revision, so the checkout must
+  follow main.
 - The independent review of the day's radar catalogue after the run, by a
   model family other than the producer's (anthropic), with the stricter rule
   for sensitive questions, then the daily release as usual.
@@ -561,6 +568,28 @@ acceptance, and a later bad release is revoked through the withdrawal path.
 The landscape record's real example of a bad release is a directory fact
 that said Ollama Cloud supports structured output.
 
+## The first day's runs
+
+Four runs on September 27, 2026 wrote the day's candidates into the local
+radar library. Each run after the first answered every question again with
+`--rerun` into a new folder, and every earlier folder is kept beside it.
+
+| Run | What it showed | What changed next |
+|---|---|---|
+| 1 | 55 packages, all passed the native prechecks. arXiv answered 406 to four of five queries; 11 of 145 seed links were refused because the link check asked for JSON; 2 briefs were withheld as copied text because they shared web addresses with their sources | One arXiv retry after 20 seconds; link checks accept any type; web addresses left out of the copied-text comparison |
+| 2 | 145 of 145 seed links resolved and no brief was withheld, but free listings led the model shortlist and retirements from 2024 led the deprecation calendar | Free listings and long-past retirements left out of answers; identifiers kept intact |
+| 3 | 57 packages (51 briefs, 2 decision helpers, 4 tools), all passed the native prechecks, and the 6 package tests passed in a sandbox with no network | Named vocabulary members replaced raw state words in the code, which changed one file the briefs cite |
+| 4 | The day's result, at the final code revision, so the files the candidates cite match the tree: 55 questions answered, 57 packages, 57 of 57 native prechecks passed, 6 of 6 package tests passed with no network, 145 of 145 seed links resolved, 151 requests, no model call, nothing approved or published | Independent review by a model family other than anthropic |
+
+Against run 3, run 4 recorded 107 checks with no relevant change, 2 with a
+material change (new entries in the collector's skill and protocol server
+listings, which it had refreshed between the two runs), 2 partially checked
+(four release repositories whose newest five releases were all drafts or
+pre-releases) and 4 that could not be checked (arXiv answered 406 twice).
+The answer states were 49 candidates, 5 that need local evaluation, 10 that
+need research (the declared gaps) and 1 with no eligible option (the index
+question, until the model directory's second format lands in this tree).
+
 ## Open design work
 
 - An Epoch AI Benchmarking Hub engine behind a per-benchmark licence gate,
@@ -571,11 +600,10 @@ that said Ollama Cloud supports structured output.
 - The hourly watch installed on a server-side schedule, with its state kept
   between runs.
 - arXiv reads that survive its edge's throttling: on September 27, 2026 the
-  edge answered 406 to four of five queries twice in three runs from a
-  shared workstation, while the same queries succeeded moments later from
-  another client. The listing feeds (rss.arxiv.org) or a quieter window are
-  the next engines to try.
-
+  edge answered 406 to four of five queries in all four runs from a shared
+  workstation, including the retry after 20 seconds that runs 2 to 4 made,
+  while the same queries succeeded moments later from another client. The listing feeds (rss.arxiv.org) or a quieter window
+  are the next engines to try.
 - Independent review of the day's catalogue and its inclusion in a daily
   release.
 - Native loading of the packages in Claude Code, Codex, OpenCode and Pi.

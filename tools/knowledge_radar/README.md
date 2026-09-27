@@ -204,10 +204,13 @@ PYTHONPATH=src:tools python tools/build_knowledge_radar.py \
 
 Without `--authorize-local-writes` it prints the plan. `--only` limits a run
 to named questions, `--skip-link-checks` and `--skip-sandbox-tests` leave
-those dimensions not done, and `--stop-after` stops after a stage. The
+those dimensions not done, and `--stop-after` stops after a stage.
+`--rerun` answers every planned question again, for example after a fix;
+give it a new `--output` folder so the earlier attempt stays beside it. The
 checks are [`tools/test_knowledge_radar.py`](../test_knowledge_radar.py),
-[`tools/test_knowledge_radar_pipeline.py`](../test_knowledge_radar_pipeline.py)
-and [`tools/test_knowledge_radar_assets.py`](../test_knowledge_radar_assets.py).
+[`tools/test_knowledge_radar_pipeline.py`](../test_knowledge_radar_pipeline.py),
+[`tools/test_knowledge_radar_assets.py`](../test_knowledge_radar_assets.py)
+and [`tools/test_knowledge_radar_model_watch.py`](../test_knowledge_radar_model_watch.py).
 
 ## What the first version implements
 
@@ -231,7 +234,7 @@ and [`tools/test_knowledge_radar_assets.py`](../test_knowledge_radar_assets.py).
 | Readiness demonstrations | Tested: resume, duplicate trigger, steering source, expired claim. Revocation uses the existing catalogue withdrawal path and is not exercised here |
 | Repeat only invalidated work | The planner re-runs only overdue or changed questions and the run writes invalidation edges; running only the affected work from the edges is design |
 | Reuse at five levels | Source answers, claims, implementations and scoped, expiring failure records are written; comparisons under an evaluation contract are design |
-| Four freshness times | Kept per binding in the shared state; conditional requests are design |
+| Four freshness times | Kept per binding in the shared state. The hourly watch sends conditional requests; the daily run still reads each source in full |
 | Honest answer states | Implemented in the index and feeds |
 | Three data layers and request coalescing | The radar writes the public shared layer only; the work identity is implemented, attaching a second request to a running job is design |
 
