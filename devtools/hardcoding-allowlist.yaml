@@ -1,5 +1,363 @@
 schema: hardcoding_allowlist/v1
 entries:
+  - finding_id: hardcoding.2ad82dccc16807a262b354e5
+    owner: tools.check_package_activation
+    rationale: >-
+      Scheme prefixes that mark a reference as a web address instead of a path inside the package. The check
+      leaves web links out when it verifies that links and imports stay inside the package, and counts a
+      plugin part named by a remote address as remote. No request is made to any address, nothing is bound to
+      a provider or endpoint, and the check runs offline. Measured on September 27, 2026: replacing this value
+      fails no current test, so a fixture for this branch is still to be added. Ported from 20ab1e53 in the
+      September 27, 2026 consolidation.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.bfd98f5824c060612f98ff83
+    owner: tools.check_package_activation
+    rationale: >-
+      Scheme prefixes that mark a reference as a web address instead of a path inside the package. The check
+      leaves web links out when it verifies that links and imports stay inside the package, and counts a
+      plugin part named by a remote address as remote. No request is made to any address, nothing is bound to
+      a provider or endpoint, and the check runs offline. Measured on September 27, 2026: replacing this value
+      fails no current test, so a fixture for this branch is still to be added. Ported from 20ab1e53 in the
+      September 27, 2026 consolidation.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.27ad78e2be0f44758432c744
+    owner: tools.check_package_activation:configuration_facts
+    rationale: >-
+      Closed file-role discriminant from FILE_ROLES of loop_engine.core.service_runtime.catalogue_packages,
+      which this check imports and holds every laboratory file row to. The branch applies the facts a harness
+      needs for a file of that role before it can use it (frontmatter, a TOML prompt, plugin parts, hook
+      handlers, server entries); a caller-configurable role would let a package skip its own role's checks.
+      Measured on September 27, 2026: replacing this value fails no current test, so a fixture for this branch
+      is still to be added. Ported from 20ab1e53 in the September 27, 2026 consolidation.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.7ae7a8b087854e4d2df80111
+    owner: tools.check_package_activation:configuration_facts
+    rationale: >-
+      Closed file-role discriminant from FILE_ROLES of loop_engine.core.service_runtime.catalogue_packages,
+      which this check imports and holds every laboratory file row to. The branch applies the facts a harness
+      needs for a file of that role before it can use it (frontmatter, a TOML prompt, plugin parts, hook
+      handlers, server entries); a caller-configurable role would let a package skip its own role's checks.
+      Measured on September 27, 2026: replacing this value fails no current test, so a fixture for this branch
+      is still to be added. Ported from 20ab1e53 in the September 27, 2026 consolidation.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.960a891cd068c72a297d6625
+    owner: tools.check_package_activation:configuration_facts
+    rationale: >-
+      Closed file-role discriminant from FILE_ROLES of loop_engine.core.service_runtime.catalogue_packages,
+      which this check imports and holds every laboratory file row to. The branch applies the facts a harness
+      needs for a file of that role before it can use it (frontmatter, a TOML prompt, plugin parts, hook
+      handlers, server entries); a caller-configurable role would let a package skip its own role's checks.
+      Measured on September 27, 2026: replacing this value fails no current test, so a fixture for this branch
+      is still to be added. Ported from 20ab1e53 in the September 27, 2026 consolidation.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.050422797e03f2d511a3694d
+    owner: tools.check_package_activation:entry_facts
+    rationale: >-
+      Closed file-role discriminant from FILE_ROLES of loop_engine.core.service_runtime.catalogue_packages,
+      which this check imports and holds every laboratory file row to. The branch applies the facts a harness
+      needs for a file of that role before it can use it (frontmatter, a TOML prompt, plugin parts, hook
+      handlers, server entries); a caller-configurable role would let a package skip its own role's checks.
+      Measured on September 27, 2026: replacing this value fails tools/test_check_package_activation.py.
+      Ported from 20ab1e53 in the September 27, 2026 consolidation.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.1e6d0d732dc7ec4a353f5f38
+    owner: tools.check_package_activation:entry_facts
+    rationale: >-
+      Closed file-role discriminant from FILE_ROLES of loop_engine.core.service_runtime.catalogue_packages,
+      which this check imports and holds every laboratory file row to. The branch applies the facts a harness
+      needs for a file of that role before it can use it (frontmatter, a TOML prompt, plugin parts, hook
+      handlers, server entries); a caller-configurable role would let a package skip its own role's checks.
+      Measured on September 27, 2026: replacing this value fails tools/test_check_package_activation.py and
+      examples/31_failure_laboratory. Ported from 20ab1e53 in the September 27, 2026 consolidation.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.37ac7013d3d1182c2a1bb097
+    owner: tools.check_package_activation:entry_facts
+    rationale: >-
+      Closed file-role discriminant from FILE_ROLES of loop_engine.core.service_runtime.catalogue_packages,
+      which this check imports and holds every laboratory file row to. The branch applies the facts a harness
+      needs for a file of that role before it can use it (frontmatter, a TOML prompt, plugin parts, hook
+      handlers, server entries); a caller-configurable role would let a package skip its own role's checks.
+      Measured on September 27, 2026: replacing this value fails no current test, so a fixture for this branch
+      is still to be added. Ported from 20ab1e53 in the September 27, 2026 consolidation.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.3822fe5fc6c86c2d2032f5a9
+    owner: tools.check_package_activation:entry_facts
+    rationale: >-
+      Closed file-role discriminant from FILE_ROLES of loop_engine.core.service_runtime.catalogue_packages,
+      which this check imports and holds every laboratory file row to. The branch applies the facts a harness
+      needs for a file of that role before it can use it (frontmatter, a TOML prompt, plugin parts, hook
+      handlers, server entries); a caller-configurable role would let a package skip its own role's checks.
+      Measured on September 27, 2026: replacing this value fails no current test, so a fixture for this branch
+      is still to be added. Ported from 20ab1e53 in the September 27, 2026 consolidation.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.64c8dea703b83d58efa9eb94
+    owner: tools.check_package_activation:entry_facts
+    rationale: >-
+      Closed file-role discriminant from FILE_ROLES of loop_engine.core.service_runtime.catalogue_packages,
+      which this check imports and holds every laboratory file row to. The branch applies the facts a harness
+      needs for a file of that role before it can use it (frontmatter, a TOML prompt, plugin parts, hook
+      handlers, server entries); a caller-configurable role would let a package skip its own role's checks.
+      Measured on September 27, 2026: replacing this value fails no current test, so a fixture for this branch
+      is still to be added. Ported from 20ab1e53 in the September 27, 2026 consolidation.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.915f8abcac843eb06c0e3afb
+    owner: tools.check_package_activation:entry_facts
+    rationale: >-
+      A registered media type recorded in the package's own file row. The check compares it to choose the
+      parser that proves the recorded claim (strict JSON, TOML); the value is a public standard name, not a
+      configurable setting, and a wrong claim is refused as media_type_claim_false. Measured on September 27,
+      2026: replacing this value fails tools/test_check_package_activation.py. Ported from 20ab1e53 in the
+      September 27, 2026 consolidation.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.945ba2e8086b22d8aaf0af3e
+    owner: tools.check_package_activation:entry_facts
+    rationale: >-
+      Closed file-role discriminant from FILE_ROLES of loop_engine.core.service_runtime.catalogue_packages,
+      which this check imports and holds every laboratory file row to. The branch applies the facts a harness
+      needs for a file of that role before it can use it (frontmatter, a TOML prompt, plugin parts, hook
+      handlers, server entries); a caller-configurable role would let a package skip its own role's checks.
+      Measured on September 27, 2026: replacing this value fails no current test, so a fixture for this branch
+      is still to be added. Ported from 20ab1e53 in the September 27, 2026 consolidation.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.aa68d577ca2dee061cb6cd11
+    owner: tools.check_package_activation:entry_facts
+    rationale: >-
+      Closed file-role discriminant from FILE_ROLES of loop_engine.core.service_runtime.catalogue_packages,
+      which this check imports and holds every laboratory file row to. The branch applies the facts a harness
+      needs for a file of that role before it can use it (frontmatter, a TOML prompt, plugin parts, hook
+      handlers, server entries); a caller-configurable role would let a package skip its own role's checks.
+      Measured on September 27, 2026: replacing this value fails no current test, so a fixture for this branch
+      is still to be added. Ported from 20ab1e53 in the September 27, 2026 consolidation.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.c1f193ae6f42330b55e18010
+    owner: tools.check_package_activation:entry_facts
+    rationale: >-
+      Closed file-role discriminant from FILE_ROLES of loop_engine.core.service_runtime.catalogue_packages,
+      which this check imports and holds every laboratory file row to. The branch applies the facts a harness
+      needs for a file of that role before it can use it (frontmatter, a TOML prompt, plugin parts, hook
+      handlers, server entries); a caller-configurable role would let a package skip its own role's checks.
+      Measured on September 27, 2026: replacing this value fails tools/test_check_package_activation.py.
+      Ported from 20ab1e53 in the September 27, 2026 consolidation.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.e4a06a2db14b879ca320888f
+    owner: tools.check_package_activation:entry_facts
+    rationale: >-
+      Closed file-role discriminant from FILE_ROLES of loop_engine.core.service_runtime.catalogue_packages,
+      which this check imports and holds every laboratory file row to. The branch applies the facts a harness
+      needs for a file of that role before it can use it (frontmatter, a TOML prompt, plugin parts, hook
+      handlers, server entries); a caller-configurable role would let a package skip its own role's checks.
+      Measured on September 27, 2026: replacing this value fails tools/test_check_package_activation.py and
+      examples/31_failure_laboratory. Ported from 20ab1e53 in the September 27, 2026 consolidation.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.04690335f0afb9e26f1153e9
+    owner: tools.check_package_activation:hook_effects
+    rationale: >-
+      The hook handler type that the Claude Code hooks reference documents (command, http, mcp_tool, prompt,
+      agent), kept in HOOK_HANDLERS beside the field that makes each type act and the effect it needs. It is
+      the harness's own published schema, not a Loop Engine setting, and the check only reads it to require a
+      declared effect and a script that exists. Measured on September 27, 2026: replacing this value fails
+      tools/test_check_package_activation.py and examples/31_failure_laboratory. Ported from 20ab1e53 in the
+      September 27, 2026 consolidation.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.a902ed8f098feba1fd6a9088
+    owner: tools.check_package_activation:hook_handlers
+    rationale: >-
+      The hook handler type that the Claude Code hooks reference documents (command, http, mcp_tool, prompt,
+      agent), kept in HOOK_HANDLERS beside the field that makes each type act and the effect it needs. It is
+      the harness's own published schema, not a Loop Engine setting, and the check only reads it to require a
+      declared effect and a script that exists. Measured on September 27, 2026: replacing this value fails no
+      current test, so a fixture for this branch is still to be added. Ported from 20ab1e53 in the September
+      27, 2026 consolidation.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.c13f1a0960cd48577a07a013
+    owner: tools.check_package_activation:install
+    rationale: >-
+      Closed package-kind discriminant, the item kind from KINDS of loop_engine.core.harness_intelligence or
+      the package kind from PACKAGE_KINDS of licensed_import.records, both imported by this check and
+      validated against every laboratory manifest. The branch chooses the native slot and layout that the
+      documented harness reads for that kind; it grants no effect and selects no provider. Measured on
+      September 27, 2026: replacing this value fails no current test, so a fixture for this branch is still to
+      be added. Ported from 20ab1e53 in the September 27, 2026 consolidation.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.36878797491d2af66e0a5208
+    owner: tools.check_package_activation:layout_targets
+    rationale: >-
+      Closed package-kind discriminant, the item kind from KINDS of loop_engine.core.harness_intelligence or
+      the package kind from PACKAGE_KINDS of licensed_import.records, both imported by this check and
+      validated against every laboratory manifest. The branch chooses the native slot and layout that the
+      documented harness reads for that kind; it grants no effect and selects no provider. Measured on
+      September 27, 2026: replacing this value fails no current test, so a fixture for this branch is still to
+      be added. Ported from 20ab1e53 in the September 27, 2026 consolidation.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.cd66e0c198988221410342e6
+    owner: tools.check_package_activation:media_claim_holds
+    rationale: >-
+      A registered media type recorded in the package's own file row. The check compares it to choose the
+      parser that proves the recorded claim (strict JSON, TOML); the value is a public standard name, not a
+      configurable setting, and a wrong claim is refused as media_type_claim_false. Measured on September 27,
+      2026: replacing this value fails tools/test_check_package_activation.py and
+      examples/31_failure_laboratory. Ported from 20ab1e53 in the September 27, 2026 consolidation.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.5696ab1adc15abd36e8f67f5
+    owner: tools.check_package_activation:package_facts
+    rationale: >-
+      Closed package-kind discriminant, the item kind from KINDS of loop_engine.core.harness_intelligence or
+      the package kind from PACKAGE_KINDS of licensed_import.records, both imported by this check and
+      validated against every laboratory manifest. The branch chooses the native slot and layout that the
+      documented harness reads for that kind; it grants no effect and selects no provider. Measured on
+      September 27, 2026: replacing this value fails no current test, so a fixture for this branch is still to
+      be added. Ported from 20ab1e53 in the September 27, 2026 consolidation.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.3232280b1ce4b7cfaf4b06fb
+    owner: tools.check_package_activation:package_kind
+    rationale: >-
+      Closed package-kind discriminant, the item kind from KINDS of loop_engine.core.harness_intelligence or
+      the package kind from PACKAGE_KINDS of licensed_import.records, both imported by this check and
+      validated against every laboratory manifest. The branch chooses the native slot and layout that the
+      documented harness reads for that kind; it grants no effect and selects no provider. Measured on
+      September 27, 2026: replacing this value fails no current test, so a fixture for this branch is still to
+      be added. Ported from 20ab1e53 in the September 27, 2026 consolidation.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.4cf2221acd84b6ca6018a194
+    owner: tools.check_package_activation:reference_findings
+    rationale: >-
+      Closed file-role discriminant from FILE_ROLES of loop_engine.core.service_runtime.catalogue_packages,
+      which this check imports and holds every laboratory file row to. The branch applies the facts a harness
+      needs for a file of that role before it can use it (frontmatter, a TOML prompt, plugin parts, hook
+      handlers, server entries); a caller-configurable role would let a package skip its own role's checks.
+      Measured on September 27, 2026: replacing this value fails no current test, so a fixture for this branch
+      is still to be added. Ported from 20ab1e53 in the September 27, 2026 consolidation.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.c249c428f27bb8ba81243fc7
+    owner: tools.check_package_activation:reference_findings
+    rationale: >-
+      Scheme prefixes that mark a reference as a web address instead of a path inside the package. The check
+      leaves web links out when it verifies that links and imports stay inside the package, and counts a
+      plugin part named by a remote address as remote. No request is made to any address, nothing is bound to
+      a provider or endpoint, and the check runs offline. Measured on September 27, 2026: replacing this value
+      fails no current test, so a fixture for this branch is still to be added. Ported from 20ab1e53 in the
+      September 27, 2026 consolidation.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.d847e904ae080e957ff6b541
+    owner: tools.check_package_activation:reference_findings
+    rationale: >-
+      Scheme prefixes that mark a reference as a web address instead of a path inside the package. The check
+      leaves web links out when it verifies that links and imports stay inside the package, and counts a
+      plugin part named by a remote address as remote. No request is made to any address, nothing is bound to
+      a provider or endpoint, and the check runs offline. Measured on September 27, 2026: replacing this value
+      fails no current test, so a fixture for this branch is still to be added. Ported from 20ab1e53 in the
+      September 27, 2026 consolidation.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.12229124ffa00e9ea763dc45
+    owner: tools.check_package_activation:select_entry
+    rationale: >-
+      Closed file-role discriminant from FILE_ROLES of loop_engine.core.service_runtime.catalogue_packages,
+      which this check imports and holds every laboratory file row to. The branch applies the facts a harness
+      needs for a file of that role before it can use it (frontmatter, a TOML prompt, plugin parts, hook
+      handlers, server entries); a caller-configurable role would let a package skip its own role's checks.
+      Measured on September 27, 2026: replacing this value fails no current test, so a fixture for this branch
+      is still to be added. Ported from 20ab1e53 in the September 27, 2026 consolidation.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.3cd9b88f2f871c4967beae67
+    owner: tools.check_package_activation:select_entry
+    rationale: >-
+      Closed file-role discriminant from FILE_ROLES of loop_engine.core.service_runtime.catalogue_packages,
+      which this check imports and holds every laboratory file row to. The branch applies the facts a harness
+      needs for a file of that role before it can use it (frontmatter, a TOML prompt, plugin parts, hook
+      handlers, server entries); a caller-configurable role would let a package skip its own role's checks.
+      Measured on September 27, 2026: replacing this value fails tools/test_check_package_activation.py.
+      Ported from 20ab1e53 in the September 27, 2026 consolidation.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.30b167fc852434bb2c117a30
+    owner: tools.check_package_activation:slot_name
+    rationale: >-
+      Closed package-kind discriminant, the item kind from KINDS of loop_engine.core.harness_intelligence or
+      the package kind from PACKAGE_KINDS of licensed_import.records, both imported by this check and
+      validated against every laboratory manifest. The branch chooses the native slot and layout that the
+      documented harness reads for that kind; it grants no effect and selects no provider. Measured on
+      September 27, 2026: replacing this value fails no current test, so a fixture for this branch is still to
+      be added. Ported from 20ab1e53 in the September 27, 2026 consolidation.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.8011b7f71d9f19d0012c7b28
+    owner: tools.check_package_activation:slot_name
+    rationale: >-
+      Closed package-kind discriminant, the item kind from KINDS of loop_engine.core.harness_intelligence or
+      the package kind from PACKAGE_KINDS of licensed_import.records, both imported by this check and
+      validated against every laboratory manifest. The branch chooses the native slot and layout that the
+      documented harness reads for that kind; it grants no effect and selects no provider. Measured on
+      September 27, 2026: replacing this value fails no current test, so a fixture for this branch is still to
+      be added. Ported from 20ab1e53 in the September 27, 2026 consolidation.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.e40a188e973e5e4e9deb7203
+    owner: tools.check_package_activation:slot_name
+    rationale: >-
+      Closed package-kind discriminant, the item kind from KINDS of loop_engine.core.harness_intelligence or
+      the package kind from PACKAGE_KINDS of licensed_import.records, both imported by this check and
+      validated against every laboratory manifest. The branch chooses the native slot and layout that the
+      documented harness reads for that kind; it grants no effect and selects no provider. Measured on
+      September 27, 2026: replacing this value fails tools/test_check_package_activation.py. Ported from
+      20ab1e53 in the September 27, 2026 consolidation.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
   - finding_id: hardcoding.f873c95a8f2f1c3edf740627
     owner: tools.fresh_account_journey.mjs:state.mailbox.token
     rationale: This operator-only signup probe assigns the mailbox token returned by the live
