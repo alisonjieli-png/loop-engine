@@ -22,7 +22,7 @@ import re
 import time
 import xml.etree.ElementTree as ElementTree
 from dataclasses import dataclass, field
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, timedelta
 from urllib.parse import quote, urlencode, urlsplit
 
 from loop_engine.core.library_ingestion.github_reader import parse_included_response
@@ -721,67 +721,6 @@ class FederalRegister:
         return EngineAnswer(OK, "" if rows else "no document matched in the window", tuple(rows), 1)
 
 
-def _per_million(value):
-    """A price per token, as the listing writes it, in US dollars per million tokens; a negative price is unknown."""
-    try:
-        price = float(value)
-    except (TypeError, ValueError):
-        return None
-    return round(price * 1_000_000, 6) if price >= 0 else None
-
-
-def _epoch_time(value):
-    if type(value) is not int or value <= 0:
-        return None
-    return datetime.fromtimestamp(value, timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-
-
-class OpenRouterModels:
-    """The OpenRouter model listing: every model it serves, when it was added, its prices and any end date."""
-
-    engine_id, engine_version = "openrouter_models", "1.0.0"
-    material_facts = ("input_price", "output_price", "context", "expiration_date")
-
-    def read(self, context: ReadContext) -> EngineAnswer:
-        only_expiring = parameter(context, "only_expiring", False, kind=bool)
-        try:
-            response = context.network.get(self.engine_id, "openrouter.ai", "/api/v1/models")
-        except (RadarEngineError, RequestCeilingReached, OSError) as error:
-            return EngineAnswer(FAILED, str(error))
-        data = _json(response.body) if response.status == 200 else None
-        if not isinstance(data, dict) or not isinstance(data.get("data"), list):
-            answer = _status_answer(response.status, "the OpenRouter model listing")
-            return EngineAnswer(answer.status, answer.reason, requests=1)
-        rows, guards = [], []
-        for item in data["data"]:
-            if not isinstance(item, dict) or not isinstance(item.get("id"), str):
-                continue
-            if not re.fullmatch(r"[A-Za-z0-9._~:-]+/[A-Za-z0-9._~:-]+", item["id"]):
-                continue
-            if isinstance(item.get("description"), str):
-                guards.append(item["description"])
-            expires = item.get("expiration_date") if isinstance(item.get("expiration_date"), str) else None
-            if only_expiring and not expires:
-                continue
-            title, reason = clean_title(item.get("name") or item["id"])
-            if reason:
-                continue
-            pricing = item.get("pricing") if isinstance(item.get("pricing"), dict) else {}
-            rows.append(observation(
-                context, self, key="openrouter:" + item["id"], origin="openrouter:" + item["id"].lower(), title=title,
-                url="https://openrouter.ai/" + item["id"], source_address="https://openrouter.ai/api/v1/models",
-                licence_basis="a hosted listing; the model's own terms apply",
-                facts={"model_id": item["id"], "context": number(item.get("context_length")),
-                       "input_price": _per_million(pricing.get("prompt")),
-                       "output_price": _per_million(pricing.get("completion")),
-                       "hugging_face_id": text_fact(item.get("hugging_face_id")),
-                       "expiration_date": expires},
-                event_at=_epoch_time(item.get("created")), effective_until=iso_time(expires)))
-        rank = "effective_until" if only_expiring else "event_at"
-        chosen = ranked(rows, parameter(context, "rank_by", rank, kind=str), descending=not only_expiring)
-        return EngineAnswer(OK, "" if rows else "no model matched", tuple(chosen[:limit_of(context)]), 1, tuple(guards))
-
-
 class HuggingFaceNewModels:
     """The newest model repositories of named publishers on the Hugging Face Hub, one listing per publisher."""
 
@@ -1007,5 +946,5 @@ class LiteLLMPrices:
 
 
 ENGINES = (GitHubSearch(), GitHubAdvisories(), GitHubReleases(), OwnerDirectory(), HuggingFaceModels(),
-           ArxivListing(), OpenAlexWorks(), EndOfLifeCalendar(), FederalRegister(), OpenRouterModels(),
-           HuggingFaceNewModels(), ModelsDevCatalogue(), LiteLLMPrices())
+           ArxivListing(), OpenAlexWorks(), EndOfLifeCalendar(), FederalRegister(), HuggingFaceNewModels(),
+           ModelsDevCatalogue(), LiteLLMPrices())

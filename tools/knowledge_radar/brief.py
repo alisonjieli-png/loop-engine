@@ -47,10 +47,8 @@ MAXIMUM_SHOWN_FACTS = 5
 SHOWN_FACTS = {
     "collector_state": (("listing", "listing"), ("stars", "stars"), ("directory_position", "directory position"),
                         ("version", "version"), ("registry_status", "registry status")),
-    "model_directory": (("maker", "maker"), ("intelligence_index", "intelligence index"),
-                        ("coding_index", "coding index"), ("agentic_index", "agentic index"),
+    "model_directory": (("maker", "maker"), ("arena_text_score", "Arena text score (LMArena, CC BY 4.0)"),
                         ("output_price", "output price per million tokens (USD)"),
-                        ("price_per_intelligence_point", "price per index point"),
                         ("parameters", "parameters"), ("context", "context tokens"), ("downloads", "downloads"),
                         ("smallest_quant", "smallest quantization"), ("released", "released")),
     "endpoint_directory": (("kind", "kind"), ("api_styles", "interface styles"), ("models_listed", "models listed"),
@@ -74,9 +72,6 @@ SHOWN_FACTS = {
     "endoflife_calendar": (("latest", "latest"), ("lts", "long-term support"), ("eoas_from", "active support ends"),
                            ("eol_from", "support ends"), ("maintained", "maintained")),
     "federal_register": (("type", "type"), ("agencies", "agencies"), ("comments_close_on", "comments close")),
-    "openrouter_models": (("model_id", "model"), ("output_price", "output price per million tokens (USD)"),
-                          ("input_price", "input price per million tokens (USD)"), ("context", "context tokens"),
-                          ("expiration_date", "end date")),
     "huggingface_new_models": (("publisher", "publisher"), ("pipeline_tag", "task"), ("downloads", "downloads"),
                                ("likes", "likes"), ("gated", "gated")),
     "models_dev_catalogue": (("provider", "provider"), ("output_price", "output price per million tokens (USD)"),
@@ -98,7 +93,8 @@ RANK_WORDS = {"source_published_at": "last change, newest first", "event_at": "d
               "servers": "number of servers, most first", "cited_by": "citations, most first",
               "likes": "likes, most first",
               "directory_position": "position in the directory listing", "models_listed": "models listed, most first",
-              "output_price": "listed output price per million tokens, lowest first"}
+              "output_price": "listed output price per million tokens, lowest first",
+              "arena_text_score": "Arena text score, highest first"}
 
 
 @dataclass(frozen=True)
@@ -179,7 +175,7 @@ DEFAULT_RANK = {"collector_state": "source_published_at", "model_directory": "do
                 "endpoint_directory": "models_listed", "github_search": "stars", "github_advisories": "event_at",
                 "github_releases": "event_at", "owner_directory": "", "arxiv_listing": "event_at",
                 "openalex_works": "cited_by", "endoflife_calendar": "effective_until", "federal_register": "event_at",
-                "curated_seed": "", "openrouter_models": "event_at", "huggingface_new_models": "event_at",
+                "curated_seed": "", "huggingface_new_models": "event_at",
                 "models_dev_catalogue": "output_price", "litellm_prices": "output_price"}
 HUGGING_FACE_SORTS = {"downloads": "downloads", "likes": "likes", "trendingScore": "trending_score",
                       "lastModified": "source_published_at", "createdAt": "event_at"}
@@ -194,8 +190,6 @@ def rank_fact(binding) -> str:
         return HUGGING_FACE_SORTS.get(str(parameters.get("sort", "downloads")), "downloads")
     if binding.engine == "mcp_directory" and parameters.get("mode") == "category_counts":
         return "servers"
-    if binding.engine == "openrouter_models" and parameters.get("only_expiring"):
-        return "effective_until"
     if binding.engine == "litellm_prices" and parameters.get("only_deprecating"):
         return "effective_until"
     return DEFAULT_RANK.get(binding.engine, "")
@@ -324,7 +318,8 @@ def current_day(current) -> str:
     return days[-1] if days else "0000-00-00"
 
 
-def build_brief(question: RadarQuestion, sections, as_of: str, *, excluded=(), copied_guard_ok: bool = True) -> dict:
+def build_brief(question: RadarQuestion, sections, as_of: str, *, excluded=(), copied_guard_ok: bool = True,
+                attributions: "dict | None" = None) -> dict:
     """The knowledge_radar_brief/v1 record of one question, or a notice when nothing can be served as current."""
     shown = [item for section in sections for item in section.claims]
     carried = [item for section in sections for item in section.carried]
@@ -368,6 +363,9 @@ def build_brief(question: RadarQuestion, sections, as_of: str, *, excluded=(), c
         "expired_claims": [item.to_dict() for item in expired],
         "would_change": list(question.would_change), "reask": list(question.reask), "recheck": list(question.recheck),
         "copied_text_check": "passed" if copied_guard_ok else "failed",
+        "attributions": [{"engine_id": engine, "attribution": text, "terms_address": terms}
+                         for engine, (text, terms) in sorted((attributions or {}).items())
+                         if any(section.engine_id == engine and (section.claims or section.carried) for section in sections)],
         "generator": {"id": GENERATOR_ID, "version": GENERATOR_VERSION}, "model_calls": 0,
     }
 
@@ -462,6 +460,8 @@ def render_skill(question: RadarQuestion, brief: dict, files: dict) -> str:
         lines.append(f"- {section['title']}: engine {section['engine_id']}, "
                      f"{section['outcome'].replace('_', ' ')}, checked {section['checked_at']}"
                      + (f", read from {address}" if address else "") + ".")
+    for row in brief.get("attributions", []):
+        lines.append(f"- Credit for {row['engine_id']}: {row['attribution']} Terms: {row['terms_address']}")
     lines += ["", "## Files in this package", ""]
     for path, meaning in files.items():
         lines.append(f"- [{path}]({path}): {meaning}")
@@ -553,7 +553,7 @@ BRIEF_SCHEMA = {
     "required": ["record_type", "question_id", "question", "title", "area", "as_of", "valid_until", "last_verified_at",
                  "state", "confidence", "confidence_basis", "review_requirement", "decision", "sections",
                  "not_established", "expired_claims", "would_change", "reask", "recheck", "copied_text_check",
-                 "generator", "model_calls"],
+                 "attributions", "generator", "model_calls"],
     "$defs": {"claim": CLAIM_SCHEMA},
     "properties": {
         "record_type": {"const": BRIEF_RECORD_TYPE}, "question_id": {"type": "string"}, "question": {"type": "string"},
@@ -581,6 +581,10 @@ BRIEF_SCHEMA = {
         "reask": {"type": "array", "items": {"type": "string"}},
         "recheck": {"type": "array", "items": {"type": "string"}},
         "copied_text_check": {"enum": ["passed", "failed"]},
+        "attributions": {"type": "array", "items": {
+            "type": "object", "additionalProperties": False, "required": ["engine_id", "attribution", "terms_address"],
+            "properties": {"engine_id": {"type": "string"}, "attribution": {"type": "string"},
+                           "terms_address": {"type": "string"}}}},
         "generator": {"type": "object", "additionalProperties": False, "required": ["id", "version"],
                       "properties": {"id": {"type": "string"}, "version": {"type": "string"}}},
         "model_calls": {"const": 0}}}

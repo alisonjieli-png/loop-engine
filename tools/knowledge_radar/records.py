@@ -476,9 +476,24 @@ class SourceContract:
                 "excluded_publishers": list(self.excluded_publishers)}
 
 
+def never_read_hosts(value) -> dict:
+    """The hosts whose terms forbid reading them by script, each with its reason. No contract may name one."""
+    rows = value.get("never_read_by_script") if isinstance(value, dict) else None
+    if type(rows) is not list:
+        refuse("radar_contracts_invalid", "never_read_by_script is a list of hosts with reasons")
+    hosts = {}
+    for row in rows:
+        item = read_part(row, "never_read_by_script row", ("host", "reason"))
+        if type(item["host"]) is not str or not re.fullmatch(r"[a-z0-9.-]+", item["host"]):
+            refuse("radar_contracts_invalid", "a never-read host is a lowercase host name")
+        hosts[item["host"]] = text_value(item["reason"], f"{item['host']} reason", limit=400)
+    return hosts
+
+
 def read_contracts(value) -> dict:
-    part = read_record(value, CONTRACTS_RECORD_TYPE, ("record_type", "revised_on", "contracts"))
+    part = read_record(value, CONTRACTS_RECORD_TYPE, ("record_type", "revised_on", "never_read_by_script", "contracts"))
     day(part["revised_on"], "revised_on")
+    forbidden = never_read_hosts(part)
     rows = part["contracts"]
     if type(rows) is not list or not rows:
         refuse("radar_contracts_invalid", "contracts is a nonempty list")
@@ -492,6 +507,9 @@ def read_contracts(value) -> dict:
         if type(hosts) is not list or any(type(host) is not str or not re.fullmatch(r"[a-z0-9.-]+", host)
                                           for host in hosts):
             refuse("radar_contract_invalid", f"{engine} hosts are lowercase host names")
+        banned = [host for host in hosts if host in forbidden or any(host.endswith("." + name) for name in forbidden)]
+        if banned:
+            refuse("radar_contract_reads_forbidden_host", f"{engine} would read {banned[0]}: {forbidden.get(banned[0], 'its terms forbid it')[:120]}")
         method = member(item["access_method"], f"{engine} access_method", ACCESS_METHODS)
         if (method == "local_file") != (not hosts):
             refuse("radar_contract_invalid", f"{engine} names hosts exactly when it reads the network")
@@ -512,7 +530,7 @@ def read_contracts(value) -> dict:
             engine, text_value(item["parser_version"], f"{engine} parser_version", limit=20), method, tuple(hosts),
             text_value(item["permitted_uses"], f"{engine} permitted_uses", limit=400),
             text_value(item["never_used"], f"{engine} never_used", limit=400),
-            text_value(item["attribution"], f"{engine} attribution", limit=300),
+            text_value(item["attribution"], f"{engine} attribution", limit=600),
             https_address(item["terms_address"], f"{engine} terms_address"), float(pause),
             count(item["maximum_requests_per_run"], f"{engine} maximum_requests_per_run", maximum=500),
             text_value(item["failure_policy"], f"{engine} failure_policy", limit=300), ceiling,

@@ -300,6 +300,23 @@ class EngineChecks(unittest.TestCase):
         unfiltered = engines_local.model_facts(row)
         self.assertEqual(unfiltered["intelligence_index"], 40.0)  # removed-guard control: the filter is what drops it
 
+    def test_a_format_two_row_keeps_its_arena_score_and_page_and_drops_nothing_open(self):
+        from knowledge_radar import engines_local
+        row = {"name": "Hosted", "slug": "maker-hosted", "maker": "Maker", "ids": {"modelsdev": "maker/hosted"},
+               "sources": [{"id": "modelsdev", "read": "2026-09-27"}, {"id": "lmarena", "read": "2026-09-27"}],
+               "facts": {"structured_output": [{"value": True, "source": 0}], "context": [{"value": 200000, "source": 0}]},
+               "benchmarks": [{"name": "Arena text score", "value": 1420, "publisher": "LMArena",
+                               "address": "arena.ai/leaderboard", "as_of": "2026-09-26", "source": 1}],
+               "prices": [{"output": 2.0, "input": 0.5, "route": "direct", "source": 0}], "popularity": {},
+               "use_cases": [], "quantizations": []}
+        contract = read_contracts(CONTRACTS)["model_directory"]
+        allowed, permitted = engines_local.source_filter(row, contract)
+        facts = engines_local.model_facts(row, allowed, contract.excluded_publishers, contract.excluded_upstreams)
+        self.assertEqual((facts["arena_text_score"], facts["arena_text_score_as_of"], facts["output_price"]),
+                         (1420, "2026-09-26", 2.0))
+        self.assertIsNone(facts["tool_calling"])  # absent means unknown, never false
+        self.assertEqual(engines_local._model_url(row), "https://baltor.ai/models/maker-hosted")
+
     def test_models_dev_keeps_the_cheapest_route_per_model_and_skips_excluded_providers(self):
         body = json.dumps({
             "a": {"name": "Host A", "doc": "https://a.example.org/docs", "models": {
@@ -340,21 +357,49 @@ class EngineChecks(unittest.TestCase):
 
 
 class RepublicationChecks(unittest.TestCase):
+    LIVE = {"record_type": "knowledge_radar_source_contract/v1", "engine_id": "example_live_lookup",
+            "parser_version": "1.0.0", "access_method": "https_get", "hosts": ["data.example.org"],
+            "permitted_uses": "A live lookup only.", "never_used": "Stored in a served file.",
+            "attribution": "Example.", "terms_address": "https://data.example.org/terms",
+            "minimum_seconds_between_requests": 1.0, "maximum_requests_per_run": 2, "maximum_response_bytes": 4096,
+            "failure_policy": "Recorded as could not check.", "republication": "live_lookup_only",
+            "excluded_upstreams": [], "excluded_publishers": []}
+
     def test_the_committed_registry_stores_no_live_lookup_source(self):
         self.assertEqual(records.republication_findings(read_registry(REGISTRY), read_contracts(CONTRACTS)), [])
 
     def test_known_wrong_a_brief_that_binds_a_live_lookup_source_is_refused(self):
-        registry = deepcopy(REGISTRY)
+        registry, contracts = deepcopy(REGISTRY), deepcopy(CONTRACTS)
+        contracts["contracts"].append(dict(self.LIVE))
         for row in registry["questions"]:
             if row["id"] == "models_new_releases":
-                row["sources"][0] = {"engine": "openrouter_models", "section": "Newest on OpenRouter", "parameters": {}}
-        findings = records.republication_findings(read_registry(registry), read_contracts(CONTRACTS))
+                row["sources"][0] = {"engine": "example_live_lookup", "section": "Live only", "parameters": {}}
+        findings = records.republication_findings(read_registry(registry), read_contracts(contracts))
         self.assertEqual(findings[0][0], "radar_live_lookup_source_stored")
-        contracts = deepcopy(CONTRACTS)
-        for row in contracts["contracts"]:
-            if row["engine_id"] == "openrouter_models":
-                row["republication"] = "stored_facts"
+        contracts["contracts"][-1]["republication"] = "stored_facts"
         self.assertEqual(records.republication_findings(read_registry(registry), read_contracts(contracts)), [])
+
+    def test_known_wrong_a_contract_that_reads_a_forbidden_host_is_refused(self):
+        for host in ("openrouter.ai", "api.openrouter.ai", "artificialanalysis.ai"):
+            contracts = deepcopy(CONTRACTS)
+            contracts["contracts"].append({**self.LIVE, "engine_id": "example_scraper", "hosts": [host],
+                                           "republication": "stored_facts"})
+            with self.assertRaises(LibraryRecordError) as caught:
+                read_contracts(contracts)
+            self.assertEqual(caught.exception.code, "radar_contract_reads_forbidden_host")
+        with mock.patch.object(records, "never_read_hosts", lambda value: {}):
+            self.assertIn("example_scraper", read_contracts(contracts))  # removed-guard control
+
+    def test_no_committed_contract_or_seed_reads_a_forbidden_host(self):
+        forbidden = set(records.never_read_hosts(CONTRACTS))
+        self.assertEqual(forbidden, {"openrouter.ai", "artificialanalysis.ai"})
+        for contract in read_contracts(CONTRACTS).values():
+            self.assertFalse(set(contract.hosts) & forbidden, contract.engine_id)
+        registry = read_registry(REGISTRY)
+        seed_hosts = {address.split("/")[2] for question in registry.questions for seed in question.seeds
+                      for address in (seed.url, *seed.links.values())}
+        self.assertFalse(seed_hosts & forbidden)
+        self.assertNotIn("openrouter_models", engines.default_registry(network_allowed=True).engines)
 
 
 class TransportChecks(unittest.TestCase):
@@ -507,6 +552,17 @@ class BriefChecks(unittest.TestCase):
         self.assertIn("valid until", text)
         self.assertNotIn("—", text)
         self.assertNotIn("–", text)
+
+    def test_a_brief_credits_only_the_sources_that_gave_claims(self):
+        question = _question()
+        checks = _section_checks(question, ("checked_material_change", [claim()]), ("could_not_check", []))
+        credits = {"model_directory": ("Directory credit.", "https://baltor.ai/models"),
+                   "huggingface_models": ("Hub credit.", "https://huggingface.co/terms-of-service")}
+        record = briefs.build_brief(question, briefs.build_sections(question, checks, [], "2026-09-27"), "2026-09-27",
+                                    attributions=credits)
+        self.assertEqual([row["engine_id"] for row in record["attributions"]], ["model_directory"])
+        self.assertEqual(vetting.schema_findings(record, briefs.BRIEF_SCHEMA, "brief"), [])
+        self.assertIn("Credit for model_directory: Directory credit.", briefs.render_skill(question, record, {}))
 
     def test_high_confidence_needs_two_independent_engines(self):
         question = _question()

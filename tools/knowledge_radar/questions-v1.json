@@ -233,22 +233,22 @@
   {
    "record_type": "knowledge_radar_question/v1",
    "id": "benchmarks_model_indices",
-   "question": "Which models lead the published general, coding and agentic indices today, and at what listed price?",
-   "title": "Model leaders on published indices",
+   "question": "Which models lead the LMArena text leaderboard, as the model directory records it, and at what listed price?",
+   "title": "Model leaders on the LMArena text leaderboard",
    "area": "benchmarks",
-   "status": "declared_gap",
-   "gap_reason": "Published index values from Artificial Analysis may not be stored in served files under its terms. The openly licensed candidates are the Arena leaderboard dataset (CC BY 4.0) and the Epoch AI Benchmarking Hub (CC BY 4.0); neither engine is built in this version.",
+   "status": "active",
+   "gap_reason": "",
    "audience": "developers and coding harnesses choosing what to build with",
    "constraints": [
     "Facts come from public listings and are dated; nothing is estimated."
    ],
    "baseline": "An engineer searches the web, reads several vendor pages, listings and newsletters by hand, and pastes what they found into the harness as context.",
    "acceptable_evidence": [
-    "The source's own identifiers, dates, licences and counts, with a link to the source."
+    "The Arena text score with its date and publisher, credited under CC BY 4.0, and the listed price with its source."
    ],
    "intended_output": "A dated decision card with ranked, source-linked evidence, a data file with its schema.",
-   "purpose": "Rank models by the Artificial Analysis intelligence, coding and agentic index values that the model directory records, with the cheapest listed price.",
-   "use_when": "Use when choosing a model for a task and a published, comparable quality number is needed as a first filter.",
+   "purpose": "Rank models by the LMArena text score that the model directory records (CC BY 4.0, credited), with listed prices from models.dev and the LiteLLM price map.",
+   "use_when": "Use when choosing a model for a task and a public preference rating is needed as a first filter.",
    "sensitivity": "general",
    "research_cost": {
     "engineer_minutes": 20,
@@ -267,17 +267,30 @@
     "Has a newer model been released since this brief?"
    ],
    "recheck": [
-    "Prices and index values change when models are released; read the directory again after the valid-until date."
+    "Arena ratings move as votes arrive; read the leaderboard again after the valid-until date.",
+    "Compare live, with credit, on OpenRouter (https://openrouter.ai/models) and Artificial Analysis (https://artificialanalysis.ai); their values are not copied here, because their terms do not allow it."
    ],
    "not_established": [
-    "No source used here measured these options on your own task, data or budget.",
-    "The source does not state when each index value was measured."
+    "A preference rating from LMArena voters is not a measurement on your task.",
+    "The directory records Arena text scores from its format 2 onward; before that, this question has no source."
    ],
    "would_change": [
-    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+    "A measured result on your own task, or on a frozen evaluation set close to it."
    ],
    "limit": 10,
-   "sources": [],
+   "sources": [
+    {
+     "engine": "model_directory",
+     "section": "Highest Arena text score",
+     "parameters": {
+      "needs_facts": [
+       "arena_text_score"
+      ],
+      "rank_by": "arena_text_score",
+      "limit": 15
+     }
+    }
+   ],
    "seeds": [],
    "assets": {}
   },
@@ -387,7 +400,8 @@
     "What reasoning effort setting does the provider default to, and what does it cost?"
    ],
    "recheck": [
-    "Confirm tool calling and structured output on the exact provider route the harness uses."
+    "Confirm tool calling and structured output on the exact provider route the harness uses.",
+    "Compare live, with credit, on OpenRouter (https://openrouter.ai/models) and Artificial Analysis (https://artificialanalysis.ai); their values are not copied here, because their terms do not allow it."
    ],
    "not_established": [
     "No source used here measured these options on your own task, data or budget.",
@@ -465,7 +479,8 @@
     "Does it replace a model a pinned step depends on?"
    ],
    "recheck": [
-    "Listings change within hours; read the listing again before choosing a model released today."
+    "Listings change within hours; read the listing again before choosing a model released today.",
+    "Compare live, with credit, on OpenRouter (https://openrouter.ai/models) and Artificial Analysis (https://artificialanalysis.ai); their values are not copied here, because their terms do not allow it."
    ],
    "not_established": [
     "A new listing is not an evaluation: nothing here measured the new models.",
@@ -556,7 +571,8 @@
     "Would a parser or a regular expression extract these fields with no model call?"
    ],
    "recheck": [
-    "Prices and capability flags change often; the table is valid only until its valid-until date."
+    "Prices and capability flags change often; the table is valid only until its valid-until date.",
+    "Compare live, with credit, on OpenRouter (https://openrouter.ai/models) and Artificial Analysis (https://artificialanalysis.ai); their values are not copied here, because their terms do not allow it."
    ],
    "not_established": [
     "No model here was measured on extraction; a listed capability is not a passed acceptance check.",
@@ -1090,7 +1106,8 @@
     "What happens on a refusal or a truncated answer?"
    ],
    "recheck": [
-    "Confirm structured output support on the exact route; the directory reads it from the provider's listed parameters."
+    "Confirm structured output support on the exact route; the directory reads it from the provider's listed parameters.",
+    "Compare live, with credit, on OpenRouter (https://openrouter.ai/models) and Artificial Analysis (https://artificialanalysis.ai); their values are not copied here, because their terms do not allow it."
    ],
    "not_established": [
     "No source used here measured these options on your own task, data or budget.",
@@ -3783,7 +3800,8 @@
     "Which model version does the project pin?"
    ],
    "recheck": [
-    "Read the provider's deprecation page."
+    "Read the provider's deprecation page.",
+    "Compare live, with credit, on OpenRouter (https://openrouter.ai/models) and Artificial Analysis (https://artificialanalysis.ai); their values are not copied here, because their terms do not allow it."
    ],
    "not_established": [
     "Only models the LiteLLM price map records are covered; each provider's own deprecation page is authoritative.",

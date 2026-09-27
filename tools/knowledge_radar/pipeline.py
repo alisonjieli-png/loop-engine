@@ -68,8 +68,8 @@ REGISTRY = Path("tools/knowledge_radar/questions-v1.json")
 CONTRACTS = Path("tools/knowledge_radar/source-contracts-v1.json")
 NETWORK_ENGINES = frozenset(("github_search", "github_advisories", "github_releases", "owner_directory",
                              "huggingface_models", "arxiv_listing", "openalex_works", "endoflife_calendar",
-                             "federal_register", "openrouter_models", "huggingface_new_models",
-                             "models_dev_catalogue", "litellm_prices"))
+                             "federal_register", "huggingface_new_models", "models_dev_catalogue",
+                             "litellm_prices"))
 
 
 class RadarRunError(RuntimeError):
@@ -355,7 +355,8 @@ def stage_brief(run: Run) -> dict:
         checks = [read_check(row) for row in read_json(run.folder / "checks" / f"{question.id}.json")]
         sections = briefs.build_sections(question, checks, run.previous_checks(question), run.request.as_of)
         excluded = [tuple(item) for answer in _answers(run, question) for item in answer["excluded"]]
-        record = briefs.build_brief(question, sections, run.request.as_of, excluded=excluded)
+        credits = {engine: (contract.attribution, contract.terms_address) for engine, contract in run.contracts.items()}
+        record = briefs.build_brief(question, sections, run.request.as_of, excluded=excluded, attributions=credits)
         if record["state"] != briefs.CURRENT:
             write_json(run.folder / "briefs" / f"{question.id}.json",
                        briefs.notice(question, run.request.as_of, record["decision"]))

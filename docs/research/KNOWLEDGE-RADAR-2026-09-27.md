@@ -175,16 +175,24 @@ Portkey's models, MIT; the Arena leaderboard dataset and the Epoch AI
 Benchmarking Hub, both CC BY 4.0), and the others are live, attributed
 lookups until either company gives written permission.
 
-The radar follows it as typed fields, not prose. Each source contract says
-whether its facts may be stored (`republication`), and a run refuses to
-start when a question that stores an answer binds a source whose terms allow
-only a live lookup. The model and endpoint directory engines drop every value
-their packaged data took from OpenRouter, and every value published by
-Artificial Analysis, even while the directory still carries them. The model
-catalogue engines read models.dev and the LiteLLM price map directly and skip
-their OpenRouter entries. Questions that depended on published index values
-are declared gaps until an openly licensed engine (Arena or Epoch AI) is
-built.
+The directory builder confirmed the same reading of both terms on September
+27, 2026: OpenRouter forbids copying from its site or services by script,
+and Artificial Analysis allows only personal, noncommercial use. The radar
+follows it as typed fields, not prose. No engine reads either by script: the
+contracts file names `openrouter.ai` and `artificialanalysis.ai` as hosts
+that are never read, and a contract that names one is refused. Both appear
+in briefs only as attributed links a customer opens. Each source contract
+also says whether its facts may be stored (`republication`), and a run
+refuses to start when a question that stores an answer binds a source whose
+terms allow only a live lookup. The model and endpoint directory engines drop
+every value their packaged data took from OpenRouter or that Artificial
+Analysis published, even while an older directory still carries them. The
+model catalogue engines read models.dev and the LiteLLM price map directly
+and skip their OpenRouter entries. Scores come from the LMArena text
+leaderboard (CC BY 4.0), which the directory records from its format 2, and
+every brief carries the credit of each source that gave it claims. The
+cheapest model per unit of thinking stays a declared gap until it is
+measured.
 
 ## What is different about the radar
 
@@ -337,14 +345,14 @@ It needs model authority and an evaluation budget before any run.
 ## Questions declared on September 27, 2026
 
 The registry, [`questions-v1.json`](../../tools/knowledge_radar/questions-v1.json),
-declares 65 questions: 54 with a source today and 11 declared gaps, each with
+declares 65 questions: 55 with a source today and 10 declared gaps, each with
 its reason.
 
 | Question | Area | Minutes, sources | Volatility, refresh | Delivery | Sensitivity | Status |
 |---|---|---|---|---|---|---|
 | New AI and machine learning papers (`papers_ai_ml_daily`) | papers | 20, 3 | days, daily | brief | general | active |
 | New and most cited papers across the sciences (`papers_across_sciences`) | papers | 45, 9 | weeks, weekly | brief | general | active |
-| Model leaders on published indices (`benchmarks_model_indices`) | benchmarks | 20, 4 | days, daily | brief, data file | general | declared gap |
+| Model leaders on the LMArena text leaderboard (`benchmarks_model_indices`) | benchmarks | 20, 4 | days, daily | brief, data file | general | active |
 | New benchmarks and evaluation suites (`benchmarks_new_evaluation_suites`) | benchmarks | 30, 3 | weeks, weekly | brief | general | active |
 | Reasoning and decision models (`models_reasoning_decision`) | models | 30, 4 | days, daily | brief, data file | general | active |
 | New model releases and availability (`models_new_releases`) | models | 15, 10 | hours, hourly | brief, data file | general | active |
@@ -464,9 +472,8 @@ machine on the service host. The fallback is a user timer on the operator
 workstation with the same command. Nothing is installed by this record.
 
 OpenRouter's model listing would detect new hosted models sooner, but its
-terms leave even private copying disputed, so the watch does not read it;
-its engine remains available as a live lookup only, and a run refuses to
-store its facts.
+terms forbid reading it by script, so the watch does not read it and the
+radar has no engine for it.
 
 ## Engine slots proposed for two stages
 
@@ -556,8 +563,9 @@ that said Ollama Cloud supports structured output.
 
 ## Open design work
 
-- An openly licensed index engine (the Arena leaderboard dataset or the Epoch
-  AI Benchmarking Hub) for the questions that are gaps under the terms above.
+- An Epoch AI Benchmarking Hub engine behind a per-benchmark licence gate,
+  and a Portkey engine if a provider appears that models.dev and LiteLLM do
+  not price.
 - The daily research watch sending back the validators it already records;
   the shared transport now accepts them.
 - The hourly watch installed on a server-side schedule, with its state kept

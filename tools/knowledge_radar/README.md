@@ -106,7 +106,7 @@ again never renews it: its review date counts from the claim's own date.
 
 ## Engines behind one source edge
 
-`knowledge_radar_source/v1` has eighteen Baltor-native engines. Local
+`knowledge_radar_source/v1` has seventeen Baltor-native engines. Local
 engines read files: `collector_state` (the source discovery collector's
 latest private exports, read only), `model_directory`,
 `endpoint_directory`, `mcp_directory` (the directory data this repository
@@ -118,8 +118,12 @@ budget and request log: `github_search`, `github_advisories`,
 radar's own read-only allow list, and `huggingface_models`,
 `huggingface_new_models`, `arxiv_listing`, `openalex_works`,
 `endoflife_calendar`, `federal_register`, `models_dev_catalogue` (models.dev,
-MIT) and `litellm_prices` (the LiteLLM price map, MIT) over HTTPS GET.
-`openrouter_models` exists as a live lookup only.
+MIT) and `litellm_prices` (the LiteLLM price map, MIT) over HTTPS GET. No
+engine reads OpenRouter or Artificial Analysis by script: the contracts file
+names both as hosts that are never read, a contract that names one is
+refused, and both appear in briefs only as attributed links a customer
+opens. The model directory's LMArena text scores (CC BY 4.0) are shown with
+their credit, which every brief carries for each source that gave it claims.
 
 Each source contract says whether the source's facts may be stored in a
 served file (`republication`) and which upstream values its engine drops
@@ -211,10 +215,10 @@ and [`tools/test_knowledge_radar_assets.py`](../test_knowledge_radar_assets.py).
 |---|---|
 | Research cost, volatility, delivery and refresh per question, with the rule | Implemented: typed fields; the reader refuses a delivery that breaks the rule; known-wrong checks and a removed-guard control |
 | Deliverable kinds | Implemented: skill packages with the brief and its metadata, typed tables with schemas, two decision helpers (`choose_model`, `check_support_window`) and four tools (`check_service_status`, `query_package_advisories`, `fetch_reference_rates`, `lookup_legal_entity`) |
-| A wider question list | Implemented: 65 questions, 54 with a source and 11 declared gaps with reasons, including retrieval methods with the STAIR paper as a lead |
+| A wider question list | Implemented: 65 questions, 55 with a source and 10 declared gaps with reasons, including retrieval methods with the STAIR paper as a lead |
 | Hourly checks for model releases | Implemented: the hourly question, the change-detecting watch with validators sent back over three openly licensed sources, and invalidation of the dependent questions; the schedule is proposed, not installed |
 | First demonstration: small models for structured extraction | Implemented: the question `models_structured_extraction` and the `choose_model` helper 2.0.0 over openly licensed data; the measurement and release are the demonstration's own steps |
-| Stored facts only from openly licensed sources | Implemented: the republication field, the run guard and the directory engines' exclusions, each with a known-wrong check |
+| Stored facts only from openly licensed sources | Implemented: no engine for OpenRouter or Artificial Analysis, a refused contract for any host that must not be read by script, the republication field and run guard, the directory engines' exclusions, and credits in every brief, each with a known-wrong check |
 | Vetting before the context layer | Implemented: native prechecks, seed link checks, schema validation, copied-text refusal, sandbox tests with known-wrong cases, the stricter review requirement on sensitive questions. Independent review stays with the existing panel |
 | Question registry and planner | Implemented |
 | Check outcomes, time fields, "no currently validated recommendation" | Implemented and tested |
@@ -240,8 +244,8 @@ and [`tools/test_knowledge_radar_assets.py`](../test_knowledge_radar_assets.py).
   only under the step's own network authority.
 - The producer family is anthropic, because Claude wrote the generator and the assets, so reviewers come
   from another family.
-- The hourly watch reads models.dev, Hugging Face and the LiteLLM price map, not OpenRouter, whose terms
-  leave even private copying disputed.
+- The hourly watch reads models.dev, Hugging Face and the LiteLLM price map. OpenRouter's terms forbid
+  reading it by script, so no engine reads it.
 - The cheapest model per unit of thinking stays a declared gap until it is measured: a listed price divided
   by a published index is neither allowed under the terms nor a measurement of thinking on a task.
 - High confidence needs two independent source engines; one source gives at most medium.

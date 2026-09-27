@@ -38,6 +38,8 @@ FAMILIES = ("papers", "skills", "plugins", "protocol_servers", "services", "repo
 INDEXES = {"Artificial Analysis Intelligence Index": "intelligence_index",
            "Artificial Analysis Coding Index": "coding_index",
            "Artificial Analysis Agentic Index": "agentic_index"}
+#: Result values the directory may carry under an open licence, by result name, and the fact each becomes.
+RESULTS = {"Arena text score": "arena_text_score"}
 
 
 def _plain_file(root: Path, relative: Path) -> Path:
@@ -165,6 +167,9 @@ def model_facts(row: dict, allowed=None, excluded_publishers=(), excluded_routes
     indexes = {INDEXES[item["name"]]: number(item.get("value")) for item in row.get("benchmarks", [])
                if item.get("name") in INDEXES and keep(item)
                and str(item.get("publisher", "")).lower() not in publishers}
+    results = {RESULTS[item["name"]]: item for item in row.get("benchmarks", [])
+               if isinstance(item, dict) and item.get("name") in RESULTS and keep(item)
+               and str(item.get("publisher", "")).lower() not in publishers and number(item.get("value")) is not None}
     quants = [item for item in row.get("quantizations", []) if number(item.get("bytes")) and keep(item)]
     smallest = min(quants, key=lambda item: (item["bytes"], item.get("name", "")), default=None)
     uses = sorted({item.get("value") for item in row.get("use_cases", []) if isinstance(item.get("value"), str)
@@ -197,13 +202,19 @@ def model_facts(row: dict, allowed=None, excluded_publishers=(), excluded_routes
         "smallest_quant_bytes": smallest["bytes"] if smallest else None,
         "smallest_quant": text_fact(smallest.get("name")) if smallest else None,
         "uses": ", ".join(uses) if uses else None,
+        "arena_text_score": number(results["arena_text_score"]["value"]) if "arena_text_score" in results else None,
+        "arena_text_score_as_of": results["arena_text_score"].get("as_of") if "arena_text_score" in results else None,
     }
 
 
 def _model_url(row: dict):
+    """The open model's own repository, or the model's page in Baltor's directory for a hosted model."""
     ids = row.get("ids") or {}
     if isinstance(ids.get("huggingface"), str):
         return "https://huggingface.co/" + ids["huggingface"]
+    slug = row.get("slug")
+    if isinstance(slug, str) and slug and all(character.isalnum() or character in "-._" for character in slug):
+        return "https://baltor.ai/models/" + slug
     return None
 
 

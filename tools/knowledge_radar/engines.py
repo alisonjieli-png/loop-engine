@@ -25,11 +25,13 @@ knowledge_radar_source/v1
     ├── openalex_works       the OpenAlex works listing
     ├── endoflife_calendar   the endoflife.date release and support calendar
     ├── federal_register     the FederalRegister.gov documents interface
-    ├── openrouter_models    the OpenRouter model listing: a live lookup only, never stored (its terms)
     ├── huggingface_new_models  the newest model repositories of named publishers
     ├── models_dev_catalogue  models.dev (MIT): hosted models with capabilities, limits and prices
     └── litellm_prices       the LiteLLM price map (MIT): prices, limits and retirement dates
 ```
+
+No engine reads OpenRouter or Artificial Analysis by script: their terms forbid it, and the source
+contracts name them as hosts that are never read. They appear only as attributed links a customer opens.
 
 An engine is an adapter the radar's Practitioner run uses. It is not a graph
 vertex, a role, a mode or a runtime type, and it grants no authority: network
