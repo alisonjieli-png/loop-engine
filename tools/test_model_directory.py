@@ -609,6 +609,123 @@ class SourcesOnThePages(unittest.TestCase):
         self.assertNotIn("through OpenRouter", text)
 
 
+#: Addresses the directory served until September 27, 2026 and dropped when it stopped copying OpenRouter's data:
+#: renamed hosted models, a duplicate address, a model only OpenRouter listed and an open model only its link reached.
+#: Each must answer as a page, a permanent redirect or 410 Gone for as long as the site runs, never "not found".
+DROPPED_ON_SEPTEMBER_27 = ("/models/x-ai-grok-4-3", "/models/qwen-qwen3-max", "/models/mistralai-mistral-large-2512",
+                           "/models/anthropic-claude-sonnet-4-5-2", "/models/inclusionai-ling-3-0-flash-fin-2",
+                           "/models/aion-labs-aion-2-0", "/models/openai-gpt-5-1-codex",
+                           "/models/mistralai-mistral-small-3-1-24b-instruct-2503")
+
+
+def unanswered(addresses) -> list:
+    """The addresses among these that would answer "not found", or that redirect to one, with the reason."""
+    broken = []
+    for address in addresses:
+        if pages.rendered_page(address, "GET", "Baltor") is not None:
+            continue
+        answer = pages.moved_answer(address, "GET", "Baltor")
+        if answer is None:
+            broken.append(f"{address} answers not found")
+        elif answer.status == 301 and pages.rendered_page(answer.location, "GET", "Baltor") is None:
+            broken.append(f"{address} redirects to {answer.location}, which answers not found")
+        elif answer.status == 410 and b'class="button" href="/models"' not in answer.body and b'href="/endpoints"' not in answer.body:
+            broken.append(f"{address} is gone without a way back")
+    return broken
+
+
+def _old(slug: str, ids: dict, sources=("modelsdev",), prices=()) -> dict:
+    return {"slug": slug, "ids": ids, "sources": [{"id": item} for item in sources],
+            "prices": [{"provider_slug": provider, "model_id": model, "route": "direct"} for provider, model in prices]}
+
+
+class MovedAddresses(unittest.TestCase):
+    """An address the directory served once answers a permanent redirect to its live page, or 410 Gone, never 404."""
+
+    def test_every_address_the_directory_stopped_serving_redirects_or_is_gone(self):
+        record = records._packaged(records.MOVED_FILE)
+        addresses = [item["from"] for item in record["moved"]] + [item["address"] for item in record["gone"]]
+        self.assertTrue(addresses)
+        self.assertEqual(unanswered(addresses + list(DROPPED_ON_SEPTEMBER_27)), [])
+
+    def test_a_service_that_forgets_the_moved_record_is_caught(self):
+        """The known-wrong control: without the record every old address answers not found, and the named check fails."""
+        with mock.patch.object(records, "load_moved", lambda: {}):
+            result = unittest.TestResult()
+            MovedAddresses("test_every_address_the_directory_stopped_serving_redirects_or_is_gone").run(result)
+        self.assertEqual(len(result.failures), 1)
+
+    def test_a_redirect_and_a_gone_page_say_where_to_go(self):
+        record = records._packaged(records.MOVED_FILE)
+        moved, gone = record["moved"][0], record["gone"][0]
+        answer = pages.moved_answer(moved["from"], "GET", "Baltor")
+        self.assertEqual((answer.status, answer.location, answer.body), (301, moved["to"], b""))
+        answer = pages.moved_answer(gone["address"], "GET", "Baltor")
+        text = answer.body.decode("utf-8")
+        self.assertEqual(answer.status, 410)
+        self.assertIn('<p class="status-page-code">410</p>', text)
+        self.assertIn(gone["since"], text)
+        self.assertIn('<meta name="robots" content="noindex">', text)
+        self.assertIsNone(pages.moved_answer(gone["address"], "POST", "Baltor"))
+        self.assertIsNone(pages.moved_answer("/models/no-such-model-anywhere", "GET", "Baltor"))
+        with mock.patch.object(records, "load_moved", side_effect=AssertionError("an interface address read the record")):
+            self.assertIsNone(pages.moved_answer("/api/v1/health", "GET", "Baltor"))
+
+    def test_the_generator_follows_exact_identifiers_and_marks_the_rest_gone(self):
+        from model_directory import moved
+        previous = [_old("x-ai-grok-x", {"openrouter": "x-ai/grok-x"}, ("openrouter", "modelsdev"), [("xai", "grok-x")]),
+                    _old("anthropic-claude-x-2", {"openrouter": "anthropic/claude.x"}, ("openrouter",)),
+                    _old("maker-model-2", {"huggingface": "maker/Model"}, ("huggingface",)),
+                    _old("aion-labs-aion-x", {"openrouter": "aion-labs/aion-x"}, ("openrouter",)),
+                    _old("someone-small", {"huggingface": "someone/small"}, ("huggingface",)),
+                    _old("maker-model-3-2", {"huggingface": "maker/Model-3.2"}, ("huggingface",)),
+                    _old("live-model", {"huggingface": "live/model"}, ("huggingface",))]
+        current = [_old("xai-grok-x", {"modelsdev": "xai/grok-x"}, prices=[("xai", "grok-x")]),
+                   _old("anthropic-claude-x", {"modelsdev": "anthropic/claude-x"}, prices=[("anthropic", "claude-x")]),
+                   _old("maker-model", {"huggingface": "maker/Model"}), _old("maker-model-3", {"huggingface": "maker/Model-3"}),
+                   _old("live-model", {"huggingface": "live/model"})]
+        earlier = {"moved": [{"from": "/models/old-a", "to": "/models/someone-small", "since": "2026-09-01", "how": "same_identifier"},
+                             {"from": "/models/old-b", "to": "/models/maker-model-2", "since": "2026-09-01", "how": "same_identifier"}],
+                   "gone": [{"address": "/models/live-model", "since": "2026-09-01", "reason": "not_listed"}]}
+        record = moved.updated_record(previous, [{"slug": "gone-host", "sources": []}], current, [], earlier, "2026-09-27")
+        self.assertEqual({item["from"]: (item["to"], item["how"]) for item in record["moved"]},
+                         {"/models/x-ai-grok-x": ("/models/xai-grok-x", "maker_price"),
+                          "/models/anthropic-claude-x-2": ("/models/anthropic-claude-x", "shared_address"),
+                          "/models/maker-model-2": ("/models/maker-model", "same_identifier"),
+                          "/models/old-b": ("/models/maker-model", "same_identifier")})
+        self.assertEqual({item["address"]: item["reason"] for item in record["gone"]},
+                         {"/models/old-a": "not_listed", "/models/aion-labs-aion-x": "refused_source",
+                          "/models/someone-small": "not_listed", "/models/maker-model-3-2": "not_listed",
+                          "/endpoints/gone-host": "not_listed"})
+        live = {"/models/" + row["slug"] for row in current}
+        self.assertEqual(len(records.validate_moved(record, live)), 9)
+
+    def test_the_reader_refuses_a_record_that_would_break_an_address(self):
+        live = {"/models/new", "/endpoints/host"}
+        good = {"record_type": records.MOVED_RECORD_TYPE,
+                "moved": [{"from": "/models/old", "to": "/models/new", "since": "2026-09-27", "how": "maker_price"}],
+                "gone": [{"address": "/endpoints/old-host", "since": "2026-09-27", "reason": "not_listed"}]}
+        self.assertEqual(records.validate_moved(good, live)["/models/old"], (301, "/models/new", "2026-09-27"))
+        wrong = {
+            "a redirect to an address that is not served": ("moved", 0, "to", "/models/elsewhere"),
+            "an entry for an address that is served": ("moved", 0, "from", "/models/new"),
+            "an address outside the directory": ("gone", 0, "address", "/pricing"),
+            "an address that is not an address part": ("gone", 0, "address", "/models/Not A Slug"),
+            "an unknown reason": ("gone", 0, "reason", "forgotten"),
+            "an unknown way of finding the move": ("moved", 0, "how", "similar_name"),
+            "a day that is not a date": ("gone", 0, "since", "yesterday"),
+        }
+        for description, (group, index, field, value) in wrong.items():
+            record = json.loads(json.dumps(good))
+            record[group][index][field] = value
+            with self.subTest(case=description), self.assertRaises(records.ModelDirectoryError):
+                records.validate_moved(record, live)
+        twice = json.loads(json.dumps(good))
+        twice["gone"].append({"address": "/models/old", "since": "2026-09-27", "reason": "not_listed"})
+        with self.assertRaises(records.ModelDirectoryError):
+            records.validate_moved(twice, live)
+
+
 class PagesAndSetup(unittest.TestCase):
     def test_the_pages_are_served_and_unknown_addresses_are_not(self):
         directory = records.load_directory()

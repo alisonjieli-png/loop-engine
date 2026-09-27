@@ -24,7 +24,7 @@ from pathlib import Path
 
 from loop_engine.core.service_runtime import model_directory as records
 from loop_engine.core.service_runtime import model_directory_fit as fit
-from model_directory import encode, sources
+from model_directory import encode, moved, sources
 from model_directory.endpoints import assemble_endpoints, harness_records
 from model_directory.fetch import CachedReader
 from model_directory.models import assemble_models
@@ -124,7 +124,13 @@ def main(argv=None) -> int:
                       "oldest_read": min(source_days.get(record["id"], {""})), "newest_read": max(source_days.get(record["id"], {""}))}
                      for record in encode.SOURCE_RECORDS]
     report["reader"] = reader.summary()
-    manifest = encode.write_directory(arguments.output, models, endpoints, harnesses, hardware, sources_state, built_at, report)
+    # The rows this build replaces are still in the output folder: each address they served that this build does not
+    # serve is recorded as moved or gone, so the service never answers "not found" at an address it once served.
+    moved_record = moved.updated_record(moved.read_rows(arguments.output, "models.json", "models"),
+                                        moved.read_rows(arguments.output, "endpoints.json", "endpoints"),
+                                        models, endpoints, moved.read_record(arguments.output), today)
+    manifest = encode.write_directory(arguments.output, models, endpoints, harnesses, hardware, sources_state, built_at,
+                                      report, moved_record)
     print(json.dumps({"counts": manifest["counts"], "model_rows_by_source": manifest["model_rows_by_source"],
                       "files": {name: item["bytes"] for name, item in manifest["files"].items()},
                       "refused": len(report["refused"]), "reader": report["reader"]}, indent=1))

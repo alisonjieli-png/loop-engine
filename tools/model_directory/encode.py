@@ -135,9 +135,10 @@ def _lines(record_type: str, key: str, rows: list, extra: "dict | None" = None) 
 
 
 def write_directory(folder: Path, models: list, endpoints: list, harnesses: list, hardware: dict, sources_state: list,
-                    built_at: str, report: dict) -> dict:
+                    built_at: str, report: dict, moved: dict) -> dict:
     """Write every packaged file and return the manifest, which is written last."""
     files = {}
+    files[records.MOVED_FILE] = _write(folder / records.MOVED_FILE, json.dumps(moved, indent=1, sort_keys=True) + "\n")
     ordered = sorted(models, key=lambda row: row["slug"])
     files["models.json"] = _write(folder / "models.json", _lines(records.MODELS_RECORD_TYPE, "models", ordered))
     files["endpoints.json"] = _write(folder / "endpoints.json", _lines(records.ENDPOINTS_RECORD_TYPE, "endpoints", endpoints,
@@ -153,7 +154,7 @@ def write_directory(folder: Path, models: list, endpoints: list, harnesses: list
          "rows": fits}, separators=(",", ":")) + "\n")
     counts = {"models": len(ordered), "endpoints": sum(1 for row in endpoints if row["kind"] == records.ENDPOINT_HOSTED),
               "runtimes": sum(1 for row in endpoints if row["kind"] == records.ENDPOINT_LOCAL),
-              "fit_rows": len(fits), "search_rows": len(search)}
+              "fit_rows": len(fits), "search_rows": len(search), "moved": len(moved["moved"]), "gone": len(moved["gone"])}
     by_source: dict = {}
     for row in ordered:
         for source_id in {item["id"] for item in row["sources"]}:

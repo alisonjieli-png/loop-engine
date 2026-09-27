@@ -220,6 +220,13 @@ your account or your key.</p>
 <p class="caption">If you followed a link from {name} to get here, the link is wrong and
 we would like to know. Tell the person who runs this service which page you came from.</p>
 """
+#: The page at an address the website served once and has removed on purpose. It says why, in words the caller wrote
+#: from its own record, and gives the way back to the list the page belonged to.
+GONE_ADDRESS_PAGE = """<h1>{heading}</h1>
+<p class="lede">{reason}</p>
+<div class="actions"><a class="button" href="{back}">{back_label}</a>
+<a class="button" href="/">Go home</a></div>
+"""
 #: The page for a failure on the service's side. Its sentences are the refusal wording of refusals.py for the exact code
 #: and status, so the page and the record a program reads say the same thing. The reference is the one the service
 #: issued for this request and recorded before answering; the page repeats nothing from the request.
@@ -457,6 +464,17 @@ def missing_address_page(display_name):
     name = escape(display_name)
     return _STATUS_PAGE.format(name=name, title="Address not found", kind="missing", code="404",
                                body=MISSING_ADDRESS_PAGE.format(name=name)).encode("utf-8")
+
+
+def gone_address_page(display_name, heading, reason, back, back_label):
+    """Return the bytes of the page a reader sees, with the status 410 Gone, at an address the website removed.
+
+    Every argument comes from a packaged record and is escaped; nothing comes from the request.
+    """
+    name = escape(display_name)
+    body = GONE_ADDRESS_PAGE.format(heading=escape(heading), reason=escape(reason), back=escape(back),
+                                    back_label=escape(back_label))
+    return _STATUS_PAGE.format(name=name, title="Page removed", kind="gone", code="410", body=body).encode("utf-8")
 
 
 def server_error_page(display_name, status, message, action, reference):

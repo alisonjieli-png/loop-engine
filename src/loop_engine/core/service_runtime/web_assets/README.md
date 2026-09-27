@@ -364,10 +364,14 @@ Their header and footer are the ones `index.html` serves, copied through
 `web_chrome.py`, and `web_pages` writes the three list pages' head from the
 site map as it does for every page. Only the two compact indexes, `model-directory.css` and
 `model-directory.js` are served as files; `models.json`, `endpoints.json`,
-`hardware.json` and `manifest.json` stay inside the service.
+`hardware.json`, `moved.json` and `manifest.json` stay inside the service.
 
 `tools/build_model_directory.py` writes the records daily from the sources
-in `tools/model_directory/SOURCES.md`. Every row keeps each source address and
+in `tools/model_directory/SOURCES.md`. An address the directory served once
+and no longer serves answers from `model-directory/moved.json`: a permanent
+redirect to the address its model has now, or 410 Gone with the reason and a
+link back to the list. Each build writes that record by comparing the rows it
+replaces with the rows it writes, so no address it served answers "not found". Every row keeps each source address and
 the day it was read, and carries a `commercial_relationship` of kind none
 that no order, filter or hardware fit reads. `model_directory_fit.py` holds the
 memory formula, which the page script repeats and

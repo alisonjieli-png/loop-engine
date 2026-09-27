@@ -16,6 +16,9 @@ The rules, each with a known-wrong case in `tools/test_model_directory.py`:
   only from an openly licensed price source, and a published result with a value comes only from
   an openly licensed results source;
 - a price carries the date it applies to, so a page can show how old it is;
+- an address the directory served once never answers "not found": the moved-address record sends it
+  to a live address or marks it gone, and a record that would redirect to an address the directory
+  does not serve, or name a live address, is refused;
 - an unknown fact is absent, never a guess, and a page renders it as "Unknown";
 - every row carries a `commercial_relationship` object read by the shared schema, and nothing that
   orders, filters, includes or fits a row reads it.
@@ -42,6 +45,13 @@ ENDPOINTS_RECORD_TYPE = "model_directory_endpoints/v2"
 HARDWARE_RECORD_TYPE = "model_directory_hardware/v1"
 FIT_INDEX_RECORD_TYPE = "model_directory_fit_index/v1"
 SEARCH_INDEX_RECORD_TYPE = "model_directory_search_index/v1"
+#: The addresses the directory stopped serving, each moved to a live address or gone with its reason.
+MOVED_RECORD_TYPE = "model_directory_moved/v1"
+MOVED_FILE = "moved.json"
+#: The prefixes of the addresses the moved record may name, and how each entry was found or why it is gone.
+MOVED_PREFIXES = ("/models/", "/endpoints/")
+MOVED_HOW = ("same_identifier", "maker_price", "shared_address")
+GONE_REASONS = ("refused_source", "not_listed")
 #: The packaged folder, inside web_assets, that holds every directory file.
 DATA_FOLDER = "model-directory"
 #: The scheme every stored source address uses. Addresses are stored without it.
@@ -464,6 +474,51 @@ def validate_harness(value) -> dict:
     _day(value["source_read"], where + ".source_read")
     _sources(value, where)
     return value
+
+
+def validate_moved(record, live: set) -> dict:
+    """Refuse a moved-address record that would break an address: a redirect to an address that is not live, an entry
+    for a live address, or an address named twice. Returns {address: (status, target address or gone reason, since)}."""
+    if not isinstance(record, dict) or record.get("record_type") != MOVED_RECORD_TYPE:
+        raise ModelDirectoryError(f"this reader reads {MOVED_RECORD_TYPE}")
+    _fields(record, "moved record", ("record_type", "moved", "gone"))
+    answers: dict = {}
+
+    def address(value, where: str) -> str:
+        _text(value, where)
+        prefix = next((item for item in MOVED_PREFIXES if value.startswith(item)), None)
+        if prefix is None or not _SLUG.match(value[len(prefix):]):
+            raise ModelDirectoryError(f"{where} is a model or endpoint page address, not {value!r}")
+        if value in answers:
+            raise ModelDirectoryError(f"{where} names {value} a second time")
+        if value in live:
+            raise ModelDirectoryError(f"{where} names {value}, which the directory serves")
+        return value
+
+    for index, item in enumerate(_list(record["moved"], "moved record.moved")):
+        where = f"moved record.moved[{index}]"
+        _fields(item, where, ("from", "to", "since", "how"))
+        source = address(item["from"], where + ".from")
+        if item["to"] not in live:
+            raise ModelDirectoryError(f"{where}.to is {item['to']!r}, which the directory does not serve")
+        if item["how"] not in MOVED_HOW:
+            raise ModelDirectoryError(f"{where}.how is one of {MOVED_HOW}")
+        answers[source] = (301, item["to"], _day(item["since"], where + ".since"))
+    for index, item in enumerate(_list(record["gone"], "moved record.gone")):
+        where = f"moved record.gone[{index}]"
+        _fields(item, where, ("address", "since", "reason"))
+        if item["reason"] not in GONE_REASONS:
+            raise ModelDirectoryError(f"{where}.reason is one of {GONE_REASONS}")
+        answers[address(item["address"], where + ".address")] = (410, item["reason"], _day(item["since"], where + ".since"))
+    return answers
+
+
+@lru_cache(maxsize=1)
+def load_moved() -> dict:
+    """The packaged moved-address record, checked against the addresses the packaged directory serves."""
+    directory = load_directory()
+    live = {"/models/" + row["slug"] for row in directory.models} | {"/endpoints/" + row["slug"] for row in directory.endpoints}
+    return validate_moved(_packaged(MOVED_FILE), live)
 
 
 def _packaged(name: str):

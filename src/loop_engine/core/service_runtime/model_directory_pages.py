@@ -261,6 +261,45 @@ def rendered_page(path: str, method: str, display_name: str, host: "str | None" 
     return web_pages.version_asset_references(body), web_pages.HTML_MEDIA_TYPE
 
 
+#: What the removed page says for each reason a model or endpoint page is gone, with the day the page went.
+GONE_SENTENCES = {
+    "refused_source": ("This page was built from a source whose terms do not allow this directory to copy it. On {since}, "
+                       "no openly licensed source that the directory reads listed it at this address."),
+    "not_listed": "On {since}, no source that this directory reads listed it any more.",
+}
+
+
+@dataclass(frozen=True)
+class MovedAnswer:
+    """The answer at an address the directory served once: a permanent redirect, or 410 Gone with a page. The body is
+    the page a GET receives; the transport sends none for HEAD and states its length."""
+
+    status: int
+    location: str
+    body: bytes
+
+
+def moved_answer(address: str, method: str, display_name: str) -> "MovedAnswer | None":
+    """301 to the live address of a model or endpoint page that moved, 410 with a page for one that is gone, or None.
+
+    The transport asks after every page renderer found nothing, so a live page always wins over an entry here. Only a
+    model or endpoint page address reads the record, so an interface request never loads the directory."""
+    if method not in ("GET", "HEAD") or not address.startswith(records.MOVED_PREFIXES):
+        return None
+    found = records.load_moved().get(address)
+    if found is None:
+        return None
+    from . import web_pages
+    status, target, since = found
+    if status == 301:
+        return MovedAnswer(301, target, b"")
+    model = address.startswith(MODEL_PREFIX)
+    return MovedAnswer(410, "", web_pages.gone_address_page(
+        display_name, "This model page was removed." if model else "This service page was removed.",
+        GONE_SENTENCES[target].format(since=since), "/models" if model else "/endpoints",
+        "Browse the models" if model else "Compare endpoints"))
+
+
 def render(address: str, display_name: str) -> "bytes | None":
     """The rendered bytes of the page at an address, before the served head and asset versions are written."""
     return _render_cached(address, display_name, today()) if handles(address) else None

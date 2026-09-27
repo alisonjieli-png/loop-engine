@@ -43,7 +43,7 @@ from .waitlist import ServiceWaitlist, administer_waitlist, join_request
 # operations above (a report, a staff flag), so they are imported under their own name.
 from .feedback import (ASK_FOR_MATERIAL_LINE, FEEDBACK_OPERATIONS as CUSTOMER_FEEDBACK_OPERATIONS, RATE_OPERATION,
                        ServiceFeedback)
-from .model_directory_pages import rendered_page
+from .model_directory_pages import moved_answer, rendered_page
 from . import library_page
 from . import red_team_page
 from . import status_pages
@@ -1688,6 +1688,18 @@ class ServiceHttpApplication:
             elif media_type == HTML_MEDIA_TYPE:
                 self.public_links.viewed(path)
             return Response(b"" if method == "HEAD" else body, media_type=media_type, headers=headers)
+        moved = moved_answer(path, method, self.configuration.display_name)
+        if moved is not None:
+            # A model or endpoint page the directory served once: a permanent redirect to its live address, or 410 Gone
+            # with the reason and the way back, from the packaged moved-address record.
+            headers = self._page_headers()
+            if moved.location:
+                headers["Location"] = moved.location
+                return Response(status_code=moved.status, headers=headers)
+            if method == "HEAD":
+                headers["Content-Length"] = str(len(moved.body))
+            return Response(b"" if method == "HEAD" else moved.body, status_code=moved.status, media_type=HTML_MEDIA_TYPE,
+                            headers=headers)
         if path.startswith("/out/") and method in ("GET", "HEAD"):
             # A counted link from a public list. The counter is given the path and nothing else.
             answer = self.public_links.redirect(path, method, Response)
