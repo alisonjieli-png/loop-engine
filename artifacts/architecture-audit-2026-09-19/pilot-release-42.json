@@ -1,0 +1,61 @@
+{
+  "record_type": "pilot_release_record/v1",
+  "release": 42,
+  "app": "baltor-pilot",
+  "source_revision": "f477aa6e9ea64dd9f4e19f6d8bd4744f98845ad2",
+  "source_tree": "88e4cc8e865355ca9dae98f19b2f10ba4a41faba",
+  "image": "registry.fly.io/baltor-pilot@sha256:7818f73a1d8f53b594b6175adab9338efdc1a63b8cd9abf1e7f14efa7a5b7625",
+  "rollback_release": 41,
+  "rollback_image": "registry.fly.io/baltor-pilot@sha256:73ee31a4f7fddb9c7a2fa22f4e0166749fbaca93e4eb47cc35a0f9a343f9f31c",
+  "deployed_at": "2026-09-27T20:51:48Z",
+  "ci_run": 36349035044,
+  "ci_conclusion": "success",
+  "deploy_run": 36349428058,
+  "deploy_workflow": 36349428058,
+  "deploy_workflow_conclusion": "success",
+  "deployment_gate_after": "false",
+  "public_checks_passed": true,
+  "public_hosts_passed": 9,
+  "visitor_pages": 57,
+  "visitor_views": 237,
+  "visitor_links": 351,
+  "visitor_problems": 0,
+  "visitor_screenshots": 114,
+  "catalogue_checks_passed": 9,
+  "catalogue_checks_planned": 9,
+  "service_checks_passed": 19,
+  "service_checks_planned": 19,
+  "service_check_attempts": [
+    {
+      "attempt": 1,
+      "executed": 19,
+      "passed": 19,
+      "outcome": "all passed"
+    }
+  ],
+  "advisory": {
+    "addresses_checked": 135,
+    "addresses_not_200": 0,
+    "pi_extension_files_matching": 9,
+    "pi_extension_files_checked": 9,
+    "detailed_browser_rules_passed": 214,
+    "detailed_browser_rules_total": 216,
+    "detailed_browser_rule_failures": "the same two hero rules as release 41, written before the September 26 hero; the rules flexibility audit in this train covers them"
+  },
+  "changes": [
+    "The model directory no longer republishes values copied from OpenRouter or Artificial Analysis; model pages link to them instead.",
+    "Every model directory address that stopped being served answers 301 (30 addresses) or 410 (103 addresses) instead of 404.",
+    "The model directory records that Ollama Cloud does not support structured outputs.",
+    "Settings refuse a custom provider that takes a built-in provider name.",
+    "--compile-provider can select a keyless local provider, and the run checkpoint records a task that came from --file.",
+    "The overnight guide no longer names the undefined --allow-sandbox-commands option.",
+    "Release tooling never empties a folder the manifest generator did not write, and workflow checks reach a conclusion before they report success."
+  ],
+  "report_sha256": {
+    "people.log": "dd1d4d29243299eb082b18b223a94bb89929fc89370bdda537035550da5c7b6c",
+    "catalogue-check.json": "8d1af1ba454db8c9093a5cc800a6dc040d7845b74d14c08135d8553f43239730",
+    "service-check.json": "aca3c74d73d92ded113a24cebcf85a5bcf07b999a78ccc8b639cb7755dde70d1",
+    "http-surfaces.tsv": "c6bba302f013a32eb0645854010be8ec69832c8f74c4c693f7b463d76c04e589"
+  },
+  "private_reports": "/home/username/baltor-private/releases/release-42-2026-09-27"
+}
