@@ -543,6 +543,24 @@ class DataTableLineTest(unittest.TestCase):
                 self.assertFalse(run_tests(target, "status_codes_table")[0])
 
 
+class VerbatimCodeSourcesTest(unittest.TestCase):
+    def test_the_declaration_is_a_valid_import_source_of_code_modules_only(self):
+        from licensed_import.harness_kinds import SourceScope, declared_kind
+        from licensed_import.sources import read_sources
+        record = read_sources(json.loads((HERE / "supply_lines" / "verbatim_code_sources.json").read_text("utf-8")))
+        self.assertGreaterEqual(len(record["repositories"]), 5)
+        for row in record["repositories"]:
+            self.assertEqual(row["kinds"], ["code_module"], row["source_id"])
+            self.assertTrue(row["include"], row["source_id"])
+        python = next(row for row in record["repositories"] if row["repository"] == "TheAlgorithms/Python")
+        scope = SourceScope(tuple(python["kinds"]), tuple(python["include"]), tuple(python["exclude"]))
+        self.assertEqual(declared_kind("sorts/quick_sort.py", scope), ("code_module", "code_module"))
+        # Known wrong: Project Euler solutions, scrapers, package markers and tests are never a module package.
+        for path in ("project_euler/problem_001/sol1.py", "web_programming/fetch_jobs.py", "maths/__init__.py",
+                     "sorts/test_quick_sort.py"):
+            self.assertIsNone(declared_kind(path, scope), path)
+
+
 class SupplyReportTest(unittest.TestCase):
     def test_the_projection_stops_when_supply_ends_and_keeps_skills_under_their_cap(self):
         from licensed_import.composition import load_targets
