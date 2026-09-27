@@ -99,10 +99,17 @@ therefore not a daily digest or a directory. It is a maintained library of
 engineering decisions and executable capabilities: research once per
 relevant task and configuration, preserve the evidence, test the
 implementation, and let many harnesses reuse the result without repeating
-the investigation." The owner's rule for what becomes a file: research that
-takes an engineer more than about five minutes across several sources is
-done once and served as a file, and a volatile fact, such as a stock price,
-is served as a tool that fetches it, never as a stored value. Beside the
+the investigation." The owner's rule for what becomes a file, in their words:
+"if the research time takes an engineer more than five minutes, multiple
+websites to go to, then it's not very trivial, and it's something that
+probably 10,000 engineers may be doing daily. We should just do that once
+and then put it into our context layer that serves it up as an appropriate
+file." A volatile fact is served as a tool that fetches it: "rather than
+holding stock price, we can hold tools that can call stock prices because
+the research time there is very trivial." The owner named further fields,
+among them "laws that have changed", "major geopolitical things",
+"contracts" and "stock trading information", and files that are "actual
+executable, like Python files, encapsulated TypeScript". Beside the
 component library, Baltor therefore maintains engineering decisions and
 executable capabilities: decision cards with their evidence, data files,
 tested code in Python or TypeScript, and tools for volatile facts. Each one
