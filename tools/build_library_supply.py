@@ -154,6 +154,27 @@ def openapi(args) -> dict:
                   complete=not args.source)
 
 
+def programs(args) -> dict:
+    from supply_lines import program_installs as line
+    run_folder = _outside(args.run_folder)
+    run_folder.mkdir(parents=True, exist_ok=True)
+    revision = code_revision(args.authorize_store_writes)
+    reader = FactReader(run_folder, line.HOSTS, maximum_requests=args.maximum_requests,
+                        pause_seconds=args.pause_seconds)
+    rows = line.read_sources()
+    if args.formula:
+        rows = [row for row in rows if row["formula"] in args.formula]
+    repositories = sorted({row["repository"] for row in rows if row["repository"]} | {line.HOMEBREW_CORE})
+    facts_by_repository = reader.repository_facts(repositories)
+    built, refusals, facts, summary = line.generate(reader, rows, code_revision=revision,
+                                                    licence_text=LICENCE_FILE.read_bytes(),
+                                                    generated_on=now_utc()[:10], staging=run_folder / "staging",
+                                                    repository_facts=facts_by_repository)
+    return finish(args, records.PROGRAM_INSTALLS, built, refusals, {"smoke_tests": summary,
+                                                                    "programs_declared": len(rows)},
+                  reader, facts, complete=not args.formula)
+
+
 def parser() -> argparse.ArgumentParser:
     main = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     commands = main.add_subparsers(dest="command", required=True)
@@ -177,12 +198,15 @@ def parser() -> argparse.ArgumentParser:
     common(two)
     two.add_argument("--source", action="append", help="only these source identities of openapi_sources.json")
     two.add_argument("--stars", action="store_true", help="read each repository's stars (GraphQL)")
+    three = commands.add_parser("programs")
+    common(three)
+    three.add_argument("--formula", action="append", help="only these formulae of program_sources.json")
     return main
 
 
 def main(argv=None) -> int:
     args = parser().parse_args(argv)
-    {"mcp-registry": mcp_registry, "openapi": openapi}[args.command](args)
+    {"mcp-registry": mcp_registry, "openapi": openapi, "programs": programs}[args.command](args)
     return 0
 
 

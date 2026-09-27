@@ -374,5 +374,72 @@ class OpenApiLineTest(unittest.TestCase):
         self.assertIs(urllib.request.urlopen, before)
 
 
+FORMULA = {"name": "sample", "desc": "Sample tool", "license": "MIT", "homepage": "https://example.org",
+           "deprecated": False, "disabled": False, "versions": {"stable": "1.2.3"},
+           "urls": {"stable": {"url": "https://example.org/sample-1.2.3.tar.gz", "checksum": "a" * 64}},
+           "bottle": {"stable": {"files": {
+               "arm64_sequoia": {"url": "https://ghcr.io/sample/arm", "sha256": "b" * 64},
+               "sonoma": {"url": "https://ghcr.io/sample/intel", "sha256": "c" * 64},
+               "x86_64_linux": {"url": "https://ghcr.io/sample/linux", "sha256": "d" * 64}}}}}
+PROGRAM_ROW = {"formula": "sample", "program": "sample-no-such-program", "version_arguments": ["--version"],
+               "repository": "example/sample", "effects": ["writes_fs"], "category": "files"}
+RELEASE = {"tagName": "v1.2.3", "releaseAssets": {"nodes": [
+    {"name": "sample-linux.tar.gz", "size": 10, "downloadUrl": "https://github.com/example/sample/linux",
+     "digest": "sha256:" + "e" * 64},
+    {"name": "sample-old.tar.gz", "size": 10, "downloadUrl": "https://github.com/example/sample/old", "digest": None}]}}
+
+
+class ProgramLineTest(unittest.TestCase):
+    def _write(self, folder, row=PROGRAM_ROW, formula=FORMULA, release=RELEASE):
+        from supply_lines import program_installs as line
+        from supply_lines.openapi_operations import literal, snake
+        module = f"{snake(row['program'])}_program"
+        plan = line.recipe(row, formula, release)
+        wrapper = line.WRAPPER.format(title="t", program=row["program"], version=plan["version"],
+                                      formula=formula["name"], description="Sample tool",
+                                      version_arguments=literal(tuple(row["version_arguments"])), hint="brew install sample")
+        target = Path(folder) / module
+        target.mkdir()
+        (target / f"{module}.py").write_text(wrapper, encoding="utf-8")
+        (target / f"test_{module}.py").write_text(line.TESTS.format(program=row["program"], module=module,
+                                                                    class_name="SampleTest"), encoding="utf-8")
+        (target / "install.json").write_text(json.dumps(plan), encoding="utf-8")
+        return target, module, plan
+
+    def test_the_recipe_pins_each_platform_bottle_and_the_published_release_digests(self):
+        from supply_lines import program_installs as line
+        plan = line.recipe(PROGRAM_ROW, FORMULA, RELEASE)
+        self.assertEqual(sorted(plan["platforms"]), ["linux-x86_64", "macos-arm64", "macos-x86_64"])
+        self.assertEqual(plan["platforms"]["macos-arm64"]["bottle"]["sha256"], "b" * 64)
+        self.assertEqual(plan["source"], {"url": "https://example.org/sample-1.2.3.tar.gz", "sha256": "a" * 64})
+        # An asset without a published digest is left out; a release of another version is left out whole.
+        self.assertEqual([asset["name"] for asset in plan["release"]["assets"]], ["sample-linux.tar.gz"])
+        self.assertIsNone(line.recipe(PROGRAM_ROW, FORMULA, {**RELEASE, "tagName": "v9.9.9"})["release"])
+
+    def test_the_wrapper_passes_its_own_tests_and_known_wrong_wrappers_fail_them(self):
+        from supply_lines.openapi_operations import run_tests
+        with tempfile.TemporaryDirectory() as folder:
+            target, module, _plan = self._write(folder)
+            passed, count, output = run_tests(target, module)
+            self.assertTrue(passed, output)
+            self.assertEqual(count, 5)  # four checks and the smoke test, skipped: the program is not installed
+            source = (target / f"{module}.py").read_text(encoding="utf-8")
+            for broken in (source.replace("shell=False", "shell=True"),
+                           source.replace('        if "\\x00" in value:\n', '        if False:\n'),
+                           source.replace("if isinstance(arguments, (str, bytes)):", "if False:")):
+                self.assertNotEqual(broken, source)
+                (target / f"{module}.py").write_text(broken, encoding="utf-8")
+                self.assertFalse(run_tests(target, module)[0])
+
+    def test_a_recipe_whose_checksum_is_not_published_fails_its_own_test(self):
+        from supply_lines.openapi_operations import run_tests
+        formula = json.loads(json.dumps(FORMULA))
+        with tempfile.TemporaryDirectory() as folder:
+            target, module, plan = self._write(folder, formula=formula)
+            plan["platforms"]["macos-arm64"]["bottle"]["sha256"] = "not a digest"
+            (target / "install.json").write_text(json.dumps(plan), encoding="utf-8")
+            self.assertFalse(run_tests(target, module)[0])
+
+
 if __name__ == "__main__":
     unittest.main()
