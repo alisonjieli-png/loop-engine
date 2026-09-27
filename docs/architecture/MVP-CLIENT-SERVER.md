@@ -47,23 +47,27 @@ from the newest release record, follow the release record and correct this
 section. Update this section in the same change that records a new release.
 It describes a private pilot. It does not describe a qualified paid service.
 
-The latest deployment is Fly release 40, completed on September 27, 2026 at
-05:11:34 UTC and checked afterwards. It runs
-`eae7946d836805afc7f0a007eece902c66d7bde6`. Its image, rollback target,
-continuous integration and checks are recorded in
+The latest deployment is Fly release 41, completed on September 27, 2026 at
+19:39:38 UTC and checked afterwards. It runs
+`389fe7c6c553a035e810b1173bee9e70edf766df`, the first consolidation train of
+that day. Its image, rollback target, continuous integration and checks are
+recorded in
+[`pilot-release-41.json`](../../artifacts/architecture-audit-2026-09-19/pilot-release-41.json)
+and [the release 41 evidence](../../artifacts/release-41-2026-09-27/README.md).
+Continuous integration and deployment both succeeded; the deployment gate is
+false. The visitor check found no problem across 57 pages, 237 views and 322
+links on nine hostnames. Catalogue checks passed nine of nine. The hosted
+service check was interrupted by a network error on its first request minutes
+after the deploy and passed nineteen of nineteen when run again; both results
+are recorded.
+
+Release 40, completed at 05:11:34 UTC the same day from
+`eae7946d836805afc7f0a007eece902c66d7bde6`, is retained as the rollback target;
+its checks are in
 [`pilot-release-40.json`](../../artifacts/architecture-audit-2026-09-19/pilot-release-40.json)
 and [the release 40 evidence](../../artifacts/release-40-2026-09-27/README.md).
-Continuous integration and deployment both succeeded; the deployment gate is
-false. All ten hosts passed. The visitor check found no problem across
-54 pages, 225 views and 348 links. Catalogue and service checks passed nine
-and nineteen checks respectively. The source disclosure preserved the original
-sample body and passed mouse, keyboard and phone checks. A real signed-in
-390-pixel check confirmed document/body widths of 390 and zero horizontal
-window scrolling, closing release 39's account-heading overflow. That browser
-check performed no download.
-
-Release 39 is retained as the rollback target. Its post-deployment command
-failure and successful grant/billing reconciliation remain in
+Release 39's post-deployment command failure and successful grant/billing
+reconciliation remain in
 [release 39 evidence](../../artifacts/release-39-2026-09-27/README.md).
 Release 38 applied the orange redesign at 01:19 UTC on September 27; see
 [release 38 evidence](../../artifacts/release-38-2026-09-27/README.md).

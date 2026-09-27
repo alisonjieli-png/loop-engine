@@ -1,0 +1,68 @@
+{
+  "record_type": "pilot_release_record/v1",
+  "release": 41,
+  "app": "baltor-pilot",
+  "source_revision": "389fe7c6c553a035e810b1173bee9e70edf766df",
+  "source_tree": "07d37dccb159aeb9e660f419addcb795de436dcb",
+  "image": "registry.fly.io/baltor-pilot@sha256:73ee31a4f7fddb9c7a2fa22f4e0166749fbaca93e4eb47cc35a0f9a343f9f31c",
+  "rollback_release": 40,
+  "rollback_image": "registry.fly.io/baltor-pilot@sha256:be98a37bb29c1ae48c62c18d87c8fea5e9f0ba278ef546a217e245e277d8629e",
+  "deployed_at": "2026-09-27T19:39:38Z",
+  "ci_run": 36344591966,
+  "ci_conclusion": "success",
+  "deploy_run": 36345000680,
+  "deploy_workflow": 36345000680,
+  "deploy_workflow_conclusion": "success",
+  "deployment_gate_after": "false",
+  "public_checks_passed": true,
+  "public_hosts_passed": 9,
+  "visitor_pages": 57,
+  "visitor_views": 237,
+  "visitor_links": 322,
+  "visitor_problems": 0,
+  "visitor_screenshots": 114,
+  "catalogue_checks_passed": 9,
+  "catalogue_checks_planned": 9,
+  "service_checks_passed": 19,
+  "service_checks_planned": 19,
+  "service_check_attempts": [
+    {
+      "attempt": 1,
+      "executed": 1,
+      "passed": 0,
+      "outcome": "interrupted by a network error on the first request to the machine address, minutes after the deploy"
+    },
+    {
+      "attempt": 2,
+      "executed": 19,
+      "passed": 19,
+      "outcome": "all passed"
+    }
+  ],
+  "advisory": {
+    "addresses_checked": 135,
+    "addresses_not_200": 0,
+    "pi_extension_files_matching": 9,
+    "pi_extension_files_checked": 9,
+    "detailed_browser_rules_passed": 214,
+    "detailed_browser_rules_total": 216,
+    "detailed_browser_rule_failures": "two hero rules written before the September 26 hero expect no search demonstration in the hero band; recorded for the rules flexibility audit"
+  },
+  "changes": [
+    "Pages served before scripts run show the live library count instead of a fixed 43.",
+    "The homepage example folder lists only the files the download delivers.",
+    "Three customer guides: component concepts, updates and withdrawals, common questions.",
+    "Two service page claims repaired and held to the source.",
+    "The first-party Baltor library skill 0.3.0 ships in integrations/ for Claude Code, Codex, OpenCode and Pi.",
+    "The install tool compiles packages into OpenCode tools and Pi extensions.",
+    "Continuous integration starts the live Ollama job only when a person asks for it."
+  ],
+  "report_sha256": {
+    "people.log": "38eb212c8076ea94215e7f68a06c475923bd141bf26a449b1c76ce71a1072dc6",
+    "catalogue-check.json": "f25f79d0f20a9b844242704cdffe1b9af8bd6e6c379c18ba735545e4b8d980d1",
+    "service-check.json": "ad23b15c0f4c2a1a765559092d523d57946adff1d029ebf4abab0da858eb50b5",
+    "service-check-rerun.json": "eb9a3d0b9788295c961739906b0f93b0588b5b60749641b4bf3758ad5b6dc7ee",
+    "http-surfaces.tsv": "c6bba302f013a32eb0645854010be8ec69832c8f74c4c693f7b463d76c04e589"
+  },
+  "private_reports": "/home/username/baltor-private/releases/release-41-2026-09-27"
+}
