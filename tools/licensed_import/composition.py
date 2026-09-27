@@ -19,7 +19,9 @@ One export of S packages (the slot)
 ├── shares: the target shares, or, given the served library's counts, each family's remaining
 │   need to the goal over the total need (supply-aware: the library reaches the target mix at
 │   the goal); a capped family never draws more than its cap share of a slot
-├── quota of a family: its share of S, whole packages by the largest remainder
+├── quota of a family: its share of S, whole packages by the largest remainder; knowing the
+│   library's counts, a capped family also never takes the library above its cap share after
+│   the slot, so a library short of other supply is not refilled with skills slot after slot
 ├── draw: families in a weighted round robin by quota, forms inside a family by their shares,
 │   so any prefix of the selection keeps the mix
 └── a family that lacks supply leaves its quota empty: the slot exports fewer packages; no
@@ -191,9 +193,38 @@ def slot_shares(targets: CompositionTargets, library: "dict | None" = None) -> d
     return result
 
 
-def slot_quotas(targets: CompositionTargets, size: int, library: "dict | None" = None) -> dict:
-    """Whole packages per family for a slot of this size."""
-    return largest_remainder(slot_shares(targets, library), size)
+def bound_caps(targets: CompositionTargets, quotas: dict, library: dict, supply: "dict | None" = None) -> dict:
+    """The quotas with each capped family bounded so the library stays at or under its cap after the slot.
+
+    A per-slot cap alone lets a library whose other families lack supply fill up with the capped family: a slot
+    of skills only is small, but it is all skills. So, knowing the library's counts, a capped family takes at
+    most what keeps it under its cap share of the library as it will be after the slot (the other families'
+    draws, limited by their supply, and the capped families' own). Solved by a rising fixed point."""
+    drawn = {name: (min(quota, int(supply.get(name, 0))) if supply is not None else quota)
+             for name, quota in quotas.items()}
+    capped = [family for family in targets.families if family.bound == CAP]
+    others = sum(drawn[family.name] for family in targets.families if family.bound != CAP)
+    base = sum(int(library.get(family.name, 0)) for family in targets.families)
+    taken = {family.name: 0 for family in capped}
+    for _round in range(100):
+        total = base + others + sum(taken.values())
+        changed = False
+        for family in capped:
+            room = max(0, math.floor(family.share * total + _TOLERANCE) - int(library.get(family.name, 0)))
+            value = min(drawn[family.name], room)
+            if value != taken[family.name]:
+                taken[family.name], changed = value, True
+        if not changed:
+            break
+    return {**quotas, **taken}
+
+
+def slot_quotas(targets: CompositionTargets, size: int, library: "dict | None" = None,
+                supply: "dict | None" = None) -> dict:
+    """Whole packages per family for a slot of this size; with the library's counts, capped families are bounded
+    at the library level too."""
+    quotas = largest_remainder(slot_shares(targets, library), size)
+    return bound_caps(targets, quotas, library, supply) if library else quotas
 
 
 def payload_form(payload: dict) -> str:

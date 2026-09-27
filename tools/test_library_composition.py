@@ -192,6 +192,25 @@ class CompositionMixTest(unittest.TestCase):
         # Known wrong: drawing the target shares without the library's counts ends above the skills cap at the goal.
         self.assertGreater(grow(library, lambda counts: TARGETS.shares)["skills"], 0.21)
 
+    def test_knowing_the_library_a_capped_family_never_takes_it_above_its_cap(self):
+        # The served library of September 27, 2026 holds 42 percent skills: no slot may add a skill until the
+        # library has grown past the point where skills are a fifth of it.
+        library = {"executable_code": 970, "connectors_and_extensions": 818, "skills": 5130,
+                   "agents_and_commands": 1563, "instructions_and_rules": 3656, "data_and_contracts": 54}
+        _chosen, kept, plan, _skipped = _compose(_stock(), library=library)
+        self.assertEqual(_families(kept)["skills"], 0)
+        self.assertEqual(_families(kept)["instructions_and_rules"], 0)
+        self.assertEqual(plan["quotas"]["skills"], 0)
+        self.assertGreater(plan["capped_by_library"]["skills"], 0)
+        # A library with room under the cap takes skills up to that room and no further.
+        roomy = {**library, "skills": 2000, "instructions_and_rules": 0, "agents_and_commands": 9000}
+        bounded = composition.bound_caps(TARGETS, {"skills": 1000, "executable_code": 0, "connectors_and_extensions": 0,
+                                                   "agents_and_commands": 0, "instructions_and_rules": 0,
+                                                   "data_and_contracts": 0}, roomy)
+        total = sum(roomy.values()) + bounded["skills"]
+        self.assertLessEqual(roomy["skills"] + bounded["skills"], 0.2 * total)
+        self.assertGreater(bounded["skills"], 0)
+
     def test_a_capped_family_already_at_its_goal_draws_nothing(self):
         library = {"skills": 20_000, "executable_code": 100}
         shares = composition.slot_shares(TARGETS, library)

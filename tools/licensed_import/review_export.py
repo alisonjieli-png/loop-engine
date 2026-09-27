@@ -68,7 +68,7 @@ from loop_engine.core.service_runtime.catalogue_packages import EXECUTABLE_ROLES
 
 from .checks import blocking_rules
 from .composition import (
-    CompositionError, CompositionTargets, largest_remainder, payload_form, slot_shares)
+    CompositionError, CompositionTargets, bound_caps, largest_remainder, payload_form, slot_shares)
 from .records import (
     CODE_MODULE, COMMAND, CONTRACT_SCHEMA, HOOK, INSTRUCTION_FILE, MARKETPLACE, PLUGIN_MANIFEST, PROTOCOL_SERVER,
     IMPORTED_VERBATIM, RULES, SETTINGS, SKILL, SUBAGENT, refusal)
@@ -247,8 +247,6 @@ def _composition(ranked: list, held: list, targets: CompositionTargets, library:
     mix. A family whose supply runs out stays short: nothing refills it."""
     shares = slot_shares(targets, library)
     quotas = largest_remainder(shares, target)
-    margin = max(0, limit - target) / target if target else 0.0
-    selection = {name: quota + math.ceil(quota * margin) for name, quota in quotas.items()}
     buckets = defaultdict(lambda: defaultdict(list))
     for payload in ranked:
         try:
@@ -257,6 +255,15 @@ def _composition(ranked: list, held: list, targets: CompositionTargets, library:
             skipped["component_form_invalid"] += 1
             continue
         buckets[targets.family_of(form)][form].append(payload)
+    capped_by_library = {}
+    if library:
+        supply = {name: sum(len(rows) for rows in buckets[name].values()) for name in quotas}
+        bounded = bound_caps(targets, quotas, library, supply)
+        capped_by_library = {name: quotas[name] - bounded[name] for name in quotas if bounded[name] < quotas[name]
+                             and bounded[name] < supply[name]}
+        quotas = bounded
+    margin = max(0, limit - target) / target if target else 0.0
+    selection = {name: quota + math.ceil(quota * margin) for name, quota in quotas.items()}
     held_counts = Counter()
     for payload in held:
         try:
@@ -297,7 +304,7 @@ def _composition(ranked: list, held: list, targets: CompositionTargets, library:
         chosen.append(payload)
     plan = {"targets": "library_composition_targets/v1", "targets_digest": targets.digest, "goal": targets.goal,
             "slot_shares": {name: round(value, 6) for name, value in shares.items()}, "quotas": quotas,
-            "selection_quotas": selection,
+            "capped_by_library": capped_by_library, "selection_quotas": selection,
             "supply": {name: sum(len(rows) for rows in buckets[name].values()) for name in order},
             "held_for_review_profile": dict(held_counts), "selected": {name: taken[name] for name in order},
             "selected_forms": {name: dict(taken_forms[name]) for name in order if taken_forms[name]}}

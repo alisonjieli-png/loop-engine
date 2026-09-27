@@ -193,6 +193,26 @@ def data_tables(args) -> dict:
                   complete=not args.table)
 
 
+def report(args) -> dict:
+    from licensed_import.composition import library_counts, load_targets
+    from licensed_import.storage import ImportStore
+    from supply_lines.report import build_report
+    targets = load_targets()
+    library = library_counts(args.library_bundle, targets)
+    library["bundle"] = Path(args.library_bundle).name
+    store = ImportStore(Path(args.store_root), writes_authorized=False)
+    try:
+        result = build_report(store, targets, library, review_batches=Path(args.review_batches),
+                              daily=Path(args.daily), slot=args.slot)
+    finally:
+        store.close()
+    result["written_at"] = now_utc()
+    Path(args.output).parent.mkdir(parents=True, exist_ok=True)
+    Path(args.output).write_text(json.dumps(result, indent=1, sort_keys=True) + "\n", encoding="utf-8")
+    print(json.dumps({key: result[key] for key in ("library", "approval")}, indent=1, default=str)[:3000])
+    return result
+
+
 def parser() -> argparse.ArgumentParser:
     main = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     commands = main.add_subparsers(dest="command", required=True)
@@ -222,13 +242,20 @@ def parser() -> argparse.ArgumentParser:
     four = commands.add_parser("data-tables")
     common(four)
     four.add_argument("--table", action="append", help="only these table identities of data_table_sources.json")
+    five = commands.add_parser("report")
+    five.add_argument("--store-root", default="/home/username/baltor-library/import-store")
+    five.add_argument("--library-bundle", required=True, help="the served release bundle folder")
+    five.add_argument("--review-batches", default="/home/username/baltor-library/review-batches")
+    five.add_argument("--daily", default="/home/username/baltor-library/daily")
+    five.add_argument("--slot", type=int, default=2000)
+    five.add_argument("--output", required=True, help="the report file (counts only, no third-party text)")
     return main
 
 
 def main(argv=None) -> int:
     args = parser().parse_args(argv)
     {"mcp-registry": mcp_registry, "openapi": openapi, "programs": programs,
-     "data-tables": data_tables}[args.command](args)
+     "data-tables": data_tables, "report": report}[args.command](args)
     return 0
 
 

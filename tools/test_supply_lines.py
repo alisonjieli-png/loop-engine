@@ -9,6 +9,7 @@ namespace is its own).
 from __future__ import annotations
 
 import copy
+import math
 import hashlib
 import json
 import sys
@@ -494,6 +495,40 @@ class DataTableLineTest(unittest.TestCase):
                 self.assertNotEqual(broken, loader)
                 (target / "status_codes_table.py").write_text(broken, encoding="utf-8")
                 self.assertFalse(run_tests(target, "status_codes_table")[0])
+
+
+class SupplyReportTest(unittest.TestCase):
+    def test_the_projection_stops_when_supply_ends_and_keeps_skills_under_their_cap(self):
+        from licensed_import.composition import load_targets
+        from supply_lines.report import needs, project
+        targets = load_targets()
+        library = {"executable_code": 970, "connectors_and_extensions": 818, "skills": 5130,
+                   "agents_and_commands": 1563, "instructions_and_rules": 3656, "data_and_contracts": 54}
+        skills_only = {"skills": 1_000_000}
+        result = project(targets, library, skills_only, 0.75)
+        # Skills alone cannot grow a library that already holds more than its cap share of them: nothing is kept.
+        self.assertEqual((result["reached"], result["slots_run"]), ({}, 0))
+        # Known wrong: caps applied to each slot alone let a skills-only supply carry the library past 25,000
+        # with skills far above their cap.
+        from licensed_import.composition import slot_quotas
+        counts = dict(library)
+        while sum(counts.values()) < 25_000:
+            counts["skills"] += int(round(slot_quotas(targets, 2000)["skills"] * 0.75))
+        self.assertGreater(counts["skills"] / sum(counts.values()), 0.5)
+        balanced = {name: 1_000_000 for name in library}
+        result = project(targets, library, balanced, 0.75)
+        self.assertEqual(sorted(result["reached"]), ["100000", "25000", "50000"])
+        final = result["reached"]["100000"]["families"]
+        for family in targets.families:
+            self.assertAlmostEqual(final[family.name]["share"], family.share, delta=0.02)
+        short = project(targets, library, {"skills": 10, "executable_code": 10}, 0.75)
+        # The executable supply is drawn and ends; the skills stay undrawn, because the library is over their cap.
+        self.assertEqual((short["not_reached"], short["end"]["supply_left"]["executable_code"],
+                          short["end"]["supply_left"]["skills"]), (["25000", "50000", "100000"], 0, 10))
+        gaps = needs(targets, library, {"executable_code": 1000}, 0.75)
+        self.assertEqual(gaps["100000"]["executable_code"]["approved_needed"], 35000 - 970)
+        self.assertEqual(gaps["100000"]["executable_code"]["gap"], math.ceil((35000 - 970) / 0.75) - 1000)
+        self.assertEqual(gaps["25000"]["skills"]["approved_needed"], 0)
 
 
 if __name__ == "__main__":
