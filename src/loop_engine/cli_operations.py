@@ -535,6 +535,16 @@ def _custom_provider_credential_env(args, provider: str) -> str:
     Builtin providers use the fixed map above. Any other provider id must be
     declared in the settings file; its ``credential_env`` is the variable the
     provider adapter reads, so the key can only reach the endpoint through it.
+
+    A provider that declares ``auth_scheme: none`` sends no credential at
+    all, which is how a local inference server on a loopback address is
+    configured. It returns the empty name, and the caller resolves no key.
+    Refusing that case made every keyless provider unreachable through
+    ``--compile-provider``: the settings file already refuses a
+    ``credential_env`` beside ``auth_scheme: none``, so there was no spelling
+    that worked. A provider whose scheme does send a credential and names no
+    variable for it is still refused, because the key would have no way to
+    reach the endpoint.
     """
     from .core.settings_loader import load_runtime_settings
 
@@ -542,11 +552,13 @@ def _custom_provider_credential_env(args, provider: str) -> str:
     for configured in loaded.settings.models.providers:
         if configured.provider_id != provider:
             continue
-        if not configured.credential_env:
-            raise ValueError(
-                f"provider {provider!r} declares no credential_env in the "
-                "settings file, so a key cannot reach its endpoint")
-        return configured.credential_env
+        if configured.credential_env:
+            return configured.credential_env
+        if configured.auth_scheme == "none":
+            return ""
+        raise ValueError(
+            f"provider {provider!r} declares no credential_env in the "
+            "settings file, so a key cannot reach its endpoint")
     known = ", ".join(sorted(_COMPILE_PROVIDER_ENV))
     raise ValueError(
         f"--compile-provider {provider!r} is neither a builtin provider "
@@ -554,11 +566,24 @@ def _custom_provider_credential_env(args, provider: str) -> str:
 
 
 def _compile_provider_key(args) -> tuple[str, str]:
+    """The variable the adapter reads and the key to put in it.
+
+    An empty variable name means the selected provider declares
+    ``auth_scheme: none`` and sends no credential, so there is nothing to
+    resolve and nothing to place in the environment.
+    """
     provider = args.compile_provider
     standard_env = _COMPILE_PROVIDER_ENV.get(provider)
     if standard_env is None:
         standard_env = _custom_provider_credential_env(args, provider)
     explicit_key = getattr(args, "_provider_key_value", "")
+    if not standard_env:
+        if explicit_key or args.provider_key_env or args.prompt_for_provider_key:
+            raise ValueError(
+                f"provider {provider!r} declares auth_scheme none in the "
+                "settings file, so it sends no credential and a supplied key "
+                "would reach nothing; remove the provider key option")
+        return "", ""
     if explicit_key:
         return standard_env, explicit_key
     if args.prompt_for_provider_key and args.provider_key_env:
@@ -622,6 +647,15 @@ def _apply_compile_provider_shortcut(
 
 @contextlib.contextmanager
 def _temporary_provider_key(env_name: str, key: str):
+    """Place the key in the exact variable the adapter reads, then restore it.
+
+    An empty name is the keyless provider: nothing is written to the
+    environment at all, so a provider declaring ``auth_scheme: none`` cannot
+    leave a stray variable behind.
+    """
+    if not env_name:
+        yield
+        return
     previous = os.environ.get(env_name)
     os.environ[env_name] = key
     try:

@@ -10,7 +10,7 @@
   "measured_seconds": {
     "a": 181.9,
     "b": 181.8,
-    "c": 180.9,
+    "c": 181.9,
     "d": 180.9
   },
   "shards": {
@@ -97,6 +97,7 @@
       "test_check_harness_fresh_instances",
       "test_check_package_activation",
       "test_check_quickstarts",
+      "test_compile_provider_keys",
       "test_decision_station_cli",
       "test_deck_page",
       "test_email_signup_password_policy",
