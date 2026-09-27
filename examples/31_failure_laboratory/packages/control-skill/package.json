@@ -1,0 +1,29 @@
+{
+  "record_type": "laboratory_package/v1",
+  "identity": "laboratory_control_skill",
+  "kind": "skill",
+  "styles": [
+    "skill",
+    "agent_skill"
+  ],
+  "purpose": "Count the data rows of a CSV file before and after a cleaning step.",
+  "license": "MIT",
+  "declared_effects": [
+    "reads_fs",
+    "spawns_process"
+  ],
+  "breaks": "nothing; this control must activate",
+  "expected_refusals": [],
+  "files": [
+    {
+      "path": "SKILL.md",
+      "role": "skill_definition",
+      "media_type": "text/markdown"
+    },
+    {
+      "path": "scripts/count_rows.sh",
+      "role": "skill_script",
+      "media_type": "text/x-shellscript"
+    }
+  ]
+}

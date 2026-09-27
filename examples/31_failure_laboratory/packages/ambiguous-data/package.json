@@ -1,0 +1,23 @@
+{
+  "record_type": "laboratory_package/v1",
+  "identity": "laboratory_ambiguous_data",
+  "kind": "skill",
+  "styles": [
+    "skill",
+    "agent_skill"
+  ],
+  "purpose": "Summarize the error lines of a service log by cause.",
+  "license": "MIT",
+  "declared_effects": [],
+  "breaks": "the frontmatter names the skill twice",
+  "expected_refusals": [
+    "frontmatter_ambiguous"
+  ],
+  "files": [
+    {
+      "path": "SKILL.md",
+      "role": "skill_definition",
+      "media_type": "text/markdown"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "record_type": "laboratory_package/v1",
+  "identity": "laboratory_permissions_drift",
+  "kind": "skill",
+  "styles": [
+    "skill",
+    "agent_skill"
+  ],
+  "purpose": "Build the documentation site and publish it to the pages branch.",
+  "license": "MIT",
+  "declared_effects": [
+    "reads_fs"
+  ],
+  "breaks": "the frontmatter pre-approves Bash and WebFetch, which the item leaves undeclared",
+  "expected_refusals": [
+    "authority_exceeds_declared_effects"
+  ],
+  "files": [
+    {
+      "path": "SKILL.md",
+      "role": "skill_definition",
+      "media_type": "text/markdown"
+    }
+  ]
+}

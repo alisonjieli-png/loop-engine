@@ -1,0 +1,32 @@
+{
+  "record_type": "laboratory_package/v1",
+  "identity": "laboratory_missing_dependency",
+  "kind": "tool",
+  "styles": [
+    "plugin_manifest",
+    "plugin_manifest"
+  ],
+  "purpose": "Draft release notes from merged changes and check them with a reviewer subagent.",
+  "license": "MIT",
+  "declared_effects": [
+    "reads_fs",
+    "spawns_process"
+  ],
+  "breaks": "the manifest names a subagent and a hook script the package lacks",
+  "expected_refusals": [
+    "manifest_part_missing",
+    "hook_script_missing"
+  ],
+  "files": [
+    {
+      "path": ".claude-plugin/plugin.json",
+      "role": "plugin_manifest",
+      "media_type": "application/json"
+    },
+    {
+      "path": "commands/release-notes.md",
+      "role": "command",
+      "media_type": "text/markdown"
+    }
+  ]
+}

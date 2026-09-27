@@ -1,0 +1,25 @@
+{
+  "record_type": "laboratory_package/v1",
+  "identity": "laboratory_hook_does_nothing",
+  "kind": "tool",
+  "styles": [
+    "hook",
+    "claude_hooks"
+  ],
+  "purpose": "Format each file after the model writes it.",
+  "license": "MIT",
+  "declared_effects": [
+    "spawns_process"
+  ],
+  "breaks": "the only handler has an empty command",
+  "expected_refusals": [
+    "hook_does_nothing"
+  ],
+  "files": [
+    {
+      "path": "hooks/hooks.json",
+      "role": "hook",
+      "media_type": "application/json"
+    }
+  ]
+}

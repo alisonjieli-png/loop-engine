@@ -1,0 +1,24 @@
+{
+  "name": "release-notes",
+  "description": "Draft release notes from merged changes and check them with a reviewer subagent.",
+  "version": "0.3.0",
+  "commands": [
+    "./commands/release-notes.md"
+  ],
+  "agents": [
+    "./agents/notes-reviewer.md"
+  ],
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/check-links.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

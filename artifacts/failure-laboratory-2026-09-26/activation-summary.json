@@ -1,0 +1,402 @@
+{
+ "bundle": "/home/username/baltor-bundles/daily-2026-09-26-10",
+ "bundle_digest": "0d7edf75842e662f859353622de201bf5d8c345fe0b00ce233dc4f9294a278dd",
+ "checked_at": "2026-09-26T17:10:34.603485+00:00",
+ "claude_code_collision_slots": 282,
+ "codes_by_package_kind": {
+  "authority_exceeds_declared_effects": {
+   "plugin_manifest": 44,
+   "skill": 10,
+   "subagent": 455
+  },
+  "command_format_mismatch": {
+   "command": 17
+  },
+  "command_prompt_missing": {
+   "command": 3
+  },
+  "entry_file_present": {
+   "contract_schema": 25
+  },
+  "frontmatter_invalid": {
+   "subagent": 3
+  },
+  "frontmatter_not_strict_yaml": {
+   "command": 62,
+   "instruction_file": 1,
+   "rules": 42,
+   "subagent": 26
+  },
+  "frontmatter_unterminated": {
+   "skill": 2
+  },
+  "hook_does_nothing": {
+   "plugin_manifest": 3
+  },
+  "hook_script_missing": {
+   "plugin_manifest": 1,
+   "subagent": 2
+  },
+  "import_outside_package": {
+   "command": 5,
+   "instruction_file": 15,
+   "rules": 1
+  },
+  "manifest_name_missing": {
+   "plugin_manifest": 2
+  },
+  "manifest_part_missing": {
+   "marketplace": 238,
+   "plugin_manifest": 216
+  },
+  "manifest_part_not_relative": {
+   "plugin_manifest": 5
+  },
+  "marketplace_lists_no_plugin": {
+   "marketplace": 2
+  },
+  "part_path_escapes": {
+   "marketplace": 1,
+   "plugin_manifest": 1
+  },
+  "protocol_server_invalid": {
+   "plugin_manifest": 6,
+   "protocol_server_configuration": 1
+  },
+  "protocol_servers_missing": {
+   "protocol_server_configuration": 10
+  },
+  "referenced_file_missing": {
+   "command": 8,
+   "skill": 5,
+   "subagent": 7
+  },
+  "referenced_path_escapes": {
+   "command": 43,
+   "instruction_file": 1,
+   "skill": 273,
+   "subagent": 33
+  },
+  "skill_name_not_native": {
+   "skill": 48
+  },
+  "subagent_description_missing": {
+   "subagent": 6
+  },
+  "subagent_frontmatter_missing": {
+   "subagent": 17
+  },
+  "subagent_name_missing": {
+   "subagent": 20
+  }
+ },
+ "command": "PYTHONPATH=src:tools python tools/check_package_activation.py --bundle /home/username/baltor-bundles/daily-2026-09-26-10 --output REPORT --compact",
+ "elapsed_wall_clock": "4:13.04",
+ "items": 6398,
+ "items_digest": "58f03c9f34fa1e7acca2837c879fc5702cfc96778f48fe4bb36007844f917f79",
+ "laboratory": {
+  "failed": [],
+  "fixtures": 12,
+  "passed": 12
+ },
+ "laboratory_fixtures": [
+  {
+   "expected_refusals": [
+    "frontmatter_ambiguous"
+   ],
+   "fixture": "ambiguous-data",
+   "observed_refusals": [
+    "frontmatter_ambiguous"
+   ],
+   "outcome": "pass"
+  },
+  {
+   "expected_refusals": [],
+   "fixture": "control-instructions",
+   "observed_refusals": [],
+   "outcome": "pass"
+  },
+  {
+   "expected_refusals": [],
+   "fixture": "control-plugin",
+   "observed_refusals": [],
+   "outcome": "pass"
+  },
+  {
+   "expected_refusals": [],
+   "fixture": "control-skill",
+   "observed_refusals": [],
+   "outcome": "pass"
+  },
+  {
+   "expected_refusals": [
+    "hook_does_nothing"
+   ],
+   "fixture": "hook-does-nothing",
+   "observed_refusals": [
+    "hook_does_nothing"
+   ],
+   "outcome": "pass"
+  },
+  {
+   "expected_refusals": [
+    "file_claim_false",
+    "media_type_claim_false"
+   ],
+   "fixture": "incorrect-output-claim",
+   "observed_refusals": [
+    "file_claim_false",
+    "media_type_claim_false"
+   ],
+   "outcome": "pass"
+  },
+  {
+   "expected_refusals": [
+    "file_missing",
+    "partial_file_present"
+   ],
+   "fixture": "interrupted-installation",
+   "observed_refusals": [
+    "file_missing",
+    "partial_file_present"
+   ],
+   "outcome": "pass"
+  },
+  {
+   "expected_refusals": [
+    "body_has_no_instructions"
+   ],
+   "fixture": "loads-but-useless",
+   "observed_refusals": [
+    "body_has_no_instructions"
+   ],
+   "outcome": "pass"
+  },
+  {
+   "expected_refusals": [
+    "manifest_part_missing",
+    "hook_script_missing"
+   ],
+   "fixture": "missing-dependency",
+   "observed_refusals": [
+    "hook_script_missing",
+    "manifest_part_missing"
+   ],
+   "outcome": "pass"
+  },
+  {
+   "expected_refusals": [
+    "authority_exceeds_declared_effects"
+   ],
+   "fixture": "permissions-drift",
+   "observed_refusals": [
+    "authority_exceeds_declared_effects"
+   ],
+   "outcome": "pass"
+  },
+  {
+   "expected_refusals": [
+    "target_path_collision"
+   ],
+   "fixture": "same-path",
+   "observed_refusals": [
+    "target_path_collision"
+   ],
+   "outcome": "pass"
+  },
+  {
+   "expected_refusals": [
+    "referenced_path_escapes"
+   ],
+   "fixture": "source-injection",
+   "observed_refusals": [
+    "referenced_path_escapes"
+   ],
+   "outcome": "pass"
+  }
+ ],
+ "loader_listing": {
+  "baseline_state": "observed",
+  "checked_at": "2026-09-26T21:32:51.673576+00:00",
+  "client_version": "1.18.32",
+  "command": "PYTHONPATH=src:tools python tools/check_package_activation.py --bundle /home/username/baltor-bundles/daily-2026-09-26-10 --output REPORT --compact --observe-listing",
+  "elapsed_seconds": 49.295,
+  "elapsed_wall_clock_whole_run": "5:32.28",
+  "harness": "opencode",
+  "maximum_resident_kilobytes_whole_run": 548816,
+  "probe_baseline_digest_matches": true,
+  "probe_run": {
+   "baseline_entries": 11,
+   "baseline_names_listed_from_another_global_folder": 3,
+   "baseline_names_listed_from_the_project_instead": [
+    "pdf",
+    "skill-creator"
+   ],
+   "inside_project": 2573,
+   "note": "the same listing run by hand over the kept scratch of the same bundle an hour earlier"
+  },
+  "record_type": "package_activation_listing/v1",
+  "state": "observed",
+  "summary": {
+   "baseline_entries": 11,
+   "baseline_names_digest": "9c827c925c1d8de1b8253164a1fc29c37b9d94da5c9cc67499f27562bc8c660a",
+   "entries_inside_project": 2573,
+   "listed_entries": 2582,
+   "outside_names_not_in_baseline": [],
+   "packages_with_extra_components": 0,
+   "skill_packages_by_placement": {
+    "held_by_another_package": 221,
+    "written": 2575
+   },
+   "unattributed_entries": [],
+   "written_by_failed_code": {
+    "authority_exceeds_declared_effects": {
+     "not_reported": 0,
+     "reported": 10
+    },
+    "frontmatter_unterminated": {
+     "not_reported": 2,
+     "reported": 0
+    },
+    "referenced_file_missing": {
+     "not_reported": 0,
+     "reported": 5
+    },
+    "referenced_path_escapes": {
+     "not_reported": 0,
+     "reported": 263
+    },
+    "skill_name_not_native": {
+     "not_reported": 0,
+     "reported": 48
+    }
+   },
+   "written_by_verdict": {
+    "activates": {
+     "not_reported": 0,
+     "reported": 2249
+    },
+    "refused": {
+     "not_reported": 2,
+     "reported": 324
+    }
+   }
+  }
+ },
+ "maximum_resident_kilobytes": 251052,
+ "record_type": "failure_laboratory_numbers/v1",
+ "recorded_on": "2026-09-26",
+ "rerun_with_final_code": {
+  "checked_at": "2026-09-26T21:25:50.786523+00:00",
+  "collisions_identical_to_recorded_run": true,
+  "elapsed_wall_clock": "0:52.59",
+  "maximum_resident_kilobytes": 253172,
+  "results_identical_to_recorded_run": true,
+  "static_summary_identical_with_listing": true,
+  "summary_identical_to_recorded_run": true
+ },
+ "summary": {
+  "collision_pairs": 656,
+  "collision_slots": 1111,
+  "collisions": 4060,
+  "failed_codes": {
+   "authority_exceeds_declared_effects": 509,
+   "command_format_mismatch": 17,
+   "command_prompt_missing": 3,
+   "frontmatter_invalid": 3,
+   "frontmatter_unterminated": 2,
+   "hook_does_nothing": 3,
+   "hook_script_missing": 3,
+   "manifest_name_missing": 2,
+   "manifest_part_missing": 454,
+   "manifest_part_not_relative": 5,
+   "marketplace_lists_no_plugin": 2,
+   "part_path_escapes": 2,
+   "protocol_server_invalid": 7,
+   "protocol_servers_missing": 10,
+   "referenced_file_missing": 20,
+   "referenced_path_escapes": 350,
+   "skill_name_not_native": 48,
+   "subagent_description_missing": 6,
+   "subagent_frontmatter_missing": 17,
+   "subagent_name_missing": 20
+  },
+  "packages": 6398,
+  "packages_in_collisions": 1035,
+  "packages_with_side_files": 3575,
+  "unknown_codes": {
+   "entry_file_present": 25,
+   "frontmatter_not_strict_yaml": 131,
+   "import_outside_package": 21
+  },
+  "verdicts": {
+   "activates": 4802,
+   "no_native_activation": 25,
+   "refused": 1423,
+   "unresolved": 148
+  },
+  "verdicts_by_package_kind": {
+   "command": {
+    "activates": 825,
+    "no_native_activation": 0,
+    "refused": 62,
+    "unresolved": 66
+   },
+   "contract_schema": {
+    "activates": 0,
+    "no_native_activation": 25,
+    "refused": 0,
+    "unresolved": 0
+   },
+   "instruction_file": {
+    "activates": 473,
+    "no_native_activation": 0,
+    "refused": 1,
+    "unresolved": 16
+   },
+   "marketplace": {
+    "activates": 86,
+    "no_native_activation": 0,
+    "refused": 241,
+    "unresolved": 0
+   },
+   "plugin_manifest": {
+    "activates": 212,
+    "no_native_activation": 0,
+    "refused": 252,
+    "unresolved": 0
+   },
+   "protocol_server_configuration": {
+    "activates": 90,
+    "no_native_activation": 0,
+    "refused": 11,
+    "unresolved": 0
+   },
+   "rules": {
+    "activates": 177,
+    "no_native_activation": 0,
+    "refused": 0,
+    "unresolved": 42
+   },
+   "skill": {
+    "activates": 2460,
+    "no_native_activation": 0,
+    "refused": 336,
+    "unresolved": 0
+   },
+   "subagent": {
+    "activates": 479,
+    "no_native_activation": 0,
+    "refused": 520,
+    "unresolved": 24
+   }
+  }
+ },
+ "tool": "tools/check_package_activation.py",
+ "undeclared_effects_asked_for": {
+  "network": 11,
+  "reads_fs": 272,
+  "spawns_process": 278,
+  "writes_fs": 196
+ }
+}

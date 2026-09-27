@@ -1,0 +1,32 @@
+{
+  "record_type": "laboratory_package/v1",
+  "identity": "laboratory_incorrect_claim",
+  "kind": "skill",
+  "styles": [
+    "skill",
+    "agent_skill"
+  ],
+  "purpose": "Check that a CSV file has the columns a pipeline stage expects.",
+  "license": "MIT",
+  "declared_effects": [
+    "reads_fs"
+  ],
+  "breaks": "the record claims JSON for a file that is not JSON and a size the skill file does not have",
+  "expected_refusals": [
+    "file_claim_false",
+    "media_type_claim_false"
+  ],
+  "files": [
+    {
+      "path": "SKILL.md",
+      "role": "skill_definition",
+      "media_type": "text/markdown",
+      "size_bytes": 100
+    },
+    {
+      "path": "assets/columns.json",
+      "role": "skill_asset",
+      "media_type": "application/json"
+    }
+  ]
+}

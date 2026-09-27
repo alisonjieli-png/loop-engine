@@ -1,0 +1,33 @@
+{
+  "record_type": "laboratory_package/v1",
+  "identity": "laboratory_interrupted_installation",
+  "kind": "skill",
+  "styles": [
+    "skill",
+    "agent_skill"
+  ],
+  "purpose": "Compress the log files of the previous day and keep seven days of archives.",
+  "license": "MIT",
+  "declared_effects": [
+    "reads_fs",
+    "writes_fs",
+    "spawns_process"
+  ],
+  "breaks": "the script is missing and a partial copy is left",
+  "expected_refusals": [
+    "file_missing",
+    "partial_file_present"
+  ],
+  "files": [
+    {
+      "path": "SKILL.md",
+      "role": "skill_definition",
+      "media_type": "text/markdown"
+    },
+    {
+      "path": "scripts/rotate.sh",
+      "role": "skill_script",
+      "media_type": "text/x-shellscript"
+    }
+  ]
+}

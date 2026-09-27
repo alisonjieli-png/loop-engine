@@ -10,7 +10,7 @@
   "measured_seconds": {
     "a": 179.9,
     "b": 179.8,
-    "c": 178.9,
+    "c": 179.9,
     "d": 178.9
   },
   "shards": {
@@ -88,6 +88,7 @@
       "test_candidate_review_record",
       "test_candidate_review_screen",
       "test_check_harness_fresh_instances",
+      "test_check_package_activation",
       "test_check_quickstarts",
       "test_decision_station_cli",
       "test_deck_page",

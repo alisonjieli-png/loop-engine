@@ -1,0 +1,10 @@
+{
+  "record_type": "laboratory_package_set/v1",
+  "packages": [
+    "first",
+    "second"
+  ],
+  "expected_refusals": [
+    "target_path_collision"
+  ]
+}

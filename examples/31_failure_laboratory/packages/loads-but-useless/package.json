@@ -1,0 +1,23 @@
+{
+  "record_type": "laboratory_package/v1",
+  "identity": "laboratory_loads_but_useless",
+  "kind": "skill",
+  "styles": [
+    "skill",
+    "agent_skill"
+  ],
+  "purpose": "Improve the code.",
+  "license": "MIT",
+  "declared_effects": [],
+  "breaks": "the body holds a heading and a comment and nothing else",
+  "expected_refusals": [
+    "body_has_no_instructions"
+  ],
+  "files": [
+    {
+      "path": "SKILL.md",
+      "role": "skill_definition",
+      "media_type": "text/markdown"
+    }
+  ]
+}

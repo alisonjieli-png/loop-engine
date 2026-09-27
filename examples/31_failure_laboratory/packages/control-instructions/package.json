@@ -1,0 +1,22 @@
+{
+  "record_type": "laboratory_package/v1",
+  "identity": "laboratory_control_instructions",
+  "kind": "instruction_file",
+  "styles": [
+    "instruction_file",
+    "agents_md"
+  ],
+  "purpose": "A working agreement for a data pipeline repository.",
+  "license": "MIT",
+  "declared_effects": [],
+  "breaks": "nothing; this control must activate",
+  "expected_refusals": [],
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "role": "instruction_file",
+      "media_type": "text/markdown",
+      "stored_as": "agents-file.md"
+    }
+  ]
+}

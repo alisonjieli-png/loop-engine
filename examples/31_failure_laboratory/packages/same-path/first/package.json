@@ -1,0 +1,21 @@
+{
+  "record_type": "laboratory_package/v1",
+  "identity": "laboratory_same_path_first",
+  "kind": "instruction_file",
+  "styles": [
+    "command",
+    "command_definition"
+  ],
+  "purpose": "Review the staged change for correctness.",
+  "license": "MIT",
+  "declared_effects": [],
+  "breaks": "writes review.md, as the second package does",
+  "expected_refusals": [],
+  "files": [
+    {
+      "path": "review.md",
+      "role": "command",
+      "media_type": "text/markdown"
+    }
+  ]
+}

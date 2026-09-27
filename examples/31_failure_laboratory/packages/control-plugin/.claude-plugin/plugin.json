@@ -1,0 +1,8 @@
+{
+  "name": "tidy-imports",
+  "description": "One command that sorts and groups the import lines of the files a change touched.",
+  "version": "1.0.0",
+  "commands": [
+    "./commands/tidy-imports.md"
+  ]
+}

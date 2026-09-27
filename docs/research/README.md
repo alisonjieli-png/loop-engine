@@ -18,3 +18,10 @@ on the code (see `../verification/`), and operating instructions (see
 
 The [records index](../RECORDS-INDEX.md) lists every version of each
 dated record.
+
+## Records added on September 26, 2026
+
+- [Package activation and the failure laboratory](PACKAGE-ACTIVATION-FAILURE-LABORATORY-2026-09-26.md):
+  ten ways to verify served packages compared, the activation check that
+  places each package in every documented harness layout, twelve laboratory
+  fixtures, and what the check found in the served bundle.

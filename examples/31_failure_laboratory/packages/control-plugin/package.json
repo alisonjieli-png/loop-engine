@@ -1,0 +1,26 @@
+{
+  "record_type": "laboratory_package/v1",
+  "identity": "laboratory_control_plugin",
+  "kind": "tool",
+  "styles": [
+    "plugin_manifest",
+    "plugin_manifest"
+  ],
+  "purpose": "One command that sorts and groups the import lines of the files a change touched.",
+  "license": "MIT",
+  "declared_effects": [],
+  "breaks": "nothing; this control must activate",
+  "expected_refusals": [],
+  "files": [
+    {
+      "path": ".claude-plugin/plugin.json",
+      "role": "plugin_manifest",
+      "media_type": "application/json"
+    },
+    {
+      "path": "commands/tidy-imports.md",
+      "role": "command",
+      "media_type": "text/markdown"
+    }
+  ]
+}

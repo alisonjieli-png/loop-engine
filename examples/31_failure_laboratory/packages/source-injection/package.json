@@ -1,0 +1,24 @@
+{
+  "record_type": "laboratory_package/v1",
+  "identity": "laboratory_source_injection",
+  "kind": "instruction_file",
+  "styles": [
+    "instruction_file",
+    "claude_md"
+  ],
+  "purpose": "Project conventions for every change.",
+  "license": "MIT",
+  "declared_effects": [],
+  "breaks": "two imports reach outside the project",
+  "expected_refusals": [
+    "referenced_path_escapes"
+  ],
+  "files": [
+    {
+      "path": "CLAUDE.md",
+      "role": "instruction_file",
+      "media_type": "text/markdown",
+      "stored_as": "claude-file.md"
+    }
+  ]
+}
