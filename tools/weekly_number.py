@@ -60,7 +60,17 @@ IDENTITY_HOST_SUFFIX = ".supabase.co"
 IDENTITY_USERS_PATH = "/auth/v1/admin/users"
 HEALTH_PATH, CAPABILITIES_PATH = "/api/v1/health", "/api/v1/capabilities"
 RELEASE_RECORDS = ROOT / "artifacts/architecture-audit-2026-09-19"
-RELEASE_RECORD_TYPE = "deployment_evidence/v1"
+#: The release record versions this command reads, and the field each version keeps every fact in. Releases up to
+#: 37 were recorded as deployment_evidence/v1; from release 38 (September 27, 2026) the release record is
+#: pilot_release_record/v1, which names the Fly release `release` and keeps the images as registry references. None
+#: marks a fact the version does not record, which stays unknown and never becomes zero. A record of any other
+#: type refuses the release source instead of being skipped: skipping a type is how releases 38 to 40 went missing.
+RELEASE_RECORD_FIELDS = {
+    "deployment_evidence/v1": {"release": "fly_release", "deployed_at": "deployed_at",
+                               "source_revision": "source_revision", "failed_first_attempts": "failed_first_attempts"},
+    "pilot_release_record/v1": {"release": "release", "deployed_at": "deployed_at",
+                                "source_revision": "source_revision", "failed_first_attempts": None},
+}
 LIBRARY_DAILY = Path("/home/username/baltor-library/daily")
 LIBRARY_COUNTS_TYPES = ("daily_library_release_counts/v1", "daily_library_release_counts/v2")
 OUTPUT_FOLDER = ROOT / "artifacts/weekly-number"
@@ -470,30 +480,47 @@ def git_commit_time(revision, repository=ROOT):
     return datetime.fromtimestamp(int(lines[0].strip()), timezone.utc)
 
 
+def release_facts(record, name):
+    """The facts one release record holds, read through the field map of its own version.
+
+    Refuses a record whose type is not a version this command reads, naming the file. A fact the version does not
+    record, or that this record lacks, is None.
+    """
+    record_type = record.get("record_type") if isinstance(record, dict) else None
+    fields = RELEASE_RECORD_FIELDS.get(record_type) if isinstance(record_type, str) else None
+    if fields is None:
+        raise Refusal("release_record_type_unknown", record=name)
+    return {fact: (record.get(field) if field else None) for fact, field in fields.items()} | {"record_type": record_type}
+
+
 def read_releases(folder, window, commit_time=git_commit_time):
-    rows = []
+    rows, left_out, by_type = [], [], {}
     for path in sorted(folder.glob("pilot-release-*.json")):
         try:
             record = json.loads(path.read_text("utf-8"))
         except (OSError, ValueError):
+            left_out.append({"record": path.name, "reason": "not readable as JSON"})
             continue
-        if not isinstance(record, dict) or record.get("record_type") != RELEASE_RECORD_TYPE:
-            continue
-        deployed = parse_time(record.get("deployed_at"))
+        facts = release_facts(record, path.name)
+        deployed = parse_time(facts["deployed_at"])
         if deployed is None:
+            left_out.append({"record": path.name, "record_type": facts["record_type"], "reason": "no deployment time"})
             continue
-        revision = record.get("source_revision")
+        by_type[facts["record_type"]] = by_type.get(facts["record_type"], 0) + 1
+        release = facts["release"] if isinstance(facts["release"], int) and not isinstance(facts["release"], bool) else None
+        revision = facts["source_revision"]
         committed = commit_time(revision) if isinstance(revision, str) and re.fullmatch(r"[0-9a-f]{7,64}", revision) else None
-        failed = record.get("failed_first_attempts")
-        rows.append({"fly_release": record.get("fly_release"), "deployed_at": iso(deployed),
+        failed = facts["failed_first_attempts"]
+        rows.append({"fly_release": release, "deployed_at": iso(deployed),
                      "source_revision": revision[:12] if isinstance(revision, str) else None,
                      "commit_to_live_minutes": minutes_between(committed, deployed),
                      "failed_first_attempts": len(failed) if isinstance(failed, list) else None,
                      "_deployed": deployed})
     this_week = [row for row in rows if window.holds(row["_deployed"])]
     failed_known = [row["failed_first_attempts"] for row in this_week if row["failed_first_attempts"] is not None]
-    numbers = [row["fly_release"] for row in rows if isinstance(row["fly_release"], int)]
-    return {"records_read": len(rows), "latest_release": max(numbers) if numbers else None,
+    numbers = [row["fly_release"] for row in rows if row["fly_release"] is not None]
+    return {"records_read": len(rows), "records_by_type": dict(sorted(by_type.items())), "left_out": left_out,
+            "latest_release": max(numbers) if numbers else None,
             "count_this_week": len(this_week),
             "commit_to_live_minutes": summary([row["commit_to_live_minutes"] for row in this_week]),
             "failed_first_attempts_this_week": sum(failed_known),
@@ -690,6 +717,9 @@ def measure(credentials, transport, window, now, *, origin=PUBLIC_ORIGIN, releas
     except OSError as error:
         releases = {"status": "unavailable", "code": error.__class__.__name__}
         sources["releases"] = {"status": "unavailable", "code": error.__class__.__name__}
+    except Refusal as refusal:
+        releases = {"status": "unavailable", "code": refusal.code}
+        sources["releases"] = {"status": "unavailable", "code": refusal.code, **refusal.fields}
     try:
         library = read_library(library_daily, window, birth_time)
         sources["library"] = {"status": "read", "slots": library["slots_read"], "folder": str(library_daily)}
@@ -775,7 +805,8 @@ def table(record):
         note = (f"commit to live median {minutes['median']} minutes over {minutes['known']}"
                 if minutes.get("known") else "commit to live unknown")
         row("releases to Fly", releases["count_this_week"], releases["records_read"],
-            f"{note}; {releases['failed_first_attempts_this_week']} failed first attempts")
+            f"latest release {_cell(releases['latest_release'])}; {note}; "
+            f"{releases['failed_first_attempts_this_week']} failed first attempts")
     if slots.get("status") == "unavailable":
         row("library slots run", None, None, "unavailable: " + slots["code"])
     else:

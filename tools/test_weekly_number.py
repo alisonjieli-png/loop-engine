@@ -403,6 +403,107 @@ class IdentityListingTests(unittest.TestCase):
         self.assertIn("mixed: 0 match the check journey prefix; 1 marked deleted and still listed", run.stdout)
 
 
+#: Release 38 as the release workflow recorded it on September 27, 2026, with the fields this reader uses.
+PILOT_RELEASE_38 = {"record_type": "pilot_release_record/v1", "release": 38, "deployed_at": "2026-09-27T01:19:33Z",
+                    "source_revision": "13caeb2039c28681e8c8793cfede80255e6f033a",
+                    "image": "registry.fly.io/baltor-pilot@sha256:" + "e" * 64,
+                    "rollback_image": "registry.fly.io/baltor-pilot@sha256:" + "7" * 64,
+                    "ci_run": 36284690803, "deploy_run": 36285062623}
+
+
+class ReleaseRecordVersionTests(unittest.TestCase):
+    """Both named release record versions are read through their own fields; any other type refuses the source.
+
+    Until September 27, 2026 the reader skipped every record that was not deployment_evidence/v1, so releases
+    38 to 40, recorded as pilot_release_record/v1, were missing and the weekly number stopped at release 37.
+    """
+
+    def setUp(self):
+        self.folder = tempfile.TemporaryDirectory()
+        self.releases = Path(self.folder.name)
+        self.window = tool.Window(datetime(2026, 9, 21, 6, 0, tzinfo=UTC), datetime(2026, 9, 28, 6, 0, tzinfo=UTC))
+
+    def tearDown(self):
+        self.folder.cleanup()
+
+    def write(self, name, record):
+        (self.releases / name).write_text(json.dumps(record), "utf-8")
+
+    def write_both_versions(self):
+        self.write("pilot-release-37.json", {"record_type": "deployment_evidence/v1", "fly_release": 37,
+                                             "deployed_at": "2026-09-26T13:25:00Z", "source_revision": "43b421f8",
+                                             "failed_first_attempts": [{"revision": "edcc77a3"}]})
+        for number, deployed in ((38, "2026-09-27T01:19:33Z"), (39, "2026-09-27T03:58:55Z"), (40, "2026-09-27T05:11:34Z")):
+            self.write(f"pilot-release-{number}.json", dict(PILOT_RELEASE_38, release=number, deployed_at=deployed))
+        # The September 20 to 23 records of the same type carry no deployment time; they are left out by name.
+        self.write("pilot-release-12.json", {"record_type": "pilot_release_record/v1", "release": 12,
+                                             "fly_release_version": 14, "observed_at": "2026-09-23T03:40:00Z"})
+
+    def test_both_versions_are_read_and_the_latest_release_is_40(self):
+        self.write_both_versions()
+        releases = tool.read_releases(self.releases, self.window, commit_time=lambda revision: None)
+        self.assertEqual(releases["latest_release"], 40)
+        self.assertEqual((releases["records_read"], releases["count_this_week"]), (4, 4))
+        self.assertEqual(releases["records_by_type"], {"deployment_evidence/v1": 1, "pilot_release_record/v1": 3})
+        self.assertEqual([row["fly_release"] for row in releases["releases_this_week"]], [37, 38, 39, 40])
+        self.assertEqual(releases["left_out"], [{"record": "pilot-release-12.json",
+                                                 "record_type": "pilot_release_record/v1",
+                                                 "reason": "no deployment time"}])
+
+    def test_a_fact_the_version_does_not_record_stays_unknown(self):
+        self.write_both_versions()
+        releases = tool.read_releases(self.releases, self.window, commit_time=lambda revision: None)
+        failed = {row["fly_release"]: row["failed_first_attempts"] for row in releases["releases_this_week"]}
+        self.assertEqual(failed, {37: 1, 38: None, 39: None, 40: None})
+        self.assertEqual((releases["failed_first_attempts_this_week"],
+                          releases["releases_with_failed_first_attempts_recorded"]), (1, 1))
+
+    def test_each_version_is_read_through_its_own_fields_only(self):
+        # A release number under the other version's field name is not borrowed across versions.
+        self.write("pilot-release-41.json", {"record_type": "pilot_release_record/v1", "fly_release": 41,
+                                             "deployed_at": "2026-09-27T07:00:00Z"})
+        self.write("pilot-release-42.json", {"record_type": "deployment_evidence/v1", "release": 42,
+                                             "deployed_at": "2026-09-27T08:00:00Z"})
+        releases = tool.read_releases(self.releases, self.window, commit_time=lambda revision: None)
+        self.assertEqual([row["fly_release"] for row in releases["releases_this_week"]], [None, None])
+        self.assertIsNone(releases["latest_release"])
+
+    def test_an_unknown_record_type_refuses_the_release_source_by_name(self):
+        self.write_both_versions()
+        self.write("pilot-release-41.json", dict(PILOT_RELEASE_38, record_type="pilot_release_record/v2", release=41))
+        with self.assertRaises(tool.Refusal) as refused:
+            tool.read_releases(self.releases, self.window, commit_time=lambda revision: None)
+        self.assertEqual((refused.exception.code, refused.exception.fields), ("release_record_type_unknown",
+                                                                             {"record": "pilot-release-41.json"}))
+        for shape in ([1, 2], {"release": 41}):
+            with self.subTest(shape=shape), self.assertRaises(tool.Refusal):
+                self.write("pilot-release-41.json", shape)
+                tool.read_releases(self.releases, self.window, commit_time=lambda revision: None)
+
+    def test_the_weekly_record_marks_the_refused_source_and_the_table_says_why(self):
+        root = self.releases / "run"
+        root.mkdir()
+        folders = write_fixture_folders(root)
+        (folders[0] / "pilot-release-41.json").write_text(json.dumps({"record_type": "release_note/v9"}), "utf-8")
+        run = Run(root)
+        self.assertEqual(run.code, 1, run.stderr)  # the record is written and marked incomplete
+        self.assertEqual(run.record["sources"]["releases"], {"status": "unavailable", "code": "release_record_type_unknown",
+                                                             "record": "pilot-release-41.json"})
+        self.assertFalse(run.record["complete"])
+        self.assertIn("unavailable: release_record_type_unknown", run.stdout)
+
+    def test_the_table_names_the_latest_release(self):
+        run = Run(self.releases)
+        self.assertIn("latest release 36; commit to live median 40.0 minutes over 2", run.stdout)
+
+    def test_the_committed_release_records_reach_release_40(self):
+        releases = tool.read_releases(tool.RELEASE_RECORDS, self.window, commit_time=lambda revision: None)
+        self.assertGreaterEqual(releases["latest_release"], 40)
+        read = {row["fly_release"] for row in releases["releases_this_week"]}
+        self.assertLessEqual({38, 39, 40}, read)
+        self.assertGreaterEqual(releases["records_by_type"].get("pilot_release_record/v1", 0), 3)
+
+
 class WeeklyNumberRefusalTests(unittest.TestCase):
     def setUp(self):
         self.folder = tempfile.TemporaryDirectory()
