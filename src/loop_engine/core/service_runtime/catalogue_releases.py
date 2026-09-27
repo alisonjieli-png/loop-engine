@@ -462,5 +462,6 @@ class CatalogueOperatorContext:
     body_store_root: str
 
     def body_store(self, *, write=False):
-        from .catalogue_packages import VolumeBodyStore, require_body_store
-        return require_body_store(VolumeBodyStore(self.body_store_root, writes_authorized=write), write=write)
+        from .catalogue_body_flush import ExactFlushVolumeBodyStore
+        from .catalogue_packages import require_body_store
+        return require_body_store(ExactFlushVolumeBodyStore(self.body_store_root, writes_authorized=write), write=write)

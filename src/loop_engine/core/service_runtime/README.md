@@ -1494,6 +1494,7 @@ starter identities.
 ```text
 Catalogue modules
 ├── catalogue_packages.py   packages of any harness file type, and the body store edge catalogue_body_store/v1
+├── catalogue_body_flush.py the body store the writers use: it flushes only what their own deferred writes changed
 ├── catalogue_schema.py     the attribute schema catalogue_attribute_schema/v1
 ├── catalogue_bundle.py     the release bundle an operator publishes, read with the manifest rules
 ├── catalogue_releases.py   releases, the pointer, withdrawals, the state marker, publish and rollback

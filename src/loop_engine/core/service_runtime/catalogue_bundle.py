@@ -34,6 +34,7 @@ import stat
 import os
 
 from ..practitioner_runtime.provisioning import _item
+from .catalogue_body_flush import ExactFlushVolumeBodyStore
 from .catalogue_packages import (EXECUTABLE_EFFECT, FILE_BODY, CataloguePackage, VolumeBodyStore,
                                  exact_digest, sha256_hex)
 from .catalogue_schema import CatalogueAttributeSchema
@@ -321,7 +322,7 @@ def write_bundle(folder, *, schema, lines, payloads, notes="", change_notes=None
     if not root.is_absolute() or root.exists():
         _refuse("bundle_folder_invalid", "a new bundle is written into a new absolute folder")
     (root / BLOBS_FOLDER).mkdir(parents=True)
-    blobs = VolumeBodyStore(str((root / BLOBS_FOLDER).resolve()), writes_authorized=True)
+    blobs = ExactFlushVolumeBodyStore(str((root / BLOBS_FOLDER).resolve()), writes_authorized=True)
     for payload in payloads:
         blobs.put(payload, durable=False)
     blobs.sync()

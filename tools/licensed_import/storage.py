@@ -32,7 +32,8 @@ from loop_engine.catalog.protocol import (
 from loop_engine.catalog.stores.sqlite_store import SQLiteRecordStore
 from loop_engine.core.library_ingestion.quarantine import Quarantine
 from loop_engine.core.library_ingestion.record_rules import canonical_digest
-from loop_engine.core.service_runtime.catalogue_packages import VolumeBodyStore, require_body_store
+from loop_engine.core.service_runtime.catalogue_body_flush import ExactFlushVolumeBodyStore
+from loop_engine.core.service_runtime.catalogue_packages import require_body_store
 
 from .records import (
     CANDIDATE_LIFECYCLE, IDEA_LIFECYCLE, KIND_LAYERS, SOURCE_STATE_LIFECYCLE, WITHDRAWAL_LIFECYCLE,
@@ -56,7 +57,7 @@ class ImportStore:
         self.root = Path(root).resolve()
         for folder in ("bodies", "quarantine"):
             (self.root / folder).mkdir(parents=True, exist_ok=True)
-        self.bodies = require_body_store(VolumeBodyStore(str(self.root / "bodies"),
+        self.bodies = require_body_store(ExactFlushVolumeBodyStore(str(self.root / "bodies"),
                                                          writes_authorized=writes_authorized),
                                          write=writes_authorized)
         database = self.root / "records.db"
