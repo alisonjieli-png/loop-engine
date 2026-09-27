@@ -25,3 +25,6 @@ dated record.
   ten ways to verify served packages compared, the activation check that
   places each package in every documented harness layout, twelve laboratory
   fixtures, and what the check found in the served bundle.
+- [Factory scheduling and economics of the library job](FACTORY-SCHEDULING-AND-ECONOMICS-2026-09-26.md):
+  the library factory measured by stage, and the daily job queued back to
+  back within stock and serving capacity.

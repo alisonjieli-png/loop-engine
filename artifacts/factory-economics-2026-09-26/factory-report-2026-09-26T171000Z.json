@@ -1,0 +1,766 @@
+{
+ "cadence_hours": 6.0,
+ "cost_per_admitted_package": {
+  "basis": "The Tactical reviewer is the owner's own server with no price record; the only recorded money is the 50 dollar monthly infrastructure allowance, spread over one day's approvals at the current rate.",
+  "charged_tokens_per_approved": 6533.8,
+  "infrastructure_usd_per_approved_at_current_rate": 0.00026,
+  "model_cost_usd": "unmetered",
+  "reviewer_seconds_per_approved": 2.01,
+  "stage_seconds_per_approved": {
+   "bundle": 0.004,
+   "calibrate": 0.068,
+   "check": 0.0,
+   "combine": 0.004,
+   "counts": 0.075,
+   "export": 0.008,
+   "prechecks": 0.574,
+   "publish": 0.113,
+   "review": 2.446,
+   "write": 0.483
+  },
+  "wall_minutes_per_approved": 0.062
+ },
+ "generation_batches": [
+  {
+   "calls_used": 11417,
+   "candidates": 8904,
+   "failed": 1096,
+   "folder": "/home/username/loop-engine/.loop-engine-dev/overnight-2026-09-24/batch",
+   "ideas_total": 10000,
+   "lanes": {
+    "lane-ollama-gemma4-31b": {
+     "active_hours": 16,
+     "attempts_inside_review_windows": 0,
+     "attempts_outside_review_windows": 148,
+     "candidates": 135,
+     "candidates_per_active_hour": 8.4,
+     "degraded_events": 1,
+     "dispatches": 183,
+     "mean_attempt_seconds": 36.7,
+     "mean_attempt_seconds_inside_review_windows": null,
+     "mean_attempt_seconds_outside_review_windows": 36.7,
+     "median_attempt_seconds": 6.0,
+     "outage_wait_seconds": 6480.0,
+     "outage_waits": 36,
+     "outcomes": {
+      "candidate_written": 135,
+      "failed_candidate_shape": 1,
+      "failed_provider": 12
+     },
+     "retries": 35
+    },
+    "lane-ollama-glm-53-flash": {
+     "active_hours": 9,
+     "attempts_inside_review_windows": 0,
+     "attempts_outside_review_windows": 140,
+     "candidates": 135,
+     "candidates_per_active_hour": 15.0,
+     "degraded_events": 1,
+     "dispatches": 153,
+     "mean_attempt_seconds": 57.4,
+     "mean_attempt_seconds_inside_review_windows": null,
+     "mean_attempt_seconds_outside_review_windows": 57.4,
+     "median_attempt_seconds": 39.0,
+     "outage_wait_seconds": 2700.0,
+     "outage_waits": 15,
+     "outcomes": {
+      "candidate_written": 135,
+      "failed_provider": 5
+     },
+     "retries": 13
+    },
+    "lane-ollama-gpt-oss-20b": {
+     "active_hours": 19,
+     "attempts_inside_review_windows": 0,
+     "attempts_outside_review_windows": 175,
+     "candidates": 133,
+     "candidates_per_active_hour": 7.0,
+     "degraded_events": 1,
+     "dispatches": 325,
+     "mean_attempt_seconds": 96.3,
+     "mean_attempt_seconds_inside_review_windows": null,
+     "mean_attempt_seconds_outside_review_windows": 96.3,
+     "median_attempt_seconds": 16.0,
+     "outage_wait_seconds": 21300.0,
+     "outage_waits": 119,
+     "outcomes": {
+      "candidate_written": 133,
+      "failed_candidate_shape": 3,
+      "failed_provider": 39
+     },
+     "retries": 150
+    },
+    "lane-ollama-kimi-k3": {
+     "active_hours": 6,
+     "attempts_inside_review_windows": 0,
+     "attempts_outside_review_windows": 8,
+     "candidates": 3,
+     "candidates_per_active_hour": 0.5,
+     "degraded_events": 1,
+     "dispatches": 20,
+     "mean_attempt_seconds": 242.9,
+     "mean_attempt_seconds_inside_review_windows": null,
+     "mean_attempt_seconds_outside_review_windows": 242.9,
+     "median_attempt_seconds": 374.0,
+     "outage_wait_seconds": 2700.0,
+     "outage_waits": 15,
+     "outcomes": {
+      "candidate_written": 3,
+      "failed_provider": 5
+     },
+     "retries": 12
+    },
+    "lane-ollama-nemotron-30b": {
+     "active_hours": 6,
+     "attempts_inside_review_windows": 0,
+     "attempts_outside_review_windows": 9,
+     "candidates": 3,
+     "candidates_per_active_hour": 0.5,
+     "degraded_events": 1,
+     "dispatches": 25,
+     "mean_attempt_seconds": 212.8,
+     "mean_attempt_seconds_inside_review_windows": null,
+     "mean_attempt_seconds_outside_review_windows": 212.8,
+     "median_attempt_seconds": 370.0,
+     "outage_wait_seconds": 2700.0,
+     "outage_waits": 15,
+     "outcomes": {
+      "candidate_written": 3,
+      "failed_candidate_shape": 1,
+      "failed_provider": 5
+     },
+     "retries": 16
+    },
+    "lane-tactical-gemma4": {
+     "active_hours": 36,
+     "attempts_inside_review_windows": 286,
+     "attempts_outside_review_windows": 9373,
+     "candidates": 8495,
+     "candidates_per_active_hour": 236.0,
+     "degraded_events": 4,
+     "dispatches": 14494,
+     "mean_attempt_seconds": 6.2,
+     "mean_attempt_seconds_inside_review_windows": 23.0,
+     "mean_attempt_seconds_outside_review_windows": 5.7,
+     "median_attempt_seconds": 5.0,
+     "outage_wait_seconds": 2700.0,
+     "outage_waits": 15,
+     "outcomes": {
+      "candidate_written": 8495,
+      "failed_candidate_shape": 1020,
+      "failed_provider": 5
+     },
+     "retries": 4974
+    }
+   },
+   "started_at": "2026-09-25T16:50:02Z",
+   "state": "complete",
+   "updated_at": "2026-09-26T11:54:48Z"
+  }
+ ],
+ "library": "/home/username/baltor-library",
+ "projection": {
+  "approvable_at_current_export_policy": 36226,
+  "approvable_from_stock": 37997,
+  "approved_per_day": 6358.7,
+  "approved_per_slot": 1589.7,
+  "days_until_full_exports_end": 4.5,
+  "days_until_serving_capacity": 2.9,
+  "days_until_stock_is_exhausted": 6.0,
+  "drawable_at_current_export_policy": 45568,
+  "eligible_remaining": 47796,
+  "export_policy_ceiling": 42624,
+  "full_exports_supported": 18,
+  "generated_waiting_for_another_family": 8904,
+  "if_slots_ran_back_to_back": {
+   "approvable_at_current_export_policy": 36226,
+   "approvable_from_stock": 37997,
+   "approved_per_day": 23082.0,
+   "approved_per_slot": 1589.7,
+   "days_until_full_exports_end": 1.2,
+   "days_until_serving_capacity": 0.8,
+   "days_until_stock_is_exhausted": 1.6,
+   "drawable_at_current_export_policy": 45568,
+   "eligible_remaining": 47796,
+   "export_policy_ceiling": 42624,
+   "full_exports_supported": 18,
+   "generated_waiting_for_another_family": 8904,
+   "marks": [
+    {
+     "date_at_current_rate": "2026-09-26",
+     "days_at_current_rate": 0.2,
+     "mark": 10000,
+     "packages_short": 3602,
+     "reachable_at_current_export_policy": true,
+     "reachable_from_current_stock": true,
+     "within_serving_capacity": true
+    },
+    {
+     "date_at_current_rate": "2026-09-27",
+     "days_at_current_rate": 1.0,
+     "mark": 30000,
+     "packages_short": 23602,
+     "reachable_at_current_export_policy": true,
+     "reachable_from_current_stock": true,
+     "within_serving_capacity": false
+    },
+    {
+     "candidates_needed_beyond_stock": 69944,
+     "date_at_current_rate": "2026-09-30",
+     "days_at_current_rate": 4.1,
+     "mark": 100000,
+     "packages_short": 93602,
+     "reachable_at_current_export_policy": false,
+     "reachable_from_current_stock": false,
+     "within_serving_capacity": false
+    }
+   ],
+   "served_now": 6398,
+   "serving_capacity": 25000,
+   "slots_per_day": 14.52003226673837,
+   "stock_ceiling": 44395,
+   "yield_per_exported": 0.795
+  },
+  "marks": [
+   {
+    "date_at_current_rate": "2026-09-27",
+    "days_at_current_rate": 0.6,
+    "mark": 10000,
+    "packages_short": 3602,
+    "reachable_at_current_export_policy": true,
+    "reachable_from_current_stock": true,
+    "within_serving_capacity": true
+   },
+   {
+    "date_at_current_rate": "2026-09-30",
+    "days_at_current_rate": 3.7,
+    "mark": 30000,
+    "packages_short": 23602,
+    "reachable_at_current_export_policy": true,
+    "reachable_from_current_stock": true,
+    "within_serving_capacity": false
+   },
+   {
+    "candidates_needed_beyond_stock": 69944,
+    "date_at_current_rate": "2026-10-11",
+    "days_at_current_rate": 14.7,
+    "mark": 100000,
+    "packages_short": 93602,
+    "reachable_at_current_export_policy": false,
+    "reachable_from_current_stock": false,
+    "within_serving_capacity": false
+   }
+  ],
+  "served_now": 6398,
+  "serving_capacity": 25000,
+  "slots_per_day": 4.0,
+  "stock_ceiling": 44395,
+  "yield_per_exported": 0.795
+ },
+ "recent_slots": [
+  "2026-09-26",
+  "2026-09-26-04",
+  "2026-09-26-10"
+ ],
+ "record_type": "factory_report/v1",
+ "review_lane": {
+  "approved_per_busy_hour": 1787.9,
+  "items_per_busy_hour": 1873.4,
+  "mean_busy_minutes_per_slot": 53.3,
+  "mean_call_seconds": 22.6,
+  "reviewer": "tactical.gemma-4-coding-abliterated",
+  "seconds_per_item": 1.922,
+  "utilization_of_cadence": 0.148,
+  "utilization_of_slot_wall": 0.538
+ },
+ "slots": [
+  {
+   "bundle": {
+    "bytes": 38984421,
+    "files": 11495,
+    "items": 3276
+   },
+   "calibration": {
+    "attempts_moved_aside": 0,
+    "busy_seconds": 38.2,
+    "calls": 8,
+    "moved_aside_busy_seconds": 0,
+    "moved_aside_calls": 0,
+    "not_qualified_verdicts": 1,
+    "retries": 0
+   },
+   "counts": {
+    "approved": 1647,
+    "checked_live": true,
+    "exported": 2000,
+    "left_out": 31,
+    "passed_prechecks": 1707,
+    "published": true,
+    "record_type": "daily_library_release_counts/v1",
+    "rejected": 29,
+    "review_calls": 143,
+    "reviewed": 1707
+   },
+   "failed_stage_notes": [
+    {
+     "at": "2026-09-25T23:25:35Z",
+     "note": "prechecks failed:     raise CandidateReviewError(code, message)\ncandidate_review.records.CandidateReviewError: native_root_invalid: a native review root must be",
+     "stage": "prechecks"
+    },
+    {
+     "at": "2026-09-25T23:39:01Z",
+     "note": "calibration failed to run: usage: community_campaign.py [-h] {prechecks,calibrate,review} ...\ncommunity_campaign.py: error: unrecognized arguments: the reviewer",
+     "stage": "calibrate"
+    },
+    {
+     "at": "2026-09-26T00:58:19Z",
+     "note": "publish failed:     raise JSONDecodeError(\"Expecting value\", s, err.value) from None\njson.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)",
+     "stage": "publish"
+    }
+   ],
+   "finished_at": "2026-09-26T01:01:51+00:00",
+   "first_run_at": "2026-09-25T23:25:35+00:00",
+   "first_run_refused": null,
+   "late_start_minutes": null,
+   "lost": null,
+   "per_approved": {
+    "charged_tokens": 6184.9,
+    "reviewer_seconds": 1.94,
+    "wall_minutes": 0.058
+   },
+   "review": {
+    "busy_seconds": 3161.9,
+    "calls": 143,
+    "calls_with_unknown_usage": 1,
+    "charged_tokens": 10186579,
+    "first_call_at": "2026-09-25T23:51:42.959159+00:00",
+    "items_in_unanswered_calls": 12,
+    "last_call_end_at": "2026-09-26T00:44:29.713105+00:00",
+    "max_call_seconds": 53.3,
+    "mean_call_seconds": 22.1,
+    "median_call_seconds": 20.3,
+    "outcomes": {
+     "batch_answered": 142,
+     "model_identity_mismatch": 1
+    },
+    "startup_minutes": 10.73,
+    "tail_minutes": 0.0,
+    "unanswered_calls": 1,
+    "unanswered_seconds": 2.7
+   },
+   "reviewer_busy_seconds": 3200.1,
+   "reviewer_utilization_of_slot": 0.554,
+   "scheduled_start": null,
+   "slot": "2026-09-26",
+   "stage_minutes": {
+    "bundle": 0.08,
+    "calibrate": 1.97,
+    "check": null,
+    "combine": 0.08,
+    "counts": 5.98,
+    "export": 0.0,
+    "prechecks": 13.43,
+    "publish": null,
+    "review": 63.52,
+    "write": 11.2
+   },
+   "status": "finished",
+   "stop": null,
+   "wall_minutes": 96.27
+  },
+  {
+   "bundle": {
+    "bytes": 59742261,
+    "files": 17061,
+    "items": 4812
+   },
+   "calibration": {
+    "attempts_moved_aside": 1,
+    "busy_seconds": 31.5,
+    "calls": 7,
+    "moved_aside_busy_seconds": 35.4,
+    "moved_aside_calls": 8,
+    "not_qualified_verdicts": 1,
+    "retries": 1
+   },
+   "counts": {
+    "approved": 1536,
+    "checked_live": true,
+    "exported": 2000,
+    "left_out": 44,
+    "passed_prechecks": 1630,
+    "published": true,
+    "record_type": "daily_library_release_counts/v1",
+    "rejected": 50,
+    "review_calls": 136,
+    "reviewed": 1630
+   },
+   "failed_stage_notes": [],
+   "finished_at": "2026-09-26T06:21:05+00:00",
+   "first_run_at": "2026-09-26T04:38:23+00:00",
+   "first_run_refused": null,
+   "late_start_minutes": 21.38,
+   "lost": null,
+   "per_approved": {
+    "charged_tokens": 6992.9,
+    "reviewer_seconds": 2.12,
+    "wall_minutes": 0.067
+   },
+   "review": {
+    "busy_seconds": 3194.1,
+    "calls": 136,
+    "calls_with_unknown_usage": 2,
+    "charged_tokens": 10741134,
+    "first_call_at": "2026-09-26T05:11:34.289507+00:00",
+    "items_in_unanswered_calls": 24,
+    "last_call_end_at": "2026-09-26T06:04:53.052648+00:00",
+    "max_call_seconds": 77.6,
+    "mean_call_seconds": 23.5,
+    "median_call_seconds": 21.0,
+    "outcomes": {
+     "batch_answered": 134,
+     "model_identity_mismatch": 2
+    },
+    "startup_minutes": 13.27,
+    "tail_minutes": -0.0,
+    "unanswered_calls": 2,
+    "unanswered_seconds": 4.9
+   },
+   "reviewer_busy_seconds": 3261.0,
+   "reviewer_utilization_of_slot": 0.529,
+   "scheduled_start": "2026-09-26T04:17:00+00:00",
+   "slot": "2026-09-26-04",
+   "stage_minutes": {
+    "bundle": 0.1,
+    "calibrate": 2.63,
+    "check": 0.02,
+    "combine": 0.12,
+    "counts": 0.0,
+    "export": 0.37,
+    "prechecks": 16.92,
+    "publish": 2.85,
+    "review": 66.58,
+    "write": 13.12
+   },
+   "status": "finished",
+   "stop": null,
+   "wall_minutes": 102.7
+  },
+  {
+   "bundle": {
+    "bytes": 79838252,
+    "files": 22720,
+    "items": 6398
+   },
+   "calibration": {
+    "attempts_moved_aside": 0,
+    "busy_seconds": 36.7,
+    "calls": 7,
+    "moved_aside_busy_seconds": 0,
+    "moved_aside_calls": 0,
+    "not_qualified_verdicts": 0,
+    "retries": 0
+   },
+   "counts": {
+    "approved": 1586,
+    "checked_live": true,
+    "exported": 2000,
+    "left_out": 29,
+    "passed_prechecks": 1660,
+    "published": true,
+    "record_type": "daily_library_release_counts/v1",
+    "rejected": 45,
+    "review_calls": 139,
+    "reviewed": 1660
+   },
+   "failed_stage_notes": [],
+   "finished_at": "2026-09-26T11:55:34+00:00",
+   "first_run_at": "2026-09-26T10:17:01+00:00",
+   "first_run_refused": null,
+   "late_start_minutes": 0.02,
+   "lost": null,
+   "per_approved": {
+    "charged_tokens": 6451.6,
+    "reviewer_seconds": 1.98,
+    "wall_minutes": 0.062
+   },
+   "review": {
+    "busy_seconds": 3104.8,
+    "calls": 139,
+    "calls_with_unknown_usage": 1,
+    "charged_tokens": 10232167,
+    "first_call_at": "2026-09-26T10:45:58.034591+00:00",
+    "items_in_unanswered_calls": 12,
+    "last_call_end_at": "2026-09-26T11:37:48.514602+00:00",
+    "max_call_seconds": 77.2,
+    "mean_call_seconds": 22.3,
+    "median_call_seconds": 20.1,
+    "outcomes": {
+     "batch_answered": 138,
+     "model_identity_mismatch": 1
+    },
+    "startup_minutes": 12.35,
+    "tail_minutes": 0.01,
+    "unanswered_calls": 1,
+    "unanswered_seconds": 2.9
+   },
+   "reviewer_busy_seconds": 3141.5,
+   "reviewer_utilization_of_slot": 0.531,
+   "scheduled_start": "2026-09-26T10:17:00+00:00",
+   "slot": "2026-09-26-10",
+   "stage_minutes": {
+    "bundle": 0.18,
+    "calibrate": 0.82,
+    "check": 0.03,
+    "combine": 0.18,
+    "counts": 0.0,
+    "export": 0.38,
+    "prechecks": 15.4,
+    "publish": 3.13,
+    "review": 64.2,
+    "write": 14.22
+   },
+   "status": "finished",
+   "stop": null,
+   "wall_minutes": 98.55
+  },
+  {
+   "bundle": null,
+   "calibration": {
+    "attempts_moved_aside": 0,
+    "busy_seconds": 0,
+    "calls": 0,
+    "moved_aside_busy_seconds": 0,
+    "moved_aside_calls": 0,
+    "not_qualified_verdicts": 0,
+    "retries": 0
+   },
+   "counts": {
+    "approved": null,
+    "checked_live": null,
+    "exported": null,
+    "left_out": null,
+    "passed_prechecks": null,
+    "published": null,
+    "record_type": null,
+    "rejected": null,
+    "review_calls": null,
+    "reviewed": null
+   },
+   "failed_stage_notes": [
+    {
+     "at": "2026-09-26T16:17:25Z",
+     "note": "export failed:     raise HarnessIntelligenceError(\nloop_engine.core.harness_intelligence.HarnessIntelligenceError: reusable code keeps its identity in code_inte",
+     "stage": "export"
+    },
+    {
+     "at": "2026-09-26T16:29:24Z",
+     "note": "prechecks failed:     raise CandidateReviewError(code, message)\ncandidate_review.records.CandidateReviewError: unknown_record_fields: licensed_import_review_exp",
+     "stage": "prechecks"
+    }
+   ],
+   "finished_at": "2026-09-26T16:29:21+00:00",
+   "first_run_at": "2026-09-26T16:17:02+00:00",
+   "first_run_refused": null,
+   "late_start_minutes": 0.03,
+   "lost": null,
+   "per_approved": {},
+   "review": {
+    "busy_seconds": 0,
+    "calls": 0,
+    "calls_with_unknown_usage": 0,
+    "charged_tokens": 0,
+    "first_call_at": null,
+    "items_in_unanswered_calls": 0,
+    "last_call_end_at": null,
+    "max_call_seconds": null,
+    "mean_call_seconds": null,
+    "median_call_seconds": null,
+    "outcomes": {},
+    "startup_minutes": null,
+    "tail_minutes": null,
+    "unanswered_calls": 0,
+    "unanswered_seconds": 0
+   },
+   "reviewer_busy_seconds": 0,
+   "reviewer_utilization_of_slot": 0.0,
+   "scheduled_start": "2026-09-26T16:17:00+00:00",
+   "slot": "2026-09-26-16",
+   "stage_minutes": {
+    "bundle": null,
+    "calibrate": null,
+    "check": null,
+    "combine": null,
+    "counts": null,
+    "export": 12.32,
+    "prechecks": null,
+    "publish": null,
+    "review": null,
+    "write": null
+   },
+   "status": "unfinished",
+   "stop": {
+    "last_failure": "prechecks failed:     raise CandidateReviewError(code, message)\ncandidate_review.records.CandidateReviewError: unknown_record_fields: licensed_import_review_exp",
+    "last_note": "prechecks failed:     raise CandidateReviewError(code, message)\ncandidate_review.records.CandidateReviewError: unknown_record_fields: licensed_import_review_exp",
+    "last_stage": "prechecks"
+   },
+   "wall_minutes": 12.32
+  }
+ ],
+ "stage_minutes_mean": {
+  "bundle": 0.1,
+  "calibrate": 1.8,
+  "check": 0.0,
+  "combine": 0.1,
+  "counts": 2.0,
+  "export": 0.2,
+  "prechecks": 15.2,
+  "publish": 3.0,
+  "review": 64.8,
+  "write": 12.8
+ },
+ "stock": {
+  "draw_curve": {
+   "candidates_in_full_exports": 36000,
+   "draw_after_full_exports": 1791,
+   "drawable_within_horizon": 45568,
+   "draws": [
+    2000,
+    2000,
+    2000,
+    2000,
+    2000,
+    2000,
+    2000,
+    2000,
+    2000,
+    2000,
+    2000,
+    2000,
+    2000,
+    2000,
+    2000,
+    2000,
+    2000,
+    2000,
+    1791,
+    335,
+    314,
+    279,
+    242,
+    240,
+    240,
+    240,
+    240,
+    236,
+    225,
+    224,
+    210,
+    199,
+    195,
+    182,
+    180,
+    180,
+    180,
+    176,
+    165,
+    165,
+    165,
+    150,
+    150,
+    150,
+    140,
+    135,
+    123,
+    116,
+    90,
+    90,
+    77,
+    64,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60
+   ],
+   "full_exports_supported": 18,
+   "horizon_exports": 80,
+   "index": "/home/username/baltor-library/import-store/candidate-index-run-1.jsonl",
+   "repositories": 2816,
+   "repositories_with_stock": 2551,
+   "reviewable_share_assumed": 0.9831
+  },
+  "eligible_remaining": 47796,
+  "exported_in_reports_present": 10000,
+  "exported_so_far": 10000,
+  "exports_drawn": 5,
+  "held_by_repository_ceiling_in_last_export": 13626,
+  "not_reviewable": 991,
+  "per_repository": 15,
+  "policy": {
+   "per_repository": 15,
+   "target": 2000
+  },
+  "source": "/home/username/baltor-library/review-batches/2026-09-26-16/export-report.json",
+  "stored_candidates": 58787,
+  "written_at": "2026-09-26T16:29:20Z"
+ },
+ "storage": {
+  "bundle_bytes": 79838252,
+  "bundle_items": 6398,
+  "bytes_at_mark": {
+   "10000": 124786264,
+   "100000": 1247862644,
+   "30000": 374358793
+  },
+  "bytes_per_package": 12479,
+  "marks_beyond_the_volume": [
+   100000
+  ],
+  "packages_the_volume_holds_at_this_size": 80137,
+  "volume_bytes": 1000000000
+ },
+ "waste": {
+  "approvals_lost_with_them": 0,
+  "calibration_attempts_moved_aside": 1,
+  "calibration_not_qualified_verdicts": 2,
+  "calibration_retries": 1,
+  "failed_stage_notes": 5,
+  "items_left_without_a_verdict": 104,
+  "late_start_minutes": 21.43,
+  "moved_aside_calibration_seconds": 35.4,
+  "review_startup_minutes_per_slot": 12.1,
+  "slots_in_journals": 4,
+  "slots_lost": [],
+  "slots_that_needed_a_restart": 3,
+  "unanswered_review_calls": 4,
+  "unanswered_review_seconds": 10.5,
+  "unfinished_slots": [
+   "2026-09-26-16"
+  ]
+ },
+ "written_at": "2026-09-26T17:10:00+00:00"
+}

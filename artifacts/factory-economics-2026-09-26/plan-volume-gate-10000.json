@@ -1,0 +1,58 @@
+{
+ "batch": 12,
+ "margin_minutes": 3.0,
+ "measured": {
+  "measured_export": 2000,
+  "precheck_pass_rate": 0.8328333333333333,
+  "stage_minutes": {
+   "bundle": 0.1,
+   "calibrate": 1.8,
+   "check": 0.0,
+   "combine": 0.1,
+   "counts": 2.0,
+   "export": 0.2,
+   "prechecks": 15.2,
+   "publish": 3.0,
+   "review": 64.8,
+   "write": 12.8
+  },
+  "yield_per_exported": 0.795
+ },
+ "planned_at": "2026-09-26T18:30:00Z",
+ "predicted_approved": 2011,
+ "predicted_approved_per_day": 21485.1,
+ "predicted_hours": 2.25,
+ "record_type": "factory_schedule_plan/v1",
+ "served": 7988,
+ "serving_capacity": 10000,
+ "slots": [
+  {
+   "export_target": 2000,
+   "predicted_approved": 1590,
+   "predicted_finish": "2026-09-26T20:10:00Z",
+   "predicted_review_end": "2026-09-26T19:52:00Z",
+   "predicted_review_start": "2026-09-26T18:47:12Z",
+   "predicted_reviewed": 1665,
+   "predicted_served_after": 9578,
+   "slot": "2026-09-26-18",
+   "start_at": "2026-09-26T18:30:00Z",
+   "stock_left_after": 45796
+  },
+  {
+   "export_target": 530,
+   "predicted_approved": 421,
+   "predicted_finish": "2026-09-26T20:44:47Z",
+   "predicted_review_end": "2026-09-26T20:36:12Z",
+   "predicted_review_start": "2026-09-26T20:19:01Z",
+   "predicted_reviewed": 441,
+   "predicted_served_after": 9999,
+   "slot": "2026-09-26-20",
+   "start_at": "2026-09-26T20:13:00Z",
+   "stock_left_after": 45266
+  }
+ ],
+ "stock": 47796,
+ "stock_left": 45266,
+ "stopped_by": "serving_capacity",
+ "target_max": 2000
+}

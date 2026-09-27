@@ -1,0 +1,19 @@
+mutant 1 factory_schedule.py: killed by test_calibration_re_runs_stop_at_the_bound
+mutant 2 factory_schedule.py: killed by test_plan_never_draws_more_than_the_stock
+mutant 3 factory_schedule.py: killed by test_plan_stops_at_the_serving_capacity
+mutant 4 factory_schedule.py: killed by test_a_calibration_stop_is_re_run_after_moving_the_attempt_aside
+mutant 5 factory_schedule.py: killed by test_a_foreign_daily_job_stops_the_queue
+mutant 6 factory_schedule.py: killed by test_a_zero_attempt_bound_and_a_missing_capacity_are_refused
+mutant 7 factory_schedule.py: killed by test_actual_counts_stop_the_queue_at_the_serving_capacity
+mutant 8 factory_schedule.py: killed by test_actual_counts_shrink_the_next_export
+mutant 9 factory_report.py: killed by test_an_unfinished_newest_slot_is_not_lost_but_an_abandoned_one_is
+mutant 10 factory_report.py: killed by test_the_first_run_replaces_the_schedule_and_records_a_late_start
+mutant 11 factory_report.py: killed by test_calibration_attempts_moved_aside_count_as_reviewer_time
+mutant 12 factory_report.py: killed by test_a_gap_without_stage_notes_is_not_given_to_the_next_stage
+mutant 13 factory_report.py: killed by test_review_lanes_come_from_the_ledger
+mutant 14 factory_schedule.py: killed by test_an_older_calibration_verdict_before_another_failure_is_not_re_run
+mutant 15 factory_schedule.py: killed by test_a_queue_without_publish_runs_one_slot_at_a_time
+mutant 16 factory_report.py: killed by test_a_restarted_stage_is_kept_out_of_the_means
+mutant 17 factory_report.py: killed by test_a_slot_stopped_at_the_publish_counts_its_written_approvals
+mutant 18 factory_report.py: killed by test_a_slot_stopped_at_the_publish_counts_its_written_approvals
+unmutated: pass OK
