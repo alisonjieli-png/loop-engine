@@ -74,18 +74,18 @@ def _price_table(row: dict, day: str, directory) -> str:
     if not row["prices"]:
         return '<p class="md-reading">No source lists a price for this model. It may only run on your own hardware.</p>'
     lines = []
-    for price in sorted(row["prices"], key=lambda item: (item["input"], item["output"], item["provider"], item["route"])):
+    for price in sorted(row["prices"], key=lambda item: (item["input"], item["output"], item["provider"], item["provider_slug"])):
         stale = records.price_is_stale(price, day)
-        route = "direct" if price["route"] == records.ROUTE_DIRECT else "through OpenRouter"
-        endpoint = price["provider_slug"] if price["route"] == records.ROUTE_DIRECT else "openrouter"
+        endpoint = price["provider_slug"]
         provider = (f'<a href="/endpoints/{escape(endpoint)}"{LISTING}>{escape(price["provider"])}</a>' if directory.endpoint(endpoint)
                     else f'<span{LISTING}>{escape(price["provider"])}</span>')
         when = (f'<time datetime="{price["as_of"]}">{price["as_of"]}</time>'
                 + (f' <span class="md-stale">older than {records.STALE_PRICE_DAYS} days; check the provider</span>' if stale else ""))
-        lines.append(f'<tr><th scope="row">{provider} <span class="md-basis">{route}</span></th>'
+        lines.append(f'<tr><th scope="row">{provider}</th>'
                      f'<td>{escape(fmt.price(price["input"]))}</td><td>{escape(fmt.price(price["output"]))}</td>'
                      f'<td>{escape(fmt.tokens(price.get("context")))}</td><td>{when}</td><td>{fmt.cite(row, price["source"])}</td></tr>')
-    return ('<div class="md-table-wrap"><table class="md-table"><caption>Prices in US dollars per million tokens, as each source lists them</caption>'
+    return ('<div class="md-table-wrap"><table class="md-table"><caption>Each provider\'s own price in US dollars per million tokens, as '
+            'an openly licensed source lists it</caption>'
             '<thead><tr><th scope="col">Provider</th><th scope="col">Input</th><th scope="col">Output</th><th scope="col">Context</th>'
             '<th scope="col">As of</th><th scope="col">Source</th></tr></thead><tbody>' + "".join(lines) + "</tbody></table></div>")
 
@@ -159,15 +159,15 @@ def _run_commands(row: dict, directory) -> str:
 
 
 def _routes(row: dict, directory) -> list:
-    """(endpoint row, model identifier) for each way to reach the model, in a fixed order: the maker's own API, OpenRouter, local."""
+    """(endpoint row, model identifier) for each way to reach the model, in a fixed order: each provider that lists a price, by
+    its address part, then a local runtime."""
     routes, seen = [], set()
-    for price in sorted(row["prices"], key=lambda item: (item["route"] != records.ROUTE_DIRECT, item["provider_slug"])):
-        slug = price["provider_slug"] if price["route"] == records.ROUTE_DIRECT else "openrouter"
+    for price in sorted(row["prices"], key=lambda item: (item["provider_slug"], item["model_id"])):
+        slug = price["provider_slug"]
         endpoint = directory.endpoint(slug)
         if endpoint is not None and slug not in seen:
             seen.add(slug)
-            model_id = price["model_id"] if price["route"] == records.ROUTE_DIRECT else row["ids"].get("openrouter", price["model_id"])
-            routes.append((endpoint, model_id))
+            routes.append((endpoint, price["model_id"]))
     gguf = next((item for item in row["quantizations"] if item["name"] in ("Q4_K_M", "Q4_K_S", "Q4_0")), None)
     ollama = directory.endpoint("ollama")
     if gguf and ollama is not None:
@@ -211,15 +211,39 @@ def directory_harnesses(directory) -> list:
     return list(directory.harnesses)
 
 
-def _benchmarks(row: dict) -> str:
-    if not row["benchmarks"]:
-        return ""
-    items = "".join(f'<li>{fmt.link(item["address"], item["name"])}' + (f": {escape(str(item['value']))}" if "value" in item else "")
-                    + f' <span class="md-basis">published by <span{LISTING}>{escape(item["publisher"])}</span></span> {fmt.cite(row, item["source"])}</li>'
-                    for item in row["benchmarks"])
+#: Publishers the pages link to without copying anything, because their terms do not allow it.
+ELSEWHERE = (("Artificial Analysis", "artificialanalysis.ai", "publishes its own intelligence, speed and price measurements"),
+             ("OpenRouter", "openrouter.ai/models", "lists current prices and uptime for each provider it routes to"))
+
+
+def _result_item(row: dict, item: dict, licences: dict) -> str:
+    value = ""
+    if "value" in item:
+        number = item["value"]
+        value = f": {number:,}" if isinstance(number, int) else f": {escape(str(number))}"
+    when = f' as of <time datetime="{item["as_of"]}">{item["as_of"]}</time>' if item.get("as_of") else ""
+    source = row["sources"][item["source"]]
+    licence = licences.get(source["id"]) if "value" in item else None
+    terms = f', under {fmt.link(licence["terms_address"], licence["licence"])}' if licence else ""
+    return (f'<li>{fmt.link(item["address"], item["name"])}{value}{when} <span class="md-basis">published by '
+            f'<span{LISTING}>{escape(item["publisher"])}</span>{terms}</span> {fmt.cite(row, item["source"])}</li>')
+
+
+def _benchmarks(row: dict, directory) -> str:
+    licences = {item["id"]: item for item in directory.manifest.get("sources") or ()}
+    items = "".join(_result_item(row, item, licences) for item in row["benchmarks"])
+    openrouter = next((price["model_id"] for price in row["prices"] if price["provider_slug"] == "openrouter"), None)
+    elsewhere = "".join(
+        f'<li>{fmt.link(address if name != "OpenRouter" or not openrouter else "openrouter.ai/" + openrouter, name)} {escape(what)}.</li>'
+        for name, address, what in ELSEWHERE)
+    rounded = any(row["sources"][item["source"]]["id"] == "lmarena" for item in row["benchmarks"] if "value" in item)
     return ('<div class="md-band" id="results" aria-labelledby="results-title"><h2 id="results-title">Published results</h2>'
             '<p class="md-reading">These are results other people published. Baltor did not run them and does not rank models by them.</p>'
-            f'<ul class="md-plain">{items}</ul></div>')
+            + (f'<ul class="md-plain">{items}</ul>' if items else "")
+            + ('<p class="md-basis">The arena score is the overall text score with style control from LMArena\'s latest leaderboard, '
+               'rounded to a whole number.</p>' if rounded else "")
+            + '<p class="md-reading">Two more publishers are linked, never copied, because their terms do not allow it:</p>'
+            f'<ul class="md-plain">{elsewhere}</ul></div>')
 
 
 def _row_sources(row: dict) -> str:
@@ -242,7 +266,7 @@ def model_page(row: dict, directory, site_map, name: str) -> str:
             + commercial_link(row) + "</div>"
             f'<div class="md-band" id="facts" aria-labelledby="facts-title"><h2 id="facts-title">Facts</h2>{_fact_rows(row)}</div>'
             f'<div class="md-band" id="prices" aria-labelledby="prices-title"><h2 id="prices-title">Prices</h2>{_price_table(row, day, directory)}</div>'
-            + _local_band(row, directory) + _setup_band(row, directory) + _benchmarks(row) + _row_sources(row) + disclosure([row]))
+            + _local_band(row, directory) + _setup_band(row, directory) + _benchmarks(row, directory) + _row_sources(row) + disclosure([row]))
     structured = {"@context": SCHEMA_CONTEXT, "@type": "SoftwareApplication", "name": row["name"], "applicationCategory": "Machine learning model",
                   "url": canonical(site_map, "/models/" + row["slug"]), "author": {"@type": "Organization", "name": row["maker"]},
                   "description": f'{row["name"]} by {row["maker"]}: {summary}',
@@ -280,7 +304,9 @@ def _endpoint_facts(endpoint: dict) -> str:
             lines.append(f"<div><dt>{label}</dt><dd>{fmt.UNKNOWN}</dd></div>")
             continue
         parts = []
-        if "value" in fact and not isinstance(fact["value"], int):
+        # A true or false fact shows Yes or No. A whole number is the count behind a note (bool is a kind of int in Python,
+        # so it is tested first: without that, a yes or no fact showed only its note).
+        if "value" in fact and (isinstance(fact["value"], bool) or not isinstance(fact["value"], int)):
             parts.append(escape(_yes(fact["value"]) if isinstance(fact["value"], bool) else str(fact["value"])))
         if fact.get("note"):
             parts.append(escape(fact["note"]))

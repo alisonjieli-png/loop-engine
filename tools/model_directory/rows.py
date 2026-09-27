@@ -6,7 +6,6 @@ row, each with its address and the day it was read, and hands back the index tha
 from __future__ import annotations
 
 import re
-from datetime import datetime, timezone
 
 from loop_engine.core.service_runtime import commercial_relationship as commercial
 
@@ -47,12 +46,6 @@ def unique_slugs(identifiers: list) -> dict:
     return result
 
 
-def split_openrouter_name(name: str) -> tuple:
-    """OpenRouter writes "Maker: Model". Returns (maker, model name), or ("", name) without a colon."""
-    maker, separator, model = name.partition(": ")
-    return (maker.strip(), model.strip()) if separator and model.strip() else ("", name.strip())
-
-
 def record_day(value, fallback: str) -> str:
     """A source's own date when it is a real calendar date of this century, else the fallback."""
     from datetime import date
@@ -63,12 +56,6 @@ def record_day(value, fallback: str) -> str:
         except ValueError:
             return fallback
     return fallback
-
-
-def day_of_epoch(seconds) -> str:
-    if not isinstance(seconds, (int, float)) or isinstance(seconds, bool) or seconds <= 0:
-        return ""
-    return datetime.fromtimestamp(seconds, timezone.utc).strftime("%Y-%m-%d")
 
 
 def per_million(value) -> "float | None":

@@ -10,6 +10,11 @@ The rules, each with a known-wrong case in `tools/test_model_directory.py`:
 
 - every row names at least one source, and every source has an address and the date it was read;
 - every fact, price, quantization, use case and benchmark names the source it came from;
+- a row that names a refused source is refused whole: the directory republishes nothing from a
+  source whose terms forbid it (OpenRouter and Artificial Analysis are linked, never copied);
+- a source the builder reads by script is read only from its own declared hosts, a price comes
+  only from an openly licensed price source, and a published result with a value comes only from
+  an openly licensed results source;
 - a price carries the date it applies to, so a page can show how old it is;
 - an unknown fact is absent, never a guess, and a page renders it as "Unknown";
 - every row carries a `commercial_relationship` object read by the shared schema, and nothing that
@@ -31,9 +36,9 @@ from functools import lru_cache
 
 from . import commercial_relationship as commercial
 
-MANIFEST_RECORD_TYPE = "model_directory_manifest/v1"
-MODELS_RECORD_TYPE = "model_directory_models/v1"
-ENDPOINTS_RECORD_TYPE = "model_directory_endpoints/v1"
+MANIFEST_RECORD_TYPE = "model_directory_manifest/v2"
+MODELS_RECORD_TYPE = "model_directory_models/v2"
+ENDPOINTS_RECORD_TYPE = "model_directory_endpoints/v2"
 HARDWARE_RECORD_TYPE = "model_directory_hardware/v1"
 FIT_INDEX_RECORD_TYPE = "model_directory_fit_index/v1"
 SEARCH_INDEX_RECORD_TYPE = "model_directory_search_index/v1"
@@ -43,19 +48,42 @@ DATA_FOLDER = "model-directory"
 SCHEME = "https"
 #: A price older than this, measured from the day a page is served, is shown as stale with its date.
 STALE_PRICE_DAYS = 30
-#: The sources a row may name, by id. Each has a record in the manifest with its terms.
-SOURCE_IDS = ("huggingface", "huggingface_config", "huggingface_gguf", "openrouter", "openrouter_endpoints",
-              "modelsdev", "baltor_records", "provider_documentation", "harness_documentation")
+#: The sources a row may name, by id. Each has a record in the manifest with its licence or terms.
+SOURCE_IDS = ("huggingface", "huggingface_config", "huggingface_gguf", "modelsdev", "litellm", "lmarena",
+              "baltor_records", "provider_documentation", "harness_documentation")
+#: Sources whose values the directory never republishes, with the reason. A row that names one is refused whole.
+#: The pages link to these publishers instead; the terms were read on September 27, 2026.
+REFUSED_SOURCES = {
+    "openrouter": "OpenRouter's terms of August 31, 2026 forbid copying information on its site or services by script "
+                  "and using it for a competing service",
+    "openrouter_endpoints": "OpenRouter's terms of August 31, 2026 forbid copying information on its site or services by "
+                            "script and using it for a competing service",
+    "artificial_analysis": "Artificial Analysis's website terms grant only personal, noncommercial use",
+}
+#: Hosts of the refused publishers. A published result whose value points at one of them is refused.
+REFUSED_HOSTS = ("openrouter.ai", "artificialanalysis.ai")
+#: Publishers whose values are refused wherever they appear, even inside another source's answer.
+REFUSED_PUBLISHERS = ("OpenRouter", "Artificial Analysis")
+#: The hosts each source the builder reads by script is read from. A source address on any other host is refused, so
+#: a value copied from a refused publisher cannot pass under an allowed source's name.
+SOURCE_HOSTS = {"huggingface": ("huggingface.co",), "huggingface_config": ("huggingface.co",),
+                "huggingface_gguf": ("huggingface.co",), "modelsdev": ("models.dev",),
+                "litellm": ("github.com", "raw.githubusercontent.com"), "lmarena": ("huggingface.co",)}
+#: The openly licensed sources a price may come from, and those a published result with a value may come from.
+PRICE_SOURCES = ("modelsdev", "litellm")
+RESULT_VALUE_SOURCES = ("lmarena",)
+#: The identifier kinds a model row may carry: the Hugging Face repository and the models.dev provider and model.
+ID_KINDS = ("huggingface", "modelsdev")
 #: The API styles an endpoint can speak, which decide the setup a harness needs.
 API_OPENAI_CHAT = "openai_chat"
 API_OPENAI_RESPONSES = "openai_responses"
 API_ANTHROPIC_MESSAGES = "anthropic_messages"
 API_NATIVE = "native"
 API_STYLES = (API_OPENAI_CHAT, API_OPENAI_RESPONSES, API_ANTHROPIC_MESSAGES, API_NATIVE)
-#: How a price reached the directory: the provider's own list, or the route through OpenRouter.
+#: How a price reached the directory: the provider's own price, as an openly licensed source records it. A price
+#: copied from a router's listing of other providers is not a route this directory publishes.
 ROUTE_DIRECT = "direct"
-ROUTE_OPENROUTER = "openrouter"
-ROUTES = (ROUTE_DIRECT, ROUTE_OPENROUTER)
+ROUTES = (ROUTE_DIRECT,)
 ENDPOINT_HOSTED = "hosted"
 ENDPOINT_LOCAL = "local"
 ENDPOINT_KINDS = (ENDPOINT_HOSTED, ENDPOINT_LOCAL)
@@ -68,7 +96,10 @@ LIST_FACTS = ("context", "max_output", "tool_calling", "structured_output", "rea
 MODEL_FIELDS = ("slug", "name", "maker", "ids", "sources", "facts", "quantizations", "prices", "use_cases",
                 "benchmarks", "popularity", "commercial_relationship")
 ENDPOINT_FIELDS = ("slug", "name", "kind", "sources", "apis", "auth", "facts", "setup", "models",
-                   "openrouter_provider", "commercial_relationship")
+                   "commercial_relationship")
+#: What the manifest says about each source the rows name, so the pages can show its licence and the day it was checked.
+MANIFEST_SOURCE_FIELDS = ("id", "name", "address", "terms_address", "licence", "checked", "use", "rows", "oldest_read",
+                          "newest_read")
 
 _SLUG = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 _DAY = re.compile(r"^20[0-9]{2}-[01][0-9]-[0-3][0-9]$")
@@ -128,6 +159,16 @@ def _fields(value, where: str, required: tuple, optional: tuple = ()) -> dict:
     return value
 
 
+def host_of(address: str) -> str:
+    """The lowercase host of a stored address, without its port."""
+    return address.split("/", 1)[0].split(":", 1)[0].lower()
+
+
+def _on_hosts(address: str, hosts) -> bool:
+    host = host_of(address)
+    return any(host == name or host.endswith("." + name) for name in hosts)
+
+
 def _sources(row: dict, where: str) -> int:
     sources = row.get("sources")
     if not isinstance(sources, list) or not sources:
@@ -135,9 +176,15 @@ def _sources(row: dict, where: str) -> int:
     for index, item in enumerate(sources):
         at = f"{where}.sources[{index}]"
         _fields(item, at, ("id", "address", "read"))
+        if item["id"] in REFUSED_SOURCES:
+            raise ModelDirectoryError(f"{at}.id {item['id']} is a refused source, because {REFUSED_SOURCES[item['id']]}; "
+                                      f"the directory links to it and republishes nothing from it")
         if item["id"] not in SOURCE_IDS:
             raise ModelDirectoryError(f"{at}.id is one of {SOURCE_IDS}")
         _address(item["address"], at + ".address")
+        if item["id"] in SOURCE_HOSTS and not _on_hosts(item["address"], SOURCE_HOSTS[item["id"]]):
+            raise ModelDirectoryError(f"{at}.address is not on a host of the {item['id']} source {SOURCE_HOSTS[item['id']]}: "
+                                      f"{item['address']!r}")
         _day(item["read"], at + ".read")
     return len(sources)
 
@@ -165,21 +212,43 @@ def _fact(value, count: int, where: str) -> dict:
     return value
 
 
-def _price(value, count: int, where: str) -> dict:
+def _price(value, sources: list, where: str) -> dict:
     _fields(value, where, ("provider", "provider_slug", "route", "model_id", "input", "output", "as_of", "source"),
             ("cache_read", "context", "quantization", "max_output"))
     _text(value["provider"], where + ".provider")
     if not _SLUG.match(_text(value["provider_slug"], where + ".provider_slug")):
         raise ModelDirectoryError(f"{where}.provider_slug is a lowercase address part")
     if value["route"] not in ROUTES:
-        raise ModelDirectoryError(f"{where}.route is one of {ROUTES}")
+        raise ModelDirectoryError(f"{where}.route is one of {ROUTES}; a price copied from a router's listing is not published")
     _text(value["model_id"], where + ".model_id")
     for name in ("input", "output", "cache_read"):
         _number(value.get(name), f"{where}.{name}", nullable=True)
     for name in ("context", "max_output"):
         _number(value.get(name), f"{where}.{name}", whole=True, nullable=True)
     _day(value["as_of"], where + ".as_of")
-    _source_ref(value["source"], count, where + ".source")
+    source = sources[_source_ref(value["source"], len(sources), where + ".source")]
+    if source["id"] not in PRICE_SOURCES:
+        raise ModelDirectoryError(f"{where}.source is a {source['id']} source; a price comes only from {PRICE_SOURCES}")
+    return value
+
+
+def _benchmark(value, sources: list, where: str) -> dict:
+    """A published result: a link to its publisher, and a value only from an openly licensed results source."""
+    _fields(value, where, ("name", "publisher", "address", "source"), ("value", "as_of"))
+    _text(value["name"], where + ".name")
+    _text(value["publisher"], where + ".publisher")
+    _address(value["address"], where + ".address")
+    source = sources[_source_ref(value["source"], len(sources), where + ".source")]
+    if "as_of" in value:
+        _day(value["as_of"], where + ".as_of")
+    if "value" in value:
+        _number(value["value"], where + ".value")
+        if source["id"] not in RESULT_VALUE_SOURCES:
+            raise ModelDirectoryError(f"{where}.value comes from a {source['id']} source; a result value comes only from "
+                                      f"{RESULT_VALUE_SOURCES}")
+        if value["publisher"] in REFUSED_PUBLISHERS or _on_hosts(value["address"], REFUSED_HOSTS):
+            raise ModelDirectoryError(f"{where}.value was published by {value['publisher']} at {value['address']}, whose terms "
+                                      f"do not allow republishing it; link to it without its value")
     return value
 
 
@@ -207,6 +276,10 @@ def validate_model_row(row) -> dict:
     if not isinstance(row["ids"], dict) or not row["ids"]:
         raise ModelDirectoryError(f"{where}.ids names the model in at least one source")
     count = _sources(row, where)
+    for kind, identifier in row["ids"].items():
+        if kind not in ID_KINDS:
+            raise ModelDirectoryError(f"{where}.ids.{kind} is not an identifier kind of this directory {ID_KINDS}")
+        _text(identifier, f"{where}.ids.{kind}")
     facts = row["facts"]
     if not isinstance(facts, dict):
         raise ModelDirectoryError(f"{where}.facts is an object")
@@ -225,15 +298,13 @@ def validate_model_row(row) -> dict:
     for index, item in enumerate(_list(row["quantizations"], where + ".quantizations")):
         _quantization(item, count, f"{where}.quantizations[{index}]")
     for index, item in enumerate(_list(row["prices"], where + ".prices")):
-        _price(item, count, f"{where}.prices[{index}]")
+        _price(item, row["sources"], f"{where}.prices[{index}]")
     for index, item in enumerate(_list(row["use_cases"], where + ".use_cases")):
         _fact(item, count, f"{where}.use_cases[{index}]")
         if item.get("value") not in USE_CASES:
             raise ModelDirectoryError(f"{where}.use_cases[{index}] is one of {USE_CASES}")
     for index, item in enumerate(_list(row["benchmarks"], where + ".benchmarks")):
-        _fields(item, f"{where}.benchmarks[{index}]", ("name", "publisher", "address", "source"), ("value",))
-        _address(item["address"], f"{where}.benchmarks[{index}].address")
-        _source_ref(item["source"], count, f"{where}.benchmarks[{index}].source")
+        _benchmark(item, row["sources"], f"{where}.benchmarks[{index}]")
     if row["popularity"] is not None:
         _fields(row["popularity"], where + ".popularity", ("downloads", "likes", "source"))
         _source_ref(row["popularity"]["source"], count, where + ".popularity.source")
@@ -278,10 +349,12 @@ def validate_endpoint_row(row) -> dict:
     if not isinstance(row["setup"], dict):
         raise ModelDirectoryError(f"{where}.setup is an object")
     for index, item in enumerate(_list(row["models"], where + ".models")):
-        _fields(item, f"{where}.models[{index}]", ("id", "name", "source", "as_of"),
-                ("model_slug", "input", "output", "context", "tool_calling"))
-        _source_ref(item["source"], count, f"{where}.models[{index}].source")
-        _day(item["as_of"], f"{where}.models[{index}].as_of")
+        at = f"{where}.models[{index}]"
+        _fields(item, at, ("id", "name", "source", "as_of"), ("model_slug", "input", "output", "context", "tool_calling"))
+        source = row["sources"][_source_ref(item["source"], count, at + ".source")]
+        _day(item["as_of"], at + ".as_of")
+        if ("input" in item or "output" in item) and source["id"] not in PRICE_SOURCES:
+            raise ModelDirectoryError(f"{at} carries a price from a {source['id']} source; a price comes only from {PRICE_SOURCES}")
     commercial.from_record(row["commercial_relationship"])
     return row
 
@@ -329,6 +402,7 @@ def directory_from_records(manifest, models, endpoints, hardware) -> Directory:
             raise ModelDirectoryError(f"this reader reads {kind}")
     if manifest.get("commercial_relationship_schema") != commercial.SCHEMA:
         raise ModelDirectoryError(f"the manifest names the commercial relationship schema {commercial.SCHEMA}")
+    described = validate_manifest_sources(manifest)
     rows = tuple(validate_model_row(row) for row in _list(models.get("models"), "models"))
     slugs = [row["slug"] for row in rows]
     if len(slugs) != len(set(slugs)):
@@ -338,7 +412,42 @@ def directory_from_records(manifest, models, endpoints, hardware) -> Directory:
     if len(by_endpoint) != len(endpoint_rows):
         raise ModelDirectoryError("two endpoint rows share a slug")
     harnesses = tuple(validate_harness(item) for item in _list(endpoints.get("harnesses"), "harnesses"))
+    named = {item["id"] for row in rows + endpoint_rows + harnesses for item in row["sources"]}
+    if named - set(described):
+        raise ModelDirectoryError(f"rows name the sources {sorted(named - set(described))}, which the manifest does not describe")
     return Directory(manifest, rows, endpoint_rows, hardware, dict(zip(slugs, rows)), by_endpoint, harnesses)
+
+
+def validate_manifest_sources(manifest: dict) -> dict:
+    """The manifest's source records by id: each an allowed source with its licence or terms and the day it was checked.
+
+    The pages show this list, so a source a row names without a record here, or a refused source, is refused.
+    """
+    described = {}
+    for index, item in enumerate(_list(manifest.get("sources"), "manifest.sources")):
+        at = f"manifest.sources[{index}]"
+        _fields(item, at, MANIFEST_SOURCE_FIELDS)
+        if item["id"] in REFUSED_SOURCES:
+            raise ModelDirectoryError(f"{at}.id {item['id']} is a refused source, because {REFUSED_SOURCES[item['id']]}")
+        if item["id"] not in SOURCE_IDS or item["id"] in described:
+            raise ModelDirectoryError(f"{at}.id is one of {SOURCE_IDS}, named once")
+        for name in ("name", "licence", "use"):
+            _text(item[name], f"{at}.{name}")
+        _address(item["address"], at + ".address")
+        _address(item["terms_address"], at + ".terms_address")
+        _day(item["checked"], at + ".checked")
+        _number(item["rows"], at + ".rows", whole=True)
+        for name in ("oldest_read", "newest_read"):
+            if item[name]:
+                _day(item[name], f"{at}.{name}")
+        described[item["id"]] = item
+    for index, item in enumerate(_list(manifest.get("linked_only"), "manifest.linked_only")):
+        at = f"manifest.linked_only[{index}]"
+        _fields(item, at, ("name", "address", "terms_address", "use"))
+        _address(item["address"], at + ".address")
+        _address(item["terms_address"], at + ".terms_address")
+        _text(item["use"], at + ".use")
+    return described
 
 
 def validate_harness(value) -> dict:

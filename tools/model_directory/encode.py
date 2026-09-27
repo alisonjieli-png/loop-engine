@@ -17,38 +17,52 @@ from loop_engine.core.service_runtime import model_directory as records
 from loop_engine.core.service_runtime import model_directory_fit as fit
 from loop_engine.core.service_runtime import model_directory_format as fmt
 
-#: What each source is, where its terms are, and how the build uses it. The pages show this list.
+#: What each source is, its licence or terms and the day they were checked, and how the build uses it. The pages show
+#: this list. Each script-read source is openly licensed or documented for programmatic use; see SOURCES.md.
 SOURCE_RECORDS = (
-    {"id": "openrouter", "name": "OpenRouter Models API", "address": "openrouter.ai/api/v1/models",
-     "terms_address": "openrouter.ai/docs/guides/overview/models",
-     "use": "Context length, output limit, supported parameters and benchmark indexes of hosted models. OpenRouter's documentation says its Models API makes this information freely available; the build reads only that documented interface."},
-    {"id": "openrouter_endpoints", "name": "OpenRouter model endpoints API", "address": "openrouter.ai/api/v1/models",
-     "terms_address": "openrouter.ai/docs/guides/overview/models",
-     "use": "The providers that serve each model through OpenRouter, with the prices OpenRouter lists for each route."},
     {"id": "huggingface", "name": "Hugging Face Hub API", "address": "huggingface.co/api/models",
-     "terms_address": "huggingface.co/terms-of-service",
+     "terms_address": "huggingface.co/terms-of-service", "licence": "Terms of service; each model card declares its own licence",
+     "checked": "2026-09-24",
      "use": "Licence, parameter count, publication date, downloads and task of open models, read within the API's published request limit."},
     {"id": "huggingface_config", "name": "Hugging Face model configurations", "address": "huggingface.co",
-     "terms_address": "huggingface.co/terms-of-service",
+     "terms_address": "huggingface.co/terms-of-service", "licence": "Terms of service", "checked": "2026-09-24",
      "use": "Layers, key and value heads, head size and context length, the numbers the memory formula needs."},
     {"id": "huggingface_gguf", "name": "Hugging Face GGUF file lists", "address": "huggingface.co",
-     "terms_address": "huggingface.co/terms-of-service",
+     "terms_address": "huggingface.co/terms-of-service", "licence": "Terms of service", "checked": "2026-09-24",
      "use": "The quantized files of a model and their sizes, from the GGUF copy its maker or the most downloaded copier publishes."},
-    {"id": "modelsdev", "name": "models.dev", "address": "models.dev/api.json", "terms_address": "github.com/sst/models.dev/blob/dev/LICENSE",
-     "use": "Direct provider prices, limits and capabilities, from a public database under the MIT licence."},
+    {"id": "modelsdev", "name": "models.dev", "address": "models.dev/api.json",
+     "terms_address": "github.com/anomalyco/models.dev/blob/dev/LICENSE", "licence": "MIT", "checked": "2026-09-27",
+     "use": "Provider prices with each record's own date, the limits and capabilities of the makers' own APIs, release dates, and each provider's documented address and key variable."},
+    {"id": "litellm", "name": "LiteLLM model price and context file", "address": "github.com/BerriAI/litellm/blob/main/model_prices_and_context_window.json",
+     "terms_address": "github.com/BerriAI/litellm/blob/main/LICENSE", "licence": "MIT", "checked": "2026-09-27",
+     "use": "Provider prices as listed on the day the file was read, and the input and output limits and tool calling, structured output and reasoning flags of the makers' own APIs."},
+    {"id": "lmarena", "name": "LMArena leaderboard dataset", "address": "huggingface.co/datasets/lmarena-ai/leaderboard-dataset",
+     "terms_address": "creativecommons.org/licenses/by/4.0/", "licence": "CC BY 4.0", "checked": "2026-09-27",
+     "use": "The overall text arena score with style control from the latest leaderboard, rounded to a whole number, for a hosted model the arena names with its maker's own identifier."},
     {"id": "baltor_records", "name": "Baltor provider client records", "address": "github.com/alisonjieli-png/loop-engine",
-     "terms_address": "github.com/alisonjieli-png/loop-engine",
+     "terms_address": "github.com/alisonjieli-png/loop-engine", "licence": "Baltor's own record", "checked": "2026-09-27",
      "use": "Output limits that Baltor's own provider clients declare or observed, each with its day."},
     {"id": "provider_documentation", "name": "Provider and runtime documentation", "address": "github.com/alisonjieli-png/loop-engine/blob/main/tools/model_directory/provider_documentation.json",
      "terms_address": "github.com/alisonjieli-png/loop-engine/blob/main/tools/model_directory/SOURCES.md",
-     "use": "API styles, authentication, rate-limit, pricing and data-policy pages, read by a person on the day each fact names."},
+     "licence": "Baltor's own record of each provider's public pages", "checked": "2026-09-27",
+     "use": "API styles, authentication, structured output, tool calling, rate-limit, pricing and data-policy pages, read by a person on the day each fact names."},
     {"id": "harness_documentation", "name": "Harness documentation", "address": "github.com/alisonjieli-png/loop-engine/blob/main/tools/model_directory/provider_documentation.json",
      "terms_address": "github.com/alisonjieli-png/loop-engine/blob/main/tools/model_directory/SOURCES.md",
+     "licence": "Baltor's own record of each harness's documentation", "checked": "2026-09-27",
      "use": "How OpenCode, Pi, Codex and Claude Code read a model provider, from each harness's own documentation."},
 )
-#: The Ollama library is linked, never read: its terms refuse automated access without permission.
-LINKED_ONLY = ({"name": "Ollama library", "address": "ollama.com/library", "terms_address": "ollama.com/terms",
-                "use": "Linked only. Ollama's terms refuse automated access without permission, so no data is copied from it."},)
+#: Publishers the pages link to and never copy from, each with the reason. The terms were read on the days named.
+LINKED_ONLY = (
+    {"name": "Ollama library", "address": "ollama.com/library", "terms_address": "ollama.com/terms",
+     "use": "Linked only. Ollama's terms refuse automated access without permission, so no data is copied from it."},
+    {"name": "OpenRouter", "address": "openrouter.ai/models", "terms_address": "openrouter.ai/terms",
+     "use": "Linked only. OpenRouter's terms of August 31, 2026 forbid copying information on its site or services by script "
+            "and using it for a competing service, so none of its prices, limits or rankings are copied here. It documents a "
+            "Models API that your own tool can read with your own account."},
+    {"name": "Artificial Analysis", "address": "artificialanalysis.ai", "terms_address": "artificialanalysis.ai/terms-of-use",
+     "use": "Linked only. Its website terms allow only personal, noncommercial use, so none of its indexes, prices or speed "
+            "measurements are copied here."},
+)
 SEARCH_FIELDS = ("slug", "name", "maker", "kind", "parameters", "context", "licence", "released", "input_price", "uses", "tools",
                  "downloads", "providers")
 FIT_FIELDS = ("slug", "name", "maker", "parameters", "active_parameters", "layers", "kv_heads", "head_dim", "attention",

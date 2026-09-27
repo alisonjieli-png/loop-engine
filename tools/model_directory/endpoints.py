@@ -70,8 +70,7 @@ def _hosted_row(entry: dict, md: dict, md_answer, model_slugs: dict, baltor: lis
                                            + (" and more" if len(observed) > 12 else "") + "."}
     return {"slug": entry["slug"], "name": entry["name"], "kind": records.ENDPOINT_HOSTED, "sources": sources_of.items,
             "apis": apis, "auth": None if not auth else {"header": auth["header"], "variable": list(auth["variable"]), "source": keys[auth["source"]]},
-            "facts": facts, "setup": {}, "models": models, "openrouter_provider": entry.get("openrouter_provider") or "",
-            "commercial_relationship": no_relationship()}
+            "facts": facts, "setup": {}, "models": models, "commercial_relationship": no_relationship()}
 
 
 def _listed_row(provider_id: str, provider: dict, md_answer, model_slugs: dict, taken: set) -> "dict | None":
@@ -100,8 +99,7 @@ def _listed_row(provider_id: str, provider: dict, md_answer, model_slugs: dict, 
             "note": "The key goes in a bearer header, the convention of OpenAI-compatible addresses; models.dev names the variable."} if variables else None
     return {"slug": slug, "name": str(provider.get("name") or provider_id), "kind": records.ENDPOINT_HOSTED,
             "sources": sources_of.items, "apis": [{"style": records.API_OPENAI_CHAT, "base": address, "source": source}],
-            "auth": auth, "facts": facts, "setup": {}, "models": models, "openrouter_provider": "",
-            "commercial_relationship": no_relationship()}
+            "auth": auth, "facts": facts, "setup": {}, "models": models, "commercial_relationship": no_relationship()}
 
 
 def _local_row(entry: dict) -> dict:
@@ -113,8 +111,7 @@ def _local_row(entry: dict) -> dict:
         setup[name] = {**{key: item for key, item in value.items() if key != "source"}, "source": keys[value["source"]]}
     setup["formats"] = list(entry.get("formats") or ())
     return {"slug": entry["slug"], "name": entry["name"], "kind": records.ENDPOINT_LOCAL, "sources": sources_of.items,
-            "apis": apis, "auth": None, "facts": {}, "setup": setup, "models": [], "openrouter_provider": "",
-            "commercial_relationship": no_relationship()}
+            "apis": apis, "auth": None, "facts": {}, "setup": setup, "models": [], "commercial_relationship": no_relationship()}
 
 
 def harness_records(documentation: dict) -> list:
@@ -135,7 +132,7 @@ def assemble_endpoints(documentation: dict, md_answer, model_rows: list, baltor:
     md = md_answer.value if isinstance(md_answer.value, dict) else {}
     model_slugs = {}
     for row in model_rows:
-        for key in ("huggingface", "openrouter", "modelsdev"):
+        for key in records.ID_KINDS:
             identifier = row["ids"].get(key)
             if isinstance(identifier, str):
                 model_slugs.setdefault(identifier.lower(), row["slug"])

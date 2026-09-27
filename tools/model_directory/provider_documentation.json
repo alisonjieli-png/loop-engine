@@ -1,11 +1,11 @@
 {
-  "record_type": "model_directory_provider_documentation/v1",
-  "reviewed_on": "2026-09-24",
+  "record_type": "model_directory_provider_documentation/v2",
+  "reviewed_on": "2026-09-27",
   "reviewed_by": "engineering, reading each provider's public documentation on the date given beside each source",
   "note": "Addresses are written without their scheme: every one is an https address. Variable names are written as parts, joined with an underscore when a page shows them, so the repository's credential audit does not read a published variable name as a credential binding in code. A fact this record does not state is unknown on the pages.",
   "hosted": [
     {
-      "slug": "openai", "name": "OpenAI", "modelsdev": "openai", "openrouter_provider": "OpenAI",
+      "slug": "openai", "name": "OpenAI", "modelsdev": "openai",
       "sources": {
         "structured": ["developers.openai.com/api/docs/guides/structured-outputs", "2026-09-24"],
         "tools": ["developers.openai.com/api/docs/guides/function-calling", "2026-09-24"],
@@ -27,7 +27,7 @@
       }
     },
     {
-      "slug": "anthropic", "name": "Anthropic", "modelsdev": "anthropic", "openrouter_provider": "Anthropic",
+      "slug": "anthropic", "name": "Anthropic", "modelsdev": "anthropic",
       "sources": {
         "structured": ["platform.claude.com/docs/en/build-with-claude/structured-outputs", "2026-09-24"],
         "compat": ["platform.claude.com/docs/en/cli-sdks-libraries/libraries/openai-sdk", "2026-09-24"],
@@ -50,7 +50,7 @@
       }
     },
     {
-      "slug": "google", "name": "Google Gemini API", "modelsdev": "google", "openrouter_provider": "Google AI Studio",
+      "slug": "google", "name": "Google Gemini API", "modelsdev": "google",
       "sources": {
         "compat": ["ai.google.dev/gemini-api/docs/openai", "2026-09-24"],
         "structured": ["ai.google.dev/gemini-api/docs/structured-output", "2026-09-24"],
@@ -73,7 +73,7 @@
       }
     },
     {
-      "slug": "mistral", "name": "Mistral AI", "modelsdev": "mistral", "openrouter_provider": "Mistral",
+      "slug": "mistral", "name": "Mistral AI", "modelsdev": "mistral",
       "sources": {
         "api": ["docs.mistral.ai/api", "2026-09-24"],
         "structured": ["docs.mistral.ai/studio/conversations/structured-output", "2026-09-24"],
@@ -95,7 +95,7 @@
       }
     },
     {
-      "slug": "groq", "name": "Groq", "modelsdev": "groq", "openrouter_provider": "Groq",
+      "slug": "groq", "name": "Groq", "modelsdev": "groq",
       "sources": {
         "compat": ["console.groq.com/docs/openai", "2026-09-24"],
         "responses": ["console.groq.com/docs/responses-api", "2026-09-24"],
@@ -117,7 +117,7 @@
       }
     },
     {
-      "slug": "cerebras", "name": "Cerebras", "modelsdev": "cerebras", "openrouter_provider": "Cerebras",
+      "slug": "cerebras", "name": "Cerebras", "modelsdev": "cerebras",
       "sources": {
         "compat": ["inference-docs.cerebras.ai/resources/openai", "2026-09-24"],
         "structured": ["inference-docs.cerebras.ai/capabilities/structured-outputs", "2026-09-24"],
@@ -139,7 +139,7 @@
       }
     },
     {
-      "slug": "together", "name": "Together AI", "modelsdev": "togetherai", "openrouter_provider": "Together",
+      "slug": "together", "name": "Together AI", "modelsdev": "togetherai",
       "sources": {
         "compat": ["docs.together.ai/docs/inference/openai-compatibility", "2026-09-24"],
         "structured": ["docs.together.ai/docs/inference/chat/structured-outputs", "2026-09-24"],
@@ -161,7 +161,7 @@
       }
     },
     {
-      "slug": "fireworks", "name": "Fireworks AI", "modelsdev": "fireworks-ai", "openrouter_provider": "Fireworks",
+      "slug": "fireworks", "name": "Fireworks AI", "modelsdev": "fireworks-ai",
       "sources": {
         "compat": ["docs.fireworks.ai/tools-sdks/openai-compatibility", "2026-09-24"],
         "responses": ["docs.fireworks.ai/guides/response-api", "2026-09-24"],
@@ -187,7 +187,7 @@
       }
     },
     {
-      "slug": "deepinfra", "name": "DeepInfra", "modelsdev": "deepinfra", "openrouter_provider": "DeepInfra",
+      "slug": "deepinfra", "name": "DeepInfra", "modelsdev": "deepinfra",
       "sources": {
         "compat": ["docs.deepinfra.com/chat/overview", "2026-09-24"],
         "anthropic": ["docs.deepinfra.com/integrations/anthropic", "2026-09-24"],
@@ -211,7 +211,7 @@
       }
     },
     {
-      "slug": "openrouter", "name": "OpenRouter", "modelsdev": "openrouter", "openrouter_provider": "",
+      "slug": "openrouter", "name": "OpenRouter", "modelsdev": "openrouter",
       "sources": {
         "quickstart": ["openrouter.ai/docs/quickstart", "2026-09-24"],
         "responses": ["openrouter.ai/docs/api_reference/responses/overview", "2026-09-24"],
@@ -238,7 +238,7 @@
       }
     },
     {
-      "slug": "ollama-cloud", "name": "Ollama Cloud", "modelsdev": "ollama-cloud", "openrouter_provider": "",
+      "slug": "ollama-cloud", "name": "Ollama Cloud", "modelsdev": "ollama-cloud",
       "sources": {
         "cloud": ["docs.ollama.com/cloud", "2026-09-24"],
         "compat": ["docs.ollama.com/api/openai-compatibility", "2026-09-24"],
@@ -403,11 +403,36 @@
       "note": "Claude Code sends Anthropic Messages requests to ANTHROPIC_BASE_URL. Anthropic says it does not support routing Claude Code to models other than Claude through any gateway, so some features may not work with another model."
     }
   ],
-  "openrouter_makers": {
-    "note": "OpenRouter names a model vendor/model. For a maker that runs its own API, the models.dev provider with the same models is named here, so a direct price joins the right model only when both identifiers match exactly.",
-    "openai": "openai", "anthropic": "anthropic", "google": "google", "mistralai": "mistral", "x-ai": "xai",
-    "deepseek": "deepseek", "moonshotai": "moonshotai", "z-ai": "zai", "qwen": "alibaba", "cohere": "cohere",
-    "minimax": "minimax", "perplexity": "perplexity", "meta-llama": "llama"
+  "maker_providers": {
+    "note": "The models.dev providers that are a model maker's own API. Each model they list becomes a hosted row, with the maker's own limits, capabilities and price. A provider that mostly resells other makers' models is not named here.",
+    "providers": ["openai", "anthropic", "google", "mistral", "xai", "deepseek", "moonshotai", "zai", "alibaba", "cohere",
+                  "minimax", "perplexity", "llama", "meta", "nova", "inception", "xiaomi", "stepfun-ai", "upstage", "ai21",
+                  "sakana", "sarvam", "poolside"]
   },
-  "excluded_openrouter_vendors": ["openrouter"]
+  "litellm_providers": {
+    "note": "LiteLLM's provider names mapped to the models.dev provider that is the same service, so a LiteLLM price shows under the right provider and the maker's own LiteLLM entry joins the maker's hosted row. A provider not named here keeps its LiteLLM name and never supplies a maker's facts.",
+    "map": {
+      "openai": "openai", "anthropic": "anthropic", "gemini": "google", "mistral": "mistral", "xai": "xai",
+      "deepseek": "deepseek", "moonshot": "moonshotai", "zai": "zai", "dashscope": "alibaba", "cohere": "cohere",
+      "cohere_chat": "cohere", "minimax": "minimax", "perplexity": "perplexity", "meta_llama": "llama", "meta": "meta",
+      "amazon_nova": "nova", "inception": "inception", "xiaomi_mimo": "xiaomi", "ai21": "ai21", "sarvam": "sarvam",
+      "groq": "groq", "cerebras": "cerebras", "together_ai": "togetherai", "fireworks_ai": "fireworks-ai",
+      "deepinfra": "deepinfra", "novita": "novita-ai", "nebius": "nebius", "openrouter": "openrouter", "baseten": "baseten",
+      "wandb": "wandb", "crusoe": "crusoe", "scaleway": "scaleway", "ovhcloud": "ovhcloud", "friendliai": "friendli",
+      "gmi": "gmicloud", "cloudflare": "cloudflare-workers-ai", "github_copilot": "github-copilot", "databricks": "databricks",
+      "snowflake": "snowflake-cortex", "oci": "oci", "watsonx": "watsonx", "vercel_ai_gateway": "vercel", "aihubmix": "aihubmix",
+      "volcengine": "volcengine", "bedrock": "amazon-bedrock", "bedrock_converse": "amazon-bedrock", "azure": "azure",
+      "vertex_ai-language-models": "google-vertex", "vertex_ai-anthropic_models": "google-vertex-anthropic"
+    }
+  },
+  "arena_organizations": {
+    "note": "LMArena's organization names mapped to the maker providers above. An arena score joins a hosted row only when the organization maps to that row's provider and the arena's model name equals the provider's model identifier exactly, ignoring case. A score with no organization, or an organization not named here, joins nothing.",
+    "map": {
+      "openai": ["openai"], "anthropic": ["anthropic"], "google": ["google"], "mistral": ["mistral"], "xai": ["xai"],
+      "deepseek": ["deepseek"], "moonshot": ["moonshotai"], "zai": ["zai"], "alibaba": ["alibaba"], "cohere": ["cohere"],
+      "minimax": ["minimax"], "perplexity": ["perplexity"], "meta": ["llama", "meta"], "amazon": ["nova"],
+      "inception-ai": ["inception"], "xiaomi": ["xiaomi"], "stepfun": ["stepfun-ai"], "upstage": ["upstage"],
+      "ai21": ["ai21"], "ai21labs": ["ai21"]
+    }
+  }
 }

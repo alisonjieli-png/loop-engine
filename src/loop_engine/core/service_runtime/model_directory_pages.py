@@ -189,16 +189,18 @@ def sources_band(directory, anchor: str = "sources") -> str:
     manifest = directory.manifest
     rows = "".join(
         f'<tr><th scope="row">{fmt.link(item["address"], item["name"])}</th><td>{escape(item["use"])}</td>'
-        f'<td>{fmt.link(item["terms_address"], "Terms")}</td><td>{fmt.number(item.get("rows"))}</td>'
-        f'<td>{escape(item.get("newest_read") or fmt.UNKNOWN)}</td></tr>' for item in manifest.get("sources") or ())
+        f'<td>{fmt.link(item["terms_address"], item["licence"])}, checked <time datetime="{escape(item["checked"])}">{escape(item["checked"])}</time></td>'
+        f'<td>{fmt.number(item.get("rows"))}</td><td>{escape(item.get("newest_read") or fmt.UNKNOWN)}</td></tr>'
+        for item in manifest.get("sources") or ())
     linked = "".join(f'<li>{fmt.link(item["address"], item["name"])}: {escape(item["use"])} {fmt.link(item["terms_address"], "Terms")}</li>'
                      for item in manifest.get("linked_only") or ())
     return (f'<div class="md-band" id="{anchor}" aria-labelledby="{anchor}-title"><h2 id="{anchor}-title">Sources and dates</h2>'
             f'<p class="md-reading">Every row keeps the address of each source it uses and the day it was read. A fact no source states is '
-            f'shown as {fmt.UNKNOWN}. The directory was built on <time datetime="{escape(manifest["built_at"])}">{escape(manifest["built_at"][:10])}</time>.</p>'
+            f'shown as {fmt.UNKNOWN}. The directory republishes only sources whose licence or terms allow it. '
+            f'It was built on <time datetime="{escape(manifest["built_at"])}">{escape(manifest["built_at"][:10])}</time>.</p>'
             f'<div class="md-table-wrap"><table class="md-table"><thead><tr><th scope="col">Source</th><th scope="col">What it gives</th>'
-            f'<th scope="col">Terms</th><th scope="col">Rows</th><th scope="col">Last read</th></tr></thead><tbody>{rows}</tbody></table></div>'
-            + (f'<ul class="md-plain">{linked}</ul>' if linked else "") + "</div>")
+            f'<th scope="col">Licence or terms</th><th scope="col">Rows</th><th scope="col">Last read</th></tr></thead><tbody>{rows}</tbody></table></div>'
+            + (f'<p class="md-reading">Linked, never copied:</p><ul class="md-plain">{linked}</ul>' if linked else "") + "</div>")
 
 
 def models_page(directory, site_map, name: str) -> str:

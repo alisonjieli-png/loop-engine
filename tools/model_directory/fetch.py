@@ -25,10 +25,12 @@ from loop_engine.core.library_ingestion.request_log import (
     PauseExceedsBound, RequestBudget, RequestCeilingReached, RequestLog,
 )
 
-#: The only hosts the build reads. Ollama's hosts are absent on purpose: its terms refuse automated access.
-HOSTS = ("openrouter.ai", "huggingface.co", "models.dev")
+#: The only hosts the build reads. Ollama's, OpenRouter's and Artificial Analysis's hosts are absent on purpose: their
+#: terms refuse automated access or republication, so the pages link to them and the build never reads them.
+HOSTS = ("huggingface.co", "datasets-server.huggingface.co", "models.dev", "raw.githubusercontent.com")
 #: Seconds between two requests to one host, which keeps the build well inside each host's published limit.
-PAUSE_SECONDS = {"huggingface.co": 0.7, "openrouter.ai": 0.25, "models.dev": 1.0}
+PAUSE_SECONDS = {"huggingface.co": 0.7, "datasets-server.huggingface.co": 1.0, "models.dev": 1.0,
+                 "raw.githubusercontent.com": 1.0}
 READ, CACHED, KEPT, MISSING = "read", "cached", "kept", "missing"
 
 

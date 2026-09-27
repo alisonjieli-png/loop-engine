@@ -1,12 +1,18 @@
-"""Model rows: one per model, from Hugging Face, OpenRouter and models.dev, joined on exact identifiers.
+"""Model rows: one per model, from Hugging Face, models.dev, LiteLLM and LMArena, joined on exact identifiers.
 
-Kind: development tool module. A Hugging Face repository and an OpenRouter model are one row only
-when OpenRouter names that repository in its hugging_face_id field. A models.dev offer joins a row
-only when its model identifier equals the row's Hugging Face identifier, or when the maker's own
-models.dev provider lists exactly the model identifier OpenRouter uses. Nothing is joined on a
-similar name, so a row never borrows another model's facts.
+Kind: development tool module. An open model is a row from its Hugging Face repository. A hosted model is a row from
+the models.dev list of its maker's own API, for the makers the reviewed record names. Another source joins a row only on
+an exact identifier:
 
-Every fact names its source and basis. Unknown facts are left out. Estimates say so.
+- a models.dev offer or a LiteLLM entry joins an open row when its model identifier equals the Hugging Face repository,
+  ignoring case, and brings that provider's price only;
+- the maker's own LiteLLM entry joins a hosted row when it names exactly the model identifier of the maker's models.dev
+  list, and brings its limits, capability flags and price;
+- an LMArena score joins a hosted row when the arena names that maker and exactly the same model identifier.
+
+Nothing is joined on a similar name, so a row never borrows another model's facts. Every fact names its source and
+basis. Unknown facts are left out. Estimates say so. Nothing is read from OpenRouter or Artificial Analysis: their terms
+forbid republishing their data, so the pages link to them instead.
 """
 from __future__ import annotations
 
@@ -16,10 +22,13 @@ from loop_engine.core.service_runtime import model_directory as records
 from loop_engine.core.service_runtime import model_directory_fit as fit
 
 from . import sources
-from .rows import RowSources, day_of_epoch, no_relationship, per_million, record_day, scheme_free, split_openrouter_name
+from .rows import RowSources, no_relationship, per_million, record_day, scheme_free, slug_of
 
 MODELSDEV_ADDRESS = "models.dev/api.json"
-OPENROUTER_ADDRESS = "openrouter.ai/api/v1/models"
+#: The name, publisher and page of the one LMArena result the directory republishes, with the licence LMArena gives it.
+ARENA_RESULT = "Arena text score"
+ARENA_PUBLISHER = "LMArena"
+ARENA_PAGE_ADDRESS = "arena.ai/leaderboard"
 _CODE_NAME = re.compile(r"(?i)(?:coder|codestral|devstral|starcoder|codellama|codegemma|codegen|(?<![a-z])code(?![a-z]))")
 _MODALITY_BY_TASK = {"text-generation": (["text"], ["text"]), "image-text-to-text": (["text", "image"], ["text"]),
                      "feature-extraction": (["text"], ["embeddings"]), "sentence-similarity": (["text"], ["embeddings"]),
@@ -49,78 +58,12 @@ def _chat_template(record: dict) -> str:
     return template if isinstance(template, str) else ""
 
 
-def _openrouter_facts(model: dict, row: dict, add, source: int) -> None:
-    facts = row["facts"]
-    if isinstance(model.get("context_length"), int) and model["context_length"] > 0:
-        facts.setdefault("context", []).append({"value": model["context_length"], "source": source,
-                                                "basis": "the context length OpenRouter lists"})
-    top = model.get("top_provider") or {}
-    if isinstance(top.get("max_completion_tokens"), int) and top["max_completion_tokens"] > 0:
-        facts.setdefault("max_output", []).append({"value": top["max_completion_tokens"], "source": source,
-                                                   "basis": "the largest output OpenRouter's first provider allows"})
-    architecture = model.get("architecture") or {}
-    if architecture.get("input_modalities") and "modalities" not in facts:
-        facts["modalities"] = {"input": list(architecture["input_modalities"]),
-                               "output": list(architecture.get("output_modalities") or []), "source": source}
-    supported = set(model.get("supported_parameters") or ())
-    facts.setdefault("tool_calling", []).append({"value": "tools" in supported, "source": source,
-                                                 "basis": "OpenRouter lists tools among the supported parameters" if "tools" in supported
-                                                 else "OpenRouter does not list tools among the supported parameters"})
-    structured = bool(supported & {"structured_outputs", "response_format"})
-    facts.setdefault("structured_output", []).append({
-        "value": structured, "source": source,
-        "basis": ("OpenRouter lists structured outputs among the supported parameters" if "structured_outputs" in supported
-                  else "OpenRouter lists response_format, a JSON mode, among the supported parameters" if structured
-                  else "OpenRouter lists no structured output parameter")})
-    reasoning = model.get("reasoning") if isinstance(model.get("reasoning"), dict) else None
-    if reasoning or "reasoning" in supported:
-        efforts = ", ".join((reasoning or {}).get("supported_efforts") or ())
-        facts.setdefault("reasoning", []).append({"value": True, "source": source,
-                                                  "basis": "OpenRouter lists reasoning controls" + (f", with the efforts {efforts}" if efforts else "")})
-        _use(row, "reasoning", source, "OpenRouter lists reasoning controls for it")
-    if isinstance(model.get("knowledge_cutoff"), str) and re.match(r"^\d{4}-\d{2}(-\d{2})?$", model["knowledge_cutoff"]):
-        facts.setdefault("knowledge_cutoff", {"value": model["knowledge_cutoff"], "source": source,
-                                              "basis": "the knowledge cutoff OpenRouter lists"})
-    if "image" in (architecture.get("input_modalities") or ()):
-        _use(row, "vision", source, "OpenRouter lists images among its inputs")
-    analysis = (model.get("benchmarks") or {}).get("artificial_analysis") or {}
-    for key, label in (("intelligence_index", "Artificial Analysis Intelligence Index"),
-                       ("coding_index", "Artificial Analysis Coding Index"), ("agentic_index", "Artificial Analysis Agentic Index")):
-        if isinstance(analysis.get(key), (int, float)) and not isinstance(analysis.get(key), bool):
-            row["benchmarks"].append({"name": label, "value": analysis[key], "publisher": "Artificial Analysis",
-                                      "address": "artificialanalysis.ai/methodology/intelligence-benchmarking", "source": source})
-
-
 def _use(row: dict, value: str, source: int, basis: str) -> None:
     if all(item["value"] != value for item in row["use_cases"]):
         row["use_cases"].append({"value": value, "source": source, "basis": basis})
 
 
-def _openrouter_prices(row: dict, details, add, model: dict) -> None:
-    if details is None or not details.usable:
-        return
-    source = add("openrouter_endpoints", "openrouter.ai" + (model.get("links") or {}).get("details", ""), details.read_on)
-    for endpoint in ((details.value or {}).get("data") or {}).get("endpoints") or ():
-        pricing = endpoint.get("pricing") or {}
-        prompt, completion = per_million(pricing.get("prompt")), per_million(pricing.get("completion"))
-        provider = str(endpoint.get("provider_name") or "").strip()
-        if prompt is None or completion is None or not provider:
-            continue
-        price = {"provider": provider, "provider_slug": sources_slug(provider), "route": records.ROUTE_OPENROUTER,
-                 "model_id": model["id"], "input": prompt, "output": completion, "as_of": details.read_on, "source": source}
-        cache = per_million(pricing.get("input_cache_read"))
-        if cache is not None:
-            price["cache_read"] = cache
-        for key, name in (("context_length", "context"), ("max_completion_tokens", "max_output")):
-            if isinstance(endpoint.get(key), int) and endpoint[key] > 0:
-                price[name] = endpoint[key]
-        if isinstance(endpoint.get("quantization"), str) and endpoint["quantization"] not in ("", "unknown"):
-            price["quantization"] = endpoint["quantization"]
-        row["prices"].append(price)
-
-
 def sources_slug(name: str) -> str:
-    from .rows import slug_of
     return slug_of(name) or "provider"
 
 
@@ -242,42 +185,176 @@ def _hugging_face_row(record: dict, answer, config_answer, config_address: str, 
     return row, sources_of
 
 
+def _whole(value) -> "int | None":
+    """A positive whole number from a source that may write it as a float, or None."""
+    if isinstance(value, bool) or not isinstance(value, (int, float)) or value <= 0 or int(value) != value:
+        return None
+    return int(value)
+
+
+#: The LiteLLM capability flags the directory reads, and the fact each one states for the maker's own API.
+_LITELLM_FLAGS = {"supports_function_calling": "tool_calling", "supports_response_schema": "structured_output",
+                  "supports_reasoning": "reasoning"}
+
+
+def _provider_key(name: str) -> str:
+    return name.lower().replace("-", "_")
+
+
+def litellm_index(answer, providers: dict) -> dict:
+    """LiteLLM's text, embedding and ranking entries by lowercase model identifier.
+
+    A key that starts with its provider's name and a slash names the model after the slash, which is the identifier the
+    provider itself uses. Each entry keeps the models.dev provider the reviewed record maps its provider to, or None.
+    """
+    index: dict = {}
+    for key, entry in sorted((answer.value or {}).items() if isinstance(answer.value, dict) else ()):
+        if not isinstance(entry, dict) or entry.get("mode") not in sources.LITELLM_MODES:
+            continue
+        provider = entry.get("litellm_provider")
+        if not isinstance(provider, str) or not provider or not isinstance(key, str):
+            continue
+        head, slash, rest = key.partition("/")
+        model_id = rest if slash and rest and _provider_key(head) == _provider_key(provider) else key
+        index.setdefault(model_id.lower(), []).append({"key": key, "model_id": model_id, "provider": provider,
+                                                       "modelsdev": providers.get(provider), "entry": entry})
+    return index
+
+
+def _litellm_offer(row: dict, add, item: dict, read_on: str, md: dict, maker_api: bool) -> None:
+    """One LiteLLM entry on a row: its price unless a models.dev price of the same provider is there, and, for the
+    maker's own API, its limits and capability flags."""
+    entry, mapped = item["entry"], item["modelsdev"]
+    slug = sources_slug(mapped) if mapped else slug_of(item["provider"]) or "provider"
+    name = str((md.get(mapped) or {}).get("name") or mapped) if mapped else item["provider"]
+    prompt, completion = per_million(entry.get("input_cost_per_token")), per_million(entry.get("output_cost_per_token"))
+    priced = prompt is not None and completion is not None and all(price["provider_slug"] != slug for price in row["prices"])
+    described = maker_api and (bool(_whole(entry.get("max_input_tokens")) or _whole(entry.get("max_output_tokens")))
+                               or any(isinstance(entry.get(key), bool) for key in _LITELLM_FLAGS)
+                               or entry.get("supports_vision") is True)
+    if not priced and not described:
+        return
+    source = add("litellm", sources.LITELLM_ADDRESS, read_on)
+    if priced:
+        price = {"provider": name, "provider_slug": slug, "route": records.ROUTE_DIRECT, "model_id": item["model_id"],
+                 "input": prompt, "output": completion, "as_of": read_on, "source": source}
+        cache = per_million(entry.get("cache_read_input_token_cost"))
+        if cache is not None:
+            price["cache_read"] = cache
+        for key, field in (("max_input_tokens", "context"), ("max_output_tokens", "max_output")):
+            if _whole(entry.get(key)):
+                price[field] = _whole(entry.get(key))
+        row["prices"].append(price)
+    if not maker_api:
+        return
+    facts = row["facts"]
+    if _whole(entry.get("max_input_tokens")):
+        facts.setdefault("context", []).append({"value": _whole(entry["max_input_tokens"]), "source": source,
+                                                "basis": "the input limit LiteLLM records for the maker's own API"})
+    if _whole(entry.get("max_output_tokens")):
+        facts.setdefault("max_output", []).append({"value": _whole(entry["max_output_tokens"]), "source": source,
+                                                   "basis": "the output limit LiteLLM records for the maker's own API"})
+    for key, fact in _LITELLM_FLAGS.items():
+        if isinstance(entry.get(key), bool):
+            facts.setdefault(fact, []).append({"value": entry[key], "source": source,
+                                               "basis": f"LiteLLM records {key} as {str(entry[key]).lower()} for the maker's own API"})
+    if entry.get("supports_vision") is True:
+        _use(row, "vision", source, "LiteLLM records vision support for the maker's own API")
+    if entry.get("supports_reasoning") is True:
+        _use(row, "reasoning", source, "LiteLLM records reasoning support for the maker's own API")
+
+
+def join_arena(rows: list, answer, organizations: dict) -> dict:
+    """Add the arena score to each hosted row whose maker the arena names, for exactly the same model identifier.
+
+    The arena's organization field decides the maker; a row with no organization, or one the reviewed record does not
+    map, joins nothing. The score is rounded to a whole number, a change the pages state beside the licence.
+    """
+    report = {"state": answer.state, "read": answer.read_on, "rows": 0, "joined": 0}
+    if not answer.usable:
+        return report
+    hosted: dict = {}
+    for row, sources_of in rows:
+        identifier = row["ids"].get("modelsdev")
+        if isinstance(identifier, str) and "huggingface" not in row["ids"]:
+            provider, _, model = identifier.partition("/")
+            hosted.setdefault((provider, model.lower()), []).append((row, sources_of))
+    for item in answer.value:
+        name, rating = item.get("model_name"), item.get("rating")
+        published = record_day(item.get("leaderboard_publish_date"), "")
+        if not isinstance(name, str) or not name.strip() or isinstance(rating, bool) or not isinstance(rating, (int, float)):
+            continue
+        report["rows"] += 1
+        organization = str(item.get("organization") or "").strip().lower()
+        for provider in organizations.get(organization, ()):
+            for row, sources_of in hosted.get((provider, name.strip().lower()), ()):
+                if any(result["name"] == ARENA_RESULT for result in row["benchmarks"]):
+                    continue
+                result = {"name": ARENA_RESULT, "value": round(rating), "publisher": ARENA_PUBLISHER,
+                          "address": ARENA_PAGE_ADDRESS, "source": sources_of.add("lmarena", sources.ARENA_ADDRESS, answer.read_on)}
+                if published:
+                    result["as_of"] = published
+                row["benchmarks"].append(result)
+                report["joined"] += 1
+    return report
+
+
 def assemble_models(reader, documentation: dict, root, today: str, gguf_limit: int, progress=print) -> tuple:
     """Every model row, and a report of what was read, reused, kept and refused."""
-    excluded = set(documentation.get("excluded_openrouter_vendors") or ())
-    makers = {key: value for key, value in (documentation.get("openrouter_makers") or {}).items() if key != "note"}
-    report = {"lists": [], "refused": [], "gguf_repositories": 0, "configurations": 0}
-    or_answer = sources.openrouter_models(reader)
-    or_models = [model for model in ((or_answer.value or {}).get("data") or ())
-                 if isinstance(model.get("id"), str) and not model["id"].startswith("~")
-                 and model["id"].split("/", 1)[0] not in excluded]
+    makers = sorted(set(documentation["maker_providers"]["providers"]))
+    report = {"lists": [], "refused": [], "gguf_repositories": 0, "configurations": 0, "served_copies": 0,
+              "served_repositories": 0, "hosted_repositories": 0}
     hf: dict = {}
+    copies: dict = {}
     for task, sort, limit in sources.HF_LISTS:
         answer = sources.hf_list(reader, task, sort, limit)
         kept = 0
         for record in answer.value or ():
-            if isinstance(record, dict) and isinstance(record.get("id"), str) and not sources.is_copy(record) and record["id"] not in hf:
-                hf[record["id"]] = (record, answer)
-                kept += 1
+            if not isinstance(record, dict) or not isinstance(record.get("id"), str) or record["id"] in hf:
+                continue
+            if sources.is_copy(record):
+                copies.setdefault(record["id"].lower(), (record, answer))
+                continue
+            hf[record["id"]] = (record, answer)
+            kept += 1
         report["lists"].append({"task": task, "sort": sort, "limit": limit, "state": answer.state, "read": answer.read_on, "added": kept})
-    groups: dict = {}
-    for model in or_models:
-        groups.setdefault(model["id"].split(":", 1)[0], []).append(model)
-    for base, group in groups.items():
-        group.sort(key=lambda item: (item["id"] != base, item["id"]))
-    linked = {}
-    for group in groups.values():
-        repository = next((model.get("hugging_face_id") for model in group if isinstance(model.get("hugging_face_id"), str)
-                           and model["hugging_face_id"].count("/") == 1), None)
-        if repository is None:
-            continue
-        linked.setdefault(repository, []).extend(group)
-        if repository not in hf:
-            answer = sources.hf_model(reader, repository)
-            if answer.usable and isinstance(answer.value, dict) and answer.value.get("id") == repository:
-                hf[repository] = (answer.value, answer)
     md_answer = sources.modelsdev(reader)
     md = md_answer.value if isinstance(md_answer.value, dict) else {}
+    ll_answer = sources.litellm_prices(reader)
+    litellm = litellm_index(ll_answer, documentation["litellm_providers"]["map"])
+    # A repository a provider serves under its exact name is the model itself, even when Hugging Face tags it like a
+    # quantized copy: a model published in 8-bit or FP8 weights carries those tags. Such a repository from the lists
+    # above gets its row back when models.dev or LiteLLM names a provider that serves it by that name.
+    served = {model_id.lower() for provider in md.values() for model_id in (provider.get("models") or {}) if model_id.count("/") == 1}
+    served |= {model_id for model_id in litellm if model_id.count("/") == 1}
+    for model_id in sorted(served & set(copies)):
+        record, answer = copies[model_id]
+        if record["id"] not in hf:
+            hf[record["id"]] = (record, answer)
+            report["served_copies"] += 1
+    # A served repository outside the lists is found in its author's own list, one request for each author who already
+    # has a row, and gets its row when the name matches exactly.
+    authors = {identifier.split("/", 1)[0].lower(): identifier.split("/", 1)[0] for identifier in hf}
+    known = {identifier.lower() for identifier in hf}
+    wanted: dict = {}
+    for model_id in sorted(served - known):
+        if model_id.split("/", 1)[0] in authors:
+            wanted.setdefault(authors[model_id.split("/", 1)[0]], set()).add(model_id)
+    for author, names in sorted(wanted.items()):
+        answer = sources.hf_author_models(reader, author)
+        for record in answer.value or ():
+            if isinstance(record, dict) and isinstance(record.get("id"), str) and record["id"].lower() in names and record["id"] not in hf:
+                hf[record["id"]] = (record, answer)
+                report["served_repositories"] += 1
+    # A repository that Hugging Face's own inference router serves gets its row even outside the lists. models.dev's list
+    # of that router names each one by its repository.
+    known = {identifier.lower() for identifier in hf}
+    for model_id in sorted((md.get(sources.HF_ROUTER_PROVIDER) or {}).get("models") or ()):
+        if model_id.count("/") == 1 and model_id.lower() not in known:
+            answer = sources.hf_model(reader, model_id)
+            if answer.usable and isinstance(answer.value, dict) and answer.value.get("id") == model_id:
+                hf[model_id] = (answer.value, answer)
+                report["hosted_repositories"] += 1
     by_hf_id: dict = {}
     for provider_id, provider in md.items():
         for model_id, model in (provider.get("models") or {}).items():
@@ -311,32 +388,15 @@ def assemble_models(reader, documentation: dict, root, today: str, gguf_limit: i
                     gguf = (chosen["id"], quantized, tree)
                     report["gguf_repositories"] += 1
         row, sources_of = _hugging_face_row(record, answer, config_answer, config_address, gguf, today)
-        for index, model in enumerate(linked.get(identifier, ())):
-            _join_openrouter(row, sources_of, model, or_answer, reader, with_facts=index == 0)
         for provider_id, provider, offer in by_hf_id.get(identifier.lower(), ()):
             _modelsdev_offer(row, sources_of.add, provider_id, provider, offer, md_answer.read_on, False)
             used_md.add((provider_id, offer["id"]))
+        for item in litellm.get(identifier.lower(), ()):
+            _litellm_offer(row, sources_of.add, item, ll_answer.read_on, md, False)
         rows.append((row, sources_of))
         if position % 100 == 0:
             progress(f"models: {position} of {len(ordered)} open models assembled; {reader.summary()['answers']}")
-    joined = {id(model) for group in linked.values() for model in group}
-    for base, group in sorted(groups.items()):
-        if any(id(model) in joined for model in group):
-            continue
-        model = group[0]
-        maker, name = split_openrouter_name(str(model.get("name") or model["id"]))
-        row = _empty_row("openrouter", model["id"], name or model["id"], maker or model["id"].split("/")[0])
-        sources_of = RowSources()
-        for index, variant in enumerate(group):
-            _join_openrouter(row, sources_of, variant, or_answer, reader, with_facts=index == 0)
-        vendor, _, model_part = base.partition("/")
-        provider_id = makers.get(vendor)
-        offer = ((md.get(provider_id) or {}).get("models") or {}).get(model_part) if provider_id else None
-        if offer is not None:
-            _modelsdev_offer(row, sources_of.add, provider_id, md[provider_id], {**offer, "id": model_part}, md_answer.read_on, True)
-            used_md.add((provider_id, model_part))
-        rows.append((row, sources_of))
-    for provider_id in sorted(set(makers.values())):
+    for provider_id in makers:
         provider = md.get(provider_id) or {}
         for model_id, offer in sorted((provider.get("models") or {}).items()):
             if (provider_id, model_id) in used_md:
@@ -344,27 +404,12 @@ def assemble_models(reader, documentation: dict, root, today: str, gguf_limit: i
             row = _empty_row("modelsdev", provider_id + "/" + model_id, str(offer.get("name") or model_id), str(provider.get("name") or provider_id))
             sources_of = RowSources()
             _modelsdev_offer(row, sources_of.add, provider_id, provider, {**offer, "id": model_id}, md_answer.read_on, True)
+            # The maker's own LiteLLM entry, the first by key when LiteLLM keeps the model under two keys.
+            own = next((item for item in litellm.get(model_id.lower(), ()) if item["modelsdev"] == provider_id), None)
+            if own is not None:
+                _litellm_offer(row, sources_of.add, own, ll_answer.read_on, md, True)
             rows.append((row, sources_of))
-    return rows, report, {"openrouter": or_answer, "modelsdev": md_answer}
-
-
-def _join_openrouter(row: dict, sources_of: RowSources, model: dict, or_answer, reader, with_facts: bool = True) -> None:
-    """Join one OpenRouter model: its facts for the first model of a group, its prices for every one."""
-    add = sources_of.add
-    details = (model.get("links") or {}).get("details")
-    if isinstance(details, str) and details.startswith("/api/v1/models/"):
-        _openrouter_prices(row, sources.openrouter_endpoints(reader, details), add, model)
-    if not with_facts:
-        return
-    source = add("openrouter", OPENROUTER_ADDRESS, or_answer.read_on)
-    row["ids"]["openrouter"] = model["id"]
-    maker, name = split_openrouter_name(str(model.get("name") or ""))
-    if name:
-        row["name"] = name
-    if maker:
-        row["maker"] = maker
-    if "released" not in row["facts"]:
-        day = day_of_epoch(model.get("created"))
-        if day:
-            row["facts"]["released"] = {"value": day, "source": source, "basis": "the day OpenRouter added the model"}
-    _openrouter_facts(model, row, add, source)
+    arena_answer = sources.arena_text_leaderboard(reader)
+    report["arena"] = join_arena(rows, arena_answer, documentation["arena_organizations"]["map"])
+    report["litellm"] = {"state": ll_answer.state, "read": ll_answer.read_on, "entries": sum(len(items) for items in litellm.values())}
+    return rows, report, {"modelsdev": md_answer, "litellm": ll_answer, "arena": arena_answer}

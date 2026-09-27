@@ -13,6 +13,13 @@ fail.
 - a row without a source, or with a fact that names no source of the row, is refused by the builder;
 - ordering, filtering, inclusion and the hardware fit give the same answer whatever every commercial
   field holds, and an order that reads a commercial field is caught;
+- a row that carries OpenRouter or Artificial Analysis data is refused by the builder and the reader,
+  in each form that data could take, and a reader that accepts one is caught; no packaged row does;
+- LiteLLM and LMArena join a row only on an exact identifier, only the maker's own entry states a
+  fact, and a served repository comes back while an unserved copy stays out;
+- Ollama Cloud's structured output reads No with its dated citation, and the record as it was
+  before the correction is caught;
+- the pages name each republished source with its licence and link the refused publishers;
 - the three pages, their detail pages and the packaged data are served, and nothing else is.
 
 Run alone:
@@ -53,13 +60,13 @@ def _row(**changes) -> dict:
     """A small valid model row that each case changes in one place."""
     row = {"slug": "example-model", "name": "Example Model", "maker": "Example Maker", "ids": {"huggingface": "example/model"},
            "sources": [{"id": "huggingface", "address": "huggingface.co/api/models/example/model", "read": "2026-09-24"},
-                       {"id": "openrouter_endpoints", "address": "openrouter.ai/api/v1/models/example/model/endpoints", "read": "2026-09-24"}],
+                       {"id": "modelsdev", "address": "models.dev/api.json", "read": "2026-09-24"}],
            "facts": {"parameters": {"value": 8_030_261_248, "source": 0, "basis": "counted from the safetensors weight files"},
                      "architecture": {"source": 0, "layers": 32, "kv_heads": 8, "head_dim": 128, "attention": "full",
                                       "latent_width": 0, "max_context": 131072}},
            "quantizations": [{"name": "Q4_K_M", "format": "gguf", "bytes": 4_920_000_000, "repository": "example/model-GGUF",
                               "files": ["model-Q4_K_M.gguf"], "source": 0}],
-           "prices": [{"provider": "Example Host", "provider_slug": "example-host", "route": "openrouter", "model_id": "example/model",
+           "prices": [{"provider": "Example Host", "provider_slug": "example-host", "route": "direct", "model_id": "example/model",
                        "input": 0.02, "output": 0.05, "as_of": "2026-09-24", "source": 1}],
            "use_cases": [], "benchmarks": [], "popularity": {"downloads": 10, "likes": 1, "source": 0},
            "commercial_relationship": commercial.to_record(commercial.NONE)}
@@ -324,9 +331,272 @@ class OllamaCloudStructuredOutput(unittest.TestCase):
         self.assertRegex(page, r"<dt>Structured output</dt><dd>No ")
         self.assertIn('href="https://' + OLLAMA_STRUCTURED_SOURCE + '"', page)
         self.assertIn('href="https://github.com/ollama/ollama/issues/12362"', page)
+        groq = pages.rendered_page("/endpoints/groq", "GET", "Baltor")[0].decode("utf-8")
+        self.assertRegex(groq, r"<dt>Structured output</dt><dd>Yes ", "a true fact shows Yes as a false one shows No")
         card = re.search(r'<li class="md-card"><a class="md-row-link" href="/endpoints/ollama-cloud">.*?</li>',
                          pages.rendered_page("/endpoints", "GET", "Baltor")[0].decode("utf-8"), re.S).group(0)
         self.assertIn("Structured output: No", card)
+
+
+def _from_openrouter() -> tuple:
+    """A row as the builder wrote it before September 27, 2026: an OpenRouter source with its facts, its routed price
+    and the Artificial Analysis index its answer carried. Returns the row and its sources as the builder collects them."""
+    row = _row()
+    sources_of = RowSources()
+    for item in row["sources"]:
+        sources_of.add(item["id"], item["address"], item["read"])
+    copied = sources_of.add("openrouter", "openrouter.ai/api/v1/models", "2026-09-27")
+    row["ids"] = {**row["ids"], "openrouter": "example/model"}
+    row["facts"]["context"] = [{"value": 131072, "source": copied, "basis": "the context length OpenRouter lists"}]
+    row["benchmarks"] = [{"name": "Artificial Analysis Intelligence Index", "value": 40.1, "publisher": "Artificial Analysis",
+                          "address": "artificialanalysis.ai/methodology/intelligence-benchmarking", "source": copied}]
+    return row, sources_of
+
+
+class RefusedSources(unittest.TestCase):
+    """OpenRouter and Artificial Analysis are linked, never copied: a row that carries their data is refused whole."""
+
+    def test_a_row_from_a_refused_source_is_refused_by_the_build(self):
+        from build_model_directory import finish_models
+        report = {"refused": []}
+        row, sources_of = _from_openrouter()
+        self.assertEqual(finish_models([(row, sources_of)], [], report, {"hosted": []}), [])
+        self.assertEqual(len(report["refused"]), 1)
+        self.assertIn("refused source", report["refused"][0]["reason"])
+
+    def test_each_way_of_carrying_refused_data_is_refused(self):
+        lmarena = {"id": "lmarena", "address": "huggingface.co/datasets/lmarena-ai/leaderboard-dataset", "read": "2026-09-27"}
+        index_value = {"name": "Artificial Analysis Intelligence Index", "value": 40.1, "publisher": "Artificial Analysis",
+                       "address": "artificialanalysis.ai/models", "source": 2}
+        cases = {
+            "an OpenRouter source": _row(sources=_row()["sources"] + [{"id": "openrouter", "address": "openrouter.ai/api/v1/models", "read": "2026-09-27"}]),
+            "an OpenRouter endpoints source": _row(sources=[{"id": "openrouter_endpoints", "address": "openrouter.ai/api/v1/models/x/endpoints", "read": "2026-09-27"}]),
+            "an Artificial Analysis source": _row(sources=[{"id": "artificial_analysis", "address": "artificialanalysis.ai", "read": "2026-09-27"}]),
+            "a price routed through OpenRouter": _row(prices=[{**_row()["prices"][0], "route": "openrouter"}]),
+            "a price from a source that is not a price source": _row(prices=[{**_row()["prices"][0], "source": 0}]),
+            "an OpenRouter identifier": _row(ids={"huggingface": "example/model", "openrouter": "example/model"}),
+            "an allowed source name on OpenRouter's host": _row(sources=[_row()["sources"][0], {"id": "modelsdev", "address": "openrouter.ai/api/v1/models", "read": "2026-09-27"}]),
+            "an Artificial Analysis value under an open source's name": _row(sources=_row()["sources"] + [lmarena], benchmarks=[index_value]),
+            "a result value from a source that publishes none": _row(benchmarks=[{**index_value, "name": "Some score", "publisher": "Someone",
+                                                                                   "address": "example.com", "source": 0}]),
+        }
+        for description, row in cases.items():
+            with self.subTest(case=description), self.assertRaises(records.ModelDirectoryError):
+                records.validate_model_row(row)
+        linked = _row(benchmarks=[{"name": "Artificial Analysis", "publisher": "Artificial Analysis", "address": "artificialanalysis.ai", "source": 0}])
+        self.assertIs(records.validate_model_row(linked), linked)
+        groq = next(entry for entry in source_engines.read_provider_documentation(REVIEWED_PATH)["hosted"] if entry["slug"] == "groq")
+        endpoint = endpoint_rows._hosted_row(groq, {}, Answer(None, "", "missing", "models.dev/api.json"), {}, [])
+        records.validate_endpoint_row(endpoint)
+        endpoint["sources"].append({"id": "openrouter_endpoints", "address": "openrouter.ai/api/v1/models", "read": "2026-09-27"})
+        with self.assertRaises(records.ModelDirectoryError):
+            records.validate_endpoint_row(endpoint)
+        manifest = {"sources": [{"id": "openrouter", "name": "OpenRouter Models API", "address": "openrouter.ai/api/v1/models",
+                                 "terms_address": "openrouter.ai/terms", "licence": "Terms", "checked": "2026-09-27", "use": "Prices.",
+                                 "rows": 1, "oldest_read": "2026-09-27", "newest_read": "2026-09-27"}], "linked_only": []}
+        with self.assertRaises(records.ModelDirectoryError):
+            records.validate_manifest_sources(manifest)
+
+    def test_a_reader_that_accepts_a_refused_source_is_caught(self):
+        """The mutant control: without the refusal, the known-wrong row passes and the named check fails."""
+        with mock.patch.object(records, "REFUSED_SOURCES", {}), \
+                mock.patch.object(records, "SOURCE_IDS", records.SOURCE_IDS + ("openrouter", "openrouter_endpoints")), \
+                mock.patch.object(records, "ID_KINDS", records.ID_KINDS + ("openrouter",)), \
+                mock.patch.object(records, "RESULT_VALUE_SOURCES", records.RESULT_VALUE_SOURCES + ("openrouter",)), \
+                mock.patch.object(records, "REFUSED_PUBLISHERS", ()), mock.patch.object(records, "REFUSED_HOSTS", ()):
+            result = unittest.TestResult()
+            RefusedSources("test_a_row_from_a_refused_source_is_refused_by_the_build").run(result)
+        self.assertEqual(len(result.failures), 1)
+
+    def test_the_builder_declares_no_refused_host_and_has_no_reader_for_one(self):
+        from loop_engine.core.library_ingestion.https_transport import HostNotDeclared, HttpsGetTransport
+        from loop_engine.core.library_ingestion.request_log import RequestBudget, RequestLog
+        from model_directory import fetch
+        self.assertFalse({"openrouter.ai", "artificialanalysis.ai", "ollama.com"} & set(fetch.HOSTS))
+        self.assertFalse([name for name in dir(source_engines) if "openrouter" in name.lower()])
+        transport = HttpsGetTransport(fetch.HOSTS, RequestBudget(maximum_requests=1, maximum_pause_seconds=1.0), RequestLog())
+        with self.assertRaises(HostNotDeclared):
+            transport.get("openrouter.ai", "/api/v1/models")
+
+    def test_no_packaged_row_carries_a_refused_source_identifier_price_or_value(self):
+        directory = records.load_directory()
+        found = []
+        for row in directory.models + directory.endpoints:
+            found += [f"{row['slug']}: source {item['id']}" for item in row["sources"] if item["id"] in records.REFUSED_SOURCES]
+        for row in directory.models:
+            found += [f"{row['slug']}: identifier {kind}" for kind in row["ids"] if kind not in records.ID_KINDS]
+            found += [f"{row['slug']}: price route {price['route']}" for price in row["prices"] if price["route"] != records.ROUTE_DIRECT]
+            found += [f"{row['slug']}: value of {item['publisher']}" for item in row["benchmarks"]
+                      if "value" in item and item["publisher"] in records.REFUSED_PUBLISHERS]
+        self.assertEqual(found, [])
+        linked = {item["name"] for item in directory.manifest["linked_only"]}
+        self.assertTrue({"OpenRouter", "Artificial Analysis", "Ollama library"} <= linked)
+        self.assertFalse({item["id"] for item in directory.manifest["sources"]} & set(records.REFUSED_SOURCES))
+
+
+def _maker_row(provider: str, model: str) -> tuple:
+    row = model_rows._empty_row("modelsdev", provider + "/" + model, model, provider)
+    sources_of = RowSources()
+    model_rows._modelsdev_offer(row, sources_of.add, provider, {"name": provider.capitalize()},
+                                {"id": model, "cost": {"input": 1.0, "output": 2.0}, "tool_call": True}, "2026-09-27", True)
+    return row, sources_of
+
+
+def _finished(row: dict, sources_of: RowSources) -> dict:
+    return records.validate_model_row({**row, "slug": "example", "sources": sources_of.items})
+
+
+class OpenlyLicensedJoins(unittest.TestCase):
+    """LiteLLM and LMArena join a row only on an exact identifier, and only the maker's own entry states a fact."""
+
+    ENTRY = {"mode": "chat", "input_cost_per_token": 1e-7, "output_cost_per_token": 2e-7, "max_input_tokens": 131072.0,
+             "max_output_tokens": 8192, "supports_function_calling": True, "supports_response_schema": False}
+
+    def _index(self, entries: dict, providers: dict) -> dict:
+        return model_rows.litellm_index(Answer(entries, "2026-09-27", "read", source_engines.LITELLM_ADDRESS), providers)
+
+    def test_an_open_row_takes_litellm_prices_by_exact_identifier_and_no_facts(self):
+        record = {"id": "example/Model-7B", "author": "example", "cardData": {}, "tags": [], "pipeline_tag": "text-generation",
+                  "createdAt": "2026-01-02T00:00:00.000Z", "downloads": 1, "likes": 1}
+        answer = Answer(record, "2026-09-27", "read", "huggingface.co/api/models/example/Model-7B")
+        row, sources_of = model_rows._hugging_face_row(record, answer, None, "", ("", {}, None), "2026-09-27")
+        index = self._index({"deepinfra/example/Model-7B": {**self.ENTRY, "litellm_provider": "deepinfra"},
+                             "novita/EXAMPLE/model-7b": {**self.ENTRY, "litellm_provider": "novita"},
+                             "together_ai/example/Model-7B-Turbo": {**self.ENTRY, "litellm_provider": "together_ai"},
+                             "fal_ai/example/Model-7B": {**self.ENTRY, "mode": "image_generation", "litellm_provider": "fal_ai"}},
+                            {"deepinfra": "deepinfra"})
+        for item in index.get("example/model-7b", ()):
+            model_rows._litellm_offer(row, sources_of.add, item, "2026-09-27", {"deepinfra": {"name": "Deep Infra"}}, False)
+        finished = _finished(row, sources_of)
+        self.assertEqual(sorted((price["provider"], price["provider_slug"], price["model_id"]) for price in finished["prices"]),
+                         [("Deep Infra", "deepinfra", "example/Model-7B"), ("novita", "novita", "EXAMPLE/model-7b")])
+        self.assertEqual({price["context"] for price in finished["prices"]}, {131072})
+        self.assertNotIn("structured_output", finished["facts"])
+        self.assertEqual({item["id"] for item in finished["sources"]}, {"huggingface", "litellm"})
+
+    def test_the_makers_own_entry_states_facts_and_a_models_dev_price_is_not_repeated(self):
+        row, sources_of = _maker_row("zai", "glm-5")
+        index = self._index({"zai/glm-5": {**self.ENTRY, "litellm_provider": "zai", "supports_vision": True},
+                             "dashscope/glm-5": {**self.ENTRY, "litellm_provider": "dashscope"}},
+                            {"zai": "zai", "dashscope": "alibaba"})
+        own = next(item for item in index["glm-5"] if item["modelsdev"] == "zai")
+        model_rows._litellm_offer(row, sources_of.add, own, "2026-09-27", {"zai": {"name": "Z.AI"}}, True)
+        finished = _finished(row, sources_of)
+        self.assertEqual([price["provider_slug"] for price in finished["prices"]], ["zai"])
+        self.assertEqual(finished["prices"][0]["source"], 0, "the models.dev price stays and LiteLLM's same-provider price is left out")
+        self.assertEqual([item["value"] for item in finished["facts"]["structured_output"]], [False])
+        self.assertEqual([item["value"] for item in finished["facts"]["tool_calling"]], [True, True])
+        self.assertIn("vision", [item["value"] for item in finished["use_cases"]])
+
+    def test_an_arena_score_joins_only_the_named_makers_exact_model(self):
+        anthropic, openai = _maker_row("anthropic", "claude-x"), _maker_row("openai", "gpt-x")
+        board = [{"model_name": "claude-x", "organization": "anthropic", "rating": 1432.6, "leaderboard_publish_date": "2026-09-25"},
+                 {"model_name": "CLAUDE-X", "organization": "Anthropic", "rating": 1400.0, "leaderboard_publish_date": "2026-09-25"},
+                 {"model_name": "claude-x-high", "organization": "anthropic", "rating": 1450.0, "leaderboard_publish_date": "2026-09-25"},
+                 {"model_name": "claude-x", "organization": "", "rating": 1460.0, "leaderboard_publish_date": "2026-09-25"},
+                 {"model_name": "claude-x", "organization": "openai", "rating": 1470.0, "leaderboard_publish_date": "2026-09-25"},
+                 {"model_name": "gpt-x", "organization": "unmapped-lab", "rating": 1300.0, "leaderboard_publish_date": "2026-09-25"}]
+        report = model_rows.join_arena([anthropic, openai], Answer(board, "2026-09-27", "read", source_engines.ARENA_ADDRESS),
+                                       {"anthropic": ["anthropic"], "openai": ["openai"]})
+        self.assertEqual((report["rows"], report["joined"]), (6, 1))
+        scored = _finished(*anthropic)
+        self.assertEqual([(item["value"], item["as_of"], item["publisher"]) for item in scored["benchmarks"]], [(1433, "2026-09-25", "LMArena")])
+        self.assertEqual(_finished(*openai)["benchmarks"], [])
+
+    def test_the_arena_reader_keeps_the_newest_overall_rows_and_stops_at_another_category(self):
+        def page(categories, day="2026-09-25"):
+            return {"rows": [{"row": {"model_name": f"model-{index}", "organization": "openai", "rating": 1000.0 + index,
+                                      "category": category, "leaderboard_publish_date": day}} for index, category in enumerate(categories)]}
+        first = page(["overall"] * 100)
+        first["rows"][5]["row"]["leaderboard_publish_date"] = "2026-09-18"
+        pages_read = []
+
+        class Reader:
+            def get_json(self, host, path, query=None, **_):
+                offset = int(dict(query)["offset"])
+                pages_read.append(offset)
+                value = first if offset == 0 else page(["overall"] * 50 + ["coding"] * 50) if offset == 100 else page(["overall"] * 100)
+                return Answer(value, "2026-09-27", "read", host + path)
+
+        answer = source_engines.arena_text_leaderboard(Reader())
+        self.assertEqual(pages_read, [0, 100])
+        self.assertEqual(len(answer.value), 149)
+        self.assertEqual({row["leaderboard_publish_date"] for row in answer.value}, {"2026-09-25"})
+
+    def test_a_served_repository_gets_its_row_and_an_unserved_copy_does_not(self):
+        """OpenRouter's repository link used to bring back models published in 8-bit or FP8 weights, which Hugging Face tags
+        like copies. An exact provider name in models.dev or LiteLLM does it now, from the lists or the author's own list."""
+        def record(identifier, tags=()):
+            return {"id": identifier, "author": identifier.split("/")[0], "tags": list(tags), "pipeline_tag": "text-generation",
+                    "cardData": {}, "createdAt": "2026-01-02T00:00:00.000Z", "downloads": 5, "likes": 1}
+
+        def build(offers: dict) -> tuple:
+            modelsdev = {"deepinfra": {"name": "Deep Infra", "models": offers},
+                         "openai": {"name": "OpenAI", "models": {"gpt-x": {"cost": {"input": 1.0, "output": 2.0}}}}}
+            listed = [record("maker/plain-7b"), record("openai/gpt-oss-x", ["8-bit"]), record("someone/copy-GGUF", ["gguf"]),
+                      record("mistralai/Listed-1B")]
+            authors = {"mistralai": [record("mistralai/Listed-1B"), record("mistralai/Served-Outside")]}
+
+            class Reader:
+                def get_json(self, host, path, query=None, **_):
+                    asked = dict(query or [])
+                    value = None
+                    if host == "huggingface.co" and path == "/api/models":
+                        value = (listed if asked.get("pipeline_tag") == "text-generation" and asked.get("sort") == "downloads"
+                                 else authors.get(asked.get("author"), []) if "author" in asked else [])
+                    elif host == "models.dev":
+                        value = modelsdev
+                    elif host == "raw.githubusercontent.com":
+                        value = {}
+                    elif host == "datasets-server.huggingface.co":
+                        value = {"rows": []}
+                    return Answer(value, "2026-09-27" if value is not None else "", "read" if value is not None else "missing", host + path)
+
+                def summary(self):
+                    return {"answers": {}}
+
+            documentation = {"maker_providers": {"providers": ["openai"]}, "litellm_providers": {"map": {}},
+                             "arena_organizations": {"map": {}}}
+            rows, report, _answers = model_rows.assemble_models(Reader(), documentation, None, "2026-09-27", 0, lambda _: None)
+            return {row["ids"].get("huggingface") or row["ids"].get("modelsdev") for row, _ in rows}, report
+
+        served, report = build({"openai/gpt-oss-x": {"cost": {"input": 0.1, "output": 0.5}},
+                                "mistralai/Served-Outside": {"cost": {"input": 0.1, "output": 0.3}}})
+        self.assertEqual(served, {"maker/plain-7b", "openai/gpt-oss-x", "mistralai/Listed-1B", "mistralai/Served-Outside", "openai/gpt-x"})
+        self.assertEqual((report["served_copies"], report["served_repositories"]), (1, 1))
+        unserved, _report = build({})
+        self.assertEqual(unserved, {"maker/plain-7b", "mistralai/Listed-1B", "openai/gpt-x"})
+
+    def test_the_builder_refuses_a_reviewed_record_of_another_version(self):
+        old = Path(__import__("tempfile").mkdtemp()) / "provider_documentation.json"
+        old.write_text(json.dumps({**source_engines.read_reviewed(REVIEWED_PATH), "record_type": "model_directory_provider_documentation/v1"}))
+        with self.assertRaises(ValueError):
+            source_engines.read_provider_documentation(old)
+        self.assertEqual(source_engines.read_provider_documentation(REVIEWED_PATH)["record_type"], source_engines.REVIEWED_RECORD_TYPE)
+
+
+class SourcesOnThePages(unittest.TestCase):
+    """The pages name each republished source with its licence, and link the refused publishers without their data."""
+
+    def test_the_sources_band_names_each_licence_and_the_linked_only_publishers(self):
+        text = pages.rendered_page("/models", "GET", "Baltor")[0].decode("utf-8")
+        band = text[text.index('id="sources"'):]
+        for expected in ("LiteLLM model price and context file", "LMArena leaderboard dataset", ">CC BY 4.0<", ">MIT<",
+                         "Linked, never copied:", ">OpenRouter</a>", ">Artificial Analysis</a>", "checked <time"):
+            self.assertIn(expected, band)
+        self.assertNotIn("OpenRouter Models API", text)
+        self.assertNotIn("through OpenRouter", text)
+
+    def test_a_model_page_shows_an_arena_score_with_its_licence_and_links_the_refused_publishers(self):
+        directory = records.load_directory()
+        row = next(row for row in directory.models if any("value" in item for item in row["benchmarks"]))
+        text = pages.rendered_page("/models/" + row["slug"], "GET", "Baltor")[0].decode("utf-8")
+        self.assertRegex(text, r'>Arena text score</a>: [0-9][0-9,]* as of <time datetime="20[0-9]{2}-[0-9]{2}-[0-9]{2}">')
+        self.assertIn('>CC BY 4.0</a>', text)
+        self.assertIn('href="https://artificialanalysis.ai"', text)
+        self.assertIn('href="https://openrouter.ai/', text)
+        self.assertNotIn("Artificial Analysis Intelligence Index", text)
+        self.assertNotIn("through OpenRouter", text)
 
 
 class PagesAndSetup(unittest.TestCase):

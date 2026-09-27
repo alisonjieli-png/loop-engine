@@ -4,14 +4,20 @@ Kind: development tool module. A reader returns what one source says and the Ans
 the day it was read; it decides nothing about which model a record belongs to. The assembly step
 in `assemble.py` joins records only on exact identifiers.
 
-Terms, as read on September 24, 2026 and recorded in SOURCES.md:
+Licences and terms, as recorded with their dates in SOURCES.md:
 
-- OpenRouter documents its Models API as making model information "freely available" and designed
-  for integration; the build reads only that documented interface, never the website pages.
 - The Hugging Face Hub API is documented for programmatic use and its terms do not restrict it; the
-  build stays under the anonymous limit the API announces.
-- models.dev publishes api.json from a repository under the MIT licence.
-- Ollama's terms refuse automated access without permission, so no reader here touches it.
+  build stays under the anonymous limit the API announces (read September 24, 2026).
+- models.dev publishes api.json from github.com/anomalyco/models.dev under the MIT licence
+  (checked September 27, 2026).
+- LiteLLM publishes model_prices_and_context_window.json at the root of github.com/BerriAI/litellm,
+  outside its enterprise folder, under the MIT licence (checked September 27, 2026).
+- LMArena publishes its leaderboard dataset on Hugging Face under CC BY 4.0, which asks for credit,
+  a link to the licence and a note of changes (checked September 27, 2026).
+- OpenRouter's terms of August 31, 2026 forbid copying information on its site or services by
+  script and using it for a competing service; Artificial Analysis's website terms grant only
+  personal, noncommercial use; Ollama's terms refuse automated access without permission. No reader
+  here touches any of them: the pages link to them instead.
 """
 from __future__ import annotations
 
@@ -21,7 +27,22 @@ from pathlib import Path
 
 from .fetch import Answer, CachedReader
 
-HF_HOST, OPENROUTER_HOST, MODELSDEV_HOST = "huggingface.co", "openrouter.ai", "models.dev"
+HF_HOST, MODELSDEV_HOST = "huggingface.co", "models.dev"
+#: The reviewed record the builder reads beside its sources, in the one version this builder understands.
+REVIEWED_RECORD_TYPE = "model_directory_provider_documentation/v2"
+#: LiteLLM's model price and context file, read from its repository's default branch.
+LITELLM_HOST, LITELLM_PATH = "raw.githubusercontent.com", "/BerriAI/litellm/main/model_prices_and_context_window.json"
+LITELLM_ADDRESS = "github.com/BerriAI/litellm/blob/main/model_prices_and_context_window.json"
+#: The LiteLLM entry kinds that describe a text, embedding or ranking model; image, audio and video entries are left out.
+LITELLM_MODES = frozenset({"chat", "completion", "responses", "embedding", "rerank"})
+#: LMArena's leaderboard dataset, read through Hugging Face's dataset viewer interface, which answers JSON pages. The
+#: overall rows of the text arena with style control, the arena's default view, come first in the latest split.
+ARENA_HOST, ARENA_PATH = "datasets-server.huggingface.co", "/rows"
+ARENA_DATASET, ARENA_CONFIG, ARENA_SPLIT, ARENA_CATEGORY = "lmarena-ai/leaderboard-dataset", "text_style_control", "latest", "overall"
+ARENA_ADDRESS = "huggingface.co/datasets/lmarena-ai/leaderboard-dataset"
+ARENA_PAGE, ARENA_MAXIMUM_PAGES = 100, 20
+#: The models.dev provider that is Hugging Face's own inference router; its model identifiers are repositories.
+HF_ROUTER_PROVIDER = "huggingface"
 #: The Hugging Face lists the directory reads, each by a documented sort order. The union of the lists,
 #: without quantized copies and adapters, is the set of open models.
 HF_LISTS = (("text-generation", "downloads", 1000), ("text-generation", "likes", 1000),
@@ -40,22 +61,52 @@ def _expand() -> list:
     return [("expand[]", name) for name in HF_EXPAND]
 
 
-def openrouter_models(reader: CachedReader) -> Answer:
-    return reader.get_json(OPENROUTER_HOST, "/api/v1/models")
-
-
-def openrouter_endpoints(reader: CachedReader, details_path: str) -> Answer:
-    """The providers that serve one OpenRouter model, with their prices on OpenRouter."""
-    return reader.get_json(OPENROUTER_HOST, details_path)
-
-
 def modelsdev(reader: CachedReader) -> Answer:
     return reader.get_json(MODELSDEV_HOST, "/api.json")
+
+
+def litellm_prices(reader: CachedReader) -> Answer:
+    """LiteLLM's model price and context file: one entry per provider and model, with its provider's name."""
+    return reader.get_json(LITELLM_HOST, LITELLM_PATH)
+
+
+def arena_text_leaderboard(reader: CachedReader) -> Answer:
+    """The overall rows of the latest text arena leaderboard, with style control, read page by page.
+
+    Reading stops at the first page that holds another category, so a later reordering of the split can only make the
+    rows fewer, never wrong. Rows of an older publication than the newest one read are left out, so a page kept from
+    an earlier day never mixes two leaderboards. The answer's day is the oldest day among the pages used.
+    """
+    rows, days, state = [], [], ""
+    for page in range(ARENA_MAXIMUM_PAGES):
+        answer = reader.get_json(ARENA_HOST, ARENA_PATH, [("dataset", ARENA_DATASET), ("config", ARENA_CONFIG),
+                                                          ("split", ARENA_SPLIT), ("offset", str(page * ARENA_PAGE)),
+                                                          ("length", str(ARENA_PAGE))])
+        items = [item.get("row") for item in ((answer.value or {}).get("rows") or ()) if isinstance(item, dict)] \
+            if isinstance(answer.value, dict) else []
+        if not answer.usable or not items:
+            state = state or answer.state
+            break
+        days.append(answer.read_on)
+        state = state or answer.state
+        overall = [row for row in items if isinstance(row, dict) and row.get("category") == ARENA_CATEGORY]
+        rows.extend(overall)
+        if len(overall) < len(items) or len(items) < ARENA_PAGE:
+            break
+    published = max((str(row.get("leaderboard_publish_date") or "") for row in rows), default="")
+    rows = [row for row in rows if str(row.get("leaderboard_publish_date") or "") == published]
+    return Answer(rows or None, min(days) if days and rows else "", state, ARENA_HOST + ARENA_PATH)
 
 
 def hf_list(reader: CachedReader, pipeline_tag: str, sort: str, limit: int) -> Answer:
     query = [("pipeline_tag", pipeline_tag), ("sort", sort), ("direction", "-1"), ("limit", str(limit)), *_expand()]
     return reader.get_json(HF_HOST, "/api/models", query)
+
+
+def hf_author_models(reader: CachedReader, author: str) -> Answer:
+    """The models one author publishes, most downloaded first, with the fields a row needs."""
+    query = [("author", author), ("sort", "downloads"), ("direction", "-1"), ("limit", "1000"), *_expand()]
+    return reader.get_json(HF_HOST, "/api/models", query, maximum_age_hours=72)
 
 
 def hf_model(reader: CachedReader, repository: str) -> Answer:
@@ -167,3 +218,11 @@ def baltor_output_records(root: Path) -> list:
 
 def read_reviewed(path: Path) -> dict:
     return json.loads(Path(path).read_text(encoding="utf-8"))
+
+
+def read_provider_documentation(path: Path) -> dict:
+    """The reviewed provider record, refused when another version of it was written."""
+    record = read_reviewed(path)
+    if record.get("record_type") != REVIEWED_RECORD_TYPE:
+        raise ValueError(f"{path} is not a {REVIEWED_RECORD_TYPE} record")
+    return record

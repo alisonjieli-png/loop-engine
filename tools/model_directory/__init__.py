@@ -10,16 +10,19 @@ Functional component and its engines:
 
 ```text
 Model directory build (functional component)
-├── Edge: source records in; model_directory_models/v1, model_directory_endpoints/v1,
-│   model_directory_hardware/v1, the two browser indexes and model_directory_manifest/v1 out
+├── Edge: source records in; model_directory_models/v2, model_directory_endpoints/v2,
+│   model_directory_hardware/v1, the two browser indexes and model_directory_manifest/v2 out
 ├── Source engine slot, each read through the bounded read-only HTTPS transport
-│   ├── openrouter: the OpenRouter Models API and its per-model endpoints API
 │   ├── huggingface: the Hugging Face Hub API, model configurations and GGUF file lists
-│   ├── modelsdev: the models.dev api.json, MIT licensed, for direct provider prices
+│   ├── modelsdev: the models.dev api.json, MIT licensed, for provider prices and the makers' own APIs
+│   ├── litellm: LiteLLM's model price and context file, MIT licensed, for prices, limits and flags
+│   ├── lmarena: the LMArena leaderboard dataset, CC BY 4.0, for the overall text arena score
 │   ├── baltor_records: the source-backed output limits in src/loop_engine provider clients
 │   ├── provider_documentation: provider and runtime facts a person read and dated
-│   └── ollama_library: not an engine; Ollama's terms refuse automated access, so pages link
-├── Rules engine: loop_engine.core.service_runtime.model_directory, shared with the service
+│   └── linked only, never read: the Ollama library, OpenRouter and Artificial Analysis, whose
+│       terms refuse automated access or republication
+├── Rules engine: loop_engine.core.service_runtime.model_directory, shared with the service; it
+│   refuses a row that names a refused source
 └── Fit engine: loop_engine.core.service_runtime.model_directory_fit, shared with the pages
 ```
 

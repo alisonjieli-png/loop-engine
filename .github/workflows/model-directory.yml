@@ -1,17 +1,18 @@
 name: Model directory refresh
 
 # Refreshes the public model and endpoint directory at /models, /endpoints and /can-i-run once a day. It reads the
-# OpenRouter Models API and its per-model endpoints API, the Hugging Face Hub API, model configurations and GGUF file
-# lists, and the models.dev database, keeps Baltor's own provider records and the reviewed provider documentation, and
-# rebuilds the packaged data files. Every row keeps its source addresses and the day each was read; the builder exits 1
-# when it refused a row, so an unsourced row is never committed. It then runs the directory's checks and, when the data
-# changed, commits the files to main and starts the CI workflow for that commit. A release carries the new data only
-# after that CI run passes.
+# Hugging Face Hub API, model configurations and GGUF file lists, the models.dev database (MIT), LiteLLM's model price
+# and context file (MIT) and the LMArena leaderboard dataset (CC BY 4.0), keeps Baltor's own provider records and the
+# reviewed provider documentation, and rebuilds the packaged data files. Every row keeps its source addresses and the
+# day each was read; the builder exits 1 when it refused a row, so an unsourced row is never committed. It then runs
+# the directory's checks and, when the data changed, commits the files to main and starts the CI workflow for that
+# commit. A release carries the new data only after that CI run passes.
 #
 # The state folder lives in the Actions cache, so a stopped run resumes where it stopped and answers younger than their
 # maximum age are reused. Set the repository variable MODEL_DIRECTORY_COMMIT to "off" to keep the refreshed files as a
-# workflow artifact without committing them. The Ollama library is linked from the pages and never read: its terms
-# refuse automated access. tools/model_directory/SOURCES.md records each source's terms.
+# workflow artifact without committing them. The Ollama library, OpenRouter and Artificial Analysis are linked from the
+# pages and never read: their terms refuse automated access or republication, and the reader refuses a row that names
+# one. tools/model_directory/SOURCES.md records each source's licence or terms with the day it was checked.
 on:
   schedule:
     - cron: "23 7 * * *"

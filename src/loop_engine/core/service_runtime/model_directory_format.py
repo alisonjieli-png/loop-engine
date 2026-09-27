@@ -105,7 +105,7 @@ ORDERS = (ORDER_PROVIDERS, ORDER_NEWEST, ORDER_DOWNLOADS, ORDER_NAME)
 
 
 def provider_count(row: dict) -> int:
-    """How many providers list a price for the model, directly or through OpenRouter."""
+    """How many providers list a price for the model, as models.dev or LiteLLM records it."""
     return len({price["provider_slug"] for price in row["prices"]})
 #: The filters a person can choose. A filter keeps rows by a sourced fact and nothing else.
 FILTER_ALL, FILTER_OPEN, FILTER_HOSTED = "all", "open", "hosted"
@@ -165,7 +165,7 @@ def cite(row: dict, index: int) -> str:
         return ""
     source = row["sources"][index]
     names = {"huggingface": "Hugging Face", "huggingface_config": "model configuration", "huggingface_gguf": "GGUF files",
-             "openrouter": "OpenRouter", "openrouter_endpoints": "OpenRouter endpoints", "modelsdev": "models.dev",
+             "modelsdev": "models.dev", "litellm": "LiteLLM", "lmarena": "LMArena",
              "baltor_records": "Baltor records", "provider_documentation": "provider documentation",
              "harness_documentation": "harness documentation"}
     return (f'<span class="md-cite">{link(source["address"], names.get(source["id"], source["id"]))}, '

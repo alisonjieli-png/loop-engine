@@ -63,7 +63,7 @@ def packaged_hardware(reviewed: dict) -> dict:
 
 def _primary(row: dict) -> str:
     ids = row["ids"]
-    return ids.get("huggingface") or (ids.get("openrouter") or "").split(":", 1)[0] or ids.get("modelsdev") or row["name"]
+    return ids.get("huggingface") or ids.get("modelsdev") or row["name"]
 
 
 def finish_models(pairs: list, baltor: list, report: dict, documentation: dict) -> list:
@@ -77,8 +77,7 @@ def finish_models(pairs: list, baltor: list, report: dict, documentation: dict) 
             if price["route"] == records.ROUTE_DIRECT:
                 price["provider_slug"] = reviewed.get(price["provider_slug"], price["provider_slug"])
         for item in baltor:
-            model_id = item["provider"] + "/" + item["model"]
-            if model_id in (row["ids"].get("openrouter"), row["ids"].get("modelsdev")):
+            if item["provider"] + "/" + item["model"] == row["ids"].get("modelsdev"):
                 source = sources_of.add("baltor_records", "github.com/alisonjieli-png/loop-engine/blob/main/" + item["path"], item["observed_at"])
                 row["facts"].setdefault("max_output", []).append({"value": item["maximum_output_tokens"], "source": source,
                                                                   "basis": "Baltor's provider client declares this limit: " + item["basis"]})
@@ -100,12 +99,12 @@ def main(argv=None) -> int:
     arguments = parser.parse_args(argv)
     built_at = datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
     today = built_at[:10]
-    documentation = sources.read_reviewed(REVIEWED / "provider_documentation.json")
+    documentation = sources.read_provider_documentation(REVIEWED / "provider_documentation.json")
     hardware = packaged_hardware(sources.read_reviewed(REVIEWED / "hardware.json"))
     reader = CachedReader(arguments.state, maximum_requests=arguments.max_requests, offline=arguments.offline)
     progress = lambda message: print(message, file=sys.stderr, flush=True)
     pairs, report, answers = assemble_models(reader, documentation, ROOT, today, arguments.gguf_limit, progress)
-    if not answers["openrouter"].usable or not answers["modelsdev"].usable:
+    if not answers["modelsdev"].usable or not answers["litellm"].usable:
         progress("a required source gave no answer and has no kept copy; nothing was written")
         return 2
     baltor = sources.baltor_output_records(ROOT)
