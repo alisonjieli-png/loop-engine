@@ -74,6 +74,11 @@ SHOWN_FACTS = {
     "endoflife_calendar": (("latest", "latest"), ("lts", "long-term support"), ("eoas_from", "active support ends"),
                            ("eol_from", "support ends"), ("maintained", "maintained")),
     "federal_register": (("type", "type"), ("agencies", "agencies"), ("comments_close_on", "comments close")),
+    "openrouter_models": (("model_id", "model"), ("output_price", "output price per million tokens (USD)"),
+                          ("input_price", "input price per million tokens (USD)"), ("context", "context tokens"),
+                          ("expiration_date", "end date")),
+    "huggingface_new_models": (("publisher", "publisher"), ("pipeline_tag", "task"), ("downloads", "downloads"),
+                               ("likes", "likes"), ("gated", "gated")),
 }
 RANK_WORDS = {"source_published_at": "last change, newest first", "event_at": "date, newest first",
               "effective_until": "end date, soonest first", "stars": "stars, most first",
@@ -83,6 +88,7 @@ RANK_WORDS = {"source_published_at": "last change, newest first", "event_at": "d
               "price_per_intelligence_point": "listed output price per intelligence index point, lowest first",
               "released": "release date, newest first", "updated": "last update, newest first",
               "servers": "number of servers, most first", "cited_by": "citations, most first",
+              "likes": "likes, most first",
               "directory_position": "position in the directory listing", "models_listed": "models listed, most first"}
 
 
@@ -156,21 +162,43 @@ def _dedupe(claims) -> list:
     return kept
 
 
+#: The fact each engine ranks by when a binding names none, so every section says how it is ordered.
+DEFAULT_RANK = {"collector_state": "source_published_at", "model_directory": "downloads", "mcp_directory": "updated",
+                "endpoint_directory": "models_listed", "github_search": "stars", "github_advisories": "event_at",
+                "github_releases": "event_at", "owner_directory": "", "arxiv_listing": "event_at",
+                "openalex_works": "cited_by", "endoflife_calendar": "effective_until", "federal_register": "event_at",
+                "curated_seed": "", "openrouter_models": "event_at", "huggingface_new_models": "event_at"}
+HUGGING_FACE_SORTS = {"downloads": "downloads", "likes": "likes", "trendingScore": "trending_score",
+                      "lastModified": "source_published_at", "createdAt": "event_at"}
+
+
+def rank_fact(binding) -> str:
+    """The fact a binding's section is ordered by: its own rank_by, else its engine's declared default."""
+    parameters = binding.parameters
+    if parameters.get("rank_by"):
+        return str(parameters["rank_by"])
+    if binding.engine == "huggingface_models":
+        return HUGGING_FACE_SORTS.get(str(parameters.get("sort", "downloads")), "downloads")
+    if binding.engine == "mcp_directory" and parameters.get("mode") == "category_counts":
+        return "servers"
+    if binding.engine == "openrouter_models" and parameters.get("only_expiring"):
+        return "effective_until"
+    return DEFAULT_RANK.get(binding.engine, "")
+
+
 def build_sections(question: RadarQuestion, checks, previous_checks, as_of: str, limit: "int | None" = None) -> tuple:
     """One section per binding. A binding that could not be checked shows its previous claims, never renewed."""
     sections = []
     for index, check in enumerate(checks):
         binding = question.sources[index]
-        rank = binding.parameters.get("rank_by", "")
+        rank = rank_fact(binding)
         words = RANK_WORDS.get(rank, "as listed by the source")
-        if binding.engine == "endoflife_calendar":
-            words = RANK_WORDS["effective_until"]
-        elif binding.engine == "curated_seed":
+        if binding.engine == "curated_seed":
             words = "in the order a person declared them; no ranking"
-        elif binding.engine in ("github_advisories", "github_releases", "arxiv_listing", "federal_register") and not rank:
-            words = RANK_WORDS["event_at"]
-        elif binding.engine == "openalex_works" and not rank:
-            words = RANK_WORDS["cited_by"]
+        elif binding.engine == "owner_directory":
+            words = "in the order of the owner's directory; no ranking"
+        elif binding.parameters.get("ascending") and rank in RANK_WORDS and rank != "price_per_intelligence_point":
+            words = rank.replace("_", " ") + ", lowest first"
         claims, carried = list(check.observations), []
         if check.outcome in ("could_not_check", "source_disappeared_or_access_changed"):
             previous = previous_checks[index] if index < len(previous_checks) else None

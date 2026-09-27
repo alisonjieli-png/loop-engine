@@ -22,7 +22,7 @@ import re
 import time
 import xml.etree.ElementTree as ElementTree
 from dataclasses import dataclass, field
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta, timezone
 from urllib.parse import quote, urlencode, urlsplit
 
 from loop_engine.core.library_ingestion.github_reader import parse_included_response
@@ -703,5 +703,116 @@ class FederalRegister:
         return EngineAnswer(OK, "" if rows else "no document matched in the window", tuple(rows), 1)
 
 
+def _per_million(value):
+    """A price per token, as the listing writes it, in US dollars per million tokens; a negative price is unknown."""
+    try:
+        price = float(value)
+    except (TypeError, ValueError):
+        return None
+    return round(price * 1_000_000, 6) if price >= 0 else None
+
+
+def _epoch_time(value):
+    if type(value) is not int or value <= 0:
+        return None
+    return datetime.fromtimestamp(value, timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+class OpenRouterModels:
+    """The OpenRouter model listing: every model it serves, when it was added, its prices and any end date."""
+
+    engine_id, engine_version = "openrouter_models", "1.0.0"
+    material_facts = ("input_price", "output_price", "context", "expiration_date")
+
+    def read(self, context: ReadContext) -> EngineAnswer:
+        only_expiring = parameter(context, "only_expiring", False, kind=bool)
+        try:
+            response = context.network.get(self.engine_id, "openrouter.ai", "/api/v1/models")
+        except (RadarEngineError, RequestCeilingReached, OSError) as error:
+            return EngineAnswer(FAILED, str(error))
+        data = _json(response.body) if response.status == 200 else None
+        if not isinstance(data, dict) or not isinstance(data.get("data"), list):
+            answer = _status_answer(response.status, "the OpenRouter model listing")
+            return EngineAnswer(answer.status, answer.reason, requests=1)
+        rows, guards = [], []
+        for item in data["data"]:
+            if not isinstance(item, dict) or not isinstance(item.get("id"), str):
+                continue
+            if not re.fullmatch(r"[A-Za-z0-9._~:-]+/[A-Za-z0-9._~:-]+", item["id"]):
+                continue
+            if isinstance(item.get("description"), str):
+                guards.append(item["description"])
+            expires = item.get("expiration_date") if isinstance(item.get("expiration_date"), str) else None
+            if only_expiring and not expires:
+                continue
+            title, reason = clean_title(item.get("name") or item["id"])
+            if reason:
+                continue
+            pricing = item.get("pricing") if isinstance(item.get("pricing"), dict) else {}
+            rows.append(observation(
+                context, self, key="openrouter:" + item["id"], origin="openrouter:" + item["id"].lower(), title=title,
+                url="https://openrouter.ai/" + item["id"], source_address="https://openrouter.ai/api/v1/models",
+                licence_basis="a hosted listing; the model's own terms apply",
+                facts={"model_id": item["id"], "context": number(item.get("context_length")),
+                       "input_price": _per_million(pricing.get("prompt")),
+                       "output_price": _per_million(pricing.get("completion")),
+                       "hugging_face_id": text_fact(item.get("hugging_face_id")),
+                       "expiration_date": expires},
+                event_at=_epoch_time(item.get("created")), effective_until=iso_time(expires)))
+        rank = "effective_until" if only_expiring else "event_at"
+        chosen = ranked(rows, parameter(context, "rank_by", rank, kind=str), descending=not only_expiring)
+        return EngineAnswer(OK, "" if rows else "no model matched", tuple(chosen[:limit_of(context)]), 1, tuple(guards))
+
+
+class HuggingFaceNewModels:
+    """The newest model repositories of named publishers on the Hugging Face Hub, one listing per publisher."""
+
+    engine_id, engine_version = "huggingface_new_models", "1.0.0"
+    material_facts = ("licence", "gated")
+
+    def read(self, context: ReadContext) -> EngineAnswer:
+        authors = [str(item) for item in parameter(context, "authors", kind=list)]
+        per_author = parameter(context, "per_author", 10, kind=int)
+        if not 1 <= per_author <= 30 or any(not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,95}", item) for item in authors):
+            raise RadarEngineError("radar_parameter_invalid", "authors are Hugging Face account names; per_author is 1 to 30")
+        rows, failures, gone, requests = [], [], [], 0
+        for author in authors:
+            query = {"author": author, "sort": "createdAt", "direction": -1, "limit": per_author}
+            try:
+                response = context.network.get(self.engine_id, "huggingface.co", "/api/models", query)
+            except (RadarEngineError, RequestCeilingReached, OSError) as error:
+                failures.append(f"{author}: {error}")
+                continue
+            requests += 1
+            data = _json(response.body) if response.status == 200 else None
+            if not isinstance(data, list):
+                (gone if response.status in (404, 410, 401, 403) else failures).append(f"{author}: answered {response.status}")
+                continue
+            for item in data:
+                if not isinstance(item, dict) or not isinstance(item.get("id"), str):
+                    continue
+                title, reason = clean_title(item["id"])
+                if reason or not re.fullmatch(r"[A-Za-z0-9._-]+/[A-Za-z0-9._-]+", item["id"]):
+                    continue
+                tags = [tag for tag in item.get("tags", []) if isinstance(tag, str)]
+                licence = next((tag.split(":", 1)[1] for tag in tags if tag.startswith("license:")), None)
+                rows.append(observation(
+                    context, self, key="hf:" + item["id"].lower(), origin="hf:" + item["id"].lower(), title=title,
+                    url="https://huggingface.co/" + item["id"], source_address="https://huggingface.co/api/models",
+                    licence=licence, licence_basis="the licence tag on the model repository" if licence else
+                    "no licence tag on the model repository",
+                    facts={"publisher": author, "downloads": number(item.get("downloads")), "likes": number(item.get("likes")),
+                           "pipeline_tag": text_fact(item.get("pipeline_tag")),
+                           "gated": item.get("gated") if isinstance(item.get("gated"), bool) else bool(item.get("gated"))},
+                    event_at=iso_time(item.get("createdAt")), source_published_at=iso_time(item.get("lastModified"))))
+        if not rows:
+            return EngineAnswer(GONE if gone and not failures else FAILED, "; ".join(gone + failures) or "no model read",
+                                requests=requests)
+        chosen = ranked(rows, "event_at")
+        problems = gone + failures
+        return EngineAnswer(PARTIAL if problems else OK, "; ".join(problems), tuple(chosen[:limit_of(context)]), requests)
+
+
 ENGINES = (GitHubSearch(), GitHubAdvisories(), GitHubReleases(), OwnerDirectory(), HuggingFaceModels(),
-           ArxivListing(), OpenAlexWorks(), EndOfLifeCalendar(), FederalRegister())
+           ArxivListing(), OpenAlexWorks(), EndOfLifeCalendar(), FederalRegister(), OpenRouterModels(),
+           HuggingFaceNewModels())

@@ -79,6 +79,7 @@
    "access_method": "https_get",
    "hosts": [
     "amplitude.com",
+    "arxiv.org",
     "auth0.com",
     "aws.amazon.com",
     "axiom.co",
@@ -302,6 +303,38 @@
    "minimum_seconds_between_requests": 1.0,
    "maximum_requests_per_run": 6,
    "failure_policy": "A read that fails is recorded as could not check, never as no change; the previous brief is not renewed."
+  },
+  {
+   "record_type": "knowledge_radar_source_contract/v1",
+   "engine_id": "openrouter_models",
+   "parser_version": "1.0.0",
+   "access_method": "https_get",
+   "hosts": [
+    "openrouter.ai"
+   ],
+   "permitted_uses": "Model identifiers, names, the time each was added, context sizes, listed prices and announced end dates.",
+   "never_used": "Model descriptions; they are kept in memory only as a guard against copying.",
+   "attribution": "OpenRouter model listing.",
+   "terms_address": "https://openrouter.ai/terms",
+   "minimum_seconds_between_requests": 1.0,
+   "maximum_requests_per_run": 4,
+   "failure_policy": "A read that fails is recorded as could not check, never as no change; the previous brief is not renewed. The listing sends no validators, so each check reads it whole."
+  },
+  {
+   "record_type": "knowledge_radar_source_contract/v1",
+   "engine_id": "huggingface_new_models",
+   "parser_version": "1.0.0",
+   "access_method": "https_get",
+   "hosts": [
+    "huggingface.co"
+   ],
+   "permitted_uses": "Model identifiers, publishers, creation and change times, download and like counts, task and licence tags.",
+   "never_used": "Model card text.",
+   "attribution": "Hugging Face Hub model listing.",
+   "terms_address": "https://huggingface.co/terms-of-service",
+   "minimum_seconds_between_requests": 1.0,
+   "maximum_requests_per_run": 20,
+   "failure_policy": "A read that fails is recorded as could not check, never as no change; the previous brief is not renewed. A publisher whose listing fails is named, and the check is partial."
   }
  ]
 }

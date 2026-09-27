@@ -39,7 +39,7 @@ support flag and the source address. The full contract is in
 
 ## Effects
 
-It reads [references/support-calendar.json](references/support-calendar.json)
+It reads `references/support-calendar.json`, which the daily package adds,
 from this package and starts one Python process. It makes no network call and
 writes nothing.
 

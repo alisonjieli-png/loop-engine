@@ -109,7 +109,7 @@ _REGISTRY_FIELDS = ("record_type", "registry_version", "revised_on", "rule", "pl
 _RULE_FIELDS = ("research_minutes_threshold", "research_sources_threshold")
 _PLANNER_FIELDS = ("maximum_questions", "exploration_share")
 _SEED_FIELDS = ("name", "url", "kind", "links")
-_SEED_KINDS = ("hosted_service", "open_source_project", "official_source", "standard", "dataset")
+_SEED_KINDS = ("hosted_service", "open_source_project", "official_source", "standard", "dataset", "paper")
 _SEED_LINK_NAMES = ("documentation", "pricing", "status", "repository", "terms", "changelog")
 _CONTRACT_FIELDS = ("record_type", "engine_id", "parser_version", "access_method", "hosts", "permitted_uses",
                     "never_used", "attribution", "terms_address", "minimum_seconds_between_requests",

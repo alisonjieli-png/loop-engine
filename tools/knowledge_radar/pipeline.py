@@ -67,7 +67,7 @@ REGISTRY = Path("tools/knowledge_radar/questions-v1.json")
 CONTRACTS = Path("tools/knowledge_radar/source-contracts-v1.json")
 NETWORK_ENGINES = frozenset(("github_search", "github_advisories", "github_releases", "owner_directory",
                              "huggingface_models", "arxiv_listing", "openalex_works", "endoflife_calendar",
-                             "federal_register"))
+                             "federal_register", "openrouter_models", "huggingface_new_models"))
 
 
 class RadarRunError(RuntimeError):
@@ -225,9 +225,11 @@ def stage_plan(run: Run) -> dict:
     if run.request.demand:
         value = read_json(run.request.demand)
         demand = {key: value for key, value in value.items() if isinstance(value, (int, float))} if isinstance(value, dict) else {}
+    from .model_watch import latest_invalidations
     record = planner.plan(run.registry, run.state(), run.request.as_of, evidence=_evidence(run.request), demand=demand,
                           only=tuple(run.request.only) or None,
-                          asset_digests=_asset_digests(run.request.repository, run.registry))
+                          asset_digests=_asset_digests(run.request.repository, run.registry),
+                          invalidations=latest_invalidations(run.request.library))
     write_json(run.folder / "plan.json", record)
     return {"selected": len(record["selected"]), "deferred": len(record["deferred"])}
 

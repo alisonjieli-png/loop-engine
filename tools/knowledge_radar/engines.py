@@ -24,7 +24,9 @@ knowledge_radar_source/v1
     ├── arxiv_listing        the arXiv query interface
     ├── openalex_works       the OpenAlex works listing
     ├── endoflife_calendar   the endoflife.date release and support calendar
-    └── federal_register     the FederalRegister.gov documents interface
+    ├── federal_register     the FederalRegister.gov documents interface
+    ├── openrouter_models    the OpenRouter model listing, with prices and announced end dates
+    └── huggingface_new_models  the newest model repositories of named publishers
 ```
 
 An engine is an adapter the radar's Practitioner run uses. It is not a graph

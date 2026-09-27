@@ -467,6 +467,84 @@
   },
   {
    "record_type": "knowledge_radar_question/v1",
+   "id": "models_new_releases",
+   "question": "Which new models did the major labs and hosts release or make available in the last hours?",
+   "title": "New model releases and availability",
+   "area": "models",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers and harnesses that must use the newest suitable model soon after release",
+   "constraints": [
+    "Checked every hour by cheap change detection; the brief is rebuilt only when a model appears, disappears or changes."
+   ],
+   "baseline": "An engineer watches lab announcements, the OpenRouter listing and Hugging Face by hand, several times a day.",
+   "acceptable_evidence": [
+    "The host's own listing entry with its identifier, the time it was added, its prices and its end date where one is announced."
+   ],
+   "intended_output": "A dated brief and a typed table of the newest models on OpenRouter and from major labs on Hugging Face.",
+   "purpose": "List the newest models added to OpenRouter and the newest model repositories of major labs on Hugging Face, with prices, context sizes, licences and dates.",
+   "use_when": "Use when a task should consider a model released in the last days, or when a model a step depends on may have changed.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 15,
+    "sources": 10
+   },
+   "volatility": "hours",
+   "refresh": "hourly",
+   "delivery": [
+    "brief",
+    "data_file"
+   ],
+   "valid_days": 1,
+   "reask": [
+    "Is the new model available on the provider route the harness uses, at a known price?",
+    "Has anyone published an evaluation of it on a task like this one?",
+    "Does it replace a model a pinned step depends on?"
+   ],
+   "recheck": [
+    "Listings change within hours; read the listing again before choosing a model released today."
+   ],
+   "not_established": [
+    "A new listing is not an evaluation: nothing here measured the new models.",
+    "Labs that publish neither on OpenRouter nor on Hugging Face are not covered."
+   ],
+   "would_change": [
+    "A published evaluation of the new model on a shared task, or the lab's own release notes."
+   ],
+   "limit": 20,
+   "sources": [
+    {
+     "engine": "openrouter_models",
+     "section": "Newest on OpenRouter",
+     "parameters": {
+      "limit": 20
+     }
+    },
+    {
+     "engine": "huggingface_new_models",
+     "section": "Newest from major labs on Hugging Face",
+     "parameters": {
+      "authors": [
+       "google",
+       "openai",
+       "meta-llama",
+       "mistralai",
+       "Qwen",
+       "deepseek-ai",
+       "xai-org",
+       "microsoft",
+       "nvidia"
+      ],
+      "per_author": 10,
+      "limit": 20
+     }
+    }
+   ],
+   "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
    "id": "models_cheapest_thinking",
    "question": "What is the cheapest model per unit of published thinking for a task, under my constraints?",
    "title": "Cheapest model per unit of published thinking",
@@ -1247,6 +1325,100 @@
     }
    ],
    "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "methods_retrieval",
+   "question": "Which retrieval methods (structure-aware and generative retrieval, hybrid lexical and dense search, rerankers, chunking and addressing) are new or gaining use, and which claims about them hold?",
+   "title": "Retrieval methods",
+   "area": "pipelines",
+   "status": "active",
+   "gap_reason": "",
+   "audience": "developers building search, retrieval and question answering over documents",
+   "constraints": [
+    "Papers and projects are listed with their own claims attributed; the radar measures none of them."
+   ],
+   "baseline": "An engineer reads new information retrieval papers, benchmark tables and project pages by hand.",
+   "acceptable_evidence": [
+    "The paper or project's own identifiers and dates; a claim counts only when an independent reproduction or a shared benchmark result supports it."
+   ],
+   "intended_output": "A dated brief of new retrieval papers, reranking and hybrid search projects and trending rerankers, with the leads a person chose.",
+   "purpose": "List new information retrieval papers, maintained hybrid search and reranking projects, trending rerankers, and the retrieval leads a person chose, each with its claim attributed.",
+   "use_when": "Use when designing or changing how a harness or product finds passages in long documents or large collections.",
+   "sensitivity": "general",
+   "research_cost": {
+    "engineer_minutes": 45,
+    "sources": 5
+   },
+   "volatility": "weeks",
+   "refresh": "weekly",
+   "delivery": [
+    "brief"
+   ],
+   "valid_days": 7,
+   "reask": [
+    "Does the method need the document's structure (for example a table of contents) that the task's documents have?",
+    "Was the claim measured on documents like the task's own?",
+    "Does a hybrid of lexical and dense search with a reranker already meet the target?"
+   ],
+   "recheck": [
+    "Read the paper's evaluation setup before relying on a reported recall figure."
+   ],
+   "not_established": [
+    "The STAIR paper (arXiv 2609.03874) reports 82.6 percent recall at 1 using a document's table of contents as the address space; that is the paper's own claim, a separate review is verifying it, and nothing here establishes it.",
+    "No method here was measured on your documents."
+   ],
+   "would_change": [
+    "An independent reproduction on a shared benchmark, or a measurement on the task's own documents."
+   ],
+   "limit": 10,
+   "sources": [
+    {
+     "engine": "curated_seed",
+     "section": "Leads a person chose",
+     "parameters": {
+      "kind": "paper"
+     }
+    },
+    {
+     "engine": "arxiv_listing",
+     "section": "Newest on arXiv in information retrieval",
+     "parameters": {
+      "categories": [
+       "cs.IR"
+      ],
+      "limit": 10
+     }
+    },
+    {
+     "engine": "github_search",
+     "section": "Hybrid search and reranking projects",
+     "parameters": {
+      "q": "topic:hybrid-search archived:false pushed:>={since_60d}",
+      "sort": "stars",
+      "per_page": 20,
+      "limit": 8
+     }
+    },
+    {
+     "engine": "huggingface_models",
+     "section": "Trending rerankers",
+     "parameters": {
+      "pipeline_tag": "text-ranking",
+      "sort": "trendingScore",
+      "limit": 8
+     }
+    }
+   ],
+   "seeds": [
+    {
+     "name": "STAIR (arXiv 2609.03874)",
+     "url": "https://arxiv.org/abs/2609.03874",
+     "kind": "paper",
+     "links": {}
+    }
+   ],
    "assets": {}
   },
   {
@@ -3556,8 +3728,8 @@
    "question": "When do the model versions and interfaces a harness uses stop working?",
    "title": "Model and interface deprecation dates",
    "area": "calendars",
-   "status": "declared_gap",
-   "gap_reason": "No single structured public source lists deprecation dates across providers; each provider publishes its own page. The next engine reads each provider's deprecation page as a dated seed with two-family review.",
+   "status": "active",
+   "gap_reason": "",
    "audience": "developers and coding harnesses choosing what to build with",
    "constraints": [
     "Facts come from public listings and are dated; nothing is estimated."
@@ -3567,7 +3739,7 @@
     "The source's own identifiers, dates, licences and counts, with a link to the source."
    ],
    "intended_output": "A dated decision card with ranked, source-linked evidence, a data file with its schema.",
-   "purpose": "Serve dated retirement dates of hosted model versions and provider interfaces.",
+   "purpose": "List the models that OpenRouter serves with an announced end date, soonest first, with a table of the dates.",
    "use_when": "Use before pinning a model version in a long-lived project.",
    "sensitivity": "general",
    "research_cost": {
@@ -3575,7 +3747,7 @@
     "sources": 8
    },
    "volatility": "weeks",
-   "refresh": "weekly",
+   "refresh": "daily",
    "delivery": [
     "brief",
     "data_file"
@@ -3588,13 +3760,23 @@
     "Read the provider's deprecation page."
    ],
    "not_established": [
-    "No source used here measured these options on your own task, data or budget."
+    "Only models served through OpenRouter are covered; each provider's own deprecation page is authoritative.",
+    "A model without an announced end date may still be retired without notice."
    ],
    "would_change": [
     "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
    ],
-   "limit": 12,
-   "sources": [],
+   "limit": 40,
+   "sources": [
+    {
+     "engine": "openrouter_models",
+     "section": "Models on OpenRouter with an announced end date",
+     "parameters": {
+      "only_expiring": true,
+      "limit": 40
+     }
+    }
+   ],
    "seeds": [],
    "assets": {}
   },
@@ -4601,6 +4783,54 @@
    ],
    "would_change": [
     "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+   ],
+   "limit": 12,
+   "sources": [],
+   "seeds": [],
+   "assets": {}
+  },
+  {
+   "record_type": "knowledge_radar_question/v1",
+   "id": "markets_government_contracts",
+   "question": "Which public contracts were awarded or opened recently in my field, by which agency, and for how much?",
+   "title": "Public contract awards and opportunities",
+   "area": "markets",
+   "status": "declared_gap",
+   "gap_reason": "USAspending answers searches only to POST requests, which the radar's read-only transport does not send, and SAM.gov needs a key; neither engine is built in this version.",
+   "audience": "companies that sell to governments",
+   "constraints": [
+    "Dated awards and opportunities with their official records."
+   ],
+   "baseline": "An engineer searches USAspending and SAM.gov by hand and copies the results into the harness.",
+   "acceptable_evidence": [
+    "The award or opportunity identifier, agency, amount and dates from the official record."
+   ],
+   "intended_output": "A dated brief and a data file of awards and opportunities, each linked to its official record.",
+   "purpose": "Serve dated lists of recent public contract awards and opportunities in a field, each linked to its official record.",
+   "use_when": "Use when planning to bid on public work or sizing a public market.",
+   "sensitivity": "financial",
+   "research_cost": {
+    "engineer_minutes": 40,
+    "sources": 3
+   },
+   "volatility": "days",
+   "refresh": "daily",
+   "delivery": [
+    "brief",
+    "data_file"
+   ],
+   "valid_days": 3,
+   "reask": [
+    "Which agencies and classification codes matter?"
+   ],
+   "recheck": [
+    "Read the official record before relying on an amount or a deadline."
+   ],
+   "not_established": [
+    "Eligibility to bid is not established here."
+   ],
+   "would_change": [
+    "The official record of the award or opportunity."
    ],
    "limit": 12,
    "sources": [],

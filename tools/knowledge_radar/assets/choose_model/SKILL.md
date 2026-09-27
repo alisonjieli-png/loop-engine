@@ -46,7 +46,7 @@ calling is unknown is not chosen when tool calling is required.
 
 ## Effects
 
-It reads [references/models-table.json](references/models-table.json) from
+It reads `references/models-table.json`, which the daily package adds, from
 this package and starts one Python process. It makes no network call and
 writes nothing.
 

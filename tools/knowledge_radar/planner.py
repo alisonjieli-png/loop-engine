@@ -38,7 +38,8 @@ def _days_between(earlier: str, later: str) -> int:
 
 
 def plan(registry, state: dict, as_of: str, *, evidence: "dict | None" = None, demand: "dict | None" = None,
-         only: "tuple | None" = None, maximum: "int | None" = None, asset_digests: "dict | None" = None) -> dict:
+         only: "tuple | None" = None, maximum: "int | None" = None, asset_digests: "dict | None" = None,
+         invalidations: "dict | None" = None) -> dict:
     """The knowledge_radar_plan/v1 of one run. ``state`` maps question ids to their last build record.
 
     ``asset_digests`` maps a question to the digest of the helper and tool assets it delivers, so a changed
@@ -47,6 +48,7 @@ def plan(registry, state: dict, as_of: str, *, evidence: "dict | None" = None, d
     evidence = evidence or {}
     demand = demand or {}
     asset_digests = asset_digests or {}
+    invalidations = invalidations or {}
     budget = maximum if maximum is not None else registry.planner.maximum_questions
     selected, deferred, candidates = [], [], []
     for question in registry.questions:
@@ -67,6 +69,9 @@ def plan(registry, state: dict, as_of: str, *, evidence: "dict | None" = None, d
         asset_changed = asset_digests.get(question.id) not in (None, (state.get(question.id) or {}).get("asset_digest"))
         if asset_changed:
             changed.append("assets")
+        if invalidations.get(question.id, "") > (state.get(question.id) or {}).get("last_built_at", ""):
+            # The hourly model watch found a material change in a source this question reads.
+            changed.append("model watch")
         if stored and due_in <= 0:
             candidates.append((1, question, "overdue", f"last answered {last}, refresh {question.refresh}"))
         elif changed and (stored or asset_changed):
