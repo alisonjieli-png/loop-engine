@@ -97,7 +97,7 @@ Use cases we are building demonstrations for, each with and without Baltor:
   transformations;
 - a data science competition taken from task to submission.
 
-## Status on September 25, 2026
+## Status on September 27, 2026
 
 Working on the live service today:
 
@@ -112,16 +112,11 @@ Working on the live service today:
 - the Model Context Protocol endpoint, speaking protocol revisions
   `2025-11-25` and `2026-07-28`, with search that returns references and
   downloads that check access and bytes;
-- a reviewed library in two labelled tiers, published without a redeploy.
-  **Community** items were each approved by one model family that did not
-  write them, with every automated check passing. **Verified** is for items
-  approved by reviewers of at least two such families. Today's Verified items
-  are the first catalogue of September 21, 2026, which predates that rule: its
-  skills were written with Claude Code and approved by three reviewers that did
-  not write them, and those reviews do not show two other model families, so
-  they are reviewed again by two other families as soon as those reviewers are
-  available. The service's `/api/v1/capabilities` record gives the live count
-  and the published meaning of each tier;
+- one searchable component library, published without a redeploy. Signed-in
+  customers can browse purpose, file kind, step functions, licence, declared
+  effects and intended harness, then open an item's source and review details.
+  The public library shows combined counts; admission records remain separate
+  from the customer presentation;
 - an Administration view where a superadmin sees every account and can grant
   or revoke free monthly Baltor Pro and switch an account off or on. Staff
   roles are fixed in code: superadmin, developer and analytics.
@@ -133,8 +128,13 @@ Not open yet:
 - the engine starting a fresh standard harness for each step, and searching
   the library by itself.
 
-The [current deployment](docs/architecture/MVP-CLIENT-SERVER.md#current-deployment)
-section records the running release. The [development tracker](docs/roadmap/DEVELOPMENT-TRACKER.md)
+[Release 40](artifacts/release-40-2026-09-27/README.md) runs the compact source
+presentation and repaired account phone layout. All ten hostnames passed;
+the visitor sweep checked 54 pages, 225 views and 348 links with zero reported
+problems. A signed-in phone check opened component details with no horizontal
+page overflow and performed no download. The
+[current deployment](docs/architecture/MVP-CLIENT-SERVER.md#current-deployment)
+section records its image, source revision and rollback target. The [development tracker](docs/roadmap/DEVELOPMENT-TRACKER.md)
 lists what is being built now, next and later, generated from the
 [roadmap](docs/roadmap/roadmap.yaml).
 

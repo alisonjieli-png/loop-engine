@@ -11,10 +11,13 @@ repeated effect beyond that recorded authority.
 
 ## Current context route
 
-For the September 27 continuation, read the
-[component reuse and research handoff](COMPONENT-REUSE-AND-RESEARCH-2026-09-27.md).
-It records release 39, native executable reuse, session discovery and the
-internal research prototype. The roadmap remains the task authority.
+For the latest September 27 continuation, read the
+[release 40 and metadata activation addendum](RELEASE-40-AND-METADATA-ACTIVATION-2026-09-27.md).
+It records the completed release, repaired phone layout and the bounded
+metadata programme's observed activation and remaining source gaps.
+The preceding [component reuse and research handoff](COMPONENT-REUSE-AND-RESEARCH-2026-09-27.md)
+retains the release 39, native reuse and session-discovery snapshot.
+The roadmap remains the task authority.
 
 For the later September 26 work, read the
 [component expansion and customer journey handoff](COMPONENT-EXPANSION-AND-CUSTOMER-JOURNEY-2026-09-26.md).

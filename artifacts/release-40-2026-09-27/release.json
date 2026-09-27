@@ -1,0 +1,102 @@
+{
+  "record_type": "pilot_release_record/v1",
+  "release": 40,
+  "app": "baltor-pilot",
+  "source_revision": "eae7946d836805afc7f0a007eece902c66d7bde6",
+  "source_tree": "a61eaddc69385d0431a7dfa900062c0888165b03",
+  "image": "registry.fly.io/baltor-pilot@sha256:be98a37bb29c1ae48c62c18d87c8fea5e9f0ba278ef546a217e245e277d8629e",
+  "rollback_release": 39,
+  "rollback_image": "registry.fly.io/baltor-pilot@sha256:0b20d84c7fd72053b9f4e70d57f5820d9220afbf57b4b6c34a2707c71b99c0bd",
+  "deployed_at": "2026-09-27T05:11:34Z",
+  "ci_run": 36296024475,
+  "ci_conclusion": "success",
+  "deploy_run": 36296360212,
+  "deploy_workflow": 36296360212,
+  "deploy_workflow_conclusion": "success",
+  "deployment_gate_after": "false",
+  "public_checks_passed": true,
+  "public_hosts_passed": 10,
+  "visitor_pages": 54,
+  "visitor_views": 225,
+  "visitor_links": 348,
+  "visitor_problems": 0,
+  "visitor_screenshots": 108,
+  "asset_digests_matched": 60,
+  "asset_digests_checked": 60,
+  "catalogue_checks_passed": 9,
+  "catalogue_checks_planned": 9,
+  "service_checks_passed": 19,
+  "service_checks_planned": 19,
+  "changes": [
+    "The library sample shows its title and puts source details in an expandable section.",
+    "Long account headings wrap on phones without widening the page.",
+    "The sample retains its original file contents."
+  ],
+  "public_library": {
+    "observed_total": "7,806",
+    "kind_rows": 11,
+    "count_tables": 1,
+    "count_column": "Components",
+    "total_count_cells": 1,
+    "public_pages_and_guides_checked": 10,
+    "visible_class_labels": 0,
+    "visible_class_selectors": 0
+  },
+  "source_disclosure": {
+    "source_initially_closed": true,
+    "source_opened": true,
+    "keyboard_closed": true,
+    "sideways": 0,
+    "body_sha256": "b710af365ff29766ee4248e3d37d55fbd52217b6efce0eb4969ced7fdf61104e"
+  },
+  "account_phone_check": {
+    "status": "complete",
+    "table_columns": [
+      "What it is for",
+      "Kind of file",
+      "Step functions",
+      "Licence",
+      "Declared effects",
+      "Written for"
+    ],
+    "tier_controls": 0,
+    "manifest_opened": true,
+    "viewport_width": 390,
+    "document_width": 390,
+    "body_width": 390,
+    "attempted_window_scroll_x": 0,
+    "downloads": 0,
+    "scope": "Existing real signed-in account: browse/search, manifest details and phone page geometry; not a new signup or download measurement."
+  },
+  "checks": {
+    "identity": {
+      "source_sha256": "ed7e75caa873926e1173648ba413e236be46b26ee6fdf5394924983c0d1dcae1",
+      "evidence_scope": "Private report retained; only sanitized aggregate results are recorded here."
+    },
+    "public": {
+      "source_sha256": "9842fa3848e31e3ee37ebde15832ded170180e5feb1c5a5ad76e37163a4448ba",
+      "evidence_scope": "Private report retained; only sanitized aggregate results are recorded here."
+    },
+    "catalogue": {
+      "source_sha256": "d1abdfe92ac54677fa7f94014eba5b714fb76d9e0693a1c388e84e83cadb54a2",
+      "evidence_scope": "Private report retained; only sanitized aggregate results are recorded here."
+    },
+    "service": {
+      "source_sha256": "26766871980171e1411978ab519d3e7638e449e1f4acde0b917381f6c2a7bbe5",
+      "evidence_scope": "Private report retained; only sanitized aggregate results are recorded here."
+    },
+    "account_phone": {
+      "source_sha256": "2caa7e8ac869401a27c851f98356a59a8780f7e8a48c3d117dbaf042b2c5c947",
+      "evidence_scope": "Private report retained; only sanitized aggregate results are recorded here."
+    }
+  },
+  "known_open_release_finding": null,
+  "limits": [
+    "The visitor sweep maps nine hostnames; supplemental checks cover all ten including the Fly hostname.",
+    "The signed-in phone check performed no download. Current API body delivery and exact retry were exercised separately by the service qualification.",
+    "Earlier signup/download and unchanged sorting, facet and effect-confirmation behavior retain their own evidence; the phone geometry probe is not their complete retest.",
+    "No paid conversion or model-driven native task is established by these checks.",
+    "This record documents the deployed source; it does not require redeploying the documentation record itself."
+  ],
+  "recorded_at": "2026-09-27T05:24:30.962950+00:00"
+}

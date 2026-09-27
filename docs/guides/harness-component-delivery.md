@@ -1,9 +1,11 @@
 # How a harness gets reusable components from Baltor
 
-Source inspection: commit `e5d21e899c6d6c8b7791288aa9ef762917e483bc`,
-September 27, 2026 UTC. Release 39 runs this source revision. Endpoint
+Source inspection: commit `eae7946d836805afc7f0a007eece902c66d7bde6`,
+September 27, 2026 UTC. Release 40 runs this source revision. Endpoint
 behavior below comes from the server implementation and the recorded
-customer download. Compact source presentation is a later change.
+customer download. The live public sample now shows its title and keeps its
+terminal source appendix under Source details; its original body digest is
+unchanged.
 
 ## Three different paths
 

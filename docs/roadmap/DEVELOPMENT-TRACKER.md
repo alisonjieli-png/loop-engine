@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:2623208144692a1ddf84bac31c7f4c31fbf3758dff9bf603e0f1a916581b8fa4`.
+Source fingerprint: `sha256:7358005d483b844c9e4cc4dd2dc3800fd4ac8c66bf90068eac2995b4f94dc921`.
 
 ## Where things stand
 
@@ -11,9 +11,9 @@ Source fingerprint: `sha256:2623208144692a1ddf84bac31c7f4c31fbf3758dff9bf603e0f1
 |---|---:|
 | Being built now | 63 |
 | Can start next | 15 |
-| Waiting on earlier work | 135 |
+| Waiting on earlier work | 134 |
 | Blocked | 3 |
-| Done | 49 |
+| Done | 50 |
 
 ## Being built now
 
@@ -35,7 +35,6 @@ Source fingerprint: `sha256:2623208144692a1ddf84bac31c7f4c31fbf3758dff9bf603e0f1
 | S-6.205 | Library composition: every kind a harness picks up in every export, code read by the reviewer at Community, and the mix recorded per release | building | Let the 16:17 UTC slot run with the balanced mix, read its export report's mix_kept and the writer's counts by kind, then sample ten approved packages with scripts and check each reviewer answer against the code. |
 | S-6.206 | Step function tags: each served item carries the kinds of step it supports (acting, analysis, building, operating, planning, reasoning, research, reviewing, verification, writing), filterable in search and shown on the pages | building | S-6.62, S-6.205 |
 | S-6.207 | The owner's own volumes as seed material: a read-only inventory with provenance classes, seed records per project, and generated harness files reviewed and published under the owner's authorship declaration | building | S-6.40, S-6.205 |
-| S-6.208 | One component library with combined kind counts, source and review details, and no customer-facing review classes | building | S-6.184, S-6.206 |
 | S-6.200 | Continuous integration in 12 minutes or less, and fewer failed pushes: sharded self-test, cached environment, a records-only lane and a pre-push hook that runs the preflight | building | S-6.180 |
 | S-6.201 | A page or a demo from one typed record, live on its own hostname within an hour: the page generator, the demo generator and hostname automation | building | S-6.67, S-6.62 |
 | S-6.204 | The weekly number: visitors, accounts, paying subscribers and served packages, read from the service's own records and published to staff | building | S-6.120, S-6.6 |
@@ -70,6 +69,7 @@ Source fingerprint: `sha256:2623208144692a1ddf84bac31c7f4c31fbf3758dff9bf603e0f1
 | S-6.25 | Expand the system map to every source file with explicit evidence limits | building |  |
 | S-6.18 | Reorganize coherent code families and update current callers | building | S-6.1, S-6.2, S-6.3 |
 | S-6.22 | Maintain sourced competitor, prior-art, funding, and strategic-path research | building | Review each changed or inaccessible source from a new source-watch report before editing a claim; keep the roadmap as the only task state. |
+| S-6.77 | Maintenance as Practitioner Loops that stage candidates for independent review | building | S-6.76, S-6.41 |
 | S-6.100 | Decision stations around the build step: typed judgments with swappable engines, measured | building | S-6.30, S-6.31 |
 | S-6.180 | The browser suite runs every night on main and reports a failure without gating a deploy | building | S-6.177 |
 | S-6.198 | Red-team the typed decision engines with the modern slavery scenarios: a request-screening station, every engine scored on the same five requests, and a showcase page | building | S-6.94, S-6.63 |
@@ -121,7 +121,7 @@ Source fingerprint: `sha256:2623208144692a1ddf84bac31c7f4c31fbf3758dff9bf603e0f1
 | S-6.52 | More retrieval engines behind the search slot | proposed | S-6.32 |
 | S-6.60 | A layer before every model call that decides one model or several | proposed | S-6.30 |
 | S-6.40 | Grow the library: original package factory first, scheduled source ingestion later | proposed | S-6.30 |
-| S-6.209 | Occupation, industry, level, language and geography tags on every served file, searchable in the signed-in dashboard | proposed | S-6.206, S-6.208, S-6.40 |
+| S-6.209 | Occupation, industry, level, language and geography tags on every served file, searchable in the signed-in dashboard | proposed | S-6.206, S-6.40 |
 | S-6.202 | Quickstarts that are checked every night: one copy-paste setup per harness on Get set up, each run against the live endpoint | proposed | S-6.24, S-6.182 |
 | S-6.213 | The product as a harness file: a first-party Baltor skill any harness installs to search and fetch from the library, plus a daily public library snapshot from each catalogue release | proposed | S-6.202, S-6.212 |
 | S-6.70 | Serve 100,000 packages: pass the capacity probe with paged listing and an indexed search | proposed | S-6.62, S-6.32 |
@@ -161,7 +161,6 @@ Source fingerprint: `sha256:2623208144692a1ddf84bac31c7f4c31fbf3758dff9bf603e0f1
 | S-6.73 | One topic and decision index, with a term conflict check | proposed | S-6.34, S-6.71 |
 | S-6.74 | Pinned, preferred and automatic engine selection at every slot | proposed | S-6.30 |
 | S-6.75 | An upstream engine and a Baltor-native engine for every adopted outside project | proposed | S-6.74, S-6.72 |
-| S-6.77 | Maintenance as Practitioner Loops that stage candidates for independent review | proposed | S-6.76, S-6.41 |
 | S-6.80 | Keep every Harness File Profile current with a verified weekly refresh | proposed | S-6.44, S-6.76 |
 | S-6.82 | News and release watchers that turn changes into component work | proposed | S-6.81 |
 | S-6.86 | Task decomposition as a functional component with several engines | proposed | S-6.30, S-6.74 |
@@ -293,7 +292,7 @@ Source fingerprint: `sha256:2623208144692a1ddf84bac31c7f4c31fbf3758dff9bf603e0f1
 | D-23 | Show, review, reach and scale | initial_service | 0 of 5 |
 | D-24 | Take requests for access and invite one person from them | initial_service | 0 of 3 |
 | D-25 | Go fully live: open registration and self-serve paid onboarding | public_launch | 2 of 17 |
-| D-26 | Reach 10,000 and then 100,000 approved harness packages, then add 100 to 1,000 a day | public_launch | 2 of 21 |
+| D-26 | Reach 10,000 and then 100,000 approved harness packages, then add 100 to 1,000 a day | public_launch | 3 of 21 |
 | D-27 | Clear components: one index, contract test kits and one home for every topic and term | continued_improvement | 0 of 4 |
 | D-28 | Selectable engines at every slot, with a Baltor-native engine beside every adopted project | continued_improvement | 0 of 9 |
 | D-29 | Agents that manage and improve the system | continued_improvement | 0 of 6 |
@@ -323,7 +322,7 @@ Source fingerprint: `sha256:2623208144692a1ddf84bac31c7f4c31fbf3758dff9bf603e0f1
 | OWNER-18 | Choose the paid identity and email plans, which take hosting above the recorded allowance | before_public |
 | OWNER-19 | Name who approves and posts replies, and from which accounts | optional |
 
-## Done (49 steps)
+## Done (50 steps)
 
 - S-6.43: Speak the current protocol revision: negotiate the 2026-07-28 Model Context Protocol beside 2025-11-25 (live_qualified)
 - S-6.89: Superadmin user management and the first 10 accounts free each month (live_qualified)
@@ -332,6 +331,7 @@ Source fingerprint: `sha256:2623208144692a1ddf84bac31c7f4c31fbf3758dff9bf603e0f1
 - S-6.101: A public directory of models, endpoints and local runtimes, with a can-I-run hardware check, at /models, /endpoints and /can-i-run (offline_verified)
 - S-6.196: The review panel reads imported packages: a reader for the imported layout, criteria written for imported material, calibration controls and a yield pilot (live_qualified)
 - S-6.197: One unattended daily job from the day's approvals to a checked live catalogue release, with automatic rollback (live_qualified)
+- S-6.208: One component library with combined kind counts, source and review details, and no customer-facing review classes (live_qualified)
 - S-6.17: Maintain one continuation plan and regenerate its status artifact (offline_verified)
 - S-6.121: The deck at deck.baltor.ai: every number from a saved record, the hostname root, and the slides only the owner can supply (offline_verified)
 - S-0.5: Text conformance, standalone export, example 26, export command (published)

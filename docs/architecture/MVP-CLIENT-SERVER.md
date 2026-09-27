@@ -2,7 +2,7 @@
 
 Kind: product architecture with measured local implementation and proposed hosting.
 Date: 2026-09-19. The [current deployment](#current-deployment) section was
-added on 2026-09-20 and last checked on 2026-09-22, after Fly release 12.
+added on 2026-09-20 and last checked on 2026-09-27, after Fly release 40.
 
 The hosted product manages accounts, subscriptions, and access to intelligence.
 The customer runs Loop Engine and the selected harnesses. A hosted intelligence
@@ -47,22 +47,25 @@ from the newest release record, follow the release record and correct this
 section. Update this section in the same change that records a new release.
 It describes a private pilot. It does not describe a qualified paid service.
 
-The latest deployment is Fly release 39, applied on September 27, 2026 at
-03:58 UTC and checked afterwards. It serves one component library from
-`e5d21e899c6d6c8b7791288aa9ef762917e483bc`. Its image, rollback target,
-continuous integration and reconciliation are recorded in
-[`pilot-release-39.json`](../../artifacts/architecture-audit-2026-09-19/pilot-release-39.json)
-and [the release 39 evidence](../../artifacts/release-39-2026-09-27/README.md).
-The deployment workflow failed at a post-deployment command deadline after
-applying the image. The exact grant and billing commands were reconciled with
-an explicit timeout. The original workflow failure remains recorded.
-All ten hostnames are healthy. The visitor check found no problem across
-54 pages, 225 views and 319 links. Catalogue and service checks passed nine
-and nineteen checks respectively. A later signed-in phone check found an
-account-heading overflow, which remains open at this release.
+The latest deployment is Fly release 40, completed on September 27, 2026 at
+05:11:34 UTC and checked afterwards. It runs
+`eae7946d836805afc7f0a007eece902c66d7bde6`. Its image, rollback target,
+continuous integration and checks are recorded in
+[`pilot-release-40.json`](../../artifacts/architecture-audit-2026-09-19/pilot-release-40.json)
+and [the release 40 evidence](../../artifacts/release-40-2026-09-27/README.md).
+Continuous integration and deployment both succeeded; the deployment gate is
+false. All ten hosts passed. The visitor check found no problem across
+54 pages, 225 views and 348 links. Catalogue and service checks passed nine
+and nineteen checks respectively. The source disclosure preserved the original
+sample body and passed mouse, keyboard and phone checks. A real signed-in
+390-pixel check confirmed document/body widths of 390 and zero horizontal
+window scrolling, closing release 39's account-heading overflow. That browser
+check performed no download.
 
-The previous deployment, release 38, applied the orange redesign at 01:19 UTC
-on September 27. Its image is retained as the rollback target; see
+Release 39 is retained as the rollback target. Its post-deployment command
+failure and successful grant/billing reconciliation remain in
+[release 39 evidence](../../artifacts/release-39-2026-09-27/README.md).
+Release 38 applied the orange redesign at 01:19 UTC on September 27; see
 [release 38 evidence](../../artifacts/release-38-2026-09-27/README.md).
 
 The earlier release 37 was checked on September 26 at 13:25 UTC.
@@ -126,8 +129,8 @@ release check. Public registration is open, through Baltor's own sign-up only.
 | Subject | Current fact | Where to check it |
 |---|---|---|
 | Public brand | Baltor. Loop Engine remains the repository, the Python package, the `loop-engine` command and the technical name. The public capabilities record reports the display name `Baltor`. | [terminology.yaml](../../terminology.yaml), explained by [the developer language guide](../guides/developer-language.md) |
-| Host | Fly.io release 39 runs on the existing single Machine. Image `sha256:0b20d84c7fd72053b9f4e70d57f5820d9220afbf57b4b6c34a2707c71b99c0bd`, source `e5d21e899c6d6c8b7791288aa9ef762917e483bc`, successful continuous integration 36292492189. Deployment run 36292845987 failed after applying the image; exact grant and billing commands were reconciled. Rollback is release 38, image `sha256:e3af395c828eeea9726369cd08c70deb7dcb13096abdfe47edab26b7ea684e7e`. The deployment gate is off. | [Release 39 evidence](../../artifacts/release-39-2026-09-27/README.md) |
-| Hostnames | All ten hostnames passed after release 39: `baltor.ai`, `www.baltor.ai`, `app.baltor.ai`, `baltor-pilot.fly.dev`, `demo.baltor.ai`, `examples.baltor.ai`, `docs.baltor.ai`, `status.baltor.ai`, `deck.baltor.ai` and `redteam.baltor.ai`. Root, health, registration and visible headings passed; sixty assets matched the source. The visitor check covered 54 pages, 225 views and 319 links. The public base address remains `https://baltor.ai`; every allowed hostname serves the protected routes. | [Release 39 evidence](../../artifacts/release-39-2026-09-27/README.md) |
+| Host | Fly.io release 40 runs on the existing single Machine. Image `sha256:be98a37bb29c1ae48c62c18d87c8fea5e9f0ba278ef546a217e245e277d8629e`, source `eae7946d836805afc7f0a007eece902c66d7bde6`, successful continuous integration 36296024475 and successful deployment 36296360212. Rollback is release 39, image `sha256:0b20d84c7fd72053b9f4e70d57f5820d9220afbf57b4b6c34a2707c71b99c0bd`. The deployment gate is off. | [Release 40 evidence](../../artifacts/release-40-2026-09-27/README.md) |
+| Hostnames | All ten hostnames passed after release 40: `baltor.ai`, `www.baltor.ai`, `app.baltor.ai`, `baltor-pilot.fly.dev`, `demo.baltor.ai`, `examples.baltor.ai`, `docs.baltor.ai`, `status.baltor.ai`, `deck.baltor.ai` and `redteam.baltor.ai`. Root, health, registration and visible headings passed; sixty assets matched the source. The visitor check covered 54 pages, 225 views and 348 links. The public base address remains `https://baltor.ai`; every allowed hostname serves the protected routes. | [Release 40 evidence](../../artifacts/release-40-2026-09-27/README.md) |
 | Host configuration | The file `/data/host.json` on the volume switches features on and off without a new image. It is not in the repository. On September 22, 2026 it gained `http.request_limits` with the client address read from the `Fly-Client-IP` header, after a backup to `/data/host.json.before-request-limits-20260922T181740`, and the Machine restarted at 18:17 UTC. Releases built after revision `e505eca` refuse a public binding without that setting. Every hostname above is listed in its `allowed_hosts` and `allowed_origins`; a hostname missing from those lists answers 421. On September 23, 2026 at 01:39 UTC, just before Fly release 15, it was backed up to `/data/host.json.before-release-15-20260923T013913` and its `http` block moved to the record `service_http_configuration/v2` with `protocol_versions` `2025-11-25` and `2026-07-28` (release 15 refuses the version 1 record and release 14 refuses version 2), and a `waitlist` block was added that names the Fly secret `BALTOR_WAITLIST_SOURCE_SECRET`, which keys the flood guard's source digest. Fly release 16 needed no host file change. On September 23 at 06:17 UTC, after a backup to `/data/host.json.before-catalogue-20260923T061642`, it gained a `catalogue` section (`service_catalogue_source/v1`, body store `/data/catalogue-bodies`), whose source moved from `image` to `store` at 06:20 UTC after the first catalogue release was published. On September 25, 2026 at 21:43 UTC, after a backup to `/data/host.json.before-license-policy-20260925T214308`, it gained `license_policy` (`service_host_license_policy/v1`) accepting MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC, CC0-1.0 and CC-BY-4.0; the policy is read at service start and the release 35 restart at 22:22 UTC loaded it, which let the 316-package Community release with its Apache-2.0 packages be served. | The release record, and the [September 21 handoff](../context/SESSION-HANDOFF-2026-09-21.md) for the hostname lists |
 | Product service | The command `loop-engine service serve`, from `src/loop_engine/core/service_runtime/`, built by [`Dockerfile.service`](../../Dockerfile.service). One process serves the website, the workspace, the `/api/v1/` interface and the Model Context Protocol endpoint `/mcp` from one origin. | [Two service commands](#two-service-commands) |
 | Durable records | One SQLite database and the served files on the encrypted Fly volume `vol_r7yg7go3n15mgqnr`, mounted at `/data`, with daily snapshots kept for five days. The volume was extended from 1 GB to 3 GB at 21:55 UTC on September 26, 2026, before the library crosses 10,000 packages, as the serving measurement recommends (artifacts/serving-measurement-2026-09-26); the filesystem grew online to 3.0 GB with 2.5 GB free and no restart. A partial upload of the 16:17 UTC slot's archive is kept set aside under `/data/incoming`. The snapshot `vs_pw1B1OwvpOjwizMBMYZVYPbb` was requested before release 12. No managed database is in use. The Supabase project exists and holds no tables, migrations or buckets. | The Machine status for the volume. The release record for the snapshot request. The takeover checkpoint for the snapshot schedule and the empty Supabase project. [Durable records today and planned](#durable-records-today-and-planned) |

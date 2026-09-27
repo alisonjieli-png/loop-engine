@@ -1,10 +1,10 @@
 {
  "counts": {
   "blocked": 3,
-  "done": 49,
+  "done": 50,
   "next": 15,
   "now": 63,
-  "waiting": 135
+  "waiting": 134
  },
  "lanes": {
   "blocked": [
@@ -164,6 +164,23 @@
     "waiting_on": [
      "S-6.62",
      "S-6.119"
+    ]
+   },
+   {
+    "acceptance": "A visitor sees what the library holds and signs up; an account searches every file in one table.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.184",
+     "S-6.206"
+    ],
+    "id": "S-6.208",
+    "next_local_work": "Retain the unified-library, source-body integrity and real-account phone regressions on later releases. Further native loading, paid conversion and component qualification remain on their existing roadmap steps.",
+    "phase": 6,
+    "status": "live_qualified",
+    "title": "One component library with combined kind counts, source and review details, and no customer-facing review classes",
+    "waiting_on": [
+     "S-6.184",
+     "S-6.206"
     ]
    },
    {
@@ -1172,23 +1189,6 @@
     ]
    },
    {
-    "acceptance": "A visitor sees what the library holds and signs up; an account searches every file in one table.",
-    "blocked_on": "",
-    "depends_on": [
-     "S-6.184",
-     "S-6.206"
-    ],
-    "id": "S-6.208",
-    "next_local_work": "Deploy the reviewed compact-source and signed-phone repair from a checked main revision, then repeat the real account phone path and public source-details interactions.",
-    "phase": 6,
-    "status": "building",
-    "title": "One component library with combined kind counts, source and review details, and no customer-facing review classes",
-    "waiting_on": [
-     "S-6.184",
-     "S-6.206"
-    ]
-   },
-   {
     "acceptance": "A checked change reaches the live service in 25 minutes or less, and fewer than one push in twenty fails its first run.",
     "blocked_on": "",
     "depends_on": [
@@ -1715,6 +1715,23 @@
     "waiting_on": []
    },
    {
+    "acceptance": "Maintenance runs as ordinary Loops through the canonical runtime, not as a second scheduler.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.76",
+     "S-6.41"
+    ],
+    "id": "S-6.77",
+    "next_local_work": "Observe the existing timer completing the installed metadata post-step; retain exact code/input/projection bindings and recorded source gaps. Keep cognitive workers held until their own explicit resource allocation and independent evaluation are configured. Stage roadmap proposals for review within the existing authority.",
+    "phase": 6,
+    "status": "building",
+    "title": "Maintenance as Practitioner Loops that stage candidates for independent review",
+    "waiting_on": [
+     "S-6.76",
+     "S-6.41"
+    ]
+   },
+   {
     "acceptance": "At each station a step asks a typed question and binds the answer of the engine its policy declares, or the station's safe default when no engine answers; advisory guidance stays apart, no answer grants authority, every decision is joined to its outcome, and a per-station measurement names the cheapest engine that meets the station's declared accuracy floor.",
     "blocked_on": "",
     "depends_on": [
@@ -2125,7 +2142,6 @@
     "title": "Occupation, industry, level, language and geography tags on every served file, searchable in the signed-in dashboard",
     "waiting_on": [
      "S-6.206",
-     "S-6.208",
      "S-6.40"
     ]
    },
@@ -2788,23 +2804,6 @@
     "waiting_on": [
      "S-6.74",
      "S-6.72"
-    ]
-   },
-   {
-    "acceptance": "Maintenance runs as ordinary Loops through the canonical runtime, not as a second scheduler.",
-    "blocked_on": "",
-    "depends_on": [
-     "S-6.76",
-     "S-6.41"
-    ],
-    "id": "S-6.77",
-    "next_local_work": "Finish independent activation review, bind programme, procedure and code-bundle identity in replay, then install the bounded metadata worker through the existing collector and user service manager. Keep model workers held until their own exact resource authority is recorded. Stage roadmap proposals for review rather than replacing task authority.",
-    "phase": 6,
-    "status": "proposed",
-    "title": "Maintenance as Practitioner Loops that stage candidates for independent review",
-    "waiting_on": [
-     "S-6.76",
-     "S-6.41"
     ]
    },
    {
@@ -5210,12 +5209,12 @@
     "D-20",
     "D-22"
    ],
-   "done_steps": 2,
+   "done_steps": 3,
    "id": "D-26",
    "stage": "public_launch",
    "status_counts": {
-    "building": 12,
-    "live_qualified": 2,
+    "building": 11,
+    "live_qualified": 3,
     "proposed": 7
    },
    "steps": [
@@ -5319,7 +5318,8 @@
    "id": "D-29",
    "stage": "continued_improvement",
    "status_counts": {
-    "proposed": 5,
+    "building": 1,
+    "proposed": 4,
     "ready": 1
    },
    "steps": [
@@ -5364,5 +5364,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:2623208144692a1ddf84bac31c7f4c31fbf3758dff9bf603e0f1a916581b8fa4"
+ "source_fingerprint": "sha256:7358005d483b844c9e4cc4dd2dc3800fd4ac8c66bf90068eac2995b4f94dc921"
 }

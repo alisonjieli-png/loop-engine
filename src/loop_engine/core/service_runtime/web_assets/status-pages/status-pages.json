@@ -5,6 +5,18 @@
   "releases": [
    {
     "kind": "service",
+    "number": 40,
+    "at": "2026-09-27T05:11:34Z",
+    "lines": [
+     "The library sample shows its title and puts source details in an expandable section.",
+     "Long account headings wrap on phones without widening the page.",
+     "The sample retains its original file contents."
+    ],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
     "number": 39,
     "at": "2026-09-27T03:58:55Z",
     "lines": [],
@@ -1191,10 +1203,10 @@
  },
  "todo": {
   "steps": 266,
-  "live": 4,
+  "live": 5,
   "checked": 35,
-  "open": 227,
-  "listed": 195,
+  "open": 226,
+  "listed": 194,
   "groups": [
    {
     "title": "Ship the September 22 review: one main line, live checks and launch readiness",
@@ -1542,11 +1554,6 @@
      {
       "step": "S-6.207",
       "title": "The owner's own volumes as seed material: a read-only inventory with provenance classes, seed records per project, and generated harness files reviewed and published under the owner's authorship declaration",
-      "status": "In progress"
-     },
-     {
-      "step": "S-6.208",
-      "title": "One component library with combined kind counts, source and review details, and no customer-facing review classes",
       "status": "In progress"
      },
      {
