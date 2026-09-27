@@ -237,8 +237,8 @@
      "approved_needed": 34985,
      "bound": "target",
      "candidates_needed": 46394,
-     "gap": 42396,
-     "supply": 3998,
+     "gap": 40715,
+     "supply": 5679,
      "target": 35000
     },
     "instructions_and_rules": {
@@ -287,8 +287,8 @@
      "approved_needed": 8735,
      "bound": "target",
      "candidates_needed": 11584,
-     "gap": 7586,
-     "supply": 3998,
+     "gap": 5905,
+     "supply": 5679,
      "target": 8750
     },
     "instructions_and_rules": {
@@ -337,8 +337,8 @@
      "approved_needed": 17485,
      "bound": "target",
      "candidates_needed": 23187,
-     "gap": 19189,
-     "supply": 3998,
+     "gap": 17508,
+     "supply": 5679,
      "target": 17500
     },
     "instructions_and_rules": {
@@ -519,43 +519,179 @@
    "slot_size": 2000,
    "slots_run": 259
   },
+  "unlimited_supply": {
+   "approval_share": 0.7541,
+   "end": {
+    "families": {
+     "agents_and_commands": {
+      "count": 10059,
+      "share": 0.0997
+     },
+     "connectors_and_extensions": {
+      "count": 20176,
+      "share": 0.2
+     },
+     "data_and_contracts": {
+      "count": 7067,
+      "share": 0.07
+     },
+     "executable_code": {
+      "count": 35341,
+      "share": 0.3503
+     },
+     "instructions_and_rules": {
+      "count": 8071,
+      "share": 0.08
+     },
+     "skills": {
+      "count": 20178,
+      "share": 0.2
+     }
+    },
+    "library": 100892,
+    "supply_left": {
+     "agents_and_commands": 9991828,
+     "connectors_and_extensions": 9975845,
+     "data_and_contracts": 9990762,
+     "executable_code": 9953150,
+     "instructions_and_rules": 9991856,
+     "skills": 9980841
+    }
+   },
+   "not_reached": [],
+   "reached": {
+    "100000": {
+     "families": {
+      "agents_and_commands": {
+       "count": 10059,
+       "share": 0.0997
+      },
+      "connectors_and_extensions": {
+       "count": 20176,
+       "share": 0.2
+      },
+      "data_and_contracts": {
+       "count": 7067,
+       "share": 0.07
+      },
+      "executable_code": {
+       "count": 35341,
+       "share": 0.3503
+      },
+      "instructions_and_rules": {
+       "count": 8071,
+       "share": 0.08
+      },
+      "skills": {
+       "count": 20178,
+       "share": 0.2
+      }
+     },
+     "library": 100892,
+     "slots": 61
+    },
+    "25000": {
+     "families": {
+      "agents_and_commands": {
+       "count": 4952,
+       "share": 0.1979
+      },
+      "connectors_and_extensions": {
+       "count": 5059,
+       "share": 0.2021
+      },
+      "data_and_contracts": {
+       "count": 1282,
+       "share": 0.0512
+      },
+      "executable_code": {
+       "count": 6004,
+       "share": 0.2399
+      },
+      "instructions_and_rules": {
+       "count": 2008,
+       "share": 0.0802
+      },
+      "skills": {
+       "count": 5723,
+       "share": 0.2287
+      }
+     },
+     "library": 25028,
+     "slots": 10
+    },
+    "50000": {
+     "families": {
+      "agents_and_commands": {
+       "count": 6755,
+       "share": 0.132
+      },
+      "connectors_and_extensions": {
+       "count": 10398,
+       "share": 0.2032
+      },
+      "data_and_contracts": {
+       "count": 3323,
+       "share": 0.0649
+      },
+      "executable_code": {
+       "count": 16372,
+       "share": 0.3199
+      },
+      "instructions_and_rules": {
+       "count": 4094,
+       "share": 0.08
+      },
+      "skills": {
+       "count": 10235,
+       "share": 0.2
+      }
+     },
+     "library": 51177,
+     "slots": 28
+    }
+   },
+   "repository_ceiling": null,
+   "slot_size": 2000,
+   "slots_run": 61
+  },
   "with_generated": {
    "approval_share": 0.7541,
    "end": {
     "families": {
      "agents_and_commands": {
       "count": 9979,
-      "share": 0.2887
+      "share": 0.2744
      },
      "connectors_and_extensions": {
-      "count": 11264,
-      "share": 0.3259
+      "count": 11261,
+      "share": 0.3097
      },
      "data_and_contracts": {
       "count": 633,
-      "share": 0.0183
+      "share": 0.0174
      },
      "executable_code": {
-      "count": 3014,
-      "share": 0.0872
+      "count": 4311,
+      "share": 0.1185
      },
      "instructions_and_rules": {
-      "count": 2765,
+      "count": 2909,
       "share": 0.08
      },
      "skills": {
-      "count": 6913,
+      "count": 7273,
       "share": 0.2
      }
     },
-    "library": 34568,
+    "library": 36366,
     "supply_left": {
-     "agents_and_commands": 4596,
+     "agents_and_commands": 4598,
      "connectors_and_extensions": 0,
      "data_and_contracts": 0,
      "executable_code": 0,
-     "instructions_and_rules": 4303,
-     "skills": 31213
+     "instructions_and_rules": 4109,
+     "skills": 30735
     }
    },
    "not_reached": [
@@ -566,75 +702,75 @@
     "25000": {
      "families": {
       "agents_and_commands": {
-       "count": 6141,
-       "share": 0.2429
+       "count": 5985,
+       "share": 0.2389
       },
       "connectors_and_extensions": {
-       "count": 8575,
-       "share": 0.3392
+       "count": 8119,
+       "share": 0.3241
       },
       "data_and_contracts": {
-       "count": 413,
-       "share": 0.0163
+       "count": 391,
+       "share": 0.0156
       },
       "executable_code": {
-       "count": 2409,
-       "share": 0.0953
+       "count": 2829,
+       "share": 0.1129
       },
       "instructions_and_rules": {
-       "count": 2022,
+       "count": 2004,
        "share": 0.08
       },
       "skills": {
        "count": 5723,
-       "share": 0.2264
+       "share": 0.2285
       }
      },
-     "library": 25283,
-     "slots": 24
+     "library": 25051,
+     "slots": 22
     }
    },
    "repository_ceiling": 15,
    "slot_size": 2000,
-   "slots_run": 247
+   "slots_run": 241
   },
   "with_generated_without_ceiling": {
    "approval_share": 0.7541,
    "end": {
     "families": {
      "agents_and_commands": {
-      "count": 9976,
-      "share": 0.2883
+      "count": 9978,
+      "share": 0.2744
      },
      "connectors_and_extensions": {
-      "count": 11265,
-      "share": 0.3255
+      "count": 11263,
+      "share": 0.3097
      },
      "data_and_contracts": {
       "count": 646,
-      "share": 0.0187
+      "share": 0.0178
      },
      "executable_code": {
-      "count": 3031,
-      "share": 0.0876
+      "count": 4297,
+      "share": 0.1182
      },
      "instructions_and_rules": {
-      "count": 2768,
+      "count": 2909,
       "share": 0.08
      },
      "skills": {
-      "count": 6921,
+      "count": 7273,
       "share": 0.2
      }
     },
-    "library": 34607,
+    "library": 36366,
     "supply_left": {
-     "agents_and_commands": 4602,
+     "agents_and_commands": 4594,
      "connectors_and_extensions": 0,
      "data_and_contracts": 0,
      "executable_code": 0,
-     "instructions_and_rules": 4294,
-     "skills": 31200
+     "instructions_and_rules": 4104,
+     "skills": 30738
     }
    },
    "not_reached": [
@@ -645,37 +781,37 @@
     "25000": {
      "families": {
       "agents_and_commands": {
-       "count": 5934,
-       "share": 0.2343
+       "count": 5608,
+       "share": 0.2217
       },
       "connectors_and_extensions": {
-       "count": 7963,
-       "share": 0.3145
+       "count": 7000,
+       "share": 0.2767
       },
       "data_and_contracts": {
        "count": 646,
        "share": 0.0255
       },
       "executable_code": {
-       "count": 3031,
-       "share": 0.1197
+       "count": 4297,
+       "share": 0.1699
       },
       "instructions_and_rules": {
-       "count": 2026,
+       "count": 2023,
        "share": 0.08
       },
       "skills": {
        "count": 5723,
-       "share": 0.226
+       "share": 0.2262
       }
      },
-     "library": 25323,
-     "slots": 21
+     "library": 25297,
+     "slots": 17
     }
    },
    "repository_ceiling": null,
    "slot_size": 2000,
-   "slots_run": 245
+   "slots_run": 236
   }
  },
  "record_type": "library_supply_report/v1",
@@ -684,10 +820,10 @@
    "families": {
     "connectors_and_extensions": 5592,
     "data_and_contracts": 46,
-    "executable_code": 1528
+    "executable_code": 3209
    },
    "forms": {
-    "api_operation": 1339,
+    "api_operation": 3020,
     "binary_install": 189,
     "data_table": 46,
     "mcp_server": 5592
@@ -695,15 +831,15 @@
    "lines": {
     "data_tables": 46,
     "mcp_registry": 5592,
-    "openapi_operations": 1339,
+    "openapi_operations": 3020,
     "program_installs": 189
    },
    "repositories_per_family": {
     "connectors_and_extensions": 5211,
     "data_and_contracts": 17,
-    "executable_code": 195
+    "executable_code": 197
    },
-   "total": 7166
+   "total": 8847
   },
   "imported": {
    "families": {
@@ -746,5 +882,5 @@
   }
  },
  "targets_digest": "8e270ea8184fc0cbc091086882e18e3f78b01d7219e7cab828deb4405c4c77a9",
- "written_at": "2026-09-27T20:00:06Z"
+ "written_at": "2026-09-27T20:34:44Z"
 }

@@ -325,6 +325,181 @@
     "written": 1339
    }
   },
+  "openapi_operations_github_and_twilio": {
+   "candidates": 1681,
+   "effects": {
+    "network": 1681,
+    "reads_secret": 1681,
+    "spawns_process": 1681
+   },
+   "finished_at": "2026-09-27T20:13:04Z",
+   "forms": {
+    "api_operation": 1681
+   },
+   "licences": {
+    "MIT": 1681
+   },
+   "line": "openapi_operations",
+   "record_type": "library_supply_run/v1",
+   "refused": 253,
+   "refused_by_reason": {
+    "blocked_by_static_check": 1,
+    "duplicate_operation": 19,
+    "generated_test_failed": 5,
+    "operation_body_not_json": 228
+   },
+   "requests": {
+    "cache_hits": 22,
+    "github_graphql": 1,
+    "github_rest": 17,
+    "https": 13,
+    "network_requests": 31
+   },
+   "sources": [
+    "github",
+    "twilio"
+   ],
+   "specifications": [
+    {
+     "commit": "c6721f32a17a71397ae46be21be90d7f1a173b6e",
+     "licence": "MIT",
+     "operations": 1221,
+     "packaged": 1215,
+     "path": "descriptions/api.github.com/api.github.com.json",
+     "refused_while_reading": 3,
+     "sha256": "c3e138597750d638b718f0da91228416893eea56d497fda391ab10b2e84b08a1",
+     "source_id": "github"
+    },
+    {
+     "commit": "5aa7f31977ce5812f7b7bc1f46a38555ebaa2888",
+     "licence": "MIT",
+     "operations": 135,
+     "packaged": 135,
+     "path": "spec/json/twilio_api_v2010.json",
+     "refused_while_reading": 62,
+     "sha256": "170b3ccd0f891416840083d72f1795b1499b14a18d4873fd2b39f47ef84642d6",
+     "source_id": "twilio"
+    },
+    {
+     "commit": "5aa7f31977ce5812f7b7bc1f46a38555ebaa2888",
+     "licence": "MIT",
+     "operations": 42,
+     "packaged": 40,
+     "path": "spec/json/twilio_messaging_v1.json",
+     "refused_while_reading": 16,
+     "sha256": "611c6fde586347615039a7d8c87a4b10d39c6d8566b7d1a691353ef995aaa473",
+     "source_id": "twilio"
+    },
+    {
+     "commit": "5aa7f31977ce5812f7b7bc1f46a38555ebaa2888",
+     "licence": "MIT",
+     "operations": 36,
+     "packaged": 33,
+     "path": "spec/json/twilio_verify_v2.json",
+     "refused_while_reading": 21,
+     "sha256": "853929e61f260cca1b7d84d90f96396d00ded6915521329daf053fa1e1befff8",
+     "source_id": "twilio"
+    },
+    {
+     "commit": "5aa7f31977ce5812f7b7bc1f46a38555ebaa2888",
+     "licence": "MIT",
+     "operations": 65,
+     "packaged": 62,
+     "path": "spec/json/twilio_conversations_v1.json",
+     "refused_while_reading": 38,
+     "sha256": "6a37056c7727c1c1ce4d892de95963ccbdc479b5d2c44e867c44fe42d8e0355b",
+     "source_id": "twilio"
+    },
+    {
+     "commit": "5aa7f31977ce5812f7b7bc1f46a38555ebaa2888",
+     "licence": "MIT",
+     "operations": 10,
+     "packaged": 9,
+     "path": "spec/json/twilio_lookups_v2.json",
+     "refused_while_reading": 0,
+     "sha256": "94eecebb7c302115f35ce5842c9a82762495943071051f605c8482ab8c735e6b",
+     "source_id": "twilio"
+    },
+    {
+     "commit": "5aa7f31977ce5812f7b7bc1f46a38555ebaa2888",
+     "licence": "MIT",
+     "operations": 13,
+     "packaged": 13,
+     "path": "spec/json/twilio_studio_v2.json",
+     "refused_while_reading": 6,
+     "sha256": "c384dd0ef33198d3b592beaf9c1d095c338063969ab4ce92ddc5c2242c4677a3",
+     "source_id": "twilio"
+    },
+    {
+     "commit": "5aa7f31977ce5812f7b7bc1f46a38555ebaa2888",
+     "licence": "MIT",
+     "operations": 28,
+     "packaged": 25,
+     "path": "spec/json/twilio_serverless_v1.json",
+     "refused_while_reading": 11,
+     "sha256": "74f59534eb423d280a5fa93570b92ff1bb71cbb04441cd2c9036f5a8c248e455",
+     "source_id": "twilio"
+    },
+    {
+     "commit": "5aa7f31977ce5812f7b7bc1f46a38555ebaa2888",
+     "licence": "MIT",
+     "operations": 30,
+     "packaged": 27,
+     "path": "spec/json/twilio_sync_v1.json",
+     "refused_while_reading": 18,
+     "sha256": "0360fe39df8da59ebecefefbeb312aaae2d6e23faf783020486e3a743f499e92",
+     "source_id": "twilio"
+    },
+    {
+     "commit": "5aa7f31977ce5812f7b7bc1f46a38555ebaa2888",
+     "licence": "MIT",
+     "operations": 44,
+     "packaged": 44,
+     "path": "spec/json/twilio_taskrouter_v1.json",
+     "refused_while_reading": 17,
+     "sha256": "f431d2bc66ba14373a452e0e6d3795cb1576cf6c2e15352b5330b22a4d34d0bf",
+     "source_id": "twilio"
+    },
+    {
+     "commit": "5aa7f31977ce5812f7b7bc1f46a38555ebaa2888",
+     "licence": "MIT",
+     "operations": 27,
+     "packaged": 24,
+     "path": "spec/json/twilio_video_v1.json",
+     "refused_while_reading": 12,
+     "sha256": "162f62d432a227cb5aab8da45af7bbfceca5569feff4e26529504583946d1383",
+     "source_id": "twilio"
+    },
+    {
+     "commit": "5aa7f31977ce5812f7b7bc1f46a38555ebaa2888",
+     "licence": "MIT",
+     "operations": 20,
+     "packaged": 20,
+     "path": "spec/json/twilio_voice_v1.json",
+     "refused_while_reading": 12,
+     "sha256": "e218199d8d6d116e23697a6f78dfddc5f7d5d1a21b8b16c3a1b4d0855f162afe",
+     "source_id": "twilio"
+    },
+    {
+     "commit": "5aa7f31977ce5812f7b7bc1f46a38555ebaa2888",
+     "licence": "MIT",
+     "operations": 34,
+     "packaged": 34,
+     "path": "spec/json/twilio_numbers_v2.json",
+     "refused_while_reading": 13,
+     "sha256": "4063aad70da9dccdce60fbc81b5580767eec442b3c6791b3c149d4b9fa66c7b2",
+     "source_id": "twilio"
+    }
+   ],
+   "store": {
+    "components": 3020,
+    "stored": true,
+    "superseded": 0,
+    "unchanged": 0,
+    "withdrawn": 0,
+    "written": 1681
+   }
+  },
   "program_installs": {
    "candidates": 189,
    "effects": {

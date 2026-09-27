@@ -58,12 +58,12 @@ and [the licensed import README](../../tools/licensed_import/README.md).
 | Line | Source read | Candidates stored | Refused | Form | Package licence |
 |---|---|---:|---:|---|---|
 | Protocol servers | 36,672 registry entries, a complete pass | 5,592 | 31,080 | `mcp_server` | MIT |
-| API operations | 6 specifications, 19 files | 1,339 | 52 | `api_operation` | MIT (1,050), MIT AND Apache-2.0 (289) |
+| API operations | 8 specifications, 32 files | 3,020 | 305 | `api_operation` | MIT (2,731), MIT AND Apache-2.0 (289) |
 | Program install recipes | 200 declared programs | 189 | 11 | `binary_install` | MIT AND BSD-2-Clause |
 | Reference data tables | 46 declared tables | 46 | 0 | `data_table` | MIT (37), CC0-1.0 AND MIT (7), Unlicense AND MIT (2) |
 | Verbatim code modules | 6 declared MIT repositories | 2,459 | 0 | `library_module` | MIT |
 
-The generated candidates (7,166) are stored in the import store's
+The generated candidates (8,847) are stored in the import store's
 `library.supply` namespace. The verbatim code modules are byte-for-byte
 copies, stored by the licensed import in `library.import`, where the imported
 review profile reads them today.
@@ -105,16 +105,28 @@ secret input.
 | Box | `box/box-openapi` | Apache-2.0 | 289 | 8 |
 | Twilio SendGrid (14 files) | `twilio/sendgrid-oai` | MIT | 141 | 7 |
 | Xero accounting | `XeroAPI/Xero-OpenAPI` | MIT | 213 | 22 |
+| GitHub REST | `github/rest-api-description` | MIT | 1,215 | 9 |
+| Twilio (12 files) | `twilio/twilio-oai` | MIT | 466 | 244 |
 
-The refusals: 43 request bodies that are not JSON (file uploads), 5 repeated
-operation names, 3 parameters the client cannot send (a required cookie or a
-query object) and 1 package that a static check blocked. The first run
-refused 77 more: path keys that carry a fragment or a fixed query, and
-schemas above the review bound. Generator version 1.1.0 sends those path keys
-correctly and compacts large schemas, and its generated tests pass for every
-one of the 1,339 packages. None of the six specifications declares a
-pagination extension, so no client pages through results; each README says
-so.
+For the first six specifications the refusals were 43 request bodies that
+are not JSON (file uploads), 5 repeated operation names, 3 parameters the
+client cannot send (a required cookie or a query object) and 1 package that
+a static check blocked. Their first run refused 77 more: path keys that carry
+a fragment or a fixed query, and schemas above the review bound. Generator
+version 1.1.0 sends those path keys correctly and compacts large schemas.
+
+GitHub's REST description declares no security scheme, so its source names a
+bearer token (`GITHUB_TOKEN`, optional, because public reads work without
+one) and each README says the scheme comes from the declaration. Twilio's
+POST operations send form-encoded bodies, which the client does not write:
+226 were refused as `operation_body_not_json`, and 18 more as repeated
+names. Five GitHub operations failed their own generated tests: the test for
+a body without a required field was written although another allowed shape
+of the body does not require that field. Generator 1.2.1 writes that test
+only when the shortened body really breaks the schema; those five are
+refused until the next run. Every stored package passed its own tests. None
+of the eight specifications declares a pagination extension, so no client
+pages through results; each README says so.
 
 ### Program install recipes
 
@@ -161,7 +173,7 @@ and web scrapers were left out by the declaration.
 
 | Family | Imported, reviewable today | Generated, held for a review profile |
 |---|---:|---:|
-| Executable code | 2,470 | 1,528 |
+| Executable code | 2,470 | 3,209 |
 | Protocol servers, plugins, marketplaces and hooks | 6,726 | 5,592 |
 | Skills | 32,772 | 0 |
 | Subagents and commands | 12,622 | 0 |
@@ -180,10 +192,10 @@ the share of 14,000 exported packages that seven daily slots approved
 | Scenario | 25,000 reached after | Families at 25,000 | Where it stops |
 |---|---|---|---|
 | Imported only (today's review path) | 57 slots | subagents and commands 31.9%, connectors 28.2%, skills 22.9%, instructions 8.0%, executable 6.7%, data 2.4% | 27,407: executable, connector and data supply run out |
-| With a review profile for generated packages | 24 slots | connectors 33.9%, subagents and commands 24.3%, skills 22.6%, executable 9.5%, instructions 8.0%, data 1.6% | 34,568: executable, connector and data supply run out |
+| With a review profile for generated packages | 22 slots | connectors 32.4%, subagents and commands 23.9%, skills 22.9%, executable 11.3%, instructions 8.0%, data 1.6% | 36,366: executable, connector and data supply run out |
 
-Without the repository ceiling the two scenarios need 51 and 21 slots. The
-executable supply sits in few repositories (8 for the imported modules, 195
+Without the repository ceiling the two scenarios need 51 and 17 slots. The
+executable supply sits in few repositories (8 for the imported modules, 197
 for the generated packages), so the ceiling slows it most. Before the
 verbatim code modules were stored, the projection without the ceiling
 needed 138 slots (imported only) and 27 slots (with generated packages) to
@@ -209,7 +221,12 @@ instruction file, because both families are over their caps in the library.
 The executable quota was 810 and the data quota 160: the ceiling of 15 a
 repository, not the supply, left them short, because those families sit in
 few repositories. The same export without the library's counts keeps the
-per-slot caps (400 skills and 160 instruction files and rules a slot).
+per-slot caps (400 skills and 160 instruction files and rules a slot). The
+daily job's deterministic prechecks (the review campaign's `prechecks`
+command, no model call) loaded that export and passed 516 of its 691
+packages, 97 of the 101 verbatim code modules among them; most refusals were
+near duplicates among imported protocol server and plugin files, as in
+earlier slots.
 
 Neither scenario reaches 50,000 or 100,000 with the supply on hand. Skills
 stay above 20 percent at 25,000 only because the library already held 5,723
@@ -230,7 +247,7 @@ Candidates needed at the 0.754 approval share, against the supply on hand
 
 | Family | At 25,000 | At 50,000 | At 100,000 | Supply | Gap at 100,000 |
 |---|---:|---:|---:|---:|---:|
-| Executable code | 11,584 | 23,187 | 46,394 | 3,998 | 42,396 |
+| Executable code | 11,584 | 23,187 | 46,394 | 5,679 | 40,715 |
 | Protocol servers, plugins, marketplaces and hooks | 4,012 | 10,642 | 23,903 | 12,318 | 11,585 |
 | Skills | 0 | 5,672 | 18,933 | 32,772 | 0 |
 | Subagents and commands | 0 | 1,447 | 8,078 | 12,622 | 0 |
@@ -239,11 +256,11 @@ Candidates needed at the 0.754 approval share, against the supply on hand
 
 The remaining gaps, largest first:
 
-- Executable code. The generated lines hold 1,528 packages and need a review
+- Executable code. The generated lines hold 3,209 packages and need a review
   profile; the 2,459 verbatim algorithm modules are the first executable
-  supply the imported profile reads today. About 42,400 more candidates are
+  supply the imported profile reads today. About 40,700 more candidates are
   needed at 100,000.
-- A review profile for generated packages. Without it, 7,166 generated
+- A review profile for generated packages. Without it, 8,847 generated
   candidates wait (see the proposal below).
 - Plugins beyond GitHub repositories: extension marketplaces (the Gemini CLI
   gallery, VS Code extensions under an allowlisted licence) and npm packages
@@ -263,9 +280,8 @@ Sources that would close the executable gap fastest:
 |---|---|---|---|
 | `Azure/azure-rest-api-specs` | MIT | tens of thousands of operations | Swagger 2.0 reading (refused today as `specification_version_unsupported`) |
 | `aws/api-models-aws` | Apache-2.0 | about 15,000 operations | a Smithy model reader |
-| `github/rest-api-description` | MIT | about 1,100 operations | none |
-| `stripe/openapi` | MIT | about 600 operations | none |
-| `twilio/twilio-oai` | MIT | about 1,000 operations | none |
+| `stripe/openapi` | MIT | about 600 operations | form-encoded request bodies (refused today as `operation_body_not_json`) |
+| more `twilio/twilio-oai` files, and their POST operations | MIT | about 1,000 operations | form-encoded request bodies |
 | `cloudflare/api-schemas` | BSD-3-Clause | about 1,600 operations | none |
 | more MIT, BSD and Apache code repositories | as declared | thousands of modules | a declaration per repository |
 
