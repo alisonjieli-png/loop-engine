@@ -129,12 +129,30 @@ def _documentation_links_that_do_not_resolve(repository: "str | None" = None) ->
     return broken
 
 
-def _docs_folders_without_charter(docs_dir: "str | None" = None) -> list:
-    """Documentation folders that hold files but carry no README stating their kind.
+def _states_kind(path: str) -> bool:
+    """Whether a Markdown file states its kind near its top."""
+    with open(path, encoding="utf-8") as stream:
+        return DOCS_CHARTER_MARKER in stream.read(DOCS_CHARTER_HEAD_CHARACTERS)
 
-    A source checkout is chartered folder by folder; an installed package has
-    no documentation tree and reports nothing. A folder with no files at all
-    (an untracked placeholder) is not chartered.
+
+def _every_document_states_its_kind(folder: str) -> bool:
+    """A folder without a README is chartered when it holds Markdown and every Markdown file states its kind."""
+    documents = [os.path.join(root, name) for root, _dirs, files in os.walk(folder)
+                 for name in files if name.endswith(".md")]
+    return bool(documents) and all(_states_kind(path) for path in documents)
+
+
+def _docs_folders_without_charter(docs_dir: "str | None" = None) -> list:
+    """Documentation folders that hold files but state no kind.
+
+    A folder states its kind in a README, or, without a README, in every
+    Markdown file it holds. The second form arrived on September 27, 2026:
+    a new folder whose only brief already said "Kind:" on its third line was
+    refused for the missing README (edcc77a3), which cost two red runs and
+    changed nothing a reader sees. A README that states no kind is still
+    refused. A source checkout is chartered folder by folder; an installed
+    package has no documentation tree and reports nothing. A folder with no
+    files at all (an untracked placeholder) is not chartered.
     """
     if docs_dir is None:
         repository, _exclusions = _nomenclature_scan_layout()
@@ -152,11 +170,10 @@ def _docs_folders_without_charter(docs_dir: "str | None" = None) -> list:
             continue
         readme = os.path.join(folder, "README.md")
         if not os.path.isfile(readme):
-            missing.append(name)
+            if not _every_document_states_its_kind(folder):
+                missing.append(name)
             continue
-        with open(readme, encoding="utf-8") as stream:
-            head = stream.read(DOCS_CHARTER_HEAD_CHARACTERS)
-        if DOCS_CHARTER_MARKER not in head:
+        if not _states_kind(readme):
             missing.append(name)
     return missing
 
@@ -462,10 +479,13 @@ def self_test() -> dict:
         results.append({"name": name, "passed": bool(ok), "note": note})
 
     r = run_conformance()
+    failing = {k: v for k, v in r["zero_tolerance_gates"].items() if v}
     check("all_zero_tolerance_gates_pass_on_the_live_tree",
           r["all_gates_pass"],
-          json.dumps({k: v for k, v in r["zero_tolerance_gates"].items()
-                      if v}) or "all zero")
+          (json.dumps(failing) + (" uncharted docs folders: " + ", ".join(
+              r["gate_details"]["docs_folders_without_a_charter_readme"])
+              if failing.get("docs_folders_without_a_charter_readme") else ""))
+          if failing else "all zero")
     check("manifest_written_and_machine_readable",
           os.path.exists(os.path.join(_HERE, "architecture_conformance.json"))
           and r["record_type"] == "architecture_conformance/v1")
@@ -499,9 +519,17 @@ def self_test() -> dict:
         open(os.path.join(directory, "unmarked", "README.md"), "w", encoding="utf-8").write(
             "# Unmarked\n\nA README that never states its kind.\n")
         os.makedirs(os.path.join(directory, "empty"))
+        os.makedirs(os.path.join(directory, "briefs"))
+        open(os.path.join(directory, "briefs", "BRIEF.md"), "w", encoding="utf-8").write(
+            "# A brief\n\nKind: a working brief.\n")
+        os.makedirs(os.path.join(directory, "mixed"))
+        open(os.path.join(directory, "mixed", "A.md"), "w", encoding="utf-8").write("# A\n\nKind: notes.\n")
+        open(os.path.join(directory, "mixed", "B.md"), "w", encoding="utf-8").write("# B\n\nNo kind here.\n")
+        os.makedirs(os.path.join(directory, "data"))
+        open(os.path.join(directory, "data", "table.json"), "w", encoding="utf-8").write("{}")
         uncharted = _docs_folders_without_charter(directory)
     check("docs_charter_canary_reports_folders_without_a_kind_and_skips_empty_ones",
-          uncharted == ["uncharted", "unmarked"], f"uncharted={uncharted}")
+          uncharted == ["data", "mixed", "uncharted", "unmarked"], f"uncharted={uncharted}")
     with tempfile.TemporaryDirectory() as directory:
         os.makedirs(os.path.join(directory, "docs"))
         target = os.path.join(directory, "docs", "guide.md")
