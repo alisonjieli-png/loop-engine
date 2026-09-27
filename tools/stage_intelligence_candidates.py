@@ -4,7 +4,7 @@ This development tool creates a new isolated database, not a hosted catalogue.
 It exports acknowledged candidate records and tests normal versus review search.
 It grants no execution, disclosure, qualification or promotion authority.
 
-Three specification versions are read. Version one cites files inside this
+Four specification versions are read. Version one cites files inside this
 repository. Version two carries material from outside it: each row names its
 outside provenance (outside_source_provenance/v1, read by the library
 ingestion component, which refuses a row without it), how its text was
@@ -12,8 +12,9 @@ authored, the licence of that text, its declared effects and the files of its
 package, and a row whose authoring or licence disagrees with its licence
 evidence is refused. Version three carries original native packages with exact
 file roles, bytes, producer method, dependencies and source provenance. It needs
-an explicit package root and verifies the complete tree before staging. All
-versions stage only candidates.
+an explicit package root and verifies the complete tree before staging. Version
+four preserves adapted reference provenance and checks the outside source
+snapshots supplied through source_root. All versions stage only candidates.
 """
 from __future__ import annotations
 
@@ -67,6 +68,7 @@ class CandidateStageRequest:
     namespace: str
     writes_authorized: bool = False
     package_root: Path | None = None
+    source_root: Path | None = None
 
 
 def _package_file(value) -> dict:
@@ -150,8 +152,9 @@ def _compile_outside(rows, request: CandidateStageRequest) -> list[dict]:
 
 
 def compile_candidates(specifications: dict, request: CandidateStageRequest) -> list[dict]:
+    from tools.adapted_reference_candidates import ADAPTED_SPECIFICATIONS, compile_adapted_candidates
     from tools.native_harness_candidates import NATIVE_SPECIFICATIONS, compile_native_candidates
-    if specifications.get("record_type") not in (LOCAL_SPECIFICATIONS, OUTSIDE_SPECIFICATIONS, NATIVE_SPECIFICATIONS):
+    if specifications.get("record_type") not in (LOCAL_SPECIFICATIONS, OUTSIDE_SPECIFICATIONS, NATIVE_SPECIFICATIONS, ADAPTED_SPECIFICATIONS):
         raise ValueError("Unsupported candidate specification contract")
     if not re.fullmatch(r"[a-z][a-z0-9_.-]{1,80}", request.namespace):
         raise ValueError("An explicit bounded namespace is required")
@@ -160,6 +163,8 @@ def compile_candidates(specifications: dict, request: CandidateStageRequest) -> 
         raise ValueError("One bounded population of specifications is required")
     if specifications["record_type"] == NATIVE_SPECIFICATIONS:
         return compile_native_candidates(rows, request)
+    if specifications["record_type"] == ADAPTED_SPECIFICATIONS:
+        return compile_adapted_candidates(rows, request)
     if specifications["record_type"] == OUTSIDE_SPECIFICATIONS:
         return _compile_outside(rows, request)
     root, records, identities = request.repository.resolve(), [], set()
@@ -248,7 +253,9 @@ def main():
     parser.add_argument("--database", type=Path, required=True)
     parser.add_argument("--namespace", required=True)
     parser.add_argument("--package-root", type=Path,
-                        help="Explicit prepared native package folder for version-three specifications")
+                        help="Explicit package folder for version-three or version-four specifications")
+    parser.add_argument("--source-root", type=Path,
+                        help="Pinned outside source snapshots for adapted version-four reference packages")
     parser.add_argument("--authorize-isolated-staging", action="store_true")
     parser.add_argument("--export", type=Path, required=True)
     parser.add_argument("--report", type=Path, required=True)
@@ -257,7 +264,7 @@ def main():
             or len({path.resolve() for path in (args.database, args.export, args.report)}) != 3):
         parser.error("Explicit staging authority and three distinct new output paths are required")
     root = Path(__file__).resolve().parents[1]
-    request = CandidateStageRequest(root, args.namespace, True, args.package_root)
+    request = CandidateStageRequest(root, args.namespace, True, args.package_root, args.source_root)
     records = compile_candidates(strict_json(args.specifications.read_bytes(), "specifications_unreadable"), request)
     with closing(SQLiteRecordStore(str(args.database.resolve()))) as store:
         acknowledgment = stage_candidates(store, records, request)

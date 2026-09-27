@@ -31,6 +31,7 @@
       "test_feedback_report",
       "test_fly_deployment",
       "test_generate_original_native_provider_binding",
+      "test_global_component_duplicate_disk",
       "test_harness_idea_matrix",
       "test_intelligence_candidate_staging",
       "test_invite_beta_user",
@@ -56,6 +57,7 @@
       "test_check_upstream_sources",
       "test_ci_test_shards",
       "test_combine_reviewed_catalogues",
+      "test_component_verification_plan",
       "test_context_routes",
       "test_design_tokens",
       "test_factory_schedule",
@@ -97,6 +99,7 @@
       "test_deck_page",
       "test_email_signup_password_policy",
       "test_generate_item_variations",
+      "test_global_component_duplicates",
       "test_identity_qualification_host",
       "test_install_selected_material",
       "test_licensed_import_packages",
@@ -116,6 +119,7 @@
       "test_write_reviewed_catalogue"
     ],
     "d": [
+      "test_adapted_reference_candidates",
       "test_architecture_audit",
       "test_build_development_tracker",
       "test_build_host_catalogue_manifest",
