@@ -1,0 +1,12 @@
+{
+  "name": "baltor-library",
+  "version": "0.3.0",
+  "private": true,
+  "description": "Search the Baltor library and stage a selected item or complete package with exact byte checks",
+  "license": "MIT",
+  "homepage": "https://baltor.ai",
+  "repository": "https://github.com/alisonjieli-png/loop-engine",
+  "pi": {
+    "skills": ["./skills"]
+  }
+}

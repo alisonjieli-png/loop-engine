@@ -5,13 +5,16 @@ September 27, 2026 UTC. Release 40 runs this source revision. Endpoint
 behavior below comes from the server implementation and the recorded
 customer download. The live public sample now shows its title and keeps its
 terminal source appendix under Source details; its original body digest is
-unchanged.
+unchanged. The sections on the Baltor library skill, the install tool's
+package compiler and where downloaded files go describe source that changed
+after that revision, and release 40 does not include it.
 
 ## Three different paths
 
-The `src/loop_engine/...` names in the sample skill identify its original
-source. A customer does not need to create those folders or load the Baltor
-repository to follow that written procedure.
+The three `src/loop_engine/...` names in the sample skill, **Check for
+existing work before building**, identify its original source. A customer does
+not need to create those folders or load the Baltor repository to follow that
+written procedure.
 
 | Path | Meaning | Example |
 |---|---|---|
@@ -75,6 +78,34 @@ harness and models. Retrieving a Python program does not execute it on the
 Baltor server. The separate internal research programme produces research and
 candidate improvements; it is not on this customer request path.
 
+## How the harness knows to use Baltor
+
+There are two ways in. The first connects the customer's protocol client to
+the Baltor Model Context Protocol endpoint, with the entry that the setup page
+gives for that client, and checks that the client lists the search and
+provisioning tools. The [onboarding guide](harness-service-onboarding.md)
+describes the account and connection checks, and the
+[Baltor Harness quickstart](quickstart-baltor-harness.md) records the manual
+search and download steps for that engine.
+
+The second is the first-party
+[Baltor library skill](../../integrations/baltor-library/README.md), version
+0.3.0, for Claude Code, Codex, OpenCode and Pi. It needs no protocol client:
+its standard library Python client searches, checks versions and digests, and
+stages a selected item in a new folder. It reads the token from the
+environment variable that the customer's configuration file names.
+
+Either way, the harness also needs an instruction to search for reusable
+material when a task needs it. A connected tool or an installed skill is
+available; the task instruction, the model or the calling program still has
+to select and invoke it.
+
+Search uses the task and the required behavior to find relevant records.
+Paginated catalogue browsing can enumerate the entries an account is allowed
+to see. Neither operation requires downloading every component. The harness
+selects a record, reads its requirements, and requests the exact files only
+when they fit the task and the customer's permissions.
+
 ## What responds to each request
 
 | Step | Model Context Protocol tool | Direct HTTP path | Response |
@@ -104,6 +135,22 @@ disclosure and metering. `CatalogueView.read_package_file` resolves declared
 members; `VolumeBodyStore` retrieves and checks their content-addressed bytes.
 Catalogue records and files use the service's persistent storage. Downloads
 do not depend on a customer finding the original `src` paths on their machine.
+
+## Where downloaded files go
+
+The client chooses the local destination. In the manual HTTP path, this is
+the output file selected by the download command. The Baltor library skill
+stages a download in a new folder that the customer names, outside the
+harness's own skill and configuration folders. The server supplies the
+declared bytes; it does not choose a folder on the customer's computer.
+
+The install tool places a one-file skill in the native skill folder of
+OpenCode, Claude Code, Codex or Pi. Its package compiler candidate writes a
+complete tool package into a new private staging folder under a root that the
+caller chooses, for an OpenCode project tool or a Pi project extension. No
+registered client profile enables that compiler, and staging never activates
+anything. The [loading guide](native-client-material-loading.md) lists what
+each path checks and refuses.
 
 ## Placement and native execution
 
@@ -139,6 +186,20 @@ Keep the complete provenance available in component details and a structured
 package reference. Put concise, actionable guidance in the normal instruction
 file. Load supporting documents or source files only when the task needs them.
 
+| Material | Normal use |
+|---|---|
+| Search result | Small purpose, identity and compatibility record used to select a component |
+| Instructions and input and output contract | Context used to decide when and how to invoke the selected component |
+| Python, TypeScript or a binary | Files installed with declared dependencies and invoked through a supported tool or command binding |
+| Examples, source history and full reference documents | Supporting material retrieved when interpretation, review or troubleshooting needs it |
+| Result | Checked output or an artifact reference returned to the task |
+
+For example, a caption tool can expose its input and output contract to the
+model while its wrapper runs the packaged Python implementation. The model
+does not need to reproduce that implementation in its response. A textual
+skill has a different use: the harness reads the instructions and performs
+the procedure using its available tools.
+
 Changing the displayed label does not change downloaded bytes. Moving a source
 appendix out of a downloaded instruction does change them; it must produce a
 new, reviewed component revision or an explicitly bound compact variant.
@@ -161,7 +222,18 @@ result. These observations are separate from a model-driven autonomous task.
 
 OpenCode and Pi native executable binding checks are recorded in
 `/home/username/baltor-private/native-code-bindings-20260927-v1`.
-The prepared first-party customer skill is in
-`/home/username/baltor-library/codex-lane/2026-09-27-customer-skill-1-v1`;
-it has passed offline contract checks but remains a candidate awaiting
-independent admission and native customer qualification.
+Private compiler qualification runs on September 27, 2026 also invoked a
+caption tool compiled for OpenCode 1.17.9 and Pi 0.73.1 in fresh clients with
+the network switched off, and both matched an independent output oracle.
+
+The first-party customer skill is in
+[integrations/baltor-library](../../integrations/baltor-library/README.md).
+Continuous integration checks its pinned bytes, runs its offline tests and
+runs it against the service application in the same process. On September 27,
+2026 Claude Code 2.1.283, Codex 0.155.1, OpenCode 1.18.32 and Pi 0.73.1 each
+installed or listed it with the network switched off and no model call, as
+[the discovery record](../../artifacts/baltor-library-integration-2026-09-27/native-discovery-v1.json)
+shows. The same bytes are catalogue candidate `baltor_library_client`, which
+waits for independent review, so the skill is not in the catalogue. No model
+has chosen it during a customer task yet, and it has not downloaded from the
+live service.

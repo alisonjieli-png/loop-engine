@@ -1,0 +1,22 @@
+{
+  "name": "baltor-library",
+  "version": "0.3.0",
+  "description": "Search the Baltor library and stage a selected item or complete package with exact byte checks",
+  "author": {
+    "name": "Baltor.AI"
+  },
+  "homepage": "https://baltor.ai",
+  "repository": "https://github.com/alisonjieli-png/loop-engine",
+  "license": "MIT",
+  "keywords": ["baltor", "library", "skills", "harness"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Baltor library",
+    "shortDescription": "Search Baltor and stage exact files.",
+    "longDescription": "A first-party skill with a Python standard library client. It searches the Baltor library, checks versions and digests, and stages a selected item or package in a new folder. It never installs or runs what it downloads.",
+    "developerName": "Baltor.AI",
+    "category": "Productivity",
+    "capabilities": [],
+    "defaultPrompt": "Search the Baltor library for material this task needs, then stage the one item I select with its exact byte checks."
+  }
+}

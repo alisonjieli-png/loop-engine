@@ -1,0 +1,6 @@
+{
+  "record_type": "baltor_library_client_configuration/v2",
+  "origin": "https://baltor.ai",
+  "credential_environment": "BALTOR_SERVICE_TOKEN",
+  "authority_effects": ["reads_fs"]
+}

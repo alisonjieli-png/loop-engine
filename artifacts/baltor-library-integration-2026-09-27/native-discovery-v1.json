@@ -1,0 +1,103 @@
+{
+  "record_type": "native_skill_discovery_observation/v1",
+  "observed_on": "2026-09-27",
+  "subject": {
+    "folder": "integrations/baltor-library",
+    "version": "0.3.0",
+    "package_digest": "ab45e58b1e1a601b4bc97ab0df84e4c4b37ca814b6c1c9bba5dfdc32578e3926"
+  },
+  "isolation": {
+    "network": "bwrap --dev-bind / / --unshare-net (loopback only)",
+    "environment": "env -i with an empty HOME and an empty client configuration folder for every client",
+    "model_calls": 0,
+    "credentials_read": 0,
+    "token_set": false
+  },
+  "observations": [
+    {
+      "client": "claude-code",
+      "version": "2.1.283",
+      "commands": [
+        "claude plugin validate --strict --json integrations/baltor-library",
+        "claude plugin marketplace add integrations/baltor-library",
+        "claude plugin install baltor-library@baltor",
+        "claude plugin details baltor-library@baltor"
+      ],
+      "result": "strict validation passed for the marketplace and the plugin manifest; plugin 0.3.0 installed; component inventory lists Skills (1) baltor-library",
+      "cached_skill_bytes_identical": true
+    },
+    {
+      "client": "codex",
+      "version": "0.155.1",
+      "commands": [
+        "codex plugin marketplace add integrations/baltor-library",
+        "codex plugin add baltor-library@baltor",
+        "codex debug prompt-input"
+      ],
+      "result": "plugin installed at plugins/cache/baltor/baltor-library/0.3.0; the rendered model input offers skill baltor-library:baltor-library",
+      "skill_offered_in_prompt_input": true,
+      "cached_skill_bytes_identical": true
+    },
+    {
+      "client": "codex",
+      "version": "0.155.1",
+      "route": "folder ~/.agents/skills/baltor-library",
+      "commands": [
+        "codex debug prompt-input"
+      ],
+      "result": "the rendered model input offers skill baltor-library",
+      "skill_offered_in_prompt_input": true
+    },
+    {
+      "client": "opencode",
+      "version": "1.18.32",
+      "commands": [
+        "OPENCODE_CONFIG_CONTENT='{\"autoupdate\": false, \"plugin\": [], \"share\": \"disabled\"}' opencode debug skill --pure"
+      ],
+      "routes": [
+        ".opencode/skills/baltor-library",
+        "~/.config/opencode/skills/baltor-library"
+      ],
+      "result": "both routes list skill baltor-library with the body of SKILL.md without its frontmatter",
+      "listed": [
+        {
+          "name": "baltor-library",
+          "content_characters": 2815
+        }
+      ]
+    },
+    {
+      "client": "pi",
+      "version": "0.73.1",
+      "commands": [
+        "pi install integrations/baltor-library",
+        "printf '{\"id\":\"1\",\"type\":\"get_commands\"}\\n' | pi --mode rpc --no-session --offline"
+      ],
+      "routes": [
+        "package from the folder",
+        ".pi/skills/baltor-library"
+      ],
+      "result": "RPC get_commands lists skill:baltor-library from the package (scope user, origin package) and from the project folder (scope project); no model was configured",
+      "listed": [
+        {
+          "name": "skill:baltor-library",
+          "scope": "user",
+          "origin": "package",
+          "path_suffix": "integrations/baltor-library/skills/baltor-library/SKILL.md"
+        },
+        {
+          "name": "skill:baltor-library",
+          "scope": "project",
+          "origin": "top-level",
+          "path_suffix": "pi-project2/.pi/skills/baltor-library/SKILL.md"
+        }
+      ]
+    }
+  ],
+  "not_observed": [
+    "a model selecting or using the skill",
+    "a live download from baltor.ai by this client",
+    "Claude Code personal skills folder ~/.claude/skills (Claude Code offers no listing without a session)",
+    "Windows"
+  ]
+}

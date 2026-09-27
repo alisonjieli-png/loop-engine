@@ -1,0 +1,20 @@
+{
+  "name": "baltor",
+  "interface": {
+    "displayName": "Baltor"
+  },
+  "plugins": [
+    {
+      "name": "baltor-library",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

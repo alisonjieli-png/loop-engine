@@ -79,6 +79,7 @@
       "test_weekly_number"
     ],
     "c": [
+      "test_baltor_library_integration",
       "test_build_continuation_status",
       "test_build_records_index",
       "test_build_volume_seed_ideas",
