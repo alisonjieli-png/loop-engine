@@ -5,6 +5,22 @@
   "releases": [
    {
     "kind": "service",
+    "number": 41,
+    "at": "2026-09-27T19:39:38Z",
+    "lines": [
+     "Pages served before scripts run show the live library count instead of a fixed 43.",
+     "The homepage example folder lists only the files the download delivers.",
+     "Three customer guides: component concepts, updates and withdrawals, common questions.",
+     "Two service page claims repaired and held to the source.",
+     "The first-party Baltor library skill 0.3.0 ships in integrations/ for Claude Code, Codex, OpenCode and Pi.",
+     "The install tool compiles packages into OpenCode tools and Pi extensions.",
+     "Continuous integration starts the live Ollama job only when a person asks for it."
+    ],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
     "number": 40,
     "at": "2026-09-27T05:11:34Z",
     "lines": [
