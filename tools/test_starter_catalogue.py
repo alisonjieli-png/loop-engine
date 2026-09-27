@@ -15,6 +15,7 @@ import json
 from pathlib import Path
 import re
 import shutil
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -1175,6 +1176,81 @@ class StarterCatalogueChecks(unittest.TestCase):
             # A cited file that is missing from the tree is reported as well, not passed over.
             (root / edited).unlink()
             self.assertIn("is not a file of this repository", " ".join(rule(replace(self.snapshot, repository=root))))
+
+    def test_a_checkout_without_the_anchor_revision_is_named_as_that_and_not_as_a_missing_file(self):
+        """The known-wrong case: a shallow checkout, where every cited file is on disk but no history is.
+
+        This is exactly what a depth-one continuous integration checkout is. Before
+        the revision was checked on its own, the first cited file answered "is not
+        in the repository at revision ...", which reads as a catalogue that cites a
+        file nobody committed. The fault is the checkout, and the refusal has to say
+        so, or the next reader repairs the wrong thing.
+        """
+        refresh = _refresh_module()
+        with tempfile.TemporaryDirectory() as directory:
+            origin = Path(directory).resolve() / "origin"
+            origin.mkdir()
+            self._git(origin, "init", "--quiet", "--initial-branch", "main")
+            self._git(origin, "config", "user.email", "checks@example.invalid")
+            self._git(origin, "config", "user.name", "Catalogue checks")
+            (origin / "cited.txt").write_text("the cited bytes\n", encoding="utf-8")
+            self._git(origin, "add", "cited.txt")
+            self._git(origin, "commit", "--quiet", "-m", "cite one file")
+            earlier = self._git(origin, "rev-parse", "HEAD").stdout.decode().strip()
+            (origin / "later.txt").write_text("added after the anchor\n", encoding="utf-8")
+            self._git(origin, "add", "later.txt")
+            self._git(origin, "commit", "--quiet", "-m", "add a later file")
+
+            shallow = Path(directory).resolve() / "shallow"
+            # A host may refuse the file transport by configuration. This asks
+            # for it explicitly so the check measures the depth, not the host.
+            self._git(origin, "-c", "protocol.file.allow=always", "clone",
+                      "--depth", "1", "--quiet", origin.as_uri(), str(shallow))
+            self.assertTrue((shallow / "cited.txt").is_file())
+            with self.assertRaisesRegex(refresh.CatalogueRefreshError, "is not a commit this repository can read"):
+                refresh.drifted_sources(shallow, earlier, ["cited.txt"])
+
+            # The complete history reads the same revision without complaint, and a
+            # file that truly is absent at a readable revision still names the file.
+            self.assertEqual(refresh.drifted_sources(origin, earlier, ["cited.txt"]), [])
+            with self.assertRaisesRegex(refresh.CatalogueRefreshError, r"later\.txt is not in the repository"):
+                refresh.drifted_sources(origin, earlier, ["later.txt"])
+
+    @staticmethod
+    def _git(repository: Path, *arguments: str):
+        """One git command for the small repositories these checks build, refusing a failure."""
+        finished = subprocess.run(["git", "-C", str(repository), *arguments],
+                                  capture_output=True, timeout=60, check=False)
+        if finished.returncode != 0:
+            named = " ".join(arguments)
+            raise AssertionError(f"git {named} failed: {finished.stderr.decode(errors='replace')}")
+        return finished
+
+    def test_the_anchor_tool_says_when_the_review_sheet_was_left_behind(self):
+        """The known-wrong case: the sheet still naming the revision the catalogue was moved from.
+
+        Anchoring rewrites the derived fields and the revision inside each body.
+        It cannot rewrite the review sheet, because the sheet carries a person's
+        judgement about which bodies were read again. So the anchor has to say
+        that the sheet is still to be edited. Without that the anchor reports a
+        finished move and the stale sheet is found later, by a rule, by someone
+        who does not know what the sheet is supposed to say.
+        """
+        refresh = _refresh_module()
+        revision = self.snapshot.items["source_revision"]
+        with tempfile.TemporaryDirectory() as directory:
+            folder = Path(directory).resolve() / "starter-catalogue"
+            shutil.copytree(CATALOGUE, folder, ignore=shutil.ignore_patterns("__pycache__"))
+            self.assertEqual(
+                refresh.anchor(refresh.AnchorRequest(folder, ROOT, revision))["review_sheet_still_to_edit"], [])
+
+            sheet = folder / refresh.REVIEW_FILE
+            earlier = (self.snapshot.items["previous_source_revisions"] or ["0" * 40])[-1]
+            sheet.write_text(sheet.read_text(encoding="utf-8").replace(
+                revision[:refresh.SHORT_REVISION], earlier[:refresh.SHORT_REVISION]), encoding="utf-8")
+            found = refresh.anchor(refresh.AnchorRequest(folder, ROOT, revision))["review_sheet_still_to_edit"]
+            self.assertEqual(len(found), 1)
+            self.assertIn(f"does not name revision {revision[:refresh.SHORT_REVISION]}", found[0])
 
     def test_the_anchor_tool_refuses_a_revision_whose_cited_bytes_differ(self):
         """Anchoring reads each cited file at the named revision before it writes anything."""

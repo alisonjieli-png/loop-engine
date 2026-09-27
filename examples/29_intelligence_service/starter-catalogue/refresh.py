@@ -57,6 +57,9 @@ SPECIFICATIONS_GLOB = SPECIFICATIONS_PREFIX + "[0-9][0-9][0-9].json"
 #: so it is refused here as well, before anything is rewritten.
 POPULATION_SIZE = 50
 ITEMS_FILE = "items.json"
+#: The review sheet. A person writes it, so anchoring reads it and reports what is
+#: left to say there rather than rewriting a judgement nobody made.
+REVIEW_FILE = "REVIEW.md"
 BODIES_FOLDER = "bodies"
 BODY_SUFFIX = ".md"
 TEMPORARY_SUFFIX = ".refresh"
@@ -297,20 +300,42 @@ def measure_sources(repository: Path, sources: list) -> dict:
             for relative in sources}
 
 
-def _bytes_at_revision(repository: Path, revision: str, relative: str) -> bytes:
-    """The committed bytes of one cited file at one revision, or a typed refusal."""
+def _git(repository: Path, *arguments: str) -> subprocess.CompletedProcess:
+    """One git command against this repository, with a process failure turned into a typed refusal."""
     try:
-        finished = subprocess.run(["git", "-C", str(repository), "show", f"{revision}:{relative}"],
-                                  capture_output=True, timeout=GIT_SECONDS, check=False)
+        return subprocess.run(["git", "-C", str(repository), *arguments],
+                              capture_output=True, timeout=GIT_SECONDS, check=False)
     except (OSError, subprocess.SubprocessError) as error:
         raise CatalogueRefreshError(f"the repository history could not be read: {error}") from error
+
+
+def require_revision_present(repository: Path, revision: str) -> None:
+    """Refuse a revision this repository cannot read, which is a different fault from a missing file.
+
+    A shallow checkout holds the working tree but not the history behind it, so
+    every lookup at an earlier revision fails there. Reported as a missing file
+    that failure names the wrong thing and sends the reader to the catalogue
+    instead of to the checkout, so it is named separately here.
+    """
+    found = _git(repository, "rev-parse", "--verify", "--quiet", f"{revision}^{{commit}}")
+    if found.returncode != 0:
+        raise CatalogueRefreshError(
+            f"revision {revision[:SHORT_REVISION]} is not a commit this repository can read, so the cited "
+            f"bytes cannot be compared with it. A shallow checkout causes this; fetch the full history.")
+
+
+def _bytes_at_revision(repository: Path, revision: str, relative: str) -> bytes:
+    """The committed bytes of one cited file at one revision, or a typed refusal."""
+    finished = _git(repository, "show", f"{revision}:{relative}")
     if finished.returncode != 0:
+        require_revision_present(repository, revision)
         raise CatalogueRefreshError(f"{relative} is not in the repository at revision {revision[:SHORT_REVISION]}")
     return finished.stdout
 
 
 def drifted_sources(repository: Path, revision: str, sources: list) -> list:
     """The cited files whose bytes at the revision are not the bytes in the tree."""
+    require_revision_present(repository, revision)
     return [relative for relative in sources
             if _bytes_at_revision(repository, revision, relative)
             != _confined(repository, relative).read_bytes()]
@@ -348,7 +373,9 @@ def anchor(request: AnchorRequest) -> dict:
     if drifted:
         raise CatalogueRefreshError(
             f"{len(drifted)} cited files differ between revision {request.revision[:SHORT_REVISION]} and the "
-            f"tree, so that revision does not name the bytes the catalogue uses: {drifted}")
+            f"tree, so that revision does not name the bytes the catalogue uses: {drifted}. Run this tool "
+            f"again with --anchor REVISION --write, naming the revision that holds the bytes now in the "
+            f"tree, so the catalogue and the repository state the same thing.")
     digests = measure_sources(repository, sources)
     new_items, new_bodies = anchored(populations, items, bodies, digests, request.revision)
     changed = sorted([identity for identity, text in bodies.items() if new_bodies[identity] != text])
@@ -360,7 +387,28 @@ def anchor(request: AnchorRequest) -> dict:
         refresh(RefreshRequest(folder, True))
     return {"record_type": "starter_catalogue_anchor/v1", "revision": request.revision, "sources": len(sources),
             "bodies_rewritten": changed if moved else [], "written": bool(moved and request.write),
+            "review_sheet_still_to_edit": review_sheet_work(folder, request.revision),
             "approved": False, "published": False}
+
+
+def review_sheet_work(folder: Path, revision: str) -> list:
+    """What the review sheet still says that this anchor revision contradicts.
+
+    The sheet carries a person's judgement, not a derived field, so this tool
+    reads it and says what is left rather than rewriting it. Without this the
+    anchor looks finished, the sheet keeps naming the revision it was moved
+    from, and the next reader meets the failure as a check nobody expected.
+    """
+    try:
+        text = _regular_file(folder, REVIEW_FILE).read_text(encoding="utf-8")
+    except (CatalogueRefreshError, OSError) as error:
+        return [f"the review sheet could not be read: {error}"]
+    named = set(re.findall(r"revision [`]?([0-9a-f]{%d})[`]?" % SHORT_REVISION, text))
+    if revision[:SHORT_REVISION] in named:
+        return []
+    return [f"{REVIEW_FILE} does not name revision {revision[:SHORT_REVISION]}. Bring the sheet to this "
+            f"revision by hand: say which cited files differ from the revision it was moved from, and whether "
+            f"each body that cites one of them was read again and still holds."]
 
 
 def _regular_body(bodies_folder: Path, identity: str) -> Path:
