@@ -1,10 +1,12 @@
 {
- "built_at": "2026-09-27T19:25:56Z",
+ "built_at": "2026-09-27T19:47:48Z",
  "commercial_relationship_schema": "directory_commercial_relationship/v1",
  "counts": {
   "endpoints": 184,
   "fit_rows": 1293,
+  "gone": 103,
   "models": 2158,
+  "moved": 30,
   "runtimes": 6,
   "search_rows": 2158
  },
@@ -24,6 +26,10 @@
   "models.json": {
    "bytes": 5503661,
    "sha256": "5d499630acc9384f284e60bb5d7d39dadf6bb3409ee373bc17aaad93536043e0"
+  },
+  "moved.json": {
+   "bytes": 16314,
+   "sha256": "2b931ae080d35d85662e8465eed3d3fca33d0e00e7c46d2cfc85a0a19fc8d8a5"
   },
   "search-index.json": {
    "bytes": 271160,
@@ -143,19 +149,15 @@
   },
   "reader": {
    "answers": {
-    "cached": 2669,
+    "cached": 2766,
     "kept": 0,
     "missing": 61,
-    "read": 97
+    "read": 0
    },
    "requests": {
-    "by_outcome": {
-     "https_get:http_error": 53,
-     "https_get:not_found": 7,
-     "https_get:ok": 98
-    },
-    "bytes": 41427511,
-    "requests": 158
+    "by_outcome": {},
+    "bytes": 0,
+    "requests": 0
    },
    "stopped_by": null
   },

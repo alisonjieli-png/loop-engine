@@ -1,0 +1,702 @@
+{
+ "gone": [
+  {
+   "address": "/models/aion-labs-aion-2-0",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/aion-labs-aion-3-0",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/aion-labs-aion-3-0-mini",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/aion-labs-aion-3-5",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/aion-labs-aion-3-5-mini",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/aion-labs-aion-rp-llama-3-1-8b",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/amazon-nova-2-lite-v1",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/amazon-nova-lite-v1",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/amazon-nova-micro-v1",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/amazon-nova-premier-v1",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/amazon-nova-pro-v1",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/andrewthompson1233-maba-v2-architecture",
+   "reason": "not_listed",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/anthropic-claude-opus-4-1",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/anthropic-claude-sonnet-4",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/baidu-ernie-4-5-vl-424b-a47b-pt",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/bytedance-seed-seed-1-6",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/bytedance-seed-seed-1-6-flash",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/bytedance-seed-seed-2-0-code",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/bytedance-seed-seed-2-0-lite",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/bytedance-seed-seed-2-0-mini",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/bytedance-seed-seed-2-1-turbo",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/cohere-command-a-plus",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/coherelabs-aya-vision-8b",
+   "reason": "not_listed",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/dots-studio-dots-3-note-preview",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/fireworks-ember-1",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/google-gemini-2-5-pro-preview",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/huihui-ai-huihui-ornith-1-5-9b-abliterated",
+   "reason": "not_listed",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/inclusionai-ling-3-0-flash-sante",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/kwaipilot-kat-coder-pro-v2-5",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/mancer-weaver",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/minimax-minimax-m1",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/minimax-minimax-m2-her",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/mistralai-codestral-2508",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/mistralai-ministral-3-3b-instruct-2512",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/mistralai-ministral-3-8b-instruct-2512",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/mistralai-mistral-large",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/mistralai-mistral-large-2407",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/mistralai-mistral-medium-3",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/mistralai-mistral-medium-3-1",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/mistralai-mistral-medium-3-5",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/mistralai-mistral-saba",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/mistralai-mistral-small-3-1-24b-instruct-2503",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/morph-morph-v3-fast",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/morph-morph-v3-large",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/openai-gpt-3-5-turbo-0613",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/openai-gpt-3-5-turbo-16k",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/openai-gpt-3-5-turbo-instruct",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/openai-gpt-4o-mini-2024-07-18",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/openai-gpt-5-1-codex",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/openai-gpt-5-1-codex-max",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/openai-gpt-5-1-codex-mini",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/openai-gpt-5-2-chat",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/openai-gpt-5-2-codex",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/openai-gpt-5-4-image-2",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/openai-gpt-5-6-luna-pro",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/openai-gpt-5-6-sol-pro",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/openai-gpt-5-6-terra-pro",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/openai-gpt-5-image",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/openai-gpt-5-image-mini",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/openai-gpt-6-astra-pro",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/openai-gpt-6-luna-pro",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/openai-gpt-6-sol-pro",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/openai-gpt-audio",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/openai-gpt-audio-mini",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/openai-gpt-chat-latest",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/openai-o3-mini-high",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/openai-o4-mini-high",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/perceptron-perceptron-mk1",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/perceptron-perceptron-mk1-5",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/perplexity-sonar-pro-search",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/pocketdoc-dans-personalityengine-v1-3-0-24b",
+   "reason": "not_listed",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/prism-ml-ternary-bonsai-2-27b-gguf",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/qwen-qwen-plus-2025-07-28",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/qwen-qwen3-5-flash-02-23",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/qwen-qwen3-5-plus-02-15",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/qwen-qwen3-5-plus-20260420",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/qwen-qwen3-7-flash",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/qwen-qwen3-8-max-0902",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/qwen-qwen3-8-max-prime",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/qwen-qwen3-8-omni-flash",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/qwen-qwen3-max-thinking",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/rekaai-reka-edge-2603",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/rekaai-reka-flash-3",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/relace-relace-apply-3",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/relace-relace-search",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/rlhflow-llama3-1-8b-prm-deepseek-data",
+   "reason": "not_listed",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/sakana-fugu-max",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/sakana-fugu-ultra-v2",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/sao10k-l3-8b-lunaris-v1",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/slayerlab-pollock-mini-lm-125m",
+   "reason": "not_listed",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/stealth-space-bunny-alpha",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/thedrummer-skyfall-36b-v2",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/thedrummer-unslopnemo-12b-v4-1",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/typesafe-jev-router",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/unbiased-pareto",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/undi95-remm-slerp-l2-13b",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/upstage-solar-mini4",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/upstage-solar-pro-3",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/writer-palmyra-x5",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/x-ai-grok-4-20",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/x-ai-grok-4-20-multi-agent",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/z-ai-glm-5-3-prime",
+   "reason": "refused_source",
+   "since": "2026-09-27"
+  },
+  {
+   "address": "/models/zed-industries-zeta-2-1",
+   "reason": "not_listed",
+   "since": "2026-09-27"
+  }
+ ],
+ "moved": [
+  {
+   "from": "/models/anthropic-claude-fable-5-1-2",
+   "how": "shared_address",
+   "since": "2026-09-27",
+   "to": "/models/anthropic-claude-fable-5-1"
+  },
+  {
+   "from": "/models/anthropic-claude-haiku-4-5-2",
+   "how": "shared_address",
+   "since": "2026-09-27",
+   "to": "/models/anthropic-claude-haiku-4-5"
+  },
+  {
+   "from": "/models/anthropic-claude-opus-4-5-2",
+   "how": "shared_address",
+   "since": "2026-09-27",
+   "to": "/models/anthropic-claude-opus-4-5"
+  },
+  {
+   "from": "/models/anthropic-claude-opus-4-6-2",
+   "how": "shared_address",
+   "since": "2026-09-27",
+   "to": "/models/anthropic-claude-opus-4-6"
+  },
+  {
+   "from": "/models/anthropic-claude-opus-4-7-2",
+   "how": "shared_address",
+   "since": "2026-09-27",
+   "to": "/models/anthropic-claude-opus-4-7"
+  },
+  {
+   "from": "/models/anthropic-claude-opus-4-8-2",
+   "how": "shared_address",
+   "since": "2026-09-27",
+   "to": "/models/anthropic-claude-opus-4-8"
+  },
+  {
+   "from": "/models/anthropic-claude-opus-5-5-2",
+   "how": "shared_address",
+   "since": "2026-09-27",
+   "to": "/models/anthropic-claude-opus-5-5"
+  },
+  {
+   "from": "/models/anthropic-claude-sonnet-4-5-2",
+   "how": "shared_address",
+   "since": "2026-09-27",
+   "to": "/models/anthropic-claude-sonnet-4-5"
+  },
+  {
+   "from": "/models/anthropic-claude-sonnet-4-6-2",
+   "how": "shared_address",
+   "since": "2026-09-27",
+   "to": "/models/anthropic-claude-sonnet-4-6"
+  },
+  {
+   "from": "/models/inclusionai-ling-3-0-flash-fin-2",
+   "how": "same_identifier",
+   "since": "2026-09-27",
+   "to": "/models/inclusionai-ling-3-0-flash-fin"
+  },
+  {
+   "from": "/models/mistralai-mistral-large-2512",
+   "how": "maker_price",
+   "since": "2026-09-27",
+   "to": "/models/mistral-mistral-large-2512"
+  },
+  {
+   "from": "/models/qwen-qwen-plus",
+   "how": "maker_price",
+   "since": "2026-09-27",
+   "to": "/models/alibaba-qwen-plus"
+  },
+  {
+   "from": "/models/qwen-qwen3-6-flash",
+   "how": "maker_price",
+   "since": "2026-09-27",
+   "to": "/models/alibaba-qwen3-6-flash"
+  },
+  {
+   "from": "/models/qwen-qwen3-6-max-preview",
+   "how": "maker_price",
+   "since": "2026-09-27",
+   "to": "/models/alibaba-qwen3-6-max-preview"
+  },
+  {
+   "from": "/models/qwen-qwen3-6-plus",
+   "how": "maker_price",
+   "since": "2026-09-27",
+   "to": "/models/alibaba-qwen3-6-plus"
+  },
+  {
+   "from": "/models/qwen-qwen3-7-max",
+   "how": "maker_price",
+   "since": "2026-09-27",
+   "to": "/models/alibaba-qwen3-7-max"
+  },
+  {
+   "from": "/models/qwen-qwen3-7-plus",
+   "how": "maker_price",
+   "since": "2026-09-27",
+   "to": "/models/alibaba-qwen3-7-plus"
+  },
+  {
+   "from": "/models/qwen-qwen3-coder-flash",
+   "how": "maker_price",
+   "since": "2026-09-27",
+   "to": "/models/alibaba-qwen3-coder-flash"
+  },
+  {
+   "from": "/models/qwen-qwen3-coder-plus",
+   "how": "maker_price",
+   "since": "2026-09-27",
+   "to": "/models/alibaba-qwen3-coder-plus"
+  },
+  {
+   "from": "/models/qwen-qwen3-max",
+   "how": "maker_price",
+   "since": "2026-09-27",
+   "to": "/models/alibaba-qwen3-max"
+  },
+  {
+   "from": "/models/x-ai-grok-4-3",
+   "how": "maker_price",
+   "since": "2026-09-27",
+   "to": "/models/xai-grok-4-3"
+  },
+  {
+   "from": "/models/x-ai-grok-4-5",
+   "how": "maker_price",
+   "since": "2026-09-27",
+   "to": "/models/xai-grok-4-5"
+  },
+  {
+   "from": "/models/x-ai-grok-4-6",
+   "how": "maker_price",
+   "since": "2026-09-27",
+   "to": "/models/xai-grok-4-6"
+  },
+  {
+   "from": "/models/x-ai-grok-4-7",
+   "how": "maker_price",
+   "since": "2026-09-27",
+   "to": "/models/xai-grok-4-7"
+  },
+  {
+   "from": "/models/x-ai-grok-build-0-1",
+   "how": "maker_price",
+   "since": "2026-09-27",
+   "to": "/models/xai-grok-build-0-1"
+  },
+  {
+   "from": "/models/xiaomimimo-mimo-v2-6-flash-rl",
+   "how": "same_identifier",
+   "since": "2026-09-27",
+   "to": "/models/xiaomi-mimo-v2-6-flash"
+  },
+  {
+   "from": "/models/xiaomimimo-mimo-v2-6-pro-rl",
+   "how": "same_identifier",
+   "since": "2026-09-27",
+   "to": "/models/xiaomi-mimo-v2-6-pro"
+  },
+  {
+   "from": "/models/z-ai-glm-5-3-flashx",
+   "how": "maker_price",
+   "since": "2026-09-27",
+   "to": "/models/zai-glm-5-3-flashx"
+  },
+  {
+   "from": "/models/z-ai-glm-5-turbo",
+   "how": "maker_price",
+   "since": "2026-09-27",
+   "to": "/models/zai-glm-5-turbo"
+  },
+  {
+   "from": "/models/z-ai-glm-5v-turbo",
+   "how": "maker_price",
+   "since": "2026-09-27",
+   "to": "/models/zai-glm-5v-turbo"
+  }
+ ],
+ "record_type": "model_directory_moved/v1"
+}
