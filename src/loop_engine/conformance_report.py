@@ -459,7 +459,7 @@ def run_conformance() -> dict:
         "all_gates_pass": all_pass,
     }
     with open(os.path.join(_HERE, "architecture_conformance.json"), "w") as f:
-        json.dump(manifest, f, indent=1)
+        json.dump(_stable_manifest(manifest), f, indent=1)
     lines = ["ZERO-TOLERANCE CONFORMANCE GATES"]
     for k, v in gates.items():
         lines.append(f"  {'PASS' if v == 0 else 'FAIL':4}  {k} = {v}")
@@ -469,6 +469,24 @@ def run_conformance() -> dict:
                  f"{'ALL GATES PASS' if all_pass else 'GATES FAILED'}")
     manifest["human_summary"] = "\n".join(lines)
     return manifest
+
+
+def _stable_manifest(manifest: dict) -> dict:
+    """The manifest as written to the repository, without the fields that move with every edit.
+
+    The scanned-file count and the line numbers of known findings change whenever
+    a module is added or an unrelated line moves, so the committed file changed in
+    39 of 51 commits from September 20 to 27, 2026 for that reason alone and
+    conflicted in merges. They stay in the printed report and the returned
+    manifest; the written copy keeps every gate, every finding by rule, file and
+    detail, and whether all gates pass.
+    """
+    written = {key: value for key, value in manifest.items() if key != "files_scanned"}
+    written["gate_details"] = {
+        key: ([{field: item for field, item in row.items() if field != "line"} if isinstance(row, dict) else row
+               for row in value] if isinstance(value, list) else value)
+        for key, value in manifest["gate_details"].items()}
+    return written
 
 
 def self_test() -> dict:
@@ -530,6 +548,16 @@ def self_test() -> dict:
         uncharted = _docs_folders_without_charter(directory)
     check("docs_charter_canary_reports_folders_without_a_kind_and_skips_empty_ones",
           uncharted == ["data", "mixed", "uncharted", "unmarked"], f"uncharted={uncharted}")
+    stable = _stable_manifest({
+        "files_scanned": 790, "all_gates_pass": False, "zero_tolerance_gates": {"g": 1},
+        "gate_details": {"scan_violations": [{"rule": "r", "file": "f.py", "line": 7, "detail": "d"}],
+                         "semantic_identity": {"passed": True}}})
+    check("written_manifest_drops_moving_fields_and_keeps_every_finding",
+          "files_scanned" not in stable and stable["all_gates_pass"] is False
+          and stable["zero_tolerance_gates"] == {"g": 1}
+          and stable["gate_details"]["scan_violations"] == [{"rule": "r", "file": "f.py", "detail": "d"}]
+          and stable["gate_details"]["semantic_identity"] == {"passed": True},
+          f"stable={stable}")
     with tempfile.TemporaryDirectory() as directory:
         os.makedirs(os.path.join(directory, "docs"))
         target = os.path.join(directory, "docs", "guide.md")
