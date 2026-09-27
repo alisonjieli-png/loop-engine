@@ -1,0 +1,56 @@
+{
+ "record_type": "library_composition_targets/v1",
+ "decided_on": "2026-09-27",
+ "owner_direction": "We need to increase our goal to 100K library components, and a diverse well balanced library, not overweighted with skills.md, we should have more functions, tools, programs, binaries, plugins, etc",
+ "component_form_vocabulary": "component_form/v1",
+ "goal_components": 100000,
+ "milestones": [25000, 50000, 100000],
+ "bounds": {
+  "target": "The share the family should reach at the goal. A slot draws the family up to its quota and leaves the rest of the quota empty when the family lacks supply.",
+  "cap": "The share the family may never exceed, in a slot or in the library at the goal. Its quota is never refilled from another family's unused quota."
+ },
+ "families": [
+  {
+   "family": "executable_code",
+   "label": "Executable code",
+   "share": 0.35,
+   "bound": "target",
+   "forms": {"api_operation": 0.3, "function": 0.2, "library_module": 0.2, "program": 0.15, "binary_install": 0.15}
+  },
+  {
+   "family": "connectors_and_extensions",
+   "label": "Protocol servers, plugins, marketplaces and hooks",
+   "share": 0.2,
+   "bound": "target",
+   "forms": {"mcp_server": 0.4, "plugin": 0.3, "hook": 0.2, "marketplace": 0.1}
+  },
+  {
+   "family": "skills",
+   "label": "Skills",
+   "share": 0.2,
+   "bound": "cap",
+   "forms": {"skill_with_scripts": 0.75, "skill": 0.25}
+  },
+  {
+   "family": "agents_and_commands",
+   "label": "Subagents and commands",
+   "share": 0.1,
+   "bound": "target",
+   "forms": {"agent": 0.5, "command": 0.5}
+  },
+  {
+   "family": "instructions_and_rules",
+   "label": "Instruction files and rules",
+   "share": 0.08,
+   "bound": "cap",
+   "forms": {"instructions": 0.6, "rules": 0.4}
+  },
+  {
+   "family": "data_and_contracts",
+   "label": "Data tables, contracts, schemas and settings",
+   "share": 0.07,
+   "bound": "target",
+   "forms": {"data_table": 0.45, "schema": 0.3, "evaluation_set": 0.15, "settings": 0.1}
+  }
+ ]
+}

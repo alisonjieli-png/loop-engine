@@ -238,11 +238,21 @@ def sync(args) -> dict:
 def export_review(args) -> dict:
     """Select, scan and write stored candidates as a catalogue folder the review panel can load."""
     from loop_engine.catalog.query import IntelligenceQuery
-    from licensed_import.storage import NAMESPACE
+    from licensed_import.composition import CompositionError, library_counts, load_targets
+    from licensed_import.storage import NAMESPACE, SUPPLY_NAMESPACE
+    targets = library = None
+    if args.kind_mix == review_export.COMPOSITION:
+        try:
+            targets = load_targets(args.composition_targets) if args.composition_targets else load_targets()
+            library = library_counts(args.library_bundle, targets) if args.library_bundle else None
+        except (CompositionError, OSError, ValueError) as error:
+            raise SystemExit(f"export-review: the composition targets or the library counts: {error}") from None
+    # The supply lines' candidates are read too, so the composition counts what waits for a review profile.
+    namespaces = (NAMESPACE, SUPPLY_NAMESPACE) if args.kind_mix == review_export.COMPOSITION else (NAMESPACE,)
     store = ImportStore(Path(args.store_root), writes_authorized=False)
     try:
         payloads = [row["payload"] for row in store.records.query(
-            IntelligenceQuery(namespaces=(NAMESPACE,), lifecycle=("candidate",)))]
+            IntelligenceQuery(namespaces=namespaces, lifecycle=("candidate",)))]
         earlier = review_export.exported_record_ids(args.exclude_export or ())
         stored = len(payloads)
         payloads = [payload for payload in payloads if payload["record_id"] not in earlier]
@@ -258,9 +268,12 @@ def export_review(args) -> dict:
             kind_shares = review_export.parse_kind_shares(args.kind_share)
         except ValueError as error:
             raise SystemExit(f"export-review: {error}") from None
+        plan = {}
         chosen, skipped = review_export.select(payloads, first_source, discovery.SOURCE_PRIORITY,
                                                limit=args.limit, per_repository=args.per_repository,
-                                               kind_mix=args.kind_mix, kind_shares=kind_shares)
+                                               kind_mix=args.kind_mix, kind_shares=kind_shares, targets=targets,
+                                               library=(library or {}).get("families"), target=args.target,
+                                               plan=plan)
         checks = None
         if args.skillspector_program or args.cisco_scanner_program:
             extra = ([CiscoSkillScanner(args.cisco_scanner_program, str(Path(args.work_folder) / "cisco"))]
@@ -270,13 +283,21 @@ def export_review(args) -> dict:
                                   extra_engines=extra, switched_off=("builtin_static_rules",))
         started = time.monotonic()
         kept, refused = review_export.scan_selection(chosen, reader, checks, target=args.target,
-                                                     scan_workers=args.scan_workers)
+                                                     scan_workers=args.scan_workers,
+                                                     quotas=plan.get("quotas") if targets else None, targets=targets)
+        if targets is not None:
+            kept_families = Counter(targets.family_of(review_export.payload_form(payload)) for payload in kept)
+            plan["kept"] = {family.name: kept_families.get(family.name, 0) for family in targets.families}
+            plan["unfilled"] = {name: plan["quotas"][name] - plan["kept"][name] for name in plan["quotas"]}
+            plan["library"] = ({"bundle": Path(args.library_bundle).name, "total": library["total"],
+                                "families": library["families"]} if library else None)
         summary = {"stored_candidates": stored, "already_exported": len(earlier),
                    "earlier_exports": sorted(Path(folder).name for folder in args.exclude_export or ()),
                    "limit": args.limit, "target": args.target,
                    "per_repository": args.per_repository, "selected": len(chosen),
                    "kind_mix": args.kind_mix,
                    "kind_shares": kind_shares if args.kind_mix == review_export.BALANCED else {},
+                   "composition": plan if targets is not None else {},
                    "mix_selected": review_export.mix_counts(chosen), "mix_kept": review_export.mix_counts(kept),
                    "not_selected": dict(skipped), "scanned": len(chosen) if checks else 0,
                    "scan_seconds": round(time.monotonic() - started, 1),
@@ -342,8 +363,16 @@ def parser() -> argparse.ArgumentParser:
     four.add_argument("--limit", type=int, default=2400)
     four.add_argument("--target", type=int, default=2000)
     four.add_argument("--per-repository", type=int, default=15)
-    four.add_argument("--kind-mix", choices=review_export.KIND_MIXES, default=review_export.BALANCED,
-                      help="balanced draws every kind in its share each export; ranked is the earlier order")
+    four.add_argument("--kind-mix", choices=review_export.KIND_MIXES, default=review_export.DEFAULT_KIND_MIX,
+                      help="composition draws each family of the library composition targets up to its quota and "
+                           "leaves a short family short; balanced draws every kind in its share and spills over; "
+                           "ranked is the earlier order")
+    four.add_argument("--composition-targets", default=None,
+                      help="the library_composition_targets/v1 record (default: src/loop_engine/data/"
+                           "library_composition.json)")
+    four.add_argument("--library-bundle",
+                      help="a release bundle folder (or its items.jsonl) whose served counts make the shares "
+                           "supply-aware: each family draws by its remaining need to the goal")
     four.add_argument("--kind-share", action="append", metavar="KIND=FRACTION",
                       help="a share of the balanced mix to change, for example hook=0.10")
     four.add_argument("--work-folder", default="")

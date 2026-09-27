@@ -28,7 +28,11 @@ repository). Two selection rules exist, chosen by the caller:
 
 ```text
 kind mix
-├── balanced (the default since September 26, 2026): every kind a harness picks
+├── composition (the default since September 27, 2026): the families of the library
+│   composition targets (composition.py), each drawn up to its quota of the slot, forms
+│   inside a family by their shares; a family that lacks supply leaves its quota empty, so
+│   the slot exports fewer packages instead of refilling with skills beyond their cap
+├── balanced (the default of September 26, 2026): every kind a harness picks
 │   up is drawn each export in a declared share, skills with scripts as their
 │   own share, by a weighted round robin, so any prefix of the selection keeps
 │   the mix and an exhausted kind spills over to the others
@@ -39,13 +43,20 @@ kind mix
 
 The owner, September 26, 2026: the library "should be skills, plugins,
 python scripts, literally a large mix of everything that can be placed into a
-harness working directory". Slow scanners may run over the selection before
-it is written; a blocked package is left out with its rule names and the next
-package takes its place. Nothing here approves anything.
+harness working directory". September 27, 2026: "a diverse well balanced
+library, not overweighted with skills.md, we should have more functions,
+tools, programs, binaries, plugins, etc". Slow scanners may run over the
+selection before it is written; a blocked package is left out with its rule
+names and the next package of the same family takes its place. A candidate
+that the panel's imported profile cannot read (a supply line's package,
+written by Baltor from licensed facts rather than copied byte for byte) is
+held and counted, never exported under that profile. Nothing here approves
+anything.
 """
 from __future__ import annotations
 
 import json
+import math
 import re
 from collections import Counter, defaultdict
 from pathlib import Path
@@ -56,9 +67,12 @@ from loop_engine.core.library_ingestion.record_rules import canonical_digest, no
 from loop_engine.core.service_runtime.catalogue_packages import EXECUTABLE_ROLES, CataloguePackage
 
 from .checks import blocking_rules
+from .composition import (
+    CompositionError, CompositionTargets, largest_remainder, payload_form, slot_shares)
 from .records import (
     CODE_MODULE, COMMAND, CONTRACT_SCHEMA, HOOK, INSTRUCTION_FILE, MARKETPLACE, PLUGIN_MANIFEST, PROTOCOL_SERVER,
-    RULES, SETTINGS, SKILL, SUBAGENT, refusal)
+    IMPORTED_VERBATIM, RULES, SETTINGS, SKILL, SUBAGENT, refusal)
+from loop_engine.core.service_runtime.catalogue_attributes import ComponentFormError
 
 ITEMS_RECORD_TYPE = "starter_catalogue_candidate_items/v3"
 SPECIFICATIONS_RECORD_TYPE = "candidate_intelligence_specifications/v3"
@@ -79,12 +93,20 @@ TEXT_MEDIA = frozenset({"text/plain", "text/markdown", "text/x-rst", "text/x-pyt
 MAXIMUM_FILE_BYTES = 256 * 1024
 MAXIMUM_PAYLOAD_BYTES = 2 * 1024 * 1024
 POPULATION_SIZE = 50
-#: The kind mixes a caller may ask for.
-KIND_MIXES = ("balanced", "ranked")
-BALANCED, RANKED = KIND_MIXES
+#: The kind mixes a caller may ask for; composition is the default since September 27, 2026.
+KIND_MIXES = ("composition", "balanced", "ranked")
+COMPOSITION, BALANCED, RANKED = KIND_MIXES
+DEFAULT_KIND_MIX = COMPOSITION
+#: The authoring the panel's imported profile reads: bytes copied from upstream under a permissive licence. A
+#: candidate authored any other way (a supply line's package written from licensed facts) waits for a review
+#: profile of its own and is held, counted by family, instead of breaking the whole export's review.
+REVIEWABLE_AUTHORING = (IMPORTED_VERBATIM,)
+AWAITING_REVIEW_PROFILE = "awaiting_review_profile"
 #: A skill whose package holds a script is its own share, so code enters the library at a steady rate.
 SKILL_WITH_SCRIPTS = "skill_with_scripts"
-#: The balanced mix of one export, as shares of the limit. Chosen on September 26, 2026 from the stock then on
+#: The balanced mix of one export, as shares of the limit (the default until September 27, 2026, kept as an
+#: explicit choice; the composition mix replaced it because it drew 40 percent skills). Chosen on September 26,
+#: 2026 from the stock then on
 #: disk (25,096 skills, of which 2,162 with scripts; 6,799 subagents; 6,437 commands; 2,939 plugin manifests;
 #: 2,932 instruction files; 2,787 rules; 1,077 marketplaces; 952 protocol server configurations; 942 hooks; 744
 #: contract schemas; 82 code modules) so that every kind lasts about the same number of exports. A kind with
@@ -112,6 +134,8 @@ def identity_for(payload: dict) -> str:
 
 def reviewable(payload: dict) -> "str | None":
     """None when the panel can read every file of the package, or the reason it cannot."""
+    if payload.get("authoring", IMPORTED_VERBATIM) not in REVIEWABLE_AUTHORING:
+        return AWAITING_REVIEW_PROFILE
     files = payload["package"]["files"]
     if any(entry["media_type"] not in TEXT_MEDIA for entry in files):
         return "a_file_is_not_reviewable_text"
@@ -152,13 +176,19 @@ def parse_kind_shares(values) -> dict:
     return shares
 
 
-def _ranked(payloads, first_source: dict, priority: dict, skipped: Counter, *, code_last: bool) -> list:
-    """Reviewable packages with their order key: source priority, then stars, then repository and path."""
+def _ranked(payloads, first_source: dict, priority: dict, skipped: Counter, *, code_last: bool,
+            held: "list | None" = None) -> list:
+    """Reviewable packages with their order key: source priority, then stars, then repository and path.
+
+    A package held for a review profile of its own is appended to ``held`` when a list is given, so the
+    composition can count it by family."""
     ranked = []
     for payload in payloads:
         reason = reviewable(payload)
         if reason:
             skipped[reason] += 1
+            if reason == AWAITING_REVIEW_PROFILE and held is not None:
+                held.append(payload)
             continue
         repository = payload["provenance"]["repository"]
         source = first_source.get(repository.lower(), "")
@@ -207,12 +237,107 @@ def _balanced(ranked: list, shares: dict, skipped: Counter, *, limit: int, per_r
     return chosen
 
 
+def _composition(ranked: list, held: list, targets: CompositionTargets, library: "dict | None", skipped: Counter,
+                 *, limit: int, target: int, per_repository: int) -> tuple:
+    """(chosen, plan): the families of the composition targets, each up to its quota, forms by their shares.
+
+    The kept quota of a family is its slot share of the target; the selection quota adds the same proportion of
+    the limit's margin, so a package the scanners block is replaced from its own family. Families are drawn in a
+    weighted round robin by selection quota and forms inside a family by their shares, so any prefix keeps the
+    mix. A family whose supply runs out stays short: nothing refills it."""
+    shares = slot_shares(targets, library)
+    quotas = largest_remainder(shares, target)
+    margin = max(0, limit - target) / target if target else 0.0
+    selection = {name: quota + math.ceil(quota * margin) for name, quota in quotas.items()}
+    buckets = defaultdict(lambda: defaultdict(list))
+    for payload in ranked:
+        try:
+            form = payload_form(payload)
+        except (ComponentFormError, CompositionError):
+            skipped["component_form_invalid"] += 1
+            continue
+        buckets[targets.family_of(form)][form].append(payload)
+    held_counts = Counter()
+    for payload in held:
+        try:
+            held_counts[targets.family_of(payload_form(payload))] += 1
+        except (ComponentFormError, CompositionError):
+            held_counts["component_form_invalid"] += 1
+    order = [family.name for family in targets.families]
+    form_shares = {family.name: dict(family.forms) for family in targets.families}
+    positions = defaultdict(int)
+    taken, taken_forms, per = Counter(), defaultdict(Counter), Counter()
+    chosen = []
+
+    def remaining(family: str) -> list:
+        return [form for form, _share in targets.family(family).forms
+                if positions[(family, form)] < len(buckets[family][form])]
+
+    while len(chosen) < limit:
+        live = [name for name in order if taken[name] < selection[name] and remaining(name)]
+        if not live:
+            break
+        total = sum(selection[name] for name in live)
+        family = max(live, key=lambda name: (selection[name] / total * (len(chosen) + 1) - taken[name],
+                                             selection[name], -order.index(name)))
+        forms = remaining(family)
+        weight = sum(form_shares[family][form] for form in forms)
+        form = max(forms, key=lambda name: (form_shares[family][name] / weight * (taken[family] + 1)
+                                            - taken_forms[family][name], form_shares[family][name],
+                                            -[row[0] for row in targets.family(family).forms].index(name)))
+        payload = buckets[family][form][positions[(family, form)]]
+        positions[(family, form)] += 1
+        repository = payload["provenance"]["repository"].lower()
+        if per[repository] >= per_repository:
+            skipped["repository_ceiling_reached"] += 1
+            continue
+        per[repository] += 1
+        taken[family] += 1
+        taken_forms[family][form] += 1
+        chosen.append(payload)
+    plan = {"targets": "library_composition_targets/v1", "targets_digest": targets.digest, "goal": targets.goal,
+            "slot_shares": {name: round(value, 6) for name, value in shares.items()}, "quotas": quotas,
+            "selection_quotas": selection,
+            "supply": {name: sum(len(rows) for rows in buckets[name].values()) for name in order},
+            "held_for_review_profile": dict(held_counts), "selected": {name: taken[name] for name in order},
+            "selected_forms": {name: dict(taken_forms[name]) for name in order if taken_forms[name]}}
+    return chosen, plan
+
+
+def keep_within_quotas(payloads, quotas: dict, targets: CompositionTargets, *, target: int) -> list:
+    """The packages, in order, while their family is under its kept quota and the slot under its target."""
+    kept, taken = [], Counter()
+    for payload in payloads:
+        family = targets.family_of(payload_form(payload))
+        if taken[family] >= quotas.get(family, 0):
+            continue
+        taken[family] += 1
+        kept.append(payload)
+        if len(kept) >= target:
+            break
+    return kept
+
+
 def select(payloads, first_source: dict, priority: dict, *, limit: int, per_repository: int,
-           kind_mix: str = RANKED, kind_shares: "dict | None" = None) -> tuple:
-    """(chosen, skipped reasons): reviewable packages spread across repositories, in the asked kind mix."""
+           kind_mix: str = RANKED, kind_shares: "dict | None" = None, targets: "CompositionTargets | None" = None,
+           library: "dict | None" = None, target: "int | None" = None, plan: "dict | None" = None) -> tuple:
+    """(chosen, skipped reasons): reviewable packages spread across repositories, in the asked kind mix.
+
+    The composition mix needs the targets and the slot size (``target``); it writes its quotas and counts into
+    ``plan`` when a dictionary is given."""
     if kind_mix not in KIND_MIXES:
         raise ValueError(f"the kind mix is one of {KIND_MIXES}: {kind_mix!r}")
     skipped = Counter()
+    if kind_mix == COMPOSITION:
+        if targets is None or not target:
+            raise ValueError("the composition mix needs the composition targets and the slot size")
+        held = []
+        ranked = _ranked(payloads, first_source, priority, skipped, code_last=False, held=held)
+        chosen, found = _composition(ranked, held, targets, library, skipped, limit=limit, target=target,
+                                     per_repository=per_repository)
+        if plan is not None:
+            plan.update(found)
+        return chosen, skipped
     if kind_mix == BALANCED:
         ranked = _ranked(payloads, first_source, priority, skipped, code_last=False)
         return _balanced(ranked, kind_shares or DEFAULT_KIND_SHARES, skipped, limit=limit,
@@ -236,11 +361,16 @@ def mix_counts(payloads) -> dict:
     return dict(Counter(mix_key(payload) for payload in payloads).most_common())
 
 
-def scan_selection(chosen, body_reader, checks, *, target: int, scan_workers: int = 8) -> tuple:
-    """Run the slow scanners over the selection; keep packages until the target, record the blocked."""
+def scan_selection(chosen, body_reader, checks, *, target: int, scan_workers: int = 8,
+                   quotas: "dict | None" = None, targets: "CompositionTargets | None" = None) -> tuple:
+    """Run the slow scanners over the selection; keep packages until the target, record the blocked.
+
+    With composition quotas, a package is kept only while its family is under its kept quota, so a family's
+    selection margin never lets it grow past its share of the slot."""
     from concurrent.futures import ThreadPoolExecutor
+    bounded = quotas is not None and targets is not None
     if checks is None or not checks.engines:
-        return chosen[:target], []
+        return (keep_within_quotas(chosen, quotas, targets, target=target) if bounded else chosen[:target]), []
     packages = {payload["record_id"]: [(entry["path"], body_reader(entry["digest"]))
                                        for entry in payload["package"]["files"]] for payload in chosen}
     keys = sorted(packages)
@@ -262,8 +392,10 @@ def scan_selection(chosen, body_reader, checks, *, target: int, scan_workers: in
         payload = {**payload, "findings": payload["findings"] + [
             {**finding, "path": finding.get("path", "")} for finding in findings]}
         kept.append(payload)
-        if len(kept) >= target:
+        if not bounded and len(kept) >= target:
             break
+    if bounded:
+        kept = keep_within_quotas(kept, quotas, targets, target=target)
     return kept, refused
 
 
