@@ -1,0 +1,575 @@
+{
+ "approval": {
+  "approved": 10557,
+  "exported": 14000,
+  "share": 0.7541,
+  "slots": [
+   "2026-09-26",
+   "2026-09-26-04",
+   "2026-09-26-10",
+   "2026-09-26-16",
+   "2026-09-27-04",
+   "2026-09-27-10",
+   "2026-09-27-16"
+  ]
+ },
+ "assumptions": [
+  "Each slot draws the composition mix with supply-aware shares and refills nothing.",
+  "Every family is approved at the same share, the mean of the daily slots so far.",
+  "No new supply arrives; the imported supply is what the import store holds today.",
+  "with_generated assumes a review profile for the supply lines' packages exists."
+ ],
+ "exported_to_review_already": 18000,
+ "goal": 100000,
+ "library": {
+  "bundle": "daily-2026-09-27-16",
+  "families": {
+   "agents_and_commands": 3909,
+   "connectors_and_extensions": 1975,
+   "data_and_contracts": 101,
+   "executable_code": 15,
+   "instructions_and_rules": 1920,
+   "skills": 5723
+  },
+  "forms": {
+   "agent": 1992,
+   "command": 1917,
+   "function": 15,
+   "hook": 308,
+   "instructions": 1077,
+   "marketplace": 463,
+   "mcp_server": 278,
+   "plugin": 926,
+   "rules": 843,
+   "schema": 60,
+   "settings": 41,
+   "skill": 5151,
+   "skill_with_scripts": 572
+  },
+  "total": 13643
+ },
+ "milestones": [
+  25000,
+  50000,
+  100000
+ ],
+ "needs": {
+  "imported_only": {
+   "100000": {
+    "agents_and_commands": {
+     "approved_needed": 6091,
+     "bound": "target",
+     "candidates_needed": 8078,
+     "gap": 0,
+     "supply": 12622,
+     "target": 10000
+    },
+    "connectors_and_extensions": {
+     "approved_needed": 18025,
+     "bound": "target",
+     "candidates_needed": 23903,
+     "gap": 17177,
+     "supply": 6726,
+     "target": 20000
+    },
+    "data_and_contracts": {
+     "approved_needed": 6899,
+     "bound": "target",
+     "candidates_needed": 9149,
+     "gap": 8473,
+     "supply": 676,
+     "target": 7000
+    },
+    "executable_code": {
+     "approved_needed": 34985,
+     "bound": "target",
+     "candidates_needed": 46394,
+     "gap": 46383,
+     "supply": 11,
+     "target": 35000
+    },
+    "instructions_and_rules": {
+     "approved_needed": 6080,
+     "bound": "cap",
+     "candidates_needed": 8063,
+     "gap": 2665,
+     "supply": 5398,
+     "target": 8000
+    },
+    "skills": {
+     "approved_needed": 14277,
+     "bound": "cap",
+     "candidates_needed": 18933,
+     "gap": 0,
+     "supply": 32772,
+     "target": 20000
+    }
+   },
+   "25000": {
+    "agents_and_commands": {
+     "approved_needed": 0,
+     "bound": "target",
+     "candidates_needed": 0,
+     "gap": 0,
+     "supply": 12622,
+     "target": 2500
+    },
+    "connectors_and_extensions": {
+     "approved_needed": 3025,
+     "bound": "target",
+     "candidates_needed": 4012,
+     "gap": 0,
+     "supply": 6726,
+     "target": 5000
+    },
+    "data_and_contracts": {
+     "approved_needed": 1649,
+     "bound": "target",
+     "candidates_needed": 2187,
+     "gap": 1511,
+     "supply": 676,
+     "target": 1750
+    },
+    "executable_code": {
+     "approved_needed": 8735,
+     "bound": "target",
+     "candidates_needed": 11584,
+     "gap": 11573,
+     "supply": 11,
+     "target": 8750
+    },
+    "instructions_and_rules": {
+     "approved_needed": 80,
+     "bound": "cap",
+     "candidates_needed": 107,
+     "gap": 0,
+     "supply": 5398,
+     "target": 2000
+    },
+    "skills": {
+     "approved_needed": 0,
+     "bound": "cap",
+     "candidates_needed": 0,
+     "gap": 0,
+     "supply": 32772,
+     "target": 5000
+    }
+   },
+   "50000": {
+    "agents_and_commands": {
+     "approved_needed": 1091,
+     "bound": "target",
+     "candidates_needed": 1447,
+     "gap": 0,
+     "supply": 12622,
+     "target": 5000
+    },
+    "connectors_and_extensions": {
+     "approved_needed": 8025,
+     "bound": "target",
+     "candidates_needed": 10642,
+     "gap": 3916,
+     "supply": 6726,
+     "target": 10000
+    },
+    "data_and_contracts": {
+     "approved_needed": 3399,
+     "bound": "target",
+     "candidates_needed": 4508,
+     "gap": 3832,
+     "supply": 676,
+     "target": 3500
+    },
+    "executable_code": {
+     "approved_needed": 17485,
+     "bound": "target",
+     "candidates_needed": 23187,
+     "gap": 23176,
+     "supply": 11,
+     "target": 17500
+    },
+    "instructions_and_rules": {
+     "approved_needed": 2080,
+     "bound": "cap",
+     "candidates_needed": 2759,
+     "gap": 0,
+     "supply": 5398,
+     "target": 4000
+    },
+    "skills": {
+     "approved_needed": 4277,
+     "bound": "cap",
+     "candidates_needed": 5672,
+     "gap": 0,
+     "supply": 32772,
+     "target": 10000
+    }
+   }
+  },
+  "with_generated": {
+   "100000": {
+    "agents_and_commands": {
+     "approved_needed": 6091,
+     "bound": "target",
+     "candidates_needed": 8078,
+     "gap": 0,
+     "supply": 12622,
+     "target": 10000
+    },
+    "connectors_and_extensions": {
+     "approved_needed": 18025,
+     "bound": "target",
+     "candidates_needed": 23903,
+     "gap": 11585,
+     "supply": 12318,
+     "target": 20000
+    },
+    "data_and_contracts": {
+     "approved_needed": 6899,
+     "bound": "target",
+     "candidates_needed": 9149,
+     "gap": 8427,
+     "supply": 722,
+     "target": 7000
+    },
+    "executable_code": {
+     "approved_needed": 34985,
+     "bound": "target",
+     "candidates_needed": 46394,
+     "gap": 44855,
+     "supply": 1539,
+     "target": 35000
+    },
+    "instructions_and_rules": {
+     "approved_needed": 6080,
+     "bound": "cap",
+     "candidates_needed": 8063,
+     "gap": 2665,
+     "supply": 5398,
+     "target": 8000
+    },
+    "skills": {
+     "approved_needed": 14277,
+     "bound": "cap",
+     "candidates_needed": 18933,
+     "gap": 0,
+     "supply": 32772,
+     "target": 20000
+    }
+   },
+   "25000": {
+    "agents_and_commands": {
+     "approved_needed": 0,
+     "bound": "target",
+     "candidates_needed": 0,
+     "gap": 0,
+     "supply": 12622,
+     "target": 2500
+    },
+    "connectors_and_extensions": {
+     "approved_needed": 3025,
+     "bound": "target",
+     "candidates_needed": 4012,
+     "gap": 0,
+     "supply": 12318,
+     "target": 5000
+    },
+    "data_and_contracts": {
+     "approved_needed": 1649,
+     "bound": "target",
+     "candidates_needed": 2187,
+     "gap": 1465,
+     "supply": 722,
+     "target": 1750
+    },
+    "executable_code": {
+     "approved_needed": 8735,
+     "bound": "target",
+     "candidates_needed": 11584,
+     "gap": 10045,
+     "supply": 1539,
+     "target": 8750
+    },
+    "instructions_and_rules": {
+     "approved_needed": 80,
+     "bound": "cap",
+     "candidates_needed": 107,
+     "gap": 0,
+     "supply": 5398,
+     "target": 2000
+    },
+    "skills": {
+     "approved_needed": 0,
+     "bound": "cap",
+     "candidates_needed": 0,
+     "gap": 0,
+     "supply": 32772,
+     "target": 5000
+    }
+   },
+   "50000": {
+    "agents_and_commands": {
+     "approved_needed": 1091,
+     "bound": "target",
+     "candidates_needed": 1447,
+     "gap": 0,
+     "supply": 12622,
+     "target": 5000
+    },
+    "connectors_and_extensions": {
+     "approved_needed": 8025,
+     "bound": "target",
+     "candidates_needed": 10642,
+     "gap": 0,
+     "supply": 12318,
+     "target": 10000
+    },
+    "data_and_contracts": {
+     "approved_needed": 3399,
+     "bound": "target",
+     "candidates_needed": 4508,
+     "gap": 3786,
+     "supply": 722,
+     "target": 3500
+    },
+    "executable_code": {
+     "approved_needed": 17485,
+     "bound": "target",
+     "candidates_needed": 23187,
+     "gap": 21648,
+     "supply": 1539,
+     "target": 17500
+    },
+    "instructions_and_rules": {
+     "approved_needed": 2080,
+     "bound": "cap",
+     "candidates_needed": 2759,
+     "gap": 0,
+     "supply": 5398,
+     "target": 4000
+    },
+    "skills": {
+     "approved_needed": 4277,
+     "bound": "cap",
+     "candidates_needed": 5672,
+     "gap": 0,
+     "supply": 32772,
+     "target": 10000
+    }
+   }
+  }
+ },
+ "projection": {
+  "imported_only": {
+   "approval_share": 0.7541,
+   "end": {
+    "families": {
+     "agents_and_commands": {
+      "count": 9971,
+      "share": 0.3925
+     },
+     "connectors_and_extensions": {
+      "count": 7047,
+      "share": 0.2774
+     },
+     "data_and_contracts": {
+      "count": 611,
+      "share": 0.024
+     },
+     "executable_code": {
+      "count": 23,
+      "share": 0.0009
+     },
+     "instructions_and_rules": {
+      "count": 2032,
+      "share": 0.08
+     },
+     "skills": {
+      "count": 5723,
+      "share": 0.2253
+     }
+    },
+    "library": 25407,
+    "supply_left": {
+     "agents_and_commands": 4611,
+     "connectors_and_extensions": 0,
+     "data_and_contracts": 0,
+     "executable_code": 0,
+     "instructions_and_rules": 5276,
+     "skills": 32772
+    }
+   },
+   "not_reached": [
+    "50000",
+    "100000"
+   ],
+   "reached": {
+    "25000": {
+     "families": {
+      "agents_and_commands": {
+       "count": 9599,
+       "share": 0.3839
+      },
+      "connectors_and_extensions": {
+       "count": 7047,
+       "share": 0.2818
+      },
+      "data_and_contracts": {
+       "count": 611,
+       "share": 0.0244
+      },
+      "executable_code": {
+       "count": 23,
+       "share": 0.0009
+      },
+      "instructions_and_rules": {
+       "count": 2000,
+       "share": 0.08
+      },
+      "skills": {
+       "count": 5723,
+       "share": 0.2289
+      }
+     },
+     "library": 25003,
+     "slots": 138
+    }
+   },
+   "slot_size": 2000,
+   "slots_run": 260
+  },
+  "with_generated": {
+   "approval_share": 0.7541,
+   "end": {
+    "families": {
+     "agents_and_commands": {
+      "count": 9969,
+      "share": 0.3113
+     },
+     "connectors_and_extensions": {
+      "count": 11265,
+      "share": 0.3518
+     },
+     "data_and_contracts": {
+      "count": 646,
+      "share": 0.0202
+     },
+     "executable_code": {
+      "count": 1176,
+      "share": 0.0367
+     },
+     "instructions_and_rules": {
+      "count": 2561,
+      "share": 0.08
+     },
+     "skills": {
+      "count": 6404,
+      "share": 0.2
+     }
+    },
+    "library": 32021,
+    "supply_left": {
+     "agents_and_commands": 4609,
+     "connectors_and_extensions": 0,
+     "data_and_contracts": 0,
+     "executable_code": 0,
+     "instructions_and_rules": 4568,
+     "skills": 31895
+    }
+   },
+   "not_reached": [
+    "50000",
+    "100000"
+   ],
+   "reached": {
+    "25000": {
+     "families": {
+      "agents_and_commands": {
+       "count": 6363,
+       "share": 0.2529
+      },
+      "connectors_and_extensions": {
+       "count": 9242,
+       "share": 0.3673
+      },
+      "data_and_contracts": {
+       "count": 646,
+       "share": 0.0257
+      },
+      "executable_code": {
+       "count": 1176,
+       "share": 0.0467
+      },
+      "instructions_and_rules": {
+       "count": 2013,
+       "share": 0.08
+      },
+      "skills": {
+       "count": 5723,
+       "share": 0.2274
+      }
+     },
+     "library": 25163,
+     "slots": 27
+    }
+   },
+   "slot_size": 2000,
+   "slots_run": 243
+  }
+ },
+ "record_type": "library_supply_report/v1",
+ "supply": {
+  "generated": {
+   "families": {
+    "connectors_and_extensions": 5592,
+    "data_and_contracts": 46,
+    "executable_code": 1528
+   },
+   "forms": {
+    "api_operation": 1339,
+    "binary_install": 189,
+    "data_table": 46,
+    "mcp_server": 5592
+   },
+   "lines": {
+    "data_tables": 46,
+    "mcp_registry": 5592,
+    "openapi_operations": 1339,
+    "program_installs": 189
+   },
+   "total": 7166
+  },
+  "imported": {
+   "families": {
+    "agents_and_commands": 12622,
+    "connectors_and_extensions": 6726,
+    "data_and_contracts": 676,
+    "executable_code": 11,
+    "instructions_and_rules": 5398,
+    "skills": 32772
+   },
+   "forms": {
+    "agent": 6442,
+    "command": 6180,
+    "function": 11,
+    "hook": 784,
+    "instructions": 2952,
+    "marketplace": 1338,
+    "mcp_server": 778,
+    "plugin": 3826,
+    "rules": 2446,
+    "schema": 659,
+    "settings": 17,
+    "skill": 29963,
+    "skill_with_scripts": 2809
+   },
+   "not_reviewable": {
+    "a_file_is_above_the_review_bound": 37,
+    "a_file_is_not_reviewable_text": 1160
+   },
+   "total": 58205
+  }
+ },
+ "targets_digest": "8e270ea8184fc0cbc091086882e18e3f78b01d7219e7cab828deb4405c4c77a9",
+ "written_at": "2026-09-27T19:32:49Z"
+}
