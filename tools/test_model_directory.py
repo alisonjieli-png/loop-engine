@@ -590,13 +590,21 @@ class SourcesOnThePages(unittest.TestCase):
         self.assertNotIn("through OpenRouter", text)
 
     def test_a_model_page_shows_an_arena_score_with_its_licence_and_links_the_refused_publishers(self):
-        directory = records.load_directory()
-        row = next(row for row in directory.models if any("value" in item for item in row["benchmarks"]))
-        text = pages.rendered_page("/models/" + row["slug"], "GET", "Baltor")[0].decode("utf-8")
-        self.assertRegex(text, r'>Arena text score</a>: [0-9][0-9,]* as of <time datetime="20[0-9]{2}-[0-9]{2}-[0-9]{2}">')
+        # A constructed row, so the check holds on a day the arena could not be read: the page reads the score's licence
+        # from the packaged manifest, and links OpenRouter's own page of the model when an open record names its identifier.
+        from loop_engine.core.service_runtime.web_site_map import load_site_map
+        arena = {"id": "lmarena", "address": "huggingface.co/datasets/lmarena-ai/leaderboard-dataset", "read": "2026-09-27"}
+        row = records.validate_model_row(_row(
+            sources=_row()["sources"] + [arena],
+            prices=_row()["prices"] + [{**_row()["prices"][0], "provider": "OpenRouter", "provider_slug": "openrouter"}],
+            benchmarks=[{"name": "Arena text score", "value": 1432, "publisher": "LMArena", "address": "arena.ai/leaderboard",
+                         "as_of": "2026-09-25", "source": 2}]))
+        text = views.model_page(row, records.load_directory(), load_site_map(), "Baltor")
+        self.assertIn('>Arena text score</a>: 1,432 as of <time datetime="2026-09-25">', text)
         self.assertIn('>CC BY 4.0</a>', text)
+        self.assertIn("rounded to a whole number", text)
         self.assertIn('href="https://artificialanalysis.ai"', text)
-        self.assertIn('href="https://openrouter.ai/', text)
+        self.assertIn('href="https://openrouter.ai/example/model"', text)
         self.assertNotIn("Artificial Analysis Intelligence Index", text)
         self.assertNotIn("through OpenRouter", text)
 
