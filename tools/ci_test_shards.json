@@ -149,6 +149,7 @@
       "test_refresh_research_sources",
       "test_rescan_served_catalogue",
       "test_service_documentation",
+      "test_shared_profiles",
       "test_showcase_pages",
       "test_stage_service_secrets",
       "test_summarize_research_watch"
