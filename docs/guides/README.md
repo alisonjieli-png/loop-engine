@@ -25,8 +25,8 @@ the check that enforces them. The single structured source it points at is
 
 ## For a paying customer of the hosted service
 
-These twelve pages explain account access, client setup, selection and downloads,
-and give one quickstart for each harness.
+These fifteen pages explain account access, client setup, selection and downloads,
+updates and common questions, and give one quickstart for each harness.
 They separate a configured connection from a harness loading and using material. Every command, address, record type,
 refusal code and refusal status in them is held to the service source by
 `tools/check_service_documentation.py`. Examples are request shapes for the reader to fill with actual selected values;
@@ -43,6 +43,9 @@ refusal whose status moves makes every page that states the old status fail.
 | [Usage and what you pay for](service-usage-and-what-you-pay-for.md) | One measured unit is one downloaded item, what is free, where your usage is, and how a retry avoids a second measured unit. |
 | [Serving and connections](service-serving-and-connections.md) | Protocol versions, transport, addresses and common refusal codes. |
 | [Troubleshooting](service-troubleshooting.md) | The failures a customer meets first, with what they see, what it means and what to do. |
+| [Components, packages and files](service-component-concepts.md) | What a component, a package and a file are, how digests pin the bytes, and which evidence answers which question. |
+| [Updates and withdrawals](service-updates-and-withdrawals.md) | Selecting a newer version, what a withdrawal changes, and what to do when material is unavailable. |
+| [Common questions](service-common-questions.md) | Short answers about an existing harness, models, empty searches, checking a download, usage and reporting a problem. |
 | [Claude Code quickstart](quickstart-claude-code.md) | What you need, the `.mcp.json` entry to paste, the first search, the first download and the check that it worked. |
 | [Codex quickstart](quickstart-codex.md) | The same steps with the `config.toml` table. |
 | [OpenCode quickstart](quickstart-opencode.md) | The same steps with the `opencode.json` entry for OpenCode 1.x. |

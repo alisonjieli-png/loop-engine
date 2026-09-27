@@ -104,6 +104,9 @@ WEB_ASSETS = {
     "/docs/usage-and-what-you-pay-for": ("index.html", HTML_MEDIA_TYPE),
     "/docs/troubleshooting": ("index.html", HTML_MEDIA_TYPE),
     "/docs/serving-and-connections": ("index.html", HTML_MEDIA_TYPE),
+    "/docs/component-concepts": ("index.html", HTML_MEDIA_TYPE),
+    "/docs/updates-and-withdrawals": ("index.html", HTML_MEDIA_TYPE),
+    "/docs/common-questions": ("index.html", HTML_MEDIA_TYPE),
     # The setup guide is the Get set up page. This older documentation address opens it too.
     "/docs/getting-set-up": ("index.html", HTML_MEDIA_TYPE),
     # One quickstart for each harness (roadmap S-6.202), built from docs/guides/quickstart-*.md like the pages above
@@ -122,6 +125,9 @@ WEB_ASSETS = {
     "/assets/docs/usage-and-what-you-pay-for.html": ("docs/usage-and-what-you-pay-for.html", HTML_MEDIA_TYPE),
     "/assets/docs/troubleshooting.html": ("docs/troubleshooting.html", HTML_MEDIA_TYPE),
     "/assets/docs/serving-and-connections.html": ("docs/serving-and-connections.html", HTML_MEDIA_TYPE),
+    "/assets/docs/component-concepts.html": ("docs/component-concepts.html", HTML_MEDIA_TYPE),
+    "/assets/docs/updates-and-withdrawals.html": ("docs/updates-and-withdrawals.html", HTML_MEDIA_TYPE),
+    "/assets/docs/common-questions.html": ("docs/common-questions.html", HTML_MEDIA_TYPE),
     "/assets/docs/quickstart-claude-code.html": ("docs/quickstart-claude-code.html", HTML_MEDIA_TYPE),
     "/assets/docs/quickstart-codex.html": ("docs/quickstart-codex.html", HTML_MEDIA_TYPE),
     "/assets/docs/quickstart-opencode.html": ("docs/quickstart-opencode.html", HTML_MEDIA_TYPE),

@@ -525,6 +525,48 @@
       "indexed": true
     },
     {
+      "address": "/docs/component-concepts",
+      "view": "docs",
+      "title": "Components, packages and files",
+      "description": "What a component, a package and a file are, how identity and digests pin the bytes, and what evidence answers each question about a task.",
+      "group": "Documentation",
+      "linked_from": [
+        "page"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "documentation",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/docs/updates-and-withdrawals",
+      "view": "docs",
+      "title": "Updates and withdrawals",
+      "description": "How to select an updated version, what a withdrawal changes and does not change, and what to do when material is unavailable.",
+      "group": "Documentation",
+      "linked_from": [
+        "page"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "documentation",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/docs/common-questions",
+      "view": "docs",
+      "title": "Common questions",
+      "description": "Short answers about using an existing harness, choosing a model, empty searches, checking a download, usage and reporting a problem.",
+      "group": "Documentation",
+      "linked_from": [
+        "page"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "documentation",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
       "address": "/waitlist",
       "view": "start",
       "title": "Get started",

@@ -99,6 +99,22 @@
           "address": "/docs/usage-and-what-you-pay-for",
           "body": "/assets/docs/usage-and-what-you-pay-for.html",
           "repository_path": "docs/guides/service-usage-and-what-you-pay-for.md"
+        },
+        {
+          "id": "component-concepts",
+          "title": "Components, packages and files",
+          "summary": "What you select, what a package holds and how to check it.",
+          "address": "/docs/component-concepts",
+          "body": "/assets/docs/component-concepts.html",
+          "repository_path": "docs/guides/service-component-concepts.md"
+        },
+        {
+          "id": "updates-and-withdrawals",
+          "title": "Updates and withdrawals",
+          "summary": "Choose a newer version and handle withdrawn material.",
+          "address": "/docs/updates-and-withdrawals",
+          "body": "/assets/docs/updates-and-withdrawals.html",
+          "repository_path": "docs/guides/service-updates-and-withdrawals.md"
         }
       ]
     },
@@ -113,6 +129,14 @@
           "address": "/docs/troubleshooting",
           "body": "/assets/docs/troubleshooting.html",
           "repository_path": "docs/guides/service-troubleshooting.md"
+        },
+        {
+          "id": "common-questions",
+          "title": "Common questions",
+          "summary": "Short answers about connecting, retrieving and usage.",
+          "address": "/docs/common-questions",
+          "body": "/assets/docs/common-questions.html",
+          "repository_path": "docs/guides/service-common-questions.md"
         }
       ]
     },
