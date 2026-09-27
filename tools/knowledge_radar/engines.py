@@ -128,11 +128,20 @@ def number(value):
     return value if type(value) in (int, float) else None
 
 
+_TABLE_BREAKING = re.compile(r"[`|\\]")
+
+
 def text_fact(value, limit: int = 120):
+    """A short fact value with invisible characters removed. Comparison signs are kept: in a version
+    range such as "< 1.7.4" they carry the meaning. Only characters that break a table are replaced."""
     if not isinstance(value, str):
         return None
-    cleaned, reason = clean_title(value)
-    return cleaned[:limit] if cleaned and not reason else None
+    text = "".join(character for character in value
+                   if unicodedata.category(character) not in ("Cc", "Cf") or character in " \t")
+    text = " ".join(_TABLE_BREAKING.sub(" ", text).split())
+    if not text or any(pattern.search(text) for pattern in _STEERING):
+        return None
+    return text[:limit]
 
 
 def iso_time(value):

@@ -103,16 +103,16 @@ class RadarNetwork:
         self.used[engine_id] = self.used.get(engine_id, 0) + 1
         self.last[engine_id] = self.clock()
 
-    def get(self, engine_id: str, host: str, path: str, query=None):
+    def get(self, engine_id: str, host: str, path: str, query=None, *, accept: str = "application/json"):
         contract = self.contracts[engine_id]
         if host not in contract.hosts or contract.access_method != "https_get":
             raise RadarEngineError("radar_host_not_declared", f"{engine_id} may not read {host}")
         self._admit(engine_id)
-        transport = self.transports.get(engine_id)
+        transport = self.transports.get((engine_id, accept))
         if transport is None:
             transport = HttpsGetTransport(contract.hosts, self.budget, self.log, timeout_seconds=30.0,
-                                          maximum_bytes=4 * 1024 * 1024)
-            self.transports[engine_id] = transport
+                                          maximum_bytes=4 * 1024 * 1024, accept=accept)
+            self.transports[(engine_id, accept)] = transport
         return transport.get(host, path, query)
 
     def gh_get(self, engine_id: str, path: str):
@@ -270,7 +270,7 @@ class GitHubAdvisories:
                 licence="CC-BY-4.0", licence_basis="the GitHub Advisory Database licence for its advisory data",
                 facts={"severity": text_fact(item.get("severity")), "cve": cve, "type": kind,
                        "packages": ", ".join(names[:3]) if names else None, "affected_packages": len(names),
-                       "vulnerable_range": text_fact(first.get("vulnerable_version_range")),
+                       "affected_range": text_fact(first.get("vulnerable_version_range")),
                        "fixed_version": text_fact(first.get("first_patched_version")),
                        "withdrawn": bool(item.get("withdrawn_at"))},
                 event_at=iso_time(item.get("published_at")), source_published_at=iso_time(item.get("updated_at"))))
@@ -501,7 +501,8 @@ class ArxivListing:
         query = {"search_query": search, "sortBy": "submittedDate", "sortOrder": "descending",
                  "max_results": limit_of(context, 30)}
         try:
-            response = context.network.get(self.engine_id, "export.arxiv.org", "/api/query", query)
+            response = context.network.get(self.engine_id, "export.arxiv.org", "/api/query", query,
+                                           accept="application/atom+xml")
         except (RadarEngineError, RequestCeilingReached, OSError) as error:
             return EngineAnswer(FAILED, str(error))
         if response.status != 200:
@@ -548,7 +549,9 @@ class OpenAlexWorks:
             raise RadarEngineError("radar_parameter_invalid", "field is an OpenAlex field such as fields/27")
         window = parameter(context, "window_days", 180, kind=int)
         start = (date.fromisoformat(context.today) - timedelta(days=window)).isoformat()
-        query = {"filter": f"from_publication_date:{start},primary_topic.field.id:{field_id},type:article",
+        # Journal sources only: a repository re-deposit of an old, much-cited article carries a new date.
+        query = {"filter": f"from_publication_date:{start},primary_topic.field.id:{field_id},type:article,"
+                           "primary_location.source.type:journal",
                  "sort": "cited_by_count:desc", "per_page": limit_of(context, 25),
                  "select": "id,doi,display_name,publication_date,cited_by_count,open_access,primary_location,primary_topic"}
         try:

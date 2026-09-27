@@ -58,9 +58,10 @@ SHOWN_FACTS = {
                            ("local_address", "local address")),
     "mcp_directory": (("servers", "servers"), ("publisher", "publisher"), ("offering", "offering"),
                       ("transports", "transports"), ("authentication", "authentication"), ("updated", "updated")),
-    "curated_seed": (("kind", "kind"),),
+    "curated_seed": (("link_pricing", "pricing page"), ("link_documentation", "documentation"),
+                     ("link_status", "status page"), ("link_repository", "repository"), ("kind", "kind")),
     "github_search": (("stars", "stars"), ("language", "language"), ("topics", "topics"), ("archived", "archived")),
-    "github_advisories": (("severity", "severity"), ("cve", "CVE"), ("vulnerable_range", "affected versions"),
+    "github_advisories": (("severity", "severity"), ("cve", "CVE"), ("affected_range", "affected range"),
                           ("fixed_version", "fixed in"), ("affected_packages", "packages")),
     "github_releases": (("tag", "latest"), ("previous_tag", "previous"), ("major_version_changed", "major version changed")),
     "owner_directory": (("tier", "tier"), ("category", "category"), ("openai_compatible", "OpenAI-compatible"),
@@ -399,7 +400,7 @@ def render_skill(question: RadarQuestion, brief: dict, files: dict) -> str:
         lines += ["| # | Name | Facts | Licence | Dates |", "|---|---|---|---|---|"]
         for number, claim in enumerate(rows, 1):
             item = _Claim(claim)
-            licence = claim["licence"] or "not stated"
+            licence = (claim["licence"] or "not stated").replace("|", "/")
             lines.append(f"| {number} | [{claim['title']}]({claim['url']}) | {facts_text(item, section['rank_fact'])} | {licence} | "
                          f"{dates_text(item)} |")
         lines.append("")
