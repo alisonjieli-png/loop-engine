@@ -72,40 +72,124 @@ local model; a developer cleans a data set without asking an expensive model
 to do simple transformations; a full solve of a data science competition from
 task to submission.
 
-Every functional component is wrapped behind a fixed, typed, versioned edge
-with one or more swappable engines behind it, at the component level and
-above and below it. A harness or a Loop may send engine preferences within
-its authority, and the runtime selects the most efficient eligible engine by
-declared order and recorded evidence. The folder structure should follow the
-components and their engines. The earlier custom loop-node engine may return
-as one more engine behind the same executor edge. Before building any
-component, search for existing projects, repositories, designs and papers to
-reuse, and record the decision.
+Every functional component sits behind a fixed, typed, versioned edge with
+one or more swappable engines, as rule 6 of the
+[authority section](#commit-push-and-release-authority) states. The earlier
+custom loop-node engine may return as one more engine behind the same
+executor edge.
+
+### The September 27 direction
+
+On September 27, 2026 the owner added four things to this north star. Each
+stands until the owner changes it.
+
+**Knowledge that stays current.** The owner observed that a developer's edge
+is "knowledge on recent papers", which "isn't something that's moated", and
+asked Baltor to keep watching and serving "top benchmarks ... top specialized
+language models, top decision and thinking and reasoning models ... top
+pipelines for everything", infrastructure choices ("Fly.io versus Render ...
+uptime monitors"), and to expand into "3D, 2D, CAD, design, image scraping";
+"every time it ages, ask questions like, Is this the most efficient way of
+doing things". In the owner's words: "top papers, top use cases, top
+solutions for X, Y, Z problems. Those are going to be more valuable than
+anything else we provide users." Baltor therefore serves two kinds of
+material side by side through the same search, retrieval and review: the
+component library of files a harness picks up, and a knowledge feed of
+dated, sourced briefs that answer which paper, model, benchmark, pipeline,
+tool or service is the best current choice for a job. Every brief carries
+the date it was checked and the date it must be asked again, and an aged
+brief is re-asked, not silently kept. Roadmap step S-6.214 is the first
+piece.
+
+**Four zones, run by agent teams.** The owner asked for "splitting the
+website server side that's public that interacts with the customer and the
+customer's harness, making sure that is appropriately compartmentalized",
+the client side ("the harness and setup, etc. in the MCP between those"),
+and "internal server-side as well as internal local components. And these
+internal components are meant to be swarms of agents or dedicated pipelines
+or individual agents with skills that do the work of a team of individuals.
+We don't have a team of individuals, but we do have a lot of agents." The
+code therefore falls into four zones: the public service, the customer
+client, internal server-side jobs and internal local pipelines. The internal
+zones are the staff: agent teams and pipelines that grow and review the
+library, release, research, measure and draft support. Each zone holds only
+its own credentials, and the public service never imports an internal
+pipeline. The
+[four-zone architecture record](docs/architecture/FOUR-ZONE-ARCHITECTURE-2026-09-27.md)
+maps every current component, job and workflow to its zone.
+
+**Decide like a startup.** The owner asked engineering to "significantly
+increase your aggressive efforts to reconcile and consolidate all aspects of
+the code: all branches, all forks, all work trees, etc." and continued: "as
+a North Star when making decisions on how to do that merge, think of our
+100K MRR 90-day plan, and think of this as a startup. You should take on
+personas of a startup CEO, a startup CTO, an invested investor, a
+non-invested investor, an interested investor, different customer groups,
+different personas of customers, different marketing channels, etc." and
+"The evolution of this project has brought vast amounts of wealth and
+understanding and product-market fit research that all needs to be
+considered and worked into a flexible North Star."
+Weigh each choice by what it does for the ninety-day revenue plan: a visitor
+who reaches a first download in their own harness, a developer or team that
+pays, a channel that brings people who stay, and a claim proven with and
+without Baltor. Library size is supply, not the goal. The plan's targets, its
+revenue analysis and the persona panel stay in the owner's private folder on
+the development workstation (`~/baltor-private/`), outside this public
+repository.
+
+**Flexible rules.** The owner: "We also need to watch out for any rules or
+tests that are not flexible enough as we continuously and iteratively
+develop." A check protects one named invariant and fails its known-wrong
+case. A check that pins whole-file bytes, page copy, counts, dates or the
+newest file name, where a narrower test of the same invariant exists, is
+replaced by the narrower test, which must still fail the known-wrong case.
+The guards of the authority section, secrets, permissions, spending and
+external effects are never loosened this way. The
+[rules flexibility audit](docs/architecture/RULES-FLEXIBILITY-AUDIT-2026-09-27.md)
+lists the current candidates.
+
+In one sentence: Baltor gives each step of a customer's harness the best
+current files and the best current knowledge for that step, proven with and
+without Baltor, under the customer's own budget and permissions, and
+engineering picks the work that brings paying developers and teams soonest.
 
 ```text
-Current initiatives, in priority order
-├── 1. One main line, live and checked (roadmap package D-18)
-│   ├── Every branch and worktree merged, silent merge losses restored
-│   ├── Releases only from a committed revision whose checks passed, then
-│   │   automated checks on every live hostname
-│   ├── One home for rules and authority; every README matches reality
-│   └── Website fixes from the persona review; sign-up email switched on
-├── 2. Private beta for invited users (D-17)
-│   ├── Personal accounts and personal client keys
-│   ├── Every approved harness intelligence item shipped
-│   └── One native client that demonstrably loads selected material and
-│       finishes a checked step in its own harness
-├── 3. Engines behind fixed edges for every functional component (D-19)
-│   ├── The shared engine framework, harness preferences, evidence ranking
-│   ├── The harness executor slot: one harness per step, Agent Client
-│   │   Protocol first
-│   └── Search and retrieval engines with a relevance floor
-├── 4. Demonstrations, case studies and benchmarks with and without Baltor,
-│      each on its own subdomain (competitions, data cleanup, agent benchmarks)
-├── 5. Evidence for the launch benefits, under explicit model authority (D-07 to D-09)
-├── 6. Durable cloud records, files and retrieval (D-05)
-└── 7. Continuing work: research, the Y Combinator package, removal of unused
-       pre-launch compatibility, and reproduced defects (D-12, S-6.26, S-6.27)
+Current initiatives, in priority order (September 27, 2026)
+├── 1. One main line, live and checked (D-18, S-6.29)
+│   ├── Every worktree line saved, then merged or archived; orphaned
+│   │   coordination notes committed
+│   ├── A free disk, and continuous integration that stays green after
+│   │   automated data refreshes
+│   ├── The daily job reads a publish from the service; the oracles run
+│   │   from a current main revision
+│   └── Releases only from checked main revisions, then live checks on
+│       every hostname
+├── 2. Activation and measurement (S-6.204, D-15, D-21, D-25)
+│   ├── A visitor counter and funnel events: visit, sign-up, first search,
+│   │   first download, return on day 2 and day 7, checkout
+│   ├── A first download inside each quickstart harness in under five
+│   │   minutes, measured
+│   ├── A free monthly download allowance measured against paid-only
+│   │   downloads
+│   └── Listings in the plugin directories, the Model Context Protocol
+│       Registry and skills.sh (S-6.183)
+├── 3. The knowledge feed (S-6.214)
+│   ├── Dated, sourced briefs on papers, models, benchmarks, pipelines,
+│   │   tools and infrastructure, asked again when they age
+│   └── Served to harnesses beside the component library, then new fields
+│       such as 3D, 2D, CAD and design
+├── 4. The Team plan (S-6.191, S-6.186)
+│   ├── One governed library across every harness a team uses: seats,
+│   │   private items through the same review, an allowlist, an audit log
+│   └── A published review method: named scanners, sandbox runs for code,
+│       second-family review, rescans and withdrawal records
+├── 5. Proof with and without Baltor (S-6.173, S-6.185, D-07 to D-09)
+│   ├── Per-step selection against native skill search, abstention measured
+│   └── Overnight work on a cheap model under the same budget
+├── 6. Engines behind fixed edges for every functional component (D-19, D-28)
+└── 7. Continuing work: library growth by the daily job (D-26), durable
+       cloud records (D-05), research, the Y Combinator package and removal
+       of unused pre-launch compatibility (D-12)
 ```
 
 The authoritative task state is [roadmap.yaml](docs/roadmap/roadmap.yaml) and
