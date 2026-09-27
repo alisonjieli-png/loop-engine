@@ -44,7 +44,8 @@ from pathlib import Path
 from loop_engine.core.library_ingestion.record_rules import git_blob_identity
 
 from .licences import repository_licence
-from .packaging import LICENCE_NAME, UPSTREAM_LICENCE_NAME, PackageFile, SupplyPackage, build
+from .packaging import (
+    LICENCE_NAME, MAXIMUM_REVIEW_FILE_BYTES, UPSTREAM_LICENCE_NAME, PackageFile, SupplyPackage, build)
 from .records import (
     GENERATED_CODE_LICENCE, LICENCE_TEXT, OPENAPI_OPERATIONS, SupplyRecordError, fact_source, provenance, refusal,
     upstream_key)

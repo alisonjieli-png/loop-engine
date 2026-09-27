@@ -384,6 +384,26 @@ class OpenApiLineTest(unittest.TestCase):
         self.assertIn("$comment", json.dumps(shallow))
         self.assertIn("description", shallow["properties"])
 
+    def test_a_package_whose_schema_is_above_the_bound_is_kept_with_a_compacted_schema(self):
+        from supply_lines import openapi_operations as line
+        from supply_lines.licences import RepositoryLicence
+        found, _refused = line.operations(SPECIFICATION, SOURCE)
+        create = next(operation for operation in found if operation.function == "create_thing")
+        licence = RepositoryLicence("example/api", "c" * 40, "MIT", "agreed", "LICENSE", LICENCE, "MIT", "MIT", 1.0)
+        generator = {"identity": "tools/supply_lines/openapi_operations.py", "version": "test",
+                     "code_revision": "a" * 40}
+        saved = line.MAXIMUM_REVIEW_FILE_BYTES
+        line.MAXIMUM_REVIEW_FILE_BYTES = 900
+        try:
+            with tempfile.TemporaryDirectory() as folder:
+                payload, bodies = line._package(create, {**SPEC_FACTS, "size_bytes": 10, "retrieved_at": "2026-09-27T00:00:00Z"},
+                                                SOURCE, licence, generator, LICENCE, "2026-09-27", Path(folder), {})
+        finally:
+            line.MAXIMUM_REVIEW_FILE_BYTES = saved
+        schema = next(bodies[entry["digest"]] for entry in payload["package"]["files"] if entry["path"] == "schema.json")
+        self.assertIn(b"descriptions and examples are omitted", schema)
+        self.assertEqual(payload["component_form"]["form"], "api_operation")
+
     def test_the_network_is_closed_while_generated_tests_run(self):
         from supply_lines import openapi_operations as line
         import urllib.request
