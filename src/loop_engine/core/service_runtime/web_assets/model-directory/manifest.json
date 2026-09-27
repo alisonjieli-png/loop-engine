@@ -1,33 +1,33 @@
 {
- "built_at": "2026-09-27T13:06:42Z",
+ "built_at": "2026-09-27T19:25:56Z",
  "commercial_relationship_schema": "directory_commercial_relationship/v1",
  "counts": {
   "endpoints": 184,
-  "fit_rows": 1226,
-  "models": 2145,
+  "fit_rows": 1293,
+  "models": 2158,
   "runtimes": 6,
-  "search_rows": 2145
+  "search_rows": 2158
  },
  "files": {
   "endpoints.json": {
-   "bytes": 1342199,
-   "sha256": "181945a1500101022036fa7fc31688fd6213cc510d199778061d62f156485ff8"
+   "bytes": 1313658,
+   "sha256": "346f55fdcd396bc1998ba2e0e33bdf2bebd595b7d58001ac247853d8688e5824"
   },
   "fit-index.json": {
-   "bytes": 250317,
-   "sha256": "87a9377bffb2e5e31f4df3bdda1e97a2caa3aa15f555d5473254ec14e29aef0c"
+   "bytes": 261221,
+   "sha256": "fa2727e72a38da4b89e3fb9fd5df220d447582ca18a1f0462d321e64e52ecdcd"
   },
   "hardware.json": {
    "bytes": 10009,
    "sha256": "5cef471389acea1215e70c060b47653ec79f37d9a723f859b1ab07b803f343c6"
   },
   "models.json": {
-   "bytes": 6004339,
-   "sha256": "40e8b2853afb6c759329a078156f078056033c7d628630d1664bab4275260b02"
+   "bytes": 5503661,
+   "sha256": "5d499630acc9384f284e60bb5d7d39dadf6bb3409ee373bc17aaad93536043e0"
   },
   "search-index.json": {
-   "bytes": 267492,
-   "sha256": "b6881322538f13abde0806fd1757f340c6b32b7261dc03b547a73c19f07e95b3"
+   "bytes": 271160,
+   "sha256": "3bfd4980189e200050243c770764e97c613062595c8af97da38a39504cb895cd"
   }
  },
  "linked_only": [
@@ -36,44 +36,63 @@
    "name": "Ollama library",
    "terms_address": "ollama.com/terms",
    "use": "Linked only. Ollama's terms refuse automated access without permission, so no data is copied from it."
+  },
+  {
+   "address": "openrouter.ai/models",
+   "name": "OpenRouter",
+   "terms_address": "openrouter.ai/terms",
+   "use": "Linked only. OpenRouter's terms of August 31, 2026 forbid copying information on its site or services by script and using it for a competing service, so none of its prices, limits or rankings are copied here. It documents a Models API that your own tool can read with your own account."
+  },
+  {
+   "address": "artificialanalysis.ai",
+   "name": "Artificial Analysis",
+   "terms_address": "artificialanalysis.ai/terms-of-use",
+   "use": "Linked only. Its website terms allow only personal, noncommercial use, so none of its indexes, prices or speed measurements are copied here."
   }
  ],
  "model_rows_by_source": {
   "baltor_records": 4,
-  "huggingface": 1774,
-  "huggingface_config": 956,
-  "huggingface_gguf": 717,
-  "modelsdev": 471,
-  "openrouter": 341,
-  "openrouter_endpoints": 341
+  "huggingface": 1853,
+  "huggingface_config": 943,
+  "huggingface_gguf": 697,
+  "litellm": 320,
+  "lmarena": 73,
+  "modelsdev": 584
  },
- "record_type": "model_directory_manifest/v1",
+ "record_type": "model_directory_manifest/v2",
  "report": {
-  "configurations": 956,
-  "gguf_repositories": 717,
+  "arena": {
+   "joined": 73,
+   "read": "2026-09-27",
+   "rows": 409,
+   "state": "cached"
+  },
+  "configurations": 943,
+  "gguf_repositories": 697,
+  "hosted_repositories": 0,
   "lists": [
    {
     "added": 482,
     "limit": 1000,
     "read": "2026-09-27",
     "sort": "downloads",
-    "state": "read",
+    "state": "cached",
     "task": "text-generation"
    },
    {
-    "added": 558,
+    "added": 557,
     "limit": 1000,
     "read": "2026-09-27",
     "sort": "likes",
-    "state": "read",
+    "state": "cached",
     "task": "text-generation"
    },
    {
-    "added": 97,
+    "added": 101,
     "limit": 500,
     "read": "2026-09-27",
     "sort": "trendingScore",
-    "state": "read",
+    "state": "cached",
     "task": "text-generation"
    },
    {
@@ -81,15 +100,15 @@
     "limit": 400,
     "read": "2026-09-27",
     "sort": "downloads",
-    "state": "read",
+    "state": "cached",
     "task": "image-text-to-text"
    },
    {
-    "added": 67,
+    "added": 66,
     "limit": 200,
     "read": "2026-09-27",
     "sort": "likes",
-    "state": "read",
+    "state": "cached",
     "task": "image-text-to-text"
    },
    {
@@ -97,7 +116,7 @@
     "limit": 250,
     "read": "2026-09-27",
     "sort": "downloads",
-    "state": "read",
+    "state": "cached",
     "task": "feature-extraction"
    },
    {
@@ -105,7 +124,7 @@
     "limit": 250,
     "read": "2026-09-27",
     "sort": "downloads",
-    "state": "read",
+    "state": "cached",
     "task": "sentence-similarity"
    },
    {
@@ -113,94 +132,115 @@
     "limit": 120,
     "read": "2026-09-27",
     "sort": "downloads",
-    "state": "read",
+    "state": "cached",
     "task": "text-ranking"
    }
   ],
+  "litellm": {
+   "entries": 3668,
+   "read": "2026-09-27",
+   "state": "cached"
+  },
   "reader": {
    "answers": {
-    "cached": 2846,
+    "cached": 2669,
     "kept": 0,
-    "missing": 69,
-    "read": 384
+    "missing": 61,
+    "read": 97
    },
    "requests": {
     "by_outcome": {
-     "https_get:http_error": 61,
-     "https_get:not_found": 8,
-     "https_get:ok": 384
+     "https_get:http_error": 53,
+     "https_get:not_found": 7,
+     "https_get:ok": 98
     },
-    "bytes": 54980757,
-    "requests": 453
+    "bytes": 41427511,
+    "requests": 158
    },
    "stopped_by": null
   },
-  "refused": []
+  "refused": [],
+  "served_copies": 31,
+  "served_repositories": 93
  },
  "sources": [
   {
-   "address": "openrouter.ai/api/v1/models",
-   "id": "openrouter",
-   "name": "OpenRouter Models API",
-   "newest_read": "2026-09-27",
-   "oldest_read": "2026-09-27",
-   "rows": 341,
-   "terms_address": "openrouter.ai/docs/guides/overview/models",
-   "use": "Context length, output limit, supported parameters and benchmark indexes of hosted models. OpenRouter's documentation says its Models API makes this information freely available; the build reads only that documented interface."
-  },
-  {
-   "address": "openrouter.ai/api/v1/models",
-   "id": "openrouter_endpoints",
-   "name": "OpenRouter model endpoints API",
-   "newest_read": "2026-09-27",
-   "oldest_read": "2026-09-27",
-   "rows": 341,
-   "terms_address": "openrouter.ai/docs/guides/overview/models",
-   "use": "The providers that serve each model through OpenRouter, with the prices OpenRouter lists for each route."
-  },
-  {
    "address": "huggingface.co/api/models",
+   "checked": "2026-09-24",
    "id": "huggingface",
+   "licence": "Terms of service; each model card declares its own licence",
    "name": "Hugging Face Hub API",
    "newest_read": "2026-09-27",
-   "oldest_read": "2026-09-26",
-   "rows": 1774,
+   "oldest_read": "2026-09-27",
+   "rows": 1853,
    "terms_address": "huggingface.co/terms-of-service",
    "use": "Licence, parameter count, publication date, downloads and task of open models, read within the API's published request limit."
   },
   {
    "address": "huggingface.co",
+   "checked": "2026-09-24",
    "id": "huggingface_config",
+   "licence": "Terms of service",
    "name": "Hugging Face model configurations",
    "newest_read": "2026-09-27",
-   "oldest_read": "2026-09-26",
-   "rows": 956,
+   "oldest_read": "2026-09-24",
+   "rows": 943,
    "terms_address": "huggingface.co/terms-of-service",
    "use": "Layers, key and value heads, head size and context length, the numbers the memory formula needs."
   },
   {
    "address": "huggingface.co",
+   "checked": "2026-09-24",
    "id": "huggingface_gguf",
+   "licence": "Terms of service",
    "name": "Hugging Face GGUF file lists",
    "newest_read": "2026-09-27",
-   "oldest_read": "2026-09-26",
-   "rows": 717,
+   "oldest_read": "2026-09-24",
+   "rows": 697,
    "terms_address": "huggingface.co/terms-of-service",
    "use": "The quantized files of a model and their sizes, from the GGUF copy its maker or the most downloaded copier publishes."
   },
   {
    "address": "models.dev/api.json",
+   "checked": "2026-09-27",
    "id": "modelsdev",
+   "licence": "MIT",
    "name": "models.dev",
    "newest_read": "2026-09-27",
    "oldest_read": "2026-09-27",
-   "rows": 655,
-   "terms_address": "github.com/sst/models.dev/blob/dev/LICENSE",
-   "use": "Direct provider prices, limits and capabilities, from a public database under the MIT licence."
+   "rows": 768,
+   "terms_address": "github.com/anomalyco/models.dev/blob/dev/LICENSE",
+   "use": "Provider prices with each record's own date, the limits and capabilities of the makers' own APIs, release dates, and each provider's documented address and key variable."
+  },
+  {
+   "address": "github.com/BerriAI/litellm/blob/main/model_prices_and_context_window.json",
+   "checked": "2026-09-27",
+   "id": "litellm",
+   "licence": "MIT",
+   "name": "LiteLLM model price and context file",
+   "newest_read": "2026-09-27",
+   "oldest_read": "2026-09-27",
+   "rows": 320,
+   "terms_address": "github.com/BerriAI/litellm/blob/main/LICENSE",
+   "use": "Provider prices as listed on the day the file was read, and the input and output limits and tool calling, structured output and reasoning flags of the makers' own APIs."
+  },
+  {
+   "address": "huggingface.co/datasets/lmarena-ai/leaderboard-dataset",
+   "checked": "2026-09-27",
+   "id": "lmarena",
+   "licence": "CC BY 4.0",
+   "name": "LMArena leaderboard dataset",
+   "newest_read": "2026-09-27",
+   "oldest_read": "2026-09-27",
+   "rows": 73,
+   "terms_address": "creativecommons.org/licenses/by/4.0/",
+   "use": "The overall text arena score with style control from the latest leaderboard, rounded to a whole number, for a hosted model the arena names with its maker's own identifier."
   },
   {
    "address": "github.com/alisonjieli-png/loop-engine",
+   "checked": "2026-09-27",
    "id": "baltor_records",
+   "licence": "Baltor's own record",
    "name": "Baltor provider client records",
    "newest_read": "2026-09-04",
    "oldest_read": "2026-08-25",
@@ -210,17 +250,21 @@
   },
   {
    "address": "github.com/alisonjieli-png/loop-engine/blob/main/tools/model_directory/provider_documentation.json",
+   "checked": "2026-09-27",
    "id": "provider_documentation",
+   "licence": "Baltor's own record of each provider's public pages",
    "name": "Provider and runtime documentation",
-   "newest_read": "2026-09-24",
+   "newest_read": "2026-09-27",
    "oldest_read": "2026-09-24",
    "rows": 17,
    "terms_address": "github.com/alisonjieli-png/loop-engine/blob/main/tools/model_directory/SOURCES.md",
-   "use": "API styles, authentication, rate-limit, pricing and data-policy pages, read by a person on the day each fact names."
+   "use": "API styles, authentication, structured output, tool calling, rate-limit, pricing and data-policy pages, read by a person on the day each fact names."
   },
   {
    "address": "github.com/alisonjieli-png/loop-engine/blob/main/tools/model_directory/provider_documentation.json",
+   "checked": "2026-09-27",
    "id": "harness_documentation",
+   "licence": "Baltor's own record of each harness's documentation",
    "name": "Harness documentation",
    "newest_read": "",
    "oldest_read": "",
