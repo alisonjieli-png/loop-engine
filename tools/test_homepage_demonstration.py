@@ -20,7 +20,9 @@ that the local engine is built to assemble such a directory for every step. Thre
 reference, a digest or a download anywhere in the hero is the known-wrong page. The one-step demonstration that stood
 beside the hero until then, splitting the address lines of a customer file, is step 2 of the demonstration at /demo,
 whose every search is rerun by tools/test_showcase_pages.py; its markup is archived in
-artifacts/website-archive-2026-09-24.
+artifacts/website-archive-2026-09-24. On September 27, 2026 the reused code file, lib/blocking_keys.py, was taken out of
+the folder: the download it sat beside delivers one SKILL.md, and the folder shows only files the download delivers
+beside the harness's own files.
 
 This module also keeps what the demonstration pages share with it: the reader of marked page elements, a real search
 of this release's packaged library through the host loader and the retrieval route the service uses, and the reader of
@@ -131,7 +133,11 @@ def read_demonstration(page):
     download = next((item["attrs"]["data-demo-download"] for item in found if "data-demo-download" in item["attrs"]), "")
     query = next((item["text"].strip() for item in found if "data-demo-query" in item["attrs"]), "")
     paths = [item["attrs"]["data-demo-path"] for item in in_order("data-demo-path")]
-    return {"stages": stages, "labels": labels, "items": items, "download": download, "query": query, "paths": paths}
+    # The harness's own files of the folder (its instruction file, its skill folder and its connection settings) are not
+    # placed from the download; they are kept apart from the placed paths.
+    harness_files = [" ".join(item["text"].split()) for item in found if "data-hero-file" in item["attrs"]]
+    return {"stages": stages, "labels": labels, "items": items, "download": download, "query": query, "paths": paths,
+            "harness_files": harness_files}
 
 
 def released_items():
@@ -198,14 +204,33 @@ def download_problems(demonstration, items):
     return problems
 
 
-def folder_problems(demonstration):
-    """The step folder places the downloaded skill, and holds a file that is not Markdown."""
-    paths, problems = demonstration["paths"], []
-    if not any(Path(path).suffix.lower() != ".md" for path in paths):
+def delivered_files(item):
+    """The files a download of this release item places in its skill folder, or None for a shape this check does not read.
+
+    Every item of the packaged release is a single-file skill: its one body is placed as the skill folder's SKILL.md."""
+    if item.get("kind") == "skill" and Path(item.get("body_path", "")).suffix == ".md" and not item.get("files"):
+        return {"SKILL.md"}
+    return None
+
+
+def folder_problems(demonstration, items):
+    """The step folder places the downloaded skill and only the files its package delivers, and holds a file that is not Markdown.
+
+    Until September 27, 2026 the folder also showed lib/blocking_keys.py beside the skill, a module the downloaded package
+    does not deliver: every package of this release is a single SKILL.md."""
+    paths, problems, identity = demonstration["paths"], [], demonstration["download"]
+    if not any(Path(path.rstrip("/")).suffix.lower() not in (".md", "") for path in paths + demonstration["harness_files"]):
         problems.append("the step folder shows only Markdown files; harness material is any file a harness reads")
     placed = [Path(path).parent.name for path in paths if Path(path).name == "SKILL.md"]
-    if placed != [demonstration["download"].replace("_", "-")]:
-        problems.append(f"the step folder places the skills {placed}, and the step downloaded {demonstration['download'] or '(nothing)'}")
+    if placed != [identity.replace("_", "-")]:
+        problems.append(f"the step folder places the skills {placed}, and the step downloaded {identity or '(nothing)'}")
+    delivered = delivered_files(items[identity]) if identity in items else set()
+    if delivered is None:
+        return problems + [f"the files a download of {identity} places are not known to this check"]
+    for path in paths:
+        if Path(path).name != "SKILL.md" and not (Path(path).parent.name == identity.replace("_", "-")
+                                                  and Path(path).name in delivered):
+            problems.append(f"the step folder shows {path}, which the download of {identity} does not deliver")
     return problems
 
 
@@ -329,7 +354,9 @@ def _planted(page, old, new):
 
 
 #: The parts of one step's working directory the hero shows, in order.
-HERO_PARTS = ("instructions", "skills", "tools", "code")
+#: The owner's hero of September 24, 2026 named reused code as a fourth part. On September 27, 2026 the code file was taken
+#: out: the folder places the one reference the search chose, and no package of the packaged release delivers a code module.
+HERO_PARTS = ("instructions", "skills", "tools")
 #: The protocol tools the hero's terminal calls, in order: the search, then the read of the exact version it chose. The search
 #: tool is listed by name in http.py and the read tool is a key of provisioning_mcp.TOOL_OPERATIONS; the tests read both.
 HERO_TOOLS = ("intelligence_search", "provisioning_read")
@@ -392,7 +419,7 @@ def hero_result_problems(page, items, harmful):
     if not demonstration["query"]:
         return ["the hero terminal shows no search"]
     return (search_problems(demonstration, release_search(demonstration["query"])) + download_problems(demonstration, items)
-            + folder_problems(demonstration) + harmful_choice_problems(demonstration, harmful))
+            + folder_problems(demonstration, items) + harmful_choice_problems(demonstration, harmful))
 
 
 def demonstration_problems(page, served):
@@ -475,6 +502,27 @@ class HomepageHeroTest(unittest.TestCase):
         placed = identity.replace("_", "-")
         self.assertEqual(len(hero_result_problems(_planted(self.page, 'data-demo-path=".claude/skills/' + placed + '/SKILL.md"',
                                                              'data-demo-path=".claude/skills/' + shown[1].replace("_", "-") + '/SKILL.md"'), self.items, harmful)), 1)
+
+    def test_the_folder_shows_only_files_the_download_delivers(self):
+        harmful = recorded_harm()
+        demonstration = read_demonstration(hero_markup(self.page))
+        self.assertEqual(folder_problems(demonstration, self.items), [])
+        self.assertEqual(delivered_files(self.items[demonstration["download"]]), {"SKILL.md"})
+        self.assertIn(".mcp.json", demonstration["harness_files"])
+        # KNOWN_WRONG: the folder as served until September 27, 2026, with a code module beside the skill that the downloaded
+        # package does not deliver; and a second file planted inside the skill's own folder.
+        before = _planted(self.page, '.mcp.json</span>\n└── .baltor/step.lock.json',
+                          '.mcp.json</span>\n├── lib/\n│   └── <span data-hero-part="code" data-demo-path="lib/blocking_keys.py">'
+                          'blocking_keys.py</span>\n└── .baltor/step.lock.json')
+        problems = hero_result_problems(before, self.items, harmful)
+        self.assertEqual(problems, ["the step folder shows lib/blocking_keys.py, which the download of "
+                                    "find_duplicate_records_with_blocking_keys does not deliver"])
+        self.assertTrue(any(problem.startswith("the hero directory shows the parts") for problem in hero_problems(before)))
+        skill = ".claude/skills/find-duplicate-records-with-blocking-keys/"
+        extra = _planted(self.page, 'SKILL.md</span>\n├── <span data-hero-part="tools"',
+                         'SKILL.md</span>\n│       └── <span data-demo-path="' + skill + 'scripts/dedupe.py">dedupe.py</span>\n'
+                         '├── <span data-hero-part="tools"')
+        self.assertEqual(len(folder_problems(read_demonstration(hero_markup(extra)), self.items)), 1)
 
     def test_the_hero_keeps_assembly_for_each_step_to_built_to_wording(self):
         # KNOWN_WRONG, the owner's constraint of September 24, 2026: assembly for each step stated as what Baltor does today, as a

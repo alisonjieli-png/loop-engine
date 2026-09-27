@@ -411,8 +411,9 @@ const primaryProblems=(actions,registrationOpen=false)=>[...(actions.length?[]:[
   ...actions.filter(action=>action.text!==stateLabel(registrationOpen)||action.href!==statePath(registrationOpen)).map(action=>"a primary action says "+JSON.stringify(action.text)+" and opens "+JSON.stringify(action.href))];
 /* The hero since September 24, 2026: no worked example, only the working directory one step gets. The owner: "instead of
    showing a simple example, we should show the directory structure emphasize that it is built on demand efficiently, no manual
-   searches, no manual setup". The figure names the four parts a step's directory holds, the instruction file with only that step's
-   context, the skill it needs, its protocol server settings and reused code, says it is an example layout, and says the files were
+   searches, no manual setup". The figure names the parts a step's directory holds, the instruction file with only that step's
+   context, the skill it needs and its protocol server settings (the reused code file beside the skill was taken out on September
+   27, 2026, because the download it sat beside delivers one SKILL.md), says it is an example layout, and says the files were
    placed with no manual search and no manual setup. What works today stays apart from what is built but not shipped: a person's
    agent searches and Baltor places the chosen files, while assembling a directory for every step is what the local engine is built
    to do, so a sentence about assembling or building for each step says "built to". Since September 26, 2026 the directory is the
@@ -420,7 +421,7 @@ const primaryProblems=(actions,registrationOpen=false)=>[...(actions.length?[]:[
    the download of the reference it chose and the folder, in that order, with the protocol tools this service lists,
    intelligence_search and provisioning_read, never the archive's placeholder commands. tools/test_homepage_demonstration.py reruns
    the search against this release's library; here the order of the three panes and the tool names are read from the page. */
-const heroDirectoryParts=["instructions","skills","tools","code"],heroStages=["search","download","folder"],heroTools=["intelligence_search","provisioning_read"];
+const heroDirectoryParts=["instructions","skills","tools"],heroStages=["search","download","folder"],heroTools=["intelligence_search","provisioning_read"];
 /* A sentence that assembles or builds something for each or every step, or for this step, without saying the engine is built to. */
 const perStepClaim=text=>text.split(/(?<=[.!?])\s+/).filter(sentence=>/\b(?:assembl|build|built)\w*\b[^.!?]*\b(?:each|every|this|one)\s+(?:step|subtask)\b/i.test(sentence)&&!/\bbuilt to\b/i.test(sentence));
 const heroDirectory=target=>target.evaluate(()=>{
@@ -924,11 +925,11 @@ try {
   check("demo_names_only_released_catalogue_items",namesOnlyReleasedItems(shownIdentities),{items:shownIdentities});
   check("demo_item_check_rejects_an_item_the_library_does_not_serve",!namesOnlyReleasedItems([...shownIdentities,"invented_item_nobody_approved"]));
   /* Harness material is any file a harness reads: the library band names the scripts, the tools and code, the hooks and the protocol
-     server settings beside the instruction files, and the hero's directory holds protocol server settings and reused code. */
+     server settings beside the instruction files, and the hero's directory holds protocol server settings. */
   await page.goto(fixture.base+"/"); await page.waitForFunction(()=>document.querySelector("#service-status").textContent.includes("Service available"));
   const libraryText=await page.locator('[data-band="library"]').innerText();
   const namesFilesBeyondMarkdown=text=>/\bscripts\b/i.test(text)&&/tools and code/i.test(text)&&/\bhooks\b/i.test(text)&&/protocol server/i.test(text);
-  check("library_names_files_beyond_markdown",namesFilesBeyondMarkdown(libraryText)&&hero.parts.includes("tools")&&hero.parts.includes("code"));
+  check("library_names_files_beyond_markdown",namesFilesBeyondMarkdown(libraryText)&&hero.parts.includes("tools"));
   check("library_word_check_rejects_a_band_that_names_only_instruction_files",!namesFilesBeyondMarkdown("Instruction files such as AGENTS.md and CLAUDE.md.")&&namesFilesBeyondMarkdown(libraryText));
   /* No motion of its own. With reduced motion requested, nothing on the homepage animates or moves by a transition. */
   const moving=await page.evaluate(()=>[...document.querySelectorAll('[data-view="home"], [data-view="home"] *')].filter(node=>{const style=getComputedStyle(node);return (style.animationName!=="none"&&parseFloat(style.animationDuration)>0)||parseFloat(style.transitionDuration)>0;}).length);

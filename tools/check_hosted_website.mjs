@@ -135,7 +135,7 @@ try{
   const liveHeroDirectory=await page.evaluate(()=>{const band=document.querySelector('[data-view="home"] [data-band="hero"]');
     return {label:band?.querySelector("[data-hero-directory] [data-hero-label]")?.textContent.replace(/\s+/g," ").trim()||"",parts:[...(band?.querySelectorAll("[data-hero-part]")||[])].map(node=>node.dataset.heroPart),
       example:band?band.querySelectorAll("[data-step-demo], [data-demo-item], [data-demo-query], [data-demo-download], [data-task-demo]").length:0,text:band?.textContent.replace(/\s+/g," ")||""};});
-  const showsNoWorkedExample=state=>state.label==="Example layout"&&JSON.stringify(state.parts)===JSON.stringify(["instructions","skills","tools","code"])&&state.example===0
+  const showsNoWorkedExample=state=>state.label==="Example layout"&&JSON.stringify(state.parts)===JSON.stringify(["instructions","skills","tools"])&&state.example===0
     &&!/\bsearch:|\bsha256\b|Bytes match the digest/i.test(state.text);
   check("live_hero_shows_a_working_directory_and_no_worked_example",showsNoWorkedExample(liveHeroDirectory));
   check("hero_directory_check_rejects_a_worked_example_again",!showsNoWorkedExample({...liveHeroDirectory,example:1})&&!showsNoWorkedExample({...liveHeroDirectory,text:liveHeroDirectory.text+" search: split address lines sha256 53dc74e3"}));
