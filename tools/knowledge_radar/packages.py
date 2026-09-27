@@ -77,19 +77,25 @@ def _search_tags(question, brief: dict) -> list:
     return unique[:20]
 
 
+def files_meaning(question) -> dict:
+    """The supporting files of a brief package and what each holds, as SKILL.md lists them."""
+    meaning = {"references/brief.json": "this brief as a typed record (knowledge_radar_brief/v1)",
+               "contracts/brief.schema.json": "the JSON Schema of the brief record",
+               "references/provenance.json": "how this brief was produced: generator, registry, sources and checks"}
+    if "data_file" in question.delivery:
+        meaning[f"references/{question.id}-table.json"] = "the current claims as one typed table (knowledge_radar_table/v1)"
+        meaning[f"contracts/{question.id}-table.schema.json"] = "the JSON Schema of that table"
+    return meaning
+
+
 def brief_proposal(question, brief: dict, *, licence: bytes, revision: str, registry_sha256: str,
                    contracts_sha256: str, checks: list) -> "tuple[dict, dict | None]":
     """One skill package for a question's brief, with its table when the question delivers a data file."""
-    files, meaning = [], {}
+    files = []
     table = schema = None
     if "data_file" in question.delivery:
         table, schema = build_table(question, brief)
-        meaning[f"references/{question.id}-table.json"] = "the current claims as one typed table (knowledge_radar_table/v1)"
-        meaning[f"contracts/{question.id}-table.schema.json"] = "the JSON Schema of that table"
-    meaning = {"references/brief.json": "this brief as a typed record (knowledge_radar_brief/v1)",
-               "contracts/brief.schema.json": "the JSON Schema of the brief record",
-               "references/provenance.json": "how this brief was produced: generator, registry, sources and checks",
-               **meaning}
+    meaning = files_meaning(question)
     provenance = {"record_type": PROVENANCE_RECORD_TYPE, "question_id": question.id, "as_of": brief["as_of"],
                   "generator": brief["generator"], "source_revision": revision,
                   "registry": {"path": REGISTRY_PATH, "sha256": registry_sha256},

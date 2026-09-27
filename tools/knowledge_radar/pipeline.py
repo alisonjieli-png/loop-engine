@@ -357,7 +357,7 @@ def stage_brief(run: Run) -> dict:
                        briefs.notice(question, run.request.as_of, record["decision"]))
             notices += 1
             continue
-        rendered = briefs.render_skill(question, record, {})
+        rendered = briefs.render_skill(question, record, packages.files_meaning(question))
         guards = {digest for answer in _answers(run, question) for digest in answer["guard_shingles"]}
         titles = [claim["title"] for section in record["sections"] for claim in section["claims"] + section["carried_claims"]]
         allowed = {hashlib.sha256(shingle.encode()).hexdigest() for title in titles for shingle in vetting.shingles(title)}

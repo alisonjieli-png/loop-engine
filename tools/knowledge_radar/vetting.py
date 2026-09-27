@@ -79,13 +79,14 @@ def schema_findings(document: dict, schema: dict, label: str) -> list:
 
 def native_prechecks(folder: Path, repository: Path) -> dict:
     """The existing native precheck engines over the prepared catalogue, one outcome per identity."""
-    tools = str(Path(repository) / "tools")
-    if tools not in sys.path:
-        sys.path.insert(0, tools)
+    # The checker's own review resources, next to this module; the vetted repository only supplies the sources.
+    tools = Path(__file__).resolve().parents[1]
+    if str(tools) not in sys.path:
+        sys.path.insert(0, str(tools))
     from candidate_review import native, native_profile, prechecks
     from candidate_review.configuration import PanelConfiguration
     base = PanelConfiguration.from_dict(json.loads(
-        (Path(repository) / "tools/candidate_review/resources/panel.json").read_text(encoding="utf-8")))
+        (tools / "candidate_review/resources/panel.json").read_text(encoding="utf-8")))
     catalogue = native.NativeCatalogue.load(folder, repository)
     population = catalogue.population_bodies()
     configuration = native_profile.configuration(base, population_size=len(population))

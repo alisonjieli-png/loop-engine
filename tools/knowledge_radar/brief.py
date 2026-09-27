@@ -96,6 +96,8 @@ class Section:
     carried: tuple
     source_address: str
     checked_at: str
+    rank_by: str = ""
+    changes: tuple = ()
 
 
 def check_outcome(answer, previous: "SourceCheck | None", material_facts) -> "tuple[str, tuple]":
@@ -174,7 +176,7 @@ def build_sections(question: RadarQuestion, checks, previous_checks, as_of: str,
             carried = list(previous.observations) if previous is not None else []
         sections.append(Section(binding.section, binding.engine, check.outcome, check.reason, words,
                                 tuple(_dedupe(claims)[:limit or question.limit]), tuple(carried),
-                                _source_address(check), check.checked_at))
+                                _source_address(check), check.checked_at, rank, tuple(check.changes)))
     return tuple(sections)
 
 
@@ -191,12 +193,14 @@ def confidence(sections, current, unverified) -> "tuple[str, str]":
     partial = outcomes.count("partially_checked")
     origins = len({item.origin for item in current})
     verified = [item for item in current if item.last_verified_at]
+    engines = {section.engine_id for section in sections if section.outcome in CHECKED_OUTCOMES and section.claims}
     if not verified:
         return "low", "no claim was verified by reading its source today"
-    if failed == 0 and partial == 0 and origins >= 8 and len(unverified) * 2 <= len(current):
-        return "high", f"every source was checked, {origins} distinct origins, most claims verified by reading the source"
+    if failed == 0 and partial == 0 and origins >= 8 and len(engines) >= 2 and len(unverified) * 2 <= len(current):
+        return "high", (f"every source was checked, {len(engines)} independent source engines, {origins} distinct "
+                        "origins, most claims verified by reading the source")
     if failed <= 1 and origins >= 3:
-        detail = f"{origins} distinct origins"
+        detail = f"{origins} distinct origins from {len(engines)} source engine" + ("s" if len(engines) != 1 else "")
         if failed or partial:
             detail += f"; {failed} source could not be checked and {partial} was checked in part"
         if len(unverified) * 2 > len(current):
@@ -215,9 +219,13 @@ def _format(value) -> str:
     return str(value)
 
 
-def facts_text(item) -> str:
+def facts_text(item, first: str = "") -> str:
     shown = []
-    for name, label in SHOWN_FACTS.get(item.engine_id, ()):
+    order = list(SHOWN_FACTS.get(item.engine_id, ()))
+    labels = dict(order)
+    if first and first in item.facts:
+        order = [(first, labels.get(first, first.replace("_", " ")))] + [entry for entry in order if entry[0] != first]
+    for name, label in order:
         value = item.facts.get(name)
         if value is None or value == "":
             continue
@@ -309,7 +317,8 @@ def build_brief(question: RadarQuestion, sections, as_of: str, *, excluded=(), c
         "decision": default_decision(question, current) if state == CURRENT else
         "No currently validated recommendation: no claim could be verified in this run.",
         "sections": [{"title": section.title, "engine_id": section.engine_id, "outcome": section.outcome,
-                      "reason": section.reason, "ranked_by": section.rank_words, "checked_at": section.checked_at,
+                      "reason": section.reason, "ranked_by": section.rank_words, "rank_fact": section.rank_by,
+                      "changes": list(section.changes), "checked_at": section.checked_at,
                       "claims": [item.to_dict() for item in section.claims],
                       "carried_claims": [item.to_dict() for item in section.carried]} for section in sections],
         "not_established": list(question.not_established) + generated_limits,
@@ -379,6 +388,8 @@ def render_skill(question: RadarQuestion, brief: dict, files: dict) -> str:
         lines += [f"### {section['title']}", "",
                   f"Ranked by {section['ranked_by']}. Check: {outcome}"
                   + (f" ({section['reason']})" if section["reason"] else "") + ".", ""]
+        if section["changes"]:
+            lines += ["Changes since the last check: " + "; ".join(section["changes"][:5]) + ".", ""]
         rows = section["claims"] or section["carried_claims"]
         if not rows:
             lines += ["No entry is available from this source in this run.", ""]
@@ -389,7 +400,7 @@ def render_skill(question: RadarQuestion, brief: dict, files: dict) -> str:
         for number, claim in enumerate(rows, 1):
             item = _Claim(claim)
             licence = claim["licence"] or "not stated"
-            lines.append(f"| {number} | [{claim['title']}]({claim['url']}) | {facts_text(item)} | {licence} | "
+            lines.append(f"| {number} | [{claim['title']}]({claim['url']}) | {facts_text(item, section['rank_fact'])} | {licence} | "
                          f"{dates_text(item)} |")
         lines.append("")
     lines += ["## What is not established", ""] + [f"- {line}" for line in brief["not_established"]] + [""]
@@ -510,8 +521,10 @@ BRIEF_SCHEMA = {
         "decision": {"type": "string"},
         "sections": {"type": "array", "items": {
             "type": "object", "additionalProperties": False,
-            "required": ["title", "engine_id", "outcome", "reason", "ranked_by", "checked_at", "claims", "carried_claims"],
+            "required": ["title", "engine_id", "outcome", "reason", "ranked_by", "rank_fact", "changes", "checked_at",
+                         "claims", "carried_claims"],
             "properties": {"title": {"type": "string"}, "engine_id": {"type": "string"},
+                           "rank_fact": {"type": "string"}, "changes": {"type": "array", "items": {"type": "string"}},
                            "outcome": {"enum": ["checked_no_relevant_change", "checked_material_change",
                                                 "partially_checked", "could_not_check",
                                                 "source_disappeared_or_access_changed"]},
