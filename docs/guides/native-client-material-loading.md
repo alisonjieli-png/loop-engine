@@ -113,14 +113,26 @@ On a system without it, for example Windows, the tool refuses with
 4. It reads `/api/v1/capabilities` and refuses an unknown service contract
    before any authenticated request. The record version, the interface
    version, the download route, the declared body format and the download
-   allowance must all be the ones this tool supports.
+   allowance must all be the ones this tool supports. The service must also
+   accept `service_retrieval_request/v2` and `service_provisioning_request/v2`,
+   serve package files by path, state a search result limit, and offer every
+   effect that you name with `--step-effect`.
 5. It selects items. With `--query` it searches through `/api/v1/retrieval`
-   and selects every hit. With `--identity` it takes the identities you name.
-   A search answer that does not state that it loaded no body is refused.
+   and selects every hit. With `--identity` it takes the identities you name,
+   and it reads each one's metadata with one bounded search that must return
+   exactly that identity and digest. Every search and provisioning request
+   states the effects you named with `--step-effect`, and none when you named
+   none. A search answer that does not state that it loaded no body is
+   refused, and so is a hit whose declared effects go beyond the ones stated.
+   An item whose package has more than one file is refused with
+   `native_package_plan_required` before any body read: this path writes one
+   file, and a complete package needs the package compiler described below.
 6. For each item it reads the manifest through `/api/v1/provisioning`. It
-   refuses a manifest of another record version, a manifest that answers for
-   another identity, a digest that differs from the one the search named, and
-   manifest text that UTF-8 cannot carry. It refuses, before any body read, a
+   refuses a manifest of a record version other than
+   `provisioning_manifest/v3`, a manifest whose declared effects go beyond
+   the ones stated, a manifest that answers for another identity, a digest
+   that differs from the one the search named, and manifest text that UTF-8
+   cannot carry. It refuses, before any body read, a
    kind without a native location, a body that this key may not read, a
    declared size over the allowance, a symbolic link in the path, a different
    existing file, and a target folder that could not take the file. When the
@@ -173,6 +185,7 @@ PYTHONPATH=src .venv/bin/python tools/install_selected_material.py \
   --client opencode \
   --target /path/to/your/project \
   --query "review inputs" \
+  --step-effect reads_fs \
   --report /path/to/new-report.json \
   --authorize-install
 ```
@@ -187,7 +200,8 @@ use. Any other variable name works.
 | `--origin` | Exact service origin without a path. Plain HTTP is accepted only for a loopback address together with `--allow-loopback-http`. |
 | `--key-variable` | Name of the environment variable that holds the key. |
 | `--query` or `--identity` | Exactly one of them. `--identity` can be repeated. `--top-n` limits the search hits. |
-| `--client` | Client kind from the client recipes registry. Only `opencode` has a layout profile today. |
+| `--client` | Client kind from the client recipes registry. `opencode`, `claude-code`, `codex` and `pi` place skills. The `baltor-harness` profile places nothing and names its reason. |
+| `--step-effect` | An effect that the harness step already holds, such as `reads_fs`. Repeatable. It decides which items the service may offer; it grants the step nothing. Without it the tool states no effect, so an item that declares any effect is withheld. |
 | `--target` | Existing project folder. It may not be a symbolic link. |
 | `--report` | New report path. It may not exist. |
 | `--client-executable` | Client binary to ask. Without it the tool looks for `opencode` on the search path. |
@@ -204,7 +218,11 @@ refused before any effect.
 ### Where the file goes
 
 For OpenCode the tool places a served item of kind `skill` at
-`.opencode/skills/<name>/SKILL.md`. The name is the service identity in lower
+`.opencode/skills/<name>/SKILL.md`. Claude Code, Codex and Pi use
+`.claude/skills/<name>/SKILL.md`, `.agents/skills/<name>/SKILL.md` and
+`.pi/skills/<name>/SKILL.md`. Only OpenCode offers a listing command without
+a model turn, so for the other three the report records the placement and
+says that no listing was observed. The name is the service identity in lower
 case with dots and underscores replaced by hyphens, for example
 `skill.review_inputs` becomes `skill-review-inputs`. An identity that cannot
 follow the documented name rule of 1 to 64 lower-case letters, digits and
@@ -286,6 +304,54 @@ and command observations were made with 1.18.31 only.
 - For an agent, the reported prompt had its final line break removed, so
   agent content is not byte exact. Agents are not a served kind today.
 
+## Complete packages: the package compiler candidate
+
+The same tool holds a compiler for a complete package of files, for two
+loader shapes. It is a candidate behind the existing
+`material_install_layout` engine slot. No registered client profile enables
+it, so the command above never uses it, and it never starts a client.
+
+```text
+Package compiler candidate
+├── Input: one complete catalogue_package/v1, every file read with one request identity
+├── Binding: exact client version, executable, configuration and dependency digests
+├── Loader shapes
+│   ├── OpenCode project tool: one .opencode/tools/<name>.ts or .js entrypoint
+│   └── Pi project extension: one .pi/extensions/<name>.ts or .js entrypoint
+├── Plan: native_material_install_preview/v3, with explicit file modes and
+│   separate placement, load and invocation effects
+└── Stage: native_material_install_record/v3, a new private folder,
+    the entrypoint written last, never activated
+```
+
+- `fetch_selected_native_package` reads one selected package. The manifest
+  must name the kind `tool` and the effects that the search named, or the
+  package is refused with `selected_package_manifest_mismatch` before any body
+  read. Every file download reuses one request identity, written to the
+  caller's record before the first read.
+- `compile_native_package_plan` checks every byte against its digest and
+  places each file in one of three destinations: the one entrypoint; support
+  files under `.opencode/baltor-packages/<package>/` or
+  `.pi/baltor-packages/<package>/`; and the two named OpenCode configuration
+  files. Every other destination is refused with
+  `unsupported_native_placement`. That includes instruction files such as
+  `AGENTS.md` and `CLAUDE.md`, even when a binding lists their role, and it
+  includes other skills, plugins and hooks.
+- A profile with a package binding names exactly the client version that the
+  binding was qualified at. A profile that keeps another observed version is
+  refused with `invalid_layout_profile`.
+- `stage_native_package_plan` needs the exact plan digest, the same client
+  observation and explicit `writes_fs`. It writes a new private folder under a
+  root that the caller chooses, and its record says `activated: false` and
+  `runtime_admitted: false`.
+
+Private qualification runs on September 27, 2026 fetched a 13-file caption
+package from a local service, compiled it for OpenCode 1.17.9 and Pi 0.73.1,
+and ran the tool in fresh clients with the network switched off. Both results
+matched an independent output oracle. The repository checks run the compiler
+without a client. A registered profile that installs tools needs its own
+qualification and admission.
+
 ## What a passing run proves and what it does not prove
 
 A passing run proves, for every selected item:
@@ -331,6 +397,7 @@ the key or a response body.
 | Fetch and verification | `service_refused`, `digest_header_missing_or_malformed`, `body_differs_from_header_digest`, `body_differs_from_manifest_digest`, `body_size_differs_from_manifest`, `download_exceeds_declared_size`, `body_is_not_utf8_text` |
 | Placement | `path_traversal_refused`, `symbolic_link_refused`, `path_component_not_a_directory`, `existing_path_not_a_regular_file`, `different_file_exists`, `target_folder_not_writable`, `path_not_usable`, `write_failed`, `file_changed_after_install` |
 | Client profile | `invalid_layout_profile`, `model_turn_command_refused` |
+| Complete package | `native_package_plan_required` on the one-file path; `native_package_refused`, with the reason as its detail, and `file_mode_mismatch` in the package compiler |
 | After the report was reserved | `unexpected_error` |
 
 `unexpected_error` means that something outside the typed refusals was raised
@@ -448,8 +515,8 @@ skipped when the binary is absent.
   describes.
 - Placement of instruction files. It needs a decision about how a project
   accepts an entry in its own configuration.
-- Layout profiles for other clients. Codex has a client recipe but no layout
-  profile, because no layout evidence was gathered for it.
+- Installing tools or reusable code through a registered profile. The package
+  compiler above stages them in a private folder only.
 - Writing a complete skill file unchanged. This waits for a typed field in
   which the service declares the format of a body.
 - Updating or removing installed material. The tool never replaces and never

@@ -25,6 +25,7 @@ import sys
 import tempfile
 import threading
 import time
+from types import SimpleNamespace
 import unittest
 from unittest import mock
 import urllib.request
@@ -250,23 +251,33 @@ CONNECTION_CLOSED_ERRORS = {"BrokenPipeError", "ConnectionResetError", "OSError"
 
 def scripted_capabilities(**delivery_changes) -> dict:
     delivery = {"download_endpoint": tool.DOWNLOAD_ROUTE, "body_format": tool.SUPPORTED_BODY_FORMAT,
-                "download_bytes": 64 * 1024 * 1024}
+                "download_bytes": 64 * 1024 * 1024, "package_files": "download_by_path"}
     delivery.update(delivery_changes)
     return {"record_type": tool.CAPABILITIES_RECORD_TYPE, "api_version": tool.SUPPORTED_API_VERSION,
-            "delivery": delivery}
+            "delivery": delivery,
+            "library": {"provisioning_request_record_types": ["service_provisioning_request/v2"],
+                        "step_effects": list(tool.STEP_EFFECTS)},
+            "retrieval": {"request_record_type": "service_retrieval_request/v2"},
+            "limits": {"search_results": 50}}
 
 
 def scripted_manifest(**changes) -> dict:
     value = {"record_type": tool.MANIFEST_RECORD_TYPE, "identity": SCRIPTED_IDENTITY, "kind": "skill",
              "purpose": "Scripted purpose", "digest": SCRIPTED_DIGEST, "size_bytes": len(SCRIPTED_BODY),
              "license": "MIT", "body_allowed": True, "source_layer": "context_intelligence",
-             "source_ref": "fixture:scripted/v1", "qualification_basis": "host_attested"}
+             "source_ref": "fixture:scripted/v1", "qualification_basis": "host_attested", "declared_effects": []}
     value.update(changes)
     return value
 
 
 def scripted_result(value: dict) -> bytes:
     return json.dumps({"record_type": tool.RESULT_VERSION, "result": value}).encode("utf-8")
+
+
+def scripted_reference(manifest):
+    return {"record_type": "provisioning_item_binding/v1", "identity": manifest["identity"],
+            "source_layer": manifest["source_layer"], "source_ref": manifest["source_ref"],
+            "body_digest": manifest["digest"], "descriptor_digest": "b" * 64}
 
 
 def served_body(handler, data: bytes, digest: str, record_type: str) -> None:
@@ -285,7 +296,8 @@ class ScriptedService:
         self.capabilities = script.get("capabilities", scripted_capabilities())
         self.manifest = script.get("manifest", scripted_manifest())
         self.raw_manifest = script.get("raw_manifest")
-        self.hits = script.get("hits", [])
+        self.hits = script.get("hits", [{"reference": scripted_reference(self.manifest),
+                                       "declared_effects": self.manifest["declared_effects"], "package": None}])
         self.retrieval = script.get("retrieval")
         self.download = script.get("download")
         self.watched_report = script.get("watched_report")
@@ -1052,7 +1064,8 @@ class ScriptedServiceChecks(unittest.TestCase):
         self.assertNotIn(tool.DOWNLOAD_ROUTE, service.seen)
 
     def test_an_offer_that_changed_between_the_search_and_the_manifest_is_refused(self):
-        service = ScriptedService(hits=[{"reference": {"identity": SCRIPTED_IDENTITY, "body_digest": "1" * 64}}])
+        service = ScriptedService(hits=[{"reference": scripted_reference(scripted_manifest(digest="1" * 64)),
+                                        "package": None, "declared_effects": []}])
         self.refused_item(service, "--query", "scripted", code="offer_changed_between_search_and_manifest")
         self.assertNotIn(tool.DOWNLOAD_ROUTE, service.seen)
 
@@ -1335,6 +1348,509 @@ class PathAndProfileChecks(unittest.TestCase):
                 observed_client_versions=profile.observed_client_versions)
 
 
+class CurrentWireChecks(ServiceCase):
+    """The installer speaks the current contract to the actual ASGI service."""
+
+    def test_current_versions_and_explicit_empty_effects_over_asgi(self):
+        with running_http(self.fixture) as (base, _service):
+            client = tool.ServiceClient(base, self.key, tool.TransferLimits())
+            with mock.patch.object(client, "_exchange", wraps=client._exchange) as exchange:
+                client.capabilities()
+                selected = client.search("alpha", 1, "lexical")[0]
+                offered = client.manifest(selected["identity"], selected["digest"])
+                body = client.download(offered, "current-wire", offered.size_bytes)
+            requests = [(call.args[0], call.args[1]) for call in exchange.call_args_list if call.args[1]]
+        self.assertEqual(body.data, BODIES[selected["identity"]].encode())
+        self.assertEqual(requests[0][1]["record_type"], "service_retrieval_request/v2")
+        self.assertTrue(all(payload["record_type"] == "service_provisioning_request/v2"
+                            for route, payload in requests if route != tool.RETRIEVAL_ROUTE))
+        self.assertTrue(all(payload["authority_effects"] == [] for _, payload in requests))
+        self.assertEqual(offered.declared_effects, ())
+        self.assertIn("package", selected)
+        self.assertEqual(self.usage_records(), 1)
+
+    def test_old_manifest_is_refused(self):
+        with self.assertRaises(tool.InstallRefusal) as caught:
+            tool.OfferedItem.from_manifest(SCRIPTED_IDENTITY,
+                scripted_manifest(record_type="provisioning_manifest/v2", declared_effects=[]))
+        self.assertEqual(caught.exception.code, tool.RefusalCode.UNSUPPORTED_SERVICE_RECORD)
+
+    def test_old_request_capability_is_refused_before_authenticated_requests(self):
+        capabilities = scripted_capabilities()
+        capabilities["library"] = {"provisioning_request_record_types": ["service_provisioning_request/v1"],
+                                    "step_effects": []}
+        with running_script(ScriptedService(capabilities=capabilities)) as base:
+            code, report, _ = self.install(base, "--identity", "skill.alpha")
+        self.assertEqual(code, 1)
+        self.assertEqual(report["http_calls"], 1)
+        self.assertEqual(report["service_refusal"]["code"], tool.RefusalCode.UNSUPPORTED_SERVICE_CAPABILITIES)
+
+    def test_search_refuses_unknown_or_incomplete_binding(self):
+        client = tool.ServiceClient("https://fixture.invalid", "synthetic-no-network", tool.TransferLimits())
+        client.download_allowance = 10000
+        valid = {"record_type": "provisioning_item_binding/v1", "identity": "fixture_skill",
+                 "body_digest": "a" * 64, "descriptor_digest": "b" * 64,
+                 "source_layer": "context_intelligence", "source_ref": "fixture:skill"}
+        for reference in ({**valid, "record_type": "provisioning_item_binding/v999"},
+                          {key: value for key, value in valid.items() if key != "source_ref"},
+                          {**valid, "descriptor_digest": "not-a-digest"}):
+            answer = {"record_type": tool.RETRIEVAL_RESULT_RECORD_TYPE, "bodies_loaded": False,
+                      "hits": [{"reference": reference, "package": None, "declared_effects": []}]}
+            with self.subTest(reference=reference), mock.patch.object(client, "_result", return_value=answer):
+                with self.assertRaises(tool.InstallRefusal):
+                    client.search("fixture", 1, "lexical")
+        self.assertEqual(client.calls, 0)
+
+    def test_explicit_identity_multifile_skill_refuses_before_metering_or_placement(self):
+        from types import SimpleNamespace
+        from loop_engine.core.service_runtime.catalogue_release_checks import Fixture, bundle_line
+        case = Fixture(self.folder / "package-service")
+        identity = "complete_skill_fixture"
+        files = (("SKILL.md", b"# Complete skill\n", "text/markdown", "skill_definition"),
+                 ("references/details.md", b"Required condition.\n", "text/markdown", "skill_reference"))
+        case._bytes = {identity: tuple(row[1] for row in files)}
+        case.publish([bundle_line(identity, files, effects=("reads_fs",), body_form="package")])
+        self.use_key(case.key.key)
+        served = SimpleNamespace(runtime=case.runtime, provisioning=case.binding())
+        with running_http(served) as (base, _service):
+            code, report, _ = self.install(base, "--identity", identity, options=("--step-effect", "reads_fs"))
+        item = report["items"][0]
+        self.assertEqual(code, 1)
+        self.assertFalse(item["facts"]["fetched"])
+        self.assertFalse(item["facts"]["installed"])
+        self.assertEqual(item["refusal"]["code"], tool.RefusalCode.NATIVE_PACKAGE_PLAN_REQUIRED)
+        self.assertEqual(case.runtime.usage_for(case.runtime.authenticate_key(case.key.key))["records"], 0)
+        self.assertEqual(list(self.project.iterdir()), [])
+
+    def test_explicit_identity_without_authoritative_metadata_is_refused_before_body(self):
+        service = ScriptedService(hits=[])
+        with running_script(service) as base:
+            code, report, _ = self.install(base, "--identity", SCRIPTED_IDENTITY)
+        self.assertEqual(code, 1)
+        self.assertFalse(report["items"][0]["facts"]["fetched"])
+        self.assertNotIn(tool.DOWNLOAD_ROUTE, service.seen)
+        self.assertEqual(list(self.project.iterdir()), [])
+
+
+class NativePackageFetchChecks(unittest.TestCase):
+    """Exact opaque files through the existing ASGI download/metering path."""
+
+    def setUp(self):
+        from types import SimpleNamespace
+        from loop_engine.core.service_runtime.catalogue_release_checks import Fixture, bundle_line
+        self.temp = tempfile.TemporaryDirectory(prefix="native-package-fetch-")
+        self.addCleanup(self.temp.cleanup)
+        self.case = Fixture(self.temp.name)
+        self.identity = "caption_native"
+        self.files = (("caption.py", b"def cut(): return 8\n", "text/x-python", "executable_tool"),
+                      ("assets/data.bin", b"\x00\xff\x80\r\n", "application/octet-stream", "other"))
+        line = bundle_line(self.identity, self.files, effects=("reads_fs", "spawns_process"))
+        line["reference"]["kind"] = "tool"
+        self.case._bytes = {self.identity: tuple(row[1] for row in self.files)}
+        self.case.publish([line])
+        self.served = SimpleNamespace(runtime=self.case.runtime, provisioning=self.case.binding())
+
+    def client(self, base):
+        client = tool.ServiceClient(base, self.case.key.key, tool.TransferLimits(),
+                                    authority_effects=("reads_fs", "spawns_process"))
+        client.capabilities()
+        return client
+
+    def selected(self, client):
+        return client.search("caption native", 1, "lexical")[0]
+
+    def fetch(self, client, selected, request_id="caption-logical-transfer"):
+        record, snapshots = {}, []
+        self.pending_record, self.persisted_snapshots = record, snapshots
+        result = tool.fetch_selected_native_package(client, selected, request_id, record,
+            lambda: snapshots.append(json.loads(json.dumps(record))))
+        return result, record, snapshots
+
+    def test_summary_and_all_files_use_one_persisted_logical_read(self):
+        with running_http(self.served) as (base, _service):
+            client = self.client(base)
+            selected = self.selected(client)
+            original = client.download
+            def after_journal(*args, **kwargs):
+                self.assertTrue(self.persisted_snapshots, "the pending transfer must be persisted before a read")
+                self.assertEqual(self.persisted_snapshots[-1]["fetch"]["request_id"], args[1])
+                return original(*args, **kwargs)
+            with mock.patch.object(client, "download", side_effect=after_journal) as download:
+                result, record, snapshots = self.fetch(client, selected)
+                again, _, _ = self.fetch(client, selected)
+        self.assertEqual(dict(result.payloads), {row[0]: row[1] for row in self.files})
+        self.assertEqual(result, again)
+        self.assertEqual(result.declared_effects, ("reads_fs", "spawns_process"))
+        self.assertEqual(result.package.package_digest, selected["package"]["package_digest"])
+        self.assertTrue(record["complete"])
+        self.assertEqual(snapshots[0]["fetch"]["request_id"], "caption-logical-transfer")
+        self.assertEqual(snapshots[0]["fetch"]["outcome"], tool.FetchOutcome.UNKNOWN)
+        self.assertTrue(all(call.args[1] == "caption-logical-transfer" for call in download.call_args_list))
+        self.assertEqual(self.case.runtime.usage_for(self.case.runtime.authenticate_key(self.case.key.key))["records"], 1)
+        self.assertNotIn(self.case.key.key, json.dumps(record))
+
+    def test_missing_or_changed_search_summary_refused_before_body_read(self):
+        import copy
+        with running_http(self.served) as (base, _service):
+            client = self.client(base)
+            selected = self.selected(client)
+            missing = {**selected, "package": None}
+            changed = copy.deepcopy(selected)
+            changed["package"]["files"][0]["media_type"] = "application/octet-streax"
+            for value in (missing, changed):
+                with self.subTest(value=value), mock.patch.object(client, "download") as download:
+                    with self.assertRaises(tool.InstallRefusal):
+                        self.fetch(client, value)
+                    download.assert_not_called()
+
+    def test_wrong_file_digest_refused_and_partial_transfer_kept(self):
+        from dataclasses import replace
+        with running_http(self.served) as (base, _service):
+            client = self.client(base)
+            selected = self.selected(client)
+            original = client.download
+            def wrong(*args, **kwargs):
+                body = original(*args, **kwargs)
+                return replace(body, data=b"x" * len(body.data)) if kwargs.get("path") else body
+            record, snapshots = {}, []
+            with mock.patch.object(client, "download", side_effect=wrong):
+                with self.assertRaises(tool.InstallRefusal):
+                    tool.fetch_selected_native_package(client, selected, "partial-caption", record,
+                        lambda: snapshots.append(json.loads(json.dumps(record))))
+        self.assertFalse(record["complete"])
+        self.assertEqual(record["fetch"]["request_id"], "partial-caption")
+        self.assertTrue(snapshots)
+
+    def test_missing_effect_authority_is_not_supplied_from_the_item(self):
+        with running_http(self.served) as (base, _service):
+            client = tool.ServiceClient(base, self.case.key.key, tool.TransferLimits())
+            client.capabilities()
+            self.assertEqual(client.search("caption native", 1, "lexical"), [])
+            with self.assertRaises(tool.InstallRefusal):
+                client.manifest(self.identity, None)
+        self.assertEqual(self.case.runtime.usage_for(self.case.runtime.authenticate_key(self.case.key.key))["records"], 0)
+
+    def test_unsupported_identity_is_refused_before_request(self):
+        with running_http(self.served) as (base, _service):
+            client = self.client(base)
+            selected = {**self.selected(client), "identity": "../../other"}
+            with mock.patch.object(client, "manifest", wraps=client.manifest) as manifest:
+                with self.assertRaises(tool.InstallRefusal):
+                    self.fetch(client, selected)
+                manifest.assert_not_called()
+
+    def test_a_package_the_manifest_calls_a_skill_is_not_fetched_as_a_tool(self):
+        """The known-wrong manifest relabels the selected package. The tool path refuses before any read.
+
+        A tool package and a skill package are placed by different rules, so the kind the service states
+        must be the kind the caller expects. Relabelling either one to reach the other's placement fails.
+        """
+        from dataclasses import replace
+        with running_http(self.served) as (base, _service):
+            client = self.client(base)
+            selected = self.selected(client)
+            original = client.manifest
+            relabelled = lambda identity, digest: replace(original(identity, digest), kind="skill")
+            with mock.patch.object(client, "manifest", side_effect=relabelled), \
+                 mock.patch.object(client, "download") as download:
+                with self.assertRaises(tool.InstallRefusal) as caught:
+                    self.fetch(client, selected)
+                download.assert_not_called()
+        self.assertEqual(caught.exception.detail, "selected_package_manifest_mismatch")
+        self.assertEqual(self.case.runtime.usage_for(self.case.runtime.authenticate_key(self.case.key.key))["records"], 0)
+
+
+class NativePackageCompilerChecks(unittest.TestCase):
+    """Candidate package compilation/staging, with no client or provider process."""
+
+    def selected(self):
+        from dataclasses import replace
+        from loop_engine.core.service_runtime.catalogue_packages import CataloguePackage, CataloguePackageFile
+        def package(identity, files):
+            contract = CataloguePackage(tuple(CataloguePackageFile(path, hashlib.sha256(body).hexdigest(),
+                len(body), media, role) for path, body, media, role in files))
+            return tool.NativePackageInput(identity, contract, tuple((path, body) for path, body, _, _ in files),
+                                           ("reads_fs", "spawns_process"))
+        source = package("caption", [("tools/run.py", b"print('original')\n", "text/x-python", "executable_tool"),
+                                     ("assets/data.bin", b"\x00\xff\x80\r\n", "application/octet-stream", "other")])
+        adapter = package("caption.opencode", [("caption.ts", b"export default {};\n", "text/typescript", "executable_tool")])
+        runtime = tool.NativeClientBinding("opencode", "cli", "1.17.9", "linux", "x86_64", "a" * 64, "b" * 64,
+                                           (("python", "c" * 64), ("zod", "d" * 64)))
+        projections = (tool.NativePackageProjection(source.identity, source.package.package_digest,
+            (".opencode", "baltor-packages", "caption"), (("tools/run.py", 0o664), ("assets/data.bin", 0o644))),
+            tool.NativePackageProjection(adapter.identity, adapter.package.package_digest,
+            (".opencode", "tools"), (("caption.ts", 0o644),)))
+        binding = tool.NativePackageBinding(runtime, "opencode_project_tool/v1", projections,
+            ".opencode/tools/caption.ts", ("executable_tool", "other"), ("reads_fs",),
+            ("reads_fs", "spawns_process"))
+        profile = replace(tool.OPENCODE_PROFILE, locations=(),
+            unplaced_kinds=tuple((kind, "outside candidate binding") for kind in KINDS if kind != "tool"),
+            package_binding=binding, observed_client_versions=(runtime.exact_version,))
+        return profile, (source, adapter), runtime
+
+    def plan(self):
+        profile, packages, runtime = self.selected()
+        return tool.compile_native_package_plan(profile, packages, runtime)
+
+    def refused(self, edit, detail):
+        profile, packages, runtime = self.selected()
+        with self.assertRaises(tool.InstallRefusal) as caught:
+            tool.compile_native_package_plan(*edit(profile, packages, runtime))
+        self.assertEqual(caught.exception.detail, detail)
+
+    def test_exact_opaque_package_tree_modes_and_separate_effects(self):
+        plan = self.plan()
+        self.assertEqual(plan.record_type, "native_material_install_preview/v3")
+        self.assertEqual([file.payload for file in plan.files if file.source_path == "assets/data.bin"], [b"\x00\xff\x80\r\n"])
+        self.assertEqual([file.mode for file in plan.files if file.source_path == "tools/run.py"], [0o664])
+        self.assertEqual(plan.load_effects, ("reads_fs",))
+        self.assertEqual(plan.invocation_effects, ("reads_fs", "spawns_process"))
+        self.assertFalse(plan.runtime_admitted)
+
+    def test_missing_file_refused(self):
+        from dataclasses import replace
+        self.refused(lambda p, packages, runtime: (p, (replace(packages[0], payloads=packages[0].payloads[:-1]), packages[1]), runtime), "package_inventory_mismatch")
+
+    def test_changed_same_length_payload_refused(self):
+        from dataclasses import replace
+        self.refused(lambda p, packages, runtime: (p, (replace(packages[0], payloads=(("tools/run.py", b"print('changed!')\n"), packages[0].payloads[1])), packages[1]), runtime), "package_bytes_mismatch")
+
+    def test_runtime_or_dependency_drift_refused(self):
+        from dataclasses import replace
+        for changed in (lambda r: replace(r, exact_version="1.17.10"),
+                        lambda r: replace(r, dependencies=(("python", "e" * 64), ("zod", "d" * 64)))):
+            self.refused(lambda p, packages, runtime: (p, packages, changed(runtime)), "client_binding_mismatch")
+
+    def test_missing_explicit_mode_refused(self):
+        from dataclasses import replace
+        def edit(p, packages, runtime):
+            projections = (replace(p.package_binding.projections[0], file_modes=()), p.package_binding.projections[1])
+            return replace(p, package_binding=replace(p.package_binding, projections=projections)), packages, runtime
+        self.refused(edit, "file_mode_inventory_mismatch")
+
+    def test_unknown_or_privileged_mode_refused(self):
+        with self.assertRaises(tool.InstallRefusal):
+            tool.NativePackageProjection("source", "a" * 64, (".pi", "packages"), (("tool.py", 0o4755),))
+
+    def test_wrong_entrypoint_location_refused(self):
+        from dataclasses import replace
+        def edit(p, packages, runtime):
+            projections = (p.package_binding.projections[0], replace(p.package_binding.projections[1], target_root=(".opencode", "wrong")))
+            return replace(p, package_binding=replace(p.package_binding, projections=projections)), packages, runtime
+        self.refused(edit, "native_entrypoint_missing")
+
+    def test_unsupported_role_refused(self):
+        from dataclasses import replace
+        self.refused(lambda p, packages, runtime: (replace(p, package_binding=replace(p.package_binding, supported_roles=("executable_tool",))), packages, runtime), "unsupported_mandatory_role")
+
+    def test_package_effects_cannot_disappear_from_invocation(self):
+        from dataclasses import replace
+        self.refused(lambda p, packages, runtime: (replace(p, package_binding=replace(p.package_binding, invocation_effects=("reads_fs",))), packages, runtime), "package_effects_omitted")
+
+    def test_stage_requires_exact_plan_and_write_grant_and_stays_inert(self):
+        plan = self.plan()
+        runtime = plan.runtime
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            for expected, effects in (("0" * 64, ("writes_fs",)), (plan.digest, ())):
+                with self.assertRaises(tool.InstallRefusal):
+                    tool.stage_native_package_plan(plan, root, root / "refused.json", expected, effects, runtime)
+                self.assertEqual(list(root.iterdir()), [])
+            result = tool.stage_native_package_plan(plan, root, root / "stage.json", plan.digest, ("writes_fs",), runtime)
+            self.assertTrue(result["complete"])
+            self.assertFalse(result["activated"])
+            self.assertFalse(result["runtime_admitted"])
+            for entry in plan.files:
+                path = Path(result["workspace"]) / entry.target_path
+                self.assertEqual(path.read_bytes(), entry.payload)
+                self.assertEqual(path.stat().st_mode & 0o7777, entry.mode)
+            with self.assertRaises(tool.InstallRefusal):
+                tool.stage_native_package_plan(plan, root, root / "stage.json", plan.digest, ("writes_fs",), runtime)
+
+    def test_missing_import_effect_refused(self):
+        from dataclasses import replace
+        profile, _, _ = self.selected()
+        with self.assertRaises(tool.InstallRefusal) as caught:
+            replace(profile.package_binding, load_effects=())
+        self.assertEqual(caught.exception.detail, "native_import_effect_missing")
+
+    def test_dependency_mount_cannot_add_native_entrypoints(self):
+        from dataclasses import replace
+        profile, packages, runtime = self.selected()
+        with self.assertRaises(tool.InstallRefusal) as caught:
+            binding = replace(profile.package_binding, dependency_mounts=(("zod", ".opencode/tools/additional"),))
+            tool.compile_native_package_plan(replace(profile, package_binding=binding), packages, runtime)
+        self.assertEqual(caught.exception.detail, "dependency_mount_invalid")
+
+    def test_unknown_profile_and_plan_versions_refuse_before_effects(self):
+        from dataclasses import replace
+        profile, _, _ = self.selected()
+        with self.assertRaises(tool.InstallRefusal):
+            replace(profile, record_type="native_client_layout_profile/v1")
+        plan = replace(self.plan(), record_type="native_material_install_preview/v2")
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            with self.assertRaises(tool.InstallRefusal):
+                tool.stage_native_package_plan(plan, root, root / "stage.json", plan.digest, ("writes_fs",), plan.runtime)
+            self.assertEqual(list(root.iterdir()), [])
+
+    def test_mode_change_changes_plan_identity(self):
+        from dataclasses import replace
+        plan = self.plan()
+        changed = replace(plan, files=(replace(plan.files[0], mode=0o664),) + plan.files[1:])
+        self.assertNotEqual(changed.digest, plan.digest)
+
+    def test_same_length_plan_payload_drift_refused_before_effects(self):
+        from dataclasses import replace
+        plan = self.plan()
+        drifted = replace(plan, files=(replace(plan.files[0], payload=b"x" * len(plan.files[0].payload)),)
+                                     + plan.files[1:])
+        self.assertEqual(drifted.digest, plan.digest, "the declared digest must be rechecked against opaque bytes")
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            with self.assertRaises(tool.InstallRefusal) as caught:
+                tool.stage_native_package_plan(drifted, root, root / "stage.json", plan.digest,
+                                               ("writes_fs",), plan.runtime)
+            self.assertEqual(caught.exception.detail, "plan_payload_mismatch")
+            self.assertEqual(list(root.iterdir()), [])
+
+    def test_explicit_mode_replay_refuses_changed_permissions(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            tool.write_confined_file(root, ("same.bin",), b"same", mode=0o664)
+            (root / "same.bin").chmod(0o444)
+            with self.assertRaises(tool.InstallRefusal) as caught:
+                tool.write_confined_file(root, ("same.bin",), b"same", mode=0o664)
+            self.assertEqual(caught.exception.code, tool.RefusalCode.FILE_MODE_MISMATCH)
+            self.assertEqual((root / "same.bin").stat().st_mode & 0o7777, 0o444)
+
+    def test_partial_stage_keeps_report_and_never_publishes_entrypoint_early(self):
+        from dataclasses import replace
+        profile, packages, runtime = self.selected()
+        plan = tool.compile_native_package_plan(profile, packages, runtime)
+        plan = replace(plan, files=tuple(sorted(plan.files, key=lambda row: row.target_path != plan.entrypoint_target)))
+        write, reached = tool.write_confined_file, []
+        def fail_second(root, parts, data, **options):
+            reached.append(parts)
+            if len(reached) == 2:
+                raise tool.InstallRefusal(tool.RefusalCode.WRITE_FAILED)
+            return write(root, parts, data, **options)
+        with tempfile.TemporaryDirectory() as folder, mock.patch.object(tool, "write_confined_file", fail_second):
+            root = Path(folder)
+            with self.assertRaises(tool.InstallRefusal):
+                tool.stage_native_package_plan(plan, root, root / "stage.json", plan.digest, ("writes_fs",), runtime)
+            report = json.loads((root / "stage.json").read_text())
+            self.assertFalse(report["complete"])
+            self.assertFalse(report["activated"])
+            self.assertFalse((Path(report["workspace"]) / plan.entrypoint_target).exists())
+            self.assertEqual(len(report["files"]), 1)
+
+    def test_plan_compilation_has_no_file_or_process_effect(self):
+        import builtins
+        profile, packages, runtime = self.selected()
+        with mock.patch.object(builtins, "open", side_effect=AssertionError("filesystem reached")), \
+             mock.patch.object(os, "open", side_effect=AssertionError("filesystem reached")), \
+             mock.patch("subprocess.run", side_effect=AssertionError("process reached")):
+            self.assertEqual(tool.compile_native_package_plan(profile, packages, runtime).record_type,
+                             "native_material_install_preview/v3")
+
+    def test_current_profiles_do_not_gain_package_installation(self):
+        for profile in (tool.OPENCODE_PROFILE, tool.PI_PROFILE):
+            self.assertIsNone(profile.package_binding)
+            with self.assertRaises(tool.InstallRefusal):
+                profile.location_for("tool")
+
+    def test_secondary_native_autoload_surfaces_are_refused(self):
+        from dataclasses import replace
+        for target in ((".opencode", "plugins"), (".opencode", "plugin"),
+                       (".opencode", "skills", "extra"), (".pi", "extensions"), (".claude", "skills", "extra")):
+            profile, packages, runtime = self.selected()
+            extra = replace(packages[1], identity="extra.autoload")
+            projection = replace(profile.package_binding.projections[1], identity=extra.identity, target_root=target)
+            binding = replace(profile.package_binding, projections=profile.package_binding.projections + (projection,))
+            with self.subTest(target=target):
+                with self.assertRaises(tool.InstallRefusal) as caught:
+                    tool.compile_native_package_plan(replace(profile, package_binding=binding), packages + (extra,), runtime)
+                self.assertEqual(caught.exception.detail, "unsupported_native_placement")
+
+    def test_received_stage_plan_cannot_add_secondary_autoload(self):
+        from dataclasses import replace
+        plan = self.plan()
+        extra = replace(plan.files[-1], target_path=".opencode/plugins/extra.ts")
+        plan = replace(plan, files=plan.files + (extra,))
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            with self.assertRaises(tool.InstallRefusal) as caught:
+                tool.stage_native_package_plan(plan, root, root / "stage.json", plan.digest,
+                                               ("writes_fs",), plan.runtime)
+            self.assertEqual(caught.exception.detail, "unsupported_native_placement")
+            self.assertEqual(list(root.iterdir()), [])
+
+    def test_received_stage_plan_requires_explicit_valid_modes_before_effects(self):
+        from dataclasses import replace
+        for mode in (None, True, "0644", 0o4755):
+            plan = self.plan()
+            plan = replace(plan, files=(replace(plan.files[0], mode=mode),) + plan.files[1:])
+            with self.subTest(mode=mode), tempfile.TemporaryDirectory() as folder:
+                root = Path(folder)
+                with self.assertRaises(tool.InstallRefusal) as caught:
+                    tool.stage_native_package_plan(plan, root, root / "stage.json", plan.digest,
+                                                   ("writes_fs",), plan.runtime)
+                self.assertEqual(caught.exception.detail, "plan_file_shape_invalid")
+                self.assertEqual(list(root.iterdir()), [])
+
+    def test_profile_cannot_inherit_evidence_for_another_loader_version(self):
+        """The known-wrong profile keeps the registered OpenCode profile's second observed version.
+
+        The tool loader was qualified at one exact version. Copying the registered profile's list would
+        claim evidence for a version the package binding never saw.
+        """
+        from dataclasses import replace
+        profile, _, _ = self.selected()
+        with self.assertRaises(tool.InstallRefusal) as caught:
+            replace(profile, observed_client_versions=tool.OPENCODE_PROFILE.observed_client_versions)
+        self.assertEqual(caught.exception.code, tool.RefusalCode.INVALID_LAYOUT_PROFILE)
+        self.assertEqual(caught.exception.detail, "package_loader_evidence_version_mismatch")
+
+    def test_an_instruction_file_cannot_ride_a_tool_binding(self):
+        """Instruction files stay unplaced, even when a host binding lists their role as supported.
+
+        Each known-wrong projection puts an AGENTS.md or CLAUDE.md where a client or the project reads
+        instructions. The closed placement rule must refuse all of them, so a package can never overwrite
+        or add to the instructions a project owns.
+        """
+        from dataclasses import replace
+        from loop_engine.core.service_runtime.catalogue_packages import CataloguePackage, CataloguePackageFile
+        for name, target_root in (("AGENTS.md", ()), ("CLAUDE.md", ()), ("AGENTS.md", (".opencode",)),
+                                  ("AGENTS.md", (".opencode", "instructions")), ("CLAUDE.md", (".claude",)),
+                                  ("AGENTS.md", (".pi",))):
+            profile, packages, runtime = self.selected()
+            body = b"# Project rules from a package\n"
+            contract = CataloguePackage((CataloguePackageFile(name, hashlib.sha256(body).hexdigest(), len(body),
+                                                              "text/markdown", "instruction_file"),))
+            instructions = tool.NativePackageInput("caption.rules", contract, ((name, body),), ("reads_fs",))
+            projection = tool.NativePackageProjection(instructions.identity, contract.package_digest, target_root,
+                                                      ((name, 0o644),))
+            binding = replace(profile.package_binding,
+                              projections=profile.package_binding.projections + (projection,),
+                              supported_roles=profile.package_binding.supported_roles + ("instruction_file",))
+            with self.subTest(target="/".join((*target_root, name))):
+                with self.assertRaises(tool.InstallRefusal) as caught:
+                    tool.compile_native_package_plan(replace(profile, package_binding=binding),
+                                                     packages + (instructions,), runtime)
+                self.assertEqual(caught.exception.detail, "unsupported_native_placement")
+
+    def test_registered_profiles_place_skills_only(self):
+        """No registered client gains a native location for instruction files, tools or reusable code."""
+        for client, profile in tool.CLIENT_LAYOUT_PROFILES.items():
+            self.assertIsNone(profile.package_binding, client)
+            for kind in ("instruction_file", "tool", "reusable_code"):
+                with self.subTest(client=client, kind=kind):
+                    with self.assertRaises(tool.InstallRefusal) as caught:
+                        profile.location_for(kind)
+                    self.assertEqual(caught.exception.code, tool.RefusalCode.KIND_HAS_NO_NATIVE_LOCATION)
+
+
 REAL_CLIENT = shutil.which(tool.OPENCODE_PROFILE.executable_name)
 
 
@@ -1427,7 +1943,7 @@ MUTANTS = (
      "InstallChecks.test_key_is_taken_only_from_the_named_variable"),
     ("shortened options are refused", lambda: _removed("OPTION_ABBREVIATIONS_ALLOWED", True),
      "InstallChecks.test_key_is_taken_only_from_the_named_variable"),
-    ("service contract handshake", lambda: _removed("require_supported_service", lambda _capabilities: 1 << 30),
+    ("service contract handshake", lambda: _removed("require_supported_service", lambda *_a, **_k: 1 << 30),
      "InstallChecks.test_unsupported_service_capabilities_refuse_before_authenticated_requests"),
     ("redirect refusal",
      lambda: _removed("service_opener", lambda: urllib.request.build_opener(urllib.request.ProxyHandler({}))),
@@ -1511,6 +2027,73 @@ def run_named_check(name: str) -> unittest.TestResult:
     result = unittest.TestResult()
     unittest.defaultTestLoader.loadTestsFromName(name, sys.modules[__name__]).run(result)
     return result
+
+
+def _omit_native_guard(detail):
+    original = tool._native_require
+    return mock.patch.object(tool, "_native_require",
+        lambda condition, reason: None if reason == detail else original(condition, reason))
+
+
+# The existing mutation gate also covers the candidate executable boundary.
+MUTANTS += tuple((detail, lambda detail=detail: _omit_native_guard(detail), "NativePackageCompilerChecks." + name)
+    for detail, name in (
+        ("package_bytes_mismatch", "test_changed_same_length_payload_refused"),
+        ("client_binding_mismatch", "test_runtime_or_dependency_drift_refused"),
+        ("package_effects_omitted", "test_package_effects_cannot_disappear_from_invocation"),
+        ("native_entrypoint_missing", "test_wrong_entrypoint_location_refused"),
+        ("native_import_effect_missing", "test_missing_import_effect_refused"),
+        ("plan_version_unsupported", "test_unknown_profile_and_plan_versions_refuse_before_effects"),
+        ("plan_digest_mismatch", "test_stage_requires_exact_plan_and_write_grant_and_stays_inert"),
+        ("placement_not_authorized", "test_stage_requires_exact_plan_and_write_grant_and_stays_inert"),
+        ("plan_payload_mismatch", "test_same_length_plan_payload_drift_refused_before_effects"),
+        ("dependency_mount_invalid", "test_dependency_mount_cannot_add_native_entrypoints"),
+        ("unsupported_native_placement", "test_secondary_native_autoload_surfaces_are_refused"),
+        ("unsupported_native_placement", "test_received_stage_plan_cannot_add_secondary_autoload"),
+        ("plan_file_shape_invalid", "test_received_stage_plan_requires_explicit_valid_modes_before_effects")))
+MUTANTS += (
+    ("binding reference shape/version",
+     lambda: mock.patch.object(tool, "selected_reference", lambda value: SimpleNamespace(**value)),
+     "CurrentWireChecks.test_search_refuses_unknown_or_incomplete_binding"),
+    ("missing package metadata treated as a flat body",
+     lambda: mock.patch.object(tool.ServiceClient, "resolve_identity_selection",
+         lambda _self, identity, digest: {"identity": identity, "digest": digest,
+                                         "package": None, "declared_effects": ()}),
+     "CurrentWireChecks.test_explicit_identity_multifile_skill_refuses_before_metering_or_placement"),
+)
+
+
+def _omit_refusal(detail):
+    original = tool._refuse_unless
+    return mock.patch.object(tool, "_refuse_unless",
+        lambda condition, code, reason="": None if reason == detail else original(condition, code, reason))
+
+
+@contextmanager
+def _registered_profile_with_a_tool_location():
+    """The known-wrong registry: OpenCode is given a native tool location without a qualified binding."""
+    from dataclasses import replace
+    location = tool.NativeLocation("tool", (".opencode", "tools"), "tool.ts", tool.SKILL_FILE_RENDERING)
+    opencode = replace(tool.OPENCODE_PROFILE, locations=tool.OPENCODE_PROFILE.locations + (location,),
+                       unplaced_kinds=tuple(row for row in tool.OPENCODE_PROFILE.unplaced_kinds if row[0] != "tool"))
+    with mock.patch.object(tool, "CLIENT_LAYOUT_PROFILES", {**tool.CLIENT_LAYOUT_PROFILES, "opencode": opencode}):
+        yield
+
+
+# The guards added with the known-wrong checks of the placement gap.
+MUTANTS += (
+    ("package loader evidence names one exact version",
+     lambda: _omit_refusal("package_loader_evidence_version_mismatch"),
+     "NativePackageCompilerChecks.test_profile_cannot_inherit_evidence_for_another_loader_version"),
+    ("instruction files keep no native placement",
+     lambda: _omit_native_guard("unsupported_native_placement"),
+     "NativePackageCompilerChecks.test_an_instruction_file_cannot_ride_a_tool_binding"),
+    ("registered profiles place skills only", _registered_profile_with_a_tool_location,
+     "NativePackageCompilerChecks.test_registered_profiles_place_skills_only"),
+    ("the service's kind must be the expected kind",
+     lambda: _omit_native_guard("selected_package_manifest_mismatch"),
+     "NativePackageFetchChecks.test_a_package_the_manifest_calls_a_skill_is_not_fetched_as_a_tool"),
+)
 
 
 class MutantControls(unittest.TestCase):

@@ -16,7 +16,7 @@ client. It does not prove that a model read, used or benefited from the item.
 from __future__ import annotations
 
 import argparse
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
 import errno
@@ -40,17 +40,19 @@ from urllib.parse import urlsplit
 import uuid
 
 from loop_engine.core.harness_intelligence import KINDS
-from loop_engine.core.provisioning_server import MANIFEST_RECORD_TYPE
+from loop_engine.core.provisioning_server import (
+    TIERED_MANIFEST_RECORD_TYPE as MANIFEST_RECORD_TYPE, ProvisioningItemBinding, ProvisioningError,
+)
 from loop_engine.core.service_runtime.http import (
-    ERROR_VERSION, MANIFEST_OPERATION, PROVISIONING_REQUEST_VERSION, READ_OPERATION,
-    RESULT_VERSION, RETRIEVAL_REQUEST_VERSION,
+    ERROR_VERSION, MANIFEST_OPERATION, TIERED_PROVISIONING_REQUEST_VERSION as PROVISIONING_REQUEST_VERSION,
+    READ_OPERATION, RESULT_VERSION, RETRIEVAL_REQUEST_VERSION, STEP_EFFECTS,
 )
 from loop_engine.core.service_runtime.http_auth import validate_public_url
 
 REPORT_RECORD_TYPE = "native_material_install_report/v1"
 INSTALL_RECORD_TYPE = "native_material_install_record/v1"
 PREVIEW_RECORD_TYPE = "native_material_install_preview/v1"
-LAYOUT_PROFILE_RECORD_TYPE = "native_client_layout_profile/v1"
+LAYOUT_PROFILE_RECORD_TYPE = "native_client_layout_profile/v3"
 LISTING_RECORD_TYPE = "native_client_listing_observation/v1"
 # The service states these values inline in its HTTP adapter. The checks run
 # against the real local service, so a change there fails a named check here.
@@ -170,6 +172,9 @@ class RefusalCode(str, Enum):
     WRITE_FAILED = "write_failed"
     MODEL_TURN_COMMAND_REFUSED = "model_turn_command_refused"
     INVALID_LAYOUT_PROFILE = "invalid_layout_profile"
+    NATIVE_PACKAGE_REFUSED = "native_package_refused"
+    NATIVE_PACKAGE_PLAN_REQUIRED = "native_package_plan_required"
+    FILE_MODE_MISMATCH = "file_mode_mismatch"
 
 
 class FetchOutcome(str, Enum):
@@ -266,10 +271,20 @@ class ClientLayoutProfile:
     version_arguments: tuple[str, ...]
     model_turn_subcommands: tuple[str, ...]
     observed_client_versions: tuple[str, ...]
+    package_binding: NativePackageBinding | None = None
     record_type: str = LAYOUT_PROFILE_RECORD_TYPE
 
     def __post_init__(self):
+        _refuse_unless(self.package_binding is None or isinstance(self.package_binding, NativePackageBinding),
+                       RefusalCode.INVALID_LAYOUT_PROFILE)
         placed = [location.served_kind for location in self.locations]
+        if self.package_binding is not None:
+            _refuse_unless(self.package_binding.runtime.client_kind == self.client_kind, RefusalCode.INVALID_LAYOUT_PROFILE)
+            # A package loader is qualified at one exact client version. A profile built from a registered
+            # one must not carry that profile's other observed versions as evidence for the package loader.
+            _refuse_unless(self.observed_client_versions == (self.package_binding.runtime.exact_version,),
+                           RefusalCode.INVALID_LAYOUT_PROFILE, "package_loader_evidence_version_mismatch")
+            placed.append(self.package_binding.served_kind)
         unplaced = [kind for kind, _reason in self.unplaced_kinds]
         _refuse_unless(self.record_type == LAYOUT_PROFILE_RECORD_TYPE and bool(self.client_kind)
                        and bool(self.executable_name) and len(set(placed)) == len(placed)
@@ -280,6 +295,8 @@ class ClientLayoutProfile:
             refuse_model_turn_subcommand(self.listing.arguments, self.model_turn_subcommands)
 
     def location_for(self, kind: str) -> NativeLocation:
+        if self.package_binding is not None and kind == self.package_binding.served_kind:
+            raise InstallRefusal(RefusalCode.NATIVE_PACKAGE_PLAN_REQUIRED)
         for location in self.locations:
             if location.served_kind == kind:
                 return location
@@ -505,7 +522,7 @@ def require_writable_placement(root: Path, directories: tuple[str, ...]) -> None
         os.close(current)
 
 
-def write_confined_file(root: Path, parts: tuple[str, ...], data: bytes) -> bool:
+def write_confined_file(root: Path, parts: tuple[str, ...], data: bytes, *, mode: int | None = None) -> bool:
     """Create the file under the root. True when written, False when identical.
 
     The bytes go to a new partial name in the same folder first. The final name
@@ -514,6 +531,8 @@ def write_confined_file(root: Path, parts: tuple[str, ...], data: bytes) -> bool
     replaces an existing name.
     """
     validate_relative_parts(parts)
+    _refuse_unless(mode is None or (type(mode) is int and mode in (0o444, 0o644, 0o664)),
+                   RefusalCode.FILE_MODE_MISMATCH)
     directory = _walk_to_directory(root, parts[:-1], create=True)
     # Without a directory handle the next open would resolve against the working folder.
     _refuse_unless(directory is not None, RefusalCode.PATH_NOT_USABLE)
@@ -526,6 +545,8 @@ def write_confined_file(root: Path, parts: tuple[str, ...], data: bytes) -> bool
             raise _refusal_for_open_error(error, partial, directory) from None
         try:
             try:
+                if mode is not None:
+                    os.fchmod(descriptor, mode)
                 view = memoryview(data)
                 while view:
                     view = view[os.write(descriptor, view):]
@@ -544,6 +565,10 @@ def write_confined_file(root: Path, parts: tuple[str, ...], data: bytes) -> bool
                         refusal = InstallRefusal(RefusalCode.EXISTING_PATH_NOT_A_REGULAR_FILE)
                     raise refusal from None
                 require_identical_existing(existing, data)
+                if mode is not None:
+                    info = os.stat(parts[-1], dir_fd=directory, follow_symlinks=False)
+                    _refuse_unless(stat.S_ISREG(info.st_mode) and stat.S_IMODE(info.st_mode) == mode,
+                                   RefusalCode.FILE_MODE_MISMATCH)
                 return False
             except OSError as error:
                 raise InstallRefusal(RefusalCode.WRITE_FAILED, type(error).__name__) from None
@@ -596,13 +621,14 @@ class OfferedItem:
     source_layer: str
     source_ref: str
     qualification_basis: str
+    declared_effects: tuple[str, ...] = ()
 
     @classmethod
     def from_manifest(cls, identity: str, value: dict) -> "OfferedItem":
         try:
             item = cls(value["identity"], value["kind"], value["purpose"], value["digest"], value["size_bytes"],
                        value["license"], value["body_allowed"], value["source_layer"], value["source_ref"],
-                       value["qualification_basis"])
+                       value["qualification_basis"], service_effects(value["declared_effects"]))
         except (KeyError, TypeError):
             raise InstallRefusal(RefusalCode.UNSUPPORTED_SERVICE_RECORD) from None
         texts = (item.identity, item.kind, item.purpose, item.digest, item.license_name, item.source_layer,
@@ -622,7 +648,47 @@ class OfferedItem:
         return {"source": source, "kind": self.kind, "digest": self.digest, "size_bytes": self.size_bytes,
                 "license": self.license_name, "license_declared": bool(self.license_name.strip()),
                 "body_allowed": self.body_allowed, "source_layer": self.source_layer,
-                "source_ref": self.source_ref, "qualification_basis": self.qualification_basis}
+                "source_ref": self.source_ref, "qualification_basis": self.qualification_basis,
+                "declared_effects": list(self.declared_effects)}
+
+
+def service_effects(value) -> tuple[str, ...]:
+    """Declared metadata effects never supply the caller's execution authority."""
+    _refuse_unless(type(value) in (list, tuple) and all(type(effect) is str for effect in value)
+                   and len(value) == len(set(value)) and set(value) <= set(STEP_EFFECTS),
+                   RefusalCode.UNSUPPORTED_SERVICE_RECORD, "effect_selection_invalid")
+    return tuple(value)
+
+
+def selected_package(summary, served_digest):
+    """Read the selected hit's authenticated package summary, never infer it from body text."""
+    from loop_engine.core.service_runtime.catalogue_packages import CataloguePackage
+    from loop_engine.core.service_runtime.records import ServiceRuntimeError
+    _refuse_unless(type(summary) is dict and set(summary) == {"body_form", "package_digest", "files"},
+                   RefusalCode.UNSUPPORTED_SERVICE_RECORD, "package_summary_required")
+    try:
+        package = CataloguePackage.from_dict({key: summary[key] for key in ("body_form", "files")})
+    except (ServiceRuntimeError, TypeError, ValueError):
+        raise InstallRefusal(RefusalCode.UNSUPPORTED_SERVICE_RECORD, "package_summary_invalid") from None
+    _refuse_unless(package.package_digest == summary["package_digest"]
+                   and package.served_digest == served_digest
+                   and [entry.to_dict() for entry in package.files] == summary["files"],
+                   RefusalCode.UNSUPPORTED_SERVICE_RECORD, "package_summary_binding_mismatch")
+    paths = [entry.path.casefold() for entry in package.files]
+    _refuse_unless(not any(other.startswith(path + "/") for path in paths for other in paths),
+                   RefusalCode.UNSUPPORTED_SERVICE_RECORD, "package_path_collision")
+    return package
+
+
+def selected_reference(value):
+    """Read the exact current binding contract through its existing typed owner."""
+    _refuse_unless(type(value) is dict and set(value) == {
+        "record_type", "identity", "source_layer", "source_ref", "body_digest", "descriptor_digest"},
+        RefusalCode.UNSUPPORTED_SERVICE_RECORD, "reference_binding_invalid")
+    try:
+        return ProvisioningItemBinding(**value)
+    except (ProvisioningError, TypeError, ValueError):
+        raise InstallRefusal(RefusalCode.UNSUPPORTED_SERVICE_RECORD, "reference_binding_invalid") from None
 
 
 @dataclass(frozen=True)
@@ -681,8 +747,11 @@ def require_bounded_response(data: bytes, bound: int) -> None:
 class ServiceClient:
     """Bounded requests to one origin. Proxies are ignored and redirects refused."""
 
-    def __init__(self, origin: str, key: str, limits: TransferLimits):
+    def __init__(self, origin: str, key: str, limits: TransferLimits, *, authority_effects: tuple[str, ...] = ()):
         self._origin, self._key, self._limits = origin, key, limits
+        self.authority_effects = service_effects(authority_effects)
+        self.download_allowance = None
+        self.maximum_search_results = None
         self._opener = service_opener()
         self.calls = 0
 
@@ -726,10 +795,21 @@ class ServiceClient:
         return result
 
     def capabilities(self) -> dict:
-        return self._result(CAPABILITIES_ROUTE, None, authenticated=False)
+        self.download_allowance = None
+        self.maximum_search_results = None
+        capabilities = self._result(CAPABILITIES_ROUTE, None, authenticated=False)
+        self.download_allowance = min(require_supported_service(capabilities, self.authority_effects),
+                                      self._limits.maximum_body_bytes)
+        self.maximum_search_results = min(50, capabilities["limits"]["search_results"])
+        return capabilities
+
+    def _selection(self) -> dict:
+        _refuse_unless(self.download_allowance is not None, RefusalCode.UNSUPPORTED_SERVICE_CAPABILITIES,
+                       "handshake_required")
+        return {"authority_effects": list(self.authority_effects)}
 
     def search(self, query: str, top_n: int | None, search_mode: str) -> list[dict]:
-        payload = {"record_type": RETRIEVAL_REQUEST_VERSION, "query": query}
+        payload = {"record_type": RETRIEVAL_REQUEST_VERSION, "query": query, **self._selection()}
         if top_n is not None:
             payload["top_n"] = top_n
         if search_mode:
@@ -741,23 +821,47 @@ class ServiceClient:
         require_references_only(result)
         selected = []
         for hit in hits:
-            reference = hit.get("reference") if isinstance(hit, dict) else None
-            _refuse_unless(isinstance(reference, dict) and isinstance(reference.get("identity"), str)
-                           and isinstance(reference.get("body_digest"), str)
-                           and DIGEST_PATTERN.fullmatch(reference["body_digest"]) is not None,
-                           RefusalCode.UNSUPPORTED_SERVICE_RECORD)
-            selected.append({"identity": reference["identity"], "digest": reference["body_digest"]})
+            binding = selected_reference(hit.get("reference") if isinstance(hit, dict) else None)
+            effects = service_effects(hit.get("declared_effects"))
+            _refuse_unless(set(effects) <= set(self.authority_effects) and "package" in hit,
+                           RefusalCode.UNSUPPORTED_SERVICE_RECORD, "selection_policy_mismatch")
+            if hit["package"] is not None:
+                selected_package(hit["package"], binding.body_digest)
+            _refuse_unless(not any(row["identity"] == binding.identity for row in selected),
+                           RefusalCode.UNSUPPORTED_SERVICE_RECORD, "duplicate_selection")
+            selected.append({"identity": binding.identity, "digest": binding.body_digest,
+                             "package": hit["package"], "declared_effects": effects})
         return selected
 
+    def resolve_identity_selection(self, identity: str, expected_digest: str) -> dict:
+        """Bounded current metadata lookup, with exact identity/digest matching and no body fallback."""
+        _refuse_unless(self.maximum_search_results is not None,
+                       RefusalCode.UNSUPPORTED_SERVICE_CAPABILITIES, "handshake_required")
+        hits = self.search(identity, self.maximum_search_results, "lexical")
+        matches = [hit for hit in hits if hit["identity"] == identity and hit["digest"] == expected_digest]
+        _refuse_unless(len(matches) == 1, RefusalCode.UNSUPPORTED_SERVICE_RECORD,
+                       "exact_identity_metadata_unavailable")
+        return matches[0]
+
     def manifest(self, identity: str, expected_digest: str | None) -> OfferedItem:
-        payload = {"record_type": PROVISIONING_REQUEST_VERSION, "operation": MANIFEST_OPERATION, "identity": identity}
+        payload = {"record_type": PROVISIONING_REQUEST_VERSION, "operation": MANIFEST_OPERATION,
+                   "identity": identity, **self._selection()}
         if expected_digest is not None:
             payload["expected_digest"] = expected_digest
-        return OfferedItem.from_manifest(identity, self._result(PROVISIONING_ROUTE, payload))
+        item = OfferedItem.from_manifest(identity, self._result(PROVISIONING_ROUTE, payload))
+        _refuse_unless(set(item.declared_effects) <= set(self.authority_effects),
+                       RefusalCode.UNSUPPORTED_SERVICE_RECORD, "selection_policy_mismatch")
+        return item
 
-    def download(self, item: OfferedItem, request_id: str, maximum_bytes: int) -> DownloadedBody:
+    def download(self, item: OfferedItem, request_id: str, maximum_bytes: int, *, path: str | None = None) -> DownloadedBody:
         payload = {"record_type": PROVISIONING_REQUEST_VERSION, "operation": READ_OPERATION,
-                   "identity": item.identity, "request_id": request_id, "expected_digest": item.digest}
+                   "identity": item.identity, "request_id": request_id, "expected_digest": item.digest,
+                   **self._selection()}
+        _refuse_unless(type(maximum_bytes) is int and 0 <= maximum_bytes <= self.download_allowance,
+                       RefusalCode.RESPONSE_TOO_LARGE)
+        if path is not None:
+            from loop_engine.core.service_runtime.catalogue_packages import placement_path
+            payload["path"] = placement_path(path)
         status, headers, data = self._exchange(DOWNLOAD_ROUTE, payload, authenticated=True,
                                                maximum_bytes=maximum_bytes)
         digests = headers.get_all(DIGEST_HEADER) or []
@@ -777,7 +881,7 @@ def require_supported_body_format(delivery: dict) -> None:
                    RefusalCode.UNSUPPORTED_SERVICE_CAPABILITIES, "body_format")
 
 
-def require_supported_service(capabilities: dict) -> int:
+def require_supported_service(capabilities: dict, authority_effects: tuple[str, ...] = ()) -> int:
     """Refuse an unknown service contract before any authenticated request.
 
     Returns the download allowance that the service declares.
@@ -789,6 +893,20 @@ def require_supported_service(capabilities: dict) -> int:
                    and type(delivery.get("download_bytes")) is int and delivery["download_bytes"] >= 1,
                    RefusalCode.UNSUPPORTED_SERVICE_CAPABILITIES)
     require_supported_body_format(delivery)
+    library, retrieval = capabilities.get("library"), capabilities.get("retrieval")
+    _refuse_unless(isinstance(library, dict) and isinstance(retrieval, dict)
+                   and isinstance(library.get("provisioning_request_record_types"), list)
+                   and PROVISIONING_REQUEST_VERSION in library["provisioning_request_record_types"]
+                   and retrieval.get("request_record_type") == RETRIEVAL_REQUEST_VERSION
+                   and isinstance(library.get("step_effects"), list)
+                   and all(type(effect) is str for effect in library["step_effects"])
+                   and set(authority_effects) <= set(library["step_effects"])
+                   and delivery.get("package_files") == "download_by_path",
+                   RefusalCode.UNSUPPORTED_SERVICE_CAPABILITIES, "current_wire_contract_required")
+    limits = capabilities.get("limits")
+    _refuse_unless(isinstance(limits, dict) and type(limits.get("search_results")) is int
+                   and limits["search_results"] >= 1,
+                   RefusalCode.UNSUPPORTED_SERVICE_CAPABILITIES, "search_limit_required")
     return delivery["download_bytes"]
 
 
@@ -1071,6 +1189,444 @@ def require_supported_client_registry(registry: dict) -> None:
                    RefusalCode.UNSUPPORTED_CLIENT_REGISTRY_VERSION)
 
 
+# ---------------------------------------------------------------------------
+# Candidate complete-package compilation at the existing material_install_layout edge.
+# No registered layout enables this branch yet. Planning/staging never launches a client.
+# ---------------------------------------------------------------------------
+
+NATIVE_PREVIEW_RECORD_TYPE = "native_material_install_preview/v3"
+NATIVE_STAGE_RECORD_TYPE = "native_material_install_record/v3"
+NATIVE_FILE_MODES = (0o444, 0o644, 0o664)
+
+
+def _native_require(condition, detail):
+    _refuse_unless(condition, RefusalCode.NATIVE_PACKAGE_REFUSED, detail)
+
+
+def _native_effects(values):
+    from loop_engine.core.facets import EFFECTS
+    _native_require(type(values) is tuple and all(type(value) is str for value in values)
+                    and len(set(values)) == len(values)
+                    and set(values) <= set(EFFECTS) and not ("pure" in values and len(values) > 1),
+                    "effects_invalid")
+
+
+def _native_digest(value):
+    return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(",", ":"),
+                                    ensure_ascii=False, allow_nan=False).encode()).hexdigest()
+
+
+@dataclass(frozen=True)
+class NativeClientBinding:
+    """Exact host-observed client/configuration/dependency identities; no install authority."""
+    client_kind: str
+    interface: str
+    exact_version: str
+    operating_system: str
+    architecture: str
+    executable_digest: str
+    effective_configuration_digest: str
+    dependencies: tuple[tuple[str, str], ...]
+
+    def __post_init__(self):
+        _native_require((self.client_kind, self.interface) in (("opencode", "cli"), ("pi", "api"))
+                        and self.operating_system == "linux"
+                        and self.architecture == "x86_64" and isinstance(self.exact_version, str)
+                        and VERSION_PATTERN.fullmatch(self.exact_version), "client_binding_invalid")
+        _native_require(all(isinstance(value, str) and DIGEST_PATTERN.fullmatch(value)
+                            for value in (self.executable_digest, self.effective_configuration_digest)),
+                        "client_binding_invalid")
+        _native_require(type(self.dependencies) is tuple and bool(self.dependencies)
+                        and all(type(row) is tuple and len(row) == 2 and isinstance(row[0], str) and row[0]
+                                and isinstance(row[1], str) and DIGEST_PATTERN.fullmatch(row[1])
+                                for row in self.dependencies)
+                        and len({row[0] for row in self.dependencies}) == len(self.dependencies),
+                        "dependency_binding_invalid")
+
+
+@dataclass(frozen=True)
+class NativePackageProjection:
+    """An exact package tree and explicit placement modes, independent of ambient file modes."""
+    identity: str
+    package_digest: str
+    target_root: tuple[str, ...]
+    file_modes: tuple[tuple[str, int], ...]
+
+    def __post_init__(self):
+        from loop_engine.core.service_runtime.catalogue_packages import placement_path
+        _native_require(isinstance(self.identity, str) and IDENTITY_PATTERN.fullmatch(self.identity)
+                        and isinstance(self.package_digest, str) and DIGEST_PATTERN.fullmatch(self.package_digest),
+                        "package_projection_invalid")
+        _native_require(type(self.target_root) is tuple, "package_projection_invalid")
+        if self.target_root:
+            validate_relative_parts(self.target_root)
+        _native_require(type(self.file_modes) is tuple and len(self.file_modes) <= 64
+                        and all(type(row) is tuple and len(row) == 2 and isinstance(row[0], str)
+                                for row in self.file_modes), "file_mode_inventory_mismatch")
+        for path, mode in self.file_modes:
+            placement_path(path)
+            _native_require(type(mode) is int and mode in NATIVE_FILE_MODES, "file_mode_unsupported")
+        _native_require(len({row[0] for row in self.file_modes}) == len(self.file_modes), "file_mode_inventory_mismatch")
+
+
+@dataclass(frozen=True)
+class NativePackageBinding:
+    """One qualified loader shape's candidate projections and distinct effect phases."""
+    runtime: NativeClientBinding
+    loader: str
+    projections: tuple[NativePackageProjection, ...]
+    entrypoint_target: str
+    supported_roles: tuple[str, ...]
+    load_effects: tuple[str, ...]
+    invocation_effects: tuple[str, ...]
+    read_only_mounts: tuple[tuple[str, str], ...] = ()
+    dependency_mounts: tuple[tuple[str, str], ...] = ()
+    served_kind: str = "tool"
+
+    def __post_init__(self):
+        from loop_engine.core.service_runtime.catalogue_packages import FILE_ROLES, placement_path
+        _native_require(isinstance(self.runtime, NativeClientBinding)
+                        and self.loader in ("opencode_project_tool/v1", "pi_project_extension/v1")
+                        and self.served_kind == "tool", "native_loader_unsupported")
+        expected = ".opencode/tools/" if self.loader == "opencode_project_tool/v1" else ".pi/extensions/"
+        _native_require(self.runtime.client_kind == ("opencode" if self.loader.startswith("opencode") else "pi")
+                        and self.entrypoint_target.startswith(expected)
+                        and "/" not in self.entrypoint_target[len(expected):]
+                        and self.entrypoint_target.endswith((".ts", ".js")), "native_loader_unsupported")
+        placement_path(self.entrypoint_target)
+        _native_require(type(self.projections) is tuple and 1 <= len(self.projections) <= 8
+                        and all(isinstance(p, NativePackageProjection) for p in self.projections)
+                        and len({p.identity for p in self.projections}) == len(self.projections), "package_projection_invalid")
+        _native_require(type(self.supported_roles) is tuple and bool(self.supported_roles)
+                        and all(type(role) is str for role in self.supported_roles)
+                        and set(self.supported_roles) <= set(FILE_ROLES), "unsupported_mandatory_role")
+        _native_effects(self.load_effects)
+        _native_require("reads_fs" in self.load_effects, "native_import_effect_missing")
+        _native_effects(self.invocation_effects)
+        _native_require(type(self.read_only_mounts) is tuple
+                        and all(type(row) is tuple and len(row) == 2
+                                and row[0] in {p.identity for p in self.projections} and row[1] == "/package"
+                                for row in self.read_only_mounts)
+                        and len({row[1] for row in self.read_only_mounts}) == len(self.read_only_mounts),
+                        "runtime_mount_unsupported")
+        _native_require(type(self.dependency_mounts) is tuple
+                        and all(type(row) is tuple and len(row) == 2
+                                and row[0] in dict(self.runtime.dependencies) and isinstance(row[1], str)
+                                for row in self.dependency_mounts)
+                        and len({row[1] for row in self.dependency_mounts}) == len(self.dependency_mounts),
+                        "dependency_mount_invalid")
+        for _identity, target in self.dependency_mounts:
+            validate_relative_parts(tuple(target.split("/")))
+            _native_require(self.runtime.client_kind == "opencode"
+                            and target.startswith(".opencode/node_modules/")
+                            and len(target.split("/")) == 3, "dependency_mount_invalid")
+
+
+@dataclass(frozen=True)
+class NativePackageInput:
+    identity: str
+    package: object
+    payloads: tuple[tuple[str, bytes], ...] = field(repr=False)
+    declared_effects: tuple[str, ...] = ()
+
+    def __post_init__(self):
+        from loop_engine.core.service_runtime.catalogue_packages import CataloguePackage
+        _native_require(type(self.identity) is str and IDENTITY_PATTERN.fullmatch(self.identity)
+                        and isinstance(self.package, CataloguePackage) and type(self.payloads) is tuple,
+                        "package_input_invalid")
+        _native_effects(self.declared_effects)
+
+
+def fetch_selected_native_package(client, selected, request_id, record, persist):
+    """Fetch one explicitly selected tool package; every file shares one journaled logical read.
+
+    This reuses the service client and existing canonical package parser. It
+    neither writes a package tree nor grants load/invocation permission.
+    The caller must persist the supplied record before a metered request.
+    No transport error is retried automatically.
+    """
+    from dataclasses import replace
+    _native_require(isinstance(client, ServiceClient) and type(selected) is dict
+                    and type(record) is dict and not record and callable(persist), "package_fetch_input_invalid")
+    _native_require(type(selected.get("identity")) is str and IDENTITY_PATTERN.fullmatch(selected["identity"]),
+                    "package_fetch_identity_invalid")
+    _native_require(isinstance(request_id, str) and re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:-]{0,127}", request_id),
+                    "logical_transfer_identity_invalid")
+    package = selected_package(selected.get("package"), selected.get("digest"))
+    effects = service_effects(selected.get("declared_effects"))
+    offered = client.manifest(selected["identity"], selected["digest"])
+    require_offer_unchanged(selected["digest"], offered)
+    require_body_permitted(offered)
+    _native_require(offered.kind == "tool" and offered.declared_effects == effects
+                    and offered.size_bytes == package.served_size, "selected_package_manifest_mismatch")
+    _native_require(client.download_allowance is not None
+                    and all(entry.size_bytes <= client.download_allowance for entry in package.files),
+                    "package_file_exceeds_allowance")
+    require_within_download_allowance(offered, client.download_allowance)
+    record.update({"record_type": "native_package_fetch_record/v1", "identity": offered.identity,
+                   "package_digest": package.package_digest, "selected_digest": offered.digest,
+                   "declared_effects": list(effects), "complete": False, "files": [],
+                   "automatic_retries": 0, "runtime_admitted": False})
+    record_pending_fetch(record, request_id, persist)
+    try:
+        body = client.download(offered, request_id, offered.size_bytes)
+        verify_downloaded_body(offered, body)
+        if package.body_form == "package":
+            _native_require(body.data == package.document(), "package_document_differs_from_selection")
+        payloads = []
+        for entry in package.files:
+            file_record = {"path": entry.path, "digest": entry.digest, "size_bytes": entry.size_bytes,
+                           "role": entry.role, "media_type": entry.media_type, "verified": False}
+            record["files"].append(file_record)
+            persist()
+            download = (client.download(offered, request_id, entry.size_bytes, path=entry.path)
+                        if package.body_form == "package" else body)
+            require_successful_download(download)
+            require_bounded_response(download.data, entry.size_bytes)
+            digest = hashlib.sha256(download.data).hexdigest()
+            require_header_digest(digest, download)
+            require_manifest_digest(digest, len(download.data), replace(offered, digest=entry.digest,
+                                                                       size_bytes=entry.size_bytes))
+            payloads.append((entry.path, download.data))
+            file_record["verified"] = True
+            persist()
+        result = NativePackageInput(offered.identity, package, tuple(payloads), effects)
+        record["fetch"].update({"outcome": FetchOutcome.FETCHED_AND_VERIFIED,
+                                "http_status": body.http_status, "header_digest": body.header_digest,
+                                "body_sha256": offered.digest, "body_bytes": len(body.data)})
+        record["complete"] = True
+        persist()
+        return result
+    except InstallRefusal as error:
+        record["refusal"] = {"code": error.code, "detail": error.detail}
+        persist()
+        raise
+
+
+@dataclass(frozen=True)
+class NativeCompiledFile:
+    package_identity: str
+    source_path: str
+    target_path: str
+    file_role: str
+    media_type: str
+    digest: str
+    mode: int
+    payload: bytes = field(repr=False)
+
+    def reference(self):
+        return {"package_identity": self.package_identity, "source_path": self.source_path,
+                "target_path": self.target_path, "file_role": self.file_role, "media_type": self.media_type,
+                "digest": self.digest, "mode": self.mode, "size_bytes": len(self.payload)}
+
+
+@dataclass(frozen=True)
+class NativeMaterialPlan:
+    profile_digest: str
+    runtime: NativeClientBinding
+    files: tuple[NativeCompiledFile, ...]
+    entrypoint_target: str
+    load_effects: tuple[str, ...]
+    invocation_effects: tuple[str, ...]
+    read_only_mounts: tuple[tuple[str, str], ...]
+    dependency_mounts: tuple[tuple[str, str], ...]
+    record_type: str = NATIVE_PREVIEW_RECORD_TYPE
+
+    @property
+    def runtime_admitted(self):
+        return False
+
+    def to_dict(self):
+        return {"record_type": self.record_type, "slot_id": "material_install_layout",
+                "profile_digest": self.profile_digest, "client_binding": asdict(self.runtime),
+                "files": [entry.reference() for entry in self.files], "entrypoint_target": self.entrypoint_target,
+                "required_effects": {"placement": ["writes_fs"], "load": list(self.load_effects),
+                                     "invocation": list(self.invocation_effects)},
+                "read_only_mounts": [list(row) for row in self.read_only_mounts],
+                "dependency_mounts": [{"dependency": identity, "project_path": path, "read_only": True}
+                                      for identity, path in self.dependency_mounts],
+                "activation": "fresh_process_after_complete_staging", "runtime_admitted": False,
+                "dependency_installation": "not_supported", "writes_performed": False}
+
+    @property
+    def digest(self):
+        return _native_digest(self.to_dict())
+
+
+def require_native_placements(files, runtime, entrypoint_target):
+    """Closed destinations for these two loader shapes, including every passive support file.
+
+    A generic package projection is not permission to introduce another plugin,
+    hook, instruction, skill or extension surface. Configuration is limited to
+    the explicitly bound OpenCode fixture files; support stays under the loader's
+    dedicated package folder. All other destinations refuse.
+    """
+    root, entry_folder = ((".opencode", "tools") if runtime.client_kind == "opencode"
+                          else (".pi", "extensions"))
+    entry_parts = entrypoint_target.split("/")
+    _native_require(len(entry_parts) == 3 and entry_parts[:2] == [root, entry_folder]
+                    and entrypoint_target.endswith((".ts", ".js")), "native_loader_unsupported")
+    for entry in files:
+        parts = entry.target_path.split("/")
+        support = len(parts) >= 4 and parts[:2] == [root, "baltor-packages"]
+        configuration = (runtime.client_kind == "opencode"
+                         and entry.target_path in ("opencode.json", ".opencode/.gitignore")
+                         and entry.file_role == "configuration")
+        _native_require(entry.target_path == entrypoint_target or support or configuration,
+                        "unsupported_native_placement")
+
+
+def validate_native_stage_plan(plan):
+    """Validate received v3 plan values before computing their identity or creating a stage."""
+    from loop_engine.core.service_runtime.catalogue_packages import CataloguePackageFile, placement_path
+    from loop_engine.core.service_runtime.records import ServiceRuntimeError
+    _native_require(type(plan.profile_digest) is str and DIGEST_PATTERN.fullmatch(plan.profile_digest)
+                    and isinstance(plan.runtime, NativeClientBinding) and type(plan.files) is tuple
+                    and 1 <= len(plan.files) <= 512 and type(plan.entrypoint_target) is str,
+                    "plan_shape_invalid")
+    for entry in plan.files:
+        _native_require(isinstance(entry, NativeCompiledFile) and type(entry.mode) is int
+                        and entry.mode in NATIVE_FILE_MODES and type(entry.payload) is bytes
+                        and type(entry.package_identity) is str and IDENTITY_PATTERN.fullmatch(entry.package_identity),
+                        "plan_file_shape_invalid")
+        try:
+            CataloguePackageFile(entry.source_path, entry.digest, len(entry.payload), entry.media_type, entry.file_role)
+            placement_path(entry.target_path)
+        except (ServiceRuntimeError, TypeError, ValueError):
+            raise InstallRefusal(RefusalCode.NATIVE_PACKAGE_REFUSED, "plan_file_shape_invalid") from None
+    _native_require(sum(len(entry.payload) for entry in plan.files) <= 32 * 1024 * 1024,
+                    "package_inventory_too_large")
+    paths = [entry.target_path.casefold() for entry in plan.files]
+    _native_require(len(set(paths)) == len(paths) and not any(
+        other.startswith(path + "/") for path in paths for other in paths), "plan_path_collision")
+    require_native_placements(plan.files, plan.runtime, plan.entrypoint_target)
+    _native_require(any(entry.target_path == plan.entrypoint_target and entry.file_role == "executable_tool"
+                        for entry in plan.files), "native_entrypoint_missing")
+    _native_effects(plan.load_effects)
+    _native_effects(plan.invocation_effects)
+    _native_require("reads_fs" in plan.load_effects and "spawns_process" in plan.invocation_effects,
+                    "plan_effects_invalid")
+    identities = {entry.package_identity for entry in plan.files}
+    _native_require(type(plan.read_only_mounts) is tuple and len(plan.read_only_mounts) <= 1
+                    and all(type(row) is tuple and len(row) == 2 and type(row[0]) is str
+                            and row[0] in identities and row[1] == "/package"
+                            for row in plan.read_only_mounts), "runtime_mount_unsupported")
+    _native_require(type(plan.dependency_mounts) is tuple
+                    and all(type(row) is tuple and len(row) == 2 and type(row[0]) is str
+                            and row[0] in dict(plan.runtime.dependencies)
+                            and type(row[1]) is str for row in plan.dependency_mounts), "dependency_mount_invalid")
+    targets = [row[1] for row in plan.dependency_mounts]
+    _native_require(len({target.casefold() for target in targets}) == len(targets), "dependency_mount_invalid")
+    for target in targets:
+        _native_require(plan.runtime.client_kind == "opencode" and target.startswith(".opencode/node_modules/")
+                        and len(target.split("/")) == 3, "dependency_mount_invalid")
+        try:
+            placement_path(target)
+        except (ServiceRuntimeError, TypeError, ValueError):
+            raise InstallRefusal(RefusalCode.NATIVE_PACKAGE_REFUSED, "dependency_mount_invalid") from None
+        folded = target.casefold()
+        _native_require(not any(path == folded or path.startswith(folded + "/") or folded.startswith(path + "/")
+                                for path in paths), "dependency_mount_collision")
+
+
+def compile_native_package_plan(profile, packages, observed_runtime):
+    """Pure candidate compiler. Exact package bytes stay opaque; unsupported semantics refuse."""
+    from loop_engine.core.service_runtime.catalogue_packages import placement_path
+    _native_require(isinstance(profile, ClientLayoutProfile) and profile.package_binding is not None,
+                    "native_package_profile_required")
+    binding = profile.package_binding
+    _native_require(observed_runtime == binding.runtime, "client_binding_mismatch")
+    _native_require(type(packages) is tuple and all(isinstance(p, NativePackageInput) for p in packages)
+                    and len({p.identity for p in packages}) == len(packages), "package_inventory_mismatch")
+    selected = {p.identity: p for p in packages}
+    _native_require(set(selected) == {p.identity for p in binding.projections}, "package_inventory_mismatch")
+    files = []
+    for projection in binding.projections:
+        item = selected[projection.identity]
+        _native_require(item.package.package_digest == projection.package_digest, "package_digest_mismatch")
+        _native_require(set(item.declared_effects) - {"pure"} <= set(binding.invocation_effects), "package_effects_omitted")
+        _native_require(not item.package.executable or "spawns_process" in item.declared_effects,
+                        "package_executable_effect_missing")
+        _native_require(all(type(row) is tuple and len(row) == 2 and type(row[0]) is str and type(row[1]) is bytes
+                            for row in item.payloads), "package_input_invalid")
+        payloads, modes = dict(item.payloads), dict(projection.file_modes)
+        paths = {entry.path for entry in item.package.files}
+        _native_require(len(payloads) == len(item.payloads) and set(payloads) == paths, "package_inventory_mismatch")
+        _native_require(set(modes) == paths, "file_mode_inventory_mismatch")
+        for entry in item.package.files:
+            raw = payloads[entry.path]
+            _native_require(hashlib.sha256(raw).hexdigest() == entry.digest and len(raw) == entry.size_bytes,
+                            "package_bytes_mismatch")
+            _native_require(entry.role in binding.supported_roles, "unsupported_mandatory_role")
+            target = "/".join((*projection.target_root, *entry.path.split("/")))
+            placement_path(target)
+            files.append(NativeCompiledFile(item.identity, entry.path, target, entry.role, entry.media_type,
+                                            entry.digest, modes[entry.path], raw))
+    _native_require(len(files) <= 512 and sum(len(entry.payload) for entry in files) <= 32 * 1024 * 1024,
+                    "package_inventory_too_large")
+    paths = [entry.target_path.casefold() for entry in files]
+    _native_require(len(set(paths)) == len(paths), "target_collision")
+    _native_require(not any("/".join(path.split("/")[:n]) in paths for path in paths
+                            for n in range(1, len(path.split("/")))), "parent_file_collision")
+    for _dependency, target in binding.dependency_mounts:
+        _native_require(not any(path == target.casefold() or path.startswith(target.casefold() + "/")
+                                or target.casefold().startswith(path + "/") for path in paths),
+                        "dependency_mount_collision")
+    entrypoint = next((entry for entry in files if entry.target_path == binding.entrypoint_target), None)
+    _native_require(entrypoint is not None and entrypoint.file_role == "executable_tool", "native_entrypoint_missing")
+    native_root = binding.entrypoint_target.rsplit("/", 1)[0] + "/"
+    _native_require(not any(entry.target_path.startswith(native_root) and entry is not entrypoint for entry in files),
+                    "extra_native_discovery_file")
+    require_native_placements(files, observed_runtime, binding.entrypoint_target)
+    return NativeMaterialPlan(_native_digest(asdict(profile)), observed_runtime,
+        tuple(sorted(files, key=lambda entry: entry.target_path)), binding.entrypoint_target,
+        binding.load_effects, binding.invocation_effects, binding.read_only_mounts, binding.dependency_mounts)
+
+
+def stage_native_package_plan(plan, parent, report_path, expected_digest, placement_effects, observed_runtime):
+    """Place into a NEW private attempt only; never update a live root or launch a client.
+
+    The report is reserved before file effects and the native entrypoint is written last.
+    A failure keeps its partial stage/report for inspection; nothing auto-activates it.
+    Host admission, load/invocation grants, mount enforcement and fresh launch stay separate.
+    """
+    _native_require(isinstance(plan, NativeMaterialPlan) and plan.record_type == NATIVE_PREVIEW_RECORD_TYPE,
+                    "plan_version_unsupported")
+    validate_native_stage_plan(plan)
+    _native_require(expected_digest == plan.digest, "plan_digest_mismatch")
+    _native_require(all(type(entry.payload) is bytes and hashlib.sha256(entry.payload).hexdigest() == entry.digest
+                        for entry in plan.files), "plan_payload_mismatch")
+    _native_require(observed_runtime == plan.runtime, "client_binding_mismatch")
+    _native_effects(placement_effects)
+    _native_require("writes_fs" in placement_effects, "placement_not_authorized")
+    root = real_target_directory(Path(parent))
+    _native_require(Path(report_path).parent.resolve() == root, "report_scope_invalid")
+    descriptor = reserve_report(Path(report_path))
+    report = {"record_type": NATIVE_STAGE_RECORD_TYPE, "plan_digest": plan.digest, "complete": False,
+              "runtime_admitted": False, "activated": False, "workspace": None, "files": [], "refusal": None}
+    try:
+        workspace = Path(tempfile.mkdtemp(prefix="native-package-", dir=root))
+        report["workspace"] = str(workspace)
+        _write_report(descriptor, report)
+        for _dependency, target in plan.dependency_mounts:
+            directory = _walk_to_directory(workspace, tuple(target.split("/")), create=True)
+            if directory is not None:
+                os.close(directory)
+        for entry in sorted(plan.files, key=lambda row: row.target_path == plan.entrypoint_target):
+            write_confined_file(workspace, tuple(entry.target_path.split("/")), entry.payload, mode=entry.mode)
+            report["files"].append(entry.reference())
+            _write_report(descriptor, report)
+        report["complete"] = True
+        _write_report(descriptor, report)
+        return report
+    except Exception as error:
+        report["refusal"] = {"type": type(error).__name__, "code": getattr(error, "code", "write_failed")}
+        _write_report(descriptor, report)
+        raise
+    finally:
+        os.close(descriptor)
+
+
 OPENCODE_PROFILE = ClientLayoutProfile(
     client_kind="opencode",
     executable_name="opencode",
@@ -1203,6 +1759,7 @@ class InstallRequest:
     preview: bool = False
     request_prefix: str = ""
     limits: TransferLimits = field(default_factory=TransferLimits)
+    authority_effects: tuple[str, ...] = ()
 
     def __post_init__(self):
         _refuse_unless(type(self.authorized) is bool and type(self.preview) is bool
@@ -1229,6 +1786,7 @@ class InstallRequest:
         _refuse_unless(not self.request_prefix or REQUEST_PREFIX_PATTERN.fullmatch(self.request_prefix) is not None,
                        RefusalCode.INVALID_REQUEST_PREFIX)
         _refuse_unless(isinstance(self.limits, TransferLimits), RefusalCode.INVALID_LIMITS)
+        object.__setattr__(self, "authority_effects", service_effects(self.authority_effects))
         layout_profile_for(self.client_kind)
 
 
@@ -1333,6 +1891,10 @@ def install_one_item(client: ServiceClient, journey: ItemJourney, selected: dict
         location = journey.profile.location_for(offered.kind)
         require_body_permitted(offered)
         require_within_download_allowance(offered, journey.maximum_body_bytes)
+        if "package" not in selected:
+            selected = client.resolve_identity_selection(offered.identity, offered.digest)
+        _refuse_unless(selected["package"] is None or selected["package"]["body_form"] == "file",
+                       RefusalCode.NATIVE_PACKAGE_PLAN_REQUIRED)
         header, truncated = RENDERERS[location.rendering](name, offered.purpose)
         parts = location.relative_parts(name)
         stage = Stage.PLACEMENT
@@ -1453,7 +2015,7 @@ def install_selected_material(request: InstallRequest, key: str, report_descript
     """Run the whole journey and return the report. The key never enters the report."""
     profile = layout_profile_for(request.client_kind)
     root = real_target_directory(request.target)
-    client = ServiceClient(request.origin, key, request.limits)
+    client = ServiceClient(request.origin, key, request.limits, authority_effects=request.authority_effects)
     request_prefix = request.request_prefix or "native-install-" + uuid.uuid4().hex
     report = {
         "record_type": REPORT_RECORD_TYPE, "complete": False,
@@ -1463,6 +2025,7 @@ def install_selected_material(request: InstallRequest, key: str, report_descript
                    "layout_observed_with_versions": list(profile.observed_client_versions)},
         "target_folder": str(root),
         "selection": {"by": "query" if request.query else "identities",
+                      "authority_effects": list(request.authority_effects),
                       "query_sha256": hashlib.sha256(request.query.encode("utf-8")).hexdigest() if request.query else None,
                       "query_characters": len(request.query) if request.query else None,
                       "largest_number_of_hits": request.top_n,
@@ -1518,6 +2081,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--identity", action="append", default=[], help="Explicit identity. Repeatable.")
     parser.add_argument("--top-n", type=int, default=None, help="Largest number of search hits to select.")
     parser.add_argument("--search-mode", default="", help="Passed to the service as given.")
+    parser.add_argument("--step-effect", choices=STEP_EFFECTS, action="append", default=[],
+                        help="Effect already held by the customer step, for metadata eligibility only. Repeatable.")
     parser.add_argument("--client-executable", type=Path, default=None, help="Client binary to ask for its listing.")
     parser.add_argument("--request-prefix", default="",
                         help="Reuse the prefix of an earlier report to repeat the same read requests.")
@@ -1540,7 +2105,8 @@ def main(argv=None) -> int:
             report=args.report, query=args.query, identities=tuple(args.identity), top_n=args.top_n,
             search_mode=args.search_mode, allow_loopback_http=args.allow_loopback_http,
             client_command=None if args.client_executable is None else (os.path.abspath(args.client_executable),),
-            authorized=args.authorize_install, preview=args.preview, request_prefix=args.request_prefix)
+            authorized=args.authorize_install, preview=args.preview, request_prefix=args.request_prefix,
+            authority_effects=tuple(args.step_effect))
         key = resolve_service_key(request.key_variable)
         refuse_key_on_command_line(key, arguments)
         real_target_directory(request.target)
