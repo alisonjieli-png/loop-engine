@@ -277,7 +277,7 @@ Read from `.github/workflows/` and the 30 most recent runs on September 27,
 The scheduled runs started five to six hours after their cron times on
 September 27, as GitHub's scheduler allows. The trigger fault in `ci.yml`
 is a parallel builder's item in this consolidation; the
-[rules flexibility audit](RULES-FLEXIBILITY-AUDIT-2026-09-27.md) records
+rules flexibility audit (`RULES-FLEXIBILITY-AUDIT-2026-09-27.md`, in preparation) records
 it.
 
 ### Zone 4: internal local
@@ -538,7 +538,7 @@ harness's own browsing, never by counts of links, files or summaries.
 
 Six behaviours show that this pipeline is ready for production. Each is a
 check of behaviour, not of wording, and the
-[rules flexibility audit](RULES-FLEXIBILITY-AUDIT-2026-09-27.md) proposes
+rules flexibility audit (`RULES-FLEXIBILITY-AUDIT-2026-09-27.md`, in preparation) proposes
 them as the checks that matter here:
 
 1. An interrupted campaign resumes from its journal without redoing

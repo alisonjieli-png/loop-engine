@@ -494,7 +494,7 @@ A step of an owning Loop
 └── step executor slot: step_run_request/v1 in, step_run_result/v1 out
     ├── Agent Client Protocol client engine ──> any registered agent (planned)
     ├── vendor-native engines ──> Claude Agent SDK, Codex app-server, OpenCode server, Pi (planned)
-    ├── meta-harness wrapper engine ──> Omnigent ──> its harness (proposed here, trial only)
+    ├── meta-harness engine adapter ──> Omnigent ──> its harness (proposed here, trial only)
     ├── text relay recipes ──> 18 command-line styles, text only (exists)
     └── framework kits ──> Pydantic AI, OpenAI Agents, Microsoft Agent Framework, Deep Agents (exist, in process)
 ```
@@ -623,7 +623,7 @@ Baltor should adopt or integrate these, not build them:
    `opencode serve` takes a model and agent per message; Pi has its remote
    control mode.
    This is already step 4 of the engine design.
-4. **Omnigent as a wrapper engine, as a trial only**, under the rule of roadmap
+4. **Omnigent as an engine adapter, as a trial only**, under the rule of roadmap
    step S-6.75 that every adopted project runs behind the slot beside a
    Baltor-native engine. Use it for agents that neither the registry nor a
    native engine covers (for example Kiro and Hermes, which are not in the
@@ -717,7 +717,7 @@ changes they imply are proposed in section 11 for the integrator.
 |---|---|
 | Baltor does not build a meta-harness, a session manager or a parallel worktree interface | At least ten products do this; GitHub, JetBrains, Databricks and Anthropic ship their own; Vibe Kanban could not find a business model |
 | The first tool-using executor engine stays the Agent Client Protocol client, now registry-driven, with the Claude Code and Codex adapters after OpenCode and Goose | One adapter reaches 41 registered agents, and six other layers already rely on the protocol |
-| Omnigent enters first as a host that calls Baltor, and only second as a trial wrapper engine | A second control plane inside the envelope, alpha status and a per-conversation session model; the protocol route gives most of its reach with a thin adapter |
+| Omnigent enters first as a host that calls Baltor, and only second as a trial engine adapter | A second control plane inside the envelope, alpha status and a per-conversation session model; the protocol route gives most of its reach with a thin adapter |
 | E02 runs on Harbor with registry agents | The same agents the executor will run, with Harbor's separate verifiers |
 | Agent definition bundles become a candidate library file kind | They fit the owner's definition of harness intelligence, and one Omnigent image runs on about fifteen named harnesses |
 | Adopt two patterns: `DRIFT` verdicts in the qualification ladder, and the secretless credential proxy in the confinement slot | Both are shipped and documented, and both answer known gaps in Baltor's plan |
@@ -730,7 +730,7 @@ This record edits no roadmap entry. For the integrator:
 - **S-6.31**: add registry-driven executor profiles, the Claude Code and Codex
   protocol adapters after Goose, a `DRIFT` verdict, and a "reported, not
   brokered" accounting mode for engines signed in with a subscription.
-- **S-6.75**: record Omnigent as a candidate wrapper engine with the gates of
+- **S-6.75**: record Omnigent as a candidate engine adapter with the gates of
   section 9.1, item 4.
 - **S-6.44**: add an Omnigent agent image layout profile, and propose agent
   definition bundles as a harness file kind.
