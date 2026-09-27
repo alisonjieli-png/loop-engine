@@ -84,8 +84,8 @@
      "approved_needed": 34985,
      "bound": "target",
      "candidates_needed": 46394,
-     "gap": 46383,
-     "supply": 11,
+     "gap": 43924,
+     "supply": 2470,
      "target": 35000
     },
     "instructions_and_rules": {
@@ -134,8 +134,8 @@
      "approved_needed": 8735,
      "bound": "target",
      "candidates_needed": 11584,
-     "gap": 11573,
-     "supply": 11,
+     "gap": 9114,
+     "supply": 2470,
      "target": 8750
     },
     "instructions_and_rules": {
@@ -184,8 +184,8 @@
      "approved_needed": 17485,
      "bound": "target",
      "candidates_needed": 23187,
-     "gap": 23176,
-     "supply": 11,
+     "gap": 20717,
+     "supply": 2470,
      "target": 17500
     },
     "instructions_and_rules": {
@@ -236,8 +236,8 @@
      "approved_needed": 34985,
      "bound": "target",
      "candidates_needed": 46394,
-     "gap": 44855,
-     "supply": 1539,
+     "gap": 42396,
+     "supply": 3998,
      "target": 35000
     },
     "instructions_and_rules": {
@@ -286,8 +286,8 @@
      "approved_needed": 8735,
      "bound": "target",
      "candidates_needed": 11584,
-     "gap": 10045,
-     "supply": 1539,
+     "gap": 7586,
+     "supply": 3998,
      "target": 8750
     },
     "instructions_and_rules": {
@@ -336,8 +336,8 @@
      "approved_needed": 17485,
      "bound": "target",
      "candidates_needed": 23187,
-     "gap": 21648,
-     "supply": 1539,
+     "gap": 19189,
+     "supply": 3998,
      "target": 17500
     },
     "instructions_and_rules": {
@@ -365,37 +365,37 @@
    "end": {
     "families": {
      "agents_and_commands": {
-      "count": 9971,
-      "share": 0.3925
+      "count": 9973,
+      "share": 0.3636
      },
      "connectors_and_extensions": {
       "count": 7047,
-      "share": 0.2774
+      "share": 0.2569
      },
      "data_and_contracts": {
       "count": 611,
-      "share": 0.024
+      "share": 0.0223
      },
      "executable_code": {
-      "count": 23,
-      "share": 0.0009
+      "count": 1879,
+      "share": 0.0685
      },
      "instructions_and_rules": {
-      "count": 2032,
+      "count": 2194,
       "share": 0.08
      },
      "skills": {
       "count": 5723,
-      "share": 0.2253
+      "share": 0.2087
      }
     },
-    "library": 25407,
+    "library": 27427,
     "supply_left": {
-     "agents_and_commands": 4611,
+     "agents_and_commands": 4610,
      "connectors_and_extensions": 0,
      "data_and_contracts": 0,
      "executable_code": 0,
-     "instructions_and_rules": 5276,
+     "instructions_and_rules": 5059,
      "skills": 32772
     }
    },
@@ -407,74 +407,74 @@
     "25000": {
      "families": {
       "agents_and_commands": {
-       "count": 9599,
-       "share": 0.3839
+       "count": 7759,
+       "share": 0.3101
       },
       "connectors_and_extensions": {
        "count": 7047,
-       "share": 0.2818
+       "share": 0.2817
       },
       "data_and_contracts": {
        "count": 611,
        "share": 0.0244
       },
       "executable_code": {
-       "count": 23,
-       "share": 0.0009
+       "count": 1879,
+       "share": 0.0751
       },
       "instructions_and_rules": {
-       "count": 2000,
+       "count": 2001,
        "share": 0.08
       },
       "skills": {
        "count": 5723,
-       "share": 0.2289
+       "share": 0.2287
       }
      },
-     "library": 25003,
-     "slots": 138
+     "library": 25020,
+     "slots": 51
     }
    },
    "slot_size": 2000,
-   "slots_run": 260
+   "slots_run": 259
   },
   "with_generated": {
    "approval_share": 0.7541,
    "end": {
     "families": {
      "agents_and_commands": {
-      "count": 9969,
-      "share": 0.3113
+      "count": 9976,
+      "share": 0.2883
      },
      "connectors_and_extensions": {
       "count": 11265,
-      "share": 0.3518
+      "share": 0.3255
      },
      "data_and_contracts": {
       "count": 646,
-      "share": 0.0202
+      "share": 0.0187
      },
      "executable_code": {
-      "count": 1176,
-      "share": 0.0367
+      "count": 3031,
+      "share": 0.0876
      },
      "instructions_and_rules": {
-      "count": 2561,
+      "count": 2768,
       "share": 0.08
      },
      "skills": {
-      "count": 6404,
+      "count": 6921,
       "share": 0.2
      }
     },
-    "library": 32021,
+    "library": 34607,
     "supply_left": {
-     "agents_and_commands": 4609,
+     "agents_and_commands": 4602,
      "connectors_and_extensions": 0,
      "data_and_contracts": 0,
      "executable_code": 0,
-     "instructions_and_rules": 4568,
-     "skills": 31895
+     "instructions_and_rules": 4294,
+     "skills": 31200
     }
    },
    "not_reached": [
@@ -485,36 +485,36 @@
     "25000": {
      "families": {
       "agents_and_commands": {
-       "count": 6363,
-       "share": 0.2529
+       "count": 5934,
+       "share": 0.2343
       },
       "connectors_and_extensions": {
-       "count": 9242,
-       "share": 0.3673
+       "count": 7963,
+       "share": 0.3145
       },
       "data_and_contracts": {
        "count": 646,
-       "share": 0.0257
+       "share": 0.0255
       },
       "executable_code": {
-       "count": 1176,
-       "share": 0.0467
+       "count": 3031,
+       "share": 0.1197
       },
       "instructions_and_rules": {
-       "count": 2013,
+       "count": 2026,
        "share": 0.08
       },
       "skills": {
        "count": 5723,
-       "share": 0.2274
+       "share": 0.226
       }
      },
-     "library": 25163,
-     "slots": 27
+     "library": 25323,
+     "slots": 21
     }
    },
    "slot_size": 2000,
-   "slots_run": 243
+   "slots_run": 245
   }
  },
  "record_type": "library_supply_report/v1",
@@ -544,7 +544,7 @@
     "agents_and_commands": 12622,
     "connectors_and_extensions": 6726,
     "data_and_contracts": 676,
-    "executable_code": 11,
+    "executable_code": 2470,
     "instructions_and_rules": 5398,
     "skills": 32772
    },
@@ -554,6 +554,7 @@
     "function": 11,
     "hook": 784,
     "instructions": 2952,
+    "library_module": 2459,
     "marketplace": 1338,
     "mcp_server": 778,
     "plugin": 3826,
@@ -567,9 +568,9 @@
     "a_file_is_above_the_review_bound": 37,
     "a_file_is_not_reviewable_text": 1160
    },
-   "total": 58205
+   "total": 60664
   }
  },
  "targets_digest": "8e270ea8184fc0cbc091086882e18e3f78b01d7219e7cab828deb4405c4c77a9",
- "written_at": "2026-09-27T19:32:49Z"
+ "written_at": "2026-09-27T19:54:02Z"
 }

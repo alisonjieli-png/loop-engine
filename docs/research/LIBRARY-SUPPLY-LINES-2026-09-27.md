@@ -61,10 +61,12 @@ and [the licensed import README](../../tools/licensed_import/README.md).
 | API operations | 6 specifications, 19 files | 1,339 | 52 | `api_operation` | MIT (1,050), MIT AND Apache-2.0 (289) |
 | Program install recipes | 200 declared programs | 189 | 11 | `binary_install` | MIT AND BSD-2-Clause |
 | Reference data tables | 46 declared tables | 46 | 0 | `data_table` | MIT (37), CC0-1.0 AND MIT (7), Unlicense AND MIT (2) |
+| Verbatim code modules | 6 declared MIT repositories | 2,459 | 0 | `library_module` | MIT |
 
 The generated candidates (7,166) are stored in the import store's
-`library.supply` namespace. The verbatim code modules go to `library.import`;
-their round is described below.
+`library.supply` namespace. The verbatim code modules are byte-for-byte
+copies, stored by the licensed import in `library.import`, where the imported
+review profile reads them today.
 
 ### Protocol servers
 
@@ -136,11 +138,30 @@ inheritance and 13 country fact tables. Two declarations were corrected
 after the first trial: the time zone table repeats a value, so it is keyed
 by its unique text, and one country file is a mapping, not a list.
 
+### Verbatim code modules
+
+The licensed import read the six repositories of
+`tools/supply_lines/verbatim_code_sources.json` at their head commits, one
+module per package with the tests that name it:
+
+| Repository | Modules | Language |
+|---|---:|---|
+| `TheAlgorithms/Python` | 1,127 | Python |
+| `TheAlgorithms/Rust` | 394 | Rust |
+| `keon/algorithms` | 382 | Python |
+| `TheAlgorithms/Go` | 272 | Go |
+| `trekhleb/javascript-algorithms` | 181 | JavaScript |
+| `TheAlgorithms/TypeScript` | 105 | TypeScript |
+
+The licence gate copied every file, the static checks blocked none, and two
+modules merged as duplicates, so 2,459 were written. Project Euler solutions
+and web scrapers were left out by the declaration.
+
 ## Supply by family, not yet exported
 
 | Family | Imported, reviewable today | Generated, held for a review profile |
 |---|---:|---:|
-| Executable code | 11 | 1,528 |
+| Executable code | 2,470 | 1,528 |
 | Protocol servers, plugins, marketplaces and hooks | 6,726 | 5,592 |
 | Skills | 32,772 | 0 |
 | Subagents and commands | 12,622 | 0 |
@@ -155,10 +176,14 @@ instruction files and rules, and no refill. Every family is approved at
 0.754, the share of 14,000 exported packages that seven daily slots approved
 (10,557). No new supply arrives in it.
 
-| Scenario | 25,000 reached after | Largest families at 25,000 | Where it stops |
+| Scenario | 25,000 reached after | Families at 25,000 | Where it stops |
 |---|---|---|---|
-| Imported only (today's review path) | 138 slots | subagents and commands 38.4%, connectors 28.2%, skills 22.9% | 25,407: executable, connector and data supply run out |
-| With a review profile for generated packages | 27 slots | connectors 36.7%, subagents and commands 25.3%, skills 22.7% | 32,021: executable, connector and data supply run out |
+| Imported only (today's review path) | 51 slots | subagents and commands 31.0%, connectors 28.2%, skills 22.9%, instructions 8.0%, executable 7.5%, data 2.4% | 27,427: executable, connector and data supply run out |
+| With a review profile for generated packages | 21 slots | connectors 31.5%, subagents and commands 23.4%, skills 22.6%, executable 12.0%, instructions 8.0%, data 2.6% | 34,607: executable, connector and data supply run out |
+
+Before the verbatim code modules were stored, the same projection needed
+138 slots (imported only) and 27 slots (with generated packages) to reach
+25,000, with executable code at 0.1 and 4.7 percent.
 
 Neither scenario reaches 50,000 or 100,000 with the supply on hand. Skills
 stay above 20 percent at 25,000 only because the library already held 5,723
@@ -179,7 +204,7 @@ Candidates needed at the 0.754 approval share, against the supply on hand
 
 | Family | At 25,000 | At 50,000 | At 100,000 | Supply | Gap at 100,000 |
 |---|---:|---:|---:|---:|---:|
-| Executable code | 11,584 | 23,187 | 46,394 | 1,539 | 44,855 |
+| Executable code | 11,584 | 23,187 | 46,394 | 3,998 | 42,396 |
 | Protocol servers, plugins, marketplaces and hooks | 4,012 | 10,642 | 23,903 | 12,318 | 11,585 |
 | Skills | 0 | 5,672 | 18,933 | 32,772 | 0 |
 | Subagents and commands | 0 | 1,447 | 8,078 | 12,622 | 0 |
@@ -189,8 +214,9 @@ Candidates needed at the 0.754 approval share, against the supply on hand
 The remaining gaps, largest first:
 
 - Executable code. The generated lines hold 1,528 packages and need a review
-  profile; the verbatim algorithm modules are the first source the imported
-  profile reads today. About 45,000 more candidates are needed at 100,000.
+  profile; the 2,459 verbatim algorithm modules are the first executable
+  supply the imported profile reads today. About 42,400 more candidates are
+  needed at 100,000.
 - A review profile for generated packages. Without it, 7,166 generated
   candidates wait (see the proposal below).
 - Plugins beyond GitHub repositories: extension marketplaces (the Gemini CLI

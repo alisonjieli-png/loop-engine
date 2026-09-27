@@ -369,6 +369,97 @@
     "withdrawn": 0,
     "written": 189
    }
+  },
+  "verbatim_code_modules": {
+   "finished_at": "2026-09-27T19:42:03Z",
+   "importer": "tools/import_licensed_harness_files.py sync --sources tools/supply_lines/verbatim_code_sources.json",
+   "kept": 2459,
+   "line": "verbatim_code_modules",
+   "merged": 2,
+   "namespace": "library.import",
+   "near_duplicate_engine": [
+    "builtin_minhash_lsh"
+   ],
+   "record_type": "licensed_import_sync_summary/v1",
+   "repositories": {
+    "TheAlgorithms/Go": {
+     "candidates": 272,
+     "commit": "5ba447ec5ff3d1213de65b92e726ee74c5d5cc19",
+     "forms": {
+      "library_module": 272
+     },
+     "licences": {
+      "MIT": 272
+     },
+     "refusals": 0
+    },
+    "TheAlgorithms/Python": {
+     "candidates": 1127,
+     "commit": "7f81fcd68c195ce71534de09d1b69d2b61665902",
+     "forms": {
+      "library_module": 1127
+     },
+     "licences": {
+      "MIT": 1127
+     },
+     "refusals": 0
+    },
+    "TheAlgorithms/Rust": {
+     "candidates": 394,
+     "commit": "2345c668b05ecb6fa074138bdbc5a1cbf2afaec8",
+     "forms": {
+      "library_module": 394
+     },
+     "licences": {
+      "MIT": 394
+     },
+     "refusals": 0
+    },
+    "TheAlgorithms/TypeScript": {
+     "candidates": 105,
+     "commit": "19b4ced86c99815f142d4a46a028f55487b8038a",
+     "forms": {
+      "library_module": 105
+     },
+     "licences": {
+      "MIT": 105
+     },
+     "refusals": 0
+    },
+    "keon/algorithms": {
+     "candidates": 382,
+     "commit": "bd1d152f9ec7331c69be662831610b003b10fc7a",
+     "forms": {
+      "library_module": 382
+     },
+     "licences": {
+      "MIT": 382
+     },
+     "refusals": 0
+    },
+    "trekhleb/javascript-algorithms": {
+     "candidates": 181,
+     "commit": "85293e3e2b88f4d2ce330d956b139cf628aa1e82",
+     "forms": {
+      "library_module": 181
+     },
+     "licences": {
+      "MIT": 181
+     },
+     "refusals": 0
+    }
+   },
+   "written": {
+    "bodies": {
+     "already_present": 0,
+     "written": 5256
+    },
+    "candidates_written": 2459,
+    "ideas_written": 0,
+    "records_written": 2465,
+    "superseded": 0,
+    "withdrawals": 0
+   }
   }
  }
 }
