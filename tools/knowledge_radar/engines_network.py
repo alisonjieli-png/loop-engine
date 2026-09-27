@@ -96,6 +96,8 @@ class RadarNetwork:
     conditional: dict = field(default_factory=dict)
     #: Validators the sources sent in this run, by request key, for the next run to send back.
     observed_validators: dict = field(default_factory=dict)
+    #: Complete answers of this run by request key: one source file read by several questions is fetched once.
+    answers: dict = field(default_factory=dict)
 
     def _admit(self, engine_id: str) -> None:
         contract = self.contracts[engine_id]
@@ -112,14 +114,18 @@ class RadarNetwork:
         contract = self.contracts[engine_id]
         if host not in contract.hosts or contract.access_method != "https_get":
             raise RadarEngineError("radar_host_not_declared", f"{engine_id} may not read {host}")
+        key = request_key(host, path, query)
+        if key in self.answers and not self.conditional.get(key):
+            return self.answers[key]
         self._admit(engine_id)
         transport = self.transports.get((engine_id, accept))
         if transport is None:
             transport = HttpsGetTransport(contract.hosts, self.budget, self.log, timeout_seconds=60.0,
                                           maximum_bytes=contract.maximum_response_bytes, accept=accept)
             self.transports[(engine_id, accept)] = transport
-        key = request_key(host, path, query)
         response = transport.get(host, path, query, validators=self.conditional.get(key))
+        if response.status == 200:
+            self.answers[key] = response
         if response.status == 200 and (response.etag or response.last_modified):
             self.observed_validators[key] = {"etag": response.etag, "last_modified": response.last_modified}
         elif response.status == 304 and key in self.conditional:

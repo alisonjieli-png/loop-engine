@@ -444,6 +444,10 @@ class TransportChecks(unittest.TestCase):
             network.get("huggingface_models", "huggingface.co", "/api/models", {"limit": 1})
         self.assertEqual(calls, [{"etag": '"v1"'}, None])
         self.assertEqual(network.observed_validators[engines_network.request_key("models.dev", "/api.json")]["etag"], '"v2"')
+        network.conditional = {}
+        with mock.patch.object(engines_network, "HttpsGetTransport", Transport):
+            again = network.get("models_dev_catalogue", "models.dev", "/api.json")
+        self.assertEqual((len(calls), again.status, network.used["models_dev_catalogue"]), (2, 200, 1))
 
 
     def test_the_transport_asks_for_the_declared_media_type(self):
