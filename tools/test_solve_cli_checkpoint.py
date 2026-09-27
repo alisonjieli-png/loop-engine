@@ -8,16 +8,20 @@ to the run's other records, where `overnight_queue.summarise` reads it.
 """
 from __future__ import annotations
 
+import json
 import os
 import signal
+import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+SOURCE = os.path.join(os.path.dirname(HERE), "src")
 sys.path.insert(0, HERE)
-sys.path.insert(0, os.path.join(os.path.dirname(HERE), "src"))
+sys.path.insert(0, SOURCE)
 
 import overnight_queue  # noqa: E402
 from loop_engine import solve_cli  # noqa: E402
@@ -88,6 +92,72 @@ class ArmCheckpointChecks(unittest.TestCase):
         finally:
             for name, disposition in previous.items():
                 signal.signal(getattr(signal, name), disposition)
+
+
+class CompletionCheckpointChecks(unittest.TestCase):
+    """Two facts an overnight operator relies on in the morning.
+
+    The checkpoint records what the night was for even when the task came
+    from ``--file``, and it is written only when a workspace was declared.
+    """
+
+    TASK = ("Repair the failing import check in this repository and prove "
+            "it with the\ncheck that failed.\n")
+
+    def setUp(self):
+        self.folder = tempfile.TemporaryDirectory(prefix="solve-cli-task-")
+        self.root = Path(self.folder.name)
+        self.history = self.root / "run-history"
+        self.history.mkdir()
+        self.workspace = self.root / "workspace"
+        self.workspace.mkdir()
+        self.value = {"run_id": "adaptive-checkpoint-test", "model_calls": 0,
+                      "run_history": {"path": str(self.history)}}
+
+    def tearDown(self):
+        self.folder.cleanup()
+
+    def test_the_checkpoint_records_a_task_that_came_from_a_file(self):
+        written = solve_cli._write_run_checkpoint(
+            SimpleNamespace(workspace=str(self.workspace), text=""),
+            self.value, reason="run completed", task=self.TASK)
+        recorded = json.loads(Path(written).read_text(encoding="utf-8"))
+        self.assertEqual(recorded["task"], self.TASK)
+
+    def test_no_declared_workspace_means_no_checkpoint_is_written(self):
+        written = solve_cli._write_run_checkpoint(
+            SimpleNamespace(workspace="", text=self.TASK),
+            self.value, reason="run completed", task=self.TASK)
+        self.assertEqual(written, "")
+        self.assertEqual(list(self.history.iterdir()), [])
+
+    def test_a_solve_started_from_a_file_names_its_task_in_the_checkpoint(self):
+        """The whole command, as the overnight guide prints it.
+
+        Deterministic, with no model authority, so no model is called. The
+        run ends for want of a model route, and the completion checkpoint it
+        writes must still say what the night was for.
+        """
+        task_file = self.root / "task.txt"
+        task_file.write_text(self.TASK, encoding="utf-8")
+        runs = self.root / "runs"
+        home = self.root / "home"
+        home.mkdir()
+        environment = {name: value for name, value in os.environ.items()
+                       if not name.startswith("LOOP_ENGINE_")}
+        environment.update(HOME=str(home), PYTHONPATH=SOURCE)
+        completed = subprocess.run(
+            [sys.executable, "-m", "loop_engine", "solve",
+             "--file", str(task_file), "--unattended",
+             "--workspace", str(self.workspace), "--runs-dir", str(runs)],
+            capture_output=True, text=True, env=environment, timeout=300,
+            check=False)
+        written = sorted(runs.glob("*/checkpoint.json"))
+        self.assertEqual(len(written), 1, completed.stdout[-600:] + completed.stderr[-600:])
+        recorded = json.loads(written[0].read_text(encoding="utf-8"))
+        self.assertEqual(recorded["reason"], "run completed")
+        self.assertEqual(recorded["task"], self.TASK)
+        self.assertEqual(recorded["model_calls"], 0)
 
 
 if __name__ == "__main__":

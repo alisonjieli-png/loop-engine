@@ -211,8 +211,14 @@ def _follow_run_id(checkpoint, runs_dir: str, progress):
     return follow
 
 
-def _write_run_checkpoint(args, value: dict, *, reason: str) -> str:
-    """Record which attempts exist and which one the others agree with."""
+def _write_run_checkpoint(args, value: dict, *, reason: str,
+                          task: str = "") -> str:
+    """Record which attempts exist and which one the others agree with.
+
+    ``task`` is the resolved task text. It used to read ``args.text`` alone,
+    so every run started from ``--file`` left an empty task in the record an
+    operator reads in the morning.
+    """
     from .core.run_checkpoint import RunCheckpoint
 
     workspace = str(getattr(args, "workspace", "") or "")
@@ -222,7 +228,7 @@ def _write_run_checkpoint(args, value: dict, *, reason: str) -> str:
     checkpoint = RunCheckpoint(
         run_id=str(value.get("run_id") or ""),
         workspace_base=workspace, checkpoint_dir=str(history),
-        task=str(getattr(args, "text", "") or ""),
+        task=task or str(getattr(args, "text", "") or ""),
         model_calls=int(value.get("model_calls") or 0),
         reason=reason)
     return checkpoint.write()
@@ -254,6 +260,11 @@ def run_solve(args) -> int:
     try:
         _apply_quickstart(args)
         intake = task_intake_from_args(args)
+        # The handler was armed before the task was resolved, so a task that
+        # came from --file reached it as an empty string. Now that the intake
+        # has read it, an interruption records what the run was for.
+        _interrupt_checkpoint.task = str(
+            intake.original_input or getattr(args, "text", "") or "")
         loaded = load_runtime_settings(args.settings_file or None)
         extension_application = resolve_cli_extensions(args, loaded.settings)
         settings = extension_application.settings
@@ -392,7 +403,8 @@ def run_solve(args) -> int:
         # checkpoint is a complete record rather than only an interruption
         # artifact.  The signal handler installed before the run covers the
         # abnormal case; this covers the ordinary one.
-        _write_run_checkpoint(args, value, reason="run completed")
+        _write_run_checkpoint(args, value, reason="run completed",
+                              task=_interrupt_checkpoint.task)
         if args.format == "json":
             print(json.dumps(value, indent=1))
         else:
