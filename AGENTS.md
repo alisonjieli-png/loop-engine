@@ -119,6 +119,29 @@ propose claims and bundles; they hold no publishing credential, and
 publication goes through the independent review and the catalogue release
 path like every other package. Roadmap step S-6.214 is the first piece.
 
+Later the same day the owner set the aim: "ideally engineers would never
+need to search and read newsletters blogs, directories, list, their coding
+harness can do that already and no need to do it again, and we can do it
+daily and serve it to thousands of coding harnesses". The analysis the
+owner shared with it states the principle as "Research once, validate for
+defined conditions, distribute many times, and repeat only the work
+invalidated by a meaningful change", and the answer a harness receives as
+"Here is the currently qualified way to accomplish this task under your
+constraints, with the implementation, evidence, limitations, and update
+history already prepared". It removes "the obligation to browse
+repeatedly" but not "the ability to inspect evidence", and shares "the
+research broadly" but not "the assumption that every project is the same".
+Three rules follow. Research is kept in three sharing scopes: public and
+shared, private to one organization, and private to one case, and only the
+public scope is pooled across customers. Every answer states where it
+stands: an approved result, a candidate, needs research, needs local
+evaluation, blocked by policy, or no eligible option. Success is measured
+by research reuse and by accepted-task improvement over a harness's own
+browsing, never by counts of links, files or summaries. Other services
+cover parts of this; Baltor's claimed difference, turning outside
+discoveries into task-specific, executable, evidence-backed capabilities
+across different harnesses, is a hypothesis to test.
+
 **Four zones, run by agent teams.** The owner asked for "splitting the
 website server side that's public that interacts with the customer and the
 customer's harness, making sure that is appropriately compartmentalized",
@@ -166,11 +189,12 @@ external effects are never loosened this way. The
 [rules flexibility audit](docs/architecture/RULES-FLEXIBILITY-AUDIT-2026-09-27.md)
 lists the current candidates.
 
-In one sentence: Baltor gives each step of a customer's harness the best
-current files, decisions and tested capabilities for that step, researched
-once, checked again as they age and proven with and without Baltor, under
-the customer's own budget and permissions, and engineering picks the work
-that brings paying developers and teams soonest.
+In one sentence: Baltor researches once what thousands of harnesses would
+otherwise each look up, and gives each step of a customer's harness the
+currently qualified files, decisions and tested capabilities for that step,
+checked again when a meaningful change invalidates them and proven with and
+without Baltor, under the customer's own budget and permissions; engineering
+picks the work that brings paying developers and teams soonest.
 
 ```text
 Current initiatives, in priority order (September 27, 2026)
@@ -197,6 +221,8 @@ Current initiatives, in priority order (September 27, 2026)
 │   │   tools for volatile facts, each dated and checked again as it ages
 │   ├── Researched once per task and configuration; research workers
 │   │   propose, the independent review and catalogue release publish
+│   ├── Every answer states where it stands, from approved result to no
+│   │   eligible option; public, organization and case scopes kept apart
 │   └── Served to harnesses beside the component library, then new fields
 │       such as 3D, 2D, CAD and design
 ├── 4. The Team plan (S-6.191, S-6.186)
