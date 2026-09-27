@@ -257,4 +257,6 @@ and [`tools/test_knowledge_radar_assets.py`](../test_knowledge_radar_assets.py).
 - No model reads a source: briefs list, rank and date; they do not summarise.
 - Link checks cover seed links; engine links come from each source's own answer.
 - The planner reads local change times; network sources are re-read on their cadence.
+- arXiv's edge refuses some automated reads with 406 at busy times; the engine waits and tries once more,
+  then records "could not check".
 - Serving, freshness in search, withdrawal of superseded briefs and a schedule are designed in the research record and not installed here.

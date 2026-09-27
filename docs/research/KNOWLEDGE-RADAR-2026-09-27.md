@@ -570,6 +570,11 @@ that said Ollama Cloud supports structured output.
   the shared transport now accepts them.
 - The hourly watch installed on a server-side schedule, with its state kept
   between runs.
+- arXiv reads that survive its edge's throttling: on September 27, 2026 the
+  edge answered 406 to four of five queries twice in three runs from a
+  shared workstation, while the same queries succeeded moments later from
+  another client. The listing feeds (rss.arxiv.org) or a quieter window are
+  the next engines to try.
 
 - Independent review of the day's catalogue and its inclusion in a daily
   release.
