@@ -24,7 +24,6 @@ from loop_engine.core.service_runtime import library_page
 from loop_engine.core.service_runtime.catalogue_attributes import HARNESS_KINDS
 from loop_engine.core.service_runtime.catalogue_schema import CatalogueAttributeSchema
 from loop_engine.core.service_runtime.catalogue_serving import CatalogueView
-from loop_engine.core.service_runtime.catalogue_tiers import TIER_MEANINGS
 
 REVIEWS = "examples/29_intelligence_service/starter-catalogue/reviews.json#"
 #: identity, served kind, purpose, tier, body, styles (the licensed import writes the harness kind first).
@@ -115,6 +114,8 @@ def page_problems(html, view):
             problems.append("a withdrawal is shown without its note")
     if BACKEND_WORDS.search(visible_text(html)):
         problems.append("the page names how search works")
+    if re.search(r'\b(?:Verified|Community)\b', visible_text(html)) or 'data-library-tier=' in html:
+        problems.append("the page splits the library into review classes")
     return problems
 
 
@@ -131,7 +132,8 @@ class LibraryPageTests(unittest.TestCase):
         self.assertEqual(counted_kinds(self.html), ["skill", "subagent", "hook"])
         self.assertEqual(listed(self.html), set())
         self.assertIn("5 packages a coding agent can fetch today, of 3 kinds", self.html)
-        self.assertIn("2 Verified and 3 Community", self.html)
+        self.assertNotIn("2 Verified and 3 Community", self.html)
+        self.assertIn('<th scope="col" class="lib-num">Components</th>', self.html)
         self.assertIn('href="/get-started"', self.html)
         self.assertIn('href="/app#browse-heading"', self.html)
 
@@ -167,9 +169,16 @@ class LibraryPageTests(unittest.TestCase):
         self.assertIn("&lt;b&gt;markup&lt;/b&gt;", self.html)
         self.assertNotIn("<b>markup</b>", self.html)
 
-    def test_the_labels_carry_the_published_meanings(self):
-        for meaning in TIER_MEANINGS.values():
-            self.assertIn(meaning.split(". ")[0], self.html)
+    def test_internal_review_paths_do_not_create_public_classes(self):
+        self.assertNotRegex(visible_text(self.html), r'\b(?:Verified|Community)\b')
+        self.assertNotIn('What the labels mean', self.html)
+        self.assertNotIn('data-library-tier=', self.html)
+        counts = dict(library_page.counts_by_harness_kind(library_page.library_rows(self.view)))
+        self.assertEqual(counts, {'skill': 3, 'subagent': 1, 'hook': 1})
+
+    def test_known_wrong_review_badge_is_detected(self):
+        wrong = self.html + '<span>Community</span>'
+        self.assertIn('the page splits the library into review classes', page_problems(wrong, self.view))
 
     def test_a_review_record_in_the_repository_is_linked(self):
         repository = pyproject_repository()

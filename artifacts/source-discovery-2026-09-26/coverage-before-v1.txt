@@ -1,0 +1,17 @@
+E
+======================================================================
+ERROR: test_coverage_rotation (unittest.loader._FailedTest.test_coverage_rotation)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_coverage_rotation
+Traceback (most recent call last):
+  File "/usr/lib/python3.14/unittest/loader.py", line 137, in loadTestsFromName
+    module = __import__(module_name)
+  File "/home/username/.le-codex-build/library-expansion-20260926/artifacts/source-discovery-2026-09-26/test_coverage_rotation.py", line 6, in <module>
+    import coverage_rotation as c
+ModuleNotFoundError: No module named 'coverage_rotation'
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.001s
+
+FAILED (errors=1)

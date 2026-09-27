@@ -94,14 +94,7 @@ a{color:var(--accent)}a:hover{color:var(--accent-hover)}
 .secondary{color:var(--muted)}
 /* A neutral label for a count or a state, in the shape of the design's labels. */
 .badge{display:inline-flex;align-items:center;min-height:24px;padding:0 .5rem;border:0;border-radius:var(--radius-label);background:var(--community-bg);color:var(--community-ink);font-size:.75rem;font-weight:600;line-height:1.4}
-/* The two library labels, written exactly Verified and Community. A page marks one with the class or with data-label-tier. */
-.label,[data-label-tier]{display:inline-flex;align-items:center;min-height:24px;padding:0 .5rem;border-radius:var(--radius-label);font-size:.75rem;font-weight:600;line-height:1.4;white-space:nowrap}
-.label-verified,[data-label-tier=verified]{background:var(--verified-bg);color:var(--verified-ink)}
-.label-community,[data-label-tier=community]{background:var(--community-bg);color:var(--community-ink)}
-/* The library table's labels, which catalogue-browser.js writes as a badge carrying data-library-tier, take the same two colours. */
-.badge[data-library-tier]{white-space:nowrap;overflow-wrap:normal;word-break:normal}
-.badge[data-library-tier=verified]{background:var(--verified-bg);color:var(--verified-ink)}
-.badge[data-library-tier=community]{background:var(--community-bg);color:var(--community-ink)}
+.label{display:inline-flex;align-items:center;min-height:24px;padding:0 .5rem;border-radius:var(--radius-label);font-size:.75rem;font-weight:600;line-height:1.4;white-space:nowrap}
 
 /* Buttons and fields. One ember action for Get started, ink for the main action of a signed-in view, a white secondary with
    a warm edge, and field edges that stand out from the ground. */

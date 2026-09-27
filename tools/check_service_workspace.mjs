@@ -2294,6 +2294,15 @@ try {
   check("browser_search_carries_every_step_effect",searchesSent.length===1&&Array.isArray(namedStepEffects)&&namedStepEffects.length===5
     &&JSON.stringify(searchesSent[0]?.authority_effects)===JSON.stringify(namedStepEffects),{sent:searchesSent,named:namedStepEffects});
   check("browser_search_reaches_the_real_authorized_retriever",await page.locator(".result").count()===2&&!(await page.locator("#results").innerText()).includes("skill.beta"));
+  const hasReviewClasses = () => page.locator('#results [data-library-tier], #results dt').evaluateAll(nodes =>
+    nodes.some(node => node.hasAttribute('data-library-tier') || node.textContent.trim() === 'Library tier'));
+  check("search_results_use_one_component_library",!(await hasReviewClasses()));
+  await page.locator('#results').evaluate(node => {
+    const badge = document.createElement('span'); badge.dataset.libraryTier = 'community';
+    badge.textContent = 'Community'; badge.id = 'wrong-review-class'; node.append(badge);
+  });
+  check("known_wrong_review_badge_is_detected",await hasReviewClasses());
+  await page.locator('#wrong-review-class').evaluate(node => node.remove());
   const downloadEvent=page.waitForEvent("download"); await page.locator(".result button").first().click(); const download=await downloadEvent;
   const stream=await download.createReadStream(); const chunks=[]; for await (const chunk of stream) chunks.push(chunk);
   check("browser_download_checks_actual_bytes_against_the_selected_digest",Buffer.concat(chunks).toString()==="APPROVED_ALPHA_BODY"&&(await page.locator(".result").first().innerText()).includes("Digest verified"));

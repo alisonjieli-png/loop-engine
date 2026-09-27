@@ -11,6 +11,11 @@ repeated effect beyond that recorded authority.
 
 ## Current context route
 
+For the later September 26 work, read the
+[component expansion and customer journey handoff](COMPONENT-EXPANSION-AND-CUSTOMER-JOURNEY-2026-09-26.md).
+It records release 38, the fresh customer check, the source discovery rotation
+and the next component batch. The roadmap remains the task authority.
+
 Start with the newest dated handoff, the
 [September 26 session handoff](SESSION-HANDOFF-2026-09-26.md). It records
 the sixth Community catalogue release with 6,398 packages, the balanced kind

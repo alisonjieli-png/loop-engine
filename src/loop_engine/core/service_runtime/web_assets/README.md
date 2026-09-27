@@ -121,10 +121,10 @@ is not used). The shared visual layer is:
   Privacy notice and Terms of service in the signed-in views), the account
   shell (the design's AppNav: a 240 pixel column of grouped sections above 860
   pixels, a row of pills below), and the shared components: ember, ink and
-  white buttons, fields, cards, tables and the `label-verified` and
-  `label-community` labels, which the library table's badges
-  (`.badge[data-library-tier]`) share; in the dark theme the mark has a one
-  pixel edge, so its navy tile keeps its corners on the dark ground;
+  white buttons, fields, cards and tables. The library presents all components
+  together, with no review-class labels, badges or tier filter. In the dark
+  theme the mark has a one pixel edge, so its navy tile keeps its corners on
+  the dark ground;
 - `site-chrome.js`, loaded by every page that carries the shared header and
   footer, which opens and closes the footer's groups (without it every group
   stays open) and, on a page the service renders on its own, marks the
@@ -243,7 +243,7 @@ with a dated removal row in that record.
 
 Since September 24, 2026 the service writes each page's own head before any
 script runs, from the typed site map (`web_site_map.json`, record
-`service_web_site_map/v2`): the title, the one-line description, the
+`service_web_site_map/v3`): the title, the one-line description, the
 canonical address on `https://baltor.ai`, the Open Graph and card tags a
 shared link shows, and `noindex` for a page a search engine may not list. The
 title, the description and those tags are taken out of a page's own head
@@ -288,6 +288,15 @@ answer HEAD like GET, with a strong validator. The checks are
   `data-evidence`. Every number a case study shows must be a number of those
   files.
 - The four audience pages under `/for/`.
+
+The three narrative case studies use the explicit `case-study` scroll budget:
+6,000 pixels at 1440 wide and 11,253 at 390. The homepage keeps its
+4,000-pixel desktop limit. The typed layout record is
+`service_web_layout_standard/v2`; both browser checks read its finite limits.
+The detailed decision red-team report keeps its existing documentation budget
+and introductory contents navigation. See the
+[design standards](../../../../../docs/guides/website-design-standards.md#scroll-budget-and-the-first-screen)
+for the owner's September 26 approval and the measurements behind this choice.
 
 ## The directory page
 

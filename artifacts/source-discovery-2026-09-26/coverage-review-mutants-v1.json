@@ -1,0 +1,10 @@
+[
+  {
+    "mutant": "overfull_page_ignored",
+    "rejected": true
+  },
+  {
+    "mutant": "null_metadata_not_validated",
+    "rejected": true
+  }
+]

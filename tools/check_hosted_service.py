@@ -13,14 +13,27 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import sys
 import urllib.error
 import urllib.parse
 import urllib.request
 import uuid
 
+# File-path invocation must use this checkout's contracts rather than an older
+# distribution installed in the interpreter used for the probe.
+if __name__ == "__main__":
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+
+from loop_engine.core.provisioning_mcp import TOOL_OPERATIONS
+from loop_engine.core.service_runtime.catalogue_reports import REPORT_TOOL
+
 #: The exact number of checks this probe runs when nothing interrupts it. A
 #: report that carries fewer has stopped early and is not a pass.
 PLANNED_CHECKS = 19
+
+#: The remote adapter adds search and catalogue reporting to the provisioning
+#: contract. Compare names exactly so a missing, extra or duplicate tool fails.
+EXPECTED_MCP_TOOL_NAMES = tuple(sorted((*TOOL_OPERATIONS, "intelligence_search", REPORT_TOOL)))
 
 
 class RefuseRedirect(urllib.request.HTTPRedirectHandler):
@@ -158,7 +171,7 @@ async def connect(mode):
         async with Client(streamable_http_client(settings['origin']+'/mcp',http_client=http),mode=mode) as client:
             tools=await client.list_tools()
             search=await client.call_tool('intelligence_search',{'query':settings['query']})
-            return {'protocol':client.protocol_version,'tool_count':len(tools.tools),
+            return {'protocol':client.protocol_version,'tool_names':[tool.name for tool in tools.tools],
                 'search_ok':not search.is_error and bool(search.structured_content['result']['hits']),
                 'bodies_loaded':search.structured_content['result']['bodies_loaded']}
 async def run():
@@ -176,14 +189,14 @@ asyncio.run(run())
             capture_output=True, text=True, timeout=60, env={"PATH": os.environ["PATH"]})
         protocol = json.loads(outcome.stdout) if outcome.returncode == 0 else {}
         check("official_MCP_client_initializes_over_real_HTTPS", outcome.returncode == 0
-              and protocol.get("protocol") == "2025-11-25" and protocol.get("tool_count") == 5)
+              and protocol.get("protocol") == "2025-11-25" and tuple(sorted(protocol.get("tool_names", ()))) == EXPECTED_MCP_TOOL_NAMES)
         check("MCP_search_returns_permitted_references", protocol.get("search_ok") is True
               and protocol.get("bodies_loaded") is False)
         # A release older than September 22, 2026 serves only the handshake,
         # so this check fails against it by design.
         per_request = protocol.get("per_request") or {}
         check("official_MCP_client_uses_the_per_request_version_over_real_HTTPS",
-              per_request.get("protocol") == "2026-07-28" and per_request.get("tool_count") == 5
+              per_request.get("protocol") == "2026-07-28" and tuple(sorted(per_request.get("tool_names", ()))) == EXPECTED_MCP_TOOL_NAMES
               and per_request.get("search_ok") is True and per_request.get("bodies_loaded") is False)
     except Exception as error:
         checks.append({"name": "remaining_checks_interrupted", "passed": False, "error_type": type(error).__name__})

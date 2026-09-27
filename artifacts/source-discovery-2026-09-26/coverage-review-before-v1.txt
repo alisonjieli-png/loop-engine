@@ -1,0 +1,49 @@
+.....E.EF....
+======================================================================
+ERROR: test_malformed_registry_metadata_keeps_other_sources_running (test_extended_sources.ExtendedSourcesTests.test_malformed_registry_metadata_keeps_other_sources_running)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/library-expansion-20260926/artifacts/source-discovery-2026-09-26/test_extended_sources.py", line 62, in test_malformed_registry_metadata_keeps_other_sources_running
+    report = e.run(config, Path(d) / 'run')
+  File "/home/username/.le-codex-build/library-expansion-20260926/artifacts/source-discovery-2026-09-26/extended_sources.py", line 228, in run
+    rows, omitted, coverage = parse(response.body, source)
+                              ~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/library-expansion-20260926/artifacts/source-discovery-2026-09-26/extended_sources.py", line 139, in parse
+    coverage["next_cursor"] = data.get("metadata", {}).get("nextCursor")
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'get'
+
+======================================================================
+ERROR: test_null_individual_registry_metadata_is_a_recorded_exclusion (test_extended_sources.ExtendedSourcesTests.test_null_individual_registry_metadata_is_a_recorded_exclusion)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/library-expansion-20260926/artifacts/source-discovery-2026-09-26/test_extended_sources.py", line 70, in test_null_individual_registry_metadata_is_a_recorded_exclusion
+    rows, omitted, _ = e.parse(raw, source('mcp_registry'))
+                       ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/library-expansion-20260926/artifacts/source-discovery-2026-09-26/extended_sources.py", line 166, in parse
+    source=source, version=version, updated=m.get("updatedAt") or m.get("publishedAt"),
+                                            ^^^^^
+AttributeError: 'NoneType' object has no attribute 'get'
+
+======================================================================
+FAIL: test_overfull_registry_page_records_unseen_rows (test_extended_sources.ExtendedSourcesTests.test_overfull_registry_page_records_unseen_rows)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/library-expansion-20260926/artifacts/source-discovery-2026-09-26/test_extended_sources.py", line 54, in test_overfull_registry_page_records_unseen_rows
+    self.assertEqual(omitted, [{'entry_index': 1, 'omitted_entries': 1, 'reason': 'source_page_exceeds_bound'}])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: [] != [{'entry_index': 1, 'omitted_entries': 1, [34 chars]nd'}]
+
+Second list contains 1 additional elements.
+First extra element 0:
+{'entry_index': 1, 'omitted_entries': 1, 'reason': 'source_page_exceeds_bound'}
+
+- []
++ [{'entry_index': 1,
++   'omitted_entries': 1,
++   'reason': 'source_page_exceeds_bound'}]
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.034s
+
+FAILED (failures=1, errors=2)

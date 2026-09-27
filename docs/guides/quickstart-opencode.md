@@ -54,10 +54,10 @@ Confirm that Baltor connects and exposes its five tools: `intelligence_search`, 
 The first search is `review inputs`. In a session, ask in plain words:
 
 ```text
-Search Baltor for review inputs with the intelligence_search tool. Show the top three references with their identity, tier and body digest.
+Search Baltor for review inputs with the intelligence_search tool. Show the top three references with their identity, source and body digest.
 ```
 
-OpenCode calls `intelligence_search` with your words as the `query`. The tool answers a `service_http_result/v1` wrapper whose `result` is the `service_retrieval_result/v1` record: a list of `hits`, each with a `reference` that names the item's `identity`, its `body_digest` and its `size_bytes`, the tier label in `library_tier_label` (Verified or Community) and `body_allowed`. A search never loads a body, so `bodies_loaded` is false, and a search is not measured.
+OpenCode calls `intelligence_search` with your words as the `query`. The tool answers a `service_http_result/v1` wrapper whose `result` is the `service_retrieval_result/v1` record: a list of `hits`, each with a `reference` that names the item's `identity`, its `body_digest` and its `size_bytes`, its source and licence, and `body_allowed`. A search never loads a body, so `bodies_loaded` is false, and a search is not measured.
 
 ## Your first download
 

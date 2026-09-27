@@ -1,0 +1,30 @@
+{
+  "record_type": "bounded_final_ui_layout_review/v1",
+  "observed_at": "2026-09-27T01:01:33.107692+00:00",
+  "source": "/home/username/.le-codex-build/ui-final-validation-20260927-v1",
+  "declared_source_tree": "540874361ba01306d6fcc857a6203e459f2ac614",
+  "checks": {
+    "20_responsive_cases": true,
+    "24_public_cases": true,
+    "6_keyboard_skip_links": true,
+    "5_footer_groups": true,
+    "2_documentation_search_dialogs": true,
+    "3_mobile_navigation_widths": true,
+    "10_known_wrong_controls": true,
+    "current_readme": true,
+    "67_source_hashes_unchanged": true
+  },
+  "all_passed": true,
+  "changed_source_paths": [],
+  "provider_calls": 0,
+  "real_credentials_used": false,
+  "source_edits": false,
+  "css_overrides": false,
+  "full_56_page_layout_sweep_run": false,
+  "advisories_retained": [
+    "Previously recorded small touch targets and long text lines.",
+    "Previously recorded landscape header 53px against a 52px layout standard.",
+    "Sign-up protection page desktop height 5120px; content retained."
+  ],
+  "scope_limit": "Responsive account fixture uses a local service token; the independently running full workspace suite checks email-account and personal-token journeys."
+}

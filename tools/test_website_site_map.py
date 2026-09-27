@@ -567,7 +567,7 @@ def inventory_of(site, release, revision):
 
 # The fixture site: a small website that passes every rule, so that each known-wrong case changes one thing.
 FIXTURE_MAP = {
-    "record_type": "service_web_site_map/v2", "decided_on": "2026-09-23", "decided_by": "the fixture",
+    "record_type": "service_web_site_map/v3", "decided_on": "2026-09-23", "decided_by": "the fixture",
     "display_name": "Example", "canonical_hostname": "example.com", "social_image": "/assets/mark.svg",
     "groups": ["Product", "Company", "Account"],
     "pages": [
@@ -848,10 +848,29 @@ GUARDED_RECORD_CASES = {
 class SiteMapRecords(unittest.TestCase):
     """The typed reader accepts the packaged records and refuses each known-wrong record."""
 
+    def test_case_studies_have_a_finite_budget_without_relaxing_the_homepage(self):
+        site_map, layout = load_site_map(), load_layout_standard()
+        pages = {page.address: page for page in site_map.pages}
+        self.assertEqual(layout.page_height_max_px["case-study"], 6000)
+        self.assertEqual(layout.page_height_max_px["long"], 4000)
+        self.assertEqual(layout.page_height_max_px["page"], 2700)
+        self.assertEqual(pages["/"].scroll_budget, "long")
+        self.assertEqual(pages["/how-it-works"].scroll_budget, "long")
+        for address in ("/case-studies/data-cleanup", "/case-studies/pi-and-gemma-4",
+                        "/case-studies/sign-up-protection"):
+            with self.subTest(address=address):
+                self.assertEqual(pages[address].scroll_budget, "case-study")
+        self.assertEqual(pages["/case-studies/decision-red-team"].scroll_budget, "documentation")
+
+    def test_site_map_refuses_versions_without_the_current_budget_contract(self):
+        for version in ("service_web_site_map/v2", "service_web_site_map/v4"):
+            with self.subTest(version=version), self.assertRaises(SiteMapError):
+                site_map_from_record({**json.loads(json.dumps(FIXTURE_MAP)), "record_type": version})
+
     def test_the_packaged_records_are_read_by_the_typed_reader(self):
         site_map, layout = load_site_map(), load_layout_standard()
-        self.assertEqual(site_map.record_type, "service_web_site_map/v2")
-        self.assertEqual(layout.record_type, "service_web_layout_standard/v1")
+        self.assertEqual(site_map.record_type, "service_web_site_map/v3")
+        self.assertEqual(layout.record_type, "service_web_layout_standard/v2")
         self.assertEqual([group.name for group in site_map.footer_groups], ["Product", "Library", "Use cases", "Documentation", "Company"])
         self.assertEqual(max(layout.section_padding_px["desktop"]), 64)
         self.assertEqual(max(layout.section_padding_px["phone"]), 40)
@@ -868,7 +887,11 @@ class SiteMapRecords(unittest.TestCase):
     def test_the_layout_reader_refuses_known_wrong_records(self):
         record = json.loads((Path(web_site_map.__file__).parent / web_site_map.LAYOUT_STANDARD_FILE).read_text(encoding="utf-8"))
         for description, change in {
-                "another version": lambda row: {**row, "record_type": "service_web_layout_standard/v2"},
+                "an older version": lambda row: {**row, "record_type": "service_web_layout_standard/v1"},
+                "a future version": lambda row: {**row, "record_type": "service_web_layout_standard/v3"},
+                "a missing case-study budget": lambda row: {**row, "page_height_max_px": {key: value for key, value in row["page_height_max_px"].items() if key != "case-study"}},
+                "an unlimited case-study budget": lambda row: {**row, "page_height_max_px": {**row["page_height_max_px"], "case-study": None}},
+                "a zero case-study budget": lambda row: {**row, "page_height_max_px": {**row["page_height_max_px"], "case-study": 0}},
                 "padding values without zero": lambda row: {**row, "section_padding_px": {"desktop": [32, 64], "phone": [0, 40]}},
                 "a contrast ratio that is not a ratio": lambda row: {**row, "text_contrast_min": 0.5},
                 "a price phrase that does not start with its marker": lambda row: {**row, "price": {**row["price"], "phrase": "29 a month"}},

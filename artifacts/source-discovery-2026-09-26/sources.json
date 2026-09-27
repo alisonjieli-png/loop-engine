@@ -1,0 +1,18 @@
+{
+  "record_type": "source_discovery_configuration/v1",
+  "maximum_requests": 10,
+  "timeout_seconds": 12,
+  "queue_size": 250,
+  "keywords": ["harness", "agent", "sandbox", "memory", "skill", "mcp", "benchmark", "api", "developer", "workflow", "saas", "library", "tool"],
+  "sources": [
+    {"id":"watch-dormice","kind":"github_repository","host":"api.github.com","path":"/repos/BitMiracle-AI/Dormice","query":{}},
+    {"id":"watch-autoharness","kind":"github_repository","host":"api.github.com","path":"/repos/tigerless-labs/autoharness","query":{}},
+    {"id":"watch-lossless-memory","kind":"github_repository","host":"api.github.com","path":"/repos/aru-labs/lossless-memory","query":{}},
+    {"id":"recent-agent-systems","kind":"github_search","host":"api.github.com","path":"/search/repositories","query":{"q":"topic:ai-agents archived:false pushed:>={since_14d}","sort":"updated","order":"desc","per_page":20}},
+    {"id":"recent-mcp-tools","kind":"github_search","host":"api.github.com","path":"/search/repositories","query":{"q":"topic:mcp-server archived:false pushed:>={since_14d}","sort":"updated","order":"desc","per_page":20}},
+    {"id":"builder-saas-projects","kind":"github_search","host":"api.github.com","path":"/search/repositories","query":{"q":"topic:saas archived:false stars:>=10 pushed:>={since_14d}","sort":"updated","order":"desc","per_page":20}},
+    {"id":"codex-releases","kind":"feed","host":"github.com","path":"/openai/codex/releases.atom","query":{}},
+    {"id":"gemini-cli-releases","kind":"feed","host":"github.com","path":"/google-gemini/gemini-cli/releases.atom","query":{}},
+    {"id":"huggingface-news","kind":"feed","host":"huggingface.co","path":"/blog/feed.xml","query":{}}
+  ]
+}

@@ -35,6 +35,10 @@ imports no other service module, so that reading it never starts the service.
 Version 2, September 24, 2026, added the description, the listing choice and the
 shared-link picture. A version 1 record lacks them and is refused, because a
 reader that guessed them would publish a description nobody wrote.
+
+Site map version 3 and layout standard version 2, September 26, 2026, add the
+finite case-study scroll budget. Earlier records lack that policy and are
+refused rather than interpreted with the ordinary-page limit.
 """
 from __future__ import annotations
 
@@ -43,8 +47,8 @@ import json
 import re
 from typing import Any
 
-SITE_MAP_RECORD_TYPE = "service_web_site_map/v2"
-LAYOUT_STANDARD_RECORD_TYPE = "service_web_layout_standard/v1"
+SITE_MAP_RECORD_TYPE = "service_web_site_map/v3"
+LAYOUT_STANDARD_RECORD_TYPE = "service_web_layout_standard/v2"
 #: The packaged files that hold the two records, beside this module.
 SITE_MAP_FILE = "web_site_map.json"
 LAYOUT_STANDARD_FILE = "web_layout_standard.json"
@@ -57,7 +61,7 @@ ENTRY_ROLES = ("brand", "link", "button", "primary")
 #: What a footer group holds: links only.
 FOOTER_ROLES = ("link",)
 #: How much scrolling a page may ask for; the pixel values live in the layout standard.
-SCROLL_BUDGETS = ("long", "page", "documentation")
+SCROLL_BUDGETS = ("long", "page", "case-study", "documentation")
 #: What a dated removal row can name.
 REMOVAL_KINDS = ("page", "header_link", "footer_link", "section")
 #: The longest description a page may carry. Search engines cut a longer one short.
@@ -466,7 +470,7 @@ def layout_standard_from_record(record: Any) -> LayoutStandard:
         padding[name] = tuple(sorted(allowed))
     containers = _fields(row["containers_px"], "layout standard.containers_px",
                          ("content_max", "reading_max", "lead_max", "desktop_edge", "phone_edge"))
-    heights = _fields(row["page_height_max_px"], "layout standard.page_height_max_px", ("long", "page"))
+    heights = _fields(row["page_height_max_px"], "layout standard.page_height_max_px", ("long", "page", "case-study"))
     contrast = row["text_contrast_min"]
     if not isinstance(contrast, (int, float)) or isinstance(contrast, bool) or not 1 < contrast <= 21:
         raise SiteMapError("layout standard.text_contrast_min is a ratio above 1 and at most 21")

@@ -689,7 +689,7 @@ const applyPaymentState = name => {
   const reportOutcome = value => {
     if (!value || value.record_type !== "service_catalogue_report_result/v1") return "The service answered with a report record this page was not written for.";
     if (value.withdrawn) return "Thank you. This item is withdrawn from the library and queued for review.";
-    return "Thank you. Your report is recorded and the item is queued for review. A Verified item is withdrawn when a second account reports it or when staff flag it.";
+    return "Thank you. Your report is recorded and the item is queued for review.";
   };
   function reportControl(identity, digest) {
     const holder = element("div", "", "result-report");
@@ -720,8 +720,6 @@ const applyPaymentState = name => {
     if (!hits.length) { $("results").append(element("p", "No permitted matches. Try a different description.", "empty")); return; }
     for (const hit of hits) {
       const card = element("article", "", "result"); card.append(element("h3", hit.purpose), element("p", hit.reference.identity), element("span", hit.kind, "badge"));
-      // Every item shows its library tier, Verified or Community, in the exact words the service sends.
-      if (hit.library_tier_label) { const tier = element("span", hit.library_tier_label, "badge"); tier.dataset.libraryTier = hit.library_tier || ""; card.append(tier); }
       // The step functions an item supports (acting, analysis, building, ...) are a served attribute written by
       // rules from the item's own words; each is shown as its own badge so a reader can tell items apart at a glance.
       const functions = Array.isArray((hit.attributes || {}).step_functions) ? hit.attributes.step_functions : [];
@@ -731,7 +729,7 @@ const applyPaymentState = name => {
       const facet = name => Array.isArray((hit.attributes || {})[name]) ? hit.attributes[name].map(String).join(", ") : "";
       const detail = document.createElement("details"), list = document.createElement("dl");
       detail.append(element("summary", "Source, integrity and access"));
-      facts(list, [["Library tier", hit.library_tier_label || "Not stated"], ["Step functions", functions.join(", ") || "Not tagged"],
+      facts(list, [["Step functions", functions.join(", ") || "Not tagged"],
         ["Job titles", facet("job_titles") || "Not tagged"], ["Industries", facet("industries") || "Not tagged"], ["Levels", facet("levels") || "Not tagged"],
         ["Languages", facet("languages") || "Not tagged"], ["Geographies", facet("geographies") || "Not tagged"], ["Source", hit.reference.source_ref], ["Digest", hit.reference.body_digest], ["License", hit.license || "Unknown"], ["Declared effects", (hit.declared_effects || []).join(", ") || "None declared"], ["Harness scope", (hit.harness_styles || []).join(", ") || "No specific harness declared"], ["Qualification basis", hit.qualification_basis], ["Bytes", hit.size_bytes], ["Body access", hit.body_allowed ? "Permitted, checked again on fetch" : "Not granted"]]); detail.append(list); card.append(detail);
       const button = element("button", "Download this version", "quiet"), status = element("p", "", "caption"); button.type = "button"; button.disabled = !hit.body_allowed; status.setAttribute("role", "status");

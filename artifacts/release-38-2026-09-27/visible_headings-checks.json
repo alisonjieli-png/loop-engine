@@ -1,0 +1,55 @@
+{
+  "checked_at": "2026-09-27T01:32:42.111Z",
+  "scope": "Read-only probe of visible headings after the visitor checker recorded the first DOM heading, including hidden headings.",
+  "passed": true,
+  "rows": [
+    {
+      "hostname": "docs.baltor.ai",
+      "status": 200,
+      "expectedView": "docs",
+      "firstDOMHeading": "Stop pasting skills into every project.",
+      "visibleHeading": "Set up, search and download.",
+      "visibleViews": [
+        "docs"
+      ],
+      "rootAddress": "/docs",
+      "passed": true
+    },
+    {
+      "hostname": "status.baltor.ai",
+      "status": 200,
+      "expectedView": "status",
+      "firstDOMHeading": "Stop pasting skills into every project.",
+      "visibleHeading": "Service status",
+      "visibleViews": [
+        "status"
+      ],
+      "rootAddress": "/status",
+      "passed": true
+    },
+    {
+      "hostname": "examples.baltor.ai",
+      "status": 200,
+      "expectedView": "examples",
+      "firstDOMHeading": "Stop pasting skills into every project.",
+      "visibleHeading": "See Baltor at work",
+      "visibleViews": [
+        "examples"
+      ],
+      "rootAddress": "/examples",
+      "passed": true
+    },
+    {
+      "hostname": "demo.baltor.ai",
+      "status": 200,
+      "expectedView": "demo",
+      "firstDOMHeading": "Stop pasting skills into every project.",
+      "visibleHeading": "Clean a customer file in five steps",
+      "visibleViews": [
+        "demo"
+      ],
+      "rootAddress": "/demo",
+      "passed": true
+    }
+  ]
+}

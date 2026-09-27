@@ -59,11 +59,10 @@ Rules write the tags from the item's own words and file roles, so a tag says
 what the item is about, not that a reviewer judged it good at that. An item
 whose words name no function has no tag. The `harness_kind` attribute names the
 kind of file a harness picks up, such as `skill`, `hook` or `subagent`. A step
-about to verify a change can ask for verification material only, and a search
-can combine that with the library tier:
+about to verify a change can ask for verification and reviewing material:
 
 ```json
-{"record_type":"service_retrieval_request/v2","query":"run the tests before merging","mode":"lexical","filters":{"step_functions":{"any_of":["verification","reviewing"]},"tier":{"equals":"verified"}}}
+{"record_type":"service_retrieval_request/v2","query":"run the tests before merging","mode":"lexical","filters":{"step_functions":{"any_of":["verification","reviewing"]}}}
 ```
 
 ### Filter by job title, industry, level, language and geography
@@ -178,14 +177,15 @@ shape: replace the two example strings with values from your search.
 ```
 
 Use version 2, as the search does. It asks with the same step effects and your
-account's library setting, so an item the search offered is not refused here,
-and every answer names the item's library tier in `library_tier` and its label,
-Verified or Community, in `library_tier_label`. Add
-`"library_tiers":["verified"]` to leave Community items out. Version 1 is still
-answered, with Verified items only; without `authority_effects` it receives no
-item that declares an effect, not even reading files.
+account's library setting, so an item the search offered can be checked with
+the same selection. The library presents all permitted components together.
+Source, licence, declared effects and review evidence describe each component.
+The protocol still carries `library_tier` and `library_tier_label` as internal
+review metadata. Clients should not turn them into customer-facing classes.
+Version 1 selects a narrower review profile and is not the current onboarding
+path. Without `authority_effects`, it receives no item that declares an effect.
 
-The manifest reports the digest, licence, size, library tier, `body_allowed`,
+The manifest reports the digest, licence, size, review metadata, `body_allowed`,
 `metering_policy` and `verify_before_use`. A manifest is not a body download and
 is not metered. Permission is checked again when the body is requested.
 
@@ -246,17 +246,14 @@ each search result card. A harness sends it through the protocol tool
 The answer is `service_catalogue_report_result/v1`. Its `state` is `withdrawn`
 when the report withdrew the item and `recorded` when it did not yet; `withdrawn`
 says the same as a Boolean, `reports` counts the accounts that reported this
-exact item version, `reports_to_withdraw` is how many are needed for its tier,
+exact item version, `reports_to_withdraw` gives the applicable withdrawal threshold,
 `flags` counts staff flags, and `review_state` is `queued`, because every
 report queues the item for the full review.
 
-The rule follows the item's `library_tier`, read from the served approval and
-never from the request:
-
-| Library tier | What withdraws the item version |
-| --- | --- |
-| Community | The first report from a signed-in account. |
-| Verified | A report from a second account, or a flag from a staff member. |
+The service chooses the withdrawal rule from the component's recorded review
+profile. Read `reports_to_withdraw` and `withdrawn` from its answer; the caller
+does not choose the threshold. Every report queues the component for review.
+A staff flag withdraws the item version immediately.
 
 A report counts once for each account and item version. Sending it again is the
 same record. A withdrawn item leaves search, listing and download within the
@@ -264,7 +261,7 @@ service's refresh interval, one minute on the hosted service, and a read of it
 answers `item_withdrawn` at once. The withdrawal keeps the item's record and the
 reason, both shown on the public library page. A withdrawn item version is never
 served again by a later release; a new review of new bytes is needed. Only a
-staff member can send the `flag` operation, which withdraws any tier at once.
+staff member can send the `flag` operation, which withdraws the item version at once.
 
 | Code | Status | Meaning |
 | --- | --- | --- |

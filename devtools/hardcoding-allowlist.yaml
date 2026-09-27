@@ -1,5 +1,19 @@
 schema: hardcoding_allowlist/v1
 entries:
+  - finding_id: hardcoding.f873c95a8f2f1c3edf740627
+    owner: tools.fresh_account_journey.mjs:state.mailbox.token
+    rationale: This operator-only signup probe assigns the mailbox token returned by the live
+      mailbox session to its private resumable journal. The right-hand side is a runtime variable,
+      not a hardcoded credential. The journal is outside the repository, bound to one origin and
+      account, owned by the current user, and written atomically with mode 0600 under a private
+      nonsymlink directory. It prevents a failed email wait from creating another mailbox or
+      account. The thirteen fresh-journey checks cover private paths, permissions, uncertain
+      effects, confirmation origin, client-key mutation refusal and secret-free reports. This
+      exception covers this exact assignment only; it does not authorize logging credentials,
+      weakening the journal checks or storing a credential in a component package.
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: '2026-09-26'
+    expires_on: '2026-10-26'
   - finding_id: hardcoding.cdec358b6a6fd775d7895bf4
     owner: loop_engine.core.service_runtime.web_assets.documentation.js:url
     rationale: The documentation view owns this first-party source-edit link. Its destination is the

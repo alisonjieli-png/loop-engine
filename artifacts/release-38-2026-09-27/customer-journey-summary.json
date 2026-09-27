@@ -1,0 +1,35 @@
+{
+  "record_type": "customer_journey_public_summary/v1",
+  "source_revision": "13caeb2039c28681e8c8793cfede80255e6f033a",
+  "signup_and_new_signin": true,
+  "access_source": "founding_free_monthly",
+  "client_key_created": false,
+  "payment_attempted": false,
+  "downloads": 1,
+  "fetched_identity": "find_duplicate_records_with_blocking_keys",
+  "fetched_sha256": "34da79f49ce312ba8577cee2fdf4dbb7083fe01ec20e4a95121a4bddb92c4f2a",
+  "worked_example": {
+    "rows": 6,
+    "expected_pairs": 2,
+    "actual_pairs": 2,
+    "skipped_block_reported": true,
+    "duplicate_identity_refused": true
+  },
+  "test_environment_failures": [
+    "Initial sandbox DNS path missing; no account created.",
+    "Old sender-domain predicate missed an email that arrived within one second.",
+    "Initial browsing script waited for search before pressing Load the library; no download."
+  ],
+  "limits": [
+    "Synthetic fixture; no measured improvement over an unassisted baseline.",
+    "Code came from the development checkout; the downloaded text does not bundle that module.",
+    "This invocation does not establish a fresh external harness solving the task autonomously."
+  ],
+  "private_record_sha256": {
+    "report-002.json": "8bcada1fefeb6ca8e14cef731820f38cea57b2d1c1ce9429317b142b71206488",
+    "report-003.json": "d13e89f4ad47e90e065d19cf483aa687b819f8a93fcfbee7960fbe111daa127d",
+    "browse-task-v1.json": "058eca3780e6335aefe148ce97435cc76692bbd3d5c4e750720e0f93dc2edeec",
+    "browse-task-v2.json": "3fc253d221da4cf09e19fac35e4a54b1155b3dc7d1ab991dd23ee8479f0325ae",
+    "worked-example-v1.json": "f7baf5ba60c7b91fdd4f32c7181cbb07742bc180282b019d3b3b5066869161dc"
+  }
+}

@@ -3,8 +3,8 @@
   "blocked": 3,
   "done": 49,
   "next": 15,
-  "now": 61,
-  "waiting": 137
+  "now": 63,
+  "waiting": 135
  },
  "lanes": {
   "blocked": [
@@ -1179,10 +1179,10 @@
      "S-6.206"
     ],
     "id": "S-6.208",
-    "next_local_work": "Release the pure fix and paging, then check signed in that the table lists every package the account may see, and screenshot both signed out and signed in.",
+    "next_local_work": "Check the unified public library, homepage, search results, searchable table and onboarding docs in the browser, then deploy the checked revision and verify the live pages.",
     "phase": 6,
     "status": "building",
-    "title": "The library page counts every harness file kind and sends visitors to sign up; the signed-in library is one searchable table without size or digest columns",
+    "title": "One component library with combined kind counts, source and review details, and no customer-facing review classes",
     "waiting_on": [
      "S-6.184",
      "S-6.206"
@@ -1284,6 +1284,42 @@
     "waiting_on": [
      "S-6.67",
      "S-6.35"
+    ]
+   },
+   {
+    "acceptance": "A builder reads what appeared yesterday in papers, skills, plugins, protocol servers, services and repositories in the format they prefer, and installs the useful parts as components.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.213",
+     "S-6.102",
+     "S-6.81",
+     "S-6.197"
+    ],
+    "id": "S-6.214",
+    "next_local_work": "Codex writes the source adapters and the distillation records in its lane; Claude builds the day page, the RSS and JSON routes and the path from an entry to a candidate component.",
+    "phase": 6,
+    "status": "building",
+    "title": "Daily distillations: new papers, skills, plugins, protocol servers, services and repositories, each served as a summary page, RSS, JSON and downloadable components",
+    "waiting_on": [
+     "S-6.213",
+     "S-6.81"
+    ]
+   },
+   {
+    "acceptance": "The factory never runs out of useful ideas and never copies what it may not copy.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.40",
+     "S-6.76"
+    ],
+    "id": "S-6.81",
+    "next_local_work": "Inspect selected sources through the existing question bank, prepare complete components and evaluate their actual tasks; expand the reviewed topic configuration as new domains arrive. Discovery observations do not count as generated components.",
+    "phase": 6,
+    "status": "building",
+    "title": "Source scouts: search tools for skills, plugins, protocol servers and harness files",
+    "waiting_on": [
+     "S-6.40",
+     "S-6.76"
     ]
    },
    {
@@ -2126,42 +2162,6 @@
     "waiting_on": [
      "S-6.202",
      "S-6.212"
-    ]
-   },
-   {
-    "acceptance": "A builder reads what appeared yesterday in papers, skills, plugins, protocol servers, services and repositories in the format they prefer, and installs the useful parts as components.",
-    "blocked_on": "",
-    "depends_on": [
-     "S-6.213",
-     "S-6.102",
-     "S-6.81",
-     "S-6.197"
-    ],
-    "id": "S-6.214",
-    "next_local_work": "Codex writes the source adapters and the distillation records in its lane; Claude builds the day page, the RSS and JSON routes and the path from an entry to a candidate component.",
-    "phase": 6,
-    "status": "proposed",
-    "title": "Daily distillations: new papers, skills, plugins, protocol servers, services and repositories, each served as a summary page, RSS, JSON and downloadable components",
-    "waiting_on": [
-     "S-6.213",
-     "S-6.81"
-    ]
-   },
-   {
-    "acceptance": "The factory never runs out of useful ideas and never copies what it may not copy.",
-    "blocked_on": "",
-    "depends_on": [
-     "S-6.40",
-     "S-6.76"
-    ],
-    "id": "S-6.81",
-    "next_local_work": "Extend the research source watch list to skill, plugin and protocol server sources and write the first scout as a candidate-only job.",
-    "phase": 6,
-    "status": "proposed",
-    "title": "Source scouts: search tools for skills, plugins, protocol servers and harness files",
-    "waiting_on": [
-     "S-6.40",
-     "S-6.76"
     ]
    },
    {
@@ -5170,10 +5170,10 @@
    "id": "D-25",
    "stage": "public_launch",
    "status_counts": {
-    "building": 8,
+    "building": 9,
     "live_qualified": 1,
     "offline_verified": 1,
-    "proposed": 7
+    "proposed": 6
    },
    "steps": [
     "S-6.65",
@@ -5214,9 +5214,9 @@
    "id": "D-26",
    "stage": "public_launch",
    "status_counts": {
-    "building": 11,
+    "building": 12,
     "live_qualified": 2,
-    "proposed": 8
+    "proposed": 7
    },
    "steps": [
     "S-6.69",
@@ -5364,5 +5364,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:2183e63cd53d7e5b26b329b1778c995ca3d0decb71c3d2f4952cef6787446e83"
+ "source_fingerprint": "sha256:1c420af9138924e17e5f7043f77ca5d12eece13a7616b8d243f598263d259c08"
 }

@@ -3,15 +3,15 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:2183e63cd53d7e5b26b329b1778c995ca3d0decb71c3d2f4952cef6787446e83`.
+Source fingerprint: `sha256:1c420af9138924e17e5f7043f77ca5d12eece13a7616b8d243f598263d259c08`.
 
 ## Where things stand
 
 | Lane | Steps |
 |---|---:|
-| Being built now | 61 |
+| Being built now | 63 |
 | Can start next | 15 |
-| Waiting on earlier work | 137 |
+| Waiting on earlier work | 135 |
 | Blocked | 3 |
 | Done | 49 |
 
@@ -35,13 +35,15 @@ Source fingerprint: `sha256:2183e63cd53d7e5b26b329b1778c995ca3d0decb71c3d2f4952c
 | S-6.205 | Library composition: every kind a harness picks up in every export, code read by the reviewer at Community, and the mix recorded per release | building | Let the 16:17 UTC slot run with the balanced mix, read its export report's mix_kept and the writer's counts by kind, then sample ten approved packages with scripts and check each reviewer answer against the code. |
 | S-6.206 | Step function tags: each served item carries the kinds of step it supports (acting, analysis, building, operating, planning, reasoning, research, reviewing, verification, writing), filterable in search and shown on the pages | building | S-6.62, S-6.205 |
 | S-6.207 | The owner's own volumes as seed material: a read-only inventory with provenance classes, seed records per project, and generated harness files reviewed and published under the owner's authorship declaration | building | S-6.40, S-6.205 |
-| S-6.208 | The library page counts every harness file kind and sends visitors to sign up; the signed-in library is one searchable table without size or digest columns | building | S-6.184, S-6.206 |
+| S-6.208 | One component library with combined kind counts, source and review details, and no customer-facing review classes | building | S-6.184, S-6.206 |
 | S-6.200 | Continuous integration in 12 minutes or less, and fewer failed pushes: sharded self-test, cached environment, a records-only lane and a pre-push hook that runs the preflight | building | S-6.180 |
 | S-6.201 | A page or a demo from one typed record, live on its own hostname within an hour: the page generator, the demo generator and hostname automation | building | S-6.67, S-6.62 |
 | S-6.204 | The weekly number: visitors, accounts, paying subscribers and served packages, read from the service's own records and published to staff | building | S-6.120, S-6.6 |
 | S-6.210 | Every owner request tracked: one ledger row per request with its steps and live state, checked against the roadmap and reported daily | building | S-6.76 |
 | S-6.211 | User Feedback Intelligence on the hosted service: a rating of each download, requests for material and search gap counts, read by staff and turned into generation ideas | building | S-6.199, S-6.120 |
 | S-6.212 | Unlinked public changelog, feature list and todo pages generated from the release records and the roadmap | building | S-6.67, S-6.35 |
+| S-6.214 | Daily distillations: new papers, skills, plugins, protocol servers, services and repositories, each served as a summary page, RSS, JSON and downloadable components | building | S-6.213, S-6.81 |
+| S-6.81 | Source scouts: search tools for skills, plugins, protocol servers and harness files | building | S-6.40, S-6.76 |
 | S-6.63 | An independent review panel of several model families | building | S-6.45 |
 | S-6.119 | Community and Verified library tiers from the review panel, written as reviewed catalogue folders for release | building | S-6.63, S-6.40 |
 | S-6.62 | Catalogue releases and library settings with good defaults | building | S-6.40 |
@@ -122,8 +124,6 @@ Source fingerprint: `sha256:2183e63cd53d7e5b26b329b1778c995ca3d0decb71c3d2f4952c
 | S-6.209 | Occupation, industry, level, language and geography tags on every served file, searchable in the signed-in dashboard | proposed | S-6.206, S-6.208, S-6.40 |
 | S-6.202 | Quickstarts that are checked every night: one copy-paste setup per harness on Get set up, each run against the live endpoint | proposed | S-6.24, S-6.182 |
 | S-6.213 | The product as a harness file: a first-party Baltor skill any harness installs to search and fetch from the library, plus a daily public library snapshot from each catalogue release | proposed | S-6.202, S-6.212 |
-| S-6.214 | Daily distillations: new papers, skills, plugins, protocol servers, services and repositories, each served as a summary page, RSS, JSON and downloadable components | proposed | S-6.213, S-6.81 |
-| S-6.81 | Source scouts: search tools for skills, plugins, protocol servers and harness files | proposed | S-6.40, S-6.76 |
 | S-6.70 | Serve 100,000 packages: pass the capacity probe with paged listing and an indexed search | proposed | S-6.62, S-6.32 |
 | S-6.83 | Maintain 100,000 packages: re-verification, near-duplicates, deprecation and withdrawal | proposed | S-6.69, S-6.51 |
 | S-6.64 | Independently authored alternatives to restricted-source ideas | proposed | S-6.63 |

@@ -97,6 +97,7 @@
       "test_install_selected_material",
       "test_licensed_import_packages",
       "test_licensed_import_reads",
+      "test_live_account_journeys",
       "test_opencode_loop",
       "test_operator_credentials",
       "test_overnight_queue",
@@ -106,6 +107,7 @@
       "test_search_effect_authority",
       "test_session_intake",
       "test_solve_cli_checkpoint",
+      "test_source_discovery_rotation",
       "test_write_reviewed_catalogue"
     ],
     "d": [

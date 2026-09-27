@@ -1,7 +1,7 @@
 /* Live account journeys on the deployed site, with disposable inboxes. It creates real accounts.
 
    Run only when public registration is open, with a new report path:
-     node tools/check_live_account_journeys.mjs https://baltor.ai REPORT.json [--fresh-only | --staff-step | --sign-up-link-step]
+     node tools/check_live_account_journeys.mjs https://baltor.ai REPORT.json [--fresh-only [--resume] | --staff-step | --sign-up-link-step]
 
    Journey "fresh": a new address signs up on Get started, reads the message, chooses a password on the
    page the link opens and lands signed in; the founding offer is read from the page.
@@ -23,35 +23,40 @@ import {chromium} from "../showcase/node_modules/playwright-core/index.mjs";
 import {existsSync, writeFileSync, readFileSync} from "node:fs";
 import {resolve} from "node:path";
 import {randomUUID, randomBytes} from "node:crypto";
+import {FreshJourneyError, runFreshOnly, isConfirmationSender} from "./fresh_account_journey.mjs";
 
 const origin = process.argv[2], output = resolve(process.argv[3] || ""), staffStep = process.argv.includes("--staff-step");
 const linkStep = process.argv.includes("--sign-up-link-step");
+const freshOnly = process.argv.includes("--fresh-only"), resumeFresh = process.argv.includes("--resume");
+if ((freshOnly && (staffStep || linkStep)) || (resumeFresh && !freshOnly) || (freshOnly && !process.env.BALTOR_JOURNEY_STATE))
+  throw new Error("Use --fresh-only with its own BALTOR_JOURNEY_STATE; --resume is only for that path.");
 // The checking accounts' passwords stay on this workstation, outside the repository, readable by this user only.
-const statePath = process.env.BALTOR_JOURNEY_STATE || resolve(process.env.HOME, ".le-safety", "live-account-journeys-state.json");
+const statePath = resolve(process.env.BALTOR_JOURNEY_STATE || resolve(process.env.HOME, ".le-safety", "live-account-journeys-state.json"));
 if (statePath.startsWith(resolve(new URL("..", import.meta.url).pathname))) throw new Error("The journey state must live outside the repository.");
 if (!origin || new URL(origin).origin !== origin || !origin.startsWith("https://") || !process.argv[3] || existsSync(output))
   throw new Error("Use an exact HTTPS origin and a new report path.");
 const MAIL = "https://api.mail.tm";
+const boundedFetch = (url, options = {}) => fetch(url, {...options, signal: AbortSignal.timeout(20000)});
 const steps = [];
 const step = (journey, name, passed, detail = {}) => steps.push({journey, name, passed: passed === true, ...detail});
 const sleep = ms => new Promise(done => setTimeout(done, ms));
 const password = () => "Qa-" + randomBytes(18).toString("base64url");
 
 async function inbox() {
-  const domain = (await (await fetch(MAIL + "/domains")).json())["hydra:member"][0].domain;
+  const domain = (await (await boundedFetch(MAIL + "/domains")).json())["hydra:member"][0].domain;
   const address = `baltor-check-${randomUUID().slice(0, 8)}@${domain}`, secret = randomUUID();
-  const made = await fetch(MAIL + "/accounts", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({address, password: secret})});
+  const made = await boundedFetch(MAIL + "/accounts", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({address, password: secret})});
   if (!made.ok) throw new Error("inbox_not_created_" + made.status);
-  const token = (await (await fetch(MAIL + "/token", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({address, password: secret})})).json()).token;
+  const token = (await (await boundedFetch(MAIL + "/token", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({address, password: secret})})).json()).token;
   return {address, token, seen: new Set()};
 }
 async function nextMessage(box, predicate, timeoutMs = 240000) {
   const until = Date.now() + timeoutMs;
   while (Date.now() < until) {
-    const list = await (await fetch(MAIL + "/messages", {headers: {Authorization: "Bearer " + box.token}})).json();
+    const list = await (await boundedFetch(MAIL + "/messages", {headers: {Authorization: "Bearer " + box.token}})).json();
     for (const row of list["hydra:member"] || []) {
       if (box.seen.has(row.id)) continue;
-      const full = await (await fetch(MAIL + "/messages/" + row.id, {headers: {Authorization: "Bearer " + box.token}})).json();
+      const full = await (await boundedFetch(MAIL + "/messages/" + row.id, {headers: {Authorization: "Bearer " + box.token}})).json();
       const text = [full.text || "", ...(Array.isArray(full.html) ? full.html : [full.html || ""])].join("\n");
       const from = full.from?.address || "";
       if (predicate(from, text)) { box.seen.add(row.id); return {from, subject: full.subject || "", text}; }
@@ -63,15 +68,27 @@ async function nextMessage(box, predicate, timeoutMs = 240000) {
 // The message links to the host file's public base address, which may be another hostname of this deployment.
 const confirmLink = text => (text.match(/https:\/\/[a-z0-9.-]+\/auth\/confirm\?[^\s"'<>]+/) || [null])[0]?.replace(/&amp;/g, "&");
 
-const identity = (await (await fetch(origin + "/api/v1/account/identity")).json()).result;
-const capabilities = (await (await fetch(origin + "/api/v1/capabilities")).json()).result;
-step("setup", "registration_is_open", capabilities.website?.registration_available === true && identity.signup_available === true,
+const identity = (await (await boundedFetch(origin + "/api/v1/account/identity")).json()).result;
+const capabilities = (await (await boundedFetch(origin + "/api/v1/capabilities")).json()).result;
+step("setup", freshOnly && resumeFresh ? "resume_keeps_the_existing_account" : "registration_is_open",
+  (freshOnly && resumeFresh) || (capabilities.website?.registration_available === true && identity.signup_available === true),
   {registration_available: capabilities.website?.registration_available, signup_available: identity.signup_available});
-const providerPassword = async (email, secret) => (await fetch(identity.project_url + "/auth/v1/token?grant_type=password", {method: "POST",
+const providerPassword = async (email, secret) => (await boundedFetch(identity.project_url + "/auth/v1/token?grant_type=password", {method: "POST",
   headers: {"Content-Type": "application/json", apikey: identity.publishable_key}, body: JSON.stringify({email, password: secret})})).status;
 
 const browser = await chromium.launch({executablePath: "/opt/google/chrome/chrome", headless: true, args: ["--no-sandbox"]});
-const newPage = async () => { const context = await browser.newContext({viewport: {width: 1440, height: 1000}}); const page = await context.newPage(); page.on("dialog", dialog => dialog.accept()); return page; };
+let freshSignupSubmissions = 0;
+const newPage = async () => {
+  const context = await browser.newContext({viewport: {width: 1440, height: 1000}});
+  if (freshOnly) await context.route("**/*", route => {
+    const request = route.request(), path = new URL(request.url()).pathname;
+    if (/^\/api\/v1\/(admin|billing\/(checkout|portal))(?:\/|$)/.test(path) || path === "/auth/v1/signup") return route.abort();
+    if (path === "/api/v1/account/access" && !["GET", "HEAD"].includes(request.method())) return route.abort();
+    if (path === "/api/v1/account/signup" && request.method() === "POST" && ++freshSignupSubmissions > 1) return route.abort();
+    return route.continue();
+  });
+  const page = await context.newPage(); page.on("dialog", dialog => dialog.accept()); return page;
+};
 
 async function signUpOnGetStarted(page, email) {
   await page.goto(origin + "/get-started");
@@ -110,6 +127,53 @@ async function signIn(page, email, secret) {
   return {path: new URL(page.url()).pathname, message: (await page.locator("#identity-message").textContent().catch(() => "")) || ""};
 }
 
+// Read only the authenticated account facts; the browser's token never leaves this evaluation.
+async function observedAccount(page) {
+  await page.waitForFunction(() => document.querySelector("#account-state")?.textContent === "Connected", null, {timeout: 30000});
+  return page.evaluate(async () => {
+    const held = JSON.parse(sessionStorage.getItem("baltor.identity-session") || "null");
+    if (!held?.access_token) return null;
+    const response = await fetch("/api/v1/session", {headers: {Authorization: "Bearer " + held.access_token},
+      credentials: "omit", redirect: "error", signal: AbortSignal.timeout(20000)});
+    if (!response.ok) return null;
+    const value = (await response.json()).result;
+    return {authentication_mode: value.authentication_mode, tenant_id: value.principal?.tenant_id,
+      entitlement: value.principal?.entitlement, access_source: value.access_source};
+  });
+}
+async function scopedFreshJourney() {
+  const registrationOpen = capabilities.website?.registration_available === true && identity.signup_available === true;
+  return runFreshOnly({statePath, origin, resume: resumeFresh, registrationOpen, actions: {
+    prepare: async () => {
+      const response = await boundedFetch(MAIL + "/domains");
+      if (!response.ok) throw new Error("inbox_domains_unavailable");
+      const domain = (await response.json())["hydra:member"]?.[0]?.domain;
+      if (typeof domain !== "string" || !/^[a-z0-9.-]+$/i.test(domain)) throw new Error("inbox_domain_invalid");
+      const address = `baltor-check-${randomUUID().slice(0, 8)}@${domain}`;
+      return {fresh: {address, password: password()}, mailbox: {address, password: randomUUID()}};
+    },
+    createInbox: async mailbox => {
+      const response = await boundedFetch(MAIL + "/accounts", {method: "POST", headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({address: mailbox.address, password: mailbox.password})});
+      if (!response.ok) throw new Error("inbox_creation_not_confirmed");
+      return {id: (await response.json()).id};
+    },
+    authorizeInbox: async mailbox => {
+      const response = await boundedFetch(MAIL + "/token", {method: "POST", headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({address: mailbox.address, password: mailbox.password})});
+      if (!response.ok) throw new Error("inbox_session_not_confirmed");
+      return (await response.json()).token;
+    },
+    signup: async email => signUpOnGetStarted(await newPage(), email),
+    waitForLink: async mailbox => {
+      const message = await nextMessage({...mailbox, seen: new Set()}, (from, text) => isConfirmationSender(from) && Boolean(confirmLink(text)));
+      return message ? confirmLink(message.text) : null;
+    },
+    confirm: async (link, secret) => { const page = await newPage(); await choosePassword(page, link, secret); return observedAccount(page); },
+    signin: async (email, secret) => { const page = await newPage(); await signIn(page, email, secret); return observedAccount(page); },
+  }});
+}
+
 // Administration keeps its sign-in in memory only, so it is opened inside the page, not by loading its address.
 async function openAdministration(page) {
   await page.evaluate(() => { history.pushState({}, "", "/admin"); dispatchEvent(new PopStateEvent("popstate")); });
@@ -130,9 +194,12 @@ const accountCard = (page, email) => page.evaluate(address => {
   return node ? {pending: /waiting for this person to choose a password/.test(node.textContent),
                  free_monthly_on_opening: /Free monthly Baltor Pro starts when the account opens/.test(node.textContent)} : null; }, email);
 
-let state = existsSync(statePath) ? JSON.parse(readFileSync(statePath, "utf8")) : null;
+let state = !freshOnly && existsSync(statePath) ? JSON.parse(readFileSync(statePath, "utf8")) : null;
 try {
-  if (linkStep) {
+  if (freshOnly) {
+    const result = await scopedFreshJourney();
+    step("fresh", "fresh_signup_confirmation_and_new_signin_complete", result.stage === "complete", result);
+  } else if (linkStep) {
     if (!state) throw new Error("run the journeys first");
     const page = await newPage(), signedIn = await signIn(page, state.fresh.address, state.fresh.password);
     step("links", "the_superadmin_signs_in", signedIn.path !== "/login", signedIn);
@@ -176,7 +243,6 @@ try {
     step("links", "cleanup_the_checking_account_gives_back_its_grant", (await staffAction(page, "Revoke free monthly", person.address)).done);
     step("links", "cleanup_the_checking_account_is_switched_off", (await staffAction(page, "Disable", person.address)).done);
   } else if (!staffStep) {
-    const freshOnly = process.argv.includes("--fresh-only");
     // Journey "fresh"
     const fresh = await inbox(), freshPassword = password(), page = await newPage();
     await signUpOnGetStarted(page, fresh.address);
@@ -187,10 +253,9 @@ try {
     const landed = message ? await choosePassword(page, confirmLink(message.text), freshPassword) : {};
     step("fresh", "choosing_a_password_signs_the_account_in", Boolean(message) && landed.path !== "/auth/confirm", landed);
     step("fresh", "the_founding_offer_covers_baltor_pro", /includes Baltor Pro/i.test((landed.planTitle || "") + " " + (landed.planText || "")), {title: landed.planTitle});
-    if (freshOnly) throw new Error("stopped after the fresh journey, as asked");
     // Journey "provider_first"
     const first = await inbox(), firstPassword = password(), finalPassword = password();
-    const providerSignup = await fetch(identity.project_url + "/auth/v1/signup", {method: "POST",
+    const providerSignup = await boundedFetch(identity.project_url + "/auth/v1/signup", {method: "POST",
       headers: {"Content-Type": "application/json", apikey: identity.publishable_key}, body: JSON.stringify({email: first.address, password: firstPassword})});
     step("provider_first", "the_provider_public_sign_up_answered", true, {status: providerSignup.status});
     const page2 = await newPage();
@@ -262,11 +327,13 @@ try {
     step("staff", "the_account_list_reports_its_founding_places", founding !== null, {founding_places_used: founding});
   }
 } catch (error) {
-  step("run", "journey_completed", false, {error: String(error).slice(0, 300)});
+  step("run", "journey_completed", false, freshOnly
+    ? {error_code: error instanceof FreshJourneyError ? error.code : "fresh_step_failed", stage: error instanceof FreshJourneyError ? error.stage : "unstarted"}
+    : {error: String(error).slice(0, 300)});
 } finally {
   await browser.close();
 }
-const report = {record_type: "live_account_journeys/v1", origin, observed_at: new Date().toISOString(), staff_step: staffStep, sign_up_link_step: linkStep,
+const report = {record_type: "live_account_journeys/v1", origin, observed_at: new Date().toISOString(), staff_step: staffStep, sign_up_link_step: linkStep, fresh_only: freshOnly, resumed: resumeFresh,
   passed: steps.filter(row => row.passed).length, total: steps.length, all_passed: steps.every(row => row.passed), steps,
   limits: "Disposable inboxes at a public service; real accounts are created. No password, token or message body is recorded."};
 writeFileSync(output, JSON.stringify(report, null, 2) + "\n");

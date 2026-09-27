@@ -63,7 +63,7 @@ The first search is `review inputs`:
 curl -sS -X POST https://baltor.ai/api/v1/retrieval -H "Authorization: Bearer $BALTOR_SERVICE_TOKEN" -H "Content-Type: application/json" -d '{"record_type":"service_retrieval_request/v2","query":"review inputs","mode":"lexical","top_n":3}'
 ```
 
-The answer is a `service_http_result/v1` wrapper whose `result` is the `service_retrieval_result/v1` record: a list of `hits`, each with a `reference` that names the item's `identity`, its `body_digest` and its `size_bytes`, the tier label in `library_tier_label` (Verified or Community) and `body_allowed`. A search never loads a body, so `bodies_loaded` is false, and a search is not measured. Keep the `identity` and the `body_digest` of the one you choose.
+The answer is a `service_http_result/v1` wrapper whose `result` is the `service_retrieval_result/v1` record: a list of `hits`, each with a `reference` that names the item's `identity`, its `body_digest` and its `size_bytes`, its source and licence, and `body_allowed`. A search never loads a body, so `bodies_loaded` is false, and a search is not measured. Keep the `identity` and the `body_digest` of the one you choose.
 
 ## Your first download
 

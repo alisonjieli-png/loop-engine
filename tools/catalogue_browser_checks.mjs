@@ -7,10 +7,10 @@
    one holds 1,200 items, so the table loads the library in several pages (roadmap S-6.203).
 
    Checks
-   ├── the rows match the service's list: count, identities and the label of every row
+   ├── the rows match the service's list: count and identities, with no customer tier classification
    ├── every list request names every step effect the capabilities record names, and a file that declares an
    │   effect is listed with it
-   ├── the kind, label and tool filters and the search box narrow the loaded rows without asking the service again
+   ├── the kind and tool filters and the search box narrow the loaded rows without asking the service again
    ├── a row opens its detail panel, by pointer and by keyboard, and the empty state says so plainly
    ├── a file that declares more than reading files is checked and fetched only after the reader confirms its
    │   effects, and then with exactly those effects; a file that only reads files is checked without asking
@@ -35,8 +35,7 @@ export async function runCatalogueBrowserChecks({browser, fixture, check, mutant
     {headers:{Authorization:"Bearer " + service.token, "Content-Type":"application/json"},
      data:{record_type:REQUEST_VERSION, operation:"list", ...fields}})).json()).result;
   const tableRows = target => target.locator("#browse-table-body tr[data-identity]").evaluateAll(lines => lines.map(line => ({
-    identity:line.dataset.identity, kind:line.dataset.harnessKind, tier:line.dataset.libraryTier,
-    label:line.querySelector(".badge")?.textContent || "", cells:[...line.children].map(cell => cell.textContent)})));
+    identity:line.dataset.identity, kind:line.dataset.harnessKind, cells:[...line.children].map(cell => cell.textContent)})));
   const shownIdentities = async target => (await tableRows(target)).map(row => row.identity).sort();
   const browseDetail = target => target.locator("#browse-detail dl").evaluate(node => {
     const pairs = [];
@@ -93,15 +92,17 @@ export async function runCatalogueBrowserChecks({browser, fixture, check, mutant
       note("browse_table_rows_match_the_service_list", reply.items.length === 7
         && JSON.stringify(identities) === JSON.stringify(reply.items.map(row => row.identity).sort())
         && await opened.locator("#browse-count").innerText() === "7 items", {identities});
-      note("browse_shows_each_item_s_library_tier", rows.length === reply.items.length && rows.every(row => {
-        const item = reply.items.find(value => value.identity === row.identity);
-        return Boolean(item?.library_tier_label) && row.label === item.library_tier_label && row.tier === item.library_tier;}),
-        {rows:rows.map(row => [row.identity, row.label])});
+      const unified = await opened.locator('[data-view="workspace"] .browse').evaluate(view => ({
+        columns:[...view.querySelectorAll("thead th")].map(cell => cell.textContent.trim()),
+        tierControls:view.querySelectorAll("#browse-tier, [data-library-tier], [data-sort-key=tier], .label-verified, .label-community").length,
+        hasTierLabels:/\b(?:Verified|Community)\b/.test(view.innerText)}));
+      note("browse_has_one_library_without_tier_controls_or_labels", unified.tierControls === 0 && !unified.hasTierLabels
+        && JSON.stringify(unified.columns) === JSON.stringify(["What it is for", "Kind of file", "Step functions", "Licence", "Declared effects", "Written for"]), unified);
       const lists = sentOf(sent, "list");
       note("browse_every_list_request_carries_every_step_effect", Array.isArray(named) && named.length === 5 && lists.length >= 1
         && lists.every(entry => JSON.stringify(entry.body.authority_effects) === JSON.stringify(named)), {named, sent:lists.map(entry => entry.body)});
       const deploy = rows.find(row => row.identity === "code.deploy");
-      note("browse_lists_a_file_that_declares_an_effect_with_that_effect", deploy !== undefined && deploy.cells[5] === "spawns_process", {deploy});
+      note("browse_lists_a_file_that_declares_an_effect_with_that_effect", deploy !== undefined && deploy.cells[4] === "spawns_process", {deploy});
       const message = await opened.locator("#browse-message").innerText();
       note("browse_says_what_it_shows_and_that_no_file_was_fetched", message.startsWith("Showing 7 items for alpha.")
         && message.includes("No file was fetched.") && !message.includes("not offered here"), {message});
@@ -112,8 +113,8 @@ export async function runCatalogueBrowserChecks({browser, fixture, check, mutant
         && detail["Where it comes from"] === listed.source_ref && detail.Licence === listed.license
         && detail["Declared effects"] === "None declared" && detail["Written for"] === "claude-code"
         && detail["The file itself"].startsWith("You may fetch it"), {detail});
-      note("browse_detail_states_the_library_tier", Boolean(listed.library_tier_label) && detail.Label === listed.library_tier_label,
-        {detail, tier:listed.library_tier_label});
+      note("browse_detail_keeps_review_evidence_without_a_tier_label", !("Label" in detail) && !("Library tier" in detail)
+        && typeof detail["Basis of its review"] === "string" && detail["Basis of its review"].length > 0, {detail});
       const body = await saveDownload(opened, () => opened.click("#browse-download"));
       note("browse_download_matches_the_selected_digest", body === "CONTEXT_REVIEW_BODY"
         && createHash("sha256").update("CONTEXT_REVIEW_BODY").digest("hex") === listed.digest
@@ -124,7 +125,9 @@ export async function runCatalogueBrowserChecks({browser, fixture, check, mutant
         && (await browseStatus(opened)) === "This account may read the details above, not the file.");
       await openItem(opened, "local.notes");
       note("browse_detail_states_an_unstated_licence_honestly", (await browseDetail(opened)).Licence === "Not stated"
-        && (await browseDetail(opened))["Written for"] === "No tool named, so it suits every tool");
+        && (await browseDetail(opened))["Written for"] === "Compatibility not recorded");
+      note("browse_unspecified_compatibility_is_not_a_support_claim", rows.find(row => row.identity === "local.notes")?.cells[5] === "Compatibility not recorded"
+        && (await browseDetail(opened))["Written for"] === "Compatibility not recorded");
       const view = await opened.locator('[data-view="workspace"] .browse').innerText();
       note("browse_view_uses_plain_words", !internalTerms.test(view) && !/\bPractitioner\b/i.test(view), {});
       note("browse_shows_descriptions_and_no_file_body", view.includes("No file was fetched.")
@@ -196,21 +199,49 @@ export async function runCatalogueBrowserChecks({browser, fixture, check, mutant
       note("browse_filters_by_kind_of_file_on_the_loaded_rows", JSON.stringify(shown) === JSON.stringify(["code.deploy", "code.normalise", "code.verify"])
         && await opened.locator("#browse-count").innerText() === "3 of 7 items" && sentOf(sent, "list").length === lists, {shown});
     },
-    label_filter:async (opened, note) => {
+    unified_library:async (opened, note) => {
       await loadBrowse(opened);
-      await opened.selectOption("#browse-tier", "community");
-      const shown = await shownIdentities(opened);
-      note("browse_filters_by_label_on_the_loaded_rows", JSON.stringify(shown) === JSON.stringify(["code.normalise", "history.retry"])
-        && await opened.locator("#browse-count").innerText() === "2 of 7 items", {shown});
+      const before = await shownIdentities(opened);
+      await opened.fill("#browse-search", "Community");
+      const classMatches = await shownIdentities(opened);
+      await opened.fill("#browse-search", "");
+      note("browse_does_not_search_a_hidden_tier_classification", before.length === 7 && classMatches.length === 0
+        && JSON.stringify(await shownIdentities(opened)) === JSON.stringify(before), {before, classMatches});
     },
-    /* A file that names no development tool suits every tool, as the page says, so a tool filter keeps it. */
+    /* A tool filter retains matching tags and unrecorded compatibility, without claiming universal support. */
     tool_filter:async (opened, note) => {
       await loadBrowse(opened);
       await opened.selectOption("#browse-style", "codex");
       const shown = await shownIdentities(opened);
-      note("browse_filters_by_development_tool_and_keeps_files_for_every_tool",
+      note("browse_filters_by_tool_tag_and_retains_unrecorded_compatibility",
         JSON.stringify(shown) === JSON.stringify(["code.deploy", "code.normalise", "code.verify", "context.brief", "history.retry", "local.notes"])
         && await opened.locator("#browse-count").innerText() === "6 of 7 items", {shown});
+    },
+    sort_table:async (opened, note, sent) => {
+      await loadBrowse(opened);
+      const lists = sentOf(sent, "list").length;
+      await opened.locator('button[data-sort-key="purpose"]').click();
+      const ascending = (await tableRows(opened)).map(row => row.cells[0]);
+      const expected = [...ascending].sort((left, right) => left.toLowerCase().localeCompare(right.toLowerCase()));
+      await opened.locator('button[data-sort-key="purpose"]').click();
+      const descending = (await tableRows(opened)).map(row => row.cells[0]);
+      note("browse_sorts_a_unified_table_in_both_directions_without_refetching", ascending.length === 7
+        && JSON.stringify(ascending) === JSON.stringify(expected) && JSON.stringify(descending) === JSON.stringify(expected.reverse())
+        && sentOf(sent, "list").length === lists, {ascending, descending});
+    },
+    report_outcome:async (opened, note) => {
+      await loadBrowse(opened); await openItem(opened, "context.review");
+      await opened.route("**/api/v1/provisioning", async route => {
+        if (route.request().postDataJSON()?.operation !== "report") return route.continue();
+        return route.fulfill({status:200, contentType:"application/json", body:JSON.stringify({result:{record_type:"service_catalogue_report_result/v1", withdrawn:false}})});
+      });
+      await opened.locator('.browse-report > button').click();
+      await opened.locator('.browse-report textarea').fill("Fixture review request");
+      await opened.locator('.browse-report button[type="submit"]').click();
+      await opened.waitForFunction(() => document.querySelector('.browse-report [role="status"]')?.textContent.startsWith("Thank you."));
+      const outcome = await opened.locator('.browse-report [role="status"]').innerText();
+      note("browse_report_outcome_does_not_reintroduce_tier_labels", /recorded/.test(outcome) && /queued for review/.test(outcome)
+        && !/\b(?:Verified|Community)\b/.test(outcome), {outcome});
     },
     search_box:async (opened, note) => {
       await loadBrowse(opened);
@@ -485,25 +516,42 @@ export async function runCatalogueBrowserChecks({browser, fixture, check, mutant
      find:"|| !Array.isArray(value.withheld) ", replacement:"",
      expected:["browse_refuses_a_catalogue_that_counts_held_back_material_the_wrong_way"]},
     {name:"accept_an_item_without_a_library_tier", scenario:"missing_tier",
-     find:'if (!knownTiers.has(row.library_tier) || !stated(row.library_tier_label)) return "no library tier";', replacement:"",
+     find:'if (!knownTiers.has(row.library_tier) || !stated(row.library_tier_label)) return "missing review metadata";', replacement:"",
      expected:["browse_refuses_a_catalogue_item_without_its_library_tier"]},
-    {name:"leave_the_library_tier_off_the_rows", scenario:"catalogue",
-     find:'const badge = element("span", values.tier, "badge");', replacement:'const badge = element("span", "", "badge");',
-     expected:["browse_shows_each_item_s_library_tier"]},
-    {name:"leave_the_library_tier_out_of_the_detail", scenario:"catalogue",
-     find:'["Label", value.library_tier_label],', replacement:"",
-     expected:["browse_detail_states_the_library_tier"]},
+    {name:"reintroduce_a_library_tier_column", scenario:"catalogue",
+     find:'const columns = [["purpose", "What it is for"], ["harness_kind", "Kind of file"],',
+     replacement:'const columns = [["purpose", "What it is for"], ["harness_kind", "Kind of file"], ["tier", "Label"],',
+     expected:["browse_has_one_library_without_tier_controls_or_labels"]},
+    {name:"reintroduce_a_library_tier_detail", scenario:"catalogue",
+     find:'["What it is for", row.purpose],', replacement:'["What it is for", row.purpose], ["Label", value.library_tier_label],',
+     expected:["browse_detail_keeps_review_evidence_without_a_tier_label"]},
+    {name:"hide_rows_using_the_internal_library_tier", scenario:"catalogue",
+     find:'return listed.filter(row => (!kind || harnessKindOf(row) === kind)',
+     replacement:'return listed.filter(row => row.library_tier === "verified" && (!kind || harnessKindOf(row) === kind)',
+     expected:["browse_table_rows_match_the_service_list"]},
+    {name:"claim_unrecorded_compatibility_means_every_tool", scenario:"catalogue",
+     find:'"Compatibility not recorded"', replacement:'"Every tool"',
+     expected:["browse_unspecified_compatibility_is_not_a_support_claim"]},
     {name:"list_without_every_step_effect", scenario:"catalogue",
      find:"...(named ? {authority_effects:named} : {})", replacement:"...{}",
      expected:["browse_every_list_request_carries_every_step_effect", "browse_lists_a_file_that_declares_an_effect_with_that_effect",
        "browse_table_rows_match_the_service_list"]},
     {name:"ignore_the_kind_filter", scenario:"kind_filter", find:"(!kind || harnessKindOf(row) === kind)", replacement:"true",
      expected:["browse_filters_by_kind_of_file_on_the_loaded_rows"]},
-    {name:"ignore_the_label_filter", scenario:"label_filter", find:"(!tier || row.library_tier === tier)", replacement:"true",
-     expected:["browse_filters_by_label_on_the_loaded_rows"]},
+    {name:"search_a_hidden_library_tier_label", scenario:"unified_library",
+     find:'text = [row.purpose, row.identity, harnessKindOf(row), harnessKindNames[harnessKindOf(row)],',
+     replacement:'text = [row.purpose, row.identity, harnessKindOf(row), harnessKindNames[harnessKindOf(row)], row.library_tier_label,',
+     expected:["browse_does_not_search_a_hidden_tier_classification"]},
+    {name:"ignore_sort_direction", scenario:"sort_table",
+     find:'const key = sortKey, direction = sortAscending ? 1 : -1;', replacement:'const key = sortKey, direction = 1;',
+     expected:["browse_sorts_a_unified_table_in_both_directions_without_refetching"]},
+    {name:"reintroduce_a_tier_label_in_report_outcomes", scenario:"report_outcome",
+     find:'"Thank you. Your report is recorded and the item is queued for review."',
+     replacement:'"Thank you. A Verified item is queued for review."',
+     expected:["browse_report_outcome_does_not_reintroduce_tier_labels"]},
     {name:"ignore_the_development_tool_filter", scenario:"tool_filter",
      find:"(!style || !toolsOf(row).length || (row.styles || []).includes(style))", replacement:"true",
-     expected:["browse_filters_by_development_tool_and_keeps_files_for_every_tool"]},
+     expected:["browse_filters_by_tool_tag_and_retains_unrecorded_compatibility"]},
     {name:"ignore_the_search_box", scenario:"search_box",
      find:"(!words.length || words.every(word => searchable(row).includes(word)))", replacement:"true",
      expected:["browse_search_box_narrows_the_loaded_rows"]},

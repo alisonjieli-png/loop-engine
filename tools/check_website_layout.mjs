@@ -110,6 +110,9 @@ const knownWrong=[
     &&compareEntries([{role:"link",label:"A",href:"/a"},{role:"link",label:"B",href:"/b"}],[{role:"link",label:"B",href:"/b"},{role:"link",label:"A",href:"/a"}]).length===1],
   ["contrast_rule_refuses_grey_8a8a8a_on_white",contrast([138,138,138],[255,255,255])<layout.text_contrast_min&&contrast([85,96,112],[255,255,255])>=layout.text_contrast_min],
   ["scroll_budget_refuses_a_homepage_of_7046_pixels",heightBudget({scroll_budget:"long"},desktop)<7046],
+  ["case_study_budget_accepts_the_recorded_page_and_refuses_one_pixel_over",heightBudget({scroll_budget:"case-study"},desktop)>=5120
+    &&heightBudget({scroll_budget:"case-study"},phone)>=5972&&heightBudget({scroll_budget:"case-study"},desktop)<6001
+    &&heightBudget({scroll_budget:"case-study"},phone)<11254&&heightBudget({scroll_budget:"long"},desktop)===4000],
   ["touch_rule_refuses_a_40_pixel_target",!tapSized({width:120,height:40})&&tapSized({width:44,height:44})],
   ["one_row_rule_refuses_a_header_that_wraps",!oneRow([{left:0,right:50,top:10,bottom:40},{left:60,right:90,top:50,bottom:80}],{left:0,right:100,top:0,bottom:90})],
   ["first_screen_rule_refuses_a_price_at_5001_pixels",!inFirstScreen({top:5001,bottom:5030},desktop.height)&&inFirstScreen({top:600,bottom:640},desktop.height)]];

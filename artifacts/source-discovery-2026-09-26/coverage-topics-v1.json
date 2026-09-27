@@ -1,0 +1,566 @@
+{
+  "record_type": "source_discovery_rotation/v1",
+  "per_run": 2,
+  "topics": [
+    {
+      "id": "domain-api-contracts",
+      "family": "repositories",
+      "kind": "github_search",
+      "host": "api.github.com",
+      "path": "/search/repositories",
+      "query": {
+        "q": "topic:openapi archived:false",
+        "sort": "updated",
+        "order": "desc",
+        "per_page": 20
+      },
+      "maximum_entries": 20
+    },
+    {
+      "id": "domain-data-cleaning",
+      "family": "repositories",
+      "kind": "github_search",
+      "host": "api.github.com",
+      "path": "/search/repositories",
+      "query": {
+        "q": "topic:data-cleaning archived:false",
+        "sort": "updated",
+        "order": "desc",
+        "per_page": 20
+      },
+      "maximum_entries": 20
+    },
+    {
+      "id": "domain-data-quality",
+      "family": "repositories",
+      "kind": "github_search",
+      "host": "api.github.com",
+      "path": "/search/repositories",
+      "query": {
+        "q": "topic:data-quality archived:false",
+        "sort": "updated",
+        "order": "desc",
+        "per_page": 20
+      },
+      "maximum_entries": 20
+    },
+    {
+      "id": "domain-schema-evolution",
+      "family": "repositories",
+      "kind": "github_search",
+      "host": "api.github.com",
+      "path": "/search/repositories",
+      "query": {
+        "q": "schema evolution in:name,description archived:false",
+        "sort": "updated",
+        "order": "desc",
+        "per_page": 20
+      },
+      "maximum_entries": 20
+    },
+    {
+      "id": "domain-data-lineage",
+      "family": "repositories",
+      "kind": "github_search",
+      "host": "api.github.com",
+      "path": "/search/repositories",
+      "query": {
+        "q": "topic:data-lineage archived:false",
+        "sort": "updated",
+        "order": "desc",
+        "per_page": 20
+      },
+      "maximum_entries": 20
+    },
+    {
+      "id": "domain-change-data-capture",
+      "family": "repositories",
+      "kind": "github_search",
+      "host": "api.github.com",
+      "path": "/search/repositories",
+      "query": {
+        "q": "topic:change-data-capture archived:false",
+        "sort": "updated",
+        "order": "desc",
+        "per_page": 20
+      },
+      "maximum_entries": 20
+    },
+    {
+      "id": "domain-etl",
+      "family": "repositories",
+      "kind": "github_search",
+      "host": "api.github.com",
+      "path": "/search/repositories",
+      "query": {
+        "q": "topic:etl archived:false",
+        "sort": "updated",
+        "order": "desc",
+        "per_page": 20
+      },
+      "maximum_entries": 20
+    },
+    {
+      "id": "domain-data-orchestration",
+      "family": "repositories",
+      "kind": "github_search",
+      "host": "api.github.com",
+      "path": "/search/repositories",
+      "query": {
+        "q": "topic:data-orchestration archived:false",
+        "sort": "updated",
+        "order": "desc",
+        "per_page": 20
+      },
+      "maximum_entries": 20
+    },
+    {
+      "id": "domain-lakehouse",
+      "family": "repositories",
+      "kind": "github_search",
+      "host": "api.github.com",
+      "path": "/search/repositories",
+      "query": {
+        "q": "topic:lakehouse archived:false",
+        "sort": "updated",
+        "order": "desc",
+        "per_page": 20
+      },
+      "maximum_entries": 20
+    },
+    {
+      "id": "domain-data-warehouse",
+      "family": "repositories",
+      "kind": "github_search",
+      "host": "api.github.com",
+      "path": "/search/repositories",
+      "query": {
+        "q": "topic:data-warehouse archived:false",
+        "sort": "updated",
+        "order": "desc",
+        "per_page": 20
+      },
+      "maximum_entries": 20
+    },
+    {
+      "id": "domain-query-federation",
+      "family": "repositories",
+      "kind": "github_search",
+      "host": "api.github.com",
+      "path": "/search/repositories",
+      "query": {
+        "q": "federated query in:name,description archived:false",
+        "sort": "updated",
+        "order": "desc",
+        "per_page": 20
+      },
+      "maximum_entries": 20
+    },
+    {
+      "id": "domain-data-virtualization",
+      "family": "repositories",
+      "kind": "github_search",
+      "host": "api.github.com",
+      "path": "/search/repositories",
+      "query": {
+        "q": "topic:data-virtualization archived:false",
+        "sort": "updated",
+        "order": "desc",
+        "per_page": 20
+      },
+      "maximum_entries": 20
+    },
+    {
+      "id": "domain-data-catalog",
+      "family": "repositories",
+      "kind": "github_search",
+      "host": "api.github.com",
+      "path": "/search/repositories",
+      "query": {
+        "q": "topic:data-catalog archived:false",
+        "sort": "updated",
+        "order": "desc",
+        "per_page": 20
+      },
+      "maximum_entries": 20
+    },
+    {
+      "id": "domain-data-contracts",
+      "family": "repositories",
+      "kind": "github_search",
+      "host": "api.github.com",
+      "path": "/search/repositories",
+      "query": {
+        "q": "topic:data-contracts archived:false",
+        "sort": "updated",
+        "order": "desc",
+        "per_page": 20
+      },
+      "maximum_entries": 20
+    },
+    {
+      "id": "domain-decentralized-storage",
+      "family": "repositories",
+      "kind": "github_search",
+      "host": "api.github.com",
+      "path": "/search/repositories",
+      "query": {
+        "q": "topic:decentralized-storage archived:false",
+        "sort": "updated",
+        "order": "desc",
+        "per_page": 20
+      },
+      "maximum_entries": 20
+    },
+    {
+      "id": "domain-local-first",
+      "family": "repositories",
+      "kind": "github_search",
+      "host": "api.github.com",
+      "path": "/search/repositories",
+      "query": {
+        "q": "topic:local-first archived:false",
+        "sort": "updated",
+        "order": "desc",
+        "per_page": 20
+      },
+      "maximum_entries": 20
+    },
+    {
+      "id": "domain-crdt",
+      "family": "repositories",
+      "kind": "github_search",
+      "host": "api.github.com",
+      "path": "/search/repositories",
+      "query": {
+        "q": "topic:crdt archived:false",
+        "sort": "updated",
+        "order": "desc",
+        "per_page": 20
+      },
+      "maximum_entries": 20
+    },
+    {
+      "id": "domain-peer-to-peer",
+      "family": "repositories",
+      "kind": "github_search",
+      "host": "api.github.com",
+      "path": "/search/repositories",
+      "query": {
+        "q": "topic:p2p archived:false",
+        "sort": "updated",
+        "order": "desc",
+        "per_page": 20
+      },
+      "maximum_entries": 20
+    },
+    {
+      "id": "domain-federated-learning",
+      "family": "repositories",
+      "kind": "github_search",
+      "host": "api.github.com",
+      "path": "/search/repositories",
+      "query": {
+        "q": "topic:federated-learning archived:false",
+        "sort": "updated",
+        "order": "desc",
+        "per_page": 20
+      },
+      "maximum_entries": 20
+    },
+    {
+      "id": "domain-differential-privacy",
+      "family": "repositories",
+      "kind": "github_search",
+      "host": "api.github.com",
+      "path": "/search/repositories",
+      "query": {
+        "q": "topic:differential-privacy archived:false",
+        "sort": "updated",
+        "order": "desc",
+        "per_page": 20
+      },
+      "maximum_entries": 20
+    },
+    {
+      "id": "domain-entity-resolution",
+      "family": "repositories",
+      "kind": "github_search",
+      "host": "api.github.com",
+      "path": "/search/repositories",
+      "query": {
+        "q": "topic:entity-resolution archived:false",
+        "sort": "updated",
+        "order": "desc",
+        "per_page": 20
+      },
+      "maximum_entries": 20
+    },
+    {
+      "id": "domain-event-streaming",
+      "family": "repositories",
+      "kind": "github_search",
+      "host": "api.github.com",
+      "path": "/search/repositories",
+      "query": {
+        "q": "topic:event-streaming archived:false",
+        "sort": "updated",
+        "order": "desc",
+        "per_page": 20
+      },
+      "maximum_entries": 20
+    },
+    {
+      "id": "domain-geospatial",
+      "family": "repositories",
+      "kind": "github_search",
+      "host": "api.github.com",
+      "path": "/search/repositories",
+      "query": {
+        "q": "topic:geospatial archived:false",
+        "sort": "updated",
+        "order": "desc",
+        "per_page": 20
+      },
+      "maximum_entries": 20
+    },
+    {
+      "id": "domain-time-series",
+      "family": "repositories",
+      "kind": "github_search",
+      "host": "api.github.com",
+      "path": "/search/repositories",
+      "query": {
+        "q": "topic:time-series archived:false",
+        "sort": "updated",
+        "order": "desc",
+        "per_page": 20
+      },
+      "maximum_entries": 20
+    },
+    {
+      "id": "domain-graph-databases",
+      "family": "repositories",
+      "kind": "github_search",
+      "host": "api.github.com",
+      "path": "/search/repositories",
+      "query": {
+        "q": "topic:graph-database archived:false",
+        "sort": "updated",
+        "order": "desc",
+        "per_page": 20
+      },
+      "maximum_entries": 20
+    },
+    {
+      "id": "domain-document-processing",
+      "family": "repositories",
+      "kind": "github_search",
+      "host": "api.github.com",
+      "path": "/search/repositories",
+      "query": {
+        "q": "topic:document-processing archived:false",
+        "sort": "updated",
+        "order": "desc",
+        "per_page": 20
+      },
+      "maximum_entries": 20
+    },
+    {
+      "id": "domain-vector-retrieval",
+      "family": "repositories",
+      "kind": "github_search",
+      "host": "api.github.com",
+      "path": "/search/repositories",
+      "query": {
+        "q": "topic:vector-search archived:false",
+        "sort": "updated",
+        "order": "desc",
+        "per_page": 20
+      },
+      "maximum_entries": 20
+    },
+    {
+      "id": "domain-evaluation",
+      "family": "repositories",
+      "kind": "github_search",
+      "host": "api.github.com",
+      "path": "/search/repositories",
+      "query": {
+        "q": "topic:llm-evaluation archived:false",
+        "sort": "updated",
+        "order": "desc",
+        "per_page": 20
+      },
+      "maximum_entries": 20
+    },
+    {
+      "id": "domain-workflow-engines",
+      "family": "repositories",
+      "kind": "github_search",
+      "host": "api.github.com",
+      "path": "/search/repositories",
+      "query": {
+        "q": "topic:workflow-engine archived:false",
+        "sort": "updated",
+        "order": "desc",
+        "per_page": 20
+      },
+      "maximum_entries": 20
+    },
+    {
+      "id": "domain-sandboxing",
+      "family": "repositories",
+      "kind": "github_search",
+      "host": "api.github.com",
+      "path": "/search/repositories",
+      "query": {
+        "q": "topic:sandbox archived:false",
+        "sort": "updated",
+        "order": "desc",
+        "per_page": 20
+      },
+      "maximum_entries": 20
+    },
+    {
+      "id": "domain-media-processing",
+      "family": "repositories",
+      "kind": "github_search",
+      "host": "api.github.com",
+      "path": "/search/repositories",
+      "query": {
+        "q": "topic:video-processing archived:false",
+        "sort": "updated",
+        "order": "desc",
+        "per_page": 20
+      },
+      "maximum_entries": 20
+    },
+    {
+      "id": "domain-three-dimensional",
+      "family": "repositories",
+      "kind": "github_search",
+      "host": "api.github.com",
+      "path": "/search/repositories",
+      "query": {
+        "q": "topic:3d archived:false",
+        "sort": "updated",
+        "order": "desc",
+        "per_page": 20
+      },
+      "maximum_entries": 20
+    },
+    {
+      "id": "domain-audio-processing",
+      "family": "repositories",
+      "kind": "github_search",
+      "host": "api.github.com",
+      "path": "/search/repositories",
+      "query": {
+        "q": "topic:audio-processing archived:false",
+        "sort": "updated",
+        "order": "desc",
+        "per_page": 20
+      },
+      "maximum_entries": 20
+    },
+    {
+      "id": "domain-scientific-computing",
+      "family": "repositories",
+      "kind": "github_search",
+      "host": "api.github.com",
+      "path": "/search/repositories",
+      "query": {
+        "q": "topic:scientific-computing archived:false",
+        "sort": "updated",
+        "order": "desc",
+        "per_page": 20
+      },
+      "maximum_entries": 20
+    },
+    {
+      "id": "domain-wasm",
+      "family": "repositories",
+      "kind": "github_search",
+      "host": "api.github.com",
+      "path": "/search/repositories",
+      "query": {
+        "q": "topic:webassembly archived:false",
+        "sort": "updated",
+        "order": "desc",
+        "per_page": 20
+      },
+      "maximum_entries": 20
+    },
+    {
+      "id": "domain-edge-computing",
+      "family": "repositories",
+      "kind": "github_search",
+      "host": "api.github.com",
+      "path": "/search/repositories",
+      "query": {
+        "q": "topic:edge-computing archived:false",
+        "sort": "updated",
+        "order": "desc",
+        "per_page": 20
+      },
+      "maximum_entries": 20
+    },
+    {
+      "id": "domain-observability",
+      "family": "repositories",
+      "kind": "github_search",
+      "host": "api.github.com",
+      "path": "/search/repositories",
+      "query": {
+        "q": "topic:observability archived:false",
+        "sort": "updated",
+        "order": "desc",
+        "per_page": 20
+      },
+      "maximum_entries": 20
+    },
+    {
+      "id": "domain-accessibility",
+      "family": "repositories",
+      "kind": "github_search",
+      "host": "api.github.com",
+      "path": "/search/repositories",
+      "query": {
+        "q": "topic:accessibility archived:false",
+        "sort": "updated",
+        "order": "desc",
+        "per_page": 20
+      },
+      "maximum_entries": 20
+    },
+    {
+      "id": "domain-developer-security",
+      "family": "repositories",
+      "kind": "github_search",
+      "host": "api.github.com",
+      "path": "/search/repositories",
+      "query": {
+        "q": "topic:devsecops archived:false",
+        "sort": "updated",
+        "order": "desc",
+        "per_page": 20
+      },
+      "maximum_entries": 20
+    },
+    {
+      "id": "domain-micro-saas",
+      "family": "repositories",
+      "kind": "github_search",
+      "host": "api.github.com",
+      "path": "/search/repositories",
+      "query": {
+        "q": "topic:micro-saas archived:false",
+        "sort": "updated",
+        "order": "desc",
+        "per_page": 20
+      },
+      "maximum_entries": 20
+    }
+  ]
+}

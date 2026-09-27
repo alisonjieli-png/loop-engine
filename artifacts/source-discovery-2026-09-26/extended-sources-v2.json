@@ -1,0 +1,104 @@
+{
+  "record_type": "source_discovery_extension_configuration/v1",
+  "maximum_requests": 10,
+  "timeout_seconds": 12,
+  "sources": [
+    {
+      "id": "daily-papers",
+      "family": "papers",
+      "kind": "daily_papers",
+      "host": "huggingface.co",
+      "path": "/api/daily_papers",
+      "query": {
+        "limit": 20,
+        "sort": "publishedAt"
+      },
+      "maximum_entries": 20
+    },
+    {
+      "id": "protocol-registry",
+      "family": "protocol_servers",
+      "kind": "mcp_registry",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "limit": 25,
+        "version": "latest"
+      },
+      "maximum_entries": 25
+    },
+    {
+      "id": "skill-directory",
+      "family": "skills",
+      "kind": "skills_directory",
+      "host": "www.skills.sh",
+      "path": "/",
+      "query": {},
+      "maximum_entries": 100
+    },
+    {
+      "id": "plugin-repositories",
+      "family": "plugins",
+      "kind": "github_search",
+      "host": "api.github.com",
+      "path": "/search/repositories",
+      "query": {
+        "q": "topic:claude-code-plugin archived:false",
+        "sort": "updated",
+        "order": "desc",
+        "per_page": 20
+      },
+      "maximum_entries": 20
+    },
+    {
+      "id": "service-projects",
+      "family": "services",
+      "kind": "github_search",
+      "host": "api.github.com",
+      "path": "/search/repositories",
+      "query": {
+        "q": "topic:saas archived:false pushed:>={since_14d}",
+        "sort": "updated",
+        "order": "desc",
+        "per_page": 20
+      },
+      "maximum_entries": 20
+    },
+    {
+      "id": "npm-protocol-packages",
+      "family": "packages",
+      "kind": "npm_search",
+      "host": "registry.npmjs.org",
+      "path": "/-/v1/search",
+      "query": {
+        "text": "keywords:mcp",
+        "size": 20,
+        "from": 0
+      },
+      "maximum_entries": 20
+    },
+    {
+      "id": "new-repositories-by-stars",
+      "family": "repositories",
+      "kind": "github_search",
+      "host": "api.github.com",
+      "path": "/search/repositories",
+      "query": {
+        "q": "archived:false created:>={since_14d} stars:>=10",
+        "sort": "stars",
+        "order": "desc",
+        "per_page": 25
+      },
+      "maximum_entries": 25
+    },
+    {
+      "id": "huggingface-news",
+      "family": "news",
+      "kind": "feed",
+      "host": "huggingface.co",
+      "path": "/blog/feed.xml",
+      "query": {},
+      "maximum_entries": 20
+    }
+  ]
+}

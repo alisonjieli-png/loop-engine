@@ -1,0 +1,106 @@
+{
+  "record_type": "pilot_release_record/v1",
+  "release": 38,
+  "recorded_at": "2026-09-27T01:49:36.518970+00:00",
+  "source_revision": "13caeb2039c28681e8c8793cfede80255e6f033a",
+  "source_tree": "540874361ba01306d6fcc857a6203e459f2ac614",
+  "image": "registry.fly.io/baltor-pilot@sha256:e3af395c828eeea9726369cd08c70deb7dcb13096abdfe47edab26b7ea684e7e",
+  "rollback_image": "registry.fly.io/baltor-pilot@sha256:7e0603e219fe21ca934d9459f8bc94a734ce2f31baaf4da8a8ae63c3edd382f8",
+  "app": "baltor-pilot",
+  "machine": "83733ea7779068",
+  "region": "iad",
+  "deployed_at": "2026-09-27T01:19:33Z",
+  "ci_run": 36284690803,
+  "deploy_run": 36285062623,
+  "deployment_gate_after": "false",
+  "checks": {
+    "preflight": {
+      "source_sha256": "531f47ed293eef787775238b77dcfabb6822ec3ec058e1b582d5b4aeae52ba79",
+      "record_type": null,
+      "passed": null,
+      "total": null,
+      "all_passed": null
+    },
+    "public": {
+      "source_sha256": "4dd35dfc38ecebce470722c9e8a407cd3569d6df9ef4f08133bc6a99ad8dbdcf",
+      "record_type": "postdeployment_public_summary/v1",
+      "passed": null,
+      "total": null,
+      "all_passed": true
+    },
+    "catalogue": {
+      "source_sha256": "a866ade02fd3249352f802113db5715a02158205271586c1a003e3aa5dcdf6a7",
+      "record_type": "hosted_catalogue_disclosure_check/v1",
+      "passed": 9,
+      "total": null,
+      "all_passed": true
+    },
+    "service": {
+      "source_sha256": "1b865bb89368f8c8b90b9e14fb447e934e13002cbafc076c0546edfd1bd409e6",
+      "record_type": "hosted_service_transport_qualification/v1",
+      "passed": 19,
+      "total": null,
+      "all_passed": true
+    },
+    "people": {
+      "source_sha256": "bfb10db9349425b5f06a33eebe995bc20b1c495c787952babd0f552a119c29fa",
+      "record_type": "live_site_for_people_check/v1",
+      "passed": true,
+      "total": null,
+      "all_passed": null,
+      "published_artifact": "people-checks.json",
+      "published_sha256": "8eda69ede1f3c5df32bf6621f5a1f5c223d1640e55c53846af9c3813632a22dc",
+      "transformation": "JSON reserialization only; parsed values equal the source report"
+    },
+    "visible_headings": {
+      "source_sha256": "27d5122fa0d71d231a6313c504c30c46e6f6dcdf6ff54551b47e6bea6f252e29",
+      "record_type": null,
+      "passed": true,
+      "total": null,
+      "all_passed": null
+    },
+    "layout": {
+      "source_sha256": "b0e9afe9562a9835a92e36063c6853bc082f6d63cbef9e33d2048ded13be2592",
+      "record_type": "bounded_final_ui_layout_review/v1",
+      "passed": null,
+      "total": null,
+      "all_passed": true
+    },
+    "browser": {
+      "source_sha256": "e5672f4c63e3f5f80b7c08b654d18b7396bdfa3c1f9d9fc0f07d04c8beff89f7",
+      "record_type": "service_workspace_browser_checks/v2",
+      "passed": 930,
+      "total": 931,
+      "all_passed": false,
+      "published_artifact": "browser-checks.json",
+      "published_sha256": "086c578c4dbcbfadf9db31c9f788ed43c74ead63ff8712a354b144f3905c63c7",
+      "transformation": "JSON reserialization only; parsed values equal the source report"
+    }
+  },
+  "public_hosts_passed": 10,
+  "public_addresses_passed": 50,
+  "catalogue_checks_passed": 9,
+  "catalogue_checks_planned": 9,
+  "service_checks_passed": 19,
+  "service_checks_planned": 19,
+  "visitor_pages": 54,
+  "visitor_views": 225,
+  "visitor_links": 348,
+  "visitor_problems": 0,
+  "browser_checks_passed": 930,
+  "browser_checks_total": 931,
+  "browser_mutants_detected": 191,
+  "browser_mutants_total": 191,
+  "remaining_at_release": [
+    "Case-study scroll length exceeded the earlier general-page budget; owner authorized larger case-study budgets after deployment.",
+    "Additional design advice remains recorded; no broken customer flow found."
+  ],
+  "redteam_hostname": {
+    "dns_records_created": 3,
+    "authoritative_checks_passed": 6,
+    "certificate_status": "Ready",
+    "host_and_origin_added": true,
+    "host_configuration_backup": "/data/host.before-redteam-20260927.json"
+  },
+  "limitations": "Transport and visitor qualification; not a full customer task, paid-service benchmark or new account signup proof."
+}

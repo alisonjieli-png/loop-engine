@@ -7,8 +7,8 @@
    The owner, September 26, 2026: "we should use a searchable table format not a random HTML table/rows,
    also size, and digest are useless pieces of information to waste space on showing and we need ALL types
    of harness working directory component files not just SKILLS". So the table names every file's purpose,
-   the kind of file a harness picks up, its label, the kinds of step it supports, its licence, its declared
-   effects and the tools it is written for; it shows no size and no digest; and a search box, three filters
+   the kind of file a harness picks up, the kinds of step it supports, its licence, its declared
+   effects and the tools it is written for; it shows no size and no digest; and a search box, two filters
    and sortable columns narrow it without a second request (roadmap S-6.208). The same day: "tag/label our
    harness component files by job title, industry, level, language, geography, etc, and allow people to
    search in the dashboard (when they sign up not on the home pages)". So five more filters, one for each
@@ -61,9 +61,8 @@ window.BaltorCatalogueBrowser = {
     const facetRules = window.BaltorCatalogueBrowser;
     const $ = id => document.getElementById(id);
     const path = "/api/v1/provisioning", downloadPath = "/api/v1/download";
-    /* Version 2, as search asks: the same default step effects and the account's library setting, so this
-       view lists what search can find and every answer names each item's library tier. Version 1 predates
-       the tiers and lists Verified items only (September 25, 2026). */
+    /* Version 2, as search asks: the same default step effects and account library setting. Internal
+       classification fields remain part of the wire contract; the customer sees one component library. */
     const requestVersion = "service_provisioning_request/v2";
     /* The exact record versions this file was written against. Another version may rename a field or
        give an existing field a different meaning, so a reply that carries one is refused as a whole and
@@ -78,8 +77,7 @@ window.BaltorCatalogueBrowser = {
     const itemVersion = "harness_intelligence_item/v1";
     /* The answer to a report. The service decides whether the report withdrew the item; this page repeats it. */
     const reportVersion = "service_catalogue_report_result/v1";
-    /* Every item names its library tier and the exact label to show for it. An item without one is a record
-       this page was not written for, never an item shown without its label. */
+    /* Validate the service's internal classification fields without rendering them as customer classes. */
     const knownTiers = new Set(["verified", "community"]);
     const metadataScope = "provisioning:metadata";
     /* The kinds of file a harness picks up, in the order the filter lists them, with the plain name of each.
@@ -95,7 +93,7 @@ window.BaltorCatalogueBrowser = {
     const knownLayers = new Set(["harness_local", "context_intelligence", "code_intelligence",
       "runtime_history_solution_intelligence", "user_feedback_intelligence"]);
     const knownKinds = Object.keys(servedKindFallback);
-    const columns = [["purpose", "What it is for"], ["harness_kind", "Kind of file"], ["tier", "Label"],
+    const columns = [["purpose", "What it is for"], ["harness_kind", "Kind of file"],
       ["step_functions", "Step functions"], ["license", "Licence"], ["effects", "Declared effects"], ["styles", "Written for"]];
     const facets = facetRules.facets, facetSelects = facets.map(([, id]) => id);
     let listed = null, shown = null, selected = "", active = false, sortKey = "harness_kind", sortAscending = true;
@@ -125,7 +123,7 @@ window.BaltorCatalogueBrowser = {
       if (!knownKinds.includes(row.kind)) return "a kind this page does not know";
       if (!Array.isArray(row.declared_effects) || !Array.isArray(row.styles)) return "an unreadable list of declared values";
       if (typeof row.body_allowed !== "boolean") return "no plain answer about downloading";
-      if (!knownTiers.has(row.library_tier) || !stated(row.library_tier_label)) return "no library tier";
+      if (!knownTiers.has(row.library_tier) || !stated(row.library_tier_label)) return "missing review metadata";
       if (row.attributes !== undefined && (row.attributes === null || typeof row.attributes !== "object" || Array.isArray(row.attributes))) return "unreadable attributes";
       return "";
     };
@@ -138,7 +136,7 @@ window.BaltorCatalogueBrowser = {
       if (!stated(value.source_ref) || !stated(value.qualification_basis)) return "a missing description";
       if (!Array.isArray(value.declared_effects) || !Array.isArray(value.styles)) return "an unreadable list of declared values";
       if (typeof value.body_allowed !== "boolean") return "no plain answer about downloading";
-      if (!knownTiers.has(value.library_tier) || !stated(value.library_tier_label)) return "no library tier";
+      if (!knownTiers.has(value.library_tier) || !stated(value.library_tier_label)) return "missing review metadata";
       return "";
     };
     const refused = "This service answered with a catalogue record this page was not written for, so nothing is shown.";
@@ -189,17 +187,17 @@ window.BaltorCatalogueBrowser = {
     const facetOf = (row, name) => facetRules.facetValues(row, name);
     const toolsOf = row => (row.styles || []).filter(name => stated(name) && !harnessKindNames[name] && !/^[a-z_]+_(format|skill|agent|command|rule|manifest|hooks|settings|config|marketplace|schema|module)$/.test(name));
     const cells = row => ({
-      purpose: row.purpose, harness_kind: harnessKindNames[harnessKindOf(row)], tier: row.library_tier_label,
+      purpose: row.purpose, harness_kind: harnessKindNames[harnessKindOf(row)],
       step_functions: functionsOf(row).join(", ") || "Not tagged", license: stated(row.license) ? row.license : "Not stated",
       effects: row.declared_effects.length ? row.declared_effects.join(", ") : "None declared",
-      styles: toolsOf(row).join(", ") || "Every tool"});
+      styles: toolsOf(row).join(", ") || "Compatibility not recorded"});
     /* The words a row is searched by, worked out once per row, since a load can bring tens of thousands; the
        facet values are words a reader may search by too. */
     const searchable = row => {
       let text = rowFacts.get(row);
       if (text === undefined) {
         text = [row.purpose, row.identity, harnessKindOf(row), harnessKindNames[harnessKindOf(row)],
-          row.library_tier_label, ...functionsOf(row), row.license || "", ...(row.declared_effects || []), ...(row.styles || []),
+          ...functionsOf(row), row.license || "", ...(row.declared_effects || []), ...(row.styles || []),
           ...facets.flatMap(([name]) => facetOf(row, name))]
           .join(" ").toLowerCase();
         rowFacts.set(row, text);
@@ -207,13 +205,12 @@ window.BaltorCatalogueBrowser = {
       return text;
     };
     const clearDetail = text => $("browse-detail").replaceChildren(element("p", text, "caption"));
-    /* A reader who finds a problem reports the exact item version they saw. The service withdraws a Community
-       item on the first report and a Verified item on the second report from another account, and counts each
-       account once. The words of the outcome follow the service's own answer, never a guess made here. */
+    /* A reader reports the exact item version. Withdrawal follows the service's response; this view
+       does not expose or reinterpret the service's internal review classifications. */
     const reportOutcome = value => {
       if (!value || value.record_type !== reportVersion) return "This service answered with a report record this page was not written for.";
       if (value.withdrawn) return "Thank you. This item is withdrawn from the library and queued for review.";
-      return "Thank you. Your report is recorded and the item is queued for review. A Verified item is withdrawn when a second account reports it or when staff flag it.";
+      return "Thank you. Your report is recorded and the item is queued for review.";
     };
     function reportControl(row) {
       const holder = element("div", "", "browse-report");
@@ -246,13 +243,13 @@ window.BaltorCatalogueBrowser = {
     /* The search box and the filters work on the rows loaded so far, so they stay usable while pages arrive. */
     function controls() {
       $("refresh-browse").disabled = !eligible() || active;
-      for (const id of ["browse-search", "browse-kind", "browse-tier", "browse-style", ...facetSelects]) $(id).disabled = !eligible() || !listed;
+      for (const id of ["browse-search", "browse-kind", "browse-style", ...facetSelects]) $(id).disabled = !eligible() || !listed;
     }
     function reset() {
       listed = null; shown = null; selected = ""; active = false; loading += 1; downloads.clear(); confirmed.clear();
       $("browse-table-body").replaceChildren(); $("browse-count").textContent = "Sign in to browse";
       $("browse-search").value = "";
-      options($("browse-kind"), [], "Every kind of file"); options($("browse-tier"), [], "Every label"); options($("browse-style"), [], "Every tool");
+      options($("browse-kind"), [], "Every kind of file"); options($("browse-style"), [], "Every tool");
       for (const [, id, , everything] of facets) options($(id), [], everything);
       clearDetail("Open an item to read its details.");
       message("browse-message", "Sign in to browse the library published for your account.");
@@ -276,7 +273,6 @@ window.BaltorCatalogueBrowser = {
     function sorted(rows) {
       const key = sortKey, direction = sortAscending ? 1 : -1;
       const value = row => key === "harness_kind" ? String(harnessKindOrder.indexOf(harnessKindOf(row))).padStart(2, "0")
-        : key === "tier" ? (row.library_tier === "verified" ? "0" : "1") + row.purpose.toLowerCase()
         : String(cells(row)[key]).toLowerCase();
       // Each row's sort value is worked out once, not once for every comparison.
       return rows.map(row => [value(row), row]).sort(([first, left], [second, right]) => {
@@ -284,13 +280,13 @@ window.BaltorCatalogueBrowser = {
         return collate(first, second) * direction;
       }).map(([_value, row]) => row);
     }
-    /* A file that names no development tool suits every tool, as the page says beside the filters, so a tool
-       filter keeps it; the service's own tool filter does the same. */
+    /* Keep matching tool tags and entries whose compatibility is unrecorded. Absence of a tag does
+       not establish support; the same inclusive matching rule is used by the service's tool filter. */
     function filtered() {
       const words = $("browse-search").value.trim().toLowerCase().split(/\s+/).filter(Boolean);
-      const kind = $("browse-kind").value, tier = $("browse-tier").value, style = $("browse-style").value;
+      const kind = $("browse-kind").value, style = $("browse-style").value;
       const wanted = facets.map(([name, id]) => [name, $(id).value]);
-      return listed.filter(row => (!kind || harnessKindOf(row) === kind) && (!tier || row.library_tier === tier)
+      return listed.filter(row => (!kind || harnessKindOf(row) === kind)
         && (!style || !toolsOf(row).length || (row.styles || []).includes(style))
         && facetRules.keepsFacets(row, wanted)
         && (!words.length || words.every(word => searchable(row).includes(word))));
@@ -313,7 +309,7 @@ window.BaltorCatalogueBrowser = {
       body.replaceChildren();
       for (const row of rows.slice(0, drawLimit)) {
         const line = document.createElement("tr");
-        line.dataset.identity = row.identity; line.dataset.harnessKind = harnessKindOf(row); line.dataset.libraryTier = row.library_tier;
+        line.dataset.identity = row.identity; line.dataset.harnessKind = harnessKindOf(row);
         line.setAttribute("aria-selected", row.identity === selected ? "true" : "false");
         const values = cells(row);
         for (const [key] of columns) {
@@ -322,8 +318,6 @@ window.BaltorCatalogueBrowser = {
             const button = element("button", values.purpose, "browse-open"); button.type = "button";
             button.addEventListener("click", () => choose(row));
             cell.append(button);
-          } else if (key === "tier") {
-            const badge = element("span", values.tier, "badge"); badge.dataset.libraryTier = row.library_tier; cell.append(badge);
           } else cell.textContent = values[key];
           line.append(cell);
         }
@@ -410,14 +404,13 @@ window.BaltorCatalogueBrowser = {
         const note = showDetail(row, [
           ["What it is for", row.purpose],
           ["Kind of file", shownValues.harness_kind],
-          ["Label", value.library_tier_label],
           ["Step functions", shownValues.step_functions],
           ...facets.map(([name, , label]) => [label, facetOf(row, name).join(", ") || "Not tagged"]),
           ["Exact reference", row.identity],
           ["Where it comes from", value.source_ref],
           ["Licence", stated(value.license) ? value.license : "Not stated"],
           ["Declared effects", value.declared_effects.length ? value.declared_effects.join(", ") : "None declared"],
-          ["Written for", toolsOf(value).length ? toolsOf(value).join(", ") : "No tool named, so it suits every tool"],
+          ["Written for", toolsOf(value).length ? toolsOf(value).join(", ") : "Compatibility not recorded"],
           ["Basis of its review", value.qualification_basis],
           ["The file itself", value.body_allowed ? "You may fetch it. Access is checked again on the way." : "Not granted to this account."]], "");
         $("browse-detail").append(reportControl(row));
@@ -492,7 +485,6 @@ window.BaltorCatalogueBrowser = {
     /* Filter choices come from the rows loaded so far, so a filter can always be undone. */
     function refreshOptions() {
       options($("browse-kind"), harnessKinds.filter(([name]) => listed.some(row => harnessKindOf(row) === name)), "Every kind of file");
-      options($("browse-tier"), [["verified", "Verified"], ["community", "Community"]].filter(([name]) => listed.some(row => row.library_tier === name)), "Every label");
       // A development tool names itself. The page shows that name as it was published, never one it invented.
       options($("browse-style"), [...new Set(listed.flatMap(toolsOf))].sort().map(name => [name, name]), "Every tool");
       // Each facet filter offers exactly the values the loaded rows carry, in alphabetical order.
@@ -563,7 +555,7 @@ window.BaltorCatalogueBrowser = {
     }
     $("refresh-browse").addEventListener("click", () => load());
     $("browse-search").addEventListener("input", () => apply());
-    for (const id of ["browse-kind", "browse-tier", "browse-style", ...facetSelects]) $(id).addEventListener("change", () => apply());
+    for (const id of ["browse-kind", "browse-style", ...facetSelects]) $(id).addEventListener("change", () => apply());
     reset();
     return {reset, connectionChanged, load};
   }

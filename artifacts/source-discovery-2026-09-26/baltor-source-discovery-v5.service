@@ -1,0 +1,20 @@
+[Unit]
+Description=Baltor read-only source discovery
+
+[Service]
+Type=oneshot
+Environment=BALTOR_RADAR_VENDOR_ROOT=/home/username/baltor-private/source-discovery-2026-09-26/engine/v5/runtime
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStart=/usr/bin/python3 /home/username/baltor-private/source-discovery-2026-09-26/engine/v5/run_discovery.py --core-configuration /home/username/baltor-private/source-discovery-2026-09-26/engine/v5/sources-core-v3.json --extended-configuration /home/username/baltor-private/source-discovery-2026-09-26/engine/v5/extended-sources-v2.json --rotation-configuration /home/username/baltor-private/source-discovery-2026-09-26/engine/v5/coverage-topics-v1.json --state /home/username/baltor-private/source-discovery-2026-09-26/state --authorize-network-reads --authorize-local-writes
+WorkingDirectory=/home/username/baltor-private/source-discovery-2026-09-26/engine/v5
+Nice=15
+IOSchedulingClass=idle
+CPUQuota=25%
+MemoryMax=384M
+TimeoutStartSec=240
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/home/username/baltor-private/source-discovery-2026-09-26/state
+UMask=0077

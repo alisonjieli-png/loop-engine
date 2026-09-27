@@ -127,14 +127,29 @@ scroll down so far to get all of the details."
 - At 390 by 844 the first screen shows the h1 and the primary action.
 - At every window size the first screen shows a primary action. The header's
   action counts, and on a phone it stands beside the menu button.
-- At 1440 the homepage and How it works are at most 4,000 pixels tall, and
-  every other page at most 2,700 pixels (three screens). At 390 a page is at
-  most twice its desktop budget in screens of 844 pixels: 7,502 pixels for the
-  homepage and How it works, 5,064 for any other page.
+- At 1440 the homepage and How it works are at most 4,000 pixels tall;
+  ordinary pages are at most 2,700 pixels (three screens). A page explicitly
+  assigned the `case-study` budget may reach 6,000 pixels. The data cleanup,
+  Pi and Gemma 4, and sign-up protection studies use this budget.
+- At 390 the limit is twice the desktop budget divided by the desktop
+  viewport height, then multiplied by 844 and rounded to the nearest pixel:
+  7,502 pixels for the homepage and How it works, 5,064 for an ordinary page,
+  and 11,253 for a case study. Both browser checks read the named budget from
+  the site map and use this formula.
 - Documentation pages, the privacy notice and the terms have no height
   budget. Once one is taller than 2,700 pixels at 1440, it opens with an
   in-page contents list: a `nav` of links to parts of the same page that
-  starts in the first screen.
+  starts in the first screen. The detailed decision red-team report retains
+  this existing documentation classification and its introductory contents
+  navigation.
+
+The owner, September 26, 2026: "We can increase our scroll length budget,
+especially for pages like a case study." The finite 6,000-pixel case-study
+limit gives the measured 5,120-pixel sign-up protection study 880 pixels of
+room for explanation and evidence. Its measured phone height was 5,972 pixels.
+This allowance does not change the homepage or ordinary-page limits. The
+site map is `service_web_site_map/v3` and the layout standard is
+`service_web_layout_standard/v2`; earlier records are refused.
 
 The live measurements of release 20 that led to these rules, recorded on
 September 23, 2026: the homepage was 7,046 pixels at 1440 (7.8 screens) and

@@ -51,7 +51,7 @@ export async function runShowcasePageChecks({root,python,browser,context,fixture
   /* Each page at its own address: one view, one visible heading, its own title and its canonical address on the canonical hostname,
      within its scroll budget at 1440 by 900 and at 390 by 844, with a screenshot of each size beside the report. */
   const budgets=entry=>{const desktop=layout.page_height_max_px[entry.scroll_budget];if(!desktop)return null;
-    return {desktop,phone:Math.floor(desktop/layout.viewports.desktop.height)*layout.phone_screens_factor*layout.viewports.phone.height};};
+    return {desktop,phone:Math.round(desktop/layout.viewports.desktop.height*layout.phone_screens_factor*layout.viewports.phone.height)};};
   const withinBudget=(heights,limits)=>!limits||(heights.desktop<=limits.desktop&&heights.phone<=limits.phone);
   const page=await context.newPage(),heights={};
   for(const path of showcasePaths){
@@ -72,6 +72,11 @@ export async function runShowcasePageChecks({root,python,browser,context,fixture
   check("showcase_pages_stay_within_their_scroll_budgets",overBudget.length===0,{heights,over:overBudget});
   check("scroll_budget_check_rejects_a_page_one_screen_too_tall",!withinBudget({desktop:2701,phone:100},{desktop:2700,phone:5064})&&!withinBudget({desktop:100,phone:5065},{desktop:2700,phone:5064})
     &&withinBudget({desktop:2700,phone:5064},{desktop:2700,phone:5064}));
+  const caseLimits=budgets(pageAt("/case-studies/sign-up-protection")),homeLimits=budgets(pageAt("/"));
+  check("case_study_budget_is_finite_and_keeps_the_homepage_limit",caseLimits?.desktop===6000&&caseLimits?.phone===11253
+    &&homeLimits?.desktop===4000&&homeLimits?.phone===7502&&withinBudget({desktop:5120,phone:5972},caseLimits)
+    &&!withinBudget({desktop:6001,phone:5972},caseLimits)&&!withinBudget({desktop:5120,phone:11254},caseLimits)
+    &&!withinBudget({desktop:5120,phone:5972},homeLimits));
   await page.setViewportSize({width:1440,height:1000});
 
   /* The demonstration: one step at a time, moved by its list, by Previous and Next and by Play, which stops at the last step; the

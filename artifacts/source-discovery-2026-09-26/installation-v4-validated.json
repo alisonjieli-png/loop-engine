@@ -1,0 +1,37 @@
+{
+  "engine_version": 4,
+  "files": {
+    "collector.py": "c6e0a2492ff17345d879f830be8e28b1f05b63c23753898ef17cd6c3fb2e535f",
+    "coverage-topics-v1.json": "85b4c7387bb92b7bbf0594ab2830d84dfb399d15201acad6c014759c1046220a",
+    "coverage_rotation.py": "70f20553521fd663ac7e3e012fdb0ae12e12031a86b498359dedff94417b0be4",
+    "extended-sources-v1.json": "57c68555afea414b00e33de3dd677c95897a44f930914d9d4d566fc6350a782b",
+    "extended-sources-v2.json": "dfb702241d1a80556b181c2b9bc32522e16f907b99ca75fe167f9abf0401a389",
+    "extended_sources.py": "0b67ade911c5da87c322524d811ee07d25a154315795123768ee4cd02626d6de",
+    "run_discovery.py": "8c34f4e2a20f4f4383048084f02f818ec639aef0971a79613071d3f72747639a",
+    "runtime/LICENSE": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+    "runtime/radar_ingestion/__init__.py": "5ad0f23cbacb3cc6a4bb89166f0f7079e813986bab34560fd66c42e8f0e79edb",
+    "runtime/radar_ingestion/https_transport.py": "5cef00f3e3a210b98e305153692125fc5beefa8114ee59e8e938226ed26e7b4b",
+    "runtime/radar_ingestion/record_rules.py": "14adc5ebf69dde010e37310cc6e733662ee8aeebf9a571851461e1a2f9221ace",
+    "runtime/radar_ingestion/request_log.py": "c9fec435745aa40373d80f1811f6b8993f75ec0401e3d99383290c49b3806e04",
+    "runtime/secret-patterns.json": "8c3f0de54fda9c1575d6d03cf4a156783c40980e2d04341258312cc3ee61580a",
+    "sources-core-v3.json": "6b5c514e68f2e37bac014321001f82ef4f2a0fbcb8f2466fd3f71d4591416c58",
+    "sources.json": "015df362fb6de04b3c6e22db29aa30055212477c7a3c04765dca70e884713896",
+    "test_collector.py": "9a1b6a32782b72e41c3acd820b92682f7ed9ee880e340272317ecd8e89d9df58",
+    "test_coverage_rotation.py": "02d0b4a132dd89a47e644d5b3523a7cb09113520175f09b25c50fe0d876cac72",
+    "test_extended_sources.py": "7ba4632c481ec957e83d4b7c9758fa629abd68f855423c748a3f65baadaddbc3",
+    "test_run_discovery.py": "cc068e17b3b8075f69e4a7d4c6533ea6849ed80bf42edb42eaf74d67c11f2b2d"
+  },
+  "previous_engine_preserved": "/home/username/baltor-private/source-discovery-2026-09-26/engine/v3",
+  "configured_requests": 18,
+  "maximum_requests": 20,
+  "topic_queries": 40,
+  "topics_per_run": 2,
+  "model_calls": 0,
+  "publications": 0,
+  "independent_component_approvals": 0,
+  "checks": {
+    "cases_passed": 33,
+    "mutants_rejected": 3,
+    "vendored_cases_passed": 33
+  }
+}

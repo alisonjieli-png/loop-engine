@@ -57,10 +57,10 @@ It makes no model call and downloads nothing. It shows whether the service answe
 The first search is `review inputs`. In a Pi session, ask in plain words:
 
 ```text
-Search Baltor for review inputs and show the top three results with their tier and digest.
+Search Baltor for review inputs and show the top three results with their source and digest.
 ```
 
-The extension's `baltor_search` tool asks `/api/v1/retrieval` with `service_retrieval_request/v2`. The service answers a `service_http_result/v1` wrapper whose `result` is the `service_retrieval_result/v1` record: a list of `hits`, each with a `reference` that names the item's `identity`, its `body_digest` and its `size_bytes`, the tier label in `library_tier_label` (Verified or Community) and `body_allowed`. A search never loads a body, so `bodies_loaded` is false, and a search is not measured.
+The extension's `baltor_search` tool asks `/api/v1/retrieval` with `service_retrieval_request/v2`. The service answers a `service_http_result/v1` wrapper whose `result` is the `service_retrieval_result/v1` record: a list of `hits`, each with a `reference` that names the item's `identity`, its `body_digest` and its `size_bytes`, its source and licence, and `body_allowed`. A search never loads a body, so `bodies_loaded` is false, and a search is not measured.
 
 ## Your first download
 

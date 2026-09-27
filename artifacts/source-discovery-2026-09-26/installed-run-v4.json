@@ -1,0 +1,94 @@
+{
+  "record_type": "source_discovery_installation_evidence/v1",
+  "engine_version": 4,
+  "finished_at": "2026-09-27T02:18:58Z",
+  "status": "complete",
+  "extended_observations": 290,
+  "source_outcomes": [
+    {
+      "source_id": "daily-papers",
+      "outcome": "ok",
+      "http_status": 200,
+      "observations": 20,
+      "response_sha256": "4940d5ea1c3f013f14a6735a2ef6fb67e9832dfa57d506b250d54378a8033314"
+    },
+    {
+      "source_id": "protocol-registry",
+      "outcome": "ok",
+      "http_status": 200,
+      "observations": 25,
+      "response_sha256": "3818015aa484eb1ca5ea2b19e31c1f0c581077ea60525fed4daef4fc977982c0"
+    },
+    {
+      "source_id": "skill-directory",
+      "outcome": "ok",
+      "http_status": 200,
+      "observations": 100,
+      "response_sha256": "c931b8d20c2d93a7bfd2ee3c2809f822e8e7776e078e603fdfd43dcb85afd84b"
+    },
+    {
+      "source_id": "plugin-repositories",
+      "outcome": "ok",
+      "http_status": 200,
+      "observations": 20,
+      "response_sha256": "e8a93f74902fd757e5d44410950ba60a0dbfc7bf00fd18d76279d7a34445d298"
+    },
+    {
+      "source_id": "service-projects",
+      "outcome": "ok",
+      "http_status": 200,
+      "observations": 20,
+      "response_sha256": "3fa9069e05ad69c8439be722b652de6c65423e06521fce7e09af56f021093cde"
+    },
+    {
+      "source_id": "npm-protocol-packages",
+      "outcome": "ok",
+      "http_status": 200,
+      "observations": 20,
+      "response_sha256": "6a1e2c86d9f7f0d90a7133723f301d411046d4414b3f3c8b67e6df4a52924378"
+    },
+    {
+      "source_id": "new-repositories-by-stars",
+      "outcome": "ok",
+      "http_status": 200,
+      "observations": 25,
+      "response_sha256": "93e8b85a8d67faba91efff9f41d53db28a14d1c0c95f4aa0a9488ab1c212583a"
+    },
+    {
+      "source_id": "huggingface-news",
+      "outcome": "ok",
+      "http_status": 200,
+      "observations": 20,
+      "response_sha256": "7621b28c21f71077f81daea50e8158eb6fe1257908d9d5e35bfb7589c6fffef6"
+    },
+    {
+      "source_id": "domain-api-contracts",
+      "outcome": "ok",
+      "http_status": 200,
+      "observations": 20,
+      "response_sha256": "77fb8cb7caef73c737ea1d9970bf5fc01394bfcf1f2d2d1027e74324d9710f82"
+    },
+    {
+      "source_id": "domain-data-cleaning",
+      "outcome": "ok",
+      "http_status": 200,
+      "observations": 20,
+      "response_sha256": "637215106bd5d98ed397af86dff3344b8b3c4bceb5898f05c4e39ac81caab42d"
+    }
+  ],
+  "coverage": {
+    "selected_topic_ids": [
+      "domain-api-contracts",
+      "domain-data-cleaning"
+    ],
+    "completed_runs": 1,
+    "complete_catalogue": false,
+    "findings": []
+  },
+  "maximum_requests": 20,
+  "configured_requests": 18,
+  "source_programs_executed": 0,
+  "model_calls": 0,
+  "component_approvals": 0,
+  "publications": 0
+}

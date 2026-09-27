@@ -1,0 +1,96 @@
+{
+  "record_type": "source_discovery_installation_evidence/v1",
+  "engine_version": 5,
+  "finished_at": "2026-09-27T02:31:59Z",
+  "status": "complete",
+  "extended_observations": 290,
+  "source_outcomes": [
+    {
+      "source_id": "daily-papers",
+      "outcome": "ok",
+      "http_status": 200,
+      "observations": 20,
+      "response_sha256": "f27706995f16486a2787dbe974eca314a1eef591b22b8fe4c1c7a16351a0b18b"
+    },
+    {
+      "source_id": "protocol-registry",
+      "outcome": "ok",
+      "http_status": 200,
+      "observations": 25,
+      "response_sha256": "3134e1b6306b01f80a5b6f816a9a9c044c629f605ea71f1d9973ed9154482e49"
+    },
+    {
+      "source_id": "skill-directory",
+      "outcome": "ok",
+      "http_status": 200,
+      "observations": 100,
+      "response_sha256": "c931b8d20c2d93a7bfd2ee3c2809f822e8e7776e078e603fdfd43dcb85afd84b"
+    },
+    {
+      "source_id": "plugin-repositories",
+      "outcome": "ok",
+      "http_status": 200,
+      "observations": 20,
+      "response_sha256": "0ec3f43b2f3fb875e2afc6e11bea51a773142a4ee4915def3c49e90dbb2a06b1"
+    },
+    {
+      "source_id": "service-projects",
+      "outcome": "ok",
+      "http_status": 200,
+      "observations": 20,
+      "response_sha256": "281ca513c6f51d3770a6c5104d075fea34831bfff41acef3c4e2b807eec20e39"
+    },
+    {
+      "source_id": "npm-protocol-packages",
+      "outcome": "ok",
+      "http_status": 200,
+      "observations": 20,
+      "response_sha256": "302341a4fb728975772928458ec066b0aa8a3d29a6dc77811ad5aff2ac246dea"
+    },
+    {
+      "source_id": "new-repositories-by-stars",
+      "outcome": "ok",
+      "http_status": 200,
+      "observations": 25,
+      "response_sha256": "4f48a483fe6d255d2d45c05b788fbea00e674e6beacdb8bbb099dac4ff9aed99"
+    },
+    {
+      "source_id": "huggingface-news",
+      "outcome": "ok",
+      "http_status": 200,
+      "observations": 20,
+      "response_sha256": "7621b28c21f71077f81daea50e8158eb6fe1257908d9d5e35bfb7589c6fffef6"
+    },
+    {
+      "source_id": "domain-data-quality",
+      "outcome": "ok",
+      "http_status": 200,
+      "observations": 20,
+      "response_sha256": "f291e951563c1cc15de8e3990c2716ecf1fd34e75730cb62da63ada19f09a85e"
+    },
+    {
+      "source_id": "domain-schema-evolution",
+      "outcome": "ok",
+      "http_status": 200,
+      "observations": 20,
+      "response_sha256": "5f3dabb28fe539fa7373eb018264a4951613dd2c91c13feace8383fa49a09476"
+    }
+  ],
+  "coverage": {
+    "selected_topic_ids": [
+      "domain-data-quality",
+      "domain-schema-evolution"
+    ],
+    "completed_runs": 2,
+    "complete_catalogue": false,
+    "findings": []
+  },
+  "maximum_requests": 20,
+  "configured_requests": 18,
+  "source_programs_executed": 0,
+  "model_calls": 0,
+  "component_approvals": 0,
+  "publications": 0,
+  "registry_cursor_used": true,
+  "registry_selection": "bounded_cursor_page"
+}

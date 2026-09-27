@@ -76,6 +76,18 @@ research ambition.
 Baltor is the public brand. Loop Engine is the repository, the Python package
 and the technical name.
 
+### One component library
+
+The owner removed the customer-facing Verified and Community split on
+September 26, 2026. Present one library with combined counts by component kind.
+Do not display review-path badges, tier filters or separate totals, and do not
+replace them with Baltor and Community classes. Put source, licence, declared
+effects and the actual review evidence in each component's details.
+
+The protocol's existing field names remain exact in technical reference
+material. They do not supply customer categories. An item's origin, its review
+record and its tested harness compatibility answer different questions.
+
 The list of names used to live in a table on this page. It now lives in
 [terminology.yaml](../../terminology.yaml), which is the single structured
 source. Every term there carries its kind, its definition, the surfaces where

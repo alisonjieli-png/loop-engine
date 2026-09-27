@@ -1,0 +1,14 @@
+[
+  {
+    "mutant": "rotation_stuck",
+    "rejected": true
+  },
+  {
+    "mutant": "advance_partial_page",
+    "rejected": true
+  },
+  {
+    "mutant": "ignore_configuration_binding",
+    "rejected": true
+  }
+]
