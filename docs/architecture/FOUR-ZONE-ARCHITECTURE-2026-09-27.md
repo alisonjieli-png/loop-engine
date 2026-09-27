@@ -208,6 +208,37 @@ State on September 27, 2026: live for search and download in four harnesses
 plus the Baltor Harness; the first-party customer skill 0.3.0 is an
 unreviewed candidate that a parallel builder is integrating.
 
+### Meta-harnesses and the harness executor slot
+
+The [agent meta-layer research](../research/AGENT-META-LAYERS-2026-09-27.md)
+of September 27, 2026 answered the owner's question about Omnigent and other
+layers that "swap the whole agent underneath". Swapping the agent is now a
+configuration change in free tools: Omnigent (open source under Apache-2.0,
+marked alpha, announced on June 13, 2026 by people at Databricks, about
+10,300 stars) and the Agent Client Protocol, whose registry lists 41 agents
+and which JetBrains Air, Zed, Harbor, OpenHands, Goose and Omnigent use. None
+of these layers supplies each step with reviewed files, skills and tools,
+places them where each agent reads them, checks that they loaded, or has an
+outside check accept the result. That is Baltor's product gap; the benefit is
+not proven yet, because the with-and-without experiment E02 has not run.
+
+What this means for the zones:
+
+- Zone 2 gets no orchestration interface. Baltor becomes something those
+  layers call: an Omnigent quickstart and agent template, setup pages for
+  Zed, JetBrains Air and Goose, and agent definition bundles as one more
+  library file type.
+- The harness executor slot, where the local engine starts a harness for a
+  step, uses the Agent Client Protocol first, with each agent taken from the
+  protocol's registry at a pinned version, and a vendor's own library only
+  where the protocol loses control Baltor needs. Omnigent is a trial engine
+  adapter behind the same slot.
+- The first measured benefit comes from a Harbor run with and without
+  Baltor. Harbor runs any registry agent, so the measurement runs exactly the
+  agents the executor runs.
+- The positioning line the research recommends: "Swap agents with any
+  meta-harness; Baltor supplies what each step needs."
+
 ### Zone 3: internal server-side
 
 Where it runs: GitHub Actions for the workflows, and operator commands that
@@ -440,12 +471,15 @@ them; the cron table keeps America/New_York time.
 | Schedule | What runs | Zone | Runs from | State on September 27, 2026 |
 |---|---|---|---|---|
 | Cron, 17 minutes past every sixth hour | The daily library job, private script `daily_library_release.sh`, with `--publish` | 4, publishing into 1 | The job checkout `~/.le-library-job`: detached at `c3db3408` of September 26 until it was moved to `12ef6e50` after 14:40 UTC on September 27 | Live with faults. Every stage ran in the 10:17 UTC slot, but the publish step logged a failure on an empty reply although the live count moved to 12,191, so the live check and counts did not run |
-| Cron, hourly at minute 40 outside the slot windows | The second-look oracle, private script `oracle_review.sh`, 24 items a run | 4 | `~/.le-library-job` | Broken until 14:40 UTC on September 27: every run refused because `tools/oracle_review_served.py` was not in the job checkout at `c3db3408`. The checkout now holds the tool; the first run that can use it is due at 15:40 UTC and was not yet observed when this record was written |
+| Cron, hourly at minute 40 outside the slot windows | The second-look oracle, private script `oracle_review.sh`, 24 items a run | 4 | `~/.le-library-job` | Broken until 14:40 UTC on September 27: every run refused because `tools/oracle_review_served.py` was not in the job checkout at `c3db3408`. Live since the checkout moved: the 19:40 UTC run sampled 24 of 13,643 served items with 4 model calls, approved 19, rejected 5 and named 5 withdrawal candidates |
 | Cron, 05:50 and 17:50 | The variation oracle, private script `oracle_variations.sh`, 12 items a run | 4 | `~/.le-library-job` | Broken for both runs so far, for the same reason (`tools/generate_item_variations.py` was not in the job checkout); the next run at 17:50 machine time is the first with the tool present |
 | Cron, every 10 minutes | The overnight batch watchdog, `run_lanes.py --watchdog` | 4 | The shared checkout's `.loop-engine-dev/overnight-2026-09-24/` | Idle. The batch is complete and every run logs `complete` |
-| Cron, daily at 06:17 | The Ollama Cloud lane probe, `run_lanes.py --probe-ollama` | 4 | Same folder | Broken. Both runs (September 26 and 27) logged `no_key_in_environment`: the cron environment cannot see the key. The owner asked on September 25 for daily retries |
-| Cron, Mondays at 06:10 UTC | The weekly number, `tools/weekly_number.py` | 4, reading 1 and the payment and identity providers | The shared checkout if it holds the tool, otherwise the agent worktree `~/.le-agent-weekly-number` | Installed, not yet run on schedule (the first Monday is September 28). The shared checkout lacks the tool, so the run would use the agent worktree. The tool reads only release 37 as latest while two release record formats exist |
-| Cron, daily at 05:40 UTC | The quickstart live check, `tools/check_quickstarts.py --origin https://baltor.ai` | 4, reading 1 | The shared checkout if it holds the tool, otherwise `~/.le-agent-quickstarts` | Live. On September 27 it passed 5 of 5 from the agent worktree and wrote its record into that worktree |
+| Cron, daily at 06:17 | The Ollama Cloud lane probe, `run_lanes.py --probe-ollama` | 4 | Same folder | Broken on both runs (September 26 and 27), which logged `no_key_in_environment` because the cron environment could not see the key. The entry was changed on September 27 to read the key's export line from the login profile; the first run with it is due on September 28. The owner asked on September 25 for daily retries |
+| Cron, Mondays at 06:10 UTC | The weekly number, `tools/weekly_number.py` | 4, reading 1 and the payment and identity providers | `~/.le-main` since September 27 (before that, the agent worktree `~/.le-agent-weekly-number`) | Installed, not yet run on schedule (the first Monday is September 28). The tool read release 37 as the latest while two release record formats existed |
+| Cron, daily at 05:40 UTC | The quickstart live check, `tools/check_quickstarts.py --origin https://baltor.ai` | 4, reading 1 | `~/.le-main` since September 27 (before that, `~/.le-agent-quickstarts`) | Live. On September 27 it passed 5 of 5 from the agent worktree and wrote its record into that worktree |
+| Cron, hourly at minute 5 | Moves the maintained checkout `~/.le-main` to `origin/main` when it has no local change | 4 | `~/.le-main` | Live since September 27. It is the checkout that the weekly number, the quickstart check and the owner-requests report read |
+| Cron, daily at 06:30 UTC | The owner-requests report | 4 | `~/.le-main` | Installed on September 27 |
+| Cron, hourly at minute 50 | The registry sync, private script `registry_sync.sh` | 4, writing the private registry | The published bundles on the workstation | Live since September 27: at 19:50 UTC it recorded the 16:17 UTC slot's release of 13,643 items and pushed it to the private registry |
 | User timer `baltor-source-discovery`, 02:35, 08:35, 14:35 and 20:35 UTC | The read-only source discovery engine (private, version 5), then the metadata research dispatcher (private) | 4 | `~/baltor-private/source-discovery-2026-09-26/` | Live, eleven runs recorded. The service is sandboxed (read-only home, 384 MB memory, a quarter of one processor) with network reads and local writes only. The dispatcher's drop-in is headed "proposal only" but is active |
 
 The workstation also runs work of two other projects: a five-minute cron job
@@ -467,7 +501,7 @@ and a producer family never approving its own work.
 |---|---|---|---|---|---|---|
 | Library release (release manager) | Turn approved packages into a catalogue release and publish it without a redeploy | The import store, the review ledger, the host licence policy | A bundle under `~/baltor-bundles/`, a published release, a slot journal under `~/baltor-library/daily/` | Every six hours | The screening call only, by a calibrated reviewer from another family | Live; 7,611 packages approved in the week; three of the last five slots hit a stage failure |
 | Admission review (reviewer) | Deterministic prechecks and one screening call against the written criteria | Exported packages | Verdicts in the review ledger | Inside each daily slot | As above; the calibration step excludes a reviewer that approves a known-wrong control | Live |
-| Second look (auditor) | Re-review served items and withdraw what fails | The served catalogue | Withdrawals with notes | Hourly | A family other than the producer | Never ran until the job checkout moved on September 27; first run pending |
+| Second look (auditor) | Re-review served items and withdraw what fails | The served catalogue | Withdrawal candidates with notes | Hourly | A family other than the producer | Live since the job checkout moved on September 27; the 19:40 UTC run rejected 5 of 24 sampled items |
 | Variations (editor) | Propose improved variations of served items | Served items | Candidate variations for review | Twice daily | The review server lane | Never ran until the job checkout moved on September 27; first run pending |
 | Supply lanes (authors) | Generate original candidates from seeds and ideas | Seed batches, idea grids, the owner's drive inventory | Candidate files for review | On demand; the overnight batch finished | Ollama Cloud (spent until October 1), the review server, Codex and Claude Code sessions | Idle. 8,904 overnight candidates and 210 Claude-written candidates were never reviewed; seed wave 1 had all 197 candidates rejected |
 | Licensed imports (sourcing) | Import licence-cleared files from public repositories | Source lists, licences | The import store (about 45,000 approvable packages left) | On demand | None for import; review as above | Idle between batches |
@@ -475,6 +509,7 @@ and a producer family never approving its own work.
 | Metadata research (analyst) | Enrich discovered sources with metadata | Discovery runs | Private reports | After each discovery run | Recorded in its private folder | Live, labelled as a proposal |
 | Knowledge radar (researcher) | Maintained decisions and capabilities: questions, snapshots, claims, tested files | The question registry, source snapshots | Candidate decision cards, data files, code and tools | Proposed, not installed | Research authority only, no publishing credential | Being built by a parallel builder; not on `main` |
 | Measurement (analyst) | The weekly number, quickstart checks, the serving measurement | The live service, payment and identity counts | Dated records | Weekly and daily | None | Quickstart check live; weekly number installed |
+| Registry (archivist) | Keep every published release in the private registry | The published bundles and review decisions | Commits to the private registry | Hourly | None | Live since September 27 |
 | Release and live checks (site reliability) | Release reviewed `main`, check every hostname, reissue diagnostic keys, apply grants | A green continuous integration run | Release records, live check records | On demand | None | Live; release 40 on September 27 |
 | Worktree audit (archivist) | Find unsaved work and commits missing from `main` | All worktrees and stashes | Loss reports, saved patches and bundles | On demand | None | Ran on September 25 and 27 |
 | Research programmes (research staff) | Market, harness and paper research by Claude and Codex workflows | Owner questions | Dated research records | On demand, within weekly model budgets | Claude Code and Codex, until each weekly limit | Paused: Claude's weekly limit reached on September 26, Codex blocked until October 3 |
@@ -564,7 +599,7 @@ in this pass; the migration plan names the step that narrows it.
 | # | Crossing | Why it matters | Narrower form |
 |---|---|---|---|
 | 1 | The daily library job (zone 4) publishes catalogue releases through `tools/fly_operator.py` with the Fly organization deploy credential (keyring item `fly`); the same item backs the Fly protocol server of the development assistant | A process that also reads untrusted package text and calls models holds a credential that can deploy images and run any command on the Machine | A publication credential that the service accepts for `publish`, `withdraw` and `rollback` only, or a zone 3 workflow that receives the bundle and holds the deploy credential itself. The service's `publish` is already idempotent by content and refuses a moved pointer |
-| 2 | Scheduled jobs read code from checkouts nobody maintains: `fly_operator.py` and the lane runner's imports from the shared checkout 204 commits behind `main`; the oracles from the job checkout, which stayed at `c3db3408` until it was moved to `12ef6e50` after 14:40 UTC on September 27; the weekly number and quickstart check from agent worktrees whose commits are not on `main` (their files match `main` today) | A job silently runs old or unreviewed code; the oracles refused every run for a day | One job checkout at a green `main` revision, advanced by a script after each green push and only between daily slots, named by every scheduled entry |
+| 2 | Scheduled jobs read code from checkouts nobody maintains: `fly_operator.py` and the lane runner's imports from the shared checkout 204 commits behind `main`; the oracles from the job checkout, which stayed at `c3db3408` until it was moved to `12ef6e50` after 14:40 UTC on September 27. Partly narrowed the same day: `~/.le-main` now follows `origin/main` every hour, and the weekly number, the quickstart check and the owner-requests report read it | A job silently runs old or unreviewed code; the oracles refused every run for a day | The job checkout and the lane runner on the same maintained revision; the job checkout moves only between daily slots and only to a revision whose continuous integration passed |
 | 3 | `tools/operator_credentials.py` resolves any of its 18 named references for any caller, and the cron entries give unattended jobs the unlocked keyring; ten more tools read the keyring directly | A generation or review tool can obtain the live payment key by naming it | A declared allowlist of references per zone and per command, refused by the resolver outside that list |
 | 4 | `tools/weekly_number.py` (zone 4) resolves the live payment key and the identity provider's secret key to count customers | Counting needs read access only; both keys can change accounts | The service's own `analytics` staff role through its administration interface, or restricted read-only provider keys |
 | 5 | The public service imports local-engine code: `core.practitioner_runtime.provisioning` pulls in node provisioning, instance instructions and guardrail modules; `core.provisioning_server` imports the undeployed worker service `core.service_api`; `catalogue_attributes` imports two `library_ingestion` modules owned by the workstation import pipeline. The image installs the whole package | Code present in the service can be reached by a future import; a pipeline change can change serving | An import-closure check on the service entry point with a must-not-reach list, then moving the shared record types below both zones |
@@ -573,7 +608,7 @@ in this pass; the migration plan names the step that narrows it.
 | 8 | Public code names private paths and one home directory: `generate_item_variations.py` defaults to the private daily job script; `oracle_review_served.py`, `weekly_number.py` and `inventory_harness_library.py` name folders under `/home/username` | Tools fail or reach the wrong place on any other machine, including a future server | Paths from settings or the environment, with the private folder optional |
 | 9 | `rescan_served_catalogue.py`, `check_upstream_sources.py`, `feedback_report.py` and `promotion_codes.py` are documented to run against `/data` on the Machine, but `tools/` is not in the image and nothing schedules them | The nightly rescan and the weekly upstream check that the approval decision promises do not run | Scheduled zone 3 jobs that call service operator commands, or service commands shipped in the image |
 | 10 | The daily review loads the client installer (`install_selected_material.py`, through the prechecks' rendering) and, with the review server lane, the candidate generator | Review, supply and client code share one process and one set of credentials | Separate processes for review and supply, each with its own credential allowlist |
-| 11 | The Ollama Cloud lane probe runs from cron without the login environment and logs `no_key_in_environment` | The daily retry the owner asked for on September 25 never reaches the provider | The job resolves its key through `tools/operator_credentials.py` itself, never printing it |
+| 11 | The Ollama Cloud lane probe ran from cron without the login environment and logged `no_key_in_environment`; since September 27 the entry reads the key's export line from the login profile | The daily retry the owner asked for on September 25 did not reach the provider; a key read from a profile file is one more copy of it | The job resolves its key through `tools/operator_credentials.py` itself, never printing it |
 
 ## Repository and deployment layout
 
@@ -583,7 +618,17 @@ fly.io instance and deployment manage that and seperate the search and
 retreival side away from our monorepo?"
 
 Engineering's decision: yes to both, in phases, as an open-core split.
-Nothing moves in this pass.
+No code moves in this pass.
+
+Done on September 27, 2026: the private repository
+`github.com/alisonjieli-png/baltor-library` holds every published catalogue
+release, six of them from 3,276 to 12,191 items, with the release index, the
+current item list, the content-addressed bodies and the review decisions of
+each slot. The private script `registry_sync.sh` keeps it current from cron
+every hour; at 19:50 UTC it added the 13,643-item release of the 16:17 UTC
+slot. It is the record and the backup of what was published, not a serving
+path: customers' harnesses keep calling `baltor.ai` with their personal
+client keys, and the service answers from its own store.
 
 ```text
 Repositories, stores and deployments (target)
@@ -600,10 +645,16 @@ Repositories, stores and deployments (target)
 │   └── Package bodies, content-addressed by digest; the release manifests
 │       that name them live in the private repository
 ├── Fly application for the website and accounts (today's baltor-pilot)
-└── Fly application for search and retrieval (new)
-    ├── Its own Machine size, deploy workflow and live checks
-    └── Verifies short-lived signed tokens that the web application issues;
-        it holds no identity or billing data
+│   └── The one front door: baltor.ai/mcp and /api/v1, and mcp.baltor.ai
+├── Fly application for search and retrieval (new)
+│   ├── Its own Machine size, deploy workflow and live checks
+│   ├── No public address; reached over Fly's private network
+│   └── Verifies short-lived signed tokens that the web application issues;
+│       it holds no identity or billing data
+└── Fly Machine for internal research (future, not built)
+    ├── Started on a schedule, runs bounded research jobs, then stops
+    ├── Holds Ollama Cloud and other research keys as Fly secrets
+    └── Writes proposals to the private registry; publishes nothing
 ```
 
 Reasons:
@@ -625,11 +676,27 @@ Reasons:
   application also gets its own release cadence, a smaller blast radius
   and a clean split inside the public service zone.
 
+How a harness reaches the library, now and after the split:
+
+- Customers keep one front door. The addresses the quickstarts publish,
+  `https://baltor.ai/mcp` and `/api/v1/`, keep working in every phase.
+- Harness traffic gets its own address, `mcp.baltor.ai`, first on the
+  current application, so that it can be measured and moved later without
+  changing any customer's settings. This is decided and not yet live.
+- After the split, the front door checks the personal client key and the
+  entitlement, then forwards library calls over Fly's private network to the
+  retrieval application, which has no public address.
+- `mcp.baltor.ai` would point straight at the retrieval application only if
+  retrieval must scale across regions or serve large downloads through a
+  content network. The old address keeps working either way.
+
 Phases:
 
 1. From now to the next release train: an off-workstation backup of the
    import store, the review ledgers and the release bundles, and the private
-   repository holding manifests and review records.
+   repository holding manifests and review records. The release history part
+   is done (the private registry above); the import store and the review
+   ledgers are not yet copied off the workstation.
 2. A server-side worker builds release bundles from the registry and uploads
    them to object storage; the live service pulls a release instead of
    receiving an upload from the workstation. This also removes the deploy
@@ -637,6 +704,17 @@ Phases:
 3. The separate retrieval application, when the library passes about
    40,000 packages or needs more than 4 GB, within the 50-dollar monthly
    infrastructure allowance, checked against the current Fly spend first.
+4. Future, not built: an internal server-side research worker. The owner,
+   September 27, 2026, in the words relayed to this record: "we may want to
+   have internal research teams that use Ollama API key and other systems as
+   a future third instance on Fly.io that runs on a cron and then shutdown,
+   but for now that is not necessary." It would be a Fly Machine started on
+   a schedule that holds the research keys as Fly secrets, runs the research
+   teams' bounded jobs, writes proposals to the private registry and stops,
+   separate from the public front door and from the retrieval application.
+   It holds research privileges only. The research intake protocol for
+   those teams (`docs/guides/research-intake-protocol.md`) is being written
+   and is not on `main` yet.
 
 Questions engineering settles, with its reasons recorded when it does:
 
