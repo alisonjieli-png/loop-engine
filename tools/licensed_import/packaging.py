@@ -24,6 +24,8 @@ from dataclasses import dataclass
 from loop_engine.core.library_ingestion.duplicates import normalized
 from loop_engine.core.library_ingestion.provenance import GITHUB_ORIGIN, ORIGIN_HOSTS, OutsideSourceProvenance
 from loop_engine.core.library_ingestion.record_rules import LibraryRecordError, bytes_digest, canonical_digest
+from loop_engine.core.service_runtime.catalogue_attributes import (
+    FORM_DERIVED, component_form_of, component_form_record)
 from loop_engine.core.service_runtime.catalogue_packages import (
     EXECUTABLE_EFFECT, PACKAGE_BODY, CataloguePackage, CataloguePackageFile)
 from loop_engine.core.service_runtime.records import ServiceRuntimeError
@@ -161,6 +163,10 @@ def build_candidate(*, plan, repository: str, commit: str, fetched_at: str, memb
         "merged": [], "version": {"previous_record_id": None, "supersedes": []},
         "compatibility": {"component_kind": plan.kind, "native_format": plan.native_format,
                           "package_format": "catalogue_package/v1"},
+        # What the component is (component_form/v1), derived from the kind, the file roles and the native format.
+        "component_form": component_form_record(
+            component_form_of(plan.kind, [entry.role for entry in entries], plan.native_format), plan.kind,
+            FORM_DERIVED),
         "evidence": evidence_states()}
     return BuiltCandidate(payload, bodies, package, comparison)
 

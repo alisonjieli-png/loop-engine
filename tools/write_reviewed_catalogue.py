@@ -75,7 +75,8 @@ from loop_engine.core.library_ingestion.facet_tags import FACETS, FacetMaterial,
 from loop_engine.core.library_ingestion.step_functions import (  # noqa: E402
     RulesStepFunctionTagger, StepFunctionMaterial, entry_text)
 from loop_engine.core.service_runtime.catalogue_attributes import (  # noqa: E402
-    FACET_ATTRIBUTES, HARNESS_KIND_ATTRIBUTE, STEP_FUNCTIONS_ATTRIBUTE, TIER_ATTRIBUTE, declare, harness_kind_of)
+    COMPONENT_FORM_ATTRIBUTE, FACET_ATTRIBUTES, HARNESS_KIND_ATTRIBUTE, HARNESS_KINDS, STEP_FUNCTIONS_ATTRIBUTE,
+    TIER_ATTRIBUTE, component_form_of, declare, harness_kind_of)
 from loop_engine.core.service_runtime.catalogue_packages import CataloguePackage  # noqa: E402
 
 ITEMS_RECORD = "starter_catalogue_candidate_items/v2"
@@ -96,9 +97,10 @@ RULES = {
                 "approves it against the written criteria. One written objection withholds approval. Tier: "
                 "Community; it becomes Verified only through the full review."),
 }
-#: Each written item carries the kinds of step it supports, the kind of file a harness picks up and the job
-#: titles, industries, levels, languages and geographies its words name, as served attributes (roadmap S-6.206,
-#: S-6.208, S-6.209). Each rules engine names itself on every tag it writes.
+#: Each written item carries the kinds of step it supports, the kind of file a harness picks up, its component
+#: form (component_form/v1, September 27, 2026) and the job titles, industries, levels, languages and
+#: geographies its words name, as served attributes (roadmap S-6.206, S-6.208, S-6.209). Each rules engine names
+#: itself on every tag it writes.
 TAGGER = RulesStepFunctionTagger()
 FACET_TAGGER = RulesFacetTagger()
 
@@ -114,7 +116,12 @@ def item_attributes(reference: dict, spec: dict, package, files, *, is_import: b
     fields = (reference["kind"], kind, str(spec.get("title") or reference["identity"]), reference["purpose"], text, roles)
     tags = TAGGER.tag(StepFunctionMaterial(*fields))
     facets = FACET_TAGGER.tag(FacetMaterial(*fields))
-    attributes = {"harness_kind": kind, **tags.attribute_values(), **facets.attribute_values()}
+    styles = tuple(reference.get("styles") or ())
+    # The licensed import writes (harness kind, native format) as the styles; the form follows from those typed
+    # fields and the file roles (component_form/v1), never from the item's words.
+    native_format = styles[1] if len(styles) >= 2 and styles[0] in HARNESS_KINDS else ""
+    attributes = {"harness_kind": kind, "component_form": component_form_of(kind, roles, native_format),
+                  **tags.attribute_values(), **facets.attribute_values()}
     engines = ({"step_functions": {"engine_id": tags.engine_id, "engine_version": tags.engine_version}}
                if tags.functions else {})
     engines.update({facet: {"engine_id": facets.engine_id, "engine_version": facets.engine_version}
@@ -387,7 +394,8 @@ def write(options) -> dict:
                     "previous_source_revisions": [], "source_digests": dict(catalogue.source_digests),
                     "publication": "not_published", "items": items}
     schema = declare(_json(REPOSITORY / "examples/29_intelligence_service/starter-catalogue/attribute-schema.json"),
-                     TIER_ATTRIBUTE, HARNESS_KIND_ATTRIBUTE, STEP_FUNCTIONS_ATTRIBUTE, *FACET_ATTRIBUTES)
+                     TIER_ATTRIBUTE, HARNESS_KIND_ATTRIBUTE, STEP_FUNCTIONS_ATTRIBUTE, COMPONENT_FORM_ATTRIBUTE,
+                     *FACET_ATTRIBUTES)
     output.mkdir(parents=True)
     for relative, payload in sorted(bodies.items()):
         target = output / relative
