@@ -41,6 +41,12 @@ from supply_lines import records  # noqa: E402
 from supply_lines.reading import FactReader  # noqa: E402
 
 LICENCE_FILE = ROOT / "LICENSE"
+#: The code the generators run: a stored package must name a revision where all of it is committed. Generated
+#: views elsewhere in the tree (a regenerated status page) do not change what a generator writes.
+GENERATOR_PATHS = ("tools/supply_lines", "tools/build_library_supply.py", "tools/licensed_import",
+                   "src/loop_engine/core/library_ingestion", "src/loop_engine/core/service_runtime/catalogue_attributes.py",
+                   "src/loop_engine/core/service_runtime/catalogue_packages.py", "src/loop_engine/data/library_composition.json",
+                   "LICENSE")
 
 
 def code_revision(storing: bool) -> str:
@@ -48,9 +54,8 @@ def code_revision(storing: bool) -> str:
     from, so a store write with uncommitted generator code is refused; a trial run marks the revision."""
     revision = subprocess.run(["git", "-C", str(ROOT), "rev-parse", "HEAD"], capture_output=True, text=True,
                               check=True).stdout.strip()
-    dirty = subprocess.run(["git", "-C", str(ROOT), "status", "--porcelain", "--", "tools/supply_lines",
-                            "tools/build_library_supply.py", "src/loop_engine/core"], capture_output=True, text=True,
-                           check=True).stdout
+    dirty = subprocess.run(["git", "-C", str(ROOT), "status", "--porcelain", "--", *GENERATOR_PATHS],
+                           capture_output=True, text=True, check=True).stdout
     if dirty.strip():
         if storing:
             raise SystemExit("the supply line code has uncommitted changes; commit it so the packages name its "
