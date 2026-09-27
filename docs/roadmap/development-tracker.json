@@ -3,7 +3,7 @@
   "blocked": 3,
   "done": 50,
   "next": 15,
-  "now": 63,
+  "now": 64,
   "waiting": 134
  },
  "lanes": {
@@ -1303,6 +1303,23 @@
     "waiting_on": [
      "S-6.213",
      "S-6.81"
+    ]
+   },
+   {
+    "acceptance": "The live catalogue serves one million distinct, licence-cleared and tested harness component files in a balanced composition, and a customer's harness can search for any of them and install it.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.40",
+     "S-6.213"
+    ],
+    "id": "S-6.215",
+    "next_local_work": "Integrate the delivery repair, then the serving engine with a volume sized for the full library within the infrastructure allowance, then run the supply lines and admission daily and record the file and package counts in each catalogue release record.",
+    "phase": 6,
+    "status": "building",
+    "title": "One million served harness component files: deterministic supply lines, test-based admission with a sampled independent review, a serving engine with delta releases, and full-package delivery",
+    "waiting_on": [
+     "S-6.40",
+     "S-6.213"
     ]
    },
    {
@@ -5213,7 +5230,7 @@
    "id": "D-26",
    "stage": "public_launch",
    "status_counts": {
-    "building": 11,
+    "building": 12,
     "live_qualified": 3,
     "proposed": 7
    },
@@ -5238,10 +5255,11 @@
     "S-6.63",
     "S-6.119",
     "S-6.64",
-    "S-6.88"
+    "S-6.88",
+    "S-6.215"
    ],
    "title": "Reach 10,000 and then 100,000 approved harness packages, then add 100 to 1,000 a day",
-   "total_steps": 21
+   "total_steps": 22
   },
   {
    "acceptance": "Every component has one contract, one guide, one owning folder, tested engines and simple names that do not conflict, and all of it is findable in one generated index.",
@@ -5364,5 +5382,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:7358005d483b844c9e4cc4dd2dc3800fd4ac8c66bf90068eac2995b4f94dc921"
+ "source_fingerprint": "sha256:ba7180268caea608e4f4dd89c5c1115ceb7d595d1f89eca6ec79fb6258da599e"
 }

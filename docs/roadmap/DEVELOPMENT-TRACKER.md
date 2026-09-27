@@ -3,13 +3,13 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:7358005d483b844c9e4cc4dd2dc3800fd4ac8c66bf90068eac2995b4f94dc921`.
+Source fingerprint: `sha256:ba7180268caea608e4f4dd89c5c1115ceb7d595d1f89eca6ec79fb6258da599e`.
 
 ## Where things stand
 
 | Lane | Steps |
 |---|---:|
-| Being built now | 63 |
+| Being built now | 64 |
 | Can start next | 15 |
 | Waiting on earlier work | 134 |
 | Blocked | 3 |
@@ -42,6 +42,7 @@ Source fingerprint: `sha256:7358005d483b844c9e4cc4dd2dc3800fd4ac8c66bf90068eac29
 | S-6.211 | User Feedback Intelligence on the hosted service: a rating of each download, requests for material and search gap counts, read by staff and turned into generation ideas | building | S-6.199, S-6.120 |
 | S-6.212 | Unlinked public changelog, feature list and todo pages generated from the release records and the roadmap | building | S-6.67, S-6.35 |
 | S-6.214 | Daily distillations: new papers, skills, plugins, protocol servers, services and repositories, each served as a summary page, RSS, JSON and downloadable components | building | S-6.213, S-6.81 |
+| S-6.215 | One million served harness component files: deterministic supply lines, test-based admission with a sampled independent review, a serving engine with delta releases, and full-package delivery | building | S-6.40, S-6.213 |
 | S-6.81 | Source scouts: search tools for skills, plugins, protocol servers and harness files | building | S-6.40, S-6.76 |
 | S-6.63 | An independent review panel of several model families | building | S-6.45 |
 | S-6.119 | Community and Verified library tiers from the review panel, written as reviewed catalogue folders for release | building | S-6.63, S-6.40 |
@@ -292,7 +293,7 @@ Source fingerprint: `sha256:7358005d483b844c9e4cc4dd2dc3800fd4ac8c66bf90068eac29
 | D-23 | Show, review, reach and scale | initial_service | 0 of 5 |
 | D-24 | Take requests for access and invite one person from them | initial_service | 0 of 3 |
 | D-25 | Go fully live: open registration and self-serve paid onboarding | public_launch | 2 of 17 |
-| D-26 | Reach 10,000 and then 100,000 approved harness packages, then add 100 to 1,000 a day | public_launch | 3 of 21 |
+| D-26 | Reach 10,000 and then 100,000 approved harness packages, then add 100 to 1,000 a day | public_launch | 3 of 22 |
 | D-27 | Clear components: one index, contract test kits and one home for every topic and term | continued_improvement | 0 of 4 |
 | D-28 | Selectable engines at every slot, with a Baltor-native engine beside every adopted project | continued_improvement | 0 of 9 |
 | D-29 | Agents that manage and improve the system | continued_improvement | 0 of 6 |

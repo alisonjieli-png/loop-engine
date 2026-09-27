@@ -5,6 +5,20 @@
   "releases": [
    {
     "kind": "service",
+    "number": 42,
+    "at": "2026-09-27T20:51:48Z",
+    "lines": [
+     "The model directory no longer republishes values copied from OpenRouter or Artificial Analysis; model pages link to them instead.",
+     "Every model directory address that stopped being served answers 301 (30 addresses) or 410 (103 addresses) instead of 404.",
+     "The model directory records that Ollama Cloud does not support structured outputs.",
+     "Settings refuse a custom provider that takes a built-in provider name.",
+     "Release tooling never empties a folder the manifest generator did not write, and workflow checks reach a conclusion before they report success."
+    ],
+    "seen_after_release": "",
+    "not_shown": 2
+   },
+   {
+    "kind": "service",
     "number": 41,
     "at": "2026-09-27T19:39:38Z",
     "lines": [
@@ -1233,11 +1247,11 @@
   ]
  },
  "todo": {
-  "steps": 266,
+  "steps": 267,
   "live": 5,
   "checked": 35,
-  "open": 226,
-  "listed": 194,
+  "open": 227,
+  "listed": 195,
   "groups": [
    {
     "title": "Ship the September 22 review: one main line, live checks and launch readiness",
@@ -1595,6 +1609,11 @@
      {
       "step": "S-6.211",
       "title": "User Feedback Intelligence on the hosted service: a rating of each download, requests for material and search gap counts, read by staff and turned into generation ideas",
+      "status": "In progress"
+     },
+     {
+      "step": "S-6.215",
+      "title": "One million served harness component files: deterministic supply lines, test-based admission with a sampled independent review, a serving engine with delta releases, and full-package delivery",
       "status": "In progress"
      },
      {
