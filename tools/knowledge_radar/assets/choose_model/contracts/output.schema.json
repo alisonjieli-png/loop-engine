@@ -1,0 +1,38 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "choose_model result",
+ "type": "object",
+ "additionalProperties": false,
+ "required": ["record_type", "as_of", "valid_until", "on", "rule", "basis", "chosen", "rejected", "state"],
+ "properties": {
+  "record_type": {"const": "knowledge_radar_choose_model_result/v1"},
+  "as_of": {"type": ["string", "null"]},
+  "valid_until": {"type": "string"},
+  "on": {"type": "string"},
+  "rule": {"type": "string"},
+  "basis": {"type": "string"},
+  "state": {"enum": ["chosen", "no_eligible_option", "table_expired"]},
+  "note": {"type": "string"},
+  "rejected": {"type": "object", "additionalProperties": {"type": "integer"}},
+  "chosen": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["title", "url", "output_price", "input_price", "price_provider", "price_as_of", "intelligence_index", "price_per_intelligence_point", "context", "licence"],
+    "properties": {
+     "title": {"type": "string"},
+     "url": {"type": "string"},
+     "output_price": {"type": "number"},
+     "input_price": {"type": ["number", "null"]},
+     "price_provider": {"type": ["string", "null"]},
+     "price_as_of": {"type": ["string", "null"]},
+     "intelligence_index": {"type": ["number", "null"]},
+     "price_per_intelligence_point": {"type": "number"},
+     "context": {"type": ["integer", "null"]},
+     "licence": {"type": ["string", "null"]}
+    }
+   }
+  }
+ }
+}

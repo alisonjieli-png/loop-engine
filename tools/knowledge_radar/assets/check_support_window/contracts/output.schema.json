@@ -1,0 +1,23 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "check_support_window result",
+ "type": "object",
+ "additionalProperties": false,
+ "required": ["record_type", "product", "version", "on", "as_of", "valid_until", "state", "cycle", "eol_from", "eoas_from", "days_left", "latest", "lts", "source"],
+ "properties": {
+  "record_type": {"const": "knowledge_radar_support_window_result/v1"},
+  "product": {"type": "string"},
+  "version": {"type": "string"},
+  "on": {"type": "string"},
+  "as_of": {"type": ["string", "null"]},
+  "valid_until": {"type": "string"},
+  "state": {"enum": ["supported", "support_ending_soon", "unsupported", "unknown_version", "supported_no_end_date_published", "calendar_expired"]},
+  "cycle": {"type": ["string", "null"]},
+  "eol_from": {"type": ["string", "null"]},
+  "eoas_from": {"type": ["string", "null"]},
+  "days_left": {"type": ["integer", "null"]},
+  "latest": {"type": ["string", "null"]},
+  "lts": {"type": ["boolean", "null"]},
+  "source": {"type": ["string", "null"]}
+ }
+}

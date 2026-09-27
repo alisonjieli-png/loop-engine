@@ -1,0 +1,13 @@
+{
+ "record_type": "knowledge_radar_table/v1",
+ "question_id": "models_cheapest_thinking",
+ "as_of": "2026-09-27",
+ "valid_until": "2026-09-30",
+ "columns": ["key", "title", "url", "licence", "tool_calling", "structured_output", "reasoning", "open_weights", "context", "output_price", "input_price", "price_provider", "price_as_of", "intelligence_index", "price_per_intelligence_point"],
+ "rows": [
+  {"key": "model:alpha", "title": "Alpha", "url": "https://example.org/alpha", "licence": "apache-2.0", "tool_calling": true, "structured_output": true, "reasoning": true, "open_weights": true, "context": 131072, "output_price": 0.8, "input_price": 0.2, "price_provider": "Provider A", "price_as_of": "2026-09-27", "intelligence_index": 40.0, "price_per_intelligence_point": 0.02},
+  {"key": "model:beta", "title": "Beta", "url": "https://example.org/beta", "licence": null, "tool_calling": true, "structured_output": false, "reasoning": true, "open_weights": false, "context": 32768, "output_price": 0.3, "input_price": 0.1, "price_provider": "Provider B", "price_as_of": "2026-09-27", "intelligence_index": 30.0, "price_per_intelligence_point": 0.01},
+  {"key": "model:gamma", "title": "Gamma", "url": "https://example.org/gamma", "licence": "mit", "tool_calling": true, "structured_output": true, "reasoning": false, "open_weights": true, "context": 262144, "output_price": 6.0, "input_price": 1.5, "price_provider": "Provider C", "price_as_of": "2026-09-27", "intelligence_index": 60.0, "price_per_intelligence_point": 0.1},
+  {"key": "model:delta", "title": "Delta", "url": "https://example.org/delta", "licence": "mit", "tool_calling": null, "structured_output": null, "reasoning": null, "open_weights": true, "context": null, "output_price": 0.1, "input_price": 0.05, "price_provider": "Provider D", "price_as_of": "2026-09-27", "intelligence_index": 20.0, "price_per_intelligence_point": 0.005}
+ ]
+}

@@ -1,0 +1,25 @@
+{
+ "record_type": "knowledge_radar_asset/v1",
+ "asset_id": "check_support_window",
+ "asset_version": "1.0.0",
+ "kind": "decision_helper",
+ "title": "Check a version's support window",
+ "purpose": "Answer whether a runtime, framework, database or operating system version is supported on a given day and how many days of support remain, from the radar's dated support calendar carried in the package; refuses an expired calendar.",
+ "declared_effects": ["reads_fs", "spawns_process"],
+ "dependencies": ["python>=3.10"],
+ "styles": ["claude", "codex", "opencode", "pi"],
+ "entrypoint": "scripts/check_support_window.py",
+ "test": "scripts/test_check_support_window.py",
+ "data_file": "references/support-calendar.json",
+ "files": [
+  {"path": "SKILL.md", "role": "skill_definition", "media_type": "text/markdown"},
+  {"path": "LICENSE", "role": "other", "media_type": "text/plain"},
+  {"path": "scripts/check_support_window.py", "role": "skill_script", "media_type": "text/x-python"},
+  {"path": "scripts/test_check_support_window.py", "role": "skill_script", "media_type": "text/x-python"},
+  {"path": "contracts/input.schema.json", "role": "configuration", "media_type": "application/schema+json"},
+  {"path": "contracts/output.schema.json", "role": "configuration", "media_type": "application/schema+json"},
+  {"path": "verification/cases.json", "role": "other", "media_type": "application/json"},
+  {"path": "verification/fixture-calendar.json", "role": "other", "media_type": "application/json"},
+  {"path": "verification/dependencies.lock.json", "role": "other", "media_type": "application/json"}
+ ]
+}

@@ -1,0 +1,16 @@
+{
+ "record_type": "knowledge_radar_tool_cases/v1",
+ "today": "2026-09-28",
+ "cases": [
+  {"name": "a patch version maps to its cycle and is supported", "request": {"product": "python", "version": "3.13.4", "on": "2026-09-28"}, "expect": {"state": "supported", "cycle": "3.13"}},
+  {"name": "support ending within the warning window", "request": {"product": "python", "version": "3.10", "on": "2026-09-28"}, "expect": {"state": "support_ending_soon", "cycle": "3.10"}},
+  {"name": "a version past its end date is unsupported", "request": {"product": "python", "version": "3.9.7", "on": "2026-09-28"}, "expect": {"state": "unsupported"}},
+  {"name": "a version the calendar does not hold is unknown, not supported", "request": {"product": "python", "version": "2.7", "on": "2026-09-28"}, "expect": {"state": "unknown_version"}},
+  {"name": "cycle 3.1 does not match version 3.13", "request": {"product": "python", "version": "3.1", "on": "2026-09-28"}, "expect": {"state": "unknown_version"}},
+  {"name": "an expired calendar is never served as current", "request": {"product": "nodejs", "version": "24"}, "today": "2026-10-05", "expect": {"state": "calendar_expired"}},
+  {"name": "known wrong: a version past its end date is not supported", "request": {"product": "python", "version": "3.9", "on": "2026-09-28"}, "known_wrong": {"state": "supported"}},
+  {"name": "known wrong: an unknown version is not supported", "request": {"product": "python", "version": "2.7", "on": "2026-09-28"}, "known_wrong": {"state": "supported"}},
+  {"name": "a missing version is refused", "request": {"product": "python"}, "expect": {"error": "request_invalid"}},
+  {"name": "a malformed day is refused", "request": {"product": "python", "version": "3.13", "on": "tomorrow"}, "expect": {"error": "request_invalid"}}
+ ]
+}
