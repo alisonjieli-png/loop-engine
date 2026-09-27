@@ -223,6 +223,37 @@ version 1), with metering fields. Bodies above `inline_body_bytes`
 require the download endpoint. Package file paths also require that endpoint;
 they are not accepted as inline reads.
 
+### Package files through the protocol tool
+
+The protocol tool `provisioning_read` delivers a package's files, not only the
+document that lists them. A single-file item still answers `provisioning_body/v3`
+with its text in `body`. A package answers `provisioning_package_read/v1`:
+
+- `package` is the item's package listing, with its `package_digest`. The
+  SHA-256 of the canonical `catalogue_package/v1` document built from `files` is
+  that digest, and it equals the `body_digest` the search returned.
+- `files` holds as many whole files as fit in one protocol answer, in path
+  order. Each file names `path`, `digest`, `size_bytes`, `media_type`, `role`,
+  `encoding` and `content`. Valid UTF-8 travels as its own text with the
+  encoding `utf-8`; any other file travels as base64 of its exact bytes with the
+  encoding `base64`. The SHA-256 of the decoded bytes must equal `digest`.
+- `next_file_offset` names the first file of the next page. Send the same read
+  again with `file_offset` set to it, and the same `request_id`. It is `null` on
+  the last page.
+- `omitted` names a file that cannot fit in any protocol answer, with the reason
+  `too_large_for_one_protocol_answer`, or `larger_than_the_download_limit` for a
+  file this service does not deliver. Fetch the first kind through
+  `/api/v1/download` by its `path`.
+
+Add `path` instead of `file_offset` to read one file. A read names one or the
+other; both answer `package_selection_conflict`, and an offset past the last
+file answers `file_offset_out_of_range`. A wrong path answers
+`package_file_not_found`. These three refusals are not counted.
+
+One answer, counting its structured copy and its text copy, stays within the
+`response_bytes` limit that `/api/v1/capabilities` reports. The capabilities
+record names this delivery under `delivery.protocol_package_files`.
+
 ## Finish the step
 
 A body may need a native directory, explicit plugin activation or declared

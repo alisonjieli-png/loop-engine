@@ -233,8 +233,14 @@ CODE_GUIDANCE = {
                               "Use equals, any_of, or at_least and at_most with values of the detail's own type."),
     "package_file_not_found": ("The item's package holds no file at the path this download named.",
                                "Read the item's package list first, then download one of the paths it names."),
-    "package_file_requires_download": ("A single file of a package is delivered through the download address.",
+    "package_file_requires_download": ("A single file of a package is delivered through the download address or "
+                                       "the provisioning_read protocol tool, not this address.",
                                        "Send the same request to the download address instead of this one."),
+    "package_selection_conflict": ("A package read names either one file by path or a page by file_offset, "
+                                   "and this request named both.",
+                                   "Send path to read one file, or file_offset to read a page, then retry."),
+    "file_offset_out_of_range": ("The package has fewer files than this file_offset counts.",
+                                 "Start again at file_offset 0, or use the next_file_offset of the previous answer."),
 }
 
 

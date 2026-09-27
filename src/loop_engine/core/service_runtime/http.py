@@ -7,6 +7,7 @@ selection, safe errors and separately authorized downloads, not another runtime.
 from __future__ import annotations
 
 import asyncio
+import base64
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field, replace
@@ -23,6 +24,7 @@ from ..provisioning_mcp import TOOL_OPERATIONS, _schema
 from ..provisioning_server import OPERATIONS, ProvisioningError, ProvisioningItemBinding, tierless_answer
 from .catalogue_reports import (FEEDBACK_OPERATIONS, FLAG_OPERATION, MAXIMUM_REASON_CHARACTERS, REPORT_OPERATION,
                                 REPORT_TOOL)
+from .catalogue_packages import FILE_BODY, MAXIMUM_PACKAGE_FILES
 from .catalogue_tiers import DEFAULT_LIBRARY_SETTINGS, narrowed, tier_legend
 from .http_auth import (
     HttpAuthenticationError, ServiceHttpAuthentication, ServiceHttpAuthenticator, validate_public_url,
@@ -72,6 +74,35 @@ STEP_EFFECTS = tuple(effect for effect in EFFECTS if effect != "pure")
 #: whose steps read files; it grants the harness nothing, since each harness keeps its own permissions. The
 #: capabilities record names it, and a header or an explicit `authority_effects` replaces it.
 DEFAULT_STEP_EFFECTS = ("reads_fs",)
+#: The protocol answer to `provisioning_read` for an item whose body is a package of files, and for one named file of
+#: any item's package: each file's exact bytes with its path, digest, size, media type and role, one page at a time.
+#: Version 1 of the read answered a package with its package document only, which lists the files and holds none of
+#: them (September 27, 2026: 26 of 26 protocol reads in a customer run delivered no file).
+PACKAGE_READ_VERSION = "provisioning_package_read/v1"
+#: How a delivered file's bytes travel in a protocol answer. Valid UTF-8 without a NUL travels as its text; any other
+#: file travels as base64 of its exact bytes. A file's digest is the SHA-256 of its exact bytes in both cases.
+UTF8_CONTENT, BASE64_CONTENT = "utf-8", "base64"
+#: Room a protocol answer keeps for the protocol envelope and the Loop execution record around the read record.
+PROTOCOL_ANSWER_RESERVE_BYTES = 8_192
+#: What each provisioning protocol tool does, in the words a harness's model reads when it chooses a tool.
+PROTOCOL_TOOL_DESCRIPTIONS = {
+    "discover": ("Summarize what this account can reach: how many items, of which kinds and library tiers, and "
+                 "whether bodies can be read. Metadata only; never counted as a download."),
+    "list": ("List the items this account can reach as metadata: identity, purpose, kind, body digest, size, "
+             "licence, declared effects and library tier. Page a long list with page_size and cursor. Metadata "
+             "only; never counted as a download."),
+    "manifest": ("Describe one item before reading it: its exact digest and size, declared effects, library tier "
+                 "and whether this account may read its body. Send expected_digest to bind the answer to the "
+                 "version you selected. Metadata only; never counted as a download."),
+    "read": ("Read one selected item. Send identity, expected_digest (the body_digest from the search) and a "
+             "request_id. A single-file item answers provisioning_body/v3 with its text in body. A package of "
+             "several files answers provisioning_package_read/v1: each file's content (UTF-8 text, or base64 of "
+             "other bytes) with its path, SHA-256 digest, size, media type and role, as many whole files as fit in "
+             "one answer. Ask for the next page with file_offset set to next_file_offset, or for one file with "
+             "path. Check each file's SHA-256 against its digest before you use it. Use the same request_id for "
+             "every page and file of one item. To save files in a project, use a command that writes the exact "
+             "bytes, never a retyped copy."),
+}
 # Version 2 adds explicit metadata effect selection. Old readers must refuse
 # this request rather than silently omit its required selection.
 RETRIEVAL_REQUEST_VERSION = "service_retrieval_request/v2"
@@ -326,6 +357,33 @@ def _json_bytes(value):
     return json.dumps(value, ensure_ascii=False, separators=(",", ":"), allow_nan=False).encode("utf-8")
 
 
+def _protocol_cost(value):
+    """The bytes one value adds to a protocol tool answer, which carries every record twice: as structured content,
+    and as the JSON text of the same record inside a text block, where that text is escaped once more."""
+    encoded = _json_bytes(value)
+    return len(encoded) + len(json.dumps(encoded.decode("utf-8"), ensure_ascii=False).encode("utf-8"))
+
+
+def _delivered_file(entry, data):
+    """One package file as a protocol answer carries it: its exact content and the facts a client checks it with.
+
+    Valid UTF-8 without a NUL travels as its own text; `content.encode("utf-8")` gives back the exact bytes. Anything
+    else travels as base64 of the exact bytes. The digest is the SHA-256 of those bytes in both cases."""
+    encoding, content = BASE64_CONTENT, base64.b64encode(data).decode("ascii")
+    if b"\x00" not in data:
+        try:
+            encoding, content = UTF8_CONTENT, data.decode("utf-8")
+        except UnicodeDecodeError:
+            pass
+    return {"path": entry.path, "digest": entry.digest, "size_bytes": entry.size_bytes,
+            "media_type": entry.media_type, "role": entry.role, "encoding": encoding, "content": content}
+
+
+def _omitted_file(entry, reason):
+    """A package file a protocol answer names without its content, and why."""
+    return {"path": entry.path, "digest": entry.digest, "size_bytes": entry.size_bytes, "reason": reason}
+
+
 #: The protocol's own error codes, defined by the 2026-07-28 revision.
 HEADER_MISMATCH_ERROR = -32020
 UNSUPPORTED_PROTOCOL_VERSION_ERROR = -32022
@@ -544,6 +602,23 @@ def tiered_provisioning_schema(operation):
         schema["properties"]["library_tiers"] = dict(LIBRARY_TIERS_SCHEMA)
     if operation == LIST_OPERATION:
         schema["properties"].update(paging_schema_properties())
+    return schema
+
+
+def protocol_tool_schema(operation):
+    """The input schema of one protocol tool: version 2's fields, and for a read the file or page of a package.
+
+    `file_offset` belongs to the protocol tool only. The JSON address keeps the version 2 request shape, where one
+    file of a package is fetched through the download address by `path`."""
+    schema = tiered_provisioning_schema(operation)
+    if operation == READ_OPERATION:
+        schema["properties"]["path"]["description"] = (
+            "One file of the item's package, by the path the search result's package lists. The answer holds that "
+            "file's exact content.")
+        schema["properties"]["file_offset"] = {
+            "type": "integer", "minimum": 0, "maximum": MAXIMUM_PACKAGE_FILES - 1,
+            "description": "The first file of the package page to return, counted from 0 in the package's path "
+                           "order. The answer's next_file_offset names the next page; null means the last page."}
     return schema
 
 
@@ -812,7 +887,14 @@ class ServiceHttpApplication:
                 "delivery": {"inline_body_bytes": self.configuration.maximum_inline_body_bytes,
                              "download_bytes": self.configuration.maximum_download_bytes,
                              "download_endpoint": "/api/v1/download", "requires_reauthorization": True,
-                             "body_format": "utf8_text", "package_files": "download_by_path"},
+                             "body_format": "utf8_text", "package_files": "download_by_path",
+                             # The protocol tool delivers a package's files too, page by page, within one answer's
+                             # limit counted with both of its copies (roadmap: customer delivery path).
+                             "protocol_package_files": {
+                                 "record_type": PACKAGE_READ_VERSION, "tool": "provisioning_read",
+                                 "selection": ["file_offset", "path"], "encodings": [UTF8_CONTENT, BASE64_CONTENT],
+                                 "answer_bytes": self.configuration.maximum_response_bytes,
+                                 "reserved_bytes": PROTOCOL_ANSWER_RESERVE_BYTES}},
                 "limits": {"request_bytes": self.configuration.maximum_request_bytes,
                            "response_bytes": self.configuration.maximum_response_bytes,
                            "search_results": self.configuration.maximum_search_results,
@@ -1067,6 +1149,83 @@ class ServiceHttpApplication:
         # asked with the default community choice, which offers only verified
         # items, and it is answered in the version 2 shapes its readers check.
         return tierless_answer(result)
+
+    def _protocol_read(self, authentication, fields):
+        """`provisioning_read` over the protocol: a single-file item's text inline, or a package's files by page.
+
+        A single-file item asked without `path` or `file_offset` is answered as before, in `provisioning_body/v3`. A
+        package, or one file named by `path`, is answered in `PACKAGE_READ_VERSION`. The read is authorized and metered
+        exactly as the download address authorizes and meters it, with the same request identity rule, and each file
+        of the page is then read from the same view, where the body store checks its size and digest. A page holds as
+        many whole files, in path order, as fit in one protocol answer; a file that cannot fit in any answer is listed
+        under `omitted` with the reason, and the download address still serves it by path within the download limit.
+        """
+        fields = dict(fields)
+        selected_path = fields.pop("path", None)
+        offset = fields.pop("file_offset", None)
+        if selected_path is not None and offset is not None:
+            raise ServiceHttpError("package_selection_conflict")
+        current = self.authenticator.revalidate(authentication)
+        self._require_scope(current, "provisioning:read")
+        fields["community_items"] = self.community_choice(current.principal, fields)
+        view = self.provisioning.current_view()
+        manifest = self.provisioning.invoke_for_principal(current.principal, MANIFEST_OPERATION, view=view,
+            **{key: value for key, value in fields.items() if key != "request_id"})
+        package = view.package_of(manifest["identity"]) if callable(getattr(view, "package_of", None)) else None
+        if package is None or (package.body_form == FILE_BODY and selected_path is None and offset is None):
+            if selected_path is not None or offset is not None:
+                raise ServiceRuntimeError("package_files_unavailable")
+            if manifest["size_bytes"] > self.configuration.maximum_inline_body_bytes:
+                raise ServiceHttpError("download_required", 413)
+            result = self.provisioning.invoke_for_principal(current.principal, READ_OPERATION, view=view, **fields)
+            self.authenticator.revalidate(authentication)
+            return result
+        # The selection is checked before the metered read, so a wrong path or page is refused without a charge.
+        if selected_path is not None:
+            chosen = (package.file(selected_path),)
+            start = package.files.index(chosen[0])
+        else:
+            start = 0 if offset is None else offset
+            if start >= len(package.files):
+                raise ServiceHttpError("file_offset_out_of_range")
+            chosen = package.files[start:]
+        value = self.provisioning.invoke_for_principal(current.principal, READ_OPERATION, view=view, **fields)
+        self.authenticator.revalidate(authentication)
+        record = {"record_type": PACKAGE_READ_VERSION, "tenant_id": value["tenant_id"],
+                  "identity": value["identity"], "digest": value["digest"], "size_bytes": value["size_bytes"],
+                  "package": view.package_summary(value["identity"]),
+                  "selection": {"path": selected_path} if selected_path is not None else {"file_offset": start},
+                  "files": [], "omitted": [], "next_file_offset": None,
+                  "download_endpoint": "/api/v1/download",
+                  **{key: value[key] for key in ("qualification_basis", "library_tier", "library_tier_label",
+                                                 "metered", "metered_unit", "metering_acknowledgment")}}
+        budget = self.configuration.maximum_response_bytes - PROTOCOL_ANSWER_RESERVE_BYTES
+        alone = used = _protocol_cost(record)
+        for index, entry in enumerate(chosen, start):
+            if entry.size_bytes > self.configuration.maximum_download_bytes:
+                record["omitted"].append(_omitted_file(entry, "larger_than_the_download_limit"))
+                used += _protocol_cost(record["omitted"][-1]) + 4
+                continue
+            # Both copies of the answer hold at least the file's own bytes, so a file that cannot fit even alone
+            # is known before it is read.
+            if alone + 2 * entry.size_bytes > budget:
+                record["omitted"].append(_omitted_file(entry, "too_large_for_one_protocol_answer"))
+                used += _protocol_cost(record["omitted"][-1]) + 4
+                continue
+            ((data, _entry),) = view.read_package_entries(value["identity"], (entry,))
+            row = _delivered_file(entry, data)
+            cost = _protocol_cost(row) + 4
+            if alone + cost > budget:
+                record["omitted"].append(_omitted_file(entry, "too_large_for_one_protocol_answer"))
+                used += _protocol_cost(record["omitted"][-1]) + 4
+                continue
+            if used + cost > budget:
+                record["next_file_offset"] = index
+                break
+            record["files"].append(row)
+            used += cost
+        self.authenticator.revalidate(authentication)
+        return record
 
     def _list_page(self, authentication, current, paged):
         """One page of a paged list (roadmap S-6.203), filled under this host's answer cap.
@@ -1385,8 +1544,8 @@ class ServiceHttpApplication:
 
         async def list_tools(ctx, _params):
             self.authenticator.revalidate(ctx.request.scope["service_authentication"])
-            tools = [types.Tool(name=name, description="Authorized intelligence " + operation,
-                inputSchema=tiered_provisioning_schema(operation), annotations=types.ToolAnnotations(
+            tools = [types.Tool(name=name, description=PROTOCOL_TOOL_DESCRIPTIONS[operation],
+                inputSchema=protocol_tool_schema(operation), annotations=types.ToolAnnotations(
                     readOnlyHint=operation != READ_OPERATION, destructiveHint=False, idempotentHint=True))
                 for name, operation in TOOL_OPERATIONS.items()]
             tools.append(types.Tool(name="intelligence_search", description="Search authorized metadata only",
@@ -1421,14 +1580,16 @@ class ServiceHttpApplication:
                         raise ServiceHttpError("unsupported_operation")
                     if operation == LIST_OPERATION:
                         paging_request(arguments)
-                    validate(arguments, tiered_provisioning_schema(operation))
+                    validate(arguments, protocol_tool_schema(operation))
                     if operation == READ_OPERATION and not arguments.get("request_id"):
                         raise ServiceHttpError("request_identity_required")
                     arguments = with_step_effects(arguments, effects) if operation != DISCOVER_OPERATION else arguments
-                    # Protocol tools serve harnesses, which read each item's tier and label in the answer.
+                    # Protocol tools serve harnesses, which read each item's tier and label in the answer. A read
+                    # delivers a package's files as well as a single file's text.
                     output = await self._tenant_work(context, lambda: invoke_http_service_as_loop(operation,
-                        lambda: self._invoke(context, operation, arguments, tiered=True,
-                                             encoding=PROTOCOL_ENCODING)))
+                        (lambda: self._protocol_read(context, arguments)) if operation == READ_OPERATION else
+                        (lambda: self._invoke(context, operation, arguments, tiered=True,
+                                              encoding=PROTOCOL_ENCODING))))
                 response = types.CallToolResult(content=[types.TextContent(type="text", text=_json_bytes(output).decode())],
                                                 structuredContent=output, isError=False)
                 if len(response.model_dump_json(by_alias=True).encode()) > self.configuration.maximum_response_bytes:

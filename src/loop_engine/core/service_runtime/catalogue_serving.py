@@ -172,6 +172,23 @@ class CatalogueView:
             self.withdrawal_check(identity, package.served_digest)
         return self.body_store.read(entry.digest, entry.size_bytes), entry
 
+    def package_of(self, identity):
+        """The typed package of one served item, or None when this view serves no package files for it."""
+        package = self.packages.get(identity)
+        return package if package is not None and self.body_store is not None else None
+
+    def read_package_entries(self, identity, entries):
+        """The verified bytes of several files of one package, after one withdrawal check for the item version.
+
+        The body store checks each file's size and digest as it reads it, so every returned file is the exact
+        bytes its entry names."""
+        package = self.package_of(identity)
+        if package is None:
+            _refuse("package_files_unavailable", "this catalogue serves no package files for that item")
+        if self.withdrawal_check is not None:
+            self.withdrawal_check(identity, package.served_digest)
+        return [(self.body_store.read(entry.digest, entry.size_bytes), entry) for entry in entries]
+
     def without(self, withdrawn, *, state_revision, notes=None):
         """A new view with every durably withdrawn item left out; the index is shared, not rebuilt."""
         keep = {identity: item for identity, item in self.catalogue.items.items()

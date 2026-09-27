@@ -10,6 +10,7 @@ reached, and the fixture key never appears in a record.
 """
 from __future__ import annotations
 
+import base64
 import hashlib
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
@@ -35,6 +36,15 @@ PUBLISHED_BASE = "https://baltor.ai"
 RECIPES_FILE = ROOT / "src/loop_engine/core/service_runtime/web_assets/client-recipes.json"
 PI_EXTENSION = ROOT / "src/loop_engine/core/service_runtime/web_assets/pi/baltor.ts"
 HARNESS_PAGE = ROOT / "docs/guides/quickstart-baltor-harness.md"
+#: A two-file package the protocol read delivers one file per page, as a small answer limit makes it do.
+PACKAGE_FILES = (("SKILL.md", b"# Review inputs\n\nRead every input once before you hand the work over.\n",
+                  "text/markdown", "skill_definition"),
+                 ("assets/checklist.bin", b"\x00\x01\xffchecklist", "application/octet-stream", "skill_asset"))
+PACKAGE_ROWS = [{"path": path, "digest": hashlib.sha256(data).hexdigest(), "size_bytes": len(data),
+                 "media_type": media, "role": role} for path, data, media, role in PACKAGE_FILES]
+PACKAGE_DOCUMENT = json.dumps({"record_type": "catalogue_package/v1", "files": PACKAGE_ROWS},
+                              sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()
+PACKAGE_DIGEST = hashlib.sha256(PACKAGE_DOCUMENT).hexdigest()
 
 
 def committed_recipes():
@@ -73,6 +83,12 @@ class State:
         self.manifest_requests = []
         #: The record type of the manifest answer; the served Pi extension refuses any other than version 3.
         self.manifest_record_type = "provisioning_manifest/v3"
+        #: The protocol search offers a package, and the protocol read answers its files one page at a time.
+        self.package_read = False
+        #: One package file arrives with other bytes than its digest names.
+        self.wrong_package_file = False
+        #: The file_offset of every package page the protocol read was asked for, in order.
+        self.package_offsets = []
         self.__dict__.update(changes)
 
 
@@ -210,6 +226,30 @@ class Handler(BaseHTTPRequestHandler):
             if self.state.refuse_tool_calls:
                 refused = {"record_type": "service_http_error/v1", "error": {"code": "insufficient_scope"}}
                 result = {"content": [{"type": "text", "text": json.dumps(refused)}], "structuredContent": refused, "isError": True}
+            elif name == "intelligence_search" and self.state.package_read:
+                package_hit = {**hit(), "reference": {"identity": IDENTITY, "body_digest": PACKAGE_DIGEST,
+                                                      "size_bytes": len(PACKAGE_DOCUMENT)},
+                               "size_bytes": len(PACKAGE_DOCUMENT)}
+                found = {"record_type": "service_retrieval_result/v1", "hits": [package_hit], "bodies_loaded": False,
+                         "catalogue_release": "fixture"}
+                output = wrapped("retrieval", found)
+                result = {"content": [{"type": "text", "text": json.dumps(output)}], "structuredContent": output, "isError": False}
+            elif name == "provisioning_read" and self.state.package_read and arguments.get("identity") == IDENTITY:
+                offset = arguments.get("file_offset", 0)
+                self.state.package_offsets.append(offset)
+                path, data, media, role = PACKAGE_FILES[offset]
+                if self.state.wrong_package_file and offset == 1:
+                    data = data + b"changed"
+                row = {"path": path, "digest": PACKAGE_ROWS[offset]["digest"], "size_bytes": PACKAGE_ROWS[offset]["size_bytes"],
+                       "media_type": media, "role": role, "encoding": "base64",
+                       "content": base64.b64encode(data).decode("ascii")}
+                record = {"record_type": "provisioning_package_read/v1", "identity": IDENTITY, "digest": PACKAGE_DIGEST,
+                          "size_bytes": len(PACKAGE_DOCUMENT), "metered": True,
+                          "package": {"body_form": "package", "package_digest": PACKAGE_DIGEST, "files": PACKAGE_ROWS},
+                          "selection": {"file_offset": offset}, "files": [row], "omitted": [],
+                          "next_file_offset": offset + 1 if offset + 1 < len(PACKAGE_FILES) else None}
+                output = wrapped("read", record)
+                result = {"content": [{"type": "text", "text": json.dumps(output)}], "structuredContent": output, "isError": False}
             elif name == "intelligence_search":
                 found = self._search({"record_type": "service_retrieval_request/v2", **arguments})
                 output = found if self.state.bare_tool_answers else wrapped("retrieval", found)
@@ -311,6 +351,22 @@ class QuickstartCheckTests(unittest.TestCase):
         for quickstart in ("claude-code", "codex", "opencode", "pi", "baltor-harness"):
             self.assertTrue(step(record, quickstart, "downloaded")["passed"])
             self.assertFalse(step(record, quickstart, "digest_matches")["passed"], quickstart)
+
+    def test_a_package_read_is_followed_page_by_page_and_checked_file_by_file(self):
+        state = State(package_read=True)
+        record = run(state)
+        for quickstart in ("claude-code", "codex", "opencode"):
+            self.assertTrue(row(record, quickstart)["passed"], quickstart)
+            self.assertIn("2 of 2 files in 2 pages", step(record, quickstart, "downloaded")["detail"])
+        self.assertEqual(state.package_offsets, [0, 1] * 3, "each protocol quickstart asks for both pages")
+
+    def test_known_wrong_a_package_file_with_other_bytes_fails_digest_matches(self):
+        record = run(State(package_read=True, wrong_package_file=True))
+        for quickstart in ("claude-code", "codex", "opencode"):
+            self.assertTrue(step(record, quickstart, "downloaded")["passed"])
+            failed = step(record, quickstart, "digest_matches")
+            self.assertFalse(failed["passed"], quickstart)
+            self.assertIn("assets/checklist.bin", failed["detail"])
 
     def test_known_wrong_a_tool_list_without_the_search_tool_fails_listed(self):
         record = run(State(no_search_tool=True))
