@@ -418,3 +418,68 @@ class SameBasenameTest(unittest.TestCase):
                 tool.build(folder, artifact_root=IMAGE_ARTIFACT_ROOT, accepted_licenses=("MIT",), grants=[],
                            include=(first, second))
             self.assertEqual(held.exception.code, "duplicate_release_path")
+
+
+class ReleaseFolderOwnershipTest(unittest.TestCase):
+    """Writing a release never empties a folder this command did not write.
+
+    Replacing the release folder removes it first. Before this check, --output
+    naming the catalogue folder removed the review record, the item file and all
+    123 candidate bodies and reported success, and a note left in the release
+    folder was removed without a word. Each case runs on a throwaway copy.
+    """
+
+    def setUp(self):
+        held = tempfile.TemporaryDirectory(prefix="loop-engine-release-owner-")
+        self.addCleanup(held.cleanup)
+        self.root = Path(held.name).resolve()
+        self.catalogue = self.root / "catalogue"
+        shutil.copytree(CATALOGUE, self.catalogue)
+        self.release = self.catalogue / "host-release"
+
+    def _write(self, output: Path):
+        printed = io.StringIO()
+        with contextlib.redirect_stdout(printed):
+            code = tool.main(["--catalogue", str(self.catalogue), "--output", str(output),
+                              "--artifact-root", IMAGE_ARTIFACT_ROOT, "--accept-license", "MIT",
+                              *sum((["--grant", value] for value in GRANTS), []), "--write"])
+        return code, json.loads(printed.getvalue())
+
+    def _refused(self, output: Path, code_expected: str):
+        code, answer = self._write(output)
+        self.assertEqual(code, 2)
+        self.assertEqual((answer["refused"], answer["code"]), (True, code_expected))
+
+    def test_a_release_folder_holding_a_file_this_command_did_not_write_is_not_emptied(self):
+        note = self.release / "NOTES.txt"
+        note.write_text("an operator's own note", encoding="utf-8")
+        manifest = (self.release / tool.MANIFEST_FILE).read_bytes()
+        self._refused(self.release, "unexpected_release_file")
+        self.assertEqual(note.read_text(encoding="utf-8"), "an operator's own note")
+        self.assertEqual((self.release / tool.MANIFEST_FILE).read_bytes(), manifest)
+
+    def test_a_file_of_another_kind_in_the_bodies_folder_is_not_removed(self):
+        stranger = self.release / tool.BODIES_FOLDER / "draft.txt"
+        stranger.write_text("not a released body", encoding="utf-8")
+        self._refused(self.release, "unexpected_release_file")
+        self.assertTrue(stranger.is_file())
+
+    def test_the_catalogue_folder_or_a_folder_holding_it_is_never_the_release_folder(self):
+        for output in (self.catalogue, self.root):
+            with self.subTest(output=output.name):
+                self._refused(output, "unsafe_release_folder")
+                self.assertTrue((self.catalogue / "reviews.json").is_file())
+                self.assertTrue((self.catalogue / "items.json").is_file())
+        self._refused(self.catalogue / "bodies", "unexpected_release_file")
+        self.assertEqual(len(list((self.catalogue / "bodies").glob("*.md"))),
+                         len(list((CATALOGUE / "bodies").glob("*.md"))))
+
+    def test_an_older_release_is_replaced_and_a_withdrawn_body_leaves_it(self):
+        withdrawn = self.release / tool.BODIES_FOLDER / "an_item_no_longer_approved.md"
+        withdrawn.write_text("a body an older release served\n", encoding="utf-8")
+        code, answer = self._write(self.release)
+        self.assertEqual((code, answer["refused"], answer["state"]), (0, False, tool.WRITTEN))
+        self.assertFalse(withdrawn.exists())
+        written = sorted(str(path.relative_to(self.release)) for path in self.release.rglob("*") if path.is_file())
+        expected = sorted(str(path.relative_to(RELEASE)) for path in RELEASE.rglob("*") if path.is_file())
+        self.assertEqual(written, expected)

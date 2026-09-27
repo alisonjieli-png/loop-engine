@@ -17,7 +17,10 @@ a drift between the review record, the bodies and the release folder fails:
         --artifact-root /opt/baltor/catalogue \
         --accept-license MIT --grant pilot-owner:bodies:required
 
-Add --write to replace the release folder with the generated content.
+Add --write to replace the release folder with the generated content. Before
+it removes anything, it refuses a folder that is the catalogue folder or holds
+it, and a folder that holds any file other than the manifest and the body files
+this command writes, so a mistaken --output never empties another folder.
 """
 from __future__ import annotations
 
@@ -406,11 +409,41 @@ def _existing(output: Path):
     return held
 
 
-def write(output: Path, manifest, bodies):
+def release_folder_refusal(output: Path, catalogue: Path) -> None:
+    """Refuse, before anything is removed, a release folder this command did not write.
+
+    Replacing the release folder removes it first, so this command must own every
+    entry in it: the manifest, and body files in the one bodies folder. The
+    catalogue folder itself, a folder that holds it, and a folder holding any
+    other file are refused, so a mistaken --output never empties the review
+    record, the candidate bodies or somebody else's files. A body file an older
+    release wrote is this command's own, so a withdrawn item still leaves the
+    release when it is written again.
+    """
+    if output == catalogue or output in catalogue.parents:
+        raise ManifestBuildError("unsafe_release_folder",
+            f"{output} is the catalogue folder or holds it; the release folder is a separate folder")
+    if not output.exists() and not output.is_symlink():
+        return
+    if output.is_symlink() or not output.is_dir():
+        raise ManifestBuildError("unsafe_release_folder", f"{output} is not a folder this command owns")
+    for entry in sorted(output.iterdir()):
+        if entry.name == MANIFEST_FILE and entry.is_file() and not entry.is_symlink():
+            continue
+        if entry.name == BODIES_FOLDER and entry.is_dir() and not entry.is_symlink():
+            for body in sorted(entry.iterdir()):
+                if body.is_symlink() or not body.is_file() or body.suffix != BODY_SUFFIX:
+                    raise ManifestBuildError("unexpected_release_file",
+                        f"{body} is not a body file this command writes; move it away by hand first")
+            continue
+        raise ManifestBuildError("unexpected_release_file",
+            f"{entry} is not a file this command writes; move it away by hand first")
+
+
+def write(output: Path, manifest, bodies, *, catalogue: Path):
+    release_folder_refusal(output, catalogue)
     generated = {MANIFEST_FILE: _rendered(manifest), **bodies}
     if output.exists():
-        if not output.is_dir() or output.is_symlink():
-            raise ManifestBuildError("unsafe_release_folder", f"{output} is not a folder this command owns")
         shutil.rmtree(output)
     for name, payload in generated.items():
         target = output / name
@@ -437,14 +470,15 @@ def main(argv=None):
         grants = [_grant(value) for value in options.grant]
         if len({grant["tenant_id"] for grant in grants}) != len(grants):
             raise ManifestBuildError("duplicate_grant_request", "one tenant is granted the same item twice")
-        manifest, bodies = build(options.catalogue.resolve(),
+        catalogue = options.catalogue.resolve()
+        manifest, bodies = build(catalogue,
             artifact_root=options.artifact_root,
             accepted_licenses=tuple(options.accept_license) or ("MIT",),
             grants=grants, include=tuple(options.include))
         output = options.output.resolve()
         generated = {MANIFEST_FILE: _rendered(manifest), **bodies}
         if options.write:
-            write(output, manifest, bodies)
+            write(output, manifest, bodies, catalogue=catalogue)
             state = WRITTEN
         else:
             state = UNCHANGED if _existing(output) == generated else DIFFERS
