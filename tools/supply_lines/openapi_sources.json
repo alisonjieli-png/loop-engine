@@ -1,0 +1,26 @@
+{
+ "record_type": "library_supply_openapi_sources/v1",
+ "curated_on": "2026-09-27",
+ "curated_by": "consolidation builder e",
+ "rule": "Official vendor repositories whose GitHub licence interface names an allowlisted licence; the generator reads each file at the branch's head commit, proves its bytes by git blob identity, and decides the licence again from the licence text at that commit.",
+ "specifications": [
+  {"source_id": "resend", "repository": "resend/resend-openapi", "branch": "main", "paths": ["resend.json"],
+   "vendor": "resend", "credential_variable": "RESEND_API_KEY", "maximum_operations": 400},
+  {"source_id": "discord", "repository": "discord/discord-api-spec", "branch": "main", "paths": ["specs/openapi.json"],
+   "vendor": "discord", "credential_variable": "DISCORD_AUTHORIZATION", "maximum_operations": 400},
+  {"source_id": "openai", "repository": "openai/openai-openapi", "branch": "main", "paths": ["openapi.json"],
+   "vendor": "openai", "credential_variable": "OPENAI_API_KEY", "maximum_operations": 400},
+  {"source_id": "box", "repository": "box/box-openapi", "branch": "main", "paths": ["openapi.json"],
+   "vendor": "box", "credential_variable": "BOX_ACCESS_TOKEN", "maximum_operations": 400},
+  {"source_id": "sendgrid", "repository": "twilio/sendgrid-oai", "branch": "main",
+   "paths": ["spec/json/tsg_mail_v3.json", "spec/json/tsg_api_keys_v3.json", "spec/json/tsg_suppressions_v3.json",
+             "spec/json/tsg_stats_v3.json", "spec/json/tsg_mc_contacts_v3.json", "spec/json/tsg_mc_lists_v3.json",
+             "spec/json/tsg_subusers_v3.json", "spec/json/tsg_alerts_v3.json", "spec/json/tsg_domain_authentication_v3.json",
+             "spec/json/tsg_link_branding_v3.json", "spec/json/tsg_email_validation_v3.json", "spec/json/tsg_scopes_v3.json",
+             "spec/json/tsg_mc_singlesends_v3.json", "spec/json/tsg_mail_settings_v3.json"],
+   "vendor": "sendgrid", "credential_variable": "SENDGRID_API_KEY", "maximum_operations": 400},
+  {"source_id": "xero_accounting", "repository": "XeroAPI/Xero-OpenAPI", "branch": "master",
+   "paths": ["xero_accounting.yaml"], "vendor": "xero", "credential_variable": "XERO_ACCESS_TOKEN",
+   "maximum_operations": 400}
+ ]
+}

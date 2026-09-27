@@ -135,6 +135,25 @@ def mcp_registry(args) -> dict:
                   reader, facts, complete=complete and args.maximum_entries >= 100_000)
 
 
+def openapi(args) -> dict:
+    from supply_lines import openapi_operations as line
+    run_folder = _outside(args.run_folder)
+    run_folder.mkdir(parents=True, exist_ok=True)
+    revision = code_revision(args.authorize_store_writes)
+    reader = FactReader(run_folder, line.HOSTS, maximum_requests=args.maximum_requests,
+                        pause_seconds=args.pause_seconds, maximum_bytes=128 * 1024 * 1024)
+    sources = line.read_sources()
+    if args.source:
+        sources = [row for row in sources if row["source_id"] in args.source]
+    facts_by_repository = reader.repository_facts(sorted({row["repository"] for row in sources})) if args.stars else {}
+    built, refusals, facts, summary = line.generate(reader, sources, code_revision=revision,
+                                                    licence_text=LICENCE_FILE.read_bytes(),
+                                                    generated_on=now_utc()[:10], staging=run_folder / "staging",
+                                                    repository_facts=facts_by_repository)
+    return finish(args, records.OPENAPI_OPERATIONS, built, refusals, {"specifications": summary}, reader, facts,
+                  complete=not args.source)
+
+
 def parser() -> argparse.ArgumentParser:
     main = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     commands = main.add_subparsers(dest="command", required=True)
@@ -154,12 +173,16 @@ def parser() -> argparse.ArgumentParser:
     one.add_argument("--maximum-entries", type=int, default=100_000)
     one.add_argument("--maximum-lookups", type=int, default=4000, help="upstream licence reads at most")
     one.add_argument("--stars", action="store_true", help="read each upstream repository's stars (GraphQL)")
+    two = commands.add_parser("openapi")
+    common(two)
+    two.add_argument("--source", action="append", help="only these source identities of openapi_sources.json")
+    two.add_argument("--stars", action="store_true", help="read each repository's stars (GraphQL)")
     return main
 
 
 def main(argv=None) -> int:
     args = parser().parse_args(argv)
-    {"mcp-registry": mcp_registry}[args.command](args)
+    {"mcp-registry": mcp_registry, "openapi": openapi}[args.command](args)
     return 0
 
 

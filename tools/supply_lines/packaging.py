@@ -20,7 +20,8 @@ from dataclasses import dataclass, field
 from loop_engine.core.library_ingestion.duplicates import normalized
 from loop_engine.core.library_ingestion.record_rules import bytes_digest
 from loop_engine.core.service_runtime.catalogue_attributes import FORM_DECLARED, component_form_record
-from loop_engine.core.service_runtime.catalogue_packages import PACKAGE_BODY, CataloguePackage, CataloguePackageFile
+from loop_engine.core.service_runtime.catalogue_packages import (
+    EXECUTABLE_EFFECT, EXECUTABLE_ROLES, PACKAGE_BODY, CataloguePackage, CataloguePackageFile)
 
 from licensed_import.checks import StaticChecks, blocking_rules
 from licensed_import.harness_kinds import media_type
@@ -129,8 +130,14 @@ def build(package: SupplyPackage, *, check: bool = True) -> tuple:
         blocked = blocking_rules(findings)
         if blocked:
             raise SupplyRecordError("blocked_by_static_check", ",".join(blocked))
-    effects = sorted({effect for effect, _rule in package.effects})
-    evidence = [{"effect": effect, "rule": rule} for effect, rule in sorted(set(package.effects))]
+    declared = set(package.effects)
+    for entry in entries:
+        if entry.role in EXECUTABLE_ROLES and not any(effect == EXECUTABLE_EFFECT for effect, _rule in declared):
+            # A package holding a file a harness may run declares a process effect (catalogue_packages.py), so a
+            # step without that authority is never offered it.
+            declared.add((EXECUTABLE_EFFECT, f"holds_an_executable_file {entry.path}"))
+    effects = sorted({effect for effect, _rule in declared})
+    evidence = [{"effect": effect, "rule": rule} for effect, rule in sorted(declared)]
     identity = record_id(package.line, package.key, catalogue_package.package_digest)
     payload = {
         "record_type": CANDIDATE_RECORD_TYPE, "record_id": identity, "upstream_key": package.key,

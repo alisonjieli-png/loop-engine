@@ -263,5 +263,116 @@ class McpRegistryLineTest(unittest.TestCase):
         self.assertEqual((len(built), [row["reason"] for row in refusals]), (1, ["duplicate_package"]))
 
 
+SPECIFICATION = {
+    "openapi": "3.1.0", "info": {"title": "Example", "version": "2.0"},
+    "servers": [{"url": "https://api.example.com/v1"}],
+    "security": [{"bearer": []}],
+    "components": {
+        "securitySchemes": {"bearer": {"type": "http", "scheme": "bearer"},
+                            "key": {"type": "apiKey", "in": "header", "name": "X-Api-Key"}},
+        "schemas": {"Thing": {"type": "object", "required": ["id", "name"],
+                              "properties": {"id": {"type": "string", "readOnly": True}, "name": {"type": "string"},
+                                             "size": {"type": "integer", "minimum": 3},
+                                             "kind": {"type": "string", "enum": ["small", "large"]},
+                                             "parent": {"$ref": "#/components/schemas/Thing"}}}}},
+    "paths": {
+        "/things/{thing_id}": {
+            "parameters": [{"name": "thing_id", "in": "path", "required": True, "schema": {"type": "string"}}],
+            "get": {"operationId": "getThing", "summary": "Read one thing",
+                    "parameters": [{"name": "expand", "in": "query", "schema": {"type": "boolean"}}],
+                    "responses": {"200": {"description": "The thing", "content": {"application/json": {
+                        "schema": {"$ref": "#/components/schemas/Thing"},
+                        "example": {"id": "t1", "name": "first"}}}},
+                        "404": {"description": "No such thing"}}},
+            "delete": {"operationId": "deleteThing", "security": [{"key": []}],
+                       "responses": {"204": {"description": "Deleted"}}}},
+        "/things": {
+            "post": {"operationId": "createThing", "requestBody": {"required": True, "content": {
+                "application/json": {"schema": {"$ref": "#/components/schemas/Thing"}}}},
+                "responses": {"201": {"description": "Created", "content": {"application/json": {
+                    "schema": {"$ref": "#/components/schemas/Thing"}}}}}},
+            "put": {"operationId": "uploadThing", "requestBody": {"content": {"multipart/form-data": {}}},
+                    "responses": {"200": {"description": "ok"}}}},
+        "/remote/{name}": {"get": {"operationId": "remote", "parameters": [
+            {"$ref": "other.json#/components/parameters/name"}], "responses": {"200": {"description": "ok"}}}},
+        "/cookie": {"get": {"operationId": "withCookie", "parameters": [
+            {"name": "session", "in": "cookie", "required": True, "schema": {"type": "string"}}],
+            "responses": {"200": {"description": "ok"}}}},
+    }}
+SOURCE = {"source_id": "example", "repository": "example/api", "branch": "main", "paths": ["openapi.json"],
+          "vendor": "example", "credential_variable": "EXAMPLE_TOKEN", "maximum_operations": 50}
+SPEC_FACTS = {"title": "Example", "version": "2.0", "repository": "example/api", "commit": "c" * 40,
+              "path": "openapi.json", "sha256": "d" * 64, "licence": "MIT", "base_url_variable": "EXAMPLE_BASE_URL"}
+
+
+class OpenApiLineTest(unittest.TestCase):
+    def test_operations_are_read_and_unsupported_ones_refused_by_name(self):
+        from supply_lines import openapi_operations as line
+        found, refused = line.operations(SPECIFICATION, SOURCE)
+        self.assertEqual(sorted(operation.function for operation in found),
+                         ["create_thing", "delete_thing", "get_thing"])
+        self.assertEqual(sorted(row["reason"] for row in refused),
+                         ["operation_body_not_json", "operation_parameters_unsupported",
+                          "operation_parameters_unsupported"])
+        get = next(operation for operation in found if operation.function == "get_thing")
+        self.assertEqual([(row.python, row.location, row.required) for row in get.parameters],
+                         [("thing_id", "path", True), ("expand", "query", False)])
+        self.assertEqual(get.base_url, "https://api.example.com/v1")
+        self.assertEqual(get.auth["placement"], "header")
+        self.assertIn("recursive reference", json.dumps(get.response_schema))
+        delete = next(operation for operation in found if operation.function == "delete_thing")
+        self.assertEqual((delete.auth["name"], delete.response_kind, delete.success_statuses), ("X-Api-Key", "empty",
+                                                                                              (204,)))
+        create = next(operation for operation in found if operation.function == "create_thing")
+        # A read-only field is not required in a request body.
+        self.assertEqual(create.body_check["required"], ["name"])
+
+    def test_every_generated_client_passes_its_own_tests_and_a_client_without_checks_fails_them(self):
+        from supply_lines import openapi_operations as line
+        found, _refused = line.operations(SPECIFICATION, SOURCE)
+        with tempfile.TemporaryDirectory() as folder:
+            for operation in found:
+                call, example = line._example_arguments(operation), line._response_example(operation)
+                target = Path(folder) / operation.module
+                target.mkdir()
+                client = line.client_source(operation, SPEC_FACTS)
+                (target / f"{operation.module}.py").write_text(client, encoding="utf-8")
+                (target / f"test_{operation.module}.py").write_text(line.test_source(operation, call, example),
+                                                                     encoding="utf-8")
+                passed, count, output = line.run_tests(target, operation.module)
+                self.assertTrue(passed, output)
+                self.assertGreaterEqual(count, 3)
+                compile(client, operation.module, "exec")
+            # Known wrong: a client that skips its argument checks must fail the generated tests.
+            create = next(operation for operation in found if operation.function == "create_thing")
+            broken = line.client_source(create, SPEC_FACTS).replace("        _check(body, BODY_SCHEMA, \"body\")\n",
+                                                                    "        pass\n")
+            (Path(folder) / create.module / f"{create.module}.py").write_text(broken, encoding="utf-8")
+            passed, _count, _output = line.run_tests(Path(folder) / create.module, create.module)
+            self.assertFalse(passed)
+            # And a client that sends to a plain HTTP address fails them too.
+            get = next(operation for operation in found if operation.function == "get_thing")
+            broken = line.client_source(get, SPEC_FACTS).replace('if not root.startswith("https://"):',
+                                                                 'if not root.startswith("http"):')
+            (Path(folder) / get.module / f"{get.module}.py").write_text(broken, encoding="utf-8")
+            self.assertFalse(line.run_tests(Path(folder) / get.module, get.module)[0])
+
+    def test_the_network_is_closed_while_generated_tests_run(self):
+        from supply_lines import openapi_operations as line
+        import urllib.request
+        before = urllib.request.urlopen
+        with tempfile.TemporaryDirectory() as folder:
+            target = Path(folder) / "example_probe"
+            target.mkdir()
+            (target / "example_probe.py").write_text("", encoding="utf-8")
+            (target / "test_example_probe.py").write_text(
+                "import unittest, urllib.request\n\nclass T(unittest.TestCase):\n    def test_open(self):\n"
+                "        urllib.request.urlopen('https://example.com')\n", encoding="utf-8")
+            passed, count, output = line.run_tests(target, "example_probe")
+        self.assertEqual((passed, count), (False, 1))
+        self.assertIn("network is closed", output)
+        self.assertIs(urllib.request.urlopen, before)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -1,0 +1,1180 @@
+"""Line openapi_operations: one API operation client per operation of a licensed OpenAPI specification.
+
+```text
+One specification (declared in openapi_sources.json)
+├── pinned: the branch's head commit, the file's git blob identity, its bytes proven by that identity
+├── licence: GitHub's licence interface and the licence text at that commit agree on an allowlisted
+│   licence (supply_lines/licences.py); the text travels as UPSTREAM-LICENSE
+└── every operation (path and method), each its own package
+    ├── <vendor>_<operation>.py: one function with keyword arguments for the path, query and header
+    │   parameters and the JSON body; it checks types, enumerations and required fields before any
+    │   request, reads the credential from a named environment variable, sends one HTTPS request
+    │   and raises ApiError with the documented meaning for any status outside the successes
+    ├── test_<vendor>_<operation>.py: a local mock built from the specification's examples (or a
+    │   minimal value built from the schema), and known-wrong calls: a missing required argument,
+    │   a wrong type, an error status, a missing credential; each must send nothing or raise
+    ├── schema.json: the operation's input and output schemas, local references resolved
+    └── README.md, LICENSE (the generated code, MIT), UPSTREAM-LICENSE, ATTRIBUTION.md
+```
+
+The generated tests run in this process before a package is stored, with the
+network closed; a package whose own tests fail is refused. Operations that
+need a body other than JSON, a cookie, an object in the query string, a
+reference into another file or a server that is not HTTPS are refused by name.
+"""
+from __future__ import annotations
+
+import base64
+import importlib.util
+import io
+import json
+import keyword
+import math
+import pprint
+import re
+import sys
+import textwrap
+import unittest
+import urllib.parse
+import urllib.request
+from collections import Counter
+from dataclasses import dataclass, field
+from pathlib import Path
+
+from loop_engine.core.library_ingestion.record_rules import git_blob_identity
+
+from .licences import repository_licence
+from .packaging import LICENCE_NAME, UPSTREAM_LICENCE_NAME, PackageFile, SupplyPackage, build
+from .records import (
+    GENERATED_CODE_LICENCE, LICENCE_TEXT, OPENAPI_OPERATIONS, SupplyRecordError, fact_source, provenance, refusal,
+    upstream_key)
+
+GENERATOR_VERSION = "1.0.0"
+SOURCES_FILE = Path(__file__).with_name("openapi_sources.json")
+SOURCES_RECORD_TYPE = "library_supply_openapi_sources/v1"
+RAW_HOST = "raw.githubusercontent.com"
+HOSTS = (RAW_HOST,)
+NATIVE_FORMAT = "openapi_operation_python"
+METHODS = ("get", "put", "post", "delete", "patch", "head", "options")
+#: Keyword arguments every generated function has; a parameter with one of these names is renamed.
+RESERVED = ("body", "base_url", "timeout", "transport")
+#: Headers the client sets itself; a parameter naming one is left to the client, or refused when required.
+MANAGED_HEADERS = ("authorization", "content-type", "accept", "user-agent", "content-length", "host")
+CHECK_DEPTH = 3
+SCHEMA_DEPTH = 8
+MAXIMUM_EXAMPLE_CHARACTERS = 24_000
+USER_AGENT = "baltor-api-client/1"
+
+
+class OperationRefused(ValueError):
+    def __init__(self, reason: str, detail: str = "") -> None:
+        super().__init__(f"{reason}: {detail}")
+        self.reason, self.detail = reason, detail
+
+
+# -- the sources ---------------------------------------------------------------------------------------------------
+def read_sources(path: Path = SOURCES_FILE) -> list:
+    record = json.loads(Path(path).read_text(encoding="utf-8"))
+    if record.get("record_type") != SOURCES_RECORD_TYPE:
+        raise ValueError(f"expected {SOURCES_RECORD_TYPE}")
+    rows = []
+    for row in record["specifications"]:
+        if not re.fullmatch(r"[a-z][a-z0-9_]{0,40}", row["vendor"]) or not re.fullmatch(
+                r"[A-Z][A-Z0-9_]{1,80}", row["credential_variable"]):
+            raise ValueError(f"{row['source_id']}: a vendor is a lower-case word and a credential an upper-case name")
+        rows.append(row)
+    return rows
+
+
+# -- references and schemas ----------------------------------------------------------------------------------------
+class Resolver:
+    """Local references (#/...) of one document; a reference into another file is refused by name."""
+
+    def __init__(self, document: dict) -> None:
+        self.document = document
+
+    def target(self, reference: str):
+        if not isinstance(reference, str) or not reference.startswith("#/"):
+            raise OperationRefused("operation_parameters_unsupported", f"reference outside the file: {reference}")
+        node = self.document
+        for part in reference[2:].split("/"):
+            part = urllib.parse.unquote(part).replace("~1", "/").replace("~0", "~")
+            if isinstance(node, dict) and part in node:
+                node = node[part]
+            elif isinstance(node, list) and part.isdigit() and int(part) < len(node):
+                node = node[int(part)]
+            else:
+                raise OperationRefused("operation_parameters_unsupported", f"unresolved reference {reference}")
+        return node
+
+    def follow(self, node, limit: int = 20):
+        """A parameter, body or response object with its reference chain followed."""
+        seen = 0
+        while isinstance(node, dict) and "$ref" in node:
+            seen += 1
+            if seen > limit:
+                raise OperationRefused("operation_parameters_unsupported", "a reference chain does not end")
+            siblings = {key: value for key, value in node.items() if key != "$ref"}
+            node = {**self.target(node["$ref"]), **siblings}
+        return node
+
+    def schema(self, node, depth: int = 0, trail: tuple = ()):
+        """The schema with local references resolved, recursion cut and depth bounded, as plain data."""
+        if not isinstance(node, dict):
+            return node if isinstance(node, (bool, type(None))) else {}
+        if "$ref" in node:
+            reference = node["$ref"]
+            if reference in trail:
+                return {"$comment": f"recursive reference to {reference}"}
+            siblings = {key: value for key, value in node.items() if key != "$ref"}
+            target = self.target(reference)
+            return self.schema({**target, **siblings} if isinstance(target, dict) else target, depth,
+                               trail + (reference,))
+        if depth >= SCHEMA_DEPTH:
+            kept = {key: node[key] for key in ("type", "format", "enum", "nullable") if key in node}
+            return {**kept, "$comment": "deeper levels are in the specification"}
+        result = {}
+        for key, value in node.items():
+            if key in ("properties", "patternProperties", "$defs", "definitions") and isinstance(value, dict):
+                result[key] = {name: self.schema(part, depth + 1, trail) for name, part in value.items()}
+            elif key in ("items", "additionalProperties", "not", "contains", "propertyNames") and isinstance(value, dict):
+                result[key] = self.schema(value, depth + 1, trail)
+            elif key in ("allOf", "anyOf", "oneOf", "prefixItems") and isinstance(value, list):
+                result[key] = [self.schema(part, depth + 1, trail) for part in value]
+            else:
+                result[key] = plain(value)
+        return result
+
+
+def plain(value):
+    """JSON data only: dates become text, non-finite numbers become None."""
+    if isinstance(value, dict):
+        return {str(key): plain(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [plain(item) for item in value]
+    if isinstance(value, float) and not math.isfinite(value):
+        return None
+    if isinstance(value, (str, int, float, bool, type(None))):
+        return value
+    return str(value)
+
+
+def _types(schema: dict) -> list:
+    value = schema.get("type")
+    kinds = [value] if isinstance(value, str) else [kind for kind in value if isinstance(kind, str)] \
+        if isinstance(value, list) else []
+    if kinds and schema.get("nullable") is True and "null" not in kinds:
+        kinds.append("null")
+    return kinds
+
+
+def check_schema(schema, depth: int = 0, *, request: bool = True) -> dict:
+    """The part of a schema a client checks before sending: types, enumerations, required fields and nesting."""
+    if not isinstance(schema, dict):
+        return {}
+    result = {}
+    if "allOf" in schema and isinstance(schema["allOf"], list):
+        merged = {key: value for key, value in schema.items() if key != "allOf"}
+        properties, required = dict(merged.get("properties") or {}), list(merged.get("required") or [])
+        kinds = _types(merged)
+        for part in schema["allOf"]:
+            if isinstance(part, dict):
+                properties.update({key: value for key, value in (part.get("properties") or {}).items()
+                                   if key not in properties})
+                required += [name for name in part.get("required") or () if isinstance(name, str)]
+                kinds = kinds or _types(part)
+        schema = {**merged, "properties": properties, "required": required, **({"type": kinds} if kinds else {})}
+        if not kinds and properties:
+            schema["type"] = ["object"]
+    kinds = _types(schema)
+    if kinds:
+        result["type"] = kinds
+    if isinstance(schema.get("format"), str):
+        result["format"] = schema["format"]
+    if isinstance(schema.get("minimum"), (int, float)) and not isinstance(schema.get("minimum"), bool):
+        result["minimum"] = schema["minimum"]
+    enum = schema.get("enum")
+    if isinstance(enum, list) and enum and len(enum) <= 200 and all(
+            isinstance(value, (str, int, float, bool, type(None))) for value in enum):
+        result["enum"] = list(enum) + ([None] if "null" in kinds and None not in enum else [])
+    for key in ("anyOf", "oneOf"):
+        if isinstance(schema.get(key), list) and schema[key] and depth < CHECK_DEPTH:
+            result["anyOf"] = [check_schema(part, depth + 1, request=request) for part in schema[key]]
+            if any(part == {} for part in result["anyOf"]):
+                del result["anyOf"]  # a branch that allows anything allows the value
+            break
+    if depth < CHECK_DEPTH:
+        properties = schema.get("properties")
+        if isinstance(properties, dict) and properties:
+            result["properties"] = {name: check_schema(part, depth + 1, request=request)
+                                    for name, part in properties.items() if isinstance(part, dict)}
+        required = [name for name in schema.get("required") or () if isinstance(name, str)]
+        if request and isinstance(properties, dict):
+            required = [name for name in required if not (properties.get(name) or {}).get("readOnly")]
+        if required:
+            result["required"] = sorted(set(required), key=required.index)
+        if isinstance(schema.get("items"), dict):
+            result["items"] = check_schema(schema["items"], depth + 1, request=request)
+    return result
+
+
+def _is(value, kind: str) -> bool:
+    if kind == "integer":
+        return isinstance(value, int) and not isinstance(value, bool)
+    if kind == "number":
+        return isinstance(value, (int, float)) and not isinstance(value, bool)
+    if kind == "boolean":
+        return isinstance(value, bool)
+    if kind == "string":
+        return isinstance(value, str)
+    if kind == "array":
+        return isinstance(value, (list, tuple))
+    if kind == "object":
+        return isinstance(value, dict)
+    if kind == "null":
+        return value is None
+    return True
+
+
+def check_value(value, schema: dict, name: str) -> None:
+    """The generated client's own check (written out below as _check), used here to test examples."""
+    if not schema:
+        return
+    if "anyOf" in schema:
+        for branch in schema["anyOf"]:
+            try:
+                check_value(value, branch, name)
+                return
+            except (TypeError, ValueError):
+                continue
+        raise ValueError(f"{name} matches none of the allowed shapes")
+    kinds = schema.get("type") or []
+    if kinds and not any(_is(value, kind) for kind in kinds):
+        raise TypeError(f"{name} must be {' or '.join(kinds)}")
+    if "enum" in schema and value not in schema["enum"]:
+        raise ValueError(f"{name} must be one of the allowed values")
+    if isinstance(value, dict):
+        missing = [key for key in schema.get("required", ()) if key not in value]
+        if missing:
+            raise ValueError(f"{name} lacks {missing}")
+        for key, part in (schema.get("properties") or {}).items():
+            if key in value and value[key] is not None:
+                check_value(value[key], part, f"{name}.{key}")
+    elif isinstance(value, (list, tuple)) and "items" in schema:
+        for index, item in enumerate(value):
+            check_value(item, schema["items"], f"{name}[{index}]")
+
+
+_FORMAT_EXAMPLES = {"date-time": "2026-01-01T00:00:00Z", "date": "2026-01-01", "email": "user@example.com",
+                    "uri": "https://example.com", "url": "https://example.com", "uuid": "00000000-0000-4000-8000-000000000000",
+                    "ipv4": "192.0.2.1", "hostname": "example.com", "binary": "", "byte": "ZXhhbXBsZQ=="}
+
+
+def synthesize(schema: dict, depth: int = 0, *, every_property: bool = False):
+    """A small value the check accepts: the first enumeration value, formats respected, and the required fields
+    of an object (every field when asked, for a mock answer that shows the answer's shape)."""
+    if not schema:
+        return "example"
+    if "enum" in schema:
+        values = [value for value in schema["enum"] if value is not None]
+        return values[0] if values else None
+    if "anyOf" in schema:
+        for branch in schema["anyOf"]:
+            candidate = synthesize(branch, depth + 1, every_property=every_property)
+            try:
+                check_value(candidate, branch, "value")
+                return candidate
+            except (TypeError, ValueError):
+                continue
+    kinds = [kind for kind in schema.get("type") or [] if kind != "null"]
+    kind = kinds[0] if kinds else ("object" if "properties" in schema else "string")
+    if kind == "string":
+        return _FORMAT_EXAMPLES.get(schema.get("format", ""), "example")
+    if kind == "integer":
+        minimum = schema.get("minimum")
+        return max(1, int(math.ceil(minimum))) if isinstance(minimum, (int, float)) else 1
+    if kind == "number":
+        minimum = schema.get("minimum")
+        return max(1.5, float(minimum)) if isinstance(minimum, (int, float)) else 1.5
+    if kind == "boolean":
+        return True
+    if kind == "array":
+        return ([synthesize(schema["items"], depth + 1, every_property=every_property)]
+                if isinstance(schema.get("items"), dict) and depth < 6 else [])
+    if kind == "object":
+        properties = schema.get("properties") or {}
+        names = list(schema.get("required", ()))
+        if every_property and depth < 3:
+            names += [name for name in properties if name not in names]
+        return {name: synthesize(properties.get(name) or {}, depth + 1, every_property=every_property)
+                for name in names}
+    return None
+
+
+# -- operations ----------------------------------------------------------------------------------------------------
+@dataclass
+class Parameter:
+    python: str
+    wire: str
+    location: str
+    required: bool
+    schema: dict
+    check: dict
+    description: str
+    example: object = None
+
+
+@dataclass
+class Operation:
+    method: str
+    path: str
+    operation_id: str
+    function: str
+    module: str
+    summary: str
+    description: str
+    parameters: list
+    body_required: bool = False
+    body_schema: "dict | None" = None
+    body_check: "dict | None" = None
+    body_example: object = None
+    success_statuses: tuple = (200,)
+    response_kind: str = "json"
+    response_schema: "dict | None" = None
+    response_example: object = None
+    errors: dict = field(default_factory=dict)
+    base_url: str = ""
+    auth: "dict | None" = None
+    auth_optional: bool = False
+    deprecated: bool = False
+
+
+def snake(value: str) -> str:
+    text = re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", str(value))
+    text = re.sub(r"[^A-Za-z0-9]+", "_", text).strip("_").lower()
+    text = re.sub(r"_+", "_", text)
+    if not text or text[0].isdigit():
+        text = "op_" + text
+    return text + "_" if keyword.iskeyword(text) else text
+
+
+def _description(node: dict) -> str:
+    text = str(node.get("summary") or node.get("description") or "").strip()
+    return re.sub(r"\s+", " ", text)
+
+
+def _first_example(node: dict):
+    if not isinstance(node, dict):
+        return None
+    if "example" in node:
+        return node["example"]
+    examples = node.get("examples")
+    if isinstance(examples, dict):
+        for value in examples.values():
+            if isinstance(value, dict) and "value" in value:
+                return value["value"]
+    if isinstance(examples, list) and examples:
+        return examples[0]
+    return None
+
+
+def _json_content(content) -> "tuple | None":
+    """(media type, media object) of the JSON entry of a content map, or None."""
+    if not isinstance(content, dict):
+        return None
+    for media, value in content.items():
+        base = str(media).split(";")[0].strip().lower()
+        if base == "application/json" or base.endswith("+json"):
+            return base, value if isinstance(value, dict) else {}
+    return None
+
+
+def _server(servers) -> str:
+    for server in servers or ():
+        if not isinstance(server, dict) or not isinstance(server.get("url"), str):
+            continue
+        url = server["url"]
+        for name, variable in (server.get("variables") or {}).items():
+            if isinstance(variable, dict) and "default" in variable:
+                url = url.replace("{" + name + "}", str(variable["default"]))
+        if url.startswith("https://") and "{" not in url:
+            return url.rstrip("/")
+    return ""
+
+
+def _auth(document: dict, requirements, source: dict) -> tuple:
+    """(auth, optional): how the credential travels, from the first security requirement, or (None, True)."""
+    if requirements is None:
+        requirements = document.get("security") or []
+    if not requirements:
+        return None, True
+    optional = any(requirement == {} for requirement in requirements)
+    schemes = (document.get("components") or {}).get("securitySchemes") or {}
+    for requirement in requirements:
+        if not isinstance(requirement, dict) or not requirement:
+            continue
+        name = next(iter(requirement))
+        scheme = schemes.get(name)
+        if isinstance(scheme, dict) and "$ref" in scheme:
+            scheme = Resolver(document).follow(scheme)
+        if not isinstance(scheme, dict):
+            continue
+        variable = (source.get("scheme_variables") or {}).get(name) or source["credential_variable"]
+        kind = scheme.get("type")
+        if kind == "http" and str(scheme.get("scheme", "")).lower() == "bearer" or kind in ("oauth2", "openIdConnect"):
+            return {"scheme": name, "placement": "header", "name": "Authorization", "prefix": "Bearer ",
+                    "variable": variable}, optional
+        if kind == "http" and str(scheme.get("scheme", "")).lower() == "basic":
+            return {"scheme": name, "placement": "basic", "name": "Authorization", "prefix": "Basic ",
+                    "variable": variable}, optional
+        if kind == "apiKey" and scheme.get("in") in ("header", "query") and isinstance(scheme.get("name"), str):
+            return {"scheme": name, "placement": scheme["in"], "name": scheme["name"], "prefix": "",
+                    "variable": variable}, optional
+        raise OperationRefused("operation_parameters_unsupported", f"security scheme {name} of type {kind}")
+    return None, True
+
+
+def operations(document: dict, source: dict) -> tuple:
+    """(operations, refusals) of one specification document, in path and method order."""
+    resolver = Resolver(document)
+    found, refused, names = [], [], set()
+    top_servers = document.get("servers") or []
+    for path in sorted(document.get("paths") or {}):
+        item = resolver.follow(document["paths"][path]) if isinstance(document["paths"][path], dict) else {}
+        for method in METHODS:
+            node = item.get(method)
+            if not isinstance(node, dict):
+                continue
+            label = f"{method.upper()} {path}"
+            try:
+                operation = _operation(document, resolver, source, path, method, item, node, top_servers)
+            except OperationRefused as error:
+                refused.append(refusal(OPENAPI_OPERATIONS, error.reason, f"{source['source_id']} {label}", error.detail))
+                continue
+            if operation.module in names:
+                refused.append(refusal(OPENAPI_OPERATIONS, "duplicate_operation", f"{source['source_id']} {label}",
+                                       operation.module))
+                continue
+            names.add(operation.module)
+            found.append(operation)
+    return found, refused
+
+
+def _operation(document, resolver, source, path, method, item, node, top_servers) -> Operation:
+    operation_id = str(node.get("operationId") or "").strip() or f"{method}_{path}"
+    function = snake(operation_id)
+    module = f"{source['vendor']}_{function}"[:80]
+    if not re.fullmatch(r"[a-z_][a-z0-9_]*", module):
+        raise OperationRefused("operation_identity_missing", operation_id)
+    merged = {}
+    for raw in list(item.get("parameters") or []) + list(node.get("parameters") or []):
+        parameter = resolver.follow(raw)
+        if not isinstance(parameter, dict) or not isinstance(parameter.get("name"), str):
+            raise OperationRefused("operation_parameters_unsupported", "a parameter without a name")
+        merged[(parameter["name"], parameter.get("in"))] = parameter
+    parameters, pythons = [], set(RESERVED)
+    for (name, location), parameter in merged.items():
+        required = bool(parameter.get("required")) or location == "path"
+        if location == "cookie" or (location == "header" and name.lower() in MANAGED_HEADERS):
+            if required:
+                raise OperationRefused("operation_parameters_unsupported", f"{location} parameter {name}")
+            continue
+        if location not in ("path", "query", "header"):
+            raise OperationRefused("operation_parameters_unsupported", f"parameter {name} in {location}")
+        if "content" in parameter and "schema" not in parameter:
+            raise OperationRefused("operation_parameters_unsupported", f"parameter {name} with a content map")
+        schema = resolver.schema(parameter.get("schema") or {})
+        check = check_schema(schema)
+        if location == "query" and "object" in check.get("type", []):
+            if required:
+                raise OperationRefused("operation_parameters_unsupported", f"object in the query: {name}")
+            continue
+        python = snake(name)
+        while python in pythons:
+            python += "_parameter"
+        pythons.add(python)
+        example = _first_example(parameter)
+        if example is None:
+            example = _first_example(parameter.get("schema") or {})
+        parameters.append(Parameter(python, name, location, required, schema, check,
+                                    re.sub(r"\s+", " ", str(parameter.get("description") or ""))[:300], plain(example)))
+    placeholders = re.findall(r"{([^}]+)}", path)
+    declared = {parameter.wire for parameter in parameters if parameter.location == "path"}
+    if set(placeholders) - declared:
+        raise OperationRefused("operation_parameters_unsupported", f"undeclared path parameters {placeholders}")
+    parameters.sort(key=lambda row: (not row.required, ("path", "query", "header").index(row.location), row.python))
+    operation = Operation(method.upper(), path, operation_id, function, module, _description(node)[:300],
+                          re.sub(r"\s+", " ", str(node.get("description") or ""))[:600], parameters,
+                          deprecated=bool(node.get("deprecated")))
+    body = node.get("requestBody")
+    if body is not None:
+        body = resolver.follow(body)
+        found = _json_content(body.get("content"))
+        if found is None:
+            raise OperationRefused("operation_body_not_json", ", ".join(sorted(body.get("content") or {}))[:200])
+        _media, media = found
+        operation.body_required = bool(body.get("required"))
+        operation.body_schema = resolver.schema(media.get("schema") or {})
+        operation.body_check = check_schema(operation.body_schema)
+        operation.body_example = plain(_first_example(media) or _first_example(media.get("schema") or {}))
+    responses = node.get("responses") or {}
+    successes = sorted(int(code) for code in responses if str(code).isdigit() and 200 <= int(code) < 300)
+    operation.success_statuses = tuple(successes) or (200,)
+    first = resolver.follow(responses.get(str(operation.success_statuses[0])) or {})
+    content = first.get("content") if isinstance(first, dict) else None
+    found = _json_content(content)
+    if found is not None:
+        _media, media = found
+        operation.response_schema = resolver.schema(media.get("schema") or {})
+        operation.response_example = plain(_first_example(media) or _first_example(media.get("schema") or {}))
+        operation.response_kind = "json"
+    elif isinstance(content, dict) and content:
+        media = str(next(iter(content))).split(";")[0].lower()
+        operation.response_kind = "text" if media.startswith("text/") else "binary"
+    else:
+        operation.response_kind = "empty"
+    for code, response in responses.items():
+        if str(code).isdigit() and int(code) >= 400:
+            response = resolver.follow(response) if isinstance(response, dict) else {}
+            operation.errors[int(code)] = re.sub(r"\s+", " ", str(response.get("description") or ""))[:160]
+    operation.base_url = _server(node.get("servers") or item.get("servers") or top_servers)
+    if not operation.base_url:
+        raise OperationRefused("operation_parameters_unsupported", "no HTTPS server")
+    operation.auth, operation.auth_optional = _auth(document, node.get("security"), source)
+    return operation
+
+
+# -- the generated client and its tests ----------------------------------------------------------------------------
+def literal(value, indent: int = 0) -> str:
+    text = pprint.pformat(value, width=110 - indent, sort_dicts=False)
+    return text.replace("\n", "\n" + " " * indent)
+
+
+RUNTIME = '''
+
+
+class ApiError(Exception):
+    """An answer outside the documented successes, with its status, its documented meaning and its body."""
+
+    def __init__(self, status, meaning, body):
+        super().__init__(f"{OPERATION['method']} {OPERATION['path']} answered {status}: {meaning}")
+        self.status, self.meaning, self.body = status, meaning, body
+
+
+def _is(value, kind):
+    if kind == "integer":
+        return isinstance(value, int) and not isinstance(value, bool)
+    if kind == "number":
+        return isinstance(value, (int, float)) and not isinstance(value, bool)
+    return isinstance(value, {"boolean": bool, "string": str, "array": (list, tuple), "object": dict,
+                              "null": type(None)}.get(kind, object))
+
+
+def _check(value, schema, name):
+    """Refuse a value that breaks the schema: its type, its allowed values, required fields and nesting."""
+    if not schema:
+        return
+    if "anyOf" in schema:
+        for branch in schema["anyOf"]:
+            try:
+                _check(value, branch, name)
+                return
+            except (TypeError, ValueError):
+                continue
+        raise ValueError(f"{name} matches none of the allowed shapes")
+    kinds = schema.get("type") or []
+    if kinds and not any(_is(value, kind) for kind in kinds):
+        raise TypeError(f"{name} must be {' or '.join(kinds)}, not {type(value).__name__}")
+    if "enum" in schema and value not in schema["enum"]:
+        raise ValueError(f"{name} must be one of {schema['enum'][:20]}")
+    if isinstance(value, dict):
+        missing = [key for key in schema.get("required", ()) if key not in value]
+        if missing:
+            raise ValueError(f"{name} lacks {missing}")
+        for key, part in (schema.get("properties") or {}).items():
+            if key in value and value[key] is not None:
+                _check(value[key], part, f"{name}.{key}")
+    elif isinstance(value, (list, tuple)) and "items" in schema:
+        for index, item in enumerate(value):
+            _check(item, schema["items"], f"{name}[{index}]")
+
+
+def _text(value):
+    return ("true" if value else "false") if isinstance(value, bool) else str(value)
+
+
+def _send(request, timeout):
+    """Send the request over HTTPS and return (status, content type, bytes), error answers included."""
+    try:
+        with urllib.request.urlopen(request, timeout=timeout) as answer:
+            return answer.status, answer.headers.get("Content-Type", ""), answer.read()
+    except urllib.error.HTTPError as error:
+        return error.code, (error.headers.get("Content-Type", "") if error.headers else ""), error.read()
+
+
+def _decode(content_type, payload):
+    if not payload:
+        return None
+    if "json" in (content_type or "").lower():
+        return json.loads(payload.decode("utf-8"))
+    if (content_type or "").lower().startswith("text/"):
+        return payload.decode("utf-8", "replace")
+    return payload
+
+
+def _call(arguments, body, base_url, timeout, transport):
+    path, query = OPERATION["path"], []
+    headers = {"Accept": "application/json", "User-Agent": USER_AGENT}
+    for python_name, wire_name, location, _required, _schema in PARAMETERS:
+        value = arguments[python_name]
+        if value is None:
+            continue
+        if location == "path":
+            path = path.replace("{" + wire_name + "}", urllib.parse.quote(_text(value), safe=""))
+        elif location == "query":
+            items = value if isinstance(value, (list, tuple)) else [value]
+            query += [(wire_name, _text(item)) for item in items]
+        else:
+            headers[wire_name] = _text(value)
+    root = (base_url or os.environ.get(BASE_URL_VARIABLE) or BASE_URL).rstrip("/")
+    if not root.startswith("https://"):
+        raise ValueError("the API address must be an HTTPS address")
+# AUTH
+    data = None
+    if body is not None:
+        data = json.dumps(body).encode("utf-8")
+        headers["Content-Type"] = "application/json"
+    url = root + path + ("?" + urllib.parse.urlencode(query) if query else "")
+    request = urllib.request.Request(url, data=data, method=OPERATION["method"], headers=headers)
+    status, content_type, payload = (transport or _send)(request, timeout)
+    try:
+        answer = _decode(content_type, payload)
+    except (ValueError, UnicodeDecodeError):
+        answer = payload
+    if status not in SUCCESS_STATUSES:
+        raise ApiError(status, ERRORS.get(status, "not a documented success"), answer)
+    return answer
+'''
+
+
+AUTH_PLACEMENTS = {
+    "header": '        headers[AUTH["name"]] = AUTH["prefix"] + credential\n',
+    "basic": ('        headers[AUTH["name"]] = AUTH["prefix"] + '
+              'base64.b64encode(credential.encode("utf-8")).decode("ascii")\n'),
+    "query": '        query.append((AUTH["name"], credential))\n'}
+AUTH_BLOCK = ('    credential = os.environ.get(AUTH["variable"], "")\n'
+              '    if credential:\n'
+              'PLACE'
+              '    elif not AUTH_OPTIONAL:\n'
+              '        raise PermissionError("set the environment variable " + AUTH["variable"] + " to call "\n'
+              '                              + OPERATION["operation_id"])\n')
+
+
+def auth_block(auth: "dict | None") -> str:
+    """The lines of _call that place the credential, for this operation's one security scheme only."""
+    if auth is None:
+        return ""
+    return AUTH_BLOCK.replace("PLACE", AUTH_PLACEMENTS[auth["placement"]])
+
+
+def doc(text: str) -> str:
+    """Text safe inside a triple-quoted docstring."""
+    return str(text).replace("\\", "\\\\").replace('"""', "'''")
+
+
+def client_source(operation: Operation, spec: dict) -> str:
+    title = spec["title"]
+    arguments = []
+    for parameter in operation.parameters:
+        arguments.append(parameter.python if parameter.required else f"{parameter.python}=None")
+    if operation.body_schema is not None:
+        arguments.append("body" if operation.body_required else "body=None")
+    arguments += ["base_url=None", "timeout=30.0", "transport=None"]
+    lines = []
+    for parameter in operation.parameters:
+        kinds = " or ".join(parameter.check.get("type", [])) or "any value"
+        text = f"{parameter.python}: {parameter.location} parameter {parameter.wire}, {kinds}" + (
+            " (required)" if parameter.required else " (optional)")
+        if parameter.description:
+            text += f". {parameter.description[:160]}"
+        lines.append(text)
+    if operation.body_schema is not None:
+        lines.append("body: the JSON request body" + (" (required)" if operation.body_required else " (optional)")
+                     + '; its schema is "input.body" in schema.json.')
+    lines += [f"base_url: overrides {operation.base_url}; the environment variable {spec['base_url_variable']} "
+              "does too.", "timeout: seconds to wait for the answer.",
+              "transport: a callable (request, timeout) -> (status, content type, bytes), for tests; the default "
+              "sends the request over HTTPS."]
+    lines = [textwrap.fill(line, width=100, initial_indent="  ", subsequent_indent="    ") for line in lines]
+    credential = ""
+    if operation.auth:
+        credential = (f", PermissionError when {operation.auth['variable']} is not set" if not operation.auth_optional
+                      else "")
+    returns = {"json": f"the parsed JSON answer of status {operation.success_statuses[0]}",
+               "text": "the text of the answer", "binary": "the bytes of the answer",
+               "empty": "None (the answer has no body)"}[operation.response_kind]
+    closing = textwrap.fill(f"Returns {returns}. Raises TypeError or ValueError before any request when an argument "
+                            f"breaks the specification{credential}, and ApiError for any answer outside the documented "
+                            "successes.", width=100)
+    docstring = "\n".join([textwrap.fill(operation.summary or f"{operation.method} {operation.path}", width=100), "",
+                           f"{operation.method} {operation.path} (operation {operation.operation_id}).", "",
+                           "Arguments:", *lines, "", closing])
+    values = ", ".join(f'"{parameter.python}": {parameter.python}' for parameter in operation.parameters)
+    body_check = ""
+    if operation.body_schema is not None:
+        body_check = ("    if body is None and BODY_REQUIRED:\n        raise ValueError(\"body is required\")\n"
+                      "    if body is not None:\n        _check(body, BODY_SCHEMA, \"body\")\n")
+    parameters = [(parameter.python, parameter.wire, parameter.location, parameter.required, parameter.check)
+                  for parameter in operation.parameters]
+    uses_basic = bool(operation.auth and operation.auth["placement"] == "basic")
+    header = doc(textwrap.fill(f"{title} API: {operation.summary or operation.operation_id}", width=110) + "\n\n"
+                 + textwrap.fill(f"{operation.method} {operation.path}, operation {operation.operation_id} of {title} "
+                                 f"{spec['version']}. Baltor generated this client from the specification at "
+                                 f"{spec['repository']}@{spec['commit'][:12]} ({spec['path']}); see README.md and "
+                                 "schema.json.", width=110))
+    header = '"""' + header + '\n"""\n'
+    imports = ["from __future__ import annotations", "", *(["import base64"] if uses_basic else []), "import json",
+               "import os", "import urllib.error", "import urllib.parse", "import urllib.request", ""]
+    runtime = RUNTIME.replace("# AUTH\n", auth_block(operation.auth))
+    constants = [
+        f'OPERATION = {literal({"method": operation.method, "path": operation.path, "operation_id": operation.operation_id})}',
+        f"BASE_URL = {operation.base_url!r}", f"BASE_URL_VARIABLE = {spec['base_url_variable']!r}",
+        f"USER_AGENT = {USER_AGENT!r}",
+        f"AUTH = {literal(operation.auth)}", f"AUTH_OPTIONAL = {operation.auth_optional!r}",
+        "#: (python name, wire name, location, required, checked schema) of every parameter.",
+        f"PARAMETERS = {literal(tuple(parameters))}",
+        f"BODY_REQUIRED = {operation.body_required!r}",
+        f"BODY_SCHEMA = {literal(operation.body_check)}",
+        f"SUCCESS_STATUSES = {operation.success_statuses!r}",
+        f"ERRORS = {literal(operation.errors)}"]
+    signature = textwrap.fill(f"def {operation.function}(*, {', '.join(arguments)}):", width=110,
+                              subsequent_indent=" " * (len(operation.function) + 5), break_long_words=False,
+                              break_on_hyphens=False)
+    function = (f"\n\n{signature}\n"
+                + '    """' + "\n".join(line.rstrip() for line in doc(docstring).replace("\n", "\n    ").split("\n"))
+                + '\n    """\n'
+                + f"    arguments = {{{values}}}\n"
+                + "    for python_name, _wire_name, _location, required, schema in PARAMETERS:\n"
+                + "        value = arguments[python_name]\n"
+                + "        if value is None:\n"
+                + "            if required:\n"
+                + "                raise ValueError(f\"{python_name} is required\")\n"
+                + "            continue\n"
+                + "        _check(value, schema, python_name)\n"
+                + body_check
+                + f"    return _call(arguments, {'body' if operation.body_schema is not None else 'None'}, base_url, "
+                  "timeout, transport)\n")
+    return header + "\n".join(imports) + "\n" + "\n".join(constants) + runtime + function
+
+
+def _example_arguments(operation: Operation) -> dict:
+    call = {}
+    for parameter in operation.parameters:
+        if not parameter.required:
+            continue
+        value = parameter.example
+        try:
+            if value is None:
+                raise ValueError
+            check_value(value, parameter.check, parameter.python)
+        except (TypeError, ValueError):
+            value = synthesize(parameter.check)
+            check_value(value, parameter.check, parameter.python)
+        call[parameter.python] = value
+    if operation.body_schema is not None:
+        body = operation.body_example
+        try:
+            if body is None or len(json.dumps(body)) > MAXIMUM_EXAMPLE_CHARACTERS:
+                raise ValueError
+            check_value(body, operation.body_check or {}, "body")
+        except (TypeError, ValueError):
+            body = synthesize(operation.body_check or {})
+            check_value(body, operation.body_check or {}, "body")
+        call["body"] = body
+    return call
+
+
+def _response_example(operation: Operation):
+    if operation.response_kind != "json":
+        return None
+    example = operation.response_example
+    if example is None or len(json.dumps(example)) > MAXIMUM_EXAMPLE_CHARACTERS:
+        example = synthesize(check_schema(operation.response_schema or {}, request=False), every_property=True) \
+            if operation.response_schema else {"ok": True}
+    return example if example is not None else {"ok": True}
+
+
+def test_source(operation: Operation, call: dict, example) -> str:
+    # The server address may carry a path of its own (https://api.example.com/v1): it precedes the operation's.
+    expected_path = urllib.parse.urlsplit(operation.base_url).path.rstrip("/") + operation.path
+    for parameter in operation.parameters:
+        if parameter.location == "path":
+            value = call[parameter.python]
+            text = ("true" if value else "false") if isinstance(value, bool) else str(value)
+            expected_path = expected_path.replace("{" + parameter.wire + "}", urllib.parse.quote(text, safe=""))
+    content_type = {"json": "application/json", "text": "text/plain", "binary": "application/octet-stream",
+                    "empty": ""}[operation.response_kind]
+    payload = {"json": "json.dumps(EXAMPLE).encode('utf-8')", "text": "b'example text'", "binary": "b'\\x00\\x01'",
+               "empty": "b''"}[operation.response_kind]
+    expected_answer = {"json": "EXAMPLE", "text": "'example text'", "binary": "b'\\x00\\x01'",
+                       "empty": "None"}[operation.response_kind]
+    error_status = min(operation.errors) if operation.errors else 500
+    required = [parameter for parameter in operation.parameters if parameter.required]
+    auth = operation.auth
+    tests = [f'''
+    def test_the_request_follows_the_specification(self):
+        mock = _Mock()
+        answer = client.{operation.function}(**CALL, transport=mock)
+        self.assertEqual(answer, {expected_answer})
+        [request] = mock.requests
+        self.assertEqual(request.get_method(), {operation.method!r})
+        address = urllib.parse.urlsplit(request.full_url)
+        self.assertEqual(address.scheme, "https")
+        self.assertEqual(urllib.parse.unquote(address.path), urllib.parse.unquote(EXPECTED_PATH))''']
+    if auth and auth["placement"] == "header":
+        tests[-1] += f'''
+        self.assertEqual(request.headers.get({auth["name"].capitalize()!r}), {auth["prefix"] + "test-credential"!r})'''
+    elif auth and auth["placement"] == "basic":
+        encoded = auth["prefix"] + base64.b64encode(b"test-credential").decode("ascii")
+        tests[-1] += f'''
+        self.assertEqual(request.headers.get("Authorization"), {encoded!r})'''
+    elif auth and auth["placement"] == "query":
+        tests[-1] += f'''
+        self.assertIn(({auth["name"]!r}, "test-credential"), urllib.parse.parse_qsl(address.query))'''
+    for parameter in required:
+        if parameter.location == "query":
+            tests[-1] += f'''
+        self.assertIn({parameter.wire!r}, dict(urllib.parse.parse_qsl(address.query)))'''
+    if "body" in call:
+        tests[-1] += '''
+        self.assertEqual(json.loads(request.data.decode("utf-8")), CALL["body"])'''
+    if required:
+        first = required[0].python
+        tests.append(f'''
+    def test_known_wrong_a_missing_required_argument_sends_nothing(self):
+        mock = _Mock()
+        arguments = {{key: value for key, value in CALL.items() if key != {first!r}}}
+        with self.assertRaises((TypeError, ValueError)):
+            client.{operation.function}(**arguments, {first}=None, transport=mock)
+        self.assertEqual(mock.requests, [])''')
+        typed = next((parameter for parameter in required if parameter.check.get("type")
+                      and "object" not in parameter.check["type"] and "array" not in parameter.check["type"]
+                      and not ("string" in parameter.check["type"] and "integer" in parameter.check["type"])), None)
+        if typed is not None:
+            wrong = [1, 2] if "string" in typed.check["type"] else "wrong type"
+            tests.append(f'''
+    def test_known_wrong_a_wrong_type_sends_nothing(self):
+        mock = _Mock()
+        with self.assertRaises((TypeError, ValueError)):
+            client.{operation.function}(**{{**CALL, {typed.python!r}: {wrong!r}}}, transport=mock)
+        self.assertEqual(mock.requests, [])''')
+    body_required = (operation.body_check or {}).get("required") or []
+    if isinstance(call.get("body"), dict) and body_required and body_required[0] in call["body"]:
+        tests.append(f'''
+    def test_known_wrong_a_body_without_a_required_field_sends_nothing(self):
+        mock = _Mock()
+        body = {{key: value for key, value in CALL["body"].items() if key != {body_required[0]!r}}}
+        with self.assertRaises((TypeError, ValueError)):
+            client.{operation.function}(**{{**CALL, "body": body}}, transport=mock)
+        self.assertEqual(mock.requests, [])''')
+    tests.append(f'''
+    def test_known_wrong_an_error_status_raises_with_its_meaning(self):
+        mock = _Mock(status={error_status}, payload=b'{{"error": "example"}}', content_type="application/json")
+        with self.assertRaises(client.ApiError) as caught:
+            client.{operation.function}(**CALL, transport=mock)
+        self.assertEqual(caught.exception.status, {error_status})''')
+    if auth and not operation.auth_optional:
+        tests.append(f'''
+    def test_known_wrong_without_the_credential_nothing_is_sent(self):
+        os.environ.pop({auth["variable"]!r}, None)
+        mock = _Mock()
+        with self.assertRaises(PermissionError):
+            client.{operation.function}(**CALL, transport=mock)
+        self.assertEqual(mock.requests, [])''')
+    tests.append(f'''
+    def test_known_wrong_an_address_that_is_not_https_sends_nothing(self):
+        mock = _Mock()
+        with self.assertRaises(ValueError):
+            client.{operation.function}(**CALL, base_url="http://example.com", transport=mock)
+        self.assertEqual(mock.requests, [])''')
+    variables = [auth["variable"]] if auth else []
+    class_name = "".join(part.capitalize() for part in operation.function.split("_") if part)[:60] + "Test"
+    return (f'"""Offline tests of {operation.function}.\n\nA local mock of the API answers with the specification\'s '
+            'example, and known-wrong calls\nmust send nothing or raise.\n"""\n'
+            "from __future__ import annotations\n\nimport json\nimport os\nimport sys\nimport unittest\n"
+            "import urllib.parse\n\nsys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))\n"
+            f"import {operation.module} as client  # noqa: E402\n\n"
+            f"CALL = {literal(call)}\nEXAMPLE = {literal(example)}\nEXPECTED_PATH = {expected_path!r}\n"
+            f"VARIABLES = {variables!r}\n\n\n"
+            "class _Mock:\n"
+            '    """A local stand-in for the API: it records each request and answers with the example."""\n\n'
+            f"    def __init__(self, status={operation.success_statuses[0]}, payload=None, content_type={content_type!r}):\n"
+            f"        self.status, self.content_type = status, content_type\n"
+            f"        self.payload = {payload} if payload is None else payload\n"
+            "        self.requests = []\n\n"
+            "    def __call__(self, request, timeout):\n"
+            "        self.requests.append(request)\n"
+            "        return self.status, self.content_type, self.payload\n\n\n"
+            f"class {class_name}(unittest.TestCase):\n"
+            "    def setUp(self):\n"
+            "        self.saved = {name: os.environ.get(name) for name in VARIABLES + [client.BASE_URL_VARIABLE]}\n"
+            "        os.environ.pop(client.BASE_URL_VARIABLE, None)\n"
+            "        for name in VARIABLES:\n"
+            '            os.environ[name] = "test-credential"\n\n'
+            "    def tearDown(self):\n"
+            "        for name, value in self.saved.items():\n"
+            "            if value is None:\n"
+            "                os.environ.pop(name, None)\n"
+            "            else:\n"
+            "                os.environ[name] = value\n"
+            + "\n".join(tests) + "\n\n\nif __name__ == \"__main__\":\n    unittest.main()\n")
+
+
+def readme_source(operation: Operation, spec: dict, schema_bytes: int) -> str:
+    rows = [f"| `{parameter.python}` | {parameter.location} `{parameter.wire}` | "
+            f"{' or '.join(parameter.check.get('type', [])) or 'any'} | {'yes' if parameter.required else 'no'} |"
+            for parameter in operation.parameters]
+    table = "\n".join(["| Argument | Sent as | Type | Required |", "|---|---|---|---|", *rows]) if rows else \
+        "The operation takes no parameters."
+    auth = operation.auth
+    if auth is None:
+        credential = "The specification requires no credential for this operation."
+    else:
+        where = {"header": f"the `{auth['name']}` header" + (f" (value `{auth['prefix']}<credential>`)"
+                                                             if auth["prefix"] else " (the value as set)"),
+                 "basic": "the `Authorization` header as Basic credentials (set the variable to `user:password`)",
+                 "query": f"the query parameter `{auth['name']}`"}[auth["placement"]]
+        credential = (f"The client reads the credential from the environment variable `{auth['variable']}` "
+                      f"(security scheme `{auth['scheme']}`) and sends it in {where}. It is never written to a file"
+                      + (". The credential is optional for this operation." if operation.auth_optional else "."))
+    body = ""
+    if operation.body_schema is not None:
+        body = (f"\nThe JSON request body is {'required' if operation.body_required else 'optional'}; "
+                "its schema is `input.body` in `schema.json`.\n")
+    return f"""# {spec['title']}: {operation.summary or operation.operation_id}
+
+`{operation.method} {operation.path}` (operation `{operation.operation_id}`) as one Python function,
+`{operation.function}` in `{operation.module}.py`. Baltor generated it and its tests from the
+{spec['title']} OpenAPI specification {spec['version']} at `{spec['repository']}` commit
+`{spec['commit']}`, file `{spec['path']}` (SHA-256 `{spec['sha256']}`), licensed {spec['licence']}.
+{('The specification marks this operation as deprecated.' + chr(10)) if operation.deprecated else ''}
+{operation.description or ''}
+
+## Arguments
+
+{table}
+{body}
+## Credential
+
+{credential}
+
+## What it does and refuses
+
+- Sends one HTTPS request to `{operation.base_url}` (or the address in `{spec['base_url_variable']}`
+  or `base_url`) and returns {('the parsed JSON answer' if operation.response_kind == 'json' else 'the answer')}.
+- Checks types, allowed values and required fields before sending, and raises `TypeError` or
+  `ValueError` without sending anything when an argument breaks the specification.
+- Raises `ApiError` with the status, the documented meaning and the body for any answer outside the
+  documented successes ({', '.join(str(code) for code in operation.success_statuses)}).
+- Refuses an address that is not HTTPS. The specification defines no pagination for this operation,
+  so the client returns one page as the API answers it.
+
+`schema.json` holds the input and output schemas ({schema_bytes} bytes), with the specification's
+local references resolved. `test_{operation.module}.py` runs offline against a local mock:
+
+```bash
+python -m unittest test_{operation.module}
+```
+"""
+
+
+# -- running the generated tests -----------------------------------------------------------------------------------
+def run_tests(folder: Path, module: str) -> tuple:
+    """(passed, tests run, tail of the output) of one package's generated tests, in this process, network closed."""
+    saved_path, saved_modules = list(sys.path), set(sys.modules)
+    saved_open = urllib.request.urlopen
+
+    def closed(*_arguments, **_options):
+        raise RuntimeError("the network is closed while generated tests run")
+
+    urllib.request.urlopen = closed
+    stream = io.StringIO()
+    try:
+        name = f"test_{module}"
+        specification = importlib.util.spec_from_file_location(name, folder / f"{name}.py")
+        loaded = importlib.util.module_from_spec(specification)
+        specification.loader.exec_module(loaded)
+        suite = unittest.TestLoader().loadTestsFromModule(loaded)
+        result = unittest.TextTestRunner(stream=stream, verbosity=0).run(suite)
+        return result.wasSuccessful() and result.testsRun > 0, result.testsRun, stream.getvalue()[-800:]
+    except Exception as error:  # noqa: BLE001 - a package whose tests cannot even load is refused, never stored
+        return False, 0, f"{type(error).__name__}: {error}"[:800]
+    finally:
+        urllib.request.urlopen = saved_open
+        sys.path[:] = saved_path
+        for name in set(sys.modules) - saved_modules:
+            del sys.modules[name]
+
+
+# -- reading a specification ---------------------------------------------------------------------------------------
+def read_specification(reader, source: dict, path: str) -> dict:
+    """The specification's bytes at the branch's head commit, proven by git blob identity, with its licence."""
+    repository = source["repository"]
+    head = reader.github(f"repos/{repository}/commits/{source['branch']}")
+    if head.status != 200:
+        raise OperationRefused("specification_unreadable", f"{repository}: no head commit")
+    commit = json.loads(head.body)["sha"]
+    meta = reader.github(f"repos/{repository}/contents/{urllib.parse.quote(path)}?ref={commit}")
+    if meta.status != 200:
+        raise OperationRefused("specification_unreadable", f"{repository}/{path}: no file at {commit[:12]}")
+    blob = json.loads(meta.body).get("sha")
+    raw = reader.get(f"https://{RAW_HOST}/{repository}/{commit}/{urllib.parse.quote(path)}")
+    if raw.status != 200 or git_blob_identity(raw.body) != blob:
+        raise OperationRefused("specification_unreadable", f"{repository}/{path}: bytes differ from blob {blob}")
+    licence = repository_licence(reader, repository, commit)
+    if not licence.allowed:
+        reason = "licence_signals_disagree" if licence.reason == "licence_signals_disagree" else "licence_not_on_allowlist"
+        raise OperationRefused(reason, f"{repository}: {licence.reason} {licence.github_spdx}")
+    try:
+        if path.endswith((".yaml", ".yml")):
+            import yaml
+            loader = getattr(yaml, "CSafeLoader", yaml.SafeLoader)
+            document = yaml.load(raw.body.decode("utf-8"), Loader=loader)  # noqa: S506 - a safe loader
+        else:
+            document = json.loads(raw.body.decode("utf-8"))
+    except Exception as error:  # noqa: BLE001 - an unreadable specification is refused by name
+        raise OperationRefused("specification_unreadable", f"{repository}/{path}: {type(error).__name__}") from None
+    document = plain(document)  # YAML keys such as 200 become text, and dates become text
+    if not isinstance(document, dict) or not str(document.get("openapi", "")).startswith("3."):
+        raise OperationRefused("specification_version_unsupported",
+                               f"{repository}/{path}: {str(document.get('openapi') or document.get('swagger'))[:20]}")
+    info = document.get("info") or {}
+    return {"document": document, "repository": repository, "commit": commit, "path": path, "blob": blob,
+            "sha256": raw.sha256, "size_bytes": len(raw.body), "retrieved_at": raw.retrieved_at, "bytes": raw.body,
+            "licence": licence, "title": re.sub(r"\s+", " ", str(info.get("title") or source["vendor"]))[:80],
+            "version": str(info.get("version") or "")[:40],
+            "base_url_variable": f"{source['vendor'].upper()}_BASE_URL"}
+
+
+def generate(reader, sources, *, code_revision: str, licence_text: bytes, generated_on: str, staging: Path,
+             repository_facts: "dict | None" = None) -> tuple:
+    """(built, refusals, facts, summary): every operation of every declared specification, tested and packaged."""
+    built, refused, facts, summary = [], [], {}, []
+    generator = {"identity": "tools/supply_lines/openapi_operations.py", "version": GENERATOR_VERSION,
+                 "code_revision": code_revision}
+    for source in sources:
+        taken = 0
+        seen_modules = set()
+        for path in source["paths"]:
+            try:
+                spec = read_specification(reader, source, path)
+            except OperationRefused as error:
+                refused.append(refusal(OPENAPI_OPERATIONS, error.reason, f"{source['source_id']} {path}", error.detail))
+                summary.append({"source_id": source["source_id"], "path": path, "refused": error.reason})
+                continue
+            facts[spec["sha256"]] = spec["bytes"]
+            licence = spec["licence"]
+            spec["licence"] = licence.spdx
+            found, refusals = operations(spec["document"], source)
+            refused += refusals
+            kept = 0
+            for operation in found:
+                if taken >= source["maximum_operations"]:
+                    break
+                if operation.module in seen_modules:
+                    refused.append(refusal(OPENAPI_OPERATIONS, "duplicate_operation",
+                                           f"{source['source_id']} {operation.method} {operation.path}", operation.module))
+                    continue
+                try:
+                    payload_bodies = _package(operation, spec, source, licence, generator, licence_text, generated_on,
+                                              staging, repository_facts or {})
+                except OperationRefused as error:
+                    refused.append(refusal(OPENAPI_OPERATIONS, error.reason,
+                                           f"{source['source_id']} {operation.method} {operation.path}", error.detail))
+                    continue
+                except SupplyRecordError as error:
+                    reason = error.code if error.code in ("blocked_by_static_check", "package_above_review_bound") \
+                        else "generated_test_failed"
+                    refused.append(refusal(OPENAPI_OPERATIONS, reason,
+                                           f"{source['source_id']} {operation.method} {operation.path}", str(error)))
+                    continue
+                seen_modules.add(operation.module)
+                built.append(payload_bodies)
+                taken += 1
+                kept += 1
+            summary.append({"source_id": source["source_id"], "path": path, "commit": spec["commit"],
+                            "sha256": spec["sha256"], "licence": licence.spdx, "operations": len(found),
+                            "refused_while_reading": len(refusals), "packaged": kept})
+    return built, refused, facts, summary
+
+
+def _package(operation, spec, source, licence, generator, licence_text, generated_on, staging, repository_facts):
+    try:
+        call = _example_arguments(operation)
+        example = _response_example(operation)
+    except (TypeError, ValueError) as error:
+        raise OperationRefused("example_not_constructible", str(error)[:200]) from None
+    schema = {"operation": {"method": operation.method, "path": operation.path, "operation_id": operation.operation_id},
+              "input": {"parameters": [{"name": parameter.wire, "in": parameter.location, "required": parameter.required,
+                                        "schema": parameter.schema} for parameter in operation.parameters],
+                        "body": operation.body_schema, "body_required": operation.body_required},
+              "output": {"status": list(operation.success_statuses), "kind": operation.response_kind,
+                         "schema": operation.response_schema},
+              "errors": {str(code): meaning for code, meaning in sorted(operation.errors.items())}}
+    schema_text = json.dumps(schema, indent=1, ensure_ascii=False, sort_keys=False) + "\n"
+    client = client_source(operation, spec)
+    tests = test_source(operation, call, example)
+    folder = staging / operation.module
+    folder.mkdir(parents=True, exist_ok=True)
+    (folder / f"{operation.module}.py").write_text(client, encoding="utf-8")
+    (folder / f"test_{operation.module}.py").write_text(tests, encoding="utf-8")
+    passed, count, output = run_tests(folder, operation.module)
+    if not passed:
+        raise OperationRefused("generated_test_failed", output[-300:])
+    readme = readme_source(operation, spec, len(schema_text.encode()))
+    upstream = licence.text
+    files = [PackageFile(f"{operation.module}.py", client.encode(), "executable_tool"),
+             PackageFile(f"test_{operation.module}.py", tests.encode(), "executable_tool"),
+             PackageFile("schema.json", schema_text.encode(), "other"),
+             PackageFile("README.md", readme.encode(), "other"),
+             PackageFile(LICENCE_NAME, licence_text, "other", LICENCE_TEXT),
+             PackageFile(UPSTREAM_LICENCE_NAME, upstream, "other", LICENCE_TEXT,
+                         {"url": f"https://github.com/{spec['repository']}/blob/{spec['commit']}/{licence.path}",
+                          "sha256": licence.sha256})]
+    expression = GENERATED_CODE_LICENCE if licence.spdx == GENERATED_CODE_LICENCE else \
+        f"{GENERATED_CODE_LICENCE} AND {licence.spdx}"
+    raw_url = f"https://{RAW_HOST}/{spec['repository']}/{spec['commit']}/{urllib.parse.quote(spec['path'])}"
+    facts = [fact_source(raw_url, spec["retrieved_at"], spec["sha256"], spec["size_bytes"], "specification",
+                         spdx=licence.spdx, basis="github_licence_interface_and_text_agree",
+                         evidence_sha256=licence.sha256),
+             fact_source(f"https://github.com/{spec['repository']}/blob/{spec['commit']}/{licence.path}",
+                         spec["retrieved_at"], licence.sha256, len(upstream), "licence_text", spdx=licence.spdx,
+                         basis="licence_file_at_the_pinned_commit")]
+    effects = [("network", "sends_one_https_request_to_the_api")]
+    credentials = []
+    if operation.auth:
+        effects.append(("reads_secret", f"reads_{operation.auth['variable']}_from_the_environment"))
+        credentials.append(operation.auth["variable"])
+    name = f"{source['vendor']}-{operation.function.replace('_', '-')}"[:90]
+    identity = f"{spec['repository']}:{spec['path']}:{operation.method} {operation.path}"
+    stars = ((repository_facts.get(spec["repository"].lower()) or {}).get("stargazerCount")) or 0
+    supply = SupplyPackage(
+        line=OPENAPI_OPERATIONS, identity=identity, key=upstream_key(OPENAPI_OPERATIONS, identity), kind="code_module",
+        native_format=NATIVE_FORMAT, form="api_operation", name=name,
+        description=(f"{spec['title']} API: {operation.summary or operation.operation_id} "
+                     f"({operation.method} {operation.path}), one tested Python function."),
+        files=files, licence_expression=expression,
+        provenance=provenance("github_repository", spec["repository"], spec["path"], spec["commit"], facts, generator),
+        placements=[{"harness": "reference", "path": f"tools/{name}/", "basis": "documented_layout",
+                     "scope": "project", "support": "unverified"}],
+        effects=effects, credentials=credentials,
+        tests={"files": [f"test_{operation.module}.py"], "command": f"python -m unittest test_{operation.module}",
+               "result": "passed", "tests_run": count, "network": False},
+        repository={"name": spec["repository"], "stars": stars, "specification": spec["path"],
+                    "specification_version": spec["version"], "operation": f"{operation.method} {operation.path}"},
+        generated_on=generated_on, comparison_text=identity)
+    return build(supply)
+
+
+def counts(refusals) -> dict:
+    return dict(Counter(row["reason"] for row in refusals).most_common())
