@@ -34,6 +34,7 @@ from loop_engine.core.provisioning_server import METERING_POLICIES
 from loop_engine.core.service_runtime.http_entrypoint import (
     HostLicensePolicy, MANIFEST_VERSION,
 )
+from loop_engine.core.service_runtime.records import ServiceRuntimeError
 
 #: The review record this command reads. A different record version is refused
 #: rather than reinterpreted, so an older or newer review cannot be guessed at.
@@ -294,9 +295,24 @@ def _review_index(folder: Path):
     return record, index
 
 
+def license_policy(accepted_licenses) -> HostLicensePolicy:
+    """The host licence policy this release is built against.
+
+    The engine owns what a usable licence list is. Its refusal, for example a
+    review state such as ``unknown`` in place of a licence name, or a name with
+    a space around it, is reported under the engine's own code as one typed
+    refusal of this command, so an operator reads a refusal record and never a
+    traceback, and this command keeps no second copy of the engine's rule.
+    """
+    try:
+        return HostLicensePolicy(accepted_licenses=tuple(accepted_licenses))
+    except ServiceRuntimeError as refusal:
+        raise ManifestBuildError(refusal.code, str(refusal)) from None
+
+
 def build(folder: Path, *, artifact_root: str, accepted_licenses, grants, include=()):
     """Return the manifest and the approved bodies, or raise the first refusal."""
-    policy = HostLicensePolicy(accepted_licenses=tuple(accepted_licenses))
+    policy = license_policy(accepted_licenses)
     catalogue = _read_json(folder / ITEMS_FILE, "the candidate item file")
     if not isinstance(catalogue, dict) or catalogue.get("record_type") != ITEMS_RECORD_TYPE:
         raise ManifestBuildError("catalogue_record_unsupported",

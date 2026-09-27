@@ -9,6 +9,8 @@ the exact refusal code the host or the generator returns.
 """
 from __future__ import annotations
 
+import contextlib
+import io
 import json
 from pathlib import Path
 import shutil
@@ -346,6 +348,28 @@ class KnownWrongCaseTest(unittest.TestCase):
             tool.build(CATALOGUE, artifact_root=IMAGE_ARTIFACT_ROOT,
                        accepted_licenses=("Apache-2.0",), grants=[])
         self.assertEqual(held.exception.code, "item_license_not_accepted")
+
+    def test_a_licence_list_the_engine_cannot_use_is_refused_under_the_engine_code(self):
+        """A review state is not a licence, and a host list holds exact printable names only.
+
+        The generator reports the engine's own refusal code as one typed refusal,
+        both from ``build`` and from the command, so an operator reads a refusal
+        record with exit status 2 and never a traceback whose exit status 1 would
+        read like a stale release folder.
+        """
+        for unusable in ("unknown", "needs_review", " MIT", "MIT ", ""):
+            with self.subTest(licence=repr(unusable)):
+                with self.assertRaises(tool.ManifestBuildError) as held:
+                    tool.build(CATALOGUE, artifact_root=IMAGE_ARTIFACT_ROOT,
+                               accepted_licenses=(unusable,), grants=[])
+                self.assertEqual(held.exception.code, "invalid_license_policy")
+                printed = io.StringIO()
+                with contextlib.redirect_stdout(printed):
+                    code = tool.main(["--catalogue", str(CATALOGUE), "--output", str(RELEASE),
+                                      "--artifact-root", IMAGE_ARTIFACT_ROOT, "--accept-license", unusable])
+                self.assertEqual(code, 2)
+                answer = json.loads(printed.getvalue())
+                self.assertEqual((answer["refused"], answer["code"]), (True, "invalid_license_policy"))
 
     def test_no_host_policy_can_accept_the_unknown_licence_the_rejected_items_declare(self):
         """The two unknown-licence candidates are refused before registration, by the host and here."""
