@@ -384,12 +384,20 @@ loop-engine solve \
 | `--supervision-policy` | the declared non progress and unaccepted pass limits |
 | `--quiet-model-io` | event summaries instead of the full prompt and output trace |
 
-Three more are off by default and should stay off unless the task needs them:
-`--allow-sandbox-commands` for generated code, `--allow-local-execution` for
-running it as a host process when Docker is absent, which the run record
-labels as the weaker isolation, and `--allow-model-failover` for moving to
-another authorized route after a retryable failure. On one local route there
-is nothing to fail over to, so leave it off.
+Two more are off by default and should stay off unless the task needs them:
+`--allow-local-execution` for running generated code as a host process when
+Docker is absent, which the run record labels as the weaker isolation, and
+`--allow-model-failover` for moving to another authorized route after a
+retryable failure. On one local route there is nothing to fail over to, so
+leave it off.
+
+Running generated code in the sandbox is not a command line option. The
+settings file decides it: a solve writes in its workspace and runs sandboxed
+commands when `operating.construction_and_execution_mode` is
+`sandbox_generate` or `promotion_authorized`. A settings file without an
+`operating:` block, such as the one in section 2, takes `sandbox_generate`.
+For a night that should do neither, add an `operating:` block with
+`construction_and_execution_mode: reuse_only`.
 
 `--unattended` matters more than it looks. Without it, a run that meets a
 material question waits for an answer, and at three in the morning that is a

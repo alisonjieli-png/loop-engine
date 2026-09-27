@@ -11,7 +11,7 @@
     "a": 181.9,
     "b": 181.8,
     "c": 181.9,
-    "d": 180.9
+    "d": 181.9
   },
   "shards": {
     "a": [
@@ -145,6 +145,7 @@
       "test_model_directory",
       "test_native_schema_reference_scope",
       "test_overnight_candidate_batch",
+      "test_overnight_guide_options",
       "test_prepare_harness_candidates",
       "test_provider_refusal_recovery",
       "test_public_links",
