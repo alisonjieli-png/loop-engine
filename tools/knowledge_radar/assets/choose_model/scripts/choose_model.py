@@ -28,11 +28,11 @@ ERROR = "knowledge_radar_tool_error/v1"
 FIELDS = {"needs_structured_output": bool, "needs_tool_calling": bool, "needs_reasoning": bool,
           "minimum_context": int, "maximum_output_price": (int, float), "maximum_cost_per_call": (int, float),
           "expected_input_tokens": int, "expected_output_tokens": int, "open_weights_only": bool,
-          "allowed_providers": list, "count": int, "today": str}
+          "allowed_providers": list, "include_free_listings": bool, "count": int, "today": str}
 DEFAULTS = {"needs_structured_output": True, "needs_tool_calling": False, "needs_reasoning": False,
             "minimum_context": 0, "maximum_output_price": None, "maximum_cost_per_call": None,
             "expected_input_tokens": 1000, "expected_output_tokens": 300, "open_weights_only": False,
-            "allowed_providers": None, "count": 5, "today": None}
+            "allowed_providers": None, "include_free_listings": False, "count": 5, "today": None}
 NULLABLE = ("maximum_output_price", "maximum_cost_per_call", "allowed_providers", "today")
 
 
@@ -110,6 +110,8 @@ def _reject(row: dict, need: dict, day: str):
     cost = cost_per_call(row, need)
     if cost is None:
         return "price unknown"
+    if cost == 0 and not need["include_free_listings"]:
+        return "free listing; its limits and terms vary"
     if need["maximum_output_price"] is not None and row["output_price"] > need["maximum_output_price"]:
         return "output price above the maximum"
     if need["maximum_cost_per_call"] is not None and cost > need["maximum_cost_per_call"]:

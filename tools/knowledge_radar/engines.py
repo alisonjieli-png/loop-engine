@@ -63,7 +63,7 @@ _STEERING = (
     re.compile(r"(?i)(?:~/\.ssh/|\bid_(?:rsa|ed25519|ecdsa)\b|\.aws/credentials\b|/etc/shadow\b)"),
     re.compile(r"<!--"),
 )
-_MARKUP = re.compile(r"[`|<>\[\]\\*_#]")
+_MARKUP = re.compile(r"[`|<>\[\]\\*]")
 
 
 class RadarEngineError(ValueError):

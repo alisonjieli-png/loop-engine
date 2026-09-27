@@ -1,16 +1,145 @@
 {
  "record_type": "knowledge_radar_tool_cases/v1",
  "cases": [
-  {"name": "default constraints pick the lowest estimated cost per call with structured output", "request": {"today": "2026-09-28"}, "expect": {"state": "chosen", "first": "Beta (Host B)"}},
-  {"name": "tool calling and a larger context exclude Beta", "request": {"today": "2026-09-28", "needs_tool_calling": true, "minimum_context": 100000}, "expect": {"state": "chosen", "first": "Alpha (Host A)"}},
-  {"name": "an unknown structured output value does not count as support", "request": {"today": "2026-09-28", "count": 10}, "expect": {"state": "chosen", "absent": "Delta (Host D)"}},
-  {"name": "a retired model is never chosen", "request": {"today": "2026-09-28", "count": 10}, "expect": {"state": "chosen", "absent": "e/epsilon"}},
-  {"name": "a maximum cost per call below every eligible model leaves no option", "request": {"today": "2026-09-28", "maximum_cost_per_call": 0.00001}, "expect": {"state": "no_eligible_option"}},
-  {"name": "an expired table is never served as current", "request": {"today": "2026-10-01"}, "expect": {"state": "table_expired"}},
-  {"name": "known wrong: the most expensive model is not the cheapest choice", "request": {"today": "2026-09-28"}, "known_wrong": {"first": "Gamma (Host C)"}},
-  {"name": "known wrong: a retired model is not chosen even when it is the cheapest", "request": {"today": "2026-09-28", "needs_tool_calling": true}, "known_wrong": {"first": "e/epsilon"}},
-  {"name": "known wrong: a model with unknown structured output is not chosen when it is required", "request": {"today": "2026-09-28"}, "known_wrong": {"first": "Delta (Host D)"}},
-  {"name": "an invalid count is refused", "request": {"count": 0}, "expect": {"error": "request_invalid"}},
-  {"name": "an unknown field is refused", "request": {"cheapest": true}, "expect": {"error": "request_invalid"}}
+  {
+   "name": "default constraints pick the lowest estimated cost per call with structured output",
+   "request": {
+    "today": "2026-09-28"
+   },
+   "expect": {
+    "state": "chosen",
+    "first": "Beta (Host B)"
+   }
+  },
+  {
+   "name": "tool calling and a larger context exclude Beta",
+   "request": {
+    "today": "2026-09-28",
+    "needs_tool_calling": true,
+    "minimum_context": 100000
+   },
+   "expect": {
+    "state": "chosen",
+    "first": "Alpha (Host A)"
+   }
+  },
+  {
+   "name": "an unknown structured output value does not count as support",
+   "request": {
+    "today": "2026-09-28",
+    "count": 10
+   },
+   "expect": {
+    "state": "chosen",
+    "absent": "Delta (Host D)"
+   }
+  },
+  {
+   "name": "a retired model is never chosen",
+   "request": {
+    "today": "2026-09-28",
+    "count": 10
+   },
+   "expect": {
+    "state": "chosen",
+    "absent": "e/epsilon"
+   }
+  },
+  {
+   "name": "a maximum cost per call below every eligible model leaves no option",
+   "request": {
+    "today": "2026-09-28",
+    "maximum_cost_per_call": 1e-05
+   },
+   "expect": {
+    "state": "no_eligible_option"
+   }
+  },
+  {
+   "name": "an expired table is never served as current",
+   "request": {
+    "today": "2026-10-01"
+   },
+   "expect": {
+    "state": "table_expired"
+   }
+  },
+  {
+   "name": "known wrong: the most expensive model is not the cheapest choice",
+   "request": {
+    "today": "2026-09-28"
+   },
+   "known_wrong": {
+    "first": "Gamma (Host C)"
+   }
+  },
+  {
+   "name": "known wrong: a retired model is not chosen even when it is the cheapest",
+   "request": {
+    "today": "2026-09-28",
+    "needs_tool_calling": true
+   },
+   "known_wrong": {
+    "first": "e/epsilon"
+   }
+  },
+  {
+   "name": "known wrong: a model with unknown structured output is not chosen when it is required",
+   "request": {
+    "today": "2026-09-28"
+   },
+   "known_wrong": {
+    "first": "Delta (Host D)"
+   }
+  },
+  {
+   "name": "an invalid count is refused",
+   "request": {
+    "count": 0
+   },
+   "expect": {
+    "error": "request_invalid"
+   }
+  },
+  {
+   "name": "an unknown field is refused",
+   "request": {
+    "cheapest": true
+   },
+   "expect": {
+    "error": "request_invalid"
+   }
+  },
+  {
+   "name": "a free listing is left out by default",
+   "request": {
+    "today": "2026-09-28",
+    "count": 10
+   },
+   "expect": {
+    "state": "chosen",
+    "absent": "Freebie (Host F)"
+   }
+  },
+  {
+   "name": "a free listing is chosen only when asked for",
+   "request": {
+    "today": "2026-09-28",
+    "include_free_listings": true
+   },
+   "expect": {
+    "state": "chosen",
+    "first": "Freebie (Host F)"
+   }
+  },
+  {
+   "name": "known wrong: a zero-priced free listing is not the cheapest choice by default",
+   "request": {
+    "today": "2026-09-28"
+   },
+   "known_wrong": {
+    "first": "Freebie (Host F)"
+   }
+  }
  ]
 }

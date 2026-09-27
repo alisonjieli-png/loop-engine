@@ -293,6 +293,7 @@ def default_decision(question: RadarQuestion, current) -> str:
     if helper == "choose_model":
         eligible = [item for item in current if item.facts.get("structured_output") is True
                     and isinstance(item.facts.get("output_price"), (int, float))
+                    and not (item.facts.get("output_price") == 0 and item.facts.get("input_price") == 0)
                     and not (item.facts.get("deprecation_date") and str(item.facts["deprecation_date"]) <= current_day(current))]
         if eligible:
             best = min(eligible, key=lambda item: (item.facts["output_price"], item.facts.get("input_price") or 0, item.key))

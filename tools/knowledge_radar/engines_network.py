@@ -815,7 +815,14 @@ def _cheapest_per_origin(rows: list) -> list:
 
 
 def _capability_filters(context: ReadContext, facts: dict) -> bool:
-    """True when a row meets the binding's declared capability, context and price filters."""
+    """True when a row meets the binding's declared capability, context and price filters.
+
+    A listing priced at zero for both input and output is a free tier or a subscription plan whose limits
+    and terms vary; it is left out unless the binding asks for free listings, because it is not a price.
+    """
+    if (not parameter(context, "include_free_listings", False, kind=bool)
+            and facts.get("input_price") == 0 and facts.get("output_price") == 0):
+        return False
     for flag in parameter(context, "require", [], kind=list):
         if facts.get(str(flag)) is not True:
             return False
@@ -916,6 +923,8 @@ class LiteLLMPrices:
         excluded = {name.lower() for name in context.contract.excluded_upstreams}
         mode = parameter(context, "mode", "chat", kind=str)
         deprecating = parameter(context, "only_deprecating", False, kind=bool)
+        window = parameter(context, "retired_within_days", 30, kind=int)
+        earliest = (date.fromisoformat(context.today) - timedelta(days=window)).isoformat()
         rows, guards = [], []
         for key, row in sorted(data.items()):
             if key == "sample_spec" or not isinstance(row, dict) or (mode and row.get("mode") != mode):
@@ -927,7 +936,8 @@ class LiteLLMPrices:
             if isinstance(metadata.get("notes"), str):
                 guards.append(metadata["notes"])
             retires = row.get("deprecation_date") if isinstance(row.get("deprecation_date"), str) else None
-            if deprecating and not retires:
+            if deprecating and (not retires or retires[:10] < earliest):
+                # A retirement long past answers no planning question; recent ones explain failing calls.
                 continue
             title, reason = clean_title(key)
             if reason:

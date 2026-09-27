@@ -3,7 +3,7 @@ name: radar-choose-model
 description: Shortlist the models that openly licensed catalogues (models.dev and the LiteLLM price map) mark as supporting structured output, cheapest estimated cost per call first, under your constraints (tool calling, reasoning, context size, price ceilings, providers), from the dated table this package carries. Use when a step extracts typed fields from text and should try the cheapest candidates first; then run your own acceptance check on your own route. It reads only its own files and makes no network call.
 license: MIT
 metadata:
-  asset_version: "2.0.0"
+  asset_version: "2.1.0"
   data_file: "references/models-table.json"
 ---
 
@@ -48,7 +48,10 @@ left out, by reason. The full contract is in
 
 A value the table does not know never counts as support: a model whose
 structured output support is unknown is not chosen when it is required. A
-model whose retirement date has passed is never chosen.
+model whose retirement date has passed is never chosen. A listing priced at
+zero for both input and output is a free tier or a subscription plan whose
+limits and terms vary, so it is left out unless you set
+`include_free_listings`.
 
 ## Effects
 

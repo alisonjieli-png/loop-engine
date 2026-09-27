@@ -1,7 +1,7 @@
 {
  "record_type": "knowledge_radar_asset/v1",
  "asset_id": "choose_model",
- "asset_version": "2.0.0",
+ "asset_version": "2.1.0",
  "kind": "decision_helper",
  "title": "Shortlist models for structured extraction by listed cost",
  "purpose": "Shortlist the models that openly licensed catalogues mark as supporting structured output, cheapest estimated listed cost per call first, under the caller's constraints, from the radar's dated table carried in the package; refuses an expired table and never picks a retired model.",

@@ -171,6 +171,7 @@ class EngineChecks(unittest.TestCase):
             self.assertEqual(title, "")
             self.assertTrue(reason)
         self.assertEqual(clean_title("Plain​ name | with [markup]")[0], "Plain name with markup")
+        self.assertEqual(clean_title("together_ai/model_name C#")[0], "together_ai/model_name C#")
 
     def test_known_wrong_a_version_range_keeps_its_comparison_signs(self):
         body = json.dumps([{"ghsa_id": "GHSA-aaaa-bbbb-cccc", "cve_id": "CVE-2026-1", "severity": "critical",
@@ -346,7 +347,8 @@ class EngineChecks(unittest.TestCase):
                 "lab/m1": {"id": "lab/m1", "name": "M1", "structured_output": True, "tool_call": True,
                            "cost": {"input": 0.2, "output": 0.8}, "limit": {"context": 64000},
                            "release_date": "2026-09-01", "description": "Never copied prose about this model."},
-                "lab/m2": {"id": "lab/m2", "name": "M2", "structured_output": False, "cost": {"input": 0.01, "output": 0.02}}}},
+                "lab/m2": {"id": "lab/m2", "name": "M2", "structured_output": False, "cost": {"input": 0.01, "output": 0.02}},
+                "lab/free": {"id": "lab/free", "name": "Free Tier", "structured_output": True, "cost": {"input": 0, "output": 0}}}},
             "b": {"name": "Host B", "models": {"m1": {"id": "m1", "name": "M1", "structured_output": True,
                                                       "cost": {"input": 0.1, "output": 0.5}, "limit": {"context": 64000}}}},
             "openrouter": {"name": "OpenRouter", "models": {"x/free": {"id": "x/free", "name": "Free",
@@ -354,6 +356,9 @@ class EngineChecks(unittest.TestCase):
         network = FakeNetwork({"models.dev/api.json": (200, body)})
         answer = engines_network.ModelsDevCatalogue().read(context_for("models_structured_extraction", network=network))
         self.assertEqual([item.title for item in answer.observations], ["M1 (Host B)"])
+        free = engines_network.ModelsDevCatalogue().read(context_for("models_structured_extraction", network=FakeNetwork(
+            {"models.dev/api.json": (200, body)}), include_free_listings=True))
+        self.assertEqual(free.observations[0].title, "Free Tier (Host A)")
         item = answer.observations[0]
         self.assertEqual((item.origin, item.facts["output_price"], item.url), ("model:m1", 0.5, "https://models.dev"))
         self.assertTrue(any("Never copied prose" in text for text in answer.guard_texts))
@@ -366,12 +371,16 @@ class EngineChecks(unittest.TestCase):
                            "host/soon": {"litellm_provider": "host", "mode": "chat", "input_cost_per_token": 1e-06,
                                          "output_cost_per_token": 3e-06, "deprecation_date": "2026-10-15"},
                            "openrouter/x": {"litellm_provider": "openrouter", "mode": "chat", "deprecation_date": "2026-10-01"},
+                           "host/old": {"litellm_provider": "host", "mode": "chat", "input_cost_per_token": 1e-06,
+                                        "output_cost_per_token": 2e-06, "deprecation_date": "2025-01-31"},
+                           "host/recent": {"litellm_provider": "host", "mode": "chat", "input_cost_per_token": 1e-06,
+                                           "output_cost_per_token": 2e-06, "deprecation_date": "2026-09-20"},
                            "host/embed": {"litellm_provider": "host", "mode": "embedding", "deprecation_date": "2026-10-02"}}).encode()
         network = FakeNetwork({"raw.githubusercontent.com/BerriAI": (200, body)})
         answer = engines_network.LiteLLMPrices().read(context_for("calendar_model_deprecations", network=network))
-        self.assertEqual([item.title for item in answer.observations], ["host/soon", "host/late"])
-        self.assertEqual(answer.observations[1].facts["output_price"], 0.8)
-        self.assertEqual(answer.observations[0].effective_until, "2026-10-15")
+        self.assertEqual([item.title for item in answer.observations], ["host/recent", "host/soon", "host/late"])
+        self.assertEqual(answer.observations[2].facts["output_price"], 0.8)
+        self.assertEqual(answer.observations[1].effective_until, "2026-10-15")
 
     def test_a_304_answer_is_not_modified_and_never_a_list(self):
         answer = engines_network._status_answer(304, "a source")
