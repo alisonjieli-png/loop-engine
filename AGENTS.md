@@ -159,6 +159,21 @@ pipeline. The
 [four-zone architecture record](docs/architecture/FOUR-ZONE-ARCHITECTURE-2026-09-27.md)
 maps every current component, job and workflow to its zone.
 
+**Agents are swappable; what each step receives is the product.** The
+owner asked the same afternoon about Omnigent and other meta layers: "you can
+swap the whole agent underneath and not rewrite anything?" The
+[agent meta-layer research](docs/research/AGENT-META-LAYERS-2026-09-27.md)
+found that swapping the agent is now a free configuration change (Omnigent,
+and the Agent Client Protocol with 41 agents in its registry), and that none
+of those layers supplies each step with reviewed files, skills and tools,
+places them where each agent reads them, checks that they loaded, or has an
+outside check accept the result. That is Baltor's product, still to be proven
+by the with-and-without measurement. Baltor therefore builds no orchestration
+interface and becomes something those layers call. The line the research
+recommends is "Swap agents with any meta-harness; Baltor supplies what each
+step needs." The harness executor slot uses the Agent Client Protocol first,
+driven by its registry.
+
 **Decide like a startup.** The owner asked engineering to "significantly
 increase your aggressive efforts to reconcile and consolidate all aspects of
 the code: all branches, all forks, all work trees, etc." and continued: "as
@@ -216,8 +231,10 @@ Current initiatives, in priority order (September 27, 2026)
 │   │   minutes, measured
 │   ├── A free monthly download allowance measured against paid-only
 │   │   downloads
-│   └── Listings in the plugin directories, the Model Context Protocol
-│       Registry and skills.sh (S-6.183)
+│   ├── Listings in the plugin directories, the Model Context Protocol
+│   │   Registry and skills.sh (S-6.183)
+│   └── Setup for the layers that swap agents: an Omnigent quickstart and
+│       agent template, Zed, JetBrains Air and Goose
 ├── 3. Maintained engineering decisions and capabilities (S-6.214)
 │   ├── Decision cards, data files, tested Python or TypeScript code and
 │   │   tools for volatile facts, each dated and checked again as it ages
@@ -234,6 +251,7 @@ Current initiatives, in priority order (September 27, 2026)
 │       second-family review, rescans and withdrawal records
 ├── 5. Proof with and without Baltor (S-6.173, S-6.185, D-07 to D-09)
 │   ├── Per-step selection against native skill search, abstention measured
+│   ├── A Harbor run of registry agents with and without Baltor's material
 │   └── Overnight work on a cheap model under the same budget
 ├── 6. The 100,000-component library in a balanced mix (D-26)
 │   ├── More functions, tools, programs, binaries, plugins and protocol
