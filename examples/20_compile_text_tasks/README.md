@@ -59,6 +59,10 @@ maximum and the five exact assembled prompts. `--max-total-tokens` is optional
 and can impose a stricter user ceiling, but it cannot undercut that derived
 minimum.
 
-GitHub Actions runs this live check once on trusted pushes to `main`. It does
-not run in the three-version Python matrix or on pull requests. Only the live
-execution step receives `OLLAMA_API_KEY`.
+GitHub Actions runs this live check only when a person starts the CI workflow
+by hand with its `live_ollama` input set to true, for example
+`gh workflow run ci.yml --ref main -f live_ollama=true`. Pushes, pull
+requests and the CI runs that the directory refresh workflows start leave the
+input at its default of false and skip the check. It does not run in the
+three-version Python matrix. Only the live execution step receives
+`OLLAMA_API_KEY`.

@@ -5,6 +5,17 @@ on:
     branches: [main]
   pull_request:
   workflow_dispatch:
+    inputs:
+      # Only a person starts the live Ollama job, by dispatching this workflow
+      # with this input set to true. The model directory and MCP directory
+      # refresh workflows dispatch this workflow after each data commit with
+      # no inputs, so the default keeps the live job out of those runs;
+      # tools/test_ci_live_ollama_dispatch.py holds that to the letter.
+      live_ollama:
+        description: Run the manual live Ollama orientation for five text scenarios
+        type: boolean
+        required: false
+        default: false
 
 jobs:
   docs:
@@ -452,7 +463,7 @@ jobs:
 
   live-ollama:
     name: manual live Ollama orientation for five text scenarios
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch' && inputs.live_ollama == true
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
