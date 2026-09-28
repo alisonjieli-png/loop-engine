@@ -11553,6 +11553,85 @@ entries:
     classification: STRATEGY_OR_PROVIDER_BINDING
     created_on: '2026-09-28'
     expires_on: '2027-09-28'
+  - finding_id: hardcoding.ac1834cdc3043aaf134c1a5c
+    owner: tools.showcase_3d.controls:main
+    rationale: >-
+      Known-wrong control of the three.js check: a page that imports three.js from a public content network
+      instead of the local copy the task supplies must fail no_external_requests. The render check aborts
+      every request outside its own loopback server, so no request to this address is ever made; the address
+      is the data of the control, not a binding. Covered by the controls run: t4_wrong_cdn must fail and
+      does.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.210bf612f5f6e25a309924e0
+    owner: tools.showcase_3d.render_check.mjs:url
+    rationale: >-
+      The three.js check serves the run folder from an ephemeral HTTP server bound to the loopback interface
+      and loads the page only from it; every other address is aborted. The port comes from the server
+      itself. The loopback host is the isolation boundary of the check, not a deployment choice. Covered by
+      the controls run: t4_positive passes and t4_wrong_cdn fails.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.0e086eb05f4bfca047af94bb
+    owner: tools.showcase_3d.rerun:run_one
+    rationale: >-
+      The harness under test reaches its model only through the counting proxy this runner starts on the
+      loopback interface (tools/showcase_3d/proxy.py). The port comes from the private configuration and the
+      run identity is in the path so that every call is attributed to its run; a remote address here would
+      bypass the call ledger and the call ceilings. Covered by the dry run of September 28, 2026.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.2841ff1d5ca33776a76281c0
+    owner: tools.showcase_3d.rerun:run_one
+    rationale: >-
+      Keys of the private showcase_3d_configuration/v1 file described in tools/showcase_3d/README.md, read
+      once per run to build the sandboxed harness environment of the 3D comparison. The values are paths on
+      the operator's machine and exist only in that file; 'opencode-cache' names the shared package cache
+      folder under the configured work folder. Nothing is bound to a provider or a deployment. Covered by
+      the dry run of September 28, 2026, which reads every key; the unit tests in tools/test_showcase_3d.py
+      do not reach this call.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.69f9943fbf3cf916051077d8
+    owner: tools.showcase_3d.rerun:run_one
+    rationale: >-
+      Keys of the private showcase_3d_configuration/v1 file described in tools/showcase_3d/README.md, read
+      once per run to build the sandboxed harness environment of the 3D comparison. The values are paths on
+      the operator's machine and exist only in that file; 'opencode-cache' names the shared package cache
+      folder under the configured work folder. Nothing is bound to a provider or a deployment. Covered by
+      the dry run of September 28, 2026, which reads every key; the unit tests in tools/test_showcase_3d.py
+      do not reach this call.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.72ed809c23c0d5eb051cb6ce
+    owner: tools.showcase_3d.rerun:run_one
+    rationale: >-
+      Keys of the private showcase_3d_configuration/v1 file described in tools/showcase_3d/README.md, read
+      once per run to build the sandboxed harness environment of the 3D comparison. The values are paths on
+      the operator's machine and exist only in that file; 'opencode-cache' names the shared package cache
+      folder under the configured work folder. Nothing is bound to a provider or a deployment. Covered by
+      the dry run of September 28, 2026, which reads every key; the unit tests in tools/test_showcase_3d.py
+      do not reach this call.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.9b02bb7b9587da1ac702fb7f
+    owner: tools.showcase_3d.rerun:run_one
+    rationale: >-
+      Keys of the private showcase_3d_configuration/v1 file described in tools/showcase_3d/README.md, read
+      once per run to build the sandboxed harness environment of the 3D comparison. The values are paths on
+      the operator's machine and exist only in that file; 'opencode-cache' names the shared package cache
+      folder under the configured work folder. Nothing is bound to a provider or a deployment. Covered by
+      the dry run of September 28, 2026, which reads every key; the unit tests in tools/test_showcase_3d.py
+      do not reach this call.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
 excluded_paths:
   - path: docs/verification/assets/live-baltor-morning-2026-09-23/browser-observations.json
     owner: docs.verification.live-baltor-morning-2026-09-23
