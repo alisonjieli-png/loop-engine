@@ -6,6 +6,9 @@
 
 Start with the [context route](docs/context/START-HERE.md). It names the
 newest dated handoff, now the
+[September 27 session handoff](docs/context/SESSION-HANDOFF-2026-09-27.md)
+(the five release trains of that day, releases 41 to 43, the delivery
+defects, the one million file goal and the next steps). Earlier ones are the
 [September 25 evening handoff](docs/context/SESSION-HANDOFF-2026-09-25-EVENING.md)
 (release 31, the first Community catalogue release, release 32 and the next
 steps), which follows the

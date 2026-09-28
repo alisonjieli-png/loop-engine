@@ -11,7 +11,13 @@ repeated effect beyond that recorded authority.
 
 ## Current context route
 
-For the latest September 27 continuation, read the
+For the newest state, read the
+[September 27 session handoff](SESSION-HANDOFF-2026-09-27.md). It records the
+five release trains of that day, releases 41 to 43, the delivery defects the
+with-and-without test found, the one million file goal, the work in flight
+and the order of the next steps. The roadmap remains the task authority.
+
+For the earlier September 27 continuation, read the
 [release 40 and metadata activation addendum](RELEASE-40-AND-METADATA-ACTIVATION-2026-09-27.md).
 It records the completed release, repaired phone layout and the bounded
 metadata programme's observed activation and remaining source gaps.
