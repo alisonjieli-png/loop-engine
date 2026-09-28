@@ -41,11 +41,16 @@ There is no configuration file yet. The steps below use these values with `curl`
     "baltor": {
       "transport": "streamable_http",
       "url": "https://baltor.ai/mcp",
-      "credential_env": "BALTOR_SERVICE_TOKEN"
+      "credential_env": "BALTOR_SERVICE_TOKEN",
+      "headers": {
+        "Baltor-Step-Effects": "reads_fs, writes_fs, spawns_process, network"
+      }
     }
   }
 }
 ```
+
+The `Baltor-Step-Effects` header says what your task's steps may do with a Baltor item: `reads_fs` reads files, `writes_fs` writes them, `spawns_process` runs commands and `network` uses the network. Remove any effect your steps do not have. Search shows every item your account may use, each with its `effects_to_declare`: the effects the header leaves out. A download of such an item is refused with `step_effects_required`, and the refusal's `details` name the effects to add.
 
 ## Check the connection
 
@@ -60,7 +65,7 @@ The answer's `result` is `service_session/v1`. Its `principal` names the account
 The first search is `review inputs`:
 
 ```bash
-curl -sS -X POST https://baltor.ai/api/v1/retrieval -H "Authorization: Bearer $BALTOR_SERVICE_TOKEN" -H "Content-Type: application/json" -d '{"record_type":"service_retrieval_request/v2","query":"review inputs","mode":"lexical","top_n":3}'
+curl -sS -X POST https://baltor.ai/api/v1/retrieval -H "Authorization: Bearer $BALTOR_SERVICE_TOKEN" -H "Baltor-Step-Effects: reads_fs, writes_fs, spawns_process, network" -H "Content-Type: application/json" -d '{"record_type":"service_retrieval_request/v2","query":"review inputs","mode":"lexical","top_n":3}'
 ```
 
 The answer is a `service_http_result/v1` wrapper whose `result` is the `service_retrieval_result/v1` record: a list of `hits`, each with a `reference` that names the item's `identity`, its `body_digest` and its `size_bytes`, its source and licence, and `body_allowed`. A search never loads a body, so `bodies_loaded` is false, and a search is not measured. Keep the `identity` and the `body_digest` of the one you choose.
@@ -70,12 +75,12 @@ The answer is a `service_http_result/v1` wrapper whose `result` is the `service_
 Replace the two placeholders with the values you kept, and give the download a new `request_id`:
 
 ```bash
-curl -sS -X POST https://baltor.ai/api/v1/download -H "Authorization: Bearer $BALTOR_SERVICE_TOKEN" -H "Content-Type: application/json" -d '{"record_type":"service_provisioning_request/v2","operation":"read","identity":"ITEM-IDENTITY","expected_digest":"SELECTED-DIGEST","request_id":"QUICKSTART-1"}' -D headers.txt -o item.md
+curl -sS -X POST https://baltor.ai/api/v1/download -H "Authorization: Bearer $BALTOR_SERVICE_TOKEN" -H "Baltor-Step-Effects: reads_fs, writes_fs, spawns_process, network" -H "Content-Type: application/json" -d '{"record_type":"service_provisioning_request/v2","operation":"read","identity":"ITEM-IDENTITY","expected_digest":"SELECTED-DIGEST","request_id":"QUICKSTART-1"}' -D headers.txt -o item.md
 sha256sum item.md
 grep -i x-content-sha256 headers.txt
 ```
 
-The download answers the bytes themselves, with the `X-Content-SHA256` header that repeats their digest. The `expected_digest` binds the read to the body you chose, so a changed body is refused rather than substituted. This download is one measured unit and appears in your usage. Keep the same `request_id` if you retry an uncertain outcome; the service records one unit for one request identity.
+The download answers the bytes themselves, with the `X-Content-SHA256` header that repeats their digest, and `curl` writes them unchanged. When the search result's `package` lists several files, this download answers the package document that lists them; download each file by adding its `path` to the same request, or use the Baltor library skill's `fetch` and `install`, as the [OpenCode quickstart](quickstart-opencode.md#install-the-baltor-library-skill) shows. The `expected_digest` binds the read to the body you chose, so a changed body is refused rather than substituted. The first download of an item version in a calendar month is one measured unit and appears in your usage; downloading the same version again that month, with any `request_id`, adds nothing. A retry of an uncertain outcome is therefore safe; keep the same `request_id` so your records name one download.
 
 ## Run a task with it
 
@@ -99,10 +104,13 @@ loop-engine solve --file task.md --ollama-api-key --model-route cloud.default --
 | --- | --- | --- |
 | `unauthorized` | 401 | The token is missing, wrong, expired or revoked. Set `BALTOR_SERVICE_TOKEN` in this terminal, then run the session check again. |
 | `insufficient_scope` | 403 | The token lacks the scope this operation needs. Create a token with `provisioning:read`. |
+| `plan_required` | 403 | Your account has no plan that includes downloads; search still works. Choose Baltor Pro on the [pricing page](https://baltor.ai/pricing). The refusal's `details` name that page, and the founding offer while places remain. |
+| `step_effects_required` | 403 | The item declares effects your configuration does not declare. Add the `effects_to_declare` that the refusal's `details` name, if your harness may do them, or choose another item. |
 | `item_unavailable` | 404 | The identity is not in your library, or it was withdrawn. Search again and use a fresh reference. |
 | `request_identity_required` | 400 | A download needs a `request_id`. Give each logical download a new one. |
 | `download_requires_read` | 400 | Only the `read` operation is answered at `/api/v1/download`. A manifest goes to `/api/v1/provisioning`. |
-| `meter_commit_unknown` | 503 | The service could not confirm the usage record. Retry with the same `request_id`. |
+| `meter_commit_unknown` | 503 | The service could not confirm the usage record. Retry with the same `request_id`; it cannot count twice. |
+| `usage_store_busy` | 503 | Other downloads held the usage store. Nothing was counted. Wait for `Retry-After`, then retry. |
 | `failed_attempt_limit_reached` | 429 | Too many refused attempts from your address. Fix the token, then wait a minute. |
 
 A `loop-engine doctor` answer that is not valid names the setting to fix and does not involve Baltor. [Troubleshooting](service-troubleshooting.md) explains every code, [Service status](https://app.baltor.ai/status) shows a current outage, and [Serving and connections](service-serving-and-connections.md) names the protocol versions. To run on a model on your own machine, follow the engine's [installation guide](../../README.md#install). The nightly record of this page's steps is written under `artifacts/quickstart-checks/` in the repository by [the quickstart check](../../tools/check_quickstarts.py).

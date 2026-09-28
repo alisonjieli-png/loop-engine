@@ -247,8 +247,17 @@ class ServiceHttpAuthenticator:
         credential = self._credential(authorization, purpose)
         if HOST_KEY_AUTHENTICATION not in self.configuration.modes:
             return None
+        from .records import ServiceRuntimeError
         try:
             principal = self.runtime.authenticate_key(credential)
+        except ServiceRuntimeError as error:
+            if error.code in ("store_busy", "store_unavailable"):
+                # A busy or unreachable store is a state of this service, not a finding about this
+                # credential. Swallowing it here would turn a moment of contention into a refusal
+                # to authenticate, so the typed store state travels to the caller as a retryable
+                # refusal instead of falling through to another authentication mode.
+                raise
+            principal = None
         except Exception:
             principal = None
         if principal is None:

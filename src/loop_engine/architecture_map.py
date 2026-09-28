@@ -53,7 +53,7 @@ MODULE_MAP = {
                        "command_risk_policy", "command_risk_programs", "stations", "station_checks", "rules_engine",
                        "station_engines", "screening_station", "screening_checks", "text_model_engine"),
     "core.service_runtime": (
-        "__init__", "records", "storage", "runtime", "runtime_checks", "provisioning",
+        "__init__", "records", "storage", "runtime", "runtime_checks", "usage_meter", "provisioning",
         "billing", "billing_records", "billing_checks", "stripe_provider",
         "billing_effects", "stripe_sessions", "stripe_session_checks", "stripe_session_transport_checks",
         "billing_policy", "billing_policy_checks",

@@ -87,6 +87,21 @@ WEB_ASSETS = {
     # The Baltor extension for Pi, one TypeScript file the Pi recipe tells a customer to save in .pi/extensions.
     # It is served as text so a browser shows it for reading before it is saved.
     "/assets/pi/baltor.ts": ("pi/baltor.ts", "text/plain; charset=utf-8"),
+    # The Baltor library skill for Claude Code, Codex, OpenCode and Pi: the six files of integrations/baltor-library
+    # byte for byte, and their digests, which the protocol quickstarts install with curl and sha256sum. Its client
+    # places a fetched skill byte for byte, so no model retypes a download (September 27, 2026). Every file is packaged
+    # with a .txt name, so no source scanner reads the copies as source or documentation of this package. tools/test_baltor_library_integration.py holds every
+    # served byte to the integration folder.
+    "/assets/baltor-library/SKILL.md": ("baltor-library/SKILL.md.txt", "text/plain; charset=utf-8"),
+    "/assets/baltor-library/LICENSE": ("baltor-library/LICENSE.txt", "text/plain; charset=utf-8"),
+    "/assets/baltor-library/scripts/baltor.py": ("baltor-library/scripts/baltor.py.txt", "text/plain; charset=utf-8"),
+    "/assets/baltor-library/references/client.md": ("baltor-library/references/client.md.txt",
+                                                     "text/plain; charset=utf-8"),
+    "/assets/baltor-library/assets/client.example.json": ("baltor-library/assets/client.example.json.txt",
+                                                          "application/json"),
+    "/assets/baltor-library/verification/test_client.py": ("baltor-library/verification/test_client.py.txt",
+                                                           "text/plain; charset=utf-8"),
+    "/assets/baltor-library/SHA256SUMS": ("baltor-library/SHA256SUMS.txt", "text/plain; charset=utf-8"),
     "/assets/supabase-client.js": ("supabase-client.js", "text/javascript"),
     "/assets/service.css": ("service.css", "text/css"),
     "/assets/architecture.css": ("architecture.css", "text/css"),

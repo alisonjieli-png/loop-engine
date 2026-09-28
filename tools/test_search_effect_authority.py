@@ -75,8 +75,19 @@ class SearchEffectAuthority(unittest.TestCase):
         self.assertNotIn("tool.private", found.text)
         self.assertFalse(found.json()["result"]["bodies_loaded"])
 
-    def test_omitted_empty_or_insufficient_effects_remain_withheld(self):
-        for fields in ({}, {"authority_effects":[]}, {"authority_effects":["reads_fs"]}):
+    def test_omitted_effects_show_every_hit_marked_with_the_effects_to_declare(self):
+        # Seeing an item is not authority to use it (September 27, 2026): a search that states no effects is shown
+        # every item it may see, each marked with the effects its step would still have to declare.
+        result = self.search()
+        self.assertEqual(result.status_code, 200)
+        hits = result.json()["result"]["hits"]
+        self.assertEqual({row["reference"]["identity"] for row in hits}, {"tool.allowed", "tool.metadata_only"})
+        self.assertTrue(all(row["effects_to_declare"] == ["spawns_process"] for row in hits))
+        self.assertEqual(result.json()["result"]["step_effects"], ["reads_fs"])
+        self.assertNotIn("tool.private", result.text)
+
+    def test_empty_or_insufficient_stated_effects_still_narrow_the_hits(self):
+        for fields in ({"authority_effects":[]}, {"authority_effects":["reads_fs"]}):
             with self.subTest(fields=fields):
                 result = self.search(**fields)
                 self.assertEqual(result.status_code, 200)
@@ -170,7 +181,9 @@ class SearchEffectAuthority(unittest.TestCase):
                                      {"tool.allowed", "tool.metadata_only"})
                     omitted = await client.call_tool("intelligence_search", {"query":"Zebrafish"})
                     self.assertFalse(omitted.is_error)
-                    self.assertEqual(omitted.structured_content["result"]["hits"], [])
+                    self.assertEqual({hit["reference"]["identity"]: hit["effects_to_declare"]
+                                      for hit in omitted.structured_content["result"]["hits"]},
+                                     {"tool.allowed": ["spawns_process"], "tool.metadata_only": ["spawns_process"]})
                     refused = await client.call_tool("intelligence_search", {"query":"Absentquasarword", "authority_effects":["made_up"]})
                     self.assertTrue(refused.is_error)
                     injected = await client.call_tool("intelligence_search", {"query":"Zebrafish", "authority_effects":["spawns_process"], "tenant_id":"beta"})

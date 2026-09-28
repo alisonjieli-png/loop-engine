@@ -3526,6 +3526,22 @@ entries:
     classification: STRATEGY_OR_PROVIDER_BINDING
     created_on: 2026-09-20
     expires_on: 2027-09-20
+  - finding_id: hardcoding.79dd63b30cbc6ccd7f2b34a9
+    owner: loop_engine.core.service_runtime.web_assets.client-recipes.json:recipes[4].configuration_note
+    rationale: >-
+      client-recipes.json holds the connection recipes that the Get set up
+      page shows. The literal at recipes[4].configuration_note is the note the
+      page prints beside the Baltor Harness recipe, for the person reading
+      it: how to search and download with a token and which effects the
+      Baltor-Step-Effects header declares. No model reads it as an
+      instruction and no code branches on it; tools/check_quickstarts.py holds
+      the recipe to the quickstart page and tools/check_service_documentation.py
+      holds the guides' facts to the source. Reviewed on 2026-09-27. Only this
+      exact finding is allowed; a changed note has a different finding
+      identity and stays blocking.
+    classification: RESOURCE_OR_TEMPLATE
+    created_on: 2026-09-27
+    expires_on: 2027-09-27
   - finding_id: hardcoding.c5d875e8703424c8cd896d2a
     owner: loop_engine.core.service_runtime.web_assets.client-recipes.json:recipes[1].configuration.$schema
     rationale: >-
@@ -7903,6 +7919,43 @@ entries:
     classification: STRATEGY_OR_PROVIDER_BINDING
     created_on: '2026-09-27'
     expires_on: '2027-09-27'
+  - finding_id: hardcoding.93e4c3cf9695d1f24207c0f6
+    owner: loop_engine.core.service_runtime.web_assets.baltor-library.SKILL.md.txt:environment
+    rationale: >-
+      $BALTOR_ITEM_ID is a shell placeholder in the example fetch command of the skill's instructions, which a
+      harness fills with the identity, digest and request identity the customer selected. No code reads it
+      from the environment. The website serves this file at /assets/baltor-library/ as a byte-for-byte copy of the pinned Baltor library skill in integrations/baltor-library, packaged with a .txt name; tools/test_baltor_library_integration.py fails when a served byte differs from the integration folder, and release.json pins those bytes, so a change needs a new version and a new review.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.d110e565e17d2de0ce6b963b
+    owner: loop_engine.core.service_runtime.web_assets.baltor-library.SKILL.md.txt:environment
+    rationale: >-
+      $BALTOR_ITEM_DIGEST is a shell placeholder in the example fetch command of the skill's instructions, which a
+      harness fills with the identity, digest and request identity the customer selected. No code reads it
+      from the environment. The website serves this file at /assets/baltor-library/ as a byte-for-byte copy of the pinned Baltor library skill in integrations/baltor-library, packaged with a .txt name; tools/test_baltor_library_integration.py fails when a served byte differs from the integration folder, and release.json pins those bytes, so a change needs a new version and a new review.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.856c2cac6cf47c5a80f3135b
+    owner: loop_engine.core.service_runtime.web_assets.baltor-library.SKILL.md.txt:environment
+    rationale: >-
+      $BALTOR_DOWNLOAD_ID is a shell placeholder in the example fetch command of the skill's instructions, which a
+      harness fills with the identity, digest and request identity the customer selected. No code reads it
+      from the environment. The website serves this file at /assets/baltor-library/ as a byte-for-byte copy of the pinned Baltor library skill in integrations/baltor-library, packaged with a .txt name; tools/test_baltor_library_integration.py fails when a served byte differs from the integration folder, and release.json pins those bytes, so a change needs a new version and a new review.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.a1f91dab54edc6dc80c28ea5
+    owner: loop_engine.core.service_runtime.web_assets.baltor-library.assets.client.example.json.txt:url
+    rationale: >-
+      The example configuration of the Baltor library skill names the public Baltor service origin, which a
+      customer copies into their own configuration; the customer's configuration decides the origin at run
+      time, and the client accepts only an exact HTTPS origin, ignores proxies and refuses redirects. The same
+      literal in the integration folder is the reviewed finding hardcoding.16487f9f722b2670aefe03ad. The website serves this file at /assets/baltor-library/ as a byte-for-byte copy of the pinned Baltor library skill in integrations/baltor-library, packaged with a .txt name; tools/test_baltor_library_integration.py fails when a served byte differs from the integration folder, and release.json pins those bytes, so a change needs a new version and a new review.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
   - finding_id: hardcoding.16487f9f722b2670aefe03ad
     owner: integrations.baltor-library.skills.baltor-library.assets.client.example.json:origin
     rationale: >-
@@ -11458,6 +11511,135 @@ entries:
     classification: DEPLOYMENT_CONFIGURATION
     created_on: '2026-09-27'
     expires_on: '2027-09-27'
+  - finding_id: hardcoding.7bf0a0868825a9b4f2d8c050
+    owner: tools.component_qualification.controls
+    rationale: >-
+      A fixture address of the qualification self-test (FIXTURE_ADDRESSES in tools/component_qualification/controls.py): a reserved example domain (example.org) or the JSON Schema 2020-12 dialect identifier, written into known-good and known-wrong fixture packages so that the provenance, download and schema checks have exact inputs. Nothing fetches it, no request is made, and no provider or endpoint is bound. Reviewed on 2026-09-28 from the triage worklist.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.81cd9b266878d360b3926538
+    owner: tools.component_qualification.controls
+    rationale: >-
+      A fixture address of the qualification self-test (FIXTURE_ADDRESSES in tools/component_qualification/controls.py): a reserved example domain (example.org) or the JSON Schema 2020-12 dialect identifier, written into known-good and known-wrong fixture packages so that the provenance, download and schema checks have exact inputs. Nothing fetches it, no request is made, and no provider or endpoint is bound. Reviewed on 2026-09-28 from the triage worklist.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.8a1a46cb29fd21e44b226093
+    owner: tools.component_qualification.controls
+    rationale: >-
+      A fixture address of the qualification self-test (FIXTURE_ADDRESSES in tools/component_qualification/controls.py): a reserved example domain (example.org) or the JSON Schema 2020-12 dialect identifier, written into known-good and known-wrong fixture packages so that the provenance, download and schema checks have exact inputs. Nothing fetches it, no request is made, and no provider or endpoint is bound. Reviewed on 2026-09-28 from the triage worklist.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.9530d7d33dcb36af8fa546ba
+    owner: tools.component_qualification.controls
+    rationale: >-
+      A fixture address of the qualification self-test (FIXTURE_ADDRESSES in tools/component_qualification/controls.py): a reserved example domain (example.org) or the JSON Schema 2020-12 dialect identifier, written into known-good and known-wrong fixture packages so that the provenance, download and schema checks have exact inputs. Nothing fetches it, no request is made, and no provider or endpoint is bound. Reviewed on 2026-09-28 from the triage worklist.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.b837ad08393797dad47a58b8
+    owner: tools.component_qualification.controls
+    rationale: >-
+      The literal is the NAME of the environment variable the qualification self-test's known-good API operation fixture declares as its credential (FIXTURE_CREDENTIAL in tools/component_qualification/controls.py). The fixture's code reads it only inside the sandbox, where the environment is cleared, so no secret is ever present; the name selects no runtime behavior and binds no provider. Reviewed on 2026-09-28 from the triage worklist.
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.eb76ebbb08bf151278b528b8
+    owner: tools.component_qualification.controls
+    rationale: >-
+      A fixture address of the qualification self-test (FIXTURE_ADDRESSES in tools/component_qualification/controls.py): a reserved example domain (example.org) or the JSON Schema 2020-12 dialect identifier, written into known-good and known-wrong fixture packages so that the provenance, download and schema checks have exact inputs. Nothing fetches it, no request is made, and no provider or endpoint is bound. Reviewed on 2026-09-28 from the triage worklist.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.ac1834cdc3043aaf134c1a5c
+    owner: tools.showcase_3d.controls:main
+    rationale: >-
+      Known-wrong control of the three.js check: a page that imports three.js from a public content network
+      instead of the local copy the task supplies must fail no_external_requests. The render check aborts
+      every request outside its own loopback server, so no request to this address is ever made; the address
+      is the data of the control, not a binding. Covered by the controls run: t4_wrong_cdn must fail and
+      does.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.210bf612f5f6e25a309924e0
+    owner: tools.showcase_3d.render_check.mjs:url
+    rationale: >-
+      The three.js check serves the run folder from an ephemeral HTTP server bound to the loopback interface
+      and loads the page only from it; every other address is aborted. The port comes from the server
+      itself. The loopback host is the isolation boundary of the check, not a deployment choice. Covered by
+      the controls run: t4_positive passes and t4_wrong_cdn fails.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.0e086eb05f4bfca047af94bb
+    owner: tools.showcase_3d.rerun:run_one
+    rationale: >-
+      The harness under test reaches its model only through the counting proxy this runner starts on the
+      loopback interface (tools/showcase_3d/proxy.py). The port comes from the private configuration and the
+      run identity is in the path so that every call is attributed to its run; a remote address here would
+      bypass the call ledger and the call ceilings. Covered by the dry run of September 28, 2026.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.2841ff1d5ca33776a76281c0
+    owner: tools.showcase_3d.rerun:run_one
+    rationale: >-
+      Keys of the private showcase_3d_configuration/v1 file described in tools/showcase_3d/README.md, read
+      once per run to build the sandboxed harness environment of the 3D comparison. The values are paths on
+      the operator's machine and exist only in that file; 'opencode-cache' names the shared package cache
+      folder under the configured work folder. Nothing is bound to a provider or a deployment. Covered by
+      the dry run of September 28, 2026, which reads every key; the unit tests in tools/test_showcase_3d.py
+      do not reach this call.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.69f9943fbf3cf916051077d8
+    owner: tools.showcase_3d.rerun:run_one
+    rationale: >-
+      Keys of the private showcase_3d_configuration/v1 file described in tools/showcase_3d/README.md, read
+      once per run to build the sandboxed harness environment of the 3D comparison. The values are paths on
+      the operator's machine and exist only in that file; 'opencode-cache' names the shared package cache
+      folder under the configured work folder. Nothing is bound to a provider or a deployment. Covered by
+      the dry run of September 28, 2026, which reads every key; the unit tests in tools/test_showcase_3d.py
+      do not reach this call.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.72ed809c23c0d5eb051cb6ce
+    owner: tools.showcase_3d.rerun:run_one
+    rationale: >-
+      Keys of the private showcase_3d_configuration/v1 file described in tools/showcase_3d/README.md, read
+      once per run to build the sandboxed harness environment of the 3D comparison. The values are paths on
+      the operator's machine and exist only in that file; 'opencode-cache' names the shared package cache
+      folder under the configured work folder. Nothing is bound to a provider or a deployment. Covered by
+      the dry run of September 28, 2026, which reads every key; the unit tests in tools/test_showcase_3d.py
+      do not reach this call.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.9b02bb7b9587da1ac702fb7f
+    owner: tools.showcase_3d.rerun:run_one
+    rationale: >-
+      Keys of the private showcase_3d_configuration/v1 file described in tools/showcase_3d/README.md, read
+      once per run to build the sandboxed harness environment of the 3D comparison. The values are paths on
+      the operator's machine and exist only in that file; 'opencode-cache' names the shared package cache
+      folder under the configured work folder. Nothing is bound to a provider or a deployment. Covered by
+      the dry run of September 28, 2026, which reads every key; the unit tests in tools/test_showcase_3d.py
+      do not reach this call.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.a14164b0421abab7468658da
+    owner: tools.component_qualification.qualify:qualify_rows
+    rationale: >-
+      A key of the committed qualification policy, not a deployment value. The qualifier reads environment_findings from tools/component_qualification/resources/qualification-policy.json, whose closed vocabulary names the five finding codes that mean a run could not start or time out rather than that the component failed. Reading the key at this call site selects which refused records are never reused; the codes themselves come from the policy file, so a caller-configurable value here could not widen admission. Measured on September 28, 2026: replacing this value fails no current test, so a fixture for this branch is still to be added. Reviewed on 2026-09-28 from the triage worklist.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+
 excluded_paths:
   - path: docs/verification/assets/live-baltor-morning-2026-09-23/browser-observations.json
     owner: docs.verification.live-baltor-morning-2026-09-23
@@ -11509,3 +11691,45 @@ excluded_paths:
     created_on: 2026-09-20
     sha256: 2c51934382bb7d6f9afd859989734562e267ad47296fa54432fbbcc1af5a95a0
     expires_on: 2027-09-20
+  - finding_id: hardcoding.7bf0a0868825a9b4f2d8c050
+    owner: tools.component_qualification.controls
+    rationale: >-
+      A fixture address of the qualification self-test (FIXTURE_ADDRESSES in tools/component_qualification/controls.py): a reserved example domain (example.org) or the JSON Schema 2020-12 dialect identifier, written into known-good and known-wrong fixture packages so that the provenance, download and schema checks have exact inputs. Nothing fetches it, no request is made, and no provider or endpoint is bound. Reviewed on 2026-09-28 from the triage worklist.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.81cd9b266878d360b3926538
+    owner: tools.component_qualification.controls
+    rationale: >-
+      A fixture address of the qualification self-test (FIXTURE_ADDRESSES in tools/component_qualification/controls.py): a reserved example domain (example.org) or the JSON Schema 2020-12 dialect identifier, written into known-good and known-wrong fixture packages so that the provenance, download and schema checks have exact inputs. Nothing fetches it, no request is made, and no provider or endpoint is bound. Reviewed on 2026-09-28 from the triage worklist.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.8a1a46cb29fd21e44b226093
+    owner: tools.component_qualification.controls
+    rationale: >-
+      A fixture address of the qualification self-test (FIXTURE_ADDRESSES in tools/component_qualification/controls.py): a reserved example domain (example.org) or the JSON Schema 2020-12 dialect identifier, written into known-good and known-wrong fixture packages so that the provenance, download and schema checks have exact inputs. Nothing fetches it, no request is made, and no provider or endpoint is bound. Reviewed on 2026-09-28 from the triage worklist.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.9530d7d33dcb36af8fa546ba
+    owner: tools.component_qualification.controls
+    rationale: >-
+      A fixture address of the qualification self-test (FIXTURE_ADDRESSES in tools/component_qualification/controls.py): a reserved example domain (example.org) or the JSON Schema 2020-12 dialect identifier, written into known-good and known-wrong fixture packages so that the provenance, download and schema checks have exact inputs. Nothing fetches it, no request is made, and no provider or endpoint is bound. Reviewed on 2026-09-28 from the triage worklist.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.b837ad08393797dad47a58b8
+    owner: tools.component_qualification.controls
+    rationale: >-
+      The literal is the NAME of the environment variable the qualification self-test's known-good API operation fixture declares as its credential (FIXTURE_CREDENTIAL in tools/component_qualification/controls.py). The fixture's code reads it only inside the sandbox, where the environment is cleared, so no secret is ever present; the name selects no runtime behavior and binds no provider. Reviewed on 2026-09-28 from the triage worklist.
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.eb76ebbb08bf151278b528b8
+    owner: tools.component_qualification.controls
+    rationale: >-
+      A fixture address of the qualification self-test (FIXTURE_ADDRESSES in tools/component_qualification/controls.py): a reserved example domain (example.org) or the JSON Schema 2020-12 dialect identifier, written into known-good and known-wrong fixture packages so that the provenance, download and schema checks have exact inputs. Nothing fetches it, no request is made, and no provider or endpoint is bound. Reviewed on 2026-09-28 from the triage worklist.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'

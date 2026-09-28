@@ -26,7 +26,8 @@ transport errors use the protocol's own error shape instead.
 | `tenant_disabled` | 401 | Ask the operator about the account state. |
 | `insufficient_scope` | 403 | The credential lacks the scope required by this operation. |
 | `scope_required` | 403 | The account lacks a required scope. Ask the operator. |
-| `body_forbidden` | 403 | Metadata access does not currently permit this body download. |
+| `plan_required` | 403 | The account has no plan that includes downloads. The `details` record, `service_plan_required/v1`, names the plan, the `pricing_url`, the `get_started_url` and, while places remain, the founding offer. |
+| `body_forbidden` | 403 | Metadata access does not currently permit this body download, for example because an operator switched this account's downloads off. |
 | `browser_session_required` | 403 | Use browser sign-in for customer token management. |
 | `account_registration_unavailable` | 503 | Follow the current access path at Get started. |
 
@@ -38,20 +39,22 @@ a token scope and an item grant are separate checks.
 ## Empty search or unavailable material
 
 An empty result is not a connection failure. It can mean the query has no match,
-the account lacks grants, the item is withdrawn, or the current selection excludes
-it. Search with `authority_effects` only for effects already permitted for your
-step. When a current request omits the field, the service uses the effects that
-your client configuration names in the `Baltor-Step-Effects` header, or reading
-files (`reads_fs`) when there is no header. An empty array withholds material
-that declares effects, and so does a version 1 provisioning request without the
-field. This choice does not authorize executing the material. Read the current
-request version from `/api/v1/capabilities` and update an older client when it
-is refused.
+the account lacks grants, the item is withdrawn, or the request's own
+`authority_effects` excludes it. A current request that omits `authority_effects`
+is shown every item the account may use, each marked with its
+`effects_to_declare`. Its step holds the effects your client configuration names
+in the `Baltor-Step-Effects` header, or reading files (`reads_fs`) when there is
+no header, and a read of an item that declares more is refused with
+`step_effects_required`. An empty array withholds material that declares effects,
+and so does a version 1 provisioning request without the field. This choice does
+not authorize executing the material. Read the current request version from
+`/api/v1/capabilities` and update an older client when it is refused.
 
 | Code | Status | Next step |
 | --- | --- | --- |
 | `item_unavailable` | 404 | Refresh your authorized list and selected digest. The response does not distinguish an unknown identity from an inaccessible one. |
-| `item_withheld` | 400 | Check the requested style, kind and effect selection. |
+| `item_withheld` | 400 | The request's own `authority_effects`, kind or style excludes the item. Ask without them to see it with its `effects_to_declare`. |
+| `step_effects_required` | 403 | The item declares effects your step did not declare. If your harness may do them, add the `effects_to_declare` from the refusal's `details` to the `Baltor-Step-Effects` header, then retry. |
 | `item_withdrawn` | 404 | Search again; the selected published version is no longer available. |
 | `package_file_not_found` | 404 | Use a path from the selected package document. |
 | `package_files_unavailable` | 404 | This item has no separately downloadable package files. |
@@ -89,7 +92,8 @@ not change a server limit.
 | Code | Status | Next step |
 | --- | --- | --- |
 | `failed_attempt_limit_reached` | 429 | Wait for `Retry-After`, then correct the rejected request or credential. |
-| `tenant_concurrency_limit_reached` | 429 | Reduce concurrent work from this account. |
+| `tenant_concurrency_limit_reached` | 429 | This account already has half the service's operation slots in use. Wait for `Retry-After`, then send the same request again; a download is counted once when it succeeds. |
+| `usage_store_busy` | 503 | Other downloads held the usage store past the service's wait. Nothing was counted or delivered. Wait for `Retry-After`, then send the same request again. |
 | `service_busy` | 503 | Retry after a pause with lower concurrency. |
 | `external_provider_capacity_reached` | 503 | Work waiting on another service has reached its capacity. |
 | `download_required` | 413 | Use the download endpoint instead of an inline body. |
@@ -99,10 +103,12 @@ not change a server limit.
 
 ## Uncertain metering and mismatched bytes
 
-`meter_commit_unknown` means the usage outcome is uncertain. Inspect usage and
-retry the same item with the same `request_id`. If that identity was used for a
-different item, repeating the conflicting request will not repair it. See
-[Usage and what you pay for](service-usage-and-what-you-pay-for.md).
+`meter_commit_unknown` means the service could not confirm whether the usage
+record was stored. Retry the same read. An item version counts once a month, so
+a retry cannot count it twice. Downloads made at the same time on one account
+answer either the item or a refusal that recorded nothing and names when to
+retry (`tenant_concurrency_limit_reached` or `usage_store_busy`), never this
+code. See [Usage and what you pay for](service-usage-and-what-you-pay-for.md).
 
 If downloaded bytes do not match the selected digest, do not treat that file as
 the selected item. Keep the item identity, expected digest and request reference

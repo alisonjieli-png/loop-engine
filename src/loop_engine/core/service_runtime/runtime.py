@@ -15,10 +15,7 @@ import secrets
 import time
 import uuid
 
-from ..provisioning_server import (
-    ProvisioningGrant, ProvisioningItemBinding, ProvisioningMeterAcknowledgment,
-    ProvisioningMeterRequest,
-)
+from ..provisioning_server import ProvisioningGrant, ProvisioningItemBinding, ProvisioningMeterRequest
 from .records import (
     BILLING_CUSTOMER_ACCOUNT_RELEASE_VERSION,
     BILLING_CUSTOMER_OUTCOME_VERSION, BILLING_MANAGE_SCOPE, CLIENT_ACCESS_PROFILE, BillingCustomerAccountRelease,
@@ -26,10 +23,10 @@ from .records import (
     BillingCustomerEffectSpec, BillingCustomerReservation, EFFECT_CONFIRMED, EFFECT_NOT_ATTEMPTED, EFFECT_PENDING,
     EFFECT_UNKNOWN, ENTITLEMENTS, IssuedServiceKey, PROVIDER_MINIMUM_IDEMPOTENCY_RETENTION_SECONDS,
     PROVIDER_SEARCH_FRESHNESS_ALLOWANCE_SECONDS,
-    ServiceCommitUnknown, ServicePrincipal, ServiceRuntimeConfig, ServiceRuntimeError,
+    ServicePrincipal, ServiceRuntimeConfig, ServiceRuntimeError,
     SubjectBindingRequest, SubjectTenantRegistration, TenantKeyIssue, TenantRegistration,
     billing_customer_request_differs_only_by_provider_account, billing_customer_search_can_show_the_previous_attempt,
-    canonical, digest, identifier, scopes, usage_items,
+    canonical, digest, identifier, scopes,
 )
 from .storage import ServiceCatalogBinding
 from .catalogue_grants import release_following_grants, release_following_payload as _follows
@@ -755,44 +752,15 @@ class ServiceRuntime:
                     "record_id": row["record_id"], "record_version": row["record_version"]}
 
     def record_usage(self, request: ProvisioningMeterRequest, principal: ServicePrincipal, *, guards=()):
-        if not isinstance(request, ProvisioningMeterRequest):
-            raise ServiceRuntimeError("invalid_usage_request")
-        try:
-            with self._catalog.store(write=True) as store:
-                current, auth_guards = self._revalidate(store, principal)
-                if (current.tenant_id != request.tenant_id or current.entitlement != BODIES
-                        or PROVISIONING_READ_SCOPE not in current.scopes):
-                    raise ServiceRuntimeError("body_forbidden")
-                logical = (request.tenant_id, request.request_id)
-                expected = digest(asdict(request))
-                held = self._catalog.read(store, USAGE, logical)
-                if held is not None:
-                    data = self._payload(held, USAGE)
-                    if data.get("request_digest") != expected:
-                        raise ServiceRuntimeError("usage_identity_conflict")
-                    return ProvisioningMeterAcknowledgment(request, True, held["record_id"], "durable")
-                row = self._catalog.record(USAGE, logical, {"record_type": SCHEMAS[USAGE],
-                    "tenant_id": request.tenant_id, "request_id_digest": digest(request.request_id),
-                    "request_digest": expected, "unit": request.unit, "quantity": request.quantity,
-                    "item_identity": request.binding.identity, "body_digest": request.binding.body_digest,
-                    "at": self._now()}, tenant_id=request.tenant_id)
-                self._catalog.commit(store, (row,), (*auth_guards, *guards, self._catalog.guard(None, row["record_id"])))
-                return ProvisioningMeterAcknowledgment(request, True, row["record_id"], "durable")
-        except ServiceCommitUnknown:
-            return ProvisioningMeterAcknowledgment(request, None)
+        """Record one metered unit, or acknowledge the unit this item version already holds this month.
+
+        The rule and its retries are in `usage_meter`: one unit for each account, item version and calendar month."""
+        from .usage_meter import record_usage
+        return record_usage(self, request, principal, guards)
 
     def usage_for(self, principal: ServicePrincipal):
-        with self._catalog.store() as store:
-            current, _ = self._revalidate(store, principal)
-            if USAGE_READ_SCOPE not in current.scopes:
-                raise ServiceRuntimeError("scope_required")
-            rows = self._catalog.rows(store, USAGE, current.tenant_id)
-            totals, reads = {}, {}
-            for value in (self._payload(row, USAGE) for row in rows):
-                totals[value["unit"]] = totals.get(value["unit"], 0) + value["quantity"]
-                reads.setdefault(value["item_identity"], []).append(value["at"])
-            return {"record_type": "durable_tenant_usage/v1", "tenant_id": current.tenant_id, "records": len(rows),
-                    "totals": totals, "durability": "durable", "items": usage_items(reads)}
+        from .usage_meter import usage_for
+        return usage_for(self, principal)
 
 
 def self_test():

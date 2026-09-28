@@ -1,0 +1,365 @@
+{
+ "record_type": "component_qualification_policy/v1",
+ "accepted_licences": [
+  "MIT",
+  "Apache-2.0",
+  "BSD-2-Clause",
+  "BSD-3-Clause",
+  "ISC",
+  "CC0-1.0",
+  "CC-BY-4.0"
+ ],
+ "accepted_licences_reason": "The daily release job's accepted list (LICENCES in daily_library_release.sh); a compound expression is accepted when every identifier in it is on this list and it uses no WITH exception.",
+ "lines": {
+  "mcp_registry": {
+   "kinds": [
+    "protocol_server_configuration"
+   ],
+   "forms": [
+    "mcp_server"
+   ],
+   "shape": "configuration",
+   "required_files": [
+    "LICENSE",
+    "ATTRIBUTION.md",
+    "README.md",
+    "baltor-connection.json",
+    ".mcp.json",
+    ".cursor/mcp.json",
+    ".codex/config.toml",
+    "opencode.json"
+   ],
+   "job_key": {
+    "json_file": "baltor-connection.json",
+    "fields": [
+     "server.package.registry",
+     "server.package.identifier"
+    ]
+   }
+  },
+  "openapi_operations": {
+   "kinds": [
+    "code_module"
+   ],
+   "forms": [
+    "api_operation"
+   ],
+   "shape": "code",
+   "required_files": [
+    "LICENSE",
+    "ATTRIBUTION.md",
+    "README.md"
+   ],
+   "job_key": {
+    "python_assignment": "OPERATION",
+    "fields": [
+     "method",
+     "path",
+     "operation_id"
+    ],
+    "fact_role": "specification"
+   },
+   "documented_fields": [
+    "method",
+    "path"
+   ]
+  },
+  "program_installs": {
+   "kinds": [
+    "code_module"
+   ],
+   "forms": [
+    "binary_install"
+   ],
+   "shape": "code",
+   "required_files": [
+    "LICENSE",
+    "ATTRIBUTION.md",
+    "README.md",
+    "install.json"
+   ],
+   "job_key": {
+    "json_file": "install.json",
+    "fields": [
+     "formula"
+    ]
+   }
+  },
+  "data_tables": {
+   "kinds": [
+    "code_module"
+   ],
+   "forms": [
+    "data_table"
+   ],
+   "shape": "code",
+   "required_files": [
+    "LICENSE",
+    "ATTRIBUTION.md",
+    "README.md"
+   ],
+   "job_key": {
+    "upstream_digests": true
+   }
+  },
+  "function_extracts": {
+   "kinds": [
+    "code_module"
+   ],
+   "forms": [
+    "function"
+   ],
+   "shape": "code",
+   "required_files": [
+    "LICENSE",
+    "ATTRIBUTION.md",
+    "README.md"
+   ],
+   "job_key": {
+    "public_functions": true,
+    "fact_role": "data_source"
+   }
+  },
+  "json_schemas": {
+   "kinds": [
+    "contract_schema"
+   ],
+   "forms": [
+    "schema"
+   ],
+   "shape": "code",
+   "required_files": [
+    "LICENSE",
+    "ATTRIBUTION.md",
+    "README.md"
+   ],
+   "job_key": {
+    "upstream_digests": true
+   }
+  }
+ },
+ "record_types": {
+  "candidate": "library_supply_candidate/v1",
+  "component_form": "component_form/v1",
+  "fact_source": "library_supply_fact_source/v1",
+  "connection": "library_connection_package/v1",
+  "install_recipe": "program_install_recipe/v1"
+ },
+ "authoring": "generated_from_licensed_facts",
+ "harness_configurations": {
+  ".mcp.json": {
+   "format": "json",
+   "table": "mcpServers",
+   "command": "command",
+   "arguments": "args"
+  },
+  ".cursor/mcp.json": {
+   "format": "json",
+   "table": "mcpServers",
+   "command": "command",
+   "arguments": "args"
+  },
+  "opencode.json": {
+   "format": "json",
+   "table": "mcp",
+   "command_list": "command"
+  },
+  ".codex/config.toml": {
+   "format": "toml",
+   "table": "mcp_servers",
+   "command": "command",
+   "arguments": "args"
+  }
+ },
+ "package_launchers": {
+  "npx": "npm",
+  "uvx": "pypi"
+ },
+ "near_duplicate_threshold": "49/50",
+ "near_duplicate_reason": "Measured on the 8,847 stored supply components on September 28, 2026: at 9/10, 175 API operation packages were flagged, every inspected pair a distinct operation of one template (different method or path), with the highest similarity 0.964. Text similarity at 49/50 therefore only catches copies that differ in a few words; the job key below catches two packages for one job whatever their text.",
+ "minified_code": {
+  "longest_line": 1000,
+  "large_file_bytes": 65536,
+  "large_file_mean_line": 150,
+  "literal_statement_reason": "A Python line longer than the limit is exempt when it holds exactly one statement that only displays literal data (names, constants, and dict, list, tuple or set displays), such as a generated operation's keyword dictionary: on September 28, 2026, ten AWS operation modules carried such lines of 1,282 to 1,562 characters. Several statements on one line, the mark of minified code, are never exempt."
+ },
+ "code_suffixes": [
+  ".py",
+  ".js",
+  ".mjs",
+  ".cjs",
+  ".ts",
+  ".sh",
+  ".bash",
+  ".ps1",
+  ".rb",
+  ".pl",
+  ".go",
+  ".rs",
+  ".php",
+  ".lua"
+ ],
+ "data_folders": [
+  "data"
+ ],
+ "metadata_fact_roles": [
+  "registry_entry",
+  "package_metadata",
+  "repository_facts"
+ ],
+ "metadata_fact_reason": "A registry entry, package metadata or repository facts record is read for names, versions, package identifiers and counts only; no text of it is copied into the package (the MCP line's link mode, basis link_only_facts_no_text_copied; the program line's GitHub repository facts). Such a fact may carry NOASSERTION when none of its bytes is a package file and at least one governing fact (licence text, specification, data, formula) carries an accepted licence.",
+ "governing_fact_roles": [
+  "licence_text",
+  "specification",
+  "data",
+  "data_source",
+  "formula",
+  "release"
+ ],
+ "effect_text_roles": [
+  "instruction_file",
+  "skill_definition",
+  "skill_reference",
+  "command",
+  "subagent_definition",
+  "protocol_server_configuration",
+  "configuration",
+  "hook",
+  "plugin_manifest"
+ ],
+ "effect_text_reason": "The licensed import's effect rules read words as actions a harness is told to take, which is right for instruction, skill, command and configuration files. A README, a JSON Schema or code comments of a generated client describe a remote API ('uploads a file'), whose effect the network effect covers; on September 28, 2026 those words produced 501 false effect findings (reads_files and writes_files in README.md and schema.json) on components whose syntax trees touch no local file. Python code is judged by its syntax tree.",
+ "job_key_reason": "One package for one job: an API operation is its specification file and its operation (method, path and the specification's operation identifier, since a specification may define several operations on one method and path, as Box does with URL fragments and OpenAI with beta variants: 23 such packages were refused as copies on September 28, 2026 when the key held method and path only); a protocol server is its registry package; a program is its formula; a data table is its upstream file bytes. Two components with one job key are duplicates whatever their text.",
+ "composition": {
+  "targets_file": "src/loop_engine/data/library_composition.json",
+  "targets_reason": "Builder e's library_composition_targets/v1 (September 27, 2026) is the authority once integrated; these shares are its copy for a checkout that does not hold it yet.",
+  "targets": {
+   "executable_code": [
+    0.35,
+    "target"
+   ],
+   "connectors_and_extensions": [
+    0.2,
+    "target"
+   ],
+   "skills": [
+    0.2,
+    "cap"
+   ],
+   "agents_and_commands": [
+    0.1,
+    "target"
+   ],
+   "instructions_and_rules": [
+    0.08,
+    "cap"
+   ],
+   "data_and_contracts": [
+    0.07,
+    "target"
+   ]
+  },
+  "family_by_form": {
+   "api_operation": "executable_code",
+   "function": "executable_code",
+   "library_module": "executable_code",
+   "program": "executable_code",
+   "binary_install": "executable_code",
+   "mcp_server": "connectors_and_extensions",
+   "plugin": "connectors_and_extensions",
+   "hook": "connectors_and_extensions",
+   "marketplace": "connectors_and_extensions",
+   "data_table": "data_and_contracts",
+   "schema": "data_and_contracts",
+   "evaluation_set": "data_and_contracts",
+   "settings": "data_and_contracts"
+  },
+  "family_by_harness_kind": {
+   "skill": "skills",
+   "instruction_file": "instructions_and_rules",
+   "rules": "instructions_and_rules",
+   "subagent": "agents_and_commands",
+   "command": "agents_and_commands",
+   "protocol_server_configuration": "connectors_and_extensions",
+   "plugin_manifest": "connectors_and_extensions",
+   "marketplace": "connectors_and_extensions",
+   "hook": "connectors_and_extensions",
+   "code_module": "executable_code",
+   "tool": "executable_code",
+   "contract_schema": "data_and_contracts",
+   "harness_settings": "data_and_contracts"
+  }
+ },
+ "licence_fingerprints": {
+  "MIT": {
+   "all": [
+    "permission is hereby granted, free of charge, to any person obtaining a copy"
+   ]
+  },
+  "Apache-2.0": {
+   "all": [
+    "apache license",
+    "version 2.0"
+   ]
+  },
+  "BSD-3-Clause": {
+   "all": [
+    "redistribution and use in source and binary forms",
+    "neither the name"
+   ]
+  },
+  "BSD-2-Clause": {
+   "all": [
+    "redistribution and use in source and binary forms"
+   ],
+   "none": [
+    "neither the name"
+   ]
+  },
+  "ISC": {
+   "all": [
+    "permission to use, copy, modify, and/or distribute this software for any purpose"
+   ]
+  },
+  "CC0-1.0": {
+   "all": [
+    "cc0 1.0"
+   ]
+  },
+  "CC-BY-4.0": {
+   "all": [
+    "attribution 4.0 international"
+   ]
+  }
+ },
+ "licence_fingerprint_reason": "Each licence text a package carries must be recognized as a licence on the accepted list, and together the texts must grant every identifier of the declared expression. Measured on a random 2,500 of the stored supply on September 28, 2026: every text was recognized except one Unlicense text, which the accepted list already refuses.",
+ "documented_fields_reason": "A generated client's README names the operation it calls (METHOD /path); code whose operation differs from its description is refused. Measured on 1,427 stored API operation packages on September 28, 2026: every README named its operation.",
+ "mutation": {
+  "shapes": [
+   "code"
+  ],
+  "replacement": "raise RuntimeError('qualification mutant: this implementation was replaced')",
+  "reason": "The written criteria require verification that rejects a known-wrong result. Every public function and public method of each root module is replaced by one that raises, and the package's own tests must then fail. On September 28, 2026 the Tactical reviewer approved every planted package whose code was broken in ways its tests could not see; this check needs no reviewer."
+ },
+ "download_schemes": [
+  "https",
+  "http",
+  "ftp"
+ ],
+ "download_reason": "A download is pinned by its SHA-256; the digest guarantees the bytes whatever the transport, as Homebrew itself accepts for source archives. Measured on September 28, 2026: the figlet recipe's source archive is served over ftp with its SHA-256 and was refused while the rule required https.",
+ "address_schemes": [
+  "https"
+ ],
+ "address_reason": "A fact source or an upstream copy is pinned by an https address and its SHA-256; a download may use another transport because its digest is checked where it is installed.",
+ "tested_code_suffixes": [
+  ".py"
+ ],
+ "tested_code_reason": "The sandbox runs Python modules and their unittest tests, and the mutation check rewrites Python. A package holding code in another language is refused until its runner and mutation are declared here, so that implementation_tested never covers code nothing ran. Builder e announced JavaScript clients for the API line on September 28, 2026; node 22 is installed at /usr/bin/node for the runner.",
+ "environment_findings": [
+  "sandbox_timed_out",
+  "tests_timed_out",
+  "mutation_timed_out",
+  "sandbox_unavailable",
+  "sandbox_not_configured"
+ ],
+ "environment_reason": "A run that timed out or could not start its sandbox says nothing about the component: on September 28, 2026, 12 of 23,523 components timed out while the machine's load average was near 300 and passed when run again. Such a component stays refused in that run (it is never admitted untested) and its record is never reused, so the next run checks it again."
+}

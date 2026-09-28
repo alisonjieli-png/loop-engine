@@ -2,7 +2,9 @@
 
 Credentials resolve from this workstation's system keyring and never appear in
 the report. This is a transport and disclosure check, not a customer task or
-paid-release benchmark. One selected body read records service usage.
+paid-release benchmark. The first read of the selected version in a calendar
+month records one unit of service usage; a later read of it that month records
+none.
 """
 from __future__ import annotations
 
@@ -144,7 +146,11 @@ def main():
               and first["result"]["metering_acknowledgment"]["durability"] == "durable")
         _, after = request("/api/v1/usage", owner)
         usage_after = after["result"]["records"]
-        check("two_read_requests_add_one_usage_record", after["result"]["records"] == before["result"]["records"] + 1)
+        # The service counts one unit for each account, item version and calendar month: the first read of this
+        # version in the month adds one record, and a later release's check in the same month adds none.
+        check("two_read_requests_add_at_most_one_usage_record_this_month",
+              after["result"]["records"] - before["result"]["records"] in (0, 1)
+              and after["result"].get("current_period_records", 0) >= 1)
         status, _ = request("/api/v1/provisioning", isolated, provision("read", identity=args.identity,
                                                                         request_id="isolated-" + request_id))
         check("another_tenant_cannot_read_the_body", status in (403, 404))

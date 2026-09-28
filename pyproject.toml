@@ -108,6 +108,8 @@ loop_engine = [
     "core/service_runtime/web_assets/*.svg",  # The website mark, a placeholder
     "core/service_runtime/web_assets/*.png",  # The page icons drawn from that mark
     "core/service_runtime/web_assets/pi/*.ts",  # The Baltor extension for Pi, served for download
+    "core/service_runtime/web_assets/baltor-library/*.txt",  # The Baltor library skill, served for download
+    "core/service_runtime/web_assets/baltor-library/**/*.txt",
     "**/*.json",          # manifests, evidence, and published measurements
     "**/*.jsonl",         # intelligence, governance, and run evidence
     "**/*.yaml",          # installed architecture and semantic projections

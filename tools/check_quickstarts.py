@@ -37,8 +37,9 @@ passed, whether the service answered the connection, listed its operations,
 answered the search, delivered the body and whether the delivered bytes carry
 the digest the search promised. A quickstart passes only when every step
 passes: a connection without a retrieval is not a pass. Each download uses a
-new ``request_id``, so each is one measured unit on the diagnostic account.
-No body text is kept.
+new ``request_id``. The service counts one unit per item version and calendar
+month, so a nightly run adds a unit on the diagnostic account only for a
+version it has not read that month. No body text is kept.
 
 Both paths answer a ``service_http_result/v1`` record whose ``result`` holds
 the session, retrieval, manifest or body record; a protocol tool carries that
@@ -69,6 +70,7 @@ The exit status is zero when every quickstart passed.
 from __future__ import annotations
 
 import argparse
+import base64
 from dataclasses import dataclass
 from datetime import datetime, timezone
 import hashlib
@@ -95,6 +97,12 @@ REQUIRED_TOOLS = (SEARCH_TOOL, READ_TOOL)
 DIGEST_HEADER, RECORD_HEADER = "x-content-sha256", "x-loop-engine-record-type"
 DOWNLOAD_RECORD = "service_download/v1"
 MANIFEST_RECORD = "provisioning_manifest/v3"
+#: The header in which a harness's configuration declares what its steps may do with an item.
+STEP_EFFECTS_HEADER = "Baltor-Step-Effects"
+#: The protocol read answer for a package of files: each file's exact content by page. The check follows every page.
+PACKAGE_READ_RECORD = "provisioning_package_read/v1"
+#: A package holds at most 64 files, so no honest package needs more pages than this.
+MAXIMUM_PACKAGE_PAGES = 64
 #: The search mode the served Pi extension sends, its SEARCH_MODE; a unit test holds the two to each other.
 EXTENSION_SEARCH_MODE = "hybrid"
 #: How many results the check asks for when the client, not the page, picks the number.
@@ -314,10 +322,14 @@ class Service:
         self.origin, self._key = origin.rstrip("/"), key
         self.opener = opener or urllib.request.build_opener(urllib.request.ProxyHandler({}), RefuseRedirect())
         self.calls = 0
+        #: The effects the running quickstart's configuration declares, sent in the header its harness sends.
+        self.step_effects = None
 
     def exchange(self, path: str, body=None, headers=None):
         """Status, lower-cased headers and bytes of one request; a refused request is answered, not raised."""
         fields = {"Accept": "application/json", "Authorization": "Bearer " + self._key, **(headers or {})}
+        if self.step_effects:
+            fields[STEP_EFFECTS_HEADER] = self.step_effects
         data = None
         if body is not None:
             fields["Content-Type"] = "application/json"
@@ -377,13 +389,33 @@ def wrapped_result(status: int, answer, what: str) -> dict:
 
 
 def choose_hit(hits, limit: int):
-    """The first hit whose body this account may read and that fits the limit the path can deliver."""
+    """The first hit whose body this account may read, that fits the limit the path can deliver, and whose declared
+    effects the quickstart's configuration declares: search shows every item, marked with `effects_to_declare`."""
     for hit in hits:
         reference = hit.get("reference") or {}
         if hit.get("body_allowed") is True and isinstance(hit.get("size_bytes"), int) \
-                and hit["size_bytes"] <= limit and reference.get("identity") and reference.get("body_digest"):
+                and hit["size_bytes"] <= limit and reference.get("identity") and reference.get("body_digest") \
+                and not hit.get("effects_to_declare"):
             return hit
     return None
+
+
+def declared_step_effects(recipe) -> str:
+    """The effects a recipe's configuration declares for its harness's steps, as the header carries them, or ''.
+
+    A protocol recipe names the header among its headers; the Pi recipe lists `step_effects`, which the served
+    extension sends in the same header."""
+    pending = [recipe.get("configuration")] if isinstance(recipe, dict) else []
+    while pending:
+        value = pending.pop()
+        if not isinstance(value, dict):
+            continue
+        if isinstance(value.get(STEP_EFFECTS_HEADER), str):
+            return value[STEP_EFFECTS_HEADER]
+        if isinstance(value.get("step_effects"), list) and all(isinstance(item, str) for item in value["step_effects"]):
+            return ", ".join(value["step_effects"])
+        pending.extend(value.values())
+    return ""
 
 
 def new_request_id(quickstart: Quickstart, stamp: str) -> str:
@@ -404,6 +436,9 @@ def run_quickstart(service: Service, quickstart: Quickstart, page_text: str, pub
     step("page_names_the_published_base", not foreign, "; ".join(foreign) if foreign else published_base)
     step("page_documents_the_first_search", documents_first_search(page_text), QUERY)
     recipe = published_recipe(recipes, quickstart.id)
+    # The harness sends the effects its configuration declares; the check sends the same header.
+    service.step_effects = declared_step_effects(recipe) or None
+    facts["step_effects"] = service.step_effects
     if recipe is None:
         step("page_matches_the_published_recipe", False, f"the service publishes no {quickstart.id} recipe")
     else:
@@ -419,6 +454,7 @@ def run_quickstart(service: Service, quickstart: Quickstart, page_text: str, pub
             _run_direct(service, quickstart, capabilities, stamp, step, facts, extension=False, page_text=page_text)
     except StepFailed as failure:
         steps[-1] = {**steps[-1], "passed": False, "detail": scrub(str(failure), service._key)[:300]}
+    service.step_effects = None
     rows = _collapse(steps)
     return {"id": quickstart.id, "harness": quickstart.harness, "page": quickstart.page,
             "wire_path": quickstart.wire_path, "steps": rows, **facts,
@@ -470,6 +506,9 @@ def _run_protocol(service, quickstart, capabilities, stamp, step, facts):
         "params": {"name": READ_TOOL, "arguments": {"identity": reference["identity"], "request_id": facts["request_id"],
                                                      "expected_digest": reference["body_digest"]}}}, version)
     body_record = _tool_output(read, READ_TOOL)
+    if isinstance(body_record, dict) and body_record.get("record_type") == PACKAGE_READ_RECORD:
+        _check_protocol_package(service, version, reference, facts, body_record, step)
+        return
     if not isinstance(body_record, dict) or not isinstance(body_record.get("body"), str):
         raise StepFailed("the read returned no body")
     if body_record.get("identity") != reference["identity"]:
@@ -479,6 +518,69 @@ def _run_protocol(service, quickstart, capabilities, stamp, step, facts):
     facts["digest_prefix"] = actual[:12]
     step("digest_matches", actual == reference["body_digest"] == body_record.get("digest"),
          "sha256 {}… promised {}…".format(actual[:12], reference["body_digest"][:12]))
+
+
+def package_file_bytes(row: dict) -> bytes:
+    """The exact bytes of one file a package read delivered, decoded as the answer names its encoding."""
+    if row.get("encoding") == "utf-8" and isinstance(row.get("content"), str):
+        return row["content"].encode("utf-8")
+    if row.get("encoding") == "base64" and isinstance(row.get("content"), str):
+        try:
+            return base64.b64decode(row["content"], validate=True)
+        except ValueError:
+            raise StepFailed("a package file's base64 content does not decode") from None
+    raise StepFailed("a package file names no encoding this check reads")
+
+
+def package_document_digest(listed: dict) -> str:
+    """The package digest a listing implies: the SHA-256 of its canonical `catalogue_package/v1` document."""
+    rows = listed.get("files") if isinstance(listed, dict) else None
+    if not isinstance(rows, list) or not rows:
+        raise StepFailed("the package read lists no files")
+    document = json.dumps({"record_type": "catalogue_package/v1", "files": rows},
+                          sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+    return hashlib.sha256(document).hexdigest()
+
+
+def _check_protocol_package(service, version, reference, facts, first, step):
+    """Follow a package read page by page with one request identity, and check every file and the package digest.
+
+    A file too large for one protocol answer is named under `omitted`; the download address serves it by path, so
+    the check counts it as named, not delivered, and still requires every listed file to be delivered or named."""
+    records, delivered, omitted, mismatched = [first], {}, {}, []
+    while True:
+        record = records[-1]
+        if record.get("record_type") != PACKAGE_READ_RECORD or record.get("identity") != reference["identity"]:
+            raise StepFailed("a package page answered another record or identity")
+        for row in record.get("files") or []:
+            data = package_file_bytes(row)
+            if hashlib.sha256(data).hexdigest() != row.get("digest") or len(data) != row.get("size_bytes"):
+                mismatched.append(str(row.get("path"))[:80])
+            delivered[row.get("path")] = row
+        omitted.update({row.get("path"): row for row in record.get("omitted") or []})
+        following = record.get("next_file_offset")
+        if following is None:
+            break
+        if not isinstance(following, int) or len(records) > MAXIMUM_PACKAGE_PAGES:
+            raise StepFailed("the package pages do not end")
+        _status, read = service.protocol({"jsonrpc": "2.0", "id": "qs-read-page", "method": "tools/call",
+            "params": {"name": READ_TOOL, "arguments": {"identity": reference["identity"],
+                                                         "request_id": facts["request_id"],
+                                                         "expected_digest": reference["body_digest"],
+                                                         "file_offset": following}}}, version)
+        records.append(_tool_output(read, READ_TOOL))
+    listed = first.get("package") or {}
+    paths = {row.get("path") for row in listed.get("files") or []}
+    if set(delivered) | set(omitted) != paths:
+        raise StepFailed("the package pages did not deliver or name every listed file")
+    step_pass(step, "downloaded", "{} of {} files in {} pages, metered {}".format(
+        len(delivered), len(paths), len(records), first.get("metered")))
+    actual = package_document_digest(listed)
+    facts["digest_prefix"] = actual[:12]
+    step("digest_matches", not mismatched
+         and actual == reference["body_digest"] == first.get("digest") == listed.get("package_digest"),
+         "files not matching their digest: " + ", ".join(mismatched) if mismatched else
+         "package sha256 {}… promised {}…".format(actual[:12], reference["body_digest"][:12]))
 
 
 def _tool_output(called: dict, tool: str):

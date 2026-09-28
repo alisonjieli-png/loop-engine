@@ -1,10 +1,17 @@
 {
   "name": "baltor-library",
-  "version": "0.3.0",
-  "description": "Search the Baltor library and stage a selected item or complete package with exact byte checks",
-  "author": {"name": "Baltor.AI"},
+  "version": "0.4.0",
+  "description": "Search the Baltor library, stage a selected item or complete package with exact byte checks, and place a fetched skill byte for byte",
+  "author": {
+    "name": "Baltor.AI"
+  },
   "homepage": "https://baltor.ai",
   "repository": "https://github.com/alisonjieli-png/loop-engine",
   "license": "MIT",
-  "keywords": ["baltor", "library", "skills", "harness"]
+  "keywords": [
+    "baltor",
+    "library",
+    "skills",
+    "harness"
+  ]
 }

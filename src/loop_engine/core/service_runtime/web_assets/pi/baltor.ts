@@ -15,10 +15,18 @@
  * removed from every tool result before the model or the session sees it.
  *
  * Configuration (optional): .pi/baltor.json in the project, or baltor.json in
- * Pi's agent folder, holding {"baltor": {"url": "...", "token_env": "..."}}.
- * Without one, the extension uses https://baltor.ai and BALTOR_SERVICE_TOKEN.
+ * Pi's agent folder, holding {"baltor": {"url": "...", "token_env": "...",
+ * "step_effects": [...]}}. step_effects says what Pi's steps may do with a
+ * Baltor item (reads_fs, writes_fs, reads_secret, network, spawns_process) and
+ * is sent in the Baltor-Step-Effects header. Without a configuration, the
+ * extension uses https://baltor.ai and BALTOR_SERVICE_TOKEN and sends no
+ * header, so the service applies its default: reading files.
  *
- * Record: baltor_pi_extension/v1. Licence: MIT.
+ * Search shows every item with the effects it declares; an item whose effects
+ * the configuration does not declare is not downloaded, and the refusal names
+ * the effects to add.
+ *
+ * Record: baltor_pi_extension/v2 (version 2 reads step_effects). Licence: MIT.
  */
 import { createHash, randomUUID } from "node:crypto";
 import { existsSync, lstatSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, writeFileSync } from "node:fs";
@@ -26,7 +34,7 @@ import * as path from "node:path";
 import { getAgentDir, loadSkillsFromDir, parseFrontmatter, type ExtensionAPI } from "@mariozechner/pi-coding-agent";
 import { Type } from "typebox";
 
-export const EXTENSION_RECORD = "baltor_pi_extension/v1";
+export const EXTENSION_RECORD = "baltor_pi_extension/v2";
 export const INSTALL_RECORD = "baltor_pi_install/v1";
 const DEFAULT_SERVICE_URL = "https://baltor.ai/mcp";
 const DEFAULT_TOKEN_VARIABLE = "BALTOR_SERVICE_TOKEN";
@@ -67,6 +75,14 @@ const MAX_PATH_DEPTH = 6;
 const MAX_DESCRIPTION = 1024;
 const REQUEST_TIMEOUT_MS = 30_000;
 const STAGING_PREFIX = ".baltor-staging-";
+// The effects a configuration may declare for Pi's steps, as the service names them, and the header that carries them.
+const STEP_EFFECTS = ["reads_fs", "writes_fs", "reads_secret", "network", "spawns_process"];
+const STEP_EFFECTS_HEADER = "Baltor-Step-Effects";
+// Refusals that recorded nothing and name a short wait in Retry-After: this account's other requests hold its share of
+// the service, or the usage store stayed busy. A read counts once a month, so sending it again cannot count twice.
+const RETRYABLE_CODES = ["tenant_concurrency_limit_reached", "usage_store_busy", "store_busy", "service_busy"];
+const RETRY_BUDGET_MS = 15_000;
+const LONGEST_RETRY_WAIT_SECONDS = 5;
 
 export class BaltorError extends Error {
 	code: string;
@@ -78,7 +94,7 @@ export class BaltorError extends Error {
 	}
 }
 
-type Settings = { serviceUrl: string; origin: string; tokenVariable: string; source: string };
+type Settings = { serviceUrl: string; origin: string; tokenVariable: string; stepEffects: string[]; source: string };
 type Capabilities = { retrievalRequest: string; retrievalDeclared: boolean; fileBytes: number; searchLimit: number };
 type PackageFile = { path: string; digest: string; size_bytes: number; role?: string };
 type SearchHit = {
@@ -89,6 +105,7 @@ type SearchHit = {
 	size_bytes: number;
 	license: string;
 	body_allowed: boolean;
+	effects_to_declare: string[];
 	files: PackageFile[] | null;
 	catalogue_release: string | null;
 };
@@ -126,7 +143,7 @@ function settingsFrom(value: unknown, source: string): Settings {
 		throw new BaltorError("configuration_invalid", `${source} must hold exactly one "baltor" table.`);
 	}
 	const table = value.baltor;
-	const unknown = Object.keys(table).filter((key) => key !== "url" && key !== "token_env");
+	const unknown = Object.keys(table).filter((key) => key !== "url" && key !== "token_env" && key !== "step_effects");
 	if (unknown.length) {
 		throw new BaltorError("configuration_invalid", `${source} has settings this extension does not read: ${unknown.join(", ")}.`);
 	}
@@ -135,7 +152,12 @@ function settingsFrom(value: unknown, source: string): Settings {
 	if (typeof tokenVariable !== "string" || !VARIABLE.test(tokenVariable)) {
 		throw new BaltorError("configuration_invalid", `${source}: token_env must name an environment variable, such as BALTOR_SERVICE_TOKEN. It never holds the token itself.`);
 	}
-	return { serviceUrl: String(url), origin: serviceOrigin(url, source), tokenVariable, source };
+	const stepEffects = table.step_effects ?? [];
+	if (!Array.isArray(stepEffects) || stepEffects.some((effect: unknown) => typeof effect !== "string" || !STEP_EFFECTS.includes(effect))
+		|| new Set(stepEffects).size !== stepEffects.length) {
+		throw new BaltorError("configuration_invalid", `${source}: step_effects must list distinct effects from ${STEP_EFFECTS.join(", ")}.`);
+	}
+	return { serviceUrl: String(url), origin: serviceOrigin(url, source), tokenVariable, stepEffects: [...stepEffects], source };
 }
 
 function serviceOrigin(url: unknown, source: string): string {
@@ -195,15 +217,40 @@ async function readCapped(response: Response, maxBytes: number, route: string): 
 	return Buffer.concat(chunks);
 }
 
-async function exchange(
-	settings: Settings,
-	route: string,
-	options: { method: "GET" | "POST"; body?: unknown; token?: string; maxBytes: number; signal?: AbortSignal },
-): Promise<Exchange> {
+type ExchangeOptions = { method: "GET" | "POST"; body?: unknown; token?: string; maxBytes: number; signal?: AbortSignal };
+
+// The wait, in milliseconds, before a refusal that recorded nothing may be sent again, or null for any other answer.
+function retryWait(reply: Exchange): number | null {
+	if (reply.status !== 429 && reply.status !== 503) return null;
+	const seconds = Number(reply.headers.get("retry-after"));
+	if (!Number.isFinite(seconds) || seconds < 0 || seconds > LONGEST_RETRY_WAIT_SECONDS) return null;
+	try {
+		const record = JSON.parse(reply.bytes.toString("utf8"));
+		return RETRYABLE_CODES.includes(record?.error?.code) ? Math.max(250, seconds * 1000) : null;
+	} catch {
+		return null;
+	}
+}
+
+// One request, sent again after each refusal that recorded nothing, while the retry budget lasts.
+async function exchange(settings: Settings, route: string, options: ExchangeOptions): Promise<Exchange> {
+	const started = Date.now();
+	for (;;) {
+		const reply = await exchangeOnce(settings, route, options);
+		const wait = retryWait(reply);
+		if (wait === null || options.signal?.aborted || Date.now() - started + wait > RETRY_BUDGET_MS) return reply;
+		await new Promise((resolve) => setTimeout(resolve, wait));
+	}
+}
+
+async function exchangeOnce(settings: Settings, route: string, options: ExchangeOptions): Promise<Exchange> {
 	const signals = [AbortSignal.timeout(REQUEST_TIMEOUT_MS)];
 	if (options.signal) signals.push(options.signal);
 	const headers: Record<string, string> = { Accept: "application/json, application/octet-stream" };
 	if (options.token) headers.Authorization = `Bearer ${options.token}`;
+	// What the configuration says Pi's steps may do. The service shows every item either way and refuses to deliver
+	// one whose declared effects are not all here.
+	if (settings.stepEffects.length) headers[STEP_EFFECTS_HEADER] = settings.stepEffects.join(", ");
 	if (options.body !== undefined) headers["Content-Type"] = "application/json";
 	let response: Response;
 	try {
@@ -339,6 +386,7 @@ export async function search(settings: Settings, query: string, limit: number, s
 		size_bytes: Number(hit?.size_bytes),
 		license: String(hit?.license ?? "unknown"),
 		body_allowed: hit?.body_allowed === true,
+		effects_to_declare: Array.isArray(hit?.effects_to_declare) ? hit.effects_to_declare.map(String) : [],
 		files: packageFiles(hit?.package),
 		catalogue_release: release,
 	}));
@@ -537,6 +585,10 @@ async function installOnce(settings: Settings, cwd: string, identity: string, na
 	if (item.body_allowed !== true) {
 		throw new BaltorError("download_not_allowed", `Your Baltor account can see ${identity} but not download it, so nothing was downloaded.`);
 	}
+	const undeclared = Array.isArray(item.effects_to_declare) ? item.effects_to_declare.map(String) : [];
+	if (undeclared.length) {
+		throw new BaltorError("step_effects_required", `${identity} declares effects that step_effects in .pi/baltor.json does not list: ${undeclared.join(", ")}. If Pi may do that, add them to step_effects and install again. Nothing was downloaded.`);
+	}
 	// Already installed with the same published digest: nothing to download. A record
 	// whose folder was removed is replaced by the new install.
 	if (exists(where.target)) {
@@ -658,6 +710,7 @@ export async function statusLines(cwd: string, signal?: AbortSignal): Promise<{ 
 		return { ready: false, lines: [...lines, `Configuration: refused. ${(error as Error).message}`, "Result: not ready"] };
 	}
 	lines.push(`Configuration: ${settings.source} (service ${settings.origin}, token variable ${settings.tokenVariable})`);
+	lines.push(`Step effects: ${settings.stepEffects.length ? settings.stepEffects.join(", ") : "none declared; the service applies its default, reads_fs"}`);
 	const tokenSet = Boolean((process.env[settings.tokenVariable] ?? "").trim());
 	lines.push(`Token variable: ${tokenSet ? "set (the value is never shown)" : "not set"}`);
 	if (!tokenSet) ready = false;
@@ -730,6 +783,7 @@ export default function baltor(pi: ExtensionAPI) {
 			found.hits.forEach((hit, index) => {
 				lines.push(`${index + 1}. ${hit.identity}`);
 				lines.push(`   ${hit.kind}, ${hit.size_bytes} bytes, licence ${hit.license}, digest ${hit.digest.slice(0, 12)}, ${hit.body_allowed ? "you may download it" : "search only for your account"}`);
+				if (hit.effects_to_declare.length) lines.push(`   needs step effects not in .pi/baltor.json: ${hit.effects_to_declare.join(", ")}`);
 				lines.push(`   ${hit.purpose}`);
 				if (hit.files?.length) lines.push(`   files: ${hit.files.map((file) => file.path).join(", ")}`);
 			});

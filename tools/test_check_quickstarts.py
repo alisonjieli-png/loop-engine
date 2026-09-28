@@ -10,6 +10,7 @@ reached, and the fixture key never appears in a record.
 """
 from __future__ import annotations
 
+import base64
 import hashlib
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
@@ -35,6 +36,15 @@ PUBLISHED_BASE = "https://baltor.ai"
 RECIPES_FILE = ROOT / "src/loop_engine/core/service_runtime/web_assets/client-recipes.json"
 PI_EXTENSION = ROOT / "src/loop_engine/core/service_runtime/web_assets/pi/baltor.ts"
 HARNESS_PAGE = ROOT / "docs/guides/quickstart-baltor-harness.md"
+#: A two-file package the protocol read delivers one file per page, as a small answer limit makes it do.
+PACKAGE_FILES = (("SKILL.md", b"# Review inputs\n\nRead every input once before you hand the work over.\n",
+                  "text/markdown", "skill_definition"),
+                 ("assets/checklist.bin", b"\x00\x01\xffchecklist", "application/octet-stream", "skill_asset"))
+PACKAGE_ROWS = [{"path": path, "digest": hashlib.sha256(data).hexdigest(), "size_bytes": len(data),
+                 "media_type": media, "role": role} for path, data, media, role in PACKAGE_FILES]
+PACKAGE_DOCUMENT = json.dumps({"record_type": "catalogue_package/v1", "files": PACKAGE_ROWS},
+                              sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()
+PACKAGE_DIGEST = hashlib.sha256(PACKAGE_DOCUMENT).hexdigest()
 
 
 def committed_recipes():
@@ -73,6 +83,16 @@ class State:
         self.manifest_requests = []
         #: The record type of the manifest answer; the served Pi extension refuses any other than version 3.
         self.manifest_record_type = "provisioning_manifest/v3"
+        #: The protocol search offers a package, and the protocol read answers its files one page at a time.
+        self.package_read = False
+        #: One package file arrives with other bytes than its digest names.
+        self.wrong_package_file = False
+        #: The file_offset of every package page the protocol read was asked for, in order.
+        self.package_offsets = []
+        #: The Baltor-Step-Effects header of every POST, with its address, in order.
+        self.step_effect_headers = []
+        #: The search offers, first, an item whose effects the quickstart's configuration does not declare.
+        self.undeclared_first = False
         self.__dict__.update(changes)
 
 
@@ -156,6 +176,7 @@ class Handler(BaseHTTPRequestHandler):
         if not self._authorized():
             return
         payload = json.loads(self.rfile.read(int(self.headers.get("Content-Length") or 0)) or b"{}")
+        self.state.step_effect_headers.append((self.path, self.headers.get("Baltor-Step-Effects")))
         if self.path == "/api/v1/retrieval":
             self.state.retrieval_requests.append(payload)
             if payload.get("record_type") != "service_retrieval_request/v2":
@@ -187,6 +208,11 @@ class Handler(BaseHTTPRequestHandler):
     def _search(self, payload):
         if payload.get("record_type") not in ("service_retrieval_request/v2", None):
             return {"record_type": "service_retrieval_result/v1", "hits": [], "bodies_loaded": False}
+        if self.state.undeclared_first and not self.state.no_hits:
+            marked = {**hit(), "reference": {"identity": "needs_secrets", "body_digest": "1" * 64, "size_bytes": 10},
+                      "size_bytes": 10, "effects_to_declare": ["reads_secret"]}
+            return {"record_type": "service_retrieval_result/v1", "hits": [marked, hit()], "bodies_loaded": False,
+                    "catalogue_release": "fixture"}
         return {"record_type": "service_retrieval_result/v1", "hits": [] if self.state.no_hits else [hit()],
                 "bodies_loaded": bool(self.state.loads_bodies), "catalogue_release": "fixture"}
 
@@ -210,6 +236,30 @@ class Handler(BaseHTTPRequestHandler):
             if self.state.refuse_tool_calls:
                 refused = {"record_type": "service_http_error/v1", "error": {"code": "insufficient_scope"}}
                 result = {"content": [{"type": "text", "text": json.dumps(refused)}], "structuredContent": refused, "isError": True}
+            elif name == "intelligence_search" and self.state.package_read:
+                package_hit = {**hit(), "reference": {"identity": IDENTITY, "body_digest": PACKAGE_DIGEST,
+                                                      "size_bytes": len(PACKAGE_DOCUMENT)},
+                               "size_bytes": len(PACKAGE_DOCUMENT)}
+                found = {"record_type": "service_retrieval_result/v1", "hits": [package_hit], "bodies_loaded": False,
+                         "catalogue_release": "fixture"}
+                output = wrapped("retrieval", found)
+                result = {"content": [{"type": "text", "text": json.dumps(output)}], "structuredContent": output, "isError": False}
+            elif name == "provisioning_read" and self.state.package_read and arguments.get("identity") == IDENTITY:
+                offset = arguments.get("file_offset", 0)
+                self.state.package_offsets.append(offset)
+                path, data, media, role = PACKAGE_FILES[offset]
+                if self.state.wrong_package_file and offset == 1:
+                    data = data + b"changed"
+                row = {"path": path, "digest": PACKAGE_ROWS[offset]["digest"], "size_bytes": PACKAGE_ROWS[offset]["size_bytes"],
+                       "media_type": media, "role": role, "encoding": "base64",
+                       "content": base64.b64encode(data).decode("ascii")}
+                record = {"record_type": "provisioning_package_read/v1", "identity": IDENTITY, "digest": PACKAGE_DIGEST,
+                          "size_bytes": len(PACKAGE_DOCUMENT), "metered": True,
+                          "package": {"body_form": "package", "package_digest": PACKAGE_DIGEST, "files": PACKAGE_ROWS},
+                          "selection": {"file_offset": offset}, "files": [row], "omitted": [],
+                          "next_file_offset": offset + 1 if offset + 1 < len(PACKAGE_FILES) else None}
+                output = wrapped("read", record)
+                result = {"content": [{"type": "text", "text": json.dumps(output)}], "structuredContent": output, "isError": False}
             elif name == "intelligence_search":
                 found = self._search({"record_type": "service_retrieval_request/v2", **arguments})
                 output = found if self.state.bare_tool_answers else wrapped("retrieval", found)
@@ -311,6 +361,48 @@ class QuickstartCheckTests(unittest.TestCase):
         for quickstart in ("claude-code", "codex", "opencode", "pi", "baltor-harness"):
             self.assertTrue(step(record, quickstart, "downloaded")["passed"])
             self.assertFalse(step(record, quickstart, "digest_matches")["passed"], quickstart)
+
+    def test_a_package_read_is_followed_page_by_page_and_checked_file_by_file(self):
+        state = State(package_read=True)
+        record = run(state)
+        for quickstart in ("claude-code", "codex", "opencode"):
+            self.assertTrue(row(record, quickstart)["passed"], quickstart)
+            self.assertIn("2 of 2 files in 2 pages", step(record, quickstart, "downloaded")["detail"])
+        self.assertEqual(state.package_offsets, [0, 1] * 3, "each protocol quickstart asks for both pages")
+
+    def test_known_wrong_a_package_file_with_other_bytes_fails_digest_matches(self):
+        record = run(State(package_read=True, wrong_package_file=True))
+        for quickstart in ("claude-code", "codex", "opencode"):
+            self.assertTrue(step(record, quickstart, "downloaded")["passed"])
+            failed = step(record, quickstart, "digest_matches")
+            self.assertFalse(failed["passed"], quickstart)
+            self.assertIn("assets/checklist.bin", failed["detail"])
+
+    def test_every_quickstart_sends_the_effects_its_configuration_declares(self):
+        state = State()
+        record = run(state)
+        self.assertTrue(record["passed"])
+        declared = "reads_fs, writes_fs, spawns_process, network"
+        self.assertTrue(state.step_effect_headers)
+        self.assertEqual({value for _path, value in state.step_effect_headers}, {declared})
+        for quickstart in ("claude-code", "codex", "opencode", "pi", "baltor-harness"):
+            self.assertEqual(row(record, quickstart)["step_effects"], declared)
+
+    def test_known_wrong_a_recipe_without_the_header_sends_none(self):
+        recipes = committed_recipes()
+        for recipe in recipes["recipes"]:
+            if recipe["id"] == "opencode":
+                recipe["configuration"]["mcp"]["baltor"]["headers"].pop("Baltor-Step-Effects")
+        self.assertEqual(tool.declared_step_effects(next(r for r in recipes["recipes"] if r["id"] == "opencode")), "")
+        self.assertEqual(tool.declared_step_effects(next(r for r in recipes["recipes"] if r["id"] == "pi")),
+                         "reads_fs, writes_fs, spawns_process, network")
+
+    def test_a_hit_the_step_cannot_fetch_is_passed_over(self):
+        record = run(State(undeclared_first=True))
+        for quickstart in ("claude-code", "codex", "opencode", "pi", "baltor-harness"):
+            self.assertEqual(row(record, quickstart)["identity"], IDENTITY, quickstart)
+        self.assertIsNone(tool.choose_hit([{"reference": {"identity": "x", "body_digest": "1" * 64}, "size_bytes": 1,
+                                            "body_allowed": True, "effects_to_declare": ["network"]}], 100))
 
     def test_known_wrong_a_tool_list_without_the_search_tool_fails_listed(self):
         record = run(State(no_search_tool=True))
@@ -460,7 +552,9 @@ class QuickstartCheckTests(unittest.TestCase):
         codex = tool.published_recipe(committed_recipes(), "codex")
         self.assertEqual(tool.toml_text(tool.filled(codex["configuration"], "https://baltor.ai/mcp")),
                          '[mcp_servers.baltor]\nurl = "https://baltor.ai/mcp"\n'
-                         'bearer_token_env_var = "BALTOR_SERVICE_TOKEN"\nstartup_timeout_sec = 20\ntool_timeout_sec = 45')
+                         'bearer_token_env_var = "BALTOR_SERVICE_TOKEN"\nstartup_timeout_sec = 20\ntool_timeout_sec = 45'
+                         '\n\n[mcp_servers.baltor.http_headers]\n'
+                         'Baltor-Step-Effects = "reads_fs, writes_fs, spawns_process, network"')
         # Settings come before inner tables, a key that is not bare is quoted, and only a whole placeholder is filled.
         self.assertEqual(tool.toml_text({"a": {"x y": True, "inner": {"k": "{{ENDPOINT}}/v"}}, "top": 1}),
                          'top = 1\n\n[a]\n"x y" = true\n\n[a.inner]\nk = "{{ENDPOINT}}/v"')

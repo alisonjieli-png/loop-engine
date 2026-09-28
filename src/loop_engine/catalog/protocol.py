@@ -27,6 +27,13 @@ class PreconditionFailed(StoreError):
     """The authoritative store refused an expected version or absence check."""
 
 
+class StoreBusy(StoreError):
+    """The store stayed locked by other work past its wait, and it wrote nothing of the batch.
+
+    A store raises this only when it knows the batch was not applied, for example after its own rollback, so the
+    same batch may be sent again. Any other failure of a write leaves its outcome unknown."""
+
+
 ATOMIC_BATCH_VERSION = "catalog_atomic_write_batch/v1"
 #: A batch that removes records is its own record version. An adapter that
 #: declared only the first version refuses it, so no adapter can apply the

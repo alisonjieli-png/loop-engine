@@ -1,6 +1,6 @@
 {
   "record_type": "website_client_recipes/v2",
-  "reviewed_at": "2026-09-24",
+  "reviewed_at": "2026-09-27",
   "credential_variable": "BALTOR_SERVICE_TOKEN",
   "revocation_note": "Open your account page, find the token under Your client tokens and select Revoke. The service refuses a revoked token on its next request. Revoking a token does not recall files that were already downloaded.",
   "recipes": [
@@ -9,14 +9,17 @@
       "name": "Codex",
       "format": "toml",
       "configuration_location": "Your existing Codex config.toml",
-      "configuration_note": "Merge this table into your existing config.toml. Do not replace your other settings.",
+      "configuration_note": "Merge this table into your existing config.toml. Do not replace your other settings. The Baltor-Step-Effects header says what your harness's steps may do with a Baltor item: read and write files in your project, run commands and use the network. Remove any effect your harness does not allow. Search still shows every item with the effects it declares; a download of an item that declares an effect you left out is refused, and the refusal names the effect.",
       "configuration": {
         "mcp_servers": {
           "baltor": {
             "url": "{{ENDPOINT}}",
             "bearer_token_env_var": "BALTOR_SERVICE_TOKEN",
             "startup_timeout_sec": 20,
-            "tool_timeout_sec": 45
+            "tool_timeout_sec": 45,
+            "http_headers": {
+              "Baltor-Step-Effects": "reads_fs, writes_fs, spawns_process, network"
+            }
           }
         }
       },
@@ -31,7 +34,7 @@
       "name": "OpenCode 1.x",
       "format": "json",
       "configuration_location": "Your existing opencode.json",
-      "configuration_note": "Merge the baltor entry into the mcp section of your existing opencode.json. Do not replace your other settings.",
+      "configuration_note": "Merge the baltor entry into the mcp section of your existing opencode.json. Do not replace your other settings. The Baltor-Step-Effects header says what your harness's steps may do with a Baltor item: read and write files in your project, run commands and use the network. Remove any effect your harness does not allow. Search still shows every item with the effects it declares; a download of an item that declares an effect you left out is refused, and the refusal names the effect.",
       "configuration": {
         "$schema": "https://opencode.ai/config.json",
         "mcp": {
@@ -40,7 +43,10 @@
             "url": "{{ENDPOINT}}",
             "enabled": true,
             "oauth": false,
-            "headers": {"Authorization": "Bearer {env:BALTOR_SERVICE_TOKEN}"}
+            "headers": {
+              "Authorization": "Bearer {env:BALTOR_SERVICE_TOKEN}",
+              "Baltor-Step-Effects": "reads_fs, writes_fs, spawns_process, network"
+            }
           }
         }
       },
@@ -55,13 +61,16 @@
       "name": "Claude Code",
       "format": "json",
       "configuration_location": "A .mcp.json file in your project folder",
-      "configuration_note": "Create this file, or merge the baltor entry into the mcpServers section of an existing one. Do not replace your other settings. The file holds the name of the variable, never the token, so it is safe to keep in version control.",
+      "configuration_note": "Create this file, or merge the baltor entry into the mcpServers section of an existing one. Do not replace your other settings. The file holds the name of the variable, never the token, so it is safe to keep in version control. The Baltor-Step-Effects header says what your harness's steps may do with a Baltor item: read and write files in your project, run commands and use the network. Remove any effect your harness does not allow. Search still shows every item with the effects it declares; a download of an item that declares an effect you left out is refused, and the refusal names the effect.",
       "configuration": {
         "mcpServers": {
           "baltor": {
             "type": "http",
             "url": "{{ENDPOINT}}",
-            "headers": {"Authorization": "Bearer ${BALTOR_SERVICE_TOKEN}"}
+            "headers": {
+              "Authorization": "Bearer ${BALTOR_SERVICE_TOKEN}",
+              "Baltor-Step-Effects": "reads_fs, writes_fs, spawns_process, network"
+            }
           }
         }
       },
@@ -76,11 +85,17 @@
       "name": "Pi",
       "format": "json",
       "configuration_location": "A .pi/baltor.json file in your project folder, next to the Baltor extension file .pi/extensions/baltor.ts",
-      "configuration_note": "Pi has no built-in Model Context Protocol client, so Baltor connects through a small Pi extension. Save the extension this website serves at /assets/pi/baltor.ts as .pi/extensions/baltor.ts in your project folder, and read it first: Pi runs every extension in that folder with your permissions. Then create this file beside it. This file holds the name of the variable, never the token. The extension adds two tools, baltor_search and baltor_download. A download checks the published SHA-256 digest before it writes anything, then installs the skill in .pi/skills.",
+      "configuration_note": "Pi has no built-in Model Context Protocol client, so Baltor connects through a small Pi extension. Save the extension this website serves at /assets/pi/baltor.ts as .pi/extensions/baltor.ts in your project folder, and read it first: Pi runs every extension in that folder with your permissions. Then create this file beside it. This file holds the name of the variable, never the token. The extension adds two tools, baltor_search and baltor_download. A download checks the published SHA-256 digest before it writes anything, then installs the skill in .pi/skills. step_effects says what your Pi steps may do with a Baltor item, and the extension sends it in the Baltor-Step-Effects header. Remove any effect Pi should not have. Search still shows every item with the effects it declares; a download of an item that declares an effect you left out is refused, and the refusal names the effect.",
       "configuration": {
         "baltor": {
           "url": "{{ENDPOINT}}",
-          "token_env": "BALTOR_SERVICE_TOKEN"
+          "token_env": "BALTOR_SERVICE_TOKEN",
+          "step_effects": [
+            "reads_fs",
+            "writes_fs",
+            "spawns_process",
+            "network"
+          ]
         }
       },
       "verification_command": "pi -p --baltor-check",
@@ -94,13 +109,16 @@
       "name": "Baltor Harness",
       "format": "json",
       "configuration_location": "No configuration file yet. The Baltor Harness steps in the linked guide use these values to search and download with your token, or use them with the engine's protocol client in Python.",
-      "configuration_note": "The Baltor Harness runs your task on your own model in small steps. It does not search or download from Baltor by itself yet: search and download with your token, add the downloaded material to your task file, then run loop-engine solve. The same address and variable work with the protocol client that ships with the engine (McpServerSpec, installed with loop-engine[integrations]). Keep the token in your environment, never in a file.",
+      "configuration_note": "The Baltor Harness runs your task on your own model in small steps. It does not search or download from Baltor by itself yet: search and download with your token, add the downloaded material to your task file, then run loop-engine solve. The same address and variable work with the protocol client that ships with the engine (McpServerSpec, installed with loop-engine[integrations]). Keep the token in your environment, never in a file. Send the Baltor-Step-Effects header with every search and download, as the guide's commands do; it says what your task's steps may do with a Baltor item. Remove any effect your steps do not have.",
       "configuration": {
         "mcp_servers": {
           "baltor": {
             "transport": "streamable_http",
             "url": "{{ENDPOINT}}",
-            "credential_env": "BALTOR_SERVICE_TOKEN"
+            "credential_env": "BALTOR_SERVICE_TOKEN",
+            "headers": {
+              "Baltor-Step-Effects": "reads_fs, writes_fs, spawns_process, network"
+            }
           }
         }
       },

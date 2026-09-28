@@ -1,7 +1,7 @@
 {
   "record_type": "baltor_library_integration_release/v1",
   "name": "baltor-library",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "skill_folder": "skills/baltor-library",
   "files": [
     {
@@ -13,36 +13,36 @@
     },
     {
       "path": "SKILL.md",
-      "digest": "4934d24c5894b4b3520d9df45c434afd307039db68643bcc7958566623108c44",
-      "size_bytes": 3086,
+      "digest": "2b2e489481fe54a07aa7cde4fc2c69f0b49c842ec4420f3643af559c33ec3be8",
+      "size_bytes": 4425,
       "media_type": "text/markdown",
       "role": "skill_definition"
     },
     {
       "path": "assets/client.example.json",
-      "digest": "5c165a3b62efc14fc19ab204cce5b6ef1c6f0fb73b3f38c04c088ab4af4c210a",
-      "size_bytes": 184,
+      "digest": "7c0e2fe661534d39c190e361243e466cb716ab15e18fc591edc3f3069f706892",
+      "size_bytes": 226,
       "media_type": "application/json",
       "role": "skill_asset"
     },
     {
       "path": "references/client.md",
-      "digest": "29046029c8418b31b2edcffb2a033acecd0be320ff0b21355073d0d9d226b529",
-      "size_bytes": 5775,
+      "digest": "a8ec833149bec1f47c4f2eef30eecd47c15dbe44ea200a7a51f10a39a253af16",
+      "size_bytes": 9344,
       "media_type": "text/markdown",
       "role": "skill_reference"
     },
     {
       "path": "scripts/baltor.py",
-      "digest": "214f9249f97a7258705cd7898ec09bef2d212d947972d40a3c9f984e409bf756",
-      "size_bytes": 26542,
+      "digest": "47a1ab1062af3cdccab647d576b286cd177f3a6cabe173b7d32514b7408ffb5a",
+      "size_bytes": 42875,
       "media_type": "text/x-python",
       "role": "skill_script"
     },
     {
       "path": "verification/test_client.py",
-      "digest": "03beddf85e1e00d9612599ada1c0000e4bc51318c7285db602564c6f3c6521c8",
-      "size_bytes": 22547,
+      "digest": "0caa181672e69cbf04f56d16e772b9b9f73bda42f9a9bb636ee9cdf081a94bb0",
+      "size_bytes": 30182,
       "media_type": "text/x-python",
       "role": "skill_script"
     }
@@ -50,7 +50,7 @@
   "package": {
     "record_type": "catalogue_package/v1",
     "body_form": "package",
-    "package_digest": "ab45e58b1e1a601b4bc97ab0df84e4c4b37ca814b6c1c9bba5dfdc32578e3926",
+    "package_digest": "c27908e828db2ca64e1749bee0215a6253c5bb7a1ec03e771d1e3bbbfc224d20",
     "catalogue_identity": "baltor_library_client",
     "declared_effects": [
       "reads_fs",
@@ -94,8 +94,8 @@
     "credential_environment": "BALTOR_SERVICE_TOKEN"
   },
   "source": {
-    "delivery": "codex-lane/2026-09-27-customer-skill-1-v1",
-    "delivery_manifest_sha256": "e3d84dc835093c2d25e2530eea65773c60fb7bee0611e1e26499b111f9d60d48",
-    "delivery_inventory_sha256": "a476a7083cf1dc7054d0087f9d98d4a26efebee8c3c21b8b61c6346b93ccb8e9"
+    "delivery": "consolidation-g/2026-09-27-customer-delivery-path",
+    "previous_version": "0.3.0",
+    "previous_package_digest": "ab45e58b1e1a601b4bc97ab0df84e4c4b37ca814b6c1c9bba5dfdc32578e3926"
   }
 }

@@ -58,6 +58,8 @@ SERVICE_SOURCES = (
     "src/loop_engine/core/provisioning_server.py",
     "src/loop_engine/core/provisioning_mcp.py",
     "src/loop_engine/core/harness_intelligence.py",
+    # The effect vocabulary the service publishes as `library.step_effects` and reads from `Baltor-Step-Effects`.
+    "src/loop_engine/core/facets.py",
     "src/loop_engine/core/retrieval.py",
     "src/loop_engine/service_cli.py",
 )
@@ -99,11 +101,12 @@ CHECKED_PROGRAMS = ("loop-engine", "codex", "opencode", "claude", "pi")
 #: Two claims whose words all exist in the source and can still be wrong. Each
 #: rule reads a paragraph and is held to values read from the source.
 #:
-#: A current request that omits `authority_effects` receives the effects its
-#: client configuration names in a header, or the source's default. Only a
-#: version 1 provisioning request withholds effect-declaring material without
-#: the field. A paragraph that says an omitted selection withholds material
-#: must name version 1 or state that default.
+#: A current request that omits `authority_effects` is shown every item, marked
+#: with the effects its step would still have to declare, and its step holds the
+#: effects its client configuration names in a header, or the source's default.
+#: Only a version 1 provisioning request withholds effect-declaring material
+#: without the field. A paragraph that says an omitted selection withholds
+#: material must name version 1 or state that default.
 PROVISIONING_MODULE = "src/loop_engine/core/provisioning_server.py"
 OMITTED_SELECTION = re.compile(r"\b(?:omit|omits|omitted|without)\b", re.IGNORECASE)
 EFFECT_WORD = re.compile(r"\beffects?\b", re.IGNORECASE)
@@ -465,9 +468,9 @@ def claim_findings(text: str, facts: dict) -> list:
                 and WITHHOLDING.search(block) and not VERSION_ONE.search(block)
                 and not all(effect in block for effect in defaults)):
             findings.append(("effect_default", block[:120],
-                             "a current request that omits authority_effects receives the client header's "
-                             "effects or {}; only a version 1 provisioning request withholds material "
-                             "without the field".format(", ".join(defaults))))
+                             "a current request that omits authority_effects is shown every item, and its step "
+                             "holds the client header's effects or {}; only a version 1 provisioning request "
+                             "withholds material without the field".format(", ".join(defaults))))
         if legacy_body in block and not VERSION_ONE.search(block):
             findings.append(("body_record_version", legacy_body,
                              f"a version 2 request returns {current_body}; {legacy_body} answers only a "

@@ -37,10 +37,13 @@ Create `.pi/baltor.json` beside it. It holds the name of the variable, never the
 {
   "baltor": {
     "url": "https://baltor.ai/mcp",
-    "token_env": "BALTOR_SERVICE_TOKEN"
+    "token_env": "BALTOR_SERVICE_TOKEN",
+    "step_effects": ["reads_fs", "writes_fs", "spawns_process", "network"]
   }
 }
 ```
+
+`step_effects` says what Pi's steps may do with a Baltor item: `reads_fs` reads files in your project, `writes_fs` writes them, `spawns_process` runs commands and `network` uses the network. `reads_secret` is left out unless your steps read secrets. Remove any effect Pi should not have. The extension sends the list in the `Baltor-Step-Effects` header. Search shows every item your account may use, and marks one whose effects your list leaves out; the extension does not download that item and names the effects to add. The extension needs version 2 of the file for this setting: download it again if an older copy refuses `step_effects`.
 
 ## Check the connection
 
@@ -70,7 +73,7 @@ Choose one result and ask Pi to install it:
 Install ITEM-IDENTITY from Baltor.
 ```
 
-The extension's `baltor_download` tool reads the item's manifest through `/api/v1/provisioning`, downloads it through `/api/v1/download` with a new `request_id`, checks every file against its published SHA-256 digest before it writes anything, installs the skill in `.pi/skills` and never replaces a folder it did not install. Its install record is kept in `.pi/baltor/installed`. This download is one measured unit and appears in your usage. Pi lists the new skill from the next session.
+The extension's `baltor_download` tool reads the item's manifest through `/api/v1/provisioning`, downloads it through `/api/v1/download` with a new `request_id`, checks every file against its published SHA-256 digest before it writes anything, installs the skill in `.pi/skills` and never replaces a folder it did not install. Its install record is kept in `.pi/baltor/installed`. The first download of an item version in a calendar month is one measured unit and appears in your usage; downloading the same version again that month, with any `request_id`, adds nothing. Pi lists the new skill from the next session.
 
 ## Check that it worked
 
@@ -91,6 +94,8 @@ The answer's `result` is `service_session/v1`. Its `principal` names the account
 | --- | --- | --- |
 | `unauthorized` | 401 | The token is missing, wrong, expired or revoked. Set `BALTOR_SERVICE_TOKEN` in the terminal that starts Pi, then run the check again. |
 | `insufficient_scope` | 403 | The token lacks the scope this operation needs. Create a token with `provisioning:read`. |
+| `plan_required` | 403 | Your account has no plan that includes downloads; search still works. Choose Baltor Pro on the [pricing page](https://baltor.ai/pricing). The refusal's `details` name that page, and the founding offer while places remain. |
+| `step_effects_required` | 403 | The item declares effects your configuration does not declare. Add the `effects_to_declare` that the refusal's `details` name, if your harness may do them, or choose another item. |
 | `item_unavailable` | 404 | The identity is not in your library, or it was withdrawn. Search again and use a fresh reference. |
 | `unsupported_version` | 400 | The service moved to a newer request version. The extension asks the service again once; if it still refuses, download the extension file again. |
 | `failed_attempt_limit_reached` | 429 | Too many refused attempts from your address. Fix the token, then wait a minute. |

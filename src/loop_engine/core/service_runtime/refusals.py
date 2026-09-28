@@ -84,6 +84,9 @@ CODE_GUIDANCE = {
                        "Create a token that includes the operation you need, then retry with it."),
     "scope_denied": ("This token is not allowed to perform that operation.",
                      "Create a token that includes the operation you need, then retry with it."),
+    "plan_required": ("This account has no plan that includes downloads, so it can search but not download.",
+                      "Choose Baltor Pro on the pricing page, then retry. The refusal's details name the pricing "
+                      "page, and the founding offer while places remain."),
     "body_forbidden": ("This account may search for that item but may not download its body.",
                        "Ask the person who runs this service for download access to that item."),
     "download_requires_read": ("Downloading a body needs the download operation, and this token does not have it.",
@@ -187,7 +190,16 @@ CODE_GUIDANCE = {
     "commit_unknown": ("The service could not confirm whether this change was stored.",
                        "Do not repeat it. Reload the current state first, then decide."),
     "meter_commit_unknown": ("The service could not confirm whether this usage record was stored.",
-                             "Do not repeat the request. Check your usage record before trying again."),
+                             "Retry the same read. An item version counts once a month, so a retry cannot count "
+                             "it twice."),
+    "usage_store_busy": ("The service's usage store stayed busy with other downloads, so this read was not counted "
+                         "and nothing was delivered.",
+                         "Send the same request again after the Retry-After seconds. It is counted once when it "
+                         "succeeds."),
+    "store_busy": ("The service's store stayed busy with other work, so this request did not finish.",
+                   "Send the same request again after the Retry-After seconds."),
+    "usage_identity_conflict": ("The service's usage record for this item version does not match the read it names.",
+                                "Report the time and the request reference to the person who runs this service."),
     "billing_reconciliation_pending": ("A payment change is still being reconciled, so this request was refused.",
                                        "Wait, reload your account page, then decide from the state you see."),
     "billing_customer_not_bound": ("This account is not yet bound to a payment customer.",
@@ -233,8 +245,23 @@ CODE_GUIDANCE = {
                               "Use equals, any_of, or at_least and at_most with values of the detail's own type."),
     "package_file_not_found": ("The item's package holds no file at the path this download named.",
                                "Read the item's package list first, then download one of the paths it names."),
-    "package_file_requires_download": ("A single file of a package is delivered through the download address.",
+    "package_file_requires_download": ("A single file of a package is delivered through the download address or "
+                                       "the provisioning_read protocol tool, not this address.",
                                        "Send the same request to the download address instead of this one."),
+    "item_withheld": ("This item is outside what the request asked to be shown: its declared effects, its kind "
+                      "or its harness style.",
+                      "Ask again without authority_effects, kinds or style to see the item and the effects its "
+                      "step must declare in the Baltor-Step-Effects header."),
+    "step_effects_required": ("This item declares effects that your client did not declare for its steps, so its "
+                              "files are not delivered. Search and listing still show it.",
+                              "If your harness may do what the item declares, add the effects the refusal's "
+                              "details name to the Baltor-Step-Effects header in your client configuration, then "
+                              "retry. Otherwise choose another item."),
+    "package_selection_conflict": ("A package read names either one file by path or a page by file_offset, "
+                                   "and this request named both.",
+                                   "Send path to read one file, or file_offset to read a page, then retry."),
+    "file_offset_out_of_range": ("The package has fewer files than this file_offset counts.",
+                                 "Start again at file_offset 0, or use the next_file_offset of the previous answer."),
 }
 
 
@@ -272,11 +299,32 @@ def self_test():
               for key, (message, action) in pairs))
     # A refusal is read by someone who is already confused. Wording that names
     # a credential value, or tells a reader to send one somewhere, would be
-    # read as an instruction to expose it.
-    forbidden = ("password", "secret key", "api key", "bearer ", "sk_", "le_", "authorization: ")
+    # read as an instruction to expose it. The key prefixes match only at the
+    # start of a word, so an exact API field name that merely contains the
+    # letters of a prefix, as file_offset contains le_, is not a named secret.
+    import re as _re
+    forbidden_words = ("password", "secret key", "api key", "bearer ", "authorization: ")
+    forbidden_prefixes = ("sk_", "le_")
+
+    def names_a_secret_value(text):
+        if any(word in text for word in forbidden_words):
+            return True
+        for prefix in forbidden_prefixes:
+            for match in _re.finditer(_re.escape(prefix), text):
+                before = text[match.start() - 1] if match.start() else ""
+                if not (before and (before.isalnum() or before == "_")):
+                    return True
+        return False
+
     check("no_refusal_wording_names_or_asks_for_a_secret_value",
-          not any(word in (message + " " + action).lower()
-                  for _key, (message, action) in pairs for word in forbidden))
+          not any(names_a_secret_value((message + " " + action).lower())
+                  for _key, (message, action) in pairs))
+    # The prefix rule still refuses a wording that names a real key shape: the
+    # known-wrong control for the word-boundary repair above.
+    check("refusal_wording_still_refuses_a_real_key_shape",
+          names_a_secret_value("send your sk_live_key and your file_offset here")
+          and names_a_secret_value("the le_ value of the request")
+          and not names_a_secret_value("send path or file_offset, then retry."))
     # The general answer must cover every status the transport chooses, or a
     # refusal falls through to wording written for a different situation.
     from .http import _status_classes_in_use

@@ -9,13 +9,14 @@ from __future__ import annotations
 import json
 import os
 import sqlite3
+import sys
 from copy import deepcopy
 from pathlib import Path
 
 from ..capabilities import StoreCapabilities
 from ..protocol import (ATOMIC_BATCH_OPERATION, ATOMIC_BATCH_VERSION, ATOMIC_REMOVAL_BATCH_VERSION,
                         ATOMIC_REMOVAL_OPERATION, CatalogBatchAcknowledgment, CatalogWriteBatch,
-                        PreconditionFailed, StoreError, UnsupportedOperationError)
+                        PreconditionFailed, StoreBusy, StoreError, UnsupportedOperationError)
 from ..query import (
     IntelligenceQuery,
     iter_query_records,
@@ -24,6 +25,12 @@ from ..query import (
 )
 
 WAL_JOURNAL_MODE = "wal"
+#: How long one connection waits for a lock another connection holds before SQLite answers that it is busy.
+BUSY_TIMEOUT_SECONDS = 5.0
+#: The result codes SQLite answers when a lock stayed held by other work past the wait: nothing was written by the
+#: statement that met it. Python 3.11 names them on the error; earlier versions only in the message.
+BUSY_ERROR_NAMES = ("SQLITE_BUSY", "SQLITE_LOCKED")
+BUSY_MESSAGES = ("database is locked", "database table is locked", "database schema is locked")
 #: The atomic batch versions this adapter applies: writes, and writes with
 #: exact removals. A batch of any other version is refused before any effect.
 APPLIED_BATCH_VERSIONS = (ATOMIC_BATCH_VERSION, ATOMIC_REMOVAL_BATCH_VERSION)
@@ -58,7 +65,7 @@ class SQLiteRecordStore:
         else:
             target = db_path
         try:
-            self._con = sqlite3.connect(target, uri=read_only, timeout=5.0)
+            self._con = sqlite3.connect(target, uri=read_only, timeout=BUSY_TIMEOUT_SECONDS)
             self._con.execute("PRAGMA trusted_schema=OFF")
             self._journal_mode = self._con.execute(
                 "PRAGMA journal_mode").fetchone()[0]
@@ -81,6 +88,11 @@ class SQLiteRecordStore:
                 self._con.close()
             if isinstance(exc, StoreError):
                 raise
+            # An open that met another connection's held lock wrote nothing and may be sent again, exactly
+            # as a busy batch: a store whose opening DDL waited past the busy timeout is a queueing delay,
+            # not an unavailable store, and its callers retry it instead of reporting one.
+            if _busy(exc):
+                raise StoreBusy("SQLite stayed locked by other work; the store was not opened; retry") from exc
             raise StoreError("SQLite store could not be opened") from exc
 
     def capabilities(self) -> StoreCapabilities:
@@ -240,6 +252,11 @@ class SQLiteRecordStore:
             self._con.rollback()
             if isinstance(exc, StoreError):
                 raise
+            # A lock another connection held past the wait refused the transaction or its commit. The rollback
+            # above has just succeeded, so none of the batch was written, and saying so lets the caller retry it
+            # instead of treating the write as an unknown commitment.
+            if _busy(exc):
+                raise StoreBusy("SQLite stayed locked by other work; the atomic batch was not applied") from exc
             raise StoreError("SQLite atomic batch write failed") from exc
         return CatalogBatchAcknowledgment(request.digest, True)
 
@@ -292,6 +309,16 @@ class SQLiteRecordStore:
 
     def close(self) -> None:
         self._con.close()
+
+
+def _busy(error) -> bool:
+    """True when a SQLite error says a lock stayed held by other work past the wait, and nothing else."""
+    if not isinstance(error, sqlite3.OperationalError):
+        return False
+    name = getattr(error, "sqlite_errorname", None)
+    if isinstance(name, str):
+        return name.startswith(BUSY_ERROR_NAMES)
+    return str(error).strip() in BUSY_MESSAGES
 
 
 def _wal_runtime_qualified() -> bool:
@@ -443,6 +470,31 @@ def self_test() -> dict:
         except StoreError:
             check("readonly_open_does_not_create_database",
                   not os.path.exists(missing_path))
+
+        # A writable open whose DDL met another connection's held lock wrote nothing and may be sent
+        # again, so it answers StoreBusy exactly as a busy batch does. Known-wrong control: the
+        # constructor used to fold every sqlite3.Error into one StoreError, which its callers
+        # answered as an unavailable store instead of retrying the same open.
+        busy_path = os.path.join(tmp, "busy_open.sqlite")
+        rival = sqlite3.connect(busy_path, timeout=30)
+        rival.execute("BEGIN IMMEDIATE")
+        busy_answer = None
+        from unittest.mock import patch as _patch
+        with _patch.dict(globals(), {}), _patch.object(sys.modules[__name__], "BUSY_TIMEOUT_SECONDS", 0.1):
+            try:
+                contended = SQLiteRecordStore(busy_path)
+            except StoreBusy:
+                busy_answer = "busy"
+            except StoreError:
+                busy_answer = "store_error"
+            else:
+                contended.close()
+                busy_answer = "opened"
+        rival.rollback()
+        rival.close()
+        check("a_busy_open_answers_store_busy_and_wrote_nothing",
+              busy_answer == "busy")
+
 
         # Independent connections contend for one version. The lock begins
         # before reading the precondition, so only one writer can accept it.

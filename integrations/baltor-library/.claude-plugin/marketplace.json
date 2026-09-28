@@ -8,8 +8,8 @@
     {
       "name": "baltor-library",
       "source": "./",
-      "description": "Search the Baltor library and stage a selected item or complete package with exact byte checks",
-      "version": "0.3.0",
+      "description": "Search the Baltor library, stage a selected item or complete package with exact byte checks, and place a fetched skill byte for byte",
+      "version": "0.4.0",
       "homepage": "https://baltor.ai",
       "license": "MIT",
       "keywords": [

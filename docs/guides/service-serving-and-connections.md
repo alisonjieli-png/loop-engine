@@ -157,6 +157,7 @@ explains how to diagnose them.
 | `browser_session_required` | 403 | Customer token management needs browser sign-in. |
 | `item_unavailable` | 404 | Identity or expected digest is unavailable to this account. |
 | `item_withheld` | 400 | Requested selection excludes this material. |
+| `step_effects_required` | 403 | The item declares effects the step did not declare in `Baltor-Step-Effects`; `details` name them. |
 | `item_withdrawn` | 404 | Selected item version withdrawn. |
 | `package_file_not_found` | 404 | Path absent from the package. |
 | `package_files_unavailable` | 404 | Separate file download unavailable for this item. |
@@ -182,7 +183,9 @@ explains how to diagnose them.
 | `external_provider_capacity_reached` | 503 | Capacity waiting on another service exhausted. |
 | `deadline_exceeded` | 504 | Response deadline exceeded. |
 | `meter_unavailable` | 400 | Required metering unavailable. |
-| `meter_commit_unknown` | 503 | Meter outcome uncertain or read identity conflicts. |
+| `meter_commit_unknown` | 503 | Meter outcome uncertain. |
+| `usage_store_busy` | 503 | The usage store stayed busy; nothing was counted. `Retry-After` names the wait. |
+| `store_busy` | 503 | The store stayed busy, so the request did not finish. `Retry-After` names the wait. |
 | `commit_unknown` | 503 | Durable write outcome uncertain. |
 | `scope_escalation_refused` | 403 | Requested token scopes exceed authority. |
 | `access_lifetime_exceeded` | 400 | Requested token lifetime exceeds policy. |

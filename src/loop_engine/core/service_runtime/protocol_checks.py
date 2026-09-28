@@ -79,9 +79,11 @@ async def _protocol_checks(check, root):
                      "refusals": "per_request_refusals_hide_cross_tenant_items_and_reject_authority_injection",
                      "completion": "per_request_search_shares_the_completion_authorization_guard",
                      "reference": "a_per_request_tool_refusal_carries_a_reference_the_operator_finds"}))
+        # One item version read in one calendar month is one unit, whatever request identity or transport reads it,
+        # so both eras' reads of skill.alpha are the one unit the first era records.
+        records = fixture.usage()["records"]
         for mode, expected, names in eras:
             fixture.runtime.set_grants("alpha", grants)
-            records = fixture.usage()["records"]
             async with _protocol_client(base, fixture, mode) as client:
                 tools = await client.list_tools()
                 check(names["profile"], client.protocol_version == expected and len(tools.tools) == 6)
