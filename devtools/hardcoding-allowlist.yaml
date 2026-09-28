@@ -11632,6 +11632,14 @@ entries:
     classification: DEPLOYMENT_CONFIGURATION
     created_on: '2026-09-28'
     expires_on: '2027-09-28'
+  - finding_id: hardcoding.a14164b0421abab7468658da
+    owner: tools.component_qualification.qualify:qualify_rows
+    rationale: >-
+      A key of the committed qualification policy, not a deployment value. The qualifier reads environment_findings from tools/component_qualification/resources/qualification-policy.json, whose closed vocabulary names the five finding codes that mean a run could not start or time out rather than that the component failed. Reading the key at this call site selects which refused records are never reused; the codes themselves come from the policy file, so a caller-configurable value here could not widen admission. Measured on September 28, 2026: replacing this value fails no current test, so a fixture for this branch is still to be added. Reviewed on 2026-09-28 from the triage worklist.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+
 excluded_paths:
   - path: docs/verification/assets/live-baltor-morning-2026-09-23/browser-observations.json
     owner: docs.verification.live-baltor-morning-2026-09-23
