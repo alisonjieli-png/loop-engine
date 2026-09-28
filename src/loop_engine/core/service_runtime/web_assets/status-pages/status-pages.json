@@ -5,6 +5,21 @@
   "releases": [
    {
     "kind": "service",
+    "number": 43,
+    "at": "2026-09-28T00:23:02Z",
+    "lines": [
+     "The catalogue body writers flush only the files they wrote, instead of every disk of the machine, before a release becomes active.",
+     "The public changelog lists release 42.",
+     "The north star says that agents are swappable and that each step's supply comes from Baltor.",
+     "The roadmap carries the owner's goal of one million served harness component files as step S-6.215.",
+     "The records index no longer carries a totals line that changed with every record, and a documentation folder can state its kind in each file.",
+     "The rules flexibility audit and the decisions on the private registry, the front door, the research worker and meta-harnesses are recorded."
+    ],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
     "number": 42,
     "at": "2026-09-27T20:51:48Z",
     "lines": [
