@@ -1719,6 +1719,90 @@ def _join(parts):
         self.assertEqual(refused.exception.reason, "closure_too_large")
 
 
+class SchemaCheckTest(unittest.TestCase):
+    def test_the_validator_accepts_and_refuses_by_each_keyword(self):
+        from supply_lines import schema_check as check
+        schema = {"$schema": "http://json-schema.org/draft-07/schema#", "type": "object", "required": ["name"],
+                  "properties": {"name": {"type": "string", "minLength": 2, "pattern": "^[a-z]+$"},
+                                 "size": {"type": "integer", "minimum": 1, "maximum": 10, "multipleOf": 2},
+                                 "tags": {"type": "array", "items": {"$ref": "#/definitions/tag"}, "uniqueItems": True,
+                                          "maxItems": 3},
+                                 "mode": {"enum": ["a", "b"]}, "kind": {"const": "x"},
+                                 "either": {"oneOf": [{"type": "string"}, {"type": "number"}]}},
+                  "patternProperties": {"^x-": {"type": "boolean"}}, "additionalProperties": False,
+                  "dependencies": {"size": ["tags"]},
+                  "if": {"properties": {"mode": {"const": "a"}}}, "then": {"required": ["kind"]},
+                  "definitions": {"tag": {"type": "string", "maxLength": 5}}}
+        good = {"name": "ab", "size": 4, "tags": ["x", "y"], "mode": "b", "x-flag": True, "either": 1}
+        self.assertEqual(check.errors(good, schema), [])
+        self.assertEqual(check.errors({"name": "ab", "mode": "a", "kind": "x"}, schema), [])
+        # Known wrong: one broken rule at a time is caught.
+        broken = [{"size": 4, "tags": ["x"]}, {"name": "a"}, {"name": "AB"}, {"name": "ab", "size": 3, "tags": []},
+                  {"name": "ab", "size": 12, "tags": []}, {"name": "ab", "tags": ["x", "x"]},
+                  {"name": "ab", "tags": ["toolong"]}, {"name": "ab", "mode": "c"}, {"name": "ab", "extra": 1},
+                  {"name": "ab", "x-flag": "yes"}, {"name": "ab", "size": 2}, {"name": "ab", "mode": "a"},
+                  {"name": "ab", "either": []}, {"name": "ab", "tags": ["a", "b", "c", "d"]}, []]
+        for instance in broken:
+            self.assertNotEqual(check.errors(instance, schema), [], instance)
+        self.assertTrue(check.equal(1, 1.0))
+        self.assertFalse(check.equal(True, 1))
+        legacy = {"$schema": "http://json-schema.org/draft-04/schema#", "type": "number", "maximum": 5,
+                  "exclusiveMaximum": True}
+        self.assertNotEqual(check.errors(5, legacy), [])
+        self.assertEqual(check.errors(4.5, legacy), [])
+        modern = {"type": "array", "prefixItems": [{"type": "string"}], "items": {"type": "integer"},
+                  "contains": {"const": 3}}
+        self.assertEqual(check.errors(["a", 3], modern), [])
+        self.assertNotEqual(check.errors(["a", "b"], modern), [])
+        self.assertNotEqual(check.errors(["a", 1], modern), [])
+
+    def test_schema_families_keep_their_latest_version_and_outside_references_are_found(self):
+        from supply_lines import json_schemas as line
+        self.assertEqual(line.family_of("abc-plan-14.2.0"), ("abc-plan", (14, 2, 0)))
+        self.assertEqual(line.choose(["abc-plan-1.0.0", "abc-plan-14.2.0", "abc-plan-2.0.0", "tsconfig"]),
+                         ["abc-plan-14.2.0", "tsconfig"])
+        self.assertEqual(line.outside_references({"a": {"$ref": "#/x"}, "b": [{"$ref": "https://x/y.json"}]}),
+                         ["https://x/y.json"])
+
+    def test_a_schema_package_carries_its_examples_and_fails_a_wrong_example(self):
+        from loop_engine.core.library_ingestion.record_rules import git_blob_identity
+        from supply_lines import json_schemas as line
+        schema = {"$schema": "http://json-schema.org/draft-07/schema#", "title": "Tool settings", "type": "object",
+                  "properties": {"level": {"enum": ["low", "high"]}}, "additionalProperties": False}
+        files = {f"{line.SCHEMA_FOLDER}/tool.json": json.dumps(schema).encode(),
+                 f"{line.VALID_FOLDER}/tool/basic.json": b'{"level": "low"}',
+                 f"{line.INVALID_FOLDER}/tool/wrong-level.json": b'{"level": "medium"}',
+                 f"{line.INVALID_FOLDER}/tool/not-caught.json": b'{"level": "low"}',
+                 f"{line.SCHEMA_FOLDER}/remote.json": b'{"$ref": "https://example.org/other.json"}',
+                 f"{line.VALID_FOLDER}/remote/a.json": b"{}"}
+        tree = {"tree": [{"path": path, "type": "blob", "sha": git_blob_identity(data), "size": len(data)}
+                         for path, data in files.items()]}
+
+        class Reader:
+            def github(self, path):
+                if "/commits/" in path:
+                    return _Answer(200, json.dumps({"sha": "c" * 40}).encode())
+                return _Answer(200, json.dumps(tree).encode())
+
+            def licence_text(self, repository, commit):
+                return "LICENSE", LICENCE, "MIT"
+
+            def get(self, url, cache_errors=False):
+                return _Answer(200, files[url.split("c" * 40 + "/", 1)[1]])
+
+        with tempfile.TemporaryDirectory() as staging:
+            built, refused, _facts, summary = line.generate(Reader(), code_revision="a" * 40, licence_text=LICENCE,
+                                                            generated_on="2026-09-28", staging=Path(staging))
+        self.assertEqual([row["reason"] for row in refused], ["needs_an_outside_reference"])
+        [(payload, _bodies)] = built
+        paths = {entry["path"] for entry in payload["package"]["files"]}
+        self.assertIn("examples/invalid/wrong-level.json", paths)
+        # An invalid example the validator does not reject is left out and counted.
+        self.assertNotIn("examples/invalid/not-caught.json", paths)
+        self.assertEqual(summary["invalid_examples_not_caught"], 1)
+        self.assertEqual((payload["component_form"]["form"], payload["kind"]), ("schema", "contract_schema"))
+
+
 class VerbatimCodeSourcesTest(unittest.TestCase):
     def test_the_declaration_is_a_valid_import_source_of_code_modules_only(self):
         from licensed_import.harness_kinds import SourceScope, declared_kind

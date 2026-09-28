@@ -16,6 +16,7 @@ build_library_supply.py
 ├── programs       one install recipe with a typed wrapper per command-line program
 ├── data-tables    one reference data table with its schema, loader and tests
 ├── functions      one documented function of a permissively licensed library, with the code it needs
+├── schemas        one SchemaStore JSON Schema with a validator and its own examples as tests
 └── report         the supply by family and form, and the projected composition
 ```
 
@@ -291,6 +292,22 @@ def functions(args) -> dict:
                   complete=not args.source)
 
 
+def schemas(args) -> dict:
+    from supply_lines import json_schemas as line
+    run_folder = _outside(args.run_folder)
+    run_folder.mkdir(parents=True, exist_ok=True)
+    revision = code_revision(args.authorize_store_writes)
+    reader = FactReader(run_folder, line.HOSTS, maximum_requests=args.maximum_requests,
+                        pause_seconds=args.pause_seconds)
+    built, refusals, facts, summary = line.generate(reader, code_revision=revision,
+                                                    licence_text=LICENCE_FILE.read_bytes(),
+                                                    generated_on=now_utc()[:10], staging=run_folder / "staging",
+                                                    only=args.schema, maximum_schemas=args.maximum_schemas)
+    unread = any(row["reason"] == "schema_unreadable" for row in refusals)
+    return finish(args, records.JSON_SCHEMAS, built, refusals, {"schemas": summary}, reader, facts,
+                  complete=not args.schema and not args.maximum_schemas and not unread)
+
+
 def report(args) -> dict:
     from licensed_import.composition import library_counts, load_targets
     from licensed_import.storage import ImportStore
@@ -356,6 +373,10 @@ def parser() -> argparse.ArgumentParser:
     common(functions_command)
     functions_command.add_argument("--source", action="append", help="only these source identities of "
                                    "function_sources.json")
+    schemas_command = commands.add_parser("schemas")
+    common(schemas_command)
+    schemas_command.add_argument("--schema", action="append", help="only these SchemaStore schema names")
+    schemas_command.add_argument("--maximum-schemas", type=int, default=0)
     four = commands.add_parser("data-tables")
     common(four)
     four.add_argument("--table", action="append", help="only these table identities of data_table_sources.json")
@@ -376,7 +397,7 @@ def main(argv=None) -> int:
     args.started_at, args.started_clock = now_utc(), time.monotonic()
     {"mcp-registry": mcp_registry, "openapi": openapi, "openapi-directory": openapi_directory,
      "openapi-discovery": openapi_discovery, "programs": programs, "data-tables": data_tables,
-     "functions": functions, "report": report}[args.command](args)
+     "functions": functions, "schemas": schemas, "report": report}[args.command](args)
     return 0
 
 

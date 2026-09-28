@@ -41,8 +41,8 @@ STATE_RECORD_TYPE = "library_supply_state/v1"
 RUN_RECORD_TYPE = "library_supply_run/v1"
 
 #: The supply lines, one per kind of fact source.
-MCP_REGISTRY, OPENAPI_OPERATIONS, PROGRAM_INSTALLS, DATA_TABLES, FUNCTION_EXTRACTS = LINES = (
-    "mcp_registry", "openapi_operations", "program_installs", "data_tables", "function_extracts")
+MCP_REGISTRY, OPENAPI_OPERATIONS, PROGRAM_INSTALLS, DATA_TABLES, FUNCTION_EXTRACTS, JSON_SCHEMAS = LINES = (
+    "mcp_registry", "openapi_operations", "program_installs", "data_tables", "function_extracts", "json_schemas")
 #: How the text of every supply package was authored, and the review profile it needs. The panel has no such
 #: profile yet (tools/candidate_review reads original and imported packages only), so an export holds these.
 AUTHORING = "generated_from_licensed_facts"
@@ -91,13 +91,17 @@ REFUSAL_REASONS = {
                         "closure_name_conflict", "examples_failed", "examples_do_not_exercise_the_function",
                         "duplicate_function", "blocked_by_static_check", "generated_test_failed",
                         "package_above_review_bound"),
+    JSON_SCHEMAS: ("source_unreadable", "licence_not_on_allowlist", "schema_unreadable",
+                   "older_version_of_a_listed_schema", "needs_an_outside_reference", "valid_example_rejected",
+                   "blocked_by_static_check", "generated_test_failed", "package_above_review_bound"),
 }
 #: The forms each line may declare, and the harness kind it serves them as.
 LINE_FORMS = {MCP_REGISTRY: {"mcp_server": "protocol_server_configuration"},
               OPENAPI_OPERATIONS: {"api_operation": "code_module"},
               PROGRAM_INSTALLS: {"binary_install": "code_module", "program": "code_module"},
               DATA_TABLES: {"data_table": "code_module"},
-              FUNCTION_EXTRACTS: {"function": "code_module"}}
+              FUNCTION_EXTRACTS: {"function": "code_module"},
+              JSON_SCHEMAS: {"schema": "contract_schema"}}
 CANDIDATE_FIELDS = ("record_type", "record_id", "upstream_key", "line", "kind", "native_format", "component_form",
                     "name", "description", "package", "package_digest", "files", "licence", "provenance",
                     "placements", "declared_effects", "effect_evidence", "credentials", "tests", "findings",
