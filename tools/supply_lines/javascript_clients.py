@@ -28,7 +28,7 @@ from pathlib import Path
 
 from .openapi_operations import (
     BINARY_ANSWER, FORM_MEDIA_TYPE, JSON_ANSWER, JSON_MEDIA_TYPE, NO_ANSWER, SELF_HOSTED_TEST_ROOT, SIGV4_PLACEMENT,
-    TEXT_ANSWER, USER_AGENT, form_pairs)
+    TEXT_ANSWER, USER_AGENT, api_title, form_pairs)
 
 NODE = "node"
 #: Test files one node process runs at once; each file runs in its own child process.
@@ -308,7 +308,7 @@ def module_source(operation, spec: dict) -> str:
     name = function_name(operation.function)
     parameters = [[parameter.python, parameter.wire, parameter.location, parameter.required, parameter.check]
                   for parameter in operation.parameters]
-    header = (f"/**\n * {comment(spec['title'])} API: {comment(operation.summary or operation.operation_id)}\n *\n"
+    header = (f"/**\n * {comment(api_title(spec['title']))}: {comment(operation.summary or operation.operation_id)}\n *\n"
               f" * {operation.method} {comment(operation.path)}, operation {comment(operation.operation_id)} of "
               f"{comment(spec['title'])} {comment(spec['version'])}.\n * Baltor generated this module from the "
               f"specification at {spec['repository']}@{spec['commit'][:12]} ({comment(spec['path'])});\n * see "

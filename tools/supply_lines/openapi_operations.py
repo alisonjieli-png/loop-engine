@@ -54,7 +54,7 @@ from .records import (
     PACKAGE_ABOVE_REVIEW_BOUND, REFUSAL_REASONS, SupplyRecordError, fact_source, licence_allowed, provenance, refusal,
     upstream_key)
 
-GENERATOR_VERSION = "1.6.0"
+GENERATOR_VERSION = "1.6.1"
 #: The text of a second allowlisted licence a specification declares beside its repository's licence.
 SPECIFICATION_LICENCE_NAME = "SPECIFICATION-LICENSE"
 DECLARED_TEXT_BASIS = "specification_info_license_declaration_text_from_choosealicense_at_the_pinned_commit"
@@ -1052,6 +1052,12 @@ def auth_block(auth: "dict | None") -> str:
     return AUTH_BLOCK.replace("PLACE", AUTH_PLACEMENTS[auth["placement"]])
 
 
+def api_title(title: str) -> str:
+    """The API's name as a heading: its title, with "API" added only when the title does not end with it."""
+    title = str(title).strip()
+    return title if re.search(r"\bAPIs?$", title, re.IGNORECASE) else f"{title} API"
+
+
 def doc(text: str) -> str:
     """Text safe inside a triple-quoted docstring."""
     return str(text).replace("\\", "\\\\").replace('"""', "'''")
@@ -1110,7 +1116,7 @@ def client_source(operation: Operation, spec: dict) -> str:
     parameters = [(parameter.python, parameter.wire, parameter.location, parameter.required, parameter.check)
                   for parameter in operation.parameters]
     uses_basic = bool(operation.auth and operation.auth["placement"] == "basic")
-    header = doc(textwrap.fill(f"{title} API: {operation.summary or operation.operation_id}", width=110) + "\n\n"
+    header = doc(textwrap.fill(f"{api_title(title)}: {operation.summary or operation.operation_id}", width=110) + "\n\n"
                  + textwrap.fill(f"{operation.method} {operation.path}, operation {operation.operation_id} of {title} "
                                  f"{spec['version']}. Baltor generated this client from the specification at "
                                  f"{spec['repository']}@{spec['commit'][:12]} ({spec['path']}); see README.md and "
@@ -1747,7 +1753,7 @@ def prepare_package(operation, spec, source, licence, generator, licence_text, g
     supply = SupplyPackage(
         line=OPENAPI_OPERATIONS, identity=identity, key=upstream_key(OPENAPI_OPERATIONS, identity), kind="code_module",
         native_format=NATIVE_FORMAT, form="api_operation", name=name,
-        description=(f"{spec['title']} API: {operation.summary or operation.operation_id} "
+        description=(f"{api_title(spec['title'])}: {operation.summary or operation.operation_id} "
                      f"({operation.method} {operation.path}), one tested Python function."),
         files=files, licence_expression=expression,
         provenance=provenance(spec.get("origin", "github_repository"), spec["repository"], spec["path"], spec["commit"],
