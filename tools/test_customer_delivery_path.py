@@ -44,6 +44,7 @@ from loop_engine.core.service_runtime.http import (PACKAGE_READ_VERSION, RETRIEV
                                                    STEP_EFFECTS_REFUSAL_VERSION, TIERED_PROVISIONING_REQUEST_VERSION,
                                                    ServiceHttpApplication)
 from loop_engine.core.service_runtime import runtime as service_runtime
+from loop_engine.core.service_runtime import usage_meter
 from loop_engine.core.service_runtime.http_test_fixtures import HttpDomainFixture, running_http
 from loop_engine.core.service_runtime.storage import ServiceCatalogBinding
 from loop_engine.core.service_runtime import access as service_access
@@ -432,9 +433,9 @@ class MeteringCountsEachItemVersionOncePerMonth(unittest.TestCase):
         service = DeliveryService(self.stack)
 
         def per_request(request, period):
-            return (request.tenant_id, request.request_id), service_runtime.digest(
+            return (request.tenant_id, request.request_id), usage_meter.digest(
                 {"tenant_id": request.tenant_id, "request_id": request.request_id})
-        with mock.patch.object(service_runtime, "usage_unit", per_request):
+        with mock.patch.object(usage_meter, "usage_unit", per_request):
             self.assertFalse(downloads_of_one_version_count_once(service))
 
 
@@ -482,7 +483,7 @@ class ConcurrentDownloadsOnOneAccount(unittest.TestCase):
         self.addCleanup(self.stack.close)
         # A short busy wait and meter time keep the held locks below short; the rules are the released ones.
         self.stack.enter_context(mock.patch.object(sqlite_store, "BUSY_TIMEOUT_SECONDS", 0.2))
-        self.stack.enter_context(mock.patch.object(service_runtime, "METER_WRITE_SECONDS", 4.0))
+        self.stack.enter_context(mock.patch.object(usage_meter, "METER_WRITE_SECONDS", 4.0))
         self.service = DeliveryService(self.stack)
 
     def test_the_store_edge_says_a_busy_batch_wrote_nothing(self):
@@ -501,7 +502,7 @@ class ConcurrentDownloadsOnOneAccount(unittest.TestCase):
 
     def test_a_store_busy_past_the_meter_time_answers_a_precise_retryable_refusal(self):
         before = self.service.usage()
-        with mock.patch.object(service_runtime, "METER_WRITE_SECONDS", 0.5), \
+        with mock.patch.object(usage_meter, "METER_WRITE_SECONDS", 0.5), \
                 HeldWriteLock(self.service.case.config.database_path, 2.0):
             refused = self.service.client.post("/api/v1/download", json=v2(
                 "read", identity="one_file", request_id="busy"))
