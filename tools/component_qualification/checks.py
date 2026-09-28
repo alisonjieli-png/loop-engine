@@ -607,13 +607,14 @@ class EffectsCheck:
         if any(entry.role in EXECUTABLE_ROLES for entry in component.package.files):
             derived.setdefault("spawns_process", "an executable file role")
         from tools.licensed_import.checks import package_effects
-        text_effects, _evidence = package_effects(
-            component.kind, {path: payload for path, payload in component.payloads.items()
-                             if not is_data_file(path, context.policy) and not is_test_file(path)},
+        text_roles = set(context.policy["effect_text_roles"])
+        _effects, evidence_rows = package_effects(
+            component.kind, {entry.path: component.payloads[entry.path] for entry in component.package.files
+                             if entry.role in text_roles and not is_data_file(entry.path, context.policy)},
             {entry.path: entry.role for entry in component.package.files})
-        for effect in text_effects:
-            if effect != "pure":
-                derived.setdefault(effect, "the licensed import's effect rules")
+        for row in evidence_rows:
+            if row["effect"] != "pure":
+                derived.setdefault(row["effect"], f"the licensed import's rule {row['rule']}")
         for effect in sorted(set(derived) - set(declared)):
             findings.append(("undeclared_effect", f"{effect} shown by {derived[effect]}"))
         notes.append("derived: " + ",".join(sorted(derived)) if derived else "derived: none")
@@ -701,28 +702,71 @@ def distinctive_text(component, policy) -> str:
     return "\n".join(parts)
 
 
+def job_key(component, policy) -> "str | None":
+    """The one job a component does, by its line's declared rule; None when the line declares none.
+
+    The rule is data (the policy's job_key per line): fields of a JSON file, fields of a Python module-level
+    dictionary, or the digests of the upstream files, optionally with the address of a fact of a named role
+    (without its commit, so two revisions of one specification name one job)."""
+    rule = policy["lines"].get(component.line, {}).get("job_key")
+    if not rule:
+        return None
+    parts = [component.line]
+    try:
+        if "json_file" in rule:
+            value = json.loads(component.text(rule["json_file"]) or "null")
+            for dotted in rule["fields"]:
+                item = value
+                for key in dotted.split("."):
+                    item = item.get(key) if isinstance(item, dict) else None
+                parts.append(str(item))
+        elif "python_assignment" in rule:
+            module = sorted(path for path in component.payloads if path.endswith(".py") and "/" not in path
+                            and not path.startswith("test_"))[0]
+            found = None
+            for node in ast.parse(component.text(module) or "").body:
+                if isinstance(node, ast.Assign) and any(isinstance(target, ast.Name)
+                                                        and target.id == rule["python_assignment"]
+                                                        for target in node.targets):
+                    found = ast.literal_eval(node.value)
+            if not isinstance(found, dict):
+                return None
+            parts += [str(found.get(field)) for field in rule["fields"]]
+        elif rule.get("upstream_digests"):
+            parts += sorted(str(row.get("digest")) for row in component.candidate.get("files", [])
+                            if isinstance(row, dict) and row.get("origin") == "upstream_verbatim")
+        if rule.get("fact_role"):
+            facts = (component.candidate.get("provenance") or {}).get("facts") or []
+            urls = sorted(re.sub(r"/[0-9a-f]{40}/", "/", str(fact.get("url", ""))) for fact in facts
+                          if isinstance(fact, dict) and fact.get("role") == rule["fact_role"])
+            parts += urls
+    except (ValueError, SyntaxError, IndexError, TypeError):
+        return None
+    return "|".join(parts)
+
+
 def duplicate_findings(components, policy, *, known_digests=None) -> dict:
     """Population-level duplicates of components; see duplicate_findings_from."""
     return duplicate_findings_from(((component.identity, component.package.package_digest,
-                                     distinctive_text(component, policy)) for component in components),
-                                   policy, known_digests=known_digests)
+                                     distinctive_text(component, policy), job_key(component, policy))
+                                    for component in components), policy, known_digests=known_digests)
 
 
 def duplicate_findings_from(subjects, policy, *, known_digests=None) -> dict:
-    """Identity to duplicate findings, from (identity, package digest, distinctive text) subjects.
+    """Identity to duplicate findings, from (identity, package digest, distinctive text, job key) subjects.
 
-    The first of a group in identity order is kept. Exact: the same package digest, or the same normalized
-    distinctive text, or a digest already known (the served library, earlier admissions). Near: five-word
-    shingle Jaccard of the distinctive text at or above the policy threshold, confirmed exactly with prefix
-    filtering (tools/global_component_duplicates.py)."""
+    The first of a group in identity order is kept. Exact: the same package digest, a digest already known
+    (the served library, earlier admissions), the same normalized distinctive text, or the same job key.
+    Near: five-word shingle Jaccard of the distinctive text at or above the policy threshold, confirmed
+    exactly with prefix filtering (tools/global_component_duplicates.py)."""
     from loop_engine.core.library_ingestion.duplicates import normalized, shingles
     from tools.global_component_duplicates import prefix_pairs
     import hashlib
     known_digests = dict(known_digests or {})
     ordered = sorted(subjects, key=lambda subject: subject[0])
-    findings = {identity: [] for identity, _digest, _text in ordered}
-    by_package, by_text, documents = {}, {}, {}
-    for identity, digest, text in ordered:
+    findings = {subject[0]: [] for subject in ordered}
+    by_package, by_text, by_job, documents = {}, {}, {}, {}
+    for identity, digest, text, key in ordered:
         text_digest = hashlib.sha256(normalized(text).encode()).hexdigest()
         if digest in known_digests:
             findings[identity].append(("exact_copy_of_existing", known_digests[digest]))
@@ -733,7 +777,12 @@ def duplicate_findings_from(subjects, policy, *, known_digests=None) -> dict:
         if text_digest in by_text:
             findings[identity].append(("exact_content_copy", by_text[text_digest]))
             continue
+        if key is not None and key in by_job:
+            findings[identity].append(("same_job_as", by_job[key]))
+            continue
         by_package[digest], by_text[text_digest] = identity, identity
+        if key is not None:
+            by_job[key] = identity
         documents[identity] = shingles(text)
     numerator, denominator = policy["near_duplicate_threshold"].split("/")
     threshold = Fraction(int(numerator), int(denominator))

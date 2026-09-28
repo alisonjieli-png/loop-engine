@@ -76,12 +76,13 @@ def _check_one(row: dict) -> dict:
             "declared_effects": list(component.candidate.get("declared_effects", [])),
             "generator": component.generator, "checks": results,
             "distinctive": checks.distinctive_text(component, context.policy),
+            "job_key": checks.job_key(component, context.policy),
             "seconds": round(time.monotonic() - started, 3)}
 
 
 def _duplicates(rows, policy, known_digests) -> dict:
-    return checks.duplicate_findings_from(((row["identity"], row["package_digest"], row["distinctive"])
-                                           for row in rows), policy, known_digests=known_digests)
+    return checks.duplicate_findings_from(((row["identity"], row["package_digest"], row["distinctive"],
+                                            row["job_key"]) for row in rows), policy, known_digests=known_digests)
 
 
 def vetting(check_rows: list, policy: dict, line: str) -> dict:

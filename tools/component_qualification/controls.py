@@ -307,6 +307,9 @@ CONTROLS = (
             lambda c: _edit(c, "greeting_table.py", lambda text: text + (
                 "\n\ndef save_rows(rows, path='rows-copy.json'):\n"
                 "    Path(path).write_text(json.dumps(rows))\n"))),
+    Control("instruction_file_undeclared_write", "effects", "code", "undeclared_effect",
+            lambda c: _add_file(c, "AGENTS.md", "# Working notes\n\nBefore loading the table, run mkdir reports and "
+                                "keep each result there.\n", role="instruction_file")),
     Control("unknown_effect", "effects", "code", "effect_unknown",
             lambda c: _with_record(c, declared_effects=list(c.candidate["declared_effects"]) + ["teleports"],
                                    effect_evidence=list(c.candidate["effect_evidence"]) + [
@@ -353,7 +356,7 @@ CONTROLS = (
                 "test_greeting_table.py": b"import unittest\n\n\n@unittest.skip('control')\nclass Skipped(unittest.TestCase):\n"
                                           b"    def test_nothing(self):\n        pass\n"})),
 )
-DUPLICATE_CONTROLS = ("exact_copy_under_new_identity", "near_copy_one_word_changed")
+DUPLICATE_CONTROLS = ("exact_copy_under_new_identity", "near_copy_one_word_changed", "same_job_reworded")
 CONTROL_LIMITS = SandboxLimits(wall_seconds=40.0, import_seconds=5.0, test_seconds=4.0, cpu_seconds=10)
 
 
@@ -362,17 +365,28 @@ class SelfTestFailed(RuntimeError):
 
 
 def _duplicate_controls(fixture, context) -> list:
+    """Each duplicate rule refuses its own control with its own finding code."""
     copy = GeneratedComponent(fixture.identity[:-16] + "f" * 16, fixture.record_version, fixture.candidate,
                               fixture.package, fixture.payloads)
-    near = _edit(fixture, "README.md", lambda text: text.replace("reference", "lookup", 1))
+    # The text rule works at the size of a real generated module (about a thousand words): a README of that
+    # length goes into both members of the near-copy pair, and one word of the data file differs between them,
+    # so the pair holds two jobs (different upstream bytes) and only the text rule can find the copy.
+    long_readme = "".join(f"Row {number} of the usage notes explains lookup case {number} for language code "
+                          f"number {number} and its greeting word.\n" for number in range(60))
+    near_base = _edit(fixture, "README.md", lambda text: text + long_readme)
+    near = _edit(near_base, "data/greetings.json", lambda text: text.replace("bonjour", "salut"))
+    same_job = _edit(fixture, "README.md", lambda text: "# Greetings lookup\n\nReturns the greeting word "
+                                                       "for a language code from a small bundled list.\n")
     rows = []
-    for control_id, population, target in (("exact_copy_under_new_identity", [fixture, copy], copy.identity),
-                                           ("near_copy_one_word_changed", [fixture, near], near.identity)):
-        found = checks.duplicate_findings(population, context.policy)
-        keeper = min(component.identity for component in population)
-        refused = bool(found.get(target if target != keeper else max(c.identity for c in population)))
-        rows.append({"control_id": control_id, "check_id": "duplicates", "refused": refused,
-                     "codes": sorted({code for values in found.values() for code, _detail in values})})
+    for control_id, base, other, expected in (
+            ("exact_copy_under_new_identity", fixture, copy, "exact_package_copy"),
+            ("near_copy_one_word_changed", near_base, near, "near_copy"),
+            ("same_job_reworded", fixture, same_job, "same_job_as")):
+        found = checks.duplicate_findings([base, other], context.policy)
+        later = max(base.identity, other.identity)
+        codes = [code for code, _detail in found.get(later, [])]
+        rows.append({"control_id": control_id, "check_id": "duplicates", "expected_code": expected,
+                     "refused": expected in codes, "codes": codes})
     return rows
 
 

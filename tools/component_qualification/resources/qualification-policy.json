@@ -28,7 +28,14 @@
     ".cursor/mcp.json",
     ".codex/config.toml",
     "opencode.json"
-   ]
+   ],
+   "job_key": {
+    "json_file": "baltor-connection.json",
+    "fields": [
+     "server.package.registry",
+     "server.package.identifier"
+    ]
+   }
   },
   "openapi_operations": {
    "kinds": [
@@ -42,7 +49,15 @@
     "LICENSE",
     "ATTRIBUTION.md",
     "README.md"
-   ]
+   ],
+   "job_key": {
+    "python_assignment": "OPERATION",
+    "fields": [
+     "method",
+     "path"
+    ],
+    "fact_role": "specification"
+   }
   },
   "program_installs": {
    "kinds": [
@@ -57,7 +72,13 @@
     "ATTRIBUTION.md",
     "README.md",
     "install.json"
-   ]
+   ],
+   "job_key": {
+    "json_file": "install.json",
+    "fields": [
+     "formula"
+    ]
+   }
   },
   "data_tables": {
    "kinds": [
@@ -71,7 +92,10 @@
     "LICENSE",
     "ATTRIBUTION.md",
     "README.md"
-   ]
+   ],
+   "job_key": {
+    "upstream_digests": true
+   }
   }
  },
  "record_types": {
@@ -111,8 +135,8 @@
   "npx": "npm",
   "uvx": "pypi"
  },
- "near_duplicate_threshold": "9/10",
- "near_duplicate_reason": "Generated components of one line share a template; 0.9 of shared five-word shingles over the distinctive files (code, schema, README, connection record) separates a copy from a sibling operation. Measured on the stored population before use; see the handoff.",
+ "near_duplicate_threshold": "49/50",
+ "near_duplicate_reason": "Measured on the 8,847 stored supply components on September 28, 2026: at 9/10, 175 API operation packages were flagged, every inspected pair a distinct operation of one template (different method or path), with the highest similarity 0.964. Text similarity at 49/50 therefore only catches copies that differ in a few words; the job key below catches two packages for one job whatever their text.",
  "minified_code": {
   "longest_line": 1000,
   "large_file_bytes": 65536,
@@ -139,14 +163,28 @@
  ],
  "metadata_fact_roles": [
   "registry_entry",
-  "package_metadata"
+  "package_metadata",
+  "repository_facts"
  ],
- "metadata_fact_reason": "A registry entry or package metadata fact is read for names, versions and package identifiers only; no text of it is copied into the package (the MCP line's link mode, basis link_only_facts_no_text_copied). Such a fact may carry NOASSERTION when none of its bytes is a package file and at least one governing fact (licence text, specification or data) carries an accepted licence.",
+ "metadata_fact_reason": "A registry entry, package metadata or repository facts record is read for names, versions, package identifiers and counts only; no text of it is copied into the package (the MCP line's link mode, basis link_only_facts_no_text_copied; the program line's GitHub repository facts). Such a fact may carry NOASSERTION when none of its bytes is a package file and at least one governing fact (licence text, specification, data, formula) carries an accepted licence.",
  "governing_fact_roles": [
   "licence_text",
   "specification",
   "data",
   "formula",
   "release"
- ]
+ ],
+ "effect_text_roles": [
+  "instruction_file",
+  "skill_definition",
+  "skill_reference",
+  "command",
+  "subagent_definition",
+  "protocol_server_configuration",
+  "configuration",
+  "hook",
+  "plugin_manifest"
+ ],
+ "effect_text_reason": "The licensed import's effect rules read words as actions a harness is told to take, which is right for instruction, skill, command and configuration files. A README, a JSON Schema or code comments of a generated client describe a remote API ('uploads a file'), whose effect the network effect covers; on September 28, 2026 those words produced 501 false effect findings (reads_files and writes_files in README.md and schema.json) on components whose syntax trees touch no local file. Python code is judged by its syntax tree.",
+ "job_key_reason": "One package for one job: an API operation is its specification file, method and path; a protocol server is its registry package; a program is its formula; a data table is its upstream file bytes. Two components with one job key are duplicates whatever their text."
 }
