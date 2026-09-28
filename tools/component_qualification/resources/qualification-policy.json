@@ -1,16 +1,78 @@
 {
  "record_type": "component_qualification_policy/v1",
- "accepted_licences": ["MIT", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause", "ISC", "CC0-1.0", "CC-BY-4.0"],
+ "accepted_licences": [
+  "MIT",
+  "Apache-2.0",
+  "BSD-2-Clause",
+  "BSD-3-Clause",
+  "ISC",
+  "CC0-1.0",
+  "CC-BY-4.0"
+ ],
  "accepted_licences_reason": "The daily release job's accepted list (LICENCES in daily_library_release.sh); a compound expression is accepted when every identifier in it is on this list and it uses no WITH exception.",
  "lines": {
-  "mcp_registry": {"kinds": ["protocol_server_configuration"], "forms": ["mcp_server"], "shape": "configuration",
-                    "required_files": ["LICENSE", "ATTRIBUTION.md", "README.md", "baltor-connection.json", ".mcp.json", ".cursor/mcp.json", ".codex/config.toml", "opencode.json"]},
-  "openapi_operations": {"kinds": ["code_module"], "forms": ["api_operation"], "shape": "code",
-                          "required_files": ["LICENSE", "ATTRIBUTION.md", "README.md"]},
-  "program_installs": {"kinds": ["code_module"], "forms": ["binary_install"], "shape": "code",
-                        "required_files": ["LICENSE", "ATTRIBUTION.md", "README.md", "install.json"]},
-  "data_tables": {"kinds": ["code_module"], "forms": ["data_table"], "shape": "code",
-                   "required_files": ["LICENSE", "ATTRIBUTION.md", "README.md"]}
+  "mcp_registry": {
+   "kinds": [
+    "protocol_server_configuration"
+   ],
+   "forms": [
+    "mcp_server"
+   ],
+   "shape": "configuration",
+   "required_files": [
+    "LICENSE",
+    "ATTRIBUTION.md",
+    "README.md",
+    "baltor-connection.json",
+    ".mcp.json",
+    ".cursor/mcp.json",
+    ".codex/config.toml",
+    "opencode.json"
+   ]
+  },
+  "openapi_operations": {
+   "kinds": [
+    "code_module"
+   ],
+   "forms": [
+    "api_operation"
+   ],
+   "shape": "code",
+   "required_files": [
+    "LICENSE",
+    "ATTRIBUTION.md",
+    "README.md"
+   ]
+  },
+  "program_installs": {
+   "kinds": [
+    "code_module"
+   ],
+   "forms": [
+    "binary_install"
+   ],
+   "shape": "code",
+   "required_files": [
+    "LICENSE",
+    "ATTRIBUTION.md",
+    "README.md",
+    "install.json"
+   ]
+  },
+  "data_tables": {
+   "kinds": [
+    "code_module"
+   ],
+   "forms": [
+    "data_table"
+   ],
+   "shape": "code",
+   "required_files": [
+    "LICENSE",
+    "ATTRIBUTION.md",
+    "README.md"
+   ]
+  }
  },
  "record_types": {
   "candidate": "library_supply_candidate/v1",
@@ -21,15 +83,70 @@
  },
  "authoring": "generated_from_licensed_facts",
  "harness_configurations": {
-  ".mcp.json": {"format": "json", "table": "mcpServers", "command": "command", "arguments": "args"},
-  ".cursor/mcp.json": {"format": "json", "table": "mcpServers", "command": "command", "arguments": "args"},
-  "opencode.json": {"format": "json", "table": "mcp", "command_list": "command"},
-  ".codex/config.toml": {"format": "toml", "table": "mcp_servers", "command": "command", "arguments": "args"}
+  ".mcp.json": {
+   "format": "json",
+   "table": "mcpServers",
+   "command": "command",
+   "arguments": "args"
+  },
+  ".cursor/mcp.json": {
+   "format": "json",
+   "table": "mcpServers",
+   "command": "command",
+   "arguments": "args"
+  },
+  "opencode.json": {
+   "format": "json",
+   "table": "mcp",
+   "command_list": "command"
+  },
+  ".codex/config.toml": {
+   "format": "toml",
+   "table": "mcp_servers",
+   "command": "command",
+   "arguments": "args"
+  }
  },
- "package_launchers": {"npx": "npm", "uvx": "pypi"},
+ "package_launchers": {
+  "npx": "npm",
+  "uvx": "pypi"
+ },
  "near_duplicate_threshold": "9/10",
  "near_duplicate_reason": "Generated components of one line share a template; 0.9 of shared five-word shingles over the distinctive files (code, schema, README, connection record) separates a copy from a sibling operation. Measured on the stored population before use; see the handoff.",
- "minified_code": {"longest_line": 1000, "large_file_bytes": 65536, "large_file_mean_line": 150},
- "code_suffixes": [".py", ".js", ".mjs", ".cjs", ".ts", ".sh", ".bash", ".ps1", ".rb", ".pl", ".go", ".rs", ".php", ".lua"],
- "data_folders": ["data"]
+ "minified_code": {
+  "longest_line": 1000,
+  "large_file_bytes": 65536,
+  "large_file_mean_line": 150
+ },
+ "code_suffixes": [
+  ".py",
+  ".js",
+  ".mjs",
+  ".cjs",
+  ".ts",
+  ".sh",
+  ".bash",
+  ".ps1",
+  ".rb",
+  ".pl",
+  ".go",
+  ".rs",
+  ".php",
+  ".lua"
+ ],
+ "data_folders": [
+  "data"
+ ],
+ "metadata_fact_roles": [
+  "registry_entry",
+  "package_metadata"
+ ],
+ "metadata_fact_reason": "A registry entry or package metadata fact is read for names, versions and package identifiers only; no text of it is copied into the package (the MCP line's link mode, basis link_only_facts_no_text_copied). Such a fact may carry NOASSERTION when none of its bytes is a package file and at least one governing fact (licence text, specification or data) carries an accepted licence.",
+ "governing_fact_roles": [
+  "licence_text",
+  "specification",
+  "data",
+  "formula",
+  "release"
+ ]
 }

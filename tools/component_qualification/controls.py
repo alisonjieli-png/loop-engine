@@ -281,6 +281,18 @@ CONTROLS = (
             lambda c: _with_record(c, provenance__facts=[{**c.candidate["provenance"]["facts"][0], "sha256": ""}])),
     Control("launcher_unpinned", "licence_provenance", "configuration", "launcher_package_not_pinned",
             lambda c: _edit(c, ".mcp.json", lambda text: text.replace(SERVER_PACKAGE, "example-notes-mcp@latest"))),
+    Control("metadata_fact_copied", "licence_provenance", "code", "fact_licence_not_accepted",
+            lambda c: _with_record(c, provenance__facts=list(c.candidate["provenance"]["facts"]) + [
+                {**c.candidate["provenance"]["facts"][0], "role": "registry_entry",
+                 "sha256": c.package.file("README.md").digest,
+                 "licence": {"spdx_expression": "NOASSERTION", "basis": "control", "evidence_sha256": None}}])),
+    Control("no_governing_licence_fact", "licence_provenance", "code", "no_governing_licence_fact",
+            lambda c: _with_record(c, provenance__facts=[
+                {**c.candidate["provenance"]["facts"][0], "role": "registry_entry",
+                 "licence": {"spdx_expression": "NOASSERTION", "basis": "control", "evidence_sha256": None}}])),
+    Control("uvx_unpinned", "licence_provenance", "configuration", "launcher_package_not_pinned",
+            lambda c: _edit(c, ".mcp.json", lambda text: text.replace('"npx"', '"uvx"').replace(
+                '"-y",', "").replace(SERVER_PACKAGE, "example-notes-mcp"))),
     Control("attribution_incomplete", "licence_provenance", "code", "attribution_lacks_file_digest",
             lambda c: c.replaced(payloads=dict(c.payloads) | {"ATTRIBUTION.md": b"# Attribution\n\nNo digests.\n"})),
     Control("python_syntax_error", "parse", "code", "python_syntax_error",

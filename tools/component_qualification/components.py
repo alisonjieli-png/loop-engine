@@ -160,11 +160,22 @@ class StoreReader:
         return rows[:limit] if limit is not None else rows
 
     def component(self, row: dict) -> GeneratedComponent:
-        return _component(row["record_id"], row["record_version"], row["payload"],
-                          lambda entry: self.store.bodies.read(entry.digest, entry.size_bytes))
+        return component_from_row(row, self.store.bodies)
 
     def close(self) -> None:
         self.store.close()
+
+
+def body_store(root):
+    """A read-only body store over the import store's bodies folder, for worker processes."""
+    from loop_engine.core.service_runtime.catalogue_packages import VolumeBodyStore
+    return VolumeBodyStore(str(Path(root) / "bodies"), writes_authorized=False)
+
+
+def component_from_row(row: dict, bodies) -> GeneratedComponent:
+    """The component a store row names, its files read and checked through a body store."""
+    return _component(row["record_id"], row["record_version"], row["payload"],
+                      lambda entry: bodies.read(entry.digest, entry.size_bytes))
 
 
 def from_folder(folder) -> GeneratedComponent:

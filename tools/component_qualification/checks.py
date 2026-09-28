@@ -272,6 +272,8 @@ class LicenceProvenanceCheck:
         facts = provenance.get("facts") if isinstance(provenance.get("facts"), list) else []
         if not facts:
             findings.append(("fact_sources_missing", "the record names no fact source"))
+        file_digests = {entry.digest for entry in component.package.files}
+        governed = False
         for fact in facts:
             fact = fact if isinstance(fact, dict) else {}
             fact_licence = fact.get("licence") if isinstance(fact.get("licence"), dict) else {}
@@ -280,8 +282,16 @@ class LicenceProvenanceCheck:
                     or not str(fact.get("url", "")).startswith("https://")
                     or not _HEX64.fullmatch(str(fact.get("sha256", ""))) or not fact.get("retrieved_at")):
                 findings.append(("fact_source_not_pinned", str(fact.get("url", ""))[:160]))
-            if fact_ids is None or set(fact_ids) - accepted:
+            accepted_fact = fact_ids is not None and not set(fact_ids) - accepted
+            metadata_only = (fact.get("role") in policy["metadata_fact_roles"]
+                             and fact.get("sha256") not in file_digests)
+            if accepted_fact and fact.get("role") not in policy["metadata_fact_roles"]:
+                governed = True
+            if not accepted_fact and not (metadata_only and fact_licence.get("spdx_expression") == "NOASSERTION"):
                 findings.append(("fact_licence_not_accepted", str(fact_licence.get("spdx_expression"))))
+        if facts and not governed:
+            findings.append(("no_governing_licence_fact", "no licence text, specification or data fact carries "
+                                                          "an accepted licence"))
         for row in record.get("files", []):
             if isinstance(row, dict) and row.get("origin") == "upstream_verbatim":
                 upstream = row.get("upstream") if isinstance(row.get("upstream"), dict) else {}
@@ -330,8 +340,11 @@ def _pinned_launchers(component, policy) -> list:
             findings.append(("launcher_package_missing", f"{path}:{name}"))
             continue
         spec = packages[0]
-        version = (spec.rsplit("@", 1)[1] if registry == "npm" and "@" in spec.lstrip("@") else
-                   spec.split("==", 1)[1] if registry == "pypi" and "==" in spec else "")
+        # npm pins name@version (a scoped name starts with @); uvx pins name==version or name@version.
+        if registry == "pypi" and "==" in spec:
+            version = spec.split("==", 1)[1]
+        else:
+            version = spec.rsplit("@", 1)[1] if "@" in spec.lstrip("@") else ""
         if not _SEMVER.fullmatch(version):
             findings.append(("launcher_package_not_pinned", f"{path}:{name}:{spec[:80]}"))
     return findings
@@ -689,32 +702,39 @@ def distinctive_text(component, policy) -> str:
 
 
 def duplicate_findings(components, policy, *, known_digests=None) -> dict:
-    """Population-level duplicates: identity to findings. The first of a group in identity order is kept.
+    """Population-level duplicates of components; see duplicate_findings_from."""
+    return duplicate_findings_from(((component.identity, component.package.package_digest,
+                                     distinctive_text(component, policy)) for component in components),
+                                   policy, known_digests=known_digests)
 
-    Exact: the same package digest, or the same normalized distinctive text. Near: five-word shingle Jaccard
-    of the distinctive text at or above the policy threshold, confirmed exactly (prefix filtering)."""
+
+def duplicate_findings_from(subjects, policy, *, known_digests=None) -> dict:
+    """Identity to duplicate findings, from (identity, package digest, distinctive text) subjects.
+
+    The first of a group in identity order is kept. Exact: the same package digest, or the same normalized
+    distinctive text, or a digest already known (the served library, earlier admissions). Near: five-word
+    shingle Jaccard of the distinctive text at or above the policy threshold, confirmed exactly with prefix
+    filtering (tools/global_component_duplicates.py)."""
     from loop_engine.core.library_ingestion.duplicates import normalized, shingles
     from tools.global_component_duplicates import prefix_pairs
     import hashlib
     known_digests = dict(known_digests or {})
-    ordered = sorted(components, key=lambda component: component.identity)
-    findings = {component.identity: [] for component in ordered}
+    ordered = sorted(subjects, key=lambda subject: subject[0])
+    findings = {identity: [] for identity, _digest, _text in ordered}
     by_package, by_text, documents = {}, {}, {}
-    for component in ordered:
-        digest = component.package.package_digest
-        text = distinctive_text(component, policy)
+    for identity, digest, text in ordered:
         text_digest = hashlib.sha256(normalized(text).encode()).hexdigest()
         if digest in known_digests:
-            findings[component.identity].append(("exact_copy_of_existing", known_digests[digest]))
+            findings[identity].append(("exact_copy_of_existing", known_digests[digest]))
             continue
         if digest in by_package:
-            findings[component.identity].append(("exact_package_copy", by_package[digest]))
+            findings[identity].append(("exact_package_copy", by_package[digest]))
             continue
         if text_digest in by_text:
-            findings[component.identity].append(("exact_content_copy", by_text[text_digest]))
+            findings[identity].append(("exact_content_copy", by_text[text_digest]))
             continue
-        by_package[digest], by_text[text_digest] = component.identity, component.identity
-        documents[component.identity] = shingles(text)
+        by_package[digest], by_text[text_digest] = identity, identity
+        documents[identity] = shingles(text)
     numerator, denominator = policy["near_duplicate_threshold"].split("/")
     threshold = Fraction(int(numerator), int(denominator))
     for left, right, intersection, union in prefix_pairs({key: value for key, value in documents.items() if value},
