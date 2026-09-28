@@ -12,7 +12,13 @@ repeated effect beyond that recorded authority.
 ## Current context route
 
 For the newest state, read the
-[September 27 session handoff](SESSION-HANDOFF-2026-09-27.md). It records the
+[September 28 session handoff](SESSION-HANDOFF-2026-09-28.md): release 44 as the live
+deployment, the four repaired gates of the customer delivery train and what each failure
+actually was, why the machine kept using swap and the guard that answers a run's question
+before the run starts, the delta catalogue publish, the library throughput measured against
+the one million file goal, the harness list and the removal of 'reviewed' as a count, and
+the ordered work that remains with the two steps that need the owner. The
+[September 27 session handoff](SESSION-HANDOFF-2026-09-27.md) precedes it. It records the
 five release trains of that day, releases 41 to 43, the delivery defects the
 with-and-without test found, the one million file goal, the work in flight
 and the order of the next steps. The roadmap remains the task authority.
