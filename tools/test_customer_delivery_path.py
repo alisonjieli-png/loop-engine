@@ -548,6 +548,11 @@ class ConcurrentDownloadsOnOneAccount(unittest.TestCase):
         self.assertTrue(any(status == 200 for status, _code, _retry in outcomes), outcomes)
         self.assertLessEqual(self.service.usage(), 2, "two item versions are at most two units")
 
+    def test_only_the_meters_busy_refusal_promises_that_nothing_was_recorded(self):
+        # A download's usage record is its only write; another request may have finished an earlier write first.
+        self.assertTrue(service_http._retry_refusal("usage_store_busy")["nothing_recorded"])
+        self.assertNotIn("nothing_recorded", service_http._retry_refusal("store_busy"))
+
     def test_known_wrong_a_busy_store_read_as_an_unknown_write_refuses_the_download(self):
         with mock.patch.object(sqlite_store, "_busy", lambda error: False):
             self.assertFalse(download_waits_out_a_held_lock(self.service, "old-classification"))

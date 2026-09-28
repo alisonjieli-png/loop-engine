@@ -158,9 +158,10 @@ EXTERNAL_PROVIDER_CODE = "external_provider_capacity_reached"
 #: identity may not contain a space, so no account can ever name this share.
 EXTERNAL_PROVIDER_SHARE = "external provider"
 NESTING_LIMIT_CODE = "nesting_limit_exceeded"
-#: Refusals that recorded nothing and may be sent again at once: the store, or the usage store behind a download,
-#: stayed busy past the service's wait. Each answers 503 with `Retry-After` and these details, so a client that meets
-#: one while it shares an account with other runs knows its request was not counted and when to send it again.
+#: Refusals that may be sent again after a short wait: the store, or the usage store behind a download, stayed busy
+#: past the service's wait. Each answers 503 with `Retry-After` and these details. A download refused this way recorded
+#: nothing, since its usage record is its only write, and the details say so; another request may have finished an
+#: earlier write before its last one was refused, so they make no such promise.
 RETRY_REFUSAL_VERSION = "service_retry_refusal/v1"
 #: The refusal of a download by an account that holds no plan, and its details: the plan, where to take it, and the
 #: founding offer while places remain. It replaces an answer that told such an account to ask the person who runs the
@@ -732,9 +733,11 @@ def step_effects_refusal(declared, step, missing) -> dict:
 
 
 def _retry_refusal(code):
-    """The details of a refusal that recorded nothing and may be sent again after a short wait."""
-    return {"record_type": RETRY_REFUSAL_VERSION, "retry_after_seconds": RETRY_AFTER_SECONDS[code],
-            "nothing_recorded": True}
+    """The details of a refusal that may be sent again after a short wait, and whether it recorded nothing."""
+    details = {"record_type": RETRY_REFUSAL_VERSION, "retry_after_seconds": RETRY_AFTER_SECONDS[code]}
+    if code == "usage_store_busy":
+        details["nothing_recorded"] = True
+    return details
 
 
 def _status(error):

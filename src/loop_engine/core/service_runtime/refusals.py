@@ -196,7 +196,7 @@ CODE_GUIDANCE = {
                          "and nothing was delivered.",
                          "Send the same request again after the Retry-After seconds. It is counted once when it "
                          "succeeds."),
-    "store_busy": ("The service's store stayed busy with other work, so nothing was written.",
+    "store_busy": ("The service's store stayed busy with other work, so this request did not finish.",
                    "Send the same request again after the Retry-After seconds."),
     "usage_identity_conflict": ("The service's usage record for this item version does not match the read it names.",
                                 "Report the time and the request reference to the person who runs this service."),

@@ -185,7 +185,7 @@ explains how to diagnose them.
 | `meter_unavailable` | 400 | Required metering unavailable. |
 | `meter_commit_unknown` | 503 | Meter outcome uncertain. |
 | `usage_store_busy` | 503 | The usage store stayed busy; nothing was counted. `Retry-After` names the wait. |
-| `store_busy` | 503 | The store stayed busy; nothing was written. `Retry-After` names the wait. |
+| `store_busy` | 503 | The store stayed busy, so the request did not finish. `Retry-After` names the wait. |
 | `commit_unknown` | 503 | Durable write outcome uncertain. |
 | `scope_escalation_refused` | 403 | Requested token scopes exceed authority. |
 | `access_lifetime_exceeded` | 400 | Requested token lifetime exceeds policy. |
