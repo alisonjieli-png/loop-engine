@@ -1605,18 +1605,24 @@ def fetch(url):
 class FunctionExtractsTest(unittest.TestCase):
     def test_documented_functions_are_copied_with_their_closure_and_tested(self):
         from supply_lines import function_extracts as line
+        from loop_engine.core.library_ingestion.record_rules import git_blob_identity
         files = {"lib/core.py": LIBRARY_CORE.encode(), "lib/helpers.py": LIBRARY_HELPERS.encode()}
+        tree = {"tree": [{"path": path, "type": "blob", "sha": git_blob_identity(data)} for path, data in files.items()]}
 
         class Reader:
-            def pinned_file(self, repository, branch, path):
-                return {"commit": "c" * 40, "bytes": files[path], "sha256": _digest(files[path]), "path": path,
-                        "retrieved_at": "2026-09-28T00:00:00Z"}
+            def github(self, path):
+                if "/commits/" in path:
+                    return _Answer(200, json.dumps({"sha": "c" * 40}).encode())
+                return _Answer(200, json.dumps(tree).encode())
+
+            def get(self, url, cache_errors=False):
+                return _Answer(200, files[url.split("c" * 40 + "/", 1)[1]])
 
             def licence_text(self, repository, commit):
                 return "LICENSE", LICENCE, "MIT"
 
         source = {"source_id": "lib", "title": "lib", "repository": "example/lib", "branch": "main",
-                  "package_root": "lib", "vendor": "lib", "modules": ["lib/core.py", "lib/helpers.py"]}
+                  "package_root": "lib", "vendor": "lib", "modules": ["lib/core.py", "lib/helpers.py", "lib/gone.py"]}
         with tempfile.TemporaryDirectory() as staging:
             built, refused, _facts, summary = line.generate(Reader(), [source], code_revision="a" * 40,
                                                             licence_text=LICENCE, generated_on="2026-09-28",
@@ -1626,7 +1632,8 @@ class FunctionExtractsTest(unittest.TestCase):
         reasons = {row["subject"].rsplit(" ", 1)[-1]: row["reason"] for row in refused}
         self.assertEqual(reasons, {"broken": "examples_failed", "no_examples": "no_examples",
                                    "prints_only": "examples_do_not_exercise_the_function",
-                                   "uses_unknown": "closure_unresolved", "fetch": "needs_a_dependency"})
+                                   "uses_unknown": "closure_unresolved", "fetch": "needs_a_dependency",
+                                   "lib/gone.py": "source_unreadable"})
         payload, bodies = by_name["chunk_pairs"]
         module = next(bodies[entry["digest"]].decode() for entry in payload["package"]["files"]
                       if entry["path"] == "lib_chunk_pairs.py")

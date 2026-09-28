@@ -24,12 +24,15 @@ from __future__ import annotations
 
 import ast
 import builtins
+import hashlib
 import doctest
 import json
 import re
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
+
+from loop_engine.core.library_ingestion.record_rules import git_blob_identity
 
 from .licences import repository_licence
 from .openapi_operations import run_tests
@@ -409,6 +412,32 @@ def test_text(module: str) -> str:
             'if __name__ == "__main__":\n    unittest.main()\n')
 
 
+def read_modules(reader, repository: str, branch: str, paths) -> tuple:
+    """({path: pinned file} of the modules, missing paths): the branch's head commit, its tree (one read), and each
+    module's bytes at that commit, proven by the tree's git blob identity."""
+    head = reader.github(f"repos/{repository}/commits/{branch}")
+    if head.status != 200:
+        raise LookupError(f"{repository}: the branch {branch} has no readable head commit")
+    commit = json.loads(head.body)["sha"]
+    tree = reader.github(f"repos/{repository}/git/trees/{commit}?recursive=1")
+    if tree.status != 200:
+        raise LookupError(f"{repository}: no tree at {commit[:12]}")
+    blobs = {entry["path"]: entry["sha"] for entry in json.loads(tree.body).get("tree", []) if entry.get("type") == "blob"}
+    pinned, missing = {}, []
+    for path in paths:
+        if path not in blobs:
+            missing.append(path)
+            continue
+        url = https_address(RAW_HOST, f"{repository}/{commit}/{path}")
+        answer = reader.get(url)
+        if answer.status != 200 or git_blob_identity(answer.body) != blobs[path]:
+            missing.append(path)
+            continue
+        pinned[path] = {"repository": repository, "commit": commit, "path": path, "blob": blobs[path], "url": url,
+                        "bytes": answer.body, "sha256": answer.sha256, "retrieved_at": answer.retrieved_at}
+    return pinned, missing
+
+
 def generate(reader, sources, *, code_revision: str, licence_text: bytes, generated_on: str, staging: Path,
              repository_facts: "dict | None" = None) -> tuple:
     """(built, refusals, facts, summary): every documented function of every declared library, tested."""
@@ -417,12 +446,14 @@ def generate(reader, sources, *, code_revision: str, licence_text: bytes, genera
                  "code_revision": code_revision}
     for source in sources:
         repository = source["repository"]
-        pinned = {}
-        for path in source["modules"]:
-            try:
-                pinned[path] = reader.pinned_file(repository, source["branch"], path)
-            except LookupError as error:
-                refused.append(refusal(FUNCTION_EXTRACTS, "source_unreadable", f"{repository} {path}", str(error)))
+        try:
+            pinned, missing = read_modules(reader, repository, source["branch"], source["modules"])
+        except LookupError as error:
+            refused.append(refusal(FUNCTION_EXTRACTS, "source_unreadable", repository, str(error)))
+            continue
+        for path in missing:
+            refused.append(refusal(FUNCTION_EXTRACTS, "source_unreadable", f"{repository} {path}",
+                                   "not a file at the commit, or its bytes differ from the blob"))
         if not pinned:
             continue
         commit = next(iter(pinned.values()))["commit"]
@@ -451,7 +482,9 @@ def generate(reader, sources, *, code_revision: str, licence_text: bytes, genera
                 if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) or node.name.startswith("_"):
                     continue
                 label = f"{repository} {path} {node.name}"
-                if node.name in seen:
+                # A library of many independent files (one algorithm each) names each function by its file too.
+                identity = (path, node.name) if source.get("name_by_module") else node.name
+                if identity in seen:
                     refused.append(refusal(FUNCTION_EXTRACTS, "duplicate_function", label))
                     continue
                 try:
@@ -465,7 +498,7 @@ def generate(reader, sources, *, code_revision: str, licence_text: bytes, genera
                         GENERATED_TEST_FAILED
                     refused.append(refusal(FUNCTION_EXTRACTS, reason, label, str(error)))
                     continue
-                seen.add(node.name)
+                seen.add(identity)
                 built.append(payload)
                 taken += 1
         summary.append({"source_id": source["source_id"], "repository": repository, "commit": commit,
@@ -480,7 +513,11 @@ def _package(node, path, modules, source, pinned, licence, commit, generator, li
         raise ExtractRefused(NO_EXAMPLES)
     closure = closure_of(node.name, path, modules, source["package_root"],
                          extra_names=sorted(example_names(node) - {node.name}))
-    module = f"{source['vendor']}_{node.name}"[:80].lower()
+    qualifier = re.sub(r"[^a-z0-9]+", "_", Path(path).with_suffix("").as_posix().lower()).strip("_") \
+        if source.get("name_by_module") else ""
+    module = "_".join(part for part in (source["vendor"], qualifier, node.name.lower()) if part)
+    if len(module) > 80:
+        module = f"{source['vendor']}_{hashlib.sha256(module.encode()).hexdigest()[:10]}_{node.name.lower()}"[:80]
     if not re.fullmatch(r"[a-z_][a-z0-9_]*", module):
         raise ExtractRefused(CLOSURE_UNRESOLVED, f"no module name for {node.name}")
     paths = sorted({statement.module for statement in closure.statements})
@@ -530,7 +567,7 @@ def _package(node, path, modules, source, pinned, licence, commit, generator, li
     facts.append(fact_source(upstream_address, pinned[path]["retrieved_at"], licence.sha256, len(licence.text),
                              "licence_text", spdx=licence.spdx, basis="licence_file_at_the_pinned_commit"))
     expression = " AND ".join(dict.fromkeys([GENERATED_CODE_LICENCE, licence.spdx]))
-    name = f"{source['vendor']}-{node.name.replace('_', '-')}"[:90]
+    name = module.replace("_", "-")[:90]
     identity = f"{source['repository']}:{path}:{node.name}"
     stars = ((repository_facts.get(source["repository"].lower()) or {}).get("stargazerCount")) or 0
     supply = SupplyPackage(
