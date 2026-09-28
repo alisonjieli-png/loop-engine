@@ -1583,6 +1583,26 @@ def uses_unknown(x):
     1
     """
     return missing_helper(x)
+
+
+def imports_numpy_inside(x):
+    """A dependency imported where the function runs.
+
+    >>> imports_numpy_inside(2)
+    2
+    """
+    import numpy
+    return int(numpy.int64(x))
+
+
+def example_imports_numpy(x):
+    """A dependency only the example imports.
+
+    >>> import numpy
+    >>> example_imports_numpy(numpy.int64(3))
+    3
+    """
+    return int(x)
 '''
 LIBRARY_HELPERS = '''import requests
 
@@ -1633,7 +1653,8 @@ class FunctionExtractsTest(unittest.TestCase):
         self.assertEqual(reasons, {"broken": "examples_failed", "no_examples": "no_examples",
                                    "prints_only": "examples_do_not_exercise_the_function",
                                    "uses_unknown": "closure_unresolved", "fetch": "needs_a_dependency",
-                                   "lib/gone.py": "source_unreadable"})
+                                   "lib/gone.py": "source_unreadable", "imports_numpy_inside": "needs_a_dependency",
+                                   "example_imports_numpy": "needs_a_dependency"})
         payload, bodies = by_name["chunk_pairs"]
         module = next(bodies[entry["digest"]].decode() for entry in payload["package"]["files"]
                       if entry["path"] == "lib_chunk_pairs.py")
@@ -1885,6 +1906,22 @@ class VerbatimCodeSourcesTest(unittest.TestCase):
         for path in ("project_euler/problem_001/sol1.py", "web_programming/fetch_jobs.py", "maths/__init__.py",
                      "sorts/test_quick_sort.py"):
             self.assertIsNone(declared_kind(path, scope), path)
+
+    def test_the_second_round_declares_tested_utility_modules_only(self):
+        from licensed_import.harness_kinds import SourceScope, declared_kind
+        from licensed_import.sources import read_sources
+        record = read_sources(json.loads((HERE / "supply_lines" / "verbatim_code_sources_2.json").read_text("utf-8")))
+        toolkit = next(row for row in record["repositories"] if row["repository"] == "toss/es-toolkit")
+        scope = SourceScope(tuple(toolkit["kinds"]), tuple(toolkit["include"]), tuple(toolkit["exclude"]))
+        self.assertEqual(declared_kind("src/array/chunk.ts", scope), ("code_module", "code_module"))
+        for path in ("src/array/chunk.spec.ts", "src/array/index.ts", "src/_internal/compareValues.ts"):
+            self.assertIsNone(declared_kind(path, scope), path)
+
+    def test_the_function_line_leaves_out_project_euler_and_scrapers(self):
+        from supply_lines import function_extracts
+        algorithms = next(row for row in function_extracts.read_sources() if row["source_id"] == "thealgorithms")
+        self.assertFalse([path for path in algorithms["modules"]
+                          if path.startswith(("project_euler/", "web_programming/", "scripts/"))])
 
 
 class SupplyReportTest(unittest.TestCase):

@@ -96,6 +96,9 @@ class Statement:
     example_reads: frozenset = frozenset()
     #: (name, attribute) of every attribute read on a plain name (pyd.camel_case), for a package namespace.
     attributes: frozenset = frozenset()
+    #: (module, level) of every import inside the statement or its docstring examples (a function that imports
+    #: numpy when it runs needs numpy as much as one that imports it at the top).
+    inner_imports: frozenset = frozenset()
 
 
 def _annotation_nodes(node) -> set:
@@ -160,6 +163,27 @@ def _names_bound(node) -> set:
     return bound
 
 
+def _inner_imports(node) -> set:
+    """(module, level) of every import statement inside a statement and in its docstring examples."""
+    found = set()
+    trees = [node]
+    for example in docstring_examples(node) if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef,
+                                                                  ast.ClassDef)) else ():
+        try:
+            trees.append(ast.parse(example.source))
+        except SyntaxError:
+            continue
+    for tree in trees:
+        for child in ast.walk(tree):
+            if child is node:
+                continue
+            if isinstance(child, ast.Import):
+                found.update((alias.name, 0) for alias in child.names)
+            elif isinstance(child, ast.ImportFrom):
+                found.add((child.module or "", child.level))
+    return found
+
+
 def _attributes(node) -> set:
     return {(child.value.id, child.attr) for child in ast.walk(node)
             if isinstance(child, ast.Attribute) and isinstance(child.value, ast.Name)}
@@ -206,7 +230,7 @@ def module_statements(module: str, source: str) -> list:
                             for alias in node.names)
         statements.append(Statement(module, index, start, node.end_lineno, text, frozenset(_names_bound(node)),
                                     frozenset(_names_read(node, lazy)), imports, _example_reads(node),
-                                    frozenset(_attributes(node))))
+                                    frozenset(_attributes(node)), frozenset(_inner_imports(node))))
     return statements
 
 
@@ -271,6 +295,10 @@ def closure_of(target: str, module: str, modules: dict, package_root: str, extra
                 key = (current, binder.index)
                 if key in included:
                     continue
+                for imported_name, level in sorted(binder.inner_imports):
+                    top = imported_name.split(".")[0]
+                    if not level and top not in _STANDARD_LIBRARY and not _within(imported_name, package_root):
+                        raise ExtractRefused(NEEDS_A_DEPENDENCY, f"{imported_name} inside {name}")
                 included[key] = binder
                 if current not in order:
                     order.append(current)
