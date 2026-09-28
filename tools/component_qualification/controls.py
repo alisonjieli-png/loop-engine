@@ -453,6 +453,9 @@ CONTROLS = (
     Control("failing_test", "sandbox", "code", "tests_failed",
             lambda c: _add_file(c, "test_control_fails.py", "import unittest\n\n\nclass Control(unittest.TestCase):\n"
                                 "    def test_fails(self):\n        self.assertEqual(1, 2)\n")),
+    Control("untested_language", "sandbox", "api", "code_language_not_tested",
+            lambda c: _add_file(c, "get_greeting.mjs", "export async function getGreeting(language) {\n"
+                                "  return { language };\n}\n")),
     Control("module_does_not_import", "sandbox", "code", "entry_point_import_failed",
             lambda c: _add_file(c, "control_module.py", "raise ImportError('control: this module never imports')\n")),
     Control("network_interface_visible", "sandbox", "code", "tests_failed",

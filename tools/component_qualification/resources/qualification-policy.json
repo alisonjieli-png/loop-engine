@@ -101,6 +101,41 @@
    "job_key": {
     "upstream_digests": true
    }
+  },
+  "function_extracts": {
+   "kinds": [
+    "code_module"
+   ],
+   "forms": [
+    "function"
+   ],
+   "shape": "code",
+   "required_files": [
+    "LICENSE",
+    "ATTRIBUTION.md",
+    "README.md"
+   ],
+   "job_key": {
+    "public_functions": true,
+    "fact_role": "data_source"
+   }
+  },
+  "json_schemas": {
+   "kinds": [
+    "contract_schema"
+   ],
+   "forms": [
+    "schema"
+   ],
+   "shape": "code",
+   "required_files": [
+    "LICENSE",
+    "ATTRIBUTION.md",
+    "README.md"
+   ],
+   "job_key": {
+    "upstream_digests": true
+   }
   }
  },
  "record_types": {
@@ -176,6 +211,7 @@
   "licence_text",
   "specification",
   "data",
+  "data_source",
   "formula",
   "release"
  ],
@@ -312,5 +348,9 @@
  "address_schemes": [
   "https"
  ],
- "address_reason": "A fact source or an upstream copy is pinned by an https address and its SHA-256; a download may use another transport because its digest is checked where it is installed."
+ "address_reason": "A fact source or an upstream copy is pinned by an https address and its SHA-256; a download may use another transport because its digest is checked where it is installed.",
+ "tested_code_suffixes": [
+  ".py"
+ ],
+ "tested_code_reason": "The sandbox runs Python modules and their unittest tests, and the mutation check rewrites Python. A package holding code in another language is refused until its runner and mutation are declared here, so that implementation_tested never covers code nothing ran. Builder e announced JavaScript clients for the API line on September 28, 2026; node 22 is installed at /usr/bin/node for the runner."
 }

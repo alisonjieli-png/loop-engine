@@ -11562,3 +11562,45 @@ excluded_paths:
     created_on: 2026-09-20
     sha256: 2c51934382bb7d6f9afd859989734562e267ad47296fa54432fbbcc1af5a95a0
     expires_on: 2027-09-20
+  - finding_id: hardcoding.7bf0a0868825a9b4f2d8c050
+    owner: tools.component_qualification.controls
+    rationale: >-
+      A fixture address of the qualification self-test (FIXTURE_ADDRESSES in tools/component_qualification/controls.py): a reserved example domain (example.org) or the JSON Schema 2020-12 dialect identifier, written into known-good and known-wrong fixture packages so that the provenance, download and schema checks have exact inputs. Nothing fetches it, no request is made, and no provider or endpoint is bound. Reviewed on 2026-09-28 from the triage worklist.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.81cd9b266878d360b3926538
+    owner: tools.component_qualification.controls
+    rationale: >-
+      A fixture address of the qualification self-test (FIXTURE_ADDRESSES in tools/component_qualification/controls.py): a reserved example domain (example.org) or the JSON Schema 2020-12 dialect identifier, written into known-good and known-wrong fixture packages so that the provenance, download and schema checks have exact inputs. Nothing fetches it, no request is made, and no provider or endpoint is bound. Reviewed on 2026-09-28 from the triage worklist.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.8a1a46cb29fd21e44b226093
+    owner: tools.component_qualification.controls
+    rationale: >-
+      A fixture address of the qualification self-test (FIXTURE_ADDRESSES in tools/component_qualification/controls.py): a reserved example domain (example.org) or the JSON Schema 2020-12 dialect identifier, written into known-good and known-wrong fixture packages so that the provenance, download and schema checks have exact inputs. Nothing fetches it, no request is made, and no provider or endpoint is bound. Reviewed on 2026-09-28 from the triage worklist.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.9530d7d33dcb36af8fa546ba
+    owner: tools.component_qualification.controls
+    rationale: >-
+      A fixture address of the qualification self-test (FIXTURE_ADDRESSES in tools/component_qualification/controls.py): a reserved example domain (example.org) or the JSON Schema 2020-12 dialect identifier, written into known-good and known-wrong fixture packages so that the provenance, download and schema checks have exact inputs. Nothing fetches it, no request is made, and no provider or endpoint is bound. Reviewed on 2026-09-28 from the triage worklist.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.b837ad08393797dad47a58b8
+    owner: tools.component_qualification.controls
+    rationale: >-
+      The literal is the NAME of the environment variable the qualification self-test's known-good API operation fixture declares as its credential (FIXTURE_CREDENTIAL in tools/component_qualification/controls.py). The fixture's code reads it only inside the sandbox, where the environment is cleared, so no secret is ever present; the name selects no runtime behavior and binds no provider. Reviewed on 2026-09-28 from the triage worklist.
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.eb76ebbb08bf151278b528b8
+    owner: tools.component_qualification.controls
+    rationale: >-
+      A fixture address of the qualification self-test (FIXTURE_ADDRESSES in tools/component_qualification/controls.py): a reserved example domain (example.org) or the JSON Schema 2020-12 dialect identifier, written into known-good and known-wrong fixture packages so that the provenance, download and schema checks have exact inputs. Nothing fetches it, no request is made, and no provider or endpoint is bound. Reviewed on 2026-09-28 from the triage worklist.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'

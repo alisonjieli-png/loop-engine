@@ -784,6 +784,14 @@ def job_key(component, policy) -> "str | None":
             if not isinstance(found, dict):
                 return None
             parts += [str(found.get(field)) for field in rule["fields"]]
+        elif rule.get("public_functions"):
+            module = main_module(component)
+            names = sorted(node.name for node in ast.parse(component.text(module) or "").body
+                           if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+                           and not node.name.startswith("_")) if module else []
+            if not names:
+                return None
+            parts += names
         elif rule.get("upstream_digests"):
             parts += sorted(str(row.get("digest")) for row in component.candidate.get("files", [])
                             if isinstance(row, dict) and row.get("origin") == "upstream_verbatim")
@@ -868,6 +876,11 @@ class SandboxCheck:
         available, reason = context.sandbox_settings.available()
         if not available:
             return _result(self, [("sandbox_unavailable", reason)])
+        untested = sorted(entry.path for entry in component.package.files
+                          if PurePosixPath(entry.path).suffix.lower() in context.policy["code_suffixes"]
+                          and PurePosixPath(entry.path).suffix.lower() not in context.policy["tested_code_suffixes"])
+        if untested:
+            return _result(self, [("code_language_not_tested", ", ".join(untested)[:240])])
         run = sandbox_module.run_component(component, context.sandbox_settings, context.work_root)
         findings = []
         if not run["ran"]:
