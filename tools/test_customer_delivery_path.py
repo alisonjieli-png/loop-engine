@@ -11,7 +11,9 @@ and must fail:
 - search, listing and manifests show every item with the effects its step would still have to declare, and a read
   of an item whose effects the step did not declare is refused, naming the header and the effects to add;
 - an account's repeated downloads of one item version count once in a calendar month, whatever request identity
-  each download names, and two first downloads that race count once.
+  each download names, and two first downloads that race count once;
+- downloads made at once on one account succeed, or answer a precise refusal that recorded nothing and says when to
+  retry, never an unknown commitment, even while other work holds the store's write lock.
 
 Every service here is a real application on a loopback socket over a temporary SQLite store and body folder, built
 from `catalogue_release_checks.Fixture`. Nothing reaches a provider or the network beyond 127.0.0.1.
@@ -20,8 +22,12 @@ from __future__ import annotations
 
 import asyncio
 import base64
+from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import json
+import sqlite3
+import threading
+import time
 from contextlib import ExitStack
 from pathlib import Path
 import tempfile
@@ -40,6 +46,8 @@ from loop_engine.core.service_runtime import runtime as service_runtime
 from loop_engine.core.service_runtime.http_test_fixtures import HttpDomainFixture, running_http
 from loop_engine.core.service_runtime.storage import ServiceCatalogBinding
 from loop_engine.core.provisioning_server import ProvisioningMeterRequest
+from loop_engine.catalog.protocol import CatalogRecordPrecondition, CatalogWriteBatch, StoreBusy
+from loop_engine.catalog.stores import sqlite_store
 from loop_engine.core.service_runtime.protocol_checks import _protocol_client
 
 PNG = b"\x89PNG\r\n\x1a\n\x00a binary asset"
@@ -424,6 +432,120 @@ class MeteringCountsEachItemVersionOncePerMonth(unittest.TestCase):
                 {"tenant_id": request.tenant_id, "request_id": request.request_id})
         with mock.patch.object(service_runtime, "usage_unit", per_request):
             self.assertFalse(downloads_of_one_version_count_once(service))
+
+
+
+class HeldWriteLock:
+    """Another connection holds the store's write lock for `seconds`, as another process's write would."""
+
+    def __init__(self, database_path, seconds):
+        self.database_path, self.seconds = database_path, seconds
+        self.ready, self.thread = threading.Event(), None
+
+    def __enter__(self):
+        def hold():
+            connection = sqlite3.connect(self.database_path, timeout=30)
+            try:
+                connection.execute("BEGIN IMMEDIATE")
+                self.ready.set()
+                time.sleep(self.seconds)
+                connection.rollback()
+            finally:
+                connection.close()
+        self.thread = threading.Thread(target=hold)
+        self.thread.start()
+        if not self.ready.wait(10):
+            raise AssertionError("the lock holder did not start")
+        return self
+
+    def __exit__(self, *_exc):
+        self.thread.join(30)
+
+
+def download_waits_out_a_held_lock(service, request_id="behind-a-lock"):
+    """A download while another connection holds the write lock past one busy wait: it is delivered and counted."""
+    before = service.usage()
+    with HeldWriteLock(service.case.config.database_path, 0.8):
+        answer = service.client.post("/api/v1/download", json=v2("read", identity="one_file", request_id=request_id))
+    return answer.status_code == 200 and answer.content == SINGLE[0][1] and service.usage() == before + 1
+
+
+class ConcurrentDownloadsOnOneAccount(unittest.TestCase):
+    """Defect 4: downloads at once on one account succeed or answer a precise, retryable refusal."""
+
+    def setUp(self):
+        self.stack = ExitStack()
+        self.addCleanup(self.stack.close)
+        # A short busy wait and meter time keep the held locks below short; the rules are the released ones.
+        self.stack.enter_context(mock.patch.object(sqlite_store, "BUSY_TIMEOUT_SECONDS", 0.2))
+        self.stack.enter_context(mock.patch.object(service_runtime, "METER_WRITE_SECONDS", 4.0))
+        self.service = DeliveryService(self.stack)
+
+    def test_the_store_edge_says_a_busy_batch_wrote_nothing(self):
+        store = sqlite_store.SQLiteRecordStore(self.service.case.config.database_path)
+        self.addCleanup(store.close)
+        row = {"record_id": "held-lock-probe", "record_version": "1", "namespace": "probe", "source_collection": "probe",
+               "artifact_kind": "probe", "intelligence_layer": "", "lifecycle": "probe", "attributes": {}, "payload": {}}
+        batch = CatalogWriteBatch.from_records((row,), (CatalogRecordPrecondition("held-lock-probe", must_not_exist=True),))
+        with HeldWriteLock(self.service.case.config.database_path, 0.6):
+            with self.assertRaises(StoreBusy):
+                store.apply_batch(batch)
+        self.assertIsNone(store.get("held-lock-probe"))
+
+    def test_a_download_behind_another_write_is_retried_and_delivered(self):
+        self.assertTrue(download_waits_out_a_held_lock(self.service))
+
+    def test_a_store_busy_past_the_meter_time_answers_a_precise_retryable_refusal(self):
+        before = self.service.usage()
+        with mock.patch.object(service_runtime, "METER_WRITE_SECONDS", 0.5), \
+                HeldWriteLock(self.service.case.config.database_path, 2.0):
+            refused = self.service.client.post("/api/v1/download", json=v2(
+                "read", identity="one_file", request_id="busy"))
+        self.assertEqual(refused.status_code, 503)
+        self.assertEqual(refused.json()["error"]["code"], "usage_store_busy")
+        self.assertEqual(refused.headers["retry-after"], "1")
+        self.assertEqual(refused.json()["error"]["details"],
+                         {"record_type": "service_retry_refusal/v1", "retry_after_seconds": 1, "nothing_recorded": True})
+        self.assertNotIn(SINGLE[0][1], refused.content)
+        self.assertEqual(self.service.usage(), before, "a refused read is not counted")
+        again = self.service.client.post("/api/v1/download", json=v2("read", identity="one_file", request_id="busy"))
+        self.assertEqual((again.status_code, self.service.usage()), (200, before + 1))
+
+    def test_downloads_at_once_on_one_account_never_answer_an_unknown_commitment(self):
+        stop = threading.Event()
+
+        def contend():
+            # Other work keeps taking the write lock for a moment, as other runs' downloads and the catalogue do.
+            while not stop.is_set():
+                with HeldWriteLock(self.service.case.config.database_path, 0.3):
+                    pass
+                time.sleep(0.05)
+        rival = threading.Thread(target=contend)
+        rival.start()
+
+        def download(index):
+            identity, path = (("gear_maker", PACKAGE[index % 5][0]) if index % 2 else ("one_file", None))
+            fields = {"identity": identity, "request_id": f"parallel-{index}", **({"path": path} if path else {})}
+            with httpx.Client(base_url=self.service.base, headers=self.service.headers, trust_env=False,
+                              timeout=60) as own:
+                answer = own.post("/api/v1/download", json=v2("read", **fields))
+            code = None if answer.status_code == 200 else answer.json()["error"]["code"]
+            return answer.status_code, code, answer.headers.get("retry-after")
+        try:
+            with ThreadPoolExecutor(8) as pool:
+                outcomes = list(pool.map(download, range(8)))
+        finally:
+            stop.set()
+            rival.join(30)
+        precise = {(429, "tenant_concurrency_limit_reached"), (503, "usage_store_busy")}
+        for status, code, retry_after in outcomes:
+            self.assertTrue(status == 200 or ((status, code) in precise and retry_after == "1"), outcomes)
+        self.assertTrue(any(status == 200 for status, _code, _retry in outcomes), outcomes)
+        self.assertLessEqual(self.service.usage(), 2, "two item versions are at most two units")
+
+    def test_known_wrong_a_busy_store_read_as_an_unknown_write_refuses_the_download(self):
+        with mock.patch.object(sqlite_store, "_busy", lambda error: False):
+            self.assertFalse(download_waits_out_a_held_lock(self.service, "old-classification"))
 
 
 if __name__ == "__main__":

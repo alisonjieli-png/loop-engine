@@ -107,7 +107,8 @@ loop-engine solve --file task.md --ollama-api-key --model-route cloud.default --
 | `item_unavailable` | 404 | The identity is not in your library, or it was withdrawn. Search again and use a fresh reference. |
 | `request_identity_required` | 400 | A download needs a `request_id`. Give each logical download a new one. |
 | `download_requires_read` | 400 | Only the `read` operation is answered at `/api/v1/download`. A manifest goes to `/api/v1/provisioning`. |
-| `meter_commit_unknown` | 503 | The service could not confirm the usage record. Retry with the same `request_id`. |
+| `meter_commit_unknown` | 503 | The service could not confirm the usage record. Retry with the same `request_id`; it cannot count twice. |
+| `usage_store_busy` | 503 | Other downloads held the usage store. Nothing was counted. Wait for `Retry-After`, then retry. |
 | `failed_attempt_limit_reached` | 429 | Too many refused attempts from your address. Fix the token, then wait a minute. |
 
 A `loop-engine doctor` answer that is not valid names the setting to fix and does not involve Baltor. [Troubleshooting](service-troubleshooting.md) explains every code, [Service status](https://app.baltor.ai/status) shows a current outage, and [Serving and connections](service-serving-and-connections.md) names the protocol versions. To run on a model on your own machine, follow the engine's [installation guide](../../README.md#install). The nightly record of this page's steps is written under `artifacts/quickstart-checks/` in the repository by [the quickstart check](../../tools/check_quickstarts.py).

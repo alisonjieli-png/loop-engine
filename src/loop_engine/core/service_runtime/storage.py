@@ -11,18 +11,37 @@ from __future__ import annotations
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 import json
+import threading
 from typing import Callable
 import uuid
 
 from ...catalog.protocol import (
     BATCH_ACKNOWLEDGMENT_VERSION, CatalogBatchAcknowledgment, CatalogRecordPrecondition, CatalogWriteBatch,
-    PreconditionFailed, StoreError, require_atomic_batch, require_atomic_removal,
+    PreconditionFailed, StoreBusy, StoreError, require_atomic_batch, require_atomic_removal,
 )
 from ...catalog.handshake import negotiate
 from ...catalog.query import IntelligenceQuery
 from ...catalog.stores.sqlite_store import SQLiteRecordStore
 from .records import (SERVICE_COLLECTION, ServiceCommitUnknown, ServiceRuntimeConfig,
                       ServiceRuntimeError, canonical, digest)
+
+#: The refusal of a write the store did not apply because other work held it locked past the wait. Nothing was
+#: written, so the same operation may be sent again.
+STORE_BUSY_CODE = "store_busy"
+#: How long one write waits behind the other writes of this process to the same store before it answers
+#: `store_busy`. The store is one serialized writer, so queueing here costs no throughput, and a queue is fairer than
+#: every thread retrying inside SQLite's own busy wait, where one writer can lose to the others until it times out.
+WRITE_QUEUE_SECONDS = 5.0
+_WRITE_QUEUES, _WRITE_QUEUES_GUARD = {}, threading.Lock()
+
+
+def write_queue(database_path):
+    """The one lock the writes of this process to one store take in turn.
+
+    It is re-entrant, so a write made from inside another write's store call on the same thread, as a check that
+    stages a race does, passes instead of waiting on itself."""
+    with _WRITE_QUEUES_GUARD:
+        return _WRITE_QUEUES.setdefault(database_path, threading.RLock())
 
 
 @dataclass(frozen=True)
@@ -122,12 +141,19 @@ class ServiceCatalogBinding:
             except StoreError:
                 raise ServiceRuntimeError("store_contract_unavailable") from None
         request = CatalogWriteBatch.from_records(records, guards, removals)
+        queue = write_queue(self.config.database_path)
+        if not queue.acquire(timeout=WRITE_QUEUE_SECONDS):
+            raise ServiceRuntimeError(STORE_BUSY_CODE, "other writes held the store; nothing was written; retry")
         try:
             acknowledgment = store.apply_batch(request)
         except PreconditionFailed:
             raise ServiceRuntimeError("concurrent_update", "state changed; retry the same operation identity") from None
+        except StoreBusy:
+            raise ServiceRuntimeError(STORE_BUSY_CODE, "the store stayed locked; nothing was written; retry") from None
         except Exception:
             raise ServiceCommitUnknown() from None
+        finally:
+            queue.release()
         if (not isinstance(acknowledgment, CatalogBatchAcknowledgment)
                 or acknowledgment.record_type != BATCH_ACKNOWLEDGMENT_VERSION
                 or acknowledgment.batch_digest != request.digest or acknowledgment.committed is not True):

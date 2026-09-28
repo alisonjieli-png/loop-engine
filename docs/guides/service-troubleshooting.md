@@ -91,7 +91,8 @@ not change a server limit.
 | Code | Status | Next step |
 | --- | --- | --- |
 | `failed_attempt_limit_reached` | 429 | Wait for `Retry-After`, then correct the rejected request or credential. |
-| `tenant_concurrency_limit_reached` | 429 | Reduce concurrent work from this account. |
+| `tenant_concurrency_limit_reached` | 429 | This account already has half the service's operation slots in use. Wait for `Retry-After`, then send the same request again; a download is counted once when it succeeds. |
+| `usage_store_busy` | 503 | Other downloads held the usage store past the service's wait. Nothing was counted or delivered. Wait for `Retry-After`, then send the same request again. |
 | `service_busy` | 503 | Retry after a pause with lower concurrency. |
 | `external_provider_capacity_reached` | 503 | Work waiting on another service has reached its capacity. |
 | `download_required` | 413 | Use the download endpoint instead of an inline body. |
@@ -101,10 +102,12 @@ not change a server limit.
 
 ## Uncertain metering and mismatched bytes
 
-`meter_commit_unknown` means the usage outcome is uncertain. Inspect usage and
-retry the same item with the same `request_id`. If that identity was used for a
-different item, repeating the conflicting request will not repair it. See
-[Usage and what you pay for](service-usage-and-what-you-pay-for.md).
+`meter_commit_unknown` means the service could not confirm whether the usage
+record was stored. Retry the same read. An item version counts once a month, so
+a retry cannot count it twice. Downloads made at the same time on one account
+answer either the item or a refusal that recorded nothing and names when to
+retry (`tenant_concurrency_limit_reached` or `usage_store_busy`), never this
+code. See [Usage and what you pay for](service-usage-and-what-you-pay-for.md).
 
 If downloaded bytes do not match the selected digest, do not treat that file as
 the selected item. Keep the item identity, expected digest and request reference

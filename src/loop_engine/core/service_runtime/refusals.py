@@ -187,7 +187,16 @@ CODE_GUIDANCE = {
     "commit_unknown": ("The service could not confirm whether this change was stored.",
                        "Do not repeat it. Reload the current state first, then decide."),
     "meter_commit_unknown": ("The service could not confirm whether this usage record was stored.",
-                             "Do not repeat the request. Check your usage record before trying again."),
+                             "Retry the same read. An item version counts once a month, so a retry cannot count "
+                             "it twice."),
+    "usage_store_busy": ("The service's usage store stayed busy with other downloads, so this read was not counted "
+                         "and nothing was delivered.",
+                         "Send the same request again after the Retry-After seconds. It is counted once when it "
+                         "succeeds."),
+    "store_busy": ("The service's store stayed busy with other work, so nothing was written.",
+                   "Send the same request again after the Retry-After seconds."),
+    "usage_identity_conflict": ("The service's usage record for this item version does not match the read it names.",
+                                "Report the time and the request reference to the person who runs this service."),
     "billing_reconciliation_pending": ("A payment change is still being reconciled, so this request was refused.",
                                        "Wait, reload your account page, then decide from the state you see."),
     "billing_customer_not_bound": ("This account is not yet bound to a payment customer.",

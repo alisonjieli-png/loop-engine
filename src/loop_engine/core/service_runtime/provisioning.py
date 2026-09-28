@@ -18,11 +18,11 @@ import secrets
 
 from ..harness_intelligence import HarnessIntelligenceCatalogue
 from ..provisioning_server import (
-    METERING_POLICIES, ProvisioningAccessPolicy, ProvisioningQualificationResolver,
+    METERING_POLICIES, ProvisioningAccessPolicy, ProvisioningMeterRefusal, ProvisioningQualificationResolver,
     ProvisioningRequest, ProvisioningServer, ProvisioningTenant, ProvisioningTenantResolver,
 )
 from ..service_api import key_digest
-from .records import ServiceRuntimeError
+from .records import ServiceCommitUnknown, ServiceRuntimeError
 from .runtime import (PROVISIONING_METADATA_SCOPE, PROVISIONING_READ_SCOPE, ServiceRuntime)
 
 
@@ -131,9 +131,22 @@ class DurableProvisioningBinding:
 
         qualifier = ProvisioningQualificationResolver(
             view.qualification_resolver.resolver_id + ":selected", selected_qualification)
+        def measure(request):
+            """Keep a definite refusal from the durable meter apart from an unknown commitment.
+
+            The runtime states an unknown durable outcome in one typed way, `ServiceCommitUnknown`, and
+            `record_usage` turns it into an acknowledgment whose commitment is unknown. Every other refusal it raises
+            is definite: nothing was recorded. Those keep their own code, so the customer is told what happened and
+            whether to retry, instead of being told that the outcome is unknown."""
+            try:
+                return self.runtime.record_usage(request, current, guards=(grant_guard,))
+            except ServiceCommitUnknown:
+                raise
+            except ServiceRuntimeError as refusal:
+                raise ProvisioningMeterRefusal("the durable meter refused this measured unit", refusal.code) from None
+
         policy = ProvisioningAccessPolicy(grants, qualifier)
-        server = ProvisioningServer(catalogue, (tenant,), view.body_reader,
-            lambda request: self.runtime.record_usage(request, current, guards=(grant_guard,)),
+        server = ProvisioningServer(catalogue, (tenant,), view.body_reader, measure,
             access_policy=policy,
             tenant_resolver=ProvisioningTenantResolver("durable_service_tenant", resolve_tenant))
         return server.handle(ProvisioningRequest(operation, internal_key, **fields))

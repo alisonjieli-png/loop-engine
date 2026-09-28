@@ -78,7 +78,9 @@ download.
 
 | Code | Status | Next step |
 | --- | --- | --- |
-| `meter_commit_unknown` | 503 | Keep the original item and request identity. Inspect usage, then retry the same read. Check that the identity was not reused for another item. |
+| `meter_commit_unknown` | 503 | The service could not confirm the usage record. Retry the same read; it cannot count twice. |
+| `usage_store_busy` | 503 | Nothing was counted or delivered. Wait for the `Retry-After` seconds, then send the same read again. The refusal's `details` record, `service_retry_refusal/v1`, says `nothing_recorded`. |
+| `tenant_concurrency_limit_reached` | 429 | This account's share of the service's operation slots is in use by its other requests. Wait for `Retry-After`, then send the same read again. |
 | `deadline_exceeded` | 504 | The server callback may still finish. Inspect usage or retry the same read identity. |
 | `commit_unknown` | 503 | Inspect current state before repeating the operation. |
 | `meter_unavailable` | 400 | Report the service configuration problem to the operator. |

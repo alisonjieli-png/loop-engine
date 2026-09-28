@@ -282,6 +282,16 @@ def self_test() -> dict:
             return refusal(lambda: ask(replace(server, meter=callback), "read"), "meter_commit_unknown")
         check("meter_" + label + "_does_not_return_a_successful_body", unacknowledged)
 
+    def definite_refusal():
+        """A meter that knows nothing was recorded keeps its own code, and records nothing."""
+        server, _, _, meter, _ = fixture()
+        def refuses(request):
+            raise serving.ProvisioningMeterRefusal("the usage store stayed busy", "usage_store_busy")
+        named = refusal(lambda: ask(replace(server, meter=refuses), "read"), "usage_store_busy")
+        return named and meter.total("paid") == 0
+
+    check("a_meters_definite_refusal_is_not_reported_as_an_unknown_commitment", definite_refusal)
+
     def lost_ack():
         server, _, _, meter, _ = fixture()
         def lost(request):

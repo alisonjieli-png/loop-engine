@@ -6,9 +6,10 @@ items are absent from all responses, including discovery counts. Explicit host
 review of a local catalogue is supported but is not independent qualification.
 
 Body reads verify bytes before asking an installed meter for an exact committed
-acknowledgment. Unknown commitment never becomes success. The reference meter
-is volatile and idempotent within its lifetime. Durable billing and all-layer
-admission remain host integrations, not new stores in this module.
+acknowledgment. Unknown commitment never becomes success, and a meter's own
+definite refusal keeps its own code instead of being reported as unknown. The
+reference meter is volatile and idempotent within its lifetime. Durable billing
+and all-layer admission remain host integrations, not new stores in this module.
 
 Every approval names its library tier, and every list row, manifest and body
 carries the tier and its exact label, so a caller always knows which admission
@@ -105,6 +106,18 @@ class ProvisioningError(ServiceError):
     def __init__(self, message: str, code: str = "invalid_request") -> None:
         super().__init__(message)
         self.code = code
+
+
+class ProvisioningMeterRefusal(ProvisioningError):
+    """An installed meter's own definite refusal, with its own stable code.
+
+    A meter raises this only when it knows that no measured unit was recorded
+    and can name why: its store stayed busy, or the account lost its plan
+    between the read and the count. The refusal reaches the caller with that
+    code, because a definite refusal is not an unknown commitment. Every other
+    failure from a meter leaves the commitment genuinely unknown, so the body
+    read is refused with `meter_commit_unknown`.
+    """
 
 
 def _version(actual: str, expected: str) -> None:
@@ -564,6 +577,9 @@ class ProvisioningServer:
         if meter_request is not None:
             try:
                 acknowledgment = self.meter(meter_request)
+            except ProvisioningMeterRefusal:
+                # The meter stated that nothing was recorded and named why; its code reaches the caller.
+                raise
             except Exception:
                 raise ProvisioningError("meter commitment is unknown; retry the same request identity",
                                         "meter_commit_unknown") from None

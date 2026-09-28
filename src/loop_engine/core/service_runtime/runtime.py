@@ -32,7 +32,7 @@ from .records import (
     billing_customer_request_differs_only_by_provider_account, billing_customer_search_can_show_the_previous_attempt,
     canonical, digest, identifier, scopes, usage_items,
 )
-from .storage import ServiceCatalogBinding
+from .storage import STORE_BUSY_CODE, ServiceCatalogBinding
 from .catalogue_grants import release_following_grants, release_following_payload as _follows
 
 (TENANT, KEY, SUBJECT, ENTITLEMENT, GRANTS, USAGE, CUSTOMER, CUSTOMER_EFFECT, TENANT_NAMESPACE, BILLING_POLICY,
@@ -82,6 +82,16 @@ PROVISIONING_METADATA_SCOPE, PROVISIONING_READ_SCOPE, USAGE_READ_SCOPE = (
 #: plan source alike (September 27, 2026: a customer run recorded 26 metered reads of 5 distinct items).
 USAGE_UNIT_RULE = "one_per_item_version_per_calendar_month_utc"
 USAGE_PERIOD_FORMAT = "%Y-%m"
+#: How long the durable meter keeps trying a write that the store refused as busy before it answers
+#: `usage_store_busy`: nothing was counted and nothing is delivered, and the customer may retry at once. It stays well
+#: inside the request deadline, so concurrent downloads on one account succeed or get that precise answer, never an
+#: unknown commitment (September 27, 2026: 5 of 8 downloads during five concurrent runs answered meter_commit_unknown).
+METER_WRITE_SECONDS = 12.0
+METER_RETRY_FIRST_DELAY_SECONDS, METER_RETRY_LONGEST_DELAY_SECONDS = 0.05, 0.5
+USAGE_STORE_BUSY_CODE = "usage_store_busy"
+#: A write whose guard changed is tried again this many times: the unit another read just recorded is then found, or
+#: the account's changed records are checked again from the start.
+METER_CHANGED_GUARD_ATTEMPTS = 3
 
 
 def usage_period(moment):
@@ -784,17 +794,27 @@ class ServiceRuntime:
         acknowledged by it."""
         if not isinstance(request, ProvisioningMeterRequest):
             raise ServiceRuntimeError("invalid_usage_request")
-        try:
-            for attempt in range(2):
-                try:
-                    return self._record_usage_once(request, principal, guards)
-                except ServiceRuntimeError as error:
-                    # Another read of the same unit committed between this read and this write. The retry finds
-                    # that record and acknowledges it; any other changed guard is checked again from the start.
-                    if error.code != "concurrent_update" or attempt:
-                        raise
-        except ServiceCommitUnknown:
-            return ProvisioningMeterAcknowledgment(request, None)
+        deadline = time.monotonic() + METER_WRITE_SECONDS
+        delay, changed = METER_RETRY_FIRST_DELAY_SECONDS, 0
+        while True:
+            try:
+                return self._record_usage_once(request, principal, guards)
+            except ServiceCommitUnknown:
+                return ProvisioningMeterAcknowledgment(request, None)
+            except ServiceRuntimeError as error:
+                if error.code == "concurrent_update" and changed < METER_CHANGED_GUARD_ATTEMPTS - 1:
+                    # Another read of the same unit committed between this read and this write, or an account
+                    # record changed: the next attempt finds that unit or checks the account again from the start.
+                    changed += 1
+                    continue
+                if error.code != STORE_BUSY_CODE:
+                    raise
+                # The store wrote nothing. Try again while the meter's time lasts, then say so precisely.
+                if time.monotonic() + delay >= deadline:
+                    raise ServiceRuntimeError(USAGE_STORE_BUSY_CODE,
+                                              "the usage store stayed busy; nothing was counted; retry") from None
+            time.sleep(delay)
+            delay = min(delay * 2, METER_RETRY_LONGEST_DELAY_SECONDS)
 
     def _record_usage_once(self, request, principal, guards):
         with self._catalog.store(write=True) as store:

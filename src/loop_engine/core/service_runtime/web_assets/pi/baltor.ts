@@ -78,6 +78,11 @@ const STAGING_PREFIX = ".baltor-staging-";
 // The effects a configuration may declare for Pi's steps, as the service names them, and the header that carries them.
 const STEP_EFFECTS = ["reads_fs", "writes_fs", "reads_secret", "network", "spawns_process"];
 const STEP_EFFECTS_HEADER = "Baltor-Step-Effects";
+// Refusals that recorded nothing and name a short wait in Retry-After: this account's other requests hold its share of
+// the service, or the usage store stayed busy. A read counts once a month, so sending it again cannot count twice.
+const RETRYABLE_CODES = ["tenant_concurrency_limit_reached", "usage_store_busy", "store_busy", "service_busy"];
+const RETRY_BUDGET_MS = 15_000;
+const LONGEST_RETRY_WAIT_SECONDS = 5;
 
 export class BaltorError extends Error {
 	code: string;
@@ -212,11 +217,33 @@ async function readCapped(response: Response, maxBytes: number, route: string): 
 	return Buffer.concat(chunks);
 }
 
-async function exchange(
-	settings: Settings,
-	route: string,
-	options: { method: "GET" | "POST"; body?: unknown; token?: string; maxBytes: number; signal?: AbortSignal },
-): Promise<Exchange> {
+type ExchangeOptions = { method: "GET" | "POST"; body?: unknown; token?: string; maxBytes: number; signal?: AbortSignal };
+
+// The wait, in milliseconds, before a refusal that recorded nothing may be sent again, or null for any other answer.
+function retryWait(reply: Exchange): number | null {
+	if (reply.status !== 429 && reply.status !== 503) return null;
+	const seconds = Number(reply.headers.get("retry-after"));
+	if (!Number.isFinite(seconds) || seconds < 0 || seconds > LONGEST_RETRY_WAIT_SECONDS) return null;
+	try {
+		const record = JSON.parse(reply.bytes.toString("utf8"));
+		return RETRYABLE_CODES.includes(record?.error?.code) ? Math.max(250, seconds * 1000) : null;
+	} catch {
+		return null;
+	}
+}
+
+// One request, sent again after each refusal that recorded nothing, while the retry budget lasts.
+async function exchange(settings: Settings, route: string, options: ExchangeOptions): Promise<Exchange> {
+	const started = Date.now();
+	for (;;) {
+		const reply = await exchangeOnce(settings, route, options);
+		const wait = retryWait(reply);
+		if (wait === null || options.signal?.aborted || Date.now() - started + wait > RETRY_BUDGET_MS) return reply;
+		await new Promise((resolve) => setTimeout(resolve, wait));
+	}
+}
+
+async function exchangeOnce(settings: Settings, route: string, options: ExchangeOptions): Promise<Exchange> {
 	const signals = [AbortSignal.timeout(REQUEST_TIMEOUT_MS)];
 	if (options.signal) signals.push(options.signal);
 	const headers: Record<string, string> = { Accept: "application/json, application/octet-stream" };

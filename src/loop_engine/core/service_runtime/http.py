@@ -158,6 +158,11 @@ EXTERNAL_PROVIDER_CODE = "external_provider_capacity_reached"
 #: identity may not contain a space, so no account can ever name this share.
 EXTERNAL_PROVIDER_SHARE = "external provider"
 NESTING_LIMIT_CODE = "nesting_limit_exceeded"
+#: Refusals that recorded nothing and may be sent again at once: the store, or the usage store behind a download,
+#: stayed busy past the service's wait. Each answers 503 with `Retry-After` and these details, so a client that meets
+#: one while it shares an account with other runs knows its request was not counted and when to send it again.
+RETRY_REFUSAL_VERSION = "service_retry_refusal/v1"
+RETRY_AFTER_SECONDS = {"usage_store_busy": 1, "store_busy": 1}
 #: The deepest request or host file this service reads nests about five
 #: containers. The reader refuses anything deeper before it parses, because the
 #: parser opens one recursive call for each container and the interpreter's
@@ -719,6 +724,12 @@ def step_effects_refusal(declared, step, missing) -> dict:
             "request_field": "authority_effects"}
 
 
+def _retry_refusal(code):
+    """The details of a refusal that recorded nothing and may be sent again after a short wait."""
+    return {"record_type": RETRY_REFUSAL_VERSION, "retry_after_seconds": RETRY_AFTER_SECONDS[code],
+            "nothing_recorded": True}
+
+
 def _status(error):
     code = getattr(error, "code", "operation_failed")
     if isinstance(error, ServiceHttpError):
@@ -747,7 +758,8 @@ def _status(error):
                 "waitlist_transition_refused", "waitlist_decision_identity_conflict",
                 "free_monthly_already_held", "free_monthly_not_held", "account_state_unchanged",
                 "account_administration_request_identity_conflict", "sign_up_links_in_progress",
-                "rating_requires_download", "report_requires_download", "material_request_identity_conflict"):
+                "rating_requires_download", "report_requires_download", "material_request_identity_conflict",
+                "usage_identity_conflict"):
         return 409, code
     # Accepted requests to join the waiting list, counted for one declared
     # source. It is a wait like the failed-attempt limit, not a bad request.
@@ -767,7 +779,8 @@ def _status(error):
     if code in ("item_unavailable", "managed_access_token_not_found", "waitlist_entry_not_found",
                 "item_withdrawn", "package_file_not_found", "package_files_unavailable", "account_not_found"):
         return 404, code
-    if code in ("meter_commit_unknown", "commit_unknown", "session_operation_in_progress",
+    if code in ("meter_commit_unknown", "commit_unknown", "usage_store_busy", "store_busy",
+                "session_operation_in_progress",
                 "session_reconciliation_window_exhausted", "session_network_authority_required",
                 "billing_customer_not_bound", "session_record_unavailable",
                 "waitlist_unavailable", "waitlist_account_directory_unavailable",
@@ -1699,7 +1712,8 @@ class ServiceHttpApplication:
                 status, code = _status(error)
                 # A transport refusal's typed details reach the harness as they reach a web client: the
                 # effects a step must declare, or how long to wait. They never hold request text.
-                details = error.details if isinstance(error, ServiceHttpError) else None
+                details = (error.details if isinstance(error, ServiceHttpError)
+                           else _retry_refusal(code) if code in RETRY_AFTER_SECONDS else None)
             # A protocol tool refusal is a failed request too, and the harness
             # that made it sees the same reference the operator searches for.
             # The record goes through the same guarded writer as every other
@@ -1825,6 +1839,9 @@ class ServiceHttpApplication:
             except Exception as error:
                 status, code = _status(error)
                 details, added = (error.details, error.headers) if isinstance(error, ServiceHttpError) else (None, None)
+                if code in RETRY_AFTER_SECONDS and details is None:
+                    details = _retry_refusal(code)
+                    added = {**(added or {}), "Retry-After": str(RETRY_AFTER_SECONDS[code])}
                 # The record is committed before the customer is told its name,
                 # so a reference in a refusal is one an operator can search for.
                 await self._record_failure(scope, request, code, status)
