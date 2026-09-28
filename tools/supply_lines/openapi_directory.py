@@ -51,9 +51,12 @@ DECLARED_LICENCE_NAMES = {
     "Apache 2.0": "Apache-2.0", "Apache 2.0 License": "Apache-2.0", "Apache-2.0": "Apache-2.0",
     "Apache v2 License": "Apache-2.0", "Apache License 2.0": "Apache-2.0", "Apache License, Version 2.0": "Apache-2.0",
     "BSD-3-Clause": "BSD-3-Clause", "BSD-2-Clause": "BSD-2-Clause", "ISC": "ISC", "CC0 1.0": "CC0-1.0",
-    "CC0-1.0": "CC0-1.0", "Unlicense": "Unlicense", "CC-BY-4.0": "CC-BY-4.0"}
+    "CC0-1.0": "CC0-1.0", "Unlicense": "Unlicense", "CC-BY-4.0": "CC-BY-4.0", "Creative Commons": "CC-BY-4.0"}
+#: Names that say which licence only together with an address: "Creative Commons" is CC-BY-4.0 only when its
+#: address is that licence's.
+NAMES_NEEDING_AN_ADDRESS = frozenset({"Creative Commons"})
 #: The address fragments that confirm a declared licence; a declared address naming another licence is refused.
-LICENCE_ADDRESS_WORDS = {"MIT": ("mit",), "Apache-2.0": ("apache.org/licenses/license-2.0", "apache-2.0", "apache2"),
+LICENCE_ADDRESS_WORDS = {"MIT": ("mit",), "Apache-2.0": ("apache.org/licenses", "apache-2.0", "apache2"),
                          "BSD-3-Clause": ("bsd-3",), "BSD-2-Clause": ("bsd-2",), "ISC": ("isc",),
                          "CC0-1.0": ("cc0", "publicdomain/zero"), "Unlicense": ("unlicense",),
                          "CC-BY-4.0": ("by/4.0", "cc-by-4.0")}
@@ -81,6 +84,8 @@ def declared_licence(info: dict) -> "tuple | None":
         return None
     name, address = str(licence["name"]).strip(), str(licence.get("url") or "").strip()
     spdx = DECLARED_LICENCE_NAMES.get(name)
+    if spdx and name in NAMES_NEEDING_AN_ADDRESS and not address:
+        spdx = None  # the name alone does not say which licence
     if spdx and address and not any(word in address.lower() for word in LICENCE_ADDRESS_WORDS[spdx]):
         spdx = None  # the address names another licence than the name does
     return spdx, name, address

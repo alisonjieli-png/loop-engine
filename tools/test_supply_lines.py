@@ -651,8 +651,15 @@ class OpenApiDirectoryTest(unittest.TestCase):
                                                              "url": "http://www.apache.org/licenses/LICENSE-2.0.html"}}),
                          ("Apache-2.0", "Apache 2.0 License", "http://www.apache.org/licenses/LICENSE-2.0.html"))
         self.assertEqual(line.declared_licence({"license": {"name": "The MIT License (MIT)"}})[0], "MIT")
+        self.assertEqual(line.declared_licence({"license": {"name": "Apache 2.0 License",
+                                                             "url": "http://www.apache.org/licenses/"}})[0], "Apache-2.0")
+        self.assertEqual(line.declared_licence({"license": {"name": "Creative Commons",
+                                                             "url": "https://creativecommons.org/licenses/by/4.0/"}})[0],
+                         "CC-BY-4.0")
         # Known wrong: a licence named by words the table does not hold, and a name whose address says otherwise.
         for info in ({"license": {"name": "Creative Commons Attribution 3.0"}}, {"license": {"name": "Microsoft"}},
+                     {"license": {"name": "Creative Commons"}},
+                     {"license": {"name": "Creative Commons", "url": "http://creativecommons.org/licenses/by/3.0/"}},
                      {"license": {"name": "MIT", "url": "https://www.gnu.org/licenses/gpl-3.0.html"}},
                      {"license": {"name": "Apache 2.0", "url": "https://opensource.org/licenses/MIT"}}):
             self.assertIsNone(line.declared_licence(info)[0], info)
