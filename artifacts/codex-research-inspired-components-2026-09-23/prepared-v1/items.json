@@ -1,0 +1,128 @@
+{
+  "record_type": "starter_catalogue_candidate_items/v3",
+  "source_revision": "231f51bb1facab517fbe915b08ea9ac85f913347",
+  "source_digests": {
+    "LICENSE": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+    "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+  },
+  "publication": "not_published",
+  "items": [
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "audit_wikilink_resolution",
+        "kind": "tool",
+        "purpose": "Scan a declared bounded Markdown subset against a supplied note inventory, reporting exact target candidates, missing/ambiguous links, unchecked fragments and source spans without editing files.",
+        "digest": "94e718f4754cca27d9329ce1707eb0e70fd4a118575abd0665f27d90fa4e2aa2",
+        "source_layer": "harness_local",
+        "source_ref": "src/loop_engine/core/service_runtime/catalogue_packages.py@231f51bb1facab517fbe915b08ea9ac85f913347",
+        "family": "harness",
+        "size_bytes": 1651,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "styles": [
+          "codex",
+          "opencode",
+          "pi"
+        ],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "language": [
+            "en"
+          ],
+          "domain": [
+            "software",
+            "data"
+          ],
+          "lifecycle": [
+            "candidate"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/audit_wikilink_resolution.package.json",
+      "package": {
+        "body_form": "package",
+        "files": [
+          {
+            "path": "AGENTS.md",
+            "digest": "b285b070888782a0891a4c4a4b24ec8dcca1c67b1ddcede4cbc580665e53bdca",
+            "size_bytes": 2791,
+            "media_type": "text/markdown",
+            "role": "instruction_file"
+          },
+          {
+            "path": "LICENSE",
+            "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+            "size_bytes": 1068,
+            "media_type": "text/plain",
+            "role": "other"
+          },
+          {
+            "path": "contracts/input.schema.json",
+            "digest": "68897736c4ff666f1f38537158ec16685cd7dbe5cd17cd04b32a61f1ec329fef",
+            "size_bytes": 1405,
+            "media_type": "application/schema+json",
+            "role": "configuration"
+          },
+          {
+            "path": "contracts/output.schema.json",
+            "digest": "c425b8614850d62c3ac542f05c7e52236ac3cdbb27075c2f65b3fba904b1af29",
+            "size_bytes": 5317,
+            "media_type": "application/schema+json",
+            "role": "configuration"
+          },
+          {
+            "path": "examples/input.json",
+            "digest": "1428405750e371a7d4827315544c133bf8ec512d8672e07fc9211cb24e012283",
+            "size_bytes": 302,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "examples/output.json",
+            "digest": "e58a2bac44562c18cb3a01b3caa2573fd6cd4e9058b92376f485821937c32f5a",
+            "size_bytes": 1831,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "references/profile.md",
+            "digest": "07bcc3423bd901cc079d5382fc833bc3dc9af57a220a24dfae709ed31926d48a",
+            "size_bytes": 5631,
+            "media_type": "text/markdown",
+            "role": "other"
+          },
+          {
+            "path": "tools/audit_wikilink_resolution.py",
+            "digest": "b0fe7266d65b9bab16615c4f993b9d8e22785c8884fa2332b83fea4a38e23f0c",
+            "size_bytes": 11620,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          },
+          {
+            "path": "verification/cases.json",
+            "digest": "a44697d9641a9bec84285bc2e730e48f7026d4170c1a85137b956a2ee1119d5f",
+            "size_bytes": 109662,
+            "media_type": "application/json",
+            "role": "other"
+          }
+        ]
+      },
+      "package_root": "packages/audit_wikilink_resolution",
+      "producer": {
+        "producer_identity": "Codex original research-inspired component authoring process",
+        "family": "openai",
+        "method_identity": "codex_original_research_inspired_components/v1"
+      },
+      "dependencies": [
+        "Python>=3.10 standard library; no third-party packages"
+      ]
+    }
+  ]
+}

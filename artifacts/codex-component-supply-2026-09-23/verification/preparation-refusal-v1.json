@@ -1,0 +1,7 @@
+{
+  "record_type": "harness_candidate_preparation_report/v1",
+  "complete": false,
+  "refusal": "native_file_invalid",
+  "cause": "Assembler used unregistered asset/reference roles. Existing FILE_ROLES requires other for standalone examples, cases and license. No payload code was executed or served.",
+  "successor": "proposals-v2.json"
+}

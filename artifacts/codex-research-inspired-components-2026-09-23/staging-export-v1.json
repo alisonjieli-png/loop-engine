@@ -1,0 +1,158 @@
+{
+  "record_type": "catalog_export/v1",
+  "records": [
+    {
+      "record_id": "codex.research.inspired.20260923.audit_wikilink_resolution",
+      "record_version": "5dbe6615810975b65fb6eb58730e639ea1a8f6d99b129d8ec91286d761c7f233",
+      "intelligence_layer": "code",
+      "source_collection": "learned",
+      "artifact_kind": "intelligence_record",
+      "lifecycle": "candidate",
+      "namespace": "codex.research.inspired.20260923",
+      "attributes": {
+        "content_sha256": "6dd7fd9405d368b1127db789bc7e593e5575355d933293728fb7708a677f964f",
+        "family": "deterministic_native_method",
+        "license_state": "pending_review",
+        "tags": [
+          "wikilink",
+          "obsidian",
+          "markdown",
+          "note_links",
+          "dangling_links",
+          "ambiguity",
+          "knowledge_vault",
+          "source_spans",
+          "deterministic"
+        ],
+        "title": "Audit Markdown wikilink note targets"
+      },
+      "payload": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "body_path": "bodies/audit_wikilink_resolution.package.json",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "dependencies": [
+          "Python>=3.10 standard library; no third-party packages"
+        ],
+        "execution_available": false,
+        "family": "deterministic_native_method",
+        "kind": "tool",
+        "license_state": "pending_review",
+        "lifecycle": "candidate",
+        "package": {
+          "body_form": "package",
+          "files": [
+            {
+              "digest": "b285b070888782a0891a4c4a4b24ec8dcca1c67b1ddcede4cbc580665e53bdca",
+              "media_type": "text/markdown",
+              "path": "AGENTS.md",
+              "role": "instruction_file",
+              "size_bytes": 2791
+            },
+            {
+              "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+              "media_type": "text/plain",
+              "path": "LICENSE",
+              "role": "other",
+              "size_bytes": 1068
+            },
+            {
+              "digest": "68897736c4ff666f1f38537158ec16685cd7dbe5cd17cd04b32a61f1ec329fef",
+              "media_type": "application/schema+json",
+              "path": "contracts/input.schema.json",
+              "role": "configuration",
+              "size_bytes": 1405
+            },
+            {
+              "digest": "c425b8614850d62c3ac542f05c7e52236ac3cdbb27075c2f65b3fba904b1af29",
+              "media_type": "application/schema+json",
+              "path": "contracts/output.schema.json",
+              "role": "configuration",
+              "size_bytes": 5317
+            },
+            {
+              "digest": "1428405750e371a7d4827315544c133bf8ec512d8672e07fc9211cb24e012283",
+              "media_type": "application/json",
+              "path": "examples/input.json",
+              "role": "other",
+              "size_bytes": 302
+            },
+            {
+              "digest": "e58a2bac44562c18cb3a01b3caa2573fd6cd4e9058b92376f485821937c32f5a",
+              "media_type": "application/json",
+              "path": "examples/output.json",
+              "role": "other",
+              "size_bytes": 1831
+            },
+            {
+              "digest": "07bcc3423bd901cc079d5382fc833bc3dc9af57a220a24dfae709ed31926d48a",
+              "media_type": "text/markdown",
+              "path": "references/profile.md",
+              "role": "other",
+              "size_bytes": 5631
+            },
+            {
+              "digest": "b0fe7266d65b9bab16615c4f993b9d8e22785c8884fa2332b83fea4a38e23f0c",
+              "media_type": "text/x-python",
+              "path": "tools/audit_wikilink_resolution.py",
+              "role": "executable_tool",
+              "size_bytes": 11620
+            },
+            {
+              "digest": "a44697d9641a9bec84285bc2e730e48f7026d4170c1a85137b956a2ee1119d5f",
+              "media_type": "application/json",
+              "path": "verification/cases.json",
+              "role": "other",
+              "size_bytes": 109662
+            }
+          ]
+        },
+        "package_digest": "94e718f4754cca27d9329ce1707eb0e70fd4a118575abd0665f27d90fa4e2aa2",
+        "package_root": "packages/audit_wikilink_resolution",
+        "producer": {
+          "family": "openai",
+          "method_identity": "codex_original_research_inspired_components/v1",
+          "producer_identity": "Codex original research-inspired component authoring process"
+        },
+        "provenance": {
+          "authoring": "original_assistant_authored",
+          "license": {
+            "expression": "MIT",
+            "path": "LICENSE",
+            "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+          },
+          "source_digests": {
+            "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+          },
+          "source_revision": "231f51bb1facab517fbe915b08ea9ac85f913347"
+        },
+        "purpose": "Scan a declared bounded Markdown subset against a supplied note inventory, reporting exact target candidates, missing/ambiguous links, unchecked fragments and source spans without editing files.",
+        "qualification": "not_independently_qualified",
+        "record_type": "candidate_intelligence_specification/v3",
+        "sources": [
+          {
+            "path": "src/loop_engine/core/service_runtime/catalogue_packages.py",
+            "sha256": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+          },
+          {
+            "path": "LICENSE",
+            "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+          }
+        ],
+        "styles": [
+          "codex",
+          "opencode",
+          "pi"
+        ],
+        "symbols": [
+          "solve"
+        ],
+        "text": "# Audit Markdown wikilink note targets\n\nScan a declared bounded Markdown subset against a supplied note inventory, reporting exact target candidates, missing/ambiguous links, unchecked fragments and source spans without editing files.\n",
+        "title": "Audit Markdown wikilink note targets"
+      }
+    }
+  ],
+  "count": 1
+}

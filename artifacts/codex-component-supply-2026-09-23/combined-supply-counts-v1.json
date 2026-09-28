@@ -1,0 +1,10 @@
+{
+  "new_candidate_packages": 17,
+  "payload_paths": 137,
+  "distinct_payload_digests": 121,
+  "payload_bytes": 535608,
+  "independent_case_count": 256,
+  "case_scope": "190 cases for 16 packages plus 66 cases for wikilinks; no implication of global coverage or native qualification.",
+  "approved": 0,
+  "served": 0
+}

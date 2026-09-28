@@ -1,0 +1,196 @@
+{
+  "record_type": "candidate_intelligence_staging_report/v1",
+  "records": 16,
+  "families": {
+    "deterministic_native_method": 16
+  },
+  "layers": {
+    "code": 16
+  },
+  "batch_digest": "8bad11e6ed7c1d072797c834e924767c3d2d3c9a87e900f33adfdcfb4734c04a",
+  "committed": true,
+  "hosted_publication": false,
+  "independent_qualification": false,
+  "review_search": {
+    "normal_search_hits": 0,
+    "normal_search_excluded": 16,
+    "probes": [
+      {
+        "expected_identity": "codex.component.supply.20260923.apply_flat_record_changes",
+        "returned": [
+          "codex.component.supply.20260923.apply_flat_record_changes",
+          "codex.component.supply.20260923.profile_csv_structure",
+          "codex.component.supply.20260923.reconcile_multiset_rows"
+        ],
+        "found_in_first_three": true,
+        "elapsed_ms": 17.699,
+        "physical_model_calls": 0
+      },
+      {
+        "expected_identity": "codex.component.supply.20260923.apply_nonoverlapping_text_edits",
+        "returned": [
+          "codex.component.supply.20260923.apply_nonoverlapping_text_edits",
+          "codex.component.supply.20260923.apply_flat_record_changes",
+          "codex.component.supply.20260923.audit_half_open_interval_overlaps"
+        ],
+        "found_in_first_three": true,
+        "elapsed_ms": 7.852,
+        "physical_model_calls": 0
+      },
+      {
+        "expected_identity": "codex.component.supply.20260923.assign_digest_shards",
+        "returned": [
+          "codex.component.supply.20260923.assign_digest_shards",
+          "codex.component.supply.20260923.reconcile_keyed_tables",
+          "codex.component.supply.20260923.validate_event_precedence"
+        ],
+        "found_in_first_three": true,
+        "elapsed_ms": 7.305,
+        "physical_model_calls": 0
+      },
+      {
+        "expected_identity": "codex.component.supply.20260923.audit_half_open_interval_overlaps",
+        "returned": [
+          "codex.component.supply.20260923.audit_half_open_interval_overlaps",
+          "codex.component.supply.20260923.evaluate_capability_requirements",
+          "codex.component.supply.20260923.compare_file_inventories"
+        ],
+        "found_in_first_three": true,
+        "elapsed_ms": 6.951,
+        "physical_model_calls": 0
+      },
+      {
+        "expected_identity": "codex.component.supply.20260923.compare_file_inventories",
+        "returned": [
+          "codex.component.supply.20260923.compare_file_inventories",
+          "codex.component.supply.20260923.detect_portable_path_collisions",
+          "codex.component.supply.20260923.evaluate_capability_requirements"
+        ],
+        "found_in_first_three": true,
+        "elapsed_ms": 7.628,
+        "physical_model_calls": 0
+      },
+      {
+        "expected_identity": "codex.component.supply.20260923.compute_weighted_quantiles",
+        "returned": [
+          "codex.component.supply.20260923.compute_weighted_quantiles",
+          "codex.component.supply.20260923.paired_sign_test",
+          "codex.component.supply.20260923.resolve_selected_dependency_closure"
+        ],
+        "found_in_first_three": true,
+        "elapsed_ms": 7.447,
+        "physical_model_calls": 0
+      },
+      {
+        "expected_identity": "codex.component.supply.20260923.detect_portable_path_collisions",
+        "returned": [
+          "codex.component.supply.20260923.detect_portable_path_collisions",
+          "codex.component.supply.20260923.compare_file_inventories"
+        ],
+        "found_in_first_three": true,
+        "elapsed_ms": 6.556,
+        "physical_model_calls": 0
+      },
+      {
+        "expected_identity": "codex.component.supply.20260923.evaluate_capability_requirements",
+        "returned": [
+          "codex.component.supply.20260923.evaluate_capability_requirements",
+          "codex.component.supply.20260923.select_context_blocks",
+          "codex.component.supply.20260923.validate_event_precedence"
+        ],
+        "found_in_first_three": true,
+        "elapsed_ms": 7.289,
+        "physical_model_calls": 0
+      },
+      {
+        "expected_identity": "codex.component.supply.20260923.paired_sign_test",
+        "returned": [
+          "codex.component.supply.20260923.paired_sign_test",
+          "codex.component.supply.20260923.compute_weighted_quantiles",
+          "codex.component.supply.20260923.profile_csv_structure"
+        ],
+        "found_in_first_three": true,
+        "elapsed_ms": 7.219,
+        "physical_model_calls": 0
+      },
+      {
+        "expected_identity": "codex.component.supply.20260923.profile_csv_structure",
+        "returned": [
+          "codex.component.supply.20260923.profile_csv_structure",
+          "codex.component.supply.20260923.paired_sign_test",
+          "codex.component.supply.20260923.resolve_selected_dependency_closure"
+        ],
+        "found_in_first_three": true,
+        "elapsed_ms": 7.831,
+        "physical_model_calls": 0
+      },
+      {
+        "expected_identity": "codex.component.supply.20260923.reconcile_keyed_tables",
+        "returned": [
+          "codex.component.supply.20260923.reconcile_keyed_tables",
+          "codex.component.supply.20260923.reconcile_multiset_rows",
+          "codex.component.supply.20260923.assign_digest_shards"
+        ],
+        "found_in_first_three": true,
+        "elapsed_ms": 7.859,
+        "physical_model_calls": 0
+      },
+      {
+        "expected_identity": "codex.component.supply.20260923.reconcile_multiset_rows",
+        "returned": [
+          "codex.component.supply.20260923.reconcile_multiset_rows",
+          "codex.component.supply.20260923.reconcile_keyed_tables",
+          "codex.component.supply.20260923.profile_csv_structure"
+        ],
+        "found_in_first_three": true,
+        "elapsed_ms": 7.714,
+        "physical_model_calls": 0
+      },
+      {
+        "expected_identity": "codex.component.supply.20260923.render_focused_task_context",
+        "returned": [
+          "codex.component.supply.20260923.render_focused_task_context",
+          "codex.component.supply.20260923.profile_csv_structure",
+          "codex.component.supply.20260923.select_context_blocks"
+        ],
+        "found_in_first_three": true,
+        "elapsed_ms": 7.408,
+        "physical_model_calls": 0
+      },
+      {
+        "expected_identity": "codex.component.supply.20260923.resolve_selected_dependency_closure",
+        "returned": [
+          "codex.component.supply.20260923.resolve_selected_dependency_closure",
+          "codex.component.supply.20260923.select_context_blocks",
+          "codex.component.supply.20260923.profile_csv_structure"
+        ],
+        "found_in_first_three": true,
+        "elapsed_ms": 7.595,
+        "physical_model_calls": 0
+      },
+      {
+        "expected_identity": "codex.component.supply.20260923.select_context_blocks",
+        "returned": [
+          "codex.component.supply.20260923.select_context_blocks",
+          "codex.component.supply.20260923.evaluate_capability_requirements",
+          "codex.component.supply.20260923.validate_event_precedence"
+        ],
+        "found_in_first_three": true,
+        "elapsed_ms": 7.266,
+        "physical_model_calls": 0
+      },
+      {
+        "expected_identity": "codex.component.supply.20260923.validate_event_precedence",
+        "returned": [
+          "codex.component.supply.20260923.validate_event_precedence",
+          "codex.component.supply.20260923.evaluate_capability_requirements",
+          "codex.component.supply.20260923.select_context_blocks"
+        ],
+        "found_in_first_three": true,
+        "elapsed_ms": 7.543,
+        "physical_model_calls": 0
+      }
+    ],
+    "limits": "Title-derived lexical smoke probes on authored candidates, not a held-out relevance or task-success benchmark"
+  }
+}

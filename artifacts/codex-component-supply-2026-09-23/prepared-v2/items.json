@@ -1,0 +1,1771 @@
+{
+  "record_type": "starter_catalogue_candidate_items/v3",
+  "source_revision": "231f51bb1facab517fbe915b08ea9ac85f913347",
+  "source_digests": {
+    "LICENSE": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+    "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+  },
+  "publication": "not_published",
+  "items": [
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "apply_flat_record_changes",
+        "kind": "tool",
+        "purpose": "Check all expected-before states against one flat record, then return either every requested change or the untouched record with conflicts.",
+        "digest": "63a5f605f26a0e7f9904e6fe7cd6acf86ac2f4e87ab4c1af11543346ad4b1e1c",
+        "source_layer": "harness_local",
+        "source_ref": "src/loop_engine/core/service_runtime/catalogue_packages.py@231f51bb1facab517fbe915b08ea9ac85f913347",
+        "family": "harness",
+        "size_bytes": 1476,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "styles": [
+          "codex",
+          "opencode",
+          "pi"
+        ],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "language": [
+            "en"
+          ],
+          "domain": [
+            "software",
+            "data"
+          ],
+          "lifecycle": [
+            "candidate"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/apply_flat_record_changes.package.json",
+      "package": {
+        "body_form": "package",
+        "files": [
+          {
+            "path": "AGENTS.md",
+            "digest": "926220a492229d038b2479796bbd4a35027c6f7c80f4e35ea3c244adc368e1bf",
+            "size_bytes": 4251,
+            "media_type": "text/markdown",
+            "role": "instruction_file"
+          },
+          {
+            "path": "LICENSE",
+            "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+            "size_bytes": 1068,
+            "media_type": "text/plain",
+            "role": "other"
+          },
+          {
+            "path": "contracts/input.schema.json",
+            "digest": "a2aca60dbdec358d5fd552fa6310ee9bb57f65ffeeb09ac212ab6415864a7cc8",
+            "size_bytes": 4872,
+            "media_type": "application/schema+json",
+            "role": "configuration"
+          },
+          {
+            "path": "contracts/output.schema.json",
+            "digest": "b230c96e4c00fd3204856b7908e7ccf239b46cca370cfb929e51326ce42e384d",
+            "size_bytes": 6145,
+            "media_type": "application/schema+json",
+            "role": "configuration"
+          },
+          {
+            "path": "examples/input.json",
+            "digest": "1478eb12d970fe70ebc64586036bb6d0a3f8cb41d3988d46d2265f76987bb45d",
+            "size_bytes": 553,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "examples/output.json",
+            "digest": "a3a23e4aeb060d5454bb96ba7c15550243b2ad2910192a221f96dbf80a4ddea6",
+            "size_bytes": 155,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "tools/apply_flat_record_changes.py",
+            "digest": "f37df2924ab751b7a3fe2f631af0e86300d0f21f6a40fa71287c301cacf745ce",
+            "size_bytes": 5176,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          },
+          {
+            "path": "verification/cases.json",
+            "digest": "c2cb1a7bc86ecaa5c3e083aa7155f149b8380713cf4ee787241a37f83e225322",
+            "size_bytes": 7198,
+            "media_type": "application/json",
+            "role": "other"
+          }
+        ]
+      },
+      "package_root": "packages/apply_flat_record_changes",
+      "producer": {
+        "producer_identity": "Codex original working-directory component authoring processes",
+        "family": "openai",
+        "method_identity": "codex_original_working_directory_components/v1"
+      },
+      "dependencies": [
+        "Python>=3.10 standard library; no third-party packages"
+      ]
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "apply_nonoverlapping_text_edits",
+        "kind": "tool",
+        "purpose": "Apply a bounded batch of edits against the original string using Unicode-codepoint positions, optionally checking its exact UTF-8 SHA-256 first.",
+        "digest": "e321b9f5cb8176cfa5112e6e542344a2e2914e1722f55df517a8c1c55c63f389",
+        "source_layer": "harness_local",
+        "source_ref": "src/loop_engine/core/service_runtime/catalogue_packages.py@231f51bb1facab517fbe915b08ea9ac85f913347",
+        "family": "harness",
+        "size_bytes": 1482,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "styles": [
+          "codex",
+          "opencode",
+          "pi"
+        ],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "language": [
+            "en"
+          ],
+          "domain": [
+            "software",
+            "data"
+          ],
+          "lifecycle": [
+            "candidate"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/apply_nonoverlapping_text_edits.package.json",
+      "package": {
+        "body_form": "package",
+        "files": [
+          {
+            "path": "AGENTS.md",
+            "digest": "06b0bfe007b9d6e42e09e0f740d7632b64b5911cfb5803fcf208f40a98caf7c7",
+            "size_bytes": 2817,
+            "media_type": "text/markdown",
+            "role": "instruction_file"
+          },
+          {
+            "path": "LICENSE",
+            "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+            "size_bytes": 1068,
+            "media_type": "text/plain",
+            "role": "other"
+          },
+          {
+            "path": "contracts/input.schema.json",
+            "digest": "a9c4766964097b37daf59741f848141cb32fdf1f744e3393eeaea96151d56143",
+            "size_bytes": 1510,
+            "media_type": "application/schema+json",
+            "role": "configuration"
+          },
+          {
+            "path": "contracts/output.schema.json",
+            "digest": "f9de7bee8f6a500f7ed2cb369073b2021a437b9b161bb9b12c2103c7c59f5152",
+            "size_bytes": 1484,
+            "media_type": "application/schema+json",
+            "role": "configuration"
+          },
+          {
+            "path": "examples/input.json",
+            "digest": "32a89560a2cc5f4556287fc3845a46d348adf95406fe1a313e3658507170519e",
+            "size_bytes": 336,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "examples/output.json",
+            "digest": "e5739a4fb593eb3574e46d7e793be95fcb2c38fd6e98434dd28e75ec2890c553",
+            "size_bytes": 279,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "tools/apply_nonoverlapping_text_edits.py",
+            "digest": "313cc16eed7f295c34013104e679964ac8805bf18123afe29e28441650840e06",
+            "size_bytes": 5922,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          },
+          {
+            "path": "verification/cases.json",
+            "digest": "0b27210a4372a18e49d39f94a0ab64922a90f259296fede26dc5e4b8d4189c5b",
+            "size_bytes": 6628,
+            "media_type": "application/json",
+            "role": "other"
+          }
+        ]
+      },
+      "package_root": "packages/apply_nonoverlapping_text_edits",
+      "producer": {
+        "producer_identity": "Codex original working-directory component authoring processes",
+        "family": "openai",
+        "method_identity": "codex_original_working_directory_components/v1"
+      },
+      "dependencies": [
+        "Python>=3.10 standard library; no third-party packages"
+      ]
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "assign_digest_shards",
+        "kind": "tool",
+        "purpose": "Assign supplied IDs to a fixed shard count using the entire SHA-256 digest of each exact UTF-8 ID modulo the shard count.",
+        "digest": "40c218030d52da94be2023b6c12e6cf573eb6af155c77489c087e7314839af28",
+        "source_layer": "harness_local",
+        "source_ref": "src/loop_engine/core/service_runtime/catalogue_packages.py@231f51bb1facab517fbe915b08ea9ac85f913347",
+        "family": "harness",
+        "size_bytes": 1472,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "styles": [
+          "codex",
+          "opencode",
+          "pi"
+        ],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "language": [
+            "en"
+          ],
+          "domain": [
+            "software",
+            "data"
+          ],
+          "lifecycle": [
+            "candidate"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/assign_digest_shards.package.json",
+      "package": {
+        "body_form": "package",
+        "files": [
+          {
+            "path": "AGENTS.md",
+            "digest": "8306626686cb0e9c393ba689b4f46d711cffca24452149023d958b0f0202069c",
+            "size_bytes": 2555,
+            "media_type": "text/markdown",
+            "role": "instruction_file"
+          },
+          {
+            "path": "LICENSE",
+            "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+            "size_bytes": 1068,
+            "media_type": "text/plain",
+            "role": "other"
+          },
+          {
+            "path": "contracts/input.schema.json",
+            "digest": "dbd232f98439c1209eb967932a09192b1f89f33b57586718d625078e6aa541f6",
+            "size_bytes": 1030,
+            "media_type": "application/schema+json",
+            "role": "configuration"
+          },
+          {
+            "path": "contracts/output.schema.json",
+            "digest": "3ddbc4563c828c7f9f82423f1a5daeca95949c184cfa48216af07efbfa5d3cad",
+            "size_bytes": 1882,
+            "media_type": "application/schema+json",
+            "role": "configuration"
+          },
+          {
+            "path": "examples/input.json",
+            "digest": "592c44a613673fbbc9ce9139054dbd32b95437cbe1c7f3c40cd5ae2cf9283572",
+            "size_bytes": 119,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "examples/output.json",
+            "digest": "a0f54bb35654d9a5a604eaddae0a6f7443a66084b7f6d3320c7e0faad20f8a3f",
+            "size_bytes": 492,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "tools/assign_digest_shards.py",
+            "digest": "8e7a9079d2b768d78e81db33ba3657f2be18f452bb37c9a803ed863c32639911",
+            "size_bytes": 5008,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          },
+          {
+            "path": "verification/cases.json",
+            "digest": "d2dcfe6b4f9c9fb26b42af629a0ac9440aff58e13c32acc84d1baf80a1eedd69",
+            "size_bytes": 60343,
+            "media_type": "application/json",
+            "role": "other"
+          }
+        ]
+      },
+      "package_root": "packages/assign_digest_shards",
+      "producer": {
+        "producer_identity": "Codex original working-directory component authoring processes",
+        "family": "openai",
+        "method_identity": "codex_original_working_directory_components/v1"
+      },
+      "dependencies": [
+        "Python>=3.10 standard library; no third-party packages"
+      ]
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "audit_half_open_interval_overlaps",
+        "kind": "tool",
+        "purpose": "Find overlapping interval pairs, maximum simultaneous occupancy and union length while treating adjacency and empty intervals correctly.",
+        "digest": "0aa1179001e40558eb32e6bedf2935e75d79db0f6acc57b65be2ade80a5a2c43",
+        "source_layer": "harness_local",
+        "source_ref": "src/loop_engine/core/service_runtime/catalogue_packages.py@231f51bb1facab517fbe915b08ea9ac85f913347",
+        "family": "harness",
+        "size_bytes": 1484,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "styles": [
+          "codex",
+          "opencode",
+          "pi"
+        ],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "language": [
+            "en"
+          ],
+          "domain": [
+            "software",
+            "data"
+          ],
+          "lifecycle": [
+            "candidate"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/audit_half_open_interval_overlaps.package.json",
+      "package": {
+        "body_form": "package",
+        "files": [
+          {
+            "path": "AGENTS.md",
+            "digest": "5414ef36e44c145b28dc269453462c110b2deca67a80c1918e02738d82cecc37",
+            "size_bytes": 4124,
+            "media_type": "text/markdown",
+            "role": "instruction_file"
+          },
+          {
+            "path": "LICENSE",
+            "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+            "size_bytes": 1068,
+            "media_type": "text/plain",
+            "role": "other"
+          },
+          {
+            "path": "contracts/input.schema.json",
+            "digest": "7201832e32a9791ac0ab3127afee4d574a45baeaa5a384a43b71d8bdc0142a6c",
+            "size_bytes": 1759,
+            "media_type": "application/schema+json",
+            "role": "configuration"
+          },
+          {
+            "path": "contracts/output.schema.json",
+            "digest": "c0af76e5a9b83b2678e4dd77456de81beee0db0e2fa4237b8deef878a56aa6b0",
+            "size_bytes": 2922,
+            "media_type": "application/schema+json",
+            "role": "configuration"
+          },
+          {
+            "path": "examples/input.json",
+            "digest": "7cbf0536a9e0da8911563a0b78a4dcdf0fd932db2e5ea7a1fb8890176693c416",
+            "size_bytes": 280,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "examples/output.json",
+            "digest": "5d16cfab4d5a0fb70156b7410affc127767afce82b6ad89f873a7c433bb08e92",
+            "size_bytes": 275,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "tools/audit_half_open_interval_overlaps.py",
+            "digest": "7899e47fbbf918f845e4f1a086ed097ecd7e5004b39304d0452ce25d2e2748a7",
+            "size_bytes": 5103,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          },
+          {
+            "path": "verification/cases.json",
+            "digest": "0b24ebd19d2cc47602713f6b69359a947b3bd9d2470419919caa1c7d770829e4",
+            "size_bytes": 5130,
+            "media_type": "application/json",
+            "role": "other"
+          }
+        ]
+      },
+      "package_root": "packages/audit_half_open_interval_overlaps",
+      "producer": {
+        "producer_identity": "Codex original working-directory component authoring processes",
+        "family": "openai",
+        "method_identity": "codex_original_working_directory_components/v1"
+      },
+      "dependencies": [
+        "Python>=3.10 standard library; no third-party packages"
+      ]
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "compare_file_inventories",
+        "kind": "tool",
+        "purpose": "Compare two explicit file inventories by exact relative path and supplied SHA-256, size and executable metadata. Report changes without reading files or guessing renames.",
+        "digest": "832463c595fb2f19536a981d6d25b52c1292abf63e4a9263b12530238841a5bc",
+        "source_layer": "harness_local",
+        "source_ref": "src/loop_engine/core/service_runtime/catalogue_packages.py@231f51bb1facab517fbe915b08ea9ac85f913347",
+        "family": "harness",
+        "size_bytes": 1476,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "styles": [
+          "codex",
+          "opencode",
+          "pi"
+        ],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "language": [
+            "en"
+          ],
+          "domain": [
+            "software",
+            "data"
+          ],
+          "lifecycle": [
+            "candidate"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/compare_file_inventories.package.json",
+      "package": {
+        "body_form": "package",
+        "files": [
+          {
+            "path": "AGENTS.md",
+            "digest": "b14e00fe7e7a9b7073455837e371cc307ffea2ebf4177ea8163e7f54dce22898",
+            "size_bytes": 2726,
+            "media_type": "text/markdown",
+            "role": "instruction_file"
+          },
+          {
+            "path": "LICENSE",
+            "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+            "size_bytes": 1068,
+            "media_type": "text/plain",
+            "role": "other"
+          },
+          {
+            "path": "contracts/input.schema.json",
+            "digest": "498a9b8f025cf8b4646a91c3d95023dbc73dd65bc3ccd00a199d88c6f2634dcc",
+            "size_bytes": 2507,
+            "media_type": "application/schema+json",
+            "role": "configuration"
+          },
+          {
+            "path": "contracts/output.schema.json",
+            "digest": "e2065df2afd5488b96d3c4550dfab88482ee278cf36b47e94485e10664d9494f",
+            "size_bytes": 2799,
+            "media_type": "application/schema+json",
+            "role": "configuration"
+          },
+          {
+            "path": "examples/input.json",
+            "digest": "4dbbb8d337e9922b58c92bd8e2855bc21ce2606831b86d0817ecbde49f8cb2e8",
+            "size_bytes": 1105,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "examples/output.json",
+            "digest": "6953452702a4ef3cf7a3a7c212f5f4c19cbaec4a31d606b0d580b1c04d483b38",
+            "size_bytes": 293,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "tools/compare_file_inventories.py",
+            "digest": "e354235c3709a78e3ea1c58b253e507e420951f8633c729d31225e1708ed0982",
+            "size_bytes": 5665,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          },
+          {
+            "path": "verification/cases.json",
+            "digest": "6b7b30c4919e284e0e0c1bd9b96936edccc36221da33cd13bb0ccca5f1c7602c",
+            "size_bytes": 8189,
+            "media_type": "application/json",
+            "role": "other"
+          }
+        ]
+      },
+      "package_root": "packages/compare_file_inventories",
+      "producer": {
+        "producer_identity": "Codex original working-directory component authoring processes",
+        "family": "openai",
+        "method_identity": "codex_original_working_directory_components/v1"
+      },
+      "dependencies": [
+        "Python>=3.10 standard library; no third-party packages"
+      ]
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "compute_weighted_quantiles",
+        "kind": "tool",
+        "purpose": "Resolve weighted empirical-CDF quantiles with positive integer weights and exact decimal-string values; avoid interpolation and binary-float threshold drift.",
+        "digest": "f13b13e7a1a21facd4269b3c6949d5f6d8a6545dfbe6d36e5a59645a92254341",
+        "source_layer": "harness_local",
+        "source_ref": "src/loop_engine/core/service_runtime/catalogue_packages.py@231f51bb1facab517fbe915b08ea9ac85f913347",
+        "family": "harness",
+        "size_bytes": 1477,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "styles": [
+          "codex",
+          "opencode",
+          "pi"
+        ],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "language": [
+            "en"
+          ],
+          "domain": [
+            "software",
+            "data"
+          ],
+          "lifecycle": [
+            "candidate"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/compute_weighted_quantiles.package.json",
+      "package": {
+        "body_form": "package",
+        "files": [
+          {
+            "path": "AGENTS.md",
+            "digest": "89a88e98429338bab866b1196258d9f91c47978b747e086ae0758667f653f8b5",
+            "size_bytes": 4108,
+            "media_type": "text/markdown",
+            "role": "instruction_file"
+          },
+          {
+            "path": "LICENSE",
+            "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+            "size_bytes": 1068,
+            "media_type": "text/plain",
+            "role": "other"
+          },
+          {
+            "path": "contracts/input.schema.json",
+            "digest": "1253c921e6417bd085804816b1cee5876d7283755d57a83b270c93f6c8618213",
+            "size_bytes": 1878,
+            "media_type": "application/schema+json",
+            "role": "configuration"
+          },
+          {
+            "path": "contracts/output.schema.json",
+            "digest": "a6533aed65dd76aec8bc013277a8c412d36cf130654fd56e9092b0f2ed2fd8d3",
+            "size_bytes": 3141,
+            "media_type": "application/schema+json",
+            "role": "configuration"
+          },
+          {
+            "path": "examples/input.json",
+            "digest": "f51f9a110988eac8ac7d6aa0f16762e7a131f78734d78fd2147cd51f6080a7a7",
+            "size_bytes": 192,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "examples/output.json",
+            "digest": "6d18c29704a0e56c5a8ba8d76b9ca045238992fd75b1c54aaade8cd35e9d045f",
+            "size_bytes": 545,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "tools/compute_weighted_quantiles.py",
+            "digest": "fb2e3a8bdb25848e9947b5ece3e703ec74cdb77d3804674acef4f56f6865e585",
+            "size_bytes": 4984,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          },
+          {
+            "path": "verification/cases.json",
+            "digest": "38fd0ce11ad251c450359d2b0df57da6f31c76bbdb40af346c2ac18783bbd4f6",
+            "size_bytes": 5071,
+            "media_type": "application/json",
+            "role": "other"
+          }
+        ]
+      },
+      "package_root": "packages/compute_weighted_quantiles",
+      "producer": {
+        "producer_identity": "Codex original working-directory component authoring processes",
+        "family": "openai",
+        "method_identity": "codex_original_working_directory_components/v1"
+      },
+      "dependencies": [
+        "Python>=3.10 standard library; no third-party packages"
+      ]
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "detect_portable_path_collisions",
+        "kind": "tool",
+        "purpose": "Report exact, Unicode-normalization/casefold and parent-file path collisions under one explicitly named abstract comparison model.",
+        "digest": "72666f42d5aa76d41b2e8c70ed9f4ad4238c95699c46f6c152f51f3d8feeb735",
+        "source_layer": "harness_local",
+        "source_ref": "src/loop_engine/core/service_runtime/catalogue_packages.py@231f51bb1facab517fbe915b08ea9ac85f913347",
+        "family": "harness",
+        "size_bytes": 1482,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "styles": [
+          "codex",
+          "opencode",
+          "pi"
+        ],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "language": [
+            "en"
+          ],
+          "domain": [
+            "software",
+            "data"
+          ],
+          "lifecycle": [
+            "candidate"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/detect_portable_path_collisions.package.json",
+      "package": {
+        "body_form": "package",
+        "files": [
+          {
+            "path": "AGENTS.md",
+            "digest": "3f70cb352717932e919a473a506da80dd9303da01c24782ff38d20434cf07010",
+            "size_bytes": 2848,
+            "media_type": "text/markdown",
+            "role": "instruction_file"
+          },
+          {
+            "path": "LICENSE",
+            "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+            "size_bytes": 1068,
+            "media_type": "text/plain",
+            "role": "other"
+          },
+          {
+            "path": "contracts/input.schema.json",
+            "digest": "54b2bb9764476a5ad540f450c06bc1ce6243ab0c212f20d971ece0777bd2afb8",
+            "size_bytes": 1156,
+            "media_type": "application/schema+json",
+            "role": "configuration"
+          },
+          {
+            "path": "contracts/output.schema.json",
+            "digest": "5efb02d0bc1f6adf444ba9414706876702f622c7dd13d88df906629f4cbd392f",
+            "size_bytes": 3386,
+            "media_type": "application/schema+json",
+            "role": "configuration"
+          },
+          {
+            "path": "examples/input.json",
+            "digest": "3b3741fef81042bfae7f538c8d9038c2119a2e1acc7e4c5b9fe6f45a4c6dbff9",
+            "size_bytes": 184,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "examples/output.json",
+            "digest": "0f52921345f8a58d070780dcd91f3c018584b4577534974fd172bd01438a417c",
+            "size_bytes": 534,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "tools/detect_portable_path_collisions.py",
+            "digest": "330cd007a2b6c1d7eb9fa71f6f2effe93bba796d766d02313cc6d1a892b8f774",
+            "size_bytes": 6168,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          },
+          {
+            "path": "verification/cases.json",
+            "digest": "998de5ba295e77ad40bda5a388f174aa389181e645d7971d686a7d1031b40e52",
+            "size_bytes": 7175,
+            "media_type": "application/json",
+            "role": "other"
+          }
+        ]
+      },
+      "package_root": "packages/detect_portable_path_collisions",
+      "producer": {
+        "producer_identity": "Codex original working-directory component authoring processes",
+        "family": "openai",
+        "method_identity": "codex_original_working_directory_components/v1"
+      },
+      "dependencies": [
+        "Python>=3.10 standard library; no third-party packages"
+      ]
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "evaluate_capability_requirements",
+        "kind": "tool",
+        "purpose": "Compare required and optional capabilities with supplied resolution and evidence levels without granting execution authority.",
+        "digest": "556abfd7f2edab4e49e82596b1ee56dafaaa7eeb35aa4351a10734ce22f38a20",
+        "source_layer": "harness_local",
+        "source_ref": "src/loop_engine/core/service_runtime/catalogue_packages.py@231f51bb1facab517fbe915b08ea9ac85f913347",
+        "family": "harness",
+        "size_bytes": 1483,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "styles": [
+          "codex",
+          "opencode",
+          "pi"
+        ],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "language": [
+            "en"
+          ],
+          "domain": [
+            "software",
+            "data"
+          ],
+          "lifecycle": [
+            "candidate"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/evaluate_capability_requirements.package.json",
+      "package": {
+        "body_form": "package",
+        "files": [
+          {
+            "path": "AGENTS.md",
+            "digest": "5e7f554391f7e514d69fbdb4a32d86bc47865c8981e2eb566fdeb4f75449059d",
+            "size_bytes": 2989,
+            "media_type": "text/markdown",
+            "role": "instruction_file"
+          },
+          {
+            "path": "LICENSE",
+            "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+            "size_bytes": 1068,
+            "media_type": "text/plain",
+            "role": "other"
+          },
+          {
+            "path": "contracts/input.schema.json",
+            "digest": "d77d16f67d02833c615a1036f45985dc2221848783216ea88723bcd72548534c",
+            "size_bytes": 1703,
+            "media_type": "application/schema+json",
+            "role": "configuration"
+          },
+          {
+            "path": "contracts/output.schema.json",
+            "digest": "02718878be1d6234061f2019b2b7d3e72fc47acc37038cafc2f9e0ca69c863d4",
+            "size_bytes": 1128,
+            "media_type": "application/schema+json",
+            "role": "configuration"
+          },
+          {
+            "path": "examples/input.json",
+            "digest": "ef64acfbd199ee9818c6476ad8076589bc7580d6067616b081156809c649577a",
+            "size_bytes": 379,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "examples/output.json",
+            "digest": "10427e2b40e3be5450a702cd29dc607130cf413bd8237f4b5281f8e7781e806f",
+            "size_bytes": 178,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "tools/evaluate_capability_requirements.py",
+            "digest": "a32264447585fb4d8af575ab4be6e37cbf7cd2c89a081fd491ee7538c2167085",
+            "size_bytes": 4302,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          },
+          {
+            "path": "verification/cases.json",
+            "digest": "620f38558b07b38feeb415cad258595652b80446c5bad0a9a89a15245d019339",
+            "size_bytes": 2604,
+            "media_type": "application/json",
+            "role": "other"
+          }
+        ]
+      },
+      "package_root": "packages/evaluate_capability_requirements",
+      "producer": {
+        "producer_identity": "Codex original working-directory component authoring processes",
+        "family": "openai",
+        "method_identity": "codex_original_working_directory_components/v1"
+      },
+      "dependencies": [
+        "Python>=3.10 standard library; no third-party packages"
+      ]
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "paired_sign_test",
+        "kind": "tool",
+        "purpose": "Compare candidate b against baseline a on paired bounded decimal measurements, with explicit ties, missing values and exact two-sided probability.",
+        "digest": "89438e3868f8eab1157db8074e9e767c03881f07c1cf45ea9e851600273448e3",
+        "source_layer": "harness_local",
+        "source_ref": "src/loop_engine/core/service_runtime/catalogue_packages.py@231f51bb1facab517fbe915b08ea9ac85f913347",
+        "family": "harness",
+        "size_bytes": 1467,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "styles": [
+          "codex",
+          "opencode",
+          "pi"
+        ],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "language": [
+            "en"
+          ],
+          "domain": [
+            "software",
+            "data"
+          ],
+          "lifecycle": [
+            "candidate"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/paired_sign_test.package.json",
+      "package": {
+        "body_form": "package",
+        "files": [
+          {
+            "path": "AGENTS.md",
+            "digest": "1a15f7ac5aa8b29618395fda6cffb056d6bb42f4d0095ba18ca9a1b3b4677866",
+            "size_bytes": 3077,
+            "media_type": "text/markdown",
+            "role": "instruction_file"
+          },
+          {
+            "path": "LICENSE",
+            "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+            "size_bytes": 1068,
+            "media_type": "text/plain",
+            "role": "other"
+          },
+          {
+            "path": "contracts/input.schema.json",
+            "digest": "9f2966f263c43affb693b81152860d6e836cddae785fd90ffb55db6df4257614",
+            "size_bytes": 1369,
+            "media_type": "application/schema+json",
+            "role": "configuration"
+          },
+          {
+            "path": "contracts/output.schema.json",
+            "digest": "368599f75ca631c0fdf10ac59e4d0c78a61f18ef65b0fe51bfdd3b3fab179751",
+            "size_bytes": 1255,
+            "media_type": "application/schema+json",
+            "role": "configuration"
+          },
+          {
+            "path": "examples/input.json",
+            "digest": "49b27e1f7adf13ae363747781314200a41c7a7e236d27187486cfe0b1c9f30f1",
+            "size_bytes": 307,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "examples/output.json",
+            "digest": "4723a1b236ee432877e7b3ad1aea84d1f906296662d421d27d6cdeac9889ccd9",
+            "size_bytes": 147,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "tools/paired_sign_test.py",
+            "digest": "f3ecfeddb95ef924fb2366fdd1c3f2a02f1de507bcca6c836f1137f361daddbf",
+            "size_bytes": 4259,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          },
+          {
+            "path": "verification/cases.json",
+            "digest": "ec19446c2ec44b418817ae59737fc27e2a3e72c6ccc6575fde31dc33f3c24bda",
+            "size_bytes": 2317,
+            "media_type": "application/json",
+            "role": "other"
+          }
+        ]
+      },
+      "package_root": "packages/paired_sign_test",
+      "producer": {
+        "producer_identity": "Codex original working-directory component authoring processes",
+        "family": "openai",
+        "method_identity": "codex_original_working_directory_components/v1"
+      },
+      "dependencies": [
+        "Python>=3.10 standard library; no third-party packages"
+      ]
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "profile_csv_structure",
+        "kind": "tool",
+        "purpose": "Inspect an in-memory CSV extract before downstream transformation; report row-width distribution, baseline-column completeness, exact header issues and physical lines without opening a task file.",
+        "digest": "c6b37a9dc4c221e697ed889745f6f88e1f23b5db4a370c3917f7b721792da7d6",
+        "source_layer": "harness_local",
+        "source_ref": "src/loop_engine/core/service_runtime/catalogue_packages.py@231f51bb1facab517fbe915b08ea9ac85f913347",
+        "family": "harness",
+        "size_bytes": 1472,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "styles": [
+          "codex",
+          "opencode",
+          "pi"
+        ],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "language": [
+            "en"
+          ],
+          "domain": [
+            "software",
+            "data"
+          ],
+          "lifecycle": [
+            "candidate"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/profile_csv_structure.package.json",
+      "package": {
+        "body_form": "package",
+        "files": [
+          {
+            "path": "AGENTS.md",
+            "digest": "2fb8ad9f8cc1bfd290e9b6d992ca0ccd7b8b1a425ce9495b02155113133399f1",
+            "size_bytes": 4847,
+            "media_type": "text/markdown",
+            "role": "instruction_file"
+          },
+          {
+            "path": "LICENSE",
+            "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+            "size_bytes": 1068,
+            "media_type": "text/plain",
+            "role": "other"
+          },
+          {
+            "path": "contracts/input.schema.json",
+            "digest": "af34196396781d9334f34a93c40f76eb85b69015b52ec87d03522e82ad33583d",
+            "size_bytes": 1869,
+            "media_type": "application/schema+json",
+            "role": "configuration"
+          },
+          {
+            "path": "contracts/output.schema.json",
+            "digest": "bbd2cc0ada5e6e96a16de9c39852096cb70a714bdf2215106be753a43be06b6e",
+            "size_bytes": 5811,
+            "media_type": "application/schema+json",
+            "role": "configuration"
+          },
+          {
+            "path": "examples/input.json",
+            "digest": "83d6bb56045d674fa9c0a4a93764af0238d04840273ecafda0e0812560257c34",
+            "size_bytes": 98,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "examples/output.json",
+            "digest": "23b0be0520288658135c1e5373ad3b75c690f8271a33eb12019cb072700f81f7",
+            "size_bytes": 761,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "tools/profile_csv_structure.py",
+            "digest": "6d9fdad1fa302a7044622d4360598fbfab2ddc8b0915ac85ca6aaa66f89cb455",
+            "size_bytes": 5749,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          },
+          {
+            "path": "verification/cases.json",
+            "digest": "6caa9becf270f988ca064a6c94dbbca6efacdb1216ea68605b4db8001b9b4962",
+            "size_bytes": 13294,
+            "media_type": "application/json",
+            "role": "other"
+          }
+        ]
+      },
+      "package_root": "packages/profile_csv_structure",
+      "producer": {
+        "producer_identity": "Codex original working-directory component authoring processes",
+        "family": "openai",
+        "method_identity": "codex_original_working_directory_components/v1"
+      },
+      "dependencies": [
+        "Python>=3.10 standard library; no third-party packages"
+      ]
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "reconcile_keyed_tables",
+        "kind": "tool",
+        "purpose": "Pair two flat-record tables by typed keys, refuse duplicate identities, and report changed fields and unmatched row indices without a Cartesian join.",
+        "digest": "ca18df3340c69d273ec7c94397892ce3edc31c9277639084cf154c7e351e9ffb",
+        "source_layer": "harness_local",
+        "source_ref": "src/loop_engine/core/service_runtime/catalogue_packages.py@231f51bb1facab517fbe915b08ea9ac85f913347",
+        "family": "harness",
+        "size_bytes": 1473,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "styles": [
+          "codex",
+          "opencode",
+          "pi"
+        ],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "language": [
+            "en"
+          ],
+          "domain": [
+            "software",
+            "data"
+          ],
+          "lifecycle": [
+            "candidate"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/reconcile_keyed_tables.package.json",
+      "package": {
+        "body_form": "package",
+        "files": [
+          {
+            "path": "AGENTS.md",
+            "digest": "89d0def0c9e9130e3e952fd6b3e5bb8faa8f14b8587c96ab48d1e1f985551a8b",
+            "size_bytes": 4437,
+            "media_type": "text/markdown",
+            "role": "instruction_file"
+          },
+          {
+            "path": "LICENSE",
+            "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+            "size_bytes": 1068,
+            "media_type": "text/plain",
+            "role": "other"
+          },
+          {
+            "path": "contracts/input.schema.json",
+            "digest": "1b55158c2aa9e72e642ead1141e7102c1679a537c9521dd9227904a68e56cc49",
+            "size_bytes": 2749,
+            "media_type": "application/schema+json",
+            "role": "configuration"
+          },
+          {
+            "path": "contracts/output.schema.json",
+            "digest": "9887b12ef08a7eab7274453b4f2f1a7dab5baf4eda013263282efbf7c69af8cb",
+            "size_bytes": 6114,
+            "media_type": "application/schema+json",
+            "role": "configuration"
+          },
+          {
+            "path": "examples/input.json",
+            "digest": "1a504a56de229519878a65c9a4b9c20640d50ee6a0705c8ba10a40aadcf46a75",
+            "size_bytes": 281,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "examples/output.json",
+            "digest": "a7f160afbd250f0bc5a94a633952f3f97cc642376ce66fa33bc86fd898a211f5",
+            "size_bytes": 663,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "tools/reconcile_keyed_tables.py",
+            "digest": "a95ad8ab65c8212411b68690068b9ee6008587646bc83eb7563630e7658eae0a",
+            "size_bytes": 5326,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          },
+          {
+            "path": "verification/cases.json",
+            "digest": "3e24970335318b468f5e7d253d25a42a04a65662c51b5bea2086f9b8e5a809fa",
+            "size_bytes": 5851,
+            "media_type": "application/json",
+            "role": "other"
+          }
+        ]
+      },
+      "package_root": "packages/reconcile_keyed_tables",
+      "producer": {
+        "producer_identity": "Codex original working-directory component authoring processes",
+        "family": "openai",
+        "method_identity": "codex_original_working_directory_components/v1"
+      },
+      "dependencies": [
+        "Python>=3.10 standard library; no third-party packages"
+      ]
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "reconcile_multiset_rows",
+        "kind": "tool",
+        "purpose": "Compare two small flat-record collections while preserving duplicate multiplicity, field presence and JSON scalar type distinctions.",
+        "digest": "c0a5672750e3c1026c2d9ec58b847292e2f4354dcbccad498699de5ab773d4b1",
+        "source_layer": "harness_local",
+        "source_ref": "src/loop_engine/core/service_runtime/catalogue_packages.py@231f51bb1facab517fbe915b08ea9ac85f913347",
+        "family": "harness",
+        "size_bytes": 1474,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "styles": [
+          "codex",
+          "opencode",
+          "pi"
+        ],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "language": [
+            "en"
+          ],
+          "domain": [
+            "software",
+            "data"
+          ],
+          "lifecycle": [
+            "candidate"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/reconcile_multiset_rows.package.json",
+      "package": {
+        "body_form": "package",
+        "files": [
+          {
+            "path": "AGENTS.md",
+            "digest": "214a85a46d496279524ff83b5b52839259ca2b03474d4e3a845a3cd2799ea03c",
+            "size_bytes": 4024,
+            "media_type": "text/markdown",
+            "role": "instruction_file"
+          },
+          {
+            "path": "LICENSE",
+            "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+            "size_bytes": 1068,
+            "media_type": "text/plain",
+            "role": "other"
+          },
+          {
+            "path": "contracts/input.schema.json",
+            "digest": "4f99485b5163a2f080cc7c90b6edd049826db5721bc8d674ad4b280625f8ebf1",
+            "size_bytes": 2311,
+            "media_type": "application/schema+json",
+            "role": "configuration"
+          },
+          {
+            "path": "contracts/output.schema.json",
+            "digest": "335ec084dca86e1a168eca2d446988648706b9e9a02ae70cdc0c4aee9c9e9438",
+            "size_bytes": 5842,
+            "media_type": "application/schema+json",
+            "role": "configuration"
+          },
+          {
+            "path": "examples/input.json",
+            "digest": "0bd54b11a05ec5e118dd7629b7b4ecb9dcb7859506533cf9dde5f566be3efe8b",
+            "size_bytes": 166,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "examples/output.json",
+            "digest": "43ee3c7a0b4fd752b756b56663f9064eea48228ccc27f1ff31d2a9cde0de3aed",
+            "size_bytes": 495,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "tools/reconcile_multiset_rows.py",
+            "digest": "400f620e66faf353fef38d18417bcea2a733c6dbc6f8a17d81135982879405c5",
+            "size_bytes": 4567,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          },
+          {
+            "path": "verification/cases.json",
+            "digest": "bc5c7050d531fe9b18e0575d8147eda4c29b61213c7f351acc4816bcf91fcd05",
+            "size_bytes": 5014,
+            "media_type": "application/json",
+            "role": "other"
+          }
+        ]
+      },
+      "package_root": "packages/reconcile_multiset_rows",
+      "producer": {
+        "producer_identity": "Codex original working-directory component authoring processes",
+        "family": "openai",
+        "method_identity": "codex_original_working_directory_components/v1"
+      },
+      "dependencies": [
+        "Python>=3.10 standard library; no third-party packages"
+      ]
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "render_focused_task_context",
+        "kind": "tool",
+        "purpose": "Render a bounded task brief with explicit first steps, acceptance criteria and digest-bound structured state.",
+        "digest": "ebe53c03ff027420016d96e81453b38cb9b705854471864742560100ea410d13",
+        "source_layer": "harness_local",
+        "source_ref": "src/loop_engine/core/service_runtime/catalogue_packages.py@231f51bb1facab517fbe915b08ea9ac85f913347",
+        "family": "harness",
+        "size_bytes": 1479,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "styles": [
+          "codex",
+          "opencode",
+          "pi"
+        ],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "language": [
+            "en"
+          ],
+          "domain": [
+            "software",
+            "data"
+          ],
+          "lifecycle": [
+            "candidate"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/render_focused_task_context.package.json",
+      "package": {
+        "body_form": "package",
+        "files": [
+          {
+            "path": "AGENTS.md",
+            "digest": "ff82a2af20bc15cd640be923956ec13549b37bd3b38a891a7f77cb1702820f0d",
+            "size_bytes": 2976,
+            "media_type": "text/markdown",
+            "role": "instruction_file"
+          },
+          {
+            "path": "LICENSE",
+            "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+            "size_bytes": 1068,
+            "media_type": "text/plain",
+            "role": "other"
+          },
+          {
+            "path": "contracts/input.schema.json",
+            "digest": "8b0fa0f3189fb6310d53f2b35e09319725f8a676b7bfb93832a58854e26d7404",
+            "size_bytes": 1945,
+            "media_type": "application/schema+json",
+            "role": "configuration"
+          },
+          {
+            "path": "contracts/output.schema.json",
+            "digest": "8093a626a98d4e73f0477e9d2bcfae7a7f30b49d7b104acc1967d037b7184019",
+            "size_bytes": 2853,
+            "media_type": "application/schema+json",
+            "role": "configuration"
+          },
+          {
+            "path": "examples/input.json",
+            "digest": "8b4ac71f3a71d383d43a66c703ab50754253f58756e11246b7b8aa098cdbc7ee",
+            "size_bytes": 452,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "examples/output.json",
+            "digest": "e69a4eaf10cd42404bf4970e9fa59649026f7a2e9d8fc040d6743362cca6100d",
+            "size_bytes": 1492,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "tools/render_focused_task_context.py",
+            "digest": "1dd7e1c4053f53da867f0d6e6411101bf197942bf06a6892e23c8f06eba0b442",
+            "size_bytes": 4855,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          },
+          {
+            "path": "verification/cases.json",
+            "digest": "2be26168203aa2e70cb5d94c55bb80dc0a72f9e3dbb032bd21efb1882ca58f88",
+            "size_bytes": 4383,
+            "media_type": "application/json",
+            "role": "other"
+          }
+        ]
+      },
+      "package_root": "packages/render_focused_task_context",
+      "producer": {
+        "producer_identity": "Codex original working-directory component authoring processes",
+        "family": "openai",
+        "method_identity": "codex_original_working_directory_components/v1"
+      },
+      "dependencies": [
+        "Python>=3.10 standard library; no third-party packages"
+      ]
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "resolve_selected_dependency_closure",
+        "kind": "tool",
+        "purpose": "Find the transitive closure of selected exact package IDs and report cycles; refuse a missing reachable dependency without choosing versions or downloading material.",
+        "digest": "b2bc15f5abc20ab4f0f71be2c914818e260e072426f7ca684b0e0160f53797db",
+        "source_layer": "harness_local",
+        "source_ref": "src/loop_engine/core/service_runtime/catalogue_packages.py@231f51bb1facab517fbe915b08ea9ac85f913347",
+        "family": "harness",
+        "size_bytes": 1486,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "styles": [
+          "codex",
+          "opencode",
+          "pi"
+        ],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "language": [
+            "en"
+          ],
+          "domain": [
+            "software",
+            "data"
+          ],
+          "lifecycle": [
+            "candidate"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/resolve_selected_dependency_closure.package.json",
+      "package": {
+        "body_form": "package",
+        "files": [
+          {
+            "path": "AGENTS.md",
+            "digest": "8c03276c856ab89dacc65121fc5b34d8b9e970bea31907d391f10605e0e38ae4",
+            "size_bytes": 2789,
+            "media_type": "text/markdown",
+            "role": "instruction_file"
+          },
+          {
+            "path": "LICENSE",
+            "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+            "size_bytes": 1068,
+            "media_type": "text/plain",
+            "role": "other"
+          },
+          {
+            "path": "contracts/input.schema.json",
+            "digest": "bb776cc53f7d1c64bbc060803ea27705340c01a79ec4bbed61d056fd4036cfca",
+            "size_bytes": 1782,
+            "media_type": "application/schema+json",
+            "role": "configuration"
+          },
+          {
+            "path": "contracts/output.schema.json",
+            "digest": "7e4d395b133009a7eda23ba5d09678a31883daf4e0c7d8c44cf3fa9815e0ced5",
+            "size_bytes": 1691,
+            "media_type": "application/schema+json",
+            "role": "configuration"
+          },
+          {
+            "path": "examples/input.json",
+            "digest": "ca33ed478b8849d22e0be2eda6a384c651a411efc19862e3947dc89130e8e967",
+            "size_bytes": 363,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "examples/output.json",
+            "digest": "b644a1e800883ee3b97d23776bab723e2426ba10a5d0848661903ab916ade857",
+            "size_bytes": 143,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "tools/resolve_selected_dependency_closure.py",
+            "digest": "6788778c91d0255a8ae9782a9d896d33cec5bfd321a62a4b4acebb185a7cc52c",
+            "size_bytes": 5999,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          },
+          {
+            "path": "verification/cases.json",
+            "digest": "3c0c6e5e33c30b2f5a473070050afb17daa75fc0949908c73887d6ecce79c494",
+            "size_bytes": 5438,
+            "media_type": "application/json",
+            "role": "other"
+          }
+        ]
+      },
+      "package_root": "packages/resolve_selected_dependency_closure",
+      "producer": {
+        "producer_identity": "Codex original working-directory component authoring processes",
+        "family": "openai",
+        "method_identity": "codex_original_working_directory_components/v1"
+      },
+      "dependencies": [
+        "Python>=3.10 standard library; no third-party packages"
+      ]
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "select_context_blocks",
+        "kind": "tool",
+        "purpose": "Preserve mandatory context and dependencies, then greedily admit optional blocks by explicit priority within supplied costs.",
+        "digest": "2bb0e6befbabfe6ba538755295ec04e83b263badaaf6b951dce825db3a6acca4",
+        "source_layer": "harness_local",
+        "source_ref": "src/loop_engine/core/service_runtime/catalogue_packages.py@231f51bb1facab517fbe915b08ea9ac85f913347",
+        "family": "harness",
+        "size_bytes": 1472,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "styles": [
+          "codex",
+          "opencode",
+          "pi"
+        ],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "language": [
+            "en"
+          ],
+          "domain": [
+            "software",
+            "data"
+          ],
+          "lifecycle": [
+            "candidate"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/select_context_blocks.package.json",
+      "package": {
+        "body_form": "package",
+        "files": [
+          {
+            "path": "AGENTS.md",
+            "digest": "f8d068b9d149b65f3b1c1b8552ce7f268849b20485fe9d4dd16b7d61b19986e7",
+            "size_bytes": 3082,
+            "media_type": "text/markdown",
+            "role": "instruction_file"
+          },
+          {
+            "path": "LICENSE",
+            "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+            "size_bytes": 1068,
+            "media_type": "text/plain",
+            "role": "other"
+          },
+          {
+            "path": "contracts/input.schema.json",
+            "digest": "a6b1fc73901e044955abb56955eb1d5bddbaf5f76a0936651ebe37e3e3e4c2be",
+            "size_bytes": 1463,
+            "media_type": "application/schema+json",
+            "role": "configuration"
+          },
+          {
+            "path": "contracts/output.schema.json",
+            "digest": "4b5f521ed4b0fc15f74fee20d2d1bdfcad29b478fd895127ade8568f91f52067",
+            "size_bytes": 2008,
+            "media_type": "application/schema+json",
+            "role": "configuration"
+          },
+          {
+            "path": "examples/input.json",
+            "digest": "810307522a8418739694b3d5800368d9c30d14847c1e7c7362f0c2c9a4acf976",
+            "size_bytes": 527,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "examples/output.json",
+            "digest": "78e23951fd0af136d9ae3242e5dcf68ac76a6319fa733473ed31855cfd2d3b11",
+            "size_bytes": 477,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "tools/select_context_blocks.py",
+            "digest": "03ea948927f8ee741c7497bafcef68444e99ababeb4d942e86c7f25a419197b5",
+            "size_bytes": 4812,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          },
+          {
+            "path": "verification/cases.json",
+            "digest": "a8a8babd4d388119fe41fd885c8c698454c9f6fc81314449408ead96d192b5df",
+            "size_bytes": 2801,
+            "media_type": "application/json",
+            "role": "other"
+          }
+        ]
+      },
+      "package_root": "packages/select_context_blocks",
+      "producer": {
+        "producer_identity": "Codex original working-directory component authoring processes",
+        "family": "openai",
+        "method_identity": "codex_original_working_directory_components/v1"
+      },
+      "dependencies": [
+        "Python>=3.10 standard library; no third-party packages"
+      ]
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "validate_event_precedence",
+        "kind": "tool",
+        "purpose": "Check strictly-before constraints against one supplied event-ID sequence, reporting missing IDs and order violations without inferring causality or using timestamps.",
+        "digest": "9caa68b043add89cfe97dc2b232f8c0a80dc7feda56f1145366cfdfa7e6670d7",
+        "source_layer": "harness_local",
+        "source_ref": "src/loop_engine/core/service_runtime/catalogue_packages.py@231f51bb1facab517fbe915b08ea9ac85f913347",
+        "family": "harness",
+        "size_bytes": 1476,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "styles": [
+          "codex",
+          "opencode",
+          "pi"
+        ],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "language": [
+            "en"
+          ],
+          "domain": [
+            "software",
+            "data"
+          ],
+          "lifecycle": [
+            "candidate"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/validate_event_precedence.package.json",
+      "package": {
+        "body_form": "package",
+        "files": [
+          {
+            "path": "AGENTS.md",
+            "digest": "e365766f7229482d72912ab4fc6e48fe032a0904716327d2cf10d3337887c806",
+            "size_bytes": 2648,
+            "media_type": "text/markdown",
+            "role": "instruction_file"
+          },
+          {
+            "path": "LICENSE",
+            "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+            "size_bytes": 1068,
+            "media_type": "text/plain",
+            "role": "other"
+          },
+          {
+            "path": "contracts/input.schema.json",
+            "digest": "e885f0b911ba714de1d8e8c49c82eaf13ca437f62d48aee959b695896372dd85",
+            "size_bytes": 1662,
+            "media_type": "application/schema+json",
+            "role": "configuration"
+          },
+          {
+            "path": "contracts/output.schema.json",
+            "digest": "c3f3963e116035d96b76ef7c986ebcbfc2e8bace319b14eaed5197ae6f7db4ad",
+            "size_bytes": 2603,
+            "media_type": "application/schema+json",
+            "role": "configuration"
+          },
+          {
+            "path": "examples/input.json",
+            "digest": "f8fdaa1250fe921079f4b6557bab6a42c3e76ddd17671baae6b10b75bbbb8c9a",
+            "size_bytes": 261,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "examples/output.json",
+            "digest": "904bd652bdd7acc240ad0035de6b580f73ff690cf638fd55e1273b0fb22196e0",
+            "size_bytes": 100,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "tools/validate_event_precedence.py",
+            "digest": "e2aebba7709305435dd28d64aea7ee97c5db2a866942065d96b9ec0ea352aa3d",
+            "size_bytes": 5530,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          },
+          {
+            "path": "verification/cases.json",
+            "digest": "a26e3d7cf785da80e2554f540424f85871c7568972a3ccd270e3f4b0dfcb5347",
+            "size_bytes": 4473,
+            "media_type": "application/json",
+            "role": "other"
+          }
+        ]
+      },
+      "package_root": "packages/validate_event_precedence",
+      "producer": {
+        "producer_identity": "Codex original working-directory component authoring processes",
+        "family": "openai",
+        "method_identity": "codex_original_working_directory_components/v1"
+      },
+      "dependencies": [
+        "Python>=3.10 standard library; no third-party packages"
+      ]
+    }
+  ]
+}

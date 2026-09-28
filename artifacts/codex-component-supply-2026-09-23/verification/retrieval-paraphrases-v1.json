@@ -1,0 +1,212 @@
+{
+  "record_type": "candidate_supply_retrieval_probe/v1",
+  "scope": "Independent task paraphrases fixed before results; one small candidate cohort, not a held-out full-system benchmark.",
+  "candidates": 16,
+  "probes": [
+    {
+      "identity": "render_focused_task_context",
+      "query": "Turn this assignment into a compact brief with clear first actions and completion checks.",
+      "hits": [
+        "codex.component.supply.20260923.render_focused_task_context",
+        "codex.component.supply.20260923.assign_digest_shards",
+        "codex.component.supply.20260923.apply_nonoverlapping_text_edits"
+      ],
+      "rank": 1,
+      "model_calls": 0
+    },
+    {
+      "identity": "evaluate_capability_requirements",
+      "query": "Which required features still lack sufficiently strong supporting evidence?",
+      "hits": [
+        "codex.component.supply.20260923.evaluate_capability_requirements",
+        "codex.component.supply.20260923.validate_event_precedence",
+        "codex.component.supply.20260923.paired_sign_test"
+      ],
+      "rank": 1,
+      "model_calls": 0
+    },
+    {
+      "identity": "select_context_blocks",
+      "query": "Fit useful background into a fixed allowance while retaining mandatory prerequisites.",
+      "hits": [
+        "codex.component.supply.20260923.select_context_blocks",
+        "codex.component.supply.20260923.assign_digest_shards",
+        "codex.component.supply.20260923.reconcile_multiset_rows"
+      ],
+      "rank": 1,
+      "model_calls": 0
+    },
+    {
+      "identity": "paired_sign_test",
+      "query": "Compare paired baseline and candidate measurements without treating ties as wins.",
+      "hits": [
+        "codex.component.supply.20260923.paired_sign_test",
+        "codex.component.supply.20260923.audit_half_open_interval_overlaps",
+        "codex.component.supply.20260923.compare_file_inventories"
+      ],
+      "rank": 1,
+      "model_calls": 0
+    },
+    {
+      "identity": "profile_csv_structure",
+      "query": "Inspect this quoted delimited extract for ragged rows and empty columns.",
+      "hits": [
+        "codex.component.supply.20260923.profile_csv_structure",
+        "codex.component.supply.20260923.reconcile_multiset_rows",
+        "codex.component.supply.20260923.audit_half_open_interval_overlaps"
+      ],
+      "rank": 1,
+      "model_calls": 0
+    },
+    {
+      "identity": "reconcile_multiset_rows",
+      "query": "Find extra repeated records on either side of these two collections.",
+      "hits": [
+        "codex.component.supply.20260923.reconcile_multiset_rows",
+        "codex.component.supply.20260923.paired_sign_test",
+        "codex.component.supply.20260923.resolve_selected_dependency_closure"
+      ],
+      "rank": 1,
+      "model_calls": 0
+    },
+    {
+      "identity": "compute_weighted_quantiles",
+      "query": "Return exact weighted percentile cutoffs without interpolating between observed values.",
+      "hits": [
+        "codex.component.supply.20260923.compute_weighted_quantiles",
+        "codex.component.supply.20260923.apply_flat_record_changes",
+        "codex.component.supply.20260923.paired_sign_test"
+      ],
+      "rank": 1,
+      "model_calls": 0
+    },
+    {
+      "identity": "audit_half_open_interval_overlaps",
+      "query": "Identify overlapping reservations, total covered time and peak simultaneous occupancy.",
+      "hits": [
+        "codex.component.supply.20260923.audit_half_open_interval_overlaps",
+        "codex.component.supply.20260923.apply_nonoverlapping_text_edits",
+        "codex.component.supply.20260923.evaluate_capability_requirements"
+      ],
+      "rank": 1,
+      "model_calls": 0
+    },
+    {
+      "identity": "apply_flat_record_changes",
+      "query": "Apply all these object edits only if every expected old value still matches.",
+      "hits": [
+        "codex.component.supply.20260923.apply_flat_record_changes",
+        "codex.component.supply.20260923.apply_nonoverlapping_text_edits"
+      ],
+      "rank": 1,
+      "model_calls": 0
+    },
+    {
+      "identity": "reconcile_keyed_tables",
+      "query": "Match two tables by unique typed identifiers and report field-level changes.",
+      "hits": [
+        "codex.component.supply.20260923.reconcile_keyed_tables",
+        "codex.component.supply.20260923.reconcile_multiset_rows",
+        "codex.component.supply.20260923.compare_file_inventories"
+      ],
+      "rank": 1,
+      "model_calls": 0
+    },
+    {
+      "identity": "compare_file_inventories",
+      "query": "Compare two supplied file manifests and separate additions, removals and metadata changes.",
+      "hits": [
+        "codex.component.supply.20260923.compare_file_inventories",
+        "codex.component.supply.20260923.apply_flat_record_changes",
+        "codex.component.supply.20260923.reconcile_multiset_rows"
+      ],
+      "rank": 1,
+      "model_calls": 0
+    },
+    {
+      "identity": "resolve_selected_dependency_closure",
+      "query": "Find everything needed by the selected packages and report reachable dependency cycles.",
+      "hits": [
+        "codex.component.supply.20260923.resolve_selected_dependency_closure",
+        "codex.component.supply.20260923.select_context_blocks",
+        "codex.component.supply.20260923.compare_file_inventories"
+      ],
+      "rank": 1,
+      "model_calls": 0
+    },
+    {
+      "identity": "assign_digest_shards",
+      "query": "Assign identifiers reproducibly to a fixed number of buckets from their complete content hashes.",
+      "hits": [
+        "codex.component.supply.20260923.assign_digest_shards",
+        "codex.component.supply.20260923.reconcile_keyed_tables",
+        "codex.component.supply.20260923.apply_nonoverlapping_text_edits"
+      ],
+      "rank": 1,
+      "model_calls": 0
+    },
+    {
+      "identity": "validate_event_precedence",
+      "query": "Check whether required events occurred in the prescribed relative order.",
+      "hits": [
+        "codex.component.supply.20260923.apply_flat_record_changes",
+        "codex.component.supply.20260923.validate_event_precedence",
+        "codex.component.supply.20260923.evaluate_capability_requirements"
+      ],
+      "rank": 2,
+      "model_calls": 0
+    },
+    {
+      "identity": "apply_nonoverlapping_text_edits",
+      "query": "Apply several string replacements using positions from the original Unicode text.",
+      "hits": [
+        "codex.component.supply.20260923.apply_nonoverlapping_text_edits",
+        "codex.component.supply.20260923.apply_flat_record_changes",
+        "codex.component.supply.20260923.assign_digest_shards"
+      ],
+      "rank": 1,
+      "model_calls": 0
+    },
+    {
+      "identity": "detect_portable_path_collisions",
+      "query": "Detect names that collide after Unicode normalization or make one file the parent of another.",
+      "hits": [
+        "codex.component.supply.20260923.detect_portable_path_collisions",
+        "codex.component.supply.20260923.validate_event_precedence",
+        "codex.component.supply.20260923.apply_nonoverlapping_text_edits"
+      ],
+      "rank": 1,
+      "model_calls": 0
+    }
+  ],
+  "rank_one": 15,
+  "within_three": 16,
+  "unrelated_probes": [
+    {
+      "query": "Bake sourdough bread at high altitude",
+      "hits": []
+    },
+    {
+      "query": "Select a hiking tent for winter camping",
+      "hits": [
+        "codex.component.supply.20260923.select_context_blocks",
+        "codex.component.supply.20260923.render_focused_task_context",
+        "codex.component.supply.20260923.apply_nonoverlapping_text_edits"
+      ]
+    },
+    {
+      "query": "Diagnose severe chest pain",
+      "hits": []
+    },
+    {
+      "query": "Send a message to a customer",
+      "hits": [
+        "codex.component.supply.20260923.assign_digest_shards",
+        "codex.component.supply.20260923.reconcile_keyed_tables",
+        "codex.component.supply.20260923.select_context_blocks"
+      ]
+    }
+  ],
+  "physical_model_calls": 0,
+  "normal_serving_excludes_candidates": true
+}
