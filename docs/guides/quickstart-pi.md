@@ -73,7 +73,7 @@ Choose one result and ask Pi to install it:
 Install ITEM-IDENTITY from Baltor.
 ```
 
-The extension's `baltor_download` tool reads the item's manifest through `/api/v1/provisioning`, downloads it through `/api/v1/download` with a new `request_id`, checks every file against its published SHA-256 digest before it writes anything, installs the skill in `.pi/skills` and never replaces a folder it did not install. Its install record is kept in `.pi/baltor/installed`. This download is one measured unit and appears in your usage. Pi lists the new skill from the next session.
+The extension's `baltor_download` tool reads the item's manifest through `/api/v1/provisioning`, downloads it through `/api/v1/download` with a new `request_id`, checks every file against its published SHA-256 digest before it writes anything, installs the skill in `.pi/skills` and never replaces a folder it did not install. Its install record is kept in `.pi/baltor/installed`. The first download of an item version in a calendar month is one measured unit and appears in your usage; downloading the same version again that month, with any `request_id`, adds nothing. Pi lists the new skill from the next session.
 
 ## Check that it worked
 

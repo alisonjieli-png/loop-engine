@@ -8,9 +8,18 @@ separate from this subscription.
 
 ## The measured unit
 
-One accepted, metered item read records one `provisioned_item`. This is the
-download unit shown by the service; it does not prove that your client saved,
-loaded or used the bytes successfully.
+The measured unit is one downloaded item version for one account in one
+calendar month, counted in UTC. The first accepted, metered read of an item
+version in a month records one `provisioned_item`. Every later read of that
+same version in that month, with any `request_id`, through the download address
+or the protocol tool, is acknowledged by the same record and adds nothing. A
+new version of the item, or the same version in a later month, is a new unit.
+This is the download unit shown by the service; it does not prove that your
+client saved, loaded or used the bytes successfully.
+
+Counting by month applies to reads from the release that introduced it
+(September 27, 2026). A read recorded earlier stays one record per request
+identity, as it was counted then.
 
 Search, discovery, listing, manifests and reading your usage are not metered.
 The discovery answer states `metered_unit` and `never_metered`. A request
@@ -45,25 +54,27 @@ The result is `durable_tenant_usage/v1`.
 | Field | Meaning |
 | --- | --- |
 | `tenant_id` | The account these records belong to. |
-| `records` | Number of recorded measured reads. |
+| `records` | Number of recorded measured units. |
 | `totals` | Quantities grouped by unit. |
 | `durability` | `durable` for this stored usage record. |
-| `items` | Each item's `item_identity`, read count in `records`, and latest `last_used_at` time. |
+| `items` | Each item's `item_identity`, its number of units in `records`, and the time of its latest unit in `last_used_at`. |
+| `unit_rule` | `one_per_item_version_per_calendar_month_utc`, the counting rule above. |
+| `current_period` | The current calendar month, as `YYYY-MM` in UTC. |
+| `current_period_records` | Units recorded in the current month. |
 
 Usage is a record of service reads. It is not a measure of model tokens,
 successful tasks or how often a downloaded file was used afterward.
 
-## Retry the same read with the same identity
+## Retry the same read
 
-Choose one `request_id` for one selected item read. If the result is uncertain,
-keep the item, its expected digest and that request identity when retrying.
-An exact retry reuses the recorded unit. A new request identity represents a
-new logical read.
-
-For a package, fetching its files with the same `request_id` shares the same
-item-level unit. A request identity must not be reused for another item or
-version. On the current service that conflict reaches the client as
-`meter_commit_unknown`, so repeated conflicting requests will not repair it.
+Choose one `request_id` for one selected item read; a read without one is
+refused with `request_identity_required`. The identity names the logical
+download in your own records and in the metering acknowledgment. It does not
+decide what is counted: a retry, a package's other files and pages, and a later
+read of the same version in the same month all share that month's unit, whatever
+identity each names. A retry after an uncertain outcome therefore never counts
+twice. Keep the same `request_id` for it anyway, so your records name one
+download.
 
 | Code | Status | Next step |
 | --- | --- | --- |

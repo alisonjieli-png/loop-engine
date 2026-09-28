@@ -116,7 +116,9 @@ PROTOCOL_TOOL_DESCRIPTIONS = {
              "other bytes) with its path, SHA-256 digest, size, media type and role, as many whole files as fit in "
              "one answer. Ask for the next page with file_offset set to next_file_offset, or for one file with "
              "path. Check each file's SHA-256 against its digest before you use it. Use the same request_id for "
-             "every page and file of one item. An item whose effects your client did not declare in the "
+             "every page and file of one item. The first read of an item version in a calendar month counts as "
+             "one download; every later read of it that month, pages and retries included, adds nothing. An item "
+             "whose effects your client did not declare in the "
              "Baltor-Step-Effects header is refused with step_effects_required, whose details name the effects to "
              "add. To save files in a project, use a command that writes the exact bytes, never a retyped copy."),
 }

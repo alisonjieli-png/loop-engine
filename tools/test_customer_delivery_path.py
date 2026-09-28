@@ -9,7 +9,9 @@ and must fail:
 
 - the protocol tool `provisioning_read` delivers a package's files, not only the package document that lists them;
 - search, listing and manifests show every item with the effects its step would still have to declare, and a read
-  of an item whose effects the step did not declare is refused, naming the header and the effects to add.
+  of an item whose effects the step did not declare is refused, naming the header and the effects to add;
+- an account's repeated downloads of one item version count once in a calendar month, whatever request identity
+  each download names, and two first downloads that race count once.
 
 Every service here is a real application on a loopback socket over a temporary SQLite store and body folder, built
 from `catalogue_release_checks.Fixture`. Nothing reaches a provider or the network beyond 127.0.0.1.
@@ -34,7 +36,10 @@ from loop_engine.core.service_runtime import http as service_http
 from loop_engine.core.service_runtime.http import (PACKAGE_READ_VERSION, RETRIEVAL_REQUEST_VERSION,
                                                    STEP_EFFECTS_REFUSAL_VERSION, TIERED_PROVISIONING_REQUEST_VERSION,
                                                    ServiceHttpApplication)
-from loop_engine.core.service_runtime.http_test_fixtures import running_http
+from loop_engine.core.service_runtime import runtime as service_runtime
+from loop_engine.core.service_runtime.http_test_fixtures import HttpDomainFixture, running_http
+from loop_engine.core.service_runtime.storage import ServiceCatalogBinding
+from loop_engine.core.provisioning_server import ProvisioningMeterRequest
 from loop_engine.core.service_runtime.protocol_checks import _protocol_client
 
 PNG = b"\x89PNG\r\n\x1a\n\x00a binary asset"
@@ -334,6 +339,91 @@ class StepEffectsAreMarkedAndCheckedAtRead(unittest.TestCase):
             refused = self.read()
         self.assertNotEqual(refused.json()["error"]["code"], "step_effects_required")
         self.assertNotIn(b"printf part", refused.content, "the provisioning boundary still withholds the body")
+
+
+
+#: Two moments in consecutive calendar months, in UTC: September 30 and October 1, 2026.
+SEPTEMBER, OCTOBER = 1_790_726_400, 1_790_812_800
+
+
+def downloads_of_one_version_count_once(service):
+    """Three downloads of one item version under three request identities, and a protocol read: one unit."""
+    before = service.usage()
+    for request_id in ("first", "second", "third"):
+        answer = service.client.post("/api/v1/download", json=v2("read", identity="one_file", request_id=request_id))
+        if answer.status_code != 200 or answer.content != SINGLE[0][1]:
+            return False
+    (read,) = service.protocol(("provisioning_read", {"identity": "one_file", "request_id": "fourth"}))
+    return not read.is_error and service.usage() - before == 1
+
+
+class MeteringCountsEachItemVersionOncePerMonth(unittest.TestCase):
+    """Defect 3: the same account downloading the same item version counts once in a billing month."""
+
+    def setUp(self):
+        self.stack = ExitStack()
+        self.addCleanup(self.stack.close)
+
+    def test_repeat_downloads_with_new_request_identities_count_once(self):
+        service = DeliveryService(self.stack)
+        self.assertTrue(downloads_of_one_version_count_once(service))
+        usage = service.case.runtime.usage_for(service.case.runtime.authenticate_key(service.case.key.key))
+        self.assertEqual(usage["unit_rule"], "one_per_item_version_per_calendar_month_utc")
+        self.assertEqual(usage["current_period_records"], 1)
+        # Another item is another unit.
+        service.client.post("/api/v1/download", json=v2("read", identity="gear_maker", request_id="gear"))
+        self.assertEqual(service.usage(), 2)
+
+    def test_a_new_month_and_a_new_version_are_new_units(self):
+        folder = Path(self.stack.enter_context(tempfile.TemporaryDirectory(prefix="metering-months-")))
+        fixture = HttpDomainFixture(folder)
+        moment = [SEPTEMBER]
+        runtime = service_runtime.ServiceRuntime(fixture.runtime.config, clock=lambda: moment[0])
+        # The fixture's grant runs for an hour of real time; this account's plan must cover both months.
+        runtime.set_operator_entitlement("alpha", valid_until=OCTOBER + 30 * 86400, evidence_ref="metering-months")
+        principal = runtime.authenticate_key(fixture.keys["alpha"].key)
+        alpha = fixture.bindings["skill.alpha"]
+        first = runtime.record_usage(ProvisioningMeterRequest("alpha", "one", alpha), principal)
+        again = runtime.record_usage(ProvisioningMeterRequest("alpha", "two", alpha), principal)
+        self.assertTrue(first.committed and again.committed)
+        self.assertEqual(first.acknowledgment_ref, again.acknowledgment_ref)
+        changed = fixture.bindings["skill.large"]
+        runtime.record_usage(ProvisioningMeterRequest("alpha", "three", changed), principal)
+        moment[0] = OCTOBER
+        runtime.record_usage(ProvisioningMeterRequest("alpha", "four", alpha), principal)
+        usage = runtime.usage_for(principal)
+        self.assertEqual(usage["records"], 3, "September's two versions and October's first read")
+        self.assertEqual((usage["current_period"], usage["current_period_records"]), ("2026-10", 1))
+
+    def test_two_first_downloads_that_race_count_once(self):
+        folder = Path(self.stack.enter_context(tempfile.TemporaryDirectory(prefix="metering-race-")))
+        fixture = HttpDomainFixture(folder)
+        runtime = fixture.runtime
+        principal = runtime.authenticate_key(fixture.keys["alpha"].key)
+        alpha = fixture.bindings["skill.alpha"]
+        original, raced = ServiceCatalogBinding.commit, []
+
+        def commit_after_a_rival(binding, store, records, guards, removals=()):
+            # The first usage write waits until a rival read of the same unit has committed through its own
+            # connection, as two harness runs downloading one item at once would.
+            if not raced and records and records[0]["artifact_kind"] == service_runtime.USAGE:
+                raced.append(None)
+                raced[0] = runtime.record_usage(ProvisioningMeterRequest("alpha", "rival", alpha), principal)
+            return original(binding, store, records, guards, removals)
+        with mock.patch.object(ServiceCatalogBinding, "commit", commit_after_a_rival):
+            first = runtime.record_usage(ProvisioningMeterRequest("alpha", "first", alpha), principal)
+        self.assertTrue(raced and raced[0].committed and first.committed)
+        self.assertEqual(first.acknowledgment_ref, raced[0].acknowledgment_ref)
+        self.assertEqual(runtime.usage_for(principal)["records"], 1)
+
+    def test_known_wrong_a_unit_per_request_identity_counts_every_download(self):
+        service = DeliveryService(self.stack)
+
+        def per_request(request, period):
+            return (request.tenant_id, request.request_id), service_runtime.digest(
+                {"tenant_id": request.tenant_id, "request_id": request.request_id})
+        with mock.patch.object(service_runtime, "usage_unit", per_request):
+            self.assertFalse(downloads_of_one_version_count_once(service))
 
 
 if __name__ == "__main__":

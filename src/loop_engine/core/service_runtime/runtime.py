@@ -8,6 +8,7 @@ establishes subscription or disclosure authority.
 from __future__ import annotations
 
 from dataclasses import asdict, replace
+from datetime import datetime, timezone
 import hashlib
 import hmac
 import math
@@ -74,6 +75,26 @@ ENTITLEMENT_SOURCES = (*REVENUE_BEARING_SOURCES, *COMPED_SOURCES)
 ACCESS_SOURCE_REPORT_VERSION = "service_access_source_report/v1"
 PROVISIONING_METADATA_SCOPE, PROVISIONING_READ_SCOPE, USAGE_READ_SCOPE = (
     "provisioning:metadata", "provisioning:read", "usage:read")
+#: The measured unit is one downloaded item version for one account in one calendar month, counted in UTC. The first
+#: metered read of a version in a month records the unit; every later read of that version in that month, with any
+#: request identity, is acknowledged by the same record and writes nothing. The owner's price decision names one
+#: downloaded item as the measured unit, and there is no overage billing, so a month is the billing period of every
+#: plan source alike (September 27, 2026: a customer run recorded 26 metered reads of 5 distinct items).
+USAGE_UNIT_RULE = "one_per_item_version_per_calendar_month_utc"
+USAGE_PERIOD_FORMAT = "%Y-%m"
+
+
+def usage_period(moment):
+    """The calendar month, in UTC, that a metered read at `moment` counts in, as `YYYY-MM`."""
+    return datetime.fromtimestamp(moment, timezone.utc).strftime(USAGE_PERIOD_FORMAT)
+
+
+def usage_unit(request, period):
+    """The logical identity and the exact content of one metered unit: account, item version, unit and month."""
+    unit = {"tenant_id": request.tenant_id, "unit": request.unit, "quantity": request.quantity,
+            "item_identity": request.binding.identity, "body_digest": request.binding.body_digest, "period": period}
+    return (request.tenant_id, "item_version_month", request.binding.identity, request.binding.body_digest,
+            period), digest(unit)
 
 
 class ServiceRuntime:
@@ -755,31 +776,49 @@ class ServiceRuntime:
                     "record_id": row["record_id"], "record_version": row["record_version"]}
 
     def record_usage(self, request: ProvisioningMeterRequest, principal: ServicePrincipal, *, guards=()):
+        """Record one metered unit, or acknowledge the unit this item version already holds this month.
+
+        The unit's identity is the account, the item version and the calendar month (`USAGE_UNIT_RULE`), so a
+        repeat read of the same version in the same month, whatever its request identity, writes nothing. Two first
+        reads that race for one unit end with one record: the one whose write loses reads the winner's record and is
+        acknowledged by it."""
         if not isinstance(request, ProvisioningMeterRequest):
             raise ServiceRuntimeError("invalid_usage_request")
         try:
-            with self._catalog.store(write=True) as store:
-                current, auth_guards = self._revalidate(store, principal)
-                if (current.tenant_id != request.tenant_id or current.entitlement != BODIES
-                        or PROVISIONING_READ_SCOPE not in current.scopes):
-                    raise ServiceRuntimeError("body_forbidden")
-                logical = (request.tenant_id, request.request_id)
-                expected = digest(asdict(request))
-                held = self._catalog.read(store, USAGE, logical)
-                if held is not None:
-                    data = self._payload(held, USAGE)
-                    if data.get("request_digest") != expected:
-                        raise ServiceRuntimeError("usage_identity_conflict")
-                    return ProvisioningMeterAcknowledgment(request, True, held["record_id"], "durable")
-                row = self._catalog.record(USAGE, logical, {"record_type": SCHEMAS[USAGE],
-                    "tenant_id": request.tenant_id, "request_id_digest": digest(request.request_id),
-                    "request_digest": expected, "unit": request.unit, "quantity": request.quantity,
-                    "item_identity": request.binding.identity, "body_digest": request.binding.body_digest,
-                    "at": self._now()}, tenant_id=request.tenant_id)
-                self._catalog.commit(store, (row,), (*auth_guards, *guards, self._catalog.guard(None, row["record_id"])))
-                return ProvisioningMeterAcknowledgment(request, True, row["record_id"], "durable")
+            for attempt in range(2):
+                try:
+                    return self._record_usage_once(request, principal, guards)
+                except ServiceRuntimeError as error:
+                    # Another read of the same unit committed between this read and this write. The retry finds
+                    # that record and acknowledges it; any other changed guard is checked again from the start.
+                    if error.code != "concurrent_update" or attempt:
+                        raise
         except ServiceCommitUnknown:
             return ProvisioningMeterAcknowledgment(request, None)
+
+    def _record_usage_once(self, request, principal, guards):
+        with self._catalog.store(write=True) as store:
+            current, auth_guards = self._revalidate(store, principal)
+            if (current.tenant_id != request.tenant_id or current.entitlement != BODIES
+                    or PROVISIONING_READ_SCOPE not in current.scopes):
+                raise ServiceRuntimeError("body_forbidden")
+            now = self._now()
+            period = usage_period(now)
+            logical, unit_digest = usage_unit(request, period)
+            held = self._catalog.read(store, USAGE, logical)
+            if held is not None:
+                data = self._payload(held, USAGE)
+                if data.get("unit_digest") != unit_digest:
+                    raise ServiceRuntimeError("usage_identity_conflict")
+                return ProvisioningMeterAcknowledgment(request, True, held["record_id"], "durable")
+            row = self._catalog.record(USAGE, logical, {"record_type": SCHEMAS[USAGE],
+                "tenant_id": request.tenant_id, "request_id_digest": digest(request.request_id),
+                "request_digest": digest(asdict(request)), "unit_digest": unit_digest, "unit_rule": USAGE_UNIT_RULE,
+                "period": period, "unit": request.unit, "quantity": request.quantity,
+                "item_identity": request.binding.identity, "body_digest": request.binding.body_digest,
+                "at": now}, tenant_id=request.tenant_id)
+            self._catalog.commit(store, (row,), (*auth_guards, *guards, self._catalog.guard(None, row["record_id"])))
+            return ProvisioningMeterAcknowledgment(request, True, row["record_id"], "durable")
 
     def usage_for(self, principal: ServicePrincipal):
         with self._catalog.store() as store:
@@ -788,11 +827,16 @@ class ServiceRuntime:
                 raise ServiceRuntimeError("scope_required")
             rows = self._catalog.rows(store, USAGE, current.tenant_id)
             totals, reads = {}, {}
+            period, this_period = usage_period(self._now()), 0
             for value in (self._payload(row, USAGE) for row in rows):
                 totals[value["unit"]] = totals.get(value["unit"], 0) + value["quantity"]
                 reads.setdefault(value["item_identity"], []).append(value["at"])
+                # A record written before the monthly unit carries no period; its moment names its month.
+                if value.get("period", usage_period(value["at"])) == period:
+                    this_period += 1
             return {"record_type": "durable_tenant_usage/v1", "tenant_id": current.tenant_id, "records": len(rows),
-                    "totals": totals, "durability": "durable", "items": usage_items(reads)}
+                    "totals": totals, "durability": "durable", "items": usage_items(reads),
+                    "unit_rule": USAGE_UNIT_RULE, "current_period": period, "current_period_records": this_period}
 
 
 def self_test():

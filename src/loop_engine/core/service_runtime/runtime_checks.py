@@ -496,9 +496,12 @@ def run_checks():
     check("exact_body_retry_has_one_durable_usage_record_after_restart", meter)
 
     def usage_by_item(folder):
-        # The account page shows usage item by item: each item read, how many reads were recorded for it and when the
-        # latest was, most recent first. An exact retry is the same read and adds nothing; another tenant sees none of it.
+        # The account page shows usage item by item: each item version counted, how many units were recorded for it
+        # and when the latest was, most recent first. A repeat read of a version in the same calendar month, under any
+        # request identity, is the same unit and adds nothing; a later month is a new unit. Another tenant sees none.
         runtime, app, key, other, clock, _ = fixture(folder)
+        later = 40 * 86400
+        runtime.set_operator_entitlement("tenant-a", valid_until=later + 1000, evidence_ref="fixture:host-approval")
         second = item_from_body(HarnessIntelligenceDraft("skill.second", "skill", "Second reviewed fixture",
             "context_intelligence", "context:second", "MIT"), "second body")
         app.catalogue.register(second)
@@ -511,23 +514,29 @@ def run_checks():
         app.invoke(key.key, "read", identity="skill.second", request_id="two")
         clock[0] = 1200
         app.invoke(key.key, "read", identity="skill.fixture", request_id="three")
-        app.invoke(key.key, "read", identity="skill.fixture", request_id="three")
-        reopened = ServiceRuntime(runtime.config, clock=lambda: 1300)
+        clock[0] = later
+        app.invoke(key.key, "read", identity="skill.fixture", request_id="four")
+        app.invoke(key.key, "read", identity="skill.fixture", request_id="five")
+        reopened = ServiceRuntime(runtime.config, clock=lambda: later + 100)
         usage = reopened.usage_for(reopened.authenticate_key(key.key))
         return (usage["records"] == 3 and usage["items"] == [
-                    {"item_identity": "skill.fixture", "records": 2, "last_used_at": 1200},
+                    {"item_identity": "skill.fixture", "records": 2, "last_used_at": later},
                     {"item_identity": "skill.second", "records": 1, "last_used_at": 1100}]
+                and (usage["current_period"], usage["current_period_records"]) == ("1970-02", 1)
                 and reopened.usage_for(reopened.authenticate_key(other.key))["items"] == [])
-    check("usage_lists_each_item_with_its_count_and_latest_read_most_recent_first", usage_by_item)
+    check("usage_lists_each_item_version_once_a_month_with_its_latest_unit_most_recent_first", usage_by_item)
 
     def changed_usage(folder):
         from ..provisioning_server import ProvisioningMeterRequest
         runtime, app, key, _, _, _ = fixture(folder)
-        app.invoke(key.key, "read", identity="skill.fixture", request_id="same")
+        first = app.invoke(key.key, "read", identity="skill.fixture", request_id="same")
         binding = ProvisioningItemBinding.from_item(app.catalogue.items["skill.fixture"])
         request = ProvisioningMeterRequest("tenant-a", "same", replace(binding, body_digest="f" * 64))
-        return refused(lambda: runtime.record_usage(request, runtime.authenticate_key(key.key)), "usage_identity_conflict")
-    check("idempotency_identity_cannot_cover_a_changed_body", changed_usage)
+        changed = runtime.record_usage(request, runtime.authenticate_key(key.key))
+        usage = runtime.usage_for(runtime.authenticate_key(key.key))
+        return (changed.committed is True and usage["records"] == 2
+                and changed.acknowledgment_ref != first["metering_acknowledgment"]["acknowledgment_ref"])
+    check("a_changed_body_is_its_own_unit_and_never_covered_by_the_first_read", changed_usage)
 
     def during_read(folder, change):
         runtime, app, key, _, _, reads = fixture(folder)

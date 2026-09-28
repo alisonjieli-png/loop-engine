@@ -37,8 +37,9 @@ passed, whether the service answered the connection, listed its operations,
 answered the search, delivered the body and whether the delivered bytes carry
 the digest the search promised. A quickstart passes only when every step
 passes: a connection without a retrieval is not a pass. Each download uses a
-new ``request_id``, so each is one measured unit on the diagnostic account.
-No body text is kept.
+new ``request_id``. The service counts one unit per item version and calendar
+month, so a nightly run adds a unit on the diagnostic account only for a
+version it has not read that month. No body text is kept.
 
 Both paths answer a ``service_http_result/v1`` record whose ``result`` holds
 the session, retrieval, manifest or body record; a protocol tool carries that
