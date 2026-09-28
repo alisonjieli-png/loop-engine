@@ -53,6 +53,20 @@ def paid_access_source(runtime, tenant_id):
         return free_monthly_kind(value) or ACCESS_SOURCE_NAMES.get(value.get("source"), "none")
 
 
+def holds_no_plan(runtime, tenant_id):
+    """True when an enabled account holds no paid access and no operator switched its downloads off.
+
+    Such an account can search and is refused a download only because it has no plan, so it is told how to take
+    one. An account whose downloads an operator switched off holds no plan either, but taking one would not
+    restore them, so it is not told to subscribe."""
+    catalog = runtime._catalog
+    with catalog.store() as store:
+        _row, tenant = runtime._tenant(store, tenant_id)
+        if tenant.get("enabled") is not True or tenant.get("body_access_revoked") is not False:
+            return False
+    return paid_access_source(runtime, tenant_id) == "none"
+
+
 def _validate_limits(policy):
     selected = scopes(policy.allowed_scopes)
     if not selected or not set(selected) <= set(DEFAULT_SCOPES):

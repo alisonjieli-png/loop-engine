@@ -104,6 +104,8 @@ loop-engine solve --file task.md --ollama-api-key --model-route cloud.default --
 | --- | --- | --- |
 | `unauthorized` | 401 | The token is missing, wrong, expired or revoked. Set `BALTOR_SERVICE_TOKEN` in this terminal, then run the session check again. |
 | `insufficient_scope` | 403 | The token lacks the scope this operation needs. Create a token with `provisioning:read`. |
+| `plan_required` | 403 | Your account has no plan that includes downloads; search still works. Choose Baltor Pro on the [pricing page](https://baltor.ai/pricing). The refusal's `details` name that page, and the founding offer while places remain. |
+| `step_effects_required` | 403 | The item declares effects your configuration does not declare. Add the `effects_to_declare` that the refusal's `details` name, if your harness may do them, or choose another item. |
 | `item_unavailable` | 404 | The identity is not in your library, or it was withdrawn. Search again and use a fresh reference. |
 | `request_identity_required` | 400 | A download needs a `request_id`. Give each logical download a new one. |
 | `download_requires_read` | 400 | Only the `read` operation is answered at `/api/v1/download`. A manifest goes to `/api/v1/provisioning`. |

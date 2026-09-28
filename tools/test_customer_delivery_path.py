@@ -13,7 +13,8 @@ and must fail:
 - an account's repeated downloads of one item version count once in a calendar month, whatever request identity
   each download names, and two first downloads that race count once;
 - downloads made at once on one account succeed, or answer a precise refusal that recorded nothing and says when to
-  retry, never an unknown commitment, even while other work holds the store's write lock.
+  retry, never an unknown commitment, even while other work holds the store's write lock;
+- an account without a plan that asks for a download is told how to take one, not to ask the operator.
 
 Every service here is a real application on a loopback socket over a temporary SQLite store and body folder, built
 from `catalogue_release_checks.Fixture`. Nothing reaches a provider or the network beyond 127.0.0.1.
@@ -45,6 +46,9 @@ from loop_engine.core.service_runtime.http import (PACKAGE_READ_VERSION, RETRIEV
 from loop_engine.core.service_runtime import runtime as service_runtime
 from loop_engine.core.service_runtime.http_test_fixtures import HttpDomainFixture, running_http
 from loop_engine.core.service_runtime.storage import ServiceCatalogBinding
+from loop_engine.core.service_runtime import access as service_access
+from loop_engine.core.service_runtime.records import TenantKeyIssue, TenantRegistration
+from loop_engine.core.service_runtime.catalogue_grants import follow_active_release
 from loop_engine.core.provisioning_server import ProvisioningMeterRequest
 from loop_engine.catalog.protocol import CatalogRecordPrecondition, CatalogWriteBatch, StoreBusy
 from loop_engine.catalog.stores import sqlite_store
@@ -546,6 +550,75 @@ class ConcurrentDownloadsOnOneAccount(unittest.TestCase):
     def test_known_wrong_a_busy_store_read_as_an_unknown_write_refuses_the_download(self):
         with mock.patch.object(sqlite_store, "_busy", lambda error: False):
             self.assertFalse(download_waits_out_a_held_lock(self.service, "old-classification"))
+
+
+
+def no_plan_is_told_how_to_subscribe(service, key):
+    """A download by an account without a plan: 403 plan_required, with the pricing page and nothing counted."""
+    answer = service.client.post("/api/v1/download", headers={"Authorization": "Bearer " + key}, json=v2(
+        "read", identity="one_file", request_id="no-plan"))
+    if answer.status_code != 403:
+        return False
+    error = answer.json()["error"]
+    return (error["code"] == "plan_required" and "pricing page" in error["next_action"]
+            and "Ask the person who runs this service" not in error["next_action"]
+            and error["details"]["pricing_url"] == service.base + "/pricing"
+            and error["details"]["plan"] == "Baltor Pro" and SINGLE[0][1] not in answer.content)
+
+
+class AnAccountWithoutAPlanIsToldHowToSubscribe(unittest.TestCase):
+    """Defect 6: a refused download names the plan and where to take it, not the operator."""
+
+    def setUp(self):
+        self.stack = ExitStack()
+        self.addCleanup(self.stack.close)
+        self.service = DeliveryService(self.stack)
+        runtime = self.service.case.runtime
+        for tenant in ("noplan", "switched_off"):
+            runtime.register_tenant(TenantRegistration(tenant, "tenant:" + tenant))
+        self.no_plan = runtime.issue_key(TenantKeyIssue("noplan", "no plan")).key
+        self.switched_off = runtime.issue_key(TenantKeyIssue("switched_off", "downloads switched off")).key
+        follow_active_release(runtime, ["noplan", "switched_off"])
+        runtime.revoke_entitlement("switched_off")
+
+    def test_a_download_names_the_plan_and_the_pricing_page(self):
+        self.assertTrue(no_plan_is_told_how_to_subscribe(self.service, self.no_plan))
+        found = self.service.client.post("/api/v1/retrieval", headers={"Authorization": "Bearer " + self.no_plan},
+                                         json={"record_type": RETRIEVAL_REQUEST_VERSION, "query": "one file"})
+        self.assertEqual(found.status_code, 200, "an account without a plan still searches")
+
+    def test_the_protocol_read_carries_the_same_refusal(self):
+        async def run():
+            async with _protocol_client(self.service.base, _Keyed(self.no_plan), "legacy") as client:
+                return await client.call_tool("provisioning_read", {"identity": "one_file", "request_id": "no-plan"})
+        refused = asyncio.run(run())
+        self.assertTrue(refused.is_error)
+        self.assertEqual(refused.structured_content["error"]["code"], "plan_required")
+        self.assertEqual(refused.structured_content["error"]["details"]["get_started_url"],
+                         self.service.base + "/get-started")
+
+    def test_an_account_an_operator_switched_off_keeps_the_operator_answer(self):
+        answer = self.service.client.post("/api/v1/download", headers={"Authorization": "Bearer " + self.switched_off},
+                                          json=v2("read", identity="one_file", request_id="switched-off"))
+        self.assertEqual((answer.status_code, answer.json()["error"]["code"]), (403, "body_forbidden"))
+
+    def test_the_founding_offer_is_named_only_while_places_remain(self):
+        class Identity:
+            founding_accounts = 10
+            def __init__(self, open_now):
+                self.open_now = open_now
+            def founding_offer_open(self):
+                return self.open_now
+        with mock.patch.object(self.service.service, "browser_identity", Identity(True)):
+            offer = self.service.service.plan_offer()
+        self.assertEqual((offer["founding_offer_open"], offer["founding_places_remaining"]), (True, 10))
+        with mock.patch.object(self.service.service, "browser_identity", Identity(False)):
+            offer = self.service.service.plan_offer()
+        self.assertEqual((offer["founding_offer_open"], offer["founding_places_remaining"]), (False, None))
+
+    def test_known_wrong_without_the_plan_check_the_operator_wording_returns(self):
+        with mock.patch.object(service_access, "holds_no_plan", lambda runtime, tenant_id: False):
+            self.assertFalse(no_plan_is_told_how_to_subscribe(self.service, self.no_plan))
 
 
 if __name__ == "__main__":

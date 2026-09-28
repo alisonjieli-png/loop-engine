@@ -162,6 +162,13 @@ NESTING_LIMIT_CODE = "nesting_limit_exceeded"
 #: stayed busy past the service's wait. Each answers 503 with `Retry-After` and these details, so a client that meets
 #: one while it shares an account with other runs knows its request was not counted and when to send it again.
 RETRY_REFUSAL_VERSION = "service_retry_refusal/v1"
+#: The refusal of a download by an account that holds no plan, and its details: the plan, where to take it, and the
+#: founding offer while places remain. It replaces an answer that told such an account to ask the person who runs the
+#: service for download access (September 27, 2026).
+PLAN_REQUIRED_CODE = "plan_required"
+PLAN_REQUIRED_VERSION = "service_plan_required/v1"
+#: The one plan the service sells, as the pricing page names it.
+PLAN_NAME = "Baltor Pro"
 RETRY_AFTER_SECONDS = {"usage_store_busy": 1, "store_busy": 1}
 #: The deepest request or host file this service reads nests about five
 #: containers. The reader refuses anything deeper before it parses, because the
@@ -1226,6 +1233,36 @@ class ServiceHttpApplication:
         # items, and it is answered in the version 2 shapes its readers check.
         return tierless_answer(result)
 
+    def _require_plan(self, principal):
+        """Refuse a body read by an account that holds no plan, and tell it how to take one.
+
+        Every body read passes here before anything is read or counted. An account whose plan includes downloads, or
+        whose downloads an operator switched off, is left to the provisioning boundary's own answer."""
+        from .access import holds_no_plan
+        from .runtime import BODIES
+        if principal.entitlement != BODIES and holds_no_plan(self.runtime, principal.tenant_id):
+            raise ServiceHttpError(PLAN_REQUIRED_CODE, 403, details=self.plan_offer())
+
+    def plan_offer(self):
+        """Where an account without a plan takes one: the pricing page, the Get started page, and the founding offer
+        while places remain, as the public pages state it."""
+        base = self.configuration.public_base_url
+        offer = {"record_type": PLAN_REQUIRED_VERSION, "plan": PLAN_NAME, "pricing_url": base + "/pricing",
+                 "get_started_url": base + "/get-started", "account_url": base + "/account",
+                 "founding_offer_open": False, "founding_places_remaining": None}
+        identity = self.browser_identity
+        limit = getattr(identity, "founding_accounts", 0) if identity is not None else 0
+        if type(limit) is int and limit > 0 and callable(getattr(identity, "founding_offer_open", None)):
+            from .free_monthly import founding_holders
+            try:
+                if identity.founding_offer_open() is True:
+                    offer.update(founding_offer_open=True,
+                                 founding_places_remaining=max(0, limit - len(founding_holders(self.runtime))))
+            except Exception:
+                # The offer is stated only when it can be read now, as the public pages state it.
+                pass
+        return offer
+
     def _read_manifest(self, principal, view, fields, step):
         """The manifest a body read starts from, after the step's effects are checked against the item's own.
 
@@ -1233,6 +1270,7 @@ class ServiceHttpApplication:
         read as metadata, which no effect withholds, and a declared effect the step did not declare refuses the read
         with `step_effects_required`, naming the header and the effects to add. The read itself then asks with the
         step's effects, so the provisioning boundary checks them a second time."""
+        self._require_plan(principal)
         wanted = {key: value for key, value in fields.items() if key != "request_id"}
         if step is None:
             return self.provisioning.invoke_for_principal(principal, MANIFEST_OPERATION, view=view, **wanted)

@@ -26,7 +26,8 @@ transport errors use the protocol's own error shape instead.
 | `tenant_disabled` | 401 | Ask the operator about the account state. |
 | `insufficient_scope` | 403 | The credential lacks the scope required by this operation. |
 | `scope_required` | 403 | The account lacks a required scope. Ask the operator. |
-| `body_forbidden` | 403 | Metadata access does not currently permit this body download. |
+| `plan_required` | 403 | The account has no plan that includes downloads. The `details` record, `service_plan_required/v1`, names the plan, the `pricing_url`, the `get_started_url` and, while places remain, the founding offer. |
+| `body_forbidden` | 403 | Metadata access does not currently permit this body download, for example because an operator switched this account's downloads off. |
 | `browser_session_required` | 403 | Use browser sign-in for customer token management. |
 | `account_registration_unavailable` | 503 | Follow the current access path at Get started. |
 

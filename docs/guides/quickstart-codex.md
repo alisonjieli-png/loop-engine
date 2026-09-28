@@ -91,6 +91,8 @@ The answer's `result` is `service_session/v1`. Its `principal` names the account
 | --- | --- | --- |
 | `unauthorized` | 401 | The token is missing, wrong, expired or revoked. Set `BALTOR_SERVICE_TOKEN` in the terminal that starts Codex, then run the session check above. |
 | `insufficient_scope` | 403 | The token lacks the scope this operation needs. Create a token with `provisioning:read`. |
+| `plan_required` | 403 | Your account has no plan that includes downloads; search still works. Choose Baltor Pro on the [pricing page](https://baltor.ai/pricing). The refusal's `details` name that page, and the founding offer while places remain. |
+| `step_effects_required` | 403 | The item declares effects your configuration does not declare. Add the `effects_to_declare` that the refusal's `details` name, if your harness may do them, or choose another item. |
 | `item_unavailable` | 404 | The identity is not in your library, or it was withdrawn. Search again and use a fresh reference. |
 | `request_identity_required` | 400 | A download needs a `request_id`. Give each logical download a new one. |
 | `download_required` | 413 | The body is larger than the inline limit. Fetch it through `/api/v1/download`. |
