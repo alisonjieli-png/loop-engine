@@ -9,6 +9,7 @@ from __future__ import annotations
 import json
 import os
 import sqlite3
+import sys
 from copy import deepcopy
 from pathlib import Path
 
@@ -87,6 +88,11 @@ class SQLiteRecordStore:
                 self._con.close()
             if isinstance(exc, StoreError):
                 raise
+            # An open that met another connection's held lock wrote nothing and may be sent again, exactly
+            # as a busy batch: a store whose opening DDL waited past the busy timeout is a queueing delay,
+            # not an unavailable store, and its callers retry it instead of reporting one.
+            if _busy(exc):
+                raise StoreBusy("SQLite stayed locked by other work; the store was not opened; retry") from exc
             raise StoreError("SQLite store could not be opened") from exc
 
     def capabilities(self) -> StoreCapabilities:
@@ -464,6 +470,31 @@ def self_test() -> dict:
         except StoreError:
             check("readonly_open_does_not_create_database",
                   not os.path.exists(missing_path))
+
+        # A writable open whose DDL met another connection's held lock wrote nothing and may be sent
+        # again, so it answers StoreBusy exactly as a busy batch does. Known-wrong control: the
+        # constructor used to fold every sqlite3.Error into one StoreError, which its callers
+        # answered as an unavailable store instead of retrying the same open.
+        busy_path = os.path.join(tmp, "busy_open.sqlite")
+        rival = sqlite3.connect(busy_path, timeout=30)
+        rival.execute("BEGIN IMMEDIATE")
+        busy_answer = None
+        from unittest.mock import patch as _patch
+        with _patch.dict(globals(), {}), _patch.object(sys.modules[__name__], "BUSY_TIMEOUT_SECONDS", 0.1):
+            try:
+                contended = SQLiteRecordStore(busy_path)
+            except StoreBusy:
+                busy_answer = "busy"
+            except StoreError:
+                busy_answer = "store_error"
+            else:
+                contended.close()
+                busy_answer = "opened"
+        rival.rollback()
+        rival.close()
+        check("a_busy_open_answers_store_busy_and_wrote_nothing",
+              busy_answer == "busy")
+
 
         # Independent connections contend for one version. The lock begins
         # before reading the precondition, so only one writer can accept it.

@@ -299,11 +299,32 @@ def self_test():
               for key, (message, action) in pairs))
     # A refusal is read by someone who is already confused. Wording that names
     # a credential value, or tells a reader to send one somewhere, would be
-    # read as an instruction to expose it.
-    forbidden = ("password", "secret key", "api key", "bearer ", "sk_", "le_", "authorization: ")
+    # read as an instruction to expose it. The key prefixes match only at the
+    # start of a word, so an exact API field name that merely contains the
+    # letters of a prefix, as file_offset contains le_, is not a named secret.
+    import re as _re
+    forbidden_words = ("password", "secret key", "api key", "bearer ", "authorization: ")
+    forbidden_prefixes = ("sk_", "le_")
+
+    def names_a_secret_value(text):
+        if any(word in text for word in forbidden_words):
+            return True
+        for prefix in forbidden_prefixes:
+            for match in _re.finditer(_re.escape(prefix), text):
+                before = text[match.start() - 1] if match.start() else ""
+                if not (before and (before.isalnum() or before == "_")):
+                    return True
+        return False
+
     check("no_refusal_wording_names_or_asks_for_a_secret_value",
-          not any(word in (message + " " + action).lower()
-                  for _key, (message, action) in pairs for word in forbidden))
+          not any(names_a_secret_value((message + " " + action).lower())
+                  for _key, (message, action) in pairs))
+    # The prefix rule still refuses a wording that names a real key shape: the
+    # known-wrong control for the word-boundary repair above.
+    check("refusal_wording_still_refuses_a_real_key_shape",
+          names_a_secret_value("send your sk_live_key and your file_offset here")
+          and names_a_secret_value("the le_ value of the request")
+          and not names_a_secret_value("send path or file_offset, then retry."))
     # The general answer must cover every status the transport chooses, or a
     # refusal falls through to wording written for a different situation.
     from .http import _status_classes_in_use

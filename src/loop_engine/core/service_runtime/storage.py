@@ -65,6 +65,10 @@ class ServiceCatalogBinding:
         try:
             store = (self.open_store(write) if self.open_store is not None else
                      SQLiteRecordStore(self.config.database_path, read_only=not write))
+        except StoreBusy:
+            # The opening DDL met another connection's held lock. Nothing was read or written, so the
+            # same open may be sent again: this is the store's own queueing state, not an unavailable store.
+            raise ServiceRuntimeError(STORE_BUSY_CODE, "the store stayed locked; nothing was read; retry") from None
         except (StoreError, OSError):
             raise ServiceRuntimeError("store_unavailable") from None
         try:
