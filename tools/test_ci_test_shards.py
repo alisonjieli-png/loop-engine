@@ -30,9 +30,9 @@ RUNNER_CALL = "tools/run_test_shard.py --shard ${{ matrix.shard }}"
 #: Jobs whose steps the pre-push script does not mirror: the manual live run and the artifact build.
 UNMIRRORED_JOBS = {"live-ollama", "build"}
 #: A line of the pre-push script: gate "local name" "CI step name" command..., skip "CI step name" "reason",
-#: setup "CI step name" command..., or local "local name" "what it checks" command... A gate, a skip or a setup
+#: setup "CI step name" command..., or local_gate "local name" "what it checks" command... A gate, a skip or a setup
 #: ties the line to one step of the workflow; a local gate checks something continuous integration does not run.
-SCRIPT_LINE = re.compile(r'^[ \t]*(gate|skip|setup|local) "([^"]+)"(?: "([^"]+)")?', re.MULTILINE)
+SCRIPT_LINE = re.compile(r'^[ \t]*(gate|skip|setup|local_gate) "([^"]+)"(?: "([^"]+)")?', re.MULTILINE)
 #: The most the heaviest shard's estimate may exceed an even division before the placement counts as unbalanced.
 BALANCE_SLACK = 1.15
 
@@ -105,7 +105,7 @@ def pre_push_problems(script: str, workflow: str) -> list:
     steps = workflow_run_steps(workflow)
     named = {}
     for kind, first, second in SCRIPT_LINE.findall(script):
-        if kind == "local":
+        if kind == "local_gate":
             if not second:
                 problems.append(f"the local gate {first!r} does not say what it checks")
             continue

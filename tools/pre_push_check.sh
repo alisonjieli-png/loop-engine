@@ -4,9 +4,14 @@
 # Roadmap step S-6.200. On September 25, 2026 two release pushes failed in continuous integration after twenty
 # minutes on checks that nobody had run locally, and a third local run failed only because /tmp was over its
 # quota. This script runs the gates of .github/workflows/ci.yml that need no browser and no container, in
-# parallel, each with its own temporary folder under $HOME, and prints one table. It changes nothing in the
-# tree. tools/test_ci_test_shards.py checks that every step of the workflow is either a gate here or is
-# declined here with a reason, so the two cannot drift apart silently.
+# parallel, each with its own temporary folder under $HOME, and prints one table. The conformance gate rewrites
+# src/loop_engine/architecture_conformance.json; when the tree was clean at the start, HEAD's copy is put back after
+# the gates, so a run leaves a clean tree clean.
+# tools/test_ci_test_shards.py checks that every step of the workflow is either a gate here or is declined here with a
+# reason, so the two cannot drift apart silently. One local gate checks what the workflow cannot: the pristine check
+# exports HEAD and regenerates every generated view there (tools/regenerate_all.py --pristine), because the working
+# tree is not what is pushed. The last line says NOT EQUIVALENT TO CI whenever anything the workflow runs did not run
+# here (tools/pre_push_summary.py), and a gate that exits 127 is reported as a missing command, not a code failure.
 #
 # Usage:  tools/pre_push_check.sh [--tree PATH] [--only gate,gate,...] [--list]
 #   PY=/path/to/python   the interpreter with the project's extras (default: .venv/bin/python of the tree, then
@@ -44,15 +49,33 @@ mkdir -p "$RUN/tmp"
 export TMPDIR="$RUN/tmp"
 : > "$RUN/results.txt"
 : > "$RUN/declined.txt"
+: > "$RUN/local.txt"
 STARTED=$(date +%s)
+# Whether the tree differs from HEAD when the run starts: the gates then check files a push would not send.
+DIRTY=0
+if [ -n "$(git -C "$ROOT" status --porcelain 2>/dev/null)" ]; then DIRTY=1; fi
+PYTHON_VERSION="$("$PY" -c 'import sys; print("%d.%d" % sys.version_info[:2])' 2>/dev/null || echo unknown)"
 
-# The environment of every gate: this interpreter first on PATH, so that `python` in a step copied from the
-# workflow is this one, then the caller's PATH, so that a tool found above (vale, lychee, node) is found in
+# The steps copied from the workflow call `python`, as the workflow's runner provides it. A machine may have only
+# python3, and a tree without .venv falls back to it, so every copied step failed with exit 127 there (train 4,
+# September 27, 2026). A small folder of this run holds `python` and `python3` that run this interpreter, and it comes
+# first on every gate's path. Each is a script that runs the interpreter by its full path rather than a link, so a
+# virtual environment still finds its own packages.
+SHIM="$RUN/bin"
+mkdir -p "$SHIM"
+for name in python python3; do
+  printf '#!/bin/sh\nexec "%s" "$@"\n' "$PY" > "$SHIM/$name"
+  chmod +x "$SHIM/$name"
+done
+
+# The environment of every gate: the shim folder and this interpreter's folder first on PATH, so that `python` in a
+# step copied from the workflow is this one, then the caller's PATH, so that a tool found above (vale, lychee, node) is
+# found in
 # the gate too; and the tree's own source first on PYTHONPATH, so that a worktree checks itself and not the
 # checkout the interpreter was installed from. A gate may put its own PYTHONPATH in front, as the workflow
 # steps do. Nothing else of the caller's environment reaches a gate, so a local credential cannot turn a
 # test into a live call.
-GATE_PATH="$VENV_BIN:${PATH:-/usr/local/bin:/usr/bin:/bin}"
+GATE_PATH="$SHIM:$VENV_BIN:${PATH:-/usr/local/bin:/usr/bin:/bin}"
 
 selected() { [ -z "$ONLY" ] || case ",$ONLY," in *",$1,"*) return 0 ;; *) return 1 ;; esac; }
 
@@ -60,6 +83,11 @@ gate() {  # gate "local name" "workflow step name" command...
   local name="$1" step="$2"; shift 2
   if [ "$LIST" = 1 ]; then printf '  %-22s %s\n' "$name" "$step"; return 0; fi
   selected "$name" || return 0
+  start_gate "$name" "$@"
+}
+
+start_gate() {  # start_gate "local name" command...: run it in the background and record one result row
+  local name="$1"; shift
   local tmp="$RUN/tmp-$name"; mkdir -p "$tmp"
   (
     started=$(date +%s)
@@ -67,6 +95,14 @@ gate() {  # gate "local name" "workflow step name" command...
         GITHUB_WORKSPACE="$ROOT" PYTHONPATH="$ROOT/src" "$@" > "$RUN/$name.log" 2>&1
     echo "$? $(( $(date +%s) - started )) $name" >> "$RUN/results.txt"
   ) &
+}
+
+local_gate() {  # local_gate "local name" "what it checks" command...: a gate the workflow does not run
+  local name="$1" what="$2"; shift 2
+  if [ "$LIST" = 1 ]; then printf '  %-22s %s (local only)\n' "$name" "$what"; return 0; fi
+  selected "$name" || return 0
+  echo "$name" >> "$RUN/local.txt"
+  start_gate "$name" "$@"
 }
 
 skip() {  # skip "workflow step name" "reason"
@@ -109,13 +145,30 @@ else:
 # A step copied from the workflow runs the way GitHub runs it: bash with -e and pipefail, no profile.
 STEP_SHELL=(bash --noprofile --norc -eo pipefail)
 
-if [ "$LIST" = 0 ]; then
+# Only the tools shards need the report layout dependency; the workflow installs it in their job alone.
+shard_selected() { [ -z "$ONLY" ] || case ",$ONLY," in *",tools-shard-"*) return 0 ;; *) return 1 ;; esac; }
+if [ "$LIST" = 1 ] || shard_selected; then
   setup "Install the report layout dependency" npm ci --prefix tools/architecture_report --ignore-scripts --no-audit --no-fund
 fi
 
 # The test-derived jobs of the workflow.
 gate "self-test" "Self-test" env PYTHONPATH=src "$PY" -m loop_engine --self-test
 gate "conformance" "Conformance gates" env PYTHONPATH=src "$PY" -m loop_engine --conformance
+# The pristine check: HEAD exported under $HOME/.le-ci-tmp/pristine (git archive, never the working tree), every
+# generated view regenerated there by the export's own builders, and a failure when anything differs from the commit.
+# Release train 2 of September 27, 2026 passed here and failed in continuous integration: the status pages were current
+# in the working tree only. When the tree is clean and the conformance gate runs, that gate writes the conformance
+# manifest from the same bytes, so the export leaves out its slowest view and the manifest is compared with HEAD after
+# the gates (the pristine-manifest row).
+MANIFEST_PATH="src/loop_engine/architecture_conformance.json"
+PRISTINE_ARGUMENTS=(--pristine)
+MANIFEST_BY_CONFORMANCE=0
+if [ "$LIST" = 0 ] && [ "$DIRTY" = 0 ] && selected conformance && selected pristine-tree; then
+  PRISTINE_ARGUMENTS+=(--skip conformance-manifest)
+  MANIFEST_BY_CONFORMANCE=1
+fi
+local_gate "pristine-tree" "HEAD exported, every generated view regenerated there, nothing differs from the commit" \
+  env PYTHONPATH=src:tools "$PY" tools/regenerate_all.py "${PRISTINE_ARGUMENTS[@]}"
 for shard in $("$PY" tools/run_test_shard.py --list | cut -d' ' -f1); do
   gate "tools-shard-$shard" "Development command and report regression checks" \
     env PYTHONPATH=src:tools "$PY" tools/run_test_shard.py --shard "$shard"
@@ -129,8 +182,8 @@ gate "devtools-and-hardcoding" "Self-orientation and hardcoding delta gates" bas
   PYTHONPATH=src:devtools/src '$PY' -m loop_engine_devtools.cli --hardcoding-audit \
     --allowlist devtools/hardcoding-allowlist.yaml --baseline devtools/hardcoding-ci-baseline.json --fail-on-new high"
 gate "examples" "Examples run" "${STEP_SHELL[@]}" "$(ci_block runtime-checks "Examples run")"
-skip "Product solve acceptance" "pulls a container image and needs Docker; continuous integration runs it on every Python version"
-skip "Default-install onboarding proof" "builds a wheel into a new environment; continuous integration runs it on Python 3.12"
+skip "Product solve acceptance" "continuous integration only: pulls a container image and needs Docker, on every Python version"
+skip "Default-install onboarding proof" "continuous integration only: builds a wheel into a new environment on Python 3.12"
 
 # The documentation job.
 if command -v node >/dev/null 2>&1; then
@@ -153,7 +206,7 @@ elif [ -n "$CHANGED_MARKDOWN" ]; then
   # shellcheck disable=SC2086
   gate "public-language" "Check public language" vale --config .vale.ini $CHANGED_MARKDOWN
 else
-  skip "Check public language" "no Markdown file differs from origin/main"
+  skip "Check public language" "nothing to check: no Markdown file differs from origin/main"
 fi
 if command -v rg >/dev/null 2>&1; then
   gate "retired-language" "Refuse retired public language" "${STEP_SHELL[@]}" "$(ci_block docs "Refuse retired public language")"
@@ -167,27 +220,36 @@ else
   skip "Check local links and section anchors" "lychee is not installed; continuous integration runs it"
 fi
 gate "benchmark-registry" "Validate benchmark registry" "${STEP_SHELL[@]}" "$(ci_block docs "Validate benchmark registry")"
-skip "Render current architecture diagrams" "needs a browser for the diagram renderer; continuous integration renders them"
-skip "Verify interactive architecture and video" "the browser suite needs Chrome and the showcase server; run node tools/check_service_workspace.mjs on its own"
+skip "Render current architecture diagrams" "continuous integration only: the diagram renderer needs a browser"
+skip "Verify interactive architecture and video" "continuous integration only: the browser suite needs Chrome and the showcase server; run node tools/check_service_workspace.mjs on its own"
 
-if [ "$LIST" = 1 ]; then exit 0; fi
+if [ "$LIST" = 1 ]; then
+  printf '  %-22s %s (local only)\n' "pristine-manifest" \
+    "the conformance manifest the conformance gate wrote from a clean tree equals HEAD's"
+  exit 0
+fi
 wait
 
-echo "Pre-push check of $REVISION in $RUN ($(( $(date +%s) - STARTED ))s wall)"
-failed=0
-while read -r code seconds name; do
-  if [ "$code" = 0 ]; then
-    printf '  pass  %5ss  %s\n' "$seconds" "$name"
+if [ "$MANIFEST_BY_CONFORMANCE" = 1 ]; then
+  echo "pristine-manifest" >> "$RUN/local.txt"
+  if git diff --quiet HEAD -- "$MANIFEST_PATH" > "$RUN/pristine-manifest.log" 2>&1; then
+    echo "0 0 pristine-manifest" >> "$RUN/results.txt"
   else
-    printf '  FAIL  %5ss  %s  (exit %s, log %s)\n' "$seconds" "$name" "$code" "$RUN/$name.log"
-    failed=1
-    grep -E '^(FAILED |FAIL: |ERROR: )' "$RUN/$name.log" | head -5 | sed 's/^/          /'
+    { echo "The conformance gate wrote a manifest that differs from HEAD's: the committed $MANIFEST_PATH is stale."
+      echo "Continuous integration does not compare it. Regenerate it with: python tools/regenerate_all.py"
+      git diff --stat HEAD -- "$MANIFEST_PATH"; } >> "$RUN/pristine-manifest.log" 2>&1
+    echo "1 0 pristine-manifest" >> "$RUN/results.txt"
   fi
-done < <(sort -k3 "$RUN/results.txt")
-while IFS='|' read -r step reason; do
-  printf '  skip         %s: %s\n' "$(printf '%s' "$step" | sed 's/ *$//')" "$(printf '%s' "$reason" | sed 's/^ *//')"
-done < "$RUN/declined.txt"
+  # The tree was clean when the run started: leave it clean.
+  git show "HEAD:$MANIFEST_PATH" > "$MANIFEST_PATH"
+fi
+
+echo "Pre-push check of $REVISION in $RUN ($(( $(date +%s) - STARTED ))s wall)"
+SUMMARY_OPTIONS=(--only "$ONLY" --python "$PYTHON_VERSION" --workflow "$ROOT/.github/workflows/ci.yml")
+if [ "$DIRTY" = 1 ]; then SUMMARY_OPTIONS+=(--dirty); fi
+"$PY" "$ROOT/tools/pre_push_summary.py" "$RUN" "${SUMMARY_OPTIONS[@]}"
+status=$?
 if grep -l "Disk quota exceeded\|No space left" "$RUN"/*.log >/dev/null 2>&1; then
   echo "  note  a log reports a full disk or quota: the failure may be the machine, not the change"
 fi
-exit "$failed"
+exit "$status"
