@@ -1068,6 +1068,20 @@ class OpenApiDirectoryTest(unittest.TestCase):
             self.assertNotEqual(broken, client)
             (target / f"{operation.module}.py").write_text(broken, encoding="utf-8")
             self.assertFalse(generator.run_tests(target, operation.module)[0])
+        # The whole package builds: its README says how the request is signed, and every key is named.
+        from supply_lines.licences import RepositoryLicence
+        licence = RepositoryLicence("example/api", "c" * 40, "Apache-2.0", "agreed", "LICENSE", b"Apache text",
+                                    "Apache-2.0", "Apache-2.0", 1.0)
+        generator_record = {"identity": "tools/supply_lines/openapi_directory.py", "version": "test",
+                            "code_revision": "a" * 40}
+        with tempfile.TemporaryDirectory() as folder:
+            payload, bodies = generator._package(get_thing, {**SPEC_FACTS, "size_bytes": 10,
+                                                             "retrieved_at": "2026-09-27T00:00:00Z"},
+                                                 json_source, licence, generator_record, LICENCE, "2026-09-27",
+                                                 Path(folder), {})
+        readme = next(bodies[entry["digest"]] for entry in payload["package"]["files"] if entry["path"] == "README.md")
+        self.assertIn(b"AWS Signature Version 4", readme)
+        self.assertEqual(payload["credentials"], ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_SESSION_TOKEN"])
         # Without the SDK metadata, or for S3, a signing scheme is still refused.
         _found, refused = generator.operations(document, {**json_source, "aws": {}})
         self.assertEqual({row["reason"] for row in refused}, {"security_scheme_unsupported"})

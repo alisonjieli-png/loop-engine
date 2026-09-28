@@ -1189,6 +1189,14 @@ def readme_source(operation: Operation, spec: dict, schema_bytes: int) -> str:
     auth = operation.auth
     if auth is None:
         credential = "The specification requires no credential for this operation."
+    elif auth["placement"] == SIGV4_PLACEMENT:
+        credential = (f"The client signs each request with AWS Signature Version 4 for the service "
+                      f"`{auth['service']}` (security scheme `{auth['scheme']}`), reading the access key from "
+                      f"`{auth['variable']}`, the secret key from `{auth['secret_variable']}` and, when it is set, "
+                      f"the session token from `{auth['token_variable']}`. The region is `AWS_REGION` (or "
+                      f"`AWS_DEFAULT_REGION`), else the specification's default `{operation.region_default or 'none'}`."
+                      f" The keys are never written to a file"
+                      + (". The credential is optional for this operation." if operation.auth_optional else "."))
     else:
         where = {"header": f"the `{auth['name']}` header" + (f" (value `{auth['prefix']}<credential>`)"
                                                              if auth["prefix"] else " (the value as set)"),
@@ -1470,6 +1478,9 @@ def _package(operation, spec, source, licence, generator, licence_text, generate
     if operation.auth:
         effects.append(("reads_secret", f"reads_{operation.auth['variable']}_from_the_environment"))
         credentials.append(operation.auth["variable"])
+        for other in ("secret_variable", "token_variable"):
+            if operation.auth.get(other):
+                credentials.append(operation.auth[other])
     name = f"{source['vendor']}-{operation.function.replace('_', '-')}"[:90]
     identity = f"{spec['repository']}:{spec['path']}:{operation.method} {operation.path_key or operation.path}"
     stars = ((repository_facts.get(spec["repository"].lower()) or {}).get("stargazerCount")) or 0
