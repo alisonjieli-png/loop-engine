@@ -41,4 +41,4 @@ A script rewrites `maria@gmail.co` to `maria@gmail.com` without review. The type
 - `src/loop_engine/code_nodes/field_recovery.py`: `recover_email`, `recover_column` and `RecoveryTables`.
 - `src/loop_engine/code_nodes/text_conformance_operations.py`: `email_normalize`.
 
-Licence: MIT. Compiled from revision b99d354. The two modules depend only on each other and on the Python standard library.
+Licence: MIT. Compiled from revision fd2fb79. The two modules depend only on each other and on the Python standard library.

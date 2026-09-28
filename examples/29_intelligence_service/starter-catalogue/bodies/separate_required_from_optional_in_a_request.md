@@ -40,4 +40,4 @@ A request asks for a fast, cheap and complete report. A developer treats complet
 
 The steps above are ordinary engineering practice, written for this catalogue in its own words.
 
-Licence: MIT. Written for this catalogue at revision b99d354.
+Licence: MIT. Written for this catalogue at revision fd2fb79.

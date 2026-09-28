@@ -4,7 +4,7 @@
  "zero_tolerance_gates": {
   "unclassified_files": 0,
   "docs_folders_without_a_charter_readme": 0,
-  "documentation_links_that_do_not_resolve": 0,
+  "documentation_links_that_do_not_resolve": 2,
   "reachable_legacy_flat_paths": 0,
   "legacy_flat_imports_on_live_paths": 0,
   "public_parallel_runtime_surfaces": 0,
@@ -38,7 +38,16 @@
  "gate_details": {
   "unclassified_files": [],
   "docs_folders_without_a_charter_readme": [],
-  "documentation_links_that_do_not_resolve": [],
+  "documentation_links_that_do_not_resolve": [
+   {
+    "file": "docs/context/SESSION-HANDOFF-2026-09-28.md",
+    "target": "../artifacts/architecture-audit-2026-09-19/pilot-release-44.json"
+   },
+   {
+    "file": "docs/context/SESSION-HANDOFF-2026-09-28.md",
+    "target": "../artifacts/release-44-2026-09-28/README.md"
+   }
+  ],
   "reachable_legacy_flat_paths": [],
   "stale_current_architecture_documents": [],
   "operational_boundary_ontology": {
@@ -498,5 +507,5 @@
   "max_power_grants_no_permissions: power scales budgets only"
  ],
  "suite_note": "run --self-test separately; conformance is releasable only when BOTH exit 0",
- "all_gates_pass": true
+ "all_gates_pass": false
 }

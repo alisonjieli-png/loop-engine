@@ -362,6 +362,30 @@ def anchored(populations: list, items: dict, bodies: dict, digests: dict, revisi
     return new_items, new_bodies
 
 
+def _carry_review_revision(folder: Path, revision: str, populations) -> list:
+    """Move the review record's named catalogue revision with the anchor, recording the old one.
+
+    A body is reviewed once, and every anchor after that only rewrites the trailing line naming the
+    revision, so the reviews still cover exactly the same bodies. The record that says so is the review
+    record, and it named the revision the catalogue was anchored to before. Left there it would make
+    the host catalogue build refuse the bundle as covering another revision: a true statement about two
+    files that disagree, and no statement at all about the reviews.
+    """
+    path = _regular_file(folder, "reviews.json")
+    record = json.loads(path.read_text(encoding="utf-8"))
+    previous = record.get("catalogue_source_revision")
+    if previous == revision:
+        return []
+    if previous:
+        carried = list(record.get("previous_catalogue_source_revisions") or ())
+        if previous not in carried:
+            carried.append(previous)
+        record["previous_catalogue_source_revisions"] = carried
+    record["catalogue_source_revision"] = revision
+    _replace_both([(path, record)])
+    return [previous] if previous else []
+
+
 def anchor(request: AnchorRequest) -> dict:
     """Pin the catalogue to a revision whose cited bytes are the bytes in the tree."""
     if not isinstance(request, AnchorRequest):
@@ -384,6 +408,7 @@ def anchor(request: AnchorRequest) -> dict:
         bodies_folder = folder / BODIES_FOLDER
         _replace_texts([(_regular_body(bodies_folder, identity), new_bodies[identity]) for identity in changed])
         _replace_both([(_regular_file(folder, ITEMS_FILE), new_items)])
+        _carry_review_revision(folder, request.revision, populations)
         refresh(RefreshRequest(folder, True))
     return {"record_type": "starter_catalogue_anchor/v1", "revision": request.revision, "sources": len(sources),
             "bodies_rewritten": changed if moved else [], "written": bool(moved and request.write),

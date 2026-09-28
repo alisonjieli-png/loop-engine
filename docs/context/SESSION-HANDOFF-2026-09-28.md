@@ -13,9 +13,9 @@ Fly release 44, deployed September 28, 2026 at 11:10:55 UTC from
 false, 57 visitor pages, 237 views and 351 links with no problem across nine
 hostnames, catalogue checks nine of nine, hosted service checks nineteen of
 nineteen. The record is
-[`pilot-release-44.json`](../artifacts/architecture-audit-2026-09-19/pilot-release-44.json)
+[`pilot-release-44.json`](../../artifacts/architecture-audit-2026-09-19/pilot-release-44.json)
 and the evidence is in
-[`release-44-2026-09-28`](../artifacts/release-44-2026-09-28/README.md). The
+[`release-44-2026-09-28`](../../artifacts/release-44-2026-09-28/README.md). The
 record commit `d74da279` had been written in the worktree `~/.le-cons-rec44` and
 never merged, so the deployment section of
 [MVP-CLIENT-SERVER.md](../architecture/MVP-CLIENT-SERVER.md) still read release
