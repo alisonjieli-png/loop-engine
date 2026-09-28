@@ -111,15 +111,15 @@ In a session, OpenCode can also read an item through the protocol connection, to
 
 ## Check that it worked
 
-1. Check the placed files. This answers `"verified": true`, and names any file that changed since it was placed:
+Check the placed files first. The command answers `"verified": true`, and names any file that changed since it was placed:
 
-   ```bash
-   python3 .opencode/skills/baltor-library/scripts/baltor.py verify --client opencode --name NATIVE-NAME
-   ```
+```bash
+python3 .opencode/skills/baltor-library/scripts/baltor.py verify --client opencode --name NATIVE-NAME
+```
 
-2. Start a new session: OpenCode lists the skill by that name.
-3. Open [your account page](https://app.baltor.ai/account): the download is listed in your usage.
-4. Confirm the account and its scopes from the terminal with the command below.
+1. Start a new session: OpenCode lists the skill by that name.
+2. Open [your account page](https://app.baltor.ai/account): the download is listed in your usage.
+3. Confirm the account and its scopes from the terminal with the command below.
 
 ```bash
 curl -sS -H "Authorization: Bearer $BALTOR_SERVICE_TOKEN" https://baltor.ai/api/v1/session

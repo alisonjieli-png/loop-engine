@@ -77,10 +77,11 @@ do not hold.
 The website also serves the Baltor library skill under
 `/assets/baltor-library/`: the six files of `integrations/baltor-library`
 byte for byte and a `SHA256SUMS` list of their digests, which the Claude Code,
-Codex and OpenCode quickstarts install with `curl` and `sha256sum`. The
-script and the files without an extension are packaged here with a `.txt`
-name; `tools/test_baltor_library_integration.py` holds every served byte to
-the integration folder.
+Codex and OpenCode quickstarts install with `curl` and `sha256sum`. Except
+the example configuration, each is packaged here with a `.txt` name, so no
+source scanner reads a copy as source or documentation of this package;
+`tools/test_baltor_library_integration.py` holds every served byte to the
+integration folder.
 
 A recipe's note may name a file this website serves under `/assets/`, as
 the Pi recipe names its extension, `/assets/pi/baltor.ts`. The guide turns
