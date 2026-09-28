@@ -202,6 +202,43 @@ class StoreTest(unittest.TestCase):
         with self.assertRaises(SupplyRecordError):
             records.state_record_id(records.OPENAPI_OPERATIONS, "somewhere_else")
 
+    def test_a_store_write_is_tried_again_while_another_job_holds_the_lock(self):
+        import build_library_supply as builder
+        from loop_engine.catalog.protocol import StoreError
+        from supply_lines import store as store_module
+        failures = {"left": 2}
+
+        class Busy:
+            def __init__(self, root, *, writes_authorized):
+                if failures["left"]:
+                    failures["left"] -= 1
+                    raise StoreError("SQLite store could not be opened")
+
+            def keep_facts(self, facts):
+                return 0
+
+            def write(self, line, built, *, complete, scope=""):
+                return {"line": line, "written": len(built)}
+
+            def close(self):
+                pass
+
+        saved = (store_module.SupplyStore, builder.STORE_PAUSE_SECONDS)
+        store_module.SupplyStore, builder.STORE_PAUSE_SECONDS = Busy, 0
+        try:
+            with tempfile.TemporaryDirectory() as folder:
+                args = builder.parser().parse_args(["data-tables", "--run-folder", folder, "--authorize-network-reads",
+                                                    "--authorize-store-writes", "--store-root", folder,
+                                                    "--minimum-free-gigabytes", "0"])
+                result = builder.store(args, records.DATA_TABLES, [], {}, complete=True)
+                self.assertEqual((result["stored"], result["attempts"]), (True, 3))
+                # Known wrong: a lock that never goes away ends as a refusal to store, never as a stopped run.
+                failures["left"] = builder.STORE_ATTEMPTS + 1
+                result = builder.store(args, records.DATA_TABLES, [], {}, complete=True)
+                self.assertEqual((result["stored"], result["reason"]), (False, "store_busy"))
+        finally:
+            store_module.SupplyStore, builder.STORE_PAUSE_SECONDS = saved
+
     def test_a_store_write_leaves_the_disk_floor_free(self):
         import build_library_supply as builder
         with tempfile.TemporaryDirectory() as folder:

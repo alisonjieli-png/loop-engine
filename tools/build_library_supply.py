@@ -91,6 +91,8 @@ def materialize(folder: Path, built) -> None:
 
 #: The free space a store write leaves on the store's disk at least (the workstation's standing floor).
 MINIMUM_FREE_GIGABYTES = 15
+#: How many times a store write is tried while another job holds the store's lock, and the pause between tries.
+STORE_ATTEMPTS, STORE_PAUSE_SECONDS = 20, 30
 
 
 def free_gigabytes(path) -> float:
@@ -109,14 +111,25 @@ def store(args, line: str, built, facts: dict, *, complete: bool, scope: str = "
         # The run's facts stay cached in its run folder, so the same command stores quickly once space returns.
         return {"stored": False, "reason": "free_space_below_the_floor", "free_gigabytes": round(free, 1),
                 "floor_gigabytes": args.minimum_free_gigabytes}
+    from loop_engine.catalog.protocol import StoreError
     from supply_lines.store import SupplyStore
-    writer = SupplyStore(args.store_root, writes_authorized=True)
-    try:
-        kept = writer.keep_facts(facts)
-        result = writer.write(line, built, complete=complete, scope=scope)
-    finally:
-        writer.close()
-    return {"stored": True, "facts_kept": kept, **result}
+    # The import store is one SQLite file other jobs write too; opening it or applying a batch while another
+    # writer holds the lock fails after a five-second wait. A batch is atomic and bodies are stored by digest, so
+    # the whole write is tried again after a pause, a bounded number of times.
+    for attempt in range(STORE_ATTEMPTS):
+        try:
+            writer = SupplyStore(args.store_root, writes_authorized=True)
+            try:
+                kept = writer.keep_facts(facts)
+                result = writer.write(line, built, complete=complete, scope=scope)
+            finally:
+                writer.close()
+            return {"stored": True, "facts_kept": kept, "attempts": attempt + 1, **result}
+        except StoreError as error:
+            if attempt == STORE_ATTEMPTS - 1:
+                return {"stored": False, "reason": "store_busy", "detail": str(error)[:200], "attempts": attempt + 1}
+            time.sleep(STORE_PAUSE_SECONDS)
+    return {"stored": False, "reason": "store_busy"}
 
 
 def finish(args, line: str, built, refusals, extra: dict, reader, facts: dict, *, complete: bool,
