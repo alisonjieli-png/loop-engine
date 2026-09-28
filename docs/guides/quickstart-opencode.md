@@ -35,11 +35,20 @@ Merge the `baltor` entry into the `mcp` section of your existing `opencode.json`
       "url": "https://baltor.ai/mcp",
       "enabled": true,
       "oauth": false,
-      "headers": {"Authorization": "Bearer {env:BALTOR_SERVICE_TOKEN}"}
+      "headers": {
+        "Authorization": "Bearer {env:BALTOR_SERVICE_TOKEN}",
+        "Baltor-Step-Effects": "reads_fs, writes_fs, spawns_process, network"
+      }
     }
   }
 }
 ```
+
+## Declare what your harness may do
+
+The `Baltor-Step-Effects` header tells Baltor what your harness's steps may do with an item: `reads_fs` reads files in your project, `writes_fs` writes them, `spawns_process` runs commands and `network` uses the network. `reads_secret` is left out unless your steps read secrets. Remove any effect your harness does not allow.
+
+Search always shows every item your account may use, with its `declared_effects` and its `effects_to_declare`: the effects your header does not declare. Such an item's download is refused with `step_effects_required`, and the refusal's `details` name the effects to add. Without the header, your steps hold `reads_fs` only.
 
 ## Check the connection
 
@@ -47,7 +56,7 @@ Merge the `baltor` entry into the `mcp` section of your existing `opencode.json`
 opencode mcp list
 ```
 
-Confirm that Baltor connects and exposes its five tools: `intelligence_search`, `provisioning_discover`, `provisioning_list`, `provisioning_manifest` and `provisioning_read`. This service uses a supplied token; do not start an OAuth login for it.
+The list shows `baltor` as connected; it does not list the tools. In a session, the six tools are available: `intelligence_search`, `provisioning_discover`, `provisioning_list`, `provisioning_manifest`, `provisioning_read` and `provisioning_report`. This service uses a supplied token; do not start an OAuth login for it.
 
 ## Your first search
 

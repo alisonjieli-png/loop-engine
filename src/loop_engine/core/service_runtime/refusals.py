@@ -236,6 +236,15 @@ CODE_GUIDANCE = {
     "package_file_requires_download": ("A single file of a package is delivered through the download address or "
                                        "the provisioning_read protocol tool, not this address.",
                                        "Send the same request to the download address instead of this one."),
+    "item_withheld": ("This item is outside what the request asked to be shown: its declared effects, its kind "
+                      "or its harness style.",
+                      "Ask again without authority_effects, kinds or style to see the item and the effects its "
+                      "step must declare in the Baltor-Step-Effects header."),
+    "step_effects_required": ("This item declares effects that your client did not declare for its steps, so its "
+                              "files are not delivered. Search and listing still show it.",
+                              "If your harness may do what the item declares, add the effects the refusal's "
+                              "details name to the Baltor-Step-Effects header in your client configuration, then "
+                              "retry. Otherwise choose another item."),
     "package_selection_conflict": ("A package read names either one file by path or a page by file_offset, "
                                    "and this request named both.",
                                    "Send path to read one file, or file_offset to read a page, then retry."),

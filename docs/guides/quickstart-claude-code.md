@@ -32,11 +32,20 @@ Create `.mcp.json` in your project folder, or merge the `baltor` entry into the 
     "baltor": {
       "type": "http",
       "url": "https://baltor.ai/mcp",
-      "headers": {"Authorization": "Bearer ${BALTOR_SERVICE_TOKEN}"}
+      "headers": {
+        "Authorization": "Bearer ${BALTOR_SERVICE_TOKEN}",
+        "Baltor-Step-Effects": "reads_fs, writes_fs, spawns_process, network"
+      }
     }
   }
 }
 ```
+
+## Declare what your harness may do
+
+The `Baltor-Step-Effects` header tells Baltor what your harness's steps may do with an item: `reads_fs` reads files in your project, `writes_fs` writes them, `spawns_process` runs commands and `network` uses the network. `reads_secret` is left out unless your steps read secrets. Remove any effect your harness does not allow.
+
+Search always shows every item your account may use, with its `declared_effects` and its `effects_to_declare`: the effects your header does not declare. Such an item's download is refused with `step_effects_required`, and the refusal's `details` name the effects to add. Without the header, your steps hold `reads_fs` only.
 
 ## Check the connection
 
@@ -46,7 +55,7 @@ Run this in the project folder, in the terminal where the token is set:
 claude mcp list
 ```
 
-The list shows a status next to `baltor`. If the status is Pending approval, start `claude` in this folder once and approve the server. If the list warns about a missing environment variable, set the token before you start Claude Code. In a session, enter `/mcp` and confirm that Baltor's five tools are listed: `intelligence_search`, `provisioning_discover`, `provisioning_list`, `provisioning_manifest` and `provisioning_read`.
+The list shows a status next to `baltor`. If the status is Pending approval, start `claude` in this folder once and approve the server. If the list warns about a missing environment variable, set the token before you start Claude Code. In a session, enter `/mcp` and confirm that Baltor's six tools are listed: `intelligence_search`, `provisioning_discover`, `provisioning_list`, `provisioning_manifest`, `provisioning_read` and `provisioning_report`.
 
 ## Your first search
 

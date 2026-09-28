@@ -20,7 +20,7 @@ current catalogue and the query; this example does not assume a particular hit.
 | --- | --- |
 | `record_type` | Exactly `service_retrieval_request/v2`. |
 | `query` | Nonempty search text, at most 4096 UTF-8 bytes. |
-| `authority_effects` | Optional unique array of declared effect names already permitted for your step. Omitted means the effects your client configuration states in the `Baltor-Step-Effects` header, or reading files (`reads_fs`) when it states none. An empty array means no declared effects. This selects metadata, not execution permission. |
+| `authority_effects` | Optional unique array of declared effect names already permitted for your step. When present, the search shows only material whose declared effects are all in it, and a read is checked against it. Omitted, the search shows every item your account may use, each marked with the effects your step would still have to declare; your step's effects are then the ones your client configuration states in the `Baltor-Step-Effects` header, or reading files (`reads_fs`) when it states none. An empty array shows only material with no declared effects. This selects metadata, not execution permission. |
 | `mode` | `lexical` or `hybrid`; default `lexical`. |
 | `top_n` | Positive whole number within the advertised `search_results` limit; default 10. |
 | `filters` | Up to eight declared, public, filterable catalogue attributes. Conditions include `equals`, `any_of`, `at_least` and `at_most`. |
@@ -32,11 +32,29 @@ answer. It is not a correctness score or a cross-query quality measurement.
 
 ### Material that declares effects
 
-A search can name `authority_effects` to include material whose declared effects
-fit the step's existing permissions. Omit it to use your client configuration's
-`Baltor-Step-Effects` header, or reading files when there is none. Send an empty
-array to consider only material with no declared effects. For example, a step
-already authorized to read files and run a local process can search with:
+Seeing an item is not permission to use it, so the two are separate. A search,
+a list or a manifest that does not name `authority_effects` shows every item your
+account may use. Each hit and each listed row names its `declared_effects` and
+its `effects_to_declare`: the effects the item declares that your step did not
+declare. The answer names your step's effects as `step_effects`. Your step
+declares them in the `Baltor-Step-Effects` header of your client configuration,
+for example `Baltor-Step-Effects: reads_fs, writes_fs, spawns_process, network`,
+or holds reading files (`reads_fs`) when the configuration states none.
+
+A read or a download checks the item's declared effects against your step's.
+When the step did not declare all of them, the service refuses the read with
+`step_effects_required` (403) before anything is read or counted. The refusal's
+`details` record, `service_step_effects_refusal/v1`, names the item's
+`declared_effects`, the `step_effects` the request held, the
+`effects_to_declare`, the `header` to set and a `header_value` that would
+declare them. An item that declares effects therefore never reaches a step that
+did not declare them.
+
+A search can still name `authority_effects` to see only material whose declared
+effects fit the step's existing permissions; the named effects are then the
+step's effects for a read as well. Send an empty array to consider only material
+with no declared effects. For example, a step already authorized to read files
+and run a local process can search with:
 
 ```json
 {"record_type":"service_retrieval_request/v2","query":"validate a local data file","mode":"lexical","authority_effects":["reads_fs","spawns_process"]}
@@ -46,9 +64,9 @@ Read the current request version from `/api/v1/capabilities`. Version 1 requests
 are refused; update the client rather than removing its selection fields. The
 protocol tool publishes its current shape through the tool list.
 
-This selects material; it does not grant execution permission. A manifest or
-read must carry the appropriate selection fields too. A metadata `filters`
-condition does not replace this selection or your harness's own permissions.
+This selects material; it does not grant execution permission. A metadata
+`filters` condition does not replace this selection or your harness's own
+permissions.
 
 ### Filter by the kind of step
 
@@ -142,7 +160,7 @@ declares more than reading files, it names those effects in plain words and
 asks you to confirm. It then asks for that one file with exactly its declared
 effects. The search on the same page asks with every step effect too. Your
 harness keeps its own rule: the `Baltor-Step-Effects` header, or reading files
-when it states none.
+when it states none, decides which items it may read.
 
 ## Read the reference
 
@@ -251,8 +269,9 @@ file answers `file_offset_out_of_range`. A wrong path answers
 `package_file_not_found`. These three refusals are not counted.
 
 One answer, counting its structured copy and its text copy, stays within the
-`response_bytes` limit that `/api/v1/capabilities` reports. The capabilities
-record names this delivery under `delivery.protocol_package_files`.
+`response_bytes` limit that `/api/v1/capabilities` reports under `limits`. The
+capabilities record names this delivery under `delivery.protocol_package_files`
+and its record under `delivery.protocol_package_record_type`.
 
 ## Finish the step
 

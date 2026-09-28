@@ -1111,6 +1111,18 @@
    },
    {
     "section": "Library",
+    "feature": "Undeclared effects",
+    "value": "shown with effects to declare and refused at read",
+    "fixed": true
+   },
+   {
+    "section": "Library",
+    "feature": "Step effects refusal code",
+    "value": "step effects required",
+    "fixed": true
+   },
+   {
+    "section": "Library",
     "feature": "Served items",
     "value": "",
     "fixed": false
@@ -1179,6 +1191,30 @@
     "section": "Delivery",
     "feature": "Package files",
     "value": "download by path",
+    "fixed": true
+   },
+   {
+    "section": "Delivery",
+    "feature": "Protocol package files",
+    "value": "provisioning read by page or path",
+    "fixed": true
+   },
+   {
+    "section": "Delivery",
+    "feature": "Protocol package selection",
+    "value": "file offset, path",
+    "fixed": true
+   },
+   {
+    "section": "Delivery",
+    "feature": "Protocol package encodings",
+    "value": "utf-8, base64",
+    "fixed": true
+   },
+   {
+    "section": "Delivery",
+    "feature": "Protocol answer reserved bytes",
+    "value": "8,192",
     "fixed": true
    },
    {

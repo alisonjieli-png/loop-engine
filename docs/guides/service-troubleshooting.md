@@ -38,20 +38,22 @@ a token scope and an item grant are separate checks.
 ## Empty search or unavailable material
 
 An empty result is not a connection failure. It can mean the query has no match,
-the account lacks grants, the item is withdrawn, or the current selection excludes
-it. Search with `authority_effects` only for effects already permitted for your
-step. When a current request omits the field, the service uses the effects that
-your client configuration names in the `Baltor-Step-Effects` header, or reading
-files (`reads_fs`) when there is no header. An empty array withholds material
-that declares effects, and so does a version 1 provisioning request without the
-field. This choice does not authorize executing the material. Read the current
-request version from `/api/v1/capabilities` and update an older client when it
-is refused.
+the account lacks grants, the item is withdrawn, or the request's own
+`authority_effects` excludes it. A current request that omits `authority_effects`
+is shown every item the account may use, each marked with its
+`effects_to_declare`. Its step holds the effects your client configuration names
+in the `Baltor-Step-Effects` header, or reading files (`reads_fs`) when there is
+no header, and a read of an item that declares more is refused with
+`step_effects_required`. An empty array withholds material that declares effects,
+and so does a version 1 provisioning request without the field. This choice does
+not authorize executing the material. Read the current request version from
+`/api/v1/capabilities` and update an older client when it is refused.
 
 | Code | Status | Next step |
 | --- | --- | --- |
 | `item_unavailable` | 404 | Refresh your authorized list and selected digest. The response does not distinguish an unknown identity from an inaccessible one. |
-| `item_withheld` | 400 | Check the requested style, kind and effect selection. |
+| `item_withheld` | 400 | The request's own `authority_effects`, kind or style excludes the item. Ask without them to see it with its `effects_to_declare`. |
+| `step_effects_required` | 403 | The item declares effects your step did not declare. If your harness may do them, add the `effects_to_declare` from the refusal's `details` to the `Baltor-Step-Effects` header, then retry. |
 | `item_withdrawn` | 404 | Search again; the selected published version is no longer available. |
 | `package_file_not_found` | 404 | Use a path from the selected package document. |
 | `package_files_unavailable` | 404 | This item has no separately downloadable package files. |

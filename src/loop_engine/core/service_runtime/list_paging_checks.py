@@ -93,10 +93,14 @@ def _whole(client, base, fixture, **fields):
 
 
 def _offered_identities(fixture):
-    """The account's whole list, asked of the provisioning boundary in this process, as the service asks it."""
+    """The account's whole list, asked of the provisioning boundary in this process, as the service asks it.
+
+    A list that states no effects is shown every item the account may see, whatever effects it declares, each
+    marked with the effects its step would still have to declare (September 27, 2026), so no effect narrows it."""
+    from ..facets import EFFECTS
     from .catalogue_tiers import DEFAULT_LIBRARY_SETTINGS, narrowed
     principal = fixture.runtime.authenticate_key(fixture.keys["alpha"].key)
-    answer = fixture.provisioning.invoke_for_principal(principal, "list", authority_effects=("reads_fs",),
+    answer = fixture.provisioning.invoke_for_principal(principal, "list", authority_effects=EFFECTS,
                                                        community_items=narrowed(DEFAULT_LIBRARY_SETTINGS, None))
     return [row["identity"] for row in answer["items"]]
 
@@ -216,9 +220,10 @@ def _page_sizes_refused(client, base, fixture):
 
 
 def _withheld_bounded(client, base, fixture):
+    """A list that narrows itself to steps that only read files holds back the items that run a process."""
     _fresh_view(fixture, "release-withheld")
-    pages, _sizes, refusal = _walk(client, base, fixture, 25)
-    whole = _whole(client, base, fixture)
+    pages, _sizes, refusal = _walk(client, base, fixture, 25, authority_effects=["reads_fs"])
+    whole = _whole(client, base, fixture, authority_effects=["reads_fs"])
     return (refusal is None and len(pages) > 1 and len(whole["withheld"]) > WITHHELD_BOUND
             and pages[0]["withheld"] == whole["withheld"][:WITHHELD_BOUND]
             and all(page["withheld_count"] == len(whole["withheld"]) for page in pages)

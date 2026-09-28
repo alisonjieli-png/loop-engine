@@ -96,6 +96,8 @@ REQUIRED_TOOLS = (SEARCH_TOOL, READ_TOOL)
 DIGEST_HEADER, RECORD_HEADER = "x-content-sha256", "x-loop-engine-record-type"
 DOWNLOAD_RECORD = "service_download/v1"
 MANIFEST_RECORD = "provisioning_manifest/v3"
+#: The header in which a harness's configuration declares what its steps may do with an item.
+STEP_EFFECTS_HEADER = "Baltor-Step-Effects"
 #: The protocol read answer for a package of files: each file's exact content by page. The check follows every page.
 PACKAGE_READ_RECORD = "provisioning_package_read/v1"
 #: A package holds at most 64 files, so no honest package needs more pages than this.
@@ -319,10 +321,14 @@ class Service:
         self.origin, self._key = origin.rstrip("/"), key
         self.opener = opener or urllib.request.build_opener(urllib.request.ProxyHandler({}), RefuseRedirect())
         self.calls = 0
+        #: The effects the running quickstart's configuration declares, sent in the header its harness sends.
+        self.step_effects = None
 
     def exchange(self, path: str, body=None, headers=None):
         """Status, lower-cased headers and bytes of one request; a refused request is answered, not raised."""
         fields = {"Accept": "application/json", "Authorization": "Bearer " + self._key, **(headers or {})}
+        if self.step_effects:
+            fields[STEP_EFFECTS_HEADER] = self.step_effects
         data = None
         if body is not None:
             fields["Content-Type"] = "application/json"
@@ -382,13 +388,33 @@ def wrapped_result(status: int, answer, what: str) -> dict:
 
 
 def choose_hit(hits, limit: int):
-    """The first hit whose body this account may read and that fits the limit the path can deliver."""
+    """The first hit whose body this account may read, that fits the limit the path can deliver, and whose declared
+    effects the quickstart's configuration declares: search shows every item, marked with `effects_to_declare`."""
     for hit in hits:
         reference = hit.get("reference") or {}
         if hit.get("body_allowed") is True and isinstance(hit.get("size_bytes"), int) \
-                and hit["size_bytes"] <= limit and reference.get("identity") and reference.get("body_digest"):
+                and hit["size_bytes"] <= limit and reference.get("identity") and reference.get("body_digest") \
+                and not hit.get("effects_to_declare"):
             return hit
     return None
+
+
+def declared_step_effects(recipe) -> str:
+    """The effects a recipe's configuration declares for its harness's steps, as the header carries them, or ''.
+
+    A protocol recipe names the header among its headers; the Pi recipe lists `step_effects`, which the served
+    extension sends in the same header."""
+    pending = [recipe.get("configuration")] if isinstance(recipe, dict) else []
+    while pending:
+        value = pending.pop()
+        if not isinstance(value, dict):
+            continue
+        if isinstance(value.get(STEP_EFFECTS_HEADER), str):
+            return value[STEP_EFFECTS_HEADER]
+        if isinstance(value.get("step_effects"), list) and all(isinstance(item, str) for item in value["step_effects"]):
+            return ", ".join(value["step_effects"])
+        pending.extend(value.values())
+    return ""
 
 
 def new_request_id(quickstart: Quickstart, stamp: str) -> str:
@@ -409,6 +435,9 @@ def run_quickstart(service: Service, quickstart: Quickstart, page_text: str, pub
     step("page_names_the_published_base", not foreign, "; ".join(foreign) if foreign else published_base)
     step("page_documents_the_first_search", documents_first_search(page_text), QUERY)
     recipe = published_recipe(recipes, quickstart.id)
+    # The harness sends the effects its configuration declares; the check sends the same header.
+    service.step_effects = declared_step_effects(recipe) or None
+    facts["step_effects"] = service.step_effects
     if recipe is None:
         step("page_matches_the_published_recipe", False, f"the service publishes no {quickstart.id} recipe")
     else:
@@ -424,6 +453,7 @@ def run_quickstart(service: Service, quickstart: Quickstart, page_text: str, pub
             _run_direct(service, quickstart, capabilities, stamp, step, facts, extension=False, page_text=page_text)
     except StepFailed as failure:
         steps[-1] = {**steps[-1], "passed": False, "detail": scrub(str(failure), service._key)[:300]}
+    service.step_effects = None
     rows = _collapse(steps)
     return {"id": quickstart.id, "harness": quickstart.harness, "page": quickstart.page,
             "wire_path": quickstart.wire_path, "steps": rows, **facts,

@@ -157,6 +157,7 @@ explains how to diagnose them.
 | `browser_session_required` | 403 | Customer token management needs browser sign-in. |
 | `item_unavailable` | 404 | Identity or expected digest is unavailable to this account. |
 | `item_withheld` | 400 | Requested selection excludes this material. |
+| `step_effects_required` | 403 | The item declares effects the step did not declare in `Baltor-Step-Effects`; `details` name them. |
 | `item_withdrawn` | 404 | Selected item version withdrawn. |
 | `package_file_not_found` | 404 | Path absent from the package. |
 | `package_files_unavailable` | 404 | Separate file download unavailable for this item. |

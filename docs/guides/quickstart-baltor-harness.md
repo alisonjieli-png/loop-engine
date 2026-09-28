@@ -41,11 +41,16 @@ There is no configuration file yet. The steps below use these values with `curl`
     "baltor": {
       "transport": "streamable_http",
       "url": "https://baltor.ai/mcp",
-      "credential_env": "BALTOR_SERVICE_TOKEN"
+      "credential_env": "BALTOR_SERVICE_TOKEN",
+      "headers": {
+        "Baltor-Step-Effects": "reads_fs, writes_fs, spawns_process, network"
+      }
     }
   }
 }
 ```
+
+The `Baltor-Step-Effects` header says what your task's steps may do with a Baltor item: `reads_fs` reads files, `writes_fs` writes them, `spawns_process` runs commands and `network` uses the network. Remove any effect your steps do not have. Search shows every item your account may use, each with its `effects_to_declare`: the effects the header leaves out. A download of such an item is refused with `step_effects_required`, and the refusal's `details` name the effects to add.
 
 ## Check the connection
 
@@ -60,7 +65,7 @@ The answer's `result` is `service_session/v1`. Its `principal` names the account
 The first search is `review inputs`:
 
 ```bash
-curl -sS -X POST https://baltor.ai/api/v1/retrieval -H "Authorization: Bearer $BALTOR_SERVICE_TOKEN" -H "Content-Type: application/json" -d '{"record_type":"service_retrieval_request/v2","query":"review inputs","mode":"lexical","top_n":3}'
+curl -sS -X POST https://baltor.ai/api/v1/retrieval -H "Authorization: Bearer $BALTOR_SERVICE_TOKEN" -H "Baltor-Step-Effects: reads_fs, writes_fs, spawns_process, network" -H "Content-Type: application/json" -d '{"record_type":"service_retrieval_request/v2","query":"review inputs","mode":"lexical","top_n":3}'
 ```
 
 The answer is a `service_http_result/v1` wrapper whose `result` is the `service_retrieval_result/v1` record: a list of `hits`, each with a `reference` that names the item's `identity`, its `body_digest` and its `size_bytes`, its source and licence, and `body_allowed`. A search never loads a body, so `bodies_loaded` is false, and a search is not measured. Keep the `identity` and the `body_digest` of the one you choose.
@@ -70,7 +75,7 @@ The answer is a `service_http_result/v1` wrapper whose `result` is the `service_
 Replace the two placeholders with the values you kept, and give the download a new `request_id`:
 
 ```bash
-curl -sS -X POST https://baltor.ai/api/v1/download -H "Authorization: Bearer $BALTOR_SERVICE_TOKEN" -H "Content-Type: application/json" -d '{"record_type":"service_provisioning_request/v2","operation":"read","identity":"ITEM-IDENTITY","expected_digest":"SELECTED-DIGEST","request_id":"QUICKSTART-1"}' -D headers.txt -o item.md
+curl -sS -X POST https://baltor.ai/api/v1/download -H "Authorization: Bearer $BALTOR_SERVICE_TOKEN" -H "Baltor-Step-Effects: reads_fs, writes_fs, spawns_process, network" -H "Content-Type: application/json" -d '{"record_type":"service_provisioning_request/v2","operation":"read","identity":"ITEM-IDENTITY","expected_digest":"SELECTED-DIGEST","request_id":"QUICKSTART-1"}' -D headers.txt -o item.md
 sha256sum item.md
 grep -i x-content-sha256 headers.txt
 ```

@@ -30,6 +30,7 @@ COPIED = (
     "src/loop_engine/core/provisioning_server.py",
     "src/loop_engine/core/provisioning_mcp.py",
     "src/loop_engine/core/harness_intelligence.py",
+    "src/loop_engine/core/facets.py",
     "src/loop_engine/core/retrieval.py",
     "src/loop_engine/service_cli.py",
     "src/loop_engine/cli_help.py",
@@ -50,12 +51,13 @@ MOVED_STATUS_BRANCH = ('    if code == "item_unavailable":\n        return 410, 
 #: The two paragraphs repaired on September 27, 2026, and the sentences they held before. The old
 #: sentences name only facts the source has, so only the claim rules can refuse them.
 USAGE_PAGE = "docs/guides/service-usage-and-what-you-pay-for.md"
-CURRENT_EFFECT_TEXT = """step. When a current request omits the field, the service uses the effects that
-your client configuration names in the `Baltor-Step-Effects` header, or reading
-files (`reads_fs`) when there is no header. An empty array withholds material
-that declares effects, and so does a version 1 provisioning request without the
-field. This choice does not authorize executing the material."""
-OLD_EFFECT_TEXT = """step. Omitted or empty effect selection withholds material that declares effects.
+CURRENT_EFFECT_TEXT = """`effects_to_declare`. Its step holds the effects your client configuration names
+in the `Baltor-Step-Effects` header, or reading files (`reads_fs`) when there is
+no header, and a read of an item that declares more is refused with
+`step_effects_required`. An empty array withholds material that declares effects,
+and so does a version 1 provisioning request without the field. This choice does
+not authorize executing the material."""
+OLD_EFFECT_TEXT = """`effects_to_declare`. Omitted or empty effect selection withholds material that declares effects.
 This choice does not authorize executing the material."""
 CURRENT_BODY_TEXT = """An inline `read` through `/api/v1/provisioning` returns `provisioning_body/v3`
 for a version 2 request, and `provisioning_body/v2` for a version 1 request."""

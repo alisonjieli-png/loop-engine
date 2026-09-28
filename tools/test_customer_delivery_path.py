@@ -7,7 +7,9 @@ On September 27, 2026 a customer run through the documented setup found that cus
 holds one repair to the behaviour that run saw, and each has a known-wrong control that puts the old behaviour back
 and must fail:
 
-- the protocol tool `provisioning_read` delivers a package's files, not only the package document that lists them.
+- the protocol tool `provisioning_read` delivers a package's files, not only the package document that lists them;
+- search, listing and manifests show every item with the effects its step would still have to declare, and a read
+  of an item whose effects the step did not declare is refused, naming the header and the effects to add.
 
 Every service here is a real application on a loopback socket over a temporary SQLite store and body folder, built
 from `catalogue_release_checks.Fixture`. Nothing reaches a provider or the network beyond 127.0.0.1.
@@ -28,7 +30,9 @@ import httpx
 
 from loop_engine.core.service_runtime.catalogue_release_checks import Fixture, bundle_line
 from loop_engine.core.service_runtime.catalogue_serving_checks import _Served, _application
-from loop_engine.core.service_runtime.http import (PACKAGE_READ_VERSION, TIERED_PROVISIONING_REQUEST_VERSION,
+from loop_engine.core.service_runtime import http as service_http
+from loop_engine.core.service_runtime.http import (PACKAGE_READ_VERSION, RETRIEVAL_REQUEST_VERSION,
+                                                   STEP_EFFECTS_REFUSAL_VERSION, TIERED_PROVISIONING_REQUEST_VERSION,
                                                    ServiceHttpApplication)
 from loop_engine.core.service_runtime.http_test_fixtures import running_http
 from loop_engine.core.service_runtime.protocol_checks import _protocol_client
@@ -45,6 +49,13 @@ PACKAGE = (("SKILL.md", b"# Gear maker\nRead references/a.md first.\n", "text/ma
            ("references/a.md", LONG_A, "text/markdown", "skill_reference"),
            ("references/b.md", LONG_B, "text/markdown", "skill_reference"))
 SINGLE = (("SKILL.md", b"# One file\nA single-file skill.\n", "text/markdown", "skill_definition"),)
+#: A skill that writes files and runs a script, so a step must declare both before it may read it.
+WRITER = (("SKILL.md", b"# Part writer\nWrites the part file with scripts/write.sh.\n", "text/markdown",
+           "skill_definition"),
+          ("scripts/write.sh", b"#!/bin/sh\nprintf part > part.stl\n", "text/x-shellscript", "skill_script"))
+WRITER_EFFECTS = ("reads_fs", "writes_fs", "spawns_process")
+#: What the quickstarts now tell a coding harness to declare.
+DECLARED = "reads_fs, writes_fs, spawns_process, network"
 #: A protocol answer limit small enough that the package needs two pages and one file cannot fit any answer.
 ANSWER_BYTES = 40_000
 
@@ -54,13 +65,13 @@ def v2(operation, **fields):
 
 
 class _Keyed:
-    """What the protocol client helper reads from a fixture: the headers of one account."""
+    """What the protocol client helper reads from a fixture: the headers of one account, and any the client adds."""
 
-    def __init__(self, key):
-        self.key = key
+    def __init__(self, key, **extra):
+        self.key, self.extra = key, extra
 
     def headers(self, _tenant="alpha"):
-        return {"Authorization": "Bearer " + self.key}
+        return {"Authorization": "Bearer " + self.key, **self.extra}
 
 
 def file_bytes(row):
@@ -79,9 +90,11 @@ class DeliveryService:
         folder = Path(stack.enter_context(tempfile.TemporaryDirectory(prefix="customer-delivery-")))
         self.case = Fixture(folder / "service")
         self.case._bytes = {"gear_maker": tuple(row[1] for row in PACKAGE),
-                            "one_file": tuple(row[1] for row in SINGLE)}
+                            "one_file": tuple(row[1] for row in SINGLE),
+                            "part_writer": tuple(row[1] for row in WRITER)}
         self.case.publish([bundle_line("gear_maker", PACKAGE, effects=("reads_fs",)),
-                           bundle_line("one_file", SINGLE, effects=("reads_fs",))])
+                           bundle_line("one_file", SINGLE, effects=("reads_fs",)),
+                           bundle_line("part_writer", WRITER, effects=WRITER_EFFECTS)])
         self.served = _Served(self.case)
         self.base, self.service = stack.enter_context(running_http(
             self.served, application_factory=_application(self.served, 60), **configuration))
@@ -95,11 +108,11 @@ class DeliveryService:
         runtime = self.case.runtime
         return runtime.usage_for(runtime.authenticate_key(self.case.key.key))["records"]
 
-    def protocol(self, *calls):
+    def protocol(self, *calls, **headers):
         """Run tool calls, in order, through the official protocol client; return each tool result."""
         async def run():
             answers = []
-            async with _protocol_client(self.base, _Keyed(self.case.key.key), "legacy") as client:
+            async with _protocol_client(self.base, _Keyed(self.case.key.key, **headers), "legacy") as client:
                 for name, arguments in calls:
                     answers.append(await client.call_tool(name, arguments))
             return answers
@@ -202,10 +215,12 @@ class ProtocolPackageRead(unittest.TestCase):
         self.assertEqual((refused.status_code, refused.json()["error"]["code"]), (400, "invalid_request"))
 
     def test_the_capabilities_name_the_protocol_package_delivery(self):
-        delivery = self.service.client.get("/api/v1/capabilities").json()["result"]["delivery"]
+        capabilities = self.service.client.get("/api/v1/capabilities").json()["result"]
+        delivery = capabilities["delivery"]
         self.assertEqual(delivery["package_files"], "download_by_path")
-        self.assertEqual(delivery["protocol_package_files"]["record_type"], PACKAGE_READ_VERSION)
-        self.assertEqual(delivery["protocol_package_files"]["answer_bytes"], ANSWER_BYTES)
+        self.assertEqual(delivery["protocol_package_files"], "provisioning_read_by_page_or_path")
+        self.assertEqual(delivery["protocol_package_record_type"], PACKAGE_READ_VERSION)
+        self.assertEqual(capabilities["limits"]["response_bytes"], ANSWER_BYTES)
 
     def test_known_wrong_a_read_that_answers_only_the_package_document_fails(self):
         def document_only(application, authentication, fields):
@@ -213,6 +228,112 @@ class ProtocolPackageRead(unittest.TestCase):
             return application._invoke(authentication, "read", fields, tiered=True)
         with mock.patch.object(ServiceHttpApplication, "_protocol_read", document_only):
             self.assertFalse(package_is_delivered(self.service, "known-wrong"))
+
+
+
+def search(service, query, **fields):
+    headers = fields.pop("headers", {})
+    answer = service.client.post("/api/v1/retrieval", headers=headers, json={
+        "record_type": RETRIEVAL_REQUEST_VERSION, "query": query, **fields})
+    return answer.json()["result"]
+
+
+def writer_is_shown_marked(service):
+    """A search with no effects stated shows the writer, marked with the two effects its step still has to declare."""
+    found = search(service, "part writer")
+    marks = {hit["reference"]["identity"]: hit.get("effects_to_declare") for hit in found["hits"]}
+    return marks.get("part_writer") == ["writes_fs", "spawns_process"] and found.get("step_effects") == ["reads_fs"]
+
+
+class StepEffectsAreMarkedAndCheckedAtRead(unittest.TestCase):
+    """Defect 2: an item that declares effects is shown with them; only a read by a step without them is refused."""
+
+    def setUp(self):
+        self.stack = ExitStack()
+        self.addCleanup(self.stack.close)
+        self.service = DeliveryService(self.stack)
+        self.writer_digest = self.service.served.provisioning.current_view().catalogue.items["part_writer"].digest
+
+    def read(self, **headers):
+        return self.service.client.post("/api/v1/download", headers=headers, json=v2(
+            "read", identity="part_writer", request_id="writer-read", expected_digest=self.writer_digest,
+            path="scripts/write.sh"))
+
+    def test_search_without_the_header_shows_every_item_marked(self):
+        self.assertTrue(writer_is_shown_marked(self.service))
+        found = search(self.service, "gear maker")
+        gear = next(hit for hit in found["hits"] if hit["reference"]["identity"] == "gear_maker")
+        self.assertEqual(gear["effects_to_declare"], [])
+        self.assertEqual(found["step_effects_header"], "Baltor-Step-Effects")
+
+    def test_listing_and_manifest_show_the_item_and_its_marks(self):
+        listed = self.service.client.post("/api/v1/provisioning", json=v2("list")).json()["result"]
+        rows = {row["identity"]: row["effects_to_declare"] for row in listed["items"]}
+        self.assertEqual(rows["part_writer"], ["writes_fs", "spawns_process"])
+        self.assertNotIn("part_writer", {row["identity"] for row in listed["withheld"]})
+        manifest = self.service.client.post("/api/v1/provisioning", json=v2(
+            "manifest", identity="part_writer", expected_digest=self.writer_digest))
+        self.assertEqual(manifest.status_code, 200)
+        self.assertEqual(manifest.json()["result"]["effects_to_declare"], ["writes_fs", "spawns_process"])
+
+    def test_a_read_by_a_step_without_the_effects_is_refused_with_the_header_and_nothing_is_counted(self):
+        refused = self.read()
+        self.assertEqual(refused.status_code, 403)
+        error = refused.json()["error"]
+        self.assertEqual(error["code"], "step_effects_required")
+        self.assertIn("Baltor-Step-Effects", error["next_action"])
+        self.assertEqual(error["details"]["record_type"], STEP_EFFECTS_REFUSAL_VERSION)
+        self.assertEqual(error["details"]["effects_to_declare"], ["writes_fs", "spawns_process"])
+        self.assertEqual(error["details"]["header"], "Baltor-Step-Effects")
+        self.assertEqual(error["details"]["header_value"], "reads_fs, writes_fs, spawns_process")
+        self.assertNotIn(b"printf part", refused.content)
+        partial = self.read(**{"Baltor-Step-Effects": "reads_fs, writes_fs"})
+        self.assertEqual(partial.json()["error"]["details"]["effects_to_declare"], ["spawns_process"])
+        self.assertEqual(self.service.usage(), 0)
+
+    def test_a_step_that_declares_the_effects_reads_the_exact_bytes(self):
+        allowed = self.read(**{"Baltor-Step-Effects": DECLARED})
+        self.assertEqual(allowed.status_code, 200)
+        self.assertEqual(allowed.content, WRITER[1][1])
+        self.assertEqual(self.service.usage(), 1)
+
+    def test_an_explicit_authority_effects_field_still_narrows_what_is_shown(self):
+        narrowed = search(self.service, "part writer", authority_effects=["reads_fs"])
+        self.assertNotIn("part_writer", {hit["reference"]["identity"] for hit in narrowed["hits"]})
+        refused = self.service.client.post("/api/v1/download", json=v2(
+            "read", identity="part_writer", request_id="field-read", authority_effects=["reads_fs"]))
+        self.assertEqual(refused.json()["error"]["code"], "step_effects_required")
+
+    def test_the_protocol_tools_show_the_marks_and_refuse_with_the_details(self):
+        found, refused = self.service.protocol(
+            ("intelligence_search", {"query": "part writer"}),
+            ("provisioning_read", {"identity": "part_writer", "request_id": "protocol-writer"}))
+        hits = {hit["reference"]["identity"]: hit for hit in found.structured_content["result"]["hits"]}
+        self.assertEqual(hits["part_writer"]["effects_to_declare"], ["writes_fs", "spawns_process"])
+        self.assertTrue(refused.is_error)
+        self.assertEqual(refused.structured_content["error"]["code"], "step_effects_required")
+        self.assertEqual(refused.structured_content["error"]["details"]["effects_to_declare"],
+                         ["writes_fs", "spawns_process"])
+        (allowed,) = self.service.protocol(("provisioning_read", {"identity": "part_writer",
+                                                                  "request_id": "protocol-writer"}),
+                                           **{"Baltor-Step-Effects": DECLARED})
+        self.assertFalse(allowed.is_error, allowed)
+        files = {row["path"]: file_bytes(row) for row in allowed.structured_content["result"]["files"]}
+        self.assertEqual(files, {path: data for path, data, _media, _role in WRITER})
+        self.assertEqual(self.service.usage(), 1)
+
+    def test_known_wrong_the_old_header_filter_hides_the_writer(self):
+        def header_filter(fields, header_effects):
+            chosen = tuple(fields.get("authority_effects") or header_effects or service_http.DEFAULT_STEP_EFFECTS)
+            return {**fields, "authority_effects": list(chosen)}, chosen
+        with mock.patch.object(service_http, "effect_selection", header_filter):
+            self.assertFalse(writer_is_shown_marked(self.service))
+
+    def test_known_wrong_without_the_step_check_the_refusal_does_not_name_the_effects(self):
+        with mock.patch.object(service_http, "effects_to_declare", lambda declared, step: []):
+            refused = self.read()
+        self.assertNotEqual(refused.json()["error"]["code"], "step_effects_required")
+        self.assertNotIn(b"printf part", refused.content, "the provisioning boundary still withholds the body")
 
 
 if __name__ == "__main__":

@@ -63,12 +63,20 @@ PROVISIONING_REQUEST_VERSION = "service_provisioning_request/v1"
 TIERED_PROVISIONING_REQUEST_VERSION = "service_provisioning_request/v2"
 PROVISIONING_REQUEST_VERSIONS = (PROVISIONING_REQUEST_VERSION, TIERED_PROVISIONING_REQUEST_VERSION)
 #: The header in which a person's own client configuration says what its harness steps may do, for example
-#: `Baltor-Step-Effects: reads_fs` when the harness reads files in the person's project. A request that states its
-#: own `authority_effects` keeps them. Without the header or the field a step holds no effect, so an item whose
-#: steps read files, write files, run a command or use the network is withheld with its reason: the service
-#: never grants an effect the person's configuration did not state.
+#: `Baltor-Step-Effects: reads_fs, writes_fs, spawns_process, network` when the harness edits files, runs commands and
+#: uses the network in the person's project. A request that states its own `authority_effects` keeps them. Search,
+#: listing and manifests show every item with its declared effects and the effects the step would still have to
+#: declare; a body read of an item whose effects the step did not declare is refused with the header and the effects
+#: to add. The service never grants an effect the person's configuration did not state.
 STEP_EFFECTS_HEADER = "baltor-step-effects"
+#: The header's name as a person writes it into a client configuration and as refusals name it.
+STEP_EFFECTS_HEADER_NAME = "Baltor-Step-Effects"
 STEP_EFFECTS = tuple(effect for effect in EFFECTS if effect != "pure")
+#: The details of a body read refused because the item declares an effect its step did not declare. Search, listing
+#: and manifests show such an item, marked with `effects_to_declare`; only its body is refused (September 27, 2026:
+#: 7,781 of 12,191 items, among them every useful CAD skill, were hidden from a client that did not send the header).
+STEP_EFFECTS_REFUSAL_VERSION = "service_step_effects_refusal/v1"
+STEP_EFFECTS_REQUIRED_CODE = "step_effects_required"
 #: What a tier-aware request's steps may do when neither the request nor the person's client configuration says:
 #: read files in the person's own project, which every coding harness step does. It lets the service offer items
 #: whose steps read files; it grants the harness nothing, since each harness keeps its own permissions. The
@@ -82,26 +90,35 @@ PACKAGE_READ_VERSION = "provisioning_package_read/v1"
 #: How a delivered file's bytes travel in a protocol answer. Valid UTF-8 without a NUL travels as its text; any other
 #: file travels as base64 of its exact bytes. A file's digest is the SHA-256 of its exact bytes in both cases.
 UTF8_CONTENT, BASE64_CONTENT = "utf-8", "base64"
+PACKAGE_FILE_ENCODINGS = (UTF8_CONTENT, BASE64_CONTENT)
 #: Room a protocol answer keeps for the protocol envelope and the Loop execution record around the read record.
 PROTOCOL_ANSWER_RESERVE_BYTES = 8_192
 #: What each provisioning protocol tool does, in the words a harness's model reads when it chooses a tool.
 PROTOCOL_TOOL_DESCRIPTIONS = {
+    "search": ("Search the Baltor library's metadata. Answers references only, never file bodies, and is never "
+               "counted as a download. Every hit names its declared_effects and effects_to_declare: the effects "
+               "your client must declare before it may read that item. Your client declares the effects its steps "
+               "may perform in the Baltor-Step-Effects header of its configuration, for example reads_fs, "
+               "writes_fs, spawns_process, network. authority_effects in the arguments narrows the hits to items "
+               "within those effects."),
     "discover": ("Summarize what this account can reach: how many items, of which kinds and library tiers, and "
                  "whether bodies can be read. Metadata only; never counted as a download."),
     "list": ("List the items this account can reach as metadata: identity, purpose, kind, body digest, size, "
-             "licence, declared effects and library tier. Page a long list with page_size and cursor. Metadata "
-             "only; never counted as a download."),
-    "manifest": ("Describe one item before reading it: its exact digest and size, declared effects, library tier "
-                 "and whether this account may read its body. Send expected_digest to bind the answer to the "
-                 "version you selected. Metadata only; never counted as a download."),
+             "licence, declared effects, effects_to_declare and library tier. Page a long list with page_size and "
+             "cursor. Metadata only; never counted as a download."),
+    "manifest": ("Describe one item before reading it: its exact digest and size, declared effects, the "
+                 "effects_to_declare your client has not declared, library tier and whether this account may read "
+                 "its body. Send expected_digest to bind the answer to the version you selected. Metadata only; "
+                 "never counted as a download."),
     "read": ("Read one selected item. Send identity, expected_digest (the body_digest from the search) and a "
              "request_id. A single-file item answers provisioning_body/v3 with its text in body. A package of "
              "several files answers provisioning_package_read/v1: each file's content (UTF-8 text, or base64 of "
              "other bytes) with its path, SHA-256 digest, size, media type and role, as many whole files as fit in "
              "one answer. Ask for the next page with file_offset set to next_file_offset, or for one file with "
              "path. Check each file's SHA-256 against its digest before you use it. Use the same request_id for "
-             "every page and file of one item. To save files in a project, use a command that writes the exact "
-             "bytes, never a retyped copy."),
+             "every page and file of one item. An item whose effects your client did not declare in the "
+             "Baltor-Step-Effects header is refused with step_effects_required, whose details name the effects to "
+             "add. To save files in a project, use a command that writes the exact bytes, never a retyped copy."),
 }
 # Version 2 adds explicit metadata effect selection. Old readers must refuse
 # this request rather than silently omit its required selection.
@@ -666,12 +683,38 @@ def step_effects(headers) -> tuple:
     return names
 
 
-def with_step_effects(fields: dict, effects: tuple) -> dict:
-    """The request's own `authority_effects` when it states them, otherwise the ones its client configuration states,
-    otherwise the documented default of a tier-aware request."""
-    if "authority_effects" not in fields:
-        return {**fields, "authority_effects": list(effects or DEFAULT_STEP_EFFECTS)}
-    return fields
+def effect_selection(fields: dict, header_effects: tuple) -> tuple:
+    """Split what one tier-aware request says about effects into what it is shown and what its step may fetch.
+
+    Returns `(fields, step)`. Seeing an item is not authority to use it, so the two are separate:
+
+    - A request that states its own `authority_effects` keeps them as a filter on what it is shown, as version 2 has
+      always done, and they are its step's effects too.
+    - A request that states none is shown every item it may see, each marked with the effects its step would still
+      have to declare. Its step holds the effects its client configuration states in the `Baltor-Step-Effects` header,
+      or the documented default. Its `authority_effects` become every effect, so no effect withholds metadata.
+
+    A body read is always checked against the step's effects, so an item that declares an effect never reaches a step
+    that did not declare it (see `_require_step_effects`)."""
+    if "authority_effects" in fields:
+        return dict(fields), tuple(fields["authority_effects"])
+    return {**fields, "authority_effects": list(EFFECTS)}, tuple(header_effects or DEFAULT_STEP_EFFECTS)
+
+
+def effects_to_declare(declared, step) -> list:
+    """The effects an item declares that a step did not declare. `pure` declares no effect, so it is never one."""
+    return [effect for effect in declared if effect != "pure" and effect not in step]
+
+
+def step_effects_refusal(declared, step, missing) -> dict:
+    """The details of a body read refused for undeclared effects: what the item needs, what the step holds, what to add.
+
+    Every value comes from the closed effect vocabulary, so nothing a caller wrote is reflected back."""
+    wanted = [effect for effect in STEP_EFFECTS if effect in step or effect in missing]
+    return {"record_type": STEP_EFFECTS_REFUSAL_VERSION, "declared_effects": [e for e in declared if e != "pure"],
+            "step_effects": [effect for effect in step if effect != "pure"], "effects_to_declare": list(missing),
+            "header": STEP_EFFECTS_HEADER_NAME, "header_value": ", ".join(wanted),
+            "request_field": "authority_effects"}
 
 
 def _status(error):
@@ -872,9 +915,14 @@ class ServiceHttpApplication:
                 "library": {"tiers": tier_legend(),
                             "provisioning_request_record_types": list(PROVISIONING_REQUEST_VERSIONS),
                             "tiered_provisioning_request_record_type": TIERED_PROVISIONING_REQUEST_VERSION,
-                            "step_effects_header": "Baltor-Step-Effects",
+                            "step_effects_header": STEP_EFFECTS_HEADER_NAME,
                             "step_effects": list(STEP_EFFECTS),
                             "default_step_effects": list(DEFAULT_STEP_EFFECTS),
+                            # Search, listing and manifests show an item whose effects the step did not declare,
+                            # marked with effects_to_declare; a read of its body is refused with this record.
+                            "undeclared_effects": "shown_with_effects_to_declare_and_refused_at_read",
+                            "step_effects_refusal_code": STEP_EFFECTS_REQUIRED_CODE,
+                            "step_effects_refusal_record_type": STEP_EFFECTS_REFUSAL_VERSION,
                             "served_items": self.served_item_count()},
                 "retrieval": {"request_record_type": RETRIEVAL_REQUEST_VERSION,
                               "authority_effects": "metadata_eligibility_only",
@@ -889,12 +937,12 @@ class ServiceHttpApplication:
                              "download_endpoint": "/api/v1/download", "requires_reauthorization": True,
                              "body_format": "utf8_text", "package_files": "download_by_path",
                              # The protocol tool delivers a package's files too, page by page, within one answer's
-                             # limit counted with both of its copies (roadmap: customer delivery path).
-                             "protocol_package_files": {
-                                 "record_type": PACKAGE_READ_VERSION, "tool": "provisioning_read",
-                                 "selection": ["file_offset", "path"], "encodings": [UTF8_CONTENT, BASE64_CONTENT],
-                                 "answer_bytes": self.configuration.maximum_response_bytes,
-                                 "reserved_bytes": PROTOCOL_ANSWER_RESERVE_BYTES}},
+                             # limit (limits.response_bytes), counted with both of its copies.
+                             "protocol_package_files": "provisioning_read_by_page_or_path",
+                             "protocol_package_record_type": PACKAGE_READ_VERSION,
+                             "protocol_package_selection": ["file_offset", "path"],
+                             "protocol_package_encodings": list(PACKAGE_FILE_ENCODINGS),
+                             "protocol_answer_reserved_bytes": PROTOCOL_ANSWER_RESERVE_BYTES},
                 "limits": {"request_bytes": self.configuration.maximum_request_bytes,
                            "response_bytes": self.configuration.maximum_response_bytes,
                            "search_results": self.configuration.maximum_search_results,
@@ -1106,7 +1154,12 @@ class ServiceHttpApplication:
         Removes `library_tiers` from the fields, because the provisioning boundary receives the resolved choice."""
         return narrowed(self.library_settings(principal), fields.pop("library_tiers", None))
 
-    def _invoke(self, authentication, operation, fields, *, tiered=False, encoding=JSON_ENCODING):
+    def _invoke(self, authentication, operation, fields, *, tiered=False, encoding=JSON_ENCODING, step=None):
+        """One provisioning operation for an authenticated request.
+
+        `step` is the effects a tier-aware request's step holds (see `effect_selection`). Listed rows and a manifest
+        then name the effects the step would still have to declare, and a read of an item that declares more is
+        refused with `step_effects_required` before anything is read or counted."""
         current = self.authenticator.revalidate(authentication)
         self._require_scope(current, "provisioning:read" if operation == READ_OPERATION else "provisioning:metadata")
         if "path" in fields:
@@ -1121,12 +1174,13 @@ class ServiceHttpApplication:
         if page_size is not None:
             return self._list_page(authentication, current, ListPageRequest(
                 current.principal, view, fields, page_size, cursor, self.configuration.maximum_response_bytes,
-                encoding))
+                encoding), step=step)
         if operation == READ_OPERATION:
-            manifest = self.provisioning.invoke_for_principal(current.principal, MANIFEST_OPERATION, view=view,
-                **{key: value for key, value in fields.items() if key != "request_id"})
+            manifest = self._read_manifest(current.principal, view, fields, step)
             if manifest["size_bytes"] > self.configuration.maximum_inline_body_bytes:
                 raise ServiceHttpError("download_required", 413)
+            if step is not None:
+                fields["authority_effects"] = list(step)
         result = self.provisioning.invoke_for_principal(current.principal, operation, view=view, **fields)
         if operation == LIST_OPERATION and callable(getattr(view, "shown_attributes", None)):
             # Each listed row carries the served attributes an account may see (the tier the row already names,
@@ -1134,6 +1188,13 @@ class ServiceHttpApplication:
             # them without a second request. They are descriptive only and grant nothing (roadmap S-6.208).
             result = {**result, "items": [{**row, "attributes": view.shown_attributes(row["identity"])}
                                           for row in result["items"]]}
+        if step is not None and operation == LIST_OPERATION:
+            result = {**result, "step_effects": list(step),
+                      "items": [{**row, "effects_to_declare": effects_to_declare(row["declared_effects"], step)}
+                                for row in result["items"]]}
+        elif step is not None and operation == MANIFEST_OPERATION:
+            result = {**result, "step_effects": list(step),
+                      "effects_to_declare": effects_to_declare(result["declared_effects"], step)}
         if "provisioning:read" not in current.effective_scopes:
             if operation == LIST_OPERATION:
                 result = {**result, "items": [{**row, "body_allowed": False} for row in result["items"]]}
@@ -1150,7 +1211,25 @@ class ServiceHttpApplication:
         # items, and it is answered in the version 2 shapes its readers check.
         return tierless_answer(result)
 
-    def _protocol_read(self, authentication, fields):
+    def _read_manifest(self, principal, view, fields, step):
+        """The manifest a body read starts from, after the step's effects are checked against the item's own.
+
+        Without `step` (a version 1 request) the manifest is asked exactly as the read is. With it, the manifest is
+        read as metadata, which no effect withholds, and a declared effect the step did not declare refuses the read
+        with `step_effects_required`, naming the header and the effects to add. The read itself then asks with the
+        step's effects, so the provisioning boundary checks them a second time."""
+        wanted = {key: value for key, value in fields.items() if key != "request_id"}
+        if step is None:
+            return self.provisioning.invoke_for_principal(principal, MANIFEST_OPERATION, view=view, **wanted)
+        manifest = self.provisioning.invoke_for_principal(principal, MANIFEST_OPERATION, view=view,
+                                                          **{**wanted, "authority_effects": list(EFFECTS)})
+        missing = effects_to_declare(manifest["declared_effects"], step)
+        if missing:
+            raise ServiceHttpError(STEP_EFFECTS_REQUIRED_CODE, 403,
+                                   details=step_effects_refusal(manifest["declared_effects"], step, missing))
+        return manifest
+
+    def _protocol_read(self, authentication, fields, step=None):
         """`provisioning_read` over the protocol: a single-file item's text inline, or a package's files by page.
 
         A single-file item asked without `path` or `file_offset` is answered as before, in `provisioning_body/v3`. A
@@ -1169,8 +1248,9 @@ class ServiceHttpApplication:
         self._require_scope(current, "provisioning:read")
         fields["community_items"] = self.community_choice(current.principal, fields)
         view = self.provisioning.current_view()
-        manifest = self.provisioning.invoke_for_principal(current.principal, MANIFEST_OPERATION, view=view,
-            **{key: value for key, value in fields.items() if key != "request_id"})
+        manifest = self._read_manifest(current.principal, view, fields, step)
+        if step is not None:
+            fields["authority_effects"] = list(step)
         package = view.package_of(manifest["identity"]) if callable(getattr(view, "package_of", None)) else None
         if package is None or (package.body_form == FILE_BODY and selected_path is None and offset is None):
             if selected_path is not None or offset is not None:
@@ -1227,11 +1307,11 @@ class ServiceHttpApplication:
         self.authenticator.revalidate(authentication)
         return record
 
-    def _list_page(self, authentication, current, paged):
+    def _list_page(self, authentication, current, paged, step=None):
         """One page of a paged list (roadmap S-6.203), filled under this host's answer cap.
 
-        Each row carries what a whole list's rows carry: the served attributes, and no body permission for a
-        credential without the read scope."""
+        Each row carries what a whole list's rows carry: the served attributes, the effects the step would still have
+        to declare, and no body permission for a credential without the read scope."""
         view = paged.view
         attributes = view.shown_attributes if callable(getattr(view, "shown_attributes", None)) else None
         reads = "provisioning:read" in current.effective_scopes
@@ -1239,13 +1319,17 @@ class ServiceHttpApplication:
         def decorate(row):
             if attributes is not None:
                 row = {**row, "attributes": attributes(row["identity"])}
+            if step is not None:
+                row = {**row, "effects_to_declare": effects_to_declare(row["declared_effects"], step)}
             return row if reads else {**row, "body_allowed": False}
         page = list_page(replace(paged, decorate=decorate), provisioning=self.provisioning, runtime=self.runtime,
                          cursors=self.list_cursors)
         self.authenticator.revalidate(authentication)
-        return page
+        return {**page, "step_effects": list(step)} if step is not None and isinstance(page, dict) else page
 
-    def _search(self, authentication, fields):
+    def _search(self, authentication, fields, step=None):
+        """Search the metadata this account may see. With `step`, each hit names the effects its step would still have
+        to declare before a read, and the answer names the step's effects and the header that sets them."""
         from dataclasses import asdict
         from ..harness_intelligence import HarnessIntelligenceItem
         from ..intelligence_tagging import TagSet
@@ -1289,8 +1373,12 @@ class ServiceHttpApplication:
                          "body_allowed": row["body_allowed"] and "provisioning:read" in current.effective_scopes,
                          "attributes": view.shown_attributes(identity),
                          "package": view.package_summary(identity)})
+            if step is not None:
+                hits[-1]["effects_to_declare"] = effects_to_declare(row["declared_effects"], step)
         self._verify_search_snapshot(authentication, current, grant_guard)
         result = {"record_type": "service_retrieval_result/v1", "hits": hits,
+                  **({"step_effects": list(step), "step_effects_header": STEP_EFFECTS_HEADER_NAME}
+                     if step is not None else {}),
                   "mode": fields.get("mode", "lexical"), "bodies_loaded": False,
                   "backend": self.capabilities()["retrieval"],
                   "catalogue_release": view.release_id or None,
@@ -1548,8 +1636,9 @@ class ServiceHttpApplication:
                 inputSchema=protocol_tool_schema(operation), annotations=types.ToolAnnotations(
                     readOnlyHint=operation != READ_OPERATION, destructiveHint=False, idempotentHint=True))
                 for name, operation in TOOL_OPERATIONS.items()]
-            tools.append(types.Tool(name="intelligence_search", description="Search authorized metadata only",
-                inputSchema=http_retrieval_schema()))
+            tools.append(types.Tool(name="intelligence_search", description=PROTOCOL_TOOL_DESCRIPTIONS["search"],
+                inputSchema=http_retrieval_schema(), annotations=types.ToolAnnotations(
+                    readOnlyHint=True, destructiveHint=False, idempotentHint=True)))
             # A harness reports an item it was served; a Community item is withdrawn at once and a Verified one on
             # the second report from another account (roadmap S-6.199). Only an account that read the item's body
             # at that digest may report it.
@@ -1564,12 +1653,14 @@ class ServiceHttpApplication:
             # always read an absent argument object as an empty one.
             name, arguments = params.name, params.arguments or {}
             scope = ctx.request.scope
+            details = None
             try:
                 context = scope["service_authentication"]
                 effects = step_effects(ctx.request.headers)
                 if name == "intelligence_search":
-                    fields = with_step_effects(self._validate_search(arguments, versioned=False), effects)
-                    output = await self._tenant_work(context, lambda: invoke_http_retrieval_as_loop(lambda: self._search(context, fields)))
+                    fields, step = effect_selection(self._validate_search(arguments, versioned=False), effects)
+                    output = await self._tenant_work(context, lambda: invoke_http_retrieval_as_loop(
+                        lambda: self._search(context, fields, step)))
                 elif name == REPORT_TOOL:
                     validate(arguments, feedback_schema())
                     output = await self._tenant_work(context, lambda: invoke_http_service_as_loop(
@@ -1583,13 +1674,18 @@ class ServiceHttpApplication:
                     validate(arguments, protocol_tool_schema(operation))
                     if operation == READ_OPERATION and not arguments.get("request_id"):
                         raise ServiceHttpError("request_identity_required")
-                    arguments = with_step_effects(arguments, effects) if operation != DISCOVER_OPERATION else arguments
+                    # What the tool shows and what its step may fetch are separate: see `effect_selection`. A
+                    # summary counts every item the account may see, whatever effects it declares.
+                    if operation == DISCOVER_OPERATION:
+                        arguments, step = {**arguments, "authority_effects": list(EFFECTS)}, None
+                    else:
+                        arguments, step = effect_selection(arguments, effects)
                     # Protocol tools serve harnesses, which read each item's tier and label in the answer. A read
                     # delivers a package's files as well as a single file's text.
                     output = await self._tenant_work(context, lambda: invoke_http_service_as_loop(operation,
-                        (lambda: self._protocol_read(context, arguments)) if operation == READ_OPERATION else
+                        (lambda: self._protocol_read(context, arguments, step)) if operation == READ_OPERATION else
                         (lambda: self._invoke(context, operation, arguments, tiered=True,
-                                              encoding=PROTOCOL_ENCODING))))
+                                              encoding=PROTOCOL_ENCODING, step=step))))
                 response = types.CallToolResult(content=[types.TextContent(type="text", text=_json_bytes(output).decode())],
                                                 structuredContent=output, isError=False)
                 if len(response.model_dump_json(by_alias=True).encode()) > self.configuration.maximum_response_bytes:
@@ -1599,13 +1695,16 @@ class ServiceHttpApplication:
                 status, code = 400, "invalid_request"
             except Exception as error:
                 status, code = _status(error)
+                # A transport refusal's typed details reach the harness as they reach a web client: the
+                # effects a step must declare, or how long to wait. They never hold request text.
+                details = error.details if isinstance(error, ServiceHttpError) else None
             # A protocol tool refusal is a failed request too, and the harness
             # that made it sees the same reference the operator searches for.
             # The record goes through the same guarded writer as every other
             # refusal, so recording it can never turn into a different failure.
             await self._record_failure(scope, ctx.request, code, status)
             reference = scope.get(SCOPE_REFERENCE_KEY)
-            refused = _error_record(code, status, None, reference.value if reference is not None else None)
+            refused = _error_record(code, status, details, reference.value if reference is not None else None)
             return types.CallToolResult(content=[types.TextContent(type="text", text=_json_bytes(refused).decode())],
                                         structuredContent=refused, isError=True)
 
@@ -2067,8 +2166,14 @@ class ServiceHttpApplication:
                         output = {"record_type": RESULT_VERSION, "operation": operation, "result": output}
                     encoded = _json_bytes(output)
                     return Response(encoded, media_type="application/json", status_code=status_code)
-                if operation != DISCOVER_OPERATION and tiered:
-                    fields = with_step_effects(fields, step_effects(request.headers))
+                # A tier-aware request's view and its step's effects are separate: see `effect_selection`. Its
+                # summary counts every item the account may see, whatever effects it declares. Version 1 predates
+                # step effects and keeps its own fields.
+                step = None
+                if tiered and operation == DISCOVER_OPERATION:
+                    fields = {**fields, "authority_effects": list(EFFECTS)}
+                elif tiered:
+                    fields, step = effect_selection(fields, step_effects(request.headers))
                 if path.endswith("download"):
                     if operation != READ_OPERATION:
                         raise ServiceHttpError("download_requires_read")
@@ -2079,8 +2184,9 @@ class ServiceHttpApplication:
                         if tiered:
                             fields["community_items"] = self.community_choice(current.principal, fields)
                         view = self.provisioning.current_view()
-                        manifest = self.provisioning.invoke_for_principal(current.principal, MANIFEST_OPERATION,
-                            view=view, **{key: value for key, value in fields.items() if key != "request_id"})
+                        manifest = self._read_manifest(current.principal, view, fields, step)
+                        if step is not None:
+                            fields["authority_effects"] = list(step)
                         if manifest["size_bytes"] > self.configuration.maximum_download_bytes:
                             raise ServiceHttpError("download_limit_exceeded", 413)
                         value = self.provisioning.invoke_for_principal(current.principal, READ_OPERATION,
@@ -2107,11 +2213,12 @@ class ServiceHttpApplication:
                     return Response(value["file"] if value.get("file") is not None else value["body"].encode("utf-8"),
                         media_type="application/octet-stream", headers=headers)
                 output = await self._tenant_work(context, lambda: invoke_http_service_as_loop(operation,
-                    lambda: self._invoke(context, operation, fields, tiered=tiered)))
+                    lambda: self._invoke(context, operation, fields, tiered=tiered, step=step)))
             elif path == "/api/v1/retrieval" and method == "POST":
-                fields = with_step_effects(self._validate_search(_parse_json(await self._body(request))),
-                                           step_effects(request.headers))
-                output = await self._tenant_work(context, lambda: invoke_http_retrieval_as_loop(lambda: self._search(context, fields)))
+                fields, step = effect_selection(self._validate_search(_parse_json(await self._body(request))),
+                                                step_effects(request.headers))
+                output = await self._tenant_work(context, lambda: invoke_http_retrieval_as_loop(
+                    lambda: self._search(context, fields, step)))
             else:
                 raise ServiceHttpError("route_unavailable", 404)
         if output.get("record_type") != RESULT_VERSION:

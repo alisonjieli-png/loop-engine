@@ -37,10 +37,13 @@ Create `.pi/baltor.json` beside it. It holds the name of the variable, never the
 {
   "baltor": {
     "url": "https://baltor.ai/mcp",
-    "token_env": "BALTOR_SERVICE_TOKEN"
+    "token_env": "BALTOR_SERVICE_TOKEN",
+    "step_effects": ["reads_fs", "writes_fs", "spawns_process", "network"]
   }
 }
 ```
+
+`step_effects` says what Pi's steps may do with a Baltor item: `reads_fs` reads files in your project, `writes_fs` writes them, `spawns_process` runs commands and `network` uses the network. `reads_secret` is left out unless your steps read secrets. Remove any effect Pi should not have. The extension sends the list in the `Baltor-Step-Effects` header. Search shows every item your account may use, and marks one whose effects your list leaves out; the extension does not download that item and names the effects to add. The extension needs version 2 of the file for this setting: download it again if an older copy refuses `step_effects`.
 
 ## Check the connection
 
