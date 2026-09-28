@@ -66,6 +66,13 @@ class RegistryTests(unittest.TestCase):
                 for name in (word.strip(" ,") for word in names.split() if word.startswith("test_")):
                     self.assertTrue((ROOT / "tools" / f"{name.rstrip(',')}.py").is_file(), name)
 
+    def test_the_outputs_listing_is_every_output_in_order(self):
+        # tools/release_train.py takes the train's side of a conflict in exactly these paths.
+        completed = subprocess.run([sys.executable, str(ROOT / "tools" / "regenerate_all.py"), "--outputs"],
+                                   capture_output=True, text=True, check=True)
+        self.assertEqual(completed.stdout.split("\n")[:-1], [output for item in tool.VIEWS for output in item.outputs])
+        self.assertIn("docs/roadmap/CONTINUATION-STATUS.md", completed.stdout.split())
+
     def test_every_tool_with_a_check_mode_is_a_view_or_says_why_not(self):
         commands = {part for item in tool.VIEWS for part in item.command}
         with_check = sorted(path.name for path in (ROOT / "tools").glob("*.py") if not path.name.startswith("test_")

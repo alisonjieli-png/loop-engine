@@ -478,6 +478,8 @@ def main(argv=None) -> int:
     parser.add_argument("--no-verify", action="store_true", help="leave out the second run of the fast views")
     parser.add_argument("--no-git", action="store_true", help="leave out the undeclared-write check (no checkout)")
     parser.add_argument("--list", action="store_true", help="print the views and exit")
+    parser.add_argument("--outputs", action="store_true",
+                        help="print every generated path, one a line, a folder ending in /, and exit")
     parser.add_argument("--build", help=argparse.SUPPRESS)
     arguments = parser.parse_args(argv)
     only = tuple(name for name in arguments.only.split(",") if name)
@@ -485,6 +487,11 @@ def main(argv=None) -> int:
     try:
         if arguments.build:
             INTERNAL_BUILDERS[arguments.build](arguments.root.resolve())
+            return 0
+        if arguments.outputs:
+            # For tools/release_train.py, which takes the train's side of a conflict in any of these paths and
+            # regenerates it, instead of asking a person to merge two generated copies.
+            print("\n".join(output for view in VIEWS for output in view.outputs))
             return 0
         if arguments.list:
             for view in VIEWS:
@@ -511,7 +518,6 @@ def main(argv=None) -> int:
         return 1
     print(f"{len(result['changed'])} generated files were written; commit them as one generated-views commit")
     return 0
-
 
 
 if __name__ == "__main__":
