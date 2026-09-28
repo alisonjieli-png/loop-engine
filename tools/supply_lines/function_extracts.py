@@ -33,12 +33,10 @@ import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from loop_engine.core.library_ingestion.record_rules import git_blob_identity
-
 from .licences import repository_licence
 from .openapi_operations import run_tests
 from .packaging import LICENCE_NAME, UPSTREAM_LICENCE_NAME, PackageFile, SupplyPackage, build
-from .reading import RAW_HOST, github_blob_address, https_address
+from .reading import RAW_HOST, github_blob_address, https_address, pinned_files
 from .records import (
     BLOCKED_BY_STATIC_CHECK, FUNCTION_EXTRACTS, GENERATED_CODE_LICENCE, GENERATED_TEST_FAILED, LICENCE_TEXT,
     PACKAGE_ABOVE_REVIEW_BOUND, SupplyRecordError, fact_source, provenance, refusal, upstream_key)
@@ -448,32 +446,6 @@ def test_text(module: str) -> str:
             'if __name__ == "__main__":\n    unittest.main()\n')
 
 
-def read_modules(reader, repository: str, branch: str, paths) -> tuple:
-    """({path: pinned file} of the modules, missing paths): the branch's head commit, its tree (one read), and each
-    module's bytes at that commit, proven by the tree's git blob identity."""
-    head = reader.github(f"repos/{repository}/commits/{branch}")
-    if head.status != 200:
-        raise LookupError(f"{repository}: the branch {branch} has no readable head commit")
-    commit = json.loads(head.body)["sha"]
-    tree = reader.github(f"repos/{repository}/git/trees/{commit}?recursive=1")
-    if tree.status != 200:
-        raise LookupError(f"{repository}: no tree at {commit[:12]}")
-    blobs = {entry["path"]: entry["sha"] for entry in json.loads(tree.body).get("tree", []) if entry.get("type") == "blob"}
-    pinned, missing = {}, []
-    for path in paths:
-        if path not in blobs:
-            missing.append(path)
-            continue
-        url = https_address(RAW_HOST, f"{repository}/{commit}/{path}")
-        answer = reader.get(url)
-        if answer.status != 200 or git_blob_identity(answer.body) != blobs[path]:
-            missing.append(path)
-            continue
-        pinned[path] = {"repository": repository, "commit": commit, "path": path, "blob": blobs[path], "url": url,
-                        "bytes": answer.body, "sha256": answer.sha256, "retrieved_at": answer.retrieved_at}
-    return pinned, missing
-
-
 def generate(reader, sources, *, code_revision: str, licence_text: bytes, generated_on: str, staging: Path,
              repository_facts: "dict | None" = None) -> tuple:
     """(built, refusals, facts, summary): every documented function of every declared library, tested."""
@@ -483,7 +455,7 @@ def generate(reader, sources, *, code_revision: str, licence_text: bytes, genera
     for source in sources:
         repository = source["repository"]
         try:
-            pinned, missing = read_modules(reader, repository, source["branch"], source["modules"])
+            pinned, missing = pinned_files(reader, repository, source["branch"], source["modules"])
         except LookupError as error:
             refused.append(refusal(FUNCTION_EXTRACTS, "source_unreadable", repository, str(error)))
             continue

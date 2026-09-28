@@ -255,3 +255,29 @@ class FactReader:
         return {"network_requests": self.network_requests, "cache_hits": self.cache_hits,
                 "https": self.https.log.summary(), "github_rest": self.rest.log.summary() if self.rest else None,
                 "github_graphql": self.graphql_log.summary()}
+
+
+def pinned_files(reader, repository: str, branch: str, paths) -> tuple:
+    """({path: pinned file}, missing paths) of many files of one repository: the branch's head commit, its tree
+    (one read), and each file's bytes at that commit, proven by the tree's git blob identity."""
+    head = reader.github(f"repos/{repository}/commits/{branch}")
+    if head.status != 200:
+        raise LookupError(f"{repository}: the branch {branch} has no readable head commit")
+    commit = json.loads(head.body)["sha"]
+    tree = reader.github(f"repos/{repository}/git/trees/{commit}?recursive=1")
+    if tree.status != 200:
+        raise LookupError(f"{repository}: no tree at {commit[:12]}")
+    blobs = {entry["path"]: entry["sha"] for entry in json.loads(tree.body).get("tree", []) if entry.get("type") == "blob"}
+    pinned, missing = {}, []
+    for path in paths:
+        if path not in blobs:
+            missing.append(path)
+            continue
+        url = https_address(RAW_HOST, f"{repository}/{commit}/{path}")
+        answer = reader.get(url)
+        if answer.status != 200 or git_blob_identity(answer.body) != blobs[path]:
+            missing.append(path)
+            continue
+        pinned[path] = {"repository": repository, "commit": commit, "path": path, "blob": blobs[path], "url": url,
+                        "bytes": answer.body, "sha256": answer.sha256, "retrieved_at": answer.retrieved_at}
+    return pinned, missing

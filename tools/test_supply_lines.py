@@ -940,6 +940,36 @@ class DataTableLineTest(unittest.TestCase):
         self.assertEqual((fields, required), ({"code": ["string"], "n": ["integer", "number"], "x": ["null"]},
                                               ["code", "n"]))
 
+    def test_a_csv_table_is_keyed_by_row_number_and_its_loader_passes_its_tests(self):
+        from supply_lines import data_tables as line
+        from supply_lines.openapi_operations import literal, run_tests
+        text = "team,wins\nBoston,10\nChicago,7\n"
+        table = line.table_rows(text, "csv_records", line.ROW_NUMBER_FIELD, None)
+        self.assertEqual(table, [{"row": 1, "team": "Boston", "wins": "10"}, {"row": 2, "team": "Chicago", "wins": "7"}])
+        self.assertEqual(line.table_rows("team,wins\nBoston,10\n", "csv_records", "team", None),
+                         [{"team": "Boston", "wins": "10"}])
+        # Known wrong: a ragged row, repeated header names and a repeated key are refused.
+        for text_value, key in (("team,wins\nBoston\n", "row"), ("team,team\na,b\n", "row"),
+                                ("team,wins\nBoston,1\nBoston,2\n", "team")):
+            with self.assertRaises(line.TableRefused, msg=text_value):
+                line.table_rows(text_value, "csv_records", key, None)
+        data = text.encode()
+        fields, required = line.infer_schema(table)
+        loader = line.LOADER.format(title="Teams", count=len(table), file_name="teams.csv", repository="example/data",
+                                    commit="c" * 40, path="teams.csv", licence="CC-BY-4.0", sha256=_digest(data),
+                                    key_field="row", value_line="", fields=literal(fields), required=literal(required),
+                                    shape_line=line.SHAPE_LINES["csv_records:row"])
+        tests = line.TESTS.format(table_id="teams", module="teams_table", class_name="TeamsTest", first_key=1,
+                                  missing_key=-987654321, wrong_key="not a key of this table")
+        with tempfile.TemporaryDirectory() as folder:
+            target = Path(folder) / "teams_table"
+            (target / "data").mkdir(parents=True)
+            (target / "data" / "teams.csv").write_bytes(data)
+            (target / "teams_table.py").write_text(loader, encoding="utf-8")
+            (target / "test_teams_table.py").write_text(tests, encoding="utf-8")
+            passed, _count, output = run_tests(target, "teams_table")
+        self.assertTrue(passed, output)
+
     def test_the_generated_loader_passes_its_tests_and_one_without_its_checks_fails_them(self):
         from supply_lines import data_tables as line
         from supply_lines.openapi_operations import literal, run_tests

@@ -21,6 +21,8 @@ One table (declared in data_table_sources.json: repository, branch, path, shape,
 """
 from __future__ import annotations
 
+import csv
+import io
 import json
 import re
 from collections import Counter
@@ -30,7 +32,7 @@ from .licences import repository_licence
 from .openapi_operations import literal, run_tests
 from .packaging import (
     LICENCE_NAME, MAXIMUM_REVIEW_FILE_BYTES, UPSTREAM_LICENCE_NAME, PackageFile, SupplyPackage, build)
-from .reading import RAW_HOST, github_blob_address
+from .reading import RAW_HOST, github_blob_address, pinned_files
 from .records import (
     BLOCKED_BY_STATIC_CHECK, DATA_TABLES, GENERATED_CODE_LICENCE, GENERATED_TEST_FAILED, LICENCE_TEXT,
     REFUSAL_REASONS, UPSTREAM_VERBATIM, SupplyRecordError, fact_source, provenance, refusal, upstream_key)
@@ -38,7 +40,11 @@ from .records import (
 GENERATOR_VERSION = "1.0.0"
 SOURCES_FILE = Path(__file__).with_name("data_table_sources.json")
 SOURCES_RECORD_TYPE = "library_supply_data_table_sources/v1"
-SHAPES = ("records", "keyed_records", "mapping", "values")
+SHAPES = ("records", "keyed_records", "mapping", "values", "csv_records", "tsv_records")
+#: Text table shapes and their delimiters. Their values are text; a table without a key field declared is keyed
+#: by its row number (from 1), a field the loader adds.
+TEXT_SHAPES = {"csv_records": ",", "tsv_records": "\t"}
+ROW_NUMBER_FIELD = "row"
 NATIVE_FORMAT = "reference_data_table"
 HOSTS = (RAW_HOST,)
 _IDENTIFIER = re.compile(r"[a-z][a-z0-9_]{1,60}\Z")
@@ -58,6 +64,8 @@ def read_sources(path: Path = SOURCES_FILE) -> list:
         raise ValueError(f"expected {SOURCES_RECORD_TYPE}")
     rows, seen = [], set()
     for table_id, title, repository, branch, file_path, shape, key_field, value_field in record["tables"]:
+        if shape in TEXT_SHAPES and key_field is None:
+            key_field = ROW_NUMBER_FIELD
         if (table_id in seen or not _IDENTIFIER.match(table_id) or shape not in SHAPES
                 or not isinstance(key_field, str) or not key_field
                 or (shape == "mapping") != (value_field is not None)):
@@ -84,9 +92,33 @@ def json_type(value) -> str:
     return "object"
 
 
+def text_rows(text: str, delimiter: str, key_field: str) -> list:
+    """The records of a delimited text table: a header row of distinct names, then rows of the same width; keyed by
+    the row number when the key field is the row number."""
+    reader = csv.reader(io.StringIO(text), delimiter=delimiter)
+    try:
+        header = next(reader)
+    except StopIteration:
+        raise TableRefused("table_empty", "the file holds no header") from None
+    if not header or len(set(header)) != len(header) or any(not name for name in header) or ROW_NUMBER_FIELD in header \
+            and key_field == ROW_NUMBER_FIELD:
+        raise TableRefused("row_violates_schema", "the header names are not distinct, nonempty field names")
+    table = []
+    for number, values in enumerate(reader, 1):
+        if not values:
+            continue
+        if len(values) != len(header):
+            raise TableRefused("row_violates_schema", f"row {number} has {len(values)} values, not {len(header)}")
+        record = dict(zip(header, values))
+        table.append({ROW_NUMBER_FIELD: len(table) + 1, **record} if key_field == ROW_NUMBER_FIELD else record)
+    return table
+
+
 def table_rows(document, shape: str, key_field: str, value_field: "str | None") -> list:
     """The rows the declared shape holds, or refuse a document of another shape or with colliding keys."""
-    if shape == "records":
+    if shape in TEXT_SHAPES:
+        table = text_rows(document, TEXT_SHAPES[shape], key_field)
+    elif shape == "records":
         if not isinstance(document, list) or not all(isinstance(row, dict) for row in document):
             raise TableRefused("row_violates_schema", "the file is not a list of objects")
         table = [dict(row) for row in document]
@@ -138,7 +170,9 @@ Baltor generated this loader, schema.json and the tests; see README.md.
 """
 from __future__ import annotations
 
+import csv
 import hashlib
+import io
 import json
 from pathlib import Path
 
@@ -184,7 +218,6 @@ def rows():
         data = DATA_FILE.read_bytes()
         if hashlib.sha256(data).hexdigest() != DATA_SHA256:
             raise ValueError(f"{{DATA_FILE.name}} is not the recorded file (SHA-256 {{DATA_SHA256}})")
-        document = json.loads(data.decode("utf-8"))
         {shape_line}
         _CACHE["rows"] = [check_row(row) for row in table]
     return [dict(row) for row in _CACHE["rows"]]
@@ -203,12 +236,21 @@ def lookup(key):
     return found[key]
 '''
 
+_JSON_DOCUMENT = "document = json.loads(data.decode(\"utf-8\"))\n        "
+_TEXT_TABLE = ("reader = csv.reader(io.StringIO(data.decode(\"utf-8-sig\")), delimiter={delimiter!r})\n"
+               "        header = next(reader)\n"
+               "        records = [dict(zip(header, values)) for values in reader if values]\n"
+               "        table = {rows}")
 SHAPE_LINES = {
-    "records": "table = [dict(row) for row in document]",
-    "keyed_records": "table = [{KEY_FIELD: key, **{name: item for name, item in value.items() if name != KEY_FIELD}}\n"
-                     "                 for key, value in document.items()]",
-    "mapping": "table = [{KEY_FIELD: key, VALUE_FIELD: value} for key, value in document.items()]",
-    "values": "table = [{KEY_FIELD: value} for value in document]"}
+    "records": _JSON_DOCUMENT + "table = [dict(row) for row in document]",
+    "keyed_records": _JSON_DOCUMENT + "table = [{KEY_FIELD: key, **{name: item for name, item in value.items() "
+                                      "if name != KEY_FIELD}}\n                 for key, value in document.items()]",
+    "mapping": _JSON_DOCUMENT + "table = [{KEY_FIELD: key, VALUE_FIELD: value} for key, value in document.items()]",
+    "values": _JSON_DOCUMENT + "table = [{KEY_FIELD: value} for value in document]"}
+for _shape, _delimiter in TEXT_SHAPES.items():
+    SHAPE_LINES[_shape] = _TEXT_TABLE.format(delimiter=_delimiter, rows="records")
+    SHAPE_LINES[_shape + ":row"] = _TEXT_TABLE.format(
+        delimiter=_delimiter, rows="[{KEY_FIELD: number, **record} for number, record in enumerate(records, 1)]")
 
 TESTS = '''"""Offline tests of the {table_id} table.
 
@@ -338,12 +380,19 @@ def generate(reader, rows, *, code_revision: str, licence_text: bytes, generated
     built, refused, facts = [], [], {}
     generator = {"identity": "tools/supply_lines/data_tables.py", "version": GENERATOR_VERSION,
                  "code_revision": code_revision}
-    licences = {}
-    for row in rows:
+    licences, pinned_by_source = {}, {}
+    # One head commit and one tree read per repository, then each file's bytes proven by its blob identity.
+    for repository, branch in sorted({(row["repository"], row["branch"]) for row in rows}):
+        paths = [row["path"] for row in rows if (row["repository"], row["branch"]) == (repository, branch)]
         try:
-            pinned = reader.pinned_file(row["repository"], row["branch"], row["path"])
-        except LookupError as error:
-            refused.append(refusal(DATA_TABLES, "source_unreadable", row["table_id"], str(error)))
+            pinned_by_source[(repository, branch)] = pinned_files(reader, repository, branch, paths)[0]
+        except LookupError:
+            pinned_by_source[(repository, branch)] = {}
+    for row in rows:
+        pinned = pinned_by_source[(row["repository"], row["branch"])].get(row["path"])
+        if pinned is None:
+            refused.append(refusal(DATA_TABLES, "source_unreadable", row["table_id"],
+                                   f"{row['repository']}/{row['path']} is not a file at the head commit"))
             continue
         facts[pinned["sha256"]] = pinned["bytes"]
         key = (row["repository"], pinned["commit"])
@@ -371,9 +420,10 @@ def generate(reader, rows, *, code_revision: str, licence_text: bytes, generated
 
 def _package(row, pinned, licence, generator, licence_text, generated_on, staging, repository_facts):
     try:
-        document = json.loads(pinned["bytes"].decode("utf-8"))
+        document = (pinned["bytes"].decode("utf-8-sig") if row["shape"] in TEXT_SHAPES
+                    else json.loads(pinned["bytes"].decode("utf-8")))
     except (UnicodeDecodeError, ValueError) as error:
-        raise TableRefused("source_unreadable", f"not JSON: {type(error).__name__}") from None
+        raise TableRefused("source_unreadable", f"not readable as {row['shape']}: {type(error).__name__}") from None
     table = table_rows(document, row["shape"], row["key_field"], row["value_field"])
     fields, required = infer_schema(table)
     file_name = PurePosixPath(row["path"]).name
@@ -382,7 +432,9 @@ def _package(row, pinned, licence, generator, licence_text, generated_on, stagin
     loader = LOADER.format(title=row["title"], count=len(table), file_name=file_name, repository=row["repository"],
                            commit=pinned["commit"], path=row["path"], licence=licence.spdx, sha256=pinned["sha256"],
                            key_field=row["key_field"], value_line=value_line, fields=literal(fields, 0),
-                           required=literal(required), shape_line=SHAPE_LINES[row["shape"]])
+                           required=literal(required),
+                           shape_line=SHAPE_LINES[row["shape"] + (":row" if row["shape"] in TEXT_SHAPES and
+                                                                  row["key_field"] == ROW_NUMBER_FIELD else "")])
     key_kinds = fields[row["key_field"]]
     class_name = "".join(part.capitalize() for part in row["table_id"].split("_")) + "TableTest"
     tests = TESTS.format(table_id=row["table_id"], module=module, class_name=class_name,
