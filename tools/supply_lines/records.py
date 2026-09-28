@@ -93,7 +93,8 @@ REFUSAL_REASONS = {
                         "package_above_review_bound"),
     JSON_SCHEMAS: ("source_unreadable", "licence_not_on_allowlist", "schema_unreadable",
                    "older_version_of_a_listed_schema", "needs_an_outside_reference", "valid_example_rejected",
-                   "blocked_by_static_check", "generated_test_failed", "package_above_review_bound"),
+                   "blocked_by_static_check", "generated_test_failed", "package_above_review_bound",
+                   "duplicate_schema", "not_an_object_schema"),
 }
 #: The forms each line may declare, and the harness kind it serves them as.
 LINE_FORMS = {MCP_REGISTRY: {"mcp_server": "protocol_server_configuration"},
@@ -182,7 +183,7 @@ def record_id(line: str, key: str, package_digest: str) -> str:
 
 #: The state scopes of a line. A line written by two modes keeps one state per mode, so a complete run of one
 #: mode never withdraws what the other supplies (the curated and the directory mode of the API line).
-STATE_SCOPES = ("", "apis_guru_directory", "google_discovery")
+STATE_SCOPES = ("", "apis_guru_directory", "google_discovery", "api_components")
 
 
 def state_record_id(line: str, scope: str = "") -> str:

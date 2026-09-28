@@ -1817,6 +1817,58 @@ class SchemaCheckTest(unittest.TestCase):
         self.assertEqual((payload["component_form"]["form"], payload["kind"]), ("schema", "contract_schema"))
 
 
+class ApiSchemasTest(unittest.TestCase):
+    def test_named_objects_become_json_schemas_with_valid_and_known_wrong_instances(self):
+        from supply_lines import api_schemas as line
+        from supply_lines import openapi_operations as operations
+        self.assertEqual(line.to_json_schema({"type": "string", "nullable": True, "example": "x", "x-internal": 1}),
+                         {"type": ["string", "null"]})
+        self.assertEqual(line.named_schemas(SPECIFICATION), {"Thing": "#/components/schemas/Thing"})
+        self.assertFalse(line.worth_a_package({"type": "string"}))
+        self.assertTrue(line.worth_a_package({"type": "object", "properties": {"a": {}, "b": {}}}))
+        raw = operations.Resolver(SPECIFICATION).schema({"$ref": "#/components/schemas/Thing"})
+        schema = {"$schema": line.DIALECT, "title": "Thing", **line.to_json_schema(raw)}
+        valid = line.instances(raw, schema)
+        self.assertTrue(valid)
+        wrong = line.wrong_values(schema, valid)
+        self.assertIn([], wrong)  # another top-level type
+        self.assertTrue(any(isinstance(value, dict) for value in wrong))  # a valid object without a required field
+
+    def test_generate_writes_one_tested_package_per_named_object(self):
+        from loop_engine.core.library_ingestion.record_rules import git_blob_identity
+        from supply_lines import api_schemas as line
+        from supply_lines.declared_licences import licence_text_paths
+        paths, _commit = licence_text_paths()
+        body = json.dumps(SPECIFICATION).encode()
+
+        class Reader:
+            def github(self, path):
+                if path.endswith("/commits/main"):
+                    return _Answer(200, json.dumps({"sha": "c" * 40}).encode())
+                return _Answer(200, json.dumps({"sha": git_blob_identity(body)}).encode())
+
+            def get(self, url, cache_errors=False):
+                return _Answer(200, body)
+
+            def licence_text(self, repository, commit):
+                return "LICENSE", LICENCE, "MIT"
+
+            def pinned_file(self, repository, commit, path):
+                spdx = next(key for key, (where, _digest) in paths.items() if where == path)
+                return {"sha256": paths[spdx][1], "commit": commit, "bytes": b"text", "path": path}
+
+        with tempfile.TemporaryDirectory() as staging:
+            built, refused, _facts, summary = line.generate(Reader(), [SOURCE], code_revision="a" * 40,
+                                                            licence_text=LICENCE, generated_on="2026-09-28",
+                                                            staging=Path(staging))
+        self.assertEqual((len(built), refused), (1, []))
+        [(payload, bodies)] = built
+        self.assertEqual((payload["component_form"]["form"], payload["kind"]), ("schema", "contract_schema"))
+        paths_in_package = {entry["path"] for entry in payload["package"]["files"]}
+        self.assertTrue({"example_thing.schema.json", "schema_check.py", "test_example_thing.py"} <= paths_in_package)
+        self.assertEqual(summary[0]["packaged"], 1)
+
+
 class VerbatimCodeSourcesTest(unittest.TestCase):
     def test_the_declaration_is_a_valid_import_source_of_code_modules_only(self):
         from licensed_import.harness_kinds import SourceScope, declared_kind
