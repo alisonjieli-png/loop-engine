@@ -17,8 +17,8 @@ from pathlib import Path
 import subprocess
 import sys
 import tempfile
-import textwrap
 import unittest
+from unittest import mock
 
 import yaml
 
@@ -350,8 +350,19 @@ class ResolverTests(unittest.TestCase):
                          {(("entries",), "finding_id", "f2")})
 
     def test_the_train_itself_refuses_to_push(self):
-        with self.assertRaises(AssertionError):
-            train.git(Path("."), "push", "origin", "HEAD:main")
+        # No real git runs here. If the guard were removed, the call would reach this recorder, never a remote: on
+        # September 27, 2026 a mutant of an earlier form of this test, without the guard, ran a real
+        # `git push origin HEAD:main` from the development worktree and moved main.
+        calls = []
+
+        def recorder(command, **_options):
+            calls.append(command)
+            return subprocess.CompletedProcess(command, 0, "", "")
+
+        with mock.patch.object(train.subprocess, "run", recorder):
+            with self.assertRaises(AssertionError):
+                train.git(Path("/nonexistent-train"), "push", "origin", "HEAD:main")
+        self.assertEqual(calls, [])
 
 
 if __name__ == "__main__":
