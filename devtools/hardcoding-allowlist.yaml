@@ -1,6 +1,7 @@
 schema: hardcoding_allowlist/v1
 entries:
 <<<<<<< HEAD
+<<<<<<< HEAD
 - finding_id: hardcoding.2ad82dccc16807a262b354e5
   owner: tools.check_package_activation
   rationale: 'Scheme prefixes that mark a reference as a web address instead of a path inside the package.
@@ -11045,6 +11046,289 @@ entries:
   created_on: '2026-09-28'
   expires_on: '2027-09-28'
 =======
+=======
+  - finding_id: hardcoding.49d6fbc8f6a46aa967f468cf
+    owner: tools.supply_lines.api_schemas
+    rationale: The JSON Schema 2020-12 dialect identifier written into the $schema field of every schema the API component
+      mode writes, the standard's own identifier as data_tables.py writes it. No request is made to it. Added with
+      the API component mode on September 28, 2026.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.07bdd4aae19663e865111e02
+    owner: tools.supply_lines.declared_licences
+    rationale: 'A pattern that recognizes public GitHub addresses (a repository, a licence file or an AWS SDK model
+      file) in upstream metadata, so the line can name the repository whose licence it reads. No request is made from
+      the pattern: every read goes through the fact reader''s declared hosts and the GitHub read allow list. Added
+      with the supply lines'' licence rules on September 27 and 28, 2026.'
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.e608b8cd0894118eb722470f
+    owner: tools.supply_lines.google_discovery
+    rationale: 'The name of the environment variable every generated Google API client reads its OAuth 2.0 access
+      token from (for example the output of gcloud auth print-access-token). It is a name, never a value: the generator
+      stores, logs and sends no credential, the generated client refuses to call a method that names scopes without
+      it, and its tests set a placeholder. Added with the discovery mode of the API line on September 28, 2026.'
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.62313783d307eee6a51b3a99
+    owner: tools.supply_lines.javascript_clients:_run
+    rationale: 'The minimal environment the node process that runs a batch of generated JavaScript tests receives:
+      the PATH to find node, an empty NODE_OPTIONS so no preloaded module changes the run, and NO_COLOR so the TAP
+      output parses. Nothing else of the generator''s environment (and no credential) reaches the tests. Added with
+      the JavaScript clients on September 28, 2026.'
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.649f7ec7676f3d8b68aecbc4
+    owner: tools.supply_lines.javascript_clients:_run
+    rationale: 'The minimal environment the node process that runs a batch of generated JavaScript tests receives:
+      the PATH to find node, an empty NODE_OPTIONS so no preloaded module changes the run, and NO_COLOR so the TAP
+      output parses. Nothing else of the generator''s environment (and no credential) reaches the tests. Added with
+      the JavaScript clients on September 28, 2026.'
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.894403a2d4f6b885d9eb3154
+    owner: tools.supply_lines.javascript_clients:_run
+    rationale: 'The minimal environment the node process that runs a batch of generated JavaScript tests receives:
+      the PATH to find node, an empty NODE_OPTIONS so no preloaded module changes the run, and NO_COLOR so the TAP
+      output parses. Nothing else of the generator''s environment (and no credential) reaches the tests. Added with
+      the JavaScript clients on September 28, 2026.'
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.d620bbfdc062cbde323150cc
+    owner: tools.supply_lines.javascript_clients:_run
+    rationale: 'The minimal environment the node process that runs a batch of generated JavaScript tests receives:
+      the PATH to find node, an empty NODE_OPTIONS so no preloaded module changes the run, and NO_COLOR so the TAP
+      output parses. Nothing else of the generator''s environment (and no credential) reaches the tests. Added with
+      the JavaScript clients on September 28, 2026.'
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.3c4651fefcf03188263ce998
+    owner: tools.supply_lines.openapi_directory
+    rationale: 'A pattern that recognizes public GitHub addresses (a repository, a licence file or an AWS SDK model
+      file) in upstream metadata, so the line can name the repository whose licence it reads. No request is made from
+      the pattern: every read goes through the fact reader''s declared hosts and the GitHub read allow list. Added
+      with the supply lines'' licence rules on September 27 and 28, 2026.'
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.f0f7ae69523ebd8d67e94dba
+    owner: tools.supply_lines.openapi_directory
+    rationale: 'A pattern that recognizes public GitHub addresses (a repository, a licence file or an AWS SDK model
+      file) in upstream metadata, so the line can name the repository whose licence it reads. No request is made from
+      the pattern: every read goes through the fact reader''s declared hosts and the GitHub read allow list. Added
+      with the supply lines'' licence rules on September 27 and 28, 2026.'
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.161d6b31b9acbf0bf532dd6b
+    owner: tools.supply_lines.openapi_operations
+    rationale: A placeholder address under the reserved .test top-level domain that generated tests give a client
+      whose specification names no public HTTPS address (a self-hosted API). The tests send every request to a local
+      mock, so the address is never contacted. Added with self-hosted API clients on September 28, 2026.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.a423312d8db6cb9d8633167c
+    owner: tools.supply_lines.openapi_sources.json:specifications[10].credential_variable
+    rationale: 'The name of the environment variable a generated Square API client reads its credential from, declared
+      once per specification in the supply line''s sources declaration and written into each client, JavaScript module
+      and README as a name. It is a name, never a value: no credential is stored, logged or sent by the generator,
+      and the generated client refuses to call without the variable set. The generated tests set a placeholder value
+      and check that a missing variable sends nothing. Added with the second batch of API sources on September 28,
+      2026.'
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.07b3d54485eec490742443db
+    owner: tools.supply_lines.openapi_sources.json:specifications[11].credential_variable
+    rationale: 'The name of the environment variable a generated Linode API client reads its credential from, declared
+      once per specification in the supply line''s sources declaration and written into each client, JavaScript module
+      and README as a name. It is a name, never a value: no credential is stored, logged or sent by the generator,
+      and the generated client refuses to call without the variable set. The generated tests set a placeholder value
+      and check that a missing variable sends nothing. Added with the second batch of API sources on September 28,
+      2026.'
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.1d6dc5fca2293c4d40316382
+    owner: tools.supply_lines.openapi_sources.json:specifications[12].credential_variable
+    rationale: 'The name of the environment variable a generated Netlify API client reads its credential from, declared
+      once per specification in the supply line''s sources declaration and written into each client, JavaScript module
+      and README as a name. It is a name, never a value: no credential is stored, logged or sent by the generator,
+      and the generated client refuses to call without the variable set. The generated tests set a placeholder value
+      and check that a missing variable sends nothing. Added with the second batch of API sources on September 28,
+      2026.'
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.73e9263370bfc8e9be359fb7
+    owner: tools.supply_lines.openapi_sources.json:specifications[16].credential_variable
+    rationale: 'The name of the environment variable a generated Discourse API client reads its credential from, declared
+      once per specification in the supply line''s sources declaration and written into each client, JavaScript module
+      and README as a name. It is a name, never a value: no credential is stored, logged or sent by the generator,
+      and the generated client refuses to call without the variable set. The generated tests set a placeholder value
+      and check that a missing variable sends nothing. Added with the second batch of API sources on September 28,
+      2026.'
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.108959a604fa566c6a150bbf
+    owner: tools.supply_lines.openapi_sources.json:specifications[17].credential_variable
+    rationale: 'The name of the environment variable a generated Figma API client reads its credential from, declared
+      once per specification in the supply line''s sources declaration and written into each client, JavaScript module
+      and README as a name. It is a name, never a value: no credential is stored, logged or sent by the generator,
+      and the generated client refuses to call without the variable set. The generated tests set a placeholder value
+      and check that a missing variable sends nothing. Added with the second batch of API sources on September 28,
+      2026.'
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.08ad509851b9f53273578c04
+    owner: tools.supply_lines.openapi_sources.json:specifications[18].credential_variable
+    rationale: 'The name of the environment variable a generated Qdrant API client reads its credential from, declared
+      once per specification in the supply line''s sources declaration and written into each client, JavaScript module
+      and README as a name. It is a name, never a value: no credential is stored, logged or sent by the generator,
+      and the generated client refuses to call without the variable set. The generated tests set a placeholder value
+      and check that a missing variable sends nothing. Added with the second batch of API sources on September 28,
+      2026.'
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.f79dfa14f978f66038d9d234
+    owner: tools.supply_lines.openapi_sources.json:specifications[21].credential_variable
+    rationale: 'The name of the environment variable a generated Ory Keto API client reads its credential from, declared
+      once per specification in the supply line''s sources declaration and written into each client, JavaScript module
+      and README as a name. It is a name, never a value: no credential is stored, logged or sent by the generator,
+      and the generated client refuses to call without the variable set. The generated tests set a placeholder value
+      and check that a missing variable sends nothing. Added with the second batch of API sources on September 28,
+      2026.'
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.1493e492c0371b3629a7d348
+    owner: tools.supply_lines.openapi_sources.json:specifications[23].credential_variable
+    rationale: 'The name of the environment variable a generated Intercom API client reads its credential from, declared
+      once per specification in the supply line''s sources declaration and written into each client, JavaScript module
+      and README as a name. It is a name, never a value: no credential is stored, logged or sent by the generator,
+      and the generated client refuses to call without the variable set. The generated tests set a placeholder value
+      and check that a missing variable sends nothing. Added with the second batch of API sources on September 28,
+      2026.'
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.fe1d160b003d5211cf23564f
+    owner: tools.supply_lines.openapi_sources.json:specifications[26].credential_variable
+    rationale: 'The name of the environment variable a generated OpenFGA API client reads its credential from, declared
+      once per specification in the supply line''s sources declaration and written into each client, JavaScript module
+      and README as a name. It is a name, never a value: no credential is stored, logged or sent by the generator,
+      and the generated client refuses to call without the variable set. The generated tests set a placeholder value
+      and check that a missing variable sends nothing. Added with the second batch of API sources on September 28,
+      2026.'
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.08bd7cbc36f90213ae4c179a
+    owner: tools.supply_lines.openapi_sources.json:specifications[27].credential_variable
+    rationale: 'The name of the environment variable a generated Slack API client reads its credential from, declared
+      once per specification in the supply line''s sources declaration and written into each client, JavaScript module
+      and README as a name. It is a name, never a value: no credential is stored, logged or sent by the generator,
+      and the generated client refuses to call without the variable set. The generated tests set a placeholder value
+      and check that a missing variable sends nothing. Added with the second batch of API sources on September 28,
+      2026.'
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.b5c8a17dcb98533d75ba01ef
+    owner: tools.supply_lines.openapi_sources.json:specifications[9].credential_variable
+    rationale: 'The name of the environment variable a generated Elasticsearch API client reads its credential from,
+      declared once per specification in the supply line''s sources declaration and written into each client, JavaScript
+      module and README as a name. It is a name, never a value: no credential is stored, logged or sent by the generator,
+      and the generated client refuses to call without the variable set. The generated tests set a placeholder value
+      and check that a missing variable sends nothing. Added with the second batch of API sources on September 28,
+      2026.'
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.6519b68f09a7ea7189585600
+    owner: tools.supply_lines.program_installs
+    rationale: 'A pattern that recognizes public GitHub addresses (a repository, a licence file or an AWS SDK model
+      file) in upstream metadata, so the line can name the repository whose licence it reads. No request is made from
+      the pattern: every read goes through the fact reader''s declared hosts and the GitHub read allow list. Added
+      with the supply lines'' licence rules on September 27 and 28, 2026.'
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.2cd6055c17e3f0c51b3f48ef
+    owner: tools.supply_lines.schema_check:is_type
+    rationale: JSON Schema's instance type names (the standard's closed vocabulary) in the standalone validator every
+      schema package carries as schema_check.py. The file imports nothing from this repository, so it cannot read
+      a shared vocabulary; each name is tested keyword by keyword in tools/test_supply_lines.py. Added with the JSON
+      Schema line on September 28, 2026.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.816d1d66244ce4c3d3698e0e
+    owner: tools.supply_lines.schema_check:is_type
+    rationale: JSON Schema's instance type names (the standard's closed vocabulary) in the standalone validator every
+      schema package carries as schema_check.py. The file imports nothing from this repository, so it cannot read
+      a shared vocabulary; each name is tested keyword by keyword in tools/test_supply_lines.py. Added with the JSON
+      Schema line on September 28, 2026.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.86a111abe83be2093f08712d
+    owner: tools.supply_lines.schema_check:is_type
+    rationale: JSON Schema's instance type names (the standard's closed vocabulary) in the standalone validator every
+      schema package carries as schema_check.py. The file imports nothing from this repository, so it cannot read
+      a shared vocabulary; each name is tested keyword by keyword in tools/test_supply_lines.py. Added with the JSON
+      Schema line on September 28, 2026.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.973bb0313794739902c10379
+    owner: tools.supply_lines.schema_check:is_type
+    rationale: JSON Schema's instance type names (the standard's closed vocabulary) in the standalone validator every
+      schema package carries as schema_check.py. The file imports nothing from this repository, so it cannot read
+      a shared vocabulary; each name is tested keyword by keyword in tools/test_supply_lines.py. Added with the JSON
+      Schema line on September 28, 2026.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.ac38832a4a039f4bac068514
+    owner: tools.supply_lines.schema_check:is_type
+    rationale: JSON Schema's instance type names (the standard's closed vocabulary) in the standalone validator every
+      schema package carries as schema_check.py. The file imports nothing from this repository, so it cannot read
+      a shared vocabulary; each name is tested keyword by keyword in tools/test_supply_lines.py. Added with the JSON
+      Schema line on September 28, 2026.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.e81402e05753697e20090327
+    owner: tools.supply_lines.schema_check:is_type
+    rationale: JSON Schema's instance type names (the standard's closed vocabulary) in the standalone validator every
+      schema package carries as schema_check.py. The file imports nothing from this repository, so it cannot read
+      a shared vocabulary; each name is tested keyword by keyword in tools/test_supply_lines.py. Added with the JSON
+      Schema line on September 28, 2026.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+  - finding_id: hardcoding.f777ef9400835a66d1d709e6
+    owner: tools.supply_lines.schema_check:is_type
+    rationale: JSON Schema's instance type names (the standard's closed vocabulary) in the standalone validator every
+      schema package carries as schema_check.py. The file imports nothing from this repository, so it cannot read
+      a shared vocabulary; each name is tested keyword by keyword in tools/test_supply_lines.py. Added with the JSON
+      Schema line on September 28, 2026.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-28'
+    expires_on: '2027-09-28'
+>>>>>>> 4464a7ff (Name the JavaScript clients' type table once, and allowlist the supply lines' remaining names for the hardcoding gate)
   - finding_id: hardcoding.3d1289d40f7dbf2c5013ec42
     owner: tools.supply_lines.openapi_sources.json:specifications[0].credential_variable
     rationale: >-

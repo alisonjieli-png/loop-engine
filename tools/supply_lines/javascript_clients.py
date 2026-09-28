@@ -66,6 +66,14 @@ def type_name(python: str) -> str:
     return "".join(part[:1].upper() + part[1:] for part in python.split("_") if part)[:80] or "Operation"
 
 
+#: The TypeScript type of each JSON Schema instance type, built from the checked schema (an array from its items).
+_TS_TYPES = {
+    "integer": lambda check, depth: "number", "number": lambda check, depth: "number",
+    "string": lambda check, depth: "string", "boolean": lambda check, depth: "boolean",
+    "null": lambda check, depth: "null", "object": lambda check, depth: "Record<string, unknown>",
+    "array": lambda check, depth: f"Array<{ts_type(check.get('items') or {}, depth + 1) if depth < 3 else 'unknown'}>"}
+
+
 def ts_type(check: dict, depth: int = 0) -> str:
     """A TypeScript type for a checked schema: its kinds, string enumerations as literals, arrays of their items."""
     if not check:
@@ -73,20 +81,7 @@ def ts_type(check: dict, depth: int = 0) -> str:
     enum = check.get("enum")
     if isinstance(enum, list) and 0 < len(enum) <= 30:
         return " | ".join(js(value) for value in enum)
-    kinds = []
-    for kind in check.get("type") or []:
-        if kind in ("integer", "number"):
-            kinds.append("number")
-        elif kind == "string":
-            kinds.append("string")
-        elif kind == "boolean":
-            kinds.append("boolean")
-        elif kind == "null":
-            kinds.append("null")
-        elif kind == "array":
-            kinds.append(f"Array<{ts_type(check.get('items') or {}, depth + 1) if depth < 3 else 'unknown'}>")
-        elif kind == "object":
-            kinds.append("Record<string, unknown>")
+    kinds = [_TS_TYPES[kind](check, depth) for kind in check.get("type") or [] if kind in _TS_TYPES]
     return " | ".join(dict.fromkeys(kinds)) or "unknown"
 
 
