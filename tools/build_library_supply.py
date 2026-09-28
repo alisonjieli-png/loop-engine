@@ -187,7 +187,7 @@ def openapi_directory(args) -> dict:
                         pause_seconds=args.pause_seconds, maximum_bytes=128 * 1024 * 1024)
     built, refusals, facts, decisions, summary = line.generate(
         reader, code_revision=revision, licence_text=LICENCE_FILE.read_bytes(), generated_on=now_utc()[:10],
-        staging=run_folder / "staging", only=args.api, maximum_apis=args.maximum_apis)
+        staging=run_folder / "staging", only=args.api, maximum_apis=args.maximum_apis, excluded=args.exclude_api)
     (run_folder / "licences.jsonl").write_text("".join(json.dumps(row, sort_keys=True) + "\n" for row in decisions),
                                                 encoding="utf-8")
     licences = Counter((row["decision"], row.get("spdx"), row.get("basis")) for row in decisions)
@@ -296,6 +296,8 @@ def parser() -> argparse.ArgumentParser:
     common(directory)
     directory.add_argument("--api", action="append", help="only these APIs (name or provider) of the directory")
     directory.add_argument("--maximum-apis", type=int, default=0, help="at most this many APIs, in name order")
+    directory.add_argument("--exclude-api", action="append", help="leave out these APIs (name or provider), so a "
+                           "large directory runs in slices whose packages are stored slice by slice")
     three = commands.add_parser("programs")
     common(three)
     three.add_argument("--formula", action="append", help="only these formulae")

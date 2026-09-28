@@ -292,8 +292,16 @@ def read_directory(reader) -> tuple:
     return json.loads(answer.body), answer
 
 
+def selected(names, only=None, excluded=None) -> list:
+    """The directory names a run takes: all, or the named APIs and providers, minus the excluded ones."""
+    only, excluded = set(only or ()), set(excluded or ())
+    return [name for name in sorted(names)
+            if (not only or name in only or name.partition(":")[0] in only)
+            and name not in excluded and name.partition(":")[0] not in excluded]
+
+
 def generate(reader, *, code_revision: str, licence_text: bytes, generated_on: str, staging, only=None,
-             maximum_apis: "int | None" = None, maximum_operations: int = 5000) -> tuple:
+             maximum_apis: "int | None" = None, maximum_operations: int = 5000, excluded=None) -> tuple:
     """(built, refusals, facts, decisions, summary) of every API of the directory, or of the named ones."""
     directory, listing = read_directory(reader)
     facts = {listing.sha256: listing.body}
@@ -302,9 +310,7 @@ def generate(reader, *, code_revision: str, licence_text: bytes, generated_on: s
     covered, supplied = curated_coverage(read_sources()), {}
     generator = {"identity": "tools/supply_lines/openapi_directory.py", "version": "1.1.0",
                  "code_revision": code_revision}
-    names = sorted(directory)
-    if only:
-        names = [name for name in names if name in set(only) or name.split(":")[0] in set(only)]
+    names = selected(directory, only, excluded)
     if maximum_apis:
         names = names[:maximum_apis]
     for name in names:
@@ -401,4 +407,4 @@ def generate(reader, *, code_revision: str, licence_text: bytes, generated_on: s
 
 __all__ = ["DECLARED_LICENCE_NAMES", "LicenceTexts", "covering_source", "curated_coverage", "declared_licence",
            "decide", "generate", "licence_file_repository", "operation_key", "origin_repository", "read_directory",
-           "swagger2_to_openapi3", "vendor_of"]
+           "selected", "swagger2_to_openapi3", "vendor_of"]

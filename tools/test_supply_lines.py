@@ -806,6 +806,11 @@ class OpenApiDirectoryTest(unittest.TestCase):
                                                                         "azure-rest-api-specs/master/x/compute.json"}]}),
                          "Azure/azure-rest-api-specs")
         self.assertIsNone(line.origin_repository({"x-origin": [{"url": "https://developer.example.com/spec.yaml"}]}))
+        names = ["amazonaws.com:ec2", "azure.com:compute", "azure.com:network", "example.com"]
+        self.assertEqual(line.selected(names, only=["azure.com"]), ["azure.com:compute", "azure.com:network"])
+        self.assertEqual(line.selected(names, excluded=["azure.com", "amazonaws.com"]), ["example.com"])
+        self.assertEqual(line.selected(names, only=["azure.com"], excluded=["azure.com:network"]), ["azure.com:compute"])
+        self.assertEqual(line.selected(names), names)
         self.assertEqual(line.vendor_of("azure.com:compute"), "azure_compute")
         self.assertEqual(line.vendor_of("1password.local:connect"), "api_1password_connect")
 
