@@ -179,10 +179,11 @@ def covering_source(name: str, covered: dict) -> "str | None":
 
 
 def operation_key(operation) -> tuple:
-    """What makes two operations one: the server host, the method and the path key. Versions of one API in the
-    directory (a preview beside a stable release) share their operations; the first in name order is kept."""
-    host = urlsplit(operation.base_url_template or operation.base_url).netloc.lower()
-    return host, operation.method, operation.path_key or operation.path
+    """What makes two operations one: the server address (host and base path), the method and the path key. A
+    preview listed beside its stable release at the same address shares its operations, and the first in name
+    order is kept; APIs that share a host under different base paths (www.googleapis.com/drive/v3) stay apart."""
+    address = urlsplit(operation.base_url_template or operation.base_url)
+    return address.netloc.lower() + address.path.rstrip("/"), operation.method, operation.path_key or operation.path
 
 
 def read_directory(reader) -> tuple:

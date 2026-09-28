@@ -1004,8 +1004,10 @@ class OpenApiDirectoryTest(unittest.TestCase):
                                                               "credential_prefix": "T", "maximum_operations": 5})
             return found[0]
 
-        stable, beta = one("https://graph.example.com/v1.0"), one("https://graph.example.com/beta")
-        self.assertEqual(line.operation_key(stable), line.operation_key(beta))
+        stable, preview = one("https://graph.example.com/v1.0"), one("https://graph.example.com/v1.0/")
+        self.assertEqual(line.operation_key(stable), line.operation_key(preview))
+        # Known wrong: APIs that share a host under different base paths are different operations.
+        self.assertNotEqual(line.operation_key(stable), line.operation_key(one("https://graph.example.com/beta")))
         self.assertNotEqual(line.operation_key(stable), line.operation_key(one("https://other.example.com/v1.0")))
         # Known wrong: a coverage field that is not a list of names is refused when the sources are read.
         bad = {"record_type": generator.SOURCES_RECORD_TYPE, "specifications": [
@@ -1037,7 +1039,7 @@ class OpenApiDirectoryTest(unittest.TestCase):
             "updated": "2026-09-01T00:00:00Z"}}} for name in names}
         answers = {https_address(line.DIRECTORY_HOST, line.DIRECTORY_LIST): json.dumps(listing).encode(),
                    address[names[0]]: json.dumps(specification("v1.0")).encode(),
-                   address[names[1]]: json.dumps(specification("beta")).encode(),
+                   address[names[1]]: json.dumps(specification("v1.0")).encode(),
                    address[names[2]]: json.dumps(specification("v3")).encode()}
 
         class Answer(_Answer):
