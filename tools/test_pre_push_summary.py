@@ -206,7 +206,7 @@ class ShimTests(unittest.TestCase):
 
     def test_known_wrong_without_the_shim_the_step_is_a_missing_command_not_a_code_failure(self):
         text = (self.tree / "tools" / "pre_push_check.sh").read_text(encoding="utf-8")
-        broken = text.replace('GATE_PATH="$SHIM:', 'GATE_PATH="', 1)
+        broken = text.replace('gate_path="$shim:', 'gate_path="', 1)
         self.assertNotEqual(broken, text, "the script no longer puts the shim on the gates' PATH")
         script = self.home / "without-shim.sh"
         script.write_text(broken, encoding="utf-8")
