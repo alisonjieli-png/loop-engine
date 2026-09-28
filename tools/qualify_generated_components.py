@@ -77,9 +77,10 @@ def command_qualify(options) -> dict:
     summary = qualify.qualify_rows(rows, repository=ROOT, store_root=options.store_root,
                                    sandbox_settings=_sandbox(options), work_root=options.work_root,
                                    workers=options.workers, known_digests=_known_digests(options.known_bundle),
-                                   output=folder / "qualification.jsonl", progress=progress)
+                                   output=folder / "qualification.jsonl", progress=progress,
+                                   reuse_paths=options.reuse)
     (folder / "run.json").write_text(json.dumps(summary, indent=1, sort_keys=True) + "\n")
-    return {key: summary[key] for key in ("components", "qualified", "refused", "unreadable", "seconds",
+    return {key: summary[key] for key in ("components", "qualified", "refused", "unreadable", "reused", "seconds",
                                           "throughput")}
 
 
@@ -127,6 +128,10 @@ def main(argv=None) -> int:
             command.add_argument("--workers", type=int, default=qualify.default_workers())
             command.add_argument("--known-bundle", type=Path,
                                  help="A release bundle whose served digests count as existing components.")
+            command.add_argument("--reuse", action="append", default=[],
+                                 help="An earlier qualification.jsonl; a component with the same record version and "
+                                      "package digest, checked by this committed qualifier revision, keeps its "
+                                      "per-component results (the duplicate pass always runs again).")
             command.add_argument("--exclude-identities", action="append", default=[],
                                  help="A file of identities already decided (admitted, rejected, or in a withheld "
                                       "batch); they are not qualified or sampled again.")

@@ -57,10 +57,20 @@ def qualifier_changed(repository: Path) -> bool:
     return done.returncode != 0 or bool(done.stdout.strip())
 
 
-def _init_worker(repository, store_root, sandbox_settings, work_root):
+def _init_worker(repository, store_root, sandbox_settings, work_root, reuse):
     _WORKER["context"] = checks.QualificationContext.load(Path(repository), sandbox_settings=sandbox_settings,
                                                           work_root=work_root)
     _WORKER["bodies"] = body_store(store_root)
+    _WORKER["reuse"] = reuse or {}
+
+
+def reusable(record: "dict | None", row: dict, revision: str) -> bool:
+    """Whether an earlier record covers this store row: same record version and package digest, checked by
+    the same committed qualifier revision. The duplicate pass never reuses anything."""
+    return (isinstance(record, dict) and record.get("record_version") == row["record_version"]
+            and record.get("package_digest") == row.get("payload", {}).get("package_digest")
+            and record.get("qualifier", {}).get("code_revision") == revision
+            and record.get("qualifier", {}).get("uncommitted_changes") is False)
 
 
 def _check_one(row: dict) -> dict:
@@ -71,6 +81,18 @@ def _check_one(row: dict) -> dict:
     except ComponentReadError as error:
         return {"identity": row["record_id"], "unreadable": error.code, "seconds": 0.0,
                 "line": row.get("payload", {}).get("line", "")}
+    earlier = _WORKER["reuse"].get(component.identity)
+    if earlier is not None:
+        return {"identity": component.identity, "record_version": component.record_version,
+                "package_digest": component.package.package_digest, "batch": component.batch,
+                "line": component.line, "form": component.form, "kind": component.kind,
+                "licence_expression": component.licence_expression,
+                "declared_effects": list(component.candidate.get("declared_effects", [])),
+                "generator": component.generator,
+                "checks": [row for row in earlier["checks"] if row["check_id"] != "duplicates"],
+                "distinctive": checks.distinctive_text(component, context.policy),
+                "job_key": checks.job_key(component, context.policy), "reused_from": earlier["qualified_at"],
+                "seconds": round(time.monotonic() - started, 3)}
     results = []
     for check in checks.CHECKS:
         if check.check_id == "duplicates":
@@ -121,8 +143,22 @@ def vetting(check_rows: list, policy: dict, line: str) -> dict:
                                      "reason": "only a sampled batch decision approves publication"}}
 
 
+def load_reuse(paths, revision: str) -> dict:
+    """Identity to the newest earlier record made by this committed qualifier revision."""
+    records = {}
+    for path in paths:
+        with open(path, encoding="utf-8") as stream:
+            for line in stream:
+                record = json.loads(line)
+                qualifier = record.get("qualifier", {})
+                if qualifier.get("code_revision") == revision and qualifier.get("uncommitted_changes") is False:
+                    if record["identity"] not in records or record["qualified_at"] > records[record["identity"]]["qualified_at"]:
+                        records[record["identity"]] = record
+    return records
+
+
 def qualify_rows(rows, *, repository: Path, store_root: Path, sandbox_settings, work_root: Path, workers: int,
-                 known_digests=None, output: Path, progress=None) -> dict:
+                 known_digests=None, output: Path, progress=None, reuse_paths=()) -> dict:
     """Qualify the named store rows; write one JSON line per component and return the run summary."""
     repository, work_root = Path(repository), Path(work_root)
     work_root.mkdir(parents=True, exist_ok=True)
@@ -132,11 +168,14 @@ def qualify_rows(rows, *, repository: Path, store_root: Path, sandbox_settings, 
     started = time.monotonic()
     test_record = self_test(context, revision)
     self_test_seconds = round(time.monotonic() - started, 1)
+    earlier = load_reuse(reuse_paths, revision) if not uncommitted else {}
+    reuse = {row["record_id"]: earlier[row["record_id"]] for row in rows
+             if reusable(earlier.get(row["record_id"]), row, revision)}
     checked, unreadable = [], []
     pool_started = time.monotonic()
     with multiprocessing.get_context("fork").Pool(
             processes=max(1, workers), initializer=_init_worker,
-            initargs=(str(repository), str(store_root), sandbox_settings, str(work_root))) as pool:
+            initargs=(str(repository), str(store_root), sandbox_settings, str(work_root), reuse)) as pool:
         for number, row in enumerate(pool.imap_unordered(_check_one, rows, chunksize=4), 1):
             (unreadable if "unreadable" in row else checked).append(row)
             if progress and number % 500 == 0:
@@ -164,8 +203,9 @@ def qualify_rows(rows, *, repository: Path, store_root: Path, sandbox_settings, 
                       "checks": check_rows, "vetting": vetting(check_rows, context.policy, row["line"]),
                       "qualifier": {"tool": "tools/component_qualification", "version": QUALIFIER_VERSION,
                                     "code_revision": revision, "uncommitted_changes": uncommitted},
-                      "self_test_sha256": test_record["sha256"], "qualified_at": stamp,
-                      "seconds": row["seconds"]}
+                      "self_test_sha256": test_record["sha256"],
+                      "qualified_at": row.get("reused_from") or stamp, "checked_in_run": stamp,
+                      "reused": "reused_from" in row, "seconds": row["seconds"]}
             stream.write(json.dumps(record, sort_keys=True) + "\n")
             counts[(row["batch"], row["line"], row["form"], outcome)] += 1
             for reason in sorted(set(refused)):
@@ -178,6 +218,7 @@ def qualify_rows(rows, *, repository: Path, store_root: Path, sandbox_settings, 
                       "known_good_rows": len(test_record["known_good"]), "seconds": self_test_seconds},
         "sandbox": {"engine": sandbox_settings.engine, "limits": sandbox_settings.limits.to_dict()},
         "workers": workers, "components": len(rows), "checked": len(checked), "unreadable": len(unreadable),
+        "reused": sum(1 for row in checked if "reused_from" in row),
         "unreadable_reasons": dict(Counter(row["unreadable"] for row in unreadable)),
         "qualified": sum(value for key, value in counts.items() if key[3] == QUALIFIED),
         "refused": sum(value for key, value in counts.items() if key[3] == REFUSED),

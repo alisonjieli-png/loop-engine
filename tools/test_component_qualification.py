@@ -168,6 +168,35 @@ class NewRuleTests(unittest.TestCase):
         self.assertIsNone(checks.mutant(controls.configuration_fixture(REVISION), self.policy))
 
 
+class ReuseTests(unittest.TestCase):
+    def _record(self, **changes):
+        record = {"identity": "a", "record_version": "v1", "package_digest": "d" * 64, "qualified_at": "2026-09-28T01:00:00Z",
+                  "qualifier": {"code_revision": "r" * 40, "uncommitted_changes": False}, "checks": []}
+        record.update(changes)
+        return record
+
+    def test_reuse_needs_the_same_bytes_and_committed_revision(self):
+        row = {"record_id": "a", "record_version": "v1", "payload": {"package_digest": "d" * 64}}
+        self.assertTrue(qualify.reusable(self._record(), row, "r" * 40))
+        self.assertFalse(qualify.reusable(self._record(record_version="v2"), row, "r" * 40))
+        self.assertFalse(qualify.reusable(self._record(package_digest="e" * 64), row, "r" * 40))
+        self.assertFalse(qualify.reusable(self._record(), row, "s" * 40))
+        self.assertFalse(qualify.reusable(self._record(qualifier={"code_revision": "r" * 40,
+                                                                  "uncommitted_changes": True}), row, "r" * 40))
+        self.assertFalse(qualify.reusable(None, row, "r" * 40))
+
+    def test_load_reuse_keeps_the_newest_committed_record(self):
+        folder = Path(tempfile.mkdtemp(prefix="reuse-"))
+        self.addCleanup(shutil.rmtree, folder, True)
+        path = folder / "qualification.jsonl"
+        rows = [self._record(qualified_at="2026-09-28T01:00:00Z"), self._record(qualified_at="2026-09-28T02:00:00Z"),
+                self._record(identity="b", qualifier={"code_revision": "r" * 40, "uncommitted_changes": True})]
+        path.write_text("".join(json.dumps(row) + "\n" for row in rows))
+        loaded = qualify.load_reuse([path], "r" * 40)
+        self.assertEqual(list(loaded), ["a"])
+        self.assertEqual(loaded["a"]["qualified_at"], "2026-09-28T02:00:00Z")
+
+
 class ReviewAdapterTests(unittest.TestCase):
     def setUp(self):
         from tools.candidate_review import native_profile
