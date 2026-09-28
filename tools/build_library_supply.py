@@ -29,6 +29,7 @@ import json
 import shutil
 import subprocess
 import sys
+import time
 from collections import Counter
 from pathlib import Path
 
@@ -122,7 +123,10 @@ def finish(args, line: str, built, refusals, extra: dict, reader, facts: dict, *
         materialize(run_folder / "packages", built)
     (run_folder / "refusals.jsonl").write_text("".join(json.dumps(row, sort_keys=True) + "\n" for row in refusals),
                                                encoding="utf-8")
-    report = {"record_type": records.RUN_RECORD_TYPE, "line": line, "finished_at": now_utc(),
+    elapsed = round(time.monotonic() - args.started_clock, 1)
+    report = {"record_type": records.RUN_RECORD_TYPE, "line": line, "started_at": args.started_at,
+              "finished_at": now_utc(), "elapsed_seconds": elapsed,
+              "candidates_per_hour": round(len(built) * 3600 / elapsed) if elapsed else None,
               "candidates": len(built), "refused": len(refusals),
               "refused_by_reason": dict(Counter(row["reason"] for row in refusals).most_common()),
               "forms": dict(Counter(payload["component_form"]["form"] for payload, _bodies in built)),
@@ -132,7 +136,8 @@ def finish(args, line: str, built, refusals, extra: dict, reader, facts: dict, *
               "store": store(args, line, built, facts, complete=complete, scope=scope)}
     (run_folder / f"run-{report['finished_at'].replace(':', '')}.json").write_text(
         json.dumps(report, indent=1, sort_keys=True) + "\n", encoding="utf-8")
-    print(json.dumps({key: report[key] for key in ("line", "candidates", "refused", "refused_by_reason", "store")},
+    print(json.dumps({key: report[key] for key in ("line", "candidates", "refused", "elapsed_seconds",
+                                                   "candidates_per_hour", "refused_by_reason", "store")},
                      indent=1, default=str))
     return report
 
@@ -343,6 +348,8 @@ def parser() -> argparse.ArgumentParser:
 
 def main(argv=None) -> int:
     args = parser().parse_args(argv)
+    # The run record states when the run began and how long it took, so each line's yield per hour is measured.
+    args.started_at, args.started_clock = now_utc(), time.monotonic()
     {"mcp-registry": mcp_registry, "openapi": openapi, "openapi-directory": openapi_directory,
      "openapi-discovery": openapi_discovery, "programs": programs, "data-tables": data_tables,
      "report": report}[args.command](args)
