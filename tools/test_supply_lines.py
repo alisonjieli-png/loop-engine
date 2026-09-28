@@ -948,6 +948,9 @@ class DataTableLineTest(unittest.TestCase):
         self.assertEqual(table, [{"row": 1, "team": "Boston", "wins": "10"}, {"row": 2, "team": "Chicago", "wins": "7"}])
         self.assertEqual(line.table_rows("team,wins\nBoston,10\n", "csv_records", "team", None),
                          [{"team": "Boston", "wins": "10"}])
+        # Old line endings (a carriage return alone) read the same.
+        self.assertEqual(line.table_rows("team,wins\rBoston,10\r", "csv_records", "team", None),
+                         [{"team": "Boston", "wins": "10"}])
         # Known wrong: a ragged row, repeated header names and a repeated key are refused.
         for text_value, key in (("team,wins\nBoston\n", "row"), ("team,team\na,b\n", "row"),
                                 ("team,wins\nBoston,1\nBoston,2\n", "team")):

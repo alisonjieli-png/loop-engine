@@ -95,7 +95,14 @@ def json_type(value) -> str:
 def text_rows(text: str, delimiter: str, key_field: str) -> list:
     """The records of a delimited text table: a header row of distinct names, then rows of the same width; keyed by
     the row number when the key field is the row number."""
-    reader = csv.reader(io.StringIO(text), delimiter=delimiter)
+    try:
+        return _text_rows(text, delimiter, key_field)
+    except csv.Error as error:
+        raise TableRefused("source_unreadable", f"not a delimited text table: {error}"[:200]) from None
+
+
+def _text_rows(text: str, delimiter: str, key_field: str) -> list:
+    reader = csv.reader(io.StringIO(text, newline=""), delimiter=delimiter)
     try:
         header = next(reader)
     except StopIteration:
@@ -237,7 +244,7 @@ def lookup(key):
 '''
 
 _JSON_DOCUMENT = "document = json.loads(data.decode(\"utf-8\"))\n        "
-_TEXT_TABLE = ("reader = csv.reader(io.StringIO(data.decode(\"utf-8-sig\")), delimiter={delimiter!r})\n"
+_TEXT_TABLE = ("reader = csv.reader(io.StringIO(data.decode(\"utf-8-sig\"), newline=\"\"), delimiter={delimiter!r})\n"
                "        header = next(reader)\n"
                "        records = [dict(zip(header, values)) for values in reader if values]\n"
                "        table = {rows}")
