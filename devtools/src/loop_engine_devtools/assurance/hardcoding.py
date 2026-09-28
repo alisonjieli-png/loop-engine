@@ -407,6 +407,11 @@ def _classification(
             context.call_name.endswith(("getenv", "environ.get"))
             or _role_tail(context.role_name) in {
                 "environment", "environ", "env", "environment_variable"}):
+        if context.syntactic.startswith("text_"):
+            return ("DEPLOYMENT_CONFIGURATION", ("shell_variable_reference",),
+                    "medium", 0.80,
+                    "A shell-style variable reference in a text file is "
+                    "parameterization, not a hardcoded deployment value.")
         return ("DEPLOYMENT_CONFIGURATION", ("environment_read",), "high",
                 0.94, "A deployment value is read at a source boundary.")
     if _looks_like_prompt(value, role_words | (symbol_words & _PROMPT_WORDS)):
@@ -1555,6 +1560,16 @@ def self_test() -> dict[str, Any]:
             "    return env\n",
             encoding="utf-8")
         (package / "broken.py").write_text("def broken(:\n", encoding="utf-8")
+        (root / "tools").mkdir()
+        (root / "tools" / "shell_fixture.sh").write_text(
+            "#!/usr/bin/env bash\n"
+            "set -u\n"
+            "WORKDIR=${WORKDIR:-\"$HOME/work\"}\n"
+            "export TMPDIR=\"$WORKDIR/tmp\"\n"
+            "mkdir -p \"$TMPDIR\"\n"
+            "SERVICE_API_KEY=sk-fixture0123456789abcdef\n"
+            "curl -H \"Authorization: Bearer $SERVICE_API_KEY\" \"$UPSTREAM\"\n",
+            encoding="utf-8")
         (package / "core").mkdir()
         probe = root / "devtools" / "review-probes" / "2026-09-07" / "probe_x.py"
         probe.parent.mkdir(parents=True)
@@ -1575,6 +1590,15 @@ def self_test() -> dict[str, Any]:
             item["classification"] == "SECRET_OR_CREDENTIAL_REFERENCE"
             and "credential_reference" in item["secondary_tags"]
             and not item["sensitive_value_redacted"]
+            for item in findings))
+        check("shell_variable_reference_is_not_a_blocking_finding", any(
+            item["classification"] == "DEPLOYMENT_CONFIGURATION"
+            and "shell_variable_reference" in item["secondary_tags"]
+            and item["severity"] != "high"
+            for item in findings))
+        check("shell_secret_reference_is_still_blocking", any(
+            item["classification"] == "SECRET_OR_CREDENTIAL_REFERENCE"
+            and item["severity"] in {"high", "critical"}
             for item in findings))
         check("secret_shaped_value_is_redacted", any(
             item["sensitive_value_redacted"]

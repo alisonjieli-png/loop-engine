@@ -148,7 +148,7 @@ def environment_codes(record: dict, policy_codes) -> set:
             if finding["code"] in policy_codes}
 
 
-def load_reuse(paths, revision: str, environment=()) -> dict:
+def load_reuse(paths, revision: str, environment_findings=()) -> dict:
     """Identity to the newest earlier record made by this committed qualifier revision; a record refused for an
     environment reason (a timeout, a sandbox that did not start) is never reused."""
     records = {}
@@ -157,7 +157,7 @@ def load_reuse(paths, revision: str, environment=()) -> dict:
             for line in stream:
                 record = json.loads(line)
                 qualifier = record.get("qualifier", {})
-                if environment_codes(record, environment):
+                if environment_codes(record, environment_findings):
                     continue
                 if qualifier.get("code_revision") == revision and qualifier.get("uncommitted_changes") is False:
                     if record["identity"] not in records or record["qualified_at"] > records[record["identity"]]["qualified_at"]:
@@ -176,8 +176,8 @@ def qualify_rows(rows, *, repository: Path, store_root: Path, sandbox_settings, 
     started = time.monotonic()
     test_record = self_test(context, revision)
     self_test_seconds = round(time.monotonic() - started, 1)
-    environment = tuple(context.policy["environment_findings"])
-    earlier = load_reuse(reuse_paths, revision, environment) if not uncommitted else {}
+    environment_findings = tuple(context.policy["environment_findings"])
+    earlier = load_reuse(reuse_paths, revision, environment_findings) if not uncommitted else {}
     reuse = {row["record_id"]: earlier[row["record_id"]] for row in rows
              if reusable(earlier.get(row["record_id"]), row, revision)}
     checked, unreadable = [], []
@@ -217,7 +217,7 @@ def qualify_rows(rows, *, repository: Path, store_root: Path, sandbox_settings, 
                       "reused": "reused_from" in row, "seconds": row["seconds"]}
             stream.write(json.dumps(record, sort_keys=True) + "\n")
             counts[(row["batch"], row["line"], row["form"], outcome)] += 1
-            environment_refused += bool(environment_codes({"checks": check_rows}, environment))
+            environment_refused += bool(environment_codes({"checks": check_rows}, environment_findings))
             for reason in sorted(set(refused)):
                 reasons[(row["line"], reason)] += 1
     total_seconds = time.monotonic() - started
