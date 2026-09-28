@@ -1,0 +1,9 @@
+{
+  "rows": 1000,
+  "unique_names": 1000,
+  "unique_ids": 1000,
+  "source_roundtrips": 1000,
+  "admission_count": 0,
+  "source_integrity": "pass",
+  "output_sha256": "cc9b8435a72c7470b47dd414c03ef172660a8688e6b4ff9d5e03957ca62110fa"
+}

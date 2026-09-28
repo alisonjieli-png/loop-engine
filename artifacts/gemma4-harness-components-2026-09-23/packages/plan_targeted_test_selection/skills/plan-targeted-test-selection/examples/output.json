@@ -1,0 +1,45 @@
+{
+  "record_type": "plan_targeted_test_selection_result/v1",
+  "coverage_basis": "supplied_mapping_only",
+  "complete_test_safety": false,
+  "selected_tests": [
+    {
+      "id": "ab",
+      "matched_symbols": [
+        "a",
+        "b"
+      ],
+      "newly_covered_symbols": [
+        "a",
+        "b"
+      ],
+      "priority": 5,
+      "estimated_ms": 10
+    },
+    {
+      "id": "c",
+      "matched_symbols": [
+        "c"
+      ],
+      "newly_covered_symbols": [
+        "c"
+      ],
+      "priority": 1,
+      "estimated_ms": 20
+    }
+  ],
+  "not_selected_impacted_tests": [
+    {
+      "id": "a",
+      "matched_symbols": [
+        "a"
+      ],
+      "reason": "count_budget"
+    }
+  ],
+  "unmapped_changed_symbols": [
+    "unknown"
+  ],
+  "mapped_but_uncovered_symbols": [],
+  "total_estimated_ms": 30
+}

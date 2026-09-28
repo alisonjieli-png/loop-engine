@@ -1,0 +1,6 @@
+{
+  "csv": "id,name\n1,Ada\n2,\n3\n",
+  "header": true,
+  "delimiter": ",",
+  "quotechar": "\""
+}

@@ -1,0 +1,81 @@
+{
+  "record_type": "local_research_metadata_results/v1",
+  "mode": "lexical",
+  "category": "tool",
+  "query": "postgres",
+  "lookup": null,
+  "candidate_selection_explicit": true,
+  "execution_available": false,
+  "source_integrity": "current_hashes_match_manifest",
+  "query_scoring": "existing lexical FTS5/BM25 order with reciprocal-rank score; separate from research priority",
+  "hits": [
+    {
+      "research_id": "tool-15bff022411d86a309b8f3cc",
+      "category": "tool",
+      "name": "io.github.YawLabs/postgres-mcp",
+      "repository": "https://github.com/YawLabs/postgres-mcp",
+      "source_url": "https://registry.modelcontextprotocol.io/v0.1/servers?version=latest&limit=100&cursor=io.github.YOLKINS%2Fweeek-mcp%3A1.0.1",
+      "source_path": "servers/26/server",
+      "source_snapshot_digest": "00c58091f5ea7d629b4d88095756db9d328d4440e37bee097939185696a3f042",
+      "rank": 539,
+      "priority_score": 77,
+      "query_score": 0.1,
+      "evidence_level": "official_registry_metadata",
+      "qualification_status": "unreviewed",
+      "compatibility_status": "unverified",
+      "rights_state": {
+        "license_reported": "unknown",
+        "license_verified": false,
+        "clearance": "not_established"
+      },
+      "lifecycle": "candidate",
+      "execution_available": false
+    },
+    {
+      "research_id": "tool-35c8edb3ee197582187880f6",
+      "category": "tool",
+      "name": "io.github.Eszetael/postgres-mcp-hardened",
+      "repository": "https://github.com/Eszetael/postgres-mcp-hardened",
+      "source_url": "https://registry.modelcontextprotocol.io/v0.1/servers?version=latest&limit=100&cursor=io.github.Drock91%2Fbitbooth-fetch%3A2.3.1",
+      "source_path": "servers/74/server",
+      "source_snapshot_digest": "1a993e628a7d09970e702f439bef2e9b07ff7b6bf8d4d31e68f1b9935e5206ce",
+      "rank": 177,
+      "priority_score": 80,
+      "query_score": 0.09091,
+      "evidence_level": "official_registry_metadata",
+      "qualification_status": "unreviewed",
+      "compatibility_status": "unverified",
+      "rights_state": {
+        "license_reported": "unknown",
+        "license_verified": false,
+        "clearance": "not_established"
+      },
+      "lifecycle": "candidate",
+      "execution_available": false
+    },
+    {
+      "research_id": "tool-4cea5d5b025bffee16755437",
+      "category": "tool",
+      "name": "io.github.antonorlov/mcp-postgres-server",
+      "repository": "https://github.com/antonorlov/mcp-postgres-server",
+      "source_url": "https://registry.modelcontextprotocol.io/v0.1/servers?version=latest&limit=100&cursor=io.github.anousss007%2Fblatui%3A1.0.0",
+      "source_path": "servers/37/server",
+      "source_snapshot_digest": "9f22b30fee8b983f3043402e3784850a009a4b0cd8806b981b9e8b1d9d7d3d3f",
+      "rank": 879,
+      "priority_score": 75,
+      "query_score": 0.08333,
+      "evidence_level": "official_registry_metadata",
+      "qualification_status": "unreviewed",
+      "compatibility_status": "unverified",
+      "rights_state": {
+        "license_reported": "unknown",
+        "license_verified": false,
+        "clearance": "not_established"
+      },
+      "lifecycle": "candidate",
+      "execution_available": false
+    }
+  ],
+  "network_requests": 0,
+  "model_calls": 0
+}

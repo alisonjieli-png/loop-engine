@@ -1,0 +1,221 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "reconcile_keyed_tables output",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "result": {
+          "type": "object",
+          "properties": {
+            "counts": {
+              "type": "object",
+              "properties": {
+                "left_rows": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 256
+                },
+                "right_rows": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 256
+                },
+                "matched": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 256
+                },
+                "unchanged": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 256
+                },
+                "changed": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 256
+                },
+                "left_only": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 256
+                },
+                "right_only": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 256
+                }
+              },
+              "required": [
+                "left_rows",
+                "right_rows",
+                "matched",
+                "unchanged",
+                "changed",
+                "left_only",
+                "right_only"
+              ],
+              "additionalProperties": false
+            },
+            "matches": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "anyOf": [
+                      {
+                        "type": "integer",
+                        "minimum": -1000000000000,
+                        "maximum": 1000000000000
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 256
+                      }
+                    ]
+                  },
+                  "left_index": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  },
+                  "right_index": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  },
+                  "changed_fields": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 64
+                    },
+                    "maxItems": 62
+                  }
+                },
+                "required": [
+                  "key",
+                  "left_index",
+                  "right_index",
+                  "changed_fields"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 256
+            },
+            "left_only": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "anyOf": [
+                      {
+                        "type": "integer",
+                        "minimum": -1000000000000,
+                        "maximum": 1000000000000
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 256
+                      }
+                    ]
+                  },
+                  "left_index": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                },
+                "required": [
+                  "key",
+                  "left_index"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 256
+            },
+            "right_only": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "anyOf": [
+                      {
+                        "type": "integer",
+                        "minimum": -1000000000000,
+                        "maximum": 1000000000000
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 256
+                      }
+                    ]
+                  },
+                  "right_index": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                },
+                "required": [
+                  "key",
+                  "right_index"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 256
+            }
+          },
+          "required": [
+            "counts",
+            "matches",
+            "left_only",
+            "right_only"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "result"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": false
+        },
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "const": "invalid_input"
+            }
+          },
+          "required": [
+            "code"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "error"
+      ],
+      "additionalProperties": false
+    }
+  ]
+}

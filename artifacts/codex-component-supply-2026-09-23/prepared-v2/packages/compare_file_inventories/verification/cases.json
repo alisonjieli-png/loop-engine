@@ -1,0 +1,338 @@
+[
+  {
+    "name": "changed_added_removed",
+    "input": {
+      "record_type": "compare_file_inventories_request/v1",
+      "before": [
+        {
+          "path": "same",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "size_bytes": 1,
+          "executable": false
+        },
+        {
+          "path": "old",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "size_bytes": 1,
+          "executable": false
+        },
+        {
+          "path": "changed",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "size_bytes": 1,
+          "executable": false
+        }
+      ],
+      "after": [
+        {
+          "path": "new",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "size_bytes": 1,
+          "executable": false
+        },
+        {
+          "path": "same",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "size_bytes": 1,
+          "executable": false
+        },
+        {
+          "path": "changed",
+          "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "size_bytes": 2,
+          "executable": true
+        }
+      ]
+    },
+    "expected": {
+      "record_type": "compare_file_inventories_result/v1",
+      "added": [
+        "new"
+      ],
+      "removed": [
+        "old"
+      ],
+      "unchanged": [
+        "same"
+      ],
+      "changed": [
+        {
+          "path": "changed",
+          "fields": [
+            "digest",
+            "size_bytes",
+            "executable"
+          ]
+        }
+      ]
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "rename_not_inferred",
+    "input": {
+      "record_type": "compare_file_inventories_request/v1",
+      "before": [
+        {
+          "path": "a",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "size_bytes": 1,
+          "executable": false
+        }
+      ],
+      "after": [
+        {
+          "path": "b",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "size_bytes": 1,
+          "executable": false
+        }
+      ]
+    },
+    "expected": {
+      "record_type": "compare_file_inventories_result/v1",
+      "added": [
+        "b"
+      ],
+      "removed": [
+        "a"
+      ],
+      "changed": [],
+      "unchanged": []
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "empty",
+    "input": {
+      "record_type": "compare_file_inventories_request/v1",
+      "before": [],
+      "after": []
+    },
+    "expected": {
+      "record_type": "compare_file_inventories_result/v1",
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "unchanged": []
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "integral_metadata",
+    "input": {
+      "record_type": "compare_file_inventories_request/v1",
+      "before": [
+        {
+          "path": "é",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "size_bytes": 1.0,
+          "executable": false
+        }
+      ],
+      "after": [
+        {
+          "path": "é",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "size_bytes": 1,
+          "executable": false
+        }
+      ]
+    },
+    "expected": {
+      "record_type": "compare_file_inventories_result/v1",
+      "added": [],
+      "removed": [],
+      "changed": [],
+      "unchanged": [
+        "é"
+      ]
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "duplicate_path",
+    "input": {
+      "record_type": "compare_file_inventories_request/v1",
+      "before": [
+        {
+          "path": "a",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "size_bytes": 1,
+          "executable": false
+        },
+        {
+          "path": "a",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "size_bytes": 1,
+          "executable": false
+        }
+      ],
+      "after": []
+    },
+    "expected": {
+      "error": "invalid_input"
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "unknown_entry_field",
+    "input": {
+      "record_type": "compare_file_inventories_request/v1",
+      "before": [
+        {
+          "path": "a",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "size_bytes": 1,
+          "executable": false,
+          "role": "tool"
+        }
+      ],
+      "after": []
+    },
+    "expected": {
+      "error": "invalid_input"
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "traversal",
+    "input": {
+      "record_type": "compare_file_inventories_request/v1",
+      "before": [
+        {
+          "path": "a/../b",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "size_bytes": 1,
+          "executable": false
+        }
+      ],
+      "after": []
+    },
+    "expected": {
+      "error": "invalid_input"
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "bool_not_size",
+    "input": {
+      "record_type": "compare_file_inventories_request/v1",
+      "before": [
+        {
+          "path": "a",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "size_bytes": true,
+          "executable": false
+        }
+      ],
+      "after": []
+    },
+    "expected": {
+      "error": "invalid_input"
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "bad_digest",
+    "input": {
+      "record_type": "compare_file_inventories_request/v1",
+      "before": [
+        {
+          "path": "a",
+          "digest": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+          "size_bytes": 1,
+          "executable": false
+        }
+      ],
+      "after": []
+    },
+    "expected": {
+      "error": "invalid_input"
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "duplicate_top_key",
+    "raw_input": "{\"record_type\":\"compare_file_inventories_request/v1\",\"record_type\":\"compare_file_inventories_request/v1\"}",
+    "expected": {
+      "error": "invalid_input"
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "nonfinite",
+    "raw_input": "{\"x\":NaN}",
+    "expected": {
+      "error": "invalid_input"
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "depth_limit",
+    "raw_input": "[[[[[[[[[[[[[[[[[0]]]]]]]]]]]]]]]]]",
+    "expected": {
+      "error": "invalid_input"
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "lone_surrogate",
+    "raw_input": "{\"x\":\"\\ud800\"}",
+    "expected": {
+      "error": "invalid_input"
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "unknown_top_field",
+    "input": {
+      "record_type": "compare_file_inventories_request/v1",
+      "before": [
+        {
+          "path": "same",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "size_bytes": 1,
+          "executable": false
+        },
+        {
+          "path": "old",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "size_bytes": 1,
+          "executable": false
+        },
+        {
+          "path": "changed",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "size_bytes": 1,
+          "executable": false
+        }
+      ],
+      "after": [
+        {
+          "path": "new",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "size_bytes": 1,
+          "executable": false
+        },
+        {
+          "path": "same",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "size_bytes": 1,
+          "executable": false
+        },
+        {
+          "path": "changed",
+          "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "size_bytes": 2,
+          "executable": true
+        }
+      ],
+      "unrecognized": true
+    },
+    "expected": {
+      "error": "invalid_input"
+    },
+    "expected_exit": 2
+  }
+]

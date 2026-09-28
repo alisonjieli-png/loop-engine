@@ -1,0 +1,158 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "apply_flat_record_changes input",
+  "$comment": "Raw transport constraints: one UTF-8 JSON object; input at most262144bytes, output at most524288bytes including newline. Duplicate object keys, nonfinite numbers, unpaired Unicode surrogates, decoded depth>8 or more than50000 decoded values refuse. JSON numeric tokens are at most128characters and must represent exact integers within+-1000000000000; integral decimal/exponent spellings are accepted. Structural schemas do not encode byte ceilings or stated cross-field conditions.",
+  "type": "object",
+  "properties": {
+    "record": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 64
+      },
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "null"
+          },
+          {
+            "type": "boolean"
+          },
+          {
+            "type": "integer",
+            "minimum": -1000000000000,
+            "maximum": 1000000000000
+          },
+          {
+            "type": "string",
+            "maxLength": 256
+          }
+        ]
+      },
+      "maxProperties": 32
+    },
+    "changes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "before": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "present": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "present"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "present": {
+                    "const": true
+                  },
+                  "value": {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": -1000000000000,
+                        "maximum": 1000000000000
+                      },
+                      {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "present",
+                  "value"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          },
+          "after": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "present": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "present"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "present": {
+                    "const": true
+                  },
+                  "value": {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": -1000000000000,
+                        "maximum": 1000000000000
+                      },
+                      {
+                        "type": "string",
+                        "maxLength": 256
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "present",
+                  "value"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          }
+        },
+        "required": [
+          "key",
+          "before",
+          "after"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 32
+    }
+  },
+  "required": [
+    "record",
+    "changes"
+  ],
+  "additionalProperties": false,
+  "description": "Atomic compare-and-change of one flat in-memory object. Change keys unique. All before states compare against the ORIGINAL record using typed scalar equality, with missing distinct from null. Any mismatch returns applied=false and original record; nothing is partially changed. On success output must still have<=32fields; otherwise refusal. Changed_count counts actual state/value changes, not operations. No persistent storage writes."
+}

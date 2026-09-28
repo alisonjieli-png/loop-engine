@@ -1,0 +1,62 @@
+{
+  "record_type": "inspect_python_symbol_dependencies_result/v1",
+  "syntax_profile": "python_ast_feature_3_10/v1",
+  "complete_runtime_dependency_graph": false,
+  "files": [
+    {
+      "path": "m.py",
+      "module": "m",
+      "source_sha256": "24ce5778f4478680dfddee1f2af46fdbf794cc6d7803b4e7cda8d4636ffeb389",
+      "parse_status": "parsed",
+      "error_line": null
+    }
+  ],
+  "symbols": [
+    {
+      "id": "py-module-62c66a7a5dd70c3146618063c344e531e6d4b59e379808443ce962b3abd63c5a",
+      "module": "m",
+      "path": "m.py",
+      "name": "<module>",
+      "lexical_name": "<module>",
+      "kind": "module",
+      "owner_id": null,
+      "line": 0,
+      "column_utf8": 0,
+      "end_line": null,
+      "end_column_utf8": null
+    },
+    {
+      "id": "py-symbol-62611a9c953c2760ecc06f838086cdf0ee9bbac1e044387d7618af8dfa47842f",
+      "module": "m",
+      "path": "m.py",
+      "name": "f",
+      "lexical_name": "f",
+      "kind": "function",
+      "owner_id": "py-module-62c66a7a5dd70c3146618063c344e531e6d4b59e379808443ce962b3abd63c5a",
+      "line": 1,
+      "column_utf8": 0,
+      "end_line": 1,
+      "end_column_utf8": 13
+    }
+  ],
+  "imports": [],
+  "calls": [
+    {
+      "module": "m",
+      "path": "m.py",
+      "owner_id": "py-module-62c66a7a5dd70c3146618063c344e531e6d4b59e379808443ce962b3abd63c5a",
+      "line": 2,
+      "column_utf8": 0,
+      "end_line": 2,
+      "end_column_utf8": 3,
+      "callee": "f",
+      "evaluation_context": "module",
+      "resolution": "candidate",
+      "reason": "name_definition_candidate",
+      "same_module_definition_ids": [
+        "py-symbol-62611a9c953c2760ecc06f838086cdf0ee9bbac1e044387d7618af8dfa47842f"
+      ],
+      "certain": false
+    }
+  ]
+}

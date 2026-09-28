@@ -1,0 +1,557 @@
+{
+  "record_type": "wikilink_author_sandbox_qa/v1",
+  "checks": [
+    {
+      "name": "four_distinct_resolution_outcomes",
+      "expected_exit": 0,
+      "exit_code": 0,
+      "matches_expected": true,
+      "schema_valid": true,
+      "stdout_utf8_bytes": 1259,
+      "timed_out": false,
+      "truncated": false,
+      "stderr_empty": true,
+      "passed": true
+    },
+    {
+      "name": "root_path_does_not_use_current_directory",
+      "expected_exit": 0,
+      "exit_code": 0,
+      "matches_expected": true,
+      "schema_valid": true,
+      "stdout_utf8_bytes": 841,
+      "timed_out": false,
+      "truncated": false,
+      "stderr_empty": true,
+      "passed": true
+    },
+    {
+      "name": "same_note_fragment_is_not_verified",
+      "expected_exit": 0,
+      "exit_code": 0,
+      "matches_expected": true,
+      "schema_valid": true,
+      "stdout_utf8_bytes": 566,
+      "timed_out": false,
+      "truncated": false,
+      "stderr_empty": true,
+      "passed": true
+    },
+    {
+      "name": "block_fragment_and_note_embed",
+      "expected_exit": 0,
+      "exit_code": 0,
+      "matches_expected": true,
+      "schema_valid": true,
+      "stdout_utf8_bytes": 571,
+      "timed_out": false,
+      "truncated": false,
+      "stderr_empty": true,
+      "passed": true
+    },
+    {
+      "name": "case_sensitive_identity",
+      "expected_exit": 0,
+      "exit_code": 0,
+      "matches_expected": true,
+      "schema_valid": true,
+      "stdout_utf8_bytes": 537,
+      "timed_out": false,
+      "truncated": false,
+      "stderr_empty": true,
+      "passed": true
+    },
+    {
+      "name": "unicode_normalization_not_inferred",
+      "expected_exit": 0,
+      "exit_code": 0,
+      "matches_expected": true,
+      "schema_valid": true,
+      "stdout_utf8_bytes": 528,
+      "timed_out": false,
+      "truncated": false,
+      "stderr_empty": true,
+      "passed": true
+    },
+    {
+      "name": "unicode_codepoint_offsets",
+      "expected_exit": 0,
+      "exit_code": 0,
+      "matches_expected": true,
+      "schema_valid": true,
+      "stdout_utf8_bytes": 547,
+      "timed_out": false,
+      "truncated": false,
+      "stderr_empty": true,
+      "passed": true
+    },
+    {
+      "name": "fenced_example_is_not_active",
+      "expected_exit": 0,
+      "exit_code": 0,
+      "matches_expected": true,
+      "schema_valid": true,
+      "stdout_utf8_bytes": 548,
+      "timed_out": false,
+      "truncated": false,
+      "stderr_empty": true,
+      "passed": true
+    },
+    {
+      "name": "longer_fence_requires_matching_character_and_length",
+      "expected_exit": 0,
+      "exit_code": 0,
+      "matches_expected": true,
+      "schema_valid": true,
+      "stdout_utf8_bytes": 548,
+      "timed_out": false,
+      "truncated": false,
+      "stderr_empty": true,
+      "passed": true
+    },
+    {
+      "name": "tilde_fence_unclosed_masks_to_end",
+      "expected_exit": 0,
+      "exit_code": 0,
+      "matches_expected": true,
+      "schema_valid": true,
+      "stdout_utf8_bytes": 321,
+      "timed_out": false,
+      "truncated": false,
+      "stderr_empty": true,
+      "passed": true
+    },
+    {
+      "name": "same_line_backtick_runs",
+      "expected_exit": 0,
+      "exit_code": 0,
+      "matches_expected": true,
+      "schema_valid": true,
+      "stdout_utf8_bytes": 549,
+      "timed_out": false,
+      "truncated": false,
+      "stderr_empty": true,
+      "passed": true
+    },
+    {
+      "name": "unmatched_inline_backtick_is_literal",
+      "expected_exit": 0,
+      "exit_code": 0,
+      "matches_expected": true,
+      "schema_valid": true,
+      "stdout_utf8_bytes": 547,
+      "timed_out": false,
+      "truncated": false,
+      "stderr_empty": true,
+      "passed": true
+    },
+    {
+      "name": "comments_are_not_links",
+      "expected_exit": 0,
+      "exit_code": 0,
+      "matches_expected": true,
+      "schema_valid": true,
+      "stdout_utf8_bytes": 549,
+      "timed_out": false,
+      "truncated": false,
+      "stderr_empty": true,
+      "passed": true
+    },
+    {
+      "name": "unclosed_comment_masks_to_end",
+      "expected_exit": 0,
+      "exit_code": 0,
+      "matches_expected": true,
+      "schema_valid": true,
+      "stdout_utf8_bytes": 321,
+      "timed_out": false,
+      "truncated": false,
+      "stderr_empty": true,
+      "passed": true
+    },
+    {
+      "name": "frontmatter_and_indented_line",
+      "expected_exit": 0,
+      "exit_code": 0,
+      "matches_expected": true,
+      "schema_valid": true,
+      "stdout_utf8_bytes": 548,
+      "timed_out": false,
+      "truncated": false,
+      "stderr_empty": true,
+      "passed": true
+    },
+    {
+      "name": "unclosed_frontmatter_refuses",
+      "expected_exit": 2,
+      "exit_code": 2,
+      "matches_expected": true,
+      "schema_valid": true,
+      "stdout_utf8_bytes": 33,
+      "timed_out": false,
+      "truncated": false,
+      "stderr_empty": true,
+      "passed": true
+    },
+    {
+      "name": "odd_escape_ignored_even_escape_active",
+      "expected_exit": 0,
+      "exit_code": 0,
+      "matches_expected": true,
+      "schema_valid": true,
+      "stdout_utf8_bytes": 549,
+      "timed_out": false,
+      "truncated": false,
+      "stderr_empty": true,
+      "passed": true
+    },
+    {
+      "name": "escaped_embed_marker_not_embed",
+      "expected_exit": 0,
+      "exit_code": 0,
+      "matches_expected": true,
+      "schema_valid": true,
+      "stdout_utf8_bytes": 547,
+      "timed_out": false,
+      "truncated": false,
+      "stderr_empty": true,
+      "passed": true
+    },
+    {
+      "name": "aliases_are_display_only",
+      "expected_exit": 0,
+      "exit_code": 0,
+      "matches_expected": true,
+      "schema_valid": true,
+      "stdout_utf8_bytes": 560,
+      "timed_out": false,
+      "truncated": false,
+      "stderr_empty": true,
+      "passed": true
+    },
+    {
+      "name": "multiple_labels_unsupported",
+      "expected_exit": 0,
+      "exit_code": 0,
+      "matches_expected": true,
+      "schema_valid": true,
+      "stdout_utf8_bytes": 545,
+      "timed_out": false,
+      "truncated": false,
+      "stderr_empty": true,
+      "passed": true
+    },
+    {
+      "name": "parent_target_unsupported",
+      "expected_exit": 0,
+      "exit_code": 0,
+      "matches_expected": true,
+      "schema_valid": true,
+      "stdout_utf8_bytes": 544,
+      "timed_out": false,
+      "truncated": false,
+      "stderr_empty": true,
+      "passed": true
+    },
+    {
+      "name": "empty_link_unsupported",
+      "expected_exit": 0,
+      "exit_code": 0,
+      "matches_expected": true,
+      "schema_valid": true,
+      "stdout_utf8_bytes": 533,
+      "timed_out": false,
+      "truncated": false,
+      "stderr_empty": true,
+      "passed": true
+    },
+    {
+      "name": "unclosed_link_reported",
+      "expected_exit": 0,
+      "exit_code": 0,
+      "matches_expected": true,
+      "schema_valid": true,
+      "stdout_utf8_bytes": 544,
+      "timed_out": false,
+      "truncated": false,
+      "stderr_empty": true,
+      "passed": true
+    },
+    {
+      "name": "empty_text",
+      "expected_exit": 0,
+      "exit_code": 0,
+      "matches_expected": true,
+      "schema_valid": true,
+      "stdout_utf8_bytes": 321,
+      "timed_out": false,
+      "truncated": false,
+      "stderr_empty": true,
+      "passed": true
+    },
+    {
+      "name": "digest_matches",
+      "expected_exit": 0,
+      "exit_code": 0,
+      "matches_expected": true,
+      "schema_valid": true,
+      "stdout_utf8_bytes": 547,
+      "timed_out": false,
+      "truncated": false,
+      "stderr_empty": true,
+      "passed": true
+    },
+    {
+      "name": "digest_mismatch",
+      "expected_exit": 2,
+      "exit_code": 2,
+      "matches_expected": true,
+      "schema_valid": true,
+      "stdout_utf8_bytes": 35,
+      "timed_out": false,
+      "truncated": false,
+      "stderr_empty": true,
+      "passed": true
+    },
+    {
+      "name": "source_must_exist",
+      "expected_exit": 2,
+      "exit_code": 2,
+      "matches_expected": true,
+      "schema_valid": true,
+      "stdout_utf8_bytes": 26,
+      "timed_out": false,
+      "truncated": false,
+      "stderr_empty": true,
+      "passed": true
+    },
+    {
+      "name": "duplicate_paths_refused",
+      "expected_exit": 2,
+      "exit_code": 2,
+      "matches_expected": true,
+      "schema_valid": true,
+      "stdout_utf8_bytes": 26,
+      "timed_out": false,
+      "truncated": false,
+      "stderr_empty": true,
+      "passed": true
+    },
+    {
+      "name": "unsafe_inventory_path_refused",
+      "expected_exit": 2,
+      "exit_code": 2,
+      "matches_expected": true,
+      "schema_valid": true,
+      "stdout_utf8_bytes": 26,
+      "timed_out": false,
+      "truncated": false,
+      "stderr_empty": true,
+      "passed": true
+    },
+    {
+      "name": "path_segment_whitespace_refused",
+      "expected_exit": 2,
+      "exit_code": 2,
+      "matches_expected": true,
+      "schema_valid": true,
+      "stdout_utf8_bytes": 26,
+      "timed_out": false,
+      "truncated": false,
+      "stderr_empty": true,
+      "passed": true
+    },
+    {
+      "name": "unknown_field_refused",
+      "expected_exit": 2,
+      "exit_code": 2,
+      "matches_expected": true,
+      "schema_valid": true,
+      "stdout_utf8_bytes": 26,
+      "timed_out": false,
+      "truncated": false,
+      "stderr_empty": true,
+      "passed": true
+    },
+    {
+      "name": "retired_profile_refused",
+      "expected_exit": 2,
+      "exit_code": 2,
+      "matches_expected": true,
+      "schema_valid": true,
+      "stdout_utf8_bytes": 26,
+      "timed_out": false,
+      "truncated": false,
+      "stderr_empty": true,
+      "passed": true
+    },
+    {
+      "name": "link_count_bounded",
+      "expected_exit": 2,
+      "exit_code": 2,
+      "matches_expected": true,
+      "schema_valid": true,
+      "stdout_utf8_bytes": 32,
+      "timed_out": false,
+      "truncated": false,
+      "stderr_empty": true,
+      "passed": true
+    },
+    {
+      "name": "duplicate_json_key_refused",
+      "expected_exit": 2,
+      "exit_code": 2,
+      "matches_expected": true,
+      "schema_valid": true,
+      "stdout_utf8_bytes": 26,
+      "timed_out": false,
+      "truncated": false,
+      "stderr_empty": true,
+      "passed": true
+    },
+    {
+      "name": "nonfinite_refused",
+      "expected_exit": 2,
+      "exit_code": 2,
+      "matches_expected": true,
+      "schema_valid": true,
+      "stdout_utf8_bytes": 26,
+      "timed_out": false,
+      "truncated": false,
+      "stderr_empty": true,
+      "passed": true
+    },
+    {
+      "name": "invalid_utf8_refused",
+      "expected_exit": 2,
+      "exit_code": 2,
+      "matches_expected": true,
+      "schema_valid": true,
+      "stdout_utf8_bytes": 26,
+      "timed_out": false,
+      "truncated": false,
+      "stderr_empty": true,
+      "passed": true
+    },
+    {
+      "name": "wire_bytes_bounded",
+      "expected_exit": 2,
+      "exit_code": 2,
+      "matches_expected": true,
+      "schema_valid": true,
+      "stdout_utf8_bytes": 26,
+      "timed_out": false,
+      "truncated": false,
+      "stderr_empty": true,
+      "passed": true
+    },
+    {
+      "name": "dot_target_refuses_.",
+      "expected_exit": 0,
+      "exit_code": 0,
+      "matches_expected": true,
+      "schema_valid": true,
+      "stdout_utf8_bytes": 534,
+      "timed_out": false,
+      "truncated": false,
+      "stderr_empty": true,
+      "passed": true
+    },
+    {
+      "name": "dot_target_refuses_..",
+      "expected_exit": 0,
+      "exit_code": 0,
+      "matches_expected": true,
+      "schema_valid": true,
+      "stdout_utf8_bytes": 535,
+      "timed_out": false,
+      "truncated": false,
+      "stderr_empty": true,
+      "passed": true
+    },
+    {
+      "name": "dot_target_refuses_folder/..",
+      "expected_exit": 0,
+      "exit_code": 0,
+      "matches_expected": true,
+      "schema_valid": true,
+      "stdout_utf8_bytes": 543,
+      "timed_out": false,
+      "truncated": false,
+      "stderr_empty": true,
+      "passed": true
+    }
+  ],
+  "mutations": [
+    {
+      "name": "first_ambiguous_note_is_incorrectly_selected",
+      "detected": true,
+      "failing_cases": [
+        "four_distinct_resolution_outcomes",
+        "root_path_does_not_use_current_directory"
+      ]
+    },
+    {
+      "name": "slash_path_uses_source_directory",
+      "detected": true,
+      "failing_cases": [
+        "root_path_does_not_use_current_directory"
+      ]
+    },
+    {
+      "name": "fenced_code_becomes_active",
+      "detected": true,
+      "failing_cases": [
+        "fenced_example_is_not_active",
+        "longer_fence_requires_matching_character_and_length",
+        "tilde_fence_unclosed_masks_to_end"
+      ]
+    },
+    {
+      "name": "even_escape_run_is_wrongly_hidden",
+      "detected": true,
+      "failing_cases": [
+        "odd_escape_ignored_even_escape_active"
+      ]
+    },
+    {
+      "name": "unverified_fragment_claims_verification",
+      "detected": true,
+      "failing_cases": [
+        "four_distinct_resolution_outcomes",
+        "same_note_fragment_is_not_verified",
+        "block_fragment_and_note_embed"
+      ]
+    },
+    {
+      "name": "source_offset_becomes_utf8_bytes",
+      "detected": true,
+      "failing_cases": [
+        "unicode_codepoint_offsets"
+      ]
+    },
+    {
+      "name": "stale_source_digest_is_ignored",
+      "detected": true,
+      "failing_cases": [
+        "digest_mismatch"
+      ]
+    }
+  ],
+  "passed": true,
+  "payloads": {
+    "AGENTS.md": "b285b070888782a0891a4c4a4b24ec8dcca1c67b1ddcede4cbc580665e53bdca",
+    "LICENSE": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+    "verification/cases.json": "13961b76be5a4088d5bdfe471baecf4cbe3dc289f8b5ec481569a35a2617a252",
+    "tools/audit_wikilink_resolution.py": "4d7549e59c4fa658c6e499c82bd8ab1acb8956e596a0f5b87e790e1ec5e3e433",
+    "references/profile.md": "d4b5af6e85fc1d1510cc5eb126a4f4f23c41a371aad4189ce88c28dcda12fe6b",
+    "contracts/input.schema.json": "68897736c4ff666f1f38537158ec16685cd7dbe5cd17cd04b32a61f1ec329fef",
+    "contracts/output.schema.json": "c425b8614850d62c3ac542f05c7e52236ac3cdbb27075c2f65b3fba904b1af29",
+    "examples/input.json": "1428405750e371a7d4827315544c133bf8ec512d8672e07fc9211cb24e012283",
+    "examples/output.json": "e58a2bac44562c18cb3a01b3caa2573fd6cd4e9058b92376f485821937c32f5a"
+  },
+  "sandbox": "existing bwrap no-network/clearenv/read-only exact mounts; 2 CPU seconds, 256 MiB, 4 wall seconds",
+  "approved": false,
+  "native_client_qualified": false,
+  "provider_calls": 0
+}

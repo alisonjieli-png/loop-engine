@@ -1,0 +1,777 @@
+{
+  "packages": 16,
+  "payload_files": 128,
+  "unique_payload_digests": 113,
+  "files": [
+    {
+      "package": "apply_flat_record_changes",
+      "path": "AGENTS.md",
+      "digest": "926220a492229d038b2479796bbd4a35027c6f7c80f4e35ea3c244adc368e1bf",
+      "bytes": 4251
+    },
+    {
+      "package": "apply_flat_record_changes",
+      "path": "tools/apply_flat_record_changes.py",
+      "digest": "f37df2924ab751b7a3fe2f631af0e86300d0f21f6a40fa71287c301cacf745ce",
+      "bytes": 5176
+    },
+    {
+      "package": "apply_flat_record_changes",
+      "path": "contracts/input.schema.json",
+      "digest": "a2aca60dbdec358d5fd552fa6310ee9bb57f65ffeeb09ac212ab6415864a7cc8",
+      "bytes": 4872
+    },
+    {
+      "package": "apply_flat_record_changes",
+      "path": "contracts/output.schema.json",
+      "digest": "b230c96e4c00fd3204856b7908e7ccf239b46cca370cfb929e51326ce42e384d",
+      "bytes": 6145
+    },
+    {
+      "package": "apply_flat_record_changes",
+      "path": "examples/input.json",
+      "digest": "1478eb12d970fe70ebc64586036bb6d0a3f8cb41d3988d46d2265f76987bb45d",
+      "bytes": 553
+    },
+    {
+      "package": "apply_flat_record_changes",
+      "path": "examples/output.json",
+      "digest": "a3a23e4aeb060d5454bb96ba7c15550243b2ad2910192a221f96dbf80a4ddea6",
+      "bytes": 155
+    },
+    {
+      "package": "apply_flat_record_changes",
+      "path": "verification/cases.json",
+      "digest": "c2cb1a7bc86ecaa5c3e083aa7155f149b8380713cf4ee787241a37f83e225322",
+      "bytes": 7198
+    },
+    {
+      "package": "apply_flat_record_changes",
+      "path": "LICENSE",
+      "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+      "bytes": 1068
+    },
+    {
+      "package": "apply_nonoverlapping_text_edits",
+      "path": "AGENTS.md",
+      "digest": "06b0bfe007b9d6e42e09e0f740d7632b64b5911cfb5803fcf208f40a98caf7c7",
+      "bytes": 2817
+    },
+    {
+      "package": "apply_nonoverlapping_text_edits",
+      "path": "tools/apply_nonoverlapping_text_edits.py",
+      "digest": "313cc16eed7f295c34013104e679964ac8805bf18123afe29e28441650840e06",
+      "bytes": 5922
+    },
+    {
+      "package": "apply_nonoverlapping_text_edits",
+      "path": "contracts/input.schema.json",
+      "digest": "a9c4766964097b37daf59741f848141cb32fdf1f744e3393eeaea96151d56143",
+      "bytes": 1510
+    },
+    {
+      "package": "apply_nonoverlapping_text_edits",
+      "path": "contracts/output.schema.json",
+      "digest": "f9de7bee8f6a500f7ed2cb369073b2021a437b9b161bb9b12c2103c7c59f5152",
+      "bytes": 1484
+    },
+    {
+      "package": "apply_nonoverlapping_text_edits",
+      "path": "examples/input.json",
+      "digest": "32a89560a2cc5f4556287fc3845a46d348adf95406fe1a313e3658507170519e",
+      "bytes": 336
+    },
+    {
+      "package": "apply_nonoverlapping_text_edits",
+      "path": "examples/output.json",
+      "digest": "e5739a4fb593eb3574e46d7e793be95fcb2c38fd6e98434dd28e75ec2890c553",
+      "bytes": 279
+    },
+    {
+      "package": "apply_nonoverlapping_text_edits",
+      "path": "verification/cases.json",
+      "digest": "0b27210a4372a18e49d39f94a0ab64922a90f259296fede26dc5e4b8d4189c5b",
+      "bytes": 6628
+    },
+    {
+      "package": "apply_nonoverlapping_text_edits",
+      "path": "LICENSE",
+      "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+      "bytes": 1068
+    },
+    {
+      "package": "assign_digest_shards",
+      "path": "AGENTS.md",
+      "digest": "8306626686cb0e9c393ba689b4f46d711cffca24452149023d958b0f0202069c",
+      "bytes": 2555
+    },
+    {
+      "package": "assign_digest_shards",
+      "path": "tools/assign_digest_shards.py",
+      "digest": "8e7a9079d2b768d78e81db33ba3657f2be18f452bb37c9a803ed863c32639911",
+      "bytes": 5008
+    },
+    {
+      "package": "assign_digest_shards",
+      "path": "contracts/input.schema.json",
+      "digest": "dbd232f98439c1209eb967932a09192b1f89f33b57586718d625078e6aa541f6",
+      "bytes": 1030
+    },
+    {
+      "package": "assign_digest_shards",
+      "path": "contracts/output.schema.json",
+      "digest": "3ddbc4563c828c7f9f82423f1a5daeca95949c184cfa48216af07efbfa5d3cad",
+      "bytes": 1882
+    },
+    {
+      "package": "assign_digest_shards",
+      "path": "examples/input.json",
+      "digest": "592c44a613673fbbc9ce9139054dbd32b95437cbe1c7f3c40cd5ae2cf9283572",
+      "bytes": 119
+    },
+    {
+      "package": "assign_digest_shards",
+      "path": "examples/output.json",
+      "digest": "a0f54bb35654d9a5a604eaddae0a6f7443a66084b7f6d3320c7e0faad20f8a3f",
+      "bytes": 492
+    },
+    {
+      "package": "assign_digest_shards",
+      "path": "verification/cases.json",
+      "digest": "d2dcfe6b4f9c9fb26b42af629a0ac9440aff58e13c32acc84d1baf80a1eedd69",
+      "bytes": 60343
+    },
+    {
+      "package": "assign_digest_shards",
+      "path": "LICENSE",
+      "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+      "bytes": 1068
+    },
+    {
+      "package": "audit_half_open_interval_overlaps",
+      "path": "AGENTS.md",
+      "digest": "5414ef36e44c145b28dc269453462c110b2deca67a80c1918e02738d82cecc37",
+      "bytes": 4124
+    },
+    {
+      "package": "audit_half_open_interval_overlaps",
+      "path": "tools/audit_half_open_interval_overlaps.py",
+      "digest": "7899e47fbbf918f845e4f1a086ed097ecd7e5004b39304d0452ce25d2e2748a7",
+      "bytes": 5103
+    },
+    {
+      "package": "audit_half_open_interval_overlaps",
+      "path": "contracts/input.schema.json",
+      "digest": "7201832e32a9791ac0ab3127afee4d574a45baeaa5a384a43b71d8bdc0142a6c",
+      "bytes": 1759
+    },
+    {
+      "package": "audit_half_open_interval_overlaps",
+      "path": "contracts/output.schema.json",
+      "digest": "c0af76e5a9b83b2678e4dd77456de81beee0db0e2fa4237b8deef878a56aa6b0",
+      "bytes": 2922
+    },
+    {
+      "package": "audit_half_open_interval_overlaps",
+      "path": "examples/input.json",
+      "digest": "7cbf0536a9e0da8911563a0b78a4dcdf0fd932db2e5ea7a1fb8890176693c416",
+      "bytes": 280
+    },
+    {
+      "package": "audit_half_open_interval_overlaps",
+      "path": "examples/output.json",
+      "digest": "5d16cfab4d5a0fb70156b7410affc127767afce82b6ad89f873a7c433bb08e92",
+      "bytes": 275
+    },
+    {
+      "package": "audit_half_open_interval_overlaps",
+      "path": "verification/cases.json",
+      "digest": "0b24ebd19d2cc47602713f6b69359a947b3bd9d2470419919caa1c7d770829e4",
+      "bytes": 5130
+    },
+    {
+      "package": "audit_half_open_interval_overlaps",
+      "path": "LICENSE",
+      "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+      "bytes": 1068
+    },
+    {
+      "package": "compare_file_inventories",
+      "path": "AGENTS.md",
+      "digest": "b14e00fe7e7a9b7073455837e371cc307ffea2ebf4177ea8163e7f54dce22898",
+      "bytes": 2726
+    },
+    {
+      "package": "compare_file_inventories",
+      "path": "tools/compare_file_inventories.py",
+      "digest": "e354235c3709a78e3ea1c58b253e507e420951f8633c729d31225e1708ed0982",
+      "bytes": 5665
+    },
+    {
+      "package": "compare_file_inventories",
+      "path": "contracts/input.schema.json",
+      "digest": "498a9b8f025cf8b4646a91c3d95023dbc73dd65bc3ccd00a199d88c6f2634dcc",
+      "bytes": 2507
+    },
+    {
+      "package": "compare_file_inventories",
+      "path": "contracts/output.schema.json",
+      "digest": "e2065df2afd5488b96d3c4550dfab88482ee278cf36b47e94485e10664d9494f",
+      "bytes": 2799
+    },
+    {
+      "package": "compare_file_inventories",
+      "path": "examples/input.json",
+      "digest": "4dbbb8d337e9922b58c92bd8e2855bc21ce2606831b86d0817ecbde49f8cb2e8",
+      "bytes": 1105
+    },
+    {
+      "package": "compare_file_inventories",
+      "path": "examples/output.json",
+      "digest": "6953452702a4ef3cf7a3a7c212f5f4c19cbaec4a31d606b0d580b1c04d483b38",
+      "bytes": 293
+    },
+    {
+      "package": "compare_file_inventories",
+      "path": "verification/cases.json",
+      "digest": "6b7b30c4919e284e0e0c1bd9b96936edccc36221da33cd13bb0ccca5f1c7602c",
+      "bytes": 8189
+    },
+    {
+      "package": "compare_file_inventories",
+      "path": "LICENSE",
+      "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+      "bytes": 1068
+    },
+    {
+      "package": "compute_weighted_quantiles",
+      "path": "AGENTS.md",
+      "digest": "89a88e98429338bab866b1196258d9f91c47978b747e086ae0758667f653f8b5",
+      "bytes": 4108
+    },
+    {
+      "package": "compute_weighted_quantiles",
+      "path": "tools/compute_weighted_quantiles.py",
+      "digest": "fb2e3a8bdb25848e9947b5ece3e703ec74cdb77d3804674acef4f56f6865e585",
+      "bytes": 4984
+    },
+    {
+      "package": "compute_weighted_quantiles",
+      "path": "contracts/input.schema.json",
+      "digest": "1253c921e6417bd085804816b1cee5876d7283755d57a83b270c93f6c8618213",
+      "bytes": 1878
+    },
+    {
+      "package": "compute_weighted_quantiles",
+      "path": "contracts/output.schema.json",
+      "digest": "a6533aed65dd76aec8bc013277a8c412d36cf130654fd56e9092b0f2ed2fd8d3",
+      "bytes": 3141
+    },
+    {
+      "package": "compute_weighted_quantiles",
+      "path": "examples/input.json",
+      "digest": "f51f9a110988eac8ac7d6aa0f16762e7a131f78734d78fd2147cd51f6080a7a7",
+      "bytes": 192
+    },
+    {
+      "package": "compute_weighted_quantiles",
+      "path": "examples/output.json",
+      "digest": "6d18c29704a0e56c5a8ba8d76b9ca045238992fd75b1c54aaade8cd35e9d045f",
+      "bytes": 545
+    },
+    {
+      "package": "compute_weighted_quantiles",
+      "path": "verification/cases.json",
+      "digest": "38fd0ce11ad251c450359d2b0df57da6f31c76bbdb40af346c2ac18783bbd4f6",
+      "bytes": 5071
+    },
+    {
+      "package": "compute_weighted_quantiles",
+      "path": "LICENSE",
+      "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+      "bytes": 1068
+    },
+    {
+      "package": "detect_portable_path_collisions",
+      "path": "AGENTS.md",
+      "digest": "3f70cb352717932e919a473a506da80dd9303da01c24782ff38d20434cf07010",
+      "bytes": 2848
+    },
+    {
+      "package": "detect_portable_path_collisions",
+      "path": "tools/detect_portable_path_collisions.py",
+      "digest": "330cd007a2b6c1d7eb9fa71f6f2effe93bba796d766d02313cc6d1a892b8f774",
+      "bytes": 6168
+    },
+    {
+      "package": "detect_portable_path_collisions",
+      "path": "contracts/input.schema.json",
+      "digest": "54b2bb9764476a5ad540f450c06bc1ce6243ab0c212f20d971ece0777bd2afb8",
+      "bytes": 1156
+    },
+    {
+      "package": "detect_portable_path_collisions",
+      "path": "contracts/output.schema.json",
+      "digest": "5efb02d0bc1f6adf444ba9414706876702f622c7dd13d88df906629f4cbd392f",
+      "bytes": 3386
+    },
+    {
+      "package": "detect_portable_path_collisions",
+      "path": "examples/input.json",
+      "digest": "3b3741fef81042bfae7f538c8d9038c2119a2e1acc7e4c5b9fe6f45a4c6dbff9",
+      "bytes": 184
+    },
+    {
+      "package": "detect_portable_path_collisions",
+      "path": "examples/output.json",
+      "digest": "0f52921345f8a58d070780dcd91f3c018584b4577534974fd172bd01438a417c",
+      "bytes": 534
+    },
+    {
+      "package": "detect_portable_path_collisions",
+      "path": "verification/cases.json",
+      "digest": "998de5ba295e77ad40bda5a388f174aa389181e645d7971d686a7d1031b40e52",
+      "bytes": 7175
+    },
+    {
+      "package": "detect_portable_path_collisions",
+      "path": "LICENSE",
+      "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+      "bytes": 1068
+    },
+    {
+      "package": "evaluate_capability_requirements",
+      "path": "AGENTS.md",
+      "digest": "5e7f554391f7e514d69fbdb4a32d86bc47865c8981e2eb566fdeb4f75449059d",
+      "bytes": 2989
+    },
+    {
+      "package": "evaluate_capability_requirements",
+      "path": "tools/evaluate_capability_requirements.py",
+      "digest": "a32264447585fb4d8af575ab4be6e37cbf7cd2c89a081fd491ee7538c2167085",
+      "bytes": 4302
+    },
+    {
+      "package": "evaluate_capability_requirements",
+      "path": "contracts/input.schema.json",
+      "digest": "d77d16f67d02833c615a1036f45985dc2221848783216ea88723bcd72548534c",
+      "bytes": 1703
+    },
+    {
+      "package": "evaluate_capability_requirements",
+      "path": "contracts/output.schema.json",
+      "digest": "02718878be1d6234061f2019b2b7d3e72fc47acc37038cafc2f9e0ca69c863d4",
+      "bytes": 1128
+    },
+    {
+      "package": "evaluate_capability_requirements",
+      "path": "examples/input.json",
+      "digest": "ef64acfbd199ee9818c6476ad8076589bc7580d6067616b081156809c649577a",
+      "bytes": 379
+    },
+    {
+      "package": "evaluate_capability_requirements",
+      "path": "examples/output.json",
+      "digest": "10427e2b40e3be5450a702cd29dc607130cf413bd8237f4b5281f8e7781e806f",
+      "bytes": 178
+    },
+    {
+      "package": "evaluate_capability_requirements",
+      "path": "verification/cases.json",
+      "digest": "620f38558b07b38feeb415cad258595652b80446c5bad0a9a89a15245d019339",
+      "bytes": 2604
+    },
+    {
+      "package": "evaluate_capability_requirements",
+      "path": "LICENSE",
+      "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+      "bytes": 1068
+    },
+    {
+      "package": "paired_sign_test",
+      "path": "AGENTS.md",
+      "digest": "1a15f7ac5aa8b29618395fda6cffb056d6bb42f4d0095ba18ca9a1b3b4677866",
+      "bytes": 3077
+    },
+    {
+      "package": "paired_sign_test",
+      "path": "tools/paired_sign_test.py",
+      "digest": "f3ecfeddb95ef924fb2366fdd1c3f2a02f1de507bcca6c836f1137f361daddbf",
+      "bytes": 4259
+    },
+    {
+      "package": "paired_sign_test",
+      "path": "contracts/input.schema.json",
+      "digest": "9f2966f263c43affb693b81152860d6e836cddae785fd90ffb55db6df4257614",
+      "bytes": 1369
+    },
+    {
+      "package": "paired_sign_test",
+      "path": "contracts/output.schema.json",
+      "digest": "368599f75ca631c0fdf10ac59e4d0c78a61f18ef65b0fe51bfdd3b3fab179751",
+      "bytes": 1255
+    },
+    {
+      "package": "paired_sign_test",
+      "path": "examples/input.json",
+      "digest": "49b27e1f7adf13ae363747781314200a41c7a7e236d27187486cfe0b1c9f30f1",
+      "bytes": 307
+    },
+    {
+      "package": "paired_sign_test",
+      "path": "examples/output.json",
+      "digest": "4723a1b236ee432877e7b3ad1aea84d1f906296662d421d27d6cdeac9889ccd9",
+      "bytes": 147
+    },
+    {
+      "package": "paired_sign_test",
+      "path": "verification/cases.json",
+      "digest": "ec19446c2ec44b418817ae59737fc27e2a3e72c6ccc6575fde31dc33f3c24bda",
+      "bytes": 2317
+    },
+    {
+      "package": "paired_sign_test",
+      "path": "LICENSE",
+      "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+      "bytes": 1068
+    },
+    {
+      "package": "profile_csv_structure",
+      "path": "AGENTS.md",
+      "digest": "1e4a3ee571d4ac6669aa4565e7131b04ace64fd96e08c5da363704dfbc2094bc",
+      "bytes": 4505
+    },
+    {
+      "package": "profile_csv_structure",
+      "path": "tools/profile_csv_structure.py",
+      "digest": "6d9fdad1fa302a7044622d4360598fbfab2ddc8b0915ac85ca6aaa66f89cb455",
+      "bytes": 5749
+    },
+    {
+      "package": "profile_csv_structure",
+      "path": "contracts/input.schema.json",
+      "digest": "cde702bc7d43007acb19be5c6cc51d1d20f1f2ca920e294a990af8426e0efcba",
+      "bytes": 1641
+    },
+    {
+      "package": "profile_csv_structure",
+      "path": "contracts/output.schema.json",
+      "digest": "bbd2cc0ada5e6e96a16de9c39852096cb70a714bdf2215106be753a43be06b6e",
+      "bytes": 5811
+    },
+    {
+      "package": "profile_csv_structure",
+      "path": "examples/input.json",
+      "digest": "83d6bb56045d674fa9c0a4a93764af0238d04840273ecafda0e0812560257c34",
+      "bytes": 98
+    },
+    {
+      "package": "profile_csv_structure",
+      "path": "examples/output.json",
+      "digest": "23b0be0520288658135c1e5373ad3b75c690f8271a33eb12019cb072700f81f7",
+      "bytes": 761
+    },
+    {
+      "package": "profile_csv_structure",
+      "path": "verification/cases.json",
+      "digest": "6caa9becf270f988ca064a6c94dbbca6efacdb1216ea68605b4db8001b9b4962",
+      "bytes": 13294
+    },
+    {
+      "package": "profile_csv_structure",
+      "path": "LICENSE",
+      "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+      "bytes": 1068
+    },
+    {
+      "package": "reconcile_keyed_tables",
+      "path": "AGENTS.md",
+      "digest": "89d0def0c9e9130e3e952fd6b3e5bb8faa8f14b8587c96ab48d1e1f985551a8b",
+      "bytes": 4437
+    },
+    {
+      "package": "reconcile_keyed_tables",
+      "path": "tools/reconcile_keyed_tables.py",
+      "digest": "a95ad8ab65c8212411b68690068b9ee6008587646bc83eb7563630e7658eae0a",
+      "bytes": 5326
+    },
+    {
+      "package": "reconcile_keyed_tables",
+      "path": "contracts/input.schema.json",
+      "digest": "1b55158c2aa9e72e642ead1141e7102c1679a537c9521dd9227904a68e56cc49",
+      "bytes": 2749
+    },
+    {
+      "package": "reconcile_keyed_tables",
+      "path": "contracts/output.schema.json",
+      "digest": "9887b12ef08a7eab7274453b4f2f1a7dab5baf4eda013263282efbf7c69af8cb",
+      "bytes": 6114
+    },
+    {
+      "package": "reconcile_keyed_tables",
+      "path": "examples/input.json",
+      "digest": "1a504a56de229519878a65c9a4b9c20640d50ee6a0705c8ba10a40aadcf46a75",
+      "bytes": 281
+    },
+    {
+      "package": "reconcile_keyed_tables",
+      "path": "examples/output.json",
+      "digest": "a7f160afbd250f0bc5a94a633952f3f97cc642376ce66fa33bc86fd898a211f5",
+      "bytes": 663
+    },
+    {
+      "package": "reconcile_keyed_tables",
+      "path": "verification/cases.json",
+      "digest": "3e24970335318b468f5e7d253d25a42a04a65662c51b5bea2086f9b8e5a809fa",
+      "bytes": 5851
+    },
+    {
+      "package": "reconcile_keyed_tables",
+      "path": "LICENSE",
+      "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+      "bytes": 1068
+    },
+    {
+      "package": "reconcile_multiset_rows",
+      "path": "AGENTS.md",
+      "digest": "214a85a46d496279524ff83b5b52839259ca2b03474d4e3a845a3cd2799ea03c",
+      "bytes": 4024
+    },
+    {
+      "package": "reconcile_multiset_rows",
+      "path": "tools/reconcile_multiset_rows.py",
+      "digest": "400f620e66faf353fef38d18417bcea2a733c6dbc6f8a17d81135982879405c5",
+      "bytes": 4567
+    },
+    {
+      "package": "reconcile_multiset_rows",
+      "path": "contracts/input.schema.json",
+      "digest": "4f99485b5163a2f080cc7c90b6edd049826db5721bc8d674ad4b280625f8ebf1",
+      "bytes": 2311
+    },
+    {
+      "package": "reconcile_multiset_rows",
+      "path": "contracts/output.schema.json",
+      "digest": "335ec084dca86e1a168eca2d446988648706b9e9a02ae70cdc0c4aee9c9e9438",
+      "bytes": 5842
+    },
+    {
+      "package": "reconcile_multiset_rows",
+      "path": "examples/input.json",
+      "digest": "0bd54b11a05ec5e118dd7629b7b4ecb9dcb7859506533cf9dde5f566be3efe8b",
+      "bytes": 166
+    },
+    {
+      "package": "reconcile_multiset_rows",
+      "path": "examples/output.json",
+      "digest": "43ee3c7a0b4fd752b756b56663f9064eea48228ccc27f1ff31d2a9cde0de3aed",
+      "bytes": 495
+    },
+    {
+      "package": "reconcile_multiset_rows",
+      "path": "verification/cases.json",
+      "digest": "bc5c7050d531fe9b18e0575d8147eda4c29b61213c7f351acc4816bcf91fcd05",
+      "bytes": 5014
+    },
+    {
+      "package": "reconcile_multiset_rows",
+      "path": "LICENSE",
+      "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+      "bytes": 1068
+    },
+    {
+      "package": "render_focused_task_context",
+      "path": "AGENTS.md",
+      "digest": "ff82a2af20bc15cd640be923956ec13549b37bd3b38a891a7f77cb1702820f0d",
+      "bytes": 2976
+    },
+    {
+      "package": "render_focused_task_context",
+      "path": "tools/render_focused_task_context.py",
+      "digest": "1dd7e1c4053f53da867f0d6e6411101bf197942bf06a6892e23c8f06eba0b442",
+      "bytes": 4855
+    },
+    {
+      "package": "render_focused_task_context",
+      "path": "contracts/input.schema.json",
+      "digest": "8b0fa0f3189fb6310d53f2b35e09319725f8a676b7bfb93832a58854e26d7404",
+      "bytes": 1945
+    },
+    {
+      "package": "render_focused_task_context",
+      "path": "contracts/output.schema.json",
+      "digest": "8093a626a98d4e73f0477e9d2bcfae7a7f30b49d7b104acc1967d037b7184019",
+      "bytes": 2853
+    },
+    {
+      "package": "render_focused_task_context",
+      "path": "examples/input.json",
+      "digest": "8b4ac71f3a71d383d43a66c703ab50754253f58756e11246b7b8aa098cdbc7ee",
+      "bytes": 452
+    },
+    {
+      "package": "render_focused_task_context",
+      "path": "examples/output.json",
+      "digest": "e69a4eaf10cd42404bf4970e9fa59649026f7a2e9d8fc040d6743362cca6100d",
+      "bytes": 1492
+    },
+    {
+      "package": "render_focused_task_context",
+      "path": "verification/cases.json",
+      "digest": "2be26168203aa2e70cb5d94c55bb80dc0a72f9e3dbb032bd21efb1882ca58f88",
+      "bytes": 4383
+    },
+    {
+      "package": "render_focused_task_context",
+      "path": "LICENSE",
+      "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+      "bytes": 1068
+    },
+    {
+      "package": "resolve_selected_dependency_closure",
+      "path": "AGENTS.md",
+      "digest": "8c03276c856ab89dacc65121fc5b34d8b9e970bea31907d391f10605e0e38ae4",
+      "bytes": 2789
+    },
+    {
+      "package": "resolve_selected_dependency_closure",
+      "path": "tools/resolve_selected_dependency_closure.py",
+      "digest": "6788778c91d0255a8ae9782a9d896d33cec5bfd321a62a4b4acebb185a7cc52c",
+      "bytes": 5999
+    },
+    {
+      "package": "resolve_selected_dependency_closure",
+      "path": "contracts/input.schema.json",
+      "digest": "bb776cc53f7d1c64bbc060803ea27705340c01a79ec4bbed61d056fd4036cfca",
+      "bytes": 1782
+    },
+    {
+      "package": "resolve_selected_dependency_closure",
+      "path": "contracts/output.schema.json",
+      "digest": "7e4d395b133009a7eda23ba5d09678a31883daf4e0c7d8c44cf3fa9815e0ced5",
+      "bytes": 1691
+    },
+    {
+      "package": "resolve_selected_dependency_closure",
+      "path": "examples/input.json",
+      "digest": "ca33ed478b8849d22e0be2eda6a384c651a411efc19862e3947dc89130e8e967",
+      "bytes": 363
+    },
+    {
+      "package": "resolve_selected_dependency_closure",
+      "path": "examples/output.json",
+      "digest": "b644a1e800883ee3b97d23776bab723e2426ba10a5d0848661903ab916ade857",
+      "bytes": 143
+    },
+    {
+      "package": "resolve_selected_dependency_closure",
+      "path": "verification/cases.json",
+      "digest": "3c0c6e5e33c30b2f5a473070050afb17daa75fc0949908c73887d6ecce79c494",
+      "bytes": 5438
+    },
+    {
+      "package": "resolve_selected_dependency_closure",
+      "path": "LICENSE",
+      "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+      "bytes": 1068
+    },
+    {
+      "package": "select_context_blocks",
+      "path": "AGENTS.md",
+      "digest": "f8d068b9d149b65f3b1c1b8552ce7f268849b20485fe9d4dd16b7d61b19986e7",
+      "bytes": 3082
+    },
+    {
+      "package": "select_context_blocks",
+      "path": "tools/select_context_blocks.py",
+      "digest": "03ea948927f8ee741c7497bafcef68444e99ababeb4d942e86c7f25a419197b5",
+      "bytes": 4812
+    },
+    {
+      "package": "select_context_blocks",
+      "path": "contracts/input.schema.json",
+      "digest": "a6b1fc73901e044955abb56955eb1d5bddbaf5f76a0936651ebe37e3e3e4c2be",
+      "bytes": 1463
+    },
+    {
+      "package": "select_context_blocks",
+      "path": "contracts/output.schema.json",
+      "digest": "4b5f521ed4b0fc15f74fee20d2d1bdfcad29b478fd895127ade8568f91f52067",
+      "bytes": 2008
+    },
+    {
+      "package": "select_context_blocks",
+      "path": "examples/input.json",
+      "digest": "810307522a8418739694b3d5800368d9c30d14847c1e7c7362f0c2c9a4acf976",
+      "bytes": 527
+    },
+    {
+      "package": "select_context_blocks",
+      "path": "examples/output.json",
+      "digest": "78e23951fd0af136d9ae3242e5dcf68ac76a6319fa733473ed31855cfd2d3b11",
+      "bytes": 477
+    },
+    {
+      "package": "select_context_blocks",
+      "path": "verification/cases.json",
+      "digest": "a8a8babd4d388119fe41fd885c8c698454c9f6fc81314449408ead96d192b5df",
+      "bytes": 2801
+    },
+    {
+      "package": "select_context_blocks",
+      "path": "LICENSE",
+      "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+      "bytes": 1068
+    },
+    {
+      "package": "validate_event_precedence",
+      "path": "AGENTS.md",
+      "digest": "e365766f7229482d72912ab4fc6e48fe032a0904716327d2cf10d3337887c806",
+      "bytes": 2648
+    },
+    {
+      "package": "validate_event_precedence",
+      "path": "tools/validate_event_precedence.py",
+      "digest": "e2aebba7709305435dd28d64aea7ee97c5db2a866942065d96b9ec0ea352aa3d",
+      "bytes": 5530
+    },
+    {
+      "package": "validate_event_precedence",
+      "path": "contracts/input.schema.json",
+      "digest": "e885f0b911ba714de1d8e8c49c82eaf13ca437f62d48aee959b695896372dd85",
+      "bytes": 1662
+    },
+    {
+      "package": "validate_event_precedence",
+      "path": "contracts/output.schema.json",
+      "digest": "c3f3963e116035d96b76ef7c986ebcbfc2e8bace319b14eaed5197ae6f7db4ad",
+      "bytes": 2603
+    },
+    {
+      "package": "validate_event_precedence",
+      "path": "examples/input.json",
+      "digest": "f8fdaa1250fe921079f4b6557bab6a42c3e76ddd17671baae6b10b75bbbb8c9a",
+      "bytes": 261
+    },
+    {
+      "package": "validate_event_precedence",
+      "path": "examples/output.json",
+      "digest": "904bd652bdd7acc240ad0035de6b580f73ff690cf638fd55e1273b0fb22196e0",
+      "bytes": 100
+    },
+    {
+      "package": "validate_event_precedence",
+      "path": "verification/cases.json",
+      "digest": "a26e3d7cf785da80e2554f540424f85871c7568972a3ccd270e3f4b0dfcb5347",
+      "bytes": 4473
+    },
+    {
+      "package": "validate_event_precedence",
+      "path": "LICENSE",
+      "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+      "bytes": 1068
+    }
+  ],
+  "metadata_effect_projection": "All sixteen launch profiles explicitly declare reads_fs and spawns_process for interpreter/script loading; no permission is granted.",
+  "source_scope": "Pinned CataloguePackage source grounds packaging only, not algorithm correctness."
+}

@@ -1,0 +1,10 @@
+{
+  "record_type": "detect_portable_path_collisions_request/v1",
+  "paths": [
+    "Straße",
+    "STRASSE",
+    "A",
+    "a/child"
+  ],
+  "platform_model": "unicode_nfc_casefold/v1"
+}

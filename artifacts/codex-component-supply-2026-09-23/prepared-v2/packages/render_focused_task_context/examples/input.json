@@ -1,0 +1,24 @@
+{
+  "task": "Validate the supplied rows",
+  "first_steps": [
+    "Read the input contract"
+  ],
+  "acceptance": [
+    "Report every invalid row"
+  ],
+  "constraints": [
+    "Preserve the input"
+  ],
+  "inputs": [
+    {
+      "path": "inputs/rows.json",
+      "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  ],
+  "context": [
+    {
+      "label": "Source note",
+      "text": "The delimiter is a comma."
+    }
+  ]
+}

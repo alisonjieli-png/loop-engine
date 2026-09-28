@@ -1,0 +1,27 @@
+{
+  "repository_population": 87,
+  "discovered_skills": 2007,
+  "comparison_population": 1282,
+  "unique_primary_skills_checked": 1008,
+  "selected": 1000,
+  "unique_instruction_digests": 1000,
+  "per_repository_population_cap": 40,
+  "complete_target": true,
+  "github_requests": {
+    "requests": 259,
+    "by_outcome": {
+      "gh_api:ok": 258,
+      "gh_api:not_found": 1
+    },
+    "bytes": 32218618
+  },
+  "https_requests": {
+    "requests": 1282,
+    "by_outcome": {
+      "https_get:ok": 1282
+    },
+    "bytes": 11707149
+  },
+  "failure_or_exclusion_count": 275,
+  "limits": "Public leaderboard seed scope only; not all global skills. No upstream code executed, no skill approved or installed; license scope and complete dependencies remain unqualified."
+}

@@ -1,0 +1,25 @@
+{
+  "reason": "Independent raw JSON controls exposed float rounding and underflow creating integer/zero cost. Exact Decimal parsing now normalizes only bounded integral values before method validation.",
+  "records": [
+    {
+      "id": "render_focused_task_context",
+      "before": "94159390d24c3909b751e418e11f02693123fff886b04c59d4be6f1b8d89728a",
+      "after": "e81279fee6f73c497477163e55f3bd5c0ffaa481cfcaef07863c3200337d7758"
+    },
+    {
+      "id": "evaluate_capability_requirements",
+      "before": "fc99fcae4377b023a4bb10b987d4599250c4becd0bd4d5a9c0b692d413f01a85",
+      "after": "3207cca654c79596245b1f7db895389d12b95fa87212804ed924cbddefa929bc"
+    },
+    {
+      "id": "select_context_blocks",
+      "before": "355bedee6fab088aa512a0d1ec98a391851a43ff9d29dc86e0659f93caef6215",
+      "after": "a795d1d01d1185fd8435019412cf7bfe3caefa7627393ba9a44006c3d0343ecb"
+    },
+    {
+      "id": "paired_sign_test",
+      "before": "93e01a6fcc38f0e0946335e099d449bd65d96a04109a115fdf34e9f5dc0b4dbb",
+      "after": "368ea981155e281a5bf1fdb814062fa8c0723845089254967eda5190adad9981"
+    }
+  ]
+}

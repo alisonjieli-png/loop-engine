@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "requirements_met": {
+      "type": "boolean"
+    },
+    "satisfied": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_]{0,63}(?![\\s\\S])"
+      },
+      "minItems": 0,
+      "maxItems": 64
+    },
+    "unsupported": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_]{0,63}(?![\\s\\S])"
+      },
+      "minItems": 0,
+      "maxItems": 64
+    },
+    "unverified": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_]{0,63}(?![\\s\\S])"
+      },
+      "minItems": 0,
+      "maxItems": 64
+    },
+    "optional_unavailable": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_]{0,63}(?![\\s\\S])"
+      },
+      "minItems": 0,
+      "maxItems": 64
+    }
+  },
+  "required": [
+    "requirements_met",
+    "satisfied",
+    "unsupported",
+    "unverified",
+    "optional_unavailable"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,12 @@
+{
+  "phase": "contracts_and_cases_before_implementation",
+  "packages": [
+    "render_focused_task_context",
+    "evaluate_capability_requirements",
+    "select_context_blocks",
+    "paired_sign_test"
+  ],
+  "tool_files_present": [],
+  "author": "Codex root author",
+  "provider_calls": 0
+}

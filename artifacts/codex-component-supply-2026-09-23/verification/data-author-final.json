@@ -1,0 +1,1818 @@
+{
+  "record_type": "data_component_author_verification/v1",
+  "sandbox": "bwrap --unshare-all --clearenv; no home/network; CPU2s AS256MiB wall4s stdout524289B",
+  "provider_calls": 0,
+  "independent_approval": false,
+  "packages": [
+    {
+      "id": "profile_csv_structure",
+      "script_sha256": "6d9fdad1fa302a7044622d4360598fbfab2ddc8b0915ac85ca6aaa66f89cb455",
+      "passed": true,
+      "checks": [
+        {
+          "name": "ragged_and_empty_cells",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "blank_header_indices": [],
+              "column_count": 2,
+              "columns": [
+                {
+                  "empty_cells": 0,
+                  "index": 0,
+                  "max_chars": 1,
+                  "missing_rows": 0,
+                  "present_rows": 3
+                },
+                {
+                  "empty_cells": 1,
+                  "index": 1,
+                  "max_chars": 3,
+                  "missing_rows": 1,
+                  "present_rows": 2
+                }
+              ],
+              "duplicate_header_names": [],
+              "header": [
+                "id",
+                "name"
+              ],
+              "physical_line_count": 4,
+              "row_count": 3,
+              "width_counts": [
+                {
+                  "records": 1,
+                  "width": 1
+                },
+                {
+                  "records": 2,
+                  "width": 2
+                }
+              ],
+              "width_mismatches": [
+                {
+                  "row_index": 2,
+                  "width": 1
+                }
+              ]
+            }
+          },
+          "elapsed_ms": 36.78573004435748,
+          "stderr": ""
+        },
+        {
+          "name": "empty_without_header",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "blank_header_indices": [],
+              "column_count": 0,
+              "columns": [],
+              "duplicate_header_names": [],
+              "header": null,
+              "physical_line_count": 0,
+              "row_count": 0,
+              "width_counts": [],
+              "width_mismatches": []
+            }
+          },
+          "elapsed_ms": 35.29716609045863,
+          "stderr": ""
+        },
+        {
+          "name": "quoted_physical_newline",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "blank_header_indices": [],
+              "column_count": 2,
+              "columns": [
+                {
+                  "empty_cells": 0,
+                  "index": 0,
+                  "max_chars": 3,
+                  "missing_rows": 0,
+                  "present_rows": 1
+                },
+                {
+                  "empty_cells": 0,
+                  "index": 1,
+                  "max_chars": 1,
+                  "missing_rows": 0,
+                  "present_rows": 1
+                }
+              ],
+              "duplicate_header_names": [],
+              "header": [
+                "a",
+                "b"
+              ],
+              "physical_line_count": 3,
+              "row_count": 1,
+              "width_counts": [
+                {
+                  "records": 1,
+                  "width": 2
+                }
+              ],
+              "width_mismatches": []
+            }
+          },
+          "elapsed_ms": 37.343976087868214,
+          "stderr": ""
+        },
+        {
+          "name": "header_duplicates_are_reported",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "blank_header_indices": [
+                2
+              ],
+              "column_count": 3,
+              "columns": [
+                {
+                  "empty_cells": 0,
+                  "index": 0,
+                  "max_chars": 1,
+                  "missing_rows": 0,
+                  "present_rows": 1
+                },
+                {
+                  "empty_cells": 0,
+                  "index": 1,
+                  "max_chars": 1,
+                  "missing_rows": 0,
+                  "present_rows": 1
+                },
+                {
+                  "empty_cells": 0,
+                  "index": 2,
+                  "max_chars": 1,
+                  "missing_rows": 0,
+                  "present_rows": 1
+                }
+              ],
+              "duplicate_header_names": [
+                {
+                  "indices": [
+                    0,
+                    1
+                  ],
+                  "name": "x"
+                }
+              ],
+              "header": [
+                "x",
+                "x",
+                ""
+              ],
+              "physical_line_count": 2,
+              "row_count": 1,
+              "width_counts": [
+                {
+                  "records": 1,
+                  "width": 3
+                }
+              ],
+              "width_mismatches": []
+            }
+          },
+          "elapsed_ms": 35.70100199431181,
+          "stderr": ""
+        },
+        {
+          "name": "unicode_is_one_character",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "blank_header_indices": [],
+              "column_count": 1,
+              "columns": [
+                {
+                  "empty_cells": 0,
+                  "index": 0,
+                  "max_chars": 1,
+                  "missing_rows": 0,
+                  "present_rows": 1
+                }
+              ],
+              "duplicate_header_names": [],
+              "header": [
+                "h"
+              ],
+              "physical_line_count": 2,
+              "row_count": 1,
+              "width_counts": [
+                {
+                  "records": 1,
+                  "width": 1
+                }
+              ],
+              "width_mismatches": []
+            }
+          },
+          "elapsed_ms": 36.88570496160537,
+          "stderr": ""
+        },
+        {
+          "name": "alternate_quote_and_delimiter",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "blank_header_indices": [],
+              "column_count": 2,
+              "columns": [
+                {
+                  "empty_cells": 0,
+                  "index": 0,
+                  "max_chars": 3,
+                  "missing_rows": 0,
+                  "present_rows": 1
+                },
+                {
+                  "empty_cells": 0,
+                  "index": 1,
+                  "max_chars": 1,
+                  "missing_rows": 0,
+                  "present_rows": 1
+                }
+              ],
+              "duplicate_header_names": [],
+              "header": [
+                "a",
+                "b"
+              ],
+              "physical_line_count": 2,
+              "row_count": 1,
+              "width_counts": [
+                {
+                  "records": 1,
+                  "width": 2
+                }
+              ],
+              "width_mismatches": []
+            }
+          },
+          "elapsed_ms": 36.83956596069038,
+          "stderr": ""
+        },
+        {
+          "name": "unterminated_quote",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "elapsed_ms": 36.52847104240209,
+          "stderr": ""
+        },
+        {
+          "name": "missing_header",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "elapsed_ms": 38.23857195675373,
+          "stderr": ""
+        },
+        {
+          "name": "record_ceiling",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "elapsed_ms": 38.09621708933264,
+          "stderr": ""
+        },
+        {
+          "name": "field_ceiling",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "elapsed_ms": 36.708235973492265,
+          "stderr": ""
+        },
+        {
+          "name": "unknown_field",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "elapsed_ms": 38.047406007535756,
+          "stderr": ""
+        }
+      ]
+    },
+    {
+      "id": "reconcile_multiset_rows",
+      "script_sha256": "400f620e66faf353fef38d18417bcea2a733c6dbc6f8a17d81135982879405c5",
+      "passed": true,
+      "checks": [
+        {
+          "name": "multiplicity",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "common": [
+                {
+                  "count": 1,
+                  "row": {
+                    "x": 1
+                  }
+                }
+              ],
+              "equal": false,
+              "left_count": 3,
+              "left_only": [
+                {
+                  "count": 1,
+                  "row": {
+                    "x": 1
+                  }
+                },
+                {
+                  "count": 1,
+                  "row": {
+                    "x": 2
+                  }
+                }
+              ],
+              "right_count": 2,
+              "right_only": [
+                {
+                  "count": 1,
+                  "row": {
+                    "x": 3
+                  }
+                }
+              ]
+            }
+          },
+          "elapsed_ms": 36.94066300522536,
+          "stderr": ""
+        },
+        {
+          "name": "empty",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "common": [],
+              "equal": true,
+              "left_count": 0,
+              "left_only": [],
+              "right_count": 0,
+              "right_only": []
+            }
+          },
+          "elapsed_ms": 36.55431605875492,
+          "stderr": ""
+        },
+        {
+          "name": "boolean_is_not_number",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "common": [],
+              "equal": false,
+              "left_count": 1,
+              "left_only": [
+                {
+                  "count": 1,
+                  "row": {
+                    "x": true
+                  }
+                }
+              ],
+              "right_count": 1,
+              "right_only": [
+                {
+                  "count": 1,
+                  "row": {
+                    "x": 1
+                  }
+                }
+              ]
+            }
+          },
+          "elapsed_ms": 36.55805601738393,
+          "stderr": ""
+        },
+        {
+          "name": "missing_is_not_null",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "common": [],
+              "equal": false,
+              "left_count": 1,
+              "left_only": [
+                {
+                  "count": 1,
+                  "row": {}
+                }
+              ],
+              "right_count": 1,
+              "right_only": [
+                {
+                  "count": 1,
+                  "row": {
+                    "x": null
+                  }
+                }
+              ]
+            }
+          },
+          "elapsed_ms": 35.72996100410819,
+          "stderr": ""
+        },
+        {
+          "name": "integral_number_spellings",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "common": [
+                {
+                  "count": 1,
+                  "row": {
+                    "x": 1
+                  }
+                }
+              ],
+              "equal": true,
+              "left_count": 1,
+              "left_only": [],
+              "right_count": 1,
+              "right_only": []
+            }
+          },
+          "elapsed_ms": 37.91309206280857,
+          "stderr": ""
+        },
+        {
+          "name": "key_order_is_not_identity",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "common": [
+                {
+                  "count": 1,
+                  "row": {
+                    "a": 2,
+                    "b": "é"
+                  }
+                }
+              ],
+              "equal": true,
+              "left_count": 1,
+              "left_only": [],
+              "right_count": 1,
+              "right_only": []
+            }
+          },
+          "elapsed_ms": 37.259608041495085,
+          "stderr": ""
+        },
+        {
+          "name": "fractional_numeric_field",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "elapsed_ms": 38.43911993317306,
+          "stderr": ""
+        },
+        {
+          "name": "nested_field",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "elapsed_ms": 42.63745807111263,
+          "stderr": ""
+        },
+        {
+          "name": "unknown_root_field",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "elapsed_ms": 37.79163700528443,
+          "stderr": ""
+        },
+        {
+          "name": "zero_with_large_exponent_is_still_zero",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "common": [],
+              "equal": false,
+              "left_count": 1,
+              "left_only": [
+                {
+                  "count": 1,
+                  "row": {
+                    "n": 0
+                  }
+                }
+              ],
+              "right_count": 0,
+              "right_only": []
+            }
+          },
+          "elapsed_ms": 37.14893595315516,
+          "stderr": ""
+        }
+      ]
+    },
+    {
+      "id": "compute_weighted_quantiles",
+      "script_sha256": "fb2e3a8bdb25848e9947b5ece3e703ec74cdb77d3804674acef4f56f6865e585",
+      "passed": true,
+      "checks": [
+        {
+          "name": "weighted_steps",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "cdf": [
+                {
+                  "cumulative_weight": 1,
+                  "value": "10",
+                  "weight": 1
+                },
+                {
+                  "cumulative_weight": 4,
+                  "value": "20",
+                  "weight": 3
+                }
+              ],
+              "distinct_values": 2,
+              "quantiles": [
+                {
+                  "q": "0",
+                  "value": "10"
+                },
+                {
+                  "q": "0.25",
+                  "value": "10"
+                },
+                {
+                  "q": "0.5",
+                  "value": "20"
+                },
+                {
+                  "q": "1",
+                  "value": "20"
+                }
+              ],
+              "total_weight": 4
+            }
+          },
+          "elapsed_ms": 39.881340926513076,
+          "stderr": ""
+        },
+        {
+          "name": "ties_normalize_exactly",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "cdf": [
+                {
+                  "cumulative_weight": 1,
+                  "value": "0",
+                  "weight": 1
+                },
+                {
+                  "cumulative_weight": 4,
+                  "value": "1",
+                  "weight": 3
+                }
+              ],
+              "distinct_values": 2,
+              "quantiles": [
+                {
+                  "q": "0",
+                  "value": "0"
+                },
+                {
+                  "q": "0.5",
+                  "value": "1"
+                },
+                {
+                  "q": "1",
+                  "value": "1"
+                }
+              ],
+              "total_weight": 4
+            }
+          },
+          "elapsed_ms": 37.18479804228991,
+          "stderr": ""
+        },
+        {
+          "name": "threshold_above_boundary",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "cdf": [
+                {
+                  "cumulative_weight": 1,
+                  "value": "-2",
+                  "weight": 1
+                },
+                {
+                  "cumulative_weight": 2,
+                  "value": "-1",
+                  "weight": 1
+                }
+              ],
+              "distinct_values": 2,
+              "quantiles": [
+                {
+                  "q": "0.500000000001",
+                  "value": "-1"
+                }
+              ],
+              "total_weight": 2
+            }
+          },
+          "elapsed_ms": 36.90698591526598,
+          "stderr": ""
+        },
+        {
+          "name": "integral_weight",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "cdf": [
+                {
+                  "cumulative_weight": 2,
+                  "value": "0.125",
+                  "weight": 2
+                }
+              ],
+              "distinct_values": 1,
+              "quantiles": [
+                {
+                  "q": "1",
+                  "value": "0.125"
+                }
+              ],
+              "total_weight": 2
+            }
+          },
+          "elapsed_ms": 37.47819096315652,
+          "stderr": ""
+        },
+        {
+          "name": "zero_weight",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "elapsed_ms": 35.79955000896007,
+          "stderr": ""
+        },
+        {
+          "name": "boolean_weight",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "elapsed_ms": 37.5458940397948,
+          "stderr": ""
+        },
+        {
+          "name": "scientific_decimal_string",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "elapsed_ms": 41.46650806069374,
+          "stderr": ""
+        },
+        {
+          "name": "out_of_range_probability",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "elapsed_ms": 36.903301952406764,
+          "stderr": ""
+        },
+        {
+          "name": "empty_samples",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "elapsed_ms": 38.51409803610295,
+          "stderr": ""
+        }
+      ]
+    },
+    {
+      "id": "audit_half_open_interval_overlaps",
+      "script_sha256": "7899e47fbbf918f845e4f1a086ed097ecd7e5004b39304d0452ce25d2e2748a7",
+      "passed": true,
+      "checks": [
+        {
+          "name": "overlap_and_adjacency",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "empty_ids": [
+                "empty"
+              ],
+              "max_concurrency": 2,
+              "overlap_count": 1,
+              "overlaps": [
+                {
+                  "end": 4,
+                  "left_id": "a",
+                  "right_id": "b",
+                  "start": 2
+                }
+              ],
+              "union_length": 8
+            }
+          },
+          "elapsed_ms": 35.854583024047315,
+          "stderr": ""
+        },
+        {
+          "name": "empty_collection",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "empty_ids": [],
+              "max_concurrency": 0,
+              "overlap_count": 0,
+              "overlaps": [],
+              "union_length": 0
+            }
+          },
+          "elapsed_ms": 34.2241310281679,
+          "stderr": ""
+        },
+        {
+          "name": "nested_intervals",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "empty_ids": [
+                "point"
+              ],
+              "max_concurrency": 2,
+              "overlap_count": 1,
+              "overlaps": [
+                {
+                  "end": 1,
+                  "left_id": "outer",
+                  "right_id": "inner",
+                  "start": -1
+                }
+              ],
+              "union_length": 10
+            }
+          },
+          "elapsed_ms": 33.56367792002857,
+          "stderr": ""
+        },
+        {
+          "name": "adjacent_only",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "empty_ids": [],
+              "max_concurrency": 1,
+              "overlap_count": 0,
+              "overlaps": [],
+              "union_length": 2
+            }
+          },
+          "elapsed_ms": 33.513700938783586,
+          "stderr": ""
+        },
+        {
+          "name": "integral_coordinates",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "empty_ids": [],
+              "max_concurrency": 2,
+              "overlap_count": 1,
+              "overlaps": [
+                {
+                  "end": 2,
+                  "left_id": "a",
+                  "right_id": "b",
+                  "start": 1
+                }
+              ],
+              "union_length": 3
+            }
+          },
+          "elapsed_ms": 33.591137966141105,
+          "stderr": ""
+        },
+        {
+          "name": "full_coordinate_range",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "empty_ids": [],
+              "max_concurrency": 1,
+              "overlap_count": 0,
+              "overlaps": [],
+              "union_length": 2000000000000
+            }
+          },
+          "elapsed_ms": 34.72407697699964,
+          "stderr": ""
+        },
+        {
+          "name": "reverse_interval",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "elapsed_ms": 33.14575203694403,
+          "stderr": ""
+        },
+        {
+          "name": "duplicate_identity",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "elapsed_ms": 33.15800300333649,
+          "stderr": ""
+        },
+        {
+          "name": "boolean_coordinate",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "elapsed_ms": 31.973864999599755,
+          "stderr": ""
+        },
+        {
+          "name": "fractional_coordinate",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "elapsed_ms": 32.68415201455355,
+          "stderr": ""
+        },
+        {
+          "name": "zero_with_large_exponent_is_still_zero",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "empty_ids": [
+                "zero"
+              ],
+              "max_concurrency": 0,
+              "overlap_count": 0,
+              "overlaps": [],
+              "union_length": 0
+            }
+          },
+          "elapsed_ms": 32.955833012238145,
+          "stderr": ""
+        }
+      ]
+    },
+    {
+      "id": "apply_flat_record_changes",
+      "script_sha256": "f37df2924ab751b7a3fe2f631af0e86300d0f21f6a40fa71287c301cacf745ce",
+      "passed": true,
+      "checks": [
+        {
+          "name": "replace_add_remove",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "applied": true,
+              "changed_count": 3,
+              "conflicts": [],
+              "record": {
+                "a": 2,
+                "new": "x"
+              }
+            }
+          },
+          "elapsed_ms": 33.12847902998328,
+          "stderr": ""
+        },
+        {
+          "name": "conflict_is_atomic",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "applied": false,
+              "changed_count": 0,
+              "conflicts": [
+                {
+                  "actual": {
+                    "present": true,
+                    "value": 2
+                  },
+                  "expected": {
+                    "present": true,
+                    "value": 9
+                  },
+                  "key": "b"
+                }
+              ],
+              "record": {
+                "a": 1,
+                "b": 2
+              }
+            }
+          },
+          "elapsed_ms": 33.24847994372249,
+          "stderr": ""
+        },
+        {
+          "name": "null_is_present",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "applied": false,
+              "changed_count": 0,
+              "conflicts": [
+                {
+                  "actual": {
+                    "present": true,
+                    "value": null
+                  },
+                  "expected": {
+                    "present": false
+                  },
+                  "key": "a"
+                }
+              ],
+              "record": {
+                "a": null
+              }
+            }
+          },
+          "elapsed_ms": 32.7796220080927,
+          "stderr": ""
+        },
+        {
+          "name": "boolean_differs_from_number",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "applied": false,
+              "changed_count": 0,
+              "conflicts": [
+                {
+                  "actual": {
+                    "present": true,
+                    "value": true
+                  },
+                  "expected": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "key": "a"
+                }
+              ],
+              "record": {
+                "a": true
+              }
+            }
+          },
+          "elapsed_ms": 34.25839601550251,
+          "stderr": ""
+        },
+        {
+          "name": "integral_noop",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "applied": true,
+              "changed_count": 0,
+              "conflicts": [],
+              "record": {
+                "a": 1
+              }
+            }
+          },
+          "elapsed_ms": 33.86157704517245,
+          "stderr": ""
+        },
+        {
+          "name": "empty_changes",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "applied": true,
+              "changed_count": 0,
+              "conflicts": [],
+              "record": {}
+            }
+          },
+          "elapsed_ms": 32.76937501505017,
+          "stderr": ""
+        },
+        {
+          "name": "duplicate_change_key",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "elapsed_ms": 32.42008597590029,
+          "stderr": ""
+        },
+        {
+          "name": "absent_state_cannot_hold_value",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "elapsed_ms": 32.066991087049246,
+          "stderr": ""
+        },
+        {
+          "name": "result_field_ceiling",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "elapsed_ms": 33.47183298319578,
+          "stderr": ""
+        },
+        {
+          "name": "nested_value",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "elapsed_ms": 33.52259797975421,
+          "stderr": ""
+        },
+        {
+          "name": "zero_with_large_exponent_is_still_zero",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "applied": true,
+              "changed_count": 0,
+              "conflicts": [],
+              "record": {
+                "n": 0
+              }
+            }
+          },
+          "elapsed_ms": 39.31232704780996,
+          "stderr": ""
+        }
+      ]
+    },
+    {
+      "id": "reconcile_keyed_tables",
+      "script_sha256": "a95ad8ab65c8212411b68690068b9ee6008587646bc83eb7563630e7658eae0a",
+      "passed": true,
+      "checks": [
+        {
+          "name": "matched_changed_and_unmatched",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "counts": {
+                "changed": 1,
+                "left_only": 1,
+                "left_rows": 3,
+                "matched": 2,
+                "right_only": 1,
+                "right_rows": 3,
+                "unchanged": 1
+              },
+              "left_only": [
+                {
+                  "key": "c",
+                  "left_index": 2
+                }
+              ],
+              "matches": [
+                {
+                  "changed_fields": [],
+                  "key": "a",
+                  "left_index": 0,
+                  "right_index": 1
+                },
+                {
+                  "changed_fields": [
+                    "n"
+                  ],
+                  "key": "b",
+                  "left_index": 1,
+                  "right_index": 0
+                }
+              ],
+              "right_only": [
+                {
+                  "key": "d",
+                  "right_index": 2
+                }
+              ]
+            }
+          },
+          "elapsed_ms": 33.439151011407375,
+          "stderr": ""
+        },
+        {
+          "name": "empty_tables",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "counts": {
+                "changed": 0,
+                "left_only": 0,
+                "left_rows": 0,
+                "matched": 0,
+                "right_only": 0,
+                "right_rows": 0,
+                "unchanged": 0
+              },
+              "left_only": [],
+              "matches": [],
+              "right_only": []
+            }
+          },
+          "elapsed_ms": 32.15415799058974,
+          "stderr": ""
+        },
+        {
+          "name": "missing_null_and_bool_number",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "counts": {
+                "changed": 1,
+                "left_only": 0,
+                "left_rows": 1,
+                "matched": 1,
+                "right_only": 0,
+                "right_rows": 1,
+                "unchanged": 0
+              },
+              "left_only": [],
+              "matches": [
+                {
+                  "changed_fields": [
+                    "b",
+                    "n"
+                  ],
+                  "key": 1,
+                  "left_index": 0,
+                  "right_index": 0
+                }
+              ],
+              "right_only": []
+            }
+          },
+          "elapsed_ms": 33.33733498584479,
+          "stderr": ""
+        },
+        {
+          "name": "typed_key_distinction",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "counts": {
+                "changed": 0,
+                "left_only": 1,
+                "left_rows": 1,
+                "matched": 0,
+                "right_only": 1,
+                "right_rows": 1,
+                "unchanged": 0
+              },
+              "left_only": [
+                {
+                  "key": 1,
+                  "left_index": 0
+                }
+              ],
+              "matches": [],
+              "right_only": [
+                {
+                  "key": "1",
+                  "right_index": 0
+                }
+              ]
+            }
+          },
+          "elapsed_ms": 33.9765619719401,
+          "stderr": ""
+        },
+        {
+          "name": "duplicate_key_not_cross_product",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "elapsed_ms": 33.07998599484563,
+          "stderr": ""
+        },
+        {
+          "name": "missing_key",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "elapsed_ms": 32.25654095876962,
+          "stderr": ""
+        },
+        {
+          "name": "null_key",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "elapsed_ms": 32.99348603468388,
+          "stderr": ""
+        },
+        {
+          "name": "boolean_key",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "elapsed_ms": 32.45683899149299,
+          "stderr": ""
+        },
+        {
+          "name": "empty_string_key",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "elapsed_ms": 32.16743504162878,
+          "stderr": ""
+        },
+        {
+          "name": "fractional_field",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "elapsed_ms": 32.24286111071706,
+          "stderr": ""
+        },
+        {
+          "name": "zero_with_large_exponent_is_still_zero",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "counts": {
+                "changed": 0,
+                "left_only": 1,
+                "left_rows": 1,
+                "matched": 0,
+                "right_only": 0,
+                "right_rows": 0,
+                "unchanged": 0
+              },
+              "left_only": [
+                {
+                  "key": 0,
+                  "left_index": 0
+                }
+              ],
+              "matches": [],
+              "right_only": []
+            }
+          },
+          "elapsed_ms": 32.52418292686343,
+          "stderr": ""
+        }
+      ]
+    }
+  ],
+  "fault_controls": [
+    {
+      "id": "profile_csv_structure",
+      "mutation": {
+        "before": "\"missing_rows\": len(data) - len(cells)",
+        "after": "\"missing_rows\": 0"
+      },
+      "detected_by": [
+        "ragged_and_empty_cells"
+      ]
+    },
+    {
+      "id": "reconcile_multiset_rows",
+      "mutation": {
+        "before": "counters.append(Counter(keys))",
+        "after": "counters.append(Counter(set(keys)))"
+      },
+      "detected_by": [
+        "multiplicity"
+      ]
+    },
+    {
+      "id": "compute_weighted_quantiles",
+      "mutation": {
+        "before": "Fraction(probability) * total",
+        "after": "Fraction(probability) * len(weights)"
+      },
+      "detected_by": [
+        "weighted_steps",
+        "ties_normalize_exactly"
+      ]
+    },
+    {
+      "id": "audit_half_open_interval_overlaps",
+      "mutation": {
+        "before": "if start < end:",
+        "after": "if start <= end:"
+      },
+      "detected_by": [
+        "overlap_and_adjacency",
+        "nested_intervals",
+        "adjacent_only"
+      ]
+    },
+    {
+      "id": "apply_flat_record_changes",
+      "mutation": {
+        "before": "if not same_state(actual, change[\"before\"]):",
+        "after": "if False:"
+      },
+      "detected_by": [
+        "conflict_is_atomic",
+        "null_is_present",
+        "boolean_differs_from_number"
+      ]
+    },
+    {
+      "id": "reconcile_keyed_tables",
+      "mutation": {
+        "before": "need(key not in table)",
+        "after": "need(True)"
+      },
+      "detected_by": [
+        "duplicate_key_not_cross_product"
+      ]
+    }
+  ],
+  "raw_boundary_checks": [
+    {
+      "id": "profile_csv_structure",
+      "case": "duplicate_keys",
+      "passed": true,
+      "exit_code": 2,
+      "output_bytes": 46
+    },
+    {
+      "id": "profile_csv_structure",
+      "case": "nonfinite",
+      "passed": true,
+      "exit_code": 2,
+      "output_bytes": 46
+    },
+    {
+      "id": "profile_csv_structure",
+      "case": "invalid_utf8",
+      "passed": true,
+      "exit_code": 2,
+      "output_bytes": 46
+    },
+    {
+      "id": "profile_csv_structure",
+      "case": "unpaired_surrogate",
+      "passed": true,
+      "exit_code": 2,
+      "output_bytes": 46
+    },
+    {
+      "id": "profile_csv_structure",
+      "case": "deep_nesting",
+      "passed": true,
+      "exit_code": 2,
+      "output_bytes": 46
+    },
+    {
+      "id": "profile_csv_structure",
+      "case": "input_byte_ceiling",
+      "passed": true,
+      "exit_code": 2,
+      "output_bytes": 46
+    },
+    {
+      "id": "reconcile_multiset_rows",
+      "case": "duplicate_keys",
+      "passed": true,
+      "exit_code": 2,
+      "output_bytes": 46
+    },
+    {
+      "id": "reconcile_multiset_rows",
+      "case": "nonfinite",
+      "passed": true,
+      "exit_code": 2,
+      "output_bytes": 46
+    },
+    {
+      "id": "reconcile_multiset_rows",
+      "case": "invalid_utf8",
+      "passed": true,
+      "exit_code": 2,
+      "output_bytes": 46
+    },
+    {
+      "id": "reconcile_multiset_rows",
+      "case": "unpaired_surrogate",
+      "passed": true,
+      "exit_code": 2,
+      "output_bytes": 46
+    },
+    {
+      "id": "reconcile_multiset_rows",
+      "case": "deep_nesting",
+      "passed": true,
+      "exit_code": 2,
+      "output_bytes": 46
+    },
+    {
+      "id": "reconcile_multiset_rows",
+      "case": "input_byte_ceiling",
+      "passed": true,
+      "exit_code": 2,
+      "output_bytes": 46
+    },
+    {
+      "id": "compute_weighted_quantiles",
+      "case": "duplicate_keys",
+      "passed": true,
+      "exit_code": 2,
+      "output_bytes": 46
+    },
+    {
+      "id": "compute_weighted_quantiles",
+      "case": "nonfinite",
+      "passed": true,
+      "exit_code": 2,
+      "output_bytes": 46
+    },
+    {
+      "id": "compute_weighted_quantiles",
+      "case": "invalid_utf8",
+      "passed": true,
+      "exit_code": 2,
+      "output_bytes": 46
+    },
+    {
+      "id": "compute_weighted_quantiles",
+      "case": "unpaired_surrogate",
+      "passed": true,
+      "exit_code": 2,
+      "output_bytes": 46
+    },
+    {
+      "id": "compute_weighted_quantiles",
+      "case": "deep_nesting",
+      "passed": true,
+      "exit_code": 2,
+      "output_bytes": 46
+    },
+    {
+      "id": "compute_weighted_quantiles",
+      "case": "input_byte_ceiling",
+      "passed": true,
+      "exit_code": 2,
+      "output_bytes": 46
+    },
+    {
+      "id": "audit_half_open_interval_overlaps",
+      "case": "duplicate_keys",
+      "passed": true,
+      "exit_code": 2,
+      "output_bytes": 46
+    },
+    {
+      "id": "audit_half_open_interval_overlaps",
+      "case": "nonfinite",
+      "passed": true,
+      "exit_code": 2,
+      "output_bytes": 46
+    },
+    {
+      "id": "audit_half_open_interval_overlaps",
+      "case": "invalid_utf8",
+      "passed": true,
+      "exit_code": 2,
+      "output_bytes": 46
+    },
+    {
+      "id": "audit_half_open_interval_overlaps",
+      "case": "unpaired_surrogate",
+      "passed": true,
+      "exit_code": 2,
+      "output_bytes": 46
+    },
+    {
+      "id": "audit_half_open_interval_overlaps",
+      "case": "deep_nesting",
+      "passed": true,
+      "exit_code": 2,
+      "output_bytes": 46
+    },
+    {
+      "id": "audit_half_open_interval_overlaps",
+      "case": "input_byte_ceiling",
+      "passed": true,
+      "exit_code": 2,
+      "output_bytes": 46
+    },
+    {
+      "id": "apply_flat_record_changes",
+      "case": "duplicate_keys",
+      "passed": true,
+      "exit_code": 2,
+      "output_bytes": 46
+    },
+    {
+      "id": "apply_flat_record_changes",
+      "case": "nonfinite",
+      "passed": true,
+      "exit_code": 2,
+      "output_bytes": 46
+    },
+    {
+      "id": "apply_flat_record_changes",
+      "case": "invalid_utf8",
+      "passed": true,
+      "exit_code": 2,
+      "output_bytes": 46
+    },
+    {
+      "id": "apply_flat_record_changes",
+      "case": "unpaired_surrogate",
+      "passed": true,
+      "exit_code": 2,
+      "output_bytes": 46
+    },
+    {
+      "id": "apply_flat_record_changes",
+      "case": "deep_nesting",
+      "passed": true,
+      "exit_code": 2,
+      "output_bytes": 46
+    },
+    {
+      "id": "apply_flat_record_changes",
+      "case": "input_byte_ceiling",
+      "passed": true,
+      "exit_code": 2,
+      "output_bytes": 46
+    },
+    {
+      "id": "reconcile_keyed_tables",
+      "case": "duplicate_keys",
+      "passed": true,
+      "exit_code": 2,
+      "output_bytes": 46
+    },
+    {
+      "id": "reconcile_keyed_tables",
+      "case": "nonfinite",
+      "passed": true,
+      "exit_code": 2,
+      "output_bytes": 46
+    },
+    {
+      "id": "reconcile_keyed_tables",
+      "case": "invalid_utf8",
+      "passed": true,
+      "exit_code": 2,
+      "output_bytes": 46
+    },
+    {
+      "id": "reconcile_keyed_tables",
+      "case": "unpaired_surrogate",
+      "passed": true,
+      "exit_code": 2,
+      "output_bytes": 46
+    },
+    {
+      "id": "reconcile_keyed_tables",
+      "case": "deep_nesting",
+      "passed": true,
+      "exit_code": 2,
+      "output_bytes": 46
+    },
+    {
+      "id": "reconcile_keyed_tables",
+      "case": "input_byte_ceiling",
+      "passed": true,
+      "exit_code": 2,
+      "output_bytes": 46
+    },
+    {
+      "id": "audit_half_open_interval_overlaps",
+      "case": "large_escaped_unicode_output",
+      "passed": true,
+      "exit_code": 0,
+      "output_bytes": 514490
+    },
+    {
+      "id": "reconcile_multiset_rows",
+      "case": "exact_input_byte_ceiling",
+      "passed": true,
+      "exit_code": 0,
+      "output_bytes": 110
+    }
+  ],
+  "passed": true
+}

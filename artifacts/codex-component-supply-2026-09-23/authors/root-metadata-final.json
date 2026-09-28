@@ -1,0 +1,114 @@
+{
+  "render_focused_task_context": {
+    "title": "Render focused task context",
+    "purpose": "Render a bounded task brief with explicit first steps, acceptance criteria and digest-bound structured state.",
+    "search_tags": [
+      "task handoff",
+      "node context",
+      "first steps",
+      "structured state"
+    ],
+    "limits": "Produces text and structured data only. The caller decides native file placement; quoting is a trust cue, not a prompt-injection security guarantee.",
+    "dependencies": [
+      "Python>=3.10 standard library; no third-party packages"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "spawns_process"
+    ],
+    "styles": [
+      "codex",
+      "opencode",
+      "pi"
+    ],
+    "kind": "tool",
+    "methodinterface": "JSON on stdin, JSON on stdout; exit 0 success, exit 2 invalid_input",
+    "sourcebasis": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py"
+    ]
+  },
+  "evaluate_capability_requirements": {
+    "title": "Evaluate declared capability requirements",
+    "purpose": "Compare required and optional capabilities with supplied resolution and evidence levels without granting execution authority.",
+    "search_tags": [
+      "required capabilities",
+      "missing support",
+      "compatibility observations",
+      "evidence floor"
+    ],
+    "limits": "Evaluates supplied claims; does not authenticate observations, approve an engine, negotiate a protocol or enforce permissions.",
+    "dependencies": [
+      "Python>=3.10 standard library; no third-party packages"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "spawns_process"
+    ],
+    "styles": [
+      "codex",
+      "opencode",
+      "pi"
+    ],
+    "kind": "tool",
+    "methodinterface": "JSON on stdin, JSON on stdout; exit 0 success, exit 2 invalid_input",
+    "sourcebasis": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py"
+    ]
+  },
+  "select_context_blocks": {
+    "title": "Select context blocks within a declared budget",
+    "purpose": "Preserve mandatory context and dependencies, then greedily admit optional blocks by explicit priority within supplied costs.",
+    "search_tags": [
+      "context budget",
+      "mandatory instructions",
+      "dependency closure",
+      "prompt assembly"
+    ],
+    "limits": "Costs are supplied measurements or estimates; this tool does not tokenize a model request, guarantee context fit, optimize a knapsack or grant authority. It refuses any cycle or missing dependency, including in omitted blocks.",
+    "dependencies": [
+      "Python>=3.10 standard library; no third-party packages"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "spawns_process"
+    ],
+    "styles": [
+      "codex",
+      "opencode",
+      "pi"
+    ],
+    "kind": "tool",
+    "methodinterface": "JSON on stdin, JSON on stdout; exit 0 success, exit 2 invalid_input",
+    "sourcebasis": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py"
+    ]
+  },
+  "paired_sign_test": {
+    "title": "Compute an exact paired sign test",
+    "purpose": "Compare candidate b against baseline a on paired bounded decimal measurements, with explicit ties, missing values and exact two-sided probability.",
+    "search_tags": [
+      "paired evaluation",
+      "exact binomial",
+      "ties missing measurements",
+      "comparison evidence"
+    ],
+    "limits": "Assumes meaningful paired observations and an equiprobable sign null on non-ties. It does not establish independence, sampling validity, effect size, multiple-comparison correction, task acceptance or a better engine.",
+    "dependencies": [
+      "Python>=3.10 standard library; no third-party packages"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "spawns_process"
+    ],
+    "styles": [
+      "codex",
+      "opencode",
+      "pi"
+    ],
+    "kind": "tool",
+    "methodinterface": "JSON on stdin, JSON on stdout; exit 0 success, exit 2 invalid_input",
+    "sourcebasis": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py"
+    ]
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "required": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_]{0,63}(?![\\s\\S])"
+      },
+      "minItems": 0,
+      "maxItems": 64,
+      "uniqueItems": true
+    },
+    "optional": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_]{0,63}(?![\\s\\S])"
+      },
+      "minItems": 0,
+      "maxItems": 64,
+      "uniqueItems": true
+    },
+    "observations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "capability": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]{0,63}(?![\\s\\S])"
+          },
+          "resolution": {
+            "enum": [
+              "native",
+              "translated",
+              "externally_enforced",
+              "unsupported",
+              "unknown"
+            ]
+          },
+          "evidence": {
+            "enum": [
+              "documented",
+              "source_inspected",
+              "dry_run_verified",
+              "live_tested"
+            ]
+          }
+        },
+        "required": [
+          "capability",
+          "resolution",
+          "evidence"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 0,
+      "maxItems": 128
+    },
+    "minimum_evidence": {
+      "enum": [
+        "documented",
+        "source_inspected",
+        "dry_run_verified",
+        "live_tested"
+      ]
+    }
+  },
+  "required": [
+    "required",
+    "optional",
+    "observations",
+    "minimum_evidence"
+  ],
+  "additionalProperties": false
+}

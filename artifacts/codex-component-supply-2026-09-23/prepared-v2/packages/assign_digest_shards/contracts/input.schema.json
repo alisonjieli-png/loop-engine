@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Assign exact IDs to digest shards input",
+  "type": "object",
+  "properties": {
+    "record_type": {
+      "const": "assign_digest_shards_request/v1"
+    },
+    "ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128,
+        "not": {
+          "pattern": "[\\u0000-\\u001f\\u007f]"
+        }
+      },
+      "maxItems": 1024,
+      "uniqueItems": true
+    },
+    "shard_count": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 4096
+    }
+  },
+  "required": [
+    "record_type",
+    "ids",
+    "shard_count"
+  ],
+  "additionalProperties": false,
+  "description": "Strict UTF-8 JSON document, at most 65536 bytes and 16 container levels; duplicate keys, nonfinite literals and lone surrogates refuse. Numeric literals at most 128 characters; mathematically integral decimal/scientific numbers are accepted exactly. Additional semantic conditions are stated in AGENTS.md."
+}

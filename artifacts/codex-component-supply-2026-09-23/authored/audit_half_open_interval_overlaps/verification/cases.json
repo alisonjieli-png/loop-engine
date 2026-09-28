@@ -1,0 +1,292 @@
+[
+  {
+    "name": "overlap_and_adjacency",
+    "input": {
+      "intervals": [
+        {
+          "id": "a",
+          "start": 0,
+          "end": 4
+        },
+        {
+          "id": "b",
+          "start": 2,
+          "end": 6
+        },
+        {
+          "id": "c",
+          "start": 6,
+          "end": 8
+        },
+        {
+          "id": "empty",
+          "start": 3,
+          "end": 3
+        }
+      ]
+    },
+    "expected": {
+      "ok": true,
+      "result": {
+        "overlap_count": 1,
+        "overlaps": [
+          {
+            "left_id": "a",
+            "right_id": "b",
+            "start": 2,
+            "end": 4
+          }
+        ],
+        "empty_ids": [
+          "empty"
+        ],
+        "max_concurrency": 2,
+        "union_length": 8
+      }
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "empty_collection",
+    "input": {
+      "intervals": []
+    },
+    "expected": {
+      "ok": true,
+      "result": {
+        "overlap_count": 0,
+        "overlaps": [],
+        "empty_ids": [],
+        "max_concurrency": 0,
+        "union_length": 0
+      }
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "nested_intervals",
+    "input": {
+      "intervals": [
+        {
+          "id": "outer",
+          "start": -5,
+          "end": 5
+        },
+        {
+          "id": "inner",
+          "start": -1,
+          "end": 1
+        },
+        {
+          "id": "point",
+          "start": 0,
+          "end": 0
+        }
+      ]
+    },
+    "expected": {
+      "ok": true,
+      "result": {
+        "overlap_count": 1,
+        "overlaps": [
+          {
+            "left_id": "outer",
+            "right_id": "inner",
+            "start": -1,
+            "end": 1
+          }
+        ],
+        "empty_ids": [
+          "point"
+        ],
+        "max_concurrency": 2,
+        "union_length": 10
+      }
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "adjacent_only",
+    "input": {
+      "intervals": [
+        {
+          "id": "a",
+          "start": 0,
+          "end": 1
+        },
+        {
+          "id": "b",
+          "start": 1,
+          "end": 2
+        }
+      ]
+    },
+    "expected": {
+      "ok": true,
+      "result": {
+        "overlap_count": 0,
+        "overlaps": [],
+        "empty_ids": [],
+        "max_concurrency": 1,
+        "union_length": 2
+      }
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "integral_coordinates",
+    "input": {
+      "intervals": [
+        {
+          "id": "a",
+          "start": 0.0,
+          "end": 2.0
+        },
+        {
+          "id": "b",
+          "start": 1,
+          "end": 3
+        }
+      ]
+    },
+    "expected": {
+      "ok": true,
+      "result": {
+        "overlap_count": 1,
+        "overlaps": [
+          {
+            "left_id": "a",
+            "right_id": "b",
+            "start": 1,
+            "end": 2
+          }
+        ],
+        "empty_ids": [],
+        "max_concurrency": 2,
+        "union_length": 3
+      }
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "full_coordinate_range",
+    "input": {
+      "intervals": [
+        {
+          "id": "a",
+          "start": -1000000000000,
+          "end": 1000000000000
+        }
+      ]
+    },
+    "expected": {
+      "ok": true,
+      "result": {
+        "overlap_count": 0,
+        "overlaps": [],
+        "empty_ids": [],
+        "max_concurrency": 1,
+        "union_length": 2000000000000
+      }
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "reverse_interval",
+    "input": {
+      "intervals": [
+        {
+          "id": "a",
+          "start": 2,
+          "end": 1
+        }
+      ]
+    },
+    "expected": {
+      "ok": false,
+      "error": {
+        "code": "invalid_input"
+      }
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "duplicate_identity",
+    "input": {
+      "intervals": [
+        {
+          "id": "a",
+          "start": 0,
+          "end": 1
+        },
+        {
+          "id": "a",
+          "start": 2,
+          "end": 3
+        }
+      ]
+    },
+    "expected": {
+      "ok": false,
+      "error": {
+        "code": "invalid_input"
+      }
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "boolean_coordinate",
+    "input": {
+      "intervals": [
+        {
+          "id": "a",
+          "start": false,
+          "end": 1
+        }
+      ]
+    },
+    "expected": {
+      "ok": false,
+      "error": {
+        "code": "invalid_input"
+      }
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "fractional_coordinate",
+    "input": {
+      "intervals": [
+        {
+          "id": "a",
+          "start": 0.5,
+          "end": 1
+        }
+      ]
+    },
+    "expected": {
+      "ok": false,
+      "error": {
+        "code": "invalid_input"
+      }
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "zero_with_large_exponent_is_still_zero",
+    "raw_input": "{\"intervals\":[{\"id\":\"zero\",\"start\":0e1000000000000000000,\"end\":0}]}",
+    "expected": {
+      "ok": true,
+      "result": {
+        "overlap_count": 0,
+        "overlaps": [],
+        "empty_ids": [
+          "zero"
+        ],
+        "max_concurrency": 0,
+        "union_length": 0
+      }
+    },
+    "expected_exit": 0
+  }
+]

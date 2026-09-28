@@ -1,0 +1,395 @@
+{
+  "profile_csv_structure": {
+    "title": "Profile CSV structure with an explicit dialect",
+    "purpose": "Inspect an in-memory CSV extract before downstream transformation; report row-width distribution, baseline-column completeness, exact header issues and physical lines without opening a task file.",
+    "search_tags": [
+      "profile",
+      "csv",
+      "structure",
+      "json",
+      "stdio",
+      "bounded",
+      "stdlib",
+      "working directory package"
+    ],
+    "dependencies": [
+      "python>=3.10"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "spawns_process"
+    ],
+    "sourcebasis": [
+      {
+        "path": "LICENSE",
+        "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "purpose": "MIT license"
+      },
+      {
+        "path": "artifacts/mixed-native-originals-contract-v2-2026-09-23/prepared/packages/audit_functional_dependency_rows/tools/audit_functional_dependency_rows.py",
+        "sha256": "e063268063d5e4985a4ad994589c24b5c3e673b943f12c04dc88f5bfb74f962a",
+        "purpose": "Existing bounded JSON/typed-record and prior-supply reference; not a claim this source implements the new method."
+      },
+      {
+        "path": "artifacts/mixed-native-independent-qa-2026-09-23/prior-material-inspection.json",
+        "sha256": "e729e9f41c25a1d7f86c43fae330fea579df3cadc92d5a25cfe55b4ed91c683e",
+        "purpose": "Existing bounded JSON/typed-record and prior-supply reference; not a claim this source implements the new method."
+      }
+    ],
+    "reuse_and_distinctness": "Extends prior filesystem CSV audit with explicit quote dialect, full width histogram and per-column completeness. Overlap is disclosed; this is not claimed as a wholly new CSV-audit family.",
+    "limits": {
+      "input_bytes": 262144,
+      "output_bytes_including_newline": 524288,
+      "decoded_depth": 8,
+      "decoded_values": 50000,
+      "raw_numeric_token_characters": 128,
+      "method": "At most1000 CSV records including header,64 fields per record,4096 Unicode characters per field and131072 characters in the CSV string. Delimiter and quote character are explicit. Columns describe baseline width only; wider rows stay visible in width reports. Headers compare exactly; only the empty string is blank. When header=true, a CSV record must exist and its parsed field list must contain at least one field; empty CSV and an empty first parsed record([]) refuse. A one-field header with an empty name is allowed and reported as blank."
+    },
+    "methodinterface": {
+      "transport": "UTF-8 JSON stdin -> UTF-8 JSON stdout",
+      "entrypoint": "tools/profile_csv_structure.py",
+      "input_schema": "contracts/input.schema.json",
+      "output_schema": "contracts/output.schema.json",
+      "success_exit": 0,
+      "refusal_exit": 2,
+      "persistent_writes": false,
+      "network": false,
+      "subprocess": false
+    },
+    "producer": {
+      "producer_identity": "Codex",
+      "family": "openai",
+      "method_identity": "codex_original_working_directory_components/v1"
+    },
+    "status": "candidate_only",
+    "source_revision": "231f51bb1facab517fbe915b08ea9ac85f913347"
+  },
+  "reconcile_multiset_rows": {
+    "title": "Reconcile typed row multisets",
+    "purpose": "Compare two small flat-record collections while preserving duplicate multiplicity, field presence and JSON scalar type distinctions.",
+    "search_tags": [
+      "reconcile",
+      "multiset",
+      "rows",
+      "json",
+      "stdio",
+      "bounded",
+      "stdlib",
+      "working directory package"
+    ],
+    "dependencies": [
+      "python>=3.10"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "spawns_process"
+    ],
+    "sourcebasis": [
+      {
+        "path": "LICENSE",
+        "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "purpose": "MIT license"
+      },
+      {
+        "path": "artifacts/mixed-native-originals-contract-v2-2026-09-23/prepared/packages/audit_functional_dependency_rows/tools/audit_functional_dependency_rows.py",
+        "sha256": "e063268063d5e4985a4ad994589c24b5c3e673b943f12c04dc88f5bfb74f962a",
+        "purpose": "Existing bounded JSON/typed-record and prior-supply reference; not a claim this source implements the new method."
+      },
+      {
+        "path": "artifacts/mixed-native-independent-qa-2026-09-23/prior-material-inspection.json",
+        "sha256": "e729e9f41c25a1d7f86c43fae330fea579df3cadc92d5a25cfe55b4ed91c683e",
+        "purpose": "Existing bounded JSON/typed-record and prior-supply reference; not a claim this source implements the new method."
+      }
+    ],
+    "reuse_and_distinctness": "Distinct from prior functional-dependency audit: compares multiplicity between two complete row collections, without determinant/dependent grouping.",
+    "limits": {
+      "input_bytes": 262144,
+      "output_bytes_including_newline": 524288,
+      "decoded_depth": 8,
+      "decoded_values": 50000,
+      "raw_numeric_token_characters": 128,
+      "method": "At most256 records per side,32 fields per record,64 characters per nonempty field name and256 per string value. Scalar values are null,Boolean,string or integer within±10^12. Nested values refuse. Missing differs from null and Boolean differs from number."
+    },
+    "methodinterface": {
+      "transport": "UTF-8 JSON stdin -> UTF-8 JSON stdout",
+      "entrypoint": "tools/reconcile_multiset_rows.py",
+      "input_schema": "contracts/input.schema.json",
+      "output_schema": "contracts/output.schema.json",
+      "success_exit": 0,
+      "refusal_exit": 2,
+      "persistent_writes": false,
+      "network": false,
+      "subprocess": false
+    },
+    "producer": {
+      "producer_identity": "Codex",
+      "family": "openai",
+      "method_identity": "codex_original_working_directory_components/v1"
+    },
+    "status": "candidate_only",
+    "source_revision": "231f51bb1facab517fbe915b08ea9ac85f913347"
+  },
+  "compute_weighted_quantiles": {
+    "title": "Compute exact weighted empirical quantiles",
+    "purpose": "Resolve weighted empirical-CDF quantiles with positive integer weights and exact decimal-string values; avoid interpolation and binary-float threshold drift.",
+    "search_tags": [
+      "compute",
+      "weighted",
+      "quantiles",
+      "json",
+      "stdio",
+      "bounded",
+      "stdlib",
+      "working directory package"
+    ],
+    "dependencies": [
+      "python>=3.10"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "spawns_process"
+    ],
+    "sourcebasis": [
+      {
+        "path": "LICENSE",
+        "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "purpose": "MIT license"
+      },
+      {
+        "path": "artifacts/mixed-native-originals-contract-v2-2026-09-23/prepared/packages/audit_functional_dependency_rows/tools/audit_functional_dependency_rows.py",
+        "sha256": "e063268063d5e4985a4ad994589c24b5c3e673b943f12c04dc88f5bfb74f962a",
+        "purpose": "Existing bounded JSON/typed-record and prior-supply reference; not a claim this source implements the new method."
+      },
+      {
+        "path": "artifacts/mixed-native-independent-qa-2026-09-23/prior-material-inspection.json",
+        "sha256": "e729e9f41c25a1d7f86c43fae330fea579df3cadc92d5a25cfe55b4ed91c683e",
+        "purpose": "Existing bounded JSON/typed-record and prior-supply reference; not a claim this source implements the new method."
+      }
+    ],
+    "reuse_and_distinctness": "Distinct from MiniMax Hamilton apportion_integer_quotas: selects observed values by cumulative mass; does not allocate a fixed integer target among groups.",
+    "limits": {
+      "input_bytes": 262144,
+      "output_bytes_including_newline": 524288,
+      "decoded_depth": 8,
+      "decoded_values": 50000,
+      "raw_numeric_token_characters": 128,
+      "method": "One to512 samples, positive integer weights≤10^9, one to64 probabilities. Value decimal strings have at most12 integer and12 fractional digits, no exponent or whitespace. Probabilities are strings in[0,1] with≤12 decimal places."
+    },
+    "methodinterface": {
+      "transport": "UTF-8 JSON stdin -> UTF-8 JSON stdout",
+      "entrypoint": "tools/compute_weighted_quantiles.py",
+      "input_schema": "contracts/input.schema.json",
+      "output_schema": "contracts/output.schema.json",
+      "success_exit": 0,
+      "refusal_exit": 2,
+      "persistent_writes": false,
+      "network": false,
+      "subprocess": false
+    },
+    "producer": {
+      "producer_identity": "Codex",
+      "family": "openai",
+      "method_identity": "codex_original_working_directory_components/v1"
+    },
+    "status": "candidate_only",
+    "source_revision": "231f51bb1facab517fbe915b08ea9ac85f913347"
+  },
+  "audit_half_open_interval_overlaps": {
+    "title": "Audit half-open interval overlap and coverage",
+    "purpose": "Find overlapping interval pairs, maximum simultaneous occupancy and union length while treating adjacency and empty intervals correctly.",
+    "search_tags": [
+      "audit",
+      "half",
+      "open",
+      "interval",
+      "overlaps",
+      "json",
+      "stdio",
+      "bounded",
+      "stdlib",
+      "working directory package"
+    ],
+    "dependencies": [
+      "python>=3.10"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "spawns_process"
+    ],
+    "sourcebasis": [
+      {
+        "path": "LICENSE",
+        "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "purpose": "MIT license"
+      },
+      {
+        "path": "artifacts/mixed-native-originals-contract-v2-2026-09-23/prepared/packages/audit_functional_dependency_rows/tools/audit_functional_dependency_rows.py",
+        "sha256": "e063268063d5e4985a4ad994589c24b5c3e673b943f12c04dc88f5bfb74f962a",
+        "purpose": "Existing bounded JSON/typed-record and prior-supply reference; not a claim this source implements the new method."
+      },
+      {
+        "path": "artifacts/mixed-native-independent-qa-2026-09-23/prior-material-inspection.json",
+        "sha256": "e729e9f41c25a1d7f86c43fae330fea579df3cadc92d5a25cfe55b4ed91c683e",
+        "purpose": "Existing bounded JSON/typed-record and prior-supply reference; not a claim this source implements the new method."
+      }
+    ],
+    "reuse_and_distinctness": "Distinct from prior DAG earliest-start scheduler and interval-capacity advisory skill: evaluates supplied half-open coordinates directly, with exact occupancy/coverage.",
+    "limits": {
+      "input_bytes": 262144,
+      "output_bytes_including_newline": 524288,
+      "decoded_depth": 8,
+      "decoded_values": 50000,
+      "raw_numeric_token_characters": 128,
+      "method": "At most48 intervals with unique nonempty IDs≤32characters. Coordinates are integers within±10^12 and start≤end. Empty intervals cover nothing. All overlaps are returned, at most1128; no truncation."
+    },
+    "methodinterface": {
+      "transport": "UTF-8 JSON stdin -> UTF-8 JSON stdout",
+      "entrypoint": "tools/audit_half_open_interval_overlaps.py",
+      "input_schema": "contracts/input.schema.json",
+      "output_schema": "contracts/output.schema.json",
+      "success_exit": 0,
+      "refusal_exit": 2,
+      "persistent_writes": false,
+      "network": false,
+      "subprocess": false
+    },
+    "producer": {
+      "producer_identity": "Codex",
+      "family": "openai",
+      "method_identity": "codex_original_working_directory_components/v1"
+    },
+    "status": "candidate_only",
+    "source_revision": "231f51bb1facab517fbe915b08ea9ac85f913347"
+  },
+  "apply_flat_record_changes": {
+    "title": "Apply guarded flat-record changes in memory",
+    "purpose": "Check all expected-before states against one flat record, then return either every requested change or the untouched record with conflicts.",
+    "search_tags": [
+      "apply",
+      "flat",
+      "record",
+      "changes",
+      "json",
+      "stdio",
+      "bounded",
+      "stdlib",
+      "working directory package"
+    ],
+    "dependencies": [
+      "python>=3.10"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "spawns_process"
+    ],
+    "sourcebasis": [
+      {
+        "path": "LICENSE",
+        "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "purpose": "MIT license"
+      },
+      {
+        "path": "artifacts/mixed-native-originals-contract-v2-2026-09-23/prepared/packages/audit_functional_dependency_rows/tools/audit_functional_dependency_rows.py",
+        "sha256": "e063268063d5e4985a4ad994589c24b5c3e673b943f12c04dc88f5bfb74f962a",
+        "purpose": "Existing bounded JSON/typed-record and prior-supply reference; not a claim this source implements the new method."
+      },
+      {
+        "path": "artifacts/mixed-native-independent-qa-2026-09-23/prior-material-inspection.json",
+        "sha256": "e729e9f41c25a1d7f86c43fae330fea579df3cadc92d5a25cfe55b4ed91c683e",
+        "purpose": "Existing bounded JSON/typed-record and prior-supply reference; not a claim this source implements the new method."
+      }
+    ],
+    "reuse_and_distinctness": "Distinct from prior JSON Pointer read-only projection: performs conditional all-or-none flat-record transformation in memory; no file or database writes.",
+    "limits": {
+      "input_bytes": 262144,
+      "output_bytes_including_newline": 524288,
+      "decoded_depth": 8,
+      "decoded_values": 50000,
+      "raw_numeric_token_characters": 128,
+      "method": "At most32 fields and32 distinct-key changes. Values use the shared flat scalar contract. Every before state checks the original record. Missing differs from present-null; any conflict returns the unchanged record. Final field count must remain≤32."
+    },
+    "methodinterface": {
+      "transport": "UTF-8 JSON stdin -> UTF-8 JSON stdout",
+      "entrypoint": "tools/apply_flat_record_changes.py",
+      "input_schema": "contracts/input.schema.json",
+      "output_schema": "contracts/output.schema.json",
+      "success_exit": 0,
+      "refusal_exit": 2,
+      "persistent_writes": false,
+      "network": false,
+      "subprocess": false
+    },
+    "producer": {
+      "producer_identity": "Codex",
+      "family": "openai",
+      "method_identity": "codex_original_working_directory_components/v1"
+    },
+    "status": "candidate_only",
+    "source_revision": "231f51bb1facab517fbe915b08ea9ac85f913347"
+  },
+  "reconcile_keyed_tables": {
+    "title": "Reconcile one-to-one keyed tables",
+    "purpose": "Pair two flat-record tables by typed keys, refuse duplicate identities, and report changed fields and unmatched row indices without a Cartesian join.",
+    "search_tags": [
+      "reconcile",
+      "keyed",
+      "tables",
+      "json",
+      "stdio",
+      "bounded",
+      "stdlib",
+      "working directory package"
+    ],
+    "dependencies": [
+      "python>=3.10"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "spawns_process"
+    ],
+    "sourcebasis": [
+      {
+        "path": "LICENSE",
+        "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "purpose": "MIT license"
+      },
+      {
+        "path": "artifacts/mixed-native-originals-contract-v2-2026-09-23/prepared/packages/audit_functional_dependency_rows/tools/audit_functional_dependency_rows.py",
+        "sha256": "e063268063d5e4985a4ad994589c24b5c3e673b943f12c04dc88f5bfb74f962a",
+        "purpose": "Existing bounded JSON/typed-record and prior-supply reference; not a claim this source implements the new method."
+      },
+      {
+        "path": "artifacts/mixed-native-independent-qa-2026-09-23/prior-material-inspection.json",
+        "sha256": "e729e9f41c25a1d7f86c43fae330fea579df3cadc92d5a25cfe55b4ed91c683e",
+        "purpose": "Existing bounded JSON/typed-record and prior-supply reference; not a claim this source implements the new method."
+      }
+    ],
+    "reuse_and_distinctness": "Prior audit-join-cardinality estimates multiplicities from CSV files; this component performs typed JSON row pairing and detects per-field changes. It refuses duplicate keys instead of aggregating or multiplying rows.",
+    "limits": {
+      "input_bytes": 262144,
+      "output_bytes_including_newline": 524288,
+      "decoded_depth": 8,
+      "decoded_values": 50000,
+      "raw_numeric_token_characters": 128,
+      "method": "At most256 rows per side and32 fields per row. Selected keys must exist and be nonempty strings or bounded integers, never null/Boolean; keys must be unique within each side. Matches/left-only follow left order and right-only follows right order. Changed field names use Unicode code-point order."
+    },
+    "methodinterface": {
+      "transport": "UTF-8 JSON stdin -> UTF-8 JSON stdout",
+      "entrypoint": "tools/reconcile_keyed_tables.py",
+      "input_schema": "contracts/input.schema.json",
+      "output_schema": "contracts/output.schema.json",
+      "success_exit": 0,
+      "refusal_exit": 2,
+      "persistent_writes": false,
+      "network": false,
+      "subprocess": false
+    },
+    "producer": {
+      "producer_identity": "Codex",
+      "family": "openai",
+      "method_identity": "codex_original_working_directory_components/v1"
+    },
+    "status": "candidate_only",
+    "source_revision": "231f51bb1facab517fbe915b08ea9ac85f913347"
+  }
+}

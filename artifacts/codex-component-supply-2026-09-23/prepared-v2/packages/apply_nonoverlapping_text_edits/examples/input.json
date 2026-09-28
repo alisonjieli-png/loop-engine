@@ -1,0 +1,17 @@
+{
+  "record_type": "apply_nonoverlapping_text_edits_request/v1",
+  "text": "abcdef",
+  "edits": [
+    {
+      "start": 4,
+      "end": 6,
+      "replacement": "Y"
+    },
+    {
+      "start": 1,
+      "end": 3,
+      "replacement": "X"
+    }
+  ],
+  "expected_sha256": "bef57ec7f53a6d40beb640a780a639c83bc29ac8a9816f1fc6c5c6dcd93c4721"
+}

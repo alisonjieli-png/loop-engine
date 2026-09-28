@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Detect abstract portable path collisions input",
+  "type": "object",
+  "properties": {
+    "record_type": {
+      "const": "detect_portable_path_collisions_request/v1"
+    },
+    "paths": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256,
+        "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?(/|$))(?!.*//)(?!.*\\\\)(?!.*[\\u0000-\\u001f\\u007f])[^/]+(?:/[^/]+)*$"
+      },
+      "maxItems": 256
+    },
+    "platform_model": {
+      "const": "unicode_nfc_casefold/v1"
+    },
+    "expected_unicode_version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 32
+    }
+  },
+  "required": [
+    "record_type",
+    "paths",
+    "platform_model"
+  ],
+  "additionalProperties": false,
+  "description": "Strict UTF-8 JSON document, at most 65536 bytes and 16 container levels; duplicate keys, nonfinite literals and lone surrogates refuse. Numeric literals at most 128 characters; mathematically integral decimal/scientific numbers are accepted exactly. Additional semantic conditions are stated in AGENTS.md."
+}

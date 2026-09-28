@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "audit_half_open_interval_overlaps output",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "result": {
+          "type": "object",
+          "properties": {
+            "overlap_count": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1128
+            },
+            "overlaps": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "left_id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 32
+                  },
+                  "right_id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 32
+                  },
+                  "start": {
+                    "type": "integer",
+                    "minimum": -1000000000000,
+                    "maximum": 1000000000000
+                  },
+                  "end": {
+                    "type": "integer",
+                    "minimum": -1000000000000,
+                    "maximum": 1000000000000
+                  }
+                },
+                "required": [
+                  "left_id",
+                  "right_id",
+                  "start",
+                  "end"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 1128
+            },
+            "empty_ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 32
+              },
+              "maxItems": 48
+            },
+            "max_concurrency": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 48
+            },
+            "union_length": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 2000000000000
+            }
+          },
+          "required": [
+            "overlap_count",
+            "overlaps",
+            "empty_ids",
+            "max_concurrency",
+            "union_length"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "result"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": false
+        },
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "const": "invalid_input"
+            }
+          },
+          "required": [
+            "code"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "error"
+      ],
+      "additionalProperties": false
+    }
+  ]
+}

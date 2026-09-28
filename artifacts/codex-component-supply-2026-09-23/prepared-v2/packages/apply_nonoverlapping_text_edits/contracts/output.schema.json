@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Apply simultaneous nonoverlapping text edits output",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "record_type": {
+          "const": "apply_nonoverlapping_text_edits_result/v1"
+        },
+        "text": {
+          "type": "string"
+        },
+        "source_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$",
+          "minLength": 64,
+          "maxLength": 64
+        },
+        "result_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$",
+          "minLength": 64,
+          "maxLength": 64
+        },
+        "edits_applied": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 128
+        }
+      },
+      "required": [
+        "record_type",
+        "text",
+        "source_sha256",
+        "result_sha256",
+        "edits_applied"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "error": {
+          "enum": [
+            "invalid_input",
+            "output_limit_exceeded",
+            "source_digest_mismatch",
+            "overlapping_edits"
+          ]
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "additionalProperties": false
+    }
+  ],
+  "description": "Exactly one UTF-8 JSON line, at most 131072 bytes including LF. Success exits 0; refusal exits 2. No diagnostic content is sent to stderr."
+}

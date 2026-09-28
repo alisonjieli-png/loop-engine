@@ -1,0 +1,25 @@
+{
+  "reason": "Normalize exact zero mantissas before Decimal exponent representation; preserve accepted integral-zero JSON spellings without allocating enormous integers.",
+  "records": [
+    {
+      "id": "render_focused_task_context",
+      "before": "e81279fee6f73c497477163e55f3bd5c0ffaa481cfcaef07863c3200337d7758",
+      "after": "1dd7e1c4053f53da867f0d6e6411101bf197942bf06a6892e23c8f06eba0b442"
+    },
+    {
+      "id": "evaluate_capability_requirements",
+      "before": "3207cca654c79596245b1f7db895389d12b95fa87212804ed924cbddefa929bc",
+      "after": "a32264447585fb4d8af575ab4be6e37cbf7cd2c89a081fd491ee7538c2167085"
+    },
+    {
+      "id": "select_context_blocks",
+      "before": "a795d1d01d1185fd8435019412cf7bfe3caefa7627393ba9a44006c3d0343ecb",
+      "after": "03ea948927f8ee741c7497bafcef68444e99ababeb4d942e86c7f25a419197b5"
+    },
+    {
+      "id": "paired_sign_test",
+      "before": "368ea981155e281a5bf1fdb814062fa8c0723845089254967eda5190adad9981",
+      "after": "f3ecfeddb95ef924fb2366fdd1c3f2a02f1de507bcca6c836f1137f361daddbf"
+    }
+  ]
+}

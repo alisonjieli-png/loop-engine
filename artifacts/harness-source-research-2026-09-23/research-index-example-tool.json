@@ -1,0 +1,14 @@
+{
+  "record_type": "local_research_metadata_results/v1",
+  "mode": "lexical",
+  "category": "tool",
+  "query": "sqlite",
+  "lookup": null,
+  "candidate_selection_explicit": true,
+  "execution_available": false,
+  "source_integrity": "current_hashes_match_manifest",
+  "query_scoring": "existing lexical FTS5/BM25 order with reciprocal-rank score; separate from research priority",
+  "hits": [],
+  "network_requests": 0,
+  "model_calls": 0
+}

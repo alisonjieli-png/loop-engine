@@ -1,0 +1,290 @@
+[
+  {
+    "name": "selected_transitive_closure",
+    "input": {
+      "record_type": "resolve_selected_dependency_closure_request/v1",
+      "roots": [
+        "a"
+      ],
+      "packages": [
+        {
+          "id": "a",
+          "requires": [
+            "b"
+          ]
+        },
+        {
+          "id": "b",
+          "requires": [
+            "c"
+          ]
+        },
+        {
+          "id": "c",
+          "requires": []
+        },
+        {
+          "id": "unused",
+          "requires": []
+        }
+      ]
+    },
+    "expected": {
+      "record_type": "resolve_selected_dependency_closure_result/v1",
+      "selected": [
+        "a",
+        "b",
+        "c"
+      ],
+      "cyclic_components": []
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "reachable_cycles_reported",
+    "input": {
+      "record_type": "resolve_selected_dependency_closure_request/v1",
+      "roots": [
+        "a"
+      ],
+      "packages": [
+        {
+          "id": "a",
+          "requires": [
+            "b"
+          ]
+        },
+        {
+          "id": "b",
+          "requires": [
+            "a",
+            "c"
+          ]
+        },
+        {
+          "id": "c",
+          "requires": [
+            "c"
+          ]
+        },
+        {
+          "id": "ignored",
+          "requires": [
+            "absent"
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "record_type": "resolve_selected_dependency_closure_result/v1",
+      "selected": [
+        "a",
+        "b",
+        "c"
+      ],
+      "cyclic_components": [
+        [
+          "a",
+          "b"
+        ],
+        [
+          "c"
+        ]
+      ]
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "unreachable_missing_ignored",
+    "input": {
+      "record_type": "resolve_selected_dependency_closure_request/v1",
+      "roots": [
+        "ok"
+      ],
+      "packages": [
+        {
+          "id": "ok",
+          "requires": []
+        },
+        {
+          "id": "unused",
+          "requires": [
+            "absent"
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "record_type": "resolve_selected_dependency_closure_result/v1",
+      "selected": [
+        "ok"
+      ],
+      "cyclic_components": []
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "no_selection",
+    "input": {
+      "record_type": "resolve_selected_dependency_closure_request/v1",
+      "roots": [],
+      "packages": [
+        {
+          "id": "a",
+          "requires": [
+            "b"
+          ]
+        },
+        {
+          "id": "b",
+          "requires": [
+            "a",
+            "c"
+          ]
+        },
+        {
+          "id": "c",
+          "requires": [
+            "c"
+          ]
+        },
+        {
+          "id": "ignored",
+          "requires": [
+            "absent"
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "record_type": "resolve_selected_dependency_closure_result/v1",
+      "selected": [],
+      "cyclic_components": []
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "missing_reachable",
+    "input": {
+      "record_type": "resolve_selected_dependency_closure_request/v1",
+      "roots": [
+        "a"
+      ],
+      "packages": [
+        {
+          "id": "a",
+          "requires": [
+            "missing"
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "error": "missing_dependency"
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "missing_root",
+    "input": {
+      "record_type": "resolve_selected_dependency_closure_request/v1",
+      "roots": [
+        "missing"
+      ],
+      "packages": []
+    },
+    "expected": {
+      "error": "missing_dependency"
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "duplicate_package",
+    "input": {
+      "record_type": "resolve_selected_dependency_closure_request/v1",
+      "roots": [],
+      "packages": [
+        {
+          "id": "a",
+          "requires": []
+        },
+        {
+          "id": "a",
+          "requires": []
+        }
+      ]
+    },
+    "expected": {
+      "error": "invalid_input"
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "duplicate_top_key",
+    "raw_input": "{\"record_type\":\"resolve_selected_dependency_closure_request/v1\",\"record_type\":\"resolve_selected_dependency_closure_request/v1\"}",
+    "expected": {
+      "error": "invalid_input"
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "nonfinite",
+    "raw_input": "{\"x\":NaN}",
+    "expected": {
+      "error": "invalid_input"
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "depth_limit",
+    "raw_input": "[[[[[[[[[[[[[[[[[0]]]]]]]]]]]]]]]]]",
+    "expected": {
+      "error": "invalid_input"
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "lone_surrogate",
+    "raw_input": "{\"x\":\"\\ud800\"}",
+    "expected": {
+      "error": "invalid_input"
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "unknown_top_field",
+    "input": {
+      "record_type": "resolve_selected_dependency_closure_request/v1",
+      "roots": [
+        "a"
+      ],
+      "packages": [
+        {
+          "id": "a",
+          "requires": [
+            "b"
+          ]
+        },
+        {
+          "id": "b",
+          "requires": [
+            "c"
+          ]
+        },
+        {
+          "id": "c",
+          "requires": []
+        },
+        {
+          "id": "unused",
+          "requires": []
+        }
+      ],
+      "unrecognized": true
+    },
+    "expected": {
+      "error": "invalid_input"
+    },
+    "expected_exit": 2
+  }
+]

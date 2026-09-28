@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Apply simultaneous nonoverlapping text edits input",
+  "type": "object",
+  "properties": {
+    "record_type": {
+      "const": "apply_nonoverlapping_text_edits_request/v1"
+    },
+    "text": {
+      "type": "string",
+      "maxLength": 32768
+    },
+    "edits": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "start": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 32768
+          },
+          "end": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 32768
+          },
+          "replacement": {
+            "type": "string",
+            "maxLength": 8192
+          }
+        },
+        "required": [
+          "start",
+          "end",
+          "replacement"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 128
+    },
+    "expected_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "minLength": 64,
+      "maxLength": 64
+    }
+  },
+  "required": [
+    "record_type",
+    "text",
+    "edits"
+  ],
+  "additionalProperties": false,
+  "description": "Strict UTF-8 JSON document, at most 65536 bytes and 16 container levels; duplicate keys, nonfinite literals and lone surrogates refuse. Numeric literals at most 128 characters; mathematically integral decimal/scientific numbers are accepted exactly. Additional semantic conditions are stated in AGENTS.md."
+}

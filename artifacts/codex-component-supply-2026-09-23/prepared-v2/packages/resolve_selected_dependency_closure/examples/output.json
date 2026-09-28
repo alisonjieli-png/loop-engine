@@ -1,0 +1,9 @@
+{
+  "record_type": "resolve_selected_dependency_closure_result/v1",
+  "selected": [
+    "a",
+    "b",
+    "c"
+  ],
+  "cyclic_components": []
+}

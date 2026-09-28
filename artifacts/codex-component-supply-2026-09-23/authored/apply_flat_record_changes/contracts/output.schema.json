@@ -1,0 +1,208 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "apply_flat_record_changes output",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "result": {
+          "type": "object",
+          "properties": {
+            "applied": {
+              "type": "boolean"
+            },
+            "record": {
+              "type": "object",
+              "propertyNames": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64
+              },
+              "additionalProperties": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "integer",
+                    "minimum": -1000000000000,
+                    "maximum": 1000000000000
+                  },
+                  {
+                    "type": "string",
+                    "maxLength": 256
+                  }
+                ]
+              },
+              "maxProperties": 32
+            },
+            "changed_count": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 32
+            },
+            "conflicts": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 64
+                  },
+                  "expected": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "present": {
+                            "const": false
+                          }
+                        },
+                        "required": [
+                          "present"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "present": {
+                            "const": true
+                          },
+                          "value": {
+                            "anyOf": [
+                              {
+                                "type": "null"
+                              },
+                              {
+                                "type": "boolean"
+                              },
+                              {
+                                "type": "integer",
+                                "minimum": -1000000000000,
+                                "maximum": 1000000000000
+                              },
+                              {
+                                "type": "string",
+                                "maxLength": 256
+                              }
+                            ]
+                          }
+                        },
+                        "required": [
+                          "present",
+                          "value"
+                        ],
+                        "additionalProperties": false
+                      }
+                    ]
+                  },
+                  "actual": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "present": {
+                            "const": false
+                          }
+                        },
+                        "required": [
+                          "present"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "present": {
+                            "const": true
+                          },
+                          "value": {
+                            "anyOf": [
+                              {
+                                "type": "null"
+                              },
+                              {
+                                "type": "boolean"
+                              },
+                              {
+                                "type": "integer",
+                                "minimum": -1000000000000,
+                                "maximum": 1000000000000
+                              },
+                              {
+                                "type": "string",
+                                "maxLength": 256
+                              }
+                            ]
+                          }
+                        },
+                        "required": [
+                          "present",
+                          "value"
+                        ],
+                        "additionalProperties": false
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "key",
+                  "expected",
+                  "actual"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 32
+            }
+          },
+          "required": [
+            "applied",
+            "record",
+            "changed_count",
+            "conflicts"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "result"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": false
+        },
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "const": "invalid_input"
+            }
+          },
+          "required": [
+            "code"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "error"
+      ],
+      "additionalProperties": false
+    }
+  ]
+}

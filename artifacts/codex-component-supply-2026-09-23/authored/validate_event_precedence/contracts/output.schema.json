@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Validate declared event precedence output",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "record_type": {
+          "const": "validate_event_precedence_result/v1"
+        },
+        "satisfied": {
+          "type": "boolean"
+        },
+        "violations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "before": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128,
+                "not": {
+                  "pattern": "[\\u0000-\\u001f\\u007f]"
+                }
+              },
+              "after": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128,
+                "not": {
+                  "pattern": "[\\u0000-\\u001f\\u007f]"
+                }
+              },
+              "before_index": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1023
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "after_index": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1023
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "reason": {
+                "enum": [
+                  "missing_event",
+                  "not_before"
+                ]
+              }
+            },
+            "required": [
+              "before",
+              "after",
+              "before_index",
+              "after_index",
+              "reason"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 2048
+        }
+      },
+      "required": [
+        "record_type",
+        "satisfied",
+        "violations"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "error": {
+          "enum": [
+            "invalid_input",
+            "output_limit_exceeded"
+          ]
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "additionalProperties": false
+    }
+  ],
+  "description": "Exactly one UTF-8 JSON line, at most 131072 bytes including LF. Success exits 0; refusal exits 2. No diagnostic content is sent to stderr."
+}

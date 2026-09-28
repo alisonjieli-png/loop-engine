@@ -1,0 +1,13 @@
+{
+  "requirements_met": false,
+  "satisfied": [
+    "binary_bytes"
+  ],
+  "unsupported": [
+    "hooks"
+  ],
+  "unverified": [],
+  "optional_unavailable": [
+    "streaming"
+  ]
+}

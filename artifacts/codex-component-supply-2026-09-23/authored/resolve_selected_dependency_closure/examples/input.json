@@ -1,0 +1,28 @@
+{
+  "record_type": "resolve_selected_dependency_closure_request/v1",
+  "roots": [
+    "a"
+  ],
+  "packages": [
+    {
+      "id": "a",
+      "requires": [
+        "b"
+      ]
+    },
+    {
+      "id": "b",
+      "requires": [
+        "c"
+      ]
+    },
+    {
+      "id": "c",
+      "requires": []
+    },
+    {
+      "id": "unused",
+      "requires": []
+    }
+  ]
+}

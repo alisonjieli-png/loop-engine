@@ -1,0 +1,181 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "record_type": {
+          "const": "plan_targeted_test_selection_result/v1"
+        },
+        "coverage_basis": {
+          "const": "supplied_mapping_only"
+        },
+        "complete_test_safety": {
+          "const": false
+        },
+        "selected_tests": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128,
+                "not": {
+                  "pattern": "[\\x00-\\x1f\\x7f]"
+                }
+              },
+              "matched_symbols": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "not": {
+                    "pattern": "[\\x00-\\x1f\\x7f]"
+                  }
+                },
+                "minItems": 0,
+                "maxItems": 128
+              },
+              "newly_covered_symbols": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "not": {
+                    "pattern": "[\\x00-\\x1f\\x7f]"
+                  }
+                },
+                "minItems": 0,
+                "maxItems": 128
+              },
+              "priority": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "estimated_ms": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 3600000
+              }
+            },
+            "required": [
+              "id",
+              "matched_symbols",
+              "newly_covered_symbols",
+              "priority",
+              "estimated_ms"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 0,
+          "maxItems": 128
+        },
+        "not_selected_impacted_tests": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128,
+                "not": {
+                  "pattern": "[\\x00-\\x1f\\x7f]"
+                }
+              },
+              "matched_symbols": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "not": {
+                    "pattern": "[\\x00-\\x1f\\x7f]"
+                  }
+                },
+                "minItems": 0,
+                "maxItems": 128
+              },
+              "reason": {
+                "enum": [
+                  "count_budget",
+                  "time_budget"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "matched_symbols",
+              "reason"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 0,
+          "maxItems": 256
+        },
+        "unmapped_changed_symbols": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "not": {
+              "pattern": "[\\x00-\\x1f\\x7f]"
+            }
+          },
+          "minItems": 0,
+          "maxItems": 128
+        },
+        "mapped_but_uncovered_symbols": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "not": {
+              "pattern": "[\\x00-\\x1f\\x7f]"
+            }
+          },
+          "minItems": 0,
+          "maxItems": 128
+        },
+        "total_estimated_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        }
+      },
+      "required": [
+        "record_type",
+        "coverage_basis",
+        "complete_test_safety",
+        "selected_tests",
+        "not_selected_impacted_tests",
+        "unmapped_changed_symbols",
+        "mapped_but_uncovered_symbols",
+        "total_estimated_ms"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "error": {
+          "enum": [
+            "invalid_input",
+            "output_limit_exceeded"
+          ]
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "additionalProperties": false
+    }
+  ]
+}

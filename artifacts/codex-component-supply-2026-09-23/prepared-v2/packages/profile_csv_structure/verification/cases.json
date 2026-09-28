@@ -1,0 +1,361 @@
+[
+  {
+    "name": "ragged_and_empty_cells",
+    "input": {
+      "csv": "id,name\n1,Ada\n2,\n3\n",
+      "header": true,
+      "delimiter": ",",
+      "quotechar": "\""
+    },
+    "expected": {
+      "ok": true,
+      "result": {
+        "row_count": 3,
+        "column_count": 2,
+        "physical_line_count": 4,
+        "header": [
+          "id",
+          "name"
+        ],
+        "duplicate_header_names": [],
+        "blank_header_indices": [],
+        "width_counts": [
+          {
+            "width": 1,
+            "records": 1
+          },
+          {
+            "width": 2,
+            "records": 2
+          }
+        ],
+        "width_mismatches": [
+          {
+            "row_index": 2,
+            "width": 1
+          }
+        ],
+        "columns": [
+          {
+            "index": 0,
+            "present_rows": 3,
+            "missing_rows": 0,
+            "empty_cells": 0,
+            "max_chars": 1
+          },
+          {
+            "index": 1,
+            "present_rows": 2,
+            "missing_rows": 1,
+            "empty_cells": 1,
+            "max_chars": 3
+          }
+        ]
+      }
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "empty_without_header",
+    "input": {
+      "csv": "",
+      "header": false,
+      "delimiter": ",",
+      "quotechar": "\""
+    },
+    "expected": {
+      "ok": true,
+      "result": {
+        "row_count": 0,
+        "column_count": 0,
+        "physical_line_count": 0,
+        "header": null,
+        "duplicate_header_names": [],
+        "blank_header_indices": [],
+        "width_counts": [],
+        "width_mismatches": [],
+        "columns": []
+      }
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "quoted_physical_newline",
+    "input": {
+      "csv": "a,b\n\"x\ny\",z\n",
+      "header": true,
+      "delimiter": ",",
+      "quotechar": "\""
+    },
+    "expected": {
+      "ok": true,
+      "result": {
+        "row_count": 1,
+        "column_count": 2,
+        "physical_line_count": 3,
+        "header": [
+          "a",
+          "b"
+        ],
+        "duplicate_header_names": [],
+        "blank_header_indices": [],
+        "width_counts": [
+          {
+            "width": 2,
+            "records": 1
+          }
+        ],
+        "width_mismatches": [],
+        "columns": [
+          {
+            "index": 0,
+            "present_rows": 1,
+            "missing_rows": 0,
+            "empty_cells": 0,
+            "max_chars": 3
+          },
+          {
+            "index": 1,
+            "present_rows": 1,
+            "missing_rows": 0,
+            "empty_cells": 0,
+            "max_chars": 1
+          }
+        ]
+      }
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "header_duplicates_are_reported",
+    "input": {
+      "csv": "x,x,\n1,2,3\n",
+      "header": true,
+      "delimiter": ",",
+      "quotechar": "\""
+    },
+    "expected": {
+      "ok": true,
+      "result": {
+        "row_count": 1,
+        "column_count": 3,
+        "physical_line_count": 2,
+        "header": [
+          "x",
+          "x",
+          ""
+        ],
+        "duplicate_header_names": [
+          {
+            "name": "x",
+            "indices": [
+              0,
+              1
+            ]
+          }
+        ],
+        "blank_header_indices": [
+          2
+        ],
+        "width_counts": [
+          {
+            "width": 3,
+            "records": 1
+          }
+        ],
+        "width_mismatches": [],
+        "columns": [
+          {
+            "index": 0,
+            "present_rows": 1,
+            "missing_rows": 0,
+            "empty_cells": 0,
+            "max_chars": 1
+          },
+          {
+            "index": 1,
+            "present_rows": 1,
+            "missing_rows": 0,
+            "empty_cells": 0,
+            "max_chars": 1
+          },
+          {
+            "index": 2,
+            "present_rows": 1,
+            "missing_rows": 0,
+            "empty_cells": 0,
+            "max_chars": 1
+          }
+        ]
+      }
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "unicode_is_one_character",
+    "input": {
+      "csv": "h\n😀\n",
+      "header": true,
+      "delimiter": ",",
+      "quotechar": "\""
+    },
+    "expected": {
+      "ok": true,
+      "result": {
+        "row_count": 1,
+        "column_count": 1,
+        "physical_line_count": 2,
+        "header": [
+          "h"
+        ],
+        "duplicate_header_names": [],
+        "blank_header_indices": [],
+        "width_counts": [
+          {
+            "width": 1,
+            "records": 1
+          }
+        ],
+        "width_mismatches": [],
+        "columns": [
+          {
+            "index": 0,
+            "present_rows": 1,
+            "missing_rows": 0,
+            "empty_cells": 0,
+            "max_chars": 1
+          }
+        ]
+      }
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "alternate_quote_and_delimiter",
+    "input": {
+      "csv": "a;b\n'x;y';z\n",
+      "header": true,
+      "delimiter": ";",
+      "quotechar": "'"
+    },
+    "expected": {
+      "ok": true,
+      "result": {
+        "row_count": 1,
+        "column_count": 2,
+        "physical_line_count": 2,
+        "header": [
+          "a",
+          "b"
+        ],
+        "duplicate_header_names": [],
+        "blank_header_indices": [],
+        "width_counts": [
+          {
+            "width": 2,
+            "records": 1
+          }
+        ],
+        "width_mismatches": [],
+        "columns": [
+          {
+            "index": 0,
+            "present_rows": 1,
+            "missing_rows": 0,
+            "empty_cells": 0,
+            "max_chars": 3
+          },
+          {
+            "index": 1,
+            "present_rows": 1,
+            "missing_rows": 0,
+            "empty_cells": 0,
+            "max_chars": 1
+          }
+        ]
+      }
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "unterminated_quote",
+    "input": {
+      "csv": "a\n\"open",
+      "header": true,
+      "delimiter": ",",
+      "quotechar": "\""
+    },
+    "expected": {
+      "ok": false,
+      "error": {
+        "code": "invalid_input"
+      }
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "missing_header",
+    "input": {
+      "csv": "",
+      "header": true,
+      "delimiter": ",",
+      "quotechar": "\""
+    },
+    "expected": {
+      "ok": false,
+      "error": {
+        "code": "invalid_input"
+      }
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "record_ceiling",
+    "input": {
+      "csv": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+      "header": false,
+      "delimiter": ",",
+      "quotechar": "\""
+    },
+    "expected": {
+      "ok": false,
+      "error": {
+        "code": "invalid_input"
+      }
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "field_ceiling",
+    "input": {
+      "csv": "a\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "header": true,
+      "delimiter": ",",
+      "quotechar": "\""
+    },
+    "expected": {
+      "ok": false,
+      "error": {
+        "code": "invalid_input"
+      }
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "unknown_field",
+    "input": {
+      "csv": "a\nx",
+      "header": true,
+      "delimiter": ",",
+      "quotechar": "\"",
+      "guess": true
+    },
+    "expected": {
+      "ok": false,
+      "error": {
+        "code": "invalid_input"
+      }
+    },
+    "expected_exit": 2
+  }
+]

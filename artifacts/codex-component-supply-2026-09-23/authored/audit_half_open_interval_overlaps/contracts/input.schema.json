@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "audit_half_open_interval_overlaps input",
+  "$comment": "Raw transport constraints: one UTF-8 JSON object; input at most262144bytes, output at most524288bytes including newline. Duplicate object keys, nonfinite numbers, unpaired Unicode surrogates, decoded depth>8 or more than50000 decoded values refuse. JSON numeric tokens are at most128characters and must represent exact integers within+-1000000000000; integral decimal/exponent spellings are accepted. Structural schemas do not encode byte ceilings or stated cross-field conditions.",
+  "type": "object",
+  "properties": {
+    "intervals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 32
+          },
+          "start": {
+            "type": "integer",
+            "minimum": -1000000000000,
+            "maximum": 1000000000000
+          },
+          "end": {
+            "type": "integer",
+            "minimum": -1000000000000,
+            "maximum": 1000000000000
+          }
+        },
+        "required": [
+          "id",
+          "start",
+          "end"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 48
+    }
+  },
+  "required": [
+    "intervals"
+  ],
+  "additionalProperties": false,
+  "description": "Coordinates are integers in a caller-selected unit. IDs unique; start<=end required. Intervals are half-open[start,end); empty intervals overlap nothing and adjacency is not overlap. Pairs ordered by original indices i<j; empty_ids input order. union_length is total covered coordinate length; max_concurrency ignores empty intervals."
+}

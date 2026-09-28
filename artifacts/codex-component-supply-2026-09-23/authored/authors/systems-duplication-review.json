@@ -1,0 +1,593 @@
+{
+  "record_type": "original_systems_duplication_review/v1",
+  "prior_skill_count": 80,
+  "prior_native_tool_count": 13,
+  "exact_identity_duplicates": [],
+  "prior_population": [
+    {
+      "identity": "adjudicate-model-disagreement-with-external-checks",
+      "population": "first-party-harness-candidates-2026-09-22",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "audit-as-of-data-visibility",
+      "population": "first-party-harness-candidates-2026-09-22",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "audit-measurement-units",
+      "population": "first-party-harness-candidates-2026-09-22",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "audit-semantic-loss-in-protocol-fallback",
+      "population": "first-party-harness-candidates-2026-09-22",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "build-a-project-decision-provenance-map",
+      "population": "first-party-harness-candidates-2026-09-22",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "challenge-retrieval-with-hard-negatives",
+      "population": "first-party-harness-candidates-2026-09-22",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "check-rate-denominators",
+      "population": "first-party-harness-candidates-2026-09-22",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "compare-model-context-pairs-on-frozen-cases",
+      "population": "first-party-harness-candidates-2026-09-22",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "define-time-zone-reporting-window",
+      "population": "first-party-harness-candidates-2026-09-22",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "design-a-bounded-product-experiment",
+      "population": "first-party-harness-candidates-2026-09-22",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "explain-engine-selection-from-eligible-evidence",
+      "population": "first-party-harness-candidates-2026-09-22",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "map-independent-acceptance-evidence",
+      "population": "first-party-harness-candidates-2026-09-22",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "map-observed-customer-journey-friction",
+      "population": "first-party-harness-candidates-2026-09-22",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "match-a-product-claim-to-verified-capability",
+      "population": "first-party-harness-candidates-2026-09-22",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "normalize-vendor-offers-for-one-decision",
+      "population": "first-party-harness-candidates-2026-09-22",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "rebuild-state-from-ordered-events",
+      "population": "first-party-harness-candidates-2026-09-22",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "reconcile-snapshot-changes",
+      "population": "first-party-harness-candidates-2026-09-22",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "reconstruct-causality-across-clock-skewed-records",
+      "population": "first-party-harness-candidates-2026-09-22",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "screen-a-study-for-a-product-decision",
+      "population": "first-party-harness-candidates-2026-09-22",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "separate-recurring-support-causes-from-repeat-contacts",
+      "population": "first-party-harness-candidates-2026-09-22",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "separate-shared-build-cache-from-task-state",
+      "population": "first-party-harness-candidates-2026-09-22",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "trace-numeric-rounding",
+      "population": "first-party-harness-candidates-2026-09-22",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "triage-support-requests-against-approved-policy",
+      "population": "first-party-harness-candidates-2026-09-22",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "validate-aggregate-grain",
+      "population": "first-party-harness-candidates-2026-09-22",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "adjudicate-a-protocol-tool-effect-request",
+      "population": "first-party-harness-candidates-2026-09-22-wave-2",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "audit-a-model-specific-skill-rendering",
+      "population": "first-party-harness-candidates-2026-09-22-wave-2",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "audit-resource-capacity-by-interval",
+      "population": "first-party-harness-candidates-2026-09-22-wave-2",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "bridge-forecast-driver-changes",
+      "population": "first-party-harness-candidates-2026-09-22-wave-2",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "carry-a-sales-promise-into-delivery",
+      "population": "first-party-harness-candidates-2026-09-22-wave-2",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "compare-acquisition-channels-for-one-segment",
+      "population": "first-party-harness-candidates-2026-09-22-wave-2",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "compile-a-native-material-placement-plan",
+      "population": "first-party-harness-candidates-2026-09-22-wave-2",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "design-catalogue-withdrawal-checks",
+      "population": "first-party-harness-candidates-2026-09-22-wave-2",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "gate-a-product-launch-across-teams",
+      "population": "first-party-harness-candidates-2026-09-22-wave-2",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "prepare-a-support-escalation-packet",
+      "population": "first-party-harness-candidates-2026-09-22-wave-2",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "qualify-a-partner-integration-proposal",
+      "population": "first-party-harness-candidates-2026-09-22-wave-2",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "qualify-an-invited-pilot-cohort",
+      "population": "first-party-harness-candidates-2026-09-22-wave-2",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "reconcile-inventory-availability",
+      "population": "first-party-harness-candidates-2026-09-22-wave-2",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "reconcile-native-material-use-evidence",
+      "population": "first-party-harness-candidates-2026-09-22-wave-2",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "reconcile-order-fulfillment-quantities",
+      "population": "first-party-harness-candidates-2026-09-22-wave-2",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "reconcile-record-flow-across-stages",
+      "population": "first-party-harness-candidates-2026-09-22-wave-2",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "reconstruct-a-buyer-decision-path",
+      "population": "first-party-harness-candidates-2026-09-22-wave-2",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "reconstruct-service-clock-from-status-intervals",
+      "population": "first-party-harness-candidates-2026-09-22-wave-2",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "revalidate-output-allocation-on-model-fallback",
+      "population": "first-party-harness-candidates-2026-09-22-wave-2",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "scope-a-step-credential-lease-to-physical-use",
+      "population": "first-party-harness-candidates-2026-09-22-wave-2",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "specify-an-isolated-harness-startup-probe",
+      "population": "first-party-harness-candidates-2026-09-22-wave-2",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "synthesize-discovery-interviews-with-counterexamples",
+      "population": "first-party-harness-candidates-2026-09-22-wave-2",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "trace-field-lineage-to-a-measure",
+      "population": "first-party-harness-candidates-2026-09-22-wave-2",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "validate-source-to-target-field-map",
+      "population": "first-party-harness-candidates-2026-09-22-wave-2",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "audit-a-published-guide-against-a-release",
+      "population": "first-party-harness-candidates-2026-09-22-wave-3",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "audit-sampling-frame-coverage",
+      "population": "first-party-harness-candidates-2026-09-22-wave-3",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "audit-service-measure-against-agreement",
+      "population": "first-party-harness-candidates-2026-09-22-wave-3",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "bound-obsolete-stock-by-support-horizon",
+      "population": "first-party-harness-candidates-2026-09-22-wave-3",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "challenge-a-survey-instrument-for-contamination",
+      "population": "first-party-harness-candidates-2026-09-22-wave-3",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "check-prerequisite-order-in-a-task-guide",
+      "population": "first-party-harness-candidates-2026-09-22-wave-3",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "compare-satisfaction-waves-by-respondent-mix",
+      "population": "first-party-harness-candidates-2026-09-22-wave-3",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "contrast-described-and-observed-workflows",
+      "population": "first-party-harness-candidates-2026-09-22-wave-3",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "define-a-user-operation-performance-envelope",
+      "population": "first-party-harness-candidates-2026-09-22-wave-3",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "derive-state-transition-tests-from-a-contract",
+      "population": "first-party-harness-candidates-2026-09-22-wave-3",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "diagnose-process-constraint-from-flow",
+      "population": "first-party-harness-candidates-2026-09-22-wave-3",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "establish-milestone-readiness-from-evidence",
+      "population": "first-party-harness-candidates-2026-09-22-wave-3",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "explain-a-service-charge-from-effective-rules",
+      "population": "first-party-harness-candidates-2026-09-22-wave-3",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "map-system-output-to-permitted-consumers",
+      "population": "first-party-harness-candidates-2026-09-22-wave-3",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "propagate-a-plan-change-through-commitments",
+      "population": "first-party-harness-candidates-2026-09-22-wave-3",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "qualify-a-prebuilt-application-against-required-seams",
+      "population": "first-party-harness-candidates-2026-09-22-wave-3",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "reconcile-account-difference-to-postings",
+      "population": "first-party-harness-candidates-2026-09-22-wave-3",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "test-aggregate-trend-for-subgroup-reversal",
+      "population": "first-party-harness-candidates-2026-09-22-wave-3",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "test-control-operation-on-a-bounded-sample",
+      "population": "first-party-harness-candidates-2026-09-22-wave-3",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "verify-resolution-against-original-symptom",
+      "population": "first-party-harness-candidates-2026-09-22-wave-3",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "allocate-scarce-stock-by-promised-service",
+      "population": "first-party-harness-candidates-2026-09-22-wave-4-ops",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "balance-project-duty-coverage",
+      "population": "first-party-harness-candidates-2026-09-22-wave-4-ops",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "classify-ambiguous-posting-account",
+      "population": "first-party-harness-candidates-2026-09-22-wave-4-ops",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "compare-distribution-paths-with-failure-costs",
+      "population": "first-party-harness-candidates-2026-09-22-wave-4-ops",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "explain-work-package-cost-variance",
+      "population": "first-party-harness-candidates-2026-09-22-wave-4-ops",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "map-repair-support-requirements-to-assets",
+      "population": "first-party-harness-candidates-2026-09-22-wave-4-ops",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "reconcile-return-credit-to-original-sale",
+      "population": "first-party-harness-candidates-2026-09-22-wave-4-ops",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "reconcile-subcontractor-delivery-to-obligations",
+      "population": "first-party-harness-candidates-2026-09-22-wave-4-ops",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "screen-payable-for-document-mismatch",
+      "population": "first-party-harness-candidates-2026-09-22-wave-4-ops",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "trace-resource-request-to-funding-window",
+      "population": "first-party-harness-candidates-2026-09-22-wave-4-ops",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "trace-statement-line-to-ledger",
+      "population": "first-party-harness-candidates-2026-09-22-wave-4-ops",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "track-customer-promises-through-case-updates",
+      "population": "first-party-harness-candidates-2026-09-22-wave-4-ops",
+      "kind": "instruction_skill"
+    },
+    {
+      "identity": "schedule_dag_earliest_times",
+      "population": "/home/username/.le-codex-build/integration/artifacts/mixed-native-originals-contract-v2-2026-09-23/prepared",
+      "kind": "native_tool"
+    },
+    {
+      "identity": "cover_pairwise_configuration_values",
+      "population": "/home/username/.le-codex-build/integration/artifacts/mixed-native-originals-contract-v2-2026-09-23/prepared",
+      "kind": "native_tool"
+    },
+    {
+      "identity": "compare_primitive_object_contracts",
+      "population": "/home/username/.le-codex-build/integration/artifacts/mixed-native-originals-contract-v2-2026-09-23/prepared",
+      "kind": "native_tool"
+    },
+    {
+      "identity": "pack_first_fit_decreasing_batches",
+      "population": "/home/username/.le-codex-build/integration/artifacts/mixed-native-originals-contract-v2-2026-09-23/prepared",
+      "kind": "native_tool"
+    },
+    {
+      "identity": "audit_functional_dependency_rows",
+      "population": "/home/username/.le-codex-build/integration/artifacts/mixed-native-originals-contract-v2-2026-09-23/prepared",
+      "kind": "native_tool"
+    },
+    {
+      "identity": "find_strongly_connected_components",
+      "population": "/home/username/.le-codex-build/integration/artifacts/mixed-native-originals-contract-v2-2026-09-23/prepared",
+      "kind": "native_tool"
+    },
+    {
+      "identity": "simulate_exact_token_bucket",
+      "population": "/home/username/.le-codex-build/integration/artifacts/mixed-native-originals-contract-v2-2026-09-23/prepared",
+      "kind": "native_tool"
+    },
+    {
+      "identity": "audit_boolean_rule_coverage",
+      "population": "/home/username/.le-codex-build/integration/artifacts/mixed-native-originals-contract-v2-2026-09-23/prepared",
+      "kind": "native_tool"
+    },
+    {
+      "identity": "decode_u16_length_prefixed_frames",
+      "population": "/home/username/.le-codex-build/integration/artifacts/mixed-native-originals-contract-v2-2026-09-23/prepared",
+      "kind": "native_tool"
+    },
+    {
+      "identity": "evaluate_bounded_rational_expression",
+      "population": "/home/username/.le-codex-build/integration/artifacts/mixed-native-originals-contract-v2-2026-09-23/prepared",
+      "kind": "native_tool"
+    },
+    {
+      "identity": "resolve_literal_named_template",
+      "population": "/home/username/.le-codex-build/integration/artifacts/mixed-native-originals-contract-v2-2026-09-23/prepared",
+      "kind": "native_tool"
+    },
+    {
+      "identity": "project_json_pointer_values",
+      "population": "/home/username/.le-codex-build/integration/artifacts/mixed-native-originals-contract-v2-2026-09-23/prepared",
+      "kind": "native_tool"
+    },
+    {
+      "identity": "apportion_integer_quotas",
+      "population": "/home/username/.le-codex-build/integration/artifacts/original-native-generation-2026-09-23/live-minimax32-20260923T154757/apportion_integer_quotas.attempt-1/candidates",
+      "kind": "native_tool"
+    }
+  ],
+  "mixed_format_manifests": [
+    {
+      "manifest": "/home/username/.le-codex-build/integration/artifacts/harness-intelligence-format-pilot-2026-09-22/manifest.json",
+      "sha256": "12f41d188e0022a0ff16132f3ffce14f0378639d50e00cc53467291aef50f000",
+      "logical_packages": null,
+      "reviewed_delivery_paths": [
+        "connections/json-shape-stdio/check_configs.py",
+        "connections/json-shape-stdio/layouts/claude/work/.mcp.json",
+        "connections/json-shape-stdio/layouts/claude/work/tools/json_shape_mcp/requirements.txt",
+        "connections/json-shape-stdio/layouts/claude/work/tools/json_shape_mcp/server.py",
+        "connections/json-shape-stdio/layouts/codex/work/.codex/config.toml",
+        "connections/json-shape-stdio/layouts/codex/work/tools/json_shape_mcp/requirements.txt",
+        "connections/json-shape-stdio/layouts/codex/work/tools/json_shape_mcp/server.py",
+        "connections/json-shape-stdio/layouts/opencode/work/opencode.json",
+        "connections/json-shape-stdio/layouts/opencode/work/tools/json_shape_mcp/requirements.txt",
+        "connections/json-shape-stdio/layouts/opencode/work/tools/json_shape_mcp/server.py",
+        "connections/json-shape-stdio/render_layouts.py",
+        "connections/json-shape-stdio/requirements.txt",
+        "connections/json-shape-stdio/server.py",
+        "connections/json-shape-stdio/tests/test_configs.py",
+        "connections/json-shape-stdio/tests/test_server.py",
+        "context/README.md",
+        "context/check_context_candidates.py",
+        "context/probe_codex_fallback.py",
+        "context/probe_codex_no_model.py",
+        "context/profile-one-csv/claude/work/AGENTS.md",
+        "context/profile-one-csv/claude/work/CLAUDE.md",
+        "context/profile-one-csv/codex/work/AGENTS.md",
+        "context/profile-one-csv/opencode/work/AGENTS.md",
+        "context/profile-one-csv/pi/work/AGENTS.md",
+        "context/repair-one-failing-test/claude/work/AGENTS.md",
+        "context/repair-one-failing-test/claude/work/CLAUDE.md",
+        "context/repair-one-failing-test/codex/work/AGENTS.md",
+        "context/repair-one-failing-test/opencode/work/AGENTS.md",
+        "context/repair-one-failing-test/pi/work/AGENTS.md",
+        "tools/audit-csv-structure/SKILL.md",
+        "tools/audit-csv-structure/scripts/audit_csv_structure.py",
+        "tools/audit-csv-structure/scripts/confined_input.py",
+        "tools/audit-csv-structure/tests/test_audit_csv_structure.py",
+        "tools/audit-jsonl-identities/SKILL.md",
+        "tools/audit-jsonl-identities/scripts/audit_jsonl_identities.py",
+        "tools/audit-jsonl-identities/scripts/confined_input.py",
+        "tools/audit-jsonl-identities/tests/test_audit_jsonl_identities.py",
+        "tools/inventory-file-digests/SKILL.md",
+        "tools/inventory-file-digests/scripts/confined_input.py",
+        "tools/inventory-file-digests/scripts/inventory_file_digests.py",
+        "tools/inventory-file-digests/tests/test_inventory_file_digests.py"
+      ]
+    },
+    {
+      "manifest": "/home/username/.le-codex-build/integration/artifacts/harness-intelligence-format-pilot-2026-09-22-wave-2/manifest.json",
+      "sha256": "2440dd2123cea394b38609696a9fc7fc82590f698a6f39124eac357c03fdf9bf",
+      "logical_packages": 3,
+      "reviewed_delivery_paths": [
+        "README.md",
+        "candidate-items.json",
+        "make_manifest.py",
+        "manifest-initial-failed-2026-09-22.json",
+        "manifest-successor-overcount-2026-09-22.json",
+        "packages/audit-join-cardinality/SKILL.md",
+        "packages/audit-join-cardinality/scripts/audit_join_cardinality.py",
+        "packages/audit-join-cardinality/scripts/confined_input.py",
+        "packages/audit-text-encoding/SKILL.md",
+        "packages/audit-text-encoding/scripts/audit_text_encoding.py",
+        "packages/audit-text-encoding/scripts/confined_input.py",
+        "packages/audit-zip-package/SKILL.md",
+        "packages/audit-zip-package/scripts/audit_zip_package.py",
+        "packages/audit-zip-package/scripts/confined_input.py",
+        "reviews/audit-join-cardinality.md",
+        "reviews/audit-text-encoding.md",
+        "reviews/audit-zip-package.md",
+        "test_make_manifest.py",
+        "tests/test_audit_join_cardinality.py",
+        "tests/test_audit_text_encoding.py",
+        "tests/test_audit_zip_package.py"
+      ]
+    }
+  ],
+  "closest_methods": {
+    "compare_file_inventories": {
+      "prior": [
+        "reconcile-snapshot-changes",
+        "tools/inventory-file-digests"
+      ],
+      "distinction": "Supplied exact file metadata diff with no filesystem traversal or digest computation over files; changes are keyed by exact path and renames are not inferred."
+    },
+    "resolve_selected_dependency_closure": {
+      "prior": [
+        "find_strongly_connected_components",
+        "compile-a-native-material-placement-plan"
+      ],
+      "distinction": "Selected exact-ID transitive closure with reachable-only missing-dependency refusal; SCC detection is a supporting subroutine, not a renamed SCC package or full placement compiler."
+    },
+    "assign_digest_shards": {
+      "prior": [
+        "audit-sampling-frame-coverage"
+      ],
+      "distinction": "Exact stable SHA256 modulo assignment over supplied IDs; neither sampling coverage nor allocation quota apportionment."
+    },
+    "validate_event_precedence": {
+      "prior": [
+        "check-prerequisite-order-in-a-task-guide",
+        "rebuild-state-from-ordered-events"
+      ],
+      "distinction": "Executable validation of supplied unique sequence IDs against explicit before/after pairs; no extraction from prose, state reconstruction or causal inference."
+    },
+    "apply_nonoverlapping_text_edits": {
+      "prior": [
+        "resolve_literal_named_template"
+      ],
+      "distinction": "Exact simultaneous original-codepoint interval replacement with optional input digest; no placeholder or fuzzy text resolution."
+    },
+    "detect_portable_path_collisions": {
+      "prior": [
+        "compile-a-native-material-placement-plan"
+      ],
+      "distinction": "Standalone data-only NFC/casefold/parent-file collision report under an explicit abstract model; does not compile/install a package or emulate filesystem security."
+    }
+  },
+  "reuse": "Bounded first-party JSON framing and MIT notice; algorithms are distinct authored work methods, not a cross product of job titles."
+}

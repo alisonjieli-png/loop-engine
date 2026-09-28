@@ -1,0 +1,1069 @@
+{
+  "record_type": "original_systems_sandbox_qa/v1",
+  "canonical_revision": "231f51bb1facab517fbe915b08ea9ac85f913347",
+  "sandbox": "bwrap unshare-all; clearenv; read-only /usr and exact tool/input/runner mounts; no network; no task workspace or credentials mounted;2CPU seconds/256MiB/4wall seconds",
+  "packages": [
+    {
+      "identity": "compare_file_inventories",
+      "script_sha256": "e354235c3709a78e3ea1c58b253e507e420951f8633c729d31225e1708ed0982",
+      "file_count": 8,
+      "checks": [
+        {
+          "name": "changed_added_removed",
+          "expected_exit": 0,
+          "exit_code": 0,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 185,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "rename_not_inferred",
+          "expected_exit": 0,
+          "exit_code": 0,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 111,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "empty",
+          "expected_exit": 0,
+          "exit_code": 0,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 105,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "integral_metadata",
+          "expected_exit": 0,
+          "exit_code": 0,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 109,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "duplicate_path",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 26,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "unknown_entry_field",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 26,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "traversal",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 26,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "bool_not_size",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 26,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "bad_digest",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 26,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "duplicate_top_key",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 26,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "nonfinite",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 26,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "depth_limit",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 26,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "lone_surrogate",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 26,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "unknown_top_field",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 26,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "identity": "resolve_selected_dependency_closure",
+      "script_sha256": "6788778c91d0255a8ae9782a9d896d33cec5bfd321a62a4b4acebb185a7cc52c",
+      "file_count": 8,
+      "checks": [
+        {
+          "name": "selected_transitive_closure",
+          "expected_exit": 0,
+          "exit_code": 0,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 112,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "reachable_cycles_reported",
+          "expected_exit": 0,
+          "exit_code": 0,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 127,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "unreachable_missing_ignored",
+          "expected_exit": 0,
+          "exit_code": 0,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 105,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "no_selection",
+          "expected_exit": 0,
+          "exit_code": 0,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 101,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "missing_reachable",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 31,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "missing_root",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 31,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "duplicate_package",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 26,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "duplicate_top_key",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 26,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "nonfinite",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 26,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "depth_limit",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 26,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "lone_surrogate",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 26,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "unknown_top_field",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 26,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "identity": "assign_digest_shards",
+      "script_sha256": "8e7a9079d2b768d78e81db33ba3657f2be18f452bb37c9a803ed863c32639911",
+      "file_count": 8,
+      "checks": [
+        {
+          "name": "known_hashes",
+          "expected_exit": 0,
+          "exit_code": 0,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 374,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "unicode_bytes_not_normalized",
+          "expected_exit": 0,
+          "exit_code": 0,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 279,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "one_shard",
+          "expected_exit": 0,
+          "exit_code": 0,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 178,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "empty_ids",
+          "expected_exit": 0,
+          "exit_code": 0,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 82,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "zero_shards",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 26,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "bool_shards",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 26,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "duplicate_id",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 26,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "unicode_output_byte_limit",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 34,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "duplicate_top_key",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 26,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "nonfinite",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 26,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "depth_limit",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 26,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "lone_surrogate",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 26,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "unknown_top_field",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 26,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "identity": "validate_event_precedence",
+      "script_sha256": "e2aebba7709305435dd28d64aea7ee97c5db2a866942065d96b9ec0ea352aa3d",
+      "file_count": 8,
+      "checks": [
+        {
+          "name": "strict_order",
+          "expected_exit": 0,
+          "exit_code": 0,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 87,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "reverse_and_self",
+          "expected_exit": 0,
+          "exit_code": 0,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 251,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "missing_event_report",
+          "expected_exit": 0,
+          "exit_code": 0,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 272,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "empty_constraints",
+          "expected_exit": 0,
+          "exit_code": 0,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 87,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "ambiguous_repeated_event",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 26,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "duplicate_constraint",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 26,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "duplicate_top_key",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 26,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "nonfinite",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 26,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "depth_limit",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 26,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "lone_surrogate",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 26,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "unknown_top_field",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 26,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "identity": "apply_nonoverlapping_text_edits",
+      "script_sha256": "313cc16eed7f295c34013104e679964ac8805bf18123afe29e28441650840e06",
+      "file_count": 8,
+      "checks": [
+        {
+          "name": "simultaneous_original_positions",
+          "expected_exit": 0,
+          "exit_code": 0,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 258,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "unicode_codepoint_offsets",
+          "expected_exit": 0,
+          "exit_code": 0,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 258,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "insertion_at_previous_end",
+          "expected_exit": 0,
+          "exit_code": 0,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 257,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "empty_edit_set",
+          "expected_exit": 0,
+          "exit_code": 0,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 263,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "empty_source_insertion",
+          "expected_exit": 0,
+          "exit_code": 0,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 256,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "overlapping_ranges",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 30,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "same_start_insertions",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 30,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "insertion_at_replacement_start",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 30,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "wrong_source_digest",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 35,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "out_of_range",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 26,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "duplicate_top_key",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 26,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "nonfinite",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 26,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "depth_limit",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 26,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "lone_surrogate",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 26,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "unknown_top_field",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 26,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "identity": "detect_portable_path_collisions",
+      "script_sha256": "330cd007a2b6c1d7eb9fa71f6f2effe93bba796d766d02313cc6d1a892b8f774",
+      "file_count": 8,
+      "checks": [
+        {
+          "name": "unicode_case_and_parent",
+          "expected_exit": 0,
+          "exit_code": 0,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 345,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "canonical_equivalence",
+          "expected_exit": 0,
+          "exit_code": 0,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 270,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "exact_duplicate_is_reported",
+          "expected_exit": 0,
+          "exit_code": 0,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 254,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "all_ancestor_pairs",
+          "expected_exit": 0,
+          "exit_code": 0,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 412,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "fullwidth_is_not_nfkc",
+          "expected_exit": 0,
+          "exit_code": 0,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 196,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "reserved_name_not_security_verdict",
+          "expected_exit": 0,
+          "exit_code": 0,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 196,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "unicode_version_mismatch",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 37,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "wrong_model",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 26,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "dot_component",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 26,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "duplicate_top_key",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 26,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "nonfinite",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 26,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "depth_limit",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 26,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "lone_surrogate",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 26,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        },
+        {
+          "name": "unknown_top_field",
+          "expected_exit": 2,
+          "exit_code": 2,
+          "matches_expected": true,
+          "schema_valid": true,
+          "stdout_utf8_bytes": 26,
+          "timed_out": false,
+          "truncated": false,
+          "stderr_empty": true,
+          "passed": true
+        }
+      ],
+      "passed": true
+    }
+  ],
+  "mutants": [
+    {
+      "identity": "compare_file_inventories",
+      "mutation": "sorted(right - left) -> sorted(left - right)",
+      "detected": true,
+      "failing_cases": [
+        "changed_added_removed",
+        "rename_not_inferred"
+      ]
+    },
+    {
+      "identity": "resolve_selected_dependency_closure",
+      "mutation": "pending.extend(graph[current]) -> pending.extend(())",
+      "detected": true,
+      "failing_cases": [
+        "selected_transitive_closure",
+        "reachable_cycles_reported",
+        "missing_reachable"
+      ]
+    },
+    {
+      "identity": "assign_digest_shards",
+      "mutation": "int(digest, 16) % count -> int(digest[:8], 16) % count",
+      "detected": true,
+      "failing_cases": [
+        "known_hashes",
+        "unicode_bytes_not_normalized"
+      ]
+    },
+    {
+      "identity": "validate_event_precedence",
+      "mutation": "left >= right -> left > right",
+      "detected": true,
+      "failing_cases": [
+        "reverse_and_self"
+      ]
+    },
+    {
+      "identity": "apply_nonoverlapping_text_edits",
+      "mutation": "pieces.extend((source[cursor:start], replacement)) -> pieces.extend((source[cursor:end], replacement))",
+      "detected": true,
+      "failing_cases": [
+        "simultaneous_original_positions",
+        "unicode_codepoint_offsets",
+        "insertion_at_previous_end"
+      ]
+    },
+    {
+      "identity": "detect_portable_path_collisions",
+      "mutation": "child.startswith(parent + \"/\") -> child.startswith(parent) and child != parent",
+      "detected": false,
+      "failing_cases": []
+    },
+    {
+      "identity": "assign_digest_shards",
+      "mutation": "Unicode character count replaces UTF-8 output byte count",
+      "detected": true,
+      "failing_cases": [
+        "unicode_output_byte_limit"
+      ]
+    }
+  ],
+  "passed": false,
+  "approval_count": 0,
+  "native_client_qualification": false,
+  "external_provider_calls": 0
+}

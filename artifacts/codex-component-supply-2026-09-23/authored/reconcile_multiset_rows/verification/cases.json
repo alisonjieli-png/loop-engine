@@ -1,0 +1,307 @@
+[
+  {
+    "name": "multiplicity",
+    "input": {
+      "left": [
+        {
+          "x": 1
+        },
+        {
+          "x": 1
+        },
+        {
+          "x": 2
+        }
+      ],
+      "right": [
+        {
+          "x": 1
+        },
+        {
+          "x": 3
+        }
+      ]
+    },
+    "expected": {
+      "ok": true,
+      "result": {
+        "left_count": 3,
+        "right_count": 2,
+        "equal": false,
+        "common": [
+          {
+            "row": {
+              "x": 1
+            },
+            "count": 1
+          }
+        ],
+        "left_only": [
+          {
+            "row": {
+              "x": 1
+            },
+            "count": 1
+          },
+          {
+            "row": {
+              "x": 2
+            },
+            "count": 1
+          }
+        ],
+        "right_only": [
+          {
+            "row": {
+              "x": 3
+            },
+            "count": 1
+          }
+        ]
+      }
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "empty",
+    "input": {
+      "left": [],
+      "right": []
+    },
+    "expected": {
+      "ok": true,
+      "result": {
+        "left_count": 0,
+        "right_count": 0,
+        "equal": true,
+        "common": [],
+        "left_only": [],
+        "right_only": []
+      }
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "boolean_is_not_number",
+    "input": {
+      "left": [
+        {
+          "x": true
+        }
+      ],
+      "right": [
+        {
+          "x": 1
+        }
+      ]
+    },
+    "expected": {
+      "ok": true,
+      "result": {
+        "left_count": 1,
+        "right_count": 1,
+        "equal": false,
+        "common": [],
+        "left_only": [
+          {
+            "row": {
+              "x": true
+            },
+            "count": 1
+          }
+        ],
+        "right_only": [
+          {
+            "row": {
+              "x": 1
+            },
+            "count": 1
+          }
+        ]
+      }
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "missing_is_not_null",
+    "input": {
+      "left": [
+        {}
+      ],
+      "right": [
+        {
+          "x": null
+        }
+      ]
+    },
+    "expected": {
+      "ok": true,
+      "result": {
+        "left_count": 1,
+        "right_count": 1,
+        "equal": false,
+        "common": [],
+        "left_only": [
+          {
+            "row": {},
+            "count": 1
+          }
+        ],
+        "right_only": [
+          {
+            "row": {
+              "x": null
+            },
+            "count": 1
+          }
+        ]
+      }
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "integral_number_spellings",
+    "input": {
+      "left": [
+        {
+          "x": 1.0
+        }
+      ],
+      "right": [
+        {
+          "x": 1
+        }
+      ]
+    },
+    "expected": {
+      "ok": true,
+      "result": {
+        "left_count": 1,
+        "right_count": 1,
+        "equal": true,
+        "common": [
+          {
+            "row": {
+              "x": 1
+            },
+            "count": 1
+          }
+        ],
+        "left_only": [],
+        "right_only": []
+      }
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "key_order_is_not_identity",
+    "input": {
+      "left": [
+        {
+          "b": "é",
+          "a": 2
+        }
+      ],
+      "right": [
+        {
+          "a": 2,
+          "b": "é"
+        }
+      ]
+    },
+    "expected": {
+      "ok": true,
+      "result": {
+        "left_count": 1,
+        "right_count": 1,
+        "equal": true,
+        "common": [
+          {
+            "row": {
+              "a": 2,
+              "b": "é"
+            },
+            "count": 1
+          }
+        ],
+        "left_only": [],
+        "right_only": []
+      }
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "fractional_numeric_field",
+    "input": {
+      "left": [
+        {
+          "x": 1.5
+        }
+      ],
+      "right": []
+    },
+    "expected": {
+      "ok": false,
+      "error": {
+        "code": "invalid_input"
+      }
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "nested_field",
+    "input": {
+      "left": [
+        {
+          "x": []
+        }
+      ],
+      "right": []
+    },
+    "expected": {
+      "ok": false,
+      "error": {
+        "code": "invalid_input"
+      }
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "unknown_root_field",
+    "input": {
+      "left": [],
+      "right": [],
+      "mode": "set"
+    },
+    "expected": {
+      "ok": false,
+      "error": {
+        "code": "invalid_input"
+      }
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "zero_with_large_exponent_is_still_zero",
+    "raw_input": "{\"left\":[{\"n\":0e1000000000000000000}],\"right\":[]}",
+    "expected": {
+      "ok": true,
+      "result": {
+        "left_count": 1,
+        "right_count": 0,
+        "equal": false,
+        "common": [],
+        "left_only": [
+          {
+            "row": {
+              "n": 0
+            },
+            "count": 1
+          }
+        ],
+        "right_only": []
+      }
+    },
+    "expected_exit": 0
+  }
+]

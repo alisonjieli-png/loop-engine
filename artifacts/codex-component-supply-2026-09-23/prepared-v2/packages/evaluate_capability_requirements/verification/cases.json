@@ -1,0 +1,126 @@
+[
+  {
+    "name": "required unsupported",
+    "input": {
+      "required": [
+        "binary_bytes",
+        "hooks"
+      ],
+      "optional": [
+        "streaming"
+      ],
+      "observations": [
+        {
+          "capability": "binary_bytes",
+          "resolution": "native",
+          "evidence": "live_tested"
+        },
+        {
+          "capability": "hooks",
+          "resolution": "unsupported",
+          "evidence": "live_tested"
+        }
+      ],
+      "minimum_evidence": "dry_run_verified"
+    },
+    "expected": {
+      "requirements_met": false,
+      "satisfied": [
+        "binary_bytes"
+      ],
+      "unsupported": [
+        "hooks"
+      ],
+      "unverified": [],
+      "optional_unavailable": [
+        "streaming"
+      ]
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "empty requirements",
+    "input": {
+      "required": [],
+      "optional": [],
+      "observations": [],
+      "minimum_evidence": "documented"
+    },
+    "expected": {
+      "requirements_met": true,
+      "satisfied": [],
+      "unsupported": [],
+      "unverified": [],
+      "optional_unavailable": []
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "overlap refused",
+    "input": {
+      "required": [
+        "binary_bytes",
+        "hooks"
+      ],
+      "optional": [
+        "hooks"
+      ],
+      "observations": [
+        {
+          "capability": "binary_bytes",
+          "resolution": "native",
+          "evidence": "live_tested"
+        },
+        {
+          "capability": "hooks",
+          "resolution": "unsupported",
+          "evidence": "live_tested"
+        }
+      ],
+      "minimum_evidence": "dry_run_verified"
+    },
+    "expected": {
+      "error": "invalid_input"
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "duplicate observation",
+    "input": {
+      "required": [
+        "binary_bytes",
+        "hooks"
+      ],
+      "optional": [
+        "streaming"
+      ],
+      "observations": [
+        {
+          "capability": "binary_bytes",
+          "resolution": "native",
+          "evidence": "live_tested"
+        },
+        {
+          "capability": "hooks",
+          "resolution": "unsupported",
+          "evidence": "live_tested"
+        },
+        {
+          "capability": "binary_bytes",
+          "resolution": "native",
+          "evidence": "live_tested"
+        },
+        {
+          "capability": "hooks",
+          "resolution": "unsupported",
+          "evidence": "live_tested"
+        }
+      ],
+      "minimum_evidence": "dry_run_verified"
+    },
+    "expected": {
+      "error": "invalid_input"
+    },
+    "expected_exit": 2
+  }
+]

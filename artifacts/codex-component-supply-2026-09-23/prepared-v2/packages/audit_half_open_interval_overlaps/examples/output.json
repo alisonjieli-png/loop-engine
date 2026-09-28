@@ -1,0 +1,19 @@
+{
+  "ok": true,
+  "result": {
+    "overlap_count": 1,
+    "overlaps": [
+      {
+        "left_id": "a",
+        "right_id": "b",
+        "start": 2,
+        "end": 4
+      }
+    ],
+    "empty_ids": [
+      "empty"
+    ],
+    "max_concurrency": 2,
+    "union_length": 8
+  }
+}

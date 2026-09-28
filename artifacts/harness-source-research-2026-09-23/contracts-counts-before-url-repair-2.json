@@ -1,0 +1,1236 @@
+{
+  "record_type": "contract_source_research_counts/v1",
+  "run": "/home/username/.le-codex-research-cache/four-catalogues-20260923/contracts-20260923-1",
+  "source_revision": "231f51bb1facab517fbe915b08ea9ac85f913347",
+  "script_sha256": "670fb0b790021cfde2e1454ada783dbd5396c424a0fb6565665b88dd94acdab6",
+  "sources": {
+    "schemastore_catalog": {
+      "name": "schemastore_catalog",
+      "host": "www.schemastore.org",
+      "path": "/api/json/catalog.json",
+      "query": {},
+      "status": 200,
+      "sha256": "75edb7d0bab76c28a7e51dd4c0de1ba7b6a1202f99f11695d2109a79e8d16991",
+      "bytes": 526075,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/75/75edb7d0bab76c28a7e51dd4c0de1ba7b6a1202f99f11695d2109a79e8d16991"
+    },
+    "apis_guru_list": {
+      "name": "apis_guru_list",
+      "host": "api.apis.guru",
+      "path": "/v2/list.json",
+      "query": {},
+      "status": 200,
+      "sha256": "dfac835d2d1f13dfdb82723d72be1acf567df53c1b710bf6d68e28b795696e66",
+      "bytes": 8855894,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/df/dfac835d2d1f13dfdb82723d72be1acf567df53c1b710bf6d68e28b795696e66"
+    }
+  },
+  "raw_catalogue_entries": 4003,
+  "logical_metadata_families": 3540,
+  "ranked_candidates": 1000,
+  "kinds": {
+    "document_schema": 600,
+    "service_api": 400
+  },
+  "relevance": {
+    "direct_agent_or_protocol": 36,
+    "service_api_machine_learning": 8,
+    "developer_build_test_and_config": 329,
+    "service_api_developer_tools": 144,
+    "data_and_observability": 39,
+    "service_api_security": 19,
+    "security_and_policy": 27,
+    "service_api_analytics": 19,
+    "service_api_text": 52,
+    "service_api_open_data": 148,
+    "service_api_monitoring": 2,
+    "service_api_search": 6,
+    "service_api_collaboration": 2,
+    "product_and_business": 169
+  },
+  "fetch_observations": {
+    "fetched": 890,
+    "fetch_failed": 22,
+    "host_or_url_not_qualified": 80,
+    "parse_or_shape_refused": 6,
+    "request_refused": 1,
+    "not_attempted": 1
+  },
+  "http_statuses": {
+    "200": 896,
+    "404": 4,
+    "None": 100
+  },
+  "acquisition_lanes": [
+    {
+      "requests": 116,
+      "by_outcome": {
+        "https_get:ok": 113,
+        "https_get:transport_error": 3
+      },
+      "bytes": 4949773
+    },
+    {
+      "requests": 115,
+      "by_outcome": {
+        "https_get:ok": 115
+      },
+      "bytes": 8614110
+    },
+    {
+      "requests": 113,
+      "by_outcome": {
+        "https_get:ok": 111,
+        "https_get:transport_error": 2
+      },
+      "bytes": 5774316
+    },
+    {
+      "requests": 112,
+      "by_outcome": {
+        "https_get:ok": 110,
+        "https_get:transport_error": 2
+      },
+      "bytes": 6653643
+    },
+    {
+      "requests": 114,
+      "by_outcome": {
+        "https_get:ok": 112,
+        "https_get:transport_error": 2
+      },
+      "bytes": 5904549
+    },
+    {
+      "requests": 114,
+      "by_outcome": {
+        "https_get:ok": 111,
+        "https_get:transport_error": 3
+      },
+      "bytes": 5832492
+    },
+    {
+      "requests": 120,
+      "by_outcome": {
+        "https_get:ok": 114,
+        "https_get:transport_error": 4,
+        "https_get:not_found": 2
+      },
+      "bytes": 6255459
+    },
+    {
+      "requests": 115,
+      "by_outcome": {
+        "https_get:ok": 111,
+        "https_get:not_found": 2,
+        "https_get:transport_error": 2
+      },
+      "bytes": 9242220
+    }
+  ],
+  "recorded_requests": 919,
+  "request_ceiling": 1200,
+  "maximum_document_bytes": 1048576,
+  "remote_references_resolved": 0,
+  "exact_body_duplicate_groups": {
+    "5bfc6f788fc85fa641835b76175fe67402c7a387f06ef1fa0879d57cfcfc4306": [
+      "contract-4b37252dffbaba3748741692",
+      "contract-853bdaf82394c9a254cfc349"
+    ]
+  },
+  "collapsed": [
+    {
+      "kind": "schema_family",
+      "key": "family:json-schema-metaschema",
+      "names": [
+        "JSON Schema Draft 4",
+        "JSON Schema Draft 7",
+        "JSON Schema Draft 8 (2019-09)",
+        "JSON Schema Draft 2020-12",
+        "JSON Schema Draft 4 (unofficial with '$ref' and 'format')",
+        "JSON Schema Draft 7 (unofficial strict)"
+      ]
+    },
+    {
+      "kind": "schema_url_alias",
+      "names": [
+        "package.yaml"
+      ],
+      "url": "https://www.schemastore.org/package.json"
+    },
+    {
+      "kind": "schema_family",
+      "key": "family:traefik",
+      "names": [
+        "Traefik v2",
+        "Traefik v3"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "amazonaws.com:amazon kinesis analytics",
+      "api_ids": [
+        "amazonaws.com:kinesisanalytics",
+        "amazonaws.com:kinesisanalyticsv2"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "amazonaws.com:amazon simple email service",
+      "api_ids": [
+        "amazonaws.com:email",
+        "amazonaws.com:sesv2"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "amazonaws.com:elastic load balancing",
+      "api_ids": [
+        "amazonaws.com:elasticloadbalancing",
+        "amazonaws.com:elasticloadbalancingv2"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "apache.org:airflow api (stable)",
+      "api_ids": [
+        "apache.org",
+        "apache.org:airflow"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "appwrite.io:appwrite",
+      "api_ids": [
+        "appwrite.io:client",
+        "appwrite.io:server"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:apimanagementclient",
+      "api_ids": [
+        "azure.com:apimanagement",
+        "azure.com:apimanagement-apimapis",
+        "azure.com:apimanagement-apimapisByTags",
+        "azure.com:apimanagement-apimapiversionsets",
+        "azure.com:apimanagement-apimauthorizationservers",
+        "azure.com:apimanagement-apimbackends",
+        "azure.com:apimanagement-apimcaches",
+        "azure.com:apimanagement-apimcertificates",
+        "azure.com:apimanagement-apimdeployment",
+        "azure.com:apimanagement-apimdiagnostics",
+        "azure.com:apimanagement-apimemailtemplate",
+        "azure.com:apimanagement-apimemailtemplates",
+        "azure.com:apimanagement-apimgroups",
+        "azure.com:apimanagement-apimidentityprovider",
+        "azure.com:apimanagement-apimissues",
+        "azure.com:apimanagement-apimloggers",
+        "azure.com:apimanagement-apimnamedvalues",
+        "azure.com:apimanagement-apimnetworkstatus",
+        "azure.com:apimanagement-apimnotifications",
+        "azure.com:apimanagement-apimopenidconnectproviders",
+        "azure.com:apimanagement-apimpolicies",
+        "azure.com:apimanagement-apimpolicydescriptions",
+        "azure.com:apimanagement-apimpolicysnippets",
+        "azure.com:apimanagement-apimproducts",
+        "azure.com:apimanagement-apimproductsByTags",
+        "azure.com:apimanagement-apimproperties",
+        "azure.com:apimanagement-apimquotas",
+        "azure.com:apimanagement-apimregions",
+        "azure.com:apimanagement-apimreports",
+        "azure.com:apimanagement-apimsubscriptions",
+        "azure.com:apimanagement-apimtagresources",
+        "azure.com:apimanagement-apimtags",
+        "azure.com:apimanagement-apimtenant",
+        "azure.com:apimanagement-apimusers",
+        "azure.com:apimanagement-apimversionsets"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:applicationinsightsmanagementclient",
+      "api_ids": [
+        "azure.com:applicationinsights-aiOperations_API",
+        "azure.com:applicationinsights-analyticsItems_API",
+        "azure.com:applicationinsights-componentAnnotations_API",
+        "azure.com:applicationinsights-componentApiKeys_API",
+        "azure.com:applicationinsights-componentContinuousExport_API",
+        "azure.com:applicationinsights-componentFeaturesAndPricing_API",
+        "azure.com:applicationinsights-componentProactiveDetection_API",
+        "azure.com:applicationinsights-componentWorkItemConfigs_API",
+        "azure.com:applicationinsights-components_API",
+        "azure.com:applicationinsights-eaSubscriptionMigration_API",
+        "azure.com:applicationinsights-favorites_API",
+        "azure.com:applicationinsights-webTestLocations_API",
+        "azure.com:applicationinsights-webTests_API",
+        "azure.com:applicationinsights-workbookTemplates_API",
+        "azure.com:applicationinsights-workbooks_API"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:authorizationmanagementclient",
+      "api_ids": [
+        "azure.com:authorization",
+        "azure.com:authorization-authorization-ClassicAdminCalls",
+        "azure.com:authorization-authorization-DenyAssignmentGetCalls",
+        "azure.com:authorization-authorization-ElevateAccessCalls",
+        "azure.com:authorization-authorization-ProviderOperationsCalls",
+        "azure.com:authorization-authorization-RACalls",
+        "azure.com:authorization-authorization-RoleAssignmentsCalls",
+        "azure.com:authorization-authorization-RoleBasedCalls",
+        "azure.com:authorization-authorization-RoleDefinitionsCalls"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:automationmanagement",
+      "api_ids": [
+        "azure.com:automation-account",
+        "azure.com:automation-certificate",
+        "azure.com:automation-connection",
+        "azure.com:automation-connectionType",
+        "azure.com:automation-credential",
+        "azure.com:automation-dscCompilationJob",
+        "azure.com:automation-dscConfiguration",
+        "azure.com:automation-dscNode",
+        "azure.com:automation-dscNodeConfiguration",
+        "azure.com:automation-dscNodeCounts",
+        "azure.com:automation-hybridRunbookWorkerGroup",
+        "azure.com:automation-job",
+        "azure.com:automation-jobSchedule",
+        "azure.com:automation-linkedWorkspace",
+        "azure.com:automation-module",
+        "azure.com:automation-python2package",
+        "azure.com:automation-runbook",
+        "azure.com:automation-schedule",
+        "azure.com:automation-sourceControl",
+        "azure.com:automation-sourceControlSyncJob",
+        "azure.com:automation-sourceControlSyncJobStreams",
+        "azure.com:automation-variable",
+        "azure.com:automation-watcher"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:azure addons resource provider",
+      "api_ids": [
+        "azure.com:addons-Addons",
+        "azure.com:addons-addons-swagger"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:azure alerts management service resource provider",
+      "api_ids": [
+        "azure.com:alertsmanagement-AlertsManagement",
+        "azure.com:alertsmanagement-SmartDetectorAlertRulesApi"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:azure log analytics",
+      "api_ids": [
+        "azure.com:operationalinsights-Clusters",
+        "azure.com:operationalinsights-OperationalInsights",
+        "azure.com:operationalinsights-swagger"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:azure log analytics query packs",
+      "api_ids": [
+        "azure.com:applicationinsights-QueryPackQueries_API",
+        "azure.com:applicationinsights-QueryPacks_API"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:azure media services",
+      "api_ids": [
+        "azure.com:mediaservices-AccountFilters",
+        "azure.com:mediaservices-Accounts",
+        "azure.com:mediaservices-Assets",
+        "azure.com:mediaservices-AssetsAndAssetFilters",
+        "azure.com:mediaservices-ContentKeyPolicies",
+        "azure.com:mediaservices-Encoding",
+        "azure.com:mediaservices-MediaGraphs",
+        "azure.com:mediaservices-StreamingPoliciesAndStreamingLocators",
+        "azure.com:mediaservices-streamingservice"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:azure reservation",
+      "api_ids": [
+        "azure.com:reservations",
+        "azure.com:reservations-quota"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:azure sql database",
+      "api_ids": [
+        "azure.com:sql-checkNameAvailability",
+        "azure.com:sql-deprecated",
+        "azure.com:sql-geoBackupPolicies",
+        "azure.com:sql-metrics",
+        "azure.com:sql-queries",
+        "azure.com:sql-recommendedElasticPools",
+        "azure.com:sql-recommendedElasticPoolsDecoupled",
+        "azure.com:sql-serverCommunicationLinks",
+        "azure.com:sql-serviceObjectives",
+        "azure.com:sql-sql.core"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:azure stack azure bridge client",
+      "api_ids": [
+        "azure.com:azurestack-AzureStack",
+        "azure.com:azurestack-Registration"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:azurebridgeadminclient",
+      "api_ids": [
+        "azure.com:azsadmin-Activation",
+        "azure.com:azsadmin-AzureBridge",
+        "azure.com:azsadmin-DownloadedProduct",
+        "azure.com:azsadmin-Product"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:azurestack azure bridge client",
+      "api_ids": [
+        "azure.com:azurestack-CustomerSubscription",
+        "azure.com:azurestack-Product"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:backupmanagementclient",
+      "api_ids": [
+        "azure.com:azsadmin-Backup",
+        "azure.com:azsadmin-BackupLocations",
+        "azure.com:azsadmin-Backups"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:blueprintclient",
+      "api_ids": [
+        "azure.com:blueprint-assignmentOperation",
+        "azure.com:blueprint-blueprintAssignment",
+        "azure.com:blueprint-blueprintDefinition"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:commercemanagementclient",
+      "api_ids": [
+        "azure.com:azsadmin-Commerce",
+        "azure.com:azsadmin-CommerceAdmin"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:compute admin client",
+      "api_ids": [
+        "azure.com:azsadmin-Compute",
+        "azure.com:azsadmin-PlatformImages",
+        "azure.com:azsadmin-Quotas",
+        "azure.com:azsadmin-VMExtensions"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:computediskadminmanagementclient",
+      "api_ids": [
+        "azure.com:azsadmin-DiskMigrationJobs",
+        "azure.com:azsadmin-Disks"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:computemanagementclient",
+      "api_ids": [
+        "azure.com:compute",
+        "azure.com:compute-skus"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:containerregistrymanagementclient",
+      "api_ids": [
+        "azure.com:containerregistry-containerregistry_build",
+        "azure.com:containerregistry-containerregistry_scopemap"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:containerserviceclient",
+      "api_ids": [
+        "azure.com:compute-containerService",
+        "azure.com:containerservice-containerService",
+        "azure.com:containerservice-location",
+        "azure.com:containerservice-managedClusters",
+        "azure.com:containerservice-openShiftManagedClusters",
+        "azure.com:containerservices-containerService",
+        "azure.com:containerservices-location",
+        "azure.com:containerservices-managedClusters",
+        "azure.com:containerservices-openShiftManagedClusters"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:cosmos db",
+      "api_ids": [
+        "azure.com:cosmos-db",
+        "azure.com:cosmos-db-privateEndpointConnection",
+        "azure.com:cosmos-db-privateLinkResources"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:databoxedgemanagementclient",
+      "api_ids": [
+        "azure.com:databoxedge",
+        "azure.com:edgegateway"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:deploymentadminclient",
+      "api_ids": [
+        "azure.com:azsadmin-ActionPlan",
+        "azure.com:azsadmin-ActionPlanOperation",
+        "azure.com:azsadmin-Deployment",
+        "azure.com:azsadmin-FileContainer",
+        "azure.com:azsadmin-ProductDeployment",
+        "azure.com:azsadmin-ProductPackage",
+        "azure.com:azsadmin-ProductSecret"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:fabricadminclient",
+      "api_ids": [
+        "azure.com:azsadmin-ApplicationOperationResults",
+        "azure.com:azsadmin-ComputeOperationResults",
+        "azure.com:azsadmin-Drive",
+        "azure.com:azsadmin-EdgeGateway",
+        "azure.com:azsadmin-EdgeGatewayPool",
+        "azure.com:azsadmin-Fabric",
+        "azure.com:azsadmin-FabricLocation",
+        "azure.com:azsadmin-FileShare",
+        "azure.com:azsadmin-InfraRole",
+        "azure.com:azsadmin-InfraRoleInstance",
+        "azure.com:azsadmin-IpPool",
+        "azure.com:azsadmin-LogicalNetwork",
+        "azure.com:azsadmin-LogicalSubnet",
+        "azure.com:azsadmin-MacAddressPool",
+        "azure.com:azsadmin-NetworkOperationResults",
+        "azure.com:azsadmin-Operations",
+        "azure.com:azsadmin-ScaleUnit",
+        "azure.com:azsadmin-ScaleUnitNode",
+        "azure.com:azsadmin-SlbMuxInstance",
+        "azure.com:azsadmin-StorageOperationResults",
+        "azure.com:azsadmin-StoragePool",
+        "azure.com:azsadmin-StorageSubSystem",
+        "azure.com:azsadmin-StorageSystem",
+        "azure.com:azsadmin-Volume"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:gallerymanagementclient",
+      "api_ids": [
+        "azure.com:azsadmin-Gallery",
+        "azure.com:azsadmin-GalleryItem"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:guestconfiguration",
+      "api_ids": [
+        "azure.com:guestconfiguration",
+        "azure.com:guestconfiguration-guestconfiguration_NotImplemented"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:hdinsightmanagementclient",
+      "api_ids": [
+        "azure.com:hdinsight-applications",
+        "azure.com:hdinsight-capabilities",
+        "azure.com:hdinsight-cluster",
+        "azure.com:hdinsight-configurations",
+        "azure.com:hdinsight-extensions",
+        "azure.com:hdinsight-locations",
+        "azure.com:hdinsight-operations",
+        "azure.com:hdinsight-scriptActions"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:infrastructureinsightsmanagementclient",
+      "api_ids": [
+        "azure.com:azsadmin-Alert",
+        "azure.com:azsadmin-InfrastructureInsights",
+        "azure.com:azsadmin-RegionHealth",
+        "azure.com:azsadmin-ResourceHealth",
+        "azure.com:azsadmin-ServiceHealth"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:iotdpsclient",
+      "api_ids": [
+        "azure.com:deviceprovisioningservices-iotdps",
+        "azure.com:provisioningservices-iotdps"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:keyvaultmanagementclient",
+      "api_ids": [
+        "azure.com:azsadmin-KeyVault",
+        "azure.com:keyvault-providers",
+        "azure.com:keyvault-secrets"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:management groups",
+      "api_ids": [
+        "azure.com:managementgroups-management",
+        "azure.com:resources-management"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:mariadbmanagementclient",
+      "api_ids": [
+        "azure.com:mariadb",
+        "azure.com:mariadb-DataEncryptionKeys",
+        "azure.com:mariadb-PerformanceRecommendations",
+        "azure.com:mariadb-PrivateEndpointConnections",
+        "azure.com:mariadb-PrivateLinkResources",
+        "azure.com:mariadb-QueryPerformanceInsights"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:microsoft.resourcehealth",
+      "api_ids": [
+        "azure.com:resourcehealth",
+        "azure.com:resourcehealth-ResourceHealth"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:mixed reality",
+      "api_ids": [
+        "azure.com:mixedreality",
+        "azure.com:mixedreality-proxy",
+        "azure.com:mixedreality-remote-rendering",
+        "azure.com:mixedreality-spatial-anchors"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:monitormanagementclient",
+      "api_ids": [
+        "azure.com:monitor-activityLogs_API",
+        "azure.com:monitor-alertRulesIncidents_API",
+        "azure.com:monitor-alertRules_API",
+        "azure.com:monitor-autoscale_API",
+        "azure.com:monitor-baseline_API",
+        "azure.com:monitor-calculateBaseline_API",
+        "azure.com:monitor-diagnosticsSettingsCategories_API",
+        "azure.com:monitor-diagnosticsSettings_API",
+        "azure.com:monitor-eventCategories_API",
+        "azure.com:monitor-logProfiles_API",
+        "azure.com:monitor-metricAlert_API",
+        "azure.com:monitor-metricBaselines_API",
+        "azure.com:monitor-metricDefinitions_API",
+        "azure.com:monitor-metricNamespaces_API",
+        "azure.com:monitor-metrics_API",
+        "azure.com:monitor-operations_API",
+        "azure.com:monitor-serviceDiagnosticsSettings_API",
+        "azure.com:monitor-subscriptionDiagnosticsSettings_API",
+        "azure.com:monitor-tenantActivityLogs_API"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:mysqlmanagementclient",
+      "api_ids": [
+        "azure.com:mysql",
+        "azure.com:mysql-DataEncryptionKeys",
+        "azure.com:mysql-PerformanceRecommendations",
+        "azure.com:mysql-PrivateEndpointConnections",
+        "azure.com:mysql-PrivateLinkResources",
+        "azure.com:mysql-QueryPerformanceInsights"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:networkadminmanagementclient",
+      "api_ids": [
+        "azure.com:azsadmin-LoadBalancers",
+        "azure.com:azsadmin-Network",
+        "azure.com:azsadmin-PublicIpAddresses",
+        "azure.com:azsadmin-VirtualNetworks"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:networkmanagementclient",
+      "api_ids": [
+        "azure.com:network",
+        "azure.com:network-applicationGateway",
+        "azure.com:network-applicationSecurityGroup",
+        "azure.com:network-availableDelegations",
+        "azure.com:network-availableServiceAliases",
+        "azure.com:network-azureFirewall",
+        "azure.com:network-azureFirewallFqdnTag",
+        "azure.com:network-bastionHost",
+        "azure.com:network-checkDnsAvailability",
+        "azure.com:network-ddosCustomPolicy",
+        "azure.com:network-ddosProtectionPlan",
+        "azure.com:network-endpointService",
+        "azure.com:network-expressRouteCircuit",
+        "azure.com:network-expressRouteGateway",
+        "azure.com:network-expressRoutePort",
+        "azure.com:network-firewallPolicy",
+        "azure.com:network-interfaceEndpoint",
+        "azure.com:network-ipGroups",
+        "azure.com:network-loadBalancer",
+        "azure.com:network-natGateway",
+        "azure.com:network-networkInterface",
+        "azure.com:network-networkProfile",
+        "azure.com:network-networkSecurityGroup",
+        "azure.com:network-networkWatcher",
+        "azure.com:network-networkWatcherConnectionMonitorV1",
+        "azure.com:network-operation",
+        "azure.com:network-privateEndpoint",
+        "azure.com:network-privateLinkService",
+        "azure.com:network-publicIpAddress",
+        "azure.com:network-publicIpPrefix",
+        "azure.com:network-routeFilter",
+        "azure.com:network-routeTable",
+        "azure.com:network-serviceCommunity",
+        "azure.com:network-serviceEndpointPolicy",
+        "azure.com:network-serviceTags",
+        "azure.com:network-usage",
+        "azure.com:network-virtualNetwork",
+        "azure.com:network-virtualNetworkGateway",
+        "azure.com:network-virtualNetworkTap",
+        "azure.com:network-virtualRouter",
+        "azure.com:network-vmssNetworkInterface",
+        "azure.com:network-vmssPublicIpAddress"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:policyclient",
+      "api_ids": [
+        "azure.com:resources-policy",
+        "azure.com:resources-policyAssignments",
+        "azure.com:resources-policyDefinitions",
+        "azure.com:resources-policySetDefinitions"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:postgresqlmanagementclient",
+      "api_ids": [
+        "azure.com:postgresql",
+        "azure.com:postgresql-DataEncryptionKeys",
+        "azure.com:postgresql-PrivateEndpointConnections",
+        "azure.com:postgresql-PrivateLinkResources"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:recoveryservicesbackupclient",
+      "api_ids": [
+        "azure.com:recoveryservices-backup",
+        "azure.com:recoveryservicesbackup",
+        "azure.com:recoveryservicesbackup-backupManagement",
+        "azure.com:recoveryservicesbackup-bms",
+        "azure.com:recoveryservicesbackup-jobs",
+        "azure.com:recoveryservicesbackup-operations",
+        "azure.com:recoveryservicesbackup-registeredIdentities"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:recoveryservicesclient",
+      "api_ids": [
+        "azure.com:recoveryservices-registeredidentities",
+        "azure.com:recoveryservices-replicationusages",
+        "azure.com:recoveryservices-vaults",
+        "azure.com:recoveryservices-vaultusages"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:security center",
+      "api_ids": [
+        "azure.com:security",
+        "azure.com:security-adaptiveNetworkHardenings",
+        "azure.com:security-advancedThreatProtectionSettings",
+        "azure.com:security-alerts",
+        "azure.com:security-allowedConnections",
+        "azure.com:security-applicationWhitelistings",
+        "azure.com:security-assessmentMetadata",
+        "azure.com:security-assessments",
+        "azure.com:security-autoProvisioningSettings",
+        "azure.com:security-automations",
+        "azure.com:security-complianceResults",
+        "azure.com:security-compliances",
+        "azure.com:security-deviceSecurityGroups",
+        "azure.com:security-discoveredSecuritySolutions",
+        "azure.com:security-externalSecuritySolutions",
+        "azure.com:security-informationProtectionPolicies",
+        "azure.com:security-iotSecuritySolutionAnalytics",
+        "azure.com:security-iotSecuritySolutions",
+        "azure.com:security-jitNetworkAccessPolicies",
+        "azure.com:security-locations",
+        "azure.com:security-operations",
+        "azure.com:security-pricings",
+        "azure.com:security-regulatoryCompliance",
+        "azure.com:security-securityContacts",
+        "azure.com:security-serverVulnerabilityAssessments",
+        "azure.com:security-subAssessments",
+        "azure.com:security-tasks",
+        "azure.com:security-topologies",
+        "azure.com:security-workspaceSettings"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:servicebusmanagementclient",
+      "api_ids": [
+        "azure.com:servicebus",
+        "azure.com:servicebus-servicebus-preview"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:servicefabricmanagementclient",
+      "api_ids": [
+        "azure.com:servicefabric-application",
+        "azure.com:servicefabric-cluster"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:sqlmanagementclient",
+      "api_ids": [
+        "azure.com:sql-DatabaseSchema",
+        "azure.com:sql-DatabaseSecurityAlertPolicies",
+        "azure.com:sql-FailoverDatabases",
+        "azure.com:sql-FailoverElasticPools",
+        "azure.com:sql-ManagedBackupShortTermRetention",
+        "azure.com:sql-ManagedDatabaseSchema",
+        "azure.com:sql-ManagedDatabaseSecurityAlertPolicies",
+        "azure.com:sql-ManagedInstanceEncryptionProtectors",
+        "azure.com:sql-ManagedInstanceKeys",
+        "azure.com:sql-ManagedInstanceTdeCertificates",
+        "azure.com:sql-ManagedInstanceVulnerabilityAssessments",
+        "azure.com:sql-ManagedRestorableDroppedDatabaseBackupShortTermRetenion",
+        "azure.com:sql-ManagedServerSecurityAlertPolicy",
+        "azure.com:sql-PrivateEndpointConnections",
+        "azure.com:sql-PrivateLinkResources",
+        "azure.com:sql-ServerAzureADAdministrators",
+        "azure.com:sql-ServerVulnerabilityAssessments",
+        "azure.com:sql-TdeCertificates",
+        "azure.com:sql-WorkloadClassifiers",
+        "azure.com:sql-WorkloadGroups",
+        "azure.com:sql-advisors",
+        "azure.com:sql-blobAuditing",
+        "azure.com:sql-blobAuditingPolicies",
+        "azure.com:sql-cancelOperations",
+        "azure.com:sql-cancelPoolOperations",
+        "azure.com:sql-capabilities",
+        "azure.com:sql-dataWarehouseUserActivities",
+        "azure.com:sql-databaseAutomaticTuning",
+        "azure.com:sql-databaseVulnerabilityAssessmentBaselines",
+        "azure.com:sql-databaseVulnerabilityAssessmentScans",
+        "azure.com:sql-databaseVulnerabilityAssessments",
+        "azure.com:sql-databases",
+        "azure.com:sql-elasticPools",
+        "azure.com:sql-encryptionProtectors",
+        "azure.com:sql-failoverGroups",
+        "azure.com:sql-firewallRules",
+        "azure.com:sql-instanceFailoverGroups",
+        "azure.com:sql-instancePools",
+        "azure.com:sql-jobs",
+        "azure.com:sql-longTermRetention",
+        "azure.com:sql-managedDatabaseSensitivityLabels",
+        "azure.com:sql-managedDatabaseVulnerabilityAssesmentRuleBaselines",
+        "azure.com:sql-managedDatabaseVulnerabilityAssessmentScans",
+        "azure.com:sql-managedDatabaseVulnerabilityAssessments",
+        "azure.com:sql-managedDatabases",
+        "azure.com:sql-managedInstanceAdministrators",
+        "azure.com:sql-managedInstanceOperations",
+        "azure.com:sql-managedInstances",
+        "azure.com:sql-operations",
+        "azure.com:sql-recoverableManagedDatabases",
+        "azure.com:sql-renameDatabase",
+        "azure.com:sql-restorableDroppedManagedDatabases",
+        "azure.com:sql-restorePoints",
+        "azure.com:sql-sensitivityLabels",
+        "azure.com:sql-serverAutomaticTuning",
+        "azure.com:sql-serverDnsAliases",
+        "azure.com:sql-serverKeys",
+        "azure.com:sql-serverOperations",
+        "azure.com:sql-serverSecurityAlertPolicies",
+        "azure.com:sql-servers",
+        "azure.com:sql-shortTermRetentionPolicies",
+        "azure.com:sql-syncAgents",
+        "azure.com:sql-syncGroups",
+        "azure.com:sql-syncMembers",
+        "azure.com:sql-tableAuditing",
+        "azure.com:sql-usages",
+        "azure.com:sql-virtualNetworkRules",
+        "azure.com:sql-virtualclusters"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:storagemanagementclient",
+      "api_ids": [
+        "azure.com:azsadmin-acquisitions",
+        "azure.com:azsadmin-blobServices",
+        "azure.com:azsadmin-containers",
+        "azure.com:azsadmin-farms",
+        "azure.com:azsadmin-queueServices",
+        "azure.com:azsadmin-shares",
+        "azure.com:azsadmin-storage",
+        "azure.com:azsadmin-storageaccounts",
+        "azure.com:azsadmin-tableServices",
+        "azure.com:storage",
+        "azure.com:storage-blob",
+        "azure.com:storage-file",
+        "azure.com:storage-managementpolicy"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:streamanalyticsmanagementclient",
+      "api_ids": [
+        "azure.com:streamanalytics-functions",
+        "azure.com:streamanalytics-inputs",
+        "azure.com:streamanalytics-outputs",
+        "azure.com:streamanalytics-streamingjobs",
+        "azure.com:streamanalytics-subscriptions",
+        "azure.com:streamanalytics-transformations"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:subscriptionclient",
+      "api_ids": [
+        "azure.com:azsadmin-Offer",
+        "azure.com:azsadmin-Subscriptions",
+        "azure.com:resources-subscriptions",
+        "azure.com:subscription-operations",
+        "azure.com:subscription-subscriptions"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:subscriptionsmanagementclient",
+      "api_ids": [
+        "azure.com:azsadmin-AcquiredPlan",
+        "azure.com:azsadmin-DelegatedProvider",
+        "azure.com:azsadmin-DelegatedProviderOffer",
+        "azure.com:azsadmin-DirectoryTenant",
+        "azure.com:azsadmin-Location",
+        "azure.com:azsadmin-Manifest",
+        "azure.com:azsadmin-OfferDelegation",
+        "azure.com:azsadmin-Plan",
+        "azure.com:azsadmin-Quota"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:trafficmanagermanagementclient",
+      "api_ids": [
+        "azure.com:trafficmanager",
+        "azure.com:trafficmanager-trafficmanageranalytics"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:update management",
+      "api_ids": [
+        "azure.com:automation-softwareUpdateConfiguration",
+        "azure.com:automation-softwareUpdateConfigurationMachineRun",
+        "azure.com:automation-softwareUpdateConfigurationRun"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:updateadminclient",
+      "api_ids": [
+        "azure.com:azsadmin-Update",
+        "azure.com:azsadmin-UpdateLocations",
+        "azure.com:azsadmin-UpdateRuns"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "azure.com:visual studio projects resource provider client",
+      "api_ids": [
+        "azure.com:visualstudio-PipelineTemplates",
+        "azure.com:visualstudio-Projects"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "ebay.com:account api",
+      "api_ids": [
+        "api.ebay.com:sell-account",
+        "ebay.com:sell-account"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "ebay.com:compliance api",
+      "api_ids": [
+        "api.ebay.com:sell-compliance",
+        "ebay.com:sell-compliance"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "ebay.com:seller service metrics api",
+      "api_ids": [
+        "api.ebay.com:sell-analytics",
+        "ebay.com:sell-analytics"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "fungenerators.com:fun generators api",
+      "api_ids": [
+        "fungenerators.com:qrcode",
+        "fungenerators.com:riddle",
+        "fungenerators.com:trivia"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "github.com:github v3 rest api",
+      "api_ids": [
+        "github.com",
+        "github.com:api.github.com",
+        "github.com:api.github.com.2022-11-28",
+        "github.com:ghec",
+        "github.com:ghec.2022-11-28",
+        "github.com:ghes-2.18",
+        "github.com:ghes-2.19",
+        "github.com:ghes-2.20",
+        "github.com:ghes-2.21",
+        "github.com:ghes-2.22",
+        "github.com:ghes-3.0",
+        "github.com:ghes-3.1",
+        "github.com:ghes-3.2",
+        "github.com:ghes-3.3",
+        "github.com:ghes-3.4",
+        "github.com:ghes-3.5",
+        "github.com:ghes-3.6",
+        "github.com:ghes-3.7",
+        "github.com:ghes-3.8",
+        "github.com:github.ae"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "googleapis.com:cloud sql admin api",
+      "api_ids": [
+        "googleapis.com:sql",
+        "googleapis.com:sqladmin"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "googleapis.com:content api for shopping",
+      "api_ids": [
+        "googleapis.com:content",
+        "googleapis.com:shoppingcontent"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "googleapis.com:drive activity api",
+      "api_ids": [
+        "googleapis.com:appsactivity",
+        "googleapis.com:driveactivity"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "ideaconsult.net:enanomapper database",
+      "api_ids": [
+        "ideaconsult.net:enanomapper",
+        "ideaconsult.net:nanoreg"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "import.io:import.io",
+      "api_ids": [
+        "import.io:data",
+        "import.io:extraction",
+        "import.io:rss",
+        "import.io:run",
+        "import.io:schedule"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "microsoft.com:computer vision client",
+      "api_ids": [
+        "microsoft.com:cognitiveservices-ComputerVision",
+        "microsoft.com:cognitiveservices-Ocr"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "microsoft.com:odata service for namespace microsoft.graph",
+      "api_ids": [
+        "microsoft.com:graph",
+        "microsoft.com:graph-beta"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "nexmo.com:conversation api",
+      "api_ids": [
+        "nexmo.com:conversation",
+        "nexmo.com:conversation.v2"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "ote-godaddy.com:",
+      "api_ids": [
+        "ote-godaddy.com:abuse",
+        "ote-godaddy.com:aftermarket",
+        "ote-godaddy.com:agreements",
+        "ote-godaddy.com:certificates",
+        "ote-godaddy.com:countries",
+        "ote-godaddy.com:domains",
+        "ote-godaddy.com:orders",
+        "ote-godaddy.com:shoppers",
+        "ote-godaddy.com:subscriptions"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "redeal.io:redeal analytics api",
+      "api_ids": [
+        "redeal.io",
+        "redeal.io:analytics"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "seldon.local:seldon external api",
+      "api_ids": [
+        "seldon.local:core",
+        "seldon.local:engine",
+        "seldon.local:wrapper"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "twilio.com:twilio - chat",
+      "api_ids": [
+        "twilio.com:twilio_chat_v1",
+        "twilio.com:twilio_chat_v2",
+        "twilio.com:twilio_chat_v3"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "twilio.com:twilio - flex",
+      "api_ids": [
+        "twilio.com:twilio_flex_v1",
+        "twilio.com:twilio_flex_v2"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "twilio.com:twilio - ip_messaging",
+      "api_ids": [
+        "twilio.com:twilio_ip_messaging_v1",
+        "twilio.com:twilio_ip_messaging_v2"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "twilio.com:twilio - lookups",
+      "api_ids": [
+        "twilio.com:twilio_lookups_v1",
+        "twilio.com:twilio_lookups_v2"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "twilio.com:twilio - numbers",
+      "api_ids": [
+        "twilio.com:twilio_numbers_v1",
+        "twilio.com:twilio_numbers_v2"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "twilio.com:twilio - pricing",
+      "api_ids": [
+        "twilio.com:twilio_pricing_v1",
+        "twilio.com:twilio_pricing_v2"
+      ]
+    },
+    {
+      "kind": "provider_title_family",
+      "key": "twilio.com:twilio - studio",
+      "api_ids": [
+        "twilio.com:twilio_studio_v1",
+        "twilio.com:twilio_studio_v2"
+      ]
+    },
+    {
+      "kind": "fetched_exact_body_alias",
+      "research_id": "contract-853bdaf82394c9a254cfc349",
+      "digest": "5bfc6f788fc85fa641835b76175fe67402c7a387f06ef1fa0879d57cfcfc4306"
+    }
+  ],
+  "license_verified": 0,
+  "approved_packages": 0,
+  "loaded_packages": 0,
+  "ranked_output_sha256": "197dbbf51c097d5439331d15506b73e7a325568a6d36317b3c026b67ebb0b543",
+  "admitted_attempts": 920,
+  "acquisition_errors": {
+    "none": 901,
+    "response_too_large": 18
+  },
+  "acquisition_source_copy": "/home/username/.le-codex-research-cache/four-catalogues-20260923/contracts-20260923-1/collector-source-at-acquisition.py",
+  "report_correction": {
+    "supersedes": "contracts-counts-initial-1.json",
+    "reason": "One malformed source URL raised InvalidURL after budget admission but before transport logging. Preserve 920 admitted attempts separately from 919 recorded HTTP observations. No repeat requests.",
+    "current_collector_sha256": "51eed3f0739a2424934c00161ffb5c55ff60b785ecc83f65c96a2bb2509ecf10",
+    "ranked_predecessor": "contracts-ranked-initial-1.jsonl",
+    "additional_reason": "Discarded over-limit bodies have no body digest, not the digest of an empty transport buffer; request observations are bound by request_digest."
+  }
+}

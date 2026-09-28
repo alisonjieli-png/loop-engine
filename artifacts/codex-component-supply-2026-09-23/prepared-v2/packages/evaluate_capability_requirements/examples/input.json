@@ -1,0 +1,22 @@
+{
+  "required": [
+    "binary_bytes",
+    "hooks"
+  ],
+  "optional": [
+    "streaming"
+  ],
+  "observations": [
+    {
+      "capability": "binary_bytes",
+      "resolution": "native",
+      "evidence": "live_tested"
+    },
+    {
+      "capability": "hooks",
+      "resolution": "unsupported",
+      "evidence": "live_tested"
+    }
+  ],
+  "minimum_evidence": "dry_run_verified"
+}

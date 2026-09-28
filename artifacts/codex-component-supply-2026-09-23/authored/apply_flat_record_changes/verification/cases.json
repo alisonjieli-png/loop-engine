@@ -1,0 +1,402 @@
+[
+  {
+    "name": "replace_add_remove",
+    "input": {
+      "record": {
+        "a": 1,
+        "old": null
+      },
+      "changes": [
+        {
+          "key": "a",
+          "before": {
+            "present": true,
+            "value": 1
+          },
+          "after": {
+            "present": true,
+            "value": 2
+          }
+        },
+        {
+          "key": "new",
+          "before": {
+            "present": false
+          },
+          "after": {
+            "present": true,
+            "value": "x"
+          }
+        },
+        {
+          "key": "old",
+          "before": {
+            "present": true,
+            "value": null
+          },
+          "after": {
+            "present": false
+          }
+        }
+      ]
+    },
+    "expected": {
+      "ok": true,
+      "result": {
+        "applied": true,
+        "record": {
+          "a": 2,
+          "new": "x"
+        },
+        "changed_count": 3,
+        "conflicts": []
+      }
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "conflict_is_atomic",
+    "input": {
+      "record": {
+        "a": 1,
+        "b": 2
+      },
+      "changes": [
+        {
+          "key": "a",
+          "before": {
+            "present": true,
+            "value": 1
+          },
+          "after": {
+            "present": true,
+            "value": 7
+          }
+        },
+        {
+          "key": "b",
+          "before": {
+            "present": true,
+            "value": 9
+          },
+          "after": {
+            "present": false
+          }
+        }
+      ]
+    },
+    "expected": {
+      "ok": true,
+      "result": {
+        "applied": false,
+        "record": {
+          "a": 1,
+          "b": 2
+        },
+        "changed_count": 0,
+        "conflicts": [
+          {
+            "key": "b",
+            "expected": {
+              "present": true,
+              "value": 9
+            },
+            "actual": {
+              "present": true,
+              "value": 2
+            }
+          }
+        ]
+      }
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "null_is_present",
+    "input": {
+      "record": {
+        "a": null
+      },
+      "changes": [
+        {
+          "key": "a",
+          "before": {
+            "present": false
+          },
+          "after": {
+            "present": true,
+            "value": 1
+          }
+        }
+      ]
+    },
+    "expected": {
+      "ok": true,
+      "result": {
+        "applied": false,
+        "record": {
+          "a": null
+        },
+        "changed_count": 0,
+        "conflicts": [
+          {
+            "key": "a",
+            "expected": {
+              "present": false
+            },
+            "actual": {
+              "present": true,
+              "value": null
+            }
+          }
+        ]
+      }
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "boolean_differs_from_number",
+    "input": {
+      "record": {
+        "a": true
+      },
+      "changes": [
+        {
+          "key": "a",
+          "before": {
+            "present": true,
+            "value": 1
+          },
+          "after": {
+            "present": true,
+            "value": 2
+          }
+        }
+      ]
+    },
+    "expected": {
+      "ok": true,
+      "result": {
+        "applied": false,
+        "record": {
+          "a": true
+        },
+        "changed_count": 0,
+        "conflicts": [
+          {
+            "key": "a",
+            "expected": {
+              "present": true,
+              "value": 1
+            },
+            "actual": {
+              "present": true,
+              "value": true
+            }
+          }
+        ]
+      }
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "integral_noop",
+    "input": {
+      "record": {
+        "a": 1.0
+      },
+      "changes": [
+        {
+          "key": "a",
+          "before": {
+            "present": true,
+            "value": 1
+          },
+          "after": {
+            "present": true,
+            "value": 1.0
+          }
+        }
+      ]
+    },
+    "expected": {
+      "ok": true,
+      "result": {
+        "applied": true,
+        "record": {
+          "a": 1
+        },
+        "changed_count": 0,
+        "conflicts": []
+      }
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "empty_changes",
+    "input": {
+      "record": {},
+      "changes": []
+    },
+    "expected": {
+      "ok": true,
+      "result": {
+        "applied": true,
+        "record": {},
+        "changed_count": 0,
+        "conflicts": []
+      }
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "duplicate_change_key",
+    "input": {
+      "record": {},
+      "changes": [
+        {
+          "key": "a",
+          "before": {
+            "present": false
+          },
+          "after": {
+            "present": true,
+            "value": 1
+          }
+        },
+        {
+          "key": "a",
+          "before": {
+            "present": false
+          },
+          "after": {
+            "present": true,
+            "value": 2
+          }
+        }
+      ]
+    },
+    "expected": {
+      "ok": false,
+      "error": {
+        "code": "invalid_input"
+      }
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "absent_state_cannot_hold_value",
+    "input": {
+      "record": {},
+      "changes": [
+        {
+          "key": "a",
+          "before": {
+            "present": false,
+            "value": null
+          },
+          "after": {
+            "present": false
+          }
+        }
+      ]
+    },
+    "expected": {
+      "ok": false,
+      "error": {
+        "code": "invalid_input"
+      }
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "result_field_ceiling",
+    "input": {
+      "record": {
+        "k0": 0,
+        "k1": 1,
+        "k2": 2,
+        "k3": 3,
+        "k4": 4,
+        "k5": 5,
+        "k6": 6,
+        "k7": 7,
+        "k8": 8,
+        "k9": 9,
+        "k10": 10,
+        "k11": 11,
+        "k12": 12,
+        "k13": 13,
+        "k14": 14,
+        "k15": 15,
+        "k16": 16,
+        "k17": 17,
+        "k18": 18,
+        "k19": 19,
+        "k20": 20,
+        "k21": 21,
+        "k22": 22,
+        "k23": 23,
+        "k24": 24,
+        "k25": 25,
+        "k26": 26,
+        "k27": 27,
+        "k28": 28,
+        "k29": 29,
+        "k30": 30,
+        "k31": 31
+      },
+      "changes": [
+        {
+          "key": "extra",
+          "before": {
+            "present": false
+          },
+          "after": {
+            "present": true,
+            "value": 1
+          }
+        }
+      ]
+    },
+    "expected": {
+      "ok": false,
+      "error": {
+        "code": "invalid_input"
+      }
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "nested_value",
+    "input": {
+      "record": {
+        "a": []
+      },
+      "changes": []
+    },
+    "expected": {
+      "ok": false,
+      "error": {
+        "code": "invalid_input"
+      }
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "zero_with_large_exponent_is_still_zero",
+    "raw_input": "{\"record\":{\"n\":0e1000000000000000000},\"changes\":[]}",
+    "expected": {
+      "ok": true,
+      "result": {
+        "applied": true,
+        "record": {
+          "n": 0
+        },
+        "changed_count": 0,
+        "conflicts": []
+      }
+    },
+    "expected_exit": 0
+  }
+]

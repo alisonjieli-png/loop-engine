@@ -1,0 +1,1 @@
+First verification attempt executed the initial case in bwrap, then failed while reporting length: canonical run_command.stdout is bytes, but the new verifier called .encode on it. No candidate source was changed. The corrected verifier uses byte length directly. No complete pass/fail report was produced by that attempt.

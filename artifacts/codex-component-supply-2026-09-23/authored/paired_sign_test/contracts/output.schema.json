@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "wins": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 128
+    },
+    "losses": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 128
+    },
+    "ties": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 128
+    },
+    "missing": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 128
+    },
+    "evaluated": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 128
+    },
+    "p_two_sided": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "numerator": {
+              "type": "string",
+              "pattern": "^[0-9]+(?![\\s\\S])"
+            },
+            "denominator": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*(?![\\s\\S])"
+            }
+          },
+          "required": [
+            "numerator",
+            "denominator"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    }
+  },
+  "required": [
+    "wins",
+    "losses",
+    "ties",
+    "missing",
+    "evaluated",
+    "p_two_sided"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,38 @@
+{
+  "ok": true,
+  "result": {
+    "left_count": 3,
+    "right_count": 2,
+    "equal": false,
+    "common": [
+      {
+        "row": {
+          "x": 1
+        },
+        "count": 1
+      }
+    ],
+    "left_only": [
+      {
+        "row": {
+          "x": 1
+        },
+        "count": 1
+      },
+      {
+        "row": {
+          "x": 2
+        },
+        "count": 1
+      }
+    ],
+    "right_only": [
+      {
+        "row": {
+          "x": 3
+        },
+        "count": 1
+      }
+    ]
+  }
+}

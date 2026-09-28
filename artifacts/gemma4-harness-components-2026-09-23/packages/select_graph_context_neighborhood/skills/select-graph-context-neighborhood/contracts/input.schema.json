@@ -1,0 +1,120 @@
+{
+  "type": "object",
+  "properties": {
+    "record_type": {
+      "const": "select_graph_context_neighborhood_request/v1"
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128,
+        "not": {
+          "pattern": "[\\x00-\\x1f\\x7f]"
+        }
+      },
+      "minItems": 0,
+      "maxItems": 512,
+      "uniqueItems": true
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "not": {
+              "pattern": "[\\x00-\\x1f\\x7f]"
+            }
+          },
+          "target": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "not": {
+              "pattern": "[\\x00-\\x1f\\x7f]"
+            }
+          },
+          "kind": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "not": {
+              "pattern": "[\\x00-\\x1f\\x7f]"
+            }
+          }
+        },
+        "required": [
+          "source",
+          "target",
+          "kind"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 0,
+      "maxItems": 2048,
+      "uniqueItems": true
+    },
+    "seeds": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128,
+        "not": {
+          "pattern": "[\\x00-\\x1f\\x7f]"
+        }
+      },
+      "minItems": 1,
+      "maxItems": 32,
+      "uniqueItems": true
+    },
+    "direction": {
+      "enum": [
+        "outgoing",
+        "incoming",
+        "both"
+      ]
+    },
+    "edge_types": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128,
+        "not": {
+          "pattern": "[\\x00-\\x1f\\x7f]"
+        }
+      },
+      "minItems": 0,
+      "maxItems": 32,
+      "uniqueItems": true
+    },
+    "node_budget": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 256
+    },
+    "max_hops": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 32
+    }
+  },
+  "required": [
+    "record_type",
+    "nodes",
+    "edges",
+    "seeds",
+    "direction",
+    "edge_types",
+    "node_budget",
+    "max_hops"
+  ],
+  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

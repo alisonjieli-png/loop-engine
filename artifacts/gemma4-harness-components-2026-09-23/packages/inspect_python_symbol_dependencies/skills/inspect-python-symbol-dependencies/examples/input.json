@@ -1,0 +1,11 @@
+{
+  "record_type": "inspect_python_symbol_dependencies_request/v1",
+  "syntax_profile": "python_ast_feature_3_10/v1",
+  "files": [
+    {
+      "path": "m.py",
+      "module": "m",
+      "source": "def f(): pass\nf()\n"
+    }
+  ]
+}

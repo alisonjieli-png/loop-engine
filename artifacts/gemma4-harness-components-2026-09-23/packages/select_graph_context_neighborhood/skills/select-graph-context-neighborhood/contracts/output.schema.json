@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "record_type": {
+          "const": "select_graph_context_neighborhood_result/v1"
+        },
+        "coverage": {
+          "const": "bounded_neighborhood"
+        },
+        "selected": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128,
+                "not": {
+                  "pattern": "[\\x00-\\x1f\\x7f]"
+                }
+              },
+              "distance": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 32
+              }
+            },
+            "required": [
+              "id",
+              "distance"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 0,
+          "maxItems": 256
+        },
+        "selected_edges": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "source": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128,
+                "not": {
+                  "pattern": "[\\x00-\\x1f\\x7f]"
+                }
+              },
+              "target": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128,
+                "not": {
+                  "pattern": "[\\x00-\\x1f\\x7f]"
+                }
+              },
+              "kind": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128,
+                "not": {
+                  "pattern": "[\\x00-\\x1f\\x7f]"
+                }
+              }
+            },
+            "required": [
+              "source",
+              "target",
+              "kind"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 0,
+          "maxItems": 2048
+        },
+        "adjacent_omissions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128,
+                "not": {
+                  "pattern": "[\\x00-\\x1f\\x7f]"
+                }
+              },
+              "distance": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 33
+              },
+              "reason": {
+                "enum": [
+                  "node_budget",
+                  "hop_limit"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "distance",
+              "reason"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 0,
+          "maxItems": 512
+        },
+        "not_selected_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 512
+        }
+      },
+      "required": [
+        "record_type",
+        "coverage",
+        "selected",
+        "selected_edges",
+        "adjacent_omissions",
+        "not_selected_count"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "error": {
+          "enum": [
+            "invalid_input",
+            "output_limit_exceeded",
+            "seed_budget_exceeded"
+          ]
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "additionalProperties": false
+    }
+  ]
+}

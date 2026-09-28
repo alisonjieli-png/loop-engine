@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/home/username/loop-engine/artifacts/harness-source-research-2026-09-23/test_research_index.py", line 9, in <module>
+    from research_index import ResearchIndexError, build_index, query_index, validate_rows, public_source_url
+ModuleNotFoundError: No module named 'research_index'

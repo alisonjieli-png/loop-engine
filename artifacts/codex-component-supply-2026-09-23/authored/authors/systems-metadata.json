@@ -1,0 +1,324 @@
+{
+  "compare_file_inventories": {
+    "title": "Compare supplied file inventories",
+    "purpose": "Compare two explicit file inventories by exact relative path and supplied SHA-256, size and executable metadata. Report changes without reading files or guessing renames.",
+    "search_tags": [
+      "inventory",
+      "file_manifest",
+      "digest_diff",
+      "metadata",
+      "deterministic"
+    ],
+    "dependencies": [
+      {
+        "name": "Python",
+        "version": ">=3.10",
+        "scope": "interpreter",
+        "standard_library_only": true
+      }
+    ],
+    "declared_effects": [
+      "spawns_process"
+    ],
+    "sourcebasis": {
+      "kind": "first_party_original",
+      "producer": "Codex",
+      "producer_family": "openai",
+      "method_identity": "codex_original_working_directory_components/v1",
+      "canonical_source_revision": "231f51bb1facab517fbe915b08ea9ac85f913347",
+      "framing_reuse": "First-party bounded JSON framing from artifacts/mixed-native-originals-contract-v2-2026-09-23/author_packages.py; algorithms authored for these contracts; no outside implementation copied."
+    },
+    "limits": {
+      "input_utf8_bytes": 65536,
+      "output_utf8_bytes_including_lf": 131072,
+      "container_depth": 16,
+      "numeric_literal_characters": 128
+    },
+    "methodinterface": {
+      "record_type": "bounded_json_cli_method/v1",
+      "input_record_type": "compare_file_inventories_request/v1",
+      "output_record_type": "compare_file_inventories_result/v1",
+      "entrypoint": "tools/compare_file_inventories.py",
+      "input": "UTF-8 JSON stdin",
+      "output": "UTF-8 JSON stdout plus LF",
+      "success_exit": 0,
+      "refusal_exit": 2,
+      "error_codes": [
+        "invalid_input",
+        "output_limit_exceeded"
+      ]
+    },
+    "status": "candidate",
+    "native_qualification": "unqualified",
+    "approved": false
+  },
+  "resolve_selected_dependency_closure": {
+    "title": "Resolve an exact selected dependency closure",
+    "purpose": "Find the transitive closure of selected exact package IDs and report cycles; refuse a missing reachable dependency without choosing versions or downloading material.",
+    "search_tags": [
+      "dependency_graph",
+      "closure",
+      "selected_packages",
+      "missing_dependency",
+      "cycles"
+    ],
+    "dependencies": [
+      {
+        "name": "Python",
+        "version": ">=3.10",
+        "scope": "interpreter",
+        "standard_library_only": true
+      }
+    ],
+    "declared_effects": [
+      "spawns_process"
+    ],
+    "sourcebasis": {
+      "kind": "first_party_original",
+      "producer": "Codex",
+      "producer_family": "openai",
+      "method_identity": "codex_original_working_directory_components/v1",
+      "canonical_source_revision": "231f51bb1facab517fbe915b08ea9ac85f913347",
+      "framing_reuse": "First-party bounded JSON framing from artifacts/mixed-native-originals-contract-v2-2026-09-23/author_packages.py; algorithms authored for these contracts; no outside implementation copied."
+    },
+    "limits": {
+      "input_utf8_bytes": 65536,
+      "output_utf8_bytes_including_lf": 131072,
+      "container_depth": 16,
+      "numeric_literal_characters": 128
+    },
+    "methodinterface": {
+      "record_type": "bounded_json_cli_method/v1",
+      "input_record_type": "resolve_selected_dependency_closure_request/v1",
+      "output_record_type": "resolve_selected_dependency_closure_result/v1",
+      "entrypoint": "tools/resolve_selected_dependency_closure.py",
+      "input": "UTF-8 JSON stdin",
+      "output": "UTF-8 JSON stdout plus LF",
+      "success_exit": 0,
+      "refusal_exit": 2,
+      "error_codes": [
+        "invalid_input",
+        "output_limit_exceeded",
+        "missing_dependency"
+      ]
+    },
+    "status": "candidate",
+    "native_qualification": "unqualified",
+    "approved": false
+  },
+  "assign_digest_shards": {
+    "title": "Assign exact IDs to digest shards",
+    "purpose": "Assign supplied IDs to a fixed shard count using the entire SHA-256 digest of each exact UTF-8 ID modulo the shard count.",
+    "search_tags": [
+      "sha256",
+      "sharding",
+      "partition_assignment",
+      "fixed_bucket_count",
+      "utf8"
+    ],
+    "dependencies": [
+      {
+        "name": "Python",
+        "version": ">=3.10",
+        "scope": "interpreter",
+        "standard_library_only": true
+      }
+    ],
+    "declared_effects": [
+      "spawns_process"
+    ],
+    "sourcebasis": {
+      "kind": "first_party_original",
+      "producer": "Codex",
+      "producer_family": "openai",
+      "method_identity": "codex_original_working_directory_components/v1",
+      "canonical_source_revision": "231f51bb1facab517fbe915b08ea9ac85f913347",
+      "framing_reuse": "First-party bounded JSON framing from artifacts/mixed-native-originals-contract-v2-2026-09-23/author_packages.py; algorithms authored for these contracts; no outside implementation copied."
+    },
+    "limits": {
+      "input_utf8_bytes": 65536,
+      "output_utf8_bytes_including_lf": 131072,
+      "container_depth": 16,
+      "numeric_literal_characters": 128
+    },
+    "methodinterface": {
+      "record_type": "bounded_json_cli_method/v1",
+      "input_record_type": "assign_digest_shards_request/v1",
+      "output_record_type": "assign_digest_shards_result/v1",
+      "entrypoint": "tools/assign_digest_shards.py",
+      "input": "UTF-8 JSON stdin",
+      "output": "UTF-8 JSON stdout plus LF",
+      "success_exit": 0,
+      "refusal_exit": 2,
+      "error_codes": [
+        "invalid_input",
+        "output_limit_exceeded"
+      ]
+    },
+    "status": "candidate",
+    "native_qualification": "unqualified",
+    "approved": false
+  },
+  "validate_event_precedence": {
+    "title": "Validate declared event precedence",
+    "purpose": "Check strictly-before constraints against one supplied event-ID sequence, reporting missing IDs and order violations without inferring causality or using timestamps.",
+    "search_tags": [
+      "event_sequence",
+      "precedence",
+      "validation",
+      "before_after",
+      "workflow_evidence"
+    ],
+    "dependencies": [
+      {
+        "name": "Python",
+        "version": ">=3.10",
+        "scope": "interpreter",
+        "standard_library_only": true
+      }
+    ],
+    "declared_effects": [
+      "spawns_process"
+    ],
+    "sourcebasis": {
+      "kind": "first_party_original",
+      "producer": "Codex",
+      "producer_family": "openai",
+      "method_identity": "codex_original_working_directory_components/v1",
+      "canonical_source_revision": "231f51bb1facab517fbe915b08ea9ac85f913347",
+      "framing_reuse": "First-party bounded JSON framing from artifacts/mixed-native-originals-contract-v2-2026-09-23/author_packages.py; algorithms authored for these contracts; no outside implementation copied."
+    },
+    "limits": {
+      "input_utf8_bytes": 65536,
+      "output_utf8_bytes_including_lf": 131072,
+      "container_depth": 16,
+      "numeric_literal_characters": 128
+    },
+    "methodinterface": {
+      "record_type": "bounded_json_cli_method/v1",
+      "input_record_type": "validate_event_precedence_request/v1",
+      "output_record_type": "validate_event_precedence_result/v1",
+      "entrypoint": "tools/validate_event_precedence.py",
+      "input": "UTF-8 JSON stdin",
+      "output": "UTF-8 JSON stdout plus LF",
+      "success_exit": 0,
+      "refusal_exit": 2,
+      "error_codes": [
+        "invalid_input",
+        "output_limit_exceeded"
+      ]
+    },
+    "status": "candidate",
+    "native_qualification": "unqualified",
+    "approved": false
+  },
+  "apply_nonoverlapping_text_edits": {
+    "title": "Apply simultaneous nonoverlapping text edits",
+    "purpose": "Apply a bounded batch of edits against the original string using Unicode-codepoint positions, optionally checking its exact UTF-8 SHA-256 first.",
+    "search_tags": [
+      "text_edit",
+      "simultaneous_edits",
+      "unicode_codepoints",
+      "digest_anchor",
+      "nonoverlap"
+    ],
+    "dependencies": [
+      {
+        "name": "Python",
+        "version": ">=3.10",
+        "scope": "interpreter",
+        "standard_library_only": true
+      }
+    ],
+    "declared_effects": [
+      "spawns_process"
+    ],
+    "sourcebasis": {
+      "kind": "first_party_original",
+      "producer": "Codex",
+      "producer_family": "openai",
+      "method_identity": "codex_original_working_directory_components/v1",
+      "canonical_source_revision": "231f51bb1facab517fbe915b08ea9ac85f913347",
+      "framing_reuse": "First-party bounded JSON framing from artifacts/mixed-native-originals-contract-v2-2026-09-23/author_packages.py; algorithms authored for these contracts; no outside implementation copied."
+    },
+    "limits": {
+      "input_utf8_bytes": 65536,
+      "output_utf8_bytes_including_lf": 131072,
+      "container_depth": 16,
+      "numeric_literal_characters": 128
+    },
+    "methodinterface": {
+      "record_type": "bounded_json_cli_method/v1",
+      "input_record_type": "apply_nonoverlapping_text_edits_request/v1",
+      "output_record_type": "apply_nonoverlapping_text_edits_result/v1",
+      "entrypoint": "tools/apply_nonoverlapping_text_edits.py",
+      "input": "UTF-8 JSON stdin",
+      "output": "UTF-8 JSON stdout plus LF",
+      "success_exit": 0,
+      "refusal_exit": 2,
+      "error_codes": [
+        "invalid_input",
+        "output_limit_exceeded",
+        "source_digest_mismatch",
+        "overlapping_edits"
+      ]
+    },
+    "status": "candidate",
+    "native_qualification": "unqualified",
+    "approved": false
+  },
+  "detect_portable_path_collisions": {
+    "title": "Detect abstract portable path collisions",
+    "purpose": "Report exact, Unicode-normalization/casefold and parent-file path collisions under one explicitly named abstract comparison model.",
+    "search_tags": [
+      "portable_paths",
+      "unicode_normalization",
+      "casefold",
+      "path_collision",
+      "parent_file_conflict"
+    ],
+    "dependencies": [
+      {
+        "name": "Python",
+        "version": ">=3.10",
+        "scope": "interpreter",
+        "standard_library_only": true
+      }
+    ],
+    "declared_effects": [
+      "spawns_process"
+    ],
+    "sourcebasis": {
+      "kind": "first_party_original",
+      "producer": "Codex",
+      "producer_family": "openai",
+      "method_identity": "codex_original_working_directory_components/v1",
+      "canonical_source_revision": "231f51bb1facab517fbe915b08ea9ac85f913347",
+      "framing_reuse": "First-party bounded JSON framing from artifacts/mixed-native-originals-contract-v2-2026-09-23/author_packages.py; algorithms authored for these contracts; no outside implementation copied."
+    },
+    "limits": {
+      "input_utf8_bytes": 65536,
+      "output_utf8_bytes_including_lf": 131072,
+      "container_depth": 16,
+      "numeric_literal_characters": 128
+    },
+    "methodinterface": {
+      "record_type": "bounded_json_cli_method/v1",
+      "input_record_type": "detect_portable_path_collisions_request/v1",
+      "output_record_type": "detect_portable_path_collisions_result/v1",
+      "entrypoint": "tools/detect_portable_path_collisions.py",
+      "input": "UTF-8 JSON stdin",
+      "output": "UTF-8 JSON stdout plus LF",
+      "success_exit": 0,
+      "refusal_exit": 2,
+      "error_codes": [
+        "invalid_input",
+        "output_limit_exceeded",
+        "unicode_version_mismatch"
+      ]
+    },
+    "status": "candidate",
+    "native_qualification": "unqualified",
+    "approved": false
+  }
+}

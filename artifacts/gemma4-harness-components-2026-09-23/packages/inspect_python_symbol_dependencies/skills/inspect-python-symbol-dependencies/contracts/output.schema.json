@@ -1,0 +1,497 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "record_type": {
+          "const": "inspect_python_symbol_dependencies_result/v1"
+        },
+        "syntax_profile": {
+          "const": "python_ast_feature_3_10/v1"
+        },
+        "complete_runtime_dependency_graph": {
+          "const": false
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "path": {
+                "type": "string",
+                "minLength": 4,
+                "maxLength": 256,
+                "pattern": "^(?!/)(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*//)[^\\\\\\x00-\\x1f\\x7f]+\\.py$",
+                "not": {
+                  "pattern": "[\\x00-\\x1f\\x7f]"
+                }
+              },
+              "module": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128,
+                "pattern": "^[A-Za-z_][A-Za-z0-9_]*(?:\\.[A-Za-z_][A-Za-z0-9_]*)*$"
+              },
+              "source_sha256": {
+                "type": "string",
+                "minLength": 64,
+                "maxLength": 64,
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "parse_status": {
+                "enum": [
+                  "parsed",
+                  "syntax_error",
+                  "analysis_limit"
+                ]
+              },
+              "error_line": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 16385
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "path",
+              "module",
+              "source_sha256",
+              "parse_status",
+              "error_line"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 0,
+          "maxItems": 16
+        },
+        "symbols": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128,
+                "not": {
+                  "pattern": "[\\x00-\\x1f\\x7f]"
+                }
+              },
+              "module": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128,
+                "pattern": "^[A-Za-z_][A-Za-z0-9_]*(?:\\.[A-Za-z_][A-Za-z0-9_]*)*$"
+              },
+              "path": {
+                "type": "string",
+                "minLength": 4,
+                "maxLength": 256,
+                "pattern": "^(?!/)(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*//)[^\\\\\\x00-\\x1f\\x7f]+\\.py$",
+                "not": {
+                  "pattern": "[\\x00-\\x1f\\x7f]"
+                }
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 16384,
+                "not": {
+                  "pattern": "[\\x00-\\x1f\\x7f]"
+                }
+              },
+              "lexical_name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 16384,
+                "not": {
+                  "pattern": "[\\x00-\\x1f\\x7f]"
+                }
+              },
+              "kind": {
+                "enum": [
+                  "module",
+                  "function",
+                  "async_function",
+                  "class"
+                ]
+              },
+              "owner_id": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128,
+                    "not": {
+                      "pattern": "[\\x00-\\x1f\\x7f]"
+                    }
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "line": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 16385
+              },
+              "column_utf8": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 65536
+              },
+              "end_line": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 16385
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "end_column_utf8": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 65536
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "module",
+              "path",
+              "name",
+              "lexical_name",
+              "kind",
+              "owner_id",
+              "line",
+              "column_utf8",
+              "end_line",
+              "end_column_utf8"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 0,
+          "maxItems": 2048
+        },
+        "imports": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "module": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128,
+                "pattern": "^[A-Za-z_][A-Za-z0-9_]*(?:\\.[A-Za-z_][A-Za-z0-9_]*)*$"
+              },
+              "path": {
+                "type": "string",
+                "minLength": 4,
+                "maxLength": 256,
+                "pattern": "^(?!/)(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*//)[^\\\\\\x00-\\x1f\\x7f]+\\.py$",
+                "not": {
+                  "pattern": "[\\x00-\\x1f\\x7f]"
+                }
+              },
+              "owner_id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128,
+                "not": {
+                  "pattern": "[\\x00-\\x1f\\x7f]"
+                }
+              },
+              "line": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 16385
+              },
+              "column_utf8": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 65536
+              },
+              "evaluation_context": {
+                "enum": [
+                  "module",
+                  "definition_time",
+                  "function_body",
+                  "class_body"
+                ]
+              },
+              "requested_module": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 16384,
+                    "not": {
+                      "pattern": "[\\x00-\\x1f\\x7f]"
+                    }
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "imported_name": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 16384,
+                    "not": {
+                      "pattern": "[\\x00-\\x1f\\x7f]"
+                    }
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "asname": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 16384,
+                    "not": {
+                      "pattern": "[\\x00-\\x1f\\x7f]"
+                    }
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "level": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 16384
+              },
+              "candidate_module_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "not": {
+                    "pattern": "[\\x00-\\x1f\\x7f]"
+                  }
+                },
+                "minItems": 0,
+                "maxItems": 16
+              },
+              "resolution": {
+                "enum": [
+                  "candidate",
+                  "unresolved"
+                ]
+              }
+            },
+            "required": [
+              "module",
+              "path",
+              "owner_id",
+              "line",
+              "column_utf8",
+              "evaluation_context",
+              "requested_module",
+              "imported_name",
+              "asname",
+              "level",
+              "candidate_module_ids",
+              "resolution"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 0,
+          "maxItems": 2048
+        },
+        "calls": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "module": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128,
+                "pattern": "^[A-Za-z_][A-Za-z0-9_]*(?:\\.[A-Za-z_][A-Za-z0-9_]*)*$"
+              },
+              "path": {
+                "type": "string",
+                "minLength": 4,
+                "maxLength": 256,
+                "pattern": "^(?!/)(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*//)[^\\\\\\x00-\\x1f\\x7f]+\\.py$",
+                "not": {
+                  "pattern": "[\\x00-\\x1f\\x7f]"
+                }
+              },
+              "owner_id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128,
+                "not": {
+                  "pattern": "[\\x00-\\x1f\\x7f]"
+                }
+              },
+              "line": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 16385
+              },
+              "column_utf8": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 65536
+              },
+              "end_line": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 16385
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "end_column_utf8": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 65536
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "callee": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 16384,
+                    "not": {
+                      "pattern": "[\\x00-\\x1f\\x7f]"
+                    }
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "evaluation_context": {
+                "enum": [
+                  "module",
+                  "definition_time",
+                  "function_body",
+                  "class_body"
+                ]
+              },
+              "resolution": {
+                "enum": [
+                  "candidate",
+                  "unresolved",
+                  "dynamic"
+                ]
+              },
+              "reason": {
+                "enum": [
+                  "name_definition_candidate",
+                  "local_binding_may_shadow",
+                  "ambiguous_or_rebound",
+                  "name_not_indexed",
+                  "attribute_requires_runtime",
+                  "callee_expression_requires_runtime"
+                ]
+              },
+              "same_module_definition_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "not": {
+                    "pattern": "[\\x00-\\x1f\\x7f]"
+                  }
+                },
+                "minItems": 0,
+                "maxItems": 2048
+              },
+              "certain": {
+                "const": false
+              }
+            },
+            "required": [
+              "module",
+              "path",
+              "owner_id",
+              "line",
+              "column_utf8",
+              "end_line",
+              "end_column_utf8",
+              "callee",
+              "evaluation_context",
+              "resolution",
+              "reason",
+              "same_module_definition_ids",
+              "certain"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 0,
+          "maxItems": 2048
+        }
+      },
+      "required": [
+        "record_type",
+        "syntax_profile",
+        "complete_runtime_dependency_graph",
+        "files",
+        "symbols",
+        "imports",
+        "calls"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "error": {
+          "enum": [
+            "invalid_input",
+            "output_limit_exceeded",
+            "fact_limit_exceeded"
+          ]
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "additionalProperties": false
+    }
+  ]
+}

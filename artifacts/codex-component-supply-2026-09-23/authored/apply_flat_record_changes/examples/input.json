@@ -1,0 +1,39 @@
+{
+  "record": {
+    "a": 1,
+    "old": null
+  },
+  "changes": [
+    {
+      "key": "a",
+      "before": {
+        "present": true,
+        "value": 1
+      },
+      "after": {
+        "present": true,
+        "value": 2
+      }
+    },
+    {
+      "key": "new",
+      "before": {
+        "present": false
+      },
+      "after": {
+        "present": true,
+        "value": "x"
+      }
+    },
+    {
+      "key": "old",
+      "before": {
+        "present": true,
+        "value": null
+      },
+      "after": {
+        "present": false
+      }
+    }
+  ]
+}

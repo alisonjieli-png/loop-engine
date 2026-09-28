@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "reconcile_keyed_tables input",
+  "$comment": "Raw transport constraints: one UTF-8 JSON object; input at most262144bytes, output at most524288bytes including newline. Duplicate object keys, nonfinite numbers, unpaired Unicode surrogates, decoded depth>8 or more than50000 decoded values refuse. JSON numeric tokens are at most128characters and must represent exact integers within+-1000000000000; integral decimal/exponent spellings are accepted. Structural schemas do not encode byte ceilings or stated cross-field conditions.",
+  "type": "object",
+  "properties": {
+    "key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "left": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "propertyNames": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "additionalProperties": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "integer",
+              "minimum": -1000000000000,
+              "maximum": 1000000000000
+            },
+            {
+              "type": "string",
+              "maxLength": 256
+            }
+          ]
+        },
+        "maxProperties": 32
+      },
+      "maxItems": 256
+    },
+    "right": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "propertyNames": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "additionalProperties": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "integer",
+              "minimum": -1000000000000,
+              "maximum": 1000000000000
+            },
+            {
+              "type": "string",
+              "maxLength": 256
+            }
+          ]
+        },
+        "maxProperties": 32
+      },
+      "maxItems": 256
+    }
+  },
+  "required": [
+    "key",
+    "left",
+    "right"
+  ],
+  "additionalProperties": false,
+  "description": "One-to-one keyed reconciliation. Every row must contain the selected key as a nonempty string or bounded integer (not Boolean/null); typed key identities are unique within each side. Numeric1 and1.0 are the same key; string1 differs. Matches and left_only follow left input order; right_only follows right order. Pair indices refer to original arrays. Changed_fields are sorted non-key field names whose presence or typed scalar value differs; missing differs from null. No duplicate aggregation or Cartesian join."
+}

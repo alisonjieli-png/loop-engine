@@ -1,0 +1,29 @@
+.E........E....
+======================================================================
+ERROR: test_api_license_object_is_preserved_as_unverified_metadata (__main__.ResearchIndexControls)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/loop-engine/artifacts/harness-source-research-2026-09-23/test_research_index.py", line 118, in test_api_license_object_is_preserved_as_unverified_metadata
+    self.assertEqual(validate_rows(rows,'tool')[0]['license_reported'],rows[0]['license_reported'])
+  File "/home/username/loop-engine/artifacts/harness-source-research-2026-09-23/research_index.py", line 121, in validate_rows
+    need(row.get('license_reported') is None or isinstance(row.get('license_reported'),str),'rights_metadata_invalid')
+  File "/home/username/loop-engine/artifacts/harness-source-research-2026-09-23/research_index.py", line 43, in need
+    raise ResearchIndexError(code)
+research_index.ResearchIndexError: rights_metadata_invalid
+
+======================================================================
+ERROR: test_percent_encoded_path_space_is_a_valid_public_url (__main__.ResearchIndexControls)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/loop-engine/artifacts/harness-source-research-2026-09-23/test_research_index.py", line 112, in test_percent_encoded_path_space_is_a_valid_public_url
+    self.assertEqual(public_source_url(url),url)
+  File "/home/username/loop-engine/artifacts/harness-source-research-2026-09-23/research_index.py", line 83, in public_source_url
+    need(not any(ord(c) <= 32 or ord(c) == 127 for c in decoded) and '\\' not in decoded, 'unsafe_source_url')
+  File "/home/username/loop-engine/artifacts/harness-source-research-2026-09-23/research_index.py", line 43, in need
+    raise ResearchIndexError(code)
+research_index.ResearchIndexError: unsafe_source_url
+
+----------------------------------------------------------------------
+Ran 15 tests in 1.770s
+
+FAILED (errors=2)

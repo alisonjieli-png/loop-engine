@@ -1,0 +1,37 @@
+{
+  "ok": true,
+  "result": {
+    "total_weight": 4,
+    "distinct_values": 2,
+    "cdf": [
+      {
+        "value": "10",
+        "weight": 1,
+        "cumulative_weight": 1
+      },
+      {
+        "value": "20",
+        "weight": 3,
+        "cumulative_weight": 4
+      }
+    ],
+    "quantiles": [
+      {
+        "q": "0",
+        "value": "10"
+      },
+      {
+        "q": "0.25",
+        "value": "10"
+      },
+      {
+        "q": "0.5",
+        "value": "20"
+      },
+      {
+        "q": "1",
+        "value": "20"
+      }
+    ]
+  }
+}

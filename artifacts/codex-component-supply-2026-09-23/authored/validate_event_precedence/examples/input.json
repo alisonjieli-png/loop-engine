@@ -1,0 +1,18 @@
+{
+  "record_type": "validate_event_precedence_request/v1",
+  "events": [
+    "fetch",
+    "verify",
+    "use"
+  ],
+  "constraints": [
+    {
+      "before": "fetch",
+      "after": "verify"
+    },
+    {
+      "before": "verify",
+      "after": "use"
+    }
+  ]
+}

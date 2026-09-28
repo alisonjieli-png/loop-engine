@@ -1,0 +1,26 @@
+{
+  "record_type": "gemma4_components_contracts_before_code/v1",
+  "cases": {
+    "inspect_python_symbol_dependencies": 15,
+    "select_graph_context_neighborhood": 20,
+    "plan_targeted_test_selection": 17
+  },
+  "files": {
+    "packages/select_graph_context_neighborhood/skills/select-graph-context-neighborhood/verification/cases.json": "28895c776bdbd5933a5f2b2c617e73e22b8271945c9d564cf87761ae60dff5dc",
+    "packages/select_graph_context_neighborhood/skills/select-graph-context-neighborhood/contracts/input.schema.json": "365fd02ea082463503bd2bad31203383de070e26693812285f3ec56a4d9aa625",
+    "packages/select_graph_context_neighborhood/skills/select-graph-context-neighborhood/contracts/output.schema.json": "aeb5417054db3bb84193a695b49b511963a7fd5068d1aadafa596d9a3762889d",
+    "packages/select_graph_context_neighborhood/skills/select-graph-context-neighborhood/examples/input.json": "7eeed44eb8d2510eb3cff274347851309505042f74e3f7019054a6b9678bed57",
+    "packages/select_graph_context_neighborhood/skills/select-graph-context-neighborhood/examples/output.json": "4129f00106df025fb3082872050fec8a2e5048ee2a156e2ddd39f82000e269e1",
+    "packages/plan_targeted_test_selection/skills/plan-targeted-test-selection/verification/cases.json": "f6fb3a51068adbe03de4bba3fdf173952c39c26646c12c014035a355d763c6f7",
+    "packages/plan_targeted_test_selection/skills/plan-targeted-test-selection/contracts/input.schema.json": "bad88ce62f998b4861e4e6fc156729dfbc6e85269250c83a9b9daa43e8878b24",
+    "packages/plan_targeted_test_selection/skills/plan-targeted-test-selection/contracts/output.schema.json": "bc29720884bdbce5fd415c2a7c41e8c5806680f5ddc235b650b9ad0e3b406f09",
+    "packages/plan_targeted_test_selection/skills/plan-targeted-test-selection/examples/input.json": "23d19144a4cdfe3030b0742836bccd6946dc7b86a088105e543723a28e0883f7",
+    "packages/plan_targeted_test_selection/skills/plan-targeted-test-selection/examples/output.json": "3c80e4fe3d4e2f4e5171dfa2c5acabfeb47226b988b3cfc619870eb8e6ea4155",
+    "packages/inspect_python_symbol_dependencies/skills/inspect-python-symbol-dependencies/verification/cases.json": "5a8bcafc71fa2b878422c2b4554c3efbd9f1f30fb03dee771f01b7b18df292ad",
+    "packages/inspect_python_symbol_dependencies/skills/inspect-python-symbol-dependencies/contracts/input.schema.json": "0dce1c28e38dbff4dae2bbb961069ce9b36b79f2c1fe14244d6d9571fc7d0b5e",
+    "packages/inspect_python_symbol_dependencies/skills/inspect-python-symbol-dependencies/contracts/output.schema.json": "23294dc4ec353466f0dda2497923049f0269297c731a13bfbb3e149ba7f90bd5",
+    "packages/inspect_python_symbol_dependencies/skills/inspect-python-symbol-dependencies/examples/input.json": "da99cff333edc837b5fbc051fcfb5b420d212dd86ce8adfd2022d15fd9981d2b",
+    "packages/inspect_python_symbol_dependencies/skills/inspect-python-symbol-dependencies/examples/output.json": "973881a22fabe230be528ed647afe310c28bfc6c5d2772f29fcfa2752e2baa87"
+  },
+  "executables_exist": false
+}

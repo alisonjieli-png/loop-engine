@@ -1,0 +1,22 @@
+{
+  "record_type": "compare_file_inventories_result/v1",
+  "added": [
+    "new"
+  ],
+  "removed": [
+    "old"
+  ],
+  "unchanged": [
+    "same"
+  ],
+  "changed": [
+    {
+      "path": "changed",
+      "fields": [
+        "digest",
+        "size_bytes",
+        "executable"
+      ]
+    }
+  ]
+}

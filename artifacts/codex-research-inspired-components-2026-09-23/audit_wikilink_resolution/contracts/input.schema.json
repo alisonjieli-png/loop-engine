@@ -1,0 +1,55 @@
+{
+  "type": "object",
+  "properties": {
+    "record_type": {
+      "const": "audit_wikilink_resolution_request/v1"
+    },
+    "syntax_profile": {
+      "const": "bounded_markdown_wikilinks/v1"
+    },
+    "source_path": {
+      "type": "string",
+      "minLength": 4,
+      "maxLength": 256,
+      "pattern": "^[^/\\\\:#|\\[\\]\\x00-\\x1f\\x7f]+(?:/[^/\\\\:#|\\[\\]\\x00-\\x1f\\x7f]+)*\\.md$",
+      "not": {
+        "pattern": "[\\x00-\\x1f\\x7f]"
+      }
+    },
+    "text": {
+      "type": "string",
+      "maxLength": 32768
+    },
+    "note_paths": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 256,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 4,
+        "maxLength": 256,
+        "pattern": "^[^/\\\\:#|\\[\\]\\x00-\\x1f\\x7f]+(?:/[^/\\\\:#|\\[\\]\\x00-\\x1f\\x7f]+)*\\.md$",
+        "not": {
+          "pattern": "[\\x00-\\x1f\\x7f]"
+        }
+      }
+    },
+    "expected_sha256": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 64,
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "required": [
+    "record_type",
+    "syntax_profile",
+    "source_path",
+    "text",
+    "note_paths"
+  ],
+  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Additional path-segment, source-membership, wire-byte and syntax limits are specified in references/profile.md."
+}

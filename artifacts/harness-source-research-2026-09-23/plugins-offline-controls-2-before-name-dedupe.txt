@@ -1,0 +1,21 @@
+test_duplicate_manifest_keys_are_not_object_evidence (test_plugins_research.ResearchControls) ... ok
+test_metadata_only_is_unreviewed_unverified_and_not_license_verified (test_plugins_research.ResearchControls) ... ok
+test_native_projection_has_same_logical_root (test_plugins_research.ResearchControls) ... ok
+test_repository_owner_does_not_create_domain (test_plugins_research.ResearchControls) ... ok
+test_same_repo_current_manifest_is_not_counted_twice (test_plugins_research.ResearchControls) ... ok
+test_same_repo_manifest_name_groups_native_variants (test_plugins_research.ResearchControls) ... FAIL
+test_score_is_exact_sum_and_caps_repository_concentration (test_plugins_research.ResearchControls) ... ok
+test_short_git_keyword_does_not_match_digital (test_plugins_research.ResearchControls) ... ok
+
+======================================================================
+FAIL: test_same_repo_manifest_name_groups_native_variants (test_plugins_research.ResearchControls)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/loop-engine/artifacts/harness-source-research-2026-09-23/test_plugins_research.py", line 43, in test_same_repo_manifest_name_groups_native_variants
+    self.assertEqual(len(selected),2)
+AssertionError: 3 != 2
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.004s
+
+FAILED (failures=1)

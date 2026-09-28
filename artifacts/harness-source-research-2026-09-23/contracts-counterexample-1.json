@@ -1,0 +1,8 @@
+{
+  "record_type": "contract_research_counterexample/v1",
+  "case": "invalid_url_admitted_before_log",
+  "url": "https://api.apis.guru/v2/specs/europeana.eu/version unknown/swagger.json",
+  "observed_initial_admitted_attempts": 920,
+  "observed_recorded_requests": 919,
+  "expected": "Report admitted attempts separately from recorded HTTP observations; reject raw whitespace URLs before transport."
+}

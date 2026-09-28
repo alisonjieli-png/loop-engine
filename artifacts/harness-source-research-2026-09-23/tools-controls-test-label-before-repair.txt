@@ -1,0 +1,14 @@
+.....F..
+======================================================================
+FAIL: test_explicit_test_registration_cannot_equal_normal_priority (__main__.RankingControls.test_explicit_test_registration_cannot_equal_normal_priority)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/loop-engine/artifacts/harness-source-research-2026-09-23/test_tools_research.py", line 72, in test_explicit_test_registration_cannot_equal_normal_priority
+    self.assertLess(sum(score(test, {})[0].values()), sum(score(normal, {})[0].values()))
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 64 not less than 58
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.002s
+
+FAILED (failures=1)

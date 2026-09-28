@@ -1,0 +1,13 @@
+{
+  "record_type": "plugin_research_evidence_clarification/v1",
+  "ranked_sha256": "f46bc30632ca2f2173052ff876e207125ea338d5afe7380fecde2c1e68bcbafb",
+  "logical_research_records": 1000,
+  "distinct_manifest_byte_sha256": 993,
+  "distinct_repository_address_strings": 989,
+  "canonical_repository_id_count": null,
+  "notes": [
+    "Repository diversity counts reported address strings; canonical GitHub repository IDs were not resolved for every plugin source.",
+    "Identical generic manifests across publishers do not establish identical whole packages. Same-repository manifest/name/native projections were grouped; full cross-repository semantic duplication remains unqualified.",
+    "Research records are not approved packages or a count of immediately runnable harness files."
+  ]
+}

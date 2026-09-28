@@ -1,0 +1,217 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "profile_csv_structure output",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "result": {
+          "type": "object",
+          "properties": {
+            "row_count": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000
+            },
+            "column_count": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 64
+            },
+            "physical_line_count": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 131072
+            },
+            "header": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "maxLength": 4096
+                  },
+                  "maxItems": 64
+                }
+              ]
+            },
+            "duplicate_header_names": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "maxLength": 4096
+                  },
+                  "indices": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 63
+                    },
+                    "maxItems": 64
+                  }
+                },
+                "required": [
+                  "name",
+                  "indices"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 64
+            },
+            "blank_header_indices": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 63
+              },
+              "maxItems": 64
+            },
+            "width_counts": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "width": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 64
+                  },
+                  "records": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000
+                  }
+                },
+                "required": [
+                  "width",
+                  "records"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 65
+            },
+            "width_mismatches": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "row_index": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 999
+                  },
+                  "width": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 64
+                  }
+                },
+                "required": [
+                  "row_index",
+                  "width"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 1000
+            },
+            "columns": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "index": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 63
+                  },
+                  "present_rows": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000
+                  },
+                  "missing_rows": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000
+                  },
+                  "empty_cells": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000
+                  },
+                  "max_chars": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 4096
+                  }
+                },
+                "required": [
+                  "index",
+                  "present_rows",
+                  "missing_rows",
+                  "empty_cells",
+                  "max_chars"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 64
+            }
+          },
+          "required": [
+            "row_count",
+            "column_count",
+            "physical_line_count",
+            "header",
+            "duplicate_header_names",
+            "blank_header_indices",
+            "width_counts",
+            "width_mismatches",
+            "columns"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "result"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": false
+        },
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "const": "invalid_input"
+            }
+          },
+          "required": [
+            "code"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "error"
+      ],
+      "additionalProperties": false
+    }
+  ]
+}

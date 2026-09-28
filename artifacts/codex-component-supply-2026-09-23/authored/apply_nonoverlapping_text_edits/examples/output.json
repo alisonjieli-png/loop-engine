@@ -1,0 +1,7 @@
+{
+  "record_type": "apply_nonoverlapping_text_edits_result/v1",
+  "text": "aXdY",
+  "source_sha256": "bef57ec7f53a6d40beb640a780a639c83bc29ac8a9816f1fc6c5c6dcd93c4721",
+  "result_sha256": "84209baa36e04bf161cd05f7ec0ed9ac7aa9567a0102ca06f08fd6dfcbfa5005",
+  "edits_applied": 2
+}

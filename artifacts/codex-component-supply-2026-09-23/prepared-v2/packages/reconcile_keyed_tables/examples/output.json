@@ -1,0 +1,42 @@
+{
+  "ok": true,
+  "result": {
+    "counts": {
+      "left_rows": 3,
+      "right_rows": 3,
+      "matched": 2,
+      "unchanged": 1,
+      "changed": 1,
+      "left_only": 1,
+      "right_only": 1
+    },
+    "matches": [
+      {
+        "key": "a",
+        "left_index": 0,
+        "right_index": 1,
+        "changed_fields": []
+      },
+      {
+        "key": "b",
+        "left_index": 1,
+        "right_index": 0,
+        "changed_fields": [
+          "n"
+        ]
+      }
+    ],
+    "left_only": [
+      {
+        "key": "c",
+        "left_index": 2
+      }
+    ],
+    "right_only": [
+      {
+        "key": "d",
+        "right_index": 2
+      }
+    ]
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Resolve an exact selected dependency closure output",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "record_type": {
+          "const": "resolve_selected_dependency_closure_result/v1"
+        },
+        "selected": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[^\\u0000-\\u001f\\u007f]+$"
+          },
+          "maxItems": 256,
+          "uniqueItems": true
+        },
+        "cyclic_components": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^\\u0000-\\u001f\\u007f]+$"
+            },
+            "maxItems": 256,
+            "uniqueItems": true
+          },
+          "maxItems": 256
+        }
+      },
+      "required": [
+        "record_type",
+        "selected",
+        "cyclic_components"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "error": {
+          "enum": [
+            "invalid_input",
+            "output_limit_exceeded",
+            "missing_dependency"
+          ]
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "additionalProperties": false
+    }
+  ],
+  "description": "Exactly one UTF-8 JSON line, at most 131072 bytes including LF. Success exits 0; refusal exits 2. No diagnostic content is sent to stderr."
+}

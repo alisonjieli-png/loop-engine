@@ -1,0 +1,90 @@
+{
+  "type": "object",
+  "properties": {
+    "record_type": {
+      "const": "plan_targeted_test_selection_request/v1"
+    },
+    "changed_symbols": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128,
+        "not": {
+          "pattern": "[\\x00-\\x1f\\x7f]"
+        }
+      },
+      "minItems": 0,
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "tests": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "not": {
+              "pattern": "[\\x00-\\x1f\\x7f]"
+            }
+          },
+          "depends_on": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "not": {
+                "pattern": "[\\x00-\\x1f\\x7f]"
+              }
+            },
+            "minItems": 0,
+            "maxItems": 256,
+            "uniqueItems": true
+          },
+          "priority": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "estimated_ms": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 3600000
+          }
+        },
+        "required": [
+          "id",
+          "depends_on",
+          "priority",
+          "estimated_ms"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 0,
+      "maxItems": 256
+    },
+    "max_tests": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 128
+    },
+    "max_estimated_ms": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000000
+    }
+  },
+  "required": [
+    "record_type",
+    "changed_symbols",
+    "tests",
+    "max_tests",
+    "max_estimated_ms"
+  ],
+  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

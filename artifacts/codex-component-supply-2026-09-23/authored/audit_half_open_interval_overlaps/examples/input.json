@@ -1,0 +1,24 @@
+{
+  "intervals": [
+    {
+      "id": "a",
+      "start": 0,
+      "end": 4
+    },
+    {
+      "id": "b",
+      "start": 2,
+      "end": 6
+    },
+    {
+      "id": "c",
+      "start": 6,
+      "end": 8
+    },
+    {
+      "id": "empty",
+      "start": 3,
+      "end": 3
+    }
+  ]
+}

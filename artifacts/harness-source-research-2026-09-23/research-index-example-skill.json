@@ -1,0 +1,81 @@
+{
+  "record_type": "local_research_metadata_results/v1",
+  "mode": "lexical",
+  "category": "skill",
+  "query": "testing",
+  "lookup": null,
+  "candidate_selection_explicit": true,
+  "execution_available": false,
+  "source_integrity": "current_hashes_match_manifest",
+  "query_scoring": "existing lexical FTS5/BM25 order with reciprocal-rank score; separate from research priority",
+  "hits": [
+    {
+      "research_id": "1665e5afcc33a9e3240418d90d6c534b68bba29181ad4e80db70694664ebba6c",
+      "category": "skill",
+      "name": "ab-testing",
+      "repository": "coreyhaines31/marketingskills",
+      "source_url": "https://github.com/coreyhaines31/marketingskills/blob/5b2c0007766c6a1cf1d53fd8fc73e979e0821022/skills/ab-testing/SKILL.md",
+      "source_path": "skills/ab-testing/SKILL.md",
+      "source_snapshot_digest": "c89a7f164e59567c6366b6d767e8eb9b4d4a3385e7081959e91605223c13ba9d",
+      "rank": 34,
+      "priority_score": 83.798211,
+      "query_score": 0.1,
+      "evidence_level": "primary_instruction_bytes_checked",
+      "qualification_status": "unreviewed",
+      "compatibility_status": "unverified",
+      "rights_state": {
+        "license_reported": "MIT",
+        "license_verified": false,
+        "clearance": "not_established"
+      },
+      "lifecycle": "candidate",
+      "execution_available": false
+    },
+    {
+      "research_id": "c13b5d1fff0531c68d6dc73e22bd3e6d4a93f54cdf86335f7416485b1aef1098",
+      "category": "skill",
+      "name": "bats-testing-patterns",
+      "repository": "wshobson/agents",
+      "source_url": "https://github.com/wshobson/agents/blob/4236bb91f8395b0435f1d8b8baf9e8e4c69a8620/plugins/shell-scripting/skills/bats-testing-patterns/SKILL.md",
+      "source_path": "plugins/shell-scripting/skills/bats-testing-patterns/SKILL.md",
+      "source_snapshot_digest": "cd806acc8e2b5d26a9fe708aff160522fd00582a9927d4ec0a017d489e52c1ec",
+      "rank": 422,
+      "priority_score": 69.202207,
+      "query_score": 0.09091,
+      "evidence_level": "primary_instruction_bytes_checked",
+      "qualification_status": "unreviewed",
+      "compatibility_status": "unverified",
+      "rights_state": {
+        "license_reported": "MIT",
+        "license_verified": false,
+        "clearance": "not_established"
+      },
+      "lifecycle": "candidate",
+      "execution_available": false
+    },
+    {
+      "research_id": "7a270a667a434cedd63915bd911afaf174e5bd6b8ae01881cb7e4bb5c9ecf0f3",
+      "category": "skill",
+      "name": "e2e-testing-patterns",
+      "repository": "wshobson/agents",
+      "source_url": "https://github.com/wshobson/agents/blob/4236bb91f8395b0435f1d8b8baf9e8e4c69a8620/plugins/developer-essentials/skills/e2e-testing-patterns/SKILL.md",
+      "source_path": "plugins/developer-essentials/skills/e2e-testing-patterns/SKILL.md",
+      "source_snapshot_digest": "cd806acc8e2b5d26a9fe708aff160522fd00582a9927d4ec0a017d489e52c1ec",
+      "rank": 434,
+      "priority_score": 69.202207,
+      "query_score": 0.08333,
+      "evidence_level": "primary_instruction_bytes_checked",
+      "qualification_status": "unreviewed",
+      "compatibility_status": "unverified",
+      "rights_state": {
+        "license_reported": "MIT",
+        "license_verified": false,
+        "clearance": "not_established"
+      },
+      "lifecycle": "candidate",
+      "execution_available": false
+    }
+  ],
+  "network_requests": 0,
+  "model_calls": 0
+}

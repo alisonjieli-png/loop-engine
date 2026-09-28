@@ -1,0 +1,209 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "reconcile_multiset_rows output",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "result": {
+          "type": "object",
+          "properties": {
+            "left_count": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 256
+            },
+            "right_count": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 256
+            },
+            "equal": {
+              "type": "boolean"
+            },
+            "common": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "row": {
+                    "type": "object",
+                    "propertyNames": {
+                      "minLength": 1,
+                      "maxLength": 64
+                    },
+                    "additionalProperties": {
+                      "anyOf": [
+                        {
+                          "type": "null"
+                        },
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "integer",
+                          "minimum": -1000000000000,
+                          "maximum": 1000000000000
+                        },
+                        {
+                          "type": "string",
+                          "maxLength": 256
+                        }
+                      ]
+                    },
+                    "maxProperties": 32
+                  },
+                  "count": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 256
+                  }
+                },
+                "required": [
+                  "row",
+                  "count"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 256
+            },
+            "left_only": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "row": {
+                    "type": "object",
+                    "propertyNames": {
+                      "minLength": 1,
+                      "maxLength": 64
+                    },
+                    "additionalProperties": {
+                      "anyOf": [
+                        {
+                          "type": "null"
+                        },
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "integer",
+                          "minimum": -1000000000000,
+                          "maximum": 1000000000000
+                        },
+                        {
+                          "type": "string",
+                          "maxLength": 256
+                        }
+                      ]
+                    },
+                    "maxProperties": 32
+                  },
+                  "count": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 256
+                  }
+                },
+                "required": [
+                  "row",
+                  "count"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 256
+            },
+            "right_only": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "row": {
+                    "type": "object",
+                    "propertyNames": {
+                      "minLength": 1,
+                      "maxLength": 64
+                    },
+                    "additionalProperties": {
+                      "anyOf": [
+                        {
+                          "type": "null"
+                        },
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "integer",
+                          "minimum": -1000000000000,
+                          "maximum": 1000000000000
+                        },
+                        {
+                          "type": "string",
+                          "maxLength": 256
+                        }
+                      ]
+                    },
+                    "maxProperties": 32
+                  },
+                  "count": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 256
+                  }
+                },
+                "required": [
+                  "row",
+                  "count"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 256
+            }
+          },
+          "required": [
+            "left_count",
+            "right_count",
+            "equal",
+            "common",
+            "left_only",
+            "right_only"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "result"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": false
+        },
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "const": "invalid_input"
+            }
+          },
+          "required": [
+            "code"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "error"
+      ],
+      "additionalProperties": false
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Resolve an exact selected dependency closure input",
+  "type": "object",
+  "properties": {
+    "record_type": {
+      "const": "resolve_selected_dependency_closure_request/v1"
+    },
+    "roots": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128,
+        "not": {
+          "pattern": "[\\u0000-\\u001f\\u007f]"
+        }
+      },
+      "maxItems": 256,
+      "uniqueItems": true
+    },
+    "packages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "not": {
+              "pattern": "[\\u0000-\\u001f\\u007f]"
+            }
+          },
+          "requires": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "not": {
+                "pattern": "[\\u0000-\\u001f\\u007f]"
+              }
+            },
+            "maxItems": 16,
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "id",
+          "requires"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 256
+    }
+  },
+  "required": [
+    "record_type",
+    "roots",
+    "packages"
+  ],
+  "additionalProperties": false,
+  "description": "Strict UTF-8 JSON document, at most 65536 bytes and 16 container levels; duplicate keys, nonfinite literals and lone surrogates refuse. Numeric literals at most 128 characters; mathematically integral decimal/scientific numbers are accepted exactly. Additional semantic conditions are stated in AGENTS.md."
+}

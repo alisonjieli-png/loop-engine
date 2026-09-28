@@ -1,0 +1,8 @@
+{
+  "record_type": "data_numeric_boundary_counterexample/v1",
+  "method": "reconcile_multiset_rows",
+  "raw_input": "{\"left\":[{\"n\":0e1000000000000000000}],\"right\":[]}",
+  "expected_exit": 0,
+  "actual_exit": 2,
+  "why_wrong": "The raw token is within128characters, mathematically zero and within the declared integer domain; Decimal exponent representation must not change that value policy."
+}

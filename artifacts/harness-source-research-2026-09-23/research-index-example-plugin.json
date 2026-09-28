@@ -1,0 +1,81 @@
+{
+  "record_type": "local_research_metadata_results/v1",
+  "mode": "lexical",
+  "category": "plugin",
+  "query": "memory",
+  "lookup": null,
+  "candidate_selection_explicit": true,
+  "execution_available": false,
+  "source_integrity": "current_hashes_match_manifest",
+  "query_scoring": "existing lexical FTS5/BM25 order with reciprocal-rank score; separate from research priority",
+  "hits": [
+    {
+      "research_id": "plugin-8e126abbe6f7caf13b497553",
+      "category": "plugin",
+      "name": "ledger-memory",
+      "repository": "prime-radiant-inc/ledger-memory",
+      "source_url": "https://github.com/prime-radiant-inc/ledger-memory/blob/329422f2f533a189e4b8ac98ad2792dbaa88f0e1/plugin.json",
+      "source_path": "plugin.json",
+      "source_snapshot_digest": "9f88a6c9728750bdf3f0809dafa921a23d2e0483f9779141ed7d24c63cf37b80",
+      "rank": 960,
+      "priority_score": 72.2279,
+      "query_score": 0.1,
+      "evidence_level": "primary_manifest_object_observed",
+      "qualification_status": "unreviewed",
+      "compatibility_status": "unverified",
+      "rights_state": {
+        "license_reported": "MIT",
+        "license_verified": false,
+        "clearance": "not_established"
+      },
+      "lifecycle": "candidate",
+      "execution_available": false
+    },
+    {
+      "research_id": "plugin-c57f8197db32937a077c4988",
+      "category": "plugin",
+      "name": "vta-agent-memory",
+      "repository": "OpenVTC/vta-agent-memory",
+      "source_url": "https://github.com/OpenVTC/vta-agent-memory/blob/85db98a8a9c6d25b673a38a9e7e60d3435f3fcc5/.claude-plugin/plugin.json",
+      "source_path": ".claude-plugin/plugin.json",
+      "source_snapshot_digest": "7e0425dd41548467483c00a76954a08c7393f5fb63bca270f2c6f8559af3439b",
+      "rank": 930,
+      "priority_score": 73.0,
+      "query_score": 0.09091,
+      "evidence_level": "primary_manifest_object_observed",
+      "qualification_status": "unreviewed",
+      "compatibility_status": "unverified",
+      "rights_state": {
+        "license_reported": "Apache-2.0",
+        "license_verified": false,
+        "clearance": "not_established"
+      },
+      "lifecycle": "candidate",
+      "execution_available": false
+    },
+    {
+      "research_id": "plugin-419af7527f64bae404cb9d09",
+      "category": "plugin",
+      "name": "episodic-memory",
+      "repository": "obra/episodic-memory",
+      "source_url": "https://github.com/obra/episodic-memory/blob/7e06519357777badd7a115d2014a7ef845904310/.claude-plugin/plugin.json",
+      "source_path": ".claude-plugin/plugin.json",
+      "source_snapshot_digest": "5d81027e00bc98b7f9b86fed5d77c330358c82635023074f1799c49eebfacc37",
+      "rank": 599,
+      "priority_score": 79.8607,
+      "query_score": 0.08333,
+      "evidence_level": "primary_manifest_object_observed",
+      "qualification_status": "unreviewed",
+      "compatibility_status": "unverified",
+      "rights_state": {
+        "license_reported": "MIT",
+        "license_verified": false,
+        "clearance": "not_established"
+      },
+      "lifecycle": "candidate",
+      "execution_available": false
+    }
+  ],
+  "network_requests": 0,
+  "model_calls": 0
+}

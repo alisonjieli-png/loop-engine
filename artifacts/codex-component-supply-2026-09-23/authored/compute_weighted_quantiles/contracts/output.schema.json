@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "compute_weighted_quantiles output",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "result": {
+          "type": "object",
+          "properties": {
+            "total_weight": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 512000000000
+            },
+            "distinct_values": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 512
+            },
+            "cdf": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "value": {
+                    "type": "string",
+                    "pattern": "^-?(0|[1-9][0-9]{0,11})(\\.[0-9]{1,12})?$(?![\\s\\S])",
+                    "maxLength": 26
+                  },
+                  "weight": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 512000000000
+                  },
+                  "cumulative_weight": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 512000000000
+                  }
+                },
+                "required": [
+                  "value",
+                  "weight",
+                  "cumulative_weight"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 512
+            },
+            "quantiles": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "q": {
+                    "type": "string",
+                    "pattern": "^(0(\\.[0-9]{1,12})?|1(\\.0{1,12})?)$(?![\\s\\S])",
+                    "maxLength": 14
+                  },
+                  "value": {
+                    "type": "string",
+                    "pattern": "^-?(0|[1-9][0-9]{0,11})(\\.[0-9]{1,12})?$(?![\\s\\S])",
+                    "maxLength": 26
+                  }
+                },
+                "required": [
+                  "q",
+                  "value"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 64
+            }
+          },
+          "required": [
+            "total_weight",
+            "distinct_values",
+            "cdf",
+            "quantiles"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "result"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "const": false
+        },
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "const": "invalid_input"
+            }
+          },
+          "required": [
+            "code"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "ok",
+        "error"
+      ],
+      "additionalProperties": false
+    }
+  ]
+}

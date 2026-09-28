@@ -1,0 +1,3575 @@
+{
+  "source_revision": "231f51bb1facab517fbe915b08ea9ac85f913347",
+  "sources": [
+    {
+      "name": "agentpluginzoo:data/capabilities.csv",
+      "host": "raw.githubusercontent.com",
+      "path": "/tezansahu/agentpluginzoo/83259b7499efc86756b3913ee7d3000a6a668893/data/capabilities.csv",
+      "query": {},
+      "status": 200,
+      "sha256": "4889231430f1c0452ce51dc7102ad9855e4ac334993239b358944c0fbd0bb492",
+      "bytes": 33475345,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/48/4889231430f1c0452ce51dc7102ad9855e4ac334993239b358944c0fbd0bb492"
+    },
+    {
+      "name": "skills_public_leaderboard",
+      "host": "skills.sh",
+      "path": "/",
+      "query": {},
+      "status": 308,
+      "sha256": "e8bf6ff8a1a9be84fc1ca910beff397e26e4309b57c0dd5ca493e98772c62483",
+      "bytes": 56,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/e8/e8bf6ff8a1a9be84fc1ca910beff397e26e4309b57c0dd5ca493e98772c62483"
+    },
+    {
+      "name": "mcp_registry_latest_100",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.BoxBoxmari/my-pi:0.1.0-alpha.2"
+      },
+      "status": 200,
+      "sha256": "042be455138f475be57c06852757784c46e6548164520bec7843a84d5ef704a9",
+      "bytes": 75756,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/04/042be455138f475be57c06852757784c46e6548164520bec7843a84d5ef704a9"
+    },
+    {
+      "name": "mcp_registry_latest_101",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.Br0ski777/web-search:1.1.0"
+      },
+      "status": 200,
+      "sha256": "f0d96d9f7d8208abbdd07f39414a76fc75ef0d7e8b2cde3997c48796b1aff460",
+      "bytes": 89113,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/f0/f0d96d9f7d8208abbdd07f39414a76fc75ef0d7e8b2cde3997c48796b1aff460"
+    },
+    {
+      "name": "mcp_registry_latest_102",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.CSOAI-ORG/agent-replay-debugger-mcp:1.0.7"
+      },
+      "status": 200,
+      "sha256": "2b555271cad069dae6e6b63f720d16a97281893b5ca1b162150ab521e1dda665",
+      "bytes": 71891,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/2b/2b555271cad069dae6e6b63f720d16a97281893b5ca1b162150ab521e1dda665"
+    },
+    {
+      "name": "mcp_registry_latest_103",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.CSOAI-ORG/expense-tracker-ai-mcp:1.0.11"
+      },
+      "status": 200,
+      "sha256": "ee18706a150fa20b35e564a43a1ebf49d94cf98f14138d8681b46dc1920efde2",
+      "bytes": 72801,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/ee/ee18706a150fa20b35e564a43a1ebf49d94cf98f14138d8681b46dc1920efde2"
+    },
+    {
+      "name": "mcp_registry_latest_104",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.CSOAI-ORG/meok-cra-annex-iv-classifier-mcp:1.1.8"
+      },
+      "status": 200,
+      "sha256": "62cda24790664122c460d0673f07c416b5b4792832d3afe05cb7eaf369a60a66",
+      "bytes": 71999,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/62/62cda24790664122c460d0673f07c416b5b4792832d3afe05cb7eaf369a60a66"
+    },
+    {
+      "name": "mcp_registry_latest_105",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.CSOAI-ORG/sql-builder-ai-mcp:1.0.8"
+      },
+      "status": 200,
+      "sha256": "873b18466636efef87dd6e54868e6b897b38c7344b9a21779aa81b0752faa314",
+      "bytes": 88378,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/87/873b18466636efef87dd6e54868e6b897b38c7344b9a21779aa81b0752faa314"
+    },
+    {
+      "name": "mcp_registry_latest_106",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.Chris-Eaccountability/elephant-accountability-mcp:1.0.1"
+      },
+      "status": 200,
+      "sha256": "77c9cf765a7ddbd716b47f2e9ab4ed1bef0e0955592b8a0fe9b43f29e48e3bf3",
+      "bytes": 112811,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/77/77c9cf765a7ddbd716b47f2e9ab4ed1bef0e0955592b8a0fe9b43f29e48e3bf3"
+    },
+    {
+      "name": "mcp_registry_latest_107",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.Courouge/douanecode-mcp:0.1.2"
+      },
+      "status": 200,
+      "sha256": "bf454644f088d6dee496fa3320b82bde37e0182d67a05ca40061d6223568d1cc",
+      "bytes": 91391,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/bf/bf454644f088d6dee496fa3320b82bde37e0182d67a05ca40061d6223568d1cc"
+    },
+    {
+      "name": "mcp_registry_latest_108",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.Damso74/arcadeops-public-discovery:1.2.0"
+      },
+      "status": 200,
+      "sha256": "83034489fb7368a3f89f66dcfba85bfc805da8e2d207df3edcc4b7d5ed56d616",
+      "bytes": 78777,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/83/83034489fb7368a3f89f66dcfba85bfc805da8e2d207df3edcc4b7d5ed56d616"
+    },
+    {
+      "name": "mcp_registry_latest_109",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.DeepAgentLabs/deep-agentic-core-mcp:0.2.0"
+      },
+      "status": 200,
+      "sha256": "39b9615ae8626f851053a0ec6bf8214040f19c2a14f7d9a7d57e328703478d09",
+      "bytes": 91059,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/39/39b9615ae8626f851053a0ec6bf8214040f19c2a14f7d9a7d57e328703478d09"
+    },
+    {
+      "name": "mcp_registry_latest_110",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.Drock91/bitbooth-fetch:2.3.1"
+      },
+      "status": 200,
+      "sha256": "1a993e628a7d09970e702f439bef2e9b07ff7b6bf8d4d31e68f1b9935e5206ce",
+      "bytes": 94028,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/1a/1a993e628a7d09970e702f439bef2e9b07ff7b6bf8d4d31e68f1b9935e5206ce"
+    },
+    {
+      "name": "mcp_registry_latest_111",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.Evozim/acoustic-reverb-simulator-mcp:2.0.0"
+      },
+      "status": 200,
+      "sha256": "695cdeb37e57fb9b6015e827749a2dac782d5e00a8a97e52eaedfa4a7dd7cfdc",
+      "bytes": 78055,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/69/695cdeb37e57fb9b6015e827749a2dac782d5e00a8a97e52eaedfa4a7dd7cfdc"
+    },
+    {
+      "name": "mcp_registry_latest_112",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.Evozim/barcode-qr-decoder-mcp:2.0.0"
+      },
+      "status": 200,
+      "sha256": "2e7a91f689515855f71ccb8e634dd95e70df32382fd8e10399094de83befe934",
+      "bytes": 78566,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/2e/2e7a91f689515855f71ccb8e634dd95e70df32382fd8e10399094de83befe934"
+    },
+    {
+      "name": "mcp_registry_latest_113",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.Evozim/coral-tpu-delegate-mcp:2.0.0"
+      },
+      "status": 200,
+      "sha256": "20b279a8bd59d9dcfb075918af2301fa8d718d4a19e86ca17a8823bddcac8840",
+      "bytes": 78243,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/20/20b279a8bd59d9dcfb075918af2301fa8d718d4a19e86ca17a8823bddcac8840"
+    },
+    {
+      "name": "mcp_registry_latest_114",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.Evozim/edge-latency-guard:1.0.0"
+      },
+      "status": 200,
+      "sha256": "227598f6762c92fdc20a6a841f53530ec5980df43e747bafd84afaa2435e10ae",
+      "bytes": 76735,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/22/227598f6762c92fdc20a6a841f53530ec5980df43e747bafd84afaa2435e10ae"
+    },
+    {
+      "name": "mcp_registry_latest_115",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.Fabric-Protocol/fabric:0.4.0"
+      },
+      "status": 200,
+      "sha256": "c70ad5fd63fc28463f5e7fd657414a247f7712c8e92601e84f90371397d746d2",
+      "bytes": 108436,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/c7/c70ad5fd63fc28463f5e7fd657414a247f7712c8e92601e84f90371397d746d2"
+    },
+    {
+      "name": "mcp_registry_latest_116",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.FreeGuy-AI/closeread-verify:0.1.2"
+      },
+      "status": 200,
+      "sha256": "ef4b9e5c2b91ad5f9559d8a98b6759757aba94fa0025013bc29480a199dec1aa",
+      "bytes": 100692,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/ef/ef4b9e5c2b91ad5f9559d8a98b6759757aba94fa0025013bc29480a199dec1aa"
+    },
+    {
+      "name": "mcp_registry_latest_117",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.GoDavai01/godavaii-mcp-server:1.0.2"
+      },
+      "status": 200,
+      "sha256": "311963b19221bcb6967583af396cae638516dad8df83e6a16f6431564d08140f",
+      "bytes": 105912,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/31/311963b19221bcb6967583af396cae638516dad8df83e6a16f6431564d08140f"
+    },
+    {
+      "name": "mcp_registry_latest_118",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.HelloSafe/travel-insurance:1.0.1"
+      },
+      "status": 200,
+      "sha256": "e3940d071ed9096f4f291aeef624d1ff13c11c62cc5185dcfb1149a6111c5f62",
+      "bytes": 91692,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/e3/e3940d071ed9096f4f291aeef624d1ff13c11c62cc5185dcfb1149a6111c5f62"
+    },
+    {
+      "name": "mcp_registry_latest_119",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.IgorGanapolsky/thumbgate:1.27.17"
+      },
+      "status": 200,
+      "sha256": "99b966768a45cd2194996bb2209cb617d7d582f7900713dbfad500eacc0da773",
+      "bytes": 102630,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/99/99b966768a45cd2194996bb2209cb617d7d582f7900713dbfad500eacc0da773"
+    },
+    {
+      "name": "mcp_registry_latest_120",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.Ivy-Innovation/cubelife:0.3.2"
+      },
+      "status": 200,
+      "sha256": "79bdb7955a890fc17f02ef22cd403f8029ddae0889e2ecdab235628a6f653ebf",
+      "bytes": 93983,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/79/79bdb7955a890fc17f02ef22cd403f8029ddae0889e2ecdab235628a6f653ebf"
+    },
+    {
+      "name": "mcp_registry_latest_121",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.JohannsenLum/canvas-api-mcp:1.1.0"
+      },
+      "status": 200,
+      "sha256": "f12c457b35f8088903126557e40fa9405f4235dfd1c2d8a3486c30a3491e7397",
+      "bytes": 107191,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/f1/f12c457b35f8088903126557e40fa9405f4235dfd1c2d8a3486c30a3491e7397"
+    },
+    {
+      "name": "mcp_registry_latest_122",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.KamaruSama/mcp-google-forms:1.0.1"
+      },
+      "status": 200,
+      "sha256": "32a86af4c2b8ee757ee2998394a02f49372bb9f39b04f1e9e185fd25189fc654",
+      "bytes": 86444,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/32/32a86af4c2b8ee757ee2998394a02f49372bb9f39b04f1e9e185fd25189fc654"
+    },
+    {
+      "name": "mcp_registry_latest_123",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.KuudoAI/amazon-agent-iris-mcp:1.0.0"
+      },
+      "status": 200,
+      "sha256": "4466b27d5693c06363e16a4b5577db285601f796ae1903fc93be15949ece864a",
+      "bytes": 107595,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/44/4466b27d5693c06363e16a4b5577db285601f796ae1903fc93be15949ece864a"
+    },
+    {
+      "name": "mcp_registry_latest_124",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.Liyux3/scholar-mcp:0.8.4"
+      },
+      "status": 200,
+      "sha256": "cbecbec85668eda084d5a57d5b2689bcc66fb6d9ebc841261c452fa4cdd48e2f",
+      "bytes": 100045,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/cb/cbecbec85668eda084d5a57d5b2689bcc66fb6d9ebc841261c452fa4cdd48e2f"
+    },
+    {
+      "name": "mcp_registry_latest_125",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.MMasey/atag-mcp:1.0.2"
+      },
+      "status": 200,
+      "sha256": "9b80f38fe7d081e83783370ad9ea67dff2d75e42a5bed72e381411b25f6aff71",
+      "bytes": 104503,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/9b/9b80f38fe7d081e83783370ad9ea67dff2d75e42a5bed72e381411b25f6aff71"
+    },
+    {
+      "name": "mcp_registry_latest_126",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.Maxim-Mazurok/msforms-api:0.2.2"
+      },
+      "status": 200,
+      "sha256": "735e514c281de2cf77218adafd7e18cf2a3ffe784ff03704353f9b38efbcee1c",
+      "bytes": 110837,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/73/735e514c281de2cf77218adafd7e18cf2a3ffe784ff03704353f9b38efbcee1c"
+    },
+    {
+      "name": "mcp_registry_latest_127",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.Modelglass/modelglass:1.0.2"
+      },
+      "status": 200,
+      "sha256": "d9539eef61b43f47b6324eb4deeb03c9ca5e3c9ba27c25f744e5fc1b5d32d7d3",
+      "bytes": 102482,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/d9/d9539eef61b43f47b6324eb4deeb03c9ca5e3c9ba27c25f744e5fc1b5d32d7d3"
+    },
+    {
+      "name": "mcp_registry_latest_128",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.Nano-Nimbus/locus:0.9.0"
+      },
+      "status": 200,
+      "sha256": "cc58f38b1388a2c9ce9249187902f8ff736ee72be37a66b659957c8bfc322823",
+      "bytes": 93241,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/cc/cc58f38b1388a2c9ce9249187902f8ff736ee72be37a66b659957c8bfc322823"
+    },
+    {
+      "name": "mcp_registry_latest_129",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.Niteowlpt/pharma-signal-api:1.0.1"
+      },
+      "status": 200,
+      "sha256": "b4b2125af9e145c94668b64ec0685a23ad45710529cb8996bf5c791093475022",
+      "bytes": 172623,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/b4/b4b2125af9e145c94668b64ec0685a23ad45710529cb8996bf5c791093475022"
+    },
+    {
+      "name": "mcp_registry_latest_130",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.OnticX/search-mcp-registry:0.1.4"
+      },
+      "status": 200,
+      "sha256": "02b116d575c7219ac0500f63e5130f910143ac6671fb03a16234c88bee595ab2",
+      "bytes": 102498,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/02/02b116d575c7219ac0500f63e5130f910143ac6671fb03a16234c88bee595ab2"
+    },
+    {
+      "name": "mcp_registry_latest_131",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.PatrickPi1312/eu-compliance:1.6.0"
+      },
+      "status": 200,
+      "sha256": "0cd4da63a47b9a8887cb57ade96e263fcb665bbb25ba9cb77f215cf99e062fd9",
+      "bytes": 93684,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/0c/0cd4da63a47b9a8887cb57ade96e263fcb665bbb25ba9cb77f215cf99e062fd9"
+    },
+    {
+      "name": "mcp_registry_latest_132",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.Project-Gifted1/pg1-threat-intel:1.7.1"
+      },
+      "status": 200,
+      "sha256": "b879354aa4ef4cca11583c358cfaaae955d23383a60077b0978c83c12c257018",
+      "bytes": 95038,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/b8/b879354aa4ef4cca11583c358cfaaae955d23383a60077b0978c83c12c257018"
+    },
+    {
+      "name": "mcp_registry_latest_133",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.RamaAditya49/titen-memory:0.7.2"
+      },
+      "status": 200,
+      "sha256": "f3414b0b0d125881e0577530d4c80aef6694391e04dcd5a84486003a62ffa81b",
+      "bytes": 165646,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/f3/f3414b0b0d125881e0577530d4c80aef6694391e04dcd5a84486003a62ffa81b"
+    },
+    {
+      "name": "mcp_registry_latest_134",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.Rosentic/rosentic:0.1.1"
+      },
+      "status": 200,
+      "sha256": "9878af680ddba83c42c3efc45fac77578df4ed743ea1a99ed4d251391622998d",
+      "bytes": 92181,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/98/9878af680ddba83c42c3efc45fac77578df4ed743ea1a99ed4d251391622998d"
+    },
+    {
+      "name": "mcp_registry_latest_135",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.SPAZIO-GENESI/attest-mcp-remote:1.0.0"
+      },
+      "status": 200,
+      "sha256": "6e5c69d9b6ea634ade4e24625382cb9084609f211eaed556aca13b7433268851",
+      "bytes": 109207,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/6e/6e5c69d9b6ea634ade4e24625382cb9084609f211eaed556aca13b7433268851"
+    },
+    {
+      "name": "mcp_registry_latest_136",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.Sendmux/sendmux-mcp:2.1.3"
+      },
+      "status": 200,
+      "sha256": "ea3f4700f320cc1b67289134351da1ae572ee41564d18d73bef88f4d2c393fd2",
+      "bytes": 156376,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/ea/ea3f4700f320cc1b67289134351da1ae572ee41564d18d73bef88f4d2c393fd2"
+    },
+    {
+      "name": "mcp_registry_latest_137",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.SheldonZhuang/spacesentinel-mcp:0.1.4"
+      },
+      "status": 200,
+      "sha256": "4b2c611923143cb968e686d507daaaf81651238108cf1e7ca516d68e42e6da05",
+      "bytes": 106764,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/4b/4b2c611923143cb968e686d507daaaf81651238108cf1e7ca516d68e42e6da05"
+    },
+    {
+      "name": "mcp_registry_latest_138",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.SolveaCX/voc-mcp:1.0.5"
+      },
+      "status": 200,
+      "sha256": "b7f7626af2d533c2ca5cf69bca858f55b37490f4dd1391ce2093be2b2ab04630",
+      "bytes": 95465,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/b7/b7f7626af2d533c2ca5cf69bca858f55b37490f4dd1391ce2093be2b2ab04630"
+    },
+    {
+      "name": "mcp_registry_latest_139",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.SurajKGoyal/amnesic:0.2.2"
+      },
+      "status": 200,
+      "sha256": "36a4ee56c4b4ec14a023883c6ced44600c2405211e913323da9809fafc825516",
+      "bytes": 91606,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/36/36a4ee56c4b4ec14a023883c6ced44600c2405211e913323da9809fafc825516"
+    },
+    {
+      "name": "mcp_registry_latest_140",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.Th3Slack3r/slacking-biz:1.2.1"
+      },
+      "status": 200,
+      "sha256": "f14f41a8dbbcf6472753aa2ee18dffdd8144a0a8341916c7239139e2e223befb",
+      "bytes": 101150,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/f1/f14f41a8dbbcf6472753aa2ee18dffdd8144a0a8341916c7239139e2e223befb"
+    },
+    {
+      "name": "mcp_registry_latest_141",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.TokDar2410621/publiar:0.1.7"
+      },
+      "status": 200,
+      "sha256": "04af96b0c36981991bb14d3efbf729a24f5f644d9524417acc1dfb3259f8491f",
+      "bytes": 94570,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/04/04af96b0c36981991bb14d3efbf729a24f5f644d9524417acc1dfb3259f8491f"
+    },
+    {
+      "name": "mcp_registry_latest_142",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.Utilify-io/utilify-mcp:0.1.0"
+      },
+      "status": 200,
+      "sha256": "720e0e5787728aa799b6d669914d56717a3eacc240d4033b38e9201ed535ddbb",
+      "bytes": 107070,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/72/720e0e5787728aa799b6d669914d56717a3eacc240d4033b38e9201ed535ddbb"
+    },
+    {
+      "name": "mcp_registry_latest_143",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.WYRE-AI/avanan-mcp:2.2.3"
+      },
+      "status": 200,
+      "sha256": "02d9c37a9d733614e6d7ba87ea84fcf8bd593953b5fc5ca2c7b5a09c431ba9aa",
+      "bytes": 148814,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/02/02d9c37a9d733614e6d7ba87ea84fcf8bd593953b5fc5ca2c7b5a09c431ba9aa"
+    },
+    {
+      "name": "mcp_registry_latest_144",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.WebforMike/citerank:2.0.2"
+      },
+      "status": 200,
+      "sha256": "4803b96c484ba05cc52b527fbe2cac3a54aecc1cc4dbfd0535772cc768f7a2bf",
+      "bytes": 80294,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/48/4803b96c484ba05cc52b527fbe2cac3a54aecc1cc4dbfd0535772cc768f7a2bf"
+    },
+    {
+      "name": "mcp_registry_latest_145",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.Wxt-ai/invoice-summary-calculator:1.0.7"
+      },
+      "status": 200,
+      "sha256": "f69266712e7a039b5b226d32bb9e7ca2b85e58761d81b58c0d562899fe987259",
+      "bytes": 72090,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/f6/f69266712e7a039b5b226d32bb9e7ca2b85e58761d81b58c0d562899fe987259"
+    },
+    {
+      "name": "mcp_registry_latest_146",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.YOLKINS/weeek-mcp:1.0.1"
+      },
+      "status": 200,
+      "sha256": "00c58091f5ea7d629b4d88095756db9d328d4440e37bee097939185696a3f042",
+      "bytes": 95843,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/00/00c58091f5ea7d629b4d88095756db9d328d4440e37bee097939185696a3f042"
+    },
+    {
+      "name": "mcp_registry_latest_147",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.a-church-ai/magnifica-family:1.0.0"
+      },
+      "status": 200,
+      "sha256": "54f258f2c68c6a5e99e8515ef42de5dd989f46695a6ed7614d928d5923c73c0a",
+      "bytes": 94976,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/54/54f258f2c68c6a5e99e8515ef42de5dd989f46695a6ed7614d928d5923c73c0a"
+    },
+    {
+      "name": "mcp_registry_latest_148",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.adamsjack711-ux/pkgxray:1.0.5"
+      },
+      "status": 200,
+      "sha256": "87c1e3dbb3920f513a78b21a664554c46fcc2c38d590cea20e2292de554bac2e",
+      "bytes": 99831,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/87/87c1e3dbb3920f513a78b21a664554c46fcc2c38d590cea20e2292de554bac2e"
+    },
+    {
+      "name": "mcp_registry_latest_149",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.agentc22/x402engine-mcp:1.0.3"
+      },
+      "status": 200,
+      "sha256": "7eca5b34e2637f86f689e9fedde6b761717d9e43fc8391850386054e2f25f31b",
+      "bytes": 98087,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/7e/7eca5b34e2637f86f689e9fedde6b761717d9e43fc8391850386054e2f25f31b"
+    },
+    {
+      "name": "mcp_registry_latest_150",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.airbuzz/syncpen-mcp:1.6.3"
+      },
+      "status": 200,
+      "sha256": "108e8ff66632a9d1baa75508f666a5ba0a3c51b86d4c9a29a95e15cae18855b4",
+      "bytes": 137419,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/10/108e8ff66632a9d1baa75508f666a5ba0a3c51b86d4c9a29a95e15cae18855b4"
+    },
+    {
+      "name": "mcp_registry_latest_151",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.alexcurpan-cloud/neuralbrain:1.0.0"
+      },
+      "status": 200,
+      "sha256": "c8feb8bd5b3b41747abba7eb525b307c46be196b872b990d135277e861b260e9",
+      "bytes": 107637,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/c8/c8feb8bd5b3b41747abba7eb525b307c46be196b872b990d135277e861b260e9"
+    },
+    {
+      "name": "mcp_registry_latest_152",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.aminpiano/nara-tour:0.1.0"
+      },
+      "status": 200,
+      "sha256": "255e10f7896b1aadc877f180ca3fae42919678e45ed77906b2e7ca6a74284caf",
+      "bytes": 97982,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/25/255e10f7896b1aadc877f180ca3fae42919678e45ed77906b2e7ca6a74284caf"
+    },
+    {
+      "name": "mcp_registry_latest_153",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.anousss007/blatui:1.0.0"
+      },
+      "status": 200,
+      "sha256": "9f22b30fee8b983f3043402e3784850a009a4b0cd8806b981b9e8b1d9d7d3d3f",
+      "bytes": 104341,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/9f/9f22b30fee8b983f3043402e3784850a009a4b0cd8806b981b9e8b1d9d7d3d3f"
+    },
+    {
+      "name": "mcp_registry_latest_154",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.applehorsefrog/vergabe-api:0.4.0"
+      },
+      "status": 200,
+      "sha256": "cbd5c55608e62de6feeca5b6a673bcdc7298a14f01d3b7b665d6851466583e4c",
+      "bytes": 99024,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/cb/cbd5c55608e62de6feeca5b6a673bcdc7298a14f01d3b7b665d6851466583e4c"
+    },
+    {
+      "name": "mcp_registry_latest_155",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.arturayupov/keyward:0.1.1"
+      },
+      "status": 200,
+      "sha256": "821cef3ead4c4eb4b52737d517ee1f40087bd9a37d5dac787771f2e65be2c112",
+      "bytes": 95609,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/82/821cef3ead4c4eb4b52737d517ee1f40087bd9a37d5dac787771f2e65be2c112"
+    },
+    {
+      "name": "mcp_registry_latest_156",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.athenalion/fincore-agentic-commerce:2.0.0"
+      },
+      "status": 200,
+      "sha256": "a99739cbdf0d5fbcf8ee6d8bb5d74824426f0b613ec96fdd6e8eadfa48196273",
+      "bytes": 106521,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/a9/a99739cbdf0d5fbcf8ee6d8bb5d74824426f0b613ec96fdd6e8eadfa48196273"
+    },
+    {
+      "name": "mcp_registry_latest_157",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.aybeeare/water-conditions:1.1.0"
+      },
+      "status": 200,
+      "sha256": "e41c56575b6673c0bc5750f37aa0f2e6391034eaf4d0cf44994365816d8834ec",
+      "bytes": 99415,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/e4/e41c56575b6673c0bc5750f37aa0f2e6391034eaf4d0cf44994365816d8834ec"
+    },
+    {
+      "name": "mcp_registry_latest_158",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.bch1212/queryshield:1.0.1"
+      },
+      "status": 200,
+      "sha256": "cb2b97214a4f16df71f4ce6f20d8521f03d06ac36188037f1bb4745eff058a12",
+      "bytes": 88826,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/cb/cb2b97214a4f16df71f4ce6f20d8521f03d06ac36188037f1bb4745eff058a12"
+    },
+    {
+      "name": "mcp_registry_latest_159",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.bguillow-rgb/pour-picks:1.0.4"
+      },
+      "status": 200,
+      "sha256": "c9d24f82518f23779272ca139f8cde3b39b97e8385fec92ac30c3ccabddbb077",
+      "bytes": 94000,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/c9/c9d24f82518f23779272ca139f8cde3b39b97e8385fec92ac30c3ccabddbb077"
+    },
+    {
+      "name": "mcp_registry_latest_160",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.bobaba99/motionlint:0.2.1"
+      },
+      "status": 200,
+      "sha256": "97f126054b44579b43a79c04fe70bd00550f206ff985e3e23c911fee98270126",
+      "bytes": 94970,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/97/97f126054b44579b43a79c04fe70bd00550f206ff985e3e23c911fee98270126"
+    },
+    {
+      "name": "mcp_registry_latest_161",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.browser-gateway/browser-gateway:0.4.23"
+      },
+      "status": 200,
+      "sha256": "69187a8ab61504b6b56a378734b03d1ed7314e7348eed15e386af101ac85d022",
+      "bytes": 105426,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/69/69187a8ab61504b6b56a378734b03d1ed7314e7348eed15e386af101ac85d022"
+    },
+    {
+      "name": "mcp_registry_latest_162",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.cammac-creator/ibanforge:1.7.0"
+      },
+      "status": 200,
+      "sha256": "ae924d54d736440621922f9a0d6c9782f6f0361b76d26a02fff48f39c2c08eb9",
+      "bytes": 91336,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/ae/ae924d54d736440621922f9a0d6c9782f6f0361b76d26a02fff48f39c2c08eb9"
+    },
+    {
+      "name": "mcp_registry_latest_163",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.cesteral/amazon-dsp-mcp:1.4.0"
+      },
+      "status": 200,
+      "sha256": "fe21e762d8999f746ca88ca2486b2d457ede0c852be2cdf14290ae23496fd832",
+      "bytes": 103572,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/fe/fe21e762d8999f746ca88ca2486b2d457ede0c852be2cdf14290ae23496fd832"
+    },
+    {
+      "name": "mcp_registry_latest_164",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.chrischall/getyourguide-mcp:2.1.1"
+      },
+      "status": 200,
+      "sha256": "6bbcb7a13506fd7685a5294392cd313adef5e2ee392d9284d61fcff3576f9ad4",
+      "bytes": 107060,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/6b/6bbcb7a13506fd7685a5294392cd313adef5e2ee392d9284d61fcff3576f9ad4"
+    },
+    {
+      "name": "mcp_registry_latest_165",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.clarkthomas/clearlot:0.3.0"
+      },
+      "status": 200,
+      "sha256": "e27767984c6e45f766fbaf7b40822591d832ac8ac0ba7dfb5e7a02ca3ba02e7f",
+      "bytes": 93148,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/e2/e27767984c6e45f766fbaf7b40822591d832ac8ac0ba7dfb5e7a02ca3ba02e7f"
+    },
+    {
+      "name": "mcp_registry_latest_166",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.codeChap/pexels:0.1.0"
+      },
+      "status": 200,
+      "sha256": "84f28a63294f6379cd21100dee7370898de8f5e21fdca7696f28d96c359254a8",
+      "bytes": 106251,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/84/84f28a63294f6379cd21100dee7370898de8f5e21fdca7696f28d96c359254a8"
+    },
+    {
+      "name": "mcp_registry_latest_167",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.codespar/mcp-picpay:0.2.0-alpha.3"
+      },
+      "status": 200,
+      "sha256": "f7326caaa9bbc30b4a41805ddc4807107b8f60de10dd7ed00ea832639fd6a7ab",
+      "bytes": 100466,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/f7/f7326caaa9bbc30b4a41805ddc4807107b8f60de10dd7ed00ea832639fd6a7ab"
+    },
+    {
+      "name": "mcp_registry_latest_168",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.conorbronsdon/postlint-mcp:1.1.0"
+      },
+      "status": 200,
+      "sha256": "688c180a537d7e5947f65a5d28559fe8766bc0d2b49500585df9ec80d76e2189",
+      "bytes": 125109,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/68/688c180a537d7e5947f65a5d28559fe8766bc0d2b49500585df9ec80d76e2189"
+    },
+    {
+      "name": "mcp_registry_latest_169",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.crunchtools/wordpress:0.4.1"
+      },
+      "status": 200,
+      "sha256": "cdd9cbf9c657f1b5806ea19f50c18750a23fd58cf37e39a7798f1561187138cd",
+      "bytes": 206281,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/cd/cdd9cbf9c657f1b5806ea19f50c18750a23fd58cf37e39a7798f1561187138cd"
+    },
+    {
+      "name": "mcp_registry_latest_170",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.cyanheads/hn-mcp-server:0.5.17"
+      },
+      "status": 200,
+      "sha256": "f7e68f7fc69762c8b0eff4c3a4d515348ac4bbecba9521307c67d7a319c5bb23",
+      "bytes": 249038,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/f7/f7e68f7fc69762c8b0eff4c3a4d515348ac4bbecba9521307c67d7a319c5bb23"
+    },
+    {
+      "name": "mcp_registry_latest_171",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.dadang11/cryptoiz:4.16.17"
+      },
+      "status": 200,
+      "sha256": "e3c100270641166d94f5c1c092ef5cd2f2836de898c464211902bee6450686bc",
+      "bytes": 91754,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/e3/e3c100270641166d94f5c1c092ef5cd2f2836de898c464211902bee6450686bc"
+    },
+    {
+      "name": "mcp_registry_latest_172",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.danboabes/mcpdomain:1.0.7"
+      },
+      "status": 200,
+      "sha256": "2eda4592dfa59fabb87d0a003f5b2bcc0b0f18b5dabda605759a6686f3bbc2b3",
+      "bytes": 96981,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/2e/2eda4592dfa59fabb87d0a003f5b2bcc0b0f18b5dabda605759a6686f3bbc2b3"
+    },
+    {
+      "name": "mcp_registry_latest_173",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.davidlandais/ovh-api-mcp:0.3.0"
+      },
+      "status": 200,
+      "sha256": "7dabf08ed333cb5f4d8de7138b9b704dd871bca94742fa2348e79920843dc07f",
+      "bytes": 108919,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/7d/7dabf08ed333cb5f4d8de7138b9b704dd871bca94742fa2348e79920843dc07f"
+    },
+    {
+      "name": "mcp_registry_latest_174",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.demovela/mcp-server:1.2.1"
+      },
+      "status": 200,
+      "sha256": "f66b737e6903dcb9ba2cbd5f624a7a5820f28a111d0ecc1c43c83ec096ed0f39",
+      "bytes": 106956,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/f6/f66b737e6903dcb9ba2cbd5f624a7a5820f28a111d0ecc1c43c83ec096ed0f39"
+    },
+    {
+      "name": "mcp_registry_latest_175",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.dharun-rd/weather:1.0.1"
+      },
+      "status": 200,
+      "sha256": "08ec46e58f240c35a958ee079674f784c3a530a9828fa4a02a8045cad3276e66",
+      "bytes": 92446,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/08/08ec46e58f240c35a958ee079674f784c3a530a9828fa4a02a8045cad3276e66"
+    },
+    {
+      "name": "mcp_registry_latest_176",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.dns-aid/dns-aid:0.28.1"
+      },
+      "status": 200,
+      "sha256": "47b7c3eb61a330cd80e36cc0d976735a2aa579d742338b1ee44ba393e035d298",
+      "bytes": 103522,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/47/47b7c3eb61a330cd80e36cc0d976735a2aa579d742338b1ee44ba393e035d298"
+    },
+    {
+      "name": "mcp_registry_latest_177",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.dontsovcmc/yandex-metrika:0.2.4"
+      },
+      "status": 200,
+      "sha256": "d27e1bb493e0e564913dcee34c5387466a6c2e4d4291520ea0c1104dd9f1537a",
+      "bytes": 104019,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/d2/d27e1bb493e0e564913dcee34c5387466a6c2e4d4291520ea0c1104dd9f1537a"
+    },
+    {
+      "name": "mcp_registry_latest_178",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.dushyant30suthar/endiagram-mcp:0.3.16"
+      },
+      "status": 200,
+      "sha256": "e8d4c7b82394b2ea9be0ac91b14cc3cbe0257d20f1111c94b32dc4e3c224c7d4",
+      "bytes": 102520,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/e8/e8d4c7b82394b2ea9be0ac91b14cc3cbe0257d20f1111c94b32dc4e3c224c7d4"
+    },
+    {
+      "name": "mcp_registry_latest_179",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.efranceschetti/festo-codesys-mcp:1.0.1"
+      },
+      "status": 200,
+      "sha256": "e9afc8e19a1d83d8a467a733ee74e91795f9f1442bb67b3294b036586b89ba19",
+      "bytes": 96356,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/e9/e9afc8e19a1d83d8a467a733ee74e91795f9f1442bb67b3294b036586b89ba19"
+    },
+    {
+      "name": "mcp_registry_latest_180",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.entia-systems-core/entity-verification:4.4.0"
+      },
+      "status": 200,
+      "sha256": "3dacef1890eb92a828fb3dce0456a3a30eb7e80fa3baf331961104bcf43679dc",
+      "bytes": 102518,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/3d/3dacef1890eb92a828fb3dce0456a3a30eb7e80fa3baf331961104bcf43679dc"
+    },
+    {
+      "name": "mcp_registry_latest_181",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.evefromwayback/govee-mcp:0.2.0"
+      },
+      "status": 200,
+      "sha256": "eb513f63dc06155d121865a52e2dfb55bbad88ecc2cef59e81a34722037b940c",
+      "bytes": 90420,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/eb/eb513f63dc06155d121865a52e2dfb55bbad88ecc2cef59e81a34722037b940c"
+    },
+    {
+      "name": "mcp_registry_latest_182",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.felixAnhalt/figma-to-code-mcp:0.29.0"
+      },
+      "status": 200,
+      "sha256": "1957d4e8738b031d7937c9a2d379d77bc0fe5347087f6edbb09fc08d44982e25",
+      "bytes": 95493,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/19/1957d4e8738b031d7937c9a2d379d77bc0fe5347087f6edbb09fc08d44982e25"
+    },
+    {
+      "name": "mcp_registry_latest_183",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.flukeatzerocool/holonovel:2026.9.7"
+      },
+      "status": 200,
+      "sha256": "f4dc4595fb421bde9f0e63185562d22c961f11004a0dd589f54dcb97d96ede98",
+      "bytes": 98122,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/f4/f4dc4595fb421bde9f0e63185562d22c961f11004a0dd589f54dcb97d96ede98"
+    },
+    {
+      "name": "mcp_registry_latest_184",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.freeappstore-online/mcp:0.1.0"
+      },
+      "status": 200,
+      "sha256": "622ea2b11e72e512a3dad458c0e832f424bd2a9cc3166d89cf9acb97e1113a43",
+      "bytes": 93184,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/62/622ea2b11e72e512a3dad458c0e832f424bd2a9cc3166d89cf9acb97e1113a43"
+    },
+    {
+      "name": "mcp_registry_latest_185",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.gabrielmahia/sifa-mcp:0.1.4"
+      },
+      "status": 200,
+      "sha256": "b777728b0cc7814987d7557186d70530d1d77ca2fb3d527b6de836b165bdc892",
+      "bytes": 93050,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/b7/b777728b0cc7814987d7557186d70530d1d77ca2fb3d527b6de836b165bdc892"
+    },
+    {
+      "name": "mcp_registry_latest_186",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.geraservicesuk/mcp-geracity:0.1.1"
+      },
+      "status": 200,
+      "sha256": "89d015eb73d8f04644cba58e647da14bcd11a9a9cc0026f70a4f1953f31118e3",
+      "bytes": 96046,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/89/89d015eb73d8f04644cba58e647da14bcd11a9a9cc0026f70a4f1953f31118e3"
+    },
+    {
+      "name": "mcp_registry_latest_187",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.gkmex75/gkmex-inventory:1.0.0"
+      },
+      "status": 200,
+      "sha256": "3cbdd0114c55cc0dc1b4a46ca64e5878354ed03d440da5e969ebc88e8a454a4c",
+      "bytes": 92680,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/3c/3cbdd0114c55cc0dc1b4a46ca64e5878354ed03d440da5e969ebc88e8a454a4c"
+    },
+    {
+      "name": "mcp_registry_latest_188",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.gregario/lego-oracle:0.1.1"
+      },
+      "status": 200,
+      "sha256": "1868ec5a66cea6ef3edc1d3c0cd12f0c2a43c402c95f610af2c7a62c5c2bce63",
+      "bytes": 106573,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/18/1868ec5a66cea6ef3edc1d3c0cd12f0c2a43c402c95f610af2c7a62c5c2bce63"
+    },
+    {
+      "name": "mcp_registry_latest_189",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.gybob/aai-gateway:1.1.10"
+      },
+      "status": 200,
+      "sha256": "21d9f9224ea774f8de11aa1a412785f4334e40dd839f3c23479dac0e564cfb91",
+      "bytes": 103093,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/21/21d9f9224ea774f8de11aa1a412785f4334e40dd839f3c23479dac0e564cfb91"
+    },
+    {
+      "name": "mcp_registry_latest_190",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.helbertparanhos/postforme-mcp-pro:1.0.0"
+      },
+      "status": 200,
+      "sha256": "cfd70d30973f4a30010eb2d22429226a73271da296eae60aba855534abde8dc7",
+      "bytes": 94767,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/cf/cfd70d30973f4a30010eb2d22429226a73271da296eae60aba855534abde8dc7"
+    },
+    {
+      "name": "mcp_registry_latest_191",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.hmoses/poly-glot-ai-workspace:1.9.1"
+      },
+      "status": 200,
+      "sha256": "22fe60b41e190e84172669e8d3958f866592db67829e8b36f6e8b38a04a63432",
+      "bytes": 90210,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/22/22fe60b41e190e84172669e8d3958f866592db67829e8b36f6e8b38a04a63432"
+    },
+    {
+      "name": "mcp_registry_latest_192",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.huoshuiai42/huoshui-pdf-translator:1.0.0"
+      },
+      "status": 200,
+      "sha256": "0cb7f66694528e37b8b85f70ce28d3327d2c1d8ed29d096fe9da15bca99550ce",
+      "bytes": 109316,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/0c/0cb7f66694528e37b8b85f70ce28d3327d2c1d8ed29d096fe9da15bca99550ce"
+    },
+    {
+      "name": "mcp_registry_latest_193",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.igorsaevets/page2ai-mcp:0.2.5"
+      },
+      "status": 200,
+      "sha256": "70ffcb683b6cbb3902cc4eeea70b65e4a03ded2abbbee2bec628ce636e648da4",
+      "bytes": 101021,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/70/70ffcb683b6cbb3902cc4eeea70b65e4a03ded2abbbee2bec628ce636e648da4"
+    },
+    {
+      "name": "mcp_registry_latest_194",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.infoinlet-marketplace/mcp-filesystem:0.1.1"
+      },
+      "status": 200,
+      "sha256": "5e559663490a6ac3fd007bbedd12113d13e255a47e8a8d1f1fb6e398c78dee72",
+      "bytes": 95616,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/5e/5e559663490a6ac3fd007bbedd12113d13e255a47e8a8d1f1fb6e398c78dee72"
+    },
+    {
+      "name": "mcp_registry_latest_195",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.irisxc4/memoryguard:0.7.12"
+      },
+      "status": 200,
+      "sha256": "9d23ecccd18ee4a2e88c899e99cb09a100d16e3c9261167ac4da558aeb93bb52",
+      "bytes": 100312,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/9d/9d23ecccd18ee4a2e88c899e99cb09a100d16e3c9261167ac4da558aeb93bb52"
+    },
+    {
+      "name": "mcp_registry_latest_196",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.jagilber-org/index-server:1.42.4"
+      },
+      "status": 200,
+      "sha256": "2726eed64ac643f5cc29ae9dd2eb7bf975209b0f17de361ffe9f5d000be4f4eb",
+      "bytes": 89693,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/27/2726eed64ac643f5cc29ae9dd2eb7bf975209b0f17de361ffe9f5d000be4f4eb"
+    },
+    {
+      "name": "mcp_registry_latest_197",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.java-jaydev/naver-mybox-mcp:0.1.0"
+      },
+      "status": 200,
+      "sha256": "5a7bdee5043e8be7c20dd2efc54c7848fc8ea9b861f3548b5b7bb73d533d0b4a",
+      "bytes": 87018,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/5a/5a7bdee5043e8be7c20dd2efc54c7848fc8ea9b861f3548b5b7bb73d533d0b4a"
+    },
+    {
+      "name": "mcp_registry_latest_198",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.jessedu29260-netizen/booboo:0.5.0"
+      },
+      "status": 200,
+      "sha256": "b37fedfbde39f70c27acd72100b6edef89acaac7a0da05e5d77da36a05aa776b",
+      "bytes": 111240,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/b3/b37fedfbde39f70c27acd72100b6edef89acaac7a0da05e5d77da36a05aa776b"
+    },
+    {
+      "name": "mcp_registry_latest_199",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.jmshinhwa/config-dsl-lint-snippet-pack:0.1.4"
+      },
+      "status": 200,
+      "sha256": "9512397e2b0a2ebbf78be57833ad1e5fd2108a4c52b62a5168ae8a08fa1f186d",
+      "bytes": 85940,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/95/9512397e2b0a2ebbf78be57833ad1e5fd2108a4c52b62a5168ae8a08fa1f186d"
+    },
+    {
+      "name": "mcp_registry_latest_200",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.jmshinhwa/sql-card-data-lint:1.0.3"
+      },
+      "status": 200,
+      "sha256": "60fffd9f9f6d5d58705d9f307d835af999ccd540063212fc18fb648b040fc5d1",
+      "bytes": 88628,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/60/60fffd9f9f6d5d58705d9f307d835af999ccd540063212fc18fb648b040fc5d1"
+    },
+    {
+      "name": "mcp_registry_latest_201",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.jonatanvazquez/propfacil:1.3.9"
+      },
+      "status": 200,
+      "sha256": "32db4fb16e9ef9137a0b46ceab942de9fa45cef749acbd17a9ef2faceae4ffd5",
+      "bytes": 101635,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/32/32db4fb16e9ef9137a0b46ceab942de9fa45cef749acbd17a9ef2faceae4ffd5"
+    },
+    {
+      "name": "mcp_registry_latest_202",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.juliusgerman/entyrix-mcp:0.1.4"
+      },
+      "status": 200,
+      "sha256": "6108c23904d1eaa6127608d4effa87d9ebc54a5851aed31553d7d2d88efeadd8",
+      "bytes": 86025,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/61/6108c23904d1eaa6127608d4effa87d9ebc54a5851aed31553d7d2d88efeadd8"
+    },
+    {
+      "name": "mcp_registry_latest_203",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.jztan/qt4-doc-mcp-server:0.7.0"
+      },
+      "status": 200,
+      "sha256": "4f0f62560bea3cde952cd6ac4e1496708fc49d32f225af710c109d79ad3cc5d4",
+      "bytes": 98011,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/4f/4f0f62560bea3cde952cd6ac4e1496708fc49d32f225af710c109d79ad3cc5d4"
+    },
+    {
+      "name": "mcp_registry_latest_204",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.kendall8388/keyframe:0.2.1"
+      },
+      "status": 200,
+      "sha256": "30afce2df27abec99a6746795e3bac5e13c61d1cb7e21424138658c9b231d69c",
+      "bytes": 90235,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/30/30afce2df27abec99a6746795e3bac5e13c61d1cb7e21424138658c9b231d69c"
+    },
+    {
+      "name": "mcp_registry_latest_205",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.kiycoh/silica-core:0.9.0"
+      },
+      "status": 200,
+      "sha256": "31aea5e721e9ed41b26f904ba9d16c5a11b64645a817e68c06ed6b4615956ced",
+      "bytes": 94889,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/31/31aea5e721e9ed41b26f904ba9d16c5a11b64645a817e68c06ed6b4615956ced"
+    },
+    {
+      "name": "mcp_registry_latest_206",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.kts982/mcp-sap-gui:0.4.0"
+      },
+      "status": 200,
+      "sha256": "9ab2470f065ec7ef29753db4b9f5df7aad17c92b026d8806270d93f16b183f82",
+      "bytes": 94244,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/9a/9ab2470f065ec7ef29753db4b9f5df7aad17c92b026d8806270d93f16b183f82"
+    },
+    {
+      "name": "mcp_registry_latest_207",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.lazymac2x/agent-trace-auditor:1.0.0"
+      },
+      "status": 200,
+      "sha256": "df270a421d400343ba858d0487a210d9fb5b9939fa294f0c4720f137087c4ca6",
+      "bytes": 79542,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/df/df270a421d400343ba858d0487a210d9fb5b9939fa294f0c4720f137087c4ca6"
+    },
+    {
+      "name": "mcp_registry_latest_208",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.letoribo/mcp-graphql-enhanced:4.15.3"
+      },
+      "status": 200,
+      "sha256": "7da0a0af146344ca3d6bec064772907f27baf8c2085c4e3bf10b7319d1352141",
+      "bytes": 96474,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/7d/7da0a0af146344ca3d6bec064772907f27baf8c2085c4e3bf10b7319d1352141"
+    },
+    {
+      "name": "mcp_registry_latest_209",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.ljcl/strava-mcp:3.0.0"
+      },
+      "status": 200,
+      "sha256": "4a9d7f7c2d868baf66edaf39d285f15ebab9cdc5603cd429136282e1cb0b80cc",
+      "bytes": 92639,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/4a/4a9d7f7c2d868baf66edaf39d285f15ebab9cdc5603cd429136282e1cb0b80cc"
+    },
+    {
+      "name": "mcp_registry_latest_210",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.lucasnoah/philadelphia-restoration:1.0.0"
+      },
+      "status": 200,
+      "sha256": "d8ce2bbe19e6961d9024bba51aa831b9cac9effcb6f06083b048f4972a3882c8",
+      "bytes": 98131,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/d8/d8ce2bbe19e6961d9024bba51aa831b9cac9effcb6f06083b048f4972a3882c8"
+    },
+    {
+      "name": "mcp_registry_latest_211",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.mailercloud-com/mcp-server:2.0.0"
+      },
+      "status": 200,
+      "sha256": "b6b4411e8a0ca8c405e49d0772c96dd4c14edcc51a1e680690c8ad6e885f8e10",
+      "bytes": 91904,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/b6/b6b4411e8a0ca8c405e49d0772c96dd4c14edcc51a1e680690c8ad6e885f8e10"
+    },
+    {
+      "name": "mcp_registry_latest_212",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.malkreide/swiss-housing-mcp:0.2.0"
+      },
+      "status": 200,
+      "sha256": "8970dbfed61a02bbf4a9a835ce7402c942e4fc5b9fcbb03d3a0dcc08006b87f7",
+      "bytes": 97788,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/89/8970dbfed61a02bbf4a9a835ce7402c942e4fc5b9fcbb03d3a0dcc08006b87f7"
+    },
+    {
+      "name": "mcp_registry_latest_213",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.markoskarllos-netizen/aetherintel-marketplace:1.0.0"
+      },
+      "status": 200,
+      "sha256": "d919471fcba8b4934e2f4dc4b940a0a338a4cf6798c182eb8bdb62c8f6da7fdc",
+      "bytes": 82376,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/d9/d919471fcba8b4934e2f4dc4b940a0a338a4cf6798c182eb8bdb62c8f6da7fdc"
+    },
+    {
+      "name": "mcp_registry_latest_214",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.matematicsolutions/mcp-eu-sparql:1.2.0"
+      },
+      "status": 200,
+      "sha256": "de99ffa34e613524f219f92dbbef6f81b488162cbc466dca528f2ae8bae8d6ca",
+      "bytes": 86603,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/de/de99ffa34e613524f219f92dbbef6f81b488162cbc466dca528f2ae8bae8d6ca"
+    },
+    {
+      "name": "mcp_registry_latest_215",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.mcp-dir/advbox-mcp:0.1.0"
+      },
+      "status": 200,
+      "sha256": "7528b2154f521a4a70c73c8f47fcfba2bb3f0ce8affd93ec9787b44d39a2ecc0",
+      "bytes": 70951,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/75/7528b2154f521a4a70c73c8f47fcfba2bb3f0ce8affd93ec9787b44d39a2ecc0"
+    },
+    {
+      "name": "mcp_registry_latest_216",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.mcp-dir/cfm_cadastro-mcp:0.1.0"
+      },
+      "status": 200,
+      "sha256": "11771515b39e56755773978c868d461346d06b113abfe136fe7ceff573904cdc",
+      "bytes": 72680,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/11/11771515b39e56755773978c868d461346d06b113abfe136fe7ceff573904cdc"
+    },
+    {
+      "name": "mcp_registry_latest_217",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.mcp-dir/cro_ro_cadastro-mcp:0.1.0"
+      },
+      "status": 200,
+      "sha256": "5b667627b07a636ee7e660cf1a4f66148a20d8e831a0f417423e623ecadfbb0a",
+      "bytes": 72717,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/5b/5b667627b07a636ee7e660cf1a4f66148a20d8e831a0f417423e623ecadfbb0a"
+    },
+    {
+      "name": "mcp_registry_latest_218",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.mcp-dir/detran_rs_veiculo-mcp:0.1.0"
+      },
+      "status": 200,
+      "sha256": "45078e7f54ab6f6c55cbba18240812641679687958a0e692305a6737cf8a9c65",
+      "bytes": 72153,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/45/45078e7f54ab6f6c55cbba18240812641679687958a0e692305a6737cf8a9c65"
+    },
+    {
+      "name": "mcp_registry_latest_219",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.mcp-dir/inpi_marcas_processo-mcp:0.1.0"
+      },
+      "status": 200,
+      "sha256": "54410664478186c2778c4e376364c50d853e19052165d12295d752f4aced9dd9",
+      "bytes": 70668,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/54/54410664478186c2778c4e376364c50d853e19052165d12295d752f4aced9dd9"
+    },
+    {
+      "name": "mcp_registry_latest_220",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.mcp-dir/omie-mcp:0.1.0"
+      },
+      "status": 200,
+      "sha256": "5a88f222857d918e780238651d2b27c7f0def3a488dc46ac399ff0a9d75fd3d2",
+      "bytes": 75265,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/5a/5a88f222857d918e780238651d2b27c7f0def3a488dc46ac399ff0a9d75fd3d2"
+    },
+    {
+      "name": "mcp_registry_latest_221",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.mcp-dir/pref_pa_belem_multas-mcp:0.1.0"
+      },
+      "status": 200,
+      "sha256": "18d87e236e58695a9b8328e1425e2d135b1b268e28060d481f1c9bf7398a91d1",
+      "bytes": 75795,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/18/18d87e236e58695a9b8328e1425e2d135b1b268e28060d481f1c9bf7398a91d1"
+    },
+    {
+      "name": "mcp_registry_latest_222",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.mcp-dir/receita_federal_nfse-mcp:0.1.0"
+      },
+      "status": 200,
+      "sha256": "e69b368b7c16086ce9dd9f2ea8798eb03dac98444eeada8aed4e7f4324cf87c9",
+      "bytes": 73664,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/e6/e69b368b7c16086ce9dd9f2ea8798eb03dac98444eeada8aed4e7f4324cf87c9"
+    },
+    {
+      "name": "mcp_registry_latest_223",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.mcp-dir/sefaz_ma_certidao_divida_ativa-mcp:0.1.0"
+      },
+      "status": 200,
+      "sha256": "fcbe46e38e0dead1dca02260118decc9f5e36ac6f25a3864c39c52534be0c8e2",
+      "bytes": 73143,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/fc/fcbe46e38e0dead1dca02260118decc9f5e36ac6f25a3864c39c52534be0c8e2"
+    },
+    {
+      "name": "mcp_registry_latest_224",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.mcp-dir/senatran_meus_veiculos_comp-mcp:0.1.0"
+      },
+      "status": 200,
+      "sha256": "48e783a61e52f4207b0df4d401600f97bc6515c024c3028f66dd712bb5f9de3a",
+      "bytes": 71711,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/48/48e783a61e52f4207b0df4d401600f97bc6515c024c3028f66dd712bb5f9de3a"
+    },
+    {
+      "name": "mcp_registry_latest_225",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.mcp-dir/tribunal_tjsp_colegio_recursal-mcp:0.1.0"
+      },
+      "status": 200,
+      "sha256": "02b15547477eec2cb3f549ede4b732be93f5b0ecf868ab846d3e0b57bf344b84",
+      "bytes": 75438,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/02/02b15547477eec2cb3f549ede4b732be93f5b0ecf868ab846d3e0b57bf344b84"
+    },
+    {
+      "name": "mcp_registry_latest_226",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.mcp-dir/webmotors-mcp:0.1.0"
+      },
+      "status": 200,
+      "sha256": "6f570c2c73de9ef5d7ba21564bc92866e2f1ff19f9c625aeffb079b56a00c06a",
+      "bytes": 111797,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/6f/6f570c2c73de9ef5d7ba21564bc92866e2f1ff19f9c625aeffb079b56a00c06a"
+    },
+    {
+      "name": "mcp_registry_latest_227",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.meltingpixelsai/zero-core-budget:1.0.0"
+      },
+      "status": 200,
+      "sha256": "f624f5a6332f5b72540c1f9017227520f37d8a52879a8ca824babb716cdd6353",
+      "bytes": 112290,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/f6/f624f5a6332f5b72540c1f9017227520f37d8a52879a8ca824babb716cdd6353"
+    },
+    {
+      "name": "mcp_registry_latest_228",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.mickelsamuel/migrationpilot:1.6.1"
+      },
+      "status": 200,
+      "sha256": "ce4c74a05393e59d85b7d5041c0479601fd991747a59d73ad0cdbdb67f7dd115",
+      "bytes": 120874,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/ce/ce4c74a05393e59d85b7d5041c0479601fd991747a59d73ad0cdbdb67f7dd115"
+    },
+    {
+      "name": "mcp_registry_latest_229",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.mindstone/mcp-server-office:0.3.0"
+      },
+      "status": 200,
+      "sha256": "523811ece7fb9a1bce284d2140c9d2307a0b2a53ba3fbd61dc3e89cf53bb9873",
+      "bytes": 99454,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/52/523811ece7fb9a1bce284d2140c9d2307a0b2a53ba3fbd61dc3e89cf53bb9873"
+    },
+    {
+      "name": "mcp_registry_latest_230",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.mmedum/pipedrive-mcp:0.6.0"
+      },
+      "status": 200,
+      "sha256": "a61d43001f41e308d64126d5f51fa4f2ffd675ab475f4998e2c660460ed40cce",
+      "bytes": 130712,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/a6/a61d43001f41e308d64126d5f51fa4f2ffd675ab475f4998e2c660460ed40cce"
+    },
+    {
+      "name": "mcp_registry_latest_231",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.mr-rahulmaurya/NOC.McpServer:1.0.6"
+      },
+      "status": 200,
+      "sha256": "1caaea62089ebab9f4758f79c1ed3397b121a1cce5738cbc0cf75bbe03749f54",
+      "bytes": 67292,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/1c/1caaea62089ebab9f4758f79c1ed3397b121a1cce5738cbc0cf75bbe03749f54"
+    },
+    {
+      "name": "mcp_registry_latest_232",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.mrfentmen/chocolatey-mcp:1.0.1"
+      },
+      "status": 200,
+      "sha256": "7c46e4e43bf76cb8d7427a8c4c0f6e055dc47fac797acd875595948c08a28105",
+      "bytes": 67109,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/7c/7c46e4e43bf76cb8d7427a8c4c0f6e055dc47fac797acd875595948c08a28105"
+    },
+    {
+      "name": "mcp_registry_latest_233",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.mrfentmen/emby-mcp:1.0.0"
+      },
+      "status": 200,
+      "sha256": "bddebc7ed5a0e9bd7e569b22ed7673cbd976f922372e9af775b5b40820254e1d",
+      "bytes": 66690,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/bd/bddebc7ed5a0e9bd7e569b22ed7673cbd976f922372e9af775b5b40820254e1d"
+    },
+    {
+      "name": "mcp_registry_latest_234",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.mrfentmen/hebcal-mcp:1.0.0"
+      },
+      "status": 200,
+      "sha256": "393f41e875f5da75de5a6a9ac79b6de8e8748ebad7b520c0edb9b47c78d343e5",
+      "bytes": 66766,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/39/393f41e875f5da75de5a6a9ac79b6de8e8748ebad7b520c0edb9b47c78d343e5"
+    },
+    {
+      "name": "mcp_registry_latest_235",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.mrfentmen/medrxiv-mcp:1.0.0"
+      },
+      "status": 200,
+      "sha256": "e30756581ed775fc49d3dfc42f4ac4d0125d5622be3fb411940384321aece1e5",
+      "bytes": 68165,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/e3/e30756581ed775fc49d3dfc42f4ac4d0125d5622be3fb411940384321aece1e5"
+    },
+    {
+      "name": "mcp_registry_latest_236",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.mrfentmen/phemex-mcp:1.0.0"
+      },
+      "status": 200,
+      "sha256": "96255071019237b83abc6d2108d0616649ce6efe41002e2b056ed2b1015a042c",
+      "bytes": 67411,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/96/96255071019237b83abc6d2108d0616649ce6efe41002e2b056ed2b1015a042c"
+    },
+    {
+      "name": "mcp_registry_latest_237",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.mrfentmen/ssl-cert-mcp:1.0.0"
+      },
+      "status": 200,
+      "sha256": "680ce96d3921bca8e67a0b6565f2a208afd8e59569dbee3711c2d9a6eaced7ea",
+      "bytes": 67131,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/68/680ce96d3921bca8e67a0b6565f2a208afd8e59569dbee3711c2d9a6eaced7ea"
+    },
+    {
+      "name": "mcp_registry_latest_238",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.mrfentmen/who-mcp:1.0.0"
+      },
+      "status": 200,
+      "sha256": "8589314147a586664ee755952106451855db98c9f531e2fbca9b82f8ea97e9cd",
+      "bytes": 88076,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/85/8589314147a586664ee755952106451855db98c9f531e2fbca9b82f8ea97e9cd"
+    },
+    {
+      "name": "mcp_registry_latest_239",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.muhammetali/recraft-mcp-server:1.0.0"
+      },
+      "status": 200,
+      "sha256": "edb4c6b594f4e6d71fba5598c34206f6bdc71710a98ffd0aad30c8c9d4463d56",
+      "bytes": 106861,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/ed/edb4c6b594f4e6d71fba5598c34206f6bdc71710a98ffd0aad30c8c9d4463d56"
+    },
+    {
+      "name": "mcp_registry_latest_240",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.nanoodlecom/nanoodle-mcp:0.6.0"
+      },
+      "status": 200,
+      "sha256": "ce3545ca85f5c49735bd2dc70c6cf3d1a8dede73bcdc7be8483687bd9de08314",
+      "bytes": 97251,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/ce/ce3545ca85f5c49735bd2dc70c6cf3d1a8dede73bcdc7be8483687bd9de08314"
+    },
+    {
+      "name": "mcp_registry_latest_241",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.nexus-mcp-infra/new-x402-listings-feed:1.0.0"
+      },
+      "status": 200,
+      "sha256": "38c092b846b40e71879a7c1ccc4d8bafb25ed30f54bcb69a4c41e1f8433a9d89",
+      "bytes": 143029,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/38/38c092b846b40e71879a7c1ccc4d8bafb25ed30f54bcb69a4c41e1f8433a9d89"
+    },
+    {
+      "name": "mcp_registry_latest_242",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.nikolay-e/diffctx:1.17.0"
+      },
+      "status": 200,
+      "sha256": "402acc06f35d1236522240578cc9b154294dd1f651160a14eee32a0a332415de",
+      "bytes": 128164,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/40/402acc06f35d1236522240578cc9b154294dd1f651160a14eee32a0a332415de"
+    },
+    {
+      "name": "mcp_registry_latest_243",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.nkiyohara/corresync:0.8.6"
+      },
+      "status": 200,
+      "sha256": "9cda84c410b2089a8efc65695b0472a3dad4a03eac75aebd1119c086a723a3a0",
+      "bytes": 112050,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/9c/9cda84c410b2089a8efc65695b0472a3dad4a03eac75aebd1119c086a723a3a0"
+    },
+    {
+      "name": "mcp_registry_latest_244",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.numbererikson/shinobi:0.3.1"
+      },
+      "status": 200,
+      "sha256": "93ad2043a710b6f4efa7192caa86fce88e880e56754a5a9756617879c64a3731",
+      "bytes": 118627,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/93/93ad2043a710b6f4efa7192caa86fce88e880e56754a5a9756617879c64a3731"
+    },
+    {
+      "name": "mcp_registry_latest_245",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.oleg-vdv/kepil:0.3.1"
+      },
+      "status": 200,
+      "sha256": "14e41c94a0afa0a29ad9ec3ac0a6b20d5edc23f7313c71fe0a98f7e47982abee",
+      "bytes": 109486,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/14/14e41c94a0afa0a29ad9ec3ac0a6b20d5edc23f7313c71fe0a98f7e47982abee"
+    },
+    {
+      "name": "mcp_registry_latest_246",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.operantlabs/operant-mcp:1.0.1"
+      },
+      "status": 200,
+      "sha256": "241c2f77886a8620a3d37d9b7c376ab877f438ab21a3ae76276c8e9ee70068d1",
+      "bytes": 95547,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/24/241c2f77886a8620a3d37d9b7c376ab877f438ab21a3ae76276c8e9ee70068d1"
+    },
+    {
+      "name": "mcp_registry_latest_247",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.pact-layer/agentpump:0.2.0"
+      },
+      "status": 200,
+      "sha256": "bc24325d7acbe4ad5db659bc94b69d9fac5f2d6a7998af9f4120dcb1c4120c10",
+      "bytes": 88353,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/bc/bc24325d7acbe4ad5db659bc94b69d9fac5f2d6a7998af9f4120dcb1c4120c10"
+    },
+    {
+      "name": "mcp_registry_latest_248",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.paulovitorti/brazil-company-risk-score:1.0.0"
+      },
+      "status": 200,
+      "sha256": "832c791b3720a2ace7b9382e09cd59500a10f8ab0a876762a5ec248b87c7be15",
+      "bytes": 84732,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/83/832c791b3720a2ace7b9382e09cd59500a10f8ab0a876762a5ec248b87c7be15"
+    },
+    {
+      "name": "mcp_registry_latest_249",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.pepabo/colormeshop-mcp:0.1.0"
+      },
+      "status": 200,
+      "sha256": "d7223f1d230560237a046c4d172f134c7a4597ac824e581ded32c6667c7b1887",
+      "bytes": 88798,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/d7/d7223f1d230560237a046c4d172f134c7a4597ac824e581ded32c6667c7b1887"
+    },
+    {
+      "name": "mcp_registry_latest_250",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.pineapple-farm/skill-history:1.0.0"
+      },
+      "status": 200,
+      "sha256": "9259875894a75c10cbba1047fab8cc27f63577de8df261a9c340ed38ac7ac1f7",
+      "bytes": 75347,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/92/9259875894a75c10cbba1047fab8cc27f63577de8df261a9c340ed38ac7ac1f7"
+    },
+    {
+      "name": "mcp_registry_latest_251",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.pipeworx-io/arcgis-harrisburg:0.1.0"
+      },
+      "status": 200,
+      "sha256": "51d49ce4cd85b7002bd2d07f8be0150d426615e10efe4877887db1d13c602d21",
+      "bytes": 74292,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/51/51d49ce4cd85b7002bd2d07f8be0150d426615e10efe4877887db1d13c602d21"
+    },
+    {
+      "name": "mcp_registry_latest_252",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.pipeworx-io/bcrp-pe:0.1.0"
+      },
+      "status": 200,
+      "sha256": "ab51f762b216781da23b5127b5b1851fcfcec7fa1ecd3109d6079ac50921e401",
+      "bytes": 71299,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/ab/ab51f762b216781da23b5127b5b1851fcfcec7fa1ecd3109d6079ac50921e401"
+    },
+    {
+      "name": "mcp_registry_latest_253",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.pipeworx-io/chronicling-america:0.1.0"
+      },
+      "status": 200,
+      "sha256": "c6ed1b8fbca9b5ba1e64bafbc4e3bfc40d029ab0ebb25719740560bea1a0d2f2",
+      "bytes": 72166,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/c6/c6ed1b8fbca9b5ba1e64bafbc4e3bfc40d029ab0ebb25719740560bea1a0d2f2"
+    },
+    {
+      "name": "mcp_registry_latest_254",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.pipeworx-io/data-cityofchicago:0.1.0"
+      },
+      "status": 200,
+      "sha256": "6c78d65ea7f8b9714ac738541c1591d1d27046420adfaeda72b3a8c25b104d71",
+      "bytes": 72073,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/6c/6c78d65ea7f8b9714ac738541c1591d1d27046420adfaeda72b3a8c25b104d71"
+    },
+    {
+      "name": "mcp_registry_latest_255",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.pipeworx-io/deps-dev:0.1.0"
+      },
+      "status": 200,
+      "sha256": "54797a73a451df78440a8e2c5843c2edb3afa21bda2e37f53a48a93e2fef25ed",
+      "bytes": 70311,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/54/54797a73a451df78440a8e2c5843c2edb3afa21bda2e37f53a48a93e2fef25ed"
+    },
+    {
+      "name": "mcp_registry_latest_256",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.pipeworx-io/europeana:0.1.1"
+      },
+      "status": 200,
+      "sha256": "23cc9744d8ef33a34b73c797683f423cecb8cd729b425ce486c3d3a48b595baf",
+      "bytes": 71114,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/23/23cc9744d8ef33a34b73c797683f423cecb8cd729b425ce486c3d3a48b595baf"
+    },
+    {
+      "name": "mcp_registry_latest_257",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.pipeworx-io/giantbomb:0.1.0"
+      },
+      "status": 200,
+      "sha256": "377b00c3094d6bf39ae215e6a2a96283747958c317061a30c60ef7cf6a46a1d6",
+      "bytes": 70816,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/37/377b00c3094d6bf39ae215e6a2a96283747958c317061a30c60ef7cf6a46a1d6"
+    },
+    {
+      "name": "mcp_registry_latest_258",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.pipeworx-io/ia-dmv:0.1.0"
+      },
+      "status": 200,
+      "sha256": "f3dec91544c9ad589a6edac875e5a7a7af5e68f073ccce64ff301a64f3a21716",
+      "bytes": 70627,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/f3/f3dec91544c9ad589a6edac875e5a7a7af5e68f073ccce64ff301a64f3a21716"
+    },
+    {
+      "name": "mcp_registry_latest_259",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.pipeworx-io/linear:0.1.0"
+      },
+      "status": 200,
+      "sha256": "8ab276e9bafc4a781c941517e91eac5cd863fbaf9c3450081da49236e22542c3",
+      "bytes": 71115,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/8a/8ab276e9bafc4a781c941517e91eac5cd863fbaf9c3450081da49236e22542c3"
+    },
+    {
+      "name": "mcp_registry_latest_260",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.pipeworx-io/nass:0.1.0"
+      },
+      "status": 200,
+      "sha256": "5017bdd1c5828cd371675f5b58f61ab5511d183299d6280ad9eebe0d11e0dd7c",
+      "bytes": 71036,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/50/5017bdd1c5828cd371675f5b58f61ab5511d183299d6280ad9eebe0d11e0dd7c"
+    },
+    {
+      "name": "mcp_registry_latest_261",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.pipeworx-io/openfigi:0.1.0"
+      },
+      "status": 200,
+      "sha256": "62aeb01df5eca39b4ffd4dbe063b96d66c1617a5db489953809f1c57c4b86c5a",
+      "bytes": 70753,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/62/62aeb01df5eca39b4ffd4dbe063b96d66c1617a5db489953809f1c57c4b86c5a"
+    },
+    {
+      "name": "mcp_registry_latest_262",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.pipeworx-io/press-release:0.1.0"
+      },
+      "status": 200,
+      "sha256": "0bcedc1b7b3632e5c9ec72d7a8cdbbcdc8f43966879d2367426c6f94702279e9",
+      "bytes": 70917,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/0b/0bcedc1b7b3632e5c9ec72d7a8cdbbcdc8f43966879d2367426c6f94702279e9"
+    },
+    {
+      "name": "mcp_registry_latest_263",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.pipeworx-io/sec-xbrl:0.1.0"
+      },
+      "status": 200,
+      "sha256": "465df41e0c654dc96d2a1c8b42c104dcd226486a7349f197894fc47782cc9a9d",
+      "bytes": 71613,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/46/465df41e0c654dc96d2a1c8b42c104dcd226486a7349f197894fc47782cc9a9d"
+    },
+    {
+      "name": "mcp_registry_latest_264",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.pipeworx-io/taiwan-stocks:0.1.0"
+      },
+      "status": 200,
+      "sha256": "fadbb82677eb8c21fdfcc00eb536c415c09677756b20aa9b835f777dab4a7e95",
+      "bytes": 70990,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/fa/fadbb82677eb8c21fdfcc00eb536c415c09677756b20aa9b835f777dab4a7e95"
+    },
+    {
+      "name": "mcp_registry_latest_265",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.pipeworx-io/us-dmv:0.1.1"
+      },
+      "status": 200,
+      "sha256": "382e92dd39a67485a93842fbbe9cc530951bea3e0e2430932e9c6250fa0dc2c8",
+      "bytes": 71197,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/38/382e92dd39a67485a93842fbbe9cc530951bea3e0e2430932e9c6250fa0dc2c8"
+    },
+    {
+      "name": "mcp_registry_latest_266",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.pipik-roman/rowlite:0.3.0"
+      },
+      "status": 200,
+      "sha256": "228b1fa8ea49cf46b971aff5f7b4351b87590949fea066324ed6ea955db57562",
+      "bytes": 94148,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/22/228b1fa8ea49cf46b971aff5f7b4351b87590949fea066324ed6ea955db57562"
+    },
+    {
+      "name": "mcp_registry_latest_267",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.praveen-ilangovan/pensieve:0.1.0"
+      },
+      "status": 200,
+      "sha256": "961e813fbd7f02058a2313e4a798cebedfd73921a101459c1f7331908fb32973",
+      "bytes": 92902,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/96/961e813fbd7f02058a2313e4a798cebedfd73921a101459c1f7331908fb32973"
+    },
+    {
+      "name": "mcp_registry_latest_268",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.pungggi/smart-terminal:1.2.39"
+      },
+      "status": 200,
+      "sha256": "c0a45409978c7db731d896b056f01f05591a481edb6f0c5676172eb135f635c7",
+      "bytes": 188709,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/c0/c0a45409978c7db731d896b056f01f05591a481edb6f0c5676172eb135f635c7"
+    },
+    {
+      "name": "mcp_registry_latest_269",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.r00tify/crashdx:0.1.0"
+      },
+      "status": 200,
+      "sha256": "e031d4ad40b466fbf206f6a2025d8020d8cf635f488f1d8f602d605eab809553",
+      "bytes": 90003,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/e0/e031d4ad40b466fbf206f6a2025d8020d8cf635f488f1d8f602d605eab809553"
+    },
+    {
+      "name": "mcp_registry_latest_270",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.raysker/axon-research:1.1.0"
+      },
+      "status": 200,
+      "sha256": "a6349036aa46269fbf2488d528ebfe693b5ba56b484ef11fd1f832ae630df602",
+      "bytes": 96107,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/a6/a6349036aa46269fbf2488d528ebfe693b5ba56b484ef11fd1f832ae630df602"
+    },
+    {
+      "name": "mcp_registry_latest_271",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.revolutionarybukhari/psx-mcp:0.1.1"
+      },
+      "status": 200,
+      "sha256": "3eae269734d4528b51747134e7843366609a6fd853ff04b9d728ab7c1bbb0e01",
+      "bytes": 103014,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/3e/3eae269734d4528b51747134e7843366609a6fd853ff04b9d728ab7c1bbb0e01"
+    },
+    {
+      "name": "mcp_registry_latest_272",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.robinafaruqia/stripe-mcp:0.1.2"
+      },
+      "status": 200,
+      "sha256": "552be5168058f8fce0ac19c1dba16feddd049c3243ae4885b67841e0168dd4ed",
+      "bytes": 73572,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/55/552be5168058f8fce0ac19c1dba16feddd049c3243ae4885b67841e0168dd4ed"
+    },
+    {
+      "name": "mcp_registry_latest_273",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.rogerawong/cudaq-docs-mcp:0.1.1"
+      },
+      "status": 200,
+      "sha256": "6307b9d83e08abb0e41ae07e89818b90518ff89b8acf413997006302d17f9185",
+      "bytes": 89871,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/63/6307b9d83e08abb0e41ae07e89818b90518ff89b8acf413997006302d17f9185"
+    },
+    {
+      "name": "mcp_registry_latest_274",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.runapi-builder/qwen-2-mcp:0.1.7"
+      },
+      "status": 200,
+      "sha256": "20e94ee5d89791cd27eb97f4fb958536f14181b224961a0d471b5248010f7a42",
+      "bytes": 88032,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/20/20e94ee5d89791cd27eb97f4fb958536f14181b224961a0d471b5248010f7a42"
+    },
+    {
+      "name": "mcp_registry_latest_275",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.ryudi84/mcp:1.0.2"
+      },
+      "status": 200,
+      "sha256": "13a3f119b073648161fee9f2cd3ab2dfb1c72c519d1c9b56c1a7bef5586e4ba0",
+      "bytes": 81928,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/13/13a3f119b073648161fee9f2cd3ab2dfb1c72c519d1c9b56c1a7bef5586e4ba0"
+    },
+    {
+      "name": "mcp_registry_latest_276",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.sadri-dridi/arrow-magic:1.0.0"
+      },
+      "status": 200,
+      "sha256": "7502ad2d3255c77d1ac5ecb708545cef96896fc6485b3fe16d8dd76e7a0c2c16",
+      "bytes": 70299,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/75/7502ad2d3255c77d1ac5ecb708545cef96896fc6485b3fe16d8dd76e7a0c2c16"
+    },
+    {
+      "name": "mcp_registry_latest_277",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.sadri-dridi/catalog-tools:1.0.0"
+      },
+      "status": 200,
+      "sha256": "1fe3a582aa946d67b728807ae71c7da877ce413a3401ae80207eefbf621a3c91",
+      "bytes": 67196,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/1f/1fe3a582aa946d67b728807ae71c7da877ce413a3401ae80207eefbf621a3c91"
+    },
+    {
+      "name": "mcp_registry_latest_278",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.sadri-dridi/cc-hu:1.0.0"
+      },
+      "status": 200,
+      "sha256": "1c4dc760500981d6abdc7e7f0289783eeca30866aa6ac64e4c6eb06ed6f5ba60",
+      "bytes": 67167,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/1c/1c4dc760500981d6abdc7e7f0289783eeca30866aa6ac64e4c6eb06ed6f5ba60"
+    },
+    {
+      "name": "mcp_registry_latest_279",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.sadri-dridi/cc-si:1.0.0"
+      },
+      "status": 200,
+      "sha256": "24840b6e523ce87639dac569495c44472acbfc872164ad6a96657bdd1a671c15",
+      "bytes": 68822,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/24/24840b6e523ce87639dac569495c44472acbfc872164ad6a96657bdd1a671c15"
+    },
+    {
+      "name": "mcp_registry_latest_280",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.sadri-dridi/contentid-ok:1.0.0"
+      },
+      "status": 200,
+      "sha256": "3a7624bdfb89db76f18b743854976bd1bf4d245aa1c0eeaaece26d448532256e",
+      "bytes": 70460,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/3a/3a7624bdfb89db76f18b743854976bd1bf4d245aa1c0eeaaece26d448532256e"
+    },
+    {
+      "name": "mcp_registry_latest_281",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.sadri-dridi/domain-labels:1.0.0"
+      },
+      "status": 200,
+      "sha256": "bdb4599bed9859daaf4bc42c02733c48bb5260d62b82e1e41eb8220039b602c8",
+      "bytes": 70356,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/bd/bdb4599bed9859daaf4bc42c02733c48bb5260d62b82e1e41eb8220039b602c8"
+    },
+    {
+      "name": "mcp_registry_latest_282",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.sadri-dridi/fx-aud:1.0.0"
+      },
+      "status": 200,
+      "sha256": "15f84fa80a1340a5a912d740134984659003d11f5559772007811769025e68ce",
+      "bytes": 69322,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/15/15f84fa80a1340a5a912d740134984659003d11f5559772007811769025e68ce"
+    },
+    {
+      "name": "mcp_registry_latest_283",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.sadri-dridi/handle-n:1.0.0"
+      },
+      "status": 200,
+      "sha256": "bb912c29b696d397d7e6455767a8eb19e08a826cb0538d93416de698024fdde7",
+      "bytes": 68947,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/bb/bb912c29b696d397d7e6455767a8eb19e08a826cb0538d93416de698024fdde7"
+    },
+    {
+      "name": "mcp_registry_latest_284",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.sadri-dridi/http-500:1.0.0"
+      },
+      "status": 200,
+      "sha256": "537644ed50c5d604c9a25a00a34da6a519bb25138d4224fc53409baae6529739",
+      "bytes": 69466,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/53/537644ed50c5d604c9a25a00a34da6a519bb25138d4224fc53409baae6529739"
+    },
+    {
+      "name": "mcp_registry_latest_285",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.sadri-dridi/jdn-ok:1.0.0"
+      },
+      "status": 200,
+      "sha256": "c44b398118699f604d13d227519ec69d61b82820f7e7eb6b418a2617b75d977f",
+      "bytes": 69108,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/c4/c44b398118699f604d13d227519ec69d61b82820f7e7eb6b418a2617b75d977f"
+    },
+    {
+      "name": "mcp_registry_latest_286",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.sadri-dridi/lang-ga:1.0.0"
+      },
+      "status": 200,
+      "sha256": "b2f585af0b37d4dea835be86bc6064e7923b3135955bf3af14fa982f6f90fb6b",
+      "bytes": 67543,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/b2/b2f585af0b37d4dea835be86bc6064e7923b3135955bf3af14fa982f6f90fb6b"
+    },
+    {
+      "name": "mcp_registry_latest_287",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.sadri-dridi/litre-gal:1.0.0"
+      },
+      "status": 200,
+      "sha256": "6ccdcb9bc6706aba85569c15899c96f0b6ff920067581f956e44a839de5e914b",
+      "bytes": 69602,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/6c/6ccdcb9bc6706aba85569c15899c96f0b6ff920067581f956e44a839de5e914b"
+    },
+    {
+      "name": "mcp_registry_latest_288",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.sadri-dridi/mph-ms:1.0.0"
+      },
+      "status": 200,
+      "sha256": "55786092f69d7ca11602c1a5a4cbaa611e89aa61fa27c9d7186be5963013bcc6",
+      "bytes": 70346,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/55/55786092f69d7ca11602c1a5a4cbaa611e89aa61fa27c9d7186be5963013bcc6"
+    },
+    {
+      "name": "mcp_registry_latest_289",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.sadri-dridi/percent-of:1.0.0"
+      },
+      "status": 200,
+      "sha256": "ee88325356a416f696e8dbdbf1021b9cdb3b94160559df29dfeadbafb02d750f",
+      "bytes": 70347,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/ee/ee88325356a416f696e8dbdbf1021b9cdb3b94160559df29dfeadbafb02d750f"
+    },
+    {
+      "name": "mcp_registry_latest_290",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.sadri-dridi/quarter-utc:1.0.0"
+      },
+      "status": 200,
+      "sha256": "36c51c9b6376b550878666549a7e56784e5d9ce4e6837e45f9de74014ac0b86f",
+      "bytes": 70214,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/36/36c51c9b6376b550878666549a7e56784e5d9ce4e6837e45f9de74014ac0b86f"
+    },
+    {
+      "name": "mcp_registry_latest_291",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.sadri-dridi/sha384-len:1.0.0"
+      },
+      "status": 200,
+      "sha256": "683fdc495b1662d0d2c1129f05bb9c0987b779b8b85f63cc0a972b8877f36a94",
+      "bytes": 69510,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/68/683fdc495b1662d0d2c1129f05bb9c0987b779b8b85f63cc0a972b8877f36a94"
+    },
+    {
+      "name": "mcp_registry_latest_292",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.sadri-dridi/st-ne:1.0.0"
+      },
+      "status": 200,
+      "sha256": "59c980457535c4ec747afebc2efc652891aaea33d0a8bf348a020c43338cc197",
+      "bytes": 69596,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/59/59c980457535c4ec747afebc2efc652891aaea33d0a8bf348a020c43338cc197"
+    },
+    {
+      "name": "mcp_registry_latest_293",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.sadri-dridi/tsp-ml:1.0.0"
+      },
+      "status": 200,
+      "sha256": "bcac7af2c453b39b92db1172754f9708f294be4ced16fc2b86a17cdacdcb6d5f",
+      "bytes": 71291,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/bc/bcac7af2c453b39b92db1172754f9708f294be4ced16fc2b86a17cdacdcb6d5f"
+    },
+    {
+      "name": "mcp_registry_latest_294",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.sadri-dridi/tz-asia-aden:1.0.0"
+      },
+      "status": 200,
+      "sha256": "d9a8a1b0ae16686eca2ccbdb7b84b8bfa5405515027a42764c212ff1edac4528",
+      "bytes": 70354,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/d9/d9a8a1b0ae16686eca2ccbdb7b84b8bfa5405515027a42764c212ff1edac4528"
+    },
+    {
+      "name": "mcp_registry_latest_295",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.sadri-dridi/tz-europe-london:1.0.0"
+      },
+      "status": 200,
+      "sha256": "893d3d0544ef22893ee09a44ce19c29d12cd08da2b4f2882e9c0f5c105c4308b",
+      "bytes": 70184,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/89/893d3d0544ef22893ee09a44ce19c29d12cd08da2b4f2882e9c0f5c105c4308b"
+    },
+    {
+      "name": "mcp_registry_latest_296",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.sadri-dridi/urlencode-ok:1.0.0"
+      },
+      "status": 200,
+      "sha256": "910b9142c84e394e9e34a4be1659352f4c245024df81324d73152c5d1c9fd407",
+      "bytes": 68868,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/91/910b9142c84e394e9e34a4be1659352f4c245024df81324d73152c5d1c9fd407"
+    },
+    {
+      "name": "mcp_registry_latest_297",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.sadri-dridi/util-083:1.0.0"
+      },
+      "status": 200,
+      "sha256": "6d9d8ad1154b03978f8dc66b82568c0981ae3f1ed99d975e76a2b70caa5e99cf",
+      "bytes": 68815,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/6d/6d9d8ad1154b03978f8dc66b82568c0981ae3f1ed99d975e76a2b70caa5e99cf"
+    },
+    {
+      "name": "mcp_registry_latest_298",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.sadri-dridi/uuid3-ok:1.0.0"
+      },
+      "status": 200,
+      "sha256": "3bc846236141a2bf4fe85190fb6434669bb3abb6f1a22675c2f22a01b6e5fa62",
+      "bytes": 70116,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/3b/3bc846236141a2bf4fe85190fb6434669bb3abb6f1a22675c2f22a01b6e5fa62"
+    },
+    {
+      "name": "mcp_registry_latest_299",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.sadri-dridi/year-utc:1.0.0"
+      },
+      "status": 200,
+      "sha256": "ffba6481ee30946b00b3117a65cb230c4b63aa508719292034b043131ec6335e",
+      "bytes": 94611,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/ff/ffba6481ee30946b00b3117a65cb230c4b63aa508719292034b043131ec6335e"
+    },
+    {
+      "name": "mcp_registry_latest_300",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.sarath-451/tomcat:1.0.2"
+      },
+      "status": 200,
+      "sha256": "ea5802b5c7ff89681dcfe9b9e1e2db9f19eef3540cd504bb28ebe208518fafed",
+      "bytes": 98077,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/ea/ea5802b5c7ff89681dcfe9b9e1e2db9f19eef3540cd504bb28ebe208518fafed"
+    },
+    {
+      "name": "mcp_registry_latest_301",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.seanmeverett/shared-memory:1.1.0"
+      },
+      "status": 200,
+      "sha256": "0e3865db7180eb7f2dfa43c98ace39541ce1708dced9207429ca30fede12fe41",
+      "bytes": 86300,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/0e/0e3865db7180eb7f2dfa43c98ace39541ce1708dced9207429ca30fede12fe41"
+    },
+    {
+      "name": "mcp_registry_latest_302",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.sercanmetalore/ekap-tender-mcp:0.1.0"
+      },
+      "status": 200,
+      "sha256": "250bd6be09bc44a168bbf032d824fc92e765eb3439425bcfcc31ead5b3500f77",
+      "bytes": 105220,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/25/250bd6be09bc44a168bbf032d824fc92e765eb3439425bcfcc31ead5b3500f77"
+    },
+    {
+      "name": "mcp_registry_latest_303",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.shawmena-dotcom/website-screenshot:1.0.1"
+      },
+      "status": 200,
+      "sha256": "ed73cf6197ca23bfcb15ecd4810cbfeb46b240a4eb654706f163a1c942a00fe2",
+      "bytes": 96999,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/ed/ed73cf6197ca23bfcb15ecd4810cbfeb46b240a4eb654706f163a1c942a00fe2"
+    },
+    {
+      "name": "mcp_registry_latest_304",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.sidney/web-to-markdown-mcp:0.6.0"
+      },
+      "status": 200,
+      "sha256": "ad31c997c7e51603f1b8f129d53447f9277c1cfbc322aeb6b56dede65096c668",
+      "bytes": 100602,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/ad/ad31c997c7e51603f1b8f129d53447f9277c1cfbc322aeb6b56dede65096c668"
+    },
+    {
+      "name": "mcp_registry_latest_305",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.slowave-ai/slowave:0.20.3"
+      },
+      "status": 200,
+      "sha256": "cfd99945f045cf136212725251aa4c114340ca771775b651a97571b1fc492288",
+      "bytes": 122837,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/cf/cfd99945f045cf136212725251aa4c114340ca771775b651a97571b1fc492288"
+    },
+    {
+      "name": "mcp_registry_latest_306",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.solutionsunity/odoo-surface-mcp:0.4.6"
+      },
+      "status": 200,
+      "sha256": "8bb589d26ef34d4905f91e7c2b9037474dd6db0b5006adb2a92c1d0c5c50122d",
+      "bytes": 90150,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/8b/8bb589d26ef34d4905f91e7c2b9037474dd6db0b5006adb2a92c1d0c5c50122d"
+    },
+    {
+      "name": "mcp_registry_latest_307",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.srmadscience/mcpdbwizard:2.0.29"
+      },
+      "status": 200,
+      "sha256": "2e4b2ff615e121f76a602638f60be3d94d717f76681f97f4ff5e4cc104d16976",
+      "bytes": 87294,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/2e/2e4b2ff615e121f76a602638f60be3d94d717f76681f97f4ff5e4cc104d16976"
+    },
+    {
+      "name": "mcp_registry_latest_308",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.startreedata/mcp-pinot:5.0.0-beta.1"
+      },
+      "status": 200,
+      "sha256": "a5890c3b9e70f4c68caa295b657f947d0f16a056dd2c6cac74edcbfb0ab5e774",
+      "bytes": 96245,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/a5/a5890c3b9e70f4c68caa295b657f947d0f16a056dd2c6cac74edcbfb0ab5e774"
+    },
+    {
+      "name": "mcp_registry_latest_309",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.sudomock/mcp:3.0.0"
+      },
+      "status": 200,
+      "sha256": "9058cad2324058eb7da68c9aed5727b44fe72ab977871802e2f980edeec742d4",
+      "bytes": 117499,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/90/9058cad2324058eb7da68c9aed5727b44fe72ab977871802e2f980edeec742d4"
+    },
+    {
+      "name": "mcp_registry_latest_310",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.szarl/payments-ai-mcp:1.1.3"
+      },
+      "status": 200,
+      "sha256": "11dfbb52934250f663a171e78e130ab61b86faf32c2a6dc5851c533cf97b68c9",
+      "bytes": 97705,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/11/11dfbb52934250f663a171e78e130ab61b86faf32c2a6dc5851c533cf97b68c9"
+    },
+    {
+      "name": "mcp_registry_latest_311",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.techreone/xknow-mcp:1.0.2"
+      },
+      "status": 200,
+      "sha256": "de4ef73935affb4e9bc2c0bbc851a7cdb8a39fe5464fe26e6c80ab8ebc7738d4",
+      "bytes": 88152,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/de/de4ef73935affb4e9bc2c0bbc851a7cdb8a39fe5464fe26e6c80ab8ebc7738d4"
+    },
+    {
+      "name": "mcp_registry_latest_312",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.theYahia/tkassa-mcp:1.0.0"
+      },
+      "status": 200,
+      "sha256": "2f0647e0ca8c0e2da8b8ea0b117efaa9509ce2badb4a4d21770536ef0abe9b4e",
+      "bytes": 106205,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/2f/2f0647e0ca8c0e2da8b8ea0b117efaa9509ce2badb4a4d21770536ef0abe9b4e"
+    },
+    {
+      "name": "mcp_registry_latest_313",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.theluckystrike/expenses-tracker:0.22.0"
+      },
+      "status": 200,
+      "sha256": "5d9fe10fb11121100c037252e93d24554d9c885dc61b6c0ff02b34b622062fd4",
+      "bytes": 118687,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/5d/5d9fe10fb11121100c037252e93d24554d9c885dc61b6c0ff02b34b622062fd4"
+    },
+    {
+      "name": "mcp_registry_latest_314",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.theluckystrike/work-order:0.22.0"
+      },
+      "status": 200,
+      "sha256": "adfea4069a08359eadd3e8d629afc44e9ce1c41833d23629ec0bdcfe6b9290e6",
+      "bytes": 97367,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/ad/adfea4069a08359eadd3e8d629afc44e9ce1c41833d23629ec0bdcfe6b9290e6"
+    },
+    {
+      "name": "mcp_registry_latest_315",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.timfurlong/msgraph-mcp:0.5.1"
+      },
+      "status": 200,
+      "sha256": "22ba3a485752a856b5ccdada5d8613a83d39b4dd49f98e4de2312193f3a2bb2f",
+      "bytes": 87917,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/22/22ba3a485752a856b5ccdada5d8613a83d39b4dd49f98e4de2312193f3a2bb2f"
+    },
+    {
+      "name": "mcp_registry_latest_316",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.tosin2013/mcp-adr-analysis-server:2.14.13"
+      },
+      "status": 200,
+      "sha256": "62f0acbf141f422a620a3625ecd4f8bd0f509294d257389aa2049082e6f199fb",
+      "bytes": 94909,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/62/62f0acbf141f422a620a3625ecd4f8bd0f509294d257389aa2049082e6f199fb"
+    },
+    {
+      "name": "mcp_registry_latest_317",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.tthorstenson/juris:0.1.0"
+      },
+      "status": 200,
+      "sha256": "18e57f772ba9f80e53a209c3c68b51e0d3bdeea27598fd738ec1c32d059a1948",
+      "bytes": 96610,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/18/18e57f772ba9f80e53a209c3c68b51e0d3bdeea27598fd738ec1c32d059a1948"
+    },
+    {
+      "name": "mcp_registry_latest_318",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.up2itnow0822/clawpay-mcp:1.2.0"
+      },
+      "status": 200,
+      "sha256": "d9a5bf43148a9c2d46dd4087b0e234977ff23803d0e8cbd603d9abec076b8e51",
+      "bytes": 96521,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/d9/d9a5bf43148a9c2d46dd4087b0e234977ff23803d0e8cbd603d9abec076b8e51"
+    },
+    {
+      "name": "mcp_registry_latest_319",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.varvararatta/environment_nature_mcp:1.0.0"
+      },
+      "status": 200,
+      "sha256": "5ec4b297219d4f2796db9c66a75fcec9f77f65498798dc1592426563d51c0ee0",
+      "bytes": 91786,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/5e/5ec4b297219d4f2796db9c66a75fcec9f77f65498798dc1592426563d51c0ee0"
+    },
+    {
+      "name": "mcp_registry_latest_320",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.verygoodplugins/mcp-evernote:1.2.3"
+      },
+      "status": 200,
+      "sha256": "fc7a526f6986276c82cedc9b3ee8c414e297c8b84f0fbacbff6c01ae7f956289",
+      "bytes": 91576,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/fc/fc7a526f6986276c82cedc9b3ee8c414e297c8b84f0fbacbff6c01ae7f956289"
+    },
+    {
+      "name": "mcp_registry_latest_321",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.vkhanhqui/figma-mcp-go:0.1.3"
+      },
+      "status": 200,
+      "sha256": "daa090e79021e98408d3440caeb188881bb3ab1cddf8c7fe4138e160f7b409b8",
+      "bytes": 92237,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/da/daa090e79021e98408d3440caeb188881bb3ab1cddf8c7fe4138e160f7b409b8"
+    },
+    {
+      "name": "mcp_registry_latest_322",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.waka4674/shipsaving-mcp:1.0.4"
+      },
+      "status": 200,
+      "sha256": "cd0944883469a54f60d70032c2747edf9fb4995091076e67fdb29d02e63856c2",
+      "bytes": 92515,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/cd/cd0944883469a54f60d70032c2747edf9fb4995091076e67fdb29d02e63856c2"
+    },
+    {
+      "name": "mcp_registry_latest_323",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.wheelerhubbell/whp-standing:1.0.1"
+      },
+      "status": 200,
+      "sha256": "8c17eeff94c861fa05440aa82277a2ed8b89ea9a1d289c71b713df21ebc89d77",
+      "bytes": 104070,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/8c/8c17eeff94c861fa05440aa82277a2ed8b89ea9a1d289c71b713df21ebc89d77"
+    },
+    {
+      "name": "mcp_registry_latest_324",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.worklore/worklore:0.1.0"
+      },
+      "status": 200,
+      "sha256": "2786fcb77b99e46c16991e39ce0b4d89519bf1c4fe293432304e1778fd586cbe",
+      "bytes": 138243,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/27/2786fcb77b99e46c16991e39ce0b4d89519bf1c4fe293432304e1778fd586cbe"
+    },
+    {
+      "name": "mcp_registry_latest_325",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.x-hannibal/mcp-webgate:0.1.33"
+      },
+      "status": 200,
+      "sha256": "de910caca74394bfe059fa1bbfa177b60ba8ed0d8102427fe00468f44c214991",
+      "bytes": 97662,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/de/de910caca74394bfe059fa1bbfa177b60ba8ed0d8102427fe00468f44c214991"
+    },
+    {
+      "name": "mcp_registry_latest_326",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.xxxoooxoxo/wiff:0.9.1"
+      },
+      "status": 200,
+      "sha256": "b00cfaf5827bb207ac85af1af28c0ee53f1fb0218d24daf6f65d69212a63b994",
+      "bytes": 102534,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/b0/b00cfaf5827bb207ac85af1af28c0ee53f1fb0218d24daf6f65d69212a63b994"
+    },
+    {
+      "name": "mcp_registry_latest_327",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.ypratap11/dokimo-mcp:0.1.0"
+      },
+      "status": 200,
+      "sha256": "6a43406094c944ed639146fb3e832fd807ed62b823cdd492b4be321f49de7c49",
+      "bytes": 100367,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/6a/6a43406094c944ed639146fb3e832fd807ed62b823cdd492b4be321f49de7c49"
+    },
+    {
+      "name": "mcp_registry_latest_328",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.zerohourzulu/continuity-evidence:0.3.0-preview.9"
+      },
+      "status": 200,
+      "sha256": "671fdffb81f65f5add7a15116b8f3e577596caee30ad2669b21e72494b080e1c",
+      "bytes": 95022,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/67/671fdffb81f65f5add7a15116b8f3e577596caee30ad2669b21e72494b080e1c"
+    },
+    {
+      "name": "mcp_registry_latest_329",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.zzzjy765/ottersnap:0.3.4"
+      },
+      "status": 200,
+      "sha256": "ddacdd14c116df199994be72a3f9542bd0b17e73767ecb334c0fa4462e0df6c6",
+      "bytes": 84534,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/dd/ddacdd14c116df199994be72a3f9542bd0b17e73767ecb334c0fa4462e0df6c6"
+    },
+    {
+      "name": "mcp_registry_latest_330",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.magellandata/spotlight:1.0.0"
+      },
+      "status": 200,
+      "sha256": "9f2f5caba0237c4d85445695d79b0c78e065d1c20ada9ba99c4328093e284eb8",
+      "bytes": 81484,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/9f/9f2f5caba0237c4d85445695d79b0c78e065d1c20ada9ba99c4328093e284eb8"
+    },
+    {
+      "name": "mcp_registry_latest_331",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.qt.qt-docs-mcp/qt-documentation:0.2.0"
+      },
+      "status": 200,
+      "sha256": "6d0f2e1d833adefb3925069f3c496c358f59d36797a6d2e19a96b7fa78fd87e7",
+      "bytes": 86269,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/6d/6d0f2e1d833adefb3925069f3c496c358f59d36797a6d2e19a96b7fa78fd87e7"
+    },
+    {
+      "name": "mcp_registry_latest_332",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.stobox/intelligence-graph:0.1.1"
+      },
+      "status": 200,
+      "sha256": "179932bbc8bc5419fcdc9ede22eff0d2b53d4a9bdbe590fe7688cad2ffb88fd7",
+      "bytes": 75576,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/17/179932bbc8bc5419fcdc9ede22eff0d2b53d4a9bdbe590fe7688cad2ffb88fd7"
+    },
+    {
+      "name": "mcp_registry_latest_333",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.tooloracle/resilienceoracle:1.0.0"
+      },
+      "status": 200,
+      "sha256": "433675514826b613aa3ddf70384e9ce3046e9f3c7a55676ebe63ef7757d6e4fb",
+      "bytes": 72646,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/43/433675514826b613aa3ddf70384e9ce3046e9f3c7a55676ebe63ef7757d6e4fb"
+    },
+    {
+      "name": "mcp_registry_latest_334",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.usefulapi/northflank:1.0.1"
+      },
+      "status": 200,
+      "sha256": "a2f381f8e1e0d854f0bb7dcb28409de391cd5e067018bc385697cbc3b63db3c2",
+      "bytes": 72034,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/a2/a2f381f8e1e0d854f0bb7dcb28409de391cd5e067018bc385697cbc3b63db3c2"
+    },
+    {
+      "name": "mcp_registry_latest_335",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "jp.anisongs/anisongs:1.0.0"
+      },
+      "status": 200,
+      "sha256": "1842d0b8ce3b21db96f0460d117fc7c628d69136419808c2667d5390168c218c",
+      "bytes": 72358,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/18/1842d0b8ce3b21db96f0460d117fc7c628d69136419808c2667d5390168c218c"
+    },
+    {
+      "name": "mcp_registry_latest_336",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "live.alpic.staging.personal-chef-chatgp-c951fcb6/personal-chef-chatgpt-app:0.0.1"
+      },
+      "status": 200,
+      "sha256": "6bd94d4ea472a17f5edc225769cbe8f985dc25a4cca56c6eaa3960bf75883903",
+      "bytes": 73721,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/6b/6bd94d4ea472a17f5edc225769cbe8f985dc25a4cca56c6eaa3960bf75883903"
+    },
+    {
+      "name": "mcp_registry_latest_337",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "me.finlight/news:1.0.3"
+      },
+      "status": 200,
+      "sha256": "016f12985df15711aa779d4e949f7270cd602e0c96eaa1389897bcbdb30dabe6",
+      "bytes": 77933,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/01/016f12985df15711aa779d4e949f7270cd602e0c96eaa1389897bcbdb30dabe6"
+    },
+    {
+      "name": "mcp_registry_latest_338",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "net.digitalpipe.app/dCYkJz:1.0.0"
+      },
+      "status": 200,
+      "sha256": "f771b70deb4303c53e1ddc529aa3fa3162862fb1dc3d37fe1970bbbb53168d71",
+      "bytes": 75728,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/f7/f771b70deb4303c53e1ddc529aa3fa3162862fb1dc3d37fe1970bbbb53168d71"
+    },
+    {
+      "name": "mcp_registry_latest_339",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "net.sprtx/sprtx-mcp:1.0.0"
+      },
+      "status": 200,
+      "sha256": "cf31920e148095af8e3c79d87f1cdc03442aa71357a66afbb16527d201ae5680",
+      "bytes": 80439,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/cf/cf31920e148095af8e3c79d87f1cdc03442aa71357a66afbb16527d201ae5680"
+    },
+    {
+      "name": "mcp_registry_latest_340",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "no.ferbu/store:1.0.0"
+      },
+      "status": 200,
+      "sha256": "3a0cb58ee2ce8b981970a71964a28a75c86b1716dad03bb460fd32f32079d7e9",
+      "bytes": 75195,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/3a/3a0cb58ee2ce8b981970a71964a28a75c86b1716dad03bb460fd32f32079d7e9"
+    },
+    {
+      "name": "mcp_registry_latest_341",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "online.sellular/sellular:1.0.0"
+      },
+      "status": 200,
+      "sha256": "9cdb96c75c4465db28729bcb47fcf3180d166d209984fb55b7c1bc3b9f70ff5a",
+      "bytes": 73723,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/9c/9cdb96c75c4465db28729bcb47fcf3180d166d209984fb55b7c1bc3b9f70ff5a"
+    },
+    {
+      "name": "mcp_registry_latest_342",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "org.memoryapi/rep:1.0.0"
+      },
+      "status": 200,
+      "sha256": "e97871fbbd8f3f814aa0884c63c1ce042f3cd2f6be1ca8841469541a70ed1bea",
+      "bytes": 80858,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/e9/e97871fbbd8f3f814aa0884c63c1ce042f3cd2f6be1ca8841469541a70ed1bea"
+    },
+    {
+      "name": "mcp_registry_latest_343",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "page.quicky/quickypage:1.0.0"
+      },
+      "status": 200,
+      "sha256": "ce70814bd3322f773eac75f55e9da4a2dfa607ca328203c438b05d2aacf00ca8",
+      "bytes": 78737,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/ce/ce70814bd3322f773eac75f55e9da4a2dfa607ca328203c438b05d2aacf00ca8"
+    },
+    {
+      "name": "mcp_registry_latest_344",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "ru.activatedai/activated-ai:0.1.0"
+      },
+      "status": 200,
+      "sha256": "f5033908800018c56a212de4db8f9e2222607e4892283963487a94f563c9c5cd",
+      "bytes": 78230,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/f5/f5033908800018c56a212de4db8f9e2222607e4892283963487a94f563c9c5cd"
+    },
+    {
+      "name": "mcp_registry_latest_345",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "sh.clearhouse/clearhouse:0.8.0"
+      },
+      "status": 200,
+      "sha256": "a5f4f32d163cc8a48136a87bdea5b50a979cc185e72a2bfdafb27aa026aa31ae",
+      "bytes": 84382,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/a5/a5f4f32d163cc8a48136a87bdea5b50a979cc185e72a2bfdafb27aa026aa31ae"
+    },
+    {
+      "name": "mcp_registry_latest_346",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "sk.path-up.ai-playground/discussion-network:1.1.0"
+      },
+      "status": 200,
+      "sha256": "da720898ad8145e106c8cf700f01b26a7d39da4be540140c2d0e83518f721228",
+      "bytes": 79532,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/da/da720898ad8145e106c8cf700f01b26a7d39da4be540140c2d0e83518f721228"
+    },
+    {
+      "name": "mcp_registry_latest_347",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "sv.prometheus/mcp:1.0.0"
+      },
+      "status": 200,
+      "sha256": "32144731a849e2d606c9939f6d4f89c52c9af62249b0afed769af2a99dcd39dc",
+      "bytes": 83599,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/32/32144731a849e2d606c9939f6d4f89c52c9af62249b0afed769af2a99dcd39dc"
+    },
+    {
+      "name": "mcp_registry_latest_348",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "tools.edgar/sec-intelligence:1.0.1"
+      },
+      "status": 200,
+      "sha256": "d8162c371c65e16878da477a5fa2116562d83d6b76a3a4c0f95c454b78f53da5",
+      "bytes": 75437,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/d8/d8162c371c65e16878da477a5fa2116562d83d6b76a3a4c0f95c454b78f53da5"
+    },
+    {
+      "name": "mcp_registry_latest_349",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "uk.co.commercialepccost/site:1.0.0"
+      },
+      "status": 200,
+      "sha256": "963e72977a87b818ee31fc8f220ab5ec7efe3e942c121ec068b37c0b5393b4ce",
+      "bytes": 72014,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/96/963e72977a87b818ee31fc8f220ab5ec7efe3e942c121ec068b37c0b5393b4ce"
+    },
+    {
+      "name": "mcp_registry_latest_350",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "uk.co.m365migrationcost/site:1.0.0"
+      },
+      "status": 200,
+      "sha256": "a91bf818a4cdcce70d240f6ba3b48de28f30585bbfe273dafb54bb1b5aeabc08",
+      "bytes": 75340,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/a9/a91bf818a4cdcce70d240f6ba3b48de28f30585bbfe273dafb54bb1b5aeabc08"
+    },
+    {
+      "name": "mcp_registry_latest_351",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "uk.qart/qart:1.0.0"
+      },
+      "status": 200,
+      "sha256": "7d474078c42b185e2c304859abfdf845c87f3dcea8aaa1d31c983750d65886c7",
+      "bytes": 78386,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/7d/7d474078c42b185e2c304859abfdf845c87f3dcea8aaa1d31c983750d65886c7"
+    },
+    {
+      "name": "mcp_registry_latest_352",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "xyz.558686.gpt55/token-gateway:2026.8.5"
+      },
+      "status": 200,
+      "sha256": "a6202b5b6dc92a8bceabb8c381b2adbd0617c166e06e9cb599dd09904ce5c430",
+      "bytes": 78280,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/a6/a6202b5b6dc92a8bceabb8c381b2adbd0617c166e06e9cb599dd09904ce5c430"
+    }
+  ],
+  "requests": {
+    "requests": 255,
+    "by_outcome": {
+      "https_get:ok": 254,
+      "https_get:http_error": 1
+    },
+    "bytes": 56751925
+  }
+}

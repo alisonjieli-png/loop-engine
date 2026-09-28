@@ -1,0 +1,25 @@
+{
+  "record_type": "contract_research_integrity_checks/v1",
+  "checks": {
+    "exact_1000_rows": true,
+    "unique_logical_keys": true,
+    "unique_research_ids": true,
+    "ranks_contiguous": true,
+    "all_unreviewed": true,
+    "parsed_body_unique": true,
+    "quarantine_digests": true,
+    "parse_has_no_schema_validity_claim": true,
+    "oversize_digest_unknown": true,
+    "request_ceiling": true,
+    "source_digest_bound": true,
+    "score_adds": true,
+    "common_fields": true
+  },
+  "passed": 13,
+  "failed": 0,
+  "ranked_sha256": "197dbbf51c097d5439331d15506b73e7a325568a6d36317b3c026b67ebb0b543",
+  "notes_sha256": "09418a2cc20f54519a1b66ec495ab0a1afaed75c7b41dd6b15cd9d115f589f6b",
+  "parsed_documents": 890,
+  "native_loading_tested": false,
+  "independent_review": false
+}

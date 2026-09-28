@@ -1,0 +1,1423 @@
+{
+  "record_type": "data_component_author_verification/v1",
+  "sandbox": "existing minimal bwrap no network/home CPU2s AS256MiB wall4s",
+  "provider_calls": 0,
+  "independent_approval": false,
+  "packages": [
+    {
+      "id": "profile_csv_structure",
+      "script_sha256": "6308e27cfa3c30e6de19632c3964121d9af0fd5df3f1e9d3ee158bb501b01dcc",
+      "checks": [
+        {
+          "name": "ragged_and_empty_cells",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "blank_header_indices": [],
+              "column_count": 2,
+              "columns": [
+                {
+                  "empty_cells": 0,
+                  "index": 0,
+                  "max_chars": 1,
+                  "missing_rows": 0,
+                  "present_rows": 3
+                },
+                {
+                  "empty_cells": 1,
+                  "index": 1,
+                  "max_chars": 3,
+                  "missing_rows": 1,
+                  "present_rows": 2
+                }
+              ],
+              "duplicate_header_names": [],
+              "header": [
+                "id",
+                "name"
+              ],
+              "physical_line_count": 4,
+              "row_count": 3,
+              "width_counts": [
+                {
+                  "records": 1,
+                  "width": 1
+                },
+                {
+                  "records": 2,
+                  "width": 2
+                }
+              ],
+              "width_mismatches": [
+                {
+                  "row_index": 2,
+                  "width": 1
+                }
+              ]
+            }
+          },
+          "schema_input_valid": true,
+          "stderr": ""
+        },
+        {
+          "name": "empty_without_header",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "blank_header_indices": [],
+              "column_count": 0,
+              "columns": [],
+              "duplicate_header_names": [],
+              "header": null,
+              "physical_line_count": 0,
+              "row_count": 0,
+              "width_counts": [],
+              "width_mismatches": []
+            }
+          },
+          "schema_input_valid": true,
+          "stderr": ""
+        },
+        {
+          "name": "quoted_physical_newline",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "blank_header_indices": [],
+              "column_count": 2,
+              "columns": [
+                {
+                  "empty_cells": 0,
+                  "index": 0,
+                  "max_chars": 3,
+                  "missing_rows": 0,
+                  "present_rows": 1
+                },
+                {
+                  "empty_cells": 0,
+                  "index": 1,
+                  "max_chars": 1,
+                  "missing_rows": 0,
+                  "present_rows": 1
+                }
+              ],
+              "duplicate_header_names": [],
+              "header": [
+                "a",
+                "b"
+              ],
+              "physical_line_count": 3,
+              "row_count": 1,
+              "width_counts": [
+                {
+                  "records": 1,
+                  "width": 2
+                }
+              ],
+              "width_mismatches": []
+            }
+          },
+          "schema_input_valid": true,
+          "stderr": ""
+        },
+        {
+          "name": "header_duplicates_are_reported",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "blank_header_indices": [
+                2
+              ],
+              "column_count": 3,
+              "columns": [
+                {
+                  "empty_cells": 0,
+                  "index": 0,
+                  "max_chars": 1,
+                  "missing_rows": 0,
+                  "present_rows": 1
+                },
+                {
+                  "empty_cells": 0,
+                  "index": 1,
+                  "max_chars": 1,
+                  "missing_rows": 0,
+                  "present_rows": 1
+                },
+                {
+                  "empty_cells": 0,
+                  "index": 2,
+                  "max_chars": 1,
+                  "missing_rows": 0,
+                  "present_rows": 1
+                }
+              ],
+              "duplicate_header_names": [
+                {
+                  "indices": [
+                    0,
+                    1
+                  ],
+                  "name": "x"
+                }
+              ],
+              "header": [
+                "x",
+                "x",
+                ""
+              ],
+              "physical_line_count": 2,
+              "row_count": 1,
+              "width_counts": [
+                {
+                  "records": 1,
+                  "width": 3
+                }
+              ],
+              "width_mismatches": []
+            }
+          },
+          "schema_input_valid": true,
+          "stderr": ""
+        },
+        {
+          "name": "unicode_is_one_character",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "blank_header_indices": [],
+              "column_count": 1,
+              "columns": [
+                {
+                  "empty_cells": 0,
+                  "index": 0,
+                  "max_chars": 1,
+                  "missing_rows": 0,
+                  "present_rows": 1
+                }
+              ],
+              "duplicate_header_names": [],
+              "header": [
+                "h"
+              ],
+              "physical_line_count": 2,
+              "row_count": 1,
+              "width_counts": [
+                {
+                  "records": 1,
+                  "width": 1
+                }
+              ],
+              "width_mismatches": []
+            }
+          },
+          "schema_input_valid": true,
+          "stderr": ""
+        },
+        {
+          "name": "alternate_quote_and_delimiter",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "blank_header_indices": [],
+              "column_count": 2,
+              "columns": [
+                {
+                  "empty_cells": 0,
+                  "index": 0,
+                  "max_chars": 3,
+                  "missing_rows": 0,
+                  "present_rows": 1
+                },
+                {
+                  "empty_cells": 0,
+                  "index": 1,
+                  "max_chars": 1,
+                  "missing_rows": 0,
+                  "present_rows": 1
+                }
+              ],
+              "duplicate_header_names": [],
+              "header": [
+                "a",
+                "b"
+              ],
+              "physical_line_count": 2,
+              "row_count": 1,
+              "width_counts": [
+                {
+                  "records": 1,
+                  "width": 2
+                }
+              ],
+              "width_mismatches": []
+            }
+          },
+          "schema_input_valid": true,
+          "stderr": ""
+        },
+        {
+          "name": "unterminated_quote",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "schema_input_valid": true,
+          "stderr": ""
+        },
+        {
+          "name": "missing_header",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "schema_input_valid": true,
+          "stderr": ""
+        },
+        {
+          "name": "record_ceiling",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "schema_input_valid": true,
+          "stderr": ""
+        },
+        {
+          "name": "field_ceiling",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "schema_input_valid": true,
+          "stderr": ""
+        },
+        {
+          "name": "unknown_field",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "schema_input_valid": false,
+          "stderr": ""
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "reconcile_multiset_rows",
+      "script_sha256": "50467ab0fa7c787a1b23c861e08cf1ea3c45590ad7073e1c87065e703e09e4cd",
+      "checks": [
+        {
+          "name": "multiplicity",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "common": [
+                {
+                  "count": 1,
+                  "row": {
+                    "x": 1
+                  }
+                }
+              ],
+              "equal": false,
+              "left_count": 3,
+              "left_only": [
+                {
+                  "count": 1,
+                  "row": {
+                    "x": 1
+                  }
+                },
+                {
+                  "count": 1,
+                  "row": {
+                    "x": 2
+                  }
+                }
+              ],
+              "right_count": 2,
+              "right_only": [
+                {
+                  "count": 1,
+                  "row": {
+                    "x": 3
+                  }
+                }
+              ]
+            }
+          },
+          "schema_input_valid": true,
+          "stderr": ""
+        },
+        {
+          "name": "empty",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "common": [],
+              "equal": true,
+              "left_count": 0,
+              "left_only": [],
+              "right_count": 0,
+              "right_only": []
+            }
+          },
+          "schema_input_valid": true,
+          "stderr": ""
+        },
+        {
+          "name": "boolean_is_not_number",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "common": [],
+              "equal": false,
+              "left_count": 1,
+              "left_only": [
+                {
+                  "count": 1,
+                  "row": {
+                    "x": true
+                  }
+                }
+              ],
+              "right_count": 1,
+              "right_only": [
+                {
+                  "count": 1,
+                  "row": {
+                    "x": 1
+                  }
+                }
+              ]
+            }
+          },
+          "schema_input_valid": true,
+          "stderr": ""
+        },
+        {
+          "name": "missing_is_not_null",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "common": [],
+              "equal": false,
+              "left_count": 1,
+              "left_only": [
+                {
+                  "count": 1,
+                  "row": {}
+                }
+              ],
+              "right_count": 1,
+              "right_only": [
+                {
+                  "count": 1,
+                  "row": {
+                    "x": null
+                  }
+                }
+              ]
+            }
+          },
+          "schema_input_valid": true,
+          "stderr": ""
+        },
+        {
+          "name": "integral_number_spellings",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "common": [
+                {
+                  "count": 1,
+                  "row": {
+                    "x": 1
+                  }
+                }
+              ],
+              "equal": true,
+              "left_count": 1,
+              "left_only": [],
+              "right_count": 1,
+              "right_only": []
+            }
+          },
+          "schema_input_valid": true,
+          "stderr": ""
+        },
+        {
+          "name": "key_order_is_not_identity",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "common": [
+                {
+                  "count": 1,
+                  "row": {
+                    "a": 2,
+                    "b": "é"
+                  }
+                }
+              ],
+              "equal": true,
+              "left_count": 1,
+              "left_only": [],
+              "right_count": 1,
+              "right_only": []
+            }
+          },
+          "schema_input_valid": true,
+          "stderr": ""
+        },
+        {
+          "name": "fractional_numeric_field",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "schema_input_valid": false,
+          "stderr": ""
+        },
+        {
+          "name": "nested_field",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "schema_input_valid": false,
+          "stderr": ""
+        },
+        {
+          "name": "unknown_root_field",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "schema_input_valid": false,
+          "stderr": ""
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "compute_weighted_quantiles",
+      "script_sha256": "aee6603f9edc52e45614c2a721584f9b6b8ae39ca80b0740345ba23c81449039",
+      "checks": [
+        {
+          "name": "weighted_steps",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "cdf": [
+                {
+                  "cumulative_weight": 1,
+                  "value": "10",
+                  "weight": 1
+                },
+                {
+                  "cumulative_weight": 4,
+                  "value": "20",
+                  "weight": 3
+                }
+              ],
+              "distinct_values": 2,
+              "quantiles": [
+                {
+                  "q": "0",
+                  "value": "10"
+                },
+                {
+                  "q": "0.25",
+                  "value": "10"
+                },
+                {
+                  "q": "0.5",
+                  "value": "20"
+                },
+                {
+                  "q": "1",
+                  "value": "20"
+                }
+              ],
+              "total_weight": 4
+            }
+          },
+          "schema_input_valid": true,
+          "stderr": ""
+        },
+        {
+          "name": "ties_normalize_exactly",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "cdf": [
+                {
+                  "cumulative_weight": 1,
+                  "value": "0",
+                  "weight": 1
+                },
+                {
+                  "cumulative_weight": 4,
+                  "value": "1",
+                  "weight": 3
+                }
+              ],
+              "distinct_values": 2,
+              "quantiles": [
+                {
+                  "q": "0",
+                  "value": "0"
+                },
+                {
+                  "q": "0.5",
+                  "value": "1"
+                },
+                {
+                  "q": "1",
+                  "value": "1"
+                }
+              ],
+              "total_weight": 4
+            }
+          },
+          "schema_input_valid": true,
+          "stderr": ""
+        },
+        {
+          "name": "threshold_above_boundary",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "cdf": [
+                {
+                  "cumulative_weight": 1,
+                  "value": "-2",
+                  "weight": 1
+                },
+                {
+                  "cumulative_weight": 2,
+                  "value": "-1",
+                  "weight": 1
+                }
+              ],
+              "distinct_values": 2,
+              "quantiles": [
+                {
+                  "q": "0.500000000001",
+                  "value": "-1"
+                }
+              ],
+              "total_weight": 2
+            }
+          },
+          "schema_input_valid": true,
+          "stderr": ""
+        },
+        {
+          "name": "integral_weight",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "cdf": [
+                {
+                  "cumulative_weight": 2,
+                  "value": "0.125",
+                  "weight": 2
+                }
+              ],
+              "distinct_values": 1,
+              "quantiles": [
+                {
+                  "q": "1",
+                  "value": "0.125"
+                }
+              ],
+              "total_weight": 2
+            }
+          },
+          "schema_input_valid": true,
+          "stderr": ""
+        },
+        {
+          "name": "zero_weight",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "schema_input_valid": false,
+          "stderr": ""
+        },
+        {
+          "name": "boolean_weight",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "schema_input_valid": false,
+          "stderr": ""
+        },
+        {
+          "name": "scientific_decimal_string",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "schema_input_valid": false,
+          "stderr": ""
+        },
+        {
+          "name": "out_of_range_probability",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "schema_input_valid": false,
+          "stderr": ""
+        },
+        {
+          "name": "empty_samples",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "schema_input_valid": false,
+          "stderr": ""
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "audit_half_open_interval_overlaps",
+      "script_sha256": "4e13a13a6db1752c7d216f0260c94f8029cd50faf30550b5ef289f98a1ea1f9c",
+      "checks": [
+        {
+          "name": "overlap_and_adjacency",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "empty_ids": [
+                "empty"
+              ],
+              "max_concurrency": 2,
+              "overlap_count": 1,
+              "overlaps": [
+                {
+                  "end": 4,
+                  "left_id": "a",
+                  "right_id": "b",
+                  "start": 2
+                }
+              ],
+              "union_length": 8
+            }
+          },
+          "schema_input_valid": true,
+          "stderr": ""
+        },
+        {
+          "name": "empty_collection",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "empty_ids": [],
+              "max_concurrency": 0,
+              "overlap_count": 0,
+              "overlaps": [],
+              "union_length": 0
+            }
+          },
+          "schema_input_valid": true,
+          "stderr": ""
+        },
+        {
+          "name": "nested_intervals",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "empty_ids": [
+                "point"
+              ],
+              "max_concurrency": 2,
+              "overlap_count": 1,
+              "overlaps": [
+                {
+                  "end": 1,
+                  "left_id": "outer",
+                  "right_id": "inner",
+                  "start": -1
+                }
+              ],
+              "union_length": 10
+            }
+          },
+          "schema_input_valid": true,
+          "stderr": ""
+        },
+        {
+          "name": "adjacent_only",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "empty_ids": [],
+              "max_concurrency": 1,
+              "overlap_count": 0,
+              "overlaps": [],
+              "union_length": 2
+            }
+          },
+          "schema_input_valid": true,
+          "stderr": ""
+        },
+        {
+          "name": "integral_coordinates",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "empty_ids": [],
+              "max_concurrency": 2,
+              "overlap_count": 1,
+              "overlaps": [
+                {
+                  "end": 2,
+                  "left_id": "a",
+                  "right_id": "b",
+                  "start": 1
+                }
+              ],
+              "union_length": 3
+            }
+          },
+          "schema_input_valid": true,
+          "stderr": ""
+        },
+        {
+          "name": "full_coordinate_range",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "empty_ids": [],
+              "max_concurrency": 1,
+              "overlap_count": 0,
+              "overlaps": [],
+              "union_length": 2000000000000
+            }
+          },
+          "schema_input_valid": true,
+          "stderr": ""
+        },
+        {
+          "name": "reverse_interval",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "schema_input_valid": true,
+          "stderr": ""
+        },
+        {
+          "name": "duplicate_identity",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "schema_input_valid": true,
+          "stderr": ""
+        },
+        {
+          "name": "boolean_coordinate",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "schema_input_valid": false,
+          "stderr": ""
+        },
+        {
+          "name": "fractional_coordinate",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "schema_input_valid": false,
+          "stderr": ""
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "apply_flat_record_changes",
+      "script_sha256": "e19429c512348c572a4daf1af339ee09947995e8971c49a7dbd77a868c589973",
+      "checks": [
+        {
+          "name": "replace_add_remove",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "applied": true,
+              "changed_count": 3,
+              "conflicts": [],
+              "record": {
+                "a": 2,
+                "new": "x"
+              }
+            }
+          },
+          "schema_input_valid": true,
+          "stderr": ""
+        },
+        {
+          "name": "conflict_is_atomic",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "applied": false,
+              "changed_count": 0,
+              "conflicts": [
+                {
+                  "actual": {
+                    "present": true,
+                    "value": 2
+                  },
+                  "expected": {
+                    "present": true,
+                    "value": 9
+                  },
+                  "key": "b"
+                }
+              ],
+              "record": {
+                "a": 1,
+                "b": 2
+              }
+            }
+          },
+          "schema_input_valid": true,
+          "stderr": ""
+        },
+        {
+          "name": "null_is_present",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "applied": false,
+              "changed_count": 0,
+              "conflicts": [
+                {
+                  "actual": {
+                    "present": true,
+                    "value": null
+                  },
+                  "expected": {
+                    "present": false
+                  },
+                  "key": "a"
+                }
+              ],
+              "record": {
+                "a": null
+              }
+            }
+          },
+          "schema_input_valid": true,
+          "stderr": ""
+        },
+        {
+          "name": "boolean_differs_from_number",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "applied": false,
+              "changed_count": 0,
+              "conflicts": [
+                {
+                  "actual": {
+                    "present": true,
+                    "value": true
+                  },
+                  "expected": {
+                    "present": true,
+                    "value": 1
+                  },
+                  "key": "a"
+                }
+              ],
+              "record": {
+                "a": true
+              }
+            }
+          },
+          "schema_input_valid": true,
+          "stderr": ""
+        },
+        {
+          "name": "integral_noop",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "applied": true,
+              "changed_count": 0,
+              "conflicts": [],
+              "record": {
+                "a": 1
+              }
+            }
+          },
+          "schema_input_valid": true,
+          "stderr": ""
+        },
+        {
+          "name": "empty_changes",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "applied": true,
+              "changed_count": 0,
+              "conflicts": [],
+              "record": {}
+            }
+          },
+          "schema_input_valid": true,
+          "stderr": ""
+        },
+        {
+          "name": "duplicate_change_key",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "schema_input_valid": true,
+          "stderr": ""
+        },
+        {
+          "name": "absent_state_cannot_hold_value",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "schema_input_valid": false,
+          "stderr": ""
+        },
+        {
+          "name": "result_field_ceiling",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "schema_input_valid": true,
+          "stderr": ""
+        },
+        {
+          "name": "nested_value",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "schema_input_valid": false,
+          "stderr": ""
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "reconcile_keyed_tables",
+      "script_sha256": "eececf1bf613d7dbcf24d02524008b655af8710ffb27cfe5162236c13a169147",
+      "checks": [
+        {
+          "name": "matched_changed_and_unmatched",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "counts": {
+                "changed": 1,
+                "left_only": 1,
+                "left_rows": 3,
+                "matched": 2,
+                "right_only": 1,
+                "right_rows": 3,
+                "unchanged": 1
+              },
+              "left_only": [
+                {
+                  "key": "c",
+                  "left_index": 2
+                }
+              ],
+              "matches": [
+                {
+                  "changed_fields": [],
+                  "key": "a",
+                  "left_index": 0,
+                  "right_index": 1
+                },
+                {
+                  "changed_fields": [
+                    "n"
+                  ],
+                  "key": "b",
+                  "left_index": 1,
+                  "right_index": 0
+                }
+              ],
+              "right_only": [
+                {
+                  "key": "d",
+                  "right_index": 2
+                }
+              ]
+            }
+          },
+          "schema_input_valid": true,
+          "stderr": ""
+        },
+        {
+          "name": "empty_tables",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "counts": {
+                "changed": 0,
+                "left_only": 0,
+                "left_rows": 0,
+                "matched": 0,
+                "right_only": 0,
+                "right_rows": 0,
+                "unchanged": 0
+              },
+              "left_only": [],
+              "matches": [],
+              "right_only": []
+            }
+          },
+          "schema_input_valid": true,
+          "stderr": ""
+        },
+        {
+          "name": "missing_null_and_bool_number",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "counts": {
+                "changed": 1,
+                "left_only": 0,
+                "left_rows": 1,
+                "matched": 1,
+                "right_only": 0,
+                "right_rows": 1,
+                "unchanged": 0
+              },
+              "left_only": [],
+              "matches": [
+                {
+                  "changed_fields": [
+                    "b",
+                    "n"
+                  ],
+                  "key": 1,
+                  "left_index": 0,
+                  "right_index": 0
+                }
+              ],
+              "right_only": []
+            }
+          },
+          "schema_input_valid": true,
+          "stderr": ""
+        },
+        {
+          "name": "typed_key_distinction",
+          "passed": true,
+          "exit_code": 0,
+          "output": {
+            "ok": true,
+            "result": {
+              "counts": {
+                "changed": 0,
+                "left_only": 1,
+                "left_rows": 1,
+                "matched": 0,
+                "right_only": 1,
+                "right_rows": 1,
+                "unchanged": 0
+              },
+              "left_only": [
+                {
+                  "key": 1,
+                  "left_index": 0
+                }
+              ],
+              "matches": [],
+              "right_only": [
+                {
+                  "key": "1",
+                  "right_index": 0
+                }
+              ]
+            }
+          },
+          "schema_input_valid": true,
+          "stderr": ""
+        },
+        {
+          "name": "duplicate_key_not_cross_product",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "schema_input_valid": true,
+          "stderr": ""
+        },
+        {
+          "name": "missing_key",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "schema_input_valid": true,
+          "stderr": ""
+        },
+        {
+          "name": "null_key",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "schema_input_valid": true,
+          "stderr": ""
+        },
+        {
+          "name": "boolean_key",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "schema_input_valid": true,
+          "stderr": ""
+        },
+        {
+          "name": "empty_string_key",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "schema_input_valid": true,
+          "stderr": ""
+        },
+        {
+          "name": "fractional_field",
+          "passed": true,
+          "exit_code": 2,
+          "output": {
+            "ok": false,
+            "error": {
+              "code": "invalid_input"
+            }
+          },
+          "schema_input_valid": false,
+          "stderr": ""
+        }
+      ],
+      "passed": true
+    }
+  ],
+  "raw_probes": [
+    {
+      "token": "1.0",
+      "exit_code": 0,
+      "output": "{\"ok\":true,\"result\":{\"common\":[],\"equal\":false,\"left_count\":1,\"left_only\":[{\"count\":1,\"row\":{\"n\":1}}],\"right_count\":0,\"right_only\":[]}}\n"
+    },
+    {
+      "token": "1e0",
+      "exit_code": 0,
+      "output": "{\"ok\":true,\"result\":{\"common\":[],\"equal\":false,\"left_count\":1,\"left_only\":[{\"count\":1,\"row\":{\"n\":1}}],\"right_count\":0,\"right_only\":[]}}\n"
+    },
+    {
+      "token": "1.0000000000000001",
+      "exit_code": 2,
+      "output": "{\"ok\":false,\"error\":{\"code\":\"invalid_input\"}}\n"
+    },
+    {
+      "token": "1e-1000000000",
+      "exit_code": 2,
+      "output": "{\"ok\":false,\"error\":{\"code\":\"invalid_input\"}}\n"
+    },
+    {
+      "token": "0e1000000000",
+      "exit_code": 0,
+      "output": "{\"ok\":true,\"result\":{\"common\":[],\"equal\":false,\"left_count\":1,\"left_only\":[{\"count\":1,\"row\":{\"n\":0}}],\"right_count\":0,\"right_only\":[]}}\n"
+    },
+    {
+      "token": "0e1000000000000000000",
+      "exit_code": 2,
+      "output": "{\"ok\":false,\"error\":{\"code\":\"invalid_input\"}}\n"
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "type": "object",
+  "properties": {
+    "record_type": {
+      "const": "inspect_python_symbol_dependencies_request/v1"
+    },
+    "syntax_profile": {
+      "const": "python_ast_feature_3_10/v1"
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 4,
+            "maxLength": 256,
+            "pattern": "^(?!/)(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*//)[^\\\\\\x00-\\x1f\\x7f]+\\.py$",
+            "not": {
+              "pattern": "[\\x00-\\x1f\\x7f]"
+            }
+          },
+          "module": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z_][A-Za-z0-9_]*(?:\\.[A-Za-z_][A-Za-z0-9_]*)*$"
+          },
+          "source": {
+            "type": "string",
+            "maxLength": 16384
+          }
+        },
+        "required": [
+          "path",
+          "module",
+          "source"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "maxItems": 16
+    }
+  },
+  "required": [
+    "record_type",
+    "syntax_profile",
+    "files"
+  ],
+  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

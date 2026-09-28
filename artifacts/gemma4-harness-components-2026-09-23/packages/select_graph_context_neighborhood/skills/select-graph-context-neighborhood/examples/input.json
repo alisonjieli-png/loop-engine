@@ -1,0 +1,35 @@
+{
+  "record_type": "select_graph_context_neighborhood_request/v1",
+  "nodes": [
+    "a",
+    "b",
+    "c",
+    "d"
+  ],
+  "edges": [
+    {
+      "source": "a",
+      "target": "c",
+      "kind": "call"
+    },
+    {
+      "source": "a",
+      "target": "b",
+      "kind": "call"
+    },
+    {
+      "source": "b",
+      "target": "d",
+      "kind": "call"
+    }
+  ],
+  "seeds": [
+    "a"
+  ],
+  "direction": "outgoing",
+  "edge_types": [
+    "call"
+  ],
+  "node_budget": 2,
+  "max_hops": 8
+}

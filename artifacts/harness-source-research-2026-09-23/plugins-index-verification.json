@@ -1,0 +1,26 @@
+{
+  "record_type": "plugin_research_index_verification/v1",
+  "checks": {
+    "exactly_1000": true,
+    "unique_research_ids": true,
+    "unique_logical_locations": true,
+    "rank_sequence": true,
+    "descending_priority": true,
+    "component_sum": true,
+    "unreviewed_and_unverified": true,
+    "repository_diversity_bound": true,
+    "owner_diversity_bound": true,
+    "all_source_rows_and_primary_bytes_bind": true,
+    "all_selected_have_primary_public_bytes": true,
+    "approval_flag_mutation_detected": true,
+    "duplicate_identity_mutation_detected": true
+  },
+  "passed": true,
+  "records": 1000,
+  "public_primary_bytes_verified": 1000,
+  "failures": [],
+  "ranked_file_sha256": "f46bc30632ca2f2173052ff876e207125ea338d5afe7380fecde2c1e68bcbafb",
+  "source_artifact_csv_sha256": "b34f9718488718b89439e583e46388451f3b6014ec4281090bc8d4104b875c9e",
+  "network_calls": 0,
+  "upstream_code_executed": false
+}

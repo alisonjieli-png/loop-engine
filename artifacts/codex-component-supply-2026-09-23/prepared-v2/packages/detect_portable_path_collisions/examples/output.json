@@ -1,0 +1,31 @@
+{
+  "record_type": "detect_portable_path_collisions_result/v1",
+  "platform_model": "unicode_nfc_casefold/v1",
+  "unicode_version": "16.0.0",
+  "collision_free": false,
+  "collisions": [
+    {
+      "normalized_path": "strasse",
+      "indices": [
+        0,
+        1
+      ],
+      "paths": [
+        "Straße",
+        "STRASSE"
+      ]
+    }
+  ],
+  "parent_file_collisions": [
+    {
+      "parent": "a",
+      "child": "a/child",
+      "parent_indices": [
+        2
+      ],
+      "child_indices": [
+        3
+      ]
+    }
+  ]
+}

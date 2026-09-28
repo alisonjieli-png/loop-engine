@@ -1,0 +1,46 @@
+{
+  "ok": true,
+  "result": {
+    "row_count": 3,
+    "column_count": 2,
+    "physical_line_count": 4,
+    "header": [
+      "id",
+      "name"
+    ],
+    "duplicate_header_names": [],
+    "blank_header_indices": [],
+    "width_counts": [
+      {
+        "width": 1,
+        "records": 1
+      },
+      {
+        "width": 2,
+        "records": 2
+      }
+    ],
+    "width_mismatches": [
+      {
+        "row_index": 2,
+        "width": 1
+      }
+    ],
+    "columns": [
+      {
+        "index": 0,
+        "present_rows": 3,
+        "missing_rows": 0,
+        "empty_cells": 0,
+        "max_chars": 1
+      },
+      {
+        "index": 1,
+        "present_rows": 2,
+        "missing_rows": 1,
+        "empty_cells": 1,
+        "max_chars": 3
+      }
+    ]
+  }
+}

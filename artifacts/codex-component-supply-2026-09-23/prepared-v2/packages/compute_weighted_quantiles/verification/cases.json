@@ -1,0 +1,298 @@
+[
+  {
+    "name": "weighted_steps",
+    "input": {
+      "samples": [
+        {
+          "value": "10",
+          "weight": 1
+        },
+        {
+          "value": "20",
+          "weight": 3
+        }
+      ],
+      "probabilities": [
+        "0",
+        "0.25",
+        "0.5",
+        "1"
+      ]
+    },
+    "expected": {
+      "ok": true,
+      "result": {
+        "total_weight": 4,
+        "distinct_values": 2,
+        "cdf": [
+          {
+            "value": "10",
+            "weight": 1,
+            "cumulative_weight": 1
+          },
+          {
+            "value": "20",
+            "weight": 3,
+            "cumulative_weight": 4
+          }
+        ],
+        "quantiles": [
+          {
+            "q": "0",
+            "value": "10"
+          },
+          {
+            "q": "0.25",
+            "value": "10"
+          },
+          {
+            "q": "0.5",
+            "value": "20"
+          },
+          {
+            "q": "1",
+            "value": "20"
+          }
+        ]
+      }
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "ties_normalize_exactly",
+    "input": {
+      "samples": [
+        {
+          "value": "1.00",
+          "weight": 2
+        },
+        {
+          "value": "-0.0",
+          "weight": 1
+        },
+        {
+          "value": "1",
+          "weight": 1
+        }
+      ],
+      "probabilities": [
+        "0.000",
+        "0.5",
+        "1.0"
+      ]
+    },
+    "expected": {
+      "ok": true,
+      "result": {
+        "total_weight": 4,
+        "distinct_values": 2,
+        "cdf": [
+          {
+            "value": "0",
+            "weight": 1,
+            "cumulative_weight": 1
+          },
+          {
+            "value": "1",
+            "weight": 3,
+            "cumulative_weight": 4
+          }
+        ],
+        "quantiles": [
+          {
+            "q": "0",
+            "value": "0"
+          },
+          {
+            "q": "0.5",
+            "value": "1"
+          },
+          {
+            "q": "1",
+            "value": "1"
+          }
+        ]
+      }
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "threshold_above_boundary",
+    "input": {
+      "samples": [
+        {
+          "value": "-2",
+          "weight": 1
+        },
+        {
+          "value": "-1",
+          "weight": 1
+        }
+      ],
+      "probabilities": [
+        "0.500000000001"
+      ]
+    },
+    "expected": {
+      "ok": true,
+      "result": {
+        "total_weight": 2,
+        "distinct_values": 2,
+        "cdf": [
+          {
+            "value": "-2",
+            "weight": 1,
+            "cumulative_weight": 1
+          },
+          {
+            "value": "-1",
+            "weight": 1,
+            "cumulative_weight": 2
+          }
+        ],
+        "quantiles": [
+          {
+            "q": "0.500000000001",
+            "value": "-1"
+          }
+        ]
+      }
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "integral_weight",
+    "input": {
+      "samples": [
+        {
+          "value": "0.125",
+          "weight": 2.0
+        }
+      ],
+      "probabilities": [
+        "1"
+      ]
+    },
+    "expected": {
+      "ok": true,
+      "result": {
+        "total_weight": 2,
+        "distinct_values": 1,
+        "cdf": [
+          {
+            "value": "0.125",
+            "weight": 2,
+            "cumulative_weight": 2
+          }
+        ],
+        "quantiles": [
+          {
+            "q": "1",
+            "value": "0.125"
+          }
+        ]
+      }
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "zero_weight",
+    "input": {
+      "samples": [
+        {
+          "value": "1",
+          "weight": 0
+        }
+      ],
+      "probabilities": [
+        "0.5"
+      ]
+    },
+    "expected": {
+      "ok": false,
+      "error": {
+        "code": "invalid_input"
+      }
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "boolean_weight",
+    "input": {
+      "samples": [
+        {
+          "value": "1",
+          "weight": true
+        }
+      ],
+      "probabilities": [
+        "0.5"
+      ]
+    },
+    "expected": {
+      "ok": false,
+      "error": {
+        "code": "invalid_input"
+      }
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "scientific_decimal_string",
+    "input": {
+      "samples": [
+        {
+          "value": "1e2",
+          "weight": 1
+        }
+      ],
+      "probabilities": [
+        "0.5"
+      ]
+    },
+    "expected": {
+      "ok": false,
+      "error": {
+        "code": "invalid_input"
+      }
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "out_of_range_probability",
+    "input": {
+      "samples": [
+        {
+          "value": "1",
+          "weight": 1
+        }
+      ],
+      "probabilities": [
+        "1.01"
+      ]
+    },
+    "expected": {
+      "ok": false,
+      "error": {
+        "code": "invalid_input"
+      }
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "empty_samples",
+    "input": {
+      "samples": [],
+      "probabilities": [
+        "0.5"
+      ]
+    },
+    "expected": {
+      "ok": false,
+      "error": {
+        "code": "invalid_input"
+      }
+    },
+    "expected_exit": 2
+  }
+]

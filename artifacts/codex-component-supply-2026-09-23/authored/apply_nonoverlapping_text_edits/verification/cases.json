@@ -1,0 +1,274 @@
+[
+  {
+    "name": "simultaneous_original_positions",
+    "input": {
+      "record_type": "apply_nonoverlapping_text_edits_request/v1",
+      "text": "abcdef",
+      "edits": [
+        {
+          "start": 4,
+          "end": 6,
+          "replacement": "Y"
+        },
+        {
+          "start": 1,
+          "end": 3,
+          "replacement": "X"
+        }
+      ],
+      "expected_sha256": "bef57ec7f53a6d40beb640a780a639c83bc29ac8a9816f1fc6c5c6dcd93c4721"
+    },
+    "expected": {
+      "record_type": "apply_nonoverlapping_text_edits_result/v1",
+      "text": "aXdY",
+      "source_sha256": "bef57ec7f53a6d40beb640a780a639c83bc29ac8a9816f1fc6c5c6dcd93c4721",
+      "result_sha256": "84209baa36e04bf161cd05f7ec0ed9ac7aa9567a0102ca06f08fd6dfcbfa5005",
+      "edits_applied": 2
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "unicode_codepoint_offsets",
+    "input": {
+      "record_type": "apply_nonoverlapping_text_edits_request/v1",
+      "text": "é🙂z",
+      "edits": [
+        {
+          "start": 1.0,
+          "end": 2.0,
+          "replacement": "!"
+        }
+      ]
+    },
+    "expected": {
+      "record_type": "apply_nonoverlapping_text_edits_result/v1",
+      "text": "é!z",
+      "source_sha256": "493d1ff0c85e1139e29b180a48e510e27059297b46d7924e490139b0cddfb03d",
+      "result_sha256": "ba3bad60de61601cf4d19c6c1ae72de9ce199d0f5fba4a47a4a1e68e099161a3",
+      "edits_applied": 1
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "insertion_at_previous_end",
+    "input": {
+      "record_type": "apply_nonoverlapping_text_edits_request/v1",
+      "text": "ab",
+      "edits": [
+        {
+          "start": 0,
+          "end": 1,
+          "replacement": "X"
+        },
+        {
+          "start": 1,
+          "end": 1,
+          "replacement": "!"
+        }
+      ]
+    },
+    "expected": {
+      "record_type": "apply_nonoverlapping_text_edits_result/v1",
+      "text": "X!b",
+      "source_sha256": "fb8e20fc2e4c3f248c60c39bd652f3c1347298bb977b8b4d5903b85055620603",
+      "result_sha256": "645b4c6b5386dea5ebe5d27334092a38128a1ca3a66c18129307b474cdbabea8",
+      "edits_applied": 2
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "empty_edit_set",
+    "input": {
+      "record_type": "apply_nonoverlapping_text_edits_request/v1",
+      "text": "unchanged",
+      "edits": []
+    },
+    "expected": {
+      "record_type": "apply_nonoverlapping_text_edits_result/v1",
+      "text": "unchanged",
+      "source_sha256": "aaa8d3c8d74ad3e8f6b1772aa9c7e0eaa528cb42fc93599ce2f125b00d4c424c",
+      "result_sha256": "aaa8d3c8d74ad3e8f6b1772aa9c7e0eaa528cb42fc93599ce2f125b00d4c424c",
+      "edits_applied": 0
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "empty_source_insertion",
+    "input": {
+      "record_type": "apply_nonoverlapping_text_edits_request/v1",
+      "text": "",
+      "edits": [
+        {
+          "start": 0,
+          "end": 0,
+          "replacement": "hi"
+        }
+      ]
+    },
+    "expected": {
+      "record_type": "apply_nonoverlapping_text_edits_result/v1",
+      "text": "hi",
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_sha256": "8f434346648f6b96df89dda901c5176b10a6d83961dd3c1ac88b59b2dc327aa4",
+      "edits_applied": 1
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "overlapping_ranges",
+    "input": {
+      "record_type": "apply_nonoverlapping_text_edits_request/v1",
+      "text": "abc",
+      "edits": [
+        {
+          "start": 0,
+          "end": 2,
+          "replacement": ""
+        },
+        {
+          "start": 1,
+          "end": 3,
+          "replacement": ""
+        }
+      ]
+    },
+    "expected": {
+      "error": "overlapping_edits"
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "same_start_insertions",
+    "input": {
+      "record_type": "apply_nonoverlapping_text_edits_request/v1",
+      "text": "abc",
+      "edits": [
+        {
+          "start": 1,
+          "end": 1,
+          "replacement": "x"
+        },
+        {
+          "start": 1,
+          "end": 1,
+          "replacement": "y"
+        }
+      ]
+    },
+    "expected": {
+      "error": "overlapping_edits"
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "insertion_at_replacement_start",
+    "input": {
+      "record_type": "apply_nonoverlapping_text_edits_request/v1",
+      "text": "abc",
+      "edits": [
+        {
+          "start": 1,
+          "end": 1,
+          "replacement": "x"
+        },
+        {
+          "start": 1,
+          "end": 2,
+          "replacement": "y"
+        }
+      ]
+    },
+    "expected": {
+      "error": "overlapping_edits"
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "wrong_source_digest",
+    "input": {
+      "record_type": "apply_nonoverlapping_text_edits_request/v1",
+      "text": "abc",
+      "edits": [],
+      "expected_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "expected": {
+      "error": "source_digest_mismatch"
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "out_of_range",
+    "input": {
+      "record_type": "apply_nonoverlapping_text_edits_request/v1",
+      "text": "a",
+      "edits": [
+        {
+          "start": 0,
+          "end": 2,
+          "replacement": ""
+        }
+      ]
+    },
+    "expected": {
+      "error": "invalid_input"
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "duplicate_top_key",
+    "raw_input": "{\"record_type\":\"apply_nonoverlapping_text_edits_request/v1\",\"record_type\":\"apply_nonoverlapping_text_edits_request/v1\"}",
+    "expected": {
+      "error": "invalid_input"
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "nonfinite",
+    "raw_input": "{\"x\":NaN}",
+    "expected": {
+      "error": "invalid_input"
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "depth_limit",
+    "raw_input": "[[[[[[[[[[[[[[[[[0]]]]]]]]]]]]]]]]]",
+    "expected": {
+      "error": "invalid_input"
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "lone_surrogate",
+    "raw_input": "{\"x\":\"\\ud800\"}",
+    "expected": {
+      "error": "invalid_input"
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "unknown_top_field",
+    "input": {
+      "record_type": "apply_nonoverlapping_text_edits_request/v1",
+      "text": "abcdef",
+      "edits": [
+        {
+          "start": 4,
+          "end": 6,
+          "replacement": "Y"
+        },
+        {
+          "start": 1,
+          "end": 3,
+          "replacement": "X"
+        }
+      ],
+      "expected_sha256": "bef57ec7f53a6d40beb640a780a639c83bc29ac8a9816f1fc6c5c6dcd93c4721",
+      "unrecognized": true
+    },
+    "expected": {
+      "error": "invalid_input"
+    },
+    "expected_exit": 2
+  }
+]

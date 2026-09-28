@@ -1,0 +1,11 @@
+{
+  "wins": 2,
+  "losses": 0,
+  "ties": 1,
+  "missing": 1,
+  "evaluated": 3,
+  "p_two_sided": {
+    "numerator": "1",
+    "denominator": "2"
+  }
+}

@@ -1,0 +1,143 @@
+[
+  {
+    "name": "mandatory dependency closure",
+    "input": {
+      "budget": 5,
+      "blocks": [
+        {
+          "id": "reference",
+          "cost": 2,
+          "priority": 0,
+          "required": false,
+          "depends_on": [],
+          "text": "Reference facts"
+        },
+        {
+          "id": "task",
+          "cost": 3,
+          "priority": 10,
+          "required": true,
+          "depends_on": [
+            "reference"
+          ],
+          "text": "The assigned task"
+        },
+        {
+          "id": "extra",
+          "cost": 4,
+          "priority": 1,
+          "required": false,
+          "depends_on": [],
+          "text": "Optional detail"
+        }
+      ]
+    },
+    "expected": {
+      "selected": [
+        "reference",
+        "task"
+      ],
+      "omitted": [
+        "extra"
+      ],
+      "total_cost": 5,
+      "remaining": 0,
+      "blocks": [
+        {
+          "id": "reference",
+          "cost": 2,
+          "priority": 0,
+          "required": false,
+          "depends_on": [],
+          "text": "Reference facts"
+        },
+        {
+          "id": "task",
+          "cost": 3,
+          "priority": 10,
+          "required": true,
+          "depends_on": [
+            "reference"
+          ],
+          "text": "The assigned task"
+        }
+      ]
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "mandatory over budget",
+    "input": {
+      "budget": 4,
+      "blocks": [
+        {
+          "id": "reference",
+          "cost": 2,
+          "priority": 0,
+          "required": false,
+          "depends_on": [],
+          "text": "Reference facts"
+        },
+        {
+          "id": "task",
+          "cost": 3,
+          "priority": 10,
+          "required": true,
+          "depends_on": [
+            "reference"
+          ],
+          "text": "The assigned task"
+        },
+        {
+          "id": "extra",
+          "cost": 4,
+          "priority": 1,
+          "required": false,
+          "depends_on": [],
+          "text": "Optional detail"
+        }
+      ]
+    },
+    "expected": {
+      "error": "invalid_input"
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "zero empty",
+    "input": {
+      "budget": 0,
+      "blocks": []
+    },
+    "expected": {
+      "selected": [],
+      "omitted": [],
+      "total_cost": 0,
+      "remaining": 0,
+      "blocks": []
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "undeclared dependency",
+    "input": {
+      "budget": 10,
+      "blocks": [
+        {
+          "id": "task",
+          "cost": 3,
+          "priority": 10,
+          "required": true,
+          "depends_on": [
+            "missing"
+          ],
+          "text": "The assigned task"
+        }
+      ]
+    },
+    "expected": {
+      "error": "invalid_input"
+    },
+    "expected_exit": 2
+  }
+]

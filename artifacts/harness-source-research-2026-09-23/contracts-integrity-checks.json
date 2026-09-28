@@ -1,0 +1,29 @@
+{
+  "record_type": "contract_research_integrity_checks/v1",
+  "checks": {
+    "exact_1000_rows": true,
+    "unique_logical_keys": true,
+    "unique_research_ids": true,
+    "ranks_contiguous": true,
+    "all_unreviewed": true,
+    "parsed_body_unique": true,
+    "quarantine_digests": true,
+    "parse_has_no_schema_validity_claim": true,
+    "oversize_digest_unknown": true,
+    "request_ceiling": true,
+    "source_digest_bound": true,
+    "score_adds": true,
+    "common_fields": true,
+    "navigation_urls": true,
+    "url_repair_single_row": true
+  },
+  "passed": 15,
+  "failed": 0,
+  "ranked_sha256": "d0b0a41bc5253a4a65b4df6f908e56ca041b4121688cbc305c2c1c5130e3f5ed",
+  "notes_sha256": "bad6d5914b41cafe17b2b279a1be4399b15684d8a364ae44507bb454acc46466",
+  "parsed_documents": 891,
+  "native_loading_tested": false,
+  "independent_review": false,
+  "url_repair_report": "contracts-url-repair-2.json",
+  "collector_offline_tests_passed": 7
+}

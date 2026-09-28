@@ -1,0 +1,71 @@
+{
+  "audit_wikilink_resolution": {
+    "title": "Audit Markdown wikilink note targets",
+    "purpose": "Scan a declared bounded Markdown subset against a supplied note inventory, reporting exact target candidates, missing/ambiguous links, unchecked fragments and source spans without editing files.",
+    "search_tags": [
+      "wikilink",
+      "obsidian",
+      "markdown",
+      "note_links",
+      "dangling_links",
+      "ambiguity",
+      "knowledge_vault",
+      "source_spans",
+      "deterministic"
+    ],
+    "dependencies": [
+      {
+        "name": "Python",
+        "version": ">=3.10",
+        "scope": "interpreter",
+        "standard_library_only": true
+      }
+    ],
+    "declared_effects": [
+      "spawns_process"
+    ],
+    "sourcebasis": {
+      "kind": "first_party_original",
+      "producer": "Codex",
+      "producer_family": "openai",
+      "method_identity": "codex_original_research_inspired_components/v1",
+      "canonical_tooling_revision": "231f51bb1facab517fbe915b08ea9ac85f913347",
+      "framing_reuse": "artifacts/codex-component-supply-2026-09-23/authored/validate_event_precedence/tools/validate_event_precedence.py",
+      "framing_sha256": "e2aebba7709305435dd28d64aea7ee97c5db2a866942065d96b9ec0ea352aa3d",
+      "originality": "Original scanner/resolution implementation and fixtures; no third-party implementation or documentation body copied. Repository MIT notice does not clear third-party material.",
+      "primary_research_urls": [
+        "https://obsidian.md/help/links",
+        "https://obsidian.md/help/Editing+and+formatting/Basic+formatting+syntax"
+      ]
+    },
+    "limits": {
+      "input_utf8_bytes": 65536,
+      "output_utf8_bytes_including_lf": 131072,
+      "container_depth": 16,
+      "text_codepoints": 32768,
+      "note_paths": 256,
+      "links": 256
+    },
+    "methodinterface": {
+      "record_type": "bounded_json_cli_method/v1",
+      "input_record_type": "audit_wikilink_resolution_request/v1",
+      "output_record_type": "audit_wikilink_resolution_result/v1",
+      "syntax_profile": "bounded_markdown_wikilinks/v1",
+      "entrypoint": "tools/audit_wikilink_resolution.py",
+      "input": "UTF-8 JSON stdin",
+      "output": "UTF-8 JSON stdout plus LF",
+      "success_exit": 0,
+      "refusal_exit": 2,
+      "error_codes": [
+        "invalid_input",
+        "source_digest_mismatch",
+        "unclosed_frontmatter",
+        "link_limit_exceeded",
+        "output_limit_exceeded"
+      ]
+    },
+    "status": "candidate",
+    "native_qualification": "unqualified",
+    "approved": false
+  }
+}

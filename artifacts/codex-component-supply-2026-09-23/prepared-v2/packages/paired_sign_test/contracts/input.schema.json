@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "direction": {
+      "enum": [
+        "higher",
+        "lower"
+      ]
+    },
+    "pairs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]{0,63}(?![\\s\\S])"
+          },
+          "a": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string",
+                "pattern": "^-?(?:(?:0|[1-9][0-9]{0,8})(?:\\.[0-9]{1,6})?|1000000000(?:\\.0{1,6})?)(?![\\s\\S])",
+                "maxLength": 18
+              }
+            ]
+          },
+          "b": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string",
+                "pattern": "^-?(?:(?:0|[1-9][0-9]{0,8})(?:\\.[0-9]{1,6})?|1000000000(?:\\.0{1,6})?)(?![\\s\\S])",
+                "maxLength": 18
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "a",
+          "b"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 0,
+      "maxItems": 128
+    }
+  },
+  "required": [
+    "direction",
+    "pairs"
+  ],
+  "additionalProperties": false
+}

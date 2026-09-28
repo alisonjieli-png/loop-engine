@@ -1,0 +1,17 @@
+{
+  "rows": 1000,
+  "named_groups": 1000,
+  "instruction_digests": 1000,
+  "sha256": "708d27199ae43e0d962b611ab56dc30defea2cb54c9c1e16cee52f2279661375",
+  "reported_licenses": {
+    "MIT": 569,
+    "Apache-2.0": 190,
+    "ISC": 25,
+    "unknown": 159,
+    "NOASSERTION": 35,
+    "CC0-1.0": 22
+  },
+  "all_unreviewed": true,
+  "all_compatibility_unverified": true,
+  "all_licenses_unverified": true
+}

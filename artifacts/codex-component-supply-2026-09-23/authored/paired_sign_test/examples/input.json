@@ -1,0 +1,25 @@
+{
+  "direction": "higher",
+  "pairs": [
+    {
+      "id": "first",
+      "a": "1",
+      "b": "2"
+    },
+    {
+      "id": "second",
+      "a": "2",
+      "b": "5"
+    },
+    {
+      "id": "tie",
+      "a": "3",
+      "b": "3"
+    },
+    {
+      "id": "missing",
+      "a": null,
+      "b": "8"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "operation": "audit_wikilink_resolution",
+  "stage": "contracts_and_cases_before_executable",
+  "case_count": 37,
+  "payloads": {
+    "verification/cases.json": "75753f1993b5ba0a93bf5d0c9692784ddd1d12a8d53764ad795febe541348031",
+    "contracts/input.schema.json": "68897736c4ff666f1f38537158ec16685cd7dbe5cd17cd04b32a61f1ec329fef",
+    "contracts/output.schema.json": "c425b8614850d62c3ac542f05c7e52236ac3cdbb27075c2f65b3fba904b1af29",
+    "examples/input.json": "1428405750e371a7d4827315544c133bf8ec512d8672e07fc9211cb24e012283",
+    "examples/output.json": "e58a2bac44562c18cb3a01b3caa2573fd6cd4e9058b92376f485821937c32f5a"
+  }
+}

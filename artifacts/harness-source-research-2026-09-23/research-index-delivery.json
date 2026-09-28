@@ -1,0 +1,68 @@
+{
+  "record_type": "local_research_index_delivery/v1",
+  "records": 4000,
+  "readback_exact_payloads": 4000,
+  "verified_source_snapshots": 1291,
+  "active_store_rows": 0,
+  "default_search_hits": 0,
+  "manifest_sha256": "115e21c99244558f205d9e1e9e6ab57e8c941355f24c51dbbbeb4dbcc8d7e6db",
+  "helper_sha256": "a6f15e7a67ba224f8e3569453c1a8fbdf058ec657e5efc2bd26389d77e53f77f",
+  "database_sha256": "2af09c852cb64a40f18ac7051f3ebad8e04294bc12d8ceb412e190be6fdd7f35",
+  "source_sha256": {
+    "skill": "b1aeb285c1e88cbb4fa6b0bb9935448650328e21369e427880bd78fa4d21b1fa",
+    "plugin": "f46bc30632ca2f2173052ff876e207125ea338d5afe7380fecde2c1e68bcbafb",
+    "contract": "d0b0a41bc5253a4a65b4df6f908e56ca041b4121688cbc305c2c1c5130e3f5ed",
+    "tool": "cc9b8435a72c7470b47dd414c03ef172660a8688e6b4ff9d5e03957ca62110fa"
+  },
+  "examples": {
+    "research-index-example-contract.json": {
+      "hits": 3,
+      "categories": [
+        "contract"
+      ],
+      "candidate_only": true
+    },
+    "research-index-example-lookup.json": {
+      "hits": 1,
+      "categories": [
+        "tool"
+      ],
+      "candidate_only": true
+    },
+    "research-index-example-plugin.json": {
+      "hits": 3,
+      "categories": [
+        "plugin"
+      ],
+      "candidate_only": true
+    },
+    "research-index-example-skill.json": {
+      "hits": 3,
+      "categories": [
+        "skill"
+      ],
+      "candidate_only": true
+    },
+    "research-index-example-tool-postgres.json": {
+      "hits": 3,
+      "categories": [
+        "tool"
+      ],
+      "candidate_only": true
+    },
+    "research-index-example-tool.json": {
+      "hits": 0,
+      "categories": [],
+      "candidate_only": true
+    },
+    "research-index-example-unrelated.json": {
+      "hits": 0,
+      "categories": [],
+      "candidate_only": true
+    }
+  },
+  "unit_controls": 15,
+  "approved": 0,
+  "network_requests_by_index": 0,
+  "model_calls": 0
+}

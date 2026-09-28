@@ -1,0 +1,24 @@
+{
+  "repository_population": 87,
+  "discovered_skills": 2007,
+  "primary_instruction_files_inspected": 1832,
+  "distinct_instruction_byte_digests_inspected": 1466,
+  "logical_name_groups": 1438,
+  "selected": 1000,
+  "distinct_selected_instruction_digests": 1000,
+  "selected_repositories": 81,
+  "per_repository_logical_cap": 40,
+  "complete_target": true,
+  "additional_requests": {
+    "requests": 550,
+    "by_outcome": {
+      "https_get:ok": 550
+    },
+    "bytes": 3069805
+  },
+  "failure_count": 65,
+  "qualification_status": "unreviewed",
+  "native_execution_performed": false,
+  "initial_report": "skills-summary-before-logical-dedup.json",
+  "notes": "Conservative same-publisher named grouping, exact-byte duplicate collapse; aliases retained. Seed scope is87 public-leaderboard repositories, not the global skills population."
+}

@@ -1,0 +1,14 @@
+{
+  "record_type": "original_contract_population/v1",
+  "stage": "contracts_and_cases_before_implementation",
+  "packages": [
+    "compare_file_inventories",
+    "resolve_selected_dependency_closure",
+    "assign_digest_shards",
+    "validate_event_precedence",
+    "apply_nonoverlapping_text_edits",
+    "detect_portable_path_collisions"
+  ],
+  "tool_files_present": [],
+  "unicode_version_for_fixtures": "16.0.0"
+}

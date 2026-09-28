@@ -1,0 +1,161 @@
+"""Bounded candidate component. Standard input/output only; no effect authority is granted."""
+from __future__ import annotations
+
+import json
+import sys
+from decimal import Decimal, DecimalException
+
+MAX_INPUT_BYTES = 262144
+MAX_OUTPUT_BYTES = 524288
+MAX_INTEGER = 1000000000000
+
+
+def need(condition):
+    if not condition:
+        raise ValueError("invalid_input")
+
+
+def obj(value, fields):
+    need(type(value) is dict and set(value) == set(fields))
+
+
+def integer(value, low=-MAX_INTEGER, high=MAX_INTEGER):
+    need(type(value) is int and low <= value <= high)
+
+
+def string(value, minimum=0, maximum=256):
+    need(type(value) is str and minimum <= len(value) <= maximum)
+
+
+def array(value, maximum, minimum=0):
+    need(type(value) is list and minimum <= len(value) <= maximum)
+
+
+def scalar(value):
+    need(type(value) in (str, int, bool, type(None)))
+    if type(value) is str:
+        string(value)
+    elif type(value) is int:
+        integer(value)
+
+
+def record(value):
+    need(type(value) is dict and len(value) <= 32)
+    for key, item in value.items():
+        string(key, 1, 64)
+        scalar(item)
+
+
+def same_scalar(left, right):
+    return type(left) is type(right) and left == right
+
+
+def unique(pairs):
+    value = {}
+    for key, item in pairs:
+        need(key not in value)
+        value[key] = item
+    return value
+
+
+def json_integer(token):
+    # JSON Schema integer includes 1.0 and 1e0. Inspect exact decimal value,
+    # never a rounded binary float. Zero does not expand a huge exponent.
+    need(len(token) <= 128)
+    mantissa = token.lower().split("e", 1)[0]
+    if all(character in "-+.0" for character in mantissa):
+        return 0
+    number = Decimal(token)
+    need(number.is_finite())
+    if number.is_zero():
+        return 0
+    need(0 <= number.adjusted() <= 12)
+    need(number == number.to_integral_value() and abs(number) <= MAX_INTEGER)
+    return int(number)
+
+
+def no_constant(_token):
+    raise ValueError("invalid_input")
+
+
+def bounded(value):
+    pending = [(value, 0)]
+    count = 0
+    while pending:
+        item, depth = pending.pop()
+        count += 1
+        need(depth <= 8 and count <= 50000)
+        if type(item) is dict:
+            for key, child in item.items():
+                key.encode("utf-8")
+                pending.append((child, depth + 1))
+        elif type(item) is list:
+            pending.extend((child, depth + 1) for child in item)
+        elif type(item) is str:
+            item.encode("utf-8")
+
+
+import re
+from fractions import Fraction
+
+DECIMAL_VALUE = re.compile(r"-?(0|[1-9][0-9]{0,11})(\.[0-9]{1,12})?")
+PROBABILITY = re.compile(r"(0(\.[0-9]{1,12})?|1(\.0{1,12})?)")
+
+
+def decimal_text(number):
+    if number.is_zero():
+        return "0"
+    value = format(number, "f")
+    return value.rstrip("0").rstrip(".") if "." in value else value
+
+
+def solve(value):
+    obj(value, ("samples", "probabilities"))
+    array(value["samples"], 512, 1)
+    array(value["probabilities"], 64, 1)
+    weights = {}
+    for sample in value["samples"]:
+        obj(sample, ("value", "weight"))
+        string(sample["value"], 1, 26)
+        need(DECIMAL_VALUE.fullmatch(sample["value"]) is not None)
+        integer(sample["weight"], 1, 10**9)
+        number = Decimal(sample["value"])
+        weights[number] = weights.get(number, 0) + sample["weight"]
+    cdf = []
+    total = 0
+    for number in sorted(weights):
+        total += weights[number]
+        cdf.append({"value": decimal_text(number), "weight": weights[number], "cumulative_weight": total})
+    quantiles = []
+    for raw in value["probabilities"]:
+        string(raw, 1, 14)
+        need(PROBABILITY.fullmatch(raw) is not None)
+        probability = Decimal(raw)
+        threshold = Fraction(probability) * total
+        selected = next(row["value"] for row in cdf if row["cumulative_weight"] >= threshold)
+        quantiles.append({"q": decimal_text(probability), "value": selected})
+    return {"total_weight": total, "distinct_values": len(cdf), "cdf": cdf, "quantiles": quantiles}
+
+
+def main():
+    try:
+        raw = sys.stdin.buffer.read(MAX_INPUT_BYTES + 1)
+        need(len(raw) <= MAX_INPUT_BYTES)
+        value = json.loads(raw.decode("utf-8"), object_pairs_hook=unique,
+                           parse_int=json_integer, parse_float=json_integer,
+                           parse_constant=no_constant)
+        bounded(value)
+        response = {"ok": True, "result": solve(value)}
+        payload = json.dumps(response, ensure_ascii=False, sort_keys=True,
+                             separators=(",", ":"), allow_nan=False).encode("utf-8") + b"\n"
+        need(len(payload) <= MAX_OUTPUT_BYTES)
+    except (ValueError, TypeError, KeyError, IndexError, UnicodeError,
+            OverflowError, RecursionError, DecimalException):
+        sys.stdout.buffer.write(b'{"ok":false,"error":{"code":"invalid_input"}}\n')
+        return 2
+    sys.stdout.buffer.write(payload)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

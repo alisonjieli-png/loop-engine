@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "compute_weighted_quantiles input",
+  "$comment": "Raw transport constraints: one UTF-8 JSON object; input at most262144bytes, output at most524288bytes including newline. Duplicate object keys, nonfinite numbers, unpaired Unicode surrogates, decoded depth>8 or more than50000 decoded values refuse. JSON numeric tokens are at most128characters and must represent exact integers within+-1000000000000; integral decimal/exponent spellings are accepted. Structural schemas do not encode byte ceilings or stated cross-field conditions.",
+  "type": "object",
+  "properties": {
+    "samples": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string",
+            "pattern": "^-?(0|[1-9][0-9]{0,11})(\\.[0-9]{1,12})?$(?![\\s\\S])",
+            "maxLength": 26
+          },
+          "weight": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000000
+          }
+        },
+        "required": [
+          "value",
+          "weight"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 512,
+      "minItems": 1
+    },
+    "probabilities": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^(0(\\.[0-9]{1,12})?|1(\\.0{1,12})?)$(?![\\s\\S])",
+        "maxLength": 14
+      },
+      "maxItems": 64,
+      "minItems": 1
+    }
+  },
+  "required": [
+    "samples",
+    "probabilities"
+  ],
+  "additionalProperties": false,
+  "description": "Weighted empirical inverse CDF: minimum observed value whose cumulative positive integer weight is at least q*total; q=0 returns the minimum. Equal numeric decimal strings combine. No interpolation. Decimal outputs use fixed-point canonical spelling with trailing fractional zeroes removed."
+}

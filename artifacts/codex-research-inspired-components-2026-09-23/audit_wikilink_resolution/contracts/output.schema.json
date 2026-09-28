@@ -1,0 +1,204 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "record_type": {
+          "const": "audit_wikilink_resolution_result/v1"
+        },
+        "syntax_profile": {
+          "const": "bounded_markdown_wikilinks/v1"
+        },
+        "source_path": {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 256,
+          "pattern": "^[^/\\\\:#|\\[\\]\\x00-\\x1f\\x7f]+(?:/[^/\\\\:#|\\[\\]\\x00-\\x1f\\x7f]+)*\\.md$",
+          "not": {
+            "pattern": "[\\x00-\\x1f\\x7f]"
+          }
+        },
+        "source_sha256": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "complete_markdown_audit": {
+          "const": false
+        },
+        "links": {
+          "type": "array",
+          "maxItems": 256,
+          "items": {
+            "type": "object",
+            "properties": {
+              "start": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 32768
+              },
+              "end": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 32768
+              },
+              "line": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 32769
+              },
+              "column": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 32769
+              },
+              "raw": {
+                "type": "string",
+                "maxLength": 32768
+              },
+              "target": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 32768
+              },
+              "fragment": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 32768
+              },
+              "display": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 32768
+              },
+              "embedded": {
+                "type": "boolean"
+              },
+              "status": {
+                "enum": [
+                  "resolved",
+                  "missing",
+                  "ambiguous",
+                  "unsupported"
+                ]
+              },
+              "candidate_paths": {
+                "type": "array",
+                "maxItems": 256,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "minLength": 4,
+                  "maxLength": 256,
+                  "pattern": "^[^/\\\\:#|\\[\\]\\x00-\\x1f\\x7f]+(?:/[^/\\\\:#|\\[\\]\\x00-\\x1f\\x7f]+)*\\.md$",
+                  "not": {
+                    "pattern": "[\\x00-\\x1f\\x7f]"
+                  }
+                }
+              },
+              "reason": {
+                "enum": [
+                  "unique_note",
+                  "note_not_found",
+                  "multiple_note_targets",
+                  "invalid_link_syntax",
+                  "unclosed_or_nested_link"
+                ]
+              },
+              "fragment_status": {
+                "enum": [
+                  "absent",
+                  "not_checked"
+                ]
+              }
+            },
+            "required": [
+              "start",
+              "end",
+              "line",
+              "column",
+              "raw",
+              "target",
+              "fragment",
+              "display",
+              "embedded",
+              "status",
+              "candidate_paths",
+              "reason",
+              "fragment_status"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "counts": {
+          "type": "object",
+          "properties": {
+            "resolved": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 256
+            },
+            "missing": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 256
+            },
+            "ambiguous": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 256
+            },
+            "unsupported": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 256
+            }
+          },
+          "required": [
+            "resolved",
+            "missing",
+            "ambiguous",
+            "unsupported"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "record_type",
+        "syntax_profile",
+        "source_path",
+        "source_sha256",
+        "complete_markdown_audit",
+        "links",
+        "counts"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "error": {
+          "enum": [
+            "invalid_input",
+            "source_digest_mismatch",
+            "unclosed_frontmatter",
+            "link_limit_exceeded",
+            "output_limit_exceeded"
+          ]
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "additionalProperties": false
+    }
+  ]
+}

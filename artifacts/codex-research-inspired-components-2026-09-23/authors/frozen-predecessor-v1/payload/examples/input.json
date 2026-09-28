@@ -1,0 +1,12 @@
+{
+  "record_type": "audit_wikilink_resolution_request/v1",
+  "syntax_profile": "bounded_markdown_wikilinks/v1",
+  "source_path": "source.md",
+  "text": "[[Roadmap]] [[Missing]] [[Plan|work]] [[Roadmap#Next]]",
+  "note_paths": [
+    "source.md",
+    "Roadmap.md",
+    "a/Plan.md",
+    "b/Plan.md"
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "record_type": "local_research_metadata_results/v1",
+  "mode": "exact_id",
+  "category": null,
+  "query": null,
+  "lookup": "tool-7a3efee6b3238eff2a414321",
+  "candidate_selection_explicit": true,
+  "execution_available": false,
+  "source_integrity": "current_hashes_match_manifest",
+  "query_scoring": "existing lexical FTS5/BM25 order with reciprocal-rank score; separate from research priority",
+  "hits": [
+    {
+      "research_id": "tool-7a3efee6b3238eff2a414321",
+      "category": "tool",
+      "name": "com.hasdata/google-search",
+      "repository": "https://github.com/HasData/google-search-mcp",
+      "source_url": "https://registry.modelcontextprotocol.io/v0.1/servers?version=latest&limit=100&cursor=com.growthmak%2Fgrowthmak%3A1.0.0",
+      "source_path": "servers/59/server",
+      "source_snapshot_digest": "232f43327f56bea427e4d4e82b3a527ff3ceb67f7c2fabaf6ad4bbceb7fd3ece",
+      "rank": 1,
+      "priority_score": 100,
+      "query_score": null,
+      "evidence_level": "official_registry_and_matching_package_metadata",
+      "qualification_status": "unreviewed",
+      "compatibility_status": "unverified",
+      "rights_state": {
+        "license_reported": "MIT",
+        "license_verified": false,
+        "clearance": "not_established"
+      },
+      "lifecycle": "candidate",
+      "execution_available": false
+    }
+  ],
+  "network_requests": 0,
+  "model_calls": 0
+}

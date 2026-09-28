@@ -1,0 +1,38 @@
+{
+  "record_type": "plan_targeted_test_selection_request/v1",
+  "changed_symbols": [
+    "a",
+    "b",
+    "c",
+    "unknown"
+  ],
+  "tests": [
+    {
+      "id": "ab",
+      "depends_on": [
+        "a",
+        "b"
+      ],
+      "priority": 5,
+      "estimated_ms": 10
+    },
+    {
+      "id": "a",
+      "depends_on": [
+        "a"
+      ],
+      "priority": 99,
+      "estimated_ms": 1
+    },
+    {
+      "id": "c",
+      "depends_on": [
+        "c"
+      ],
+      "priority": 1,
+      "estimated_ms": 20
+    }
+  ],
+  "max_tests": 2,
+  "max_estimated_ms": 1000
+}

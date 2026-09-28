@@ -1,0 +1,156 @@
+{
+  "artifact_rows": 34476,
+  "strata": {
+    "A_plugin": 31915,
+    "B_skill": 2541,
+    "C_mcp": 20
+  },
+  "repo_rows": 24589,
+  "conformance_rows": 68072,
+  "plugin_artifact_ids_joined_to_conformance": 31915,
+  "plugin_rows": 31915,
+  "logical_groups": 29416,
+  "eligible_logical_groups": 29414,
+  "native_projection_or_same_repo_fingerprint_rows_collapsed": 2499,
+  "source_ledger_rows": 193,
+  "unexhausted_source_routes": 103,
+  "artifact_snapshot_digest": "b34f9718488718b89439e583e46388451f3b6014ec4281090bc8d4104b875c9e",
+  "source_snapshots": {
+    "README.md": {
+      "name": "agentpluginzoo:README.md",
+      "host": "raw.githubusercontent.com",
+      "path": "/tezansahu/agentpluginzoo/83259b7499efc86756b3913ee7d3000a6a668893/README.md",
+      "query": {},
+      "status": 200,
+      "sha256": "40af34fbf96324c24b46506ff7b4c5b846db0568f1309e01ef5ab7e96c46524d",
+      "bytes": 5120
+    },
+    "LICENSE": {
+      "name": "agentpluginzoo:LICENSE",
+      "host": "raw.githubusercontent.com",
+      "path": "/tezansahu/agentpluginzoo/83259b7499efc86756b3913ee7d3000a6a668893/LICENSE",
+      "query": {},
+      "status": 200,
+      "sha256": "0c76e73ae68aefb5aa0863e5c393b0faabf83eb39d35d370e6e0d852a0ce34ca",
+      "bytes": 1067
+    },
+    "data/README.md": {
+      "name": "agentpluginzoo:data/README.md",
+      "host": "raw.githubusercontent.com",
+      "path": "/tezansahu/agentpluginzoo/83259b7499efc86756b3913ee7d3000a6a668893/data/README.md",
+      "query": {},
+      "status": 200,
+      "sha256": "89153cb70cdd78f9b7ff22f2b9543fe1cda64592b52e98d57652b637a4ba83d5",
+      "bytes": 5011
+    },
+    "data/source_ledger.csv": {
+      "name": "agentpluginzoo:data/source_ledger.csv",
+      "host": "raw.githubusercontent.com",
+      "path": "/tezansahu/agentpluginzoo/83259b7499efc86756b3913ee7d3000a6a668893/data/source_ledger.csv",
+      "query": {},
+      "status": 200,
+      "sha256": "bc634419c7d42b440b349217e2894815168f3bfa3f0f5670a4178f48fe7d910f",
+      "bytes": 39287
+    },
+    "data/repos.csv": {
+      "name": "agentpluginzoo:data/repos.csv",
+      "host": "raw.githubusercontent.com",
+      "path": "/tezansahu/agentpluginzoo/83259b7499efc86756b3913ee7d3000a6a668893/data/repos.csv",
+      "query": {},
+      "status": 200,
+      "sha256": "b400049a37107c651e8b3f2785fca120115d82ac69cf5b0de658a18427ba7ec6",
+      "bytes": 3820214
+    },
+    "data/artifacts.csv": {
+      "name": "agentpluginzoo:data/artifacts.csv",
+      "host": "raw.githubusercontent.com",
+      "path": "/tezansahu/agentpluginzoo/83259b7499efc86756b3913ee7d3000a6a668893/data/artifacts.csv",
+      "query": {},
+      "status": 200,
+      "sha256": "b34f9718488718b89439e583e46388451f3b6014ec4281090bc8d4104b875c9e",
+      "bytes": 10313275
+    },
+    "data/conformance.csv": {
+      "name": "agentpluginzoo:data/conformance.csv",
+      "host": "raw.githubusercontent.com",
+      "path": "/tezansahu/agentpluginzoo/83259b7499efc86756b3913ee7d3000a6a668893/data/conformance.csv",
+      "query": {},
+      "status": 200,
+      "sha256": "095d6b8674f7a9f6bec609dfea6cc822b6d11460d4204a622f8b00c5d71e6034",
+      "bytes": 11134626
+    }
+  },
+  "fresh_same_repository_manifest_candidates_skipped": 0,
+  "fresh_same_repository_manifest_name_candidates_skipped": 1,
+  "record_type": "plugin_research_population/v1",
+  "ranked_items": 1000,
+  "distinct_ranked_repositories": 989,
+  "distinct_ranked_owners": 960,
+  "maximum_items_one_repository": 8,
+  "maximum_items_one_owner": 8,
+  "evidence_levels": {
+    "primary_manifest_object_observed": 581,
+    "pinned_research_metadata": 419
+  },
+  "topics": {
+    "testing_verification": 237,
+    "planning_orchestration": 270,
+    "code_development": 451,
+    "security_policy": 144,
+    "protocol_integration": 319,
+    "data_analytics": 90,
+    "business_product": 104,
+    "context_memory": 175,
+    "operations_observability": 99,
+    "browser_automation": 44,
+    "research_documents": 140,
+    "design_ui_accessibility": 76,
+    "general_agent_workflow": 204
+  },
+  "license_verified_count": 0,
+  "reported_license_counts": {
+    "MIT": 814,
+    "Apache-2.0": 168,
+    "AGPL-3.0": 1,
+    "ISC": 3,
+    "BSD-3-Clause": 4,
+    "CC0-1.0": 2,
+    "MIT-0": 1,
+    "BSD-2-Clause": 1,
+    "unknown": 3,
+    "CC-BY-4.0": 1,
+    "Unlicense": 1,
+    "GPL-3.0": 1
+  },
+  "primary_manifest_attempts": 583,
+  "primary_manifest_verified_byte_reads": 582,
+  "primary_status_counts": {
+    "200": 582,
+    "None": 1
+  },
+  "network_request_summary": {
+    "requests": 1160,
+    "by_outcome": {
+      "gh_api:ok": 1159,
+      "gh_api:not_found": 1
+    },
+    "bytes": 48764883
+  },
+  "network_request_budget": {
+    "ceiling": 1200,
+    "used": 1160,
+    "remaining_reserve": 500,
+    "maximum_pause_seconds": 30,
+    "pauses": []
+  },
+  "stopped_reason": "declared_collection_ceiling",
+  "ranked_file_sha256": "4dc4fa140e2b7d728bbaa4ea8c76856862d8afc035a3b8bbee7d5249cb135dfd",
+  "scoring_recipe": "plugin_research_priority/v3",
+  "source_files": {
+    "plugins_rank_research.py": "e16a5cdeac60233e29a89ce68f8024b3f6d0f949946cd40a947fdfc6046541f2",
+    "plugins_build_ranked.py": "bd01fa54d33339bce4372c9ba632186e27cc04bd59705657dca669e3044799f6"
+  },
+  "raw_body_location": "outside_repository_content_addressed_quarantine",
+  "upstream_code_executed": false,
+  "qualification_or_approval_performed": false
+}

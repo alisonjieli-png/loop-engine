@@ -1,0 +1,31 @@
+{
+  "selected": [
+    "reference",
+    "task"
+  ],
+  "omitted": [
+    "extra"
+  ],
+  "total_cost": 5,
+  "remaining": 0,
+  "blocks": [
+    {
+      "id": "reference",
+      "cost": 2,
+      "priority": 0,
+      "required": false,
+      "depends_on": [],
+      "text": "Reference facts"
+    },
+    {
+      "id": "task",
+      "cost": 3,
+      "priority": 10,
+      "required": true,
+      "depends_on": [
+        "reference"
+      ],
+      "text": "The assigned task"
+    }
+  ]
+}

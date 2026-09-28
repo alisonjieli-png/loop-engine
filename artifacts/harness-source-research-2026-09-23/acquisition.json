@@ -1,0 +1,1516 @@
+{
+  "source_revision": "231f51bb1facab517fbe915b08ea9ac85f913347",
+  "sources": [
+    {
+      "name": "agentpluginzoo:README.md",
+      "host": "raw.githubusercontent.com",
+      "path": "/tezansahu/agentpluginzoo/83259b7499efc86756b3913ee7d3000a6a668893/README.md",
+      "query": {},
+      "status": 200,
+      "sha256": "40af34fbf96324c24b46506ff7b4c5b846db0568f1309e01ef5ab7e96c46524d",
+      "bytes": 5120,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/40/40af34fbf96324c24b46506ff7b4c5b846db0568f1309e01ef5ab7e96c46524d"
+    },
+    {
+      "name": "agentpluginzoo:LICENSE",
+      "host": "raw.githubusercontent.com",
+      "path": "/tezansahu/agentpluginzoo/83259b7499efc86756b3913ee7d3000a6a668893/LICENSE",
+      "query": {},
+      "status": 200,
+      "sha256": "0c76e73ae68aefb5aa0863e5c393b0faabf83eb39d35d370e6e0d852a0ce34ca",
+      "bytes": 1067,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/0c/0c76e73ae68aefb5aa0863e5c393b0faabf83eb39d35d370e6e0d852a0ce34ca"
+    },
+    {
+      "name": "agentpluginzoo:data/README.md",
+      "host": "raw.githubusercontent.com",
+      "path": "/tezansahu/agentpluginzoo/83259b7499efc86756b3913ee7d3000a6a668893/data/README.md",
+      "query": {},
+      "status": 200,
+      "sha256": "89153cb70cdd78f9b7ff22f2b9543fe1cda64592b52e98d57652b637a4ba83d5",
+      "bytes": 5011,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/89/89153cb70cdd78f9b7ff22f2b9543fe1cda64592b52e98d57652b637a4ba83d5"
+    },
+    {
+      "name": "agentpluginzoo:data/source_ledger.csv",
+      "host": "raw.githubusercontent.com",
+      "path": "/tezansahu/agentpluginzoo/83259b7499efc86756b3913ee7d3000a6a668893/data/source_ledger.csv",
+      "query": {},
+      "status": 200,
+      "sha256": "bc634419c7d42b440b349217e2894815168f3bfa3f0f5670a4178f48fe7d910f",
+      "bytes": 39287,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/bc/bc634419c7d42b440b349217e2894815168f3bfa3f0f5670a4178f48fe7d910f"
+    },
+    {
+      "name": "agentpluginzoo:data/repos.csv",
+      "host": "raw.githubusercontent.com",
+      "path": "/tezansahu/agentpluginzoo/83259b7499efc86756b3913ee7d3000a6a668893/data/repos.csv",
+      "query": {},
+      "status": 200,
+      "sha256": "b400049a37107c651e8b3f2785fca120115d82ac69cf5b0de658a18427ba7ec6",
+      "bytes": 3820214,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/b4/b400049a37107c651e8b3f2785fca120115d82ac69cf5b0de658a18427ba7ec6"
+    },
+    {
+      "name": "agentpluginzoo:data/artifacts.csv",
+      "host": "raw.githubusercontent.com",
+      "path": "/tezansahu/agentpluginzoo/83259b7499efc86756b3913ee7d3000a6a668893/data/artifacts.csv",
+      "query": {},
+      "status": 200,
+      "sha256": "b34f9718488718b89439e583e46388451f3b6014ec4281090bc8d4104b875c9e",
+      "bytes": 10313275,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/b3/b34f9718488718b89439e583e46388451f3b6014ec4281090bc8d4104b875c9e"
+    },
+    {
+      "name": "agentpluginzoo:data/conformance.csv",
+      "host": "raw.githubusercontent.com",
+      "path": "/tezansahu/agentpluginzoo/83259b7499efc86756b3913ee7d3000a6a668893/data/conformance.csv",
+      "query": {},
+      "status": 200,
+      "sha256": "095d6b8674f7a9f6bec609dfea6cc822b6d11460d4204a622f8b00c5d71e6034",
+      "bytes": 11134626,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/09/095d6b8674f7a9f6bec609dfea6cc822b6d11460d4204a622f8b00c5d71e6034"
+    },
+    {
+      "name": "schemastore_catalog",
+      "host": "www.schemastore.org",
+      "path": "/api/json/catalog.json",
+      "query": {},
+      "status": 200,
+      "sha256": "75edb7d0bab76c28a7e51dd4c0de1ba7b6a1202f99f11695d2109a79e8d16991",
+      "bytes": 526075,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/75/75edb7d0bab76c28a7e51dd4c0de1ba7b6a1202f99f11695d2109a79e8d16991"
+    },
+    {
+      "name": "apis_guru_list",
+      "host": "api.apis.guru",
+      "path": "/v2/list.json",
+      "query": {},
+      "status": 200,
+      "sha256": "dfac835d2d1f13dfdb82723d72be1acf567df53c1b710bf6d68e28b795696e66",
+      "bytes": 8855894,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/df/dfac835d2d1f13dfdb82723d72be1acf567df53c1b710bf6d68e28b795696e66"
+    },
+    {
+      "name": "skills_leaderboard",
+      "host": "skills.sh",
+      "path": "/api/v1/skills",
+      "query": {
+        "view": "all-time",
+        "per_page": 500,
+        "page": 0
+      },
+      "status": 401,
+      "sha256": "9b050cfd797553100d46b3f91557b0e38f4e67e8331994f77431595f71972f7b",
+      "bytes": 206,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/9b/9b050cfd797553100d46b3f91557b0e38f4e67e8331994f77431595f71972f7b"
+    },
+    {
+      "name": "mcp_registry_latest_000",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100
+      },
+      "status": 200,
+      "sha256": "eed98a938c770dba0d25d9956818f17c56fd36f02e6f4e5205ae13950150741a",
+      "bytes": 82453,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/ee/eed98a938c770dba0d25d9956818f17c56fd36f02e6f4e5205ae13950150741a"
+    },
+    {
+      "name": "mcp_registry_latest_001",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "ai.appdeploy/deploy-app:2.6.13"
+      },
+      "status": 200,
+      "sha256": "fc91ee193b81d8fd40008d47a6b94133200a57218bad20219e3ff26a94f99545",
+      "bytes": 77398,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/fc/fc91ee193b81d8fd40008d47a6b94133200a57218bad20219e3ff26a94f99545"
+    },
+    {
+      "name": "mcp_registry_latest_002",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "ai.buron/buron:0.1.0"
+      },
+      "status": 200,
+      "sha256": "117adde997ef606e341782fd47232d3be44cd6185cb0e91e65f7a736859009bc",
+      "bytes": 103215,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/11/117adde997ef606e341782fd47232d3be44cd6185cb0e91e65f7a736859009bc"
+    },
+    {
+      "name": "mcp_registry_latest_003",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "ai.daystruct.api/daystruct:1.2.0"
+      },
+      "status": 200,
+      "sha256": "f3bb631ed2981428c8f66638ef21f90e1410404aa606f9aa5bb07058ca79c8fa",
+      "bytes": 114201,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/f3/f3bb631ed2981428c8f66638ef21f90e1410404aa606f9aa5bb07058ca79c8fa"
+    },
+    {
+      "name": "mcp_registry_latest_004",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "ai.feedback1/mcp:1.1.0"
+      },
+      "status": 200,
+      "sha256": "93af6e0c17b2530943daaec22223a6d4dd831e3c729602d3dc64ee0994fa67fd",
+      "bytes": 72862,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/93/93af6e0c17b2530943daaec22223a6d4dd831e3c729602d3dc64ee0994fa67fd"
+    },
+    {
+      "name": "mcp_registry_latest_005",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "ai.getvda/llm-orchestration-agent-langchain-anthropic:1.0.0"
+      },
+      "status": 200,
+      "sha256": "eb48f42de015d757e5f9db760d12ace39e9ca5819829d06ffcaa33e98c79b327",
+      "bytes": 73979,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/eb/eb48f42de015d757e5f9db760d12ace39e9ca5819829d06ffcaa33e98c79b327"
+    },
+    {
+      "name": "mcp_registry_latest_006",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "ai.inite/inite-visibility:1.1.2"
+      },
+      "status": 200,
+      "sha256": "3a285b02905da8d78c2d48e496b64a15e9d6b1cfa8c16fdaaf14da2351dbfe12",
+      "bytes": 83261,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/3a/3a285b02905da8d78c2d48e496b64a15e9d6b1cfa8c16fdaaf14da2351dbfe12"
+    },
+    {
+      "name": "mcp_registry_latest_007",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "ai.mainbook/bank-statement-converter:0.5.2"
+      },
+      "status": 200,
+      "sha256": "2da5ad38f85038db6d99d2cdb27222e5a12496d635c8f0d8eba3182ca34ed2dd",
+      "bytes": 84171,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/2d/2da5ad38f85038db6d99d2cdb27222e5a12496d635c8f0d8eba3182ca34ed2dd"
+    },
+    {
+      "name": "mcp_registry_latest_008",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "ai.omnitravel/travelmcp-directory:1.0.0"
+      },
+      "status": 200,
+      "sha256": "f272d05aa5a038a3c7c5970ac4d07e1c4062673deafc70e00e39d3af2e38fd87",
+      "bytes": 82775,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/f2/f272d05aa5a038a3c7c5970ac4d07e1c4062673deafc70e00e39d3af2e38fd87"
+    },
+    {
+      "name": "mcp_registry_latest_009",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "ai.qr-manager/qr-manager:1.0.0"
+      },
+      "status": 200,
+      "sha256": "3f092392165b512977d8c981757175f424e6ae7f2e3fa5bed21c381d0d1d2135",
+      "bytes": 78577,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/3f/3f092392165b512977d8c981757175f424e6ae7f2e3fa5bed21c381d0d1d2135"
+    },
+    {
+      "name": "mcp_registry_latest_010",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "ai.sendafax/sendafax:1.0.1"
+      },
+      "status": 200,
+      "sha256": "18b7dee67715b4fba7a235398480a86e37d079bc6b08bf5fafa451c4003260fc",
+      "bytes": 81552,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/18/18b7dee67715b4fba7a235398480a86e37d079bc6b08bf5fafa451c4003260fc"
+    },
+    {
+      "name": "mcp_registry_latest_011",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "ai.smithery/anirbanbasu-frankfurtermcp:1.15.0"
+      },
+      "status": 200,
+      "sha256": "13ba59fdb2e7fbbdda5d5c69b6ec295a4f8b642cd1a2f11d5808ce8cc0225092",
+      "bytes": 83043,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/13/13ba59fdb2e7fbbdda5d5c69b6ec295a4f8b642cd1a2f11d5808ce8cc0225092"
+    },
+    {
+      "name": "mcp_registry_latest_012",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "ai.smithery/magenie33-quality-dimension-generator:1.0.0"
+      },
+      "status": 200,
+      "sha256": "4b0571f7ed1b0d05f1d172f323e40cb4fdd1981b6c763206479cd94557fab68e",
+      "bytes": 84219,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/4b/4b0571f7ed1b0d05f1d172f323e40cb4fdd1981b6c763206479cd94557fab68e"
+    },
+    {
+      "name": "mcp_registry_latest_013",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "ai.syntheticbrew/syntheticbrew:1.18.0"
+      },
+      "status": 200,
+      "sha256": "8d9d4531a79a489d2e72260eff50bdfc0d54771913475ca38ec58fcc7b0eb7f0",
+      "bytes": 90209,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/8d/8d9d4531a79a489d2e72260eff50bdfc0d54771913475ca38ec58fcc7b0eb7f0"
+    },
+    {
+      "name": "mcp_registry_latest_014",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "ai.trendsmcp/x-twitter:1.0.6"
+      },
+      "status": 200,
+      "sha256": "fe60d616a239b9adcb8e44e4dbab9c99226ca19c2b00f68e9a1567b3e923df8d",
+      "bytes": 80113,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/fe/fe60d616a239b9adcb8e44e4dbab9c99226ca19c2b00f68e9a1567b3e923df8d"
+    },
+    {
+      "name": "mcp_registry_latest_015",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "ai.windsor/windsor-mcp:0.1.0"
+      },
+      "status": 200,
+      "sha256": "f21a0cfebc7a93b2ef66ffe0d30d2043689efd5dd8db39c7cc02c25ae5cc089b",
+      "bytes": 81626,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/f2/f21a0cfebc7a93b2ef66ffe0d30d2043689efd5dd8db39c7cc02c25ae5cc089b"
+    },
+    {
+      "name": "mcp_registry_latest_016",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "app.crawlio/crawlio-browser:1.11.0"
+      },
+      "status": 200,
+      "sha256": "9b7da6555cc17108fc9f1cb6896f55b16e360f9a9373ccdea4bcff0468d28b79",
+      "bytes": 76404,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/9b/9b7da6555cc17108fc9f1cb6896f55b16e360f9a9373ccdea4bcff0468d28b79"
+    },
+    {
+      "name": "mcp_registry_latest_017",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "app.john11/john11:1.0.0"
+      },
+      "status": 200,
+      "sha256": "b7fc2429cafa30e1d44adbe65ff21d7740550dd03f8cae8ad366825c35a4c3b6",
+      "bytes": 86461,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/b7/b7fc2429cafa30e1d44adbe65ff21d7740550dd03f8cae8ad366825c35a4c3b6"
+    },
+    {
+      "name": "mcp_registry_latest_018",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "app.pinsuite/pinsuite:1.0.0"
+      },
+      "status": 200,
+      "sha256": "80988c02be2411982b3a6c2b409e56f9bc9b3bf1f7a0da3734844b152eb139bd",
+      "bytes": 77745,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/80/80988c02be2411982b3a6c2b409e56f9bc9b3bf1f7a0da3734844b152eb139bd"
+    },
+    {
+      "name": "mcp_registry_latest_019",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "app.thoughtspot/mcp-server:1.0.1"
+      },
+      "status": 200,
+      "sha256": "36062cfd1c714930efaa98a74965e840089a2849271b7bc71c9b76006cb7973f",
+      "bytes": 78350,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/36/36062cfd1c714930efaa98a74965e840089a2849271b7bc71c9b76006cb7973f"
+    },
+    {
+      "name": "mcp_registry_latest_020",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "app.wishpool/japan-logistics-mcp:0.1.0"
+      },
+      "status": 200,
+      "sha256": "d9bb00d3e9626eddb5006aab9087d79174656984824b641528ab1a53c0d3e721",
+      "bytes": 77245,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/d9/d9bb00d3e9626eddb5006aab9087d79174656984824b641528ab1a53c0d3e721"
+    },
+    {
+      "name": "mcp_registry_latest_021",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "at.blckalpaca/knowledge-base:1.0.0"
+      },
+      "status": 200,
+      "sha256": "d80f6df7f73f0c49d4677f41a6e1e28ec8ca9aacdd475ddaccb2b943ccc98206",
+      "bytes": 74358,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/d8/d80f6df7f73f0c49d4677f41a6e1e28ec8ca9aacdd475ddaccb2b943ccc98206"
+    },
+    {
+      "name": "mcp_registry_latest_022",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "br.com.pushinpay/mcp:0.1.1"
+      },
+      "status": 200,
+      "sha256": "a2830ff5b5043375e4ce61cb3b870c22910c5c077b6f00f3b3d4256202c763d7",
+      "bytes": 75206,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/a2/a2830ff5b5043375e4ce61cb3b870c22910c5c077b6f00f3b3d4256202c763d7"
+    },
+    {
+      "name": "mcp_registry_latest_023",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "ch.firmenwatch/firmenwatch:1.0.0"
+      },
+      "status": 200,
+      "sha256": "25dd064b7e031f37715bf96cd2541a2624e13b22eda04a5707334789c5c45fd8",
+      "bytes": 84593,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/25/25dd064b7e031f37715bf96cd2541a2624e13b22eda04a5707334789c5c45fd8"
+    },
+    {
+      "name": "mcp_registry_latest_024",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "cn.savantcat/geo-cn:1.0.0"
+      },
+      "status": 200,
+      "sha256": "fd581f6e37a2a3e9639fdffecd94109f8a9ec245417abf7aa51ba11675c2a278",
+      "bytes": 76211,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/fd/fd581f6e37a2a3e9639fdffecd94109f8a9ec245417abf7aa51ba11675c2a278"
+    },
+    {
+      "name": "mcp_registry_latest_025",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "co.loopgolf/tee-times:1.0.0"
+      },
+      "status": 200,
+      "sha256": "11240ad2e0cc11ccade1c50081690bc807c687891fbd0532e770e8748dc41709",
+      "bytes": 77058,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/11/11240ad2e0cc11ccade1c50081690bc807c687891fbd0532e770e8748dc41709"
+    },
+    {
+      "name": "mcp_registry_latest_026",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.24haowan/marketing:0.1.0"
+      },
+      "status": 200,
+      "sha256": "3d06bb59ea926101ad0eafdbed4e16adfc982e513d98c4ed8d6d4deb9011d64a",
+      "bytes": 127888,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/3d/3d06bb59ea926101ad0eafdbed4e16adfc982e513d98c4ed8d6d4deb9011d64a"
+    },
+    {
+      "name": "mcp_registry_latest_027",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.a2awire/data-exploit-db-exploit-database-proof-of-concept:0.1.1"
+      },
+      "status": 200,
+      "sha256": "ba563481a3eeeba88bf0f192354cd4a11b871c64285ed080a5d829e89abf7b29",
+      "bytes": 150609,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/ba/ba563481a3eeeba88bf0f192354cd4a11b871c64285ed080a5d829e89abf7b29"
+    },
+    {
+      "name": "mcp_registry_latest_028",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.aftership.mcp/tracking-public:1.0.1"
+      },
+      "status": 200,
+      "sha256": "7e138e269ea6aa2969bd5af61fbd6d130913cb44a45c9dc66f09ca1a4bb6888a",
+      "bytes": 77458,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/7e/7e138e269ea6aa2969bd5af61fbd6d130913cb44a45c9dc66f09ca1a4bb6888a"
+    },
+    {
+      "name": "mcp_registry_latest_029",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.aioproductos/mcp-studio:0.2.3"
+      },
+      "status": 200,
+      "sha256": "f204ee66900a85a71ba96b87f53f388f921942600025465d997ac0fae9e5e6a4",
+      "bytes": 80061,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/f2/f204ee66900a85a71ba96b87f53f388f921942600025465d997ac0fae9e5e6a4"
+    },
+    {
+      "name": "mcp_registry_latest_030",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.apished/date-math-calculator:1.0.0"
+      },
+      "status": 200,
+      "sha256": "bd70b56d099abdcbf0f6f7be79fa1ecf342b70b42cd210fbab685e0c54067544",
+      "bytes": 79982,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/bd/bd70b56d099abdcbf0f6f7be79fa1ecf342b70b42cd210fbab685e0c54067544"
+    },
+    {
+      "name": "mcp_registry_latest_031",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.auto-reader/ocr:1.0.3"
+      },
+      "status": 200,
+      "sha256": "0ede01c649799d8f76ec533ffaa2d3bd074037d89f71a1a798e66f0b4c114afd",
+      "bytes": 86934,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/0e/0ede01c649799d8f76ec533ffaa2d3bd074037d89f71a1a798e66f0b4c114afd"
+    },
+    {
+      "name": "mcp_registry_latest_032",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.bidskim/mcp:1.0.0"
+      },
+      "status": 200,
+      "sha256": "47a7a816e2075e58fc27fd3396ea8e8c539e1835b3c10a682132509fa3753b83",
+      "bytes": 79643,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/47/47a7a816e2075e58fc27fd3396ea8e8c539e1835b3c10a682132509fa3753b83"
+    },
+    {
+      "name": "mcp_registry_latest_033",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.bozfix/bozfix:1.0.0"
+      },
+      "status": 200,
+      "sha256": "b33e2e47d11247078869ac4dcb1821950ef01cc919c803673106f1b12ef51a06",
+      "bytes": 74102,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/b3/b33e2e47d11247078869ac4dcb1821950ef01cc919c803673106f1b12ef51a06"
+    },
+    {
+      "name": "mcp_registry_latest_034",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.careerrift/career-rift:0.3.0"
+      },
+      "status": 200,
+      "sha256": "5729a16246a771c4680b14414034bdc0ee6c93be8b39f59d80bbc8d2943dd9a7",
+      "bytes": 75762,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/57/5729a16246a771c4680b14414034bdc0ee6c93be8b39f59d80bbc8d2943dd9a7"
+    },
+    {
+      "name": "mcp_registry_latest_035",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.clauderegistry/plugin-catalog:1.2.0"
+      },
+      "status": 200,
+      "sha256": "c92271b21ef8aeeef44d76f739f09b31e33bf10314141514c45fb48fa18baebb",
+      "bytes": 104591,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/c9/c92271b21ef8aeeef44d76f739f09b31e33bf10314141514c45fb48fa18baebb"
+    },
+    {
+      "name": "mcp_registry_latest_036",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.coachwatts/coach-watts:0.5.25"
+      },
+      "status": 200,
+      "sha256": "222cf393ddf5eec31f44c69d57114d601b1708bb3356d1ae4f2c83119d578086",
+      "bytes": 77506,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/22/222cf393ddf5eec31f44c69d57114d601b1708bb3356d1ae4f2c83119d578086"
+    },
+    {
+      "name": "mcp_registry_latest_037",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.courseprofiler/courseprofiler:0.1.0"
+      },
+      "status": 200,
+      "sha256": "6613f81c6415f39a0987b0962d2adfa02944f57a8ff39215db0117d1598cd29e",
+      "bytes": 91028,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/66/6613f81c6415f39a0987b0962d2adfa02944f57a8ff39215db0117d1598cd29e"
+    },
+    {
+      "name": "mcp_registry_latest_038",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.datakoot/domain-dns-whois:2.1.0"
+      },
+      "status": 200,
+      "sha256": "b336dfd03a6830066b43156349a99616a7f74cde0342a94e1b74f08dafd51a21",
+      "bytes": 95514,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/b3/b336dfd03a6830066b43156349a99616a7f74cde0342a94e1b74f08dafd51a21"
+    },
+    {
+      "name": "mcp_registry_latest_039",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.dintak/dintak-mcp-gateway:0.1.0"
+      },
+      "status": 200,
+      "sha256": "0519f62a0b4026a1bff7eeebee6f6ca49226ad2c18d716cc9fa2ea413b1bea0b",
+      "bytes": 73946,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/05/0519f62a0b4026a1bff7eeebee6f6ca49226ad2c18d716cc9fa2ea413b1bea0b"
+    },
+    {
+      "name": "mcp_registry_latest_040",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.dyndns-server.noon-ai/face-blur-redaction-mcp:0.1.12"
+      },
+      "status": 200,
+      "sha256": "0400f9b875f71cdc69a8ded9ce879355de0838685cde24d143dd71b78ed3fc9a",
+      "bytes": 78808,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/04/0400f9b875f71cdc69a8ded9ce879355de0838685cde24d143dd71b78ed3fc9a"
+    },
+    {
+      "name": "mcp_registry_latest_041",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.enclave402/enclave402:2.1.0"
+      },
+      "status": 200,
+      "sha256": "0b5042e21958387720d047396ddab5c984f39b568c337f412f9536d97b7c46a9",
+      "bytes": 77836,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/0b/0b5042e21958387720d047396ddab5c984f39b568c337f412f9536d97b7c46a9"
+    },
+    {
+      "name": "mcp_registry_latest_042",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.falconer/mcp:0.2.1"
+      },
+      "status": 200,
+      "sha256": "a2b5acd5b355f34cd2876aeeb8da60a217c049f9f8f373b5e5d380e9e7e6933f",
+      "bytes": 82575,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/a2/a2b5acd5b355f34cd2876aeeb8da60a217c049f9f8f373b5e5d380e9e7e6933f"
+    },
+    {
+      "name": "mcp_registry_latest_043",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.flightpowers/google-flights:1.2.0"
+      },
+      "status": 200,
+      "sha256": "376926db049903941e19483a2b27419a06ac466b24fe422eb5d21016b0a777c6",
+      "bytes": 81910,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/37/376926db049903941e19483a2b27419a06ac466b24fe422eb5d21016b0a777c6"
+    },
+    {
+      "name": "mcp_registry_latest_044",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.geekflare/mcp:0.3.6"
+      },
+      "status": 200,
+      "sha256": "92cbb3f6b6a60683266bdee3c469e436fa290f81335c028719cb3467a006cbcd",
+      "bytes": 80696,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/92/92cbb3f6b6a60683266bdee3c469e436fa290f81335c028719cb3467a006cbcd"
+    },
+    {
+      "name": "mcp_registry_latest_045",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.gibsonai/mcp:1.0.0"
+      },
+      "status": 200,
+      "sha256": "7621df35c8a72de422c4d0667bacb17209700796875ff0da295869ebc15482ca",
+      "bytes": 77583,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/76/7621df35c8a72de422c4d0667bacb17209700796875ff0da295869ebc15482ca"
+    },
+    {
+      "name": "mcp_registry_latest_046",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.growthmak/growthmak:1.0.0"
+      },
+      "status": 200,
+      "sha256": "232f43327f56bea427e4d4e82b3a527ff3ceb67f7c2fabaf6ad4bbceb7fd3ece",
+      "bytes": 96076,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/23/232f43327f56bea427e4d4e82b3a527ff3ceb67f7c2fabaf6ad4bbceb7fd3ece"
+    },
+    {
+      "name": "mcp_registry_latest_047",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.heybuna/buna:1.45.0"
+      },
+      "status": 200,
+      "sha256": "2085f7e4dddf32ab8aaa5adf6c911b8ca15631a1e65732fd60fececbb14a8010",
+      "bytes": 78365,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/20/2085f7e4dddf32ab8aaa5adf6c911b8ca15631a1e65732fd60fececbb14a8010"
+    },
+    {
+      "name": "mcp_registry_latest_048",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.immo-spot/mcp:1.0.0"
+      },
+      "status": 200,
+      "sha256": "0bc654392fa1268a843e5e530b931717768031f208196d94411443c31b4df8e3",
+      "bytes": 109547,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/0b/0bc654392fa1268a843e5e530b931717768031f208196d94411443c31b4df8e3"
+    },
+    {
+      "name": "mcp_registry_latest_049",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.jiyumarketing.mcp/agency-mcp:1.0.0"
+      },
+      "status": 200,
+      "sha256": "30b5e96b7ada95b9b77ecafbd05010723e899ced0467ce8f58bd15b92962d893",
+      "bytes": 69815,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/30/30b5e96b7ada95b9b77ecafbd05010723e899ced0467ce8f58bd15b92962d893"
+    },
+    {
+      "name": "mcp_registry_latest_050",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.kbasevo/site:1.0.0"
+      },
+      "status": 200,
+      "sha256": "7fff49cca57b45c556d124d670830653415966c3564a084540a61772df499b11",
+      "bytes": 101969,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/7f/7fff49cca57b45c556d124d670830653415966c3564a084540a61772df499b11"
+    },
+    {
+      "name": "mcp_registry_latest_051",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.leapmemory/memory:1.0.0"
+      },
+      "status": 200,
+      "sha256": "9ea8bff889e6a205ad111bc856e91e3d9a396c2292bf10c714b5804de1407776",
+      "bytes": 79977,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/9e/9ea8bff889e6a205ad111bc856e91e3d9a396c2292bf10c714b5804de1407776"
+    },
+    {
+      "name": "mcp_registry_latest_052",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.lumethic/verify:1.1.0"
+      },
+      "status": 200,
+      "sha256": "28913a8373cdcd5b3aa70b176f542e1513b657421779be6a8f9e01dbd80f3736",
+      "bytes": 88071,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/28/28913a8373cdcd5b3aa70b176f542e1513b657421779be6a8f9e01dbd80f3736"
+    },
+    {
+      "name": "mcp_registry_latest_053",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.mambabuilt/mcp-meta-ad-library-monitor:1.0.1"
+      },
+      "status": 200,
+      "sha256": "b2ff414a79624a0a2f02ff18081dfe19d7ca057f2bdf5bf88b390642837d8d7f",
+      "bytes": 86179,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/b2/b2ff414a79624a0a2f02ff18081dfe19d7ca057f2bdf5bf88b390642837d8d7f"
+    },
+    {
+      "name": "mcp_registry_latest_054",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.mcparmory/google-maps:1.0.3"
+      },
+      "status": 200,
+      "sha256": "cf902400cd584f3cb6272eebe9765dd6abd7974695b78afb7447036e43e57228",
+      "bytes": 94749,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/cf/cf902400cd584f3cb6272eebe9765dd6abd7974695b78afb7447036e43e57228"
+    },
+    {
+      "name": "mcp_registry_latest_055",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.medianfi/compliance:1.0.0"
+      },
+      "status": 200,
+      "sha256": "83fd03176c361abc2305c6e4206c68b27eb0ebe04d573023b76e949e1a36fb26",
+      "bytes": 91306,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/83/83fd03176c361abc2305c6e4206c68b27eb0ebe04d573023b76e949e1a36fb26"
+    },
+    {
+      "name": "mcp_registry_latest_056",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.mock-server/mockserver:8.0.0"
+      },
+      "status": 200,
+      "sha256": "52df25c6a93bb120f5ac67a381f0dddfb2c5875b45894ecf022f2ee4ae791a0f",
+      "bytes": 83216,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/52/52df25c6a93bb120f5ac67a381f0dddfb2c5875b45894ecf022f2ee4ae791a0f"
+    },
+    {
+      "name": "mcp_registry_latest_057",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.naibul/board-game-hall:1.0.3"
+      },
+      "status": 200,
+      "sha256": "47c4457eddb2258364836e0d5c4d59f242f620074d9103cdc271e272c32444d7",
+      "bytes": 86466,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/47/47c4457eddb2258364836e0d5c4d59f242f620074d9103cdc271e272c32444d7"
+    },
+    {
+      "name": "mcp_registry_latest_058",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.nursinghomedatabase/mcp:1.0.1"
+      },
+      "status": 200,
+      "sha256": "b4eccb342ca175802b412651a320a4c6614b78d8d1bd5e37dee5d873f6dfcc2b",
+      "bytes": 69951,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/b4/b4eccb342ca175802b412651a320a4c6614b78d8d1bd5e37dee5d873f6dfcc2b"
+    },
+    {
+      "name": "mcp_registry_latest_059",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.onrender.coverintent-network/insurance:2.0.0"
+      },
+      "status": 200,
+      "sha256": "872413842bad28ee7da7d676eaf629b39dff73737005d2cc42ccae9e2740b5c8",
+      "bytes": 78198,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/87/872413842bad28ee7da7d676eaf629b39dff73737005d2cc42ccae9e2740b5c8"
+    },
+    {
+      "name": "mcp_registry_latest_060",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.parseium/mcp:2.0.0"
+      },
+      "status": 200,
+      "sha256": "2fb481bffe9f5627d5d6f29a9e64d746af967d2db1281667503e75ffb3c8744b",
+      "bytes": 80587,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/2f/2fb481bffe9f5627d5d6f29a9e64d746af967d2db1281667503e75ffb3c8744b"
+    },
+    {
+      "name": "mcp_registry_latest_061",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.playgama/developer-cabinet:1.1.0"
+      },
+      "status": 200,
+      "sha256": "1633e51f4a6713897d86cf08d54b7687e6871ffa6ce983bfbd9649947152c74f",
+      "bytes": 82163,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/16/1633e51f4a6713897d86cf08d54b7687e6871ffa6ce983bfbd9649947152c74f"
+    },
+    {
+      "name": "mcp_registry_latest_062",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.proofzo/site:1.0.0"
+      },
+      "status": 200,
+      "sha256": "3a6f2141cc365d10f1b01f432fbd88dfdb7ce52e5747a7bd904f94b841665092",
+      "bytes": 97116,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/3a/3a6f2141cc365d10f1b01f432fbd88dfdb7ce52e5747a7bd904f94b841665092"
+    },
+    {
+      "name": "mcp_registry_latest_063",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.ranklogs/ranklogs:1.0.0"
+      },
+      "status": 200,
+      "sha256": "67225a68b4b1fc906bc780279b4dd02e46b5f8616d4a0b01faf6cfd2951317ca",
+      "bytes": 74943,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/67/67225a68b4b1fc906bc780279b4dd02e46b5f8616d4a0b01faf6cfd2951317ca"
+    },
+    {
+      "name": "mcp_registry_latest_064",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.rephonic/rephonic:1.0.0"
+      },
+      "status": 200,
+      "sha256": "aaf016714192b4e058cd77283fa1778f0d9e828d2c249651680d666493e8dbeb",
+      "bytes": 79853,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/aa/aaf016714192b4e058cd77283fa1778f0d9e828d2c249651680d666493e8dbeb"
+    },
+    {
+      "name": "mcp_registry_latest_065",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.rtcstats/rtcstats:1.0.0"
+      },
+      "status": 200,
+      "sha256": "6e33bcbafa319ed7835f73d1b4bac0314c512b98d118fddebbbec08449adac1f",
+      "bytes": 89535,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/6e/6e33bcbafa319ed7835f73d1b4bac0314c512b98d118fddebbbec08449adac1f"
+    },
+    {
+      "name": "mcp_registry_latest_066",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.scrykeeper/royal-road-intelligence:0.1.0"
+      },
+      "status": 200,
+      "sha256": "6645b62f8b0fe371868b15ca54956002c44a730abb7dbb6d2875a1d9d0fa3957",
+      "bytes": 77336,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/66/6645b62f8b0fe371868b15ca54956002c44a730abb7dbb6d2875a1d9d0fa3957"
+    },
+    {
+      "name": "mcp_registry_latest_067",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.shonanfarm/sukimalabo-tester:1.0.0"
+      },
+      "status": 200,
+      "sha256": "dfcfe2a5cce7349328b3902d1185cfb6f7996ebe47a715477461109d6356c397",
+      "bytes": 83929,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/df/dfcfe2a5cce7349328b3902d1185cfb6f7996ebe47a715477461109d6356c397"
+    },
+    {
+      "name": "mcp_registry_latest_068",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.softkiln/deploy:1.0.1"
+      },
+      "status": 200,
+      "sha256": "93ae39a3e1b277d12bb6d9968e4baaeb118f7f05ab92f53d3b04e4ab37ecc708",
+      "bytes": 84434,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/93/93ae39a3e1b277d12bb6d9968e4baaeb118f7f05ab92f53d3b04e4ab37ecc708"
+    },
+    {
+      "name": "mcp_registry_latest_069",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.stayingapi/hotel-vacation-rental-mcp:1.0.0"
+      },
+      "status": 200,
+      "sha256": "939259d09834fd6bfe97289061d40b5b7c27c689cd1664f7e26b49abe34ad792",
+      "bytes": 80552,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/93/939259d09834fd6bfe97289061d40b5b7c27c689cd1664f7e26b49abe34ad792"
+    },
+    {
+      "name": "mcp_registry_latest_070",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.sygnliq/sygnldata:0.2.0"
+      },
+      "status": 200,
+      "sha256": "15fb26a4d0d0b3a4d81643d0fb921e916ea3705f5b7a101d2526db02ef59774c",
+      "bytes": 77798,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/15/15fb26a4d0d0b3a4d81643d0fb921e916ea3705f5b7a101d2526db02ef59774c"
+    },
+    {
+      "name": "mcp_registry_latest_071",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.theartofservice/compliance-intelligence:1.1.0"
+      },
+      "status": 200,
+      "sha256": "d9647b10e671dd13e6a80b27a1618457a679569073ff492eda2d99b0e1dbbd94",
+      "bytes": 82977,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/d9/d9647b10e671dd13e6a80b27a1618457a679569073ff492eda2d99b0e1dbbd94"
+    },
+    {
+      "name": "mcp_registry_latest_072",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.thevicinityapp/vicinity-agent-api:0.1.0"
+      },
+      "status": 200,
+      "sha256": "303adab9a115a58d5403b674e4ab55d929c74b5e5213969a9bc2fbcf70ffbf49",
+      "bytes": 78019,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/30/303adab9a115a58d5403b674e4ab55d929c74b5e5213969a9bc2fbcf70ffbf49"
+    },
+    {
+      "name": "mcp_registry_latest_073",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.transcodely/mcp:1.1.0"
+      },
+      "status": 200,
+      "sha256": "0c15bc736aa7c776fd38e11482d707dce054ecd153e301717f15bed7f982ae92",
+      "bytes": 80992,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/0c/0c15bc736aa7c776fd38e11482d707dce054ecd153e301717f15bed7f982ae92"
+    },
+    {
+      "name": "mcp_registry_latest_074",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.unfoldip/patent-search:1.0.2"
+      },
+      "status": 200,
+      "sha256": "61a6cd9e04bc05e300d2ee7f2f4a4eee80b3864c0d98c5d95d0d1b3f047ac74c",
+      "bytes": 79482,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/61/61a6cd9e04bc05e300d2ee7f2f4a4eee80b3864c0d98c5d95d0d1b3f047ac74c"
+    },
+    {
+      "name": "mcp_registry_latest_075",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.vhishongkong/vhis:1.0.0"
+      },
+      "status": 200,
+      "sha256": "239fff58a2129202d07bd854b2651935d198a296e28e3d70b41597dee9420764",
+      "bytes": 76392,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/23/239fff58a2129202d07bd854b2651935d198a296e28e3d70b41597dee9420764"
+    },
+    {
+      "name": "mcp_registry_latest_076",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.weekrota/site:1.0.0"
+      },
+      "status": 200,
+      "sha256": "0be6641cdcff3d2b89aa9376f15a388a49f01d5cbb4a967e88bd7631541f25a6",
+      "bytes": 85828,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/0b/0be6641cdcff3d2b89aa9376f15a388a49f01d5cbb4a967e88bd7631541f25a6"
+    },
+    {
+      "name": "mcp_registry_latest_077",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "com.xquik/mcp:2.6.0"
+      },
+      "status": 200,
+      "sha256": "fe0a431c591c3cad36b50954727c84efd4905762c8ed8ac699bf6416060f7781",
+      "bytes": 77736,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/fe/fe0a431c591c3cad36b50954727c84efd4905762c8ed8ac699bf6416060f7781"
+    },
+    {
+      "name": "mcp_registry_latest_078",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "de.agundur/geo-scanner:1.0.0"
+      },
+      "status": 200,
+      "sha256": "e4b8060bae8a6ea45a781be92c44bb0b8faa4e1207bfc8d67bf1d2d4154ab3f2",
+      "bytes": 73967,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/e4/e4b8060bae8a6ea45a781be92c44bb0b8faa4e1207bfc8d67bf1d2d4154ab3f2"
+    },
+    {
+      "name": "mcp_registry_latest_079",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "dev.agentsim/mcp:0.29.1"
+      },
+      "status": 200,
+      "sha256": "84d4219f420274044fd88f2a529cf00a866d11600947e4e8f9e0c8fccb7fa990",
+      "bytes": 80487,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/84/84d4219f420274044fd88f2a529cf00a866d11600947e4e8f9e0c8fccb7fa990"
+    },
+    {
+      "name": "mcp_registry_latest_080",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "dev.dualregistry/registry:2.0.1"
+      },
+      "status": 200,
+      "sha256": "bd73f8cd9d05a0e3f7c61a7b21f71ad8a57418b260292f58a4905f732bf144dd",
+      "bytes": 87252,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/bd/bd73f8cd9d05a0e3f7c61a7b21f71ad8a57418b260292f58a4905f732bf144dd"
+    },
+    {
+      "name": "mcp_registry_latest_081",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "dev.lekta/lekta:2026.7.0"
+      },
+      "status": 200,
+      "sha256": "ffc38725cd98700f41236f015cbcded3ad52444c143de3c1fd195f7784aa5867",
+      "bytes": 84971,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/ff/ffc38725cd98700f41236f015cbcded3ad52444c143de3c1fd195f7784aa5867"
+    },
+    {
+      "name": "mcp_registry_latest_082",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "dev.reapx/app-store-reviews:1.0.0"
+      },
+      "status": 200,
+      "sha256": "326929bfd54e78f2ae11c8db3fec8b50b167fd9f87f1c0756363d07dd6060c37",
+      "bytes": 97171,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/32/326929bfd54e78f2ae11c8db3fec8b50b167fd9f87f1c0756363d07dd6060c37"
+    },
+    {
+      "name": "mcp_registry_latest_083",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "dev.threadmine/mcp:0.1.0"
+      },
+      "status": 200,
+      "sha256": "42a957db77ce3df6fa6531d4e7bf4120e4188b79d322fd5de3c265d0b87931f6",
+      "bytes": 117226,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/42/42a957db77ce3df6fa6531d4e7bf4120e4188b79d322fd5de3c265d0b87931f6"
+    },
+    {
+      "name": "mcp_registry_latest_084",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "dev.workers.selbyventurecap.cf-worker/apollo-salesforce-mapper:2.0.0"
+      },
+      "status": 200,
+      "sha256": "1b8a33588ba6cbda0802962707eefb346bbb19c7dbc39cff404b26fb70913b9f",
+      "bytes": 82418,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/1b/1b8a33588ba6cbda0802962707eefb346bbb19c7dbc39cff404b26fb70913b9f"
+    },
+    {
+      "name": "mcp_registry_latest_085",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "eu.ansvar/estonian-law-mcp:1.0.0"
+      },
+      "status": 200,
+      "sha256": "4f319ebec7958da8ae5b9d00f988c580fb1d03ac82d07fe950b34b6202515a69",
+      "bytes": 89469,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/4f/4f319ebec7958da8ae5b9d00f988c580fb1d03ac82d07fe950b34b6202515a69"
+    },
+    {
+      "name": "mcp_registry_latest_086",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "eu.madeinro/digital-compass-mcp:0.5.0"
+      },
+      "status": 200,
+      "sha256": "676e98eb2b431f34d22bb2f51f799459ff5828aa07ec260ed6f387e0790623c4",
+      "bytes": 80173,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/67/676e98eb2b431f34d22bb2f51f799459ff5828aa07ec260ed6f387e0790623c4"
+    },
+    {
+      "name": "mcp_registry_latest_087",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "fr.humanmirror/outcome:1.0.0"
+      },
+      "status": 200,
+      "sha256": "a85621f6d466e54a5ff647c8045535f8184ca60ad4c96fa9cbb8fe27cc3d7541",
+      "bytes": 79155,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/a8/a85621f6d466e54a5ff647c8045535f8184ca60ad4c96fa9cbb8fe27cc3d7541"
+    },
+    {
+      "name": "mcp_registry_latest_088",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "guide.homegarden/guide-registry:1.0.0"
+      },
+      "status": 200,
+      "sha256": "db0da7a5f66272ac7874a4d12c7fda35c199dac8dc9e78983b2d4951db8715bf",
+      "bytes": 77870,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/db/db0da7a5f66272ac7874a4d12c7fda35c199dac8dc9e78983b2d4951db8715bf"
+    },
+    {
+      "name": "mcp_registry_latest_089",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "info.blocksize.mcp/agentic-payments:0.6.22"
+      },
+      "status": 200,
+      "sha256": "afe89b8c6dce31627d7aa3fb2ca95db2477c4e1cf806691eadb80af1869469a3",
+      "bytes": 84358,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/af/afe89b8c6dce31627d7aa3fb2ca95db2477c4e1cf806691eadb80af1869469a3"
+    },
+    {
+      "name": "mcp_registry_latest_090",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.averta/mcp-gateway:0.1.1"
+      },
+      "status": 200,
+      "sha256": "261b66893c2609daf63e2a9a8cbb9fd4d0771d4ab4d208834b998379f5e77941",
+      "bytes": 80085,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/26/261b66893c2609daf63e2a9a8cbb9fd4d0771d4ab4d208834b998379f5e77941"
+    },
+    {
+      "name": "mcp_registry_latest_091",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.dotrequirements/dotrequirements:1.0.0"
+      },
+      "status": 200,
+      "sha256": "1963312fd4a711ba9af2a602216ec0377baa35caf19f01953b75a7878589ad80",
+      "bytes": 89265,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/19/1963312fd4a711ba9af2a602216ec0377baa35caf19f01953b75a7878589ad80"
+    },
+    {
+      "name": "mcp_registry_latest_092",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.0xddneto/ai-proof-of-us:0.5.0"
+      },
+      "status": 200,
+      "sha256": "9114209ece30eb17484e616407d49ca64f5436c54815c93b9b9433cb1a1516d0",
+      "bytes": 90258,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/91/9114209ece30eb17484e616407d49ca64f5436c54815c93b9b9433cb1a1516d0"
+    },
+    {
+      "name": "mcp_registry_latest_093",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.7nashinick/norwegian-data-mcp:0.2.0"
+      },
+      "status": 200,
+      "sha256": "57d676d9d9ea078ce6c4682de677708b3e904397b95f8ce64d11c8c43a0f3339",
+      "bytes": 112392,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/57/57d676d9d9ea078ce6c4682de677708b3e904397b95f8ce64d11c8c43a0f3339"
+    },
+    {
+      "name": "mcp_registry_latest_094",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.AIops-tools/olvm-aiops:0.4.1"
+      },
+      "status": 200,
+      "sha256": "45cf6f94604db662dc44940ba3150cf664ba0e7d4a4ec9bcd25dcd77a54d2cd0",
+      "bytes": 96305,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/45/45cf6f94604db662dc44940ba3150cf664ba0e7d4a4ec9bcd25dcd77a54d2cd0"
+    },
+    {
+      "name": "mcp_registry_latest_095",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.AceDataCloud/mcp-seedance:2026.9.4.0"
+      },
+      "status": 200,
+      "sha256": "1b47679e3093b4cf37efa87ded4b30b3bcb0aceab765f71eb7327e6fcb12c9c9",
+      "bytes": 102791,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/1b/1b47679e3093b4cf37efa87ded4b30b3bcb0aceab765f71eb7327e6fcb12c9c9"
+    },
+    {
+      "name": "mcp_registry_latest_096",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.AivaStack/vouchtools:0.1.0"
+      },
+      "status": 200,
+      "sha256": "59144e6cc07ae74fabcba9e36f217cbf030353d2bb94fff8f86657f4d2c00861",
+      "bytes": 93155,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/59/59144e6cc07ae74fabcba9e36f217cbf030353d2bb94fff8f86657f4d2c00861"
+    },
+    {
+      "name": "mcp_registry_latest_097",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.Ankur-stockheads/rubo-mcp:0.1.1"
+      },
+      "status": 200,
+      "sha256": "ecdbebcfdd1eb879bc77aa380971f5b47578447955aea4bb5c048675cb228a40",
+      "bytes": 86905,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/ec/ecdbebcfdd1eb879bc77aa380971f5b47578447955aea4bb5c048675cb228a40"
+    },
+    {
+      "name": "mcp_registry_latest_098",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.Arthefacte/fractal-arena:1.12.1"
+      },
+      "status": 200,
+      "sha256": "cbe9e1b075cfa3efd9ce6fdfc83ec3a7c870ba922bdcc8b0f2e0f22c138d41bd",
+      "bytes": 95941,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/cb/cbe9e1b075cfa3efd9ce6fdfc83ec3a7c870ba922bdcc8b0f2e0f22c138d41bd"
+    },
+    {
+      "name": "mcp_registry_latest_099",
+      "host": "registry.modelcontextprotocol.io",
+      "path": "/v0.1/servers",
+      "query": {
+        "version": "latest",
+        "limit": 100,
+        "cursor": "io.github.BaiqingL/latchshot:1.0.2"
+      },
+      "status": 200,
+      "sha256": "919d2c9c4871476b6aa6e92a4ece9d13b6ae28d20788c959b8d8d9243be7a0ce",
+      "bytes": 96756,
+      "quarantine_file": "/home/username/.le-codex-research-cache/four-catalogues-20260923/quarantine/91/919d2c9c4871476b6aa6e92a4ece9d13b6ae28d20788c959b8d8d9243be7a0ce"
+    }
+  ],
+  "requests": {
+    "requests": 110,
+    "by_outcome": {
+      "https_get:ok": 109,
+      "https_get:http_error": 1
+    },
+    "bytes": 43254419
+  }
+}

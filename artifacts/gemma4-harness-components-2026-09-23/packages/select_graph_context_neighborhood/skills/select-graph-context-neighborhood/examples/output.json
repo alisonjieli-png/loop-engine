@@ -1,0 +1,34 @@
+{
+  "record_type": "select_graph_context_neighborhood_result/v1",
+  "coverage": "bounded_neighborhood",
+  "selected": [
+    {
+      "id": "a",
+      "distance": 0
+    },
+    {
+      "id": "b",
+      "distance": 1
+    }
+  ],
+  "selected_edges": [
+    {
+      "source": "a",
+      "target": "b",
+      "kind": "call"
+    }
+  ],
+  "adjacent_omissions": [
+    {
+      "id": "c",
+      "distance": 1,
+      "reason": "node_budget"
+    },
+    {
+      "id": "d",
+      "distance": 2,
+      "reason": "node_budget"
+    }
+  ],
+  "not_selected_count": 2
+}

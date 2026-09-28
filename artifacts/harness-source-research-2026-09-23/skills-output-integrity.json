@@ -1,0 +1,20 @@
+{
+  "rows": 1000,
+  "named_groups": 1000,
+  "canonical_repository_named_groups": 1000,
+  "instruction_digests": 1000,
+  "repository_addresses": 81,
+  "canonical_repositories": 80,
+  "sha256": "b1aeb285c1e88cbb4fa6b0bb9935448650328e21369e427880bd78fa4d21b1fa",
+  "reported_licenses": {
+    "MIT": 569,
+    "Apache-2.0": 190,
+    "ISC": 25,
+    "unknown": 159,
+    "NOASSERTION": 35,
+    "CC0-1.0": 22
+  },
+  "all_unreviewed": true,
+  "all_compatibility_unverified": true,
+  "all_licenses_unverified": true
+}

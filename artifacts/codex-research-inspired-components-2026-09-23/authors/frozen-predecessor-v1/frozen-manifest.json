@@ -1,0 +1,17 @@
+{
+  "record_type": "original_research_inspired_payload_manifest/v1",
+  "logical_candidates": 1,
+  "approved": 0,
+  "served": 0,
+  "files": {
+    "AGENTS.md": "b285b070888782a0891a4c4a4b24ec8dcca1c67b1ddcede4cbc580665e53bdca",
+    "LICENSE": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+    "contracts/input.schema.json": "68897736c4ff666f1f38537158ec16685cd7dbe5cd17cd04b32a61f1ec329fef",
+    "contracts/output.schema.json": "c425b8614850d62c3ac542f05c7e52236ac3cdbb27075c2f65b3fba904b1af29",
+    "examples/input.json": "1428405750e371a7d4827315544c133bf8ec512d8672e07fc9211cb24e012283",
+    "examples/output.json": "e58a2bac44562c18cb3a01b3caa2573fd6cd4e9058b92376f485821937c32f5a",
+    "references/profile.md": "07bcc3423bd901cc079d5382fc833bc3dc9af57a220a24dfae709ed31926d48a",
+    "tools/audit_wikilink_resolution.py": "4d7549e59c4fa658c6e499c82bd8ab1acb8956e596a0f5b87e790e1ec5e3e433",
+    "verification/cases.json": "13961b76be5a4088d5bdfe471baecf4cbe3dc289f8b5ec481569a35a2617a252"
+  }
+}

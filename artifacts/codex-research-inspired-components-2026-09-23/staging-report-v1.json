@@ -1,0 +1,30 @@
+{
+  "record_type": "candidate_intelligence_staging_report/v1",
+  "records": 1,
+  "families": {
+    "deterministic_native_method": 1
+  },
+  "layers": {
+    "code": 1
+  },
+  "batch_digest": "56950394f170ed6a2f7570fdfc37ebecbc1d346595ec52e7c0f8f73fc125e8c0",
+  "committed": true,
+  "hosted_publication": false,
+  "independent_qualification": false,
+  "review_search": {
+    "normal_search_hits": 0,
+    "normal_search_excluded": 1,
+    "probes": [
+      {
+        "expected_identity": "codex.research.inspired.20260923.audit_wikilink_resolution",
+        "returned": [
+          "codex.research.inspired.20260923.audit_wikilink_resolution"
+        ],
+        "found_in_first_three": true,
+        "elapsed_ms": 11.341,
+        "physical_model_calls": 0
+      }
+    ],
+    "limits": "Title-derived lexical smoke probes on authored candidates, not a held-out relevance or task-success benchmark"
+  }
+}

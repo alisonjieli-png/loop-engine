@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "reconcile_multiset_rows input",
+  "$comment": "Raw transport constraints: one UTF-8 JSON object; input at most262144bytes, output at most524288bytes including newline. Duplicate object keys, nonfinite numbers, unpaired Unicode surrogates, decoded depth>8 or more than50000 decoded values refuse. JSON numeric tokens are at most128characters and must represent exact integers within+-1000000000000; integral decimal/exponent spellings are accepted. Structural schemas do not encode byte ceilings or stated cross-field conditions.",
+  "type": "object",
+  "properties": {
+    "left": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "propertyNames": {
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "additionalProperties": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "integer",
+              "minimum": -1000000000000,
+              "maximum": 1000000000000
+            },
+            {
+              "type": "string",
+              "maxLength": 256
+            }
+          ]
+        },
+        "maxProperties": 32
+      },
+      "maxItems": 256
+    },
+    "right": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "propertyNames": {
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "additionalProperties": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "integer",
+              "minimum": -1000000000000,
+              "maximum": 1000000000000
+            },
+            {
+              "type": "string",
+              "maxLength": 256
+            }
+          ]
+        },
+        "maxProperties": 32
+      },
+      "maxItems": 256
+    }
+  },
+  "required": [
+    "left",
+    "right"
+  ],
+  "additionalProperties": false,
+  "description": "Multiset equality uses exact flat row fields, numeric integer equality and distinct Boolean/null/string types; missing differs from null. Output arrays sort by compact sorted-key UTF-8 JSON serialization, not numeric column order."
+}

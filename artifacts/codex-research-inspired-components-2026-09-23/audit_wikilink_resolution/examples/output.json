@@ -1,0 +1,82 @@
+{
+  "record_type": "audit_wikilink_resolution_result/v1",
+  "syntax_profile": "bounded_markdown_wikilinks/v1",
+  "source_path": "source.md",
+  "source_sha256": "bdb3c06806fd4e64a5d8d759601d04a6ec41c08ffe47b675faee0dd8092c9e7c",
+  "complete_markdown_audit": false,
+  "links": [
+    {
+      "start": 0,
+      "end": 11,
+      "line": 1,
+      "column": 1,
+      "raw": "Roadmap",
+      "target": "Roadmap",
+      "fragment": null,
+      "display": null,
+      "embedded": false,
+      "status": "resolved",
+      "candidate_paths": [
+        "Roadmap.md"
+      ],
+      "reason": "unique_note",
+      "fragment_status": "absent"
+    },
+    {
+      "start": 12,
+      "end": 23,
+      "line": 1,
+      "column": 13,
+      "raw": "Missing",
+      "target": "Missing",
+      "fragment": null,
+      "display": null,
+      "embedded": false,
+      "status": "missing",
+      "candidate_paths": [],
+      "reason": "note_not_found",
+      "fragment_status": "absent"
+    },
+    {
+      "start": 24,
+      "end": 37,
+      "line": 1,
+      "column": 25,
+      "raw": "Plan|work",
+      "target": "Plan",
+      "fragment": null,
+      "display": "work",
+      "embedded": false,
+      "status": "ambiguous",
+      "candidate_paths": [
+        "a/Plan.md",
+        "b/Plan.md"
+      ],
+      "reason": "multiple_note_targets",
+      "fragment_status": "absent"
+    },
+    {
+      "start": 38,
+      "end": 54,
+      "line": 1,
+      "column": 39,
+      "raw": "Roadmap#Next",
+      "target": "Roadmap",
+      "fragment": "Next",
+      "display": null,
+      "embedded": false,
+      "status": "resolved",
+      "candidate_paths": [
+        "Roadmap.md"
+      ],
+      "reason": "unique_note",
+      "fragment_status": "not_checked"
+    }
+  ],
+  "counts": {
+    "resolved": 2,
+    "missing": 1,
+    "ambiguous": 1,
+    "unsupported": 0
+  }
+}

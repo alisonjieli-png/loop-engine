@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "profile_csv_structure input",
+  "$comment": "Raw transport constraints: one UTF-8 JSON object; input at most262144bytes, output at most524288bytes including newline. Duplicate object keys, nonfinite numbers, unpaired Unicode surrogates, decoded depth>8 or more than50000 decoded values refuse. JSON numeric tokens are at most128characters and must represent exact integers within+-1000000000000; integral decimal/exponent spellings are accepted. Structural schemas do not encode byte ceilings or stated cross-field conditions.",
+  "type": "object",
+  "properties": {
+    "csv": {
+      "type": "string",
+      "maxLength": 131072,
+      "pattern": "^[^\\u0000]*$"
+    },
+    "delimiter": {
+      "enum": [
+        ",",
+        ";",
+        "\t",
+        "|"
+      ]
+    },
+    "quotechar": {
+      "enum": [
+        "\"",
+        "'"
+      ]
+    },
+    "header": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "csv",
+    "delimiter",
+    "quotechar",
+    "header"
+  ],
+  "additionalProperties": false,
+  "description": "Explicit dialect only; up to1000 CSV records including header,64fields per record,4096characters per field. CSV parse errors refuse; ragged rows and exact duplicate/blank headers are reported. Row indices are zero-based data-row positions. Width and column summaries cover data rows; baseline width comes from header or first record. Column_count/columns use baseline width only; extra fields remain visible in width reports. Empty/blank means exact empty string, not whitespace. Duplicate headers use exact case-sensitive equality. When header=true, a CSV record must exist and its parsed field list must contain at least one field; empty CSV and an empty first parsed record([]) refuse. A one-field header with an empty name is allowed and reported as blank."
+}

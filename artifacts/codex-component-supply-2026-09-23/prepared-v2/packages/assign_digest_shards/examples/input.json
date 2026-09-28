@@ -1,0 +1,9 @@
+{
+  "record_type": "assign_digest_shards_request/v1",
+  "ids": [
+    "b",
+    "a",
+    "abc"
+  ],
+  "shard_count": 7
+}

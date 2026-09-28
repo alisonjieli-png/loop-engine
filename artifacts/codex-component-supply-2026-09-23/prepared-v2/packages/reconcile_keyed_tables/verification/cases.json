@@ -1,0 +1,341 @@
+[
+  {
+    "name": "matched_changed_and_unmatched",
+    "input": {
+      "key": "id",
+      "left": [
+        {
+          "id": "a",
+          "n": 1
+        },
+        {
+          "id": "b",
+          "n": 2
+        },
+        {
+          "id": "c"
+        }
+      ],
+      "right": [
+        {
+          "id": "b",
+          "n": 3
+        },
+        {
+          "id": "a",
+          "n": 1
+        },
+        {
+          "id": "d"
+        }
+      ]
+    },
+    "expected": {
+      "ok": true,
+      "result": {
+        "counts": {
+          "left_rows": 3,
+          "right_rows": 3,
+          "matched": 2,
+          "unchanged": 1,
+          "changed": 1,
+          "left_only": 1,
+          "right_only": 1
+        },
+        "matches": [
+          {
+            "key": "a",
+            "left_index": 0,
+            "right_index": 1,
+            "changed_fields": []
+          },
+          {
+            "key": "b",
+            "left_index": 1,
+            "right_index": 0,
+            "changed_fields": [
+              "n"
+            ]
+          }
+        ],
+        "left_only": [
+          {
+            "key": "c",
+            "left_index": 2
+          }
+        ],
+        "right_only": [
+          {
+            "key": "d",
+            "right_index": 2
+          }
+        ]
+      }
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "empty_tables",
+    "input": {
+      "key": "id",
+      "left": [],
+      "right": []
+    },
+    "expected": {
+      "ok": true,
+      "result": {
+        "counts": {
+          "left_rows": 0,
+          "right_rows": 0,
+          "matched": 0,
+          "unchanged": 0,
+          "changed": 0,
+          "left_only": 0,
+          "right_only": 0
+        },
+        "matches": [],
+        "left_only": [],
+        "right_only": []
+      }
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "missing_null_and_bool_number",
+    "input": {
+      "key": "id",
+      "left": [
+        {
+          "id": 1,
+          "b": true
+        }
+      ],
+      "right": [
+        {
+          "id": 1.0,
+          "b": 1,
+          "n": null
+        }
+      ]
+    },
+    "expected": {
+      "ok": true,
+      "result": {
+        "counts": {
+          "left_rows": 1,
+          "right_rows": 1,
+          "matched": 1,
+          "unchanged": 0,
+          "changed": 1,
+          "left_only": 0,
+          "right_only": 0
+        },
+        "matches": [
+          {
+            "key": 1,
+            "left_index": 0,
+            "right_index": 0,
+            "changed_fields": [
+              "b",
+              "n"
+            ]
+          }
+        ],
+        "left_only": [],
+        "right_only": []
+      }
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "typed_key_distinction",
+    "input": {
+      "key": "id",
+      "left": [
+        {
+          "id": 1
+        }
+      ],
+      "right": [
+        {
+          "id": "1"
+        }
+      ]
+    },
+    "expected": {
+      "ok": true,
+      "result": {
+        "counts": {
+          "left_rows": 1,
+          "right_rows": 1,
+          "matched": 0,
+          "unchanged": 0,
+          "changed": 0,
+          "left_only": 1,
+          "right_only": 1
+        },
+        "matches": [],
+        "left_only": [
+          {
+            "key": 1,
+            "left_index": 0
+          }
+        ],
+        "right_only": [
+          {
+            "key": "1",
+            "right_index": 0
+          }
+        ]
+      }
+    },
+    "expected_exit": 0
+  },
+  {
+    "name": "duplicate_key_not_cross_product",
+    "input": {
+      "key": "id",
+      "left": [
+        {
+          "id": 1
+        },
+        {
+          "id": 1.0
+        }
+      ],
+      "right": [
+        {
+          "id": 1
+        }
+      ]
+    },
+    "expected": {
+      "ok": false,
+      "error": {
+        "code": "invalid_input"
+      }
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "missing_key",
+    "input": {
+      "key": "id",
+      "left": [
+        {}
+      ],
+      "right": []
+    },
+    "expected": {
+      "ok": false,
+      "error": {
+        "code": "invalid_input"
+      }
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "null_key",
+    "input": {
+      "key": "id",
+      "left": [
+        {
+          "id": null
+        }
+      ],
+      "right": []
+    },
+    "expected": {
+      "ok": false,
+      "error": {
+        "code": "invalid_input"
+      }
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "boolean_key",
+    "input": {
+      "key": "id",
+      "left": [
+        {
+          "id": true
+        }
+      ],
+      "right": []
+    },
+    "expected": {
+      "ok": false,
+      "error": {
+        "code": "invalid_input"
+      }
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "empty_string_key",
+    "input": {
+      "key": "id",
+      "left": [
+        {
+          "id": ""
+        }
+      ],
+      "right": []
+    },
+    "expected": {
+      "ok": false,
+      "error": {
+        "code": "invalid_input"
+      }
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "fractional_field",
+    "input": {
+      "key": "id",
+      "left": [
+        {
+          "id": 1,
+          "n": 1.5
+        }
+      ],
+      "right": []
+    },
+    "expected": {
+      "ok": false,
+      "error": {
+        "code": "invalid_input"
+      }
+    },
+    "expected_exit": 2
+  },
+  {
+    "name": "zero_with_large_exponent_is_still_zero",
+    "raw_input": "{\"key\":\"id\",\"left\":[{\"id\":0e1000000000000000000}],\"right\":[]}",
+    "expected": {
+      "ok": true,
+      "result": {
+        "counts": {
+          "left_rows": 1,
+          "right_rows": 0,
+          "matched": 0,
+          "unchanged": 0,
+          "changed": 0,
+          "left_only": 1,
+          "right_only": 0
+        },
+        "matches": [],
+        "left_only": [
+          {
+            "key": 0,
+            "left_index": 0
+          }
+        ],
+        "right_only": []
+      }
+    },
+    "expected_exit": 0
+  }
+]

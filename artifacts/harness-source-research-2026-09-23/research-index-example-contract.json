@@ -1,0 +1,81 @@
+{
+  "record_type": "local_research_metadata_results/v1",
+  "mode": "lexical",
+  "category": "contract",
+  "query": "agent permissions",
+  "lookup": null,
+  "candidate_selection_explicit": true,
+  "execution_available": false,
+  "source_integrity": "current_hashes_match_manifest",
+  "query_scoring": "existing lexical FTS5/BM25 order with reciprocal-rank score; separate from research priority",
+  "hits": [
+    {
+      "research_id": "contract-9d1426abd267f8f4abe2681d",
+      "category": "contract",
+      "name": "Agent Permission Policy",
+      "repository": "Mearman/agent-permissions",
+      "source_url": "https://raw.githubusercontent.com/Mearman/agent-permissions/main/agent-permissions.schema.json",
+      "source_path": "agent-permissions.schema.json",
+      "source_snapshot_digest": "75edb7d0bab76c28a7e51dd4c0de1ba7b6a1202f99f11695d2109a79e8d16991",
+      "rank": 1,
+      "priority_score": 49,
+      "query_score": 0.1,
+      "evidence_level": "catalogue_and_exact_document_parse",
+      "qualification_status": "unreviewed",
+      "compatibility_status": "unverified",
+      "rights_state": {
+        "license_reported": null,
+        "license_verified": false,
+        "clearance": "not_established"
+      },
+      "lifecycle": "candidate",
+      "execution_available": false
+    },
+    {
+      "research_id": "contract-c9368df70f25a424cece6e82",
+      "category": "contract",
+      "name": "Drupal Permissions",
+      "repository": null,
+      "source_url": "https://www.schemastore.org/drupal-permissions.json",
+      "source_path": null,
+      "source_snapshot_digest": "75edb7d0bab76c28a7e51dd4c0de1ba7b6a1202f99f11695d2109a79e8d16991",
+      "rank": 474,
+      "priority_score": 34,
+      "query_score": 0.09091,
+      "evidence_level": "catalogue_and_exact_document_parse",
+      "qualification_status": "unreviewed",
+      "compatibility_status": "unverified",
+      "rights_state": {
+        "license_reported": null,
+        "license_verified": false,
+        "clearance": "not_established"
+      },
+      "lifecycle": "candidate",
+      "execution_available": false
+    },
+    {
+      "research_id": "contract-b108371166b20fd1fa75114f",
+      "category": "contract",
+      "name": "AgentCtl permissions",
+      "repository": "itslab42/agentctl",
+      "source_url": "https://raw.githubusercontent.com/itslab42/agentctl/main/schemas/permissions.schema.json",
+      "source_path": "schemas/permissions.schema.json",
+      "source_snapshot_digest": "75edb7d0bab76c28a7e51dd4c0de1ba7b6a1202f99f11695d2109a79e8d16991",
+      "rank": 463,
+      "priority_score": 34,
+      "query_score": 0.08333,
+      "evidence_level": "catalogue_and_exact_document_parse",
+      "qualification_status": "unreviewed",
+      "compatibility_status": "unverified",
+      "rights_state": {
+        "license_reported": null,
+        "license_verified": false,
+        "clearance": "not_established"
+      },
+      "lifecycle": "candidate",
+      "execution_available": false
+    }
+  ],
+  "network_requests": 0,
+  "model_calls": 0
+}

@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Detect abstract portable path collisions output",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "record_type": {
+          "const": "detect_portable_path_collisions_result/v1"
+        },
+        "platform_model": {
+          "const": "unicode_nfc_casefold/v1"
+        },
+        "unicode_version": {
+          "type": "string"
+        },
+        "collision_free": {
+          "type": "boolean"
+        },
+        "collisions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "normalized_path": {
+                "type": "string"
+              },
+              "indices": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 255
+                },
+                "maxItems": 256
+              },
+              "paths": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256,
+                  "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?(/|$))(?!.*//)(?!.*\\\\)(?!.*[\\u0000-\\u001f\\u007f])[^/]+(?:/[^/]+)*$"
+                },
+                "maxItems": 256
+              }
+            },
+            "required": [
+              "normalized_path",
+              "indices",
+              "paths"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 256
+        },
+        "parent_file_collisions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "parent": {
+                "type": "string"
+              },
+              "child": {
+                "type": "string"
+              },
+              "parent_indices": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 255
+                },
+                "maxItems": 256
+              },
+              "child_indices": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 255
+                },
+                "maxItems": 256
+              }
+            },
+            "required": [
+              "parent",
+              "child",
+              "parent_indices",
+              "child_indices"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 1024
+        }
+      },
+      "required": [
+        "record_type",
+        "platform_model",
+        "unicode_version",
+        "collision_free",
+        "collisions",
+        "parent_file_collisions"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "error": {
+          "enum": [
+            "invalid_input",
+            "output_limit_exceeded",
+            "unicode_version_mismatch"
+          ]
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "additionalProperties": false
+    }
+  ],
+  "description": "Exactly one UTF-8 JSON line, at most 131072 bytes including LF. Success exits 0; refusal exits 2. No diagnostic content is sent to stderr."
+}
