@@ -129,6 +129,8 @@ def admit(qualification_folder: Path, review_path: Path, store_root: "Path | Non
         batch_ref = f"sampled-review.json#{batch}"
         for identity in frame:
             record = qualification[identity]
+            if record["qualifier"].get("uncommitted_changes", True):
+                raise ValueError(f"{identity}: its qualifier's code was not committed, so the record cannot name it")
             component = load(identity)
             if component.package.package_digest != record["package_digest"]:
                 raise ValueError(f"{identity}: the stored package differs from the qualified package")

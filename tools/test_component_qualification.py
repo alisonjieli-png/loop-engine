@@ -70,20 +70,22 @@ class FixtureCheckTests(unittest.TestCase):
         self.context = _context()
         self.code = controls.code_fixture(REVISION)
         self.configuration = controls.configuration_fixture(REVISION)
-        self.context.duplicates = checks.duplicate_findings([self.code, self.configuration], self.context.policy)
+        self.api = controls.api_fixture(REVISION)
+        self.context.duplicates = checks.duplicate_findings([self.code, self.configuration, self.api],
+                                                            self.context.policy)
 
     def test_known_good_fixtures_pass_every_static_check(self):
-        for fixture in (self.code, self.configuration):
+        for fixture in (self.code, self.configuration, self.api):
             for check in checks.CHECKS:
-                if check.check_id == "sandbox":
+                if check.check_id in ("sandbox", "mutation"):
                     continue
                 self.assertEqual(check.run(fixture, self.context).status, checks.PASSED, (fixture.line, check.check_id))
 
     def test_every_static_control_is_refused_with_its_code(self):
-        fixtures = {"code": self.code, "configuration": self.configuration}
+        fixtures = {"code": self.code, "configuration": self.configuration, "api": self.api}
         by_id = {check.check_id: check for check in checks.CHECKS}
         for control in controls.CONTROLS:
-            if control.check_id == "sandbox":
+            if control.check_id in ("sandbox", "mutation"):
                 continue
             component = control.build(fixtures[control.base])
             self.context.duplicates.setdefault(component.identity, [])
@@ -146,6 +148,26 @@ class SelfTestTests(unittest.TestCase):
                 controls.self_test(_context(self.work), REVISION)
 
 
+class NewRuleTests(unittest.TestCase):
+    def setUp(self):
+        self.policy = _context().policy
+
+    def test_licence_fingerprints(self):
+        self.assertEqual(checks.recognized_licences(controls.MIT_TEXT, self.policy), {"MIT"})
+        self.assertEqual(checks.recognized_licences("All rights reserved.", self.policy), set())
+        bsd3 = ("Redistribution and use in source and binary forms, with or without modification, are permitted. "
+                "Neither the name of the copyright holder nor the names of its contributors may be used.")
+        self.assertEqual(checks.recognized_licences(bsd3, self.policy), {"BSD-3-Clause"})
+
+    def test_mutant_replaces_public_implementations_only(self):
+        mutated, replaced = checks.mutant(controls.api_fixture(REVISION), self.policy)
+        text = mutated.text("get_greeting.py")
+        self.assertEqual(replaced, 1)
+        self.assertIn("qualification mutant", text)
+        self.assertIn("class ApiError", text)
+        self.assertIsNone(checks.mutant(controls.configuration_fixture(REVISION), self.policy))
+
+
 class ReviewAdapterTests(unittest.TestCase):
     def setUp(self):
         from tools.candidate_review import native_profile
@@ -196,7 +218,8 @@ class AdmissionTests(unittest.TestCase):
                 stream.write(json.dumps({"identity": component.identity, "outcome": "qualified",
                                          "batch": component.batch, "package_digest": component.package.package_digest,
                                          "vetting": {"implementation_tested": "fixture"},
-                                         "qualifier": {"code_revision": REVISION}, "self_test_sha256": "0" * 64,
+                                         "qualifier": {"code_revision": REVISION, "uncommitted_changes": False},
+                                         "self_test_sha256": "0" * 64,
                                          "checks": []}) + "\n")
         self.qualification = qualification
 
@@ -243,6 +266,15 @@ class AdmissionTests(unittest.TestCase):
         self.assertEqual((result["approved"], result["rejected"]), (0, 1))
         _record, index = _review_index(self.folder / "rejected")
         self.assertEqual(index[self.code.identity]["outcome"], "rejected")
+
+    def test_an_uncommitted_qualifier_admits_nothing(self):
+        path = self.qualification / "qualification.jsonl"
+        rows = [json.loads(line) for line in path.read_text().splitlines()]
+        for row in rows:
+            row["qualifier"]["uncommitted_changes"] = True
+        path.write_text("".join(json.dumps(row) + "\n" for row in rows))
+        with self.assertRaises(ValueError):
+            self._admit(self._review(), "uncommitted")
 
     def test_a_review_that_is_not_admissible_admits_nothing(self):
         with self.assertRaises(ValueError):

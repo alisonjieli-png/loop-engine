@@ -58,7 +58,11 @@
      "operation_id"
     ],
     "fact_role": "specification"
-   }
+   },
+   "documented_fields": [
+    "method",
+    "path"
+   ]
   },
   "program_installs": {
    "kinds": [
@@ -247,5 +251,56 @@
    "contract_schema": "data_and_contracts",
    "harness_settings": "data_and_contracts"
   }
+ },
+ "licence_fingerprints": {
+  "MIT": {
+   "all": [
+    "permission is hereby granted, free of charge, to any person obtaining a copy"
+   ]
+  },
+  "Apache-2.0": {
+   "all": [
+    "apache license",
+    "version 2.0"
+   ]
+  },
+  "BSD-3-Clause": {
+   "all": [
+    "redistribution and use in source and binary forms",
+    "neither the name"
+   ]
+  },
+  "BSD-2-Clause": {
+   "all": [
+    "redistribution and use in source and binary forms"
+   ],
+   "none": [
+    "neither the name"
+   ]
+  },
+  "ISC": {
+   "all": [
+    "permission to use, copy, modify, and/or distribute this software for any purpose"
+   ]
+  },
+  "CC0-1.0": {
+   "all": [
+    "cc0 1.0"
+   ]
+  },
+  "CC-BY-4.0": {
+   "all": [
+    "attribution 4.0 international"
+   ]
+  }
+ },
+ "licence_fingerprint_reason": "Each licence text a package carries must be recognized as a licence on the accepted list, and together the texts must grant every identifier of the declared expression. Measured on a random 2,500 of the stored supply on September 28, 2026: every text was recognized except one Unlicense text, which the accepted list already refuses.",
+ "documented_fields_reason": "A generated client's README names the operation it calls (METHOD /path); code whose operation differs from its description is refused. Measured on 1,427 stored API operation packages on September 28, 2026: every README named its operation.",
+ "mutation": {
+  "shapes": [
+   "code"
+  ],
+  "replacement": "raise RuntimeError('qualification mutant: this implementation was replaced')",
+  "reason": "The written criteria require verification that rejects a known-wrong result. Every public function and public method of each root module is replaced by one that raises, and the package's own tests must then fail. On September 28, 2026 the Tactical reviewer approved every planted package whose code was broken in ways its tests could not see; this check needs no reviewer."
  }
 }

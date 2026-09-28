@@ -1,8 +1,8 @@
 """Known-good fixtures and known-wrong controls for every qualification check, run before every run.
 
-Two small fixture components in the supply lines' format are known good: a reference data table (loader,
-schema, data file and tests) and a protocol server configuration (four harness files and a connection
-record). Every check must pass both (the false-refusal side). Each control changes one fixture in one way
+Three small fixture components in the supply lines' format are known good: a reference data table (loader,
+schema, data file and tests), a protocol server configuration (four harness files and a connection record)
+and an API operation client (a standard library client with a fake transport in its tests). Every check must pass both (the false-refusal side). Each control changes one fixture in one way
 that a named check must refuse with a named finding (the false-acceptance side). A qualification run starts
 only when every check passes the fixtures and refuses every one of its controls; otherwise it stops and
 qualifies nothing. The self-test record keeps each control's digest and result.
@@ -198,6 +198,107 @@ def configuration_fixture(revision: str) -> GeneratedComponent:
                   {})
 
 
+API_CLIENT = '''"""Example Greetings API: Get a greeting
+
+GET /greetings/{language}, operation get-greeting of Example Greetings API 1.0.0.
+"""
+import json
+import os
+import urllib.parse
+import urllib.request
+
+OPERATION = {'method': 'GET', 'path': '/greetings/{language}', 'operation_id': 'get-greeting'}
+BASE_URL = "https://api.example.org"
+
+
+class ApiError(RuntimeError):
+    """The API answered with an error status."""
+
+
+def get_greeting(*, language, base_url=None, timeout=30.0, transport=None):
+    """Return the greeting for a language code."""
+    if not isinstance(language, str) or not language:
+        raise ValueError("language is a non-empty string")
+    url = (base_url or BASE_URL) + "/greetings/" + urllib.parse.quote(language, safe="")
+    token = os.environ.get("EXAMPLE_API_KEY", "")
+    request = urllib.request.Request(url, method="GET", headers={"Authorization": "Bearer " + token})
+    send = transport or (lambda outgoing: urllib.request.urlopen(outgoing, timeout=timeout))
+    with send(request) as response:
+        status = getattr(response, "status", 200)
+        body = response.read()
+    if status >= 400:
+        raise ApiError(f"status {status}")
+    return json.loads(body)
+'''
+
+API_TESTS = '''import io
+import sys
+import unittest
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import get_greeting as client  # noqa: E402
+
+
+class FakeResponse(io.BytesIO):
+    status = 200
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *details):
+        self.close()
+
+
+class GetGreetingTests(unittest.TestCase):
+    def test_sends_the_documented_request(self):
+        seen = []
+
+        def transport(request):
+            seen.append((request.get_method(), request.full_url))
+            return FakeResponse(b'{"greeting": "hello"}')
+
+        self.assertEqual(client.get_greeting(language="en", transport=transport), {"greeting": "hello"})
+        self.assertEqual(seen, [("GET", "https://api.example.org/greetings/en")])
+
+    def test_error_status_raises(self):
+        def transport(request):
+            response = FakeResponse(b"{}")
+            response.status = 500
+            return response
+
+        with self.assertRaises(client.ApiError):
+            client.get_greeting(language="en", transport=transport)
+
+    def test_refuses_an_empty_language(self):
+        with self.assertRaises(ValueError):
+            client.get_greeting(language="")
+
+
+if __name__ == "__main__":
+    unittest.main()
+'''
+
+
+def api_fixture(revision: str) -> GeneratedComponent:
+    schema = json.dumps({"$schema": "https://json-schema.org/draft/2020-12/schema", "type": "object",
+                         "properties": {"greeting": {"type": "string"}}}, indent=1) + "\n"
+    files = {"get_greeting.py": API_CLIENT.encode(), "test_get_greeting.py": API_TESTS.encode(),
+             "schema.json": schema.encode(), "LICENSE": MIT_TEXT.encode(),
+             "README.md": b"# Get a greeting\n\nGET /greetings/{language}, operation get-greeting of Example "
+                          b"Greetings API 1.0.0. The credential is read from EXAMPLE_API_KEY.\n"}
+    roles = {"get_greeting.py": "executable_tool", "test_get_greeting.py": "executable_tool"}
+    evidence = {"network": "sends one https request to the api", "reads_secret": "reads EXAMPLE_API_KEY",
+                "spawns_process": "holds an executable file"}
+    fact = {**_fact("https://example.org/openapi.json", b"{}"), "role": "specification",
+            "licence": {"spdx_expression": "MIT", "basis": "fixture", "evidence_sha256": None}}
+    component = _build("openapi_operations", "api_operation", "code_module", files, roles,
+                       ("network", "reads_secret", "spawns_process"), evidence, fact, revision, {})
+    record = dict(component.candidate) | {"credentials": ["EXAMPLE_API_KEY"]}
+    return GeneratedComponent(component.identity, component.record_version, MappingProxyType(record),
+                              component.package, component.payloads)
+
+
 def _edit(component, path, change) -> GeneratedComponent:
     payloads = dict(component.payloads)
     payloads[path] = change(payloads[path].decode()).encode()
@@ -295,6 +396,14 @@ CONTROLS = (
                 '"-y",', "").replace(SERVER_PACKAGE, "example-notes-mcp"))),
     Control("attribution_incomplete", "licence_provenance", "code", "attribution_lacks_file_digest",
             lambda c: c.replaced(payloads=dict(c.payloads) | {"ATTRIBUTION.md": b"# Attribution\n\nNo digests.\n"})),
+    Control("licence_text_restrictive", "licence_provenance", "code", "licence_text_unrecognized",
+            lambda c: _edit(c, "LICENSE", lambda text: "Copyright (c) 2026 Example Holdings. All rights reserved.\n")),
+    Control("documented_method_contradicted", "schema", "api", "documentation_contradicts_operation",
+            lambda c: _edit(c, "get_greeting.py", lambda text: text.replace("'method': 'GET'", "'method': 'DELETE'")
+                            .replace('method="GET"', 'method="DELETE"'))),
+    Control("tests_accept_anything", "mutation", "api", "tests_accept_a_broken_implementation",
+            lambda c: _edit(c, "test_get_greeting.py", lambda text: "import unittest\n\n\nclass Tests(unittest.TestCase):\n"
+                            "    def test_call(self):\n        self.assertTrue(True)\n")),
     Control("python_syntax_error", "parse", "code", "python_syntax_error",
             lambda c: _edit(c, "greeting_table.py", lambda text: text + "\ndef broken(:\n    pass\n")),
     Control("json_trailing_comma", "parse", "configuration", "document_does_not_parse",
@@ -392,7 +501,8 @@ def _duplicate_controls(fixture, context) -> list:
 
 def self_test(context, revision: str) -> dict:
     """Run every check on the known-good fixtures and every control on its check; raise on any failure."""
-    fixtures = {"code": code_fixture(revision), "configuration": configuration_fixture(revision)}
+    fixtures = {"code": code_fixture(revision), "configuration": configuration_fixture(revision),
+                "api": api_fixture(revision)}
     context.duplicates = checks.duplicate_findings(list(fixtures.values()), context.policy)
     good, failures = [], []
     for name, fixture in fixtures.items():
@@ -411,7 +521,7 @@ def self_test(context, revision: str) -> dict:
     for control in CONTROLS:
         component = control.build(fixtures[control.base])
         saved = context.sandbox_settings
-        if control.check_id == "sandbox" and control_settings is not None:
+        if control.check_id in ("sandbox", "mutation") and control_settings is not None:
             context.sandbox_settings = control_settings
         try:
             if control.check_id == "duplicates":

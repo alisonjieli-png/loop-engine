@@ -17,7 +17,8 @@ Qualification of one generated component (every check runs; any refusal refuses 
 │   ├── effects: declared effects in the vocabulary and covering what the code does (Python syntax tree:
 │   │   processes, network, file writes and reads, declared credentials) and what the licensed import's
 │   │   effect rules find in the text; executable files declare a process
-│   └── sandbox: every module imports and the package's own tests pass in the sandbox, at least one ran
+│   ├── sandbox: every module imports and the package's own tests pass in the sandbox, at least one ran
+│   └── mutation: with every public function and method replaced by one that raises, the tests must fail
 ├── compatibility tested: the sandbox's interpreter, or each harness configuration format validated
 └── publication safety
     ├── safety: the library ingestion and licensed import scan engines, the review panel's static rules
@@ -248,10 +249,19 @@ class LicenceProvenanceCheck:
         texts = licence.get("texts") if isinstance(licence.get("texts"), list) else []
         if not texts:
             findings.append(("licence_text_missing", "the record names no licence text"))
+        granted = set()
         for path in texts:
             text = component.text(path) if isinstance(path, str) else None
             if not text or not text.strip():
                 findings.append(("licence_text_missing", str(path)))
+                continue
+            recognized = recognized_licences(text, policy)
+            if not recognized:
+                findings.append(("licence_text_unrecognized", str(path)))
+            granted |= recognized
+        if identifiers is not None and texts and set(identifiers) - granted:
+            findings.append(("licence_text_does_not_grant_declared",
+                             ",".join(sorted(set(identifiers) - granted))))
         attribution_path = licence.get("attribution")
         attribution = component.text(attribution_path) if isinstance(attribution_path, str) else None
         if not attribution:
@@ -300,6 +310,17 @@ class LicenceProvenanceCheck:
         findings += _pinned_launchers(component, policy)
         findings += _pinned_downloads(component, policy)
         return _result(self, findings)
+
+
+def recognized_licences(text: str, policy: dict) -> set:
+    """The accepted licences whose fingerprint phrases a licence text holds, case and spacing ignored."""
+    folded = " ".join(text.lower().split())
+    found = set()
+    for identifier, rule in policy["licence_fingerprints"].items():
+        if all(phrase in folded for phrase in rule.get("all", [])) and not any(
+                phrase in folded for phrase in rule.get("none", [])):
+            found.add(identifier)
+    return found
 
 
 def _server_tables(component, policy) -> list:
@@ -441,6 +462,15 @@ class SchemaCheck:
             if len(commands) > 1:
                 findings.append(("harness_commands_disagree", f"{len(commands)} different commands"))
             notes.append("harness formats validated: " + ", ".join(present))
+        documented = policy["lines"].get(component.line, {}).get("documented_fields")
+        if documented:
+            operation = python_assignment(component, policy["lines"][component.line]["job_key"]["python_assignment"])
+            readme = component.text("README.md") or ""
+            if not isinstance(operation, dict):
+                findings.append(("operation_undeclared", "the module declares no operation record"))
+            elif " ".join(str(operation.get(field)) for field in documented) not in readme:
+                findings.append(("documentation_contradicts_operation",
+                                 " ".join(str(operation.get(field)) for field in documented)[:160]))
         connection = component.text("baltor-connection.json")
         if connection is not None:
             try:
@@ -702,6 +732,27 @@ def distinctive_text(component, policy) -> str:
     return "\n".join(parts)
 
 
+def main_module(component) -> "str | None":
+    modules = sorted(path for path in component.payloads if path.endswith(".py") and "/" not in path
+                     and not path.startswith("test_"))
+    return modules[0] if modules else None
+
+
+def python_assignment(component, name: str):
+    """The literal value a module-level assignment of the main module gives ``name``, or None."""
+    module = main_module(component)
+    if module is None:
+        return None
+    try:
+        for node in ast.parse(component.text(module) or "").body:
+            if isinstance(node, ast.Assign) and any(isinstance(target, ast.Name) and target.id == name
+                                                    for target in node.targets):
+                return ast.literal_eval(node.value)
+    except (ValueError, SyntaxError):
+        return None
+    return None
+
+
 def job_key(component, policy) -> "str | None":
     """The one job a component does, by its line's declared rule; None when the line declares none.
 
@@ -721,14 +772,7 @@ def job_key(component, policy) -> "str | None":
                     item = item.get(key) if isinstance(item, dict) else None
                 parts.append(str(item))
         elif "python_assignment" in rule:
-            module = sorted(path for path in component.payloads if path.endswith(".py") and "/" not in path
-                            and not path.startswith("test_"))[0]
-            found = None
-            for node in ast.parse(component.text(module) or "").body:
-                if isinstance(node, ast.Assign) and any(isinstance(target, ast.Name)
-                                                        and target.id == rule["python_assignment"]
-                                                        for target in node.targets):
-                    found = ast.literal_eval(node.value)
+            found = python_assignment(component, rule["python_assignment"])
             if not isinstance(found, dict):
                 return None
             parts += [str(found.get(field)) for field in rule["fields"]]
@@ -840,6 +884,77 @@ class SandboxCheck:
         return _result(self, findings, (json.dumps(summary, sort_keys=True),))
 
 
+class _Mutator(ast.NodeTransformer):
+    """Replace the body of every public function and of every public method of public classes."""
+
+    def __init__(self, replacement: str) -> None:
+        self.replacement = replacement
+        self.mutated = 0
+
+    def _replace(self, node):
+        node.body = [ast.Expr(node.body[0].value)] if (node.body and isinstance(node.body[0], ast.Expr)
+                                                       and isinstance(getattr(node.body[0], "value", None),
+                                                                      ast.Constant)) else []
+        node.body += ast.parse(self.replacement).body
+        self.mutated += 1
+        return node
+
+    def visit_Module(self, node):
+        for index, item in enumerate(node.body):
+            if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)) and not item.name.startswith("_"):
+                node.body[index] = self._replace(item)
+            elif isinstance(item, ast.ClassDef) and not item.name.startswith("_"):
+                for position, member in enumerate(item.body):
+                    if isinstance(member, (ast.FunctionDef, ast.AsyncFunctionDef)) and not member.name.startswith("_"):
+                        item.body[position] = self._replace(member)
+        return node
+
+
+def mutant(component, policy) -> "tuple | None":
+    """(mutated component, functions replaced) with every public implementation raising; None without code."""
+    modules, tests = sandbox_module.python_modules(component)
+    if not modules or not tests:
+        return None
+    payloads, replaced = dict(component.payloads), 0
+    for module in modules:
+        path = module + ".py"
+        tree = ast.parse(component.text(path) or "")
+        mutator = _Mutator(policy["mutation"]["replacement"])
+        mutator.visit(tree)
+        if mutator.mutated:
+            payloads[path] = (ast.unparse(ast.fix_missing_locations(tree)) + "\n").encode()
+            replaced += mutator.mutated
+    if not replaced:
+        return None
+    return component.replaced(payloads=payloads), replaced
+
+
+class MutationCheck:
+    """The package's own tests must fail when its implementation is replaced by one that raises."""
+
+    check_id, kind, dimension = "mutation", "format", IMPLEMENTATION
+
+    def run(self, component, context) -> CheckResult:
+        line = context.policy["lines"].get(component.line, {})
+        if line.get("shape") not in context.policy["mutation"]["shapes"]:
+            return _not_applicable(self, "no executable implementation to mutate")
+        if context.sandbox_settings is None or context.work_root is None:
+            return _result(self, [("sandbox_not_configured", "no sandbox settings were supplied")])
+        built = mutant(component, context.policy)
+        if built is None:
+            return _result(self, [("nothing_to_mutate", "no public function or method in a root module with tests")])
+        mutated, replaced = built
+        run = sandbox_module.run_component(mutated, context.sandbox_settings, context.work_root)
+        tests_row = run.get("tests")
+        if not run["ran"] or tests_row is None:
+            return _result(self, [("mutation_run_failed", run.get("reason", "") + " " + run.get("stderr_tail", "")[-160:])])
+        if tests_row["passed"]:
+            return _result(self, [("tests_accept_a_broken_implementation",
+                                   f"{replaced} public implementations replaced; the tests still pass")])
+        return _result(self, [], (json.dumps({"replaced": replaced, "mutant_tests": {
+            key: tests_row[key] for key in ("ran", "failures", "errors", "skipped")}}, sort_keys=True),))
+
+
 CHECKS = (ManifestCheck(), LicenceProvenanceCheck(), ParseCheck(), SchemaCheck(), EffectsCheck(), SafetyCheck(),
-          SecretsCheck(), DuplicatesCheck(), SandboxCheck())
+          SecretsCheck(), DuplicatesCheck(), SandboxCheck(), MutationCheck())
 CHECK_IDS = tuple(check.check_id for check in CHECKS)

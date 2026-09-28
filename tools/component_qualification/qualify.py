@@ -41,10 +41,20 @@ def _now() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
+QUALIFIER_PATHS = ("tools/component_qualification", "tools/qualify_generated_components.py")
+
+
 def code_revision(repository: Path) -> str:
     done = subprocess.run(["git", "-C", str(repository), "rev-parse", "HEAD"], capture_output=True, text=True,
                           check=False)
     return done.stdout.strip()
+
+
+def qualifier_changed(repository: Path) -> bool:
+    """Whether the qualifier's own code differs from its commit, so a record could not name its exact code."""
+    done = subprocess.run(["git", "-C", str(repository), "status", "--porcelain", "--", *QUALIFIER_PATHS],
+                          capture_output=True, text=True, check=False)
+    return done.returncode != 0 or bool(done.stdout.strip())
 
 
 def _init_worker(repository, store_root, sandbox_settings, work_root):
@@ -117,6 +127,7 @@ def qualify_rows(rows, *, repository: Path, store_root: Path, sandbox_settings, 
     repository, work_root = Path(repository), Path(work_root)
     work_root.mkdir(parents=True, exist_ok=True)
     revision = code_revision(repository)
+    uncommitted = qualifier_changed(repository)
     context = checks.QualificationContext.load(repository, sandbox_settings=sandbox_settings, work_root=work_root)
     started = time.monotonic()
     test_record = self_test(context, revision)
@@ -152,7 +163,7 @@ def qualify_rows(rows, *, repository: Path, store_root: Path, sandbox_settings, 
                       "generator": row["generator"], "outcome": outcome, "reasons": refused,
                       "checks": check_rows, "vetting": vetting(check_rows, context.policy, row["line"]),
                       "qualifier": {"tool": "tools/component_qualification", "version": QUALIFIER_VERSION,
-                                    "code_revision": revision},
+                                    "code_revision": revision, "uncommitted_changes": uncommitted},
                       "self_test_sha256": test_record["sha256"], "qualified_at": stamp,
                       "seconds": row["seconds"]}
             stream.write(json.dumps(record, sort_keys=True) + "\n")
@@ -162,6 +173,7 @@ def qualify_rows(rows, *, repository: Path, store_root: Path, sandbox_settings, 
     total_seconds = time.monotonic() - started
     summary = {
         "record_type": RUN_RECORD, "started_at": stamp, "qualifier_revision": revision,
+        "qualifier_uncommitted_changes": uncommitted,
         "self_test": {"sha256": test_record["sha256"], "known_wrong_controls": len(test_record["known_wrong"]),
                       "known_good_rows": len(test_record["known_good"]), "seconds": self_test_seconds},
         "sandbox": {"engine": sandbox_settings.engine, "limits": sandbox_settings.limits.to_dict()},
