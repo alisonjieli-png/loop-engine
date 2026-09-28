@@ -46,6 +46,8 @@ NATIVE_FORMAT = "python_function"
 HOSTS = (RAW_HOST,)
 #: The most lines one extracted closure may hold; a larger one is not a function-level component.
 MAXIMUM_CLOSURE_LINES = 400
+#: The name the generated namespace of a package import is built with (import types as ...).
+NAMESPACE_MODULE = "_namespace_types"
 #: The doctest options the examples run with: whitespace runs and ellipses as upstream test suites allow them.
 DOCTEST_FLAGS = doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
 _BUILTINS = frozenset(dir(builtins)) | {"__name__", "__file__", "__doc__", "__all__", "__builtins__"}
@@ -87,12 +89,38 @@ class Statement:
     binds: frozenset
     reads: frozenset
     imports: tuple = ()  # (bound name, module, attribute or None, level) of an import statement
+    #: Names the examples of a definition's docstring read and do not bind themselves.
+    example_reads: frozenset = frozenset()
+    #: (name, attribute) of every attribute read on a plain name (pyd.camel_case), for a package namespace.
+    attributes: frozenset = frozenset()
 
 
-def _names_read(node) -> set:
-    """Names a statement reads (loads), leaving out names it binds inside itself (arguments and locals)."""
+def _annotation_nodes(node) -> set:
+    """The ids of every node inside an annotation of a statement (arguments, returns, annotated assignments)."""
+    inside = set()
+    for child in ast.walk(node):
+        annotations = []
+        if isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            annotations.append(child.returns)
+        elif isinstance(child, ast.arg):
+            annotations.append(child.annotation)
+        elif isinstance(child, ast.AnnAssign):
+            annotations.append(child.annotation)
+        for annotation in annotations:
+            if annotation is not None:
+                inside.update(id(grandchild) for grandchild in ast.walk(annotation))
+    return inside
+
+
+def _names_read(node, lazy_annotations: bool = False) -> set:
+    """Names a statement reads (loads), leaving out names it binds inside itself (arguments and locals). With
+    `from __future__ import annotations` an annotation is never evaluated, so the names only annotations read are
+    left out."""
+    skipped = _annotation_nodes(node) if lazy_annotations else set()
     loaded, stored = set(), set()
     for child in ast.walk(node):
+        if id(child) in skipped:
+            continue
         if isinstance(child, ast.Name):
             (loaded if isinstance(child.ctx, ast.Load) else stored).add(child.id)
         elif isinstance(child, ast.arg):
@@ -129,10 +157,39 @@ def _names_bound(node) -> set:
     return bound
 
 
+def _attributes(node) -> set:
+    return {(child.value.id, child.attr) for child in ast.walk(node)
+            if isinstance(child, ast.Attribute) and isinstance(child.value, ast.Name)}
+
+
+def _example_reads(node) -> frozenset:
+    """Names the docstring examples of a definition read, less the names the examples bind themselves."""
+    if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+        return frozenset()
+    loaded, stored = set(), set()
+    for example in docstring_examples(node):
+        try:
+            tree = ast.parse(example.source)
+        except SyntaxError:
+            continue
+        for child in ast.walk(tree):
+            if isinstance(child, ast.Name):
+                (loaded if isinstance(child.ctx, ast.Load) else stored).add(child.id)
+            elif isinstance(child, ast.arg):
+                stored.add(child.arg)
+            elif isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                stored.add(child.name)
+            elif isinstance(child, (ast.Import, ast.ImportFrom)):
+                stored.update((alias.asname or alias.name).split(".")[0] for alias in child.names)
+    return frozenset(loaded - stored)
+
+
 def module_statements(module: str, source: str) -> list:
     """The top-level statements of one module, with the lines each spans (decorators included)."""
     tree = ast.parse(source)
     lines = source.splitlines(keepends=True)
+    lazy = any(isinstance(node, ast.ImportFrom) and node.module == "__future__" and
+               any(alias.name == "annotations" for alias in node.names) for node in tree.body)
     statements = []
     for index, node in enumerate(tree.body):
         start = min([node.lineno] + [decorator.lineno for decorator in getattr(node, "decorator_list", ())])
@@ -145,7 +202,8 @@ def module_statements(module: str, source: str) -> list:
             imports = tuple(((alias.asname or alias.name), node.module or "", alias.name, node.level)
                             for alias in node.names)
         statements.append(Statement(module, index, start, node.end_lineno, text, frozenset(_names_bound(node)),
-                                    frozenset(_names_read(node)), imports))
+                                    frozenset(_names_read(node, lazy)), imports, _example_reads(node),
+                                    frozenset(_attributes(node))))
     return statements
 
 
@@ -155,18 +213,9 @@ def docstring_examples(node) -> list:
     return doctest.DocTestParser().get_examples(docstring) if ">>>" in docstring else []
 
 
-def example_names(examples) -> set:
-    """Names the examples read: each example's source parsed; an example that does not parse reads none."""
-    names = set()
-    for example in examples:
-        try:
-            tree = ast.parse(example.source)
-        except SyntaxError:
-            continue
-        for child in ast.walk(tree):
-            if isinstance(child, ast.Name) and isinstance(child.ctx, ast.Load):
-                names.add(child.id)
-    return names
+def example_names(node) -> set:
+    """Names the docstring examples of a definition read and do not bind themselves."""
+    return set(_example_reads(node))
 
 
 # -- the closure ---------------------------------------------------------------------------------------------------
@@ -175,54 +224,96 @@ class Closure:
     statements: list = field(default_factory=list)  # Statement rows, in dependency order of modules
     imports: dict = field(default_factory=dict)  # bound name -> (module, attribute or None) of the standard library
     future: bool = False
+    #: A name bound to the package itself (import pydash as pyd) -> the attributes the copied code reads on it,
+    #: written as a namespace of the copied definitions.
+    namespaces: dict = field(default_factory=dict)
+    #: A name an import from the package binds under another name (_ for _gettext) -> the definition's name.
+    aliases: dict = field(default_factory=dict)
 
 
 def closure_of(target: str, module: str, modules: dict, package_root: str, extra_names=()) -> Closure:
     """The statements one function needs, across the package's modules. modules maps a module path to
-    (statements, source); an import from the package itself is followed into the module it names, a standard
-    library import is written as an import, and any other import refuses the function."""
+    (statements, source). A definition brings the names it reads and the names its docstring examples read; an
+    import from the package itself is followed into the module it names (a name bound to the whole package
+    becomes a namespace of the attributes the copied code reads on it); a standard library import is written as
+    an import; any other import refuses the function."""
     closure = Closure()
     included: dict = {}  # (module, index) -> Statement
     order: list = []  # modules in the order their statements were first needed
-    bound_by: dict = {}  # name -> module that supplies it
-    pending = [(module, name) for name in extra_names] + [(module, target)]
+    defined_in: dict = {}  # name -> module whose definition supplies it
+    pending = [(module, name) for name in sorted(extra_names, reverse=True)] + [(module, target)]
+    seen_pairs = set()
     while pending:
         current, name = pending.pop()
-        if name in _BUILTINS:
+        if name in _BUILTINS or (current, name) in seen_pairs:
             continue
+        seen_pairs.add((current, name))
         statements, source = modules[current]
         if "from __future__ import annotations" in source:
             closure.future = True
-        binder = next((row for row in statements if name in row.binds), None)
-        if binder is None:
+        binders = [row for row in statements if name in row.binds]
+        if not binders:
             raise ExtractRefused(CLOSURE_UNRESOLVED, f"{name} in {current}")
-        if bound_by.get(name, current) != current:
-            raise ExtractRefused(CLOSURE_NAME_CONFLICT, f"{name} in {bound_by[name]} and {current}")
-        bound_by[name] = current
-        imported = next((row for row in binder.imports if row[0] == name), None) if _is_plain_import(binder) else None
-        if imported is not None:
-            _bound, imported_module, attribute, level = imported
-            if level or _within(imported_module, package_root):
-                target_module = _resolve(current, imported_module, level, package_root, modules)
-                if target_module is None or attribute is None:
-                    raise ExtractRefused(NEEDS_A_DEPENDENCY, f"{'.' * level}{imported_module or ''} from {current}")
-                if attribute != name:
-                    raise ExtractRefused(CLOSURE_NAME_CONFLICT, f"{attribute} imported as {name}")
-                del bound_by[name]  # the name is supplied by the module it is imported from
-                pending.append((target_module, attribute))
+        definitions = [row for row in binders if not row.imports]
+        if definitions:
+            if defined_in.get(name, current) != current:
+                # Two modules may define a name the same way (T = t.TypeVar("T")): one copy serves both.
+                earlier = [row.text for row in modules[defined_in[name]][0] if name in row.binds and not row.imports]
+                if [row.text for row in definitions] == earlier:
+                    continue
+                raise ExtractRefused(CLOSURE_NAME_CONFLICT, f"{name} in {defined_in[name]} and {current}")
+            defined_in[name] = current
+            # Every statement binding the name, in source order: overload stubs and then the definition used.
+            for binder in definitions:
+                key = (current, binder.index)
+                if key in included:
+                    continue
+                included[key] = binder
+                if current not in order:
+                    order.append(current)
+                for read in sorted(binder.reads | binder.example_reads, reverse=True):
+                    pending.append((current, read))
+                for alias, attribute in sorted(binder.attributes):
+                    if closure.namespaces.get(alias) is not None:
+                        pending.append((closure.namespaces[alias][0], attribute))
+                        closure.namespaces[alias][1].add(attribute)
+            continue
+        imported = next(row for row in binders[0].imports if row[0] == name)
+        _bound, imported_module, attribute, level = imported
+        if level or _within(imported_module, package_root):
+            target_module = _resolve(current, imported_module, level, package_root, modules)
+            if target_module is None:
+                raise ExtractRefused(NEEDS_A_DEPENDENCY, f"{'.' * level}{imported_module or ''} from {current}")
+            if attribute is None:
+                # The whole package under a name: the copied code reads attributes on it.
+                known = closure.namespaces.setdefault(name, (target_module, set()))
+                if known[0] != target_module:
+                    raise ExtractRefused(CLOSURE_NAME_CONFLICT, f"{name} names two modules")
+                for statement in list(included.values()):
+                    for alias, read in statement.attributes:
+                        if alias == name and read not in known[1]:
+                            known[1].add(read)
+                            pending.append((target_module, read))
                 continue
-            if (imported_module or "").split(".")[0] not in _STANDARD_LIBRARY:
-                raise ExtractRefused(NEEDS_A_DEPENDENCY, imported_module or "")
-            closure.imports[name] = (imported_module, attribute)
+            if attribute != name:
+                # from .i18n import _gettext as _: the definition is copied under its own name and the alias
+                # is written after it (generated).
+                if closure.aliases.get(name, attribute) != attribute:
+                    raise ExtractRefused(CLOSURE_NAME_CONFLICT, f"{name} names two definitions")
+                closure.aliases[name] = attribute
+            pending.append((target_module, attribute))
             continue
-        key = (current, binder.index)
-        if key in included:
-            continue
-        included[key] = binder
-        if current not in order:
-            order.append(current)
-        for read in sorted(binder.reads, reverse=True):
-            pending.append((current, read))
+        if (imported_module or "").split(".")[0] not in _STANDARD_LIBRARY:
+            raise ExtractRefused(NEEDS_A_DEPENDENCY, imported_module or "")
+        if closure.imports.get(name, (imported_module, attribute)) != (imported_module, attribute):
+            raise ExtractRefused(CLOSURE_NAME_CONFLICT, f"{name} imported from two places")
+        closure.imports[name] = (imported_module, attribute)
+    # A namespace attribute that is itself a name the closure imports from the package resolves to its definition;
+    # every attribute must end as a copied definition.
+    for alias, (_module, attributes) in closure.namespaces.items():
+        for attribute in attributes:
+            if attribute not in defined_in and attribute not in closure.imports:
+                raise ExtractRefused(CLOSURE_UNRESOLVED, f"{alias}.{attribute}")
     by_module = {}
     for (current, _index), statement in included.items():
         by_module.setdefault(current, []).append(statement)
@@ -284,10 +375,18 @@ def module_text(closure: Closure, target: str, header: str) -> str:
             imports.append(f"import {module}" if name == module.split(".")[0] else f"import {module} as {name}")
         else:
             imports.append(f"from {module} import {attribute}" + ("" if attribute == name else f" as {name}"))
+    if closure.namespaces:
+        imports.append(f"import types as {NAMESPACE_MODULE}")
     if imports:
-        lines.append("\n".join(imports) + "\n")
+        lines.append("\n".join(sorted(imports)) + "\n")
     for statement in closure.statements:
         lines.append("\n" + statement.text.rstrip("\n") + "\n")
+    for alias, original in sorted(closure.aliases.items()):
+        lines.append(f"\n{alias} = {original}\n")
+    for alias, (_module, attributes) in sorted(closure.namespaces.items()):
+        # The package itself, as far as the copied code reads it (generated).
+        members = ", ".join(f"{attribute}={attribute}" for attribute in sorted(attributes))
+        lines.append(f"\n{alias} = {NAMESPACE_MODULE}.SimpleNamespace({members})\n")
     lines.append(f"\n__all__ = [{target!r}]\n")
     return "\n".join(line.rstrip("\n") for line in lines) + "\n"
 
@@ -380,7 +479,7 @@ def _package(node, path, modules, source, pinned, licence, commit, generator, li
     if not examples:
         raise ExtractRefused(NO_EXAMPLES)
     closure = closure_of(node.name, path, modules, source["package_root"],
-                         extra_names=sorted(example_names(examples) - {node.name}))
+                         extra_names=sorted(example_names(node) - {node.name}))
     module = f"{source['vendor']}_{node.name}"[:80].lower()
     if not re.fullmatch(r"[a-z_][a-z0-9_]*", module):
         raise ExtractRefused(CLOSURE_UNRESOLVED, f"no module name for {node.name}")

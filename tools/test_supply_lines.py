@@ -1643,6 +1643,62 @@ class FunctionExtractsTest(unittest.TestCase):
         self.assertIn("from itertools import islice", take_module)
         self.assertEqual(summary[0]["packaged"], 2)
 
+    def test_annotations_aliases_and_package_namespaces_are_followed(self):
+        from supply_lines import function_extracts as line
+        text = '''from __future__ import annotations
+import typing as t
+import lib2 as pkg
+from .words import _join as join_words
+from somewhere_else import OnlyInAnnotations
+
+T = t.TypeVar("T")
+
+
+def shout(word: OnlyInAnnotations) -> T:
+    """Louder.
+
+    >>> shout("hi")
+    'HI!'
+    """
+    return word.upper() + "!"
+
+
+def shout_all(words):
+    """Louder, joined.
+
+    >>> shout_all(["a", "b"])
+    'A! B!'
+    """
+    return join_words([pkg.shout(word) for word in words])
+'''
+        words = '''import typing as t
+
+T = t.TypeVar("T")
+
+
+def _join(parts):
+    return " ".join(parts)
+'''
+        init = "from .text import shout, shout_all\n"
+        modules = {path: (line.module_statements(path, source), source) for path, source in
+                   (("lib2/text.py", text), ("lib2/words.py", words), ("lib2/__init__.py", init))}
+        closure = line.closure_of("shout", "lib2/text.py", modules, "lib2")
+        # Names only annotations read are left out when annotations are never evaluated.
+        self.assertEqual([sorted(row.binds) for row in closure.statements], [["shout"]])
+        closure = line.closure_of("shout_all", "lib2/text.py", modules, "lib2")
+        self.assertEqual(closure.aliases, {"join_words": "_join"})
+        self.assertEqual({alias: sorted(names) for alias, (_module, names) in closure.namespaces.items()},
+                         {"pkg": ["shout"]})
+        written = line.module_text(closure, "shout_all", "# header\n")
+        import importlib.util
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "extracted_shout_all.py"
+            path.write_text(written, encoding="utf-8")
+            specification = importlib.util.spec_from_file_location("extracted_shout_all", path)
+            extracted = importlib.util.module_from_spec(specification)
+            specification.loader.exec_module(extracted)
+        self.assertEqual(extracted.shout_all(["a", "b"]), "A! B!")
+
     def test_the_closure_follows_package_imports_and_refuses_what_it_cannot_copy(self):
         from supply_lines import function_extracts as line
         modules = {"lib/core.py": (line.module_statements("lib/core.py", LIBRARY_CORE), LIBRARY_CORE),
