@@ -1,0 +1,59 @@
+{
+  "record_type": "pilot_release_record/v1",
+  "release": 44,
+  "app": "baltor-pilot",
+  "source_revision": "d4542e93c702dbb529be057ee9f480d40217691c",
+  "source_tree": "e3ce544706f1d882fe4350716a8e2ea98ff87fd8",
+  "image": "registry.fly.io/baltor-pilot@sha256:0b3e6782d9a96482a8264e7bda1d3a50eefcd81a1d094590016f5e7a5edaa188",
+  "rollback_release": 43,
+  "rollback_image": "registry.fly.io/baltor-pilot@sha256:1746b97fd5f19a0076144a18bd074f803d8a702c15aa45a51f993e7a0bfc3374",
+  "deployed_at": "2026-09-28T11:10:55Z",
+  "ci_run": 36413186206,
+  "ci_conclusion": "success",
+  "deploy_run": 36413843751,
+  "deploy_workflow": 36413843751,
+  "deploy_workflow_conclusion": "success",
+  "deployment_gate_after": "false",
+  "public_checks_passed": true,
+  "public_hosts_passed": 9,
+  "visitor_pages": 57,
+  "visitor_views": 237,
+  "visitor_links": 351,
+  "visitor_problems": 0,
+  "visitor_screenshots": 114,
+  "catalogue_checks_passed": 9,
+  "catalogue_checks_planned": 9,
+  "service_checks_passed": 19,
+  "service_checks_planned": 19,
+  "service_check_attempts": [
+    {
+      "attempt": 1,
+      "executed": 19,
+      "passed": 19,
+      "outcome": "all passed"
+    }
+  ],
+  "advisory": {
+    "addresses_checked": 135,
+    "addresses_not_200": 0,
+    "pi_extension_files_matching": 9,
+    "pi_extension_files_checked": 9,
+    "detailed_browser_rules_passed": 214,
+    "detailed_browser_rules_total": 216,
+    "detailed_browser_rule_failures": "the same two hero rules as releases 41 to 43, written before the September 26 hero; the website builder of September 28 decides whether the page or the rule is wrong"
+  },
+  "changes": [
+    "The knowledge radar: a question registry, source contracts and source engines, a planner, a feed, an hourly model release watch and a staged daily run, with guards checked against known-wrong cases.",
+    "Release tooling: every generated view is regenerated in dependency order by one command, a pristine check exports the commit, a release train is built in one command, and tools test modules are placed in shards at run time.",
+    "The pre-push check chooses its interpreter from the checkout and warns when a local run is not equivalent to continuous integration.",
+    "The hardcoding findings that turned main red on September 28 are cleared.",
+    "The release 43 record, the September 27 session handoff and the cited Codex research evidence are committed."
+  ],
+  "report_sha256": {
+    "people.log": "4cf7aac1a2cc4816da5b1d751a61f198379b3925f33487d0e0d50b679fc427f6",
+    "catalogue-check.json": "c36d485f629e79db9f43974f128e636581137bf6248804dc65941d21b1f243b3",
+    "service-check.json": "01ec3bcd7dad74776636966ad85f4c968cba7fb53271ef8464817de85b9f1137",
+    "http-surfaces.tsv": "c6bba302f013a32eb0645854010be8ec69832c8f74c4c693f7b463d76c04e589"
+  },
+  "private_reports": "/home/username/baltor-private/releases/release-44-2026-09-28"
+}
