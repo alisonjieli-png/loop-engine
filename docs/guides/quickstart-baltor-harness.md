@@ -80,7 +80,7 @@ sha256sum item.md
 grep -i x-content-sha256 headers.txt
 ```
 
-The download answers the bytes themselves, with the `X-Content-SHA256` header that repeats their digest. The `expected_digest` binds the read to the body you chose, so a changed body is refused rather than substituted. The first download of an item version in a calendar month is one measured unit and appears in your usage; downloading the same version again that month, with any `request_id`, adds nothing. A retry of an uncertain outcome is therefore safe; keep the same `request_id` so your records name one download.
+The download answers the bytes themselves, with the `X-Content-SHA256` header that repeats their digest, and `curl` writes them unchanged. When the search result's `package` lists several files, this download answers the package document that lists them; download each file by adding its `path` to the same request, or use the Baltor library skill's `fetch` and `install`, as the [OpenCode quickstart](quickstart-opencode.md#install-the-baltor-library-skill) shows. The `expected_digest` binds the read to the body you chose, so a changed body is refused rather than substituted. The first download of an item version in a calendar month is one measured unit and appears in your usage; downloading the same version again that month, with any `request_id`, adds nothing. A retry of an uncertain outcome is therefore safe; keep the same `request_id` so your records name one download.
 
 ## Run a task with it
 

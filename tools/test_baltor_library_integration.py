@@ -2,7 +2,7 @@
 
 Kind: continuous integration check.
 
-The folder integrations/baltor-library carries one skill, version 0.3.0, with a Claude Code plugin, a Codex
+The folder integrations/baltor-library carries one skill, version 0.4.0, with a Claude Code plugin, a Codex
 plugin and a Pi package around the same six files. This module holds the promises its README makes:
 
 - the files are the pinned bytes of release.json, whose package digest is the digest of catalogue candidate
@@ -12,8 +12,11 @@ plugin and a Pi package around the same six files. This module holds the promise
   skills in, so the README and the placement profiles cannot drift apart;
 - the configuration names the token variable that the setup page uses and never holds a token, and the client
   reads the token from that variable, sends it only in the request header and never prints it;
+- the website serves the same six files byte for byte under /assets/baltor-library/, with their digests, and the
+  client's own placement table names the folders the release names;
 - the client's own offline tests pass, and the pinned client works against the service application of this
-  revision, run in the same process with network connections refused.
+  revision, run in the same process with network connections refused: it fetches a package exactly, declares its
+  effects in the header, and places a fetched skill byte for byte.
 
 Each rule is a function that returns its problems, and each has a known-wrong control that must report one.
 Nothing here starts a harness, reaches the network or reads a real credential.
@@ -50,6 +53,7 @@ POLICY = ROOT / "src" / "loop_engine" / "forbidden_paths.json"
 FRONTMATTER_KEYS = {"name", "description", "license", "allowed-tools", "metadata", "compatibility"}
 SKILL_NAME_PATTERN = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
 ORIGIN = "https://offline.invalid"
+SERVED_ROOT = "/assets/baltor-library/"
 
 
 def read_json(path: Path):
@@ -124,6 +128,47 @@ def pin_problems(package: Path) -> list:
                          ("Pi package", pi_package.get("name"))):
         if value != release["name"]:
             problems.append(f"the {label} is named {value!r}")
+    return problems
+
+
+def served_copy_problems(package: Path) -> list:
+    """Every file of the skill is served at /assets/baltor-library/<path> with the same bytes, and the served
+    SHA256SUMS names each file's digest by its path inside the skill folder."""
+    from loop_engine.core.service_runtime import web_pages
+    release = read_json(package / "release.json")
+    folder = skill_folder(package)
+    problems = []
+
+    def served(address):
+        if address not in web_pages.WEB_ASSETS:
+            return None
+        return web_pages.read_packaged_asset(web_pages.WEB_ASSETS[address][0])
+    for row in release["files"]:
+        body = served(SERVED_ROOT + row["path"])
+        if body is None:
+            problems.append(f"the website does not serve {row['path']}")
+        elif body != (folder / row["path"]).read_bytes():
+            problems.append(f"the website serves other bytes for {row['path']}")
+    sums = served(SERVED_ROOT + "SHA256SUMS")
+    expected = "".join(f"{row['digest']}  {row['path']}\n" for row in release["files"]).encode()
+    if sums != expected:
+        problems.append("the served SHA256SUMS does not list the pinned digests by their paths in the skill folder")
+    listed = {address[len(SERVED_ROOT):] for address in web_pages.WEB_ASSETS if address.startswith(SERVED_ROOT)}
+    if listed != {row["path"] for row in release["files"]} | {"SHA256SUMS"}:
+        problems.append(f"the website serves {sorted(listed)} under {SERVED_ROOT}")
+    return problems
+
+
+def placement_table_problems(package: Path, table: dict) -> list:
+    """The client's own table of skill folders, which its install command writes to, is the release's table."""
+    release = read_json(package / "release.json")
+    problems = []
+    for client in CLIENTS:
+        for scope in ("project", "user"):
+            placed = f"{table.get(client, {}).get(scope)}/{release['name']}"
+            if placed != release["native_skill_folders"][client][scope]:
+                problems.append(f"{client} {scope}: the client places in {placed!r}, the release names "
+                                f"{release['native_skill_folders'][client][scope]!r}")
     return problems
 
 
@@ -266,12 +311,34 @@ class PinnedReleaseChecks(unittest.TestCase):
             manifest.write_text(json.dumps(value), encoding="utf-8")
             self.assertTrue(any("Codex plugin names version '0.3.1'" in problem for problem in pin_problems(copy)))
 
-    def test_the_package_digest_is_the_catalogue_candidate(self):
+    def test_the_package_digest_is_the_pinned_version(self):
+        # Version 0.4.0 replaced the 0.3.0 catalogue candidate's bytes; the new bytes need their own review.
         release = read_json(PACKAGE / "release.json")
         self.assertEqual(release["package"]["catalogue_identity"], "baltor_library_client")
         self.assertEqual(release["package"]["package_digest"],
+                         "654caafb21daea85e2ee77dd32c4a5ab3821519dde147fa69a9f48563a2ecb73")
+        self.assertEqual(release["source"]["previous_package_digest"],
                          "ab45e58b1e1a601b4bc97ab0df84e4c4b37ca814b6c1c9bba5dfdc32578e3926")
         self.assertEqual(release["package"]["catalogue_publication"], "not_published")
+
+    def test_the_website_serves_the_pinned_files(self):
+        self.assertEqual(served_copy_problems(PACKAGE), [])
+
+    def test_a_served_byte_that_differs_is_reported(self):
+        from loop_engine.core.service_runtime import web_pages
+        original = web_pages.read_packaged_asset
+
+        def changed(name):
+            body = original(name)
+            return body + b"# retyped" if name.endswith("baltor.py.txt") else body
+        with mock.patch.object(web_pages, "read_packaged_asset", changed):
+            self.assertIn("the website serves other bytes for scripts/baltor.py", served_copy_problems(PACKAGE))
+
+    def test_the_client_places_skills_where_the_release_says(self):
+        module = load_module(skill_folder(PACKAGE) / "scripts" / "baltor.py", "baltor_library_client_table")
+        self.assertEqual(placement_table_problems(PACKAGE, module.NATIVE_SKILL_ROOTS), [])
+        moved = {**module.NATIVE_SKILL_ROOTS, "codex": {"project": ".codex/skills", "user": "~/.codex/skills"}}
+        self.assertTrue(placement_table_problems(PACKAGE, moved))
 
 
 class ManifestChecks(unittest.TestCase):
@@ -551,11 +618,13 @@ class ServiceContractChecks(unittest.TestCase):
             self.assertEqual((self.folder / "first" / "payload" / path).read_bytes(), data)
         self.assertEqual(self.usage_records(), 1)
         self.module.fetch(self.client, "supplier_cleanup", digest, "one-logical-read", self.folder / "retry", found)
-        self.assertEqual(self.usage_records(), 1, "the same request identity is one download")
+        self.assertEqual(self.usage_records(), 1, "the same item version is one download")
         for request in self.opener.requests:
             if request.data:
                 sent = json.loads(request.data)
-                self.assertEqual(sent.get("authority_effects"), ["reads_fs"])
+                # The configured effects travel in the header, so the service marks what it shows.
+                self.assertNotIn("authority_effects", sent)
+                self.assertEqual(request.get_header("Baltor-step-effects"), "reads_fs")
                 self.assertNotIn("library_tiers", sent)
         for path in (self.folder / "first").rglob("*.json"):
             self.assertNotIn(self.case.key.key, path.read_text(encoding="utf-8"))
@@ -577,14 +646,41 @@ class ServiceContractChecks(unittest.TestCase):
         with self.assertRaises(self.module.Refusal) as caught:
             self.client.manifest("supplier_cleanup", "0" * 64)
         self.assertEqual(caught.exception.code, "service_refused:item_unavailable")
-        # The runner declares spawns_process, which this step does not hold, so search leaves it out and the
-        # manifest of its exact digest is withheld.
+        # The runner declares spawns_process, which this configuration does not declare. Search shows it, marked
+        # with the effect to declare; the client refuses to fetch it, and the service refuses its body.
         found = self.client.search("supplier runner", 5)
-        self.assertNotIn("supplier_runner", {hit["reference"]["identity"] for hit in found["hits"]})
+        runner = next(hit for hit in found["hits"] if hit["reference"]["identity"] == "supplier_runner")
+        self.assertEqual(runner["effects_to_declare"], ["spawns_process"])
+        self.assertEqual(self.client.manifest("supplier_runner", self.runner_digest)["effects_to_declare"],
+                         ["spawns_process"])
         with self.assertRaises(self.module.Refusal) as caught:
-            self.client.manifest("supplier_runner", self.runner_digest)
-        self.assertEqual(caught.exception.code, "service_refused:item_withheld")
+            self.module.fetch(self.client, "supplier_runner", self.runner_digest, "runner", self.folder / "runner", found)
+        self.assertEqual((caught.exception.code, caught.exception.effects), ("step_effects_not_configured",
+                                                                            ["spawns_process"]))
+        with self.assertRaises(self.module.Refusal) as caught:
+            self.client.download("supplier_runner", self.runner_digest, "runner", self.runner_digest, 64,
+                                 "scripts/clean.sh")
+        self.assertEqual((caught.exception.code, caught.exception.effects),
+                         ("service_refused:step_effects_required", ["spawns_process"]))
         self.assertEqual(self.usage_records(), 0)
+
+    def test_a_fetched_skill_is_installed_byte_for_byte_and_verified(self):
+        found, digest = self.selection()
+        self.module.fetch(self.client, "supplier_cleanup", digest, "install-me", self.folder / "staged", found)
+        project = self.folder / "project"
+        project.mkdir()
+        record = self.module.install(self.folder / "staged", "opencode", "project", project)
+        placed = project / ".opencode" / "skills" / record["native_name"]
+        self.assertEqual(record["native_name"], "supplier-cleanup")
+        skill = (placed / "SKILL.md").read_bytes()
+        # The served SKILL.md has no front matter, so a generated name and description come first, then the
+        # published bytes unchanged; the record says how long the header is.
+        self.assertTrue(skill.endswith(self.FILES[0][1]))
+        self.assertEqual(len(skill) - record["files"][[row["path"] for row in record["files"]].index("SKILL.md")]
+                         ["header_bytes"], len(self.FILES[0][1]))
+        self.assertEqual((placed / "assets" / "example.bin").read_bytes(), self.FILES[1][1])
+        self.assertTrue(self.module.verify("opencode", "supplier-cleanup", "project", project)["verified"])
+        self.assertEqual(self.usage_records(), 1)
 
 
 def load_tests(loader, standard_tests, pattern):

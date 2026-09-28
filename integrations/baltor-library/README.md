@@ -1,10 +1,11 @@
 # Baltor library skill
 
-One first-party skill, version 0.3.0, for Claude Code, Codex, OpenCode and Pi.
-It searches the Baltor library and stages one selected item or complete
-package in a new folder, after it checks versions, sizes and SHA-256 digests.
-It never installs or runs what it downloads, and it never calls a model. Its
-client, `scripts/baltor.py`, uses only the Python standard library.
+One first-party skill, version 0.4.0, for Claude Code, Codex, OpenCode and Pi.
+It searches the Baltor library, stages one selected item or complete package
+in a new folder after it checks versions, sizes and SHA-256 digests, and
+places a fetched skill in the client's own skill folder byte for byte. It never
+runs what it downloads, and it never calls a model. Its client,
+`scripts/baltor.py`, uses only the Python standard library.
 
 ## What is in this folder
 
@@ -29,24 +30,37 @@ integrations/baltor-library
 
 ## Status
 
-- Version 0.3.0 is pinned. `release.json` records the SHA-256 digest of each
-  file and the package digest
-  `ab45e58b1e1a601b4bc97ab0df84e4c4b37ca814b6c1c9bba5dfdc32578e3926`. The
-  repository check `tools/test_baltor_library_integration.py` fails when a
-  byte, a manifest version or a native folder changes without the record.
-- The skill is not in the Baltor catalogue. Catalogue candidate
-  `baltor_library_client` holds the same bytes and waits for independent
-  review. This folder is the source distribution of the same files.
-- Observed on September 27, 2026, with the network switched off, an empty
-  home folder and no model call. Claude Code 2.1.283 installed the plugin from
-  this folder and listed the skill in its component inventory. Codex 0.155.1
-  installed the plugin and offered the skill in its rendered model input. It
-  did the same for a copy in `~/.agents/skills`. OpenCode 1.18.32 listed the
-  skill from `.opencode/skills` and from `~/.config/opencode/skills`. Pi 0.73.1
-  listed the skill from this folder as a package and from `.pi/skills`.
-- Not observed yet: a model choosing the skill during a real task, a live
-  download from baltor.ai by this client, and Windows. The client declares
-  POSIX file operations.
+- Version 0.4.0 is pinned. `release.json` records the SHA-256 digest of each
+  file and the package digest; `release.json` also names the 0.3.0 package
+  digest it replaces. The repository check
+  `tools/test_baltor_library_integration.py` fails when a byte, a manifest
+  version or a native folder changes without the record, and when the copy
+  the website serves at `/assets/baltor-library/` differs from these files.
+- What 0.4.0 changed, after a customer run on September 27, 2026 found that a
+  model retyping a downloaded skill corrupted it: the new `install` command
+  places a fetched skill byte for byte, and `verify` checks it later; the
+  configured effects travel in the `Baltor-Step-Effects` header, so search
+  shows every item with the effects still to declare, and fetch refuses an
+  item whose effects the configuration leaves out; the example configuration
+  declares `reads_fs`, `writes_fs`, `spawns_process` and `network`; a refusal
+  that recorded nothing and names a short wait is sent again after it.
+- The skill is not in the Baltor catalogue. The 0.3.0 bytes are catalogue
+  candidate `baltor_library_client`, which waits for independent review; the
+  0.4.0 bytes need their own review before they enter the catalogue. This
+  folder is the source distribution of the same files.
+- Observed for version 0.3.0 on September 27, 2026, with the network switched
+  off, an empty home folder and no model call. Claude Code 2.1.283 installed
+  the plugin from this folder and listed the skill in its component inventory.
+  Codex 0.155.1 installed the plugin and offered the skill in its rendered
+  model input. It did the same for a copy in `~/.agents/skills`. OpenCode
+  1.18.32 listed the skill from `.opencode/skills` and from
+  `~/.config/opencode/skills`. Pi 0.73.1 listed the skill from this folder as
+  a package and from `.pi/skills`. In a customer run the same day, 0.3.0
+  fetched a complete 18-file package from baltor.ai with every file digest
+  checked.
+- Not observed yet for 0.4.0: a client loading a skill that `install` placed,
+  a model choosing the skill during a real task, and Windows. The client
+  declares POSIX file operations.
 
 ## Set up your token once
 
@@ -79,9 +93,24 @@ when a response repeats the token.
 
 ## Install for your client
 
-Replace `/path/to/loop-engine` with the folder of your copy of this
-repository. Start a new session afterwards, because each client reads skills
-when a session starts.
+The Baltor website serves the same six files, and the digests to check them,
+under `https://baltor.ai/assets/baltor-library/`. The commands below place
+them in a project's OpenCode skill folder; use the folder your client reads,
+as the table in [the client reference](skills/baltor-library/references/client.md#placement)
+shows:
+
+```bash
+mkdir -p .opencode/skills/baltor-library && cd .opencode/skills/baltor-library
+for file in SKILL.md LICENSE scripts/baltor.py references/client.md assets/client.example.json verification/test_client.py; do
+  curl -fsSL --create-dirs "https://baltor.ai/assets/baltor-library/$file" -o "$file"
+done
+curl -fsSL https://baltor.ai/assets/baltor-library/SHA256SUMS | sha256sum -c -
+cd -
+```
+
+From a copy of this repository, replace `/path/to/loop-engine` below with its
+folder. Start a new session afterwards, because each client reads skills when
+a session starts.
 
 ### Claude Code
 
@@ -151,6 +180,23 @@ The saved file is the selection that a later `fetch` command reads. A search
 reads metadata only and does not count as a download.
 [The client reference](skills/baltor-library/references/client.md) explains
 `fetch`, its folder rules and what to do after a failure.
+
+## Place a fetched skill
+
+`fetch` stages files in a new folder and places nothing. To use a fetched
+skill in your client, place it with `install`, which checks every staged file
+again and writes the exact bytes into the client's skill folder:
+
+```bash
+python3 skills/baltor-library/scripts/baltor.py install --staged /absolute/new-download-folder \
+  --client opencode --project /absolute/project --authorize-install
+python3 skills/baltor-library/scripts/baltor.py verify --client opencode --name NATIVE-NAME --project /absolute/project
+```
+
+The install prints its record, whose `native_name` is the folder name `verify`
+takes. It places skill packages only and never replaces a folder it did not
+install. [Placement](skills/baltor-library/references/client.md#placement)
+names every client's folder.
 
 ## How the skill relates to the protocol connection
 
