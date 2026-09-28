@@ -2,6 +2,7 @@
 
 Kind: dated handoff. It records the consolidation of September 27 and the
 night that followed:
+
 - what went live;
 - the owner's directions of the day and the decisions made under them;
 - the work in flight in detached worktrees;
