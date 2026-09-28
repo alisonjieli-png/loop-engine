@@ -126,17 +126,20 @@ code,first=call('/api/v1/provisioning',cfg['owner'],request);assert code==200
 code,repeated=call('/api/v1/provisioning',cfg['owner'],request);assert code==200
 assert first['result']['metering_acknowledgment']==repeated['result']['metering_acknowledgment']
 assert hashlib.sha256(first['result']['body'].encode()).hexdigest()==first['result']['digest']
-after=call('/api/v1/usage',cfg['owner'])[1]['result']['records'];assert after==before+cfg['expected_new_records']
+after=call('/api/v1/usage',cfg['owner'])[1]['result']['records'];assert after-before in cfg['allowed_new_records']
 print(json.dumps({'authenticated':True,'tenant_scope_preserved':True,'revoked_records_preserved':True,'body_digest_checked':True,'idempotency_preserved':True}))
 '''
         credentials={"owner":secret(options.app+".fly.dev",options.owner,"service-access"),"owner_name":options.owner,
                      "administrator":secret(options.app+".fly.dev",options.administrator,"service-access"),
-                     "identity":options.identity,"request_id":"restore-test-"+uuid.uuid4().hex,"expected_new_records":1}
+                     "identity":options.identity,"request_id":"restore-test-"+uuid.uuid4().hex,
+                     # One unit for each account, item version and calendar month: a snapshot whose owner already read
+                     # this version this month records none for the first read, and the repeat after restart none.
+                     "allowed_new_records":[0,1]}
         # Poll only readiness. Mutating local acceptance is attempted once per
         # phase, using one durable request identity across restart.
         health="import urllib.request; urllib.request.urlopen('http://localhost:8080/api/v1/health',timeout=2).close()"
         for phase in ("initial", "after_restart"):
-            if phase=="after_restart": command(["docker","restart",container]);credentials["expected_new_records"]=0
+            if phase=="after_restart": command(["docker","restart",container]);credentials["allowed_new_records"]=[0]
             deadline=time.monotonic()+35
             while True:
                 ready=subprocess.run(["docker","exec",container,"python","-c",health],capture_output=True,timeout=5)
