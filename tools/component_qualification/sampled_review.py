@@ -43,12 +43,18 @@ MAXIMUM_BATCH = 12
 CALL_TOKEN_BUDGET = 150_000
 PRODUCER_METHOD = "library_supply_generator"
 
+#: The planted control kinds, each named once, with the native criterion its defect violates.
+VERIFICATION_ACCEPTS_ANYTHING = "verification_accepts_anything"
+UNDECLARED_FILE_WRITE = "undeclared_file_write"
+MISSING_DEPENDENCY = "missing_dependency"
+LICENCE_CONTRADICTION = "licence_contradiction"
+BEHAVIOR_CONTRADICTS_DESCRIPTION = "behavior_contradicts_description"
 CONTROL_KINDS = {
-    "verification_accepts_anything": ("contracts_and_checks", "code"),
-    "undeclared_file_write": ("declared_effects", "code"),
-    "missing_dependency": ("dependency_closure", "code"),
-    "licence_contradiction": ("original_rights", "any"),
-    "behavior_contradicts_description": ("whole_package", "any"),
+    VERIFICATION_ACCEPTS_ANYTHING: ("contracts_and_checks", "code"),
+    UNDECLARED_FILE_WRITE: ("declared_effects", "code"),
+    MISSING_DEPENDENCY: ("dependency_closure", "code"),
+    LICENCE_CONTRADICTION: ("original_rights", "any"),
+    BEHAVIOR_CONTRADICTS_DESCRIPTION: ("whole_package", "any"),
 }
 
 
@@ -73,7 +79,7 @@ def plant(component: GeneratedComponent, kind: str, identity: str) -> "Generated
     """One known-wrong control made from a real component; None when this kind does not apply to it."""
     payloads = dict(component.payloads)
     module = _main_module(component)
-    if kind == "verification_accepts_anything":
+    if kind == VERIFICATION_ACCEPTS_ANYTHING:
         tests = [path for path in payloads if path.startswith("test_") and path.endswith(".py")]
         if not tests:
             return None
@@ -81,7 +87,7 @@ def plant(component: GeneratedComponent, kind: str, identity: str) -> "Generated
                               b"    def test_call_succeeds(self):\n        self.assertTrue(True)\n\n"
                               b"    def test_error_path(self):\n        self.assertTrue(True)\n\n\n"
                               b"if __name__ == \"__main__\":\n    unittest.main()\n")
-    elif kind == "undeclared_file_write":
+    elif kind == UNDECLARED_FILE_WRITE:
         if module is None or "writes_fs" in component.candidate.get("declared_effects", []):
             return None
         text = payloads[module].decode()
@@ -94,7 +100,7 @@ def plant(component: GeneratedComponent, kind: str, identity: str) -> "Generated
                             "    with open(\"last_result.json\", \"w\", encoding=\"utf-8\") as stream:\n"
                             "        stream.write(_json.dumps(result, default=str))\n"
                             "    return result\n").encode()
-    elif kind == "missing_dependency":
+    elif kind == MISSING_DEPENDENCY:
         if module is None:
             return None
         text = payloads[module].decode()
@@ -102,14 +108,14 @@ def plant(component: GeneratedComponent, kind: str, identity: str) -> "Generated
         position = next((index for index, line in enumerate(lines) if line.startswith(("import ", "from "))), 0)
         lines.insert(position, "import acme_request_helpers\n")
         payloads[module] = "".join(lines).encode()
-    elif kind == "licence_contradiction":
+    elif kind == LICENCE_CONTRADICTION:
         texts = (component.candidate.get("licence") or {}).get("texts") or []
         if not texts or texts[0] not in payloads:
             return None
         payloads[texts[0]] = (b"Copyright (c) 2026 Example Holdings. All rights reserved.\n\n"
                               b"No permission is granted to copy, modify, publish or distribute this software or "
                               b"any part of it.\n")
-    elif kind == "behavior_contradicts_description":
+    elif kind == BEHAVIOR_CONTRADICTS_DESCRIPTION:
         if module is not None:
             text = payloads[module].decode()
             for method, other in (('"GET"', '"DELETE"'), ('"POST"', '"DELETE"'), ('"PATCH"', '"DELETE"')):

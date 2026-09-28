@@ -289,7 +289,7 @@ class LicenceProvenanceCheck:
             fact_licence = fact.get("licence") if isinstance(fact.get("licence"), dict) else {}
             fact_ids = licence_identifiers(fact_licence.get("spdx_expression", ""))
             if (fact.get("record_type") != policy["record_types"]["fact_source"]
-                    or not str(fact.get("url", "")).startswith("https://")
+                    or not _pinned_address(fact.get("url"), policy)
                     or not _HEX64.fullmatch(str(fact.get("sha256", ""))) or not fact.get("retrieved_at")):
                 findings.append(("fact_source_not_pinned", str(fact.get("url", ""))[:160]))
             accepted_fact = fact_ids is not None and not set(fact_ids) - accepted
@@ -305,7 +305,7 @@ class LicenceProvenanceCheck:
         for row in record.get("files", []):
             if isinstance(row, dict) and row.get("origin") == "upstream_verbatim":
                 upstream = row.get("upstream") if isinstance(row.get("upstream"), dict) else {}
-                if upstream.get("sha256") != row.get("digest") or not str(upstream.get("url", "")).startswith("https://"):
+                if upstream.get("sha256") != row.get("digest") or not _pinned_address(upstream.get("url"), policy):
                     findings.append(("upstream_copy_not_bound", str(row.get("path"))))
         findings += _pinned_launchers(component, policy)
         findings += _pinned_downloads(component, policy)
@@ -321,6 +321,11 @@ def recognized_licences(text: str, policy: dict) -> set:
                 phrase in folded for phrase in rule.get("none", [])):
             found.add(identifier)
     return found
+
+
+def _pinned_address(url, policy) -> bool:
+    """Whether a fact or upstream address uses one of the policy's address schemes."""
+    return isinstance(url, str) and url.split("://", 1)[0] in policy["address_schemes"] and "://" in url
 
 
 def _server_tables(component, policy) -> list:
@@ -531,6 +536,8 @@ WRITE_METHODS = frozenset({"write_text", "write_bytes", "touch", "unlink", "rmdi
 READ_METHODS = frozenset({"read_text", "read_bytes", "iterdir", "glob", "rglob"})
 READ_CALLS = frozenset({"os.listdir", "os.scandir", "os.walk"})
 PROCESS_CALL_PREFIXES = ("os.system", "os.popen", "os.fork", "os.exec", "os.spawn", "os.posix_spawn")
+#: The keyword argument of open() that names its mode (Python's own vocabulary).
+OPEN_MODE_KEYWORD = "mode"
 
 
 def _dotted(node) -> str:
@@ -592,7 +599,7 @@ def code_effects(text: str, credentials) -> dict:
                                                                 and node.func.attr == "open" and resolved != "os.open"
                                                                 and head not in ("webbrowser",)):
             mode = node.args[1] if len(node.args) > 1 else next((keyword.value for keyword in node.keywords
-                                                                 if keyword.arg == "mode"), None)
+                                                                 if keyword.arg == OPEN_MODE_KEYWORD), None)
             mode_text = mode.value if isinstance(mode, ast.Constant) and isinstance(mode.value, str) else "r"
             note("writes_fs" if set(mode_text) & set("wax+") else "reads_fs", node)
         if resolved in ("os.getenv", "os.environ.get") and node.args:

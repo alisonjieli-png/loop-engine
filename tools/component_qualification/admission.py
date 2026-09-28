@@ -27,6 +27,9 @@ from pathlib import Path
 
 from .components import StoreReader
 
+#: The review panel's own verdict vocabulary (tools/candidate_review/verdicts.py).
+from tools.candidate_review.verdicts import APPROVE, REJECT  # noqa: E402
+
 ADMISSION_REVIEWER = "generated_batch_admission/v1"
 ADMISSION_RECORD = "generated_component_admission_report/v1"
 DECISION_RULE = ("A generated component is approved for the community scope only when a qualification process "
@@ -135,7 +138,7 @@ def admit(qualification_folder: Path, review_path: Path, store_root: "Path | Non
             if component.package.package_digest != record["package_digest"]:
                 raise ValueError(f"{identity}: the stored package differs from the qualified package")
             sampled = verdicts.get(identity)
-            admission = {"reviewer_id": ADMISSION_REVIEWER, "decision": "approve", "reason": "", "findings": [],
+            admission = {"reviewer_id": ADMISSION_REVIEWER, "decision": APPROVE, "reason": "", "findings": [],
                          "body_sha256": record["package_digest"], "call_ref": "",
                          "basis": {"qualification_ref": f"qualification.jsonl#{identity}",
                                    "qualification_record_sha256": _sha(record), "batch": batch,
@@ -149,15 +152,15 @@ def admit(qualification_folder: Path, review_path: Path, store_root: "Path | Non
             decisions = [admission]
             if sampled is not None:
                 reviewer_decision = {"reviewer_id": review["reviewer"], "decision": sampled["decision"],
-                                     "reason": sampled["reason"] if sampled["decision"] != "approve" else "",
+                                     "reason": sampled["reason"] if sampled["decision"] != APPROVE else "",
                                      "findings": [{"criterion_id": criterion} for criterion in sampled["criteria"]],
                                      "body_sha256": sampled.get("body_sha256"), "call_ref": sampled["call_ref"]}
-                if sampled["decision"] != "approve" and not reviewer_decision["reason"].strip():
+                if sampled["decision"] != APPROVE and not reviewer_decision["reason"].strip():
                     reviewer_decision["reason"] = "rejected under the written native criteria"
                 decisions.append(reviewer_decision)
-            rejected = any(item["decision"] != "approve" for item in decisions)
+            rejected = any(item["decision"] != APPROVE for item in decisions)
             if rejected:
-                admission["decision"] = "reject"
+                admission["decision"] = REJECT
                 admission["reason"] = "the sampling reviewer rejected this component"
             reference = reference_for(component)
             files = tuple(NativeReviewFile(file, component.payloads[file.path]) for file in component.package.files)

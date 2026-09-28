@@ -28,6 +28,15 @@ from .components import CANDIDATE_RECORD, GENERATED_AUTHORING, GeneratedComponen
 from .sandbox import SandboxLimits, SandboxSettings
 
 SELF_TEST_RECORD = "component_qualification_self_test/v1"
+#: Fixture addresses: reserved example domains and the JSON Schema dialect identifier. Nothing here is fetched.
+FIXTURE_ADDRESSES = {"greetings": "https://example.org/greetings.json", "server": "https://example.org/server.json",
+                     "specification": "https://example.org/openapi.json",
+                     "archive": "https://example.org/example-1.0.0.tar.gz",
+                     "schema_dialect": "https://json-schema.org/draft/2020-12/schema"}
+#: The fixture client's credential, by variable name only.
+FIXTURE_CREDENTIAL = "EXAMPLE_API_KEY"
+#: The catalogue's file role for a file a harness does not run or load (catalogue_packages.FILE_ROLES).
+OTHER_ROLE = "other"
 FIXTURE_DATE = "2026-09-27"
 
 MIT_TEXT = """MIT License
@@ -108,7 +117,7 @@ if __name__ == "__main__":
     unittest.main()
 '''
 
-SCHEMA = json.dumps({"$schema": "https://json-schema.org/draft/2020-12/schema", "type": "array",
+SCHEMA = json.dumps({"$schema": FIXTURE_ADDRESSES["schema_dialect"], "type": "array",
                      "items": {"type": "object", "required": ["language", "greeting"], "additionalProperties": False,
                                "properties": {"language": {"type": "string"}, "greeting": {"type": "string"}}}},
                     indent=1) + "\n"
@@ -172,7 +181,7 @@ def code_fixture(revision: str) -> GeneratedComponent:
     roles = {"greeting_table.py": "executable_tool", "test_greeting_table.py": "executable_tool"}
     evidence = {"reads_fs": "the loader reads its own data file", "spawns_process": "holds an executable file"}
     return _build("data_tables", "data_table", "code_module", files, roles, ("reads_fs", "spawns_process"),
-                  evidence, _fact("https://example.org/greetings.json", GREETINGS), revision,
+                  evidence, _fact(FIXTURE_ADDRESSES["greetings"], GREETINGS), revision,
                   {"data/greetings.json": "upstream_verbatim"})
 
 
@@ -194,7 +203,7 @@ def configuration_fixture(revision: str) -> GeneratedComponent:
                                                                  ".codex/config.toml")}
     evidence = {"network": "downloads the pinned package when started", "spawns_process": "starts a local server"}
     return _build("mcp_registry", "mcp_server", "protocol_server_configuration", files, roles,
-                  ("network", "spawns_process"), evidence, _fact("https://example.org/server.json", b"{}"), revision,
+                  ("network", "spawns_process"), evidence, _fact(FIXTURE_ADDRESSES["server"], b"{}"), revision,
                   {})
 
 
@@ -281,20 +290,20 @@ if __name__ == "__main__":
 
 
 def api_fixture(revision: str) -> GeneratedComponent:
-    schema = json.dumps({"$schema": "https://json-schema.org/draft/2020-12/schema", "type": "object",
+    schema = json.dumps({"$schema": FIXTURE_ADDRESSES["schema_dialect"], "type": "object",
                          "properties": {"greeting": {"type": "string"}}}, indent=1) + "\n"
     files = {"get_greeting.py": API_CLIENT.encode(), "test_get_greeting.py": API_TESTS.encode(),
              "schema.json": schema.encode(), "LICENSE": MIT_TEXT.encode(),
              "README.md": b"# Get a greeting\n\nGET /greetings/{language}, operation get-greeting of Example "
                           b"Greetings API 1.0.0. The credential is read from EXAMPLE_API_KEY.\n"}
     roles = {"get_greeting.py": "executable_tool", "test_get_greeting.py": "executable_tool"}
-    evidence = {"network": "sends one https request to the api", "reads_secret": "reads EXAMPLE_API_KEY",
+    evidence = {"network": "sends one https request to the api", "reads_secret": f"reads {FIXTURE_CREDENTIAL}",
                 "spawns_process": "holds an executable file"}
-    fact = {**_fact("https://example.org/openapi.json", b"{}"), "role": "specification",
+    fact = {**_fact(FIXTURE_ADDRESSES["specification"], b"{}"), "role": "specification",
             "licence": {"spdx_expression": "MIT", "basis": "fixture", "evidence_sha256": None}}
     component = _build("openapi_operations", "api_operation", "code_module", files, roles,
                        ("network", "reads_secret", "spawns_process"), evidence, fact, revision, {})
-    record = dict(component.candidate) | {"credentials": ["EXAMPLE_API_KEY"]}
+    record = dict(component.candidate) | {"credentials": [FIXTURE_CREDENTIAL]}
     return GeneratedComponent(component.identity, component.record_version, MappingProxyType(record),
                               component.package, component.payloads)
 
@@ -340,7 +349,7 @@ def _with_record(component, **fields) -> GeneratedComponent:
 def _add_file(component, path, text, role="executable_tool") -> GeneratedComponent:
     payloads = dict(component.payloads) | {path: text.encode()}
     changed = _rebind(component, payloads)
-    if role != "other":
+    if role != OTHER_ROLE:
         entries = tuple(CataloguePackageFile(entry.path, entry.digest, entry.size_bytes, entry.media_type,
                                              role if entry.path == path else entry.role)
                         for entry in changed.package.files)
@@ -397,7 +406,7 @@ CONTROLS = (
     Control("download_without_digest", "licence_provenance", "code", "download_not_pinned",
             lambda c: _add_file(c, "install.json", json.dumps({
                 "record_type": "program_install_recipe/v1", "program": "example", "version": "1.0.0",
-                "source": {"url": "https://example.org/example-1.0.0.tar.gz"}}), role="configuration")),
+                "source": {"url": FIXTURE_ADDRESSES["archive"]}}), role="configuration")),
     Control("attribution_incomplete", "licence_provenance", "code", "attribution_lacks_file_digest",
             lambda c: c.replaced(payloads=dict(c.payloads) | {"ATTRIBUTION.md": b"# Attribution\n\nNo digests.\n"})),
     Control("licence_text_restrictive", "licence_provenance", "code", "licence_text_unrecognized",

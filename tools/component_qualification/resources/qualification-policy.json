@@ -308,5 +308,9 @@
   "http",
   "ftp"
  ],
- "download_reason": "A download is pinned by its SHA-256; the digest guarantees the bytes whatever the transport, as Homebrew itself accepts for source archives. Measured on September 28, 2026: the figlet recipe's source archive is served over ftp with its SHA-256 and was refused while the rule required https."
+ "download_reason": "A download is pinned by its SHA-256; the digest guarantees the bytes whatever the transport, as Homebrew itself accepts for source archives. Measured on September 28, 2026: the figlet recipe's source archive is served over ftp with its SHA-256 and was refused while the rule required https.",
+ "address_schemes": [
+  "https"
+ ],
+ "address_reason": "A fact source or an upstream copy is pinned by an https address and its SHA-256; a download may use another transport because its digest is checked where it is installed."
 }
