@@ -1,0 +1,60 @@
+{
+  "record_type": "pilot_release_record/v1",
+  "release": 43,
+  "app": "baltor-pilot",
+  "source_revision": "d874a09397ac8def29bbdd140b4960c59d6da6e5",
+  "source_tree": "1c5a3f4ebfa099a91139ef43b3d556785131a1de",
+  "image": "registry.fly.io/baltor-pilot@sha256:1746b97fd5f19a0076144a18bd074f803d8a702c15aa45a51f993e7a0bfc3374",
+  "rollback_release": 42,
+  "rollback_image": "registry.fly.io/baltor-pilot@sha256:7818f73a1d8f53b594b6175adab9338efdc1a63b8cd9abf1e7f14efa7a5b7625",
+  "deployed_at": "2026-09-28T00:23:02Z",
+  "ci_run": 36361405152,
+  "ci_conclusion": "success",
+  "deploy_run": 36361858710,
+  "deploy_workflow": 36361858710,
+  "deploy_workflow_conclusion": "success",
+  "deployment_gate_after": "false",
+  "public_checks_passed": true,
+  "public_hosts_passed": 9,
+  "visitor_pages": 57,
+  "visitor_views": 237,
+  "visitor_links": 351,
+  "visitor_problems": 0,
+  "visitor_screenshots": 114,
+  "catalogue_checks_passed": 9,
+  "catalogue_checks_planned": 9,
+  "service_checks_passed": 19,
+  "service_checks_planned": 19,
+  "service_check_attempts": [
+    {
+      "attempt": 1,
+      "executed": 19,
+      "passed": 19,
+      "outcome": "all passed"
+    }
+  ],
+  "advisory": {
+    "addresses_checked": 135,
+    "addresses_not_200": 0,
+    "pi_extension_files_matching": 9,
+    "pi_extension_files_checked": 9,
+    "detailed_browser_rules_passed": 214,
+    "detailed_browser_rules_total": 216,
+    "detailed_browser_rule_failures": "the same two hero rules as releases 41 and 42, written before the September 26 hero; the rules flexibility audit released here names them"
+  },
+  "changes": [
+    "The catalogue body writers flush only the files they wrote, instead of every disk of the machine, before a release becomes active.",
+    "The public changelog lists release 42.",
+    "The north star says that agents are swappable and that each step's supply comes from Baltor.",
+    "The roadmap carries the owner's goal of one million served harness component files as step S-6.215.",
+    "The records index no longer carries a totals line that changed with every record, and a documentation folder can state its kind in each file.",
+    "The rules flexibility audit and the decisions on the private registry, the front door, the research worker and meta-harnesses are recorded."
+  ],
+  "report_sha256": {
+    "people.log": "1559f402aa3115608c0d1ce894235b1858f03a55854a54900ca8177995e05993",
+    "catalogue-check.json": "0347d4e7d927526a5547fd81497a9605e07f07d0b8cfa79e62d1dac201836189",
+    "service-check.json": "06538293cde9b1a3f5b58563508cebcb024b24aba68feca3af424c9c89d3c4bb",
+    "http-surfaces.tsv": "c6bba302f013a32eb0645854010be8ec69832c8f74c4c693f7b463d76c04e589"
+  },
+  "private_reports": "/home/username/baltor-private/releases/release-43-2026-09-28"
+}

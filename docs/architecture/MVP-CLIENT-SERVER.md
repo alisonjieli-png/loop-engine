@@ -47,17 +47,17 @@ from the newest release record, follow the release record and correct this
 section. Update this section in the same change that records a new release.
 It describes a private pilot. It does not describe a qualified paid service.
 
-The latest deployment is Fly release 42, completed on September 27, 2026 at
-20:51:48 UTC and checked afterwards. It runs
-`f477aa6e9ea64dd9f4e19f6d8bd4744f98845ad2`, the second and third
-consolidation trains of that day. Its image, rollback target, continuous
-integration and checks are recorded in
-[`pilot-release-42.json`](../../artifacts/architecture-audit-2026-09-19/pilot-release-42.json)
-and [the release 42 evidence](../../artifacts/release-42-2026-09-27/README.md).
+The latest deployment is Fly release 43, completed on September 28, 2026 at
+00:23:02 UTC and checked afterwards. It runs
+`d874a09397ac8def29bbdd140b4960c59d6da6e5`, the fourth consolidation train
+of September 27. Its image, rollback target, continuous integration and
+checks are recorded in
+[`pilot-release-43.json`](../../artifacts/architecture-audit-2026-09-19/pilot-release-43.json)
+and [the release 43 evidence](../../artifacts/release-43-2026-09-28/README.md).
 Continuous integration and deployment both succeeded; the deployment gate is
 false. The visitor check found no problem across 57 pages, 237 views and 351
 links on nine hostnames. Catalogue checks passed nine of nine and the hosted
-service check passed nineteen of nineteen. Release 41 is the rollback target.
+service check passed nineteen of nineteen. Release 42 is the rollback target.
 
 Release 40, completed at 05:11:34 UTC the same day from
 `eae7946d836805afc7f0a007eece902c66d7bde6`, is retained as the rollback target;
