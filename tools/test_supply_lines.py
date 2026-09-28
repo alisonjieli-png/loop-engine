@@ -725,6 +725,75 @@ class OpenApiDirectoryTest(unittest.TestCase):
                 passed, _count, output = generator.run_tests(target, operation.module)
                 self.assertTrue(passed, output)
 
+    def test_aws_operations_are_signed_with_the_sdk_metadata_and_pass_the_published_test_vector(self):
+        from supply_lines import openapi_operations as generator
+        region = {"default": "us-east-1", "enum": ["us-east-1", "eu-west-1"]}
+        document = {
+            "openapi": "3.0.0", "info": {"title": "Things", "version": "2020-01-01"},
+            "servers": [{"url": "http://things.{region}.amazonaws.com", "variables": {"region": region}},
+                        {"url": "https://things.{region}.amazonaws.com", "variables": {"region": region}}],
+            "security": [{"hmac": []}],
+            "components": {"securitySchemes": {"hmac": {"type": "apiKey", "name": "Authorization", "in": "header",
+                                                        "x-amazon-apigateway-authtype": "awsSigv4"}},
+                           "parameters": {"X-Amz-Date": {"name": "X-Amz-Date", "in": "header", "schema": {"type": "string"}}}},
+            "paths": {
+                "/#X-Amz-Target=Things_20200101.GetThing": {
+                    "parameters": [{"$ref": "#/components/parameters/X-Amz-Date"}],
+                    "post": {"operationId": "GetThing",
+                             "parameters": [{"name": "X-Amz-Target", "in": "header", "required": True,
+                                             "schema": {"type": "string", "enum": ["Things_20200101.GetThing"]}}],
+                             "requestBody": {"required": True, "content": {"application/json": {"schema": {
+                                 "type": "object", "required": ["Name"], "properties": {"Name": {"type": "string"}}}}}},
+                             "responses": {"200": {"description": "ok", "content": {"application/json": {
+                                 "schema": {"type": "object", "properties": {"Arn": {"type": "string"}}}}}}}}},
+                "/#Action=ListThings": {
+                    "get": {"operationId": "GET_ListThings",
+                            "parameters": [{"name": "MaxResults", "in": "query", "schema": {"type": "integer"}},
+                                           {"name": "Filter", "in": "query", "schema": {"type": "array",
+                                                                                         "items": {"type": "string"}}}],
+                            "responses": {"200": {"description": "ok", "content": {"text/xml": {
+                                "schema": {"type": "object"}}}}}}}}}
+        json_source = {"source_id": "things", "vendor": "things", "credential_prefix": "THINGS", "maximum_operations": 9,
+                       "aws": {"protocol": "json", "json_version": "1.1", "signing_name": "things",
+                               "api_version": "2020-01-01"}}
+        found, refused = generator.operations(document, json_source)
+        self.assertEqual(refused, [])
+        get_thing = next(operation for operation in found if operation.function == "get_thing")
+        self.assertEqual((get_thing.fixed_headers, get_thing.body_media, get_thing.path),
+                         ((("X-Amz-Target", "Things_20200101.GetThing"),), "application/x-amz-json-1.1", "/"))
+        self.assertEqual([parameter.wire for parameter in get_thing.parameters], [])
+        self.assertEqual((get_thing.base_url_template, get_thing.region_default),
+                         ("https://things.{region}.amazonaws.com", "us-east-1"))
+        self.assertEqual(get_thing.auth["service"], "things")
+        list_things = next(operation for operation in found if operation.function == "get_list_things")
+        # The query protocol numbers list members; this client leaves an optional list out instead of sending it wrong.
+        self.assertEqual([parameter.wire for parameter in list_things.parameters], ["MaxResults"])
+        self.assertEqual(list_things.fixed_query, (("Action", "ListThings"), ("Version", "2020-01-01")))
+        with tempfile.TemporaryDirectory() as folder:
+            for operation in found:
+                target = Path(folder) / operation.module
+                target.mkdir()
+                client = generator.client_source(operation, SPEC_FACTS)
+                (target / f"{operation.module}.py").write_text(client, encoding="utf-8")
+                source = generator.test_source(operation, generator._example_arguments(operation),
+                                               generator._response_example(operation))
+                self.assertIn("test_the_signature_matches_the_aws_test_vector", source)
+                (target / f"test_{operation.module}.py").write_text(source, encoding="utf-8")
+                passed, _count, output = generator.run_tests(target, operation.module)
+                self.assertTrue(passed, output)
+            # Known wrong: a signer with a wrong key derivation fails the published test vector.
+            broken = client.replace('for part in (date, region, service, "aws4_request"):',
+                                    'for part in (date, service, region, "aws4_request"):')
+            self.assertNotEqual(broken, client)
+            (target / f"{operation.module}.py").write_text(broken, encoding="utf-8")
+            self.assertFalse(generator.run_tests(target, operation.module)[0])
+        # Without the SDK metadata, or for S3, a signing scheme is still refused.
+        _found, refused = generator.operations(document, {**json_source, "aws": {}})
+        self.assertEqual({row["reason"] for row in refused}, {"security_scheme_unsupported"})
+        _found, refused = generator.operations(document, {**json_source, "aws": {**json_source["aws"],
+                                                                                 "signing_name": "s3"}})
+        self.assertEqual({row["reason"] for row in refused}, {"security_scheme_unsupported"})
+
     def test_a_request_signing_scheme_is_refused_by_name(self):
         from supply_lines import openapi_operations as generator
         document = {"openapi": "3.0.0", "info": {"title": "AWS", "version": "1"},

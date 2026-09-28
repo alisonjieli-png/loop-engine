@@ -65,6 +65,12 @@ JSON_MEDIA = "application/json"
 FORM_MEDIA = "application/x-www-form-urlencoded"
 DIRECTORY_BASIS = "specification_info_license_declaration"
 ORIGIN_BASIS = "origin_repository_licence_interface_and_text_agree"
+#: AWS specifications of the directory are converted from the AWS SDK for JavaScript's models; the model's
+#: metadata (protocol, JSON version, signing name, API version) is read from that repository at a pinned commit.
+AWS_PROVIDER = "amazonaws.com"
+AWS_SDK_REPOSITORY = "aws/aws-sdk-js"
+AWS_SDK_BRANCH = "master"
+_AWS_MODEL = re.compile(r"https://raw\.githubusercontent\.com/aws/aws-sdk-js/[^/]+/(apis/[A-Za-z0-9._-]+)\.normal\.json\Z")
 
 
 # -- licences ------------------------------------------------------------------------------------------------------
@@ -237,6 +243,36 @@ def swagger2_to_openapi3(document: dict) -> dict:
 
 
 # -- the line -------------------------------------------------------------------------------------------------------
+def aws_metadata(reader, info: dict, cache: dict) -> "tuple | None":
+    """(the AWS SDK model's metadata for signing, its pinned file, the SDK licence) of an AWS specification."""
+    origins = info.get("x-origin") if isinstance(info, dict) else None
+    model = None
+    for origin in origins if isinstance(origins, list) else []:
+        match = _AWS_MODEL.match(str((origin or {}).get("url") or "")) if isinstance(origin, dict) else None
+        if match:
+            model = match.group(1) + ".min.json"
+    if model is None:
+        return None
+    if "licence" not in cache:
+        facts = reader.repository_facts([AWS_SDK_REPOSITORY]).get(AWS_SDK_REPOSITORY.lower()) or {}
+        commit = (((facts.get("defaultBranchRef") or {}).get("target")) or {}).get("oid")
+        cache["commit"] = commit
+        cache["licence"] = repository_licence(reader, AWS_SDK_REPOSITORY, commit) if commit else None
+    licence = cache["licence"]
+    if licence is None or not licence.allowed:
+        return None
+    try:
+        pinned = reader.pinned_file(AWS_SDK_REPOSITORY, cache["commit"], model)
+        metadata = json.loads(pinned["bytes"]).get("metadata") or {}
+    except (LookupError, ValueError):
+        return None
+    signing = metadata.get("signingName") or metadata.get("endpointPrefix")
+    if not signing or str(metadata.get("signatureVersion", "v4")) not in ("v4", "s3v4"):
+        return None
+    return ({"protocol": metadata.get("protocol"), "json_version": metadata.get("jsonVersion"),
+             "signing_name": signing, "api_version": metadata.get("apiVersion")}, pinned, licence)
+
+
 def vendor_of(name: str) -> str:
     """A lower-case identifier for one API of the directory, for module and variable names."""
     provider, _, service = name.partition(":")
@@ -259,7 +295,7 @@ def generate(reader, *, code_revision: str, licence_text: bytes, generated_on: s
     directory, listing = read_directory(reader)
     facts = {listing.sha256: listing.body}
     texts = LicenceTexts(reader)
-    origins, decisions, built, refused, summary = {}, [], [], [], Counter()
+    origins, decisions, built, refused, summary, aws_cache = {}, [], [], [], Counter(), {}
     generator = {"identity": "tools/supply_lines/openapi_directory.py", "version": "1.0.0",
                  "code_revision": code_revision}
     names = sorted(directory)
@@ -298,6 +334,16 @@ def generate(reader, *, code_revision: str, licence_text: bytes, generated_on: s
         vendor = vendor_of(name)
         source = {"source_id": name, "vendor": vendor, "credential_prefix": vendor.upper(),
                   "maximum_operations": maximum_operations}
+        aws_facts = []
+        if name.split(":")[0] == AWS_PROVIDER:
+            found_aws = aws_metadata(reader, info, aws_cache)
+            if found_aws is not None:
+                source["aws"], pinned, sdk_licence = found_aws
+                facts[pinned["sha256"]] = pinned["bytes"]
+                aws_facts.append(fact_source(pinned["url"], pinned["retrieved_at"], pinned["sha256"],
+                                             len(pinned["bytes"]), "repository_facts", spdx=sdk_licence.spdx,
+                                             basis="aws_sdk_model_metadata_at_the_pinned_commit",
+                                             evidence_sha256=sdk_licence.sha256))
         licence = decision["licence"]
         origin = decision.get("origin_repository")
         path = url.split(f"{DIRECTORY_HOST}/", 1)[-1]
@@ -311,7 +357,7 @@ def generate(reader, *, code_revision: str, licence_text: bytes, generated_on: s
                                        else "licence_text_from_choosealicense_at_the_pinned_commit"),
                 "extra_facts": [fact_source(listing.url, listing.retrieved_at, listing.sha256, len(listing.body),
                                             "registry_entry", spdx=DIRECTORY_LICENCE,
-                                            basis="directory_list_of_apis_guru")]}
+                                            basis="directory_list_of_apis_guru")] + aws_facts}
         if origin:
             spec["origin_repository"] = origin
         found, refusals = operations(document, source)

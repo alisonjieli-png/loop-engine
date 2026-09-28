@@ -52,7 +52,7 @@ from .records import (
     BLOCKED_BY_STATIC_CHECK, GENERATED_CODE_LICENCE, GENERATED_TEST_FAILED, LICENCE_TEXT, OPENAPI_OPERATIONS,
     PACKAGE_ABOVE_REVIEW_BOUND, REFUSAL_REASONS, SupplyRecordError, fact_source, provenance, refusal, upstream_key)
 
-GENERATOR_VERSION = "1.2.1"
+GENERATOR_VERSION = "1.3.0"
 #: What the first success answer holds: JSON, text, other bytes, or nothing.
 JSON_ANSWER, TEXT_ANSWER, BINARY_ANSWER, NO_ANSWER = "json", "text", "binary", "empty"
 #: Refusal codes a package build may raise that the line keeps as they are; any other means its tests failed.
@@ -369,6 +369,12 @@ class Operation:
     fixed_query: tuple = ()
     #: The path key as the specification writes it, when it differs from the path sent (a query or a fragment).
     path_key: str = ""
+    #: Headers sent on every call (an AWS JSON target), the body's media type, and a server address template
+    #: whose region the caller chooses, with the region used when the caller names none.
+    fixed_headers: tuple = ()
+    body_media: str = "application/json"
+    base_url_template: str = ""
+    region_default: str = ""
 
 
 def snake(value: str) -> str:
@@ -411,6 +417,27 @@ def _json_content(content) -> "tuple | None":
     return None
 
 
+JSON_MEDIA_TYPE = "application/json"
+REGION_VARIABLE = "region"
+
+
+def _region_template(servers) -> tuple:
+    """(address template with {region}, default region) of the first HTTPS server that names a region variable."""
+    for server in servers or ():
+        if not isinstance(server, dict) or not isinstance(server.get("url"), str) or not is_https(server["url"]):
+            continue
+        variables = server.get("variables") or {}
+        region = variables.get(REGION_VARIABLE) if isinstance(variables, dict) else None
+        if isinstance(region, dict) and "default" in region:
+            template = server["url"]
+            for name, variable in variables.items():
+                if name != REGION_VARIABLE and isinstance(variable, dict) and "default" in variable:
+                    template = template.replace("{" + name + "}", str(variable["default"]))
+            if re.fullmatch(r"[^{}]*\{region\}[^{}]*", template):
+                return template.rstrip("/"), str(region["default"])
+    return "", ""
+
+
 def _server(servers) -> str:
     for server in servers or ():
         if not isinstance(server, dict) or not isinstance(server.get("url"), str):
@@ -431,6 +458,22 @@ HTTP_SCHEME_TYPE, API_KEY_SCHEME_TYPE = "http", "apiKey"
 DECLARED_SCHEME = "declared_in_openapi_sources"
 #: The extension prefix AWS specifications use to mark a request-signing scheme (awsSigv4).
 SIGNATURE_EXTENSION_PREFIX = "x-amazon-apigateway-authtype"
+#: Where an AWS Signature Version 4 credential goes: nowhere as it is; the client signs each request with it.
+SIGV4_PLACEMENT = "aws_sigv4"
+#: The standard environment variables of AWS credentials, named once (names, never values).
+AWS_CREDENTIAL_VARIABLES = {"variable": "AWS_ACCESS_KEY_ID", "secret_variable": "AWS_SECRET_ACCESS_KEY",
+                            "token_variable": "AWS_SESSION_TOKEN"}
+#: The request headers an AWS specification declares for signing; the signer sets them, so no caller passes them.
+AWS_SIGNING_PARAMETERS = frozenset({"x-amz-content-sha256", "x-amz-date", "x-amz-algorithm", "x-amz-credential",
+                                    "x-amz-security-token", "x-amz-signature", "x-amz-signedheaders"})
+#: AWS protocols whose requests this client can write, and the signing names it does not sign for (S3 needs a
+#: payload hash header and single path encoding).
+AWS_PROTOCOLS = ("json", "rest-json", "query", "ec2", "rest-xml")
+AWS_UNSIGNABLE_SERVICES = frozenset({"s3", "s3-outposts", "s3-object-lambda", "s3express"})
+AWS_TARGET_HEADER = "X-Amz-Target"
+AWS_ACTION = "Action"
+AWS_VERSION = "Version"
+AWS_QUERY_PROTOCOLS = ("query", "ec2")
 _BEARER = {"placement": "header", "name": "Authorization", "prefix": "Bearer "}
 SCHEME_PLACEMENTS = {
     (HTTP_SCHEME_TYPE, "bearer"): _BEARER, ("oauth2", ""): _BEARER, ("openIdConnect", ""): _BEARER,
@@ -479,8 +522,14 @@ def _auth(document: dict, requirements, source: dict) -> tuple:
             continue
         kind = scheme.get("type")
         if any(str(field).startswith(SIGNATURE_EXTENSION_PREFIX) for field in scheme):
-            # A request-signing scheme (AWS Signature Version 4) cannot be met by sending a stored credential.
-            raise OperationRefused("security_scheme_unsupported", f"security scheme {name} signs each request")
+            # A request-signing scheme (AWS Signature Version 4): the client signs each request when the AWS SDK's
+            # published metadata names the service's protocol and signing name; otherwise it is refused.
+            aws = source.get("aws") or {}
+            if aws.get("protocol") not in AWS_PROTOCOLS or not aws.get("signing_name") or \
+                    aws["signing_name"] in AWS_UNSIGNABLE_SERVICES:
+                raise OperationRefused("security_scheme_unsupported", f"security scheme {name} signs each request")
+            return {"scheme": name, "placement": SIGV4_PLACEMENT, "name": "Authorization", "prefix": "",
+                    **AWS_CREDENTIAL_VARIABLES, "service": aws["signing_name"]}, optional
         key = (kind, str(scheme.get("scheme", "")).lower() if kind == HTTP_SCHEME_TYPE else
                str(scheme.get("in", "")) if kind == API_KEY_SCHEME_TYPE else "")
         variable = (source.get("scheme_variables") or {}).get(name) or credential_variable(source, key)
@@ -518,17 +567,41 @@ def operations(document: dict, source: dict) -> tuple:
     return found, refused
 
 
+def _aws_fragment(path: str, aws: dict) -> tuple:
+    """(fixed headers, fixed query) an AWS path key's fragment names: #X-Amz-Target=... or #Action=...."""
+    fragment = path.partition("#")[2]
+    name, _separator, value = fragment.partition("=")
+    if not value:
+        return (), ()
+    if name == AWS_TARGET_HEADER:
+        return ((AWS_TARGET_HEADER, value),), ()
+    if name == AWS_ACTION and aws.get("api_version"):
+        return (), ((AWS_ACTION, value), (AWS_VERSION, aws["api_version"]))
+    return (), ()
+
+
 def _operation(document, resolver, source, path, method, item, node, top_servers) -> Operation:
     operation_id = str(node.get("operationId") or "").strip() or f"{method}_{path}"
     function = snake(operation_id)
     module = f"{source['vendor']}_{function}"[:80]
     if not re.fullmatch(r"[a-z_][a-z0-9_]*", module):
         raise OperationRefused("operation_identity_missing", operation_id)
+    auth, auth_optional = _auth(document, node.get("security"), source)
+    signs = bool(auth and auth["placement"] == SIGV4_PLACEMENT)
+    aws = source.get("aws") or {} if signs else {}
+    fixed_headers, aws_query = _aws_fragment(path, aws) if signs else ((), ())
+    fixed_names = {name.lower() for name, _value in fixed_headers}
+    # The query protocol is the API's (AWS metadata) or the operation's own (its path key names an Action).
+    query_protocol = signs and (aws.get("protocol") in AWS_QUERY_PROTOCOLS or bool(aws_query))
     merged = {}
     for raw in list(item.get("parameters") or []) + list(node.get("parameters") or []):
         parameter = resolver.follow(raw)
         if not isinstance(parameter, dict) or not isinstance(parameter.get("name"), str):
             raise OperationRefused("operation_parameters_unsupported", "a parameter without a name")
+        lowered = parameter["name"].lower()
+        if signs and (lowered in AWS_SIGNING_PARAMETERS or lowered in fixed_names or
+                      (parameter.get("in") == "query" and parameter["name"] in (AWS_ACTION, AWS_VERSION) and aws_query)):
+            continue  # the signer or the path key's fragment supplies it
         merged[(parameter["name"], parameter.get("in"))] = parameter
     parameters, pythons = [], set(RESERVED)
     for (name, location), parameter in merged.items():
@@ -543,9 +616,12 @@ def _operation(document, resolver, source, path, method, item, node, top_servers
             raise OperationRefused("operation_parameters_unsupported", f"parameter {name} with a content map")
         schema = resolver.schema(parameter.get("schema") or {})
         check = check_schema(schema)
-        if location == "query" and "object" in check.get("type", []):
+        if location == "query" and "object" in check.get("type", []) or (
+                query_protocol and location == "query" and "array" in check.get("type", [])):
+            # An object in the query, or a list in the AWS query protocol (which numbers each member), is not
+            # written by this client: an optional one is left out, a required one refuses the operation.
             if required:
-                raise OperationRefused("operation_parameters_unsupported", f"object in the query: {name}")
+                raise OperationRefused("operation_parameters_unsupported", f"object or list in the query: {name}")
             continue
         python = snake(name)
         while python in pythons:
@@ -560,7 +636,7 @@ def _operation(document, resolver, source, path, method, item, node, top_servers
     # fixed query into the path key (/responses?beta=true). Neither belongs to the path that is sent: a fragment
     # is never sent, and a fixed query travels as query items on every call.
     sent_path, _separator, fixed_text = path.partition("#")[0].partition("?")
-    fixed = urllib.parse.parse_qsl(fixed_text, keep_blank_values=True)
+    fixed = urllib.parse.parse_qsl(fixed_text, keep_blank_values=True) + list(aws_query)
     placeholders = re.findall(r"{([^}]+)}", sent_path)
     declared = {parameter.wire for parameter in parameters if parameter.location == "path"}
     if set(placeholders) - declared:
@@ -569,7 +645,10 @@ def _operation(document, resolver, source, path, method, item, node, top_servers
     operation = Operation(method.upper(), sent_path, operation_id, function, module, _description(node)[:300],
                           re.sub(r"\s+", " ", str(node.get("description") or ""))[:600], parameters,
                           deprecated=bool(node.get("deprecated")), fixed_query=tuple(fixed),
-                          path_key=path if path != sent_path else "")
+                          path_key=path if path != sent_path else "", fixed_headers=tuple(fixed_headers),
+                          body_media=(f"application/x-amz-json-{aws['json_version']}"
+                                      if signs and aws.get("protocol") == "json" and aws.get("json_version")
+                                      else JSON_MEDIA_TYPE))
     body = node.get("requestBody")
     if body is not None:
         body = resolver.follow(body)
@@ -601,10 +680,13 @@ def _operation(document, resolver, source, path, method, item, node, top_servers
         if str(code).isdigit() and int(code) >= 400:
             response = resolver.follow(response) if isinstance(response, dict) else {}
             operation.errors[int(code)] = re.sub(r"\s+", " ", str(response.get("description") or ""))[:160]
-    operation.base_url = _server(node.get("servers") or item.get("servers") or top_servers)
+    servers = node.get("servers") or item.get("servers") or top_servers
+    operation.base_url = _server(servers)
     if not operation.base_url:
         raise OperationRefused("operation_parameters_unsupported", "no HTTPS server")
-    operation.auth, operation.auth_optional = _auth(document, node.get("security"), source)
+    if signs:
+        operation.base_url_template, operation.region_default = _region_template(servers)
+    operation.auth, operation.auth_optional = auth, auth_optional
     return operation
 
 
@@ -667,6 +749,11 @@ def _text(value):
     return ("true" if value else "false") if isinstance(value, bool) else str(value)
 
 
+def _region():
+    """The region the caller names in AWS_REGION (or AWS_DEFAULT_REGION), else the specification's default."""
+    return os.environ.get("AWS_REGION") or os.environ.get("AWS_DEFAULT_REGION") or REGION_DEFAULT
+
+
 def _send(request, timeout):
     """Send the request over HTTPS and return (status, content type, bytes), error answers included."""
     try:
@@ -688,7 +775,7 @@ def _decode(content_type, payload):
 
 def _call(arguments, body, base_url, timeout, transport):
     path, query = OPERATION["path"], list(FIXED_QUERY)
-    headers = {"Accept": "application/json", "User-Agent": USER_AGENT}
+    headers = {"Accept": "application/json", "User-Agent": USER_AGENT, **dict(FIXED_HEADERS)}
     for python_name, wire_name, location, _required, _schema in PARAMETERS:
         value = arguments[python_name]
         if value is None:
@@ -700,15 +787,17 @@ def _call(arguments, body, base_url, timeout, transport):
             query += [(wire_name, _text(item)) for item in items]
         else:
             headers[wire_name] = _text(value)
-    root = (base_url or os.environ.get(BASE_URL_VARIABLE) or BASE_URL).rstrip("/")
+    root = (base_url or os.environ.get(BASE_URL_VARIABLE) or
+            (BASE_URL_TEMPLATE.format(region=_region()) if BASE_URL_TEMPLATE else BASE_URL)).rstrip("/")
     if not root.startswith("https://"):
         raise ValueError("the API address must be an HTTPS address")
 # AUTH
     data = None
     if body is not None:
         data = json.dumps(body).encode("utf-8")
-        headers["Content-Type"] = "application/json"
+        headers["Content-Type"] = BODY_MEDIA
     url = root + path + ("?" + urllib.parse.urlencode(query) if query else "")
+# SIGN
     request = urllib.request.Request(url, data=data, method=OPERATION["method"], headers=headers)
     status, content_type, payload = (transport or _send)(request, timeout)
     try:
@@ -734,9 +823,51 @@ AUTH_BLOCK = ('    credential = os.environ.get(AUTH["variable"], "")\n'
               '                              + OPERATION["operation_id"])\n')
 
 
+#: The AWS Signature Version 4 signer written into a client whose operation signs each request. It is checked
+#: against AWS's published test vector (get-vanilla) in every generated test.
+SIGNER = '''
+
+def _signature_headers(method, url, headers, payload, access_key, secret_key, token, region, service, amz_date):
+    """The headers AWS Signature Version 4 adds to one request: X-Amz-Date, the session token and Authorization."""
+    parts = urllib.parse.urlsplit(url)
+    signed = {name.lower(): " ".join(str(value).split()) for name, value in headers.items()}
+    signed["host"] = parts.netloc
+    signed["x-amz-date"] = amz_date
+    if token:
+        signed["x-amz-security-token"] = token
+    names = sorted(signed)
+    pairs = sorted(urllib.parse.parse_qsl(parts.query, keep_blank_values=True))
+    canonical_query = "&".join(urllib.parse.quote(key, safe="-_.~") + "=" + urllib.parse.quote(value, safe="-_.~")
+                               for key, value in pairs)
+    canonical = "\\n".join([method, urllib.parse.quote(parts.path or "/", safe="/-_.~"), canonical_query,
+                           "".join(name + ":" + signed[name] + "\\n" for name in names), ";".join(names),
+                           hashlib.sha256(payload or b"").hexdigest()])
+    date = amz_date[:8]
+    scope = date + "/" + region + "/" + service + "/aws4_request"
+    to_sign = "\\n".join(["AWS4-HMAC-SHA256", amz_date, scope, hashlib.sha256(canonical.encode("utf-8")).hexdigest()])
+    key = ("AWS4" + secret_key).encode("utf-8")
+    for part in (date, region, service, "aws4_request"):
+        key = hmac.new(key, part.encode("utf-8"), hashlib.sha256).digest()
+    signature = hmac.new(key, to_sign.encode("utf-8"), hashlib.sha256).hexdigest()
+    added = {"X-Amz-Date": amz_date, "Authorization": "AWS4-HMAC-SHA256 Credential=" + access_key + "/" + scope +
+             ", SignedHeaders=" + ";".join(names) + ", Signature=" + signature}
+    if token:
+        added["X-Amz-Security-Token"] = token
+    return added
+'''
+#: The lines of _call that sign the request, for an operation whose security scheme is AWS Signature Version 4.
+SIGN_BLOCK = ('    access_key, secret_key = os.environ.get(AUTH["variable"], ""), os.environ.get(AUTH["secret_variable"], "")\n'
+              '    if not access_key or not secret_key:\n'
+              '        raise PermissionError("set " + AUTH["variable"] + " and " + AUTH["secret_variable"] + " to call "\n'
+              '                              + OPERATION["operation_id"])\n'
+              '    headers.update(_signature_headers(OPERATION["method"], url, headers, data, access_key, secret_key,\n'
+              '                                      os.environ.get(AUTH["token_variable"], ""), _region(),\n'
+              '                                      AUTH["service"], time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())))\n')
+
+
 def auth_block(auth: "dict | None") -> str:
     """The lines of _call that place the credential, for this operation's one security scheme only."""
-    if auth is None:
+    if auth is None or auth["placement"] == SIGV4_PLACEMENT:
         return ""
     return AUTH_BLOCK.replace("PLACE", AUTH_PLACEMENTS[auth["placement"]])
 
@@ -797,14 +928,24 @@ def client_source(operation: Operation, spec: dict) -> str:
                                  f"{spec['repository']}@{spec['commit'][:12]} ({spec['path']}); see README.md and "
                                  "schema.json.", width=110))
     header = '"""' + header + '\n"""\n'
-    imports = ["from __future__ import annotations", "", *(["import base64"] if uses_basic else []), "import json",
-               "import os", "import urllib.error", "import urllib.parse", "import urllib.request", ""]
-    runtime = RUNTIME.replace("# AUTH\n", auth_block(operation.auth))
+    signs = bool(operation.auth and operation.auth["placement"] == SIGV4_PLACEMENT)
+    imports = ["from __future__ import annotations", "", *(["import base64"] if uses_basic else []),
+               *(["import hashlib", "import hmac"] if signs else []), "import json", "import os",
+               *(["import time"] if signs else []), "import urllib.error", "import urllib.parse", "import urllib.request",
+               ""]
+    signs = bool(operation.auth and operation.auth["placement"] == SIGV4_PLACEMENT)
+    runtime = RUNTIME.replace("# AUTH\n", auth_block(operation.auth)).replace("# SIGN\n", SIGN_BLOCK if signs else "")
+    if signs:
+        runtime += SIGNER
     constants = [
         f'OPERATION = {literal({"method": operation.method, "path": operation.path, "operation_id": operation.operation_id})}',
         f"BASE_URL = {operation.base_url!r}", f"BASE_URL_VARIABLE = {spec['base_url_variable']!r}",
         "#: Query items the specification writes into this operation's path key; sent on every call.",
         f"FIXED_QUERY = {literal(operation.fixed_query)}",
+        f"FIXED_HEADERS = {literal(operation.fixed_headers)}",
+        f"BODY_MEDIA = {operation.body_media!r}",
+        f"BASE_URL_TEMPLATE = {operation.base_url_template!r}",
+        f"REGION_DEFAULT = {operation.region_default!r}",
         f"USER_AGENT = {USER_AGENT!r}",
         f"AUTH = {literal(operation.auth)}", f"AUTH_OPTIONAL = {operation.auth_optional!r}",
         "#: (python name, wire name, location, required, checked schema) of every parameter.",
@@ -916,6 +1057,15 @@ def test_source(operation: Operation, call: dict, example) -> str:
     elif auth and auth["placement"] == "query":
         tests[-1] += f'''
         self.assertIn(({auth["name"]!r}, "test-credential"), urllib.parse.parse_qsl(address.query))'''
+    elif auth and auth["placement"] == SIGV4_PLACEMENT:
+        tests[-1] += f'''
+        authorization = request.headers.get("Authorization")
+        self.assertTrue(authorization.startswith("AWS4-HMAC-SHA256 Credential=test-credential/"), authorization)
+        self.assertIn("/{auth["service"]}/aws4_request, SignedHeaders=", authorization)
+        self.assertRegex(request.headers.get("X-amz-date"), "^[0-9]{{8}}T[0-9]{{6}}Z$")'''
+    for name, value in operation.fixed_headers:
+        tests[-1] += f'''
+        self.assertEqual(request.headers.get({name.capitalize()!r}), {value!r})'''
     for parameter in required:
         if parameter.location == "query":
             tests[-1] += f'''
@@ -978,7 +1128,17 @@ def test_source(operation: Operation, call: dict, example) -> str:
         with self.assertRaises(ValueError):
             client.{operation.function}(**CALL, base_url="http://example.com", transport=mock)
         self.assertEqual(mock.requests, [])''')
-    variables = [auth["variable"]] if auth else []
+    variables = ([auth["variable"]] + ([auth["secret_variable"]] if auth.get("secret_variable") else [])) if auth else []
+    if auth and auth["placement"] == SIGV4_PLACEMENT:
+        tests.append('''
+    def test_the_signature_matches_the_aws_test_vector(self):
+        headers = client._signature_headers(
+            "GET", "https://example.amazonaws.com/", {}, b"", "AKIDEXAMPLE", "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY",
+            "", "us-east-1", "service", "20150830T123600Z")
+        self.assertEqual(headers["Authorization"],
+                         "AWS4-HMAC-SHA256 Credential=AKIDEXAMPLE/20150830/us-east-1/service/aws4_request, "
+                         "SignedHeaders=host;x-amz-date, "
+                         "Signature=5fa00fa31553b73ebf1942676e86291e8372ff2a2260956d9b8aae1d763fbf31")''')
     class_name = "".join(part.capitalize() for part in operation.function.split("_") if part)[:60] + "Test"
     return (f'"""Offline tests of {operation.function}.\n\nA local mock of the API answers with the specification\'s '
             'example, and known-wrong calls\nmust send nothing or raise.\n"""\n'
@@ -1075,7 +1235,10 @@ python -m unittest test_{operation.module}
 def run_tests(folder: Path, module: str) -> tuple:
     """(passed, tests run, tail of the output) of one package's generated tests, in this process, network closed."""
     saved_path, saved_modules = list(sys.path), set(sys.modules)
-    saved_open = urllib.request.urlopen
+    saved_open, saved_bytecode = urllib.request.urlopen, sys.dont_write_bytecode
+    # No compiled copy is written or reused: a rewritten file of the same size within the same second would
+    # otherwise load its earlier compiled copy.
+    sys.dont_write_bytecode = True
 
     def closed(*_arguments, **_options):
         raise RuntimeError("the network is closed while generated tests run")
@@ -1094,6 +1257,7 @@ def run_tests(folder: Path, module: str) -> tuple:
         return False, 0, f"{type(error).__name__}: {error}"[:800]
     finally:
         urllib.request.urlopen = saved_open
+        sys.dont_write_bytecode = saved_bytecode
         sys.path[:] = saved_path
         for name in set(sys.modules) - saved_modules:
             del sys.modules[name]
