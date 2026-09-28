@@ -149,6 +149,18 @@ class SummaryTests(unittest.TestCase):
         self.assertNotIn("skipped them", text)
         self.assertIn("equivalent to CI", last)
 
+    def test_known_wrong_an_interpreter_without_the_dependencies_is_a_gap_and_a_missing_module_is_named(self):
+        self.workflow.write_text(WORKFLOW.replace('"3.10", "3.11", "3.12"', '"3.12"'), encoding="utf-8")
+        self.write(results=[(1, 2, "benchmark-registry")],
+                   logs={"benchmark-registry": "ModuleNotFoundError: No module named 'jsonschema'\n"})
+        (self.folder / "environment.txt").write_text("PY is not set and no .venv was found, so the gates ran on "
+                                                     "/usr/bin/python3\n", encoding="utf-8")
+        text, last, status = self.run_summary(python="3.12")
+        self.assertEqual(status, 1, "a missing module stays a failure: a change can import one nobody installs")
+        self.assertIn(summary.MISSING_MODULE_HINT, text)
+        self.assertIn("  - PY is not set and no .venv was found, so the gates ran on /usr/bin/python3", text)
+        self.assertIn("NOT EQUIVALENT TO CI (1 skipped in this run", last)
+
     def test_an_unreadable_workflow_is_a_gap_not_silence(self):
         self.write(results=[(0, 12, "self-test")])
         _text, last, _status = self.run_summary(python="3.12", workflow=self.folder / "absent.yml")
@@ -216,6 +228,113 @@ class ShimTests(unittest.TestCase):
         row = next(line for line in output.splitlines() if "benchmark-registry" in line and "exit 127" in line)
         self.assertIn(summary.NOT_FOUND_NOTE, row)
         self.assertEqual(row.split()[0], "----", "the status column says neither pass nor FAIL")
+
+
+class InterpreterTests(unittest.TestCase):
+    """Which interpreter the script finds when PY is not set: a worktree uses its repository's checkout's .venv."""
+
+    IDENTITY = {"GIT_AUTHOR_NAME": "Pre-push test", "GIT_AUTHOR_EMAIL": "pre-push@example.invalid",
+                "GIT_COMMITTER_NAME": "Pre-push test", "GIT_COMMITTER_EMAIL": "pre-push@example.invalid",
+                "GIT_CONFIG_NOSYSTEM": "1"}
+
+    def setUp(self):
+        missing = [name for name in SCRIPT_COMMANDS if not shutil.which(name)]
+        if missing:
+            self.skipTest(f"this machine lacks {', '.join(missing)}")
+        holder = tempfile.TemporaryDirectory(prefix="pre-push-interpreter-")
+        self.addCleanup(holder.cleanup)
+        self.home = Path(holder.name)
+        self.bin = self.home / "bin"
+        self.bin.mkdir()
+        for name in SCRIPT_COMMANDS:
+            os.symlink(shutil.which(name), self.bin / name)
+        # The checkout that holds the repository, with a .venv, and a worktree of it without one.
+        self.main = self.home / "main"
+        (self.main / ".github" / "workflows").mkdir(parents=True)
+        (self.main / ".github" / "workflows" / "ci.yml").write_text(SCRATCH_WORKFLOW, encoding="utf-8")
+        (self.main / "tools").mkdir()
+        for name in ("run_test_shard.py", "ci_test_shards.json", "pre_push_summary.py", "pre_push_check.sh"):
+            shutil.copy2(ROOT / "tools" / name, self.main / "tools" / name)
+        self.git(self.main, "init", "-q")
+        self.git(self.main, "add", "-A")
+        self.git(self.main, "commit", "-q", "-m", "scratch")
+        self.venv_python = self.main / ".venv" / "bin" / "python"
+        self.venv_python.parent.mkdir(parents=True)
+        self.venv_python.write_text(f'#!/bin/sh\nexec "{sys.executable}" "$@"\n', encoding="utf-8")
+        self.venv_python.chmod(0o755)
+        self.worktree = self.home / "worktree"
+        self.git(self.main, "worktree", "add", "-q", "--detach", str(self.worktree), "HEAD")
+
+    def git(self, where: Path, *args) -> None:
+        subprocess.run(["git", "-C", str(where), *args], check=True, capture_output=True,
+                       env={**os.environ, **self.IDENTITY})
+
+    def run_script(self, script: Path, tree: Path, extra_path=()):
+        home = self.home / f"user-{script.stem}-{tree.name}"
+        home.mkdir(exist_ok=True)
+        environment = {"PATH": os.pathsep.join([*map(str, extra_path), str(self.bin)]), "HOME": str(home),
+                       "LANG": "C.UTF-8", "GIT_CEILING_DIRECTORIES": str(self.home)}
+        completed = subprocess.run([str(self.bin / "bash"), str(script), "--tree", str(tree), "--only",
+                                    "benchmark-registry"], env=environment, capture_output=True, text=True,
+                                   timeout=300, check=False)
+        shims = list(home.glob(".le-ci-tmp/pre-push/*/bin/python"))
+        return completed.returncode, completed.stdout + completed.stderr, shims
+
+    def test_a_worktree_without_a_venv_uses_its_checkout_venv(self):
+        status, output, shims = self.run_script(self.worktree / "tools" / "pre_push_check.sh", self.worktree)
+        self.assertEqual(status, 0, output)
+        self.assertEqual(len(shims), 1, output)
+        self.assertIn(str(self.venv_python), shims[0].read_text(encoding="utf-8"))
+        self.assertNotIn("PY is not set", output)
+
+    def test_known_wrong_without_the_checkout_venv_a_worktree_finds_no_python(self):
+        text = (self.worktree / "tools" / "pre_push_check.sh").read_text(encoding="utf-8")
+        marker = '  if [ -n "$common" ] && [ -x "$(dirname "$common")/.venv/bin/python" ]; then'
+        self.assertIn(marker, text)
+        script = self.home / "without-checkout-venv.sh"
+        script.write_text(text.replace(marker, "  if false; then", 1), encoding="utf-8")
+        status, output, _shims = self.run_script(script, self.worktree)
+        self.assertEqual(status, 2, output)
+        self.assertIn("no Python found; set PY", output)
+
+    def test_a_bare_python3_is_reported_as_a_gap_of_the_run(self):
+        # A tree outside any repository, and python3 alone on PATH: the fallback of a machine without a .venv.
+        tree = self.home / "plain"
+        shutil.copytree(self.main / "tools", tree / "tools")
+        shutil.copytree(self.main / ".github", tree / ".github")
+        interpreter = self.home / "system" / "python3"
+        interpreter.parent.mkdir()
+        interpreter.write_text(f'#!/bin/sh\nexec "{sys.executable}" "$@"\n', encoding="utf-8")
+        interpreter.chmod(0o755)
+        status, output, _shims = self.run_script(tree / "tools" / "pre_push_check.sh", tree,
+                                                 extra_path=(interpreter.parent,))
+        self.assertEqual(status, 0, output)
+        self.assertIn(f"  - PY is not set and no .venv was found, so the gates ran on {interpreter}", output)
+
+    def test_known_wrong_a_system_managed_interpreter_is_not_asked_to_install(self):
+        # An interpreter that has pip but refuses installs, as a system python3 does under PEP 668: the copied
+        # step's install line must be left out, not run and failed.
+        tree = self.home / "managed"
+        shutil.copytree(self.main / "tools", tree / "tools")
+        (tree / ".github" / "workflows").mkdir(parents=True)
+        (tree / ".github" / "workflows" / "ci.yml").write_text(SCRATCH_WORKFLOW.replace(
+            "          python -c", "          python -m pip install PyYAML jsonschema\n          python -c"),
+            encoding="utf-8")
+        interpreter = self.home / "managed-python" / "python3"
+        interpreter.parent.mkdir()
+        interpreter.write_text(
+            "#!/bin/sh\n"
+            'case "$*" in\n'
+            '  "-m pip --version") echo "pip 99 (system)"; exit 0 ;;\n'
+            '  "-m pip install"*) echo "error: externally-managed-environment"; exit 1 ;;\n'
+            '  *EXTERNALLY-MANAGED*) exit 0 ;;\n'
+            "esac\n"
+            f'exec "{sys.executable}" "$@"\n', encoding="utf-8")
+        interpreter.chmod(0o755)
+        status, output, _shims = self.run_script(tree / "tools" / "pre_push_check.sh", tree,
+                                                 extra_path=(interpreter.parent,))
+        self.assertEqual(status, 0, output)
+        self.assertRegex(output, r"  pass +\d+s  benchmark-registry")
 
 
 if __name__ == "__main__":

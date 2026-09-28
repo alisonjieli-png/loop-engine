@@ -39,8 +39,21 @@ while [ $# -gt 0 ]; do
 done
 cd "$root" || exit 2
 
+# The interpreter: PY when set, else the tree's .venv, else the .venv of the checkout that holds the tree's
+# repository (a worktree has none of its own; this is how a worktree finds the project's dependencies), else python3
+# on PATH, which may lack them. That last case is reported as a gap of the run, because a step can then fail on a
+# missing module, which is the machine and not the change.
 PY="${PY:-$root/.venv/bin/python}"
-if [ ! -x "$PY" ]; then PY="$(command -v python3 || true)"; fi
+python_fallback=""
+if [ ! -x "$PY" ]; then
+  common="$(git -C "$root" rev-parse --path-format=absolute --git-common-dir 2>/dev/null || true)"
+  if [ -n "$common" ] && [ -x "$(dirname "$common")/.venv/bin/python" ]; then
+    PY="$(dirname "$common")/.venv/bin/python"
+  else
+    PY="$(command -v python3 || true)"
+    python_fallback="$PY"
+  fi
+fi
 if [ -z "$PY" ]; then echo "no Python found; set PY" >&2; exit 2; fi
 venv_bin="$(cd "$(dirname "$PY")" && pwd)"
 revision="$(git rev-parse --short HEAD 2>/dev/null || echo untracked)"
@@ -48,6 +61,11 @@ run_folder="${HOME}/.le-ci-tmp/pre-push/${revision}-$(date +%Y%m%d-%H%M%S)"
 mkdir -p "$run_folder/tmp"
 export TMPDIR="$run_folder/tmp"
 : > "$run_folder/results.txt"
+: > "$run_folder/environment.txt"
+if [ -n "$python_fallback" ]; then
+  echo "PY is not set and no .venv was found, so the gates ran on $python_fallback, which may lack the project's dependencies" \
+    >> "$run_folder/environment.txt"
+fi
 : > "$run_folder/declined.txt"
 : > "$run_folder/local.txt"
 run_started=$(date +%s)
@@ -118,6 +136,12 @@ setup() {  # setup "workflow step name" command...   runs at once, before the ga
   fi
 }
 
+system_managed() {  # the interpreter is the system's own, which refuses pip installs (PEP 668)
+  "$PY" -c 'import os, sys, sysconfig
+sys.exit(0 if sys.prefix == sys.base_prefix and os.path.isfile(os.path.join(sysconfig.get_path("stdlib"), "EXTERNALLY-MANAGED")) else 1)' \
+    2>/dev/null
+}
+
 ci_block() {  # ci_block JOB "workflow step name": the path of a script holding that step's run text
   local job="$1" step="$2" file
   file="$run_folder/step-$(printf '%s' "$step" | tr -c 'A-Za-z0-9' '-').sh"
@@ -134,10 +158,11 @@ else:
     sys.exit("no step named %r in job %r" % (step, job))
 ' "$root/.github/workflows/ci.yml" "$job" "$step" > "$file" 2> "$file.error"; then
     printf 'echo "%s"; exit 2\n' "the workflow step could not be extracted: $(cat "$file.error")" > "$file"
-  elif ! "$PY" -m pip --version >/dev/null 2>&1; then
-    # This interpreter has no pip module (a uv-managed environment). A step's `python -m pip install` line
-    # names project dependencies that are already installed, so it is left out here rather than failing.
-    sed -i 's/^\( *\)python -m pip install .*$/\1echo "pip is not available in this interpreter; the install line was left out"/' "$file"
+  elif ! "$PY" -m pip --version >/dev/null 2>&1 || system_managed; then
+    # This interpreter has no pip module (a uv-managed environment), or the system manages it and refuses installs
+    # (PEP 668). A step's `python -m pip install` line names project dependencies the workflow's runner installs;
+    # a pre-push check does not install into the interpreter it was given, so the line is left out here.
+    sed -i 's/^\( *\)python -m pip install .*$/\1echo "the install line was left out: this interpreter has no pip or the system manages it"/' "$file"
   fi
   printf '%s' "$file"
 }

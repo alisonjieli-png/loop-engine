@@ -16,9 +16,12 @@ gate (the pristine check) runs something continuous integration does not; it can
 equivalent.
 
 Usage: python tools/pre_push_summary.py RUN_FOLDER [--only a,b] [--python 3.10] [--dirty] [--workflow PATH]
-The run folder holds results.txt ("code seconds name" lines), declined.txt ("step | reason" lines) and local.txt (one
-local gate name a line). Exit status: 0 every gate that ran passed, 1 a gate failed, 3 no gate failed but one could
-not run. It reads files and prints; it writes nothing.
+The run folder holds results.txt ("code seconds name" lines), declined.txt ("step | reason" lines), local.txt (one
+local gate name a line) and environment.txt (one line for each way this machine differs from the workflow's runner,
+such as an interpreter without the project's dependencies). A failed gate whose log names a missing module gets a
+hint under its row: it stays a failure, because a change can also import a module nobody installs. Exit status: 0
+every gate that ran passed, 1 a gate failed, 3 no gate failed but one could not run. It reads files and prints; it
+writes nothing.
 """
 from __future__ import annotations
 
@@ -39,6 +42,10 @@ CI_ONLY = "continuous integration only:"
 MATRIX_JOBS = ("unit-tests", "runtime-checks")
 #: The log lines shown under a failed gate.
 FAILURE_LINES = ("FAILED ", "FAIL: ", "ERROR: ")
+#: Log text that names a module the interpreter lacks.
+MISSING_MODULE = ("ModuleNotFoundError", "No module named")
+MISSING_MODULE_HINT = ("the log names a missing module: when the interpreter is not the project's environment, this is "
+                       "the machine, not the change")
 
 
 def _lines(path: Path) -> list:
@@ -57,6 +64,11 @@ def read_rows(folder: Path) -> tuple:
         declined.append((step.strip(), reason.strip()))
     local = {line.strip() for line in _lines(folder / "local.txt") if line.strip()}
     return sorted(results, key=lambda row: row[2]), declined, local
+
+
+def environment_notes(folder: Path) -> list:
+    """How this machine differed from the workflow's runner, one note a line of environment.txt."""
+    return [line.strip() for line in _lines(folder / "environment.txt") if line.strip()]
 
 
 def workflow_versions(workflow: Path = WORKFLOW):
@@ -99,7 +111,10 @@ def summarize(folder: Path, *, only=(), python="", dirty=False, workflow: Path =
         else:
             failed += 1
             lines.append(f"  FAIL  {seconds:5}s  {name}  (exit {code}, log {log}){marker}")
-            lines += [f"          {line}" for line in _lines(log) if line.startswith(FAILURE_LINES)][:5]
+            text = _lines(log)
+            lines += [f"          {line}" for line in text if line.startswith(FAILURE_LINES)][:5]
+            if any(marker in line for line in text for marker in MISSING_MODULE):
+                lines.append(f"          {MISSING_MODULE_HINT}")
     for step, reason in declined:
         lines.append(f"  skip         {step}: {reason}")
         if reason.startswith(CI_ONLY):
@@ -110,6 +125,7 @@ def summarize(folder: Path, *, only=(), python="", dirty=False, workflow: Path =
         skipped.append(f"--only ran {', '.join(only)}; every other gate was left out")
     if dirty:
         skipped.append("the working tree differs from HEAD, so the gates checked files a push would not send")
+    skipped += environment_notes(folder)
     versions = workflow_versions(workflow)
     if versions is None:
         skipped.append(f"the Python versions of {workflow} could not be read, so none were compared")
