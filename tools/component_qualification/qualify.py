@@ -143,14 +143,22 @@ def vetting(check_rows: list, policy: dict, line: str) -> dict:
                                      "reason": "only a sampled batch decision approves publication"}}
 
 
-def load_reuse(paths, revision: str) -> dict:
-    """Identity to the newest earlier record made by this committed qualifier revision."""
+def environment_codes(record: dict, policy_codes) -> set:
+    return {finding["code"] for check in record.get("checks", []) for finding in check.get("findings", [])
+            if finding["code"] in policy_codes}
+
+
+def load_reuse(paths, revision: str, environment=()) -> dict:
+    """Identity to the newest earlier record made by this committed qualifier revision; a record refused for an
+    environment reason (a timeout, a sandbox that did not start) is never reused."""
     records = {}
     for path in paths:
         with open(path, encoding="utf-8") as stream:
             for line in stream:
                 record = json.loads(line)
                 qualifier = record.get("qualifier", {})
+                if environment_codes(record, environment):
+                    continue
                 if qualifier.get("code_revision") == revision and qualifier.get("uncommitted_changes") is False:
                     if record["identity"] not in records or record["qualified_at"] > records[record["identity"]]["qualified_at"]:
                         records[record["identity"]] = record
@@ -168,7 +176,8 @@ def qualify_rows(rows, *, repository: Path, store_root: Path, sandbox_settings, 
     started = time.monotonic()
     test_record = self_test(context, revision)
     self_test_seconds = round(time.monotonic() - started, 1)
-    earlier = load_reuse(reuse_paths, revision) if not uncommitted else {}
+    environment = tuple(context.policy["environment_findings"])
+    earlier = load_reuse(reuse_paths, revision, environment) if not uncommitted else {}
     reuse = {row["record_id"]: earlier[row["record_id"]] for row in rows
              if reusable(earlier.get(row["record_id"]), row, revision)}
     checked, unreadable = [], []
@@ -183,7 +192,7 @@ def qualify_rows(rows, *, repository: Path, store_root: Path, sandbox_settings, 
     pool_seconds = time.monotonic() - pool_started
     duplicates = _duplicates(checked, context.policy, known_digests)
     stamp = _now()
-    counts, reasons = Counter(), Counter()
+    counts, reasons, environment_refused = Counter(), Counter(), 0
     output = Path(output)
     output.parent.mkdir(parents=True, exist_ok=True)
     with open(output, "w", encoding="utf-8") as stream:
@@ -208,6 +217,7 @@ def qualify_rows(rows, *, repository: Path, store_root: Path, sandbox_settings, 
                       "reused": "reused_from" in row, "seconds": row["seconds"]}
             stream.write(json.dumps(record, sort_keys=True) + "\n")
             counts[(row["batch"], row["line"], row["form"], outcome)] += 1
+            environment_refused += bool(environment_codes({"checks": check_rows}, environment))
             for reason in sorted(set(refused)):
                 reasons[(row["line"], reason)] += 1
     total_seconds = time.monotonic() - started
@@ -219,6 +229,7 @@ def qualify_rows(rows, *, repository: Path, store_root: Path, sandbox_settings, 
         "sandbox": {"engine": sandbox_settings.engine, "limits": sandbox_settings.limits.to_dict()},
         "workers": workers, "components": len(rows), "checked": len(checked), "unreadable": len(unreadable),
         "reused": sum(1 for row in checked if "reused_from" in row),
+        "refused_for_environment_reasons": environment_refused,
         "unreadable_reasons": dict(Counter(row["unreadable"] for row in unreadable)),
         "qualified": sum(value for key, value in counts.items() if key[3] == QUALIFIED),
         "refused": sum(value for key, value in counts.items() if key[3] == REFUSED),

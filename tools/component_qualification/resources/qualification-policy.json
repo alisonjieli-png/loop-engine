@@ -180,7 +180,8 @@
  "minified_code": {
   "longest_line": 1000,
   "large_file_bytes": 65536,
-  "large_file_mean_line": 150
+  "large_file_mean_line": 150,
+  "literal_statement_reason": "A Python line longer than the limit is exempt when it holds exactly one statement that only displays literal data (names, constants, and dict, list, tuple or set displays), such as a generated operation's keyword dictionary: on September 28, 2026, ten AWS operation modules carried such lines of 1,282 to 1,562 characters. Several statements on one line, the mark of minified code, are never exempt."
  },
  "code_suffixes": [
   ".py",
@@ -352,5 +353,13 @@
  "tested_code_suffixes": [
   ".py"
  ],
- "tested_code_reason": "The sandbox runs Python modules and their unittest tests, and the mutation check rewrites Python. A package holding code in another language is refused until its runner and mutation are declared here, so that implementation_tested never covers code nothing ran. Builder e announced JavaScript clients for the API line on September 28, 2026; node 22 is installed at /usr/bin/node for the runner."
+ "tested_code_reason": "The sandbox runs Python modules and their unittest tests, and the mutation check rewrites Python. A package holding code in another language is refused until its runner and mutation are declared here, so that implementation_tested never covers code nothing ran. Builder e announced JavaScript clients for the API line on September 28, 2026; node 22 is installed at /usr/bin/node for the runner.",
+ "environment_findings": [
+  "sandbox_timed_out",
+  "tests_timed_out",
+  "mutation_timed_out",
+  "sandbox_unavailable",
+  "sandbox_not_configured"
+ ],
+ "environment_reason": "A run that timed out or could not start its sandbox says nothing about the component: on September 28, 2026, 12 of 23,523 components timed out while the machine's load average was near 300 and passed when run again. Such a component stays refused in that run (it is never admitted untested) and its record is never reused, so the next run checks it again."
 }

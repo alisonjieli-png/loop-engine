@@ -90,6 +90,9 @@ class FixtureCheckTests(unittest.TestCase):
             component = control.build(fixtures[control.base])
             self.context.duplicates.setdefault(component.identity, [])
             result = by_id[control.check_id].run(component, self.context)
+            if not control.expected_code:
+                self.assertEqual(result.status, checks.PASSED, control.control_id)
+                continue
             self.assertIn(control.expected_code, [code for code, _detail in result.findings], control.control_id)
 
     def test_every_check_has_a_control(self):
@@ -151,6 +154,13 @@ class SelfTestTests(unittest.TestCase):
 class NewRuleTests(unittest.TestCase):
     def setUp(self):
         self.policy = _context().policy
+
+    def test_literal_statement_lines(self):
+        text = "def f(a, b):\n    arguments = {'a': a, 'b': b}\n    return call(arguments)\nx = 1; y = 2\n"
+        lines = checks.literal_statement_lines(text)
+        self.assertIn(2, lines)
+        self.assertNotIn(3, lines)
+        self.assertNotIn(4, lines)
 
     def test_licence_fingerprints(self):
         self.assertEqual(checks.recognized_licences(controls.MIT_TEXT, self.policy), {"MIT"})

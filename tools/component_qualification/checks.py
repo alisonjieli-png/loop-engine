@@ -659,6 +659,31 @@ class EffectsCheck:
         return _result(self, findings, notes)
 
 
+LITERAL_NODES = (ast.Dict, ast.List, ast.Tuple, ast.Set, ast.Constant, ast.Name, ast.Attribute, ast.Load,
+                 ast.UnaryOp, ast.USub, ast.UAdd, ast.Starred, ast.JoinedStr, ast.FormattedValue)
+
+
+def literal_statement_lines(text: str) -> set:
+    """Lines held by exactly one statement that only displays literal data (no call, no operator but a sign)."""
+    try:
+        tree = ast.parse(text)
+    except SyntaxError:
+        return set()
+    starts, literal = {}, set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.stmt):
+            for line in range(node.lineno, (node.end_lineno or node.lineno) + 1):
+                starts[line] = starts.get(line, 0) + 1 if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef,
+                                                                                 ast.ClassDef, ast.If, ast.For,
+                                                                                 ast.While, ast.With, ast.Try)) else \
+                    starts.get(line, 0)
+            value = getattr(node, "value", None)
+            if isinstance(node, (ast.Assign, ast.AnnAssign, ast.Expr, ast.Return)) and value is not None and all(
+                    isinstance(child, LITERAL_NODES) for child in ast.walk(value)):
+                literal.update(range(node.lineno, (node.end_lineno or node.lineno) + 1))
+    return {line for line in literal if starts.get(line, 0) == 1}
+
+
 TEST_TAMPERING = re.compile(r"\bos\._exit\s*\(|\bsys\.(?:stdout|stderr|__stdout__|__stderr__)\s*=|"
                             r"\bTextTestRunner\b|\bTestResult\b|\bunittest\.main\s*\(\s*exit\s*=\s*False")
 
@@ -701,10 +726,12 @@ class SafetyCheck:
                     findings.append((code, f"{path}:{text.count(chr(10), 0, match.start()) + 1}"))
             if PurePosixPath(path).suffix.lower() in policy["code_suffixes"] and not data_file:
                 lines = text.splitlines() or [""]
-                longest = max(len(line) for line in lines)
+                exempt = literal_statement_lines(text) if path.endswith(".py") else set()
+                long_lines = [(number, len(line)) for number, line in enumerate(lines, 1)
+                              if len(line) > limits["longest_line"] and number not in exempt]
                 mean = len(text) / len(lines)
-                if longest > limits["longest_line"] or (len(text) > limits["large_file_bytes"]
-                                                        and mean > limits["large_file_mean_line"]):
+                if long_lines or (len(text) > limits["large_file_bytes"] and mean > limits["large_file_mean_line"]):
+                    longest = max((length for _number, length in long_lines), default=max(len(line) for line in lines))
                     findings.append(("minified_or_bundled_code", f"{path}: longest line {longest}"))
             if is_test_file(path) and TEST_TAMPERING.search(text):
                 findings.append(("test_report_tampering", path))
@@ -884,7 +911,8 @@ class SandboxCheck:
         run = sandbox_module.run_component(component, context.sandbox_settings, context.work_root)
         findings = []
         if not run["ran"]:
-            findings.append(("sandbox_run_failed", run.get("reason", "") + " " + run.get("stderr_tail", "")[-200:]))
+            code = "sandbox_timed_out" if run.get("timed_out") else "sandbox_run_failed"
+            findings.append((code, run.get("reason", "") + " " + run.get("stderr_tail", "")[-200:]))
             return CheckResult(self.check_id, VERSION, self.kind, self.dimension, REFUSED, tuple(findings),
                                (json.dumps({key: run.get(key) for key in ("wall_seconds", "timed_out", "exit")}),))
         for row in run["imports"]:
@@ -895,7 +923,9 @@ class SandboxCheck:
             findings.append(("no_tests_ran", "the package declares no test module"))
         else:
             executed = tests_row["ran"] - tests_row["skipped"]
-            if not tests_row["passed"]:
+            if tests_row["timed_out"]:
+                findings.append(("tests_timed_out", f"the tests ran past {context.sandbox_settings.limits.test_seconds} s"))
+            elif not tests_row["passed"]:
                 findings.append(("tests_failed", tests_row["tail"][-240:]))
             elif executed < 1:
                 findings.append(("no_test_executed", f"{tests_row['ran']} ran, {tests_row['skipped']} skipped"))
@@ -967,6 +997,8 @@ class MutationCheck:
         mutated, replaced = built
         run = sandbox_module.run_component(mutated, context.sandbox_settings, context.work_root)
         tests_row = run.get("tests")
+        if run.get("timed_out") or (tests_row is not None and tests_row["timed_out"]):
+            return _result(self, [("mutation_timed_out", "the mutant's tests did not finish within the limits")])
         if not run["ran"] or tests_row is None:
             return _result(self, [("mutation_run_failed", run.get("reason", "") + " " + run.get("stderr_tail", "")[-160:])])
         if tests_row["passed"]:
