@@ -3,8 +3,9 @@
 Kind: development comparison tool. It answers one question with numbers: does a harness pass more 3D modeling
 tasks when material from Baltor is placed in it? It does not change the product.
 
-The first comparison, on September 27, 2026, ran one run per task and condition and is recorded in
-[the research record](../../docs/research/USER-JOURNEY-AND-3D-WITH-WITHOUT-2026-09-27.md). This tool repeats it
+The first comparison, on September 27, 2026, ran one run per task and condition. Its research record,
+`docs/research/USER-JOURNEY-AND-3D-WITH-WITHOUT-2026-09-27.md`, is published together with this tool's first
+full rerun, because the delivery faults that comparison found are repaired only from release 45. This tool repeats it
 with at least five grouped runs per task and condition, grading fixed before the first run, and a report that
 lists every run.
 
