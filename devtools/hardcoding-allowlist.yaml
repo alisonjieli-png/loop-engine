@@ -3526,6 +3526,22 @@ entries:
     classification: STRATEGY_OR_PROVIDER_BINDING
     created_on: 2026-09-20
     expires_on: 2027-09-20
+  - finding_id: hardcoding.79dd63b30cbc6ccd7f2b34a9
+    owner: loop_engine.core.service_runtime.web_assets.client-recipes.json:recipes[4].configuration_note
+    rationale: >-
+      client-recipes.json holds the connection recipes that the Get set up
+      page shows. The literal at recipes[4].configuration_note is the note the
+      page prints beside the Baltor Harness recipe, for the person reading
+      it: how to search and download with a token and which effects the
+      Baltor-Step-Effects header declares. No model reads it as an
+      instruction and no code branches on it; tools/check_quickstarts.py holds
+      the recipe to the quickstart page and tools/check_service_documentation.py
+      holds the guides' facts to the source. Reviewed on 2026-09-27. Only this
+      exact finding is allowed; a changed note has a different finding
+      identity and stays blocking.
+    classification: RESOURCE_OR_TEMPLATE
+    created_on: 2026-09-27
+    expires_on: 2027-09-27
   - finding_id: hardcoding.c5d875e8703424c8cd896d2a
     owner: loop_engine.core.service_runtime.web_assets.client-recipes.json:recipes[1].configuration.$schema
     rationale: >-
@@ -7900,6 +7916,43 @@ entries:
       publishes it, the public product homepage and the public repository address. Nothing fetches them,
       selects a provider with them or sends a credential to them. tools/test_baltor_library_integration.py
       pins every manifest of this folder and its version.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.93e4c3cf9695d1f24207c0f6
+    owner: loop_engine.core.service_runtime.web_assets.baltor-library.SKILL.md.txt:environment
+    rationale: >-
+      $BALTOR_ITEM_ID is a shell placeholder in the example fetch command of the skill's instructions, which a
+      harness fills with the identity, digest and request identity the customer selected. No code reads it
+      from the environment. The website serves this file at /assets/baltor-library/ as a byte-for-byte copy of the pinned Baltor library skill in integrations/baltor-library, packaged with a .txt name; tools/test_baltor_library_integration.py fails when a served byte differs from the integration folder, and release.json pins those bytes, so a change needs a new version and a new review.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.d110e565e17d2de0ce6b963b
+    owner: loop_engine.core.service_runtime.web_assets.baltor-library.SKILL.md.txt:environment
+    rationale: >-
+      $BALTOR_ITEM_DIGEST is a shell placeholder in the example fetch command of the skill's instructions, which a
+      harness fills with the identity, digest and request identity the customer selected. No code reads it
+      from the environment. The website serves this file at /assets/baltor-library/ as a byte-for-byte copy of the pinned Baltor library skill in integrations/baltor-library, packaged with a .txt name; tools/test_baltor_library_integration.py fails when a served byte differs from the integration folder, and release.json pins those bytes, so a change needs a new version and a new review.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.856c2cac6cf47c5a80f3135b
+    owner: loop_engine.core.service_runtime.web_assets.baltor-library.SKILL.md.txt:environment
+    rationale: >-
+      $BALTOR_DOWNLOAD_ID is a shell placeholder in the example fetch command of the skill's instructions, which a
+      harness fills with the identity, digest and request identity the customer selected. No code reads it
+      from the environment. The website serves this file at /assets/baltor-library/ as a byte-for-byte copy of the pinned Baltor library skill in integrations/baltor-library, packaged with a .txt name; tools/test_baltor_library_integration.py fails when a served byte differs from the integration folder, and release.json pins those bytes, so a change needs a new version and a new review.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
+  - finding_id: hardcoding.a1f91dab54edc6dc80c28ea5
+    owner: loop_engine.core.service_runtime.web_assets.baltor-library.assets.client.example.json.txt:url
+    rationale: >-
+      The example configuration of the Baltor library skill names the public Baltor service origin, which a
+      customer copies into their own configuration; the customer's configuration decides the origin at run
+      time, and the client accepts only an exact HTTPS origin, ignores proxies and refuses redirects. The same
+      literal in the integration folder is the reviewed finding hardcoding.16487f9f722b2670aefe03ad. The website serves this file at /assets/baltor-library/ as a byte-for-byte copy of the pinned Baltor library skill in integrations/baltor-library, packaged with a .txt name; tools/test_baltor_library_integration.py fails when a served byte differs from the integration folder, and release.json pins those bytes, so a change needs a new version and a new review.
     classification: STRATEGY_OR_PROVIDER_BINDING
     created_on: '2026-09-27'
     expires_on: '2027-09-27'

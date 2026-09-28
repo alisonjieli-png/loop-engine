@@ -97,7 +97,7 @@ WEB_ASSETS = {
     "/assets/baltor-library/scripts/baltor.py": ("baltor-library/scripts/baltor.py.txt", "text/plain; charset=utf-8"),
     "/assets/baltor-library/references/client.md": ("baltor-library/references/client.md.txt",
                                                      "text/plain; charset=utf-8"),
-    "/assets/baltor-library/assets/client.example.json": ("baltor-library/assets/client.example.json",
+    "/assets/baltor-library/assets/client.example.json": ("baltor-library/assets/client.example.json.txt",
                                                           "application/json"),
     "/assets/baltor-library/verification/test_client.py": ("baltor-library/verification/test_client.py.txt",
                                                            "text/plain; charset=utf-8"),

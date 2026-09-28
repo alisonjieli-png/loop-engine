@@ -540,11 +540,13 @@ def skill_header(name, description):
     return ('---\nname: ' + json.dumps(name) + '\ndescription: ' + json.dumps(description) + '\n---\n').encode()
 
 def skill_roots(client_name, scope, project):
-    """The client's skill folder for the scope, and the folder that keeps this client's install records beside it."""
+    """The client's skill folder for the scope, and the folder that keeps this client's install records beside it.
+
+    A folder the table writes from the home folder (`~/...`) is the user's; any other is inside the project."""
     require(client_name in NATIVE_SKILL_ROOTS, 'client_unknown')
-    require(scope in ('project', 'user'), 'scope_unknown')
+    require(scope in NATIVE_SKILL_ROOTS[client_name], 'scope_unknown')
     declared = NATIVE_SKILL_ROOTS[client_name][scope]
-    root = Path(declared).expanduser() if scope == 'user' else Path(project).absolute() / declared
+    root = Path(declared).expanduser() if declared.startswith('~') else Path(project).absolute() / declared
     return root, root.parent / 'baltor-library' / 'installed'
 
 def staged_files(staged):

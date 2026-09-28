@@ -34,8 +34,8 @@
     },
     {
       "path": "scripts/baltor.py",
-      "digest": "0d16f849699cea4cb0ac2e22aeac85445be7915739122d9f5dfbfcec74d78d7d",
-      "size_bytes": 42744,
+      "digest": "47a1ab1062af3cdccab647d576b286cd177f3a6cabe173b7d32514b7408ffb5a",
+      "size_bytes": 42875,
       "media_type": "text/x-python",
       "role": "skill_script"
     },
@@ -50,7 +50,7 @@
   "package": {
     "record_type": "catalogue_package/v1",
     "body_form": "package",
-    "package_digest": "654caafb21daea85e2ee77dd32c4a5ab3821519dde147fa69a9f48563a2ecb73",
+    "package_digest": "c27908e828db2ca64e1749bee0215a6253c5bb7a1ec03e771d1e3bbbfc224d20",
     "catalogue_identity": "baltor_library_client",
     "declared_effects": [
       "reads_fs",

@@ -316,7 +316,7 @@ class PinnedReleaseChecks(unittest.TestCase):
         release = read_json(PACKAGE / "release.json")
         self.assertEqual(release["package"]["catalogue_identity"], "baltor_library_client")
         self.assertEqual(release["package"]["package_digest"],
-                         "654caafb21daea85e2ee77dd32c4a5ab3821519dde147fa69a9f48563a2ecb73")
+                         "c27908e828db2ca64e1749bee0215a6253c5bb7a1ec03e771d1e3bbbfc224d20")
         self.assertEqual(release["source"]["previous_package_digest"],
                          "ab45e58b1e1a601b4bc97ab0df84e4c4b37ca814b6c1c9bba5dfdc32578e3926")
         self.assertEqual(release["package"]["catalogue_publication"], "not_published")
