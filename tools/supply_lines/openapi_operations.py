@@ -615,9 +615,13 @@ def _auth(document: dict, requirements, source: dict) -> tuple:
         return None, True
     optional = any(requirement == {} for requirement in requirements)
     schemes = (document.get("components") or {}).get("securitySchemes") or {}
-    for requirement in requirements:
-        if not isinstance(requirement, dict) or not requirement:
-            continue
+    # A requirement naming one scheme is preferred to one that combines several: OpenAPI reads a combination as
+    # needing every scheme at once, which this client does not send, so a combination alone refuses the operation.
+    ordered = sorted((requirement for requirement in requirements if isinstance(requirement, dict) and requirement),
+                     key=lambda requirement: len(requirement) != 1)
+    for requirement in ordered:
+        if len(requirement) != 1:
+            raise OperationRefused("security_scheme_unsupported", f"a requirement combines {sorted(requirement)}")
         name = next(iter(requirement))
         scheme = schemes.get(name)
         if isinstance(scheme, dict) and "$ref" in scheme:

@@ -647,6 +647,24 @@ class OpenApiLineTest(unittest.TestCase):
             (target / f"{operation.module}.py").write_text(broken, encoding="utf-8")
             self.assertFalse(line.run_tests(target, operation.module)[0])
 
+    def test_a_single_scheme_requirement_is_preferred_and_a_combination_alone_is_refused(self):
+        from supply_lines import openapi_operations as line
+        schemes = {"email": {"type": "apiKey", "in": "header", "name": "X-Auth-Email"},
+                   "key": {"type": "apiKey", "in": "header", "name": "X-Auth-Key"},
+                   "token": {"type": "http", "scheme": "bearer"}}
+
+        def spec(security):
+            return {"openapi": "3.0.0", "info": {"title": "Edge", "version": "1"},
+                    "servers": [{"url": "https://api.edge.example"}], "components": {"securitySchemes": schemes},
+                    "paths": {"/zones": {"get": {"operationId": "listZones", "security": security,
+                                                 "responses": {"200": {"description": "ok"}}}}}}
+
+        [operation], _refused = line.operations(spec([{"email": [], "key": []}, {"token": []}]), SOURCE)
+        self.assertEqual((operation.auth["scheme"], operation.auth["prefix"]), ("token", "Bearer "))
+        # Known wrong: a requirement that combines schemes needs all of them, which the client does not send.
+        found, refused = line.operations(spec([{"email": [], "key": [], "token": []}]), SOURCE)
+        self.assertEqual((found, [row["reason"] for row in refused]), ([], ["security_scheme_unsupported"]))
+
     def test_json_media_types_and_a_self_hosted_address(self):
         from supply_lines import openapi_operations as line
         self.assertEqual(line.request_content({"application/json-patch+json": {"a": 1},
