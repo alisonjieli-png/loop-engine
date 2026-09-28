@@ -71,9 +71,19 @@
    "since": "2026-09-27"
   },
   {
+   "address": "/models/armurai-pentest-ai",
+   "reason": "not_listed",
+   "since": "2026-09-28"
+  },
+  {
    "address": "/models/baidu-ernie-4-5-vl-424b-a47b-pt",
    "reason": "refused_source",
    "since": "2026-09-27"
+  },
+  {
+   "address": "/models/bennydaball-krea-2-engineer-v1",
+   "reason": "not_listed",
+   "since": "2026-09-28"
   },
   {
    "address": "/models/bytedance-seed-seed-1-6",
@@ -116,14 +126,44 @@
    "since": "2026-09-27"
   },
   {
+   "address": "/models/coherelabs-tiny-aya-earth",
+   "reason": "not_listed",
+   "since": "2026-09-28"
+  },
+  {
+   "address": "/models/crashoverridex-quillan-ronin",
+   "reason": "not_listed",
+   "since": "2026-09-28"
+  },
+  {
+   "address": "/models/dbourget-philai-embeddings-v1-1",
+   "reason": "not_listed",
+   "since": "2026-09-28"
+  },
+  {
    "address": "/models/dots-studio-dots-3-note-preview",
    "reason": "refused_source",
    "since": "2026-09-27"
   },
   {
+   "address": "/models/eleutherai-pythia-2-8b",
+   "reason": "not_listed",
+   "since": "2026-09-28"
+  },
+  {
+   "address": "/models/empero-ai-qwable-9b-claude-fable-5",
+   "reason": "not_listed",
+   "since": "2026-09-28"
+  },
+  {
    "address": "/models/fireworks-ember-1",
    "reason": "refused_source",
    "since": "2026-09-27"
+  },
+  {
+   "address": "/models/gnani-gnani-evon-v3-3-30b-a3b",
+   "reason": "not_listed",
+   "since": "2026-09-28"
   },
   {
    "address": "/models/google-gemini-2-5-pro-preview",
@@ -141,9 +181,24 @@
    "since": "2026-09-27"
   },
   {
+   "address": "/models/inclusionai-llada2-2-mini",
+   "reason": "not_listed",
+   "since": "2026-09-28"
+  },
+  {
+   "address": "/models/insilicomedicine-longevity-llm",
+   "reason": "not_listed",
+   "since": "2026-09-28"
+  },
+  {
    "address": "/models/kwaipilot-kat-coder-pro-v2-5",
    "reason": "refused_source",
    "since": "2026-09-27"
+  },
+  {
+   "address": "/models/liquidai-lfm2-5-8b-a1b-dspark",
+   "reason": "not_listed",
+   "since": "2026-09-28"
   },
   {
    "address": "/models/mancer-weaver",
@@ -211,6 +266,11 @@
    "since": "2026-09-27"
   },
   {
+   "address": "/models/mlabonne-qwen3-30b-a3b-abliterated",
+   "reason": "not_listed",
+   "since": "2026-09-28"
+  },
+  {
    "address": "/models/morph-morph-v3-fast",
    "reason": "refused_source",
    "since": "2026-09-27"
@@ -219,6 +279,11 @@
    "address": "/models/morph-morph-v3-large",
    "reason": "refused_source",
    "since": "2026-09-27"
+  },
+  {
+   "address": "/models/notnotsamuel-lfm2-5-350m-rlcd",
+   "reason": "not_listed",
+   "since": "2026-09-28"
   },
   {
    "address": "/models/openai-gpt-3-5-turbo-0613",
@@ -366,6 +431,11 @@
    "since": "2026-09-27"
   },
   {
+   "address": "/models/qwen-qwen2-5-72b",
+   "reason": "not_listed",
+   "since": "2026-09-28"
+  },
+  {
    "address": "/models/qwen-qwen3-5-flash-02-23",
    "reason": "refused_source",
    "since": "2026-09-27"
@@ -446,9 +516,19 @@
    "since": "2026-09-27"
   },
   {
+   "address": "/models/sdadas-st-polish-paraphrase-from-mpnet",
+   "reason": "not_listed",
+   "since": "2026-09-28"
+  },
+  {
    "address": "/models/slayerlab-pollock-mini-lm-125m",
    "reason": "not_listed",
    "since": "2026-09-27"
+  },
+  {
+   "address": "/models/stardoc-ai-teleocr",
+   "reason": "not_listed",
+   "since": "2026-09-28"
   },
   {
    "address": "/models/stealth-space-bunny-alpha",
@@ -464,6 +544,11 @@
    "address": "/models/thedrummer-unslopnemo-12b-v4-1",
    "reason": "refused_source",
    "since": "2026-09-27"
+  },
+  {
+   "address": "/models/trl-internal-testing-tiny-qwen3-5forconditionalgeneration-3-8",
+   "reason": "not_listed",
+   "since": "2026-09-28"
   },
   {
    "address": "/models/typesafe-jev-router",
@@ -491,6 +576,11 @@
    "since": "2026-09-27"
   },
   {
+   "address": "/models/ut-ifml-dqwen3-5-2b-base",
+   "reason": "not_listed",
+   "since": "2026-09-28"
+  },
+  {
    "address": "/models/writer-palmyra-x5",
    "reason": "refused_source",
    "since": "2026-09-27"
@@ -504,6 +594,21 @@
    "address": "/models/x-ai-grok-4-20-multi-agent",
    "reason": "refused_source",
    "since": "2026-09-27"
+  },
+  {
+   "address": "/models/xhtoken-spark-x2-5-1-7b",
+   "reason": "not_listed",
+   "since": "2026-09-28"
+  },
+  {
+   "address": "/models/yuhan123-vicuna-13b-self-consistency-neg-exp-var-5",
+   "reason": "not_listed",
+   "since": "2026-09-28"
+  },
+  {
+   "address": "/models/yuxinlu1-gemma-4-12b-agentic-fable5-composer2-5-v2-3-5x-tau2",
+   "reason": "not_listed",
+   "since": "2026-09-28"
   },
   {
    "address": "/models/z-ai-glm-5-3-prime",
