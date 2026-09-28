@@ -394,6 +394,10 @@ CONTROLS = (
     Control("uvx_unpinned", "licence_provenance", "configuration", "launcher_package_not_pinned",
             lambda c: _edit(c, ".mcp.json", lambda text: text.replace('"npx"', '"uvx"').replace(
                 '"-y",', "").replace(SERVER_PACKAGE, "example-notes-mcp"))),
+    Control("download_without_digest", "licence_provenance", "code", "download_not_pinned",
+            lambda c: _add_file(c, "install.json", json.dumps({
+                "record_type": "program_install_recipe/v1", "program": "example", "version": "1.0.0",
+                "source": {"url": "https://example.org/example-1.0.0.tar.gz"}}), role="configuration")),
     Control("attribution_incomplete", "licence_provenance", "code", "attribution_lacks_file_digest",
             lambda c: c.replaced(payloads=dict(c.payloads) | {"ATTRIBUTION.md": b"# Attribution\n\nNo digests.\n"})),
     Control("licence_text_restrictive", "licence_provenance", "code", "licence_text_unrecognized",

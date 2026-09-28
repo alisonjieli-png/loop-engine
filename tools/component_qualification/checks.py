@@ -385,7 +385,8 @@ def _pinned_downloads(component, policy) -> list:
         if isinstance(value, dict):
             url = value.get("url")
             if isinstance(url, str):
-                if not url.startswith("https://") or not _HEX64.fullmatch(str(value.get("sha256", ""))):
+                scheme = url.split("://", 1)[0] if "://" in url else ""
+                if scheme not in policy["download_schemes"] or not _HEX64.fullmatch(str(value.get("sha256", ""))):
                     findings.append(("download_not_pinned", f"{where}:{url[:120]}"))
             for key, item in value.items():
                 walk(item, f"{where}.{key}")

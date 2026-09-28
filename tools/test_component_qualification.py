@@ -17,7 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 REVISION = subprocess.run(["git", "-C", str(ROOT), "rev-parse", "HEAD"], capture_output=True, text=True,
                           check=False).stdout.strip()
 SANDBOX = SandboxSettings()
-HAS_SANDBOX = SANDBOX.available()[0] and bool(REVISION)
+HAS_SANDBOX = bool(REVISION) and SANDBOX.works()
 
 
 def _context(work=None):

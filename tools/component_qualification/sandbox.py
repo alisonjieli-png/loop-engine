@@ -117,6 +117,19 @@ class SandboxSettings:
             missing.append("systemd-run")
         return (not missing, f"missing {missing}" if missing else "")
 
+    def works(self) -> bool:
+        """Whether this machine can start the sandbox at all (user namespaces may be refused), by running a
+        trivial command in it once."""
+        if not self.available()[0]:
+            return False
+        argv = [self.bwrap, "--ro-bind", "/", "/", "--dev", "/dev", "--proc", "/proc", "--unshare-net",
+                "--unshare-pid", "--die-with-parent", self.python, "-c", "print('sandbox works')"]
+        try:
+            done = subprocess.run(argv, capture_output=True, timeout=30, check=False, env={"PATH": SYSTEM_PATH})
+        except (OSError, subprocess.TimeoutExpired):
+            return False
+        return done.returncode == 0 and b"sandbox works" in done.stdout
+
 
 def python_modules(component) -> tuple:
     """(importable modules, test modules): root-level Python files, tests named test_*.py."""

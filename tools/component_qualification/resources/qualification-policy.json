@@ -302,5 +302,11 @@
   ],
   "replacement": "raise RuntimeError('qualification mutant: this implementation was replaced')",
   "reason": "The written criteria require verification that rejects a known-wrong result. Every public function and public method of each root module is replaced by one that raises, and the package's own tests must then fail. On September 28, 2026 the Tactical reviewer approved every planted package whose code was broken in ways its tests could not see; this check needs no reviewer."
- }
+ },
+ "download_schemes": [
+  "https",
+  "http",
+  "ftp"
+ ],
+ "download_reason": "A download is pinned by its SHA-256; the digest guarantees the bytes whatever the transport, as Homebrew itself accepts for source archives. Measured on September 28, 2026: the figlet recipe's source archive is served over ftp with its SHA-256 and was refused while the rule required https."
 }
