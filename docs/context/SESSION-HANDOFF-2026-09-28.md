@@ -232,3 +232,34 @@ would place. The in-progress schema.org runtime is the normalizer for a pasted
 link, the reference nine-step practitioner profile is the frame that shows where
 each step's files come from, and the savings are stated honestly, as the context
 one step needed and what the chain replaced.
+
+## The owner's infrastructure budget decision, September 28, 2026
+
+The owner set the ceiling at the recorded 50 United States dollars a month for
+infrastructure, and deferred a vector database.
+
+Priced against Fly's published 2026 rates, the architecture this project needs
+to serve one million files costs about 43 dollars a month and therefore fits
+inside the recorded allowance: two stateless machines at 8.78 each for web, API
+and search, one stateful machine at 13.27 holding a 25 gigabyte volume at 3.75,
+snapshots at 1.20, an address and a certificate at 3.00, and about 200 gigabytes
+of egress at 4.00. That is about 22 dollars more than the single machine it
+replaces, and it is what buys releases that do not take the site down.
+
+The volume figure was measured, not assumed. The live 3 gigabyte volume holds
+15,146 packages at 37 percent, which is 77 kilobytes a package, so one million
+files at the measured 3.8 files a package is about 265,000 packages, or 19.4
+gigabytes. Ten million files is 73.3 gigabytes and a total near 75 dollars a
+month, which is past the allowance and would be brought to the owner with these
+numbers.
+
+The media analysis component is a separate Fly application that scales to zero,
+so a stopped machine bills only its root filesystem and the component costs
+almost nothing in a month when nobody pastes anything.
+
+A vector database is deferred by the owner's decision. It is about 30 to 60
+dollars a month for a four gigabyte machine, and the service already fuses a
+lexical pool and a vector pool in process, so it would move an in-memory index
+off a small machine rather than improve relevance. It becomes justified when
+memory is the binding constraint rather than storage, which is the point where
+customer count, not file count, is the measure that matters.
