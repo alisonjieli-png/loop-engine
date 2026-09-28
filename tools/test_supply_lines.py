@@ -1522,6 +1522,147 @@ class JavaScriptClientTest(unittest.TestCase):
         self.assertEqual(scripts.comment("a */ b\nc"), "a * / b c")
 
 
+LIBRARY_CORE = '''"""A small library."""
+from itertools import islice
+
+from .helpers import _pairs
+
+try:
+    import numpy
+except ImportError:
+    numpy = None
+
+DEFAULT = 2
+
+
+def take(n, iterable):
+    """The first n items.
+
+    >>> take(2, [1, 2, 3])
+    [1, 2]
+    """
+    return list(islice(iterable, n))
+
+
+def chunk_pairs(iterable):
+    """Pairs, from a helper of another module and a constant.
+
+    >>> chunk_pairs([1, 2, 3, 4])
+    [(1, 2), (3, 4)]
+    """
+    return list(_pairs(iterable, DEFAULT))
+
+
+def broken(x):
+    """An example that is wrong.
+
+    >>> broken(1)
+    3
+    """
+    return x + 1
+
+
+def no_examples(x):
+    """Nothing to run."""
+    return x
+
+
+def prints_only(x):
+    """Examples that never call the function.
+
+    >>> 1 + 1
+    2
+    """
+    return x
+
+
+def uses_unknown(x):
+    """A name nothing binds.
+
+    >>> uses_unknown(1)
+    1
+    """
+    return missing_helper(x)
+'''
+LIBRARY_HELPERS = '''import requests
+
+
+def _pairs(iterable, size):
+    items = list(iterable)
+    return [tuple(items[index:index + size]) for index in range(0, len(items), size)]
+
+
+def fetch(url):
+    """Needs a dependency.
+
+    >>> fetch("x")
+    'x'
+    """
+    return requests.get(url)
+'''
+
+
+class FunctionExtractsTest(unittest.TestCase):
+    def test_documented_functions_are_copied_with_their_closure_and_tested(self):
+        from supply_lines import function_extracts as line
+        files = {"lib/core.py": LIBRARY_CORE.encode(), "lib/helpers.py": LIBRARY_HELPERS.encode()}
+
+        class Reader:
+            def pinned_file(self, repository, branch, path):
+                return {"commit": "c" * 40, "bytes": files[path], "sha256": _digest(files[path]), "path": path,
+                        "retrieved_at": "2026-09-28T00:00:00Z"}
+
+            def licence_text(self, repository, commit):
+                return "LICENSE", LICENCE, "MIT"
+
+        source = {"source_id": "lib", "title": "lib", "repository": "example/lib", "branch": "main",
+                  "package_root": "lib", "vendor": "lib", "modules": ["lib/core.py", "lib/helpers.py"]}
+        with tempfile.TemporaryDirectory() as staging:
+            built, refused, _facts, summary = line.generate(Reader(), [source], code_revision="a" * 40,
+                                                            licence_text=LICENCE, generated_on="2026-09-28",
+                                                            staging=Path(staging))
+        by_name = {payload["repository"]["function"]: (payload, bodies) for payload, bodies in built}
+        self.assertEqual(sorted(by_name), ["chunk_pairs", "take"])
+        reasons = {row["subject"].rsplit(" ", 1)[-1]: row["reason"] for row in refused}
+        self.assertEqual(reasons, {"broken": "examples_failed", "no_examples": "no_examples",
+                                   "prints_only": "examples_do_not_exercise_the_function",
+                                   "uses_unknown": "closure_unresolved", "fetch": "needs_a_dependency"})
+        payload, bodies = by_name["chunk_pairs"]
+        module = next(bodies[entry["digest"]].decode() for entry in payload["package"]["files"]
+                      if entry["path"] == "lib_chunk_pairs.py")
+        # The helper from the other module comes first, whole; the unused try block and imports are left out.
+        self.assertLess(module.index("def _pairs("), module.index("def chunk_pairs("))
+        self.assertIn("DEFAULT = 2", module)
+        self.assertNotIn("numpy", module)
+        self.assertNotIn("islice", module)
+        self.assertEqual(payload["component_form"]["form"], "function")
+        self.assertEqual(payload["repository"]["segments"][0][0], "lib/helpers.py")
+        take_payload, take_bodies = by_name["take"]
+        take_module = next(take_bodies[entry["digest"]].decode() for entry in take_payload["package"]["files"]
+                           if entry["path"] == "lib_take.py")
+        self.assertIn("from itertools import islice", take_module)
+        self.assertEqual(summary[0]["packaged"], 2)
+
+    def test_the_closure_follows_package_imports_and_refuses_what_it_cannot_copy(self):
+        from supply_lines import function_extracts as line
+        modules = {"lib/core.py": (line.module_statements("lib/core.py", LIBRARY_CORE), LIBRARY_CORE),
+                   "lib/helpers.py": (line.module_statements("lib/helpers.py", LIBRARY_HELPERS), LIBRARY_HELPERS)}
+        closure = line.closure_of("chunk_pairs", "lib/core.py", modules, "lib")
+        self.assertEqual([(row.module, sorted(row.binds)) for row in closure.statements],
+                         [("lib/helpers.py", ["_pairs"]), ("lib/core.py", ["DEFAULT"]), ("lib/core.py", ["chunk_pairs"])])
+        with self.assertRaises(line.ExtractRefused) as refused:
+            line.closure_of("fetch", "lib/helpers.py", modules, "lib")
+        self.assertEqual(refused.exception.reason, "needs_a_dependency")
+        saved = line.MAXIMUM_CLOSURE_LINES
+        line.MAXIMUM_CLOSURE_LINES = 3
+        try:
+            with self.assertRaises(line.ExtractRefused) as refused:
+                line.closure_of("chunk_pairs", "lib/core.py", modules, "lib")
+        finally:
+            line.MAXIMUM_CLOSURE_LINES = saved
+        self.assertEqual(refused.exception.reason, "closure_too_large")
+
+
 class VerbatimCodeSourcesTest(unittest.TestCase):
     def test_the_declaration_is_a_valid_import_source_of_code_modules_only(self):
         from licensed_import.harness_kinds import SourceScope, declared_kind

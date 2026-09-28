@@ -41,8 +41,8 @@ STATE_RECORD_TYPE = "library_supply_state/v1"
 RUN_RECORD_TYPE = "library_supply_run/v1"
 
 #: The supply lines, one per kind of fact source.
-MCP_REGISTRY, OPENAPI_OPERATIONS, PROGRAM_INSTALLS, DATA_TABLES = LINES = (
-    "mcp_registry", "openapi_operations", "program_installs", "data_tables")
+MCP_REGISTRY, OPENAPI_OPERATIONS, PROGRAM_INSTALLS, DATA_TABLES, FUNCTION_EXTRACTS = LINES = (
+    "mcp_registry", "openapi_operations", "program_installs", "data_tables", "function_extracts")
 #: How the text of every supply package was authored, and the review profile it needs. The panel has no such
 #: profile yet (tools/candidate_review reads original and imported packages only), so an export holds these.
 AUTHORING = "generated_from_licensed_facts"
@@ -86,12 +86,18 @@ REFUSAL_REASONS = {
     DATA_TABLES: ("source_unreadable", "licence_not_on_allowlist", "licence_signals_disagree", "table_empty",
                   "row_violates_schema", "table_above_review_bound", "blocked_by_static_check",
                   "generated_test_failed"),
+    FUNCTION_EXTRACTS: ("source_unreadable", "licence_not_on_allowlist", "licence_signals_disagree", "licence_unknown",
+                        "no_examples", "closure_unresolved", "needs_a_dependency", "closure_too_large",
+                        "closure_name_conflict", "examples_failed", "examples_do_not_exercise_the_function",
+                        "duplicate_function", "blocked_by_static_check", "generated_test_failed",
+                        "package_above_review_bound"),
 }
 #: The forms each line may declare, and the harness kind it serves them as.
 LINE_FORMS = {MCP_REGISTRY: {"mcp_server": "protocol_server_configuration"},
               OPENAPI_OPERATIONS: {"api_operation": "code_module"},
               PROGRAM_INSTALLS: {"binary_install": "code_module", "program": "code_module"},
-              DATA_TABLES: {"data_table": "code_module"}}
+              DATA_TABLES: {"data_table": "code_module"},
+              FUNCTION_EXTRACTS: {"function": "code_module"}}
 CANDIDATE_FIELDS = ("record_type", "record_id", "upstream_key", "line", "kind", "native_format", "component_form",
                     "name", "description", "package", "package_digest", "files", "licence", "provenance",
                     "placements", "declared_effects", "effect_evidence", "credentials", "tests", "findings",

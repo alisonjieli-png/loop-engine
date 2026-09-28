@@ -15,6 +15,7 @@ build_library_supply.py
 ├── openapi-discovery  the same for every Google API discovery document of Google's Apache-2.0 client
 ├── programs       one install recipe with a typed wrapper per command-line program
 ├── data-tables    one reference data table with its schema, loader and tests
+├── functions      one documented function of a permissively licensed library, with the code it needs
 └── report         the supply by family and form, and the projected composition
 ```
 
@@ -271,6 +272,25 @@ def data_tables(args) -> dict:
                   complete=not args.table)
 
 
+def functions(args) -> dict:
+    from supply_lines import function_extracts as line
+    run_folder = _outside(args.run_folder)
+    run_folder.mkdir(parents=True, exist_ok=True)
+    revision = code_revision(args.authorize_store_writes)
+    reader = FactReader(run_folder, line.HOSTS, maximum_requests=args.maximum_requests,
+                        pause_seconds=args.pause_seconds)
+    sources = line.read_sources()
+    if args.source:
+        sources = [row for row in sources if row["source_id"] in args.source]
+    facts_by_repository = reader.repository_facts(sorted({row["repository"] for row in sources}))
+    built, refusals, facts, summary = line.generate(reader, sources, code_revision=revision,
+                                                    licence_text=LICENCE_FILE.read_bytes(),
+                                                    generated_on=now_utc()[:10], staging=run_folder / "staging",
+                                                    repository_facts=facts_by_repository)
+    return finish(args, records.FUNCTION_EXTRACTS, built, refusals, {"libraries": summary}, reader, facts,
+                  complete=not args.source)
+
+
 def report(args) -> dict:
     from licensed_import.composition import library_counts, load_targets
     from licensed_import.storage import ImportStore
@@ -332,6 +352,10 @@ def parser() -> argparse.ArgumentParser:
     three.add_argument("--catalogue", action="store_true",
                        help="also every formula of Homebrew's catalogue with an allowlisted licence and executables")
     three.add_argument("--maximum-programs", type=int, default=0)
+    functions_command = commands.add_parser("functions")
+    common(functions_command)
+    functions_command.add_argument("--source", action="append", help="only these source identities of "
+                                   "function_sources.json")
     four = commands.add_parser("data-tables")
     common(four)
     four.add_argument("--table", action="append", help="only these table identities of data_table_sources.json")
@@ -352,7 +376,7 @@ def main(argv=None) -> int:
     args.started_at, args.started_clock = now_utc(), time.monotonic()
     {"mcp-registry": mcp_registry, "openapi": openapi, "openapi-directory": openapi_directory,
      "openapi-discovery": openapi_discovery, "programs": programs, "data-tables": data_tables,
-     "report": report}[args.command](args)
+     "functions": functions, "report": report}[args.command](args)
     return 0
 
 
