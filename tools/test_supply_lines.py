@@ -1458,6 +1458,22 @@ class JavaScriptClientTest(unittest.TestCase):
         for payload in failed:
             self.assertFalse(any(entry["path"].endswith(".mjs") for entry in payload["package"]["files"]))
 
+    @unittest.skipUnless(shutil.which("node"), "Node.js runs the JavaScript tests")
+    def test_one_broken_test_file_does_not_fail_the_rest_of_its_batch(self):
+        from supply_lines import javascript_clients as scripts
+        good = ('import { describe, test } from "node:test";\nimport assert from "node:assert/strict";\n'
+                'describe("good.test.mjs", () => { test("adds", () => { assert.equal(1 + 1, 2); }); });\n')
+        wrong = ('import { describe, test } from "node:test";\nimport assert from "node:assert/strict";\n'
+                 'describe("wrong.test.mjs", () => { test("adds", () => { assert.equal(1 + 1, 3); }); });\n')
+        with tempfile.TemporaryDirectory() as folder:
+            for name, text in (("good", good), ("wrong", wrong), ("broken", "this is not javascript (\n")):
+                (Path(folder) / name).mkdir()
+                (Path(folder) / name / f"{name}.test.mjs").write_text(text, encoding="utf-8")
+            results = scripts.run_tests(Path(folder), ["good/good.test.mjs", "wrong/wrong.test.mjs",
+                                                       "broken/broken.test.mjs"])
+        self.assertEqual(results, {"good/good.test.mjs": True, "wrong/wrong.test.mjs": False,
+                                   "broken/broken.test.mjs": False})
+
     def test_names_and_types_follow_javascript_rules(self):
         from supply_lines import javascript_clients as scripts
         self.assertEqual(scripts.function_name("projects_locations_things_get"), "projectsLocationsThingsGet")

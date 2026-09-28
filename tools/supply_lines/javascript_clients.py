@@ -552,23 +552,34 @@ def node_available() -> bool:
     return shutil.which(NODE) is not None
 
 
-def run_tests(folder: Path, test_files: list) -> dict:
-    """Test file (relative to folder) to passed, from one node --test run over all of them, network closed in each."""
-    if not test_files:
-        return {}
+def _run(folder: Path, test_files: list, flags: list) -> dict:
+    """Suite name to passed, for one node --test run."""
     environment = {"PATH": os.environ.get("PATH", ""), "HOME": str(folder), "NODE_OPTIONS": "", "NO_COLOR": "1"}
     try:
-        finished = subprocess.run([NODE, "--test", "--test-reporter=tap", f"--test-concurrency={TEST_CONCURRENCY}",
-                                   *test_files], cwd=folder, capture_output=True, text=True,
-                                  timeout=BATCH_TIMEOUT_SECONDS, env=environment, check=False)
+        finished = subprocess.run([NODE, "--test", "--test-reporter=tap", *flags, *test_files], cwd=folder,
+                                  capture_output=True, text=True, timeout=BATCH_TIMEOUT_SECONDS, env=environment,
+                                  check=False)
     except (OSError, subprocess.TimeoutExpired):
-        return {path: False for path in test_files}
+        return {}
     results = {}
     for line in finished.stdout.splitlines():
         match = _TAP_RESULT.match(line)  # top-level lines only: one suite per test file, named after it
         if match:
             name = match.group(2).strip()
             results[name] = results.get(name, True) and match.group(1) is None
+    return results
+
+
+def run_tests(folder: Path, test_files: list) -> dict:
+    """Test file (relative to folder) to passed. One node process runs the whole batch, one file after another
+    (the files restore what they change in the environment); a file the batch run does not report is run again in
+    its own process, so one broken file cannot fail the others."""
+    if not test_files:
+        return {}
+    results = _run(folder, test_files, ["--experimental-test-isolation=none", "--test-concurrency=1"])
+    missing = [path for path in test_files if path.rsplit("/", 1)[-1] not in results]
+    if missing:
+        results.update(_run(folder, missing, [f"--test-concurrency={TEST_CONCURRENCY}"]))
     return {path: results.get(path.rsplit("/", 1)[-1], False) for path in test_files}
 
 
