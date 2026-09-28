@@ -54,7 +54,8 @@
     "python_assignment": "OPERATION",
     "fields": [
      "method",
-     "path"
+     "path",
+     "operation_id"
     ],
     "fact_role": "specification"
    }
@@ -186,5 +187,5 @@
   "plugin_manifest"
  ],
  "effect_text_reason": "The licensed import's effect rules read words as actions a harness is told to take, which is right for instruction, skill, command and configuration files. A README, a JSON Schema or code comments of a generated client describe a remote API ('uploads a file'), whose effect the network effect covers; on September 28, 2026 those words produced 501 false effect findings (reads_files and writes_files in README.md and schema.json) on components whose syntax trees touch no local file. Python code is judged by its syntax tree.",
- "job_key_reason": "One package for one job: an API operation is its specification file, method and path; a protocol server is its registry package; a program is its formula; a data table is its upstream file bytes. Two components with one job key are duplicates whatever their text."
+ "job_key_reason": "One package for one job: an API operation is its specification file and its operation (method, path and the specification's operation identifier, since a specification may define several operations on one method and path, as Box does with URL fragments and OpenAI with beta variants: 23 such packages were refused as copies on September 28, 2026 when the key held method and path only); a protocol server is its registry package; a program is its formula; a data table is its upstream file bytes. Two components with one job key are duplicates whatever their text."
 }
