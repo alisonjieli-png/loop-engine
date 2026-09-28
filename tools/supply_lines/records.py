@@ -78,7 +78,7 @@ REFUSAL_REASONS = {
                          "licence_signals_disagree", "licence_unknown", "operation_identity_missing",
                          "operation_body_not_json", "operation_parameters_unsupported", "security_scheme_unsupported",
                          "example_not_constructible", "duplicate_operation", "blocked_by_static_check",
-                         "generated_test_failed", "package_above_review_bound"),
+                         "generated_test_failed", "package_above_review_bound", "covered_by_a_curated_source"),
     PROGRAM_INSTALLS: ("formula_licence_not_on_allowlist", "formula_deprecated_or_disabled", "not_a_command_line_program",
                        "no_published_checksum", "upstream_repository_unreadable", "licence_signals_disagree",
                        "blocked_by_static_check", "generated_test_failed", "duplicate_program"),
@@ -169,10 +169,17 @@ def record_id(line: str, key: str, package_digest: str) -> str:
     return f"library.supply.{line}.{key}.{package_digest[:16]}"
 
 
-def state_record_id(line: str) -> str:
+#: The state scopes of a line. A line written by two modes keeps one state per mode, so a complete run of one
+#: mode never withdraws what the other supplies (the curated and the directory mode of the API line).
+STATE_SCOPES = ("", "apis_guru_directory")
+
+
+def state_record_id(line: str, scope: str = "") -> str:
     if line not in LINES:
         raise SupplyRecordError("line_unknown", line)
-    return f"library.supply.state.{line}"
+    if scope not in STATE_SCOPES:
+        raise SupplyRecordError("state_scope_unknown", scope)
+    return f"library.supply.state.{line}" + (f".{scope}" if scope else "")
 
 
 def refusal(line: str, reason: str, subject: str, detail: str = "") -> dict:

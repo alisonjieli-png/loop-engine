@@ -152,6 +152,42 @@ class StoreTest(unittest.TestCase):
             finally:
                 writer.close()
 
+    def test_a_scoped_mode_keeps_its_own_state_so_the_other_mode_never_withdraws_it(self):
+        from supply_lines.store import SupplyStore
+        with tempfile.TemporaryDirectory() as folder:
+            curated = build(_package())
+            directory = build(_package(identity="apis.guru/example:list_things", name="example-list-things",
+                                       key=records.upstream_key(records.OPENAPI_OPERATIONS,
+                                                                "apis.guru/example:list_things")))
+            writer = SupplyStore(folder, writes_authorized=True)
+            try:
+                writer.write(records.OPENAPI_OPERATIONS, [directory], complete=False, scope="apis_guru_directory")
+                result = writer.write(records.OPENAPI_OPERATIONS, [curated], complete=True)
+                self.assertEqual((result["written"], result["withdrawn"]), (1, 0))
+                self.assertEqual(writer.store.get(directory[0]["record_id"])["lifecycle"], "candidate")
+                scoped = writer.store.get(records.state_record_id(records.OPENAPI_OPERATIONS, "apis_guru_directory"))
+                self.assertEqual(list(scoped["payload"]["packages"].values()), [directory[0]["record_id"]])
+                # Known wrong: one shared state lets the curated mode's complete run withdraw the directory's.
+                writer.write(records.OPENAPI_OPERATIONS, [directory], complete=False)
+                shared = writer.write(records.OPENAPI_OPERATIONS, [curated], complete=True)
+                self.assertEqual(shared["withdrawn"], 1)
+            finally:
+                writer.close()
+        with self.assertRaises(SupplyRecordError):
+            records.state_record_id(records.OPENAPI_OPERATIONS, "somewhere_else")
+
+    def test_a_store_write_leaves_the_disk_floor_free(self):
+        import build_library_supply as builder
+        with tempfile.TemporaryDirectory() as folder:
+            args = builder.parser().parse_args(["data-tables", "--run-folder", folder, "--authorize-network-reads",
+                                                "--authorize-store-writes", "--store-root", folder,
+                                                "--minimum-free-gigabytes", "1000000"])
+            result = builder.store(args, records.DATA_TABLES, [build(_package())], {}, complete=True)
+            self.assertEqual((result["stored"], result["reason"]), (False, "free_space_below_the_floor"))
+            self.assertEqual(list(Path(folder).iterdir()), [])
+            self.assertEqual(builder.parser().parse_args(["data-tables", "--run-folder", folder,
+                                                          "--authorize-network-reads"]).minimum_free_gigabytes, 15)
+
 
 def _entry(name="io.github.example/weather", *, package=None, remotes=None, env=None, version="1.2.3"):
     server = {"name": name, "version": version, "description": "Weather forecasts for agents.",
@@ -704,6 +740,137 @@ class OpenApiDirectoryTest(unittest.TestCase):
         self.assertEqual(line.decide("d.com", {"title": "x"}, Reader(mit), Texts(), {})["decision"], "licence_unknown")
         unreadable = line.decide("e.com", origin, Reader(None), Texts(), {})
         self.assertEqual(unreadable["decision"], "licence_unknown")
+
+    def test_a_licence_file_address_is_decided_by_its_repository_and_must_agree_with_the_declared_name(self):
+        from supply_lines import openapi_directory as line
+        from supply_lines.licences import RepositoryLicence
+
+        class Reader:
+            def __init__(self, licence):
+                self.licence = licence
+
+            def repository_facts(self, repositories):
+                return {repository.lower(): {"defaultBranchRef": {"target": {"oid": "d" * 40}}}
+                        for repository in repositories}
+
+            def licence_text(self, repository, commit):
+                return self.licence
+
+        class Texts:
+            def text(self, spdx):
+                raise AssertionError("a licence file address never takes a template text")
+
+        self.assertEqual(line.licence_file_repository("https://github.com/XeroAPI/Xero-OpenAPI/blob/master/LICENSE"),
+                         "XeroAPI/Xero-OpenAPI")
+        self.assertEqual(line.licence_file_repository(
+            "https://raw.githubusercontent.com/appwrite/appwrite/master/LICENSE"), "appwrite/appwrite")
+        self.assertEqual(line.licence_file_repository("https://github.com/a/b/blob/main/COPYING.txt"), "a/b")
+        for address in ("https://github.com/a/b/blob/main/README.md", "https://docs.example.org/LICENSE.txt",
+                        "https://github.com/a/b", "./LICENSE", ""):
+            self.assertIsNone(line.licence_file_repository(address), address)
+        mit = ("LICENSE", LICENCE, "MIT")
+        xero = {"license": {"name": "MIT", "url": "https://github.com/XeroAPI/Xero-OpenAPI/blob/master/LICENSE"}}
+        agreed = line.decide("xero.com:xero_assets", xero, Reader(mit), Texts(), {})
+        self.assertEqual((agreed["decision"], agreed["spdx"], agreed["basis"], agreed["licence_repository"]),
+                         ("agreed", "MIT", line.LICENCE_FILE_BASIS, "XeroAPI/Xero-OpenAPI"))
+        self.assertEqual(agreed["licence"].commit, "d" * 40)
+        # Known wrong: the declared name and the repository's licence disagree, the name maps to no licence, or
+        # the repository does not answer.
+        apache = {"license": {"name": "Apache 2.0", "url": "https://github.com/XeroAPI/Xero-OpenAPI/blob/x/LICENSE"}}
+        self.assertEqual(line.decide("x.com", apache, Reader(mit), Texts(), {})["decision"], "licence_signals_disagree")
+        public = {"license": {"name": "Public Domain", "url": "https://github.com/a/b/blob/main/LICENSE"}}
+        self.assertEqual(line.decide("y.com", public, Reader(mit), Texts(), {})["decision"], "licence_not_on_allowlist")
+        self.assertEqual(line.decide("z.com", xero, Reader(None), Texts(), {})["decision"], "licence_unknown")
+
+    def test_curated_sources_keep_their_directory_entries_and_one_operation_is_supplied_once(self):
+        from supply_lines import openapi_directory as line
+        from supply_lines import openapi_operations as generator
+        covered = line.curated_coverage(generator.read_sources())
+        self.assertEqual(line.covering_source("github.com:ghes-3.8", covered), "github")
+        self.assertEqual(line.covering_source("twilio.com:api", covered), "twilio")
+        self.assertEqual(line.covering_source("sendgrid.com", covered), "sendgrid")
+        self.assertEqual(line.covering_source("openai.com", covered), "openai")
+        # Known wrong: a sibling API of a covered one, or a same-named service elsewhere, is not covered.
+        for name in ("twilio.com:twilio_chat_v2", "klarna.com:openai", "xero.com:xero_assets", "azure.com:compute"):
+            self.assertIsNone(line.covering_source(name, covered), name)
+
+        def one(server):
+            document = {"openapi": "3.0.0", "info": {"title": "T", "version": "1"}, "servers": [{"url": server}],
+                        "paths": {"/users/{id}": {"get": {"operationId": "getUser", "parameters": [
+                            {"name": "id", "in": "path", "required": True, "schema": {"type": "string"}}],
+                            "responses": {"200": {"description": "ok"}}}}}}
+            found, _refused = generator.operations(document, {"source_id": "t", "vendor": "t",
+                                                              "credential_prefix": "T", "maximum_operations": 5})
+            return found[0]
+
+        stable, beta = one("https://graph.example.com/v1.0"), one("https://graph.example.com/beta")
+        self.assertEqual(line.operation_key(stable), line.operation_key(beta))
+        self.assertNotEqual(line.operation_key(stable), line.operation_key(one("https://other.example.com/v1.0")))
+        # Known wrong: a coverage field that is not a list of names is refused when the sources are read.
+        bad = {"record_type": generator.SOURCES_RECORD_TYPE, "specifications": [
+            {"source_id": "x", "vendor": "x", "credential_variable": "X_KEY", "directory_names": "x.com"}]}
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "sources.json"
+            path.write_text(json.dumps(bad), encoding="utf-8")
+            with self.assertRaises(ValueError):
+                generator.read_sources(path)
+
+    def test_generate_leaves_covered_apis_to_their_source_and_supplies_one_operation_once(self):
+        from supply_lines import openapi_directory as line
+        from supply_lines.reading import https_address
+        paths, _commit = line.licence_text_paths()
+        names = ("example.com:graph", "example.com:graph-beta", "github.com:ghes-3.8")
+
+        def specification(version):
+            return {"openapi": "3.0.0", "info": {"title": "Graph", "version": "1", "license": {"name": "MIT"}},
+                    "servers": [{"url": f"https://graph.example.com/{version}"}],
+                    "paths": {"/users/{id}": {"get": {"operationId": "getUser", "parameters": [
+                        {"name": "id", "in": "path", "required": True, "schema": {"type": "string"}}],
+                        "responses": {"200": {"description": "ok", "content": {"application/json": {
+                            "schema": {"type": "object", "properties": {"id": {"type": "string"}}}}}}}}}}}
+
+        address = {name: f"https://{line.DIRECTORY_HOST}/v2/specs/{name.replace(':', '/')}/1/openapi.json"
+                   for name in names}
+        listing = {name: {"preferred": "1", "versions": {"1": {
+            "info": {"title": name, "license": {"name": "MIT"}}, "swaggerUrl": address[name],
+            "updated": "2026-09-01T00:00:00Z"}}} for name in names}
+        answers = {https_address(line.DIRECTORY_HOST, line.DIRECTORY_LIST): json.dumps(listing).encode(),
+                   address[names[0]]: json.dumps(specification("v1.0")).encode(),
+                   address[names[1]]: json.dumps(specification("beta")).encode(),
+                   address[names[2]]: json.dumps(specification("v3")).encode()}
+
+        class Answer(_Answer):
+            def __init__(self, url, status, body):
+                super().__init__(status, body)
+                self.url = url
+
+        class Reader:
+            def __init__(self):
+                self.asked = []
+
+            def get(self, url, cache_errors=False):
+                self.asked.append(url)
+                return Answer(url, 200, answers[url]) if url in answers else Answer(url, 404, b"{}")
+
+            def pinned_file(self, repository, commit, path):
+                return {"sha256": paths["MIT"][1], "commit": commit, "bytes": LICENCE, "path": path,
+                        "url": f"https://raw.githubusercontent.com/{repository}/{commit}/{path}",
+                        "retrieved_at": "2026-09-27T00:00:00Z"}
+
+        reader = Reader()
+        with tempfile.TemporaryDirectory() as folder:
+            built, refused, _facts, decisions, summary = line.generate(
+                reader, code_revision="a" * 40, licence_text=LICENCE, generated_on="2026-09-27",
+                staging=Path(folder) / "staging")
+        self.assertEqual([payload["provenance"]["repository"] for payload, _bodies in built],
+                         ["apis.guru/example.com/graph"])
+        self.assertEqual(sorted((row["reason"], row["subject"].split(" ")[0]) for row in refused),
+                         [("covered_by_a_curated_source", "github.com:ghes-3.8"),
+                          ("duplicate_operation", "example.com:graph-beta")])
+        self.assertEqual((summary["covered_by_a_curated_source"], summary["duplicate_operations"]), (1, 1))
+        # A covered API is never read: its specification is left to the curated source.
+        self.assertNotIn(address[names[2]], reader.asked)
+        self.assertEqual([row["api"] for row in decisions], list(names[:2]))
 
     def test_a_swagger_2_document_becomes_operations_with_body_auth_and_servers(self):
         from supply_lines import openapi_directory as line

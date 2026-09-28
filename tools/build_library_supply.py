@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import shutil
 import subprocess
 import sys
 from collections import Counter
@@ -82,20 +83,38 @@ def materialize(folder: Path, built) -> None:
         (root / "candidate.json").write_text(json.dumps(payload, indent=1, sort_keys=True) + "\n", encoding="utf-8")
 
 
-def store(args, line: str, built, facts: dict, *, complete: bool) -> dict:
+#: The free space a store write leaves on the store's disk at least (the workstation's standing floor).
+MINIMUM_FREE_GIGABYTES = 15
+
+
+def free_gigabytes(path) -> float:
+    """Free space of the disk holding path (its nearest existing parent), in gigabytes."""
+    path = Path(path)
+    while not path.exists() and path != path.parent:
+        path = path.parent
+    return shutil.disk_usage(path).free / 1024 ** 3
+
+
+def store(args, line: str, built, facts: dict, *, complete: bool, scope: str = "") -> dict:
     if not args.authorize_store_writes:
         return {"stored": False, "reason": "no --authorize-store-writes"}
+    free = free_gigabytes(args.store_root)
+    if free < args.minimum_free_gigabytes:
+        # The run's facts stay cached in its run folder, so the same command stores quickly once space returns.
+        return {"stored": False, "reason": "free_space_below_the_floor", "free_gigabytes": round(free, 1),
+                "floor_gigabytes": args.minimum_free_gigabytes}
     from supply_lines.store import SupplyStore
     writer = SupplyStore(args.store_root, writes_authorized=True)
     try:
         kept = writer.keep_facts(facts)
-        result = writer.write(line, built, complete=complete)
+        result = writer.write(line, built, complete=complete, scope=scope)
     finally:
         writer.close()
     return {"stored": True, "facts_kept": kept, **result}
 
 
-def finish(args, line: str, built, refusals, extra: dict, reader, facts: dict, *, complete: bool) -> dict:
+def finish(args, line: str, built, refusals, extra: dict, reader, facts: dict, *, complete: bool,
+           scope: str = "") -> dict:
     run_folder = Path(args.run_folder)
     if args.materialize:
         materialize(run_folder / "packages", built)
@@ -108,7 +127,7 @@ def finish(args, line: str, built, refusals, extra: dict, reader, facts: dict, *
               "licences": dict(Counter(payload["licence"]["spdx_expression"] for payload, _bodies in built)),
               "effects": dict(Counter(effect for payload, _bodies in built for effect in payload["declared_effects"])),
               "requests": reader.requests() if reader else {}, **extra,
-              "store": store(args, line, built, facts, complete=complete)}
+              "store": store(args, line, built, facts, complete=complete, scope=scope)}
     (run_folder / f"run-{report['finished_at'].replace(':', '')}.json").write_text(
         json.dumps(report, indent=1, sort_keys=True) + "\n", encoding="utf-8")
     print(json.dumps({key: report[key] for key in ("line", "candidates", "refused", "refused_by_reason", "store")},
@@ -177,7 +196,7 @@ def openapi_directory(args) -> dict:
                                                                 "apis": count}
                                                                for (decision, spdx, basis), count in
                                                                sorted(licences.items(), key=lambda item: -item[1])]},
-                  reader, facts, complete=False)
+                  reader, facts, complete=False, scope=line.STATE_SCOPE)
 
 
 def programs(args) -> dict:
@@ -261,6 +280,8 @@ def parser() -> argparse.ArgumentParser:
         sub.add_argument("--materialize", action="store_true", help="also write every package under the run folder")
         sub.add_argument("--maximum-requests", type=int, default=6000)
         sub.add_argument("--pause-seconds", type=float, default=0.25, help="the least pause between two requests")
+        sub.add_argument("--minimum-free-gigabytes", type=float, default=MINIMUM_FREE_GIGABYTES,
+                         help="store nothing when the store's disk has less free space than this")
 
     one = commands.add_parser("mcp-registry")
     common(one)

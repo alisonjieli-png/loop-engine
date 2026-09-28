@@ -47,9 +47,12 @@ class SupplyStore:
             self.store.quarantine.put(data)
         return len(facts)
 
-    def write(self, line: str, built, *, complete: bool) -> dict:
-        """Store each (payload, bodies) of one line; supersede changed versions, withdraw what a complete run lost."""
-        state_id = state_record_id(line)
+    def write(self, line: str, built, *, complete: bool, scope: str = "") -> dict:
+        """Store each (payload, bodies) of one line; supersede changed versions, withdraw what a complete run lost.
+
+        The state (and so what a complete run may withdraw) is the line's own, or its scope's when a line has
+        several modes."""
+        state_id = state_record_id(line, scope)
         current_state = self.store.get(state_id)
         previous = dict((current_state or {}).get("payload", {}).get("packages", {}))
         packages, records, expected, bodies = {}, [], {}, {}
@@ -88,12 +91,13 @@ class SupplyStore:
         if current_state is None or current_state["payload"].get("packages") != packages:
             # The state is rewritten only when the components it lists changed: an unchanged run writes nothing.
             state = {"record_type": STATE_RECORD_TYPE, "line": line, "written_at": now_utc(), "complete": complete,
-                     "packages": packages}
+                     "packages": packages, **({"scope": scope} if scope else {})}
             if current_state is not None:
                 expected[state_id] = current_state["record_version"]
             records.append(_state_store_record(state, state_id))
         body_result = self.store.put_bodies(bodies) if bodies else {"written": 0, "already_present": 0}
         if records:
             self.store.apply(records, expected=expected)
-        return {"line": line, "written": written, "unchanged": unchanged, "superseded": superseded,
+        return {"line": line, **({"scope": scope} if scope else {}), "written": written, "unchanged": unchanged,
+                "superseded": superseded,
                 "withdrawn": withdrawn, "bodies": body_result, "components": len(packages)}
