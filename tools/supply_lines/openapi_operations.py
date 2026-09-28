@@ -54,7 +54,7 @@ from .records import (
     PACKAGE_ABOVE_REVIEW_BOUND, REFUSAL_REASONS, SupplyRecordError, fact_source, licence_allowed, provenance, refusal,
     upstream_key)
 
-GENERATOR_VERSION = "1.5.0"
+GENERATOR_VERSION = "1.6.0"
 #: The text of a second allowlisted licence a specification declares beside its repository's licence.
 SPECIFICATION_LICENCE_NAME = "SPECIFICATION-LICENSE"
 DECLARED_TEXT_BASIS = "specification_info_license_declaration_text_from_choosealicense_at_the_pinned_commit"
@@ -1645,12 +1645,36 @@ def _package(operation, spec, source, licence, generator, licence_text, generate
                                  repository_facts).supply)
 
 
+#: The longest example string a generated test writes: a longer one is cut, so no test holds a one-line literal
+#: a minified-code check would refuse.
+MAXIMUM_EXAMPLE_STRING = 200
+#: The value a secret-shaped example string is replaced with: a test never holds a secret-shaped literal.
+PLACEHOLDER_TEXT = "example"
+
+
+def clean_example(value):
+    """An example value with every secret-shaped string replaced and every long string cut."""
+    from loop_engine.core.library_ingestion.connection_rendering import credential_shaped
+    if isinstance(value, str):
+        if credential_shaped(value):
+            return PLACEHOLDER_TEXT
+        return value[:MAXIMUM_EXAMPLE_STRING]
+    if isinstance(value, dict):
+        return {key: clean_example(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [clean_example(item) for item in value]
+    return value
+
+
 def prepare_package(operation, spec, source, licence, generator, licence_text, generated_on, staging,
                     repository_facts) -> Prepared:
     """Everything of one operation's package but the build, after its Python tests passed."""
     try:
-        call = _example_arguments(operation)
-        example = _response_example(operation)
+        call = clean_example(_example_arguments(operation))
+        example = clean_example(_response_example(operation))
+        for name, value in call.items():
+            check_value(value, next((row.check for row in operation.parameters if row.python == name),
+                                    operation.body_check or {}), name)
     except (TypeError, ValueError) as error:
         raise OperationRefused("example_not_constructible", str(error)[:200]) from None
     schema = {"operation": {"method": operation.method, "path": operation.path, "operation_id": operation.operation_id},

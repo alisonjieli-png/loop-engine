@@ -268,6 +268,35 @@ class McpRegistryLineTest(unittest.TestCase):
         return mcp_registry.generate(entries, reader, code_revision="a" * 40, licence_text=LICENCE,
                                      generated_on="2026-09-27")
 
+    def test_an_entry_that_names_its_package_in_runtime_arguments_is_refused(self):
+        pypi = {"registryType": "pypi", "identifier": "weather-mcp", "version": "1.2.3",
+                "transport": {"type": "stdio"},
+                "runtimeArguments": [{"type": "named", "name": "--from", "value": "weather-mcp[all]"},
+                                     {"type": "positional", "value": "weather-mcp"}]}
+        entry = _entry(package=pypi)
+        built, refusals = self._generate([(entry, _source(entry))])
+        self.assertEqual((built, [row["reason"] for row in refusals]), ([], ["required_arguments_not_rendered"]))
+        # A runtime flag that does not name the package keeps the entry.
+        harmless = {**pypi, "runtimeArguments": [{"type": "named", "name": "--python", "value": "3.12"}]}
+        entry = _entry(package=harmless)
+        built, refusals = self._generate([(entry, _source(entry))],
+                                         answers={"https://pypi.org/pypi/weather-mcp/1.2.3/json":
+                                                  (200, json.dumps({"info": {"license": "MIT"}}).encode())})
+        self.assertEqual((len(built), refusals), (1, []))
+
+    def test_a_variable_named_like_a_secret_is_declared_as_one(self):
+        entry = _entry(env=[{"name": "WEATHER_API_KEY", "isSecret": False, "isRequired": True},
+                            {"name": "WEATHER_REGION", "isSecret": False}])
+        built, refusals = self._generate([(entry, _source(entry))])
+        self.assertEqual(refusals, [])
+        [(payload, _bodies)] = built
+        self.assertIn("reads_secret", payload["declared_effects"])
+        self.assertEqual(payload["credentials"], ["WEATHER_API_KEY"])
+        # Known wrong: a server with no secret-like variable declares no secret.
+        entry = _entry(env=[{"name": "WEATHER_REGION", "isSecret": False}])
+        [(payload, _bodies)], _refusals = self._generate([(entry, _source(entry))])
+        self.assertNotIn("reads_secret", payload["declared_effects"])
+
     def test_a_published_npm_server_becomes_one_connection_package_for_four_harnesses(self):
         entry = _entry()
         built, refusals = self._generate([(entry, _source(entry))])
@@ -617,6 +646,16 @@ class OpenApiLineTest(unittest.TestCase):
         # repository is MIT.
         built, refused, _facts, _summary = run({"license": {"name": "Proprietary"}})
         self.assertEqual((built, [row["reason"] for row in refused]), ([], ["licence_not_on_allowlist"]))
+
+    def test_example_values_are_cut_and_secret_shaped_ones_replaced(self):
+        from supply_lines import openapi_operations as line
+        long_text = "x" * 5000
+        cleaned = line.clean_example({"note": long_text, "key": "ghp_" + "A1b2C3d4E5f6G7h8I9j0" * 2,
+                                      "items": [{"text": long_text}], "count": 3})
+        self.assertEqual(len(cleaned["note"]), line.MAXIMUM_EXAMPLE_STRING)
+        self.assertEqual(cleaned["key"], line.PLACEHOLDER_TEXT)
+        self.assertEqual((len(cleaned["items"][0]["text"]), cleaned["count"]), (line.MAXIMUM_EXAMPLE_STRING, 3))
+        self.assertEqual(line.clean_example("short"), "short")
 
     def test_form_bodies_are_encoded_by_their_declared_style(self):
         from supply_lines import openapi_operations as line

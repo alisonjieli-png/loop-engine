@@ -26,6 +26,7 @@ from pathlib import Path
 
 from loop_engine.core.library_ingestion.candidates import REQUEST_RECORD_TYPE
 from loop_engine.core.library_ingestion.connection_rendering import render_connection
+from loop_engine.core.library_ingestion.effects import declared_effects
 from loop_engine.core.library_ingestion.format_connection import ConnectionFileRules
 from loop_engine.core.library_ingestion.https_transport import quote_part
 from loop_engine.core.library_ingestion.provenance import read_outside_provenance
@@ -42,7 +43,7 @@ from .records import (
     BLOCKED_BY_STATIC_CHECK, CONNECTION_FILES_INVALID, GENERATED_CODE_LICENCE, LICENCE_TEXT, MCP_REGISTRY,
     REFUSAL_REASONS, SupplyRecordError, fact_source, licence_allowed, provenance, refusal, upstream_key)
 
-GENERATOR_VERSION = "1.0.0"
+GENERATOR_VERSION = "1.1.0"
 REGISTRY_HOST = "registry.modelcontextprotocol.io"
 #: The registry engine's reason when GitHub's licence interface and the licence text name different licences.
 UPSTREAM_SIGNALS_DISAGREE = "upstream_licence_signals_disagree"
@@ -202,6 +203,33 @@ permissions.
 """
 
 
+#: Runtime flags with which an entry names the package or a module itself (uvx --from pkg[extra] command,
+#: npx --package pkg, python -m module). The renderer appends the pinned identifier@version after the runtime
+#: arguments, so with one of these the package would run unpinned with a stray argument; such an entry is refused.
+PACKAGE_NAMING_FLAGS = frozenset({"--from", "--with", "--package", "-p", "-m"})
+
+
+def names_its_own_package(server: dict) -> bool:
+    """Whether a runtime argument of any package of the entry names the package or a module to run."""
+    for package in server.get("packages") or ():
+        for argument in (package.get("runtimeArguments") or ()) if isinstance(package, dict) else ():
+            if isinstance(argument, dict) and ({str(argument.get("name") or ""), str(argument.get("value") or "")}
+                                               & PACKAGE_NAMING_FLAGS):
+                return True
+    return False
+
+
+def secret_names(document: dict, texts) -> list:
+    """The variables a connection passes that are secrets: flagged by the entry, or named like a secret (the
+    library ingestion effect rule names_a_secret, read over the variable's name alone)."""
+    names = []
+    for row in document["inputs"]:
+        named = "reads_secret" in declared_effects("protocol_server_configuration", row["name"], {}).effects
+        if row["secret"] or named:
+            names.append(row["name"])
+    return names
+
+
 def generate(entries, reader, *, code_revision: str, licence_text: bytes, generated_on: str,
              repository_facts: "dict | None" = None) -> tuple:
     """(built, refusals) for the registry entries: one package per server that passes every rule."""
@@ -235,6 +263,11 @@ def generate(entries, reader, *, code_revision: str, licence_text: bytes, genera
         part = evidence.get("repository_licence") or {}
         if not part.get("sha256"):
             refusals.append(refusal(MCP_REGISTRY, "licence_unknown", name, "no licence file digest"))
+            continue
+        if names_its_own_package(server):
+            refusals.append(refusal(MCP_REGISTRY, "required_arguments_not_rendered", name,
+                                    "a runtime argument names the package or a module; the pinned version would "
+                                    "not apply to it"))
             continue
         try:
             rendered = render_connection(entry, source)
@@ -294,8 +327,9 @@ def generate(entries, reader, *, code_revision: str, licence_text: bytes, genera
                              basis="package_metadata_declaration")]
         effects = [("spawns_process", "starts_a_local_server_process"),
                    ("network", "downloads_the_pinned_package_when_started")]
-        secrets = [row["name"] for row in document["inputs"] if row["secret"]]
-        if secrets:
+        secrets = secret_names(document, texts)
+        found = declared_effects("protocol_server_configuration", "\n".join(texts.values()), {}, connection=document)
+        if secrets or "reads_secret" in found.effects:
             effects.append(("reads_secret", "reads_secret_inputs_from_named_environment_variables"))
         placements = [{"harness": "upstream", "path": source.path, "basis": "registry_entry", "scope": "upstream",
                        "support": "unverified"}] + [
