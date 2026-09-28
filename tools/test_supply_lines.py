@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import copy
 import math
+import shutil
 import hashlib
 import json
 import sys
@@ -1402,6 +1403,68 @@ class GoogleDiscoveryTest(unittest.TestCase):
                                                              licence_text=LICENCE, generated_on="2026-09-27",
                                                              staging=Path(staging))
         self.assertEqual((built, [row["reason"] for row in refused]), ([], ["specification_unreadable"]))
+
+
+class JavaScriptClientTest(unittest.TestCase):
+    def _jobs(self):
+        from supply_lines import openapi_operations as line
+        from supply_lines.licences import RepositoryLicence
+        licence = RepositoryLicence("example/api", "c" * 40, "MIT", "agreed", "LICENSE", LICENCE, "MIT", "MIT", 1.0)
+        generator = {"identity": "tools/supply_lines/openapi_operations.py", "version": "test", "code_revision": "a" * 40}
+        spec = {**SPEC_FACTS, "size_bytes": 10, "retrieved_at": "2026-09-27T00:00:00Z"}
+        found, _refused = line.operations(SPECIFICATION, SOURCE)
+        from supply_lines import google_discovery
+        google = {"source_id": "google:things:v1", "vendor": "google_things_v1", "credential_prefix": "GOOGLE",
+                  "credential_variable": "GOOGLE_ACCESS_TOKEN", "maximum_operations": 50}
+        found_google, _refused = line.operations(google_discovery.discovery_to_openapi3(DISCOVERY), google)
+        return [(operation, spec, SOURCE, licence, generator, LICENCE, "2026-09-27", {}, operation.module)
+                for operation in found] + [(operation, {**spec, "base_url_variable": "GOOGLE_THINGS_V1_BASE_URL"},
+                                            google, licence, generator, LICENCE, "2026-09-27", {}, operation.module)
+                                           for operation in found_google]
+
+    @unittest.skipUnless(shutil.which("node"), "Node.js runs the JavaScript tests")
+    def test_every_package_carries_a_tested_javascript_module_and_its_declarations(self):
+        from collections import Counter
+        from supply_lines import openapi_operations as line
+        jobs = self._jobs()
+        refused, summary = [], Counter()
+        with tempfile.TemporaryDirectory() as folder:
+            built = line.package_operations(jobs, Path(folder), refused, summary)
+        self.assertEqual((refused, summary["with_javascript"], len(built)), ([], len(jobs), len(jobs)))
+        for payload, bodies in built:
+            paths = {entry["path"] for entry in payload["package"]["files"]}
+            module = payload["tests"]["files"][0][len("test_"):-len(".py")]
+            self.assertTrue({f"{module}.mjs", f"{module}.d.ts", f"{module}.test.mjs"} <= paths, paths)
+            self.assertEqual(payload["tests"]["javascript"]["command"], f"node --test {module}.test.mjs")
+            self.assertIn("JavaScript module with TypeScript declarations", payload["description"])
+        # Known wrong: a module that skips its argument checks fails its own tests and is left out; the package
+        # keeps its Python client alone.
+        from supply_lines import javascript_clients as scripts
+        original = scripts.module_source
+
+        def unchecked(operation, spec):
+            return original(operation, spec).replace("    check(value, schema, python);\n", "")
+
+        scripts.module_source = unchecked
+        try:
+            refused, summary = [], Counter()
+            with tempfile.TemporaryDirectory() as folder:
+                built = line.package_operations(jobs, Path(folder), refused, summary)
+        finally:
+            scripts.module_source = original
+        self.assertGreater(summary["javascript_tests_failed"], 0)
+        failed = [payload for payload, _bodies in built if "javascript" not in payload["tests"]]
+        self.assertEqual(len(failed), summary["javascript_tests_failed"])
+        for payload in failed:
+            self.assertFalse(any(entry["path"].endswith(".mjs") for entry in payload["package"]["files"]))
+
+    def test_names_and_types_follow_javascript_rules(self):
+        from supply_lines import javascript_clients as scripts
+        self.assertEqual(scripts.function_name("projects_locations_things_get"), "projectsLocationsThingsGet")
+        self.assertEqual(scripts.function_name("delete"), "deleteOperation")
+        self.assertEqual(scripts.ts_type({"type": ["string"], "enum": ["A", "B"]}), '"A" | "B"')
+        self.assertEqual(scripts.ts_type({"type": ["array"], "items": {"type": ["integer"]}}), "Array<number>")
+        self.assertEqual(scripts.comment("a */ b\nc"), "a * / b c")
 
 
 class VerbatimCodeSourcesTest(unittest.TestCase):

@@ -31,11 +31,9 @@ from loop_engine.core.library_ingestion.record_rules import git_blob_identity
 
 from .licences import repository_licence
 from .openapi_directory import DUPLICATE_OPERATION, operation_key
-from .openapi_operations import OperationRefused, _package, operations
+from .openapi_operations import operations, package_operations
 from .reading import RAW_HOST, https_address
-from .records import (
-    BLOCKED_BY_STATIC_CHECK, GENERATED_TEST_FAILED, OPENAPI_OPERATIONS, PACKAGE_ABOVE_REVIEW_BOUND, SupplyRecordError,
-    refusal)
+from .records import OPENAPI_OPERATIONS, SupplyRecordError, refusal
 
 DISCOVERY_REPOSITORY = "googleapis/google-api-python-client"
 DISCOVERY_BRANCH = "main"
@@ -180,7 +178,7 @@ def discovery_to_openapi3(document: dict) -> dict:
 
 
 def generate(reader, *, code_revision: str, licence_text: bytes, generated_on: str, staging, only=None,
-             maximum_apis: "int | None" = None, maximum_operations: int = 3000) -> tuple:
+             maximum_apis: "int | None" = None, maximum_operations: int = 3000, javascript: bool = True) -> tuple:
     """(built, refusals, facts, summary) of every chosen discovery document, or of the named APIs."""
     head = reader.github(f"repos/{DISCOVERY_REPOSITORY}/commits/{DISCOVERY_BRANCH}")
     if head.status != 200:
@@ -226,6 +224,7 @@ def generate(reader, *, code_revision: str, licence_text: bytes, generated_on: s
         refused += refusals
         summary["apis"] += 1
         summary["operations"] += len(found)
+        jobs = []
         for operation in found[:maximum_operations]:
             key = operation_key(operation)
             if key in supplied:
@@ -234,18 +233,11 @@ def generate(reader, *, code_revision: str, licence_text: bytes, generated_on: s
                                        f"supplied from {supplied[key]}"))
                 continue
             supplied[key] = f"{name}:{version}"
-            try:
-                built.append(_package(operation, spec, source, licence, generator, licence_text, generated_on,
-                                      staging, {}))
-                summary["packaged"] += 1
-            except OperationRefused as error:
-                refused.append(refusal(OPENAPI_OPERATIONS, error.reason, f"{name}:{version} {operation.method} "
-                                       f"{operation.path}", error.detail))
-            except SupplyRecordError as error:
-                reason = error.code if error.code in (BLOCKED_BY_STATIC_CHECK, PACKAGE_ABOVE_REVIEW_BOUND) else \
-                    GENERATED_TEST_FAILED
-                refused.append(refusal(OPENAPI_OPERATIONS, reason, f"{name}:{version} {operation.method} "
-                                       f"{operation.path}", str(error)))
+            jobs.append((operation, spec, source, licence, generator, licence_text, generated_on, {},
+                         f"{name}:{version} {operation.method} {operation.path}"))
+        packaged = package_operations(jobs, staging, refused, summary, javascript=javascript)
+        built += packaged
+        summary["packaged"] += len(packaged)
     return built, refused, facts, dict(summary)
 
 

@@ -1560,9 +1560,9 @@ def read_specification(reader, source: dict, path: str, texts=None) -> dict:
 
 
 def generate(reader, sources, *, code_revision: str, licence_text: bytes, generated_on: str, staging: Path,
-             repository_facts: "dict | None" = None) -> tuple:
+             repository_facts: "dict | None" = None, javascript: bool = True) -> tuple:
     """(built, refusals, facts, summary): every operation of every declared specification, tested and packaged."""
-    built, refused, facts, summary = [], [], {}, []
+    built, refused, facts, summary, counted = [], [], {}, [], Counter()
     generator = {"identity": "tools/supply_lines/openapi_operations.py", "version": GENERATOR_VERSION,
                  "code_revision": code_revision}
     texts = LicenceTexts(reader)
@@ -1581,36 +1581,27 @@ def generate(reader, sources, *, code_revision: str, licence_text: bytes, genera
             spec["licence"] = licence.spdx
             found, refusals = operations(spec["document"], source)
             refused += refusals
-            kept = 0
+            jobs = []
             for operation in found:
-                if taken >= source["maximum_operations"]:
+                if taken + len(jobs) >= source["maximum_operations"]:
                     break
+                label = f"{source['source_id']} {operation.method} {operation.path}"
                 if operation.module in seen_modules:
-                    refused.append(refusal(OPENAPI_OPERATIONS, "duplicate_operation",
-                                           f"{source['source_id']} {operation.method} {operation.path}", operation.module))
-                    continue
-                try:
-                    payload_bodies = _package(operation, spec, source, licence, generator, licence_text, generated_on,
-                                              staging, repository_facts or {})
-                except OperationRefused as error:
-                    refused.append(refusal(OPENAPI_OPERATIONS, error.reason,
-                                           f"{source['source_id']} {operation.method} {operation.path}", error.detail))
-                    continue
-                except SupplyRecordError as error:
-                    reason = error.code if error.code in KEPT_CODES else GENERATED_TEST_FAILED
-                    refused.append(refusal(OPENAPI_OPERATIONS, reason,
-                                           f"{source['source_id']} {operation.method} {operation.path}", str(error)))
+                    refused.append(refusal(OPENAPI_OPERATIONS, "duplicate_operation", label, operation.module))
                     continue
                 seen_modules.add(operation.module)
-                built.append(payload_bodies)
-                taken += 1
-                kept += 1
+                jobs.append((operation, spec, source, licence, generator, licence_text, generated_on,
+                             repository_facts or {}, label))
+            packaged = package_operations(jobs, staging, refused, counted, javascript=javascript)
+            built += packaged
+            taken += len(packaged)
             declared = spec.get("declared_licence") or {}
             summary.append({"source_id": source["source_id"], "path": path, "commit": spec["commit"],
                             "sha256": spec["sha256"], "licence": licence.spdx,
                             "declared_licence": declared.get("spdx"), "declared_as": declared.get("declared"),
-                            "operations": len(found),
-                            "refused_while_reading": len(refusals), "packaged": kept})
+                            "operations": len(found), "refused_while_reading": len(refusals),
+                            "packaged": len(packaged)})
+    summary.append({"javascript": dict(counted)})
     return built, refused, facts, summary
 
 
@@ -1634,7 +1625,26 @@ def compact(value, depth_limit: "int | None", depth: int = 0, names: bool = Fals
     return value
 
 
+@dataclass
+class Prepared:
+    """One operation's package before it is built: the facts, and what its JavaScript module is written from."""
+
+    supply: SupplyPackage
+    operation: Operation
+    spec: dict
+    call: dict
+    example: object
+
+
 def _package(operation, spec, source, licence, generator, licence_text, generated_on, staging, repository_facts):
+    """The package of one operation with its Python client only."""
+    return build(prepare_package(operation, spec, source, licence, generator, licence_text, generated_on, staging,
+                                 repository_facts).supply)
+
+
+def prepare_package(operation, spec, source, licence, generator, licence_text, generated_on, staging,
+                    repository_facts) -> Prepared:
+    """Everything of one operation's package but the build, after its Python tests passed."""
     try:
         call = _example_arguments(operation)
         example = _response_example(operation)
@@ -1723,7 +1733,85 @@ def _package(operation, spec, source, licence, generator, licence_text, generate
         repository={"name": spec["repository"], "stars": stars, "specification": spec["path"],
                     "specification_version": spec["version"], "operation": f"{operation.method} {operation.path}"},
         generated_on=generated_on, comparison_text=identity)
-    return build(supply)
+    return Prepared(supply, operation, spec, call, example)
+
+
+JAVASCRIPT_DESCRIPTION = " and one tested JavaScript module with TypeScript declarations"
+
+
+def with_javascript(supply: SupplyPackage, files: dict, tests_run: int) -> SupplyPackage:
+    """The package with its JavaScript module, declarations and tests added, and a second test command."""
+    from dataclasses import replace
+    from .javascript_clients import TEST_SUFFIX
+    added = [PackageFile(path, text.encode("utf-8"), "other" if path.endswith(".d.ts") else "executable_tool")
+             for path, text in files.items()]
+    test_file = next(path for path in files if path.endswith(TEST_SUFFIX))
+    tests = {**supply.tests, "javascript": {"files": [test_file], "command": f"node --test {test_file}",
+                                            "result": "passed", "tests_run": tests_run, "network": False}}
+    description = supply.description.rstrip(".") + JAVASCRIPT_DESCRIPTION + "."
+    return replace(supply, files=list(supply.files) + added, tests=tests, description=description)
+
+
+def package_operations(jobs, staging: Path, refused: list, summary, *, javascript: bool = True) -> list:
+    """Every job's built package. A job is (operation, spec, source, licence, generator, licence text, generation
+    date, repository facts, label). The Python client is tested in this process; then one node run tests every
+    JavaScript module of the batch, and a module is added only when its tests pass (a package whose JavaScript tests
+    fail keeps its Python client alone, and the summary counts it)."""
+    from . import javascript_clients as scripts
+    prepared = []
+    for operation, spec, source, licence, generator, licence_text, generated_on, facts, label in jobs:
+        try:
+            prepared.append((prepare_package(operation, spec, source, licence, generator, licence_text, generated_on,
+                                             staging, facts), label))
+        except OperationRefused as error:
+            refused.append(refusal(OPENAPI_OPERATIONS, error.reason, label, error.detail))
+        except SupplyRecordError as error:
+            reason = error.code if error.code in KEPT_CODES else GENERATED_TEST_FAILED
+            refused.append(refusal(OPENAPI_OPERATIONS, reason, label, str(error)))
+    written, passed = {}, {}
+    folder = staging / "javascript"
+    if javascript and prepared and scripts.node_available():
+        for item, _label in prepared:
+            operation = item.operation
+            module = operation.module
+            expected_path = urllib.parse.urlsplit(operation.base_url).path.rstrip("/") + operation.path
+            for parameter in operation.parameters:
+                if parameter.location == "path":
+                    value = item.call[parameter.python]
+                    text = ("true" if value else "false") if isinstance(value, bool) else str(value)
+                    expected_path = expected_path.replace("{" + parameter.wire + "}", urllib.parse.quote(
+                        text, safe="/" if parameter.reserved else ""))
+            test_text, count = scripts.test_source(operation, item.call, item.example, expected_path)
+            files = {f"{module}{scripts.JAVASCRIPT_SUFFIX}": scripts.module_source(operation, item.spec),
+                     f"{module}{scripts.DECLARATION_SUFFIX}": scripts.declaration_source(operation),
+                     f"{module}{scripts.TEST_SUFFIX}": test_text}
+            target = folder / module
+            target.mkdir(parents=True, exist_ok=True)
+            for path, text in files.items():
+                (target / path).write_text(text, encoding="utf-8")
+            written[module] = (files, count)
+        passed = scripts.run_tests(folder, [f"{module}/{module}{scripts.TEST_SUFFIX}" for module in written])
+        shutil.rmtree(folder, ignore_errors=True)
+    built = []
+    for item, label in prepared:
+        module = item.operation.module
+        supply = item.supply
+        if passed.get(f"{module}/{module}{scripts.TEST_SUFFIX}"):
+            files, count = written[module]
+            try:
+                built.append(build(with_javascript(supply, files, count)))
+                summary["with_javascript"] += 1
+                continue
+            except SupplyRecordError:
+                summary["javascript_not_packaged"] += 1
+        elif module in written:
+            summary["javascript_tests_failed"] += 1
+        try:
+            built.append(build(supply))
+        except SupplyRecordError as error:
+            reason = error.code if error.code in KEPT_CODES else GENERATED_TEST_FAILED
+            refused.append(refusal(OPENAPI_OPERATIONS, reason, label, str(error)))
+    return built
 
 
 def counts(refusals) -> dict:

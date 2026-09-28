@@ -39,13 +39,10 @@ from .declared_licences import (
 from .licences import (
     AGREED, KNOWN_LICENCE_REFUSALS, LICENCE_NOT_ON_ALLOWLIST, LICENCE_SIGNALS_DISAGREE, LICENCE_UNKNOWN,
     RepositoryLicence, repository_licence)
-from .openapi_operations import (
-    OperationRefused, _package, operations, plain, read_sources)
+from .openapi_operations import operations, package_operations, plain, read_sources
 from .reading import https_address
 from .swagger2 import swagger2_to_openapi3
-from .records import (
-    BLOCKED_BY_STATIC_CHECK, GENERATED_TEST_FAILED, OPENAPI_OPERATIONS, PACKAGE_ABOVE_REVIEW_BOUND, SupplyRecordError,
-    fact_source, licence_allowed, refusal)
+from .records import OPENAPI_OPERATIONS, SupplyRecordError, fact_source, licence_allowed, refusal
 
 DIRECTORY_HOST = "api.apis.guru"
 DIRECTORY_LIST = "v2/list.json"
@@ -216,7 +213,8 @@ def selected(names, only=None, excluded=None) -> list:
 
 
 def generate(reader, *, code_revision: str, licence_text: bytes, generated_on: str, staging, only=None,
-             maximum_apis: "int | None" = None, maximum_operations: int = 5000, excluded=None) -> tuple:
+             maximum_apis: "int | None" = None, maximum_operations: int = 5000, excluded=None,
+             javascript: bool = True) -> tuple:
     """(built, refusals, facts, decisions, summary) of every API of the directory, or of the named ones."""
     directory, listing = read_directory(reader)
     facts = {listing.sha256: listing.body}
@@ -305,7 +303,7 @@ def generate(reader, *, code_revision: str, licence_text: bytes, generated_on: s
         refused += refusals
         summary["apis"] += 1
         summary["operations"] += len(found)
-        kept = 0
+        jobs = []
         for operation in found[:maximum_operations]:
             key = operation_key(operation)
             if key in supplied:
@@ -314,19 +312,11 @@ def generate(reader, *, code_revision: str, licence_text: bytes, generated_on: s
                 summary["duplicate_operations"] += 1
                 continue
             supplied[key] = name
-            try:
-                built.append(_package(operation, spec, source, licence, generator, licence_text, generated_on,
-                                      staging, {}))
-                kept += 1
-            except OperationRefused as error:
-                refused.append(refusal(OPENAPI_OPERATIONS, error.reason, f"{name} {operation.method} {operation.path}",
-                                       error.detail))
-            except SupplyRecordError as error:
-                reason = error.code if error.code in (BLOCKED_BY_STATIC_CHECK, PACKAGE_ABOVE_REVIEW_BOUND) else \
-                    GENERATED_TEST_FAILED
-                refused.append(refusal(OPENAPI_OPERATIONS, reason, f"{name} {operation.method} {operation.path}",
-                                       str(error)))
-        summary["packaged"] += kept
+            jobs.append((operation, spec, source, licence, generator, licence_text, generated_on, {},
+                         f"{name} {operation.method} {operation.path}"))
+        packaged = package_operations(jobs, staging, refused, summary, javascript=javascript)
+        built += packaged
+        summary["packaged"] += len(packaged)
     return built, refused, facts, decisions, dict(summary)
 
 
