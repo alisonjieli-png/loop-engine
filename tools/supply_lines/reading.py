@@ -45,6 +45,9 @@ RELEASE_FIELDS = ("nameWithOwner isFork isArchived isPrivate stargazerCount lice
                   "latestRelease { tagName publishedAt tagCommit { oid } "
                   "releaseAssets(first: 100) { nodes { name size downloadUrl digest } } }")
 MAXIMUM_BATCH = 25
+#: The characters a request path keeps as they are when a listed address is encoded (RFC 3986 path characters and
+#: the escape sign).
+PATH_SAFE = "/%:@!$&'()*+,;=-._~"
 #: The host that serves a GitHub file's exact bytes at a commit, and the host of GitHub's web pages.
 RAW_HOST = "raw.githubusercontent.com"
 GITHUB_WEB_HOST = "github.com"
@@ -163,7 +166,10 @@ class FactReader:
         if parts.scheme != HTTPS_SCHEME or not parts.hostname:
             raise ValueError(f"not an HTTPS address: {url[:120]}")
         self._pace()
-        response = self.https.get(parts.hostname, parts.path or "/", dict(parse_qsl(parts.query)))
+        # A listed address may hold characters a request line cannot carry (a space in "v2.0 preview"): they are
+        # percent-encoded; an address already encoded keeps its escapes.
+        response = self.https.get(parts.hostname, urllib.parse.quote(parts.path or "/", safe=PATH_SAFE),
+                                  dict(parse_qsl(parts.query)))
         if response.status == 200 or (cache_errors and response.status is not None):
             return self._keep(url, url, response.status, response.body)
         return Fetched(url, response.status, response.body, hashlib.sha256(response.body).hexdigest(), now_utc(), False)

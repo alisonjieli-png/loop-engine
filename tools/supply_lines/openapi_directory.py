@@ -27,6 +27,7 @@ stay local pointers into the same document.
 """
 from __future__ import annotations
 
+import http.client
 import json
 import re
 from collections import Counter
@@ -250,7 +251,12 @@ def generate(reader, *, code_revision: str, licence_text: bytes, generated_on: s
             refused.append(refusal(OPENAPI_OPERATIONS, reason, name, str(decision.get("declared_name") or "")))
             continue
         url = entry.get("swaggerUrl")
-        answer = reader.get(url) if url else None
+        try:
+            answer = reader.get(url) if url else None
+        except (http.client.HTTPException, ValueError) as error:
+            # An address the request line cannot carry is refused by name; the run goes on.
+            refused.append(refusal(OPENAPI_OPERATIONS, "specification_unreadable", name, type(error).__name__))
+            continue
         if answer is None or answer.status != 200:
             refused.append(refusal(OPENAPI_OPERATIONS, "specification_unreadable", name, str(url)))
             continue

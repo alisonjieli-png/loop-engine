@@ -121,6 +121,31 @@ class RecordsTest(unittest.TestCase):
         self.assertEqual(caught.exception.code, "licence_files_missing")
 
 
+class ReadingTest(unittest.TestCase):
+    def test_a_listed_address_with_a_space_is_encoded_before_it_is_sent(self):
+        from supply_lines.reading import FactReader
+
+        class Transport:
+            def __init__(self):
+                self.asked = []
+
+            def get(self, host, path, query):
+                self.asked.append((host, path, query))
+
+                class Answer:
+                    status, body = 200, b"{}"
+                return Answer()
+
+        with tempfile.TemporaryDirectory() as folder:
+            reader = FactReader(folder, ("api.apis.guru",), github=False, sleep=lambda seconds: None)
+            reader.https = Transport()
+            answer = reader.get("https://api.apis.guru/v2/specs/azure.com/luis/v2.0 preview/swagger.json")
+            reader.get("https://api.apis.guru/v2/specs/a%20b/swagger.json?x=1")
+        self.assertEqual(answer.status, 200)
+        self.assertEqual(reader.https.asked, [("api.apis.guru", "/v2/specs/azure.com/luis/v2.0%20preview/swagger.json", {}),
+                                              ("api.apis.guru", "/v2/specs/a%20b/swagger.json", {"x": "1"})])
+
+
 class StoreTest(unittest.TestCase):
     def test_supplied_candidates_live_in_their_own_namespace_with_versions_and_withdrawals(self):
         from supply_lines.store import SupplyStore
