@@ -1770,6 +1770,13 @@ class SchemaCheckTest(unittest.TestCase):
                          ["abc-plan-14.2.0", "tsconfig"])
         self.assertEqual(line.outside_references({"a": {"$ref": "#/x"}, "b": [{"$ref": "https://x/y.json"}]}),
                          ["https://x/y.json"])
+        self.assertEqual(line.safe_name("my file (1).json"), "my_file_1_.json")
+        self.assertEqual(line._unique(["a.json", "a.json", "b.json"]), ["a.json", "a_1.json", "b.json"])
+        # Known wrong: a package path the catalogue refuses is a refusal by name, never a stopped run.
+        with self.assertRaises(SupplyRecordError) as refused:
+            build(_package(files=[PackageFile("bad name.py", b"x = 1\n", "executable_tool"),
+                                  PackageFile(LICENCE_NAME, LICENCE, "other", records.LICENCE_TEXT)]))
+        self.assertEqual(refused.exception.code, "package_path_invalid")
 
     def test_a_schema_package_carries_its_examples_and_fails_a_wrong_example(self):
         from loop_engine.core.library_ingestion.record_rules import git_blob_identity

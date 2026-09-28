@@ -81,6 +81,11 @@ def outside_references(node) -> list:
     return found
 
 
+def safe_name(name: str) -> str:
+    """A file name of letters, digits and ._-, as a package path allows (the original path stays in provenance)."""
+    return re.sub(r"[^A-Za-z0-9._-]+", "_", name).strip("._")[:100] or "example.json"
+
+
 def module_name(name: str) -> str:
     return ("schemastore_" + _SEGMENT.sub("_", name.lower()).strip("_"))[:80]
 
@@ -196,12 +201,23 @@ def generate(reader, *, code_revision: str, licence_text: bytes, generated_on: s
     return built, refused, facts, summary
 
 
+def _unique(names) -> list:
+    """File names made unique by a counter, when two examples sanitize to one name."""
+    seen, unique = {}, []
+    for name in names:
+        count = seen.get(name, 0)
+        seen[name] = count + 1
+        unique.append(name if not count else f"{Path(name).stem}_{count}{Path(name).suffix}")
+    return unique
+
+
 def _package(name, schema_path, schema_answer, valid, invalid, wrong, commit, licence, generator, licence_text,
              generated_on, staging):
     module = module_name(name)
     schema_file = f"{name}.schema.json"
-    valid_files = [f"examples/valid/{Path(path).name}" for path, _answer in valid]
-    invalid_files = [f"examples/invalid/{Path(path).name}" for path, _answer in invalid]
+    valid_files = [f"examples/valid/{name}" for name in _unique(safe_name(Path(path).name) for path, _answer in valid)]
+    invalid_files = [f"examples/invalid/{name}" for name in _unique(safe_name(Path(path).name)
+                                                                     for path, _answer in invalid)]
     tests = test_text(schema_file, valid_files, invalid_files, wrong)
     folder = staging / module
     for path, data in [(schema_file, schema_answer.body), (VALIDATOR_NAME, VALIDATOR_TEXT),

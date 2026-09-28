@@ -23,6 +23,8 @@ from loop_engine.core.service_runtime.catalogue_attributes import FORM_DECLARED,
 from loop_engine.core.service_runtime.catalogue_packages import (
     EXECUTABLE_EFFECT, EXECUTABLE_ROLES, PACKAGE_BODY, CataloguePackage, CataloguePackageFile)
 
+from loop_engine.core.service_runtime.records import ServiceRuntimeError
+
 from licensed_import.checks import StaticChecks, blocking_rules, package_cautions
 from licensed_import.harness_kinds import media_type
 
@@ -32,6 +34,8 @@ from .records import (
 
 ATTRIBUTION_NAME = "ATTRIBUTION.md"
 LICENCE_NAME = "LICENSE"
+#: The refusal code of a package whose file path the catalogue package refuses.
+PACKAGE_PATH_INVALID = "package_path_invalid"
 UPSTREAM_LICENCE_NAME = "UPSTREAM-LICENSE"
 #: The review panel reads files up to these bounds (tools/licensed_import/review_export.py); a package above them
 #: could never be reviewed, so a line refuses it before it is stored.
@@ -121,7 +125,12 @@ def build(package: SupplyPackage, *, check: bool = True) -> tuple:
     if any(len(row.data) > MAXIMUM_REVIEW_FILE_BYTES for row in files) or \
             sum(len(row.data) for row in files) > MAXIMUM_REVIEW_PACKAGE_BYTES:
         raise SupplyRecordError("package_above_review_bound", package.name)
-    entries = [_entry(row.path, row.data, row.role) for row in files]
+    try:
+        entries = [_entry(row.path, row.data, row.role) for row in files]
+    except ServiceRuntimeError as error:
+        # A file path the catalogue package refuses (a segment outside letters, digits and ._@+-) refuses the
+        # package by name instead of stopping the run.
+        raise SupplyRecordError(PACKAGE_PATH_INVALID, str(error)[:200]) from None
     catalogue_package = CataloguePackage(tuple(entries), PACKAGE_BODY)
     findings = list(package.findings)
     if check:
