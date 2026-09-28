@@ -14,7 +14,7 @@ Every job starts at once. Nothing waits for another job.
 | Job | Python | What it runs |
 |---|---|---|
 | public documentation | 3.12 | Markdown structure, public language, retired words, links, the benchmark registry, the diagrams and the browser checks of the showcase. Unchanged by the September 26, 2026 change. |
-| tools tests, shards a to d | 3.10, 3.11, 3.12 | The tools test modules, one shard of [`tools/ci_test_shards.json`](../../tools/ci_test_shards.json) per job, twelve jobs in all. |
+| tools tests, shards a to d | 3.10, 3.11, 3.12 | The tools test modules, one of the shards [`tools/ci_test_shards.json`](../../tools/ci_test_shards.json) names per job, twelve jobs in all. |
 | runtime checks | 3.10, 3.11, 3.12 | The embodiment lab, the qualification lab, the served site map, the examples and the product solve acceptance. The default-install onboarding proof runs on 3.12, as before. |
 | self-test | 3.12 | `python -m loop_engine --self-test`. |
 | conformance and hardcoding gates | 3.12 | `python -m loop_engine --conformance`, the development tools self-test and the hardcoding delta gate. |
@@ -57,33 +57,42 @@ overlap queue some of their jobs behind the other run's.
 
 ## The shard manifest
 
-[`tools/ci_test_shards.json`](../../tools/ci_test_shards.json) names every
-tools test module in exactly one shard. The shards were balanced by the
-measured time of each module, so that they finish together;
-[`tools/balance_test_shards.py`](../../tools/balance_test_shards.py) writes
-the manifest and records the basis of the balance in it.
-[`tools/run_test_shard.py`](../../tools/run_test_shard.py) runs one shard
-the way `unittest discover -s tools -p 'test_*.py'` loads the modules.
+[`tools/ci_test_shards.json`](../../tools/ci_test_shards.json) names the
+shards and where the module timings are recorded, and nothing else.
+[`tools/run_test_shard.py`](../../tools/run_test_shard.py) places the modules
+when the shards run: every module that
+`unittest discover -s tools -p 'test_*.py'` would load, each weighing its
+recorded seconds, the heaviest first into the shard with the least estimated
+time. A module that no timing record names weighs the median of the recorded
+modules. The same checkout always computes the same placement, whatever
+order the files are found in.
 
-When you add a test module, `tools/test_ci_test_shards.py` fails until the
-module is in a shard. Its message names the command that places new modules
-in the lightest shard:
-
-```bash
-PYTHONPATH=src:tools python tools/balance_test_shards.py --add-missing --write
-```
-
-To rebalance every shard from new measurements, give the tool a timing
-record, a JSON map of module name to a record with a `seconds` field:
+Until September 27, 2026 the manifest listed every module under its shard,
+with the estimated seconds of each shard. Every new test module had to be
+added to a list and to a total, and two lines of work that each added a
+module conflicted in that file whenever they were merged. Now a new test
+module changes no committed file.
 
 ```bash
-PYTHONPATH=src:tools python tools/balance_test_shards.py \
-  --timings artifacts/ci-speed-2026-09-26/module-times-2026-09-26.json --shards 4 --write
+PYTHONPATH=src:tools python tools/run_test_shard.py --list    # shards, module counts, estimated seconds
+PYTHONPATH=src:tools python tools/run_test_shard.py --plan    # the whole placement
 ```
 
-The same test checks that the workflow runs every shard on every Python
-version, and that the pre-push script either runs or declines, with a
-reason, every step of the workflow.
+New modules weigh the median until they are timed. To time the modules that
+no record names, each alone in its own process, and write a new dated
+record that the manifest's pattern picks up:
+
+```bash
+PYTHONPATH=src:tools python tools/balance_test_shards.py --measure unmeasured \
+  --output artifacts/ci-speed-YYYY-MM-DD/module-times-YYYY-MM-DD.json
+```
+
+[`tools/test_ci_test_shards.py`](../../tools/test_ci_test_shards.py) checks
+that every discovered module is placed in exactly one shard, that the
+placement does not depend on discovery order, that the manifest lists no
+module, that the workflow runs every shard on every Python version, and
+that the pre-push script either runs or declines, with a reason, every step
+of the workflow.
 
 ## The cached environment
 

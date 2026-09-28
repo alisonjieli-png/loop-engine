@@ -286,9 +286,10 @@ jobs:
         run: npm ci --prefix tools/architecture_report --ignore-scripts --no-audit --no-fund
 
       - name: Development command and report regression checks
-        # One shard of tools/ci_test_shards.json, loaded the way unittest
-        # discovery loads the tools folder. The shards were balanced on
-        # measured module times; tools/balance_test_shards.py rebalances them.
+        # One of the shards tools/ci_test_shards.json names, loaded the way
+        # unittest discovery loads the tools folder. tools/run_test_shard.py
+        # places the modules at run time from the recorded module times, so a
+        # new test module changes no committed file.
         run: PYTHONPATH=src:tools python tools/run_test_shard.py --shard ${{ matrix.shard }}
 
   runtime-checks:
