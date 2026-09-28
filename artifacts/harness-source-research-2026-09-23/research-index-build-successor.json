@@ -1,0 +1,65 @@
+{
+  "record_type": "local_research_index_manifest/v1",
+  "authoritative_input": "ranked_jsonl_files",
+  "derived_index": true,
+  "runtime": {
+    "revision": "231f51bb1facab517fbe915b08ea9ac85f913347",
+    "classpath": "/home/username/.le-codex-build/integration/src",
+    "tracked_source_files": 860,
+    "source_tree_sha256": "4efb1740232b54bba970edbc6797685968039f35568c60c3a30e715fee584ed7",
+    "local_helper_sha256": "a6f15e7a67ba224f8e3569453c1a8fbdf058ec657e5efc2bd26389d77e53f77f"
+  },
+  "sources": {
+    "skill": {
+      "path": "/home/username/loop-engine/artifacts/harness-source-research-2026-09-23/skills-ranked.jsonl",
+      "filename": "skills-ranked.jsonl",
+      "sha256": "b1aeb285c1e88cbb4fa6b0bb9935448650328e21369e427880bd78fa4d21b1fa",
+      "bytes": 2762421,
+      "rows": 1000
+    },
+    "plugin": {
+      "path": "/home/username/loop-engine/artifacts/harness-source-research-2026-09-23/plugins-ranked.jsonl",
+      "filename": "plugins-ranked.jsonl",
+      "sha256": "f46bc30632ca2f2173052ff876e207125ea338d5afe7380fecde2c1e68bcbafb",
+      "bytes": 3977756,
+      "rows": 1000
+    },
+    "contract": {
+      "path": "/home/username/loop-engine/artifacts/harness-source-research-2026-09-23/contracts-ranked.jsonl",
+      "filename": "contracts-ranked.jsonl",
+      "sha256": "d0b0a41bc5253a4a65b4df6f908e56ca041b4121688cbc305c2c1c5130e3f5ed",
+      "bytes": 2457494,
+      "rows": 1000
+    },
+    "tool": {
+      "path": "/home/username/loop-engine/artifacts/harness-source-research-2026-09-23/tools-ranked.jsonl",
+      "filename": "tools-ranked.jsonl",
+      "sha256": "cc9b8435a72c7470b47dd414c03ef172660a8688e6b4ff9d5e03957ca62110fa",
+      "bytes": 1781633,
+      "rows": 1000
+    }
+  },
+  "source_snapshot_count": 1291,
+  "database_path": "/home/username/.le-codex-research-cache/four-catalogues-20260923/research-index.db",
+  "database_sha256": "2af09c852cb64a40f18ac7051f3ebad8e04294bc12d8ceb412e190be6fdd7f35",
+  "records": 4000,
+  "readback_exact_payloads": 4000,
+  "batch_digest": "a12131e0a8b40113bf9a1049384817192e4af67de9e33fc262cc2b609fa1dc42",
+  "batch_acknowledged": true,
+  "active_store_rows": 0,
+  "default_active_search_hits": 0,
+  "default_active_search_excluded": 4000,
+  "lifecycle": "candidate",
+  "execution_available": false,
+  "store_health": {
+    "adapter_id": "local.sqlite",
+    "healthy": true,
+    "record_count": 4000,
+    "read_only": false,
+    "journal_mode_last_observed": "delete",
+    "engine_version": "3.50.4"
+  },
+  "network_requests": 0,
+  "model_calls": 0,
+  "upstream_programs_executed": 0
+}

@@ -1,0 +1,226 @@
+{
+  "record_type": "harness_research_build_opportunities/v1",
+  "selection": "Editorial synthesis from the ranked skill methods; references inspire ideas and do not establish correctness or endorsement.",
+  "opportunities": [
+    {
+      "title": "Task brief with first actions",
+      "inspiration_research_id": "9f556d81212a1f39aa40c016738bc25f94224fcd5f6af9d25e86cf3abb502a69",
+      "inspiration_source_url": "https://github.com/coreyhaines31/marketingskills/blob/5b2c0007766c6a1cf1d53fd8fc73e979e0821022/skills/customer-research/SKILL.md",
+      "action": "Reuse render_focused_task_context",
+      "status": "prepared_candidate",
+      "existing_owner": "core.instance_instructions",
+      "discriminating_check": "Goal, inputs and acceptance remain exact after rendering.",
+      "copied_upstream_implementation": false,
+      "approved": false
+    },
+    {
+      "title": "Context with complete prerequisites",
+      "inspiration_research_id": "9c769364c7253270f7603c50c9fcb7c00c78f86c2106b33cc1f0369451ae9169",
+      "inspiration_source_url": "https://github.com/lllllllama/rigorpilot-skills/blob/fb3ccdf5aa64b1fa5b1d0463e666a8bc8bc26e01/skills/paper-context-resolver/SKILL.md",
+      "action": "Reuse select_context_blocks",
+      "status": "prepared_candidate",
+      "existing_owner": "core.instance_instructions",
+      "discriminating_check": "Mandatory dependency closure fits the declared cost allowance.",
+      "copied_upstream_implementation": false,
+      "approved": false
+    },
+    {
+      "title": "Capability requirements from observed facts",
+      "inspiration_research_id": "bf6a8ed00dbc2e83981070bc2435c28cd9e6417ed9890a8c396a7ed740880a4b",
+      "inspiration_source_url": "https://github.com/vercel-labs/agent-browser/blob/d01253d9db28d75080e36da3c1c31ef89454731e/skills/agent-browser/SKILL.md",
+      "action": "Reuse evaluate_capability_requirements",
+      "status": "prepared_candidate",
+      "existing_owner": "core.harness_execution_contracts",
+      "discriminating_check": "Unknown or insufficient evidence never satisfies a required feature.",
+      "copied_upstream_implementation": false,
+      "approved": false
+    },
+    {
+      "title": "Paired engine evaluation",
+      "inspiration_research_id": "cb7baae5b482fc760f29f9ab8c56badcd1834772cb7f3182de1c408645d14353",
+      "inspiration_source_url": "https://github.com/obra/superpowers/blob/5bf4e78011075bcfc0dc295f0724994cd123ee71/skills/test-driven-development/SKILL.md",
+      "action": "Reuse paired_sign_test",
+      "status": "prepared_candidate",
+      "existing_owner": "core.configuration_preferences",
+      "discriminating_check": "Ties and missing measurements never become wins.",
+      "copied_upstream_implementation": false,
+      "approved": false
+    },
+    {
+      "title": "Change inventory review",
+      "inspiration_research_id": "334062bd18f456e453f35410e14746b25bdbb73b50fe3d751b69ca2ca37c267a",
+      "inspiration_source_url": "https://github.com/mattpocock/skills/blob/c55ee46073ed923f86ce59a5eb3b6d895095d1b7/skills/engineering/code-review/SKILL.md",
+      "action": "Reuse compare_file_inventories",
+      "status": "prepared_candidate",
+      "existing_owner": "core.generated_project",
+      "discriminating_check": "Distinguish bytes, modes, additions and removals without guessing renames.",
+      "copied_upstream_implementation": false,
+      "approved": false
+    },
+    {
+      "title": "Prerequisite resolver",
+      "inspiration_research_id": "85f82e6cc4420b8800804acde6fa4c7292aca6ed1e100537e0064d356c85afc0",
+      "inspiration_source_url": "https://github.com/larksuite/cli/blob/a079fd7a0f2e5f91ef2a45017175ac9b7435ee97/skills/lark-workflow-meeting-summary/SKILL.md",
+      "action": "Reuse resolve_selected_dependency_closure",
+      "status": "prepared_candidate",
+      "existing_owner": "core.configuration_preferences",
+      "discriminating_check": "Include every required dependency and explicitly report relevant cycles.",
+      "copied_upstream_implementation": false,
+      "approved": false
+    },
+    {
+      "title": "Observed event ordering",
+      "inspiration_research_id": "85f82e6cc4420b8800804acde6fa4c7292aca6ed1e100537e0064d356c85afc0",
+      "inspiration_source_url": "https://github.com/larksuite/cli/blob/a079fd7a0f2e5f91ef2a45017175ac9b7435ee97/skills/lark-workflow-meeting-summary/SKILL.md",
+      "action": "Reuse validate_event_precedence",
+      "status": "prepared_candidate",
+      "existing_owner": "core.run_history",
+      "discriminating_check": "Missing observations and wrong order are separate failures.",
+      "copied_upstream_implementation": false,
+      "approved": false
+    },
+    {
+      "title": "Exact source-span edits",
+      "inspiration_research_id": "7dff549fd4a9dc5182bdf3e5d79ead073c48df75ae4234a02249684f0e848715",
+      "inspiration_source_url": "https://github.com/juliusbrussee/caveman/blob/2fd153c67988e980fb0b2455c90832159a6a5a25/skills/safe-refactor/SKILL.md",
+      "action": "Reuse apply_nonoverlapping_text_edits",
+      "status": "prepared_candidate",
+      "existing_owner": "core.generated_project",
+      "discriminating_check": "Edits are interpreted against one frozen original string.",
+      "copied_upstream_implementation": false,
+      "approved": false
+    },
+    {
+      "title": "Portable path conflict inspection",
+      "inspiration_research_id": "f0372f99c1425296761e8c64696c45fad3fbc8fbba4fb126ede93a32516ce3fd",
+      "inspiration_source_url": "https://github.com/googleworkspace/cli/blob/a3768d0e82ad83cca2da97724e46bea4ff0e6dbd/skills/gws-workflow-file-announce/SKILL.md",
+      "action": "Reuse detect_portable_path_collisions",
+      "status": "prepared_candidate",
+      "existing_owner": "core.service_runtime.catalogue_packages",
+      "discriminating_check": "Report normalized collisions without claiming filesystem containment.",
+      "copied_upstream_implementation": false,
+      "approved": false
+    },
+    {
+      "title": "Guarded object update plan",
+      "inspiration_research_id": "f17d43e0172bbc762b7ce66b27be19c659f2e96e207d384b25de3c1a3ad47983",
+      "inspiration_source_url": "https://github.com/prisma/skills/blob/1123817e60d15ca0f3af91878923241dee7e3b09/prisma-database-setup/SKILL.md",
+      "action": "Reuse apply_flat_record_changes",
+      "status": "prepared_candidate",
+      "existing_owner": "core.independent_verification",
+      "discriminating_check": "A single expected-state conflict prevents partial application.",
+      "copied_upstream_implementation": false,
+      "approved": false
+    },
+    {
+      "title": "Requirement-to-check coverage",
+      "inspiration_research_id": "432fb2a9b3024a48e9e4cbcdd23fa013bb68d937fb79c40f0c813725a99f9ecc",
+      "inspiration_source_url": "https://github.com/mattpocock/skills/blob/c55ee46073ed923f86ce59a5eb3b6d895095d1b7/skills/engineering/to-spec/SKILL.md",
+      "action": "Build an original traceability report over explicit requirements and checks",
+      "status": "planned",
+      "existing_owner": "core.independent_verification",
+      "discriminating_check": "No requirement is called covered merely because a similarly named check exists.",
+      "copied_upstream_implementation": false,
+      "approved": false
+    },
+    {
+      "title": "Review findings with source anchors",
+      "inspiration_research_id": "334062bd18f456e453f35410e14746b25bdbb73b50fe3d751b69ca2ca37c267a",
+      "inspiration_source_url": "https://github.com/mattpocock/skills/blob/c55ee46073ed923f86ce59a5eb3b6d895095d1b7/skills/engineering/code-review/SKILL.md",
+      "action": "Build a bounded finding format and validate current file/span digests",
+      "status": "planned",
+      "existing_owner": "core.generated_project",
+      "discriminating_check": "An old line number cannot silently bind to new source bytes.",
+      "copied_upstream_implementation": false,
+      "approved": false
+    },
+    {
+      "title": "Repeated failure classification",
+      "inspiration_research_id": "ba7bb3e12cdf38016a16cb6c99f3df80aa89cf040c5f8d1183028a0a1f1e4158",
+      "inspiration_source_url": "https://github.com/lllllllama/rigorpilot-skills/blob/fb3ccdf5aa64b1fa5b1d0463e666a8bc8bc26e01/skills/safe-debug/SKILL.md",
+      "action": "Wrap existing failure classification into a retrieval-ready method package",
+      "status": "planned",
+      "existing_owner": "core.harness_fallback",
+      "discriminating_check": "Outage, invalid output, unknown effects and exhausted authority stay distinct.",
+      "copied_upstream_implementation": false,
+      "approved": false
+    },
+    {
+      "title": "Browser observation handoff",
+      "inspiration_research_id": "bf6a8ed00dbc2e83981070bc2435c28cd9e6417ed9890a8c396a7ed740880a4b",
+      "inspiration_source_url": "https://github.com/vercel-labs/agent-browser/blob/d01253d9db28d75080e36da3c1c31ef89454731e/skills/agent-browser/SKILL.md",
+      "action": "Package a compact typed DOM/action observation with explicit unknowns",
+      "status": "planned",
+      "existing_owner": "core.observation_expectations",
+      "discriminating_check": "An observed element is not evidence that a requested action succeeded.",
+      "copied_upstream_implementation": false,
+      "approved": false
+    },
+    {
+      "title": "Accessibility evidence checklist",
+      "inspiration_research_id": "26595eb4e1c9f867c004d30a53cf45751cf0abba932d2c7eef106162ac39e9af",
+      "inspiration_source_url": "https://github.com/addyosmani/web-quality-skills/blob/afa8da942115f2961fdbfa80807ea0b232ff6c00/skills/accessibility/SKILL.md",
+      "action": "Build measurable DOM checks plus an explicit manual-review remainder",
+      "status": "planned",
+      "existing_owner": "core.independent_verification",
+      "discriminating_check": "Automated checks never imply complete accessibility conformance.",
+      "copied_upstream_implementation": false,
+      "approved": false
+    },
+    {
+      "title": "Design token consistency",
+      "inspiration_research_id": "761b3268e127b0f0b14b701d29df494b4b9c796ad29640fbf8baf9773f6fe8c5",
+      "inspiration_source_url": "https://github.com/mattpocock/skills/blob/c55ee46073ed923f86ce59a5eb3b6d895095d1b7/skills/engineering/codebase-design/SKILL.md",
+      "action": "Build a deterministic token-reference and undefined-variable report",
+      "status": "planned",
+      "existing_owner": "core.generated_project",
+      "discriminating_check": "Colour or spacing references must resolve in the declared theme.",
+      "copied_upstream_implementation": false,
+      "approved": false
+    },
+    {
+      "title": "Research claim traceability",
+      "inspiration_research_id": "9f556d81212a1f39aa40c016738bc25f94224fcd5f6af9d25e86cf3abb502a69",
+      "inspiration_source_url": "https://github.com/coreyhaines31/marketingskills/blob/5b2c0007766c6a1cf1d53fd8fc73e979e0821022/skills/customer-research/SKILL.md",
+      "action": "Build a claim-to-source and observation-status contract",
+      "status": "planned",
+      "existing_owner": "core.information_evidence_contracts",
+      "discriminating_check": "Inference and missing evidence remain visible beside source-backed facts.",
+      "copied_upstream_implementation": false,
+      "approved": false
+    },
+    {
+      "title": "Native instruction variant comparison",
+      "inspiration_research_id": "9f556d81212a1f39aa40c016738bc25f94224fcd5f6af9d25e86cf3abb502a69",
+      "inspiration_source_url": "https://github.com/coreyhaines31/marketingskills/blob/5b2c0007766c6a1cf1d53fd8fc73e979e0821022/skills/customer-research/SKILL.md",
+      "action": "Wrap the compiler preview to compare required semantics across projections",
+      "status": "planned",
+      "existing_owner": "tools.install_selected_material",
+      "discriminating_check": "Provider-specific omission of a required constraint refuses compilation.",
+      "copied_upstream_implementation": false,
+      "approved": false
+    },
+    {
+      "title": "Model-specific instruction reduction",
+      "inspiration_research_id": "1dd4a683a91b28ec60175f9bb48f2cd17c92245f41adc25004b3daf30edbcd86",
+      "inspiration_source_url": "https://github.com/google-labs-code/stitch-skills/blob/0337446dadde6f8c94210444e2aa9d546126480f/plugins/stitch-utilities/skills/enhance-prompt/SKILL.md",
+      "action": "Stage constrained rewrites and compare on held-out task acceptance",
+      "status": "planned",
+      "existing_owner": "core.prompt_experiment",
+      "discriminating_check": "Shorter text is accepted only when required meaning and measured quality remain adequate.",
+      "copied_upstream_implementation": false,
+      "approved": false
+    },
+    {
+      "title": "Local note-link inspection",
+      "inspiration_research_id": "77796b461d84162c68ce12ea8bdd440606baca5479ff5ea9ca4f3472d95f041f",
+      "inspiration_source_url": "https://github.com/larksuite/cli/blob/a079fd7a0f2e5f91ef2a45017175ac9b7435ee97/skills/lark-markdown/SKILL.md",
+      "action": "Reuse audit_wikilink_resolution from the research-inspired cohort",
+      "status": "prepared_candidate",
+      "existing_owner": "core.service_runtime.catalogue_packages",
+      "discriminating_check": "Missing targets, ambiguous names and unchecked fragments remain separate.",
+      "copied_upstream_implementation": false,
+      "approved": false
+    }
+  ]
+}
