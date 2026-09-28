@@ -1,8 +1,10 @@
 # Continuous integration and the pre-push check
 
 This guide explains what runs when a revision reaches `main`, how the run is
-divided so that it finishes in minutes, and how to run the same gates on your
-machine before you push. The workflow is
+divided so that it finishes in minutes, how to run the same gates on your
+machine before you push, how every generated file is regenerated and checked
+against the commit, and how a release train goes from cherry-pick to the push
+command in one command. The workflow is
 [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml). The release
 workflow waits for this whole run to pass before it deploys a revision, so
 the wall time of this run is part of every release.
@@ -123,14 +125,44 @@ PY=/path/to/python tools/pre_push_check.sh   # an interpreter other than .venv/b
 tools/pre_push_check.sh --tree /path/to/worktree
 ```
 
-The table shows `pass`, `FAIL` or `skip` for each gate, the seconds it took
-and, for a failure, the log path and the first failed check names. A
-declined step names its reason: the product solve acceptance needs Docker,
-the default-install proof builds a wheel, the diagrams and the showcase need
-a browser, and the public language and link checks run only when `vale` and
-`lychee` are installed. The script changes nothing in the tree, and nothing
-of your shell environment reaches a gate except the path, so a local
-credential cannot turn a test into a live call.
+The table shows one row for each gate: `pass`, `FAIL`, or `----` for a gate
+that could not run, with the seconds it took and, for a failure, the log path
+and the first failed check names. Nothing of your shell environment reaches a
+gate except the path, so a local credential cannot turn a test into a live
+call. The conformance gate rewrites
+`src/loop_engine/architecture_conformance.json`; when the tree was clean at
+the start, the script puts the committed copy back afterwards, so a run
+leaves a clean tree clean.
+
+The steps copied from the workflow call `python`, as the workflow's runner
+provides it. Some machines have only `python3`, and a tree without `.venv`
+falls back to it, so on September 27, 2026 two gates exited 127 and looked
+like failures of the code. Each run now writes a folder holding `python` and
+`python3` that run the chosen interpreter, and puts it first on every gate's
+path. A gate that still exits 127 found a command missing from the machine.
+Its row says `command not found in the local environment: NOT A CODE
+FAILURE`, it counts as not run, and the script exits 3 when nothing failed.
+
+### What a local run does not cover
+
+After the table, the script lists everything continuous integration runs
+that this run did not, in two groups:
+
+- what this run skipped: a missing `vale`, `lychee`, `node` or `rg`, the
+  gates left out by `--only`, a working tree that differs from `HEAD` (the
+  gates then checked files a push would not send), and a missing command;
+- what a local run never covers: the steps that need Docker or a browser,
+  and the Python versions other than the local one.
+
+The last line gives the verdict and says `NOT EQUIVALENT TO CI` whenever
+either list is not empty, with both counts, for example
+`RESULT: all 18 gates passed; NOT EQUIVALENT TO CI (0 skipped in this run,
+5 only in continuous integration; listed above)`. Look at the first count:
+zero means that this run covered everything a local run can cover. A step
+with nothing to check, such as the public language check when no Markdown
+file differs from `origin/main`, is not counted.
+[`tools/pre_push_summary.py`](../../tools/pre_push_summary.py) prints the
+table and the verdict.
 
 On the development machine the self-test reports one failure that passes
 in continuous integration, `removed_key_refresh_pause_is_detected`. The
@@ -145,6 +177,86 @@ git config core.hooksPath tools/git-hooks
 ```
 
 To push once without it, run `PRE_PUSH_CHECK=0 git push`.
+
+## Generated views and the pristine check
+
+Sixteen committed paths are generated from other files: the packaged copies
+of the architecture and terminology contracts, the semantic dictionary, the
+architecture map and diagrams, the served documentation pages, the starter
+catalogue release folder, the red team record, the development tracker, the
+continuation status, the records index, the public status pages and the
+conformance manifest. Continuous integration rebuilds most of them in a test
+or a gate and fails when the committed copy differs.
+[`tools/regenerate_all.py`](../../tools/regenerate_all.py) holds the one
+list, in the order in which one view reads what another writes, and runs
+every builder:
+
+```bash
+PYTHONPATH=src:tools python tools/regenerate_all.py            # regenerate and report what changed
+PYTHONPATH=src:tools python tools/regenerate_all.py --check    # report, then put every output back
+PYTHONPATH=src:tools python tools/regenerate_all.py --list     # each view and the check that compares it
+PYTHONPATH=src:tools python tools/regenerate_all.py --pristine # regenerate an export of HEAD
+```
+
+It runs the fast views a second time and fails when the second run changes
+anything, so a builder whose inputs changed after it ran is named instead of
+being committed stale. It also fails when a builder writes a file that the
+list does not name.
+
+The pristine check answers a different question: is the commit itself
+current? It exports `HEAD` with `git archive` into a folder under
+`$HOME/.le-ci-tmp/pristine/`, never the working tree, regenerates every view
+there with the export's own builders, and fails when anything differs from
+the commit, with the differences in a report beside the export. On
+September 27, 2026 the second release train passed every local check and
+failed in continuous integration, because the status pages had been
+regenerated in the working tree before a later commit added a release
+record, and the regenerated copy was never committed. The pre-push check runs
+the pristine check as a local gate, `pristine-tree`. When the tree is clean
+and the conformance gate runs, the export leaves out the slow conformance
+manifest, and the `pristine-manifest` row compares the manifest that the
+conformance gate wrote with the committed one instead.
+
+## The release train
+
+[`tools/release_train.py`](../../tools/release_train.py) builds a release
+train in one command, in a worktree with no uncommitted changes to tracked
+files, on `main` or a detached `HEAD`:
+
+```bash
+python tools/release_train.py --worktree /path/to/train \
+  --trailer "Co-Authored-By: Name <address>" COMMIT COMMIT ...
+```
+
+1. It cherry-picks each commit with `-x`, in the order given, and skips a
+   commit already on the train.
+2. On a conflict it resolves only what a rule can resolve. A generated file
+   takes the train's side, because the next step rebuilds it. The shard
+   manifest takes the side that names shards only, when the other side still
+   lists modules. A YAML file where both sides appended whole entries to the
+   same list keeps the train's entries, then the picked commit's; it is
+   refused when a side changes a line that was already there, when a side
+   is not made of whole list entries, when the result does not parse, or
+   when an identifier (`finding_id` or `id`) repeats. Any other conflict
+   stops the train: the conflict stays in place, and the script names the
+   files and prints the command that continues with the commits still to
+   pick.
+3. It regenerates every view with the train's own
+   `tools/regenerate_all.py` and commits what changed as one final commit,
+   "Regenerate generated views".
+4. It runs the train's own pre-push check, which includes the pristine
+   check, and repeats its result line. With `--skip-gates` it runs only the
+   pristine check, and the result says that it is not equivalent to
+   continuous integration.
+5. It prints the exact push command and the release commands of the guarded
+   workflow [`.github/workflows/fly-pilot.yml`](../../.github/workflows/fly-pilot.yml):
+   wait for continuous integration on the exact revision, switch the
+   deployment setting on for the run and off again afterwards, read it back,
+   then run the live checks and record the release.
+
+The script never pushes, never changes a repository setting and never
+starts a workflow. It exits 0 when the train is ready, 1 when a gate or the
+pristine check failed, and 2 when it stopped.
 
 ## Decisions and their reasons
 
