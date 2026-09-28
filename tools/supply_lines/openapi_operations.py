@@ -90,8 +90,11 @@ def read_sources(path: Path = SOURCES_FILE) -> list:
         raise ValueError(f"expected {SOURCES_RECORD_TYPE}")
     rows = []
     for row in record["specifications"]:
-        if not re.fullmatch(r"[a-z][a-z0-9_]{0,40}", row["vendor"]) or not re.fullmatch(
-                r"[A-Z][A-Z0-9_]{1,80}", row["credential_variable"]):
+        # A source may name its credential variable; otherwise the rule names it from the vendor and the scheme's
+        # kind (_API_KEY, _CREDENTIALS, _ACCESS_TOKEN).
+        row = {**row, "credential_prefix": row.get("credential_prefix") or row["vendor"].upper()}
+        if not re.fullmatch(r"[a-z][a-z0-9_]{0,40}", row["vendor"]) or (
+                "credential_variable" in row and not re.fullmatch(r"[A-Z][A-Z0-9_]{1,80}", row["credential_variable"])):
             raise ValueError(f"{row['source_id']}: a vendor is a lower-case word and a credential an upper-case name")
         for field_name in ("directory_names", "directory_providers"):
             entries = row.get(field_name, [])
