@@ -194,6 +194,18 @@ def read_directory(reader) -> tuple:
     return json.loads(answer.body), answer
 
 
+#: A directory name that marks a preview of another listed API (microsoft.com:graph-beta beside
+#: microsoft.com:graph): the preview repeats its stable release's operations under another base path.
+_PREVIEW_SUFFIX = re.compile(r"[-_.](?:beta|preview|alpha)\Z", re.IGNORECASE)
+PREVIEW_BESIDE_STABLE = "preview_beside_its_stable_release"
+
+
+def stable_sibling(name: str, names) -> "str | None":
+    """The listed stable API a preview name belongs to, or None."""
+    stable = _PREVIEW_SUFFIX.sub("", name)
+    return stable if stable != name and stable in names else None
+
+
 def selected(names, only=None, excluded=None) -> list:
     """The directory names a run takes: all, or the named APIs and providers, minus the excluded ones."""
     only, excluded = set(only or ()), set(excluded or ())
@@ -224,6 +236,11 @@ def generate(reader, *, code_revision: str, licence_text: bytes, generated_on: s
         if covering is not None:
             refused.append(refusal(OPENAPI_OPERATIONS, COVERED_BY_A_CURATED_SOURCE, name, covering))
             summary[COVERED_BY_A_CURATED_SOURCE] += 1
+            continue
+        sibling = stable_sibling(name, directory)
+        if sibling is not None:
+            refused.append(refusal(OPENAPI_OPERATIONS, PREVIEW_BESIDE_STABLE, name, sibling))
+            summary[PREVIEW_BESIDE_STABLE] += 1
             continue
         decision = decide(name, info, reader, texts, origins)
         decisions.append({key: value for key, value in decision.items() if key != "licence"})

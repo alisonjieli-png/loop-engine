@@ -918,6 +918,13 @@ class OpenApiDirectoryTest(unittest.TestCase):
                                                                         "azure-rest-api-specs/master/x/compute.json"}]}),
                          "Azure/azure-rest-api-specs")
         self.assertIsNone(line.origin_repository({"x-origin": [{"url": "https://developer.example.com/spec.yaml"}]}))
+        listed = {"microsoft.com:graph", "microsoft.com:graph-beta", "azure.com:eventhub-EventHub-preview",
+                  "azure.com:eventhub-EventHub", "example.com:beta"}
+        self.assertEqual(line.stable_sibling("microsoft.com:graph-beta", listed), "microsoft.com:graph")
+        self.assertEqual(line.stable_sibling("azure.com:eventhub-EventHub-preview", listed), "azure.com:eventhub-EventHub")
+        # Known wrong: a preview without a listed stable release, and a stable release, are kept.
+        self.assertIsNone(line.stable_sibling("example.com:beta", listed))
+        self.assertIsNone(line.stable_sibling("microsoft.com:graph", listed))
         names = ["amazonaws.com:ec2", "azure.com:compute", "azure.com:network", "example.com"]
         self.assertEqual(line.selected(names, only=["azure.com"]), ["azure.com:compute", "azure.com:network"])
         self.assertEqual(line.selected(names, excluded=["azure.com", "amazonaws.com"]), ["example.com"])
@@ -1040,7 +1047,7 @@ class OpenApiDirectoryTest(unittest.TestCase):
         from supply_lines import openapi_directory as line
         from supply_lines.reading import https_address
         paths, _commit = line.licence_text_paths()
-        names = ("example.com:graph", "example.com:graph-beta", "github.com:ghes-3.8")
+        names = ("example.com:graph", "example.com:graph-mirror", "github.com:ghes-3.8", "example.com:graph-beta")
 
         def specification(version):
             return {"openapi": "3.0.0", "info": {"title": "Graph", "version": "1", "license": {"name": "MIT"}},
@@ -1058,7 +1065,8 @@ class OpenApiDirectoryTest(unittest.TestCase):
         answers = {https_address(line.DIRECTORY_HOST, line.DIRECTORY_LIST): json.dumps(listing).encode(),
                    address[names[0]]: json.dumps(specification("v1.0")).encode(),
                    address[names[1]]: json.dumps(specification("v1.0")).encode(),
-                   address[names[2]]: json.dumps(specification("v3")).encode()}
+                   address[names[2]]: json.dumps(specification("v3")).encode(),
+                   address[names[3]]: json.dumps(specification("beta")).encode()}
 
         class Answer(_Answer):
             def __init__(self, url, status, body):
@@ -1087,11 +1095,14 @@ class OpenApiDirectoryTest(unittest.TestCase):
                          ["apis.guru/example.com/graph"])
         self.assertEqual(sorted((row["reason"], row["subject"].split(" ")[0]) for row in refused),
                          [("covered_by_a_curated_source", "github.com:ghes-3.8"),
-                          ("duplicate_operation", "example.com:graph-beta")])
-        self.assertEqual((summary["covered_by_a_curated_source"], summary["duplicate_operations"]), (1, 1))
-        # A covered API is never read: its specification is left to the curated source.
+                          ("duplicate_operation", "example.com:graph-mirror"),
+                          ("preview_beside_its_stable_release", "example.com:graph-beta")])
+        self.assertEqual((summary["covered_by_a_curated_source"], summary["duplicate_operations"],
+                          summary["preview_beside_its_stable_release"]), (1, 1, 1))
+        # A covered API and a preview are never read: they are left to the curated source and the stable release.
         self.assertNotIn(address[names[2]], reader.asked)
-        self.assertEqual([row["api"] for row in decisions], list(names[:2]))
+        self.assertNotIn(address[names[3]], reader.asked)
+        self.assertEqual([row["api"] for row in decisions], ["example.com:graph", "example.com:graph-mirror"])
 
     def test_a_swagger_2_document_becomes_operations_with_body_auth_and_servers(self):
         from supply_lines import openapi_directory as line
