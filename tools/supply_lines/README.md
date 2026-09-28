@@ -73,22 +73,37 @@ Supply lines (each writes library_supply_candidate/v1 records)
 │   │   names one (base_url or the environment variable)
 │   ├── discovery mode (google_discovery.py): Google's discovery documents from its Apache-2.0 client
 │   │   repository, one version per API, resource names ({+name}) sent with their slashes
-│   └── a stdlib client with argument checks, the credential by variable name, ApiError, and
-│       generated tests against a local mock that must pass before the package is kept
+│   ├── a stdlib client with argument checks, the credential by variable name, ApiError, and
+│   │   generated tests against a local mock that must pass before the package is kept
+│   └── beside it (javascript_clients.py) an ES module with TypeScript declarations and node:test
+│       tests repeating the Python ones, kept only when they pass
 ├── program_installs: one install recipe and typed wrapper per command-line program
 │   ├── kind code_module, form binary_install; programs in program_sources.json
 │   └── Homebrew bottles and source archive by published SHA-256, release assets by GitHub's
 │       published digests; no binary re-hosted; a smoke test skipped when not installed
-└── data_tables: one reference data table with its schema, loader and tests
-    ├── kind code_module, form data_table; tables in data_table_sources.json
-    └── the upstream file byte for byte, its licence text beside it, a loader that refuses a
-        changed file or a row that breaks the schema
+├── data_tables: one reference data table with its schema, loader and tests
+│   ├── kind code_module, form data_table; tables in data_table_sources.json (JSON shapes, and CSV
+│   │   or TSV files keyed by a field or by their row number)
+│   └── the upstream file byte for byte, its licence text beside it, a loader that refuses a
+│       changed file or a row that breaks the schema
+├── function_extracts: one documented function of a permissive library with exactly the code it needs
+│   ├── kind code_module, form function; libraries in function_sources.json
+│   ├── the function and its closure copied whole statement by statement across the package's own
+│   │   modules; standard library imports written as imports; any other dependency refuses it
+│   └── its docstring examples run as doctests, and the same function raising NotImplementedError
+│       under its own docstring must fail them
+└── json_schemas: one JSON Schema with schema_check.py (a small validator) and tests
+    ├── kind contract_schema, form schema
+    ├── SchemaStore mode (json_schemas.py): the latest version of each schema family with the
+    │   repository's own valid and invalid examples beside it
+    └── API component mode (api_schemas.py): every named object of a curated OpenAPI specification,
+        with the specification's example, generated instances and known-wrong values
 ```
 
-Beside the lines, `verbatim_code_sources.json` declares MIT code
-repositories for the licensed import itself (`--sources`): those modules are
-byte-for-byte copies in `library.import`, which the imported review profile
-reads today.
+Beside the lines, `verbatim_code_sources.json` and
+`verbatim_code_sources_2.json` declare MIT code repositories for the licensed
+import itself (`--sources`): those modules are byte-for-byte copies in
+`library.import`, which the imported review profile reads today.
 
 ## One package
 
