@@ -25,6 +25,7 @@ from __future__ import annotations
 import ast
 import builtins
 import hashlib
+import shutil
 import doctest
 import json
 import re
@@ -422,6 +423,13 @@ def module_text(closure: Closure, target: str, header: str) -> str:
     return "\n".join(line.rstrip("\n") for line in lines) + "\n"
 
 
+def text_effects(text: str) -> list:
+    """The effects the library ingestion rules read in the copied code (a file it opens, the network it uses)."""
+    from loop_engine.core.library_ingestion.effects import declared_effects
+    found = declared_effects("code_module", text, {})
+    return [(row["effect"], row["rule"]) for row in found.evidence]
+
+
 def mutant_text(text: str, target: str, docstring: str) -> str:
     """The module with the function replaced by one that raises under the same docstring: its examples must
     fail, or they do not exercise the function."""
@@ -564,9 +572,7 @@ def _package(node, path, modules, source, pinned, licence, commit, generator, li
     docstring = ast.get_docstring(node, clean=False) or ""
     (folder / f"{module}.py").write_text(mutant_text(text, node.name, docstring), encoding="utf-8")
     mutant_passed, _count, _output = run_tests(folder, module)
-    for leftover in folder.iterdir():
-        leftover.unlink()
-    folder.rmdir()
+    shutil.rmtree(folder, ignore_errors=True)  # a test that starts processes may leave compiled files behind
     if mutant_passed:
         raise ExtractRefused(EXAMPLES_DO_NOT_EXERCISE, node.name)
     signature = ast.get_source_segment(modules[path][1], node).split("\n", 1)[0].strip()
@@ -607,7 +613,7 @@ def _package(node, path, modules, source, pinned, licence, commit, generator, li
         provenance=provenance("github_repository", source["repository"], path, commit, facts, generator),
         placements=[{"harness": "reference", "path": f"tools/{name}/", "basis": "documented_layout",
                      "scope": "project", "support": "unverified"}],
-        effects=[], credentials=[],
+        effects=text_effects(text), credentials=[],
         tests={"files": [f"test_{module}.py"], "command": f"python -m unittest test_{module}", "result": "passed",
                "tests_run": count, "network": False,
                "known_wrong_control": "the function raising NotImplementedError under its own docstring fails"},

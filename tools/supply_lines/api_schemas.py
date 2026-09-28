@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import json
 import re
+import shutil
 from pathlib import Path
 
 from . import schema_check
@@ -222,9 +223,7 @@ def _package(name, module, schema, text, valid, wrong, spec, source, identity, g
                        (f"test_{module}.py", tests.encode("utf-8"))):
         (folder / path).write_bytes(data)
     passed, count, output = run_tests(folder, module)
-    for leftover in folder.iterdir():
-        leftover.unlink()
-    folder.rmdir()
+    shutil.rmtree(folder, ignore_errors=True)
     if not passed:
         raise SupplyRecordError(GENERATED_TEST_FAILED, output[-300:])
     title = str(schema.get("description") or name).split("\n")[0][:200]
