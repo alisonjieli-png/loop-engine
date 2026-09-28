@@ -135,13 +135,22 @@ the start, the script puts the committed copy back afterwards, so a run
 leaves a clean tree clean.
 
 The steps copied from the workflow call `python`, as the workflow's runner
-provides it. Some machines have only `python3`, and a tree without `.venv`
-falls back to it, so on September 27, 2026 two gates exited 127 and looked
-like failures of the code. Each run now writes a folder holding `python` and
+provides it. Some machines have only `python3`, and a worktree has no `.venv`
+of its own, so on September 27, 2026 two gates exited 127 and looked like
+failures of the code. Each run now writes a folder holding `python` and
 `python3` that run the chosen interpreter, and puts it first on every gate's
 path. A gate that still exits 127 found a command missing from the machine.
 Its row says `command not found in the local environment: NOT A CODE
 FAILURE`, it counts as not run, and the script exits 3 when nothing failed.
+
+When `PY` is not set, the script uses the tree's `.venv`, then the `.venv`
+of the checkout that holds the tree's repository, which is how a worktree
+finds the project's dependencies, then `python3` on the path. The last case
+is listed as a gap of the run, because a step can then fail on a missing
+module; such a failure keeps its `FAIL` row, with a hint under it. A copied
+step's `pip install` line is left out when the interpreter has no pip or the
+system manages it, because a pre-push check does not install packages into
+the interpreter it was given.
 
 ### What a local run does not cover
 

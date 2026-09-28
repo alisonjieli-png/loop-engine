@@ -14,8 +14,8 @@
 # here (tools/pre_push_summary.py), and a gate that exits 127 is reported as a missing command, not a code failure.
 #
 # Usage:  tools/pre_push_check.sh [--tree PATH] [--only gate,gate,...] [--list]
-#   PY=/path/to/python   the interpreter with the project's extras (default: .venv/bin/python of the tree, then
-#                        python3 on PATH)
+#   PY=/path/to/python   the interpreter with the project's extras (default: .venv/bin/python of the tree, then of
+#                        the checkout that holds its repository, then python3 on PATH, reported as a gap)
 #   --tree PATH          check that checkout instead of the one holding this script
 #   --only a,b           run only the named gates (see --list)
 # Every gate gets TMPDIR and RUNNER_TEMP under $HOME/.le-ci-tmp/pre-push/, never /tmp: on one development
