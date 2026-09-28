@@ -1,0 +1,47 @@
+{
+  "record_type": "contract_source_url_repair/v1",
+  "research_id": "contract-63260b9344771c11b37329e7",
+  "raw_catalogue_url": "https://api.apis.guru/v2/specs/europeana.eu/version unknown/swagger.json",
+  "normalized_source_url": "https://api.apis.guru/v2/specs/europeana.eu/version%20unknown/swagger.json",
+  "previous_ranked_sha256": "197dbbf51c097d5439331d15506b73e7a325568a6d36317b3c026b67ebb0b543",
+  "ranked_sha256": "d0b0a41bc5253a4a65b4df6f908e56ca041b4121688cbc305c2c1c5130e3f5ed",
+  "normalization": {
+    "operation": "percent_encode_literal_space_in_path",
+    "same_origin": true,
+    "decoded_path_segments_unchanged": true,
+    "original_catalogue_snapshot_digest": "dfac835d2d1f13dfdb82723d72be1acf567df53c1b710bf6d68e28b795696e66",
+    "request_digest": "9879ff4d94a30f1cd5018e1890e37a04c0359a468dcf376105f9447271bc2237"
+  },
+  "fetch_observation": {
+    "status": "fetched",
+    "http_status": 200,
+    "request_digest": "9879ff4d94a30f1cd5018e1890e37a04c0359a468dcf376105f9447271bc2237",
+    "transport_error_class": null,
+    "json_parsed": true,
+    "root_kind": "object",
+    "declared_dialect": null,
+    "declared_id": null,
+    "openapi_marker": "2.0",
+    "reference_count": 12,
+    "external_reference_count": 0,
+    "remote_references_resolved": false,
+    "structural_values_visited": 780,
+    "metaschema_validated": false,
+    "semantic_behavior_verified": false
+  },
+  "body_sha256": "acffdd609bd5e0d803c0b5b61866e6adaeb0ec87ea213ea522dc5cd5f0a9f9d5",
+  "run": "/home/username/.le-codex-research-cache/four-catalogues-20260923/contracts-url-repair-20260923-2",
+  "requests": {
+    "requests": 1,
+    "by_outcome": {
+      "https_get:ok": 1
+    },
+    "bytes": 24472
+  },
+  "logical_candidate_count": 1000,
+  "rows_changed": 1,
+  "licence_object_preserved": true,
+  "all_rows_remain_unreviewed": true,
+  "navigation_urls_valid": true,
+  "approval": "not_performed"
+}

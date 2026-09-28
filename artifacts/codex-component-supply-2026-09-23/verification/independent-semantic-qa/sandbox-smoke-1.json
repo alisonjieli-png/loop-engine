@@ -1,0 +1,20 @@
+{
+  "script_sha256": "37685c81598d98588b193f3b023960adc46c26654bd551adb3d3d79a99ef0a1b",
+  "input_sha256": "f00bb9c75ce8910c29af6b61da0492d08f933923fde398d624a9ec24adc328cd",
+  "exit_code": 0,
+  "elapsed_ms": 32.740160007961094,
+  "timed_out": false,
+  "launcher_truncated": false,
+  "stdout_bytes": 59,
+  "stderr_bytes": 0,
+  "stdout_sha256": "77721aa1add553aeb7304748867b8291305d66d7c0db0c7bae39369c3ce1532d",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "output": {
+    "home_absent": true,
+    "input": {
+      "probe": "local-fixture"
+    }
+  },
+  "stderr_tail": "",
+  "launcher_stderr": ""
+}

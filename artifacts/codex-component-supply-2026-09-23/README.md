@@ -12,9 +12,10 @@ qualification remains separate.
 
 ## Prepared material
 
-Use [prepared-v2/items.json](prepared-v2/items.json) and
-[prepared-v2/packages/](prepared-v2/packages/) for exact-byte independent
-admission and future integration. Preparation and engineering QA do not approve
+Use [prepared-v2/items.json](prepared-v2/items.json) and the
+`prepared-v2/packages/` package bodies (held in the library admission
+pipeline, not this commit; see the September 27, 2026 consolidation handoff)
+for exact-byte independent admission and future integration. Preparation and engineering QA do not approve
 or publish material. The authored directory contains auxiliary author evidence
 under `authors/`; it is excluded from the explicit sixteen-package inventory.
 

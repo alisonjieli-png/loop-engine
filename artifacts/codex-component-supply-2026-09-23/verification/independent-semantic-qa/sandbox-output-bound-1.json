@@ -1,0 +1,22 @@
+{
+  "record_type": "independent_candidate_sandbox_control/v1",
+  "control": "stdout_output_bound",
+  "passed": true,
+  "observation": {
+    "script_sha256": "817a351bdce2e3add8c86ae53355df33a990d4ffafec952c07e97e4dca5dddbf",
+    "input_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "exit_code": 1,
+    "elapsed_ms": 50.93570507597178,
+    "timed_out": false,
+    "launcher_truncated": false,
+    "stdout_bytes": 65536,
+    "stderr_bytes": 499,
+    "stdout_sha256": "1f8745f0d2d1387ec1af2211a3cf417b2e9e885e853472649c1d979d0e9370e3",
+    "stderr_sha256": "8d3d1b63ebc72bca7dc4515246c8f1b840146ec8c245ae22d4c34fce895fd6ec",
+    "output": null,
+    "stderr_tail": "ackage/tool.py\", run_name=\"__main__\")\n    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen runpy>\", line 287, in run_path\n  File \"<frozen runpy>\", line 98, in _run_module_code\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"/package/tool.py\", line 2, in <module>\n    sys.stdout.write(\"x\" * 1000000)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^\nOSError: [Errno 27] File too large\n",
+    "launcher_stderr": ""
+  },
+  "runner_sha256": "fbae37103234b42f68e617544d2cb28991c907dc1db5744ad6ad74d336037797",
+  "process_owner_source_sha256": "905be48df79fb7b649eb26815be7e3cecb9192b7b29756562c8b6a2153bf27f7"
+}

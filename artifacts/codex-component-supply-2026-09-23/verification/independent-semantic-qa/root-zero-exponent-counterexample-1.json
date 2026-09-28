@@ -1,0 +1,30 @@
+{
+  "input": "{\"budget\":0e1000000000000000000,\"blocks\":[]}",
+  "expected": {
+    "selected": [],
+    "omitted": [],
+    "total_cost": 0,
+    "remaining": 0,
+    "blocks": []
+  },
+  "expected_exit": 0,
+  "observation": {
+    "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+    "output_limit_bytes": 65536,
+    "script_sha256": "a795d1d01d1185fd8435019412cf7bfe3caefa7627393ba9a44006c3d0343ecb",
+    "input_sha256": "99bc9b10c9d390bd56a00299b19dfa05d4050ca4e980998207bc1fd3f29becf8",
+    "exit_code": 2,
+    "elapsed_ms": 34.32249801699072,
+    "timed_out": false,
+    "launcher_truncated": false,
+    "stdout_bytes": 26,
+    "stderr_bytes": 0,
+    "stdout_sha256": "521ae7ef95afcb2f14e65d170d3f30a8ead6fe8e3b2445544ed3fef0efc5cf2b",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "output": {
+      "error": "invalid_input"
+    },
+    "stderr_tail": "",
+    "launcher_stderr": ""
+  }
+}

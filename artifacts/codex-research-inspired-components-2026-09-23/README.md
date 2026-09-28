@@ -2,7 +2,9 @@
 
 Status: one original candidate, nine payload files, zero approvals and zero
 hosted items. Use [prepared-v1/items.json](prepared-v1/items.json) and the
-[prepared tree](prepared-v1/packages/audit_wikilink_resolution/).
+prepared tree at `prepared-v1/packages/audit_wikilink_resolution/` (held in
+the library admission pipeline, not this commit; see the September 27, 2026
+consolidation handoff).
 
 The method reports missing/ambiguous note targets and source spans from supplied
 Markdown and a declared note inventory. It does not read a vault, rewrite notes

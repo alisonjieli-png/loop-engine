@@ -1,0 +1,293 @@
+{
+  "record_type": "independent_input_schema_expectations/v1",
+  "rows": [
+    {
+      "identity": "profile_csv_structure",
+      "case": "quoted_newlines_and_blank_record",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "identity": "profile_csv_structure",
+      "case": "exact_duplicate_and_blank_headers",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "identity": "profile_csv_structure",
+      "case": "extra_fields_do_not_expand_baseline",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "identity": "profile_csv_structure",
+      "case": "empty_without_header",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "identity": "profile_csv_structure",
+      "case": "unterminated_quote",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "identity": "profile_csv_structure",
+      "case": "nul_input",
+      "passed": true,
+      "actual": false,
+      "expected": false
+    },
+    {
+      "identity": "profile_csv_structure",
+      "case": "wire_byte_limit",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "identity": "reconcile_multiset_rows",
+      "case": "multiplicities_types_and_missing",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "identity": "reconcile_multiset_rows",
+      "case": "input_permutation",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "identity": "reconcile_multiset_rows",
+      "case": "field_order_and_integral_numbers",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "identity": "reconcile_multiset_rows",
+      "case": "empty_multisets",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "identity": "reconcile_multiset_rows",
+      "case": "nonintegral_row_number",
+      "passed": true,
+      "actual": false,
+      "expected": false
+    },
+    {
+      "identity": "reconcile_multiset_rows",
+      "case": "rounding_must_not_fabricate_integer",
+      "passed": true,
+      "actual": false,
+      "expected": false
+    },
+    {
+      "identity": "reconcile_multiset_rows",
+      "case": "wire_byte_limit",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "identity": "compute_weighted_quantiles",
+      "case": "exact_cdf_thresholds_and_duplicate_values",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "identity": "compute_weighted_quantiles",
+      "case": "sample_permutation",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "identity": "compute_weighted_quantiles",
+      "case": "positive_weight_scale_invariance",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "identity": "compute_weighted_quantiles",
+      "case": "negative_zero_and_integral_weight",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "identity": "compute_weighted_quantiles",
+      "case": "zero_weight_refused",
+      "passed": true,
+      "actual": false,
+      "expected": false
+    },
+    {
+      "identity": "compute_weighted_quantiles",
+      "case": "probability_above_one",
+      "passed": true,
+      "actual": false,
+      "expected": false
+    },
+    {
+      "identity": "compute_weighted_quantiles",
+      "case": "near_integer_weight_not_rounded",
+      "passed": true,
+      "actual": false,
+      "expected": false
+    },
+    {
+      "identity": "compute_weighted_quantiles",
+      "case": "wire_byte_limit",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "identity": "audit_half_open_interval_overlaps",
+      "case": "half_open_empty_nested_and_adjacent",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "identity": "audit_half_open_interval_overlaps",
+      "case": "coordinate_translation",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "identity": "audit_half_open_interval_overlaps",
+      "case": "identical_nonempty_intervals",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "identity": "audit_half_open_interval_overlaps",
+      "case": "integral_empty_coordinates",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "identity": "audit_half_open_interval_overlaps",
+      "case": "reversed_interval",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "identity": "audit_half_open_interval_overlaps",
+      "case": "duplicate_interval_id",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "identity": "apply_flat_record_changes",
+      "case": "replace_remove_add_typed_value",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "identity": "apply_flat_record_changes",
+      "case": "late_conflict_cancels_every_change",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "identity": "apply_flat_record_changes",
+      "case": "boolean_does_not_match_integer",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "identity": "apply_flat_record_changes",
+      "case": "noops_are_not_changes",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "identity": "apply_flat_record_changes",
+      "case": "repeated_change_key",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "identity": "apply_flat_record_changes",
+      "case": "result_property_bound",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "identity": "reconcile_keyed_tables",
+      "case": "typed_key_and_missing_value_reconciliation",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "identity": "reconcile_keyed_tables",
+      "case": "integral_key_and_nonkey_values",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "identity": "reconcile_keyed_tables",
+      "case": "duplicate_normalized_integer_key",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "identity": "reconcile_keyed_tables",
+      "case": "missing_key",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "identity": "reconcile_keyed_tables",
+      "case": "null_key",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "identity": "reconcile_keyed_tables",
+      "case": "boolean_key",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "identity": "reconcile_keyed_tables",
+      "case": "empty_string_key",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    }
+  ],
+  "passed": true
+}

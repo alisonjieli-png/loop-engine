@@ -1,0 +1,2692 @@
+{
+  "record_type": "independent_component_execution/v1",
+  "at": "2026-09-23T21:08:23.315371+00:00",
+  "case_source_sha256": "8599974eea6572f8b7ed2bcc6a85e4e025b1a79341752aa62b3fb47c0d8fdb74",
+  "trusted_runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+  "process_owner_source_sha256": "905be48df79fb7b649eb26815be7e3cecb9192b7b29756562c8b6a2153bf27f7",
+  "network": "unshared_namespace",
+  "home": "absent",
+  "cpu_seconds": 2,
+  "address_space_bytes": 268435456,
+  "wall_seconds_per_case": 4,
+  "maximum_each_output_file_bytes": "per-package explicit bound, default 65536, allowed maximum 1048576",
+  "packages": [
+    {
+      "identity": "compare_file_inventories",
+      "bindings": {
+        "files": [
+          {
+            "path": "AGENTS.md",
+            "digest": "b14e00fe7e7a9b7073455837e371cc307ffea2ebf4177ea8163e7f54dce22898",
+            "size_bytes": 2726
+          },
+          {
+            "path": "LICENSE",
+            "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+            "size_bytes": 1068
+          },
+          {
+            "path": "contracts/input.schema.json",
+            "digest": "498a9b8f025cf8b4646a91c3d95023dbc73dd65bc3ccd00a199d88c6f2634dcc",
+            "size_bytes": 2507
+          },
+          {
+            "path": "contracts/output.schema.json",
+            "digest": "e2065df2afd5488b96d3c4550dfab88482ee278cf36b47e94485e10664d9494f",
+            "size_bytes": 2799
+          },
+          {
+            "path": "examples/input.json",
+            "digest": "4dbbb8d337e9922b58c92bd8e2855bc21ce2606831b86d0817ecbde49f8cb2e8",
+            "size_bytes": 1105
+          },
+          {
+            "path": "examples/output.json",
+            "digest": "6953452702a4ef3cf7a3a7c212f5f4c19cbaec4a31d606b0d580b1c04d483b38",
+            "size_bytes": 293
+          },
+          {
+            "path": "tools/compare_file_inventories.py",
+            "digest": "e354235c3709a78e3ea1c58b253e507e420951f8633c729d31225e1708ed0982",
+            "size_bytes": 5665
+          },
+          {
+            "path": "verification/cases.json",
+            "digest": "6b7b30c4919e284e0e0c1bd9b96936edccc36221da33cd13bb0ccca5f1c7602c",
+            "size_bytes": 8189
+          }
+        ],
+        "tree_binding_sha256": "75b1e779c4f3ef8ae7eb98cde470296817e73fad9f4f5ed1c5d01acb04af6f6f"
+      },
+      "bytes_unchanged_during_check": true,
+      "cases": [
+        {
+          "name": "all_metadata_axes_and_no_rename_guess",
+          "rationale": "Identical bytes at old/new paths are still removal/addition; exact metadata changes are distinguished.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": true,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "e354235c3709a78e3ea1c58b253e507e420951f8633c729d31225e1708ed0982",
+            "input_sha256": "66108a8c0c757c45ec0374225fc23d93595436afda6ef986c0791fcba0cf3d7a",
+            "exit_code": 0,
+            "elapsed_ms": 35.268035950139165,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 238,
+            "stderr_bytes": 0,
+            "stdout_sha256": "cf6ba38c5048d6cbf801daaed94ee31958aac1bba92b24e7432b9a4804096287",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "added": [
+                "new"
+              ],
+              "changed": [
+                {
+                  "fields": [
+                    "digest"
+                  ],
+                  "path": "digest"
+                },
+                {
+                  "fields": [
+                    "executable"
+                  ],
+                  "path": "exec"
+                },
+                {
+                  "fields": [
+                    "size_bytes"
+                  ],
+                  "path": "size"
+                }
+              ],
+              "record_type": "compare_file_inventories_result/v1",
+              "removed": [
+                "old"
+              ],
+              "unchanged": [
+                "same"
+              ]
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "declaration_permutation",
+          "rationale": "Inventory order is not semantic.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": true,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "e354235c3709a78e3ea1c58b253e507e420951f8633c729d31225e1708ed0982",
+            "input_sha256": "4b5aaddb36517176c93fa443d24d71f9c2d1d749ee2a53fce4b412e992adf936",
+            "exit_code": 0,
+            "elapsed_ms": 35.47969402279705,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 238,
+            "stderr_bytes": 0,
+            "stdout_sha256": "cf6ba38c5048d6cbf801daaed94ee31958aac1bba92b24e7432b9a4804096287",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "added": [
+                "new"
+              ],
+              "changed": [
+                {
+                  "fields": [
+                    "digest"
+                  ],
+                  "path": "digest"
+                },
+                {
+                  "fields": [
+                    "executable"
+                  ],
+                  "path": "exec"
+                },
+                {
+                  "fields": [
+                    "size_bytes"
+                  ],
+                  "path": "size"
+                }
+              ],
+              "record_type": "compare_file_inventories_result/v1",
+              "removed": [
+                "old"
+              ],
+              "unchanged": [
+                "same"
+              ]
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "integral_size",
+          "rationale": "Mathematically integral JSON sizes agree.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": true,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "e354235c3709a78e3ea1c58b253e507e420951f8633c729d31225e1708ed0982",
+            "input_sha256": "92b453f088a39a3c05943feb6670082563394498d752df25ae6a9d6f0986e618",
+            "exit_code": 0,
+            "elapsed_ms": 36.937040043994784,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 108,
+            "stderr_bytes": 0,
+            "stdout_sha256": "22f0802fc921d9571683317b009fc270db4d5d0a7232a64d944d6ebe47c8bd1f",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "added": [],
+              "changed": [],
+              "record_type": "compare_file_inventories_result/v1",
+              "removed": [],
+              "unchanged": [
+                "a"
+              ]
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "duplicate_path",
+          "rationale": "An inventory cannot contain two records for the same path.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "e354235c3709a78e3ea1c58b253e507e420951f8633c729d31225e1708ed0982",
+            "input_sha256": "e8e302404599befcbb92ac08d900721b2e37172404cad8ff42d6f4771fc94af6",
+            "exit_code": 2,
+            "elapsed_ms": 35.123968962579966,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 26,
+            "stderr_bytes": 0,
+            "stdout_sha256": "521ae7ef95afcb2f14e65d170d3f30a8ead6fe8e3b2445544ed3fef0efc5cf2b",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "error": "invalid_input"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "parent_path",
+          "rationale": "A reference path must be normalized and relative.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": false,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "e354235c3709a78e3ea1c58b253e507e420951f8633c729d31225e1708ed0982",
+            "input_sha256": "58dcfc522d19e55cdc6339bc00c745488ef1aefb3a47f15c8952aeb918120a35",
+            "exit_code": 2,
+            "elapsed_ms": 34.72680796403438,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 26,
+            "stderr_bytes": 0,
+            "stdout_sha256": "521ae7ef95afcb2f14e65d170d3f30a8ead6fe8e3b2445544ed3fef0efc5cf2b",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "error": "invalid_input"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "duplicate_record_type",
+          "rationale": "Duplicate keys cannot be silently overwritten.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true
+          },
+          "passed": true,
+          "input_schema_valid": null,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "e354235c3709a78e3ea1c58b253e507e420951f8633c729d31225e1708ed0982",
+            "input_sha256": "23739419b5fb72100047363f53bec2863b369339f5fb0903dff483526865f40e",
+            "exit_code": 2,
+            "elapsed_ms": 35.36730399355292,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 26,
+            "stderr_bytes": 0,
+            "stdout_sha256": "521ae7ef95afcb2f14e65d170d3f30a8ead6fe8e3b2445544ed3fef0efc5cf2b",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "error": "invalid_input"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "trailing_bytes",
+          "rationale": "Consume one complete document.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true
+          },
+          "passed": true,
+          "input_schema_valid": null,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "e354235c3709a78e3ea1c58b253e507e420951f8633c729d31225e1708ed0982",
+            "input_sha256": "494027af7a5997eb786341f9c5f7d7984cbdc3a90ad2d0635009d4fe86f81e30",
+            "exit_code": 2,
+            "elapsed_ms": 34.685267019085586,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 26,
+            "stderr_bytes": 0,
+            "stdout_sha256": "521ae7ef95afcb2f14e65d170d3f30a8ead6fe8e3b2445544ed3fef0efc5cf2b",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "error": "invalid_input"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "invalid_utf8",
+          "rationale": "Invalid encoding must give a typed refusal.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true
+          },
+          "passed": true,
+          "input_schema_valid": null,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "e354235c3709a78e3ea1c58b253e507e420951f8633c729d31225e1708ed0982",
+            "input_sha256": "66a2d172ff5c7a788b8f06fbc45de33f7e7bd9eee4ff09bedf3e0e77a4a65572",
+            "exit_code": 2,
+            "elapsed_ms": 33.80791191011667,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 26,
+            "stderr_bytes": 0,
+            "stdout_sha256": "521ae7ef95afcb2f14e65d170d3f30a8ead6fe8e3b2445544ed3fef0efc5cf2b",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "error": "invalid_input"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "wire_byte_ceiling",
+          "rationale": "Input byte limit includes leading whitespace.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "e354235c3709a78e3ea1c58b253e507e420951f8633c729d31225e1708ed0982",
+            "input_sha256": "352e4df988fea161a09151c7db81947daf32d1f83307cc601f974f49a1af1171",
+            "exit_code": 2,
+            "elapsed_ms": 34.49789201840758,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 26,
+            "stderr_bytes": 0,
+            "stdout_sha256": "521ae7ef95afcb2f14e65d170d3f30a8ead6fe8e3b2445544ed3fef0efc5cf2b",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "error": "invalid_input"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        }
+      ],
+      "passed": true
+    },
+    {
+      "identity": "resolve_selected_dependency_closure",
+      "bindings": {
+        "files": [
+          {
+            "path": "AGENTS.md",
+            "digest": "8c03276c856ab89dacc65121fc5b34d8b9e970bea31907d391f10605e0e38ae4",
+            "size_bytes": 2789
+          },
+          {
+            "path": "LICENSE",
+            "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+            "size_bytes": 1068
+          },
+          {
+            "path": "contracts/input.schema.json",
+            "digest": "bb776cc53f7d1c64bbc060803ea27705340c01a79ec4bbed61d056fd4036cfca",
+            "size_bytes": 1782
+          },
+          {
+            "path": "contracts/output.schema.json",
+            "digest": "7e4d395b133009a7eda23ba5d09678a31883daf4e0c7d8c44cf3fa9815e0ced5",
+            "size_bytes": 1691
+          },
+          {
+            "path": "examples/input.json",
+            "digest": "ca33ed478b8849d22e0be2eda6a384c651a411efc19862e3947dc89130e8e967",
+            "size_bytes": 363
+          },
+          {
+            "path": "examples/output.json",
+            "digest": "b644a1e800883ee3b97d23776bab723e2426ba10a5d0848661903ab916ade857",
+            "size_bytes": 143
+          },
+          {
+            "path": "tools/resolve_selected_dependency_closure.py",
+            "digest": "6788778c91d0255a8ae9782a9d896d33cec5bfd321a62a4b4acebb185a7cc52c",
+            "size_bytes": 5999
+          },
+          {
+            "path": "verification/cases.json",
+            "digest": "3c0c6e5e33c30b2f5a473070050afb17daa75fc0949908c73887d6ecce79c494",
+            "size_bytes": 5438
+          }
+        ],
+        "tree_binding_sha256": "216fc11e9807032cf4374f3d7a8ca00bf7c5a74dc38049392f86e08e279d9e12"
+      },
+      "bytes_unchanged_during_check": true,
+      "cases": [
+        {
+          "name": "diamond_and_unreachable_missing",
+          "rationale": "Shared dependencies appear once; unreachable missing references do not affect selected closure.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": true,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "6788778c91d0255a8ae9782a9d896d33cec5bfd321a62a4b4acebb185a7cc52c",
+            "input_sha256": "c44ed03ccb1f3d5ed9b34c33f2f66b46118c16c1b9352fe0edab49ede937823a",
+            "exit_code": 0,
+            "elapsed_ms": 35.78220494091511,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 116,
+            "stderr_bytes": 0,
+            "stdout_sha256": "114cbffc6f248dcd72fabe98202467f011a3ee4fb26ed2d8ead7afdbf9e7e353",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "cyclic_components": [],
+              "record_type": "resolve_selected_dependency_closure_result/v1",
+              "selected": [
+                "a",
+                "b",
+                "c",
+                "d"
+              ]
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "reachable_cycle_reported_not_unreachable_cycle",
+          "rationale": "The method reports selected strongly connected components; it does not require an acyclic world.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": true,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "6788778c91d0255a8ae9782a9d896d33cec5bfd321a62a4b4acebb185a7cc52c",
+            "input_sha256": "af86de137e9fc1df116e37b6bea760e4084c43c07e64c3c1923e9e6c5c8f8c72",
+            "exit_code": 0,
+            "elapsed_ms": 35.26719403453171,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 117,
+            "stderr_bytes": 0,
+            "stdout_sha256": "2b277cd35cf7e83bd93eb05feb3e327f44e67747994f4f844bb40987a4c7cf74",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "cyclic_components": [
+                [
+                  "a",
+                  "b"
+                ]
+              ],
+              "record_type": "resolve_selected_dependency_closure_result/v1",
+              "selected": [
+                "a",
+                "b"
+              ]
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "selected_self_loop",
+          "rationale": "A single vertex with a self-loop is cyclic.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": true,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "6788778c91d0255a8ae9782a9d896d33cec5bfd321a62a4b4acebb185a7cc52c",
+            "input_sha256": "9401d89fb64cec81e3fd19cab8e6207a4173be6204f311491a74aa01e3cd54f6",
+            "exit_code": 0,
+            "elapsed_ms": 34.45699706207961,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 109,
+            "stderr_bytes": 0,
+            "stdout_sha256": "7832882ec6f9dcfef016003eceae82ec335566f34fb681db02153d91eee71728",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "cyclic_components": [
+                [
+                  "a"
+                ]
+              ],
+              "record_type": "resolve_selected_dependency_closure_result/v1",
+              "selected": [
+                "a"
+              ]
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "empty_roots",
+          "rationale": "Do not include unrelated declared packages.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": true,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "6788778c91d0255a8ae9782a9d896d33cec5bfd321a62a4b4acebb185a7cc52c",
+            "input_sha256": "cb3b463f2c95e1fd97fbd96bc1fcf662bbddba88a300c4b66ea5f7d3fde25845",
+            "exit_code": 0,
+            "elapsed_ms": 33.84140401612967,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 101,
+            "stderr_bytes": 0,
+            "stdout_sha256": "fac8ba101d6495c6e25ac8a1446ad6b3ca195b804e43cbcba0a4bc3792e653b6",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "cyclic_components": [],
+              "record_type": "resolve_selected_dependency_closure_result/v1",
+              "selected": []
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "reachable_missing",
+          "rationale": "Selected closure cannot invent an unavailable dependency.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "6788778c91d0255a8ae9782a9d896d33cec5bfd321a62a4b4acebb185a7cc52c",
+            "input_sha256": "fc1aeca8fa1541bbb3f5ef3602353c8216d1774384acf096c88b1ca242fb5711",
+            "exit_code": 2,
+            "elapsed_ms": 34.5353870652616,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 31,
+            "stderr_bytes": 0,
+            "stdout_sha256": "4254002f3df5c669d817c6377cc6c58a4bd1179baaa904576df24fa4f0a5844d",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "error": "missing_dependency"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "missing_root",
+          "rationale": "An unknown root is a missing selected dependency.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "6788778c91d0255a8ae9782a9d896d33cec5bfd321a62a4b4acebb185a7cc52c",
+            "input_sha256": "14458d759c54f61000271f416e7d73eac01d73d03d8d5bf3cd987672f319a54b",
+            "exit_code": 2,
+            "elapsed_ms": 34.03538197744638,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 31,
+            "stderr_bytes": 0,
+            "stdout_sha256": "4254002f3df5c669d817c6377cc6c58a4bd1179baaa904576df24fa4f0a5844d",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "error": "missing_dependency"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "ambiguous_duplicate_package",
+          "rationale": "Duplicate package IDs cannot select one declaration by accident.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "6788778c91d0255a8ae9782a9d896d33cec5bfd321a62a4b4acebb185a7cc52c",
+            "input_sha256": "010adb934c2d2711f26bbbd3d1cafb564449f4a9afb2d5780f11bf22909490a3",
+            "exit_code": 2,
+            "elapsed_ms": 35.31869500875473,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 26,
+            "stderr_bytes": 0,
+            "stdout_sha256": "521ae7ef95afcb2f14e65d170d3f30a8ead6fe8e3b2445544ed3fef0efc5cf2b",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "error": "invalid_input"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "duplicate_record_type",
+          "rationale": "Duplicate keys cannot be silently overwritten.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true
+          },
+          "passed": true,
+          "input_schema_valid": null,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "6788778c91d0255a8ae9782a9d896d33cec5bfd321a62a4b4acebb185a7cc52c",
+            "input_sha256": "b72bf49654084a411a65b0f434908d2520f795dd488f9443a0d53d8c9fd33ce4",
+            "exit_code": 2,
+            "elapsed_ms": 36.523216986097395,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 26,
+            "stderr_bytes": 0,
+            "stdout_sha256": "521ae7ef95afcb2f14e65d170d3f30a8ead6fe8e3b2445544ed3fef0efc5cf2b",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "error": "invalid_input"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "trailing_bytes",
+          "rationale": "Consume one complete document.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true
+          },
+          "passed": true,
+          "input_schema_valid": null,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "6788778c91d0255a8ae9782a9d896d33cec5bfd321a62a4b4acebb185a7cc52c",
+            "input_sha256": "fbb4e246130aedf1c2287b6b8d378f02e68105d60cdbd8567b902fccc78d7467",
+            "exit_code": 2,
+            "elapsed_ms": 35.0654199719429,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 26,
+            "stderr_bytes": 0,
+            "stdout_sha256": "521ae7ef95afcb2f14e65d170d3f30a8ead6fe8e3b2445544ed3fef0efc5cf2b",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "error": "invalid_input"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "invalid_utf8",
+          "rationale": "Invalid encoding must give a typed refusal.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true
+          },
+          "passed": true,
+          "input_schema_valid": null,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "6788778c91d0255a8ae9782a9d896d33cec5bfd321a62a4b4acebb185a7cc52c",
+            "input_sha256": "d84863199eddbd35b018e2c27c0eefa8f5fc0eb49b1934b813ddd96aad4b8a0f",
+            "exit_code": 2,
+            "elapsed_ms": 35.228466033004224,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 26,
+            "stderr_bytes": 0,
+            "stdout_sha256": "521ae7ef95afcb2f14e65d170d3f30a8ead6fe8e3b2445544ed3fef0efc5cf2b",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "error": "invalid_input"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "wire_byte_ceiling",
+          "rationale": "Input byte limit includes leading whitespace.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "6788778c91d0255a8ae9782a9d896d33cec5bfd321a62a4b4acebb185a7cc52c",
+            "input_sha256": "354f0bf4f2c34a41c31f146f0826bc8873f31890998c19a17cf6cb0cdd52852d",
+            "exit_code": 2,
+            "elapsed_ms": 35.43678903952241,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 26,
+            "stderr_bytes": 0,
+            "stdout_sha256": "521ae7ef95afcb2f14e65d170d3f30a8ead6fe8e3b2445544ed3fef0efc5cf2b",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "error": "invalid_input"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        }
+      ],
+      "passed": true
+    },
+    {
+      "identity": "assign_digest_shards",
+      "bindings": {
+        "files": [
+          {
+            "path": "AGENTS.md",
+            "digest": "8306626686cb0e9c393ba689b4f46d711cffca24452149023d958b0f0202069c",
+            "size_bytes": 2555
+          },
+          {
+            "path": "LICENSE",
+            "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+            "size_bytes": 1068
+          },
+          {
+            "path": "contracts/input.schema.json",
+            "digest": "dbd232f98439c1209eb967932a09192b1f89f33b57586718d625078e6aa541f6",
+            "size_bytes": 1030
+          },
+          {
+            "path": "contracts/output.schema.json",
+            "digest": "3ddbc4563c828c7f9f82423f1a5daeca95949c184cfa48216af07efbfa5d3cad",
+            "size_bytes": 1882
+          },
+          {
+            "path": "examples/input.json",
+            "digest": "592c44a613673fbbc9ce9139054dbd32b95437cbe1c7f3c40cd5ae2cf9283572",
+            "size_bytes": 119
+          },
+          {
+            "path": "examples/output.json",
+            "digest": "a0f54bb35654d9a5a604eaddae0a6f7443a66084b7f6d3320c7e0faad20f8a3f",
+            "size_bytes": 492
+          },
+          {
+            "path": "tools/assign_digest_shards.py",
+            "digest": "8e7a9079d2b768d78e81db33ba3657f2be18f452bb37c9a803ed863c32639911",
+            "size_bytes": 5008
+          },
+          {
+            "path": "verification/cases.json",
+            "digest": "d2dcfe6b4f9c9fb26b42af629a0ac9440aff58e13c32acc84d1baf80a1eedd69",
+            "size_bytes": 60343
+          }
+        ],
+        "tree_binding_sha256": "ead3904acd4b5249fc4076316d8c2447b17e701b03bd2de60265cd56d372a86c"
+      },
+      "bytes_unchanged_during_check": true,
+      "cases": [
+        {
+          "name": "whole_digest_modulo_and_distinct_unicode",
+          "rationale": "Oracle accumulates digest bytes modulo seven, without int(hex) or Unicode normalization.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": true,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "8e7a9079d2b768d78e81db33ba3657f2be18f452bb37c9a803ed863c32639911",
+            "input_sha256": "9a33d8d61a89686ce7170fffb4d12a8ef0783a4a06c52dd5c744c9fad89da6eb",
+            "exit_code": 0,
+            "elapsed_ms": 37.11704001761973,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 476,
+            "stderr_bytes": 0,
+            "stdout_sha256": "1699d4cacb4c04cb0d8901e8a61af33b3f48a52720f92593cd981403b7fc18ba",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "assignments": [
+                {
+                  "id": "alpha",
+                  "sha256": "8ed3f6ad685b959ead7022518e1af76cd816f8e8ec7ccdda1ed4018e8f2223f8",
+                  "shard": 6
+                },
+                {
+                  "id": "e\u0301",
+                  "sha256": "bf12767b0f2a56b2190075bae8169f656e3ce8d6357d4aff184bc6c7ea48f9f6",
+                  "shard": 3
+                },
+                {
+                  "id": "z",
+                  "sha256": "594e519ae499312b29433b7dd8a97ff068defcba9755b6d5d00e84c524d67b06",
+                  "shard": 5
+                },
+                {
+                  "id": "\u00e9",
+                  "sha256": "4a99557e4033c3539de2eb65472017cad5f9557f7a0625a09f1c3f6e2ba69c4c",
+                  "shard": 6
+                }
+              ],
+              "record_type": "assign_digest_shards_result/v1",
+              "shard_count": 7
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "input_permutation",
+          "rationale": "Assignments have stable lexical ID order.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": true,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "8e7a9079d2b768d78e81db33ba3657f2be18f452bb37c9a803ed863c32639911",
+            "input_sha256": "c8de4854c61f6e3770e8568de1a5f9b06aa90cfc87ea53b50e164c6c975c021b",
+            "exit_code": 0,
+            "elapsed_ms": 37.19633899163455,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 476,
+            "stderr_bytes": 0,
+            "stdout_sha256": "1699d4cacb4c04cb0d8901e8a61af33b3f48a52720f92593cd981403b7fc18ba",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "assignments": [
+                {
+                  "id": "alpha",
+                  "sha256": "8ed3f6ad685b959ead7022518e1af76cd816f8e8ec7ccdda1ed4018e8f2223f8",
+                  "shard": 6
+                },
+                {
+                  "id": "e\u0301",
+                  "sha256": "bf12767b0f2a56b2190075bae8169f656e3ce8d6357d4aff184bc6c7ea48f9f6",
+                  "shard": 3
+                },
+                {
+                  "id": "z",
+                  "sha256": "594e519ae499312b29433b7dd8a97ff068defcba9755b6d5d00e84c524d67b06",
+                  "shard": 5
+                },
+                {
+                  "id": "\u00e9",
+                  "sha256": "4a99557e4033c3539de2eb65472017cad5f9557f7a0625a09f1c3f6e2ba69c4c",
+                  "shard": 6
+                }
+              ],
+              "record_type": "assign_digest_shards_result/v1",
+              "shard_count": 7
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "one_integral_shard",
+          "rationale": "All IDs map to shard zero; 1.0 is a valid schema integer.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": true,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "8e7a9079d2b768d78e81db33ba3657f2be18f452bb37c9a803ed863c32639911",
+            "input_sha256": "35b1c6bf98a98f8ae5de5b3458ac137adfaebf4f44f8dfc36a2afe7a0237372c",
+            "exit_code": 0,
+            "elapsed_ms": 42.285691015422344,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 275,
+            "stderr_bytes": 0,
+            "stdout_sha256": "48a841c87efce8cf3faef8254de3cb9880b616328b7a554d3bea921850a06df5",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "assignments": [
+                {
+                  "id": "a",
+                  "sha256": "ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb",
+                  "shard": 0
+                },
+                {
+                  "id": "b",
+                  "sha256": "3e23e8160039594a33894f6564e1b1348bbd7a0088d42c4acb73eeaed59c009d",
+                  "shard": 0
+                }
+              ],
+              "record_type": "assign_digest_shards_result/v1",
+              "shard_count": 1
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "empty_ids_max_shards",
+          "rationale": "No fabricated assignments for an empty set.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": true,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "8e7a9079d2b768d78e81db33ba3657f2be18f452bb37c9a803ed863c32639911",
+            "input_sha256": "63aea2431fae1de2a9b7da7a9aa8cad731543bc4d5117d319f81ee0be578914c",
+            "exit_code": 0,
+            "elapsed_ms": 47.8762979619205,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 85,
+            "stderr_bytes": 0,
+            "stdout_sha256": "c472cf2489a09cc28f04cd066b8d8be9d3413a4a51d028d3b299cabf262b0c05",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "assignments": [],
+              "record_type": "assign_digest_shards_result/v1",
+              "shard_count": 4096
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "boolean_shard_count",
+          "rationale": "Boolean is not an integer.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": false,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "8e7a9079d2b768d78e81db33ba3657f2be18f452bb37c9a803ed863c32639911",
+            "input_sha256": "4ede08a52a072055e9796959b100c896a0129b3ccc13d976479a0c35f958df98",
+            "exit_code": 2,
+            "elapsed_ms": 40.00506701413542,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 26,
+            "stderr_bytes": 0,
+            "stdout_sha256": "521ae7ef95afcb2f14e65d170d3f30a8ead6fe8e3b2445544ed3fef0efc5cf2b",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "error": "invalid_input"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "duplicate_id",
+          "rationale": "Duplicate identifiers are not silently deduplicated.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": false,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "8e7a9079d2b768d78e81db33ba3657f2be18f452bb37c9a803ed863c32639911",
+            "input_sha256": "52ca242ff4d69c0ad161bdba7e8380bc89c4fe4fb56b457ae027e7ef5ae524fa",
+            "exit_code": 2,
+            "elapsed_ms": 39.47840095497668,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 26,
+            "stderr_bytes": 0,
+            "stdout_sha256": "521ae7ef95afcb2f14e65d170d3f30a8ead6fe8e3b2445544ed3fef0efc5cf2b",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "error": "invalid_input"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "near_integer_shard_count",
+          "rationale": "Do not round a noninteger wire number into the valid range.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": false,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "8e7a9079d2b768d78e81db33ba3657f2be18f452bb37c9a803ed863c32639911",
+            "input_sha256": "f98944378f7b14af5c0472951c9ca27f944cefb940ef31e0709303fa9005379b",
+            "exit_code": 2,
+            "elapsed_ms": 39.28325301967561,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 26,
+            "stderr_bytes": 0,
+            "stdout_sha256": "521ae7ef95afcb2f14e65d170d3f30a8ead6fe8e3b2445544ed3fef0efc5cf2b",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "error": "invalid_input"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "lone_surrogate_id",
+          "rationale": "Unpaired surrogate must be a typed refusal before UTF-8 hashing.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "8e7a9079d2b768d78e81db33ba3657f2be18f452bb37c9a803ed863c32639911",
+            "input_sha256": "c0bd341b138563c516a056194627442f532159678940d90b48b7b9a55523ef3f",
+            "exit_code": 2,
+            "elapsed_ms": 36.91476408857852,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 26,
+            "stderr_bytes": 0,
+            "stdout_sha256": "521ae7ef95afcb2f14e65d170d3f30a8ead6fe8e3b2445544ed3fef0efc5cf2b",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "error": "invalid_input"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "duplicate_record_type",
+          "rationale": "Duplicate keys cannot be silently overwritten.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true
+          },
+          "passed": true,
+          "input_schema_valid": null,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "8e7a9079d2b768d78e81db33ba3657f2be18f452bb37c9a803ed863c32639911",
+            "input_sha256": "933f61f285c5a3ffe7e22cc69f0dae36d51ac06d0c321d37661e099bc94213cb",
+            "exit_code": 2,
+            "elapsed_ms": 36.409000982530415,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 26,
+            "stderr_bytes": 0,
+            "stdout_sha256": "521ae7ef95afcb2f14e65d170d3f30a8ead6fe8e3b2445544ed3fef0efc5cf2b",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "error": "invalid_input"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "trailing_bytes",
+          "rationale": "Consume one complete document.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true
+          },
+          "passed": true,
+          "input_schema_valid": null,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "8e7a9079d2b768d78e81db33ba3657f2be18f452bb37c9a803ed863c32639911",
+            "input_sha256": "c082bf5d63d41a13ba1139dc2c4480072e246cc11256066d290ba5c3a2393062",
+            "exit_code": 2,
+            "elapsed_ms": 35.95671697985381,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 26,
+            "stderr_bytes": 0,
+            "stdout_sha256": "521ae7ef95afcb2f14e65d170d3f30a8ead6fe8e3b2445544ed3fef0efc5cf2b",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "error": "invalid_input"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "invalid_utf8",
+          "rationale": "Invalid encoding must give a typed refusal.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true
+          },
+          "passed": true,
+          "input_schema_valid": null,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "8e7a9079d2b768d78e81db33ba3657f2be18f452bb37c9a803ed863c32639911",
+            "input_sha256": "99f88fe09c517233178af1a2d1161c31b4d3244ab7afab4d20eba8f3fe45bc5c",
+            "exit_code": 2,
+            "elapsed_ms": 35.51662201061845,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 26,
+            "stderr_bytes": 0,
+            "stdout_sha256": "521ae7ef95afcb2f14e65d170d3f30a8ead6fe8e3b2445544ed3fef0efc5cf2b",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "error": "invalid_input"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "wire_byte_ceiling",
+          "rationale": "Input byte limit includes leading whitespace.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "8e7a9079d2b768d78e81db33ba3657f2be18f452bb37c9a803ed863c32639911",
+            "input_sha256": "498ea2ec431a3da5c8638d6cffb7edf042e4632f667ea7880bad88efd26c8019",
+            "exit_code": 2,
+            "elapsed_ms": 36.117051960900426,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 26,
+            "stderr_bytes": 0,
+            "stdout_sha256": "521ae7ef95afcb2f14e65d170d3f30a8ead6fe8e3b2445544ed3fef0efc5cf2b",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "error": "invalid_input"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        }
+      ],
+      "passed": true
+    },
+    {
+      "identity": "validate_event_precedence",
+      "bindings": {
+        "files": [
+          {
+            "path": "AGENTS.md",
+            "digest": "e365766f7229482d72912ab4fc6e48fe032a0904716327d2cf10d3337887c806",
+            "size_bytes": 2648
+          },
+          {
+            "path": "LICENSE",
+            "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+            "size_bytes": 1068
+          },
+          {
+            "path": "contracts/input.schema.json",
+            "digest": "e885f0b911ba714de1d8e8c49c82eaf13ca437f62d48aee959b695896372dd85",
+            "size_bytes": 1662
+          },
+          {
+            "path": "contracts/output.schema.json",
+            "digest": "c3f3963e116035d96b76ef7c986ebcbfc2e8bace319b14eaed5197ae6f7db4ad",
+            "size_bytes": 2603
+          },
+          {
+            "path": "examples/input.json",
+            "digest": "f8fdaa1250fe921079f4b6557bab6a42c3e76ddd17671baae6b10b75bbbb8c9a",
+            "size_bytes": 261
+          },
+          {
+            "path": "examples/output.json",
+            "digest": "904bd652bdd7acc240ad0035de6b580f73ff690cf638fd55e1273b0fb22196e0",
+            "size_bytes": 100
+          },
+          {
+            "path": "tools/validate_event_precedence.py",
+            "digest": "e2aebba7709305435dd28d64aea7ee97c5db2a866942065d96b9ec0ea352aa3d",
+            "size_bytes": 5530
+          },
+          {
+            "path": "verification/cases.json",
+            "digest": "a26e3d7cf785da80e2554f540424f85871c7568972a3ccd270e3f4b0dfcb5347",
+            "size_bytes": 4473
+          }
+        ],
+        "tree_binding_sha256": "9f54ba5cf4de19556869b5c2b9162c461b8044e05f54194ba8402e0aa182a90e"
+      },
+      "bytes_unchanged_during_check": true,
+      "cases": [
+        {
+          "name": "legal_diamond_permutation",
+          "rationale": "Independent siblings need no artificial total order.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": true,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "e2aebba7709305435dd28d64aea7ee97c5db2a866942065d96b9ec0ea352aa3d",
+            "input_sha256": "bf3cd867711583680f5667dec332bda86e73a004e6d2fd8d2cbcfcbfa29a188a",
+            "exit_code": 0,
+            "elapsed_ms": 34.152983920648694,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 87,
+            "stderr_bytes": 0,
+            "stdout_sha256": "dfe58e3037ec3deecd72d6bc4ae97821d6a8f9431ab1d9cf7e4b3983d41a9b38",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "record_type": "validate_event_precedence_result/v1",
+              "satisfied": true,
+              "violations": []
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "other_legal_diamond_order",
+          "rationale": "Both topological sibling orders are legal.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": true,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "e2aebba7709305435dd28d64aea7ee97c5db2a866942065d96b9ec0ea352aa3d",
+            "input_sha256": "eaf556714be73d9ab3b576fef29d83b8b6ffb06d566a26eb6052b31e9a5c6d28",
+            "exit_code": 0,
+            "elapsed_ms": 33.811087952926755,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 87,
+            "stderr_bytes": 0,
+            "stdout_sha256": "dfe58e3037ec3deecd72d6bc4ae97821d6a8f9431ab1d9cf7e4b3983d41a9b38",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "record_type": "validate_event_precedence_result/v1",
+              "satisfied": true,
+              "violations": []
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "backward_event",
+          "rationale": "Existing events can violate the requested order.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": true,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "e2aebba7709305435dd28d64aea7ee97c5db2a866942065d96b9ec0ea352aa3d",
+            "input_sha256": "9e39ffda3596b5ff00eb36ff8930c5bb0d7c0f47917616de94447a3bfd9cc498",
+            "exit_code": 0,
+            "elapsed_ms": 34.59387202747166,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 169,
+            "stderr_bytes": 0,
+            "stdout_sha256": "cae4bd41347c3cb56c365209846adad00e0e91fff21caf38404b2336c622bbca",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "record_type": "validate_event_precedence_result/v1",
+              "satisfied": false,
+              "violations": [
+                {
+                  "after": "a",
+                  "after_index": 0,
+                  "before": "b",
+                  "before_index": 1,
+                  "reason": "not_before"
+                }
+              ]
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "missing_event_reported",
+          "rationale": "Missing event is a reported violation, not fabricated index zero.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": true,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "e2aebba7709305435dd28d64aea7ee97c5db2a866942065d96b9ec0ea352aa3d",
+            "input_sha256": "54d95755318992a28d6f0d158682cc1860889e9683a5c906fd3b2a32a243ffb6",
+            "exit_code": 0,
+            "elapsed_ms": 34.697058028541505,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 180,
+            "stderr_bytes": 0,
+            "stdout_sha256": "b833bec595c3ddb72c8e2e221645ec432e88f088489b069abd83c17d4bb9cc67",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "record_type": "validate_event_precedence_result/v1",
+              "satisfied": false,
+              "violations": [
+                {
+                  "after": "a",
+                  "after_index": 0,
+                  "before": "absent",
+                  "before_index": null,
+                  "reason": "missing_event"
+                }
+              ]
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "self_precedence_unsatisfied",
+          "rationale": "Strict precedence cannot include equality.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": true,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "e2aebba7709305435dd28d64aea7ee97c5db2a866942065d96b9ec0ea352aa3d",
+            "input_sha256": "475ad99ff9949e977ed9433af87fa469a609cc90a9f00e87ef0a20086b1028fb",
+            "exit_code": 0,
+            "elapsed_ms": 36.77920496556908,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 169,
+            "stderr_bytes": 0,
+            "stdout_sha256": "f22e450de63081c1d721675ceb220890805b03feed7f35b20315c4ce3293cd5b",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "record_type": "validate_event_precedence_result/v1",
+              "satisfied": false,
+              "violations": [
+                {
+                  "after": "a",
+                  "after_index": 0,
+                  "before": "a",
+                  "before_index": 0,
+                  "reason": "not_before"
+                }
+              ]
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "duplicate_event",
+          "rationale": "Repeated IDs make a single event position ambiguous.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": false,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "e2aebba7709305435dd28d64aea7ee97c5db2a866942065d96b9ec0ea352aa3d",
+            "input_sha256": "7fcb5abea830be43edee2a5caece9bdb090ebfc754325bc8767a464babc4689b",
+            "exit_code": 2,
+            "elapsed_ms": 34.90932995919138,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 26,
+            "stderr_bytes": 0,
+            "stdout_sha256": "521ae7ef95afcb2f14e65d170d3f30a8ead6fe8e3b2445544ed3fef0efc5cf2b",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "error": "invalid_input"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "duplicate_record_type",
+          "rationale": "Duplicate keys cannot be silently overwritten.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true
+          },
+          "passed": true,
+          "input_schema_valid": null,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "e2aebba7709305435dd28d64aea7ee97c5db2a866942065d96b9ec0ea352aa3d",
+            "input_sha256": "1899c1407dbfcd155b9a63c3f8e6910065aaf2211d8721d8744fdd3431375dc9",
+            "exit_code": 2,
+            "elapsed_ms": 34.822979010641575,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 26,
+            "stderr_bytes": 0,
+            "stdout_sha256": "521ae7ef95afcb2f14e65d170d3f30a8ead6fe8e3b2445544ed3fef0efc5cf2b",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "error": "invalid_input"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "trailing_bytes",
+          "rationale": "Consume one complete document.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true
+          },
+          "passed": true,
+          "input_schema_valid": null,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "e2aebba7709305435dd28d64aea7ee97c5db2a866942065d96b9ec0ea352aa3d",
+            "input_sha256": "2dff7e7af9522fb5299a7b732413c6ab810f816e86589cb66b99ab6d3f794510",
+            "exit_code": 2,
+            "elapsed_ms": 34.47705693542957,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 26,
+            "stderr_bytes": 0,
+            "stdout_sha256": "521ae7ef95afcb2f14e65d170d3f30a8ead6fe8e3b2445544ed3fef0efc5cf2b",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "error": "invalid_input"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "invalid_utf8",
+          "rationale": "Invalid encoding must give a typed refusal.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true
+          },
+          "passed": true,
+          "input_schema_valid": null,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "e2aebba7709305435dd28d64aea7ee97c5db2a866942065d96b9ec0ea352aa3d",
+            "input_sha256": "9e6f6dbe0c5567a8b68fd3c3c9a9b88ac937ff374262a00b80c082bfc1aea5fd",
+            "exit_code": 2,
+            "elapsed_ms": 34.78151001036167,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 26,
+            "stderr_bytes": 0,
+            "stdout_sha256": "521ae7ef95afcb2f14e65d170d3f30a8ead6fe8e3b2445544ed3fef0efc5cf2b",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "error": "invalid_input"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "wire_byte_ceiling",
+          "rationale": "Input byte limit includes leading whitespace.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "e2aebba7709305435dd28d64aea7ee97c5db2a866942065d96b9ec0ea352aa3d",
+            "input_sha256": "b231051264d08584d55f231d791aa9e2a8c239b7bafff16f3559e23ed6b2fa86",
+            "exit_code": 2,
+            "elapsed_ms": 33.66693202406168,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 26,
+            "stderr_bytes": 0,
+            "stdout_sha256": "521ae7ef95afcb2f14e65d170d3f30a8ead6fe8e3b2445544ed3fef0efc5cf2b",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "error": "invalid_input"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        }
+      ],
+      "passed": true
+    },
+    {
+      "identity": "apply_nonoverlapping_text_edits",
+      "bindings": {
+        "files": [
+          {
+            "path": "AGENTS.md",
+            "digest": "06b0bfe007b9d6e42e09e0f740d7632b64b5911cfb5803fcf208f40a98caf7c7",
+            "size_bytes": 2817
+          },
+          {
+            "path": "LICENSE",
+            "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+            "size_bytes": 1068
+          },
+          {
+            "path": "contracts/input.schema.json",
+            "digest": "a9c4766964097b37daf59741f848141cb32fdf1f744e3393eeaea96151d56143",
+            "size_bytes": 1510
+          },
+          {
+            "path": "contracts/output.schema.json",
+            "digest": "f9de7bee8f6a500f7ed2cb369073b2021a437b9b161bb9b12c2103c7c59f5152",
+            "size_bytes": 1484
+          },
+          {
+            "path": "examples/input.json",
+            "digest": "32a89560a2cc5f4556287fc3845a46d348adf95406fe1a313e3658507170519e",
+            "size_bytes": 336
+          },
+          {
+            "path": "examples/output.json",
+            "digest": "e5739a4fb593eb3574e46d7e793be95fcb2c38fd6e98434dd28e75ec2890c553",
+            "size_bytes": 279
+          },
+          {
+            "path": "tools/apply_nonoverlapping_text_edits.py",
+            "digest": "313cc16eed7f295c34013104e679964ac8805bf18123afe29e28441650840e06",
+            "size_bytes": 5922
+          },
+          {
+            "path": "verification/cases.json",
+            "digest": "0b27210a4372a18e49d39f94a0ab64922a90f259296fede26dc5e4b8d4189c5b",
+            "size_bytes": 6628
+          }
+        ],
+        "tree_binding_sha256": "9b725d6157e81c814f87400ded1c31c7d22d90c6ff0cebdf0b3691098f7e4add"
+      },
+      "bytes_unchanged_during_check": true,
+      "cases": [
+        {
+          "name": "original_codepoint_coordinates_and_adjacent_insertion",
+          "rationale": "Offsets count Unicode code points against the original text; insertion at a prior range end is permitted.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": true,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "313cc16eed7f295c34013104e679964ac8805bf18123afe29e28441650840e06",
+            "input_sha256": "062cd7d92c814742fa1c9a2b43d06c4a5a1b229e25382d667061ebfeb839b66b",
+            "exit_code": 0,
+            "elapsed_ms": 37.59920701850206,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 260,
+            "stderr_bytes": 0,
+            "stdout_sha256": "76d9d38a883529eab83eb301794dd068496f22f95b2293e33a426ef220e07fc9",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "edits_applied": 3,
+              "record_type": "apply_nonoverlapping_text_edits_result/v1",
+              "result_sha256": "dd399c123c816b440ab7523651a0e22cb8dad9d391c0e97f82593dad86da7d3e",
+              "source_sha256": "8d102def2f22f2143a085b1f1282db08ebee5e633cfea183cd6af5526ac79e5b",
+              "text": "aXYbZZ"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "edit_declaration_permutation",
+          "rationale": "Sort by original offset without changing meaning.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": true,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "313cc16eed7f295c34013104e679964ac8805bf18123afe29e28441650840e06",
+            "input_sha256": "2a6acd1dc8122292844c00a649e44758b9bd0eed0cc1b87652e239fbe3e47e77",
+            "exit_code": 0,
+            "elapsed_ms": 36.70078399591148,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 260,
+            "stderr_bytes": 0,
+            "stdout_sha256": "76d9d38a883529eab83eb301794dd068496f22f95b2293e33a426ef220e07fc9",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "edits_applied": 3,
+              "record_type": "apply_nonoverlapping_text_edits_result/v1",
+              "result_sha256": "dd399c123c816b440ab7523651a0e22cb8dad9d391c0e97f82593dad86da7d3e",
+              "source_sha256": "8d102def2f22f2143a085b1f1282db08ebee5e633cfea183cd6af5526ac79e5b",
+              "text": "aXYbZZ"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "integral_indices_delete",
+          "rationale": "Integral JSON indices agree with the schema.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": true,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "313cc16eed7f295c34013104e679964ac8805bf18123afe29e28441650840e06",
+            "input_sha256": "858670e770064966c4237ddb11afa43b414d377b9059340fd6835622cb4a92c9",
+            "exit_code": 0,
+            "elapsed_ms": 37.85251593217254,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 256,
+            "stderr_bytes": 0,
+            "stdout_sha256": "376f932afae0735100f7bb53714c4e4223a3276e7b15535849f487a9d7ff2055",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "edits_applied": 1,
+              "record_type": "apply_nonoverlapping_text_edits_result/v1",
+              "result_sha256": "f45de51cdef30991551e41e882dd7b5404799648a0a00753f44fc966e6153fc1",
+              "source_sha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+              "text": "ac"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "empty_document_insertion",
+          "rationale": "The original end position supports insertion.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": true,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "313cc16eed7f295c34013104e679964ac8805bf18123afe29e28441650840e06",
+            "input_sha256": "bb4eb727234b698af2c1c262f0367c11937c2f4a18da7b8ff4897251b4b6e9c9",
+            "exit_code": 0,
+            "elapsed_ms": 36.19384206831455,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 255,
+            "stderr_bytes": 0,
+            "stdout_sha256": "165621edb8561b8a2bc34eebf11bb6f99dfcd3ed79498394e4845a69674e2076",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "edits_applied": 1,
+              "record_type": "apply_nonoverlapping_text_edits_result/v1",
+              "result_sha256": "2d711642b726b04401627ca9fbac32f5c8530fb1903cc4db02258717921a4881",
+              "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "text": "x"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "stale_source_digest",
+          "rationale": "Never apply edits to a changed source.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "313cc16eed7f295c34013104e679964ac8805bf18123afe29e28441650840e06",
+            "input_sha256": "d0f1b70de0c1020a6180d9cfd3f8747b3734b3a78d08bc297b4d81690534ba77",
+            "exit_code": 2,
+            "elapsed_ms": 37.18674601987004,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 35,
+            "stderr_bytes": 0,
+            "stdout_sha256": "2f23fe3e80ef9ca6010cfb3f74b642b87ea9f552daa6e5dd86dd0432762ff4cd",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "error": "source_digest_mismatch"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "insertion_inside_range",
+          "rationale": "Insertion inside a replaced range is an overlap.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "313cc16eed7f295c34013104e679964ac8805bf18123afe29e28441650840e06",
+            "input_sha256": "44a05fbf932930970471f13293ef3cd0f9f083fc447155bf15bb20d1015f6ba1",
+            "exit_code": 2,
+            "elapsed_ms": 37.47178497724235,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 30,
+            "stderr_bytes": 0,
+            "stdout_sha256": "00765b75d8f39beafb511f3a5432db79d622daacabab60190a9a91b7f7264208",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "error": "overlapping_edits"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "same_insertion_position",
+          "rationale": "Same-start insertions are ambiguous by declared policy.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "313cc16eed7f295c34013104e679964ac8805bf18123afe29e28441650840e06",
+            "input_sha256": "a75bc5c1b31563c20745225220c52bd230e67edc8b01335ecf5a5fa79344e697",
+            "exit_code": 2,
+            "elapsed_ms": 37.1265719877556,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 30,
+            "stderr_bytes": 0,
+            "stdout_sha256": "00765b75d8f39beafb511f3a5432db79d622daacabab60190a9a91b7f7264208",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "error": "overlapping_edits"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "beyond_original_end",
+          "rationale": "A structurally valid bound can exceed this particular source.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "313cc16eed7f295c34013104e679964ac8805bf18123afe29e28441650840e06",
+            "input_sha256": "347552c18b3f3e92dcad12e81435c0fdc27a896ba84b674112c83c7c7e321d24",
+            "exit_code": 2,
+            "elapsed_ms": 36.27278690692037,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 26,
+            "stderr_bytes": 0,
+            "stdout_sha256": "521ae7ef95afcb2f14e65d170d3f30a8ead6fe8e3b2445544ed3fef0efc5cf2b",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "error": "invalid_input"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "duplicate_record_type",
+          "rationale": "Duplicate keys cannot be silently overwritten.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true
+          },
+          "passed": true,
+          "input_schema_valid": null,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "313cc16eed7f295c34013104e679964ac8805bf18123afe29e28441650840e06",
+            "input_sha256": "c73f1dac21ada50adc85b3e6fef05c5c69a875848b7467c5b1b65998e3d57434",
+            "exit_code": 2,
+            "elapsed_ms": 38.59125298913568,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 26,
+            "stderr_bytes": 0,
+            "stdout_sha256": "521ae7ef95afcb2f14e65d170d3f30a8ead6fe8e3b2445544ed3fef0efc5cf2b",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "error": "invalid_input"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "trailing_bytes",
+          "rationale": "Consume one complete document.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true
+          },
+          "passed": true,
+          "input_schema_valid": null,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "313cc16eed7f295c34013104e679964ac8805bf18123afe29e28441650840e06",
+            "input_sha256": "3e834cf145107f2ad3f33e92381a43251e2bd79e01aaac7d72b20cc197e6a9ec",
+            "exit_code": 2,
+            "elapsed_ms": 37.1053438866511,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 26,
+            "stderr_bytes": 0,
+            "stdout_sha256": "521ae7ef95afcb2f14e65d170d3f30a8ead6fe8e3b2445544ed3fef0efc5cf2b",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "error": "invalid_input"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "invalid_utf8",
+          "rationale": "Invalid encoding must give a typed refusal.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true
+          },
+          "passed": true,
+          "input_schema_valid": null,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "313cc16eed7f295c34013104e679964ac8805bf18123afe29e28441650840e06",
+            "input_sha256": "aa394530c3d3a6b36554506ed1a04d1bb38e4a36a566d5635e4ff2f6c62b0a5a",
+            "exit_code": 2,
+            "elapsed_ms": 36.686880979686975,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 26,
+            "stderr_bytes": 0,
+            "stdout_sha256": "521ae7ef95afcb2f14e65d170d3f30a8ead6fe8e3b2445544ed3fef0efc5cf2b",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "error": "invalid_input"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "wire_byte_ceiling",
+          "rationale": "Input byte limit includes leading whitespace.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "313cc16eed7f295c34013104e679964ac8805bf18123afe29e28441650840e06",
+            "input_sha256": "47355807ea94c6e55ca56da1e354010d33f220535ce0bcc567b05e28c6ebbd05",
+            "exit_code": 2,
+            "elapsed_ms": 36.72648104839027,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 26,
+            "stderr_bytes": 0,
+            "stdout_sha256": "521ae7ef95afcb2f14e65d170d3f30a8ead6fe8e3b2445544ed3fef0efc5cf2b",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "error": "invalid_input"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        }
+      ],
+      "passed": true
+    },
+    {
+      "identity": "detect_portable_path_collisions",
+      "bindings": {
+        "files": [
+          {
+            "path": "AGENTS.md",
+            "digest": "3f70cb352717932e919a473a506da80dd9303da01c24782ff38d20434cf07010",
+            "size_bytes": 2848
+          },
+          {
+            "path": "LICENSE",
+            "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+            "size_bytes": 1068
+          },
+          {
+            "path": "contracts/input.schema.json",
+            "digest": "54b2bb9764476a5ad540f450c06bc1ce6243ab0c212f20d971ece0777bd2afb8",
+            "size_bytes": 1156
+          },
+          {
+            "path": "contracts/output.schema.json",
+            "digest": "5efb02d0bc1f6adf444ba9414706876702f622c7dd13d88df906629f4cbd392f",
+            "size_bytes": 3386
+          },
+          {
+            "path": "examples/input.json",
+            "digest": "3b3741fef81042bfae7f538c8d9038c2119a2e1acc7e4c5b9fe6f45a4c6dbff9",
+            "size_bytes": 184
+          },
+          {
+            "path": "examples/output.json",
+            "digest": "0f52921345f8a58d070780dcd91f3c018584b4577534974fd172bd01438a417c",
+            "size_bytes": 534
+          },
+          {
+            "path": "tools/detect_portable_path_collisions.py",
+            "digest": "330cd007a2b6c1d7eb9fa71f6f2effe93bba796d766d02313cc6d1a892b8f774",
+            "size_bytes": 6168
+          },
+          {
+            "path": "verification/cases.json",
+            "digest": "6c6d659e4738cea023d28ed00bb0d78fb6a92c18e02c86fb4b860d2e48ab5d8b",
+            "size_bytes": 6629
+          }
+        ],
+        "tree_binding_sha256": "5ea3f0a620764bc389f811b7391cbe95c325d8ade4c678a02dc8990c5ca44ce4"
+      },
+      "bytes_unchanged_during_check": true,
+      "cases": [
+        {
+          "name": "full_casefold_and_canonical_unicode",
+          "rationale": "ASCII lowercase alone misses both length-changing casefold and NFC equivalence.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": true,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "330cd007a2b6c1d7eb9fa71f6f2effe93bba796d766d02313cc6d1a892b8f774",
+            "input_sha256": "f4d2f3f0edf16c9cdef9e47ae98830fc2f44003f5a30da0752abeecde8fba2f5",
+            "exit_code": 0,
+            "elapsed_ms": 38.265922921709716,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 334,
+            "stderr_bytes": 0,
+            "stdout_sha256": "1be8020639489cbb0fda6dd38d7341abc4b04b8fdbc2674cbf2a86c5bb30402a",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "collision_free": false,
+              "collisions": [
+                {
+                  "indices": [
+                    0,
+                    1
+                  ],
+                  "normalized_path": "strasse",
+                  "paths": [
+                    "Stra\u00dfe",
+                    "STRASSE"
+                  ]
+                },
+                {
+                  "indices": [
+                    2,
+                    3
+                  ],
+                  "normalized_path": "\u00e9",
+                  "paths": [
+                    "\u00e9",
+                    "e\u0301"
+                  ]
+                }
+              ],
+              "parent_file_collisions": [],
+              "platform_model": "unicode_nfc_casefold/v1",
+              "record_type": "detect_portable_path_collisions_result/v1",
+              "unicode_version": "16.0.0"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "path_component_parent_not_text_prefix",
+          "rationale": "a conflicts with a/x, but not with ab/y.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": true,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "330cd007a2b6c1d7eb9fa71f6f2effe93bba796d766d02313cc6d1a892b8f774",
+            "input_sha256": "26e244daaca2c5fd004bdbac413daa3b47cc1c063c9e2217c6ae814b349910fa",
+            "exit_code": 0,
+            "elapsed_ms": 37.37352101597935,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 266,
+            "stderr_bytes": 0,
+            "stdout_sha256": "418d2eced9b491e8847b14651ae04ded4b3dab51a3ee357445cfbabb5f716ecf",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "collision_free": false,
+              "collisions": [],
+              "parent_file_collisions": [
+                {
+                  "child": "a/x",
+                  "child_indices": [
+                    1
+                  ],
+                  "parent": "a",
+                  "parent_indices": [
+                    0
+                  ]
+                }
+              ],
+              "platform_model": "unicode_nfc_casefold/v1",
+              "record_type": "detect_portable_path_collisions_result/v1",
+              "unicode_version": "16.0.0"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "exact_duplicate_preserves_indices",
+          "rationale": "Repeated input paths remain a detected duplicate group.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": true,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "330cd007a2b6c1d7eb9fa71f6f2effe93bba796d766d02313cc6d1a892b8f774",
+            "input_sha256": "9720e5c340bb8ab0126c56ffcb5b433d4f84c0db628865bf576f47b8f3997f2b",
+            "exit_code": 0,
+            "elapsed_ms": 34.38876394648105,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 254,
+            "stderr_bytes": 0,
+            "stdout_sha256": "89e81715eecea71295b688c30352316de4fb5c793e458536ae5077f37fc80dda",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "collision_free": false,
+              "collisions": [
+                {
+                  "indices": [
+                    0,
+                    1
+                  ],
+                  "normalized_path": "x",
+                  "paths": [
+                    "x",
+                    "x"
+                  ]
+                }
+              ],
+              "parent_file_collisions": [],
+              "platform_model": "unicode_nfc_casefold/v1",
+              "record_type": "detect_portable_path_collisions_result/v1",
+              "unicode_version": "16.0.0"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "declared_model_is_not_windows_security_validator",
+          "rationale": "No normalization collision exists; reserved-name security is explicitly outside this abstract model.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": true,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "330cd007a2b6c1d7eb9fa71f6f2effe93bba796d766d02313cc6d1a892b8f774",
+            "input_sha256": "abe5b0fc789b0f32d598f7f97bf9de1c5f914f800c1b05370f90629401059df3",
+            "exit_code": 0,
+            "elapsed_ms": 35.47219396568835,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 196,
+            "stderr_bytes": 0,
+            "stdout_sha256": "82fd80a952a78ff4fb1b0ed829b6d06d5872df24e14469ba2159ffca757f1da3",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "collision_free": true,
+              "collisions": [],
+              "parent_file_collisions": [],
+              "platform_model": "unicode_nfc_casefold/v1",
+              "record_type": "detect_portable_path_collisions_result/v1",
+              "unicode_version": "16.0.0"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "stale_unicode_model",
+          "rationale": "Reject a requested Unicode table mismatch.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "330cd007a2b6c1d7eb9fa71f6f2effe93bba796d766d02313cc6d1a892b8f774",
+            "input_sha256": "2b07cad39f1412df0e756934ab62d1e7f425dcd9390a15a6520961d67acb7ca6",
+            "exit_code": 2,
+            "elapsed_ms": 34.140671021305025,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 37,
+            "stderr_bytes": 0,
+            "stdout_sha256": "62ad33d53278a643b3c7acf1433f6cc87a937db30357c356f7d89c6026c333b4",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "error": "unicode_version_mismatch"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "parent_traversal",
+          "rationale": "Normalized lexical paths cannot contain dot-dot segments.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": false,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "330cd007a2b6c1d7eb9fa71f6f2effe93bba796d766d02313cc6d1a892b8f774",
+            "input_sha256": "e6ff1986d2f4707fa73fe6f573b7df2d454d5ac68c40ae662d3a20d7b0fced9e",
+            "exit_code": 2,
+            "elapsed_ms": 34.725973033346236,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 26,
+            "stderr_bytes": 0,
+            "stdout_sha256": "521ae7ef95afcb2f14e65d170d3f30a8ead6fe8e3b2445544ed3fef0efc5cf2b",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "error": "invalid_input"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "duplicate_record_type",
+          "rationale": "Duplicate keys cannot be silently overwritten.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true
+          },
+          "passed": true,
+          "input_schema_valid": null,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "330cd007a2b6c1d7eb9fa71f6f2effe93bba796d766d02313cc6d1a892b8f774",
+            "input_sha256": "7cc187efa28c82b5e0ab2224cef2361b59280af2882942f493f23113e4fa563e",
+            "exit_code": 2,
+            "elapsed_ms": 34.405736019834876,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 26,
+            "stderr_bytes": 0,
+            "stdout_sha256": "521ae7ef95afcb2f14e65d170d3f30a8ead6fe8e3b2445544ed3fef0efc5cf2b",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "error": "invalid_input"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "trailing_bytes",
+          "rationale": "Consume one complete document.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true
+          },
+          "passed": true,
+          "input_schema_valid": null,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "330cd007a2b6c1d7eb9fa71f6f2effe93bba796d766d02313cc6d1a892b8f774",
+            "input_sha256": "e0b7db90a57f7dddde8e033acc0e34f0102e8734378578681a84d1bcbc8f1400",
+            "exit_code": 2,
+            "elapsed_ms": 33.84527296293527,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 26,
+            "stderr_bytes": 0,
+            "stdout_sha256": "521ae7ef95afcb2f14e65d170d3f30a8ead6fe8e3b2445544ed3fef0efc5cf2b",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "error": "invalid_input"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "invalid_utf8",
+          "rationale": "Invalid encoding must give a typed refusal.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true
+          },
+          "passed": true,
+          "input_schema_valid": null,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "330cd007a2b6c1d7eb9fa71f6f2effe93bba796d766d02313cc6d1a892b8f774",
+            "input_sha256": "4e2770be29fac4f0ce64335ae868fe8a7c42c6775f463a45947fb47da1944373",
+            "exit_code": 2,
+            "elapsed_ms": 34.651989932172,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 26,
+            "stderr_bytes": 0,
+            "stdout_sha256": "521ae7ef95afcb2f14e65d170d3f30a8ead6fe8e3b2445544ed3fef0efc5cf2b",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "error": "invalid_input"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "wire_byte_ceiling",
+          "rationale": "Input byte limit includes leading whitespace.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+            "output_limit_bytes": 65536,
+            "script_sha256": "330cd007a2b6c1d7eb9fa71f6f2effe93bba796d766d02313cc6d1a892b8f774",
+            "input_sha256": "f17cff5a4051f9d925b221af939a9e5b3330a4042e885236e0a3c23e310d2a08",
+            "exit_code": 2,
+            "elapsed_ms": 35.145848989486694,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 26,
+            "stderr_bytes": 0,
+            "stdout_sha256": "521ae7ef95afcb2f14e65d170d3f30a8ead6fe8e3b2445544ed3fef0efc5cf2b",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "error": "invalid_input"
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        }
+      ],
+      "passed": true
+    }
+  ],
+  "admission": "not_performed",
+  "model_calls": 0,
+  "case_count": 64,
+  "passed": true
+}

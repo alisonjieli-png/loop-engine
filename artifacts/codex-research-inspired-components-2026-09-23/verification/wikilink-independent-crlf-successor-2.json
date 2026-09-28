@@ -1,0 +1,289 @@
+{
+  "record_type": "independent_wikilink_execution/v1",
+  "case_sha256": "186ab497c517092c41ed147f8263208dfe2057e8a53b7d277869a35342d72225",
+  "payload_binding": {
+    "files": [
+      {
+        "path": "AGENTS.md",
+        "digest": "b285b070888782a0891a4c4a4b24ec8dcca1c67b1ddcede4cbc580665e53bdca",
+        "size_bytes": 2791
+      },
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068
+      },
+      {
+        "path": "contracts/input.schema.json",
+        "digest": "68897736c4ff666f1f38537158ec16685cd7dbe5cd17cd04b32a61f1ec329fef",
+        "size_bytes": 1405
+      },
+      {
+        "path": "contracts/output.schema.json",
+        "digest": "c425b8614850d62c3ac542f05c7e52236ac3cdbb27075c2f65b3fba904b1af29",
+        "size_bytes": 5317
+      },
+      {
+        "path": "examples/input.json",
+        "digest": "1428405750e371a7d4827315544c133bf8ec512d8672e07fc9211cb24e012283",
+        "size_bytes": 302
+      },
+      {
+        "path": "examples/output.json",
+        "digest": "e58a2bac44562c18cb3a01b3caa2573fd6cd4e9058b92376f485821937c32f5a",
+        "size_bytes": 1831
+      },
+      {
+        "path": "references/profile.md",
+        "digest": "07bcc3423bd901cc079d5382fc833bc3dc9af57a220a24dfae709ed31926d48a",
+        "size_bytes": 5631
+      },
+      {
+        "path": "tools/audit_wikilink_resolution.py",
+        "digest": "b0fe7266d65b9bab16615c4f993b9d8e22785c8884fa2332b83fea4a38e23f0c",
+        "size_bytes": 11620
+      },
+      {
+        "path": "verification/cases.json",
+        "digest": "a44697d9641a9bec84285bc2e730e48f7026d4170c1a85137b956a2ee1119d5f",
+        "size_bytes": 109662
+      }
+    ],
+    "tree_binding_sha256": "e60090dde5d1c6976333bf4eeac732697ebee72084f06e297509291cd4f26146"
+  },
+  "unchanged_tree": true,
+  "trusted_sandbox_source_sha256": "ea468fa4e9eff1f6feaf8124d2eeb4ad47e66b5c5a2e70797bbbfa59d44c7451",
+  "process_owner_sha256": "905be48df79fb7b649eb26815be7e3cecb9192b7b29756562c8b6a2153bf27f7",
+  "sandbox": {
+    "network": "unshared",
+    "home": "absent",
+    "cpu_seconds": 2,
+    "address_space_bytes": 268435456,
+    "wall_seconds": 4,
+    "output_capture_bytes": 131073
+  },
+  "cases": [
+    {
+      "name": "frontmatter_extra_cr_is_not_exact_first_line",
+      "passed": true,
+      "checks": {
+        "exit": true,
+        "bounded": true,
+        "output_schema": true,
+        "no_stderr": true,
+        "expected_link_count": true,
+        "expected_link_fields": true,
+        "source_binding": true,
+        "counts": true,
+        "original_codepoint_spans": true
+      },
+      "input_schema_valid": true,
+      "observation": {
+        "runner_sha256": "619442ab68e00798e2daa1967bbd9993af46e6f4d0b318858cfde621f7892617",
+        "output_limit_bytes": 131073,
+        "script_sha256": "b0fe7266d65b9bab16615c4f993b9d8e22785c8884fa2332b83fea4a38e23f0c",
+        "input_sha256": "c8c1d29bdadd499d0cb65363af0f9cf926403d826b5b388361973e5262da92da",
+        "exit_code": 0,
+        "elapsed_ms": 43.62039500847459,
+        "timed_out": false,
+        "launcher_truncated": false,
+        "stdout_bytes": 541,
+        "stderr_bytes": 0,
+        "stdout_sha256": "51fe2f4d30b195cf1f686a4696b929d8919d09fd9385944c7d7d51f3cd992e2a",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "output": {
+          "complete_markdown_audit": false,
+          "counts": {
+            "ambiguous": 0,
+            "missing": 0,
+            "resolved": 1,
+            "unsupported": 0
+          },
+          "links": [
+            {
+              "candidate_paths": [
+                "Shown.md"
+              ],
+              "column": 1,
+              "display": null,
+              "embedded": false,
+              "end": 15,
+              "fragment": null,
+              "fragment_status": "absent",
+              "line": 2,
+              "raw": "Shown",
+              "reason": "unique_note",
+              "start": 6,
+              "status": "resolved",
+              "target": "Shown"
+            }
+          ],
+          "record_type": "audit_wikilink_resolution_result/v1",
+          "source_path": "Source.md",
+          "source_sha256": "487344f54dd7182a0b5db3a003e7abf0f75059741c8b34e34e1db13dde13cedd",
+          "syntax_profile": "bounded_markdown_wikilinks/v1"
+        },
+        "stderr_tail": "",
+        "launcher_stderr": ""
+      }
+    },
+    {
+      "name": "frontmatter_extra_cr_is_not_exact_closer",
+      "passed": true,
+      "checks": {
+        "exit": true,
+        "bounded": true,
+        "output_schema": true,
+        "no_stderr": true,
+        "exact_refusal": true
+      },
+      "input_schema_valid": true,
+      "observation": {
+        "runner_sha256": "619442ab68e00798e2daa1967bbd9993af46e6f4d0b318858cfde621f7892617",
+        "output_limit_bytes": 131073,
+        "script_sha256": "b0fe7266d65b9bab16615c4f993b9d8e22785c8884fa2332b83fea4a38e23f0c",
+        "input_sha256": "0f6a49b2216a8ec4fcba8222c6ad2393124a12dbd8c9fd7803713f56ba43b2a2",
+        "exit_code": 2,
+        "elapsed_ms": 42.59846999775618,
+        "timed_out": false,
+        "launcher_truncated": false,
+        "stdout_bytes": 33,
+        "stderr_bytes": 0,
+        "stdout_sha256": "b2d017bd79ee055be267771a9cd7ca496fb5e5ea5814a52d57de200f9958ec6c",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "output": {
+          "error": "unclosed_frontmatter"
+        },
+        "stderr_tail": "",
+        "launcher_stderr": ""
+      }
+    },
+    {
+      "name": "lone_cr_at_eof_is_not_frontmatter_opener",
+      "passed": true,
+      "checks": {
+        "exit": true,
+        "bounded": true,
+        "output_schema": true,
+        "no_stderr": true,
+        "expected_link_count": true,
+        "expected_link_fields": true,
+        "source_binding": true,
+        "counts": true,
+        "original_codepoint_spans": true
+      },
+      "input_schema_valid": true,
+      "observation": {
+        "runner_sha256": "619442ab68e00798e2daa1967bbd9993af46e6f4d0b318858cfde621f7892617",
+        "output_limit_bytes": 131073,
+        "script_sha256": "b0fe7266d65b9bab16615c4f993b9d8e22785c8884fa2332b83fea4a38e23f0c",
+        "input_sha256": "0c9b3101c629fce533dda3a3fb446577090e0ae97d1eab9d94c8234744aa3ecb",
+        "exit_code": 0,
+        "elapsed_ms": 42.42620605509728,
+        "timed_out": false,
+        "launcher_truncated": false,
+        "stdout_bytes": 321,
+        "stderr_bytes": 0,
+        "stdout_sha256": "16aaffc98613af4f527d53447b6d94bef5e32f632b82bff09eeab4327549dc76",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "output": {
+          "complete_markdown_audit": false,
+          "counts": {
+            "ambiguous": 0,
+            "missing": 0,
+            "resolved": 0,
+            "unsupported": 0
+          },
+          "links": [],
+          "record_type": "audit_wikilink_resolution_result/v1",
+          "source_path": "Source.md",
+          "source_sha256": "e4f8f08fb98bc3dbb458af121a54e79f93dfb4f4c151d109583f4630de99627f",
+          "syntax_profile": "bounded_markdown_wikilinks/v1"
+        },
+        "stderr_tail": "",
+        "launcher_stderr": ""
+      }
+    },
+    {
+      "name": "lone_cr_at_eof_is_not_frontmatter_closer",
+      "passed": true,
+      "checks": {
+        "exit": true,
+        "bounded": true,
+        "output_schema": true,
+        "no_stderr": true,
+        "exact_refusal": true
+      },
+      "input_schema_valid": true,
+      "observation": {
+        "runner_sha256": "619442ab68e00798e2daa1967bbd9993af46e6f4d0b318858cfde621f7892617",
+        "output_limit_bytes": 131073,
+        "script_sha256": "b0fe7266d65b9bab16615c4f993b9d8e22785c8884fa2332b83fea4a38e23f0c",
+        "input_sha256": "93b8f5995f278003fa9998b98022ca758d819070f0e7dea1a9e199b6914bdb41",
+        "exit_code": 2,
+        "elapsed_ms": 42.069248971529305,
+        "timed_out": false,
+        "launcher_truncated": false,
+        "stdout_bytes": 33,
+        "stderr_bytes": 0,
+        "stdout_sha256": "b2d017bd79ee055be267771a9cd7ca496fb5e5ea5814a52d57de200f9958ec6c",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "output": {
+          "error": "unclosed_frontmatter"
+        },
+        "stderr_tail": "",
+        "launcher_stderr": ""
+      }
+    },
+    {
+      "name": "exact_closer_at_eof_remains_supported",
+      "passed": true,
+      "checks": {
+        "exit": true,
+        "bounded": true,
+        "output_schema": true,
+        "no_stderr": true,
+        "expected_link_count": true,
+        "expected_link_fields": true,
+        "source_binding": true,
+        "counts": true,
+        "original_codepoint_spans": true
+      },
+      "input_schema_valid": true,
+      "observation": {
+        "runner_sha256": "619442ab68e00798e2daa1967bbd9993af46e6f4d0b318858cfde621f7892617",
+        "output_limit_bytes": 131073,
+        "script_sha256": "b0fe7266d65b9bab16615c4f993b9d8e22785c8884fa2332b83fea4a38e23f0c",
+        "input_sha256": "294c088247800bab4642b75d69c30264cc4592deb92e890b1a5a56d215868997",
+        "exit_code": 0,
+        "elapsed_ms": 40.1622949866578,
+        "timed_out": false,
+        "launcher_truncated": false,
+        "stdout_bytes": 321,
+        "stderr_bytes": 0,
+        "stdout_sha256": "90c23f9a1cded6f44496ebf89811381c68d8e0981033fc9c86609daec00667e4",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "output": {
+          "complete_markdown_audit": false,
+          "counts": {
+            "ambiguous": 0,
+            "missing": 0,
+            "resolved": 0,
+            "unsupported": 0
+          },
+          "links": [],
+          "record_type": "audit_wikilink_resolution_result/v1",
+          "source_path": "Source.md",
+          "source_sha256": "59396a969cba209fd5f0eff8ffb9c44036a93eb1f1f4fca4656be4c75d0412c6",
+          "syntax_profile": "bounded_markdown_wikilinks/v1"
+        },
+        "stderr_tail": "",
+        "launcher_stderr": ""
+      }
+    }
+  ],
+  "passed": 5,
+  "total": 5,
+  "model_calls": 0,
+  "approval": "not_performed"
+}

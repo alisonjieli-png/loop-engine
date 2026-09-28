@@ -1,0 +1,95 @@
+{
+  "record_type": "independent_wikilink_cases/v1",
+  "source_basis": "Post-inspection exact-line boundary controls from profile: LF lines and CRLF accepted; repeated CR is not CRLF.",
+  "cases": [
+    {
+      "name": "frontmatter_extra_cr_is_not_exact_first_line",
+      "input": {
+        "record_type": "audit_wikilink_resolution_request/v1",
+        "syntax_profile": "bounded_markdown_wikilinks/v1",
+        "source_path": "Source.md",
+        "text": "---\r\r\n[[Shown]]",
+        "note_paths": [
+          "Source.md",
+          "Shown.md"
+        ]
+      },
+      "expected_exit": 0,
+      "expected_error": null,
+      "expected_links": [
+        {
+          "target": "Shown",
+          "status": "resolved",
+          "candidate_paths": [
+            "Shown.md"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "frontmatter_extra_cr_is_not_exact_closer",
+      "input": {
+        "record_type": "audit_wikilink_resolution_request/v1",
+        "syntax_profile": "bounded_markdown_wikilinks/v1",
+        "source_path": "Source.md",
+        "text": "---\nkey: value\n---\r\r\n[[Shown]]",
+        "note_paths": [
+          "Source.md",
+          "Shown.md"
+        ]
+      },
+      "expected_exit": 2,
+      "expected_error": "unclosed_frontmatter",
+      "expected_links": []
+    },
+    {
+      "name": "lone_cr_at_eof_is_not_frontmatter_opener",
+      "input": {
+        "record_type": "audit_wikilink_resolution_request/v1",
+        "syntax_profile": "bounded_markdown_wikilinks/v1",
+        "source_path": "Source.md",
+        "text": "---\r",
+        "note_paths": [
+          "Source.md",
+          "Shown.md"
+        ]
+      },
+      "expected_exit": 0,
+      "expected_error": null,
+      "expected_links": []
+    },
+    {
+      "name": "lone_cr_at_eof_is_not_frontmatter_closer",
+      "input": {
+        "record_type": "audit_wikilink_resolution_request/v1",
+        "syntax_profile": "bounded_markdown_wikilinks/v1",
+        "source_path": "Source.md",
+        "text": "---\nkey\n---\r",
+        "note_paths": [
+          "Source.md",
+          "Shown.md"
+        ]
+      },
+      "expected_exit": 2,
+      "expected_error": "unclosed_frontmatter",
+      "expected_links": []
+    },
+    {
+      "name": "exact_closer_at_eof_remains_supported",
+      "input": {
+        "record_type": "audit_wikilink_resolution_request/v1",
+        "syntax_profile": "bounded_markdown_wikilinks/v1",
+        "source_path": "Source.md",
+        "text": "---\nkey\n---",
+        "note_paths": [
+          "Source.md",
+          "Shown.md"
+        ]
+      },
+      "expected_exit": 0,
+      "expected_error": null,
+      "expected_links": []
+    }
+  ],
+  "predecessor_sha256": "0960dbc4f8227e932a39ca56270d8dfd108d92ea99e55a96541f9c77a3a7749a"
+}

@@ -1,0 +1,629 @@
+{
+  "record_type": "independent_component_execution/v1",
+  "at": "2026-09-23T21:23:08.639495+00:00",
+  "case_source_sha256": "268656eda34cb04083dc9ca1a0f3ff4d2fe0eee04e4d0242a48e871b4a230db3",
+  "trusted_runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+  "process_owner_source_sha256": "905be48df79fb7b649eb26815be7e3cecb9192b7b29756562c8b6a2153bf27f7",
+  "network": "unshared_namespace",
+  "home": "absent",
+  "cpu_seconds": 2,
+  "address_space_bytes": 268435456,
+  "wall_seconds_per_case": 4,
+  "maximum_each_output_file_bytes": "per-package explicit bound, default 65536, allowed maximum 1048576",
+  "packages": [
+    {
+      "identity": "profile_csv_structure",
+      "bindings": {
+        "files": [
+          {
+            "path": "AGENTS.md",
+            "digest": "2fb8ad9f8cc1bfd290e9b6d992ca0ccd7b8b1a425ce9495b02155113133399f1",
+            "size_bytes": 4847
+          },
+          {
+            "path": "LICENSE",
+            "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+            "size_bytes": 1068
+          },
+          {
+            "path": "contracts/input.schema.json",
+            "digest": "af34196396781d9334f34a93c40f76eb85b69015b52ec87d03522e82ad33583d",
+            "size_bytes": 1869
+          },
+          {
+            "path": "contracts/output.schema.json",
+            "digest": "bbd2cc0ada5e6e96a16de9c39852096cb70a714bdf2215106be753a43be06b6e",
+            "size_bytes": 5811
+          },
+          {
+            "path": "examples/input.json",
+            "digest": "83d6bb56045d674fa9c0a4a93764af0238d04840273ecafda0e0812560257c34",
+            "size_bytes": 98
+          },
+          {
+            "path": "examples/output.json",
+            "digest": "23b0be0520288658135c1e5373ad3b75c690f8271a33eb12019cb072700f81f7",
+            "size_bytes": 761
+          },
+          {
+            "path": "tools/profile_csv_structure.py",
+            "digest": "6d9fdad1fa302a7044622d4360598fbfab2ddc8b0915ac85ca6aaa66f89cb455",
+            "size_bytes": 5749
+          },
+          {
+            "path": "verification/cases.json",
+            "digest": "6caa9becf270f988ca064a6c94dbbca6efacdb1216ea68605b4db8001b9b4962",
+            "size_bytes": 13294
+          }
+        ],
+        "tree_binding_sha256": "55877b069a1f500370146f5de270f0df247bf8b854231e3e0b975a4b1793b457"
+      },
+      "bytes_unchanged_during_check": true,
+      "cases": [
+        {
+          "name": "quoted_newlines_and_blank_record",
+          "rationale": "CSV logical records differ from physical lines; a blank CSV record is not a two-empty-cell row.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": true,
+          "observation": {
+            "runner_sha256": "b6c055e69d55a03fd1d3b474a8d307da80b29aea3df0992b4f32f7ef54fabf23",
+            "output_limit_bytes": 524289,
+            "script_sha256": "6d9fdad1fa302a7044622d4360598fbfab2ddc8b0915ac85ca6aaa66f89cb455",
+            "input_sha256": "089ac45d655b36a19da5f3e861f6f633a33b0aad27ff165e57552ac458dc25b7",
+            "exit_code": 0,
+            "elapsed_ms": 32.45855798013508,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 427,
+            "stderr_bytes": 0,
+            "stdout_sha256": "399ea0c4db8da200a14909eacb110b437182b8fb10e673b18be8b458d1f853d7",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "ok": true,
+              "result": {
+                "blank_header_indices": [],
+                "column_count": 2,
+                "columns": [
+                  {
+                    "empty_cells": 0,
+                    "index": 0,
+                    "max_chars": 3,
+                    "missing_rows": 1,
+                    "present_rows": 2
+                  },
+                  {
+                    "empty_cells": 1,
+                    "index": 1,
+                    "max_chars": 3,
+                    "missing_rows": 1,
+                    "present_rows": 2
+                  }
+                ],
+                "duplicate_header_names": [],
+                "header": [
+                  "x",
+                  "y"
+                ],
+                "physical_line_count": 5,
+                "row_count": 3,
+                "width_counts": [
+                  {
+                    "records": 1,
+                    "width": 0
+                  },
+                  {
+                    "records": 2,
+                    "width": 2
+                  }
+                ],
+                "width_mismatches": [
+                  {
+                    "row_index": 2,
+                    "width": 0
+                  }
+                ]
+              }
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "exact_duplicate_and_blank_headers",
+          "rationale": "Empty header and empty cell positions remain distinct and positional.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": true,
+          "observation": {
+            "runner_sha256": "b6c055e69d55a03fd1d3b474a8d307da80b29aea3df0992b4f32f7ef54fabf23",
+            "output_limit_bytes": 524289,
+            "script_sha256": "6d9fdad1fa302a7044622d4360598fbfab2ddc8b0915ac85ca6aaa66f89cb455",
+            "input_sha256": "cfcb731be257e7635876f8a086b14b5f689aac5b0b9f82c0ee8e0dfed55adaef",
+            "exit_code": 0,
+            "elapsed_ms": 31.769231078214943,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 486,
+            "stderr_bytes": 0,
+            "stdout_sha256": "6c6e148acfd73e6d3f01bba5ae31a42b30f9e8bd11dfc726cdbc7a57fdf382f9",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "ok": true,
+              "result": {
+                "blank_header_indices": [
+                  1
+                ],
+                "column_count": 3,
+                "columns": [
+                  {
+                    "empty_cells": 0,
+                    "index": 0,
+                    "max_chars": 1,
+                    "missing_rows": 0,
+                    "present_rows": 1
+                  },
+                  {
+                    "empty_cells": 1,
+                    "index": 1,
+                    "max_chars": 0,
+                    "missing_rows": 0,
+                    "present_rows": 1
+                  },
+                  {
+                    "empty_cells": 0,
+                    "index": 2,
+                    "max_chars": 1,
+                    "missing_rows": 0,
+                    "present_rows": 1
+                  }
+                ],
+                "duplicate_header_names": [
+                  {
+                    "indices": [
+                      0,
+                      2
+                    ],
+                    "name": "b"
+                  }
+                ],
+                "header": [
+                  "b",
+                  "",
+                  "b"
+                ],
+                "physical_line_count": 2,
+                "row_count": 1,
+                "width_counts": [
+                  {
+                    "records": 1,
+                    "width": 3
+                  }
+                ],
+                "width_mismatches": []
+              }
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "extra_fields_do_not_expand_baseline",
+          "rationale": "Confirmed contract: report extra width but do not invent additional baseline columns.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": true,
+          "observation": {
+            "runner_sha256": "b6c055e69d55a03fd1d3b474a8d307da80b29aea3df0992b4f32f7ef54fabf23",
+            "output_limit_bytes": 524289,
+            "script_sha256": "6d9fdad1fa302a7044622d4360598fbfab2ddc8b0915ac85ca6aaa66f89cb455",
+            "input_sha256": "77673186cb23859ef26c7a06151ddcd1fe838f292b867a0a2565db0c4e62f346",
+            "exit_code": 0,
+            "elapsed_ms": 30.503361020237207,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 347,
+            "stderr_bytes": 0,
+            "stdout_sha256": "63708e921bfb991aecf12876a8169a77b546fbe2ade2528094421c5f14a7d8e7",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "ok": true,
+              "result": {
+                "blank_header_indices": [],
+                "column_count": 1,
+                "columns": [
+                  {
+                    "empty_cells": 0,
+                    "index": 0,
+                    "max_chars": 1,
+                    "missing_rows": 0,
+                    "present_rows": 2
+                  }
+                ],
+                "duplicate_header_names": [],
+                "header": [
+                  "h"
+                ],
+                "physical_line_count": 3,
+                "row_count": 2,
+                "width_counts": [
+                  {
+                    "records": 1,
+                    "width": 1
+                  },
+                  {
+                    "records": 1,
+                    "width": 2
+                  }
+                ],
+                "width_mismatches": [
+                  {
+                    "row_index": 0,
+                    "width": 2
+                  }
+                ]
+              }
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "empty_without_header",
+          "rationale": "Empty document has zero records and no inferred columns.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": true,
+          "observation": {
+            "runner_sha256": "b6c055e69d55a03fd1d3b474a8d307da80b29aea3df0992b4f32f7ef54fabf23",
+            "output_limit_bytes": 524289,
+            "script_sha256": "6d9fdad1fa302a7044622d4360598fbfab2ddc8b0915ac85ca6aaa66f89cb455",
+            "input_sha256": "ec446df4f7844790de0b48fbe76caca1080b34743e56e5921d55d5f2a44b71a1",
+            "exit_code": 0,
+            "elapsed_ms": 30.49759508576244,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 199,
+            "stderr_bytes": 0,
+            "stdout_sha256": "356dca62f378d89548efca8ef4ef54002a4e21210ea0bc611992c3f44d47e423",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "ok": true,
+              "result": {
+                "blank_header_indices": [],
+                "column_count": 0,
+                "columns": [],
+                "duplicate_header_names": [],
+                "header": null,
+                "physical_line_count": 0,
+                "row_count": 0,
+                "width_counts": [],
+                "width_mismatches": []
+              }
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "unterminated_quote",
+          "rationale": "Strict dialect parser must refuse an unterminated quoted field.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b6c055e69d55a03fd1d3b474a8d307da80b29aea3df0992b4f32f7ef54fabf23",
+            "output_limit_bytes": 524289,
+            "script_sha256": "6d9fdad1fa302a7044622d4360598fbfab2ddc8b0915ac85ca6aaa66f89cb455",
+            "input_sha256": "0efdfd2c3cc0c042f84e6623db4b9b991a637f31510c18b945a5d5c9faf01308",
+            "exit_code": 2,
+            "elapsed_ms": 30.07807699032128,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 46,
+            "stderr_bytes": 0,
+            "stdout_sha256": "1780d8746dc667c7b7dc78c7dd006c668f5f8c5393f39150b4a6eede7ec00ac0",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "ok": false,
+              "error": {
+                "code": "invalid_input"
+              }
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "nul_input",
+          "rationale": "NUL is outside the declared CSV string contract.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": false,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b6c055e69d55a03fd1d3b474a8d307da80b29aea3df0992b4f32f7ef54fabf23",
+            "output_limit_bytes": 524289,
+            "script_sha256": "6d9fdad1fa302a7044622d4360598fbfab2ddc8b0915ac85ca6aaa66f89cb455",
+            "input_sha256": "b4af2bbb9dc1e8775f28b813c016eb41620a3f186a132bb6373f674d61f93c81",
+            "exit_code": 2,
+            "elapsed_ms": 30.55674198549241,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 46,
+            "stderr_bytes": 0,
+            "stdout_sha256": "1780d8746dc667c7b7dc78c7dd006c668f5f8c5393f39150b4a6eede7ec00ac0",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "ok": false,
+              "error": {
+                "code": "invalid_input"
+              }
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "duplicate_same_value_key",
+          "rationale": "Raw duplicate names must be refused.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true
+          },
+          "passed": true,
+          "input_schema_valid": null,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b6c055e69d55a03fd1d3b474a8d307da80b29aea3df0992b4f32f7ef54fabf23",
+            "output_limit_bytes": 524289,
+            "script_sha256": "6d9fdad1fa302a7044622d4360598fbfab2ddc8b0915ac85ca6aaa66f89cb455",
+            "input_sha256": "90ef3394d1091ecb3ef0578436188e0d9055079797a25c105b68708fca3a88bc",
+            "exit_code": 2,
+            "elapsed_ms": 31.03669499978423,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 46,
+            "stderr_bytes": 0,
+            "stdout_sha256": "1780d8746dc667c7b7dc78c7dd006c668f5f8c5393f39150b4a6eede7ec00ac0",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "ok": false,
+              "error": {
+                "code": "invalid_input"
+              }
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "trailing_garbage",
+          "rationale": "A valid prefix is not a valid complete document.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true
+          },
+          "passed": true,
+          "input_schema_valid": null,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b6c055e69d55a03fd1d3b474a8d307da80b29aea3df0992b4f32f7ef54fabf23",
+            "output_limit_bytes": 524289,
+            "script_sha256": "6d9fdad1fa302a7044622d4360598fbfab2ddc8b0915ac85ca6aaa66f89cb455",
+            "input_sha256": "24aad284e1b0709293e1e121c3841baf6b084bf7f89c90137b83a57e99afd6bc",
+            "exit_code": 2,
+            "elapsed_ms": 30.78314394224435,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 46,
+            "stderr_bytes": 0,
+            "stdout_sha256": "1780d8746dc667c7b7dc78c7dd006c668f5f8c5393f39150b4a6eede7ec00ac0",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "ok": false,
+              "error": {
+                "code": "invalid_input"
+              }
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "invalid_utf8",
+          "rationale": "Invalid UTF-8 must produce the declared refusal, not a traceback.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true
+          },
+          "passed": true,
+          "input_schema_valid": null,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b6c055e69d55a03fd1d3b474a8d307da80b29aea3df0992b4f32f7ef54fabf23",
+            "output_limit_bytes": 524289,
+            "script_sha256": "6d9fdad1fa302a7044622d4360598fbfab2ddc8b0915ac85ca6aaa66f89cb455",
+            "input_sha256": "fe08d72b157ef964c7bb3efaf81e34fceef9ec335f076f19001348fb19b68570",
+            "exit_code": 2,
+            "elapsed_ms": 33.56077102944255,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 46,
+            "stderr_bytes": 0,
+            "stdout_sha256": "1780d8746dc667c7b7dc78c7dd006c668f5f8c5393f39150b4a6eede7ec00ac0",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "ok": false,
+              "error": {
+                "code": "invalid_input"
+              }
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "wire_byte_limit",
+          "rationale": "Leading whitespace still counts toward the declared input byte limit.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b6c055e69d55a03fd1d3b474a8d307da80b29aea3df0992b4f32f7ef54fabf23",
+            "output_limit_bytes": 524289,
+            "script_sha256": "6d9fdad1fa302a7044622d4360598fbfab2ddc8b0915ac85ca6aaa66f89cb455",
+            "input_sha256": "f46e7c53336e3f201165507d7642065026f2770070ebc6ea5d295f94e728779e",
+            "exit_code": 2,
+            "elapsed_ms": 32.15435997117311,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 46,
+            "stderr_bytes": 0,
+            "stdout_sha256": "1780d8746dc667c7b7dc78c7dd006c668f5f8c5393f39150b4a6eede7ec00ac0",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "ok": false,
+              "error": {
+                "code": "invalid_input"
+              }
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "header_true_requires_a_record",
+          "rationale": "Header=true requires an actual nonempty CSV record; this additional semantic precondition is not a structural JSON Schema constraint.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b6c055e69d55a03fd1d3b474a8d307da80b29aea3df0992b4f32f7ef54fabf23",
+            "output_limit_bytes": 524289,
+            "script_sha256": "6d9fdad1fa302a7044622d4360598fbfab2ddc8b0915ac85ca6aaa66f89cb455",
+            "input_sha256": "4ff20d5ca184d42959663b75743cdf492f00dede119f46f710ce3304e15387ab",
+            "exit_code": 2,
+            "elapsed_ms": 32.993793953210115,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 46,
+            "stderr_bytes": 0,
+            "stdout_sha256": "1780d8746dc667c7b7dc78c7dd006c668f5f8c5393f39150b4a6eede7ec00ac0",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "ok": false,
+              "error": {
+                "code": "invalid_input"
+              }
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        },
+        {
+          "name": "header_true_requires_a_nonempty_record",
+          "rationale": "Header=true requires an actual nonempty CSV record; this additional semantic precondition is not a structural JSON Schema constraint.",
+          "checks": {
+            "exit_matches": true,
+            "semantic_output_matches": true,
+            "successful_output_schema_valid": true,
+            "bounded_execution": true,
+            "input_schema_expectation_matches": true
+          },
+          "passed": true,
+          "input_schema_valid": true,
+          "output_schema_valid": null,
+          "observation": {
+            "runner_sha256": "b6c055e69d55a03fd1d3b474a8d307da80b29aea3df0992b4f32f7ef54fabf23",
+            "output_limit_bytes": 524289,
+            "script_sha256": "6d9fdad1fa302a7044622d4360598fbfab2ddc8b0915ac85ca6aaa66f89cb455",
+            "input_sha256": "db13c1c2cff2dace68414e0edf302d374fc62df23aa1209a7823be803491fef5",
+            "exit_code": 2,
+            "elapsed_ms": 30.617497046478093,
+            "timed_out": false,
+            "launcher_truncated": false,
+            "stdout_bytes": 46,
+            "stderr_bytes": 0,
+            "stdout_sha256": "1780d8746dc667c7b7dc78c7dd006c668f5f8c5393f39150b4a6eede7ec00ac0",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "output": {
+              "ok": false,
+              "error": {
+                "code": "invalid_input"
+              }
+            },
+            "stderr_tail": "",
+            "launcher_stderr": ""
+          }
+        }
+      ],
+      "passed": true
+    }
+  ],
+  "admission": "not_performed",
+  "model_calls": 0,
+  "case_count": 12,
+  "passed": true
+}

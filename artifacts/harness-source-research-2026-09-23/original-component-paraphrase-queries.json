@@ -1,0 +1,71 @@
+{
+  "record_type": "independent_task_paraphrase_queries/v1",
+  "count": 16,
+  "selection": "Queries sent to the root before seeing any retrieval results. Known package contracts supplied the expected targets; this is a small authored evaluation set, not an unbiased customer benchmark.",
+  "queries": [
+    {
+      "expected_package": "render_focused_task_context",
+      "query": "Turn this assignment into a compact brief with clear first actions and completion checks."
+    },
+    {
+      "expected_package": "evaluate_capability_requirements",
+      "query": "Which required features still lack sufficiently strong supporting evidence?"
+    },
+    {
+      "expected_package": "select_context_blocks",
+      "query": "Fit useful background into a fixed allowance while retaining mandatory prerequisites."
+    },
+    {
+      "expected_package": "paired_sign_test",
+      "query": "Compare paired baseline and candidate measurements without treating ties as wins."
+    },
+    {
+      "expected_package": "profile_csv_structure",
+      "query": "Inspect this quoted delimited extract for ragged rows and empty columns."
+    },
+    {
+      "expected_package": "reconcile_multiset_rows",
+      "query": "Find extra repeated records on either side of these two collections."
+    },
+    {
+      "expected_package": "compute_weighted_quantiles",
+      "query": "Return exact weighted percentile cutoffs without interpolating between observed values."
+    },
+    {
+      "expected_package": "audit_half_open_interval_overlaps",
+      "query": "Identify overlapping reservations, total covered time and peak simultaneous occupancy."
+    },
+    {
+      "expected_package": "apply_flat_record_changes",
+      "query": "Apply all these object edits only if every expected old value still matches."
+    },
+    {
+      "expected_package": "reconcile_keyed_tables",
+      "query": "Match two tables by unique typed identifiers and report field-level changes."
+    },
+    {
+      "expected_package": "compare_file_inventories",
+      "query": "Compare two supplied file manifests and separate additions, removals and metadata changes."
+    },
+    {
+      "expected_package": "resolve_selected_dependency_closure",
+      "query": "Find everything needed by the selected packages and report reachable dependency cycles."
+    },
+    {
+      "expected_package": "assign_digest_shards",
+      "query": "Assign identifiers reproducibly to a fixed number of buckets from their complete content hashes."
+    },
+    {
+      "expected_package": "validate_event_precedence",
+      "query": "Check whether required events occurred in the prescribed relative order."
+    },
+    {
+      "expected_package": "apply_nonoverlapping_text_edits",
+      "query": "Apply several string replacements using positions from the original Unicode text."
+    },
+    {
+      "expected_package": "detect_portable_path_collisions",
+      "query": "Detect names that collide after Unicode normalization or make one file the parent of another."
+    }
+  ]
+}

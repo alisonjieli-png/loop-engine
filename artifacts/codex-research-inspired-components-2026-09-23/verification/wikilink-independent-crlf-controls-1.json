@@ -1,0 +1,46 @@
+{
+  "record_type": "independent_wikilink_cases/v1",
+  "source_basis": "Post-inspection exact-line boundary controls from profile: LF lines and CRLF accepted; repeated CR is not CRLF.",
+  "cases": [
+    {
+      "name": "frontmatter_extra_cr_is_not_exact_first_line",
+      "input": {
+        "record_type": "audit_wikilink_resolution_request/v1",
+        "syntax_profile": "bounded_markdown_wikilinks/v1",
+        "source_path": "Source.md",
+        "text": "---\r\r\n[[Shown]]",
+        "note_paths": [
+          "Source.md",
+          "Shown.md"
+        ]
+      },
+      "expected_exit": 0,
+      "expected_error": null,
+      "expected_links": [
+        {
+          "target": "Shown",
+          "status": "resolved",
+          "candidate_paths": [
+            "Shown.md"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "frontmatter_extra_cr_is_not_exact_closer",
+      "input": {
+        "record_type": "audit_wikilink_resolution_request/v1",
+        "syntax_profile": "bounded_markdown_wikilinks/v1",
+        "source_path": "Source.md",
+        "text": "---\nkey: value\n---\r\r\n[[Shown]]",
+        "note_paths": [
+          "Source.md",
+          "Shown.md"
+        ]
+      },
+      "expected_exit": 2,
+      "expected_error": "unclosed_frontmatter",
+      "expected_links": []
+    }
+  ]
+}

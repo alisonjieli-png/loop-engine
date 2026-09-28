@@ -1,0 +1,44 @@
+{
+  "record_type": "independent_candidate_sandbox_controls/v1",
+  "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+  "controls": [
+    {
+      "name": "cpu_spin",
+      "passed": true,
+      "observation": {
+        "script_sha256": "6f03a883a34c8b19ec2dba2a1e2941488319b72a4d2f441aa474cff0744647c1",
+        "input_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "exit_code": 137,
+        "elapsed_ms": 2015.7729849452153,
+        "timed_out": false,
+        "launcher_truncated": false,
+        "stdout_bytes": 0,
+        "stderr_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "output": null,
+        "stderr_tail": "",
+        "launcher_stderr": ""
+      }
+    },
+    {
+      "name": "memory_ceiling",
+      "passed": true,
+      "observation": {
+        "script_sha256": "aff1b75a04f732a5d3b6405c2d559627b965d6c79250af37319540c006107a83",
+        "input_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "exit_code": 1,
+        "elapsed_ms": 42.09134401753545,
+        "timed_out": false,
+        "launcher_truncated": false,
+        "stdout_bytes": 0,
+        "stderr_bytes": 438,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "143f5554d5a79a2ca593cca79ab3eb2918eb9f831cbcb044ea92ecf6f292f10c",
+        "output": null,
+        "stderr_tail": "ile \"/runner.py\", line 15, in <module>\n    runpy.run_path(\"/package/tool.py\", run_name=\"__main__\")\n    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen runpy>\", line 287, in run_path\n  File \"<frozen runpy>\", line 98, in _run_module_code\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"/package/tool.py\", line 1, in <module>\n    blob=bytearray(512*1024*1024)\nMemoryError\n",
+        "launcher_stderr": ""
+      }
+    }
+  ]
+}

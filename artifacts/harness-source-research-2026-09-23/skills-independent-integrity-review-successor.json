@@ -1,0 +1,32 @@
+{
+  "record_type": "skills_independent_integrity_review/v1",
+  "at": "2026-09-23T22:16:50.854690+00:00",
+  "checks": {
+    "exactly_1000_records": true,
+    "unique_research_ids": true,
+    "unique_same_publisher_names": true,
+    "unique_instruction_sha256": true,
+    "continuous_rank": true,
+    "descending_priority": true,
+    "score_sum_rounded_six_places": true,
+    "research_only_status_flags": true,
+    "per_repository_cap_40": true,
+    "canonical_repository_ids_present": true,
+    "unique_canonical_repository_id_and_skill_name": true,
+    "all_cached_bytes_tree_blob_alias_and_public_bindings": true,
+    "source_index_unchanged_during_review": true
+  },
+  "passed": true,
+  "records": 1000,
+  "repository_addresses": 81,
+  "canonical_repository_ids": 80,
+  "distinct_instruction_digests": 1000,
+  "aliases_checked": 1028,
+  "alias_bodies_checked": 1028,
+  "failures": [],
+  "source_index_sha256": "708d27199ae43e0d962b611ab56dc30defea2cb54c9c1e16cee52f2279661375",
+  "review_script_sha256": "2300adace4428280c96969dc04fc849c2d7aa40ce34f7df3bafbbe0a019dbe6b",
+  "network_calls": 0,
+  "upstream_code_executed": false,
+  "scope": "Counts, score arithmetic, cached bytes, Git/tree/projection bindings, anonymous fetch records, public repository metadata and research-only flags; no compatibility, license clearance or semantic task qualification."
+}

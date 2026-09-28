@@ -1,0 +1,93 @@
+[
+  {
+    "name": "near_integer_budget",
+    "input": "{\"budget\":1.00000000000000001,\"blocks\":[]}",
+    "schema_valid_using_plain_decoder": true,
+    "observation": {
+      "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+      "output_limit_bytes": 65536,
+      "script_sha256": "355bedee6fab088aa512a0d1ec98a391851a43ff9d29dc86e0659f93caef6215",
+      "input_sha256": "6a902c6b99ae023c2ef7650f840b0d5ff30d211ac81f97603aafb0f9898ef161",
+      "exit_code": 0,
+      "elapsed_ms": 37.05814899876714,
+      "timed_out": false,
+      "launcher_truncated": false,
+      "stdout_bytes": 79,
+      "stderr_bytes": 0,
+      "stdout_sha256": "8d171502cf2d9f6e3f654dfe2d30151cabfd52597994cd95578f98bb72403fae",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output": {
+        "blocks": [],
+        "omitted": [],
+        "remaining": 1,
+        "selected": [],
+        "total_cost": 0
+      },
+      "stderr_tail": "",
+      "launcher_stderr": ""
+    }
+  },
+  {
+    "name": "underflow_fractional_cost",
+    "input": "{\"budget\":0,\"blocks\":[{\"id\":\"a\",\"cost\":1e-9999,\"priority\":0,\"required\":true,\"depends_on\":[],\"text\":\"a\"}]}",
+    "schema_valid_using_plain_decoder": true,
+    "observation": {
+      "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+      "output_limit_bytes": 65536,
+      "script_sha256": "355bedee6fab088aa512a0d1ec98a391851a43ff9d29dc86e0659f93caef6215",
+      "input_sha256": "ca6db9012c4d63b94c2903373c1d74451653f81206a447c9047e870e15d82182",
+      "exit_code": 0,
+      "elapsed_ms": 36.96740395389497,
+      "timed_out": false,
+      "launcher_truncated": false,
+      "stdout_bytes": 170,
+      "stderr_bytes": 0,
+      "stdout_sha256": "f1353f90b8535b4c8563aee7291f28aa93155f9327f92de456f9a5815ffb1d5e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output": {
+        "blocks": [
+          {
+            "cost": 0.0,
+            "depends_on": [],
+            "id": "a",
+            "priority": 0,
+            "required": true,
+            "text": "a"
+          }
+        ],
+        "omitted": [],
+        "remaining": 0,
+        "selected": [
+          "a"
+        ],
+        "total_cost": 0
+      },
+      "stderr_tail": "",
+      "launcher_stderr": ""
+    }
+  },
+  {
+    "name": "terminal_newline_identifier",
+    "input": "{\"budget\":1,\"blocks\":[{\"id\":\"a\\n\",\"cost\":1,\"priority\":0,\"required\":false,\"depends_on\":[],\"text\":\"a\"}]}",
+    "schema_valid_using_plain_decoder": false,
+    "observation": {
+      "runner_sha256": "b43b342058a2d6f4bbca6e3782fab87bd7bc9e67714c6d5b71559d6124ec2913",
+      "output_limit_bytes": 65536,
+      "script_sha256": "355bedee6fab088aa512a0d1ec98a391851a43ff9d29dc86e0659f93caef6215",
+      "input_sha256": "91c85bbbadcdb1f2cb7adecced8997c051da6ea48e74e803e39f0ee1c3003034",
+      "exit_code": 2,
+      "elapsed_ms": 36.990363034419715,
+      "timed_out": false,
+      "launcher_truncated": false,
+      "stdout_bytes": 26,
+      "stderr_bytes": 0,
+      "stdout_sha256": "521ae7ef95afcb2f14e65d170d3f30a8ead6fe8e3b2445544ed3fef0efc5cf2b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output": {
+        "error": "invalid_input"
+      },
+      "stderr_tail": "",
+      "launcher_stderr": ""
+    }
+  }
+]

@@ -1,0 +1,95 @@
+{
+  "record_type": "independent_wrong_algorithm_controls/v1",
+  "rows": [
+    {
+      "identity": "paired_sign_test",
+      "case": "ties_missing_and_exact_decimal",
+      "completed_wrong_algorithm": true,
+      "detected": true,
+      "observation": {
+        "script_sha256": "a22cbaf600f585ecf7264661574709f764e9d60c1746ec2967688fa9b2014a1a",
+        "input_sha256": "1412ca3b2849aaa721e65b5bf6c0ef2705ed288a9d9175223e0404736ddb413b",
+        "exit_code": 0,
+        "elapsed_ms": 36.27208003308624,
+        "timed_out": false,
+        "launcher_truncated": false,
+        "stdout_bytes": 121,
+        "stderr_bytes": 0,
+        "stdout_sha256": "299d10ca47cbddee708a14626ff78801e334892bd4d5e69ef44f0f721087e07b",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "output": {
+          "wins": 2,
+          "losses": 1,
+          "ties": 1,
+          "missing": 1,
+          "evaluated": 4,
+          "p_two_sided": {
+            "numerator": "5",
+            "denominator": "8"
+          }
+        },
+        "stderr_tail": "",
+        "launcher_stderr": ""
+      }
+    },
+    {
+      "identity": "select_context_blocks",
+      "case": "newly_ready_b_precedes_previously_ready_z",
+      "completed_wrong_algorithm": true,
+      "detected": true,
+      "observation": {
+        "script_sha256": "45e7b25a78f8a3da0a439ac59e192002f84408ef03d178995d98090f8c219216",
+        "input_sha256": "bf8aef1e3d5d7900151b828516a2bab0aad708d33f11e40c3699da44df10a977",
+        "exit_code": 0,
+        "elapsed_ms": 32.13301103096455,
+        "timed_out": false,
+        "launcher_truncated": false,
+        "stdout_bytes": 375,
+        "stderr_bytes": 0,
+        "stdout_sha256": "6eebe3173dbd04c6bcd635a067489c0e6297b1d51f2486267aa35f3eaa44927a",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "output": {
+          "selected": [
+            "a",
+            "z",
+            "b"
+          ],
+          "omitted": [],
+          "total_cost": 3,
+          "remaining": 0,
+          "blocks": [
+            {
+              "id": "a",
+              "cost": 1,
+              "priority": 0,
+              "required": false,
+              "depends_on": [],
+              "text": "a text"
+            },
+            {
+              "id": "z",
+              "cost": 1,
+              "priority": 10,
+              "required": false,
+              "depends_on": [],
+              "text": "z text"
+            },
+            {
+              "id": "b",
+              "cost": 1,
+              "priority": 0,
+              "required": true,
+              "depends_on": [
+                "a"
+              ],
+              "text": "b text"
+            }
+          ]
+        },
+        "stderr_tail": "",
+        "launcher_stderr": ""
+      }
+    }
+  ],
+  "passed": true
+}

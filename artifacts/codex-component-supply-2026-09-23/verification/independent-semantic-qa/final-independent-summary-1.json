@@ -1,0 +1,918 @@
+{
+  "record_type": "codex_component_supply_independent_engineering_qa/v1",
+  "at": "2026-09-23T21:23:46.969740+00:00",
+  "source_tooling_revision": "231f51bb1facab517fbe915b08ea9ac85f913347",
+  "packages": [
+    {
+      "identity": "apply_flat_record_changes",
+      "independent_cases": 11,
+      "evidence_report": "data-independent-execution-1.json",
+      "script_imports": [
+        "__future__",
+        "decimal",
+        "json",
+        "sys"
+      ],
+      "tree_binding_sha256": "2afd22edfd1165e8064108c267f647bfd31827dd837693b45ea4bf04c587e2e6",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "digest": "926220a492229d038b2479796bbd4a35027c6f7c80f4e35ea3c244adc368e1bf",
+          "size_bytes": 4251
+        },
+        {
+          "path": "LICENSE",
+          "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+          "size_bytes": 1068
+        },
+        {
+          "path": "contracts/input.schema.json",
+          "digest": "a2aca60dbdec358d5fd552fa6310ee9bb57f65ffeeb09ac212ab6415864a7cc8",
+          "size_bytes": 4872
+        },
+        {
+          "path": "contracts/output.schema.json",
+          "digest": "b230c96e4c00fd3204856b7908e7ccf239b46cca370cfb929e51326ce42e384d",
+          "size_bytes": 6145
+        },
+        {
+          "path": "examples/input.json",
+          "digest": "1478eb12d970fe70ebc64586036bb6d0a3f8cb41d3988d46d2265f76987bb45d",
+          "size_bytes": 553
+        },
+        {
+          "path": "examples/output.json",
+          "digest": "a3a23e4aeb060d5454bb96ba7c15550243b2ad2910192a221f96dbf80a4ddea6",
+          "size_bytes": 155
+        },
+        {
+          "path": "tools/apply_flat_record_changes.py",
+          "digest": "f37df2924ab751b7a3fe2f631af0e86300d0f21f6a40fa71287c301cacf745ce",
+          "size_bytes": 5176
+        },
+        {
+          "path": "verification/cases.json",
+          "digest": "c2cb1a7bc86ecaa5c3e083aa7155f149b8380713cf4ee787241a37f83e225322",
+          "size_bytes": 7198
+        }
+      ]
+    },
+    {
+      "identity": "apply_nonoverlapping_text_edits",
+      "independent_cases": 12,
+      "evidence_report": "systems-independent-successor-2.json",
+      "script_imports": [
+        "decimal",
+        "hashlib",
+        "json",
+        "sys"
+      ],
+      "tree_binding_sha256": "9b725d6157e81c814f87400ded1c31c7d22d90c6ff0cebdf0b3691098f7e4add",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "digest": "06b0bfe007b9d6e42e09e0f740d7632b64b5911cfb5803fcf208f40a98caf7c7",
+          "size_bytes": 2817
+        },
+        {
+          "path": "LICENSE",
+          "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+          "size_bytes": 1068
+        },
+        {
+          "path": "contracts/input.schema.json",
+          "digest": "a9c4766964097b37daf59741f848141cb32fdf1f744e3393eeaea96151d56143",
+          "size_bytes": 1510
+        },
+        {
+          "path": "contracts/output.schema.json",
+          "digest": "f9de7bee8f6a500f7ed2cb369073b2021a437b9b161bb9b12c2103c7c59f5152",
+          "size_bytes": 1484
+        },
+        {
+          "path": "examples/input.json",
+          "digest": "32a89560a2cc5f4556287fc3845a46d348adf95406fe1a313e3658507170519e",
+          "size_bytes": 336
+        },
+        {
+          "path": "examples/output.json",
+          "digest": "e5739a4fb593eb3574e46d7e793be95fcb2c38fd6e98434dd28e75ec2890c553",
+          "size_bytes": 279
+        },
+        {
+          "path": "tools/apply_nonoverlapping_text_edits.py",
+          "digest": "313cc16eed7f295c34013104e679964ac8805bf18123afe29e28441650840e06",
+          "size_bytes": 5922
+        },
+        {
+          "path": "verification/cases.json",
+          "digest": "0b27210a4372a18e49d39f94a0ab64922a90f259296fede26dc5e4b8d4189c5b",
+          "size_bytes": 6628
+        }
+      ]
+    },
+    {
+      "identity": "assign_digest_shards",
+      "independent_cases": 12,
+      "evidence_report": "systems-independent-successor-2.json",
+      "script_imports": [
+        "decimal",
+        "hashlib",
+        "json",
+        "sys"
+      ],
+      "tree_binding_sha256": "ead3904acd4b5249fc4076316d8c2447b17e701b03bd2de60265cd56d372a86c",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "digest": "8306626686cb0e9c393ba689b4f46d711cffca24452149023d958b0f0202069c",
+          "size_bytes": 2555
+        },
+        {
+          "path": "LICENSE",
+          "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+          "size_bytes": 1068
+        },
+        {
+          "path": "contracts/input.schema.json",
+          "digest": "dbd232f98439c1209eb967932a09192b1f89f33b57586718d625078e6aa541f6",
+          "size_bytes": 1030
+        },
+        {
+          "path": "contracts/output.schema.json",
+          "digest": "3ddbc4563c828c7f9f82423f1a5daeca95949c184cfa48216af07efbfa5d3cad",
+          "size_bytes": 1882
+        },
+        {
+          "path": "examples/input.json",
+          "digest": "592c44a613673fbbc9ce9139054dbd32b95437cbe1c7f3c40cd5ae2cf9283572",
+          "size_bytes": 119
+        },
+        {
+          "path": "examples/output.json",
+          "digest": "a0f54bb35654d9a5a604eaddae0a6f7443a66084b7f6d3320c7e0faad20f8a3f",
+          "size_bytes": 492
+        },
+        {
+          "path": "tools/assign_digest_shards.py",
+          "digest": "8e7a9079d2b768d78e81db33ba3657f2be18f452bb37c9a803ed863c32639911",
+          "size_bytes": 5008
+        },
+        {
+          "path": "verification/cases.json",
+          "digest": "d2dcfe6b4f9c9fb26b42af629a0ac9440aff58e13c32acc84d1baf80a1eedd69",
+          "size_bytes": 60343
+        }
+      ]
+    },
+    {
+      "identity": "audit_half_open_interval_overlaps",
+      "independent_cases": 11,
+      "evidence_report": "data-independent-execution-1.json",
+      "script_imports": [
+        "__future__",
+        "decimal",
+        "json",
+        "sys"
+      ],
+      "tree_binding_sha256": "25dfe8bf5fd02fa5052467699db6b1b09ad4c4bffddeb1aa520f2dadc8d4c786",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "digest": "5414ef36e44c145b28dc269453462c110b2deca67a80c1918e02738d82cecc37",
+          "size_bytes": 4124
+        },
+        {
+          "path": "LICENSE",
+          "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+          "size_bytes": 1068
+        },
+        {
+          "path": "contracts/input.schema.json",
+          "digest": "7201832e32a9791ac0ab3127afee4d574a45baeaa5a384a43b71d8bdc0142a6c",
+          "size_bytes": 1759
+        },
+        {
+          "path": "contracts/output.schema.json",
+          "digest": "c0af76e5a9b83b2678e4dd77456de81beee0db0e2fa4237b8deef878a56aa6b0",
+          "size_bytes": 2922
+        },
+        {
+          "path": "examples/input.json",
+          "digest": "7cbf0536a9e0da8911563a0b78a4dcdf0fd932db2e5ea7a1fb8890176693c416",
+          "size_bytes": 280
+        },
+        {
+          "path": "examples/output.json",
+          "digest": "5d16cfab4d5a0fb70156b7410affc127767afce82b6ad89f873a7c433bb08e92",
+          "size_bytes": 275
+        },
+        {
+          "path": "tools/audit_half_open_interval_overlaps.py",
+          "digest": "7899e47fbbf918f845e4f1a086ed097ecd7e5004b39304d0452ce25d2e2748a7",
+          "size_bytes": 5103
+        },
+        {
+          "path": "verification/cases.json",
+          "digest": "0b24ebd19d2cc47602713f6b69359a947b3bd9d2470419919caa1c7d770829e4",
+          "size_bytes": 5130
+        }
+      ]
+    },
+    {
+      "identity": "compare_file_inventories",
+      "independent_cases": 9,
+      "evidence_report": "systems-independent-successor-2.json",
+      "script_imports": [
+        "decimal",
+        "json",
+        "sys"
+      ],
+      "tree_binding_sha256": "75b1e779c4f3ef8ae7eb98cde470296817e73fad9f4f5ed1c5d01acb04af6f6f",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "digest": "b14e00fe7e7a9b7073455837e371cc307ffea2ebf4177ea8163e7f54dce22898",
+          "size_bytes": 2726
+        },
+        {
+          "path": "LICENSE",
+          "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+          "size_bytes": 1068
+        },
+        {
+          "path": "contracts/input.schema.json",
+          "digest": "498a9b8f025cf8b4646a91c3d95023dbc73dd65bc3ccd00a199d88c6f2634dcc",
+          "size_bytes": 2507
+        },
+        {
+          "path": "contracts/output.schema.json",
+          "digest": "e2065df2afd5488b96d3c4550dfab88482ee278cf36b47e94485e10664d9494f",
+          "size_bytes": 2799
+        },
+        {
+          "path": "examples/input.json",
+          "digest": "4dbbb8d337e9922b58c92bd8e2855bc21ce2606831b86d0817ecbde49f8cb2e8",
+          "size_bytes": 1105
+        },
+        {
+          "path": "examples/output.json",
+          "digest": "6953452702a4ef3cf7a3a7c212f5f4c19cbaec4a31d606b0d580b1c04d483b38",
+          "size_bytes": 293
+        },
+        {
+          "path": "tools/compare_file_inventories.py",
+          "digest": "e354235c3709a78e3ea1c58b253e507e420951f8633c729d31225e1708ed0982",
+          "size_bytes": 5665
+        },
+        {
+          "path": "verification/cases.json",
+          "digest": "6b7b30c4919e284e0e0c1bd9b96936edccc36221da33cd13bb0ccca5f1c7602c",
+          "size_bytes": 8189
+        }
+      ]
+    },
+    {
+      "identity": "compute_weighted_quantiles",
+      "independent_cases": 11,
+      "evidence_report": "data-independent-execution-1.json",
+      "script_imports": [
+        "__future__",
+        "decimal",
+        "fractions",
+        "json",
+        "re",
+        "sys"
+      ],
+      "tree_binding_sha256": "05e867c318075879cefd9e769a72f68452c9aa8d3afa3a6d8810f19c23d50d76",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "digest": "89a88e98429338bab866b1196258d9f91c47978b747e086ae0758667f653f8b5",
+          "size_bytes": 4108
+        },
+        {
+          "path": "LICENSE",
+          "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+          "size_bytes": 1068
+        },
+        {
+          "path": "contracts/input.schema.json",
+          "digest": "1253c921e6417bd085804816b1cee5876d7283755d57a83b270c93f6c8618213",
+          "size_bytes": 1878
+        },
+        {
+          "path": "contracts/output.schema.json",
+          "digest": "a6533aed65dd76aec8bc013277a8c412d36cf130654fd56e9092b0f2ed2fd8d3",
+          "size_bytes": 3141
+        },
+        {
+          "path": "examples/input.json",
+          "digest": "f51f9a110988eac8ac7d6aa0f16762e7a131f78734d78fd2147cd51f6080a7a7",
+          "size_bytes": 192
+        },
+        {
+          "path": "examples/output.json",
+          "digest": "6d18c29704a0e56c5a8ba8d76b9ca045238992fd75b1c54aaade8cd35e9d045f",
+          "size_bytes": 545
+        },
+        {
+          "path": "tools/compute_weighted_quantiles.py",
+          "digest": "fb2e3a8bdb25848e9947b5ece3e703ec74cdb77d3804674acef4f56f6865e585",
+          "size_bytes": 4984
+        },
+        {
+          "path": "verification/cases.json",
+          "digest": "38fd0ce11ad251c450359d2b0df57da6f31c76bbdb40af346c2ac18783bbd4f6",
+          "size_bytes": 5071
+        }
+      ]
+    },
+    {
+      "identity": "detect_portable_path_collisions",
+      "independent_cases": 10,
+      "evidence_report": "systems-independent-successor-2.json",
+      "script_imports": [
+        "decimal",
+        "json",
+        "sys",
+        "unicodedata"
+      ],
+      "tree_binding_sha256": "bfcc758dbd31c0b0cbb99d8b39fd5aef76ee966b6a06f707fef4413f394a4642",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "digest": "3f70cb352717932e919a473a506da80dd9303da01c24782ff38d20434cf07010",
+          "size_bytes": 2848
+        },
+        {
+          "path": "LICENSE",
+          "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+          "size_bytes": 1068
+        },
+        {
+          "path": "contracts/input.schema.json",
+          "digest": "54b2bb9764476a5ad540f450c06bc1ce6243ab0c212f20d971ece0777bd2afb8",
+          "size_bytes": 1156
+        },
+        {
+          "path": "contracts/output.schema.json",
+          "digest": "5efb02d0bc1f6adf444ba9414706876702f622c7dd13d88df906629f4cbd392f",
+          "size_bytes": 3386
+        },
+        {
+          "path": "examples/input.json",
+          "digest": "3b3741fef81042bfae7f538c8d9038c2119a2e1acc7e4c5b9fe6f45a4c6dbff9",
+          "size_bytes": 184
+        },
+        {
+          "path": "examples/output.json",
+          "digest": "0f52921345f8a58d070780dcd91f3c018584b4577534974fd172bd01438a417c",
+          "size_bytes": 534
+        },
+        {
+          "path": "tools/detect_portable_path_collisions.py",
+          "digest": "330cd007a2b6c1d7eb9fa71f6f2effe93bba796d766d02313cc6d1a892b8f774",
+          "size_bytes": 6168
+        },
+        {
+          "path": "verification/cases.json",
+          "digest": "998de5ba295e77ad40bda5a388f174aa389181e645d7971d686a7d1031b40e52",
+          "size_bytes": 7175
+        }
+      ]
+    },
+    {
+      "identity": "evaluate_capability_requirements",
+      "independent_cases": 11,
+      "evidence_report": "root-independent-successor-3.json",
+      "script_imports": [
+        "decimal",
+        "hashlib",
+        "json",
+        "math",
+        "re",
+        "sys"
+      ],
+      "tree_binding_sha256": "56e5afc92311ac5dc21e0a9dd3d1df649922186f1b95e5845ec1f585f97299eb",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "digest": "5e7f554391f7e514d69fbdb4a32d86bc47865c8981e2eb566fdeb4f75449059d",
+          "size_bytes": 2989
+        },
+        {
+          "path": "LICENSE",
+          "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+          "size_bytes": 1068
+        },
+        {
+          "path": "contracts/input.schema.json",
+          "digest": "d77d16f67d02833c615a1036f45985dc2221848783216ea88723bcd72548534c",
+          "size_bytes": 1703
+        },
+        {
+          "path": "contracts/output.schema.json",
+          "digest": "02718878be1d6234061f2019b2b7d3e72fc47acc37038cafc2f9e0ca69c863d4",
+          "size_bytes": 1128
+        },
+        {
+          "path": "examples/input.json",
+          "digest": "ef64acfbd199ee9818c6476ad8076589bc7580d6067616b081156809c649577a",
+          "size_bytes": 379
+        },
+        {
+          "path": "examples/output.json",
+          "digest": "10427e2b40e3be5450a702cd29dc607130cf413bd8237f4b5281f8e7781e806f",
+          "size_bytes": 178
+        },
+        {
+          "path": "tools/evaluate_capability_requirements.py",
+          "digest": "a32264447585fb4d8af575ab4be6e37cbf7cd2c89a081fd491ee7538c2167085",
+          "size_bytes": 4302
+        },
+        {
+          "path": "verification/cases.json",
+          "digest": "620f38558b07b38feeb415cad258595652b80446c5bad0a9a89a15245d019339",
+          "size_bytes": 2604
+        }
+      ]
+    },
+    {
+      "identity": "paired_sign_test",
+      "independent_cases": 14,
+      "evidence_report": "root-independent-successor-3.json",
+      "script_imports": [
+        "decimal",
+        "fractions",
+        "hashlib",
+        "json",
+        "math",
+        "re",
+        "sys"
+      ],
+      "tree_binding_sha256": "f89c6884d11b2a5978542aa66430ae917b9ab0b92c31b71463f3d584d5fc70f4",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "digest": "1a15f7ac5aa8b29618395fda6cffb056d6bb42f4d0095ba18ca9a1b3b4677866",
+          "size_bytes": 3077
+        },
+        {
+          "path": "LICENSE",
+          "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+          "size_bytes": 1068
+        },
+        {
+          "path": "contracts/input.schema.json",
+          "digest": "9f2966f263c43affb693b81152860d6e836cddae785fd90ffb55db6df4257614",
+          "size_bytes": 1369
+        },
+        {
+          "path": "contracts/output.schema.json",
+          "digest": "368599f75ca631c0fdf10ac59e4d0c78a61f18ef65b0fe51bfdd3b3fab179751",
+          "size_bytes": 1255
+        },
+        {
+          "path": "examples/input.json",
+          "digest": "49b27e1f7adf13ae363747781314200a41c7a7e236d27187486cfe0b1c9f30f1",
+          "size_bytes": 307
+        },
+        {
+          "path": "examples/output.json",
+          "digest": "4723a1b236ee432877e7b3ad1aea84d1f906296662d421d27d6cdeac9889ccd9",
+          "size_bytes": 147
+        },
+        {
+          "path": "tools/paired_sign_test.py",
+          "digest": "f3ecfeddb95ef924fb2366fdd1c3f2a02f1de507bcca6c836f1137f361daddbf",
+          "size_bytes": 4259
+        },
+        {
+          "path": "verification/cases.json",
+          "digest": "ec19446c2ec44b418817ae59737fc27e2a3e72c6ccc6575fde31dc33f3c24bda",
+          "size_bytes": 2317
+        }
+      ]
+    },
+    {
+      "identity": "profile_csv_structure",
+      "independent_cases": 12,
+      "evidence_report": "data-csv-independent-successor-2.json",
+      "script_imports": [
+        "__future__",
+        "collections",
+        "csv",
+        "decimal",
+        "io",
+        "json",
+        "sys"
+      ],
+      "tree_binding_sha256": "55877b069a1f500370146f5de270f0df247bf8b854231e3e0b975a4b1793b457",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "digest": "2fb8ad9f8cc1bfd290e9b6d992ca0ccd7b8b1a425ce9495b02155113133399f1",
+          "size_bytes": 4847
+        },
+        {
+          "path": "LICENSE",
+          "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+          "size_bytes": 1068
+        },
+        {
+          "path": "contracts/input.schema.json",
+          "digest": "af34196396781d9334f34a93c40f76eb85b69015b52ec87d03522e82ad33583d",
+          "size_bytes": 1869
+        },
+        {
+          "path": "contracts/output.schema.json",
+          "digest": "bbd2cc0ada5e6e96a16de9c39852096cb70a714bdf2215106be753a43be06b6e",
+          "size_bytes": 5811
+        },
+        {
+          "path": "examples/input.json",
+          "digest": "83d6bb56045d674fa9c0a4a93764af0238d04840273ecafda0e0812560257c34",
+          "size_bytes": 98
+        },
+        {
+          "path": "examples/output.json",
+          "digest": "23b0be0520288658135c1e5373ad3b75c690f8271a33eb12019cb072700f81f7",
+          "size_bytes": 761
+        },
+        {
+          "path": "tools/profile_csv_structure.py",
+          "digest": "6d9fdad1fa302a7044622d4360598fbfab2ddc8b0915ac85ca6aaa66f89cb455",
+          "size_bytes": 5749
+        },
+        {
+          "path": "verification/cases.json",
+          "digest": "6caa9becf270f988ca064a6c94dbbca6efacdb1216ea68605b4db8001b9b4962",
+          "size_bytes": 13294
+        }
+      ]
+    },
+    {
+      "identity": "reconcile_keyed_tables",
+      "independent_cases": 12,
+      "evidence_report": "data-independent-execution-1.json",
+      "script_imports": [
+        "__future__",
+        "decimal",
+        "json",
+        "sys"
+      ],
+      "tree_binding_sha256": "2bf335ba8f7fba255169910db7b8165e6cf22caaf8b7efe203941476ff14bed0",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "digest": "89d0def0c9e9130e3e952fd6b3e5bb8faa8f14b8587c96ab48d1e1f985551a8b",
+          "size_bytes": 4437
+        },
+        {
+          "path": "LICENSE",
+          "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+          "size_bytes": 1068
+        },
+        {
+          "path": "contracts/input.schema.json",
+          "digest": "1b55158c2aa9e72e642ead1141e7102c1679a537c9521dd9227904a68e56cc49",
+          "size_bytes": 2749
+        },
+        {
+          "path": "contracts/output.schema.json",
+          "digest": "9887b12ef08a7eab7274453b4f2f1a7dab5baf4eda013263282efbf7c69af8cb",
+          "size_bytes": 6114
+        },
+        {
+          "path": "examples/input.json",
+          "digest": "1a504a56de229519878a65c9a4b9c20640d50ee6a0705c8ba10a40aadcf46a75",
+          "size_bytes": 281
+        },
+        {
+          "path": "examples/output.json",
+          "digest": "a7f160afbd250f0bc5a94a633952f3f97cc642376ce66fa33bc86fd898a211f5",
+          "size_bytes": 663
+        },
+        {
+          "path": "tools/reconcile_keyed_tables.py",
+          "digest": "a95ad8ab65c8212411b68690068b9ee6008587646bc83eb7563630e7658eae0a",
+          "size_bytes": 5326
+        },
+        {
+          "path": "verification/cases.json",
+          "digest": "3e24970335318b468f5e7d253d25a42a04a65662c51b5bea2086f9b8e5a809fa",
+          "size_bytes": 5851
+        }
+      ]
+    },
+    {
+      "identity": "reconcile_multiset_rows",
+      "independent_cases": 12,
+      "evidence_report": "data-independent-execution-1.json",
+      "script_imports": [
+        "__future__",
+        "collections",
+        "decimal",
+        "json",
+        "sys"
+      ],
+      "tree_binding_sha256": "c0e88e69371b661c32444e111bee5a9c8f601af860a594f3f2d415f46661747c",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "digest": "214a85a46d496279524ff83b5b52839259ca2b03474d4e3a845a3cd2799ea03c",
+          "size_bytes": 4024
+        },
+        {
+          "path": "LICENSE",
+          "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+          "size_bytes": 1068
+        },
+        {
+          "path": "contracts/input.schema.json",
+          "digest": "4f99485b5163a2f080cc7c90b6edd049826db5721bc8d674ad4b280625f8ebf1",
+          "size_bytes": 2311
+        },
+        {
+          "path": "contracts/output.schema.json",
+          "digest": "335ec084dca86e1a168eca2d446988648706b9e9a02ae70cdc0c4aee9c9e9438",
+          "size_bytes": 5842
+        },
+        {
+          "path": "examples/input.json",
+          "digest": "0bd54b11a05ec5e118dd7629b7b4ecb9dcb7859506533cf9dde5f566be3efe8b",
+          "size_bytes": 166
+        },
+        {
+          "path": "examples/output.json",
+          "digest": "43ee3c7a0b4fd752b756b56663f9064eea48228ccc27f1ff31d2a9cde0de3aed",
+          "size_bytes": 495
+        },
+        {
+          "path": "tools/reconcile_multiset_rows.py",
+          "digest": "400f620e66faf353fef38d18417bcea2a733c6dbc6f8a17d81135982879405c5",
+          "size_bytes": 4567
+        },
+        {
+          "path": "verification/cases.json",
+          "digest": "bc5c7050d531fe9b18e0575d8147eda4c29b61213c7f351acc4816bcf91fcd05",
+          "size_bytes": 5014
+        }
+      ]
+    },
+    {
+      "identity": "render_focused_task_context",
+      "independent_cases": 11,
+      "evidence_report": "root-independent-successor-3.json",
+      "script_imports": [
+        "decimal",
+        "hashlib",
+        "json",
+        "math",
+        "re",
+        "sys"
+      ],
+      "tree_binding_sha256": "77cfc9647a1f015a0090399d58706857c57656efdb1d4683cd795cb3c22acd9d",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "digest": "ff82a2af20bc15cd640be923956ec13549b37bd3b38a891a7f77cb1702820f0d",
+          "size_bytes": 2976
+        },
+        {
+          "path": "LICENSE",
+          "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+          "size_bytes": 1068
+        },
+        {
+          "path": "contracts/input.schema.json",
+          "digest": "8b0fa0f3189fb6310d53f2b35e09319725f8a676b7bfb93832a58854e26d7404",
+          "size_bytes": 1945
+        },
+        {
+          "path": "contracts/output.schema.json",
+          "digest": "8093a626a98d4e73f0477e9d2bcfae7a7f30b49d7b104acc1967d037b7184019",
+          "size_bytes": 2853
+        },
+        {
+          "path": "examples/input.json",
+          "digest": "8b4ac71f3a71d383d43a66c703ab50754253f58756e11246b7b8aa098cdbc7ee",
+          "size_bytes": 452
+        },
+        {
+          "path": "examples/output.json",
+          "digest": "e69a4eaf10cd42404bf4970e9fa59649026f7a2e9d8fc040d6743362cca6100d",
+          "size_bytes": 1492
+        },
+        {
+          "path": "tools/render_focused_task_context.py",
+          "digest": "1dd7e1c4053f53da867f0d6e6411101bf197942bf06a6892e23c8f06eba0b442",
+          "size_bytes": 4855
+        },
+        {
+          "path": "verification/cases.json",
+          "digest": "2be26168203aa2e70cb5d94c55bb80dc0a72f9e3dbb032bd21efb1882ca58f88",
+          "size_bytes": 4383
+        }
+      ]
+    },
+    {
+      "identity": "resolve_selected_dependency_closure",
+      "independent_cases": 11,
+      "evidence_report": "systems-independent-successor-2.json",
+      "script_imports": [
+        "decimal",
+        "json",
+        "sys"
+      ],
+      "tree_binding_sha256": "216fc11e9807032cf4374f3d7a8ca00bf7c5a74dc38049392f86e08e279d9e12",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "digest": "8c03276c856ab89dacc65121fc5b34d8b9e970bea31907d391f10605e0e38ae4",
+          "size_bytes": 2789
+        },
+        {
+          "path": "LICENSE",
+          "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+          "size_bytes": 1068
+        },
+        {
+          "path": "contracts/input.schema.json",
+          "digest": "bb776cc53f7d1c64bbc060803ea27705340c01a79ec4bbed61d056fd4036cfca",
+          "size_bytes": 1782
+        },
+        {
+          "path": "contracts/output.schema.json",
+          "digest": "7e4d395b133009a7eda23ba5d09678a31883daf4e0c7d8c44cf3fa9815e0ced5",
+          "size_bytes": 1691
+        },
+        {
+          "path": "examples/input.json",
+          "digest": "ca33ed478b8849d22e0be2eda6a384c651a411efc19862e3947dc89130e8e967",
+          "size_bytes": 363
+        },
+        {
+          "path": "examples/output.json",
+          "digest": "b644a1e800883ee3b97d23776bab723e2426ba10a5d0848661903ab916ade857",
+          "size_bytes": 143
+        },
+        {
+          "path": "tools/resolve_selected_dependency_closure.py",
+          "digest": "6788778c91d0255a8ae9782a9d896d33cec5bfd321a62a4b4acebb185a7cc52c",
+          "size_bytes": 5999
+        },
+        {
+          "path": "verification/cases.json",
+          "digest": "3c0c6e5e33c30b2f5a473070050afb17daa75fc0949908c73887d6ecce79c494",
+          "size_bytes": 5438
+        }
+      ]
+    },
+    {
+      "identity": "select_context_blocks",
+      "independent_cases": 21,
+      "evidence_report": "root-independent-successor-3.json",
+      "script_imports": [
+        "decimal",
+        "graphlib",
+        "hashlib",
+        "heapq",
+        "json",
+        "math",
+        "re",
+        "sys"
+      ],
+      "tree_binding_sha256": "66f40309754be804a143037f6685792727a6ed65624b85821f8f541133cd0be0",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "digest": "f8d068b9d149b65f3b1c1b8552ce7f268849b20485fe9d4dd16b7d61b19986e7",
+          "size_bytes": 3082
+        },
+        {
+          "path": "LICENSE",
+          "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+          "size_bytes": 1068
+        },
+        {
+          "path": "contracts/input.schema.json",
+          "digest": "a6b1fc73901e044955abb56955eb1d5bddbaf5f76a0936651ebe37e3e3e4c2be",
+          "size_bytes": 1463
+        },
+        {
+          "path": "contracts/output.schema.json",
+          "digest": "4b5f521ed4b0fc15f74fee20d2d1bdfcad29b478fd895127ade8568f91f52067",
+          "size_bytes": 2008
+        },
+        {
+          "path": "examples/input.json",
+          "digest": "810307522a8418739694b3d5800368d9c30d14847c1e7c7362f0c2c9a4acf976",
+          "size_bytes": 527
+        },
+        {
+          "path": "examples/output.json",
+          "digest": "78e23951fd0af136d9ae3242e5dcf68ac76a6319fa733473ed31855cfd2d3b11",
+          "size_bytes": 477
+        },
+        {
+          "path": "tools/select_context_blocks.py",
+          "digest": "03ea948927f8ee741c7497bafcef68444e99ababeb4d942e86c7f25a419197b5",
+          "size_bytes": 4812
+        },
+        {
+          "path": "verification/cases.json",
+          "digest": "a8a8babd4d388119fe41fd885c8c698454c9f6fc81314449408ead96d192b5df",
+          "size_bytes": 2801
+        }
+      ]
+    },
+    {
+      "identity": "validate_event_precedence",
+      "independent_cases": 10,
+      "evidence_report": "systems-independent-successor-2.json",
+      "script_imports": [
+        "decimal",
+        "json",
+        "sys"
+      ],
+      "tree_binding_sha256": "9f54ba5cf4de19556869b5c2b9162c461b8044e05f54194ba8402e0aa182a90e",
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "digest": "e365766f7229482d72912ab4fc6e48fe032a0904716327d2cf10d3337887c806",
+          "size_bytes": 2648
+        },
+        {
+          "path": "LICENSE",
+          "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+          "size_bytes": 1068
+        },
+        {
+          "path": "contracts/input.schema.json",
+          "digest": "e885f0b911ba714de1d8e8c49c82eaf13ca437f62d48aee959b695896372dd85",
+          "size_bytes": 1662
+        },
+        {
+          "path": "contracts/output.schema.json",
+          "digest": "c3f3963e116035d96b76ef7c986ebcbfc2e8bace319b14eaed5197ae6f7db4ad",
+          "size_bytes": 2603
+        },
+        {
+          "path": "examples/input.json",
+          "digest": "f8fdaa1250fe921079f4b6557bab6a42c3e76ddd17671baae6b10b75bbbb8c9a",
+          "size_bytes": 261
+        },
+        {
+          "path": "examples/output.json",
+          "digest": "904bd652bdd7acc240ad0035de6b580f73ff690cf638fd55e1273b0fb22196e0",
+          "size_bytes": 100
+        },
+        {
+          "path": "tools/validate_event_precedence.py",
+          "digest": "e2aebba7709305435dd28d64aea7ee97c5db2a866942065d96b9ec0ea352aa3d",
+          "size_bytes": 5530
+        },
+        {
+          "path": "verification/cases.json",
+          "digest": "a26e3d7cf785da80e2554f540424f85871c7568972a3ccd270e3f4b0dfcb5347",
+          "size_bytes": 4473
+        }
+      ]
+    }
+  ],
+  "package_count": 16,
+  "payload_file_paths": 128,
+  "distinct_payload_file_hashes": 113,
+  "payload_bytes": 395981,
+  "payload_file_categories": {
+    "contract": 32,
+    "example": 32,
+    "instruction": 16,
+    "license": 16,
+    "tool": 16,
+    "verification_fixture": 16
+  },
+  "independent_cases": 190,
+  "independent_wrong_algorithm_controls": 2,
+  "unresolved_findings": [],
+  "exact_current_trees_match_execution_evidence": true,
+  "candidate_admission_performed": false,
+  "native_harness_qualification_performed": false,
+  "model_provider_calls": 0,
+  "live_service_requests": 0,
+  "limits": "Finite fixture and source review, not a proof over all allowed inputs, all Python versions, maximum-volume workloads, or native harness loading.",
+  "evidence_files": {
+    "root-independent-successor-3.json": "5769c07ebc0083d215b80d820252a71d54ca84b6225789d7dfcf6abc0bd69f2a",
+    "systems-independent-successor-2.json": "4731f88796107a9ec8a283a0b67bac064eeb3b86c2115f80c43a58519299b2cf",
+    "data-independent-execution-1.json": "abefe38a5a851306efc1e1eea17f5df1901504f7ff11f6346695bbd18f7eb040",
+    "data-csv-independent-successor-2.json": "72917fddf2e5eb5422be00c1b116f19eb525b7a54bfc204f0e93253db7a2bd55"
+  },
+  "qa_source_files": {
+    "sandbox.py": "ea468fa4e9eff1f6feaf8124d2eeb4ad47e66b5c5a2e70797bbbfa59d44c7451",
+    "verify_cases.py": "06d40ef8dbd1d27df189b77cacaa54e0166ca83965ae4ab5dbb2ad9e93ecd5d9",
+    "build_final_summary.py": "e8986bbb8df9481932e64b21f908f00e8945ef570f1d0587deb5ec0cb71b71be",
+    "wrong_algorithm_controls.py": "e0e994d3cb93315dd72f27af95036a1876cd2f87dd16c68f5d767af80cde097d"
+  }
+}
