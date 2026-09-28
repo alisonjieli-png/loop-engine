@@ -592,6 +592,100 @@ class OpenApiLineTest(unittest.TestCase):
         built, refused, _facts, _summary = run({"license": {"name": "Proprietary"}})
         self.assertEqual((built, [row["reason"] for row in refused]), ([], ["licence_not_on_allowlist"]))
 
+    def test_form_bodies_are_encoded_by_their_declared_style(self):
+        from supply_lines import openapi_operations as line
+        stripe = (("expand", "deepObject", True), ("metadata", "deepObject", True))
+        self.assertEqual(line.form_pairs({"amount": 5, "expand": ["a", "b"], "metadata": {"k": "v", "n": None},
+                                          "live": True, "skip": None}, stripe),
+                         [("amount", "5"), ("expand[0]", "a"), ("expand[1]", "b"), ("metadata[k]", "v"),
+                          ("live", "true")])
+        self.assertEqual(line.form_pairs({"items": [{"price": "p1", "tax": [1, 2]}]}, (("items", "deepObject", True),)),
+                         [("items[0][price]", "p1"), ("items[0][tax][0]", "1"), ("items[0][tax][1]", "2")])
+        self.assertEqual(line.form_pairs({"Event": ["a", "b"], "Codes": ["x", "y"]}, (("Codes", "form", False),)),
+                         [("Event", "a"), ("Event", "b"), ("Codes", "x,y")])
+        self.assertEqual(line.form_pairs({"point": {"x": 1, "y": 2}}, ()), [("x", "1"), ("y", "2")])
+        self.assertEqual(line.form_encoding({"encoding": {"b": {"style": "deepObject", "explode": True}, "a": {}}}),
+                         (("a", "form", True), ("b", "deepObject", True)))
+        spec = {"openapi": "3.0.0", "info": {"title": "Pay", "version": "1"},
+                "servers": [{"url": "https://api.pay.example/"}],
+                "components": {"securitySchemes": {"bearer": {"type": "http", "scheme": "bearer"}}},
+                "security": [{"bearer": []}],
+                "paths": {"/v1/charges": {"post": {"operationId": "PostCharges", "requestBody": {"required": True,
+                    "content": {"application/x-www-form-urlencoded": {
+                        "encoding": {"metadata": {"style": "deepObject", "explode": True}},
+                        "schema": {"type": "object", "required": ["amount"], "properties": {
+                            "amount": {"type": "integer"}, "metadata": {"type": "object", "example": {"order": "7"}},
+                            "expand": {"type": "array", "items": {"type": "string"}}}}}}},
+                    "responses": {"200": {"description": "ok", "content": {"application/json": {
+                        "schema": {"type": "object", "properties": {"id": {"type": "string"}}}}}}}}}}}
+        [operation], refused = line.operations(spec, SOURCE)
+        self.assertEqual((refused, operation.body_media, operation.body_encoding),
+                         ([], "application/x-www-form-urlencoded", (("metadata", "deepObject", True),)))
+        # Known wrong: a list of objects in plain form style has no defined encoding, so the operation is refused.
+        fields = spec["paths"]["/v1/charges"]["post"]["requestBody"]["content"]["application/x-www-form-urlencoded"]
+        listed = copy.deepcopy(spec)
+        listed["paths"]["/v1/charges"]["post"]["requestBody"]["content"]["application/x-www-form-urlencoded"] = {
+            **fields, "schema": {**fields["schema"], "properties": {
+                **fields["schema"]["properties"], "lines": {"type": "array", "items": {"type": "object"}}}}}
+        found, refused = line.operations(listed, SOURCE)
+        self.assertEqual((found, [row["reason"] for row in refused]), ([], ["operation_body_not_json"]))
+        call = {"body": {"amount": 5, "metadata": {"order": "7"}}}
+        source = line.test_source(operation, call, line._response_example(operation))
+        client = line.client_source(operation, SPEC_FACTS)
+        self.assertIn("EXPECTED_FORM = [('amount', '5'), ('metadata[order]', '7')]", source)
+        with tempfile.TemporaryDirectory() as folder:
+            target = Path(folder) / operation.module
+            target.mkdir()
+            (target / f"{operation.module}.py").write_text(client, encoding="utf-8")
+            (target / f"test_{operation.module}.py").write_text(source, encoding="utf-8")
+            passed, _count, output = line.run_tests(target, operation.module)
+            self.assertTrue(passed, output)
+            # Known wrong: an encoder that flattens nested fields instead of bracketing them fails the test.
+            broken = client.replace("            pairs += _deep(name, value)\n",
+                                    "            pairs.append((name, _text(value)))\n")
+            self.assertNotEqual(broken, client)
+            (target / f"{operation.module}.py").write_text(broken, encoding="utf-8")
+            self.assertFalse(line.run_tests(target, operation.module)[0])
+
+    def test_json_media_types_and_a_self_hosted_address(self):
+        from supply_lines import openapi_operations as line
+        self.assertEqual(line.request_content({"application/json-patch+json": {"a": 1},
+                                               "application/merge-patch+json": {"b": 2}}),
+                         ("application/merge-patch+json", {"b": 2}))
+        self.assertEqual(line.request_content({"*/*": {"schema": {}}})[0], "application/json")
+        self.assertEqual(line.request_content({"application/json": {}, "*/*": {}})[0], "application/json")
+        self.assertIsNone(line.request_content({"multipart/form-data": {}, "application/yaml": {}}))
+        spec = {"openapi": "3.0.0", "info": {"title": "Cluster", "version": "1"},
+                "components": {"securitySchemes": {"token": {"type": "apiKey", "in": "header",
+                                                             "name": "authorization"}}},
+                "security": [{"token": []}],
+                "paths": {"/api/v1/namespaces/{name}": {"patch": {"operationId": "patchNamespace", "parameters": [
+                    {"name": "name", "in": "path", "required": True, "schema": {"type": "string"}}],
+                    "requestBody": {"required": True, "content": {
+                        "application/json-patch+json": {"schema": {"type": "object"}},
+                        "application/merge-patch+json": {"schema": {"type": "object"}}}},
+                    "responses": {"200": {"description": "ok", "content": {"application/json": {
+                        "schema": {"type": "object"}}}}}}}}}
+        [operation], refused = line.operations(spec, SOURCE)
+        self.assertEqual((refused, operation.base_url, operation.body_media), ([], "", "application/merge-patch+json"))
+        call = line._example_arguments(operation)
+        source = line.test_source(operation, call, line._response_example(operation))
+        client = line.client_source(operation, SPEC_FACTS)
+        self.assertIn("test_known_wrong_without_an_address_nothing_is_sent", source)
+        self.assertIn("application/merge-patch+json", source)
+        with tempfile.TemporaryDirectory() as folder:
+            target = Path(folder) / operation.module
+            target.mkdir()
+            (target / f"{operation.module}.py").write_text(client, encoding="utf-8")
+            (target / f"test_{operation.module}.py").write_text(source, encoding="utf-8")
+            passed, _count, output = line.run_tests(target, operation.module)
+            self.assertTrue(passed, output)
+            # Known wrong: a client that falls back to a made-up address sends without being told where.
+            broken = client.replace("BASE_URL = ''", "BASE_URL = 'https://localhost'")
+            self.assertNotEqual(broken, client)
+            (target / f"{operation.module}.py").write_text(broken, encoding="utf-8")
+            self.assertFalse(line.run_tests(target, operation.module)[0])
+
     def test_the_network_is_closed_while_generated_tests_run(self):
         from supply_lines import openapi_operations as line
         import urllib.request
@@ -1005,6 +1099,26 @@ class OpenApiDirectoryTest(unittest.TestCase):
                     encoding="utf-8")
                 passed, _count, output = generator.run_tests(target, operation.module)
                 self.assertTrue(passed, output)
+
+    def test_swagger_2_form_fields_keep_their_names_types_and_collection_formats(self):
+        from supply_lines import swagger2
+        document = {"swagger": "2.0", "info": {"title": "Chat", "version": "1"}, "host": "chat.example.com",
+                    "basePath": "/api", "schemes": ["https"], "consumes": ["application/x-www-form-urlencoded"],
+                    "paths": {"/chat.postMessage": {"post": {"operationId": "chat_postMessage", "parameters": [
+                        {"name": "channel", "in": "formData", "type": "string", "required": True},
+                        {"name": "users", "in": "formData", "type": "array", "items": {"type": "string"},
+                         "collectionFormat": "multi"},
+                        {"name": "tags", "in": "formData", "type": "array", "items": {"type": "string"}}],
+                        "responses": {"200": {"description": "ok"}}}}}}
+        converted = swagger2.swagger2_to_openapi3(document)
+        body = converted["paths"]["/chat.postMessage"]["post"]["requestBody"]
+        entry = body["content"]["application/x-www-form-urlencoded"]
+        self.assertEqual((body["required"], entry["schema"]["required"], sorted(entry["schema"]["properties"])),
+                         (True, ["channel"], ["channel", "tags", "users"]))
+        self.assertEqual(entry["encoding"], {"users": {"style": "form", "explode": True},
+                                             "tags": {"style": "form", "explode": False}})
+        self.assertTrue(swagger2.is_swagger2(document))
+        self.assertFalse(swagger2.is_swagger2(converted))
 
     def test_aws_operations_are_signed_with_the_sdk_metadata_and_pass_the_published_test_vector(self):
         from supply_lines import openapi_operations as generator

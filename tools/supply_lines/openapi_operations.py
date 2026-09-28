@@ -54,7 +54,7 @@ from .records import (
     PACKAGE_ABOVE_REVIEW_BOUND, REFUSAL_REASONS, SupplyRecordError, fact_source, licence_allowed, provenance, refusal,
     upstream_key)
 
-GENERATOR_VERSION = "1.4.0"
+GENERATOR_VERSION = "1.5.0"
 #: The text of a second allowlisted licence a specification declares beside its repository's licence.
 SPECIFICATION_LICENCE_NAME = "SPECIFICATION-LICENSE"
 DECLARED_TEXT_BASIS = "specification_info_license_declaration_text_from_choosealicense_at_the_pinned_commit"
@@ -384,6 +384,10 @@ class Operation:
     body_media: str = "application/json"
     base_url_template: str = ""
     region_default: str = ""
+    #: (field, style, explode) of each form body field whose encoding the specification declares.
+    body_encoding: tuple = ()
+    #: The server the specification lists when it names no public HTTPS address (a self-hosted API).
+    server_hint: str = ""
 
 
 def snake(value: str) -> str:
@@ -427,7 +431,83 @@ def _json_content(content) -> "tuple | None":
 
 
 JSON_MEDIA_TYPE = "application/json"
+FORM_MEDIA_TYPE = "application/x-www-form-urlencoded"
+#: A request body the specification allows in any media type is sent as JSON.
+ANY_MEDIA_TYPE = "*/*"
+#: Among JSON media types of a request body: plain JSON first, then a merge patch, then the first other +json type.
+MERGE_PATCH_MARK = "merge-patch"
+#: The address generated tests give a client whose specification names no public HTTPS address.
+SELF_HOSTED_TEST_ROOT = "https://api.example.test"
 REGION_VARIABLE = "region"
+
+
+def request_content(content) -> "tuple | None":
+    """(media type to send, media object) of the request body entry this client writes, or None: JSON (plain, a
+    merge patch, another +json type, or any media type) or a URL-encoded form."""
+    if not isinstance(content, dict):
+        return None
+    ranked = []
+    for index, (media, value) in enumerate(content.items()):
+        base = str(media).split(";")[0].strip().lower()
+        value = value if isinstance(value, dict) else {}
+        if base == JSON_MEDIA_TYPE:
+            ranked.append((0, index, base, value))
+        elif base.endswith("+json"):
+            ranked.append((1 if MERGE_PATCH_MARK in base else 2, index, base, value))
+        elif base == FORM_MEDIA_TYPE:
+            ranked.append((3, index, base, value))
+        elif base == ANY_MEDIA_TYPE:
+            ranked.append((4, index, JSON_MEDIA_TYPE, value))
+    if not ranked:
+        return None
+    _rank, _index, base, value = min(ranked)
+    return base, value
+
+
+def form_encoding(media: dict) -> tuple:
+    """(field, style, explode) of each field of a form body's declared encoding; OpenAPI's defaults otherwise
+    (style form, exploded)."""
+    rows = []
+    for name, entry in sorted((media.get("encoding") or {}).items()):
+        if isinstance(entry, dict):
+            style = str(entry.get("style") or "form")
+            rows.append((str(name), style, bool(entry.get("explode", style == "form"))))
+    return tuple(rows)
+
+
+def form_pairs(body: dict, encoding: tuple) -> list:
+    """The (key, value) pairs of a URL-encoded form body: primitives as they are, a list repeated (exploded) or
+    joined with commas, an object's fields as their own keys (exploded) and, in deepObject style, nested keys
+    with brackets (a list numbered: items[0][price]). This is the reference the generated client's copy is
+    tested against."""
+    styles = {name: (style, explode) for name, style, explode in encoding}
+
+    def text(value):
+        return ("true" if value else "false") if isinstance(value, bool) else str(value)
+
+    def deep(prefix, value):
+        if isinstance(value, dict):
+            return [pair for key, item in value.items() if item is not None for pair in deep(f"{prefix}[{key}]", item)]
+        if isinstance(value, (list, tuple)):
+            return [pair for index, item in enumerate(value) for pair in deep(f"{prefix}[{index}]", item)]
+        return [(prefix, text(value))]
+
+    pairs = []
+    for name, value in body.items():
+        if value is None:
+            continue
+        style, explode = styles.get(name, ("form", True))
+        if style == "deepObject" and isinstance(value, (dict, list, tuple)):
+            pairs += deep(name, value)
+        elif isinstance(value, dict):
+            pairs += ([(str(key), text(item)) for key, item in value.items() if item is not None] if explode else
+                      [(name, ",".join(f"{key},{text(item)}" for key, item in value.items() if item is not None))])
+        elif isinstance(value, (list, tuple)):
+            pairs += [(name, text(item)) for item in value] if explode else [(name, ",".join(text(item)
+                                                                                             for item in value))]
+        else:
+            pairs.append((name, text(value)))
+    return pairs
 
 
 def _region_template(servers) -> tuple:
@@ -661,10 +741,22 @@ def _operation(document, resolver, source, path, method, item, node, top_servers
     body = node.get("requestBody")
     if body is not None:
         body = resolver.follow(body)
-        found = _json_content(body.get("content"))
+        found = request_content(body.get("content"))
         if found is None:
             raise OperationRefused("operation_body_not_json", ", ".join(sorted(body.get("content") or {}))[:200])
-        _media, media = found
+        chosen, media = found
+        if not (signs and aws.get("protocol") == "json" and aws.get("json_version")):
+            operation.body_media = chosen
+        if chosen == FORM_MEDIA_TYPE:
+            operation.body_encoding = form_encoding(media)
+            deep = {name for name, style, _explode in operation.body_encoding if style == "deepObject"}
+            fields = (resolver.schema(media.get("schema") or {}) or {}).get("properties") or {}
+            for name, field_schema in fields.items():
+                items = (field_schema or {}).get("items") if isinstance(field_schema, dict) else None
+                nested = isinstance(items, dict) and (items.get("type") in ("object", "array") or "properties" in items)
+                if nested and name not in deep:
+                    # OpenAPI defines no form encoding for a list of objects or lists outside deepObject style.
+                    raise OperationRefused("operation_body_not_json", f"form field {name} is a list of objects")
         operation.body_required = bool(body.get("required"))
         operation.body_schema = resolver.schema(media.get("schema") or {})
         operation.body_check = check_schema(operation.body_schema)
@@ -692,7 +784,11 @@ def _operation(document, resolver, source, path, method, item, node, top_servers
     servers = node.get("servers") or item.get("servers") or top_servers
     operation.base_url = _server(servers)
     if not operation.base_url:
-        raise OperationRefused("operation_parameters_unsupported", "no HTTPS server")
+        # A self-hosted API (Kubernetes, a search engine, a forge): the caller gives the address; the client
+        # sends nothing until it has an HTTPS one.
+        listed = next((server.get("url") for server in servers or () if isinstance(server, dict)
+                       and isinstance(server.get("url"), str)), "")
+        operation.server_hint = str(listed)[:120]
     if signs:
         operation.base_url_template, operation.region_default = _region_template(servers)
     operation.auth, operation.auth_optional = auth, auth_optional
@@ -874,6 +970,47 @@ SIGN_BLOCK = ('    access_key, secret_key = os.environ.get(AUTH["variable"], "")
               '                                      AUTH["service"], time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())))\n')
 
 
+#: The form encoder written into a client whose request body is URL-encoded form fields; generated tests hold its
+#: output to form_pairs, the reference above.
+FORM_ENCODER = '''
+
+def _deep(prefix, value):
+    if isinstance(value, dict):
+        return [pair for key, item in value.items() if item is not None
+                for pair in _deep(prefix + "[" + str(key) + "]", item)]
+    if isinstance(value, (list, tuple)):
+        return [pair for index, item in enumerate(value) for pair in _deep(prefix + "[" + str(index) + "]", item)]
+    return [(prefix, _text(value))]
+
+
+def _form_pairs(body):
+    """The URL-encoded fields of the body, by the encoding the specification declares for each field."""
+    pairs = []
+    for name, value in body.items():
+        if value is None:
+            continue
+        style, explode = BODY_ENCODING.get(name, ("form", True))
+        if style == "deepObject" and isinstance(value, (dict, list, tuple)):
+            pairs += _deep(name, value)
+        elif isinstance(value, dict):
+            if explode:
+                pairs += [(str(key), _text(item)) for key, item in value.items() if item is not None]
+            else:
+                pairs.append((name, ",".join(str(key) + "," + _text(item) for key, item in value.items()
+                                             if item is not None)))
+        elif isinstance(value, (list, tuple)):
+            if explode:
+                pairs += [(name, _text(item)) for item in value]
+            else:
+                pairs.append((name, ",".join(_text(item) for item in value)))
+        else:
+            pairs.append((name, _text(value)))
+    return pairs
+'''
+JSON_BODY_LINE = '        data = json.dumps(body).encode("utf-8")\n'
+FORM_BODY_LINE = '        data = urllib.parse.urlencode(_form_pairs(body)).encode("ascii")\n'
+
+
 def auth_block(auth: "dict | None") -> str:
     """The lines of _call that place the credential, for this operation's one security scheme only."""
     if auth is None or auth["placement"] == SIGV4_PLACEMENT:
@@ -902,11 +1039,19 @@ def client_source(operation: Operation, spec: dict) -> str:
         if parameter.description:
             text += f". {parameter.description[:160]}"
         lines.append(text)
+    form = operation.body_media == FORM_MEDIA_TYPE
     if operation.body_schema is not None:
-        lines.append("body: the JSON request body" + (" (required)" if operation.body_required else " (optional)")
+        lines.append(("body: the form fields of the request body" if form else "body: the JSON request body")
+                     + (" (required)" if operation.body_required else " (optional)")
                      + '; its schema is "input.body" in schema.json.')
-    lines += [f"base_url: overrides {operation.base_url}; the environment variable {spec['base_url_variable']} "
-              "does too.", "timeout: seconds to wait for the answer.",
+    if operation.base_url or operation.base_url_template:
+        lines.append(f"base_url: overrides {operation.base_url}; the environment variable {spec['base_url_variable']} "
+                     "does too.")
+    else:
+        lines.append(f"base_url: the API's HTTPS address, which the specification does not name"
+                     + (f" (it lists {operation.server_hint})" if operation.server_hint else "")
+                     + f"; give it here or in the environment variable {spec['base_url_variable']}.")
+    lines += ["timeout: seconds to wait for the answer.",
               "transport: a callable (request, timeout) -> (status, content type, bytes), for tests; the default "
               "sends the request over HTTPS."]
     lines = [textwrap.fill(line, width=100, initial_indent="  ", subsequent_indent="    ") for line in lines]
@@ -946,6 +1091,8 @@ def client_source(operation: Operation, spec: dict) -> str:
     runtime = RUNTIME.replace("# AUTH\n", auth_block(operation.auth)).replace("# SIGN\n", SIGN_BLOCK if signs else "")
     if signs:
         runtime += SIGNER
+    if form:
+        runtime = runtime.replace(JSON_BODY_LINE, FORM_BODY_LINE) + FORM_ENCODER
     constants = [
         f'OPERATION = {literal({"method": operation.method, "path": operation.path, "operation_id": operation.operation_id})}',
         f"BASE_URL = {operation.base_url!r}", f"BASE_URL_VARIABLE = {spec['base_url_variable']!r}",
@@ -953,6 +1100,8 @@ def client_source(operation: Operation, spec: dict) -> str:
         f"FIXED_QUERY = {literal(operation.fixed_query)}",
         f"FIXED_HEADERS = {literal(operation.fixed_headers)}",
         f"BODY_MEDIA = {operation.body_media!r}",
+        *([f"BODY_ENCODING = {literal({name: (style, explode) for name, style, explode in operation.body_encoding})}"]
+          if form else []),
         f"BASE_URL_TEMPLATE = {operation.base_url_template!r}",
         f"REGION_DEFAULT = {operation.region_default!r}",
         f"USER_AGENT = {USER_AGENT!r}",
@@ -1082,9 +1231,17 @@ def test_source(operation: Operation, call: dict, example) -> str:
     for name, value in operation.fixed_query:
         tests[-1] += f'''
         self.assertIn(({name!r}, {value!r}), urllib.parse.parse_qsl(address.query, keep_blank_values=True))'''
-    if "body" in call:
+    form = operation.body_media == FORM_MEDIA_TYPE
+    if "body" in call and form:
+        tests[-1] += f'''
+        self.assertEqual(request.headers.get("Content-type"), {FORM_MEDIA_TYPE!r})
+        self.assertEqual(urllib.parse.parse_qsl(request.data.decode("ascii"), keep_blank_values=True), EXPECTED_FORM)'''
+    elif "body" in call:
         tests[-1] += '''
         self.assertEqual(json.loads(request.data.decode("utf-8")), CALL["body"])'''
+        if operation.body_media != JSON_MEDIA_TYPE:
+            tests[-1] += f'''
+        self.assertEqual(request.headers.get("Content-type"), {operation.body_media!r})'''
     if required:
         first = required[0].python
         tests.append(f'''
@@ -1131,6 +1288,15 @@ def test_source(operation: Operation, call: dict, example) -> str:
         with self.assertRaises(PermissionError):
             client.{operation.function}(**CALL, transport=mock)
         self.assertEqual(mock.requests, [])''')
+    self_hosted = not operation.base_url and not operation.base_url_template
+    if self_hosted:
+        tests.append(f'''
+    def test_known_wrong_without_an_address_nothing_is_sent(self):
+        os.environ.pop(client.BASE_URL_VARIABLE, None)
+        mock = _Mock()
+        with self.assertRaises(ValueError):
+            client.{operation.function}(**CALL, transport=mock)
+        self.assertEqual(mock.requests, [])''')
     tests.append(f'''
     def test_known_wrong_an_address_that_is_not_https_sends_nothing(self):
         mock = _Mock()
@@ -1155,7 +1321,10 @@ def test_source(operation: Operation, call: dict, example) -> str:
             "import urllib.parse\n\nsys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))\n"
             f"import {operation.module} as client  # noqa: E402\n\n"
             f"CALL = {literal(call)}\nEXAMPLE = {literal(example)}\nEXPECTED_PATH = {expected_path!r}\n"
-            f"VARIABLES = {variables!r}\n\n\n"
+            + (f"EXPECTED_FORM = {literal(form_pairs(call['body'], operation.body_encoding))}\n"
+               if form and "body" in call else "")
+            + (f"ROOT = {SELF_HOSTED_TEST_ROOT!r}\n" if self_hosted else "")
+            + f"VARIABLES = {variables!r}\n\n\n"
             "class _Mock:\n"
             '    """A local stand-in for the API: it records each request and answers with the example."""\n\n'
             f"    def __init__(self, status={operation.success_statuses[0]}, payload=None, content_type={content_type!r}):\n"
@@ -1168,7 +1337,9 @@ def test_source(operation: Operation, call: dict, example) -> str:
             f"class {class_name}(unittest.TestCase):\n"
             "    def setUp(self):\n"
             "        self.saved = {name: os.environ.get(name) for name in VARIABLES + [client.BASE_URL_VARIABLE]}\n"
-            "        os.environ.pop(client.BASE_URL_VARIABLE, None)\n"
+            + ("        os.environ[client.BASE_URL_VARIABLE] = ROOT\n" if self_hosted else
+               "        os.environ.pop(client.BASE_URL_VARIABLE, None)\n")
+            +
             "        for name in VARIABLES:\n"
             '            os.environ[name] = "test-credential"\n\n'
             "    def tearDown(self):\n"
@@ -1209,8 +1380,17 @@ def readme_source(operation: Operation, spec: dict, schema_bytes: int) -> str:
                       + (". The credential is optional for this operation." if operation.auth_optional else "."))
     body = ""
     if operation.body_schema is not None:
-        body = (f"\nThe JSON request body is {'required' if operation.body_required else 'optional'}; "
+        kind = "URL-encoded form body" if operation.body_media == FORM_MEDIA_TYPE else "JSON request body"
+        body = (f"\nThe {kind} is {'required' if operation.body_required else 'optional'}; "
                 "its schema is `input.body` in `schema.json`.\n")
+    if operation.base_url or operation.base_url_template:
+        destination = (f"Sends one HTTPS request to `{operation.base_url}` (or the address in "
+                       f"`{spec['base_url_variable']}`\n  or `base_url`)")
+    else:
+        destination = (f"Sends one HTTPS request to the address given in `base_url` or `{spec['base_url_variable']}`: "
+                       "the specification names no\n  public HTTPS address"
+                       + (f" (it lists `{operation.server_hint}`)" if operation.server_hint else "")
+                       + ", so the client sends nothing until it has one,")
     return f"""# {spec['title']}: {operation.summary or operation.operation_id}
 
 `{operation.method} {operation.path}` (operation `{operation.operation_id}`{f', path key `{operation.path_key}`' if operation.path_key else ''}) as one Python function,
@@ -1230,8 +1410,7 @@ def readme_source(operation: Operation, spec: dict, schema_bytes: int) -> str:
 
 ## What it does and refuses
 
-- Sends one HTTPS request to `{operation.base_url}` (or the address in `{spec['base_url_variable']}`
-  or `base_url`) and returns {('the parsed JSON answer' if operation.response_kind == JSON_ANSWER else 'the answer')}.
+- {destination} and returns {('the parsed JSON answer' if operation.response_kind == JSON_ANSWER else 'the answer')}.
 - Checks types, allowed values and required fields before sending, and raises `TypeError` or
   `ValueError` without sending anything when an argument breaks the specification.
 - Raises `ApiError` with the status, the documented meaning and the body for any answer outside the
@@ -1323,6 +1502,9 @@ def read_specification(reader, source: dict, path: str, texts=None) -> dict:
     except Exception as error:  # noqa: BLE001 - an unreadable specification is refused by name
         raise OperationRefused("specification_unreadable", f"{repository}/{path}: {type(error).__name__}") from None
     document = plain(document)  # YAML keys such as 200 become text, and dates become text
+    from .swagger2 import is_swagger2, swagger2_to_openapi3  # the converter reads this module's vocabulary
+    if is_swagger2(document):
+        document = swagger2_to_openapi3(document)
     if not isinstance(document, dict) or not str(document.get("openapi", "")).startswith("3."):
         raise OperationRefused("specification_version_unsupported",
                                f"{repository}/{path}: {str(document.get('openapi') or document.get('swagger'))[:20]}")

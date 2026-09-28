@@ -67,6 +67,10 @@ Supply lines (each writes library_supply_candidate/v1 records)
 │   ├── directory mode (openapi_directory.py): every APIs.guru specification whose own declared licence,
 │   │   declared licence file or origin repository licence is allowlisted, minus what a curated source
 │   │   supplies, one package per host, method and path, in its own line state
+│   ├── bodies: JSON (plain, a merge patch, another +json type, or any media type) and URL-encoded forms
+│   │   by their declared style (deepObject brackets, exploded or comma lists); Swagger 2 is converted first
+│   ├── a self-hosted API with no public HTTPS address gets a client that sends nothing until the caller
+│   │   names one (base_url or the environment variable)
 │   └── a stdlib client with argument checks, the credential by variable name, ApiError, and
 │       generated tests against a local mock that must pass before the package is kept
 ├── program_installs: one install recipe and typed wrapper per command-line program
