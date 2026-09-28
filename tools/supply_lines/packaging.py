@@ -15,6 +15,7 @@ the reviewer. A clean check is triage, not proof of safety.
 """
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
 
 from loop_engine.core.library_ingestion.duplicates import normalized
@@ -29,11 +30,37 @@ from licensed_import.checks import StaticChecks, blocking_rules, package_caution
 from licensed_import.harness_kinds import media_type
 
 from .records import (
-    ATTRIBUTION, AUTHORING, CANDIDATE_RECORD_TYPE, FILE_ORIGINS, GENERATED, LICENCE_TEXT, REVIEW_PROFILE,
-    SupplyRecordError, licence_allowed, read_supply_candidate, record_id)
+    ATTRIBUTION, AUTHORING, CANDIDATE_RECORD_TYPE, FILE_ORIGINS, GENERATED, LICENCE_TEXT, NOTICE_FILE, REVIEW_PROFILE,
+    UPSTREAM_VERBATIM, SupplyRecordError, fact_source, licence_allowed, read_supply_candidate, record_id)
 
 ATTRIBUTION_NAME = "ATTRIBUTION.md"
 LICENCE_NAME = "LICENSE"
+#: The file a package carries for an upstream notice file (a second one gains its repository's name).
+UPSTREAM_NOTICE_NAME = "UPSTREAM-NOTICE"
+#: The basis of a notice file's fact source: the repository's NOTICE file read at the commit the package pins.
+NOTICE_BASIS = "notice_file_at_the_pinned_commit"
+
+
+def notice_files(notices) -> tuple:
+    """(package files, fact sources) for the upstream notice files a package carries, one per repository.
+
+    Apache-2.0 section 4(d) asks that a derivative work carry a readable copy of the attribution notices of the
+    work's NOTICE file. Each notice travels as a verbatim upstream copy bound to its address and digest, listed as
+    a notice (never as a licence text: it grants nothing), under the licence of the repository it belongs to."""
+    files, facts, seen = [], [], set()
+    for notice in notices or ():
+        if not notice or notice["repository"] in seen:
+            continue
+        seen.add(notice["repository"])
+        name = UPSTREAM_NOTICE_NAME if not files else \
+            f"{UPSTREAM_NOTICE_NAME}-{re.sub(r'[^A-Za-z0-9._-]+', '-', notice['repository'])}"
+        files.append(PackageFile(name, notice["bytes"], "other", UPSTREAM_VERBATIM,
+                                 {"url": notice["url"], "sha256": notice["sha256"]}, notice=True))
+        facts.append(fact_source(notice["url"], notice["retrieved_at"], notice["sha256"], len(notice["bytes"]),
+                                 NOTICE_FILE, spdx=notice["spdx"], basis=NOTICE_BASIS))
+    return files, facts
+
+
 #: The refusal code of a package whose file path the catalogue package refuses.
 PACKAGE_PATH_INVALID = "package_path_invalid"
 UPSTREAM_LICENCE_NAME = "UPSTREAM-LICENSE"
@@ -59,6 +86,7 @@ class PackageFile:
     role: str
     origin: str = GENERATED
     upstream: "dict | None" = None  # {"url": ..., "sha256": ...} for a verbatim copy
+    notice: bool = False  # an upstream repository's notice file (see notice_files)
 
 
 @dataclass
@@ -119,6 +147,7 @@ def build(package: SupplyPackage, *, check: bool = True) -> tuple:
         raise SupplyRecordError("file_origins_invalid", "every file names its origin")
     files = sorted(package.files, key=lambda row: row.path)
     texts = [row.path for row in files if row.origin == LICENCE_TEXT]
+    notices = [row.path for row in files if row.notice]
     rows = [(row.path, row.origin, bytes_digest(row.data)) for row in files]
     attribution = attribution_text(package, rows)
     files.append(PackageFile(ATTRIBUTION_NAME, attribution, "other", ATTRIBUTION))
@@ -158,7 +187,8 @@ def build(package: SupplyPackage, *, check: bool = True) -> tuple:
         "package": catalogue_package.to_dict(), "package_digest": catalogue_package.package_digest,
         "files": [{**entry.to_dict(), "origin": row.origin, "upstream": row.upstream}
                   for entry, row in zip(entries, files)],
-        "licence": {"spdx_expression": package.licence_expression, "texts": texts, "attribution": ATTRIBUTION_NAME},
+        "licence": {"spdx_expression": package.licence_expression, "texts": texts, "attribution": ATTRIBUTION_NAME,
+                    "notices": notices},
         "provenance": package.provenance, "placements": package.placements, "declared_effects": effects,
         "effect_evidence": evidence, "credentials": sorted(set(package.credentials)), "tests": package.tests,
         "findings": sorted(findings, key=lambda row: (row.get("path", ""), row.get("line", 0), row["rule"])),

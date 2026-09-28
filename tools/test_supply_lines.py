@@ -662,7 +662,9 @@ class OpenApiLineTest(unittest.TestCase):
                 return "LICENSE", LICENCE, "MIT"
 
             def pinned_file(self, repository, commit, path):
-                spdx = next(key for key, (where, _digest) in paths.items() if where == path)
+                spdx = next((key for key, (where, _digest) in paths.items() if where == path), None)
+                if spdx is None:
+                    raise LookupError(path)  # no notice file in this repository
                 return {"sha256": paths[spdx][1], "commit": commit, "bytes": b"text of " + spdx.encode(),
                         "path": path}
 
@@ -1217,6 +1219,8 @@ class OpenApiDirectoryTest(unittest.TestCase):
                 return Answer(url, 200, answers[url]) if url in answers else Answer(url, 404, b"{}")
 
             def pinned_file(self, repository, commit, path):
+                if path.startswith("NOTICE"):
+                    raise LookupError(path)
                 return {"sha256": paths["MIT"][1], "commit": commit, "bytes": LICENCE, "path": path,
                         "url": f"https://raw.githubusercontent.com/{repository}/{commit}/{path}",
                         "retrieved_at": "2026-09-27T00:00:00Z"}
@@ -1496,6 +1500,9 @@ class GoogleDiscoveryTest(unittest.TestCase):
                 self.asked.append(url)
                 return _Answer(200, self.bytes_served)
 
+            def pinned_file(self, repository, commit, path):
+                raise LookupError(path)  # no notice file in this repository
+
         reader = Reader(body)
         with tempfile.TemporaryDirectory() as staging:
             built, refused, _facts, summary = line.generate(reader, code_revision="a" * 40, licence_text=LICENCE,
@@ -1711,6 +1718,9 @@ class FunctionExtractsTest(unittest.TestCase):
             def licence_text(self, repository, commit):
                 return "LICENSE", LICENCE, "MIT"
 
+            def pinned_file(self, repository, commit, path):
+                raise LookupError(path)  # no notice file in this repository
+
         source = {"source_id": "lib", "title": "lib", "repository": "example/lib", "branch": "main",
                   "package_root": "lib", "vendor": "lib", "modules": ["lib/core.py", "lib/helpers.py", "lib/gone.py"]}
         with tempfile.TemporaryDirectory() as staging:
@@ -1882,6 +1892,7 @@ class SchemaCheckTest(unittest.TestCase):
                  f"{line.VALID_FOLDER}/remote/a.json": b"{}"}
         tree = {"tree": [{"path": path, "type": "blob", "sha": git_blob_identity(data), "size": len(data)}
                          for path, data in files.items()]}
+        notice = b"SchemaStore\nCopyright the contributors\n"
 
         class Reader:
             def github(self, path):
@@ -1895,6 +1906,12 @@ class SchemaCheckTest(unittest.TestCase):
             def get(self, url, cache_errors=False):
                 return _Answer(200, files[url.split("c" * 40 + "/", 1)[1]])
 
+            def pinned_file(self, repository, commit, path):
+                if path != "NOTICE":
+                    raise LookupError(path)
+                return {"commit": commit, "bytes": notice, "path": path, "sha256": hashlib.sha256(notice).hexdigest(),
+                        "retrieved_at": "2026-09-28T00:00:00Z"}
+
         with tempfile.TemporaryDirectory() as staging:
             built, refused, _facts, summary = line.generate(Reader(), code_revision="a" * 40, licence_text=LICENCE,
                                                             generated_on="2026-09-28", staging=Path(staging))
@@ -1906,6 +1923,22 @@ class SchemaCheckTest(unittest.TestCase):
         self.assertNotIn("examples/invalid/not-caught.json", paths)
         self.assertEqual(summary["invalid_examples_not_caught"], 1)
         self.assertEqual((payload["component_form"]["form"], payload["kind"]), ("schema", "contract_schema"))
+        # The repository's notice file travels with every package derived from it (Apache-2.0 section 4(d)): a
+        # verbatim upstream copy bound to its digest, listed as a notice and never as a licence text (it grants
+        # nothing), recorded as a fact under the licence of the repository it belongs to.
+        self.assertIn("UPSTREAM-NOTICE", paths)
+        self.assertEqual(payload["licence"]["notices"], ["UPSTREAM-NOTICE"])
+        self.assertNotIn("UPSTREAM-NOTICE", payload["licence"]["texts"])
+        row = next(row for row in payload["files"] if row["path"] == "UPSTREAM-NOTICE")
+        self.assertEqual((row["origin"], row["upstream"]["sha256"]), ("upstream_verbatim", row["digest"]))
+        fact = next(fact for fact in payload["provenance"]["facts"] if fact["role"] == "notice_file")
+        self.assertEqual((fact["licence"]["spdx_expression"], fact["sha256"]), ("MIT", row["digest"]))
+        # Known wrong: a notice that names a generated file is refused by the candidate reader.
+        from supply_lines.records import SupplyRecordError, read_supply_candidate
+        wrong = json.loads(json.dumps(payload))
+        wrong["licence"]["notices"] = ["README.md"]
+        with self.assertRaises(SupplyRecordError):
+            read_supply_candidate(wrong)
 
 
 class ApiSchemasTest(unittest.TestCase):
@@ -1945,7 +1978,9 @@ class ApiSchemasTest(unittest.TestCase):
                 return "LICENSE", LICENCE, "MIT"
 
             def pinned_file(self, repository, commit, path):
-                spdx = next(key for key, (where, _digest) in paths.items() if where == path)
+                spdx = next((key for key, (where, _digest) in paths.items() if where == path), None)
+                if spdx is None:
+                    raise LookupError(path)  # no notice file in this repository
                 return {"sha256": paths[spdx][1], "commit": commit, "bytes": b"text", "path": path}
 
         with tempfile.TemporaryDirectory() as staging:

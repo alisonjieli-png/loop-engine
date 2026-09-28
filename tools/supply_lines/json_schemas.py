@@ -26,8 +26,8 @@ from loop_engine.core.library_ingestion.record_rules import git_blob_identity
 from . import schema_check
 from .licences import repository_licence
 from .openapi_operations import run_tests
-from .packaging import LICENCE_NAME, UPSTREAM_LICENCE_NAME, PackageFile, SupplyPackage, build
-from .reading import RAW_HOST, github_blob_address, https_address
+from .packaging import LICENCE_NAME, UPSTREAM_LICENCE_NAME, PackageFile, SupplyPackage, build, notice_files
+from .reading import RAW_HOST, github_blob_address, https_address, repository_notice
 from .records import (
     BLOCKED_BY_STATIC_CHECK, GENERATED_CODE_LICENCE, GENERATED_TEST_FAILED, JSON_SCHEMAS, LICENCE_TEXT,
     PACKAGE_ABOVE_REVIEW_BOUND, UPSTREAM_VERBATIM, SupplyRecordError, fact_source, provenance, refusal, upstream_key)
@@ -36,7 +36,7 @@ SCHEMA_REPOSITORY = "SchemaStore/schemastore"
 SCHEMA_BRANCH = "master"
 SCHEMA_FOLDER, VALID_FOLDER, INVALID_FOLDER = "src/schemas/json", "src/test", "src/negative_test"
 HOSTS = (RAW_HOST,)
-GENERATOR_VERSION = "1.0.0"
+GENERATOR_VERSION = "1.1.0"
 NATIVE_FORMAT = "json_schema"
 VALIDATOR_NAME = "schema_check.py"
 VALIDATOR_TEXT = Path(schema_check.__file__).read_bytes()
@@ -125,6 +125,7 @@ def generate(reader, *, code_revision: str, licence_text: bytes, generated_on: s
     licence = repository_licence(reader, SCHEMA_REPOSITORY, commit)
     if not licence.allowed:
         raise SupplyRecordError("licence_not_on_allowlist", f"{SCHEMA_REPOSITORY}: {licence.reason}")
+    notice = repository_notice(reader, SCHEMA_REPOSITORY, commit, licence.spdx)
     tree = reader.github(f"repos/{SCHEMA_REPOSITORY}/git/trees/{commit}?recursive=1")
     if tree.status != 200:
         raise SupplyRecordError("source_unreadable", f"{SCHEMA_REPOSITORY}: no tree at {commit[:12]}")
@@ -192,7 +193,7 @@ def generate(reader, *, code_revision: str, licence_text: bytes, generated_on: s
             wrong = None
         try:
             built.append(_package(name, schema_path, schema_answer, valid, caught, wrong, commit, licence, generator,
-                                  licence_text, generated_on, staging))
+                                  licence_text, generated_on, staging, notice))
             summary["packaged"] += 1
         except SupplyRecordError as error:
             reason = error.code if error.code in (BLOCKED_BY_STATIC_CHECK, PACKAGE_ABOVE_REVIEW_BOUND) else \
@@ -212,7 +213,7 @@ def _unique(names) -> list:
 
 
 def _package(name, schema_path, schema_answer, valid, invalid, wrong, commit, licence, generator, licence_text,
-             generated_on, staging):
+             generated_on, staging, notice=None):
     module = module_name(name)
     schema_file = f"{name}.schema.json"
     valid_files = [f"examples/valid/{name}" for name in _unique(safe_name(Path(path).name) for path, _answer in valid)]
@@ -260,6 +261,9 @@ def _package(name, schema_path, schema_answer, valid, invalid, wrong, commit, li
                          evidence_sha256=licence.sha256),
              fact_source(upstream_address, schema_answer.retrieved_at, licence.sha256, len(licence.text),
                          "licence_text", spdx=licence.spdx, basis="licence_file_at_the_pinned_commit")]
+    notices, notice_facts = notice_files([notice])
+    files += notices
+    facts += notice_facts
     identity = f"{SCHEMA_REPOSITORY}:{schema_path}"
     supply = SupplyPackage(
         line=JSON_SCHEMAS, identity=identity, key=upstream_key(JSON_SCHEMAS, identity), kind="contract_schema",

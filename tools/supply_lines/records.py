@@ -53,9 +53,12 @@ GENERATED, UPSTREAM_VERBATIM, LICENCE_TEXT, ATTRIBUTION = FILE_ORIGINS = (
 #: Where the facts came from; each names the host the facts were read from.
 ORIGINS = {"mcp_official_registry": "registry.modelcontextprotocol.io", "github_repository": "github.com",
            "homebrew_formulae": "formulae.brew.sh", "apis_guru_directory": "api.apis.guru"}
-#: What one fact source is to the package.
+#: What one fact source is to the package. A notice file is an upstream repository's NOTICE, carried verbatim
+#: under that repository's licence (Apache-2.0 section 4(d)); it is neither a licence text nor a fact the
+#: generator read to write code.
 FACT_ROLES = ("registry_entry", "package_metadata", "specification", "formula", "release", "licence_text",
-              "data_source", "repository_facts", "analytics")
+              "data_source", "repository_facts", "analytics", "notice_file")
+NOTICE_FILE = "notice_file"
 #: The owner's allowlist of September 24, 2026 (tools/licensed_import/records.py ALLOWED_LICENCES).
 ALLOWED_LICENCES = ("MIT", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause", "ISC", "0BSD", "CC0-1.0", "CC-BY-4.0",
                     "Unlicense")
@@ -261,6 +264,11 @@ def read_supply_candidate(value) -> dict:
             or licence.get("attribution") not in paths):
         raise SupplyRecordError("licence_files_missing", "the licence texts and the attribution are package files")
     origins = {row["path"]: row["origin"] for row in value["files"]}
+    # The upstream notice files a package carries (packages built before September 28, 2026 name none): each is a
+    # package file copied verbatim, never a licence text.
+    notices = licence.get("notices", [])
+    if not isinstance(notices, list) or any(origins.get(path) != UPSTREAM_VERBATIM for path in notices):
+        raise SupplyRecordError("licence_files_missing", "each notice file is a verbatim upstream package file")
     if set(origins) != set(paths) or any(origin not in FILE_ORIGINS for origin in origins.values()):
         raise SupplyRecordError("file_origins_invalid", "every package file names where it came from")
     source = value["provenance"]

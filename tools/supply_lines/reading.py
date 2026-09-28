@@ -281,3 +281,24 @@ def pinned_files(reader, repository: str, branch: str, paths) -> tuple:
         pinned[path] = {"repository": repository, "commit": commit, "path": path, "blob": blobs[path], "url": url,
                         "bytes": answer.body, "sha256": answer.sha256, "retrieved_at": answer.retrieved_at}
     return pinned, missing
+
+
+#: The names of a repository's notice file, in the order they are looked for (Apache-2.0 section 4(d) asks that a
+#: derivative work carry the attribution notices of the work's NOTICE file).
+NOTICE_NAMES = ("NOTICE", "NOTICE.txt", "NOTICE.md")
+
+
+def repository_notice(reader, repository: str, commit: str, spdx: str) -> "dict | None":
+    """The notice file at a repository's root at an exact commit, its bytes proven by blob identity, or None.
+
+    ``spdx`` is the licence of the repository at that commit, which the notice file is distributed under as
+    one of the repository's files; the caller has already decided that licence."""
+    for name in NOTICE_NAMES:
+        try:
+            found = reader.pinned_file(repository, commit, name)
+        except LookupError:
+            continue
+        return {"repository": repository, "commit": found["commit"], "path": name, "bytes": found["bytes"],
+                "sha256": found["sha256"], "retrieved_at": found["retrieved_at"], "spdx": spdx,
+                "url": github_blob_address(repository, found["commit"], name)}
+    return None

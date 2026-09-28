@@ -31,13 +31,13 @@ from pathlib import Path, PurePosixPath
 from .licences import repository_licence
 from .openapi_operations import literal, run_tests
 from .packaging import (
-    LICENCE_NAME, MAXIMUM_REVIEW_FILE_BYTES, UPSTREAM_LICENCE_NAME, PackageFile, SupplyPackage, build)
-from .reading import RAW_HOST, github_blob_address, pinned_files
+    LICENCE_NAME, MAXIMUM_REVIEW_FILE_BYTES, UPSTREAM_LICENCE_NAME, PackageFile, SupplyPackage, build, notice_files)
+from .reading import RAW_HOST, github_blob_address, pinned_files, repository_notice
 from .records import (
     BLOCKED_BY_STATIC_CHECK, DATA_TABLES, GENERATED_CODE_LICENCE, GENERATED_TEST_FAILED, LICENCE_TEXT,
     REFUSAL_REASONS, UPSTREAM_VERBATIM, SupplyRecordError, fact_source, provenance, refusal, upstream_key)
 
-GENERATOR_VERSION = "1.0.0"
+GENERATOR_VERSION = "1.1.0"
 SOURCES_FILE = Path(__file__).with_name("data_table_sources.json")
 SOURCES_RECORD_TYPE = "library_supply_data_table_sources/v1"
 SHAPES = ("records", "keyed_records", "mapping", "values", "csv_records", "tsv_records")
@@ -387,7 +387,7 @@ def generate(reader, rows, *, code_revision: str, licence_text: bytes, generated
     built, refused, facts = [], [], {}
     generator = {"identity": "tools/supply_lines/data_tables.py", "version": GENERATOR_VERSION,
                  "code_revision": code_revision}
-    licences, pinned_by_source = {}, {}
+    licences, notices, pinned_by_source = {}, {}, {}
     # One head commit and one tree read per repository, then each file's bytes proven by its blob identity.
     for repository, branch in sorted({(row["repository"], row["branch"]) for row in rows}):
         paths = [row["path"] for row in rows if (row["repository"], row["branch"]) == (repository, branch)]
@@ -410,13 +410,15 @@ def generate(reader, rows, *, code_revision: str, licence_text: bytes, generated
             reason = licence.refusal_reason(REFUSAL_REASONS[DATA_TABLES])
             refused.append(refusal(DATA_TABLES, reason, row["table_id"], f"{licence.reason} {licence.github_spdx}"))
             continue
+        if key not in notices:
+            notices[key] = repository_notice(reader, row["repository"], pinned["commit"], licence.spdx)
         if len(pinned["bytes"]) > MAXIMUM_REVIEW_FILE_BYTES:
             refused.append(refusal(DATA_TABLES, "table_above_review_bound", row["table_id"],
                                    f"{len(pinned['bytes'])} bytes"))
             continue
         try:
             built.append(_package(row, pinned, licence, generator, licence_text, generated_on, staging,
-                                  repository_facts))
+                                  repository_facts, notices.get(key)))
         except TableRefused as error:
             refused.append(refusal(DATA_TABLES, error.reason, row["table_id"], error.detail))
         except SupplyRecordError as error:
@@ -425,7 +427,7 @@ def generate(reader, rows, *, code_revision: str, licence_text: bytes, generated
     return built, refused, facts
 
 
-def _package(row, pinned, licence, generator, licence_text, generated_on, staging, repository_facts):
+def _package(row, pinned, licence, generator, licence_text, generated_on, staging, repository_facts, notice=None):
     try:
         document = (pinned["bytes"].decode("utf-8-sig") if row["shape"] in TEXT_SHAPES
                     else json.loads(pinned["bytes"].decode("utf-8")))
@@ -480,6 +482,9 @@ def _package(row, pinned, licence, generator, licence_text, generated_on, stagin
              fact_source(github_blob_address(row["repository"], pinned["commit"], licence.path),
                          pinned["retrieved_at"], licence.sha256, len(licence.text), "licence_text", spdx=licence.spdx,
                          basis="licence_file_at_the_pinned_commit")]
+    notice_rows, notice_facts = notice_files([notice])
+    files += notice_rows
+    facts += notice_facts
     name = f"{row['table_id'].replace('_', '-')}-table"
     stars = ((repository_facts.get(row["repository"].lower()) or {}).get("stargazerCount")) or 0
     supply = SupplyPackage(

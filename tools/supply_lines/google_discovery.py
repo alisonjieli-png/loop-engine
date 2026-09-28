@@ -32,7 +32,7 @@ from loop_engine.core.library_ingestion.record_rules import git_blob_identity
 from .licences import repository_licence
 from .openapi_directory import DUPLICATE_OPERATION, operation_key
 from .openapi_operations import operations, package_operations
-from .reading import RAW_HOST, https_address
+from .reading import RAW_HOST, https_address, repository_notice
 from .records import OPENAPI_OPERATIONS, SupplyRecordError, refusal
 
 DISCOVERY_REPOSITORY = "googleapis/google-api-python-client"
@@ -192,12 +192,13 @@ def generate(reader, *, code_revision: str, licence_text: bytes, generated_on: s
         raise SupplyRecordError("specification_unreadable", f"{DISCOVERY_REPOSITORY}: no tree at {commit[:12]}")
     blobs = {entry["path"]: entry["sha"] for entry in json.loads(tree.body).get("tree", [])
              if entry.get("type") == "blob" and entry["path"].startswith(DISCOVERY_FOLDER + "/")}
+    notice = repository_notice(reader, DISCOVERY_REPOSITORY, commit, licence.spdx)
     chosen = choose_documents(blobs)
     if only:
         chosen = [row for row in chosen if row[1] in set(only)]
     if maximum_apis:
         chosen = chosen[:maximum_apis]
-    generator = {"identity": "tools/supply_lines/google_discovery.py", "version": "1.0.0", "code_revision": code_revision}
+    generator = {"identity": "tools/supply_lines/google_discovery.py", "version": "1.1.0", "code_revision": code_revision}
     built, refused, facts, summary, supplied = [], [], {}, Counter(), {}
     summary["documents_listed"], summary["documents_chosen"] = len(blobs), len(chosen)
     for path, name, version in chosen:
@@ -219,7 +220,7 @@ def generate(reader, *, code_revision: str, licence_text: bytes, generated_on: s
                 "commit": commit, "path": path, "sha256": raw.sha256, "size_bytes": len(raw.body),
                 "retrieved_at": raw.retrieved_at, "licence": licence.spdx,
                 "title": re.sub(r"\s+", " ", str(document.get("title") or name))[:80], "version": version[:40],
-                "base_url_variable": f"{vendor.upper()}_BASE_URL"}
+                "base_url_variable": f"{vendor.upper()}_BASE_URL", "notices": [notice]}
         found, refusals = operations(converted, source)
         refused += refusals
         summary["apis"] += 1

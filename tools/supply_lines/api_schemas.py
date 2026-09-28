@@ -26,13 +26,14 @@ from .declared_licences import LicenceTexts
 from .openapi_operations import (
     SPECIFICATION_LICENCE_NAME, OperationRefused, Resolver, check_schema, clean_example, compact, literal,
     read_sources, read_specification, run_tests, synthesize)
-from .packaging import LICENCE_NAME, MAXIMUM_REVIEW_FILE_BYTES, UPSTREAM_LICENCE_NAME, PackageFile, SupplyPackage, build
+from .packaging import (
+    LICENCE_NAME, MAXIMUM_REVIEW_FILE_BYTES, UPSTREAM_LICENCE_NAME, PackageFile, SupplyPackage, build, notice_files)
 from .reading import RAW_HOST, github_blob_address, https_address
 from .records import (
     BLOCKED_BY_STATIC_CHECK, GENERATED_CODE_LICENCE, GENERATED_TEST_FAILED, JSON_SCHEMAS, LICENCE_TEXT,
     PACKAGE_ABOVE_REVIEW_BOUND, SupplyRecordError, fact_source, provenance, refusal, upstream_key)
 
-GENERATOR_VERSION = "1.0.0"
+GENERATOR_VERSION = "1.1.0"
 NATIVE_FORMAT = "json_schema"
 STATE_SCOPE = "api_components"
 VALIDATOR_NAME = "schema_check.py"
@@ -253,6 +254,9 @@ def _package(name, module, schema, text, valid, wrong, spec, source, identity, g
                          evidence_sha256=licence.sha256),
              fact_source(upstream_address, spec["retrieved_at"], licence.sha256, len(licence.text), "licence_text",
                          spdx=licence.spdx, basis="licence_file_at_the_pinned_commit")]
+    notices, notice_facts = notice_files(spec.get("notices"))
+    files += notices
+    facts += notice_facts
     expression = " AND ".join(dict.fromkeys([GENERATED_CODE_LICENCE, licence.spdx] +
                                             ([second.spdx] if second is not None else [])))
     supply = SupplyPackage(

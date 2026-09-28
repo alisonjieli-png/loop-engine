@@ -35,15 +35,15 @@ from pathlib import Path
 
 from .licences import repository_licence
 from .openapi_operations import run_tests
-from .packaging import LICENCE_NAME, UPSTREAM_LICENCE_NAME, PackageFile, SupplyPackage, build
-from .reading import RAW_HOST, github_blob_address, https_address, pinned_files
+from .packaging import LICENCE_NAME, UPSTREAM_LICENCE_NAME, PackageFile, SupplyPackage, build, notice_files
+from .reading import RAW_HOST, github_blob_address, https_address, pinned_files, repository_notice
 from .records import (
     BLOCKED_BY_STATIC_CHECK, FUNCTION_EXTRACTS, GENERATED_CODE_LICENCE, GENERATED_TEST_FAILED, LICENCE_TEXT,
     PACKAGE_ABOVE_REVIEW_BOUND, SupplyRecordError, fact_source, provenance, refusal, upstream_key)
 
 SOURCES_FILE = Path(__file__).with_name("function_sources.json")
 SOURCES_RECORD_TYPE = "library_supply_function_sources/v1"
-GENERATOR_VERSION = "1.0.0"
+GENERATOR_VERSION = "1.1.0"
 NATIVE_FORMAT = "python_function"
 HOSTS = (RAW_HOST,)
 #: The most lines one extracted closure may hold; a larger one is not a function-level component.
@@ -471,6 +471,7 @@ def generate(reader, sources, *, code_revision: str, licence_text: bytes, genera
                 ("licence_not_on_allowlist", "licence_signals_disagree", "licence_unknown")), repository,
                 str(licence.github_spdx)))
             continue
+        source = {**source, "notice": repository_notice(reader, repository, commit, licence.spdx)}
         modules = {}
         for path, found in pinned.items():
             facts[found["sha256"]] = found["bytes"]
@@ -572,6 +573,9 @@ def _package(node, path, modules, source, pinned, licence, commit, generator, li
              for segment_path in paths]
     facts.append(fact_source(upstream_address, pinned[path]["retrieved_at"], licence.sha256, len(licence.text),
                              "licence_text", spdx=licence.spdx, basis="licence_file_at_the_pinned_commit"))
+    notices, notice_facts = notice_files([source.get("notice")])
+    files += notices
+    facts += notice_facts
     expression = " AND ".join(dict.fromkeys([GENERATED_CODE_LICENCE, licence.spdx]))
     name = module.replace("_", "-")[:90]
     identity = f"{source['repository']}:{path}:{node.name}"

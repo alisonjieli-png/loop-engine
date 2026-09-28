@@ -40,7 +40,7 @@ from .licences import (
     AGREED, KNOWN_LICENCE_REFUSALS, LICENCE_NOT_ON_ALLOWLIST, LICENCE_SIGNALS_DISAGREE, LICENCE_UNKNOWN,
     RepositoryLicence, repository_licence)
 from .openapi_operations import operations, package_operations, plain, read_sources
-from .reading import https_address
+from .reading import https_address, repository_notice
 from .swagger2 import swagger2_to_openapi3
 from .records import OPENAPI_OPERATIONS, SupplyRecordError, fact_source, licence_allowed, refusal
 
@@ -220,8 +220,8 @@ def generate(reader, *, code_revision: str, licence_text: bytes, generated_on: s
     facts = {listing.sha256: listing.body}
     texts = LicenceTexts(reader)
     origins, decisions, built, refused, summary, aws_cache = {}, [], [], [], Counter(), {}
-    covered, supplied = curated_coverage(read_sources()), {}
-    generator = {"identity": "tools/supply_lines/openapi_directory.py", "version": "1.1.0",
+    covered, supplied, notices = curated_coverage(read_sources()), {}, {}
+    generator = {"identity": "tools/supply_lines/openapi_directory.py", "version": "1.2.0",
                  "code_revision": code_revision}
     names = selected(directory, only, excluded)
     if maximum_apis:
@@ -299,6 +299,18 @@ def generate(reader, *, code_revision: str, licence_text: bytes, generated_on: s
                                             basis="directory_list_of_apis_guru")] + aws_facts}
         if origin:
             spec["origin_repository"] = origin
+        # The notice files of the repositories the package is derived from: the one whose licence decided it,
+        # and the AWS SDK for JavaScript for an AWS specification (its models are the specification's source).
+        notice_sources = []
+        if decision["basis"] in (ORIGIN_BASIS, LICENCE_FILE_BASIS):
+            notice_sources.append((licence.repository, licence.commit, licence.spdx))
+        if aws_facts and aws_cache.get("commit"):
+            notice_sources.append((AWS_SDK_REPOSITORY, aws_cache["commit"], aws_cache["licence"].spdx))
+        spec["notices"] = []
+        for repository, commit, spdx in notice_sources:
+            if (repository, commit) not in notices:
+                notices[(repository, commit)] = repository_notice(reader, repository, commit, spdx)
+            spec["notices"].append(notices[(repository, commit)])
         found, refusals = operations(document, source)
         refused += refusals
         summary["apis"] += 1

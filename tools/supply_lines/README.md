@@ -112,6 +112,9 @@ One supplied package (catalogue_package/v1)
 ├── generated files, each marked generated in the candidate's file list
 ├── upstream files copied byte for byte only where the licence allows it, marked upstream_verbatim
 ├── LICENSE (and UPSTREAM-LICENSE where the upstream licence governs copied facts)
+├── UPSTREAM-NOTICE: the NOTICE file of each repository the package is derived from, when
+│   that repository has one, copied verbatim (Apache-2.0 section 4(d) asks a derivative work
+│   to carry those attribution notices); listed under licence.notices, never as a licence text
 └── ATTRIBUTION.md: the generator, its version and code revision, every fact source with its
     address, retrieval time, SHA-256 and licence, and every file's origin and digest
 ```

@@ -47,14 +47,14 @@ from loop_engine.core.library_ingestion.record_rules import git_blob_identity
 from .declared_licences import LicenceTexts, repository_declaration
 from .licences import LICENCE_NOT_ON_ALLOWLIST, repository_licence
 from .packaging import (
-    LICENCE_NAME, MAXIMUM_REVIEW_FILE_BYTES, UPSTREAM_LICENCE_NAME, PackageFile, SupplyPackage, build)
-from .reading import RAW_HOST, github_blob_address, https_address, is_https
+    LICENCE_NAME, MAXIMUM_REVIEW_FILE_BYTES, UPSTREAM_LICENCE_NAME, PackageFile, SupplyPackage, build, notice_files)
+from .reading import RAW_HOST, github_blob_address, https_address, is_https, repository_notice
 from .records import (
     BLOCKED_BY_STATIC_CHECK, GENERATED_CODE_LICENCE, GENERATED_TEST_FAILED, LICENCE_TEXT, OPENAPI_OPERATIONS,
     PACKAGE_ABOVE_REVIEW_BOUND, REFUSAL_REASONS, SupplyRecordError, fact_source, licence_allowed, provenance, refusal,
     upstream_key)
 
-GENERATOR_VERSION = "1.6.1"
+GENERATOR_VERSION = "1.7.0"
 #: The text of a second allowlisted licence a specification declares beside its repository's licence.
 SPECIFICATION_LICENCE_NAME = "SPECIFICATION-LICENSE"
 DECLARED_TEXT_BASIS = "specification_info_license_declaration_text_from_choosealicense_at_the_pinned_commit"
@@ -1563,6 +1563,7 @@ def read_specification(reader, source: dict, path: str, texts=None) -> dict:
     return {"document": document, "repository": repository, "commit": commit, "path": path, "blob": blob,
             "sha256": raw.sha256, "size_bytes": len(raw.body), "retrieved_at": raw.retrieved_at, "bytes": raw.body,
             "licence": licence, "declared_licence": declared,
+            "notices": [repository_notice(reader, repository, commit, licence.spdx)],
             "title": re.sub(r"\s+", " ", str(info.get("title") or source["vendor"]))[:80],
             "version": str(info.get("version") or "")[:40],
             "base_url_variable": f"{source['vendor'].upper()}_BASE_URL"}
@@ -1738,6 +1739,9 @@ def prepare_package(operation, spec, source, licence, generator, licence_text, g
         facts.append(fact_source(github_blob_address(second.repository, second.commit, second.path),
                                  spec["retrieved_at"], second.sha256, len(second.text), "licence_text",
                                  spdx=second.spdx, basis=DECLARED_TEXT_BASIS))
+    notices, notice_facts = notice_files(spec.get("notices"))
+    files += notices
+    facts += notice_facts
     facts += list(spec.get("extra_facts") or ())
     effects = [("network", "sends_one_https_request_to_the_api")]
     credentials = []
