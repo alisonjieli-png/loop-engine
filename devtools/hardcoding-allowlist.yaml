@@ -11447,6 +11447,17 @@ entries:
     classification: DEPLOYMENT_CONFIGURATION
     created_on: '2026-09-27'
     expires_on: '2027-09-27'
+  - finding_id: hardcoding.42c291a825a72c5c57f816c3
+    owner: tools.release_train:check_gates
+    rationale: >-
+      The name of the variable tools/pre_push_check.sh already reads to choose its interpreter. The release
+      train passes the caller's value through, or its own interpreter when the caller set none, so that a
+      worktree without .venv runs the gates with the project's extras instead of a bare python3. It chooses a
+      development interpreter on the machine that builds a train, never a deployment value, and the service
+      never runs this tool. tools/test_release_train.py runs the gates through this path.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
 excluded_paths:
   - path: docs/verification/assets/live-baltor-morning-2026-09-23/browser-observations.json
     owner: docs.verification.live-baltor-morning-2026-09-23
