@@ -5,7 +5,7 @@ tasks when material from Baltor is placed in it? It does not change the product.
 
 The first comparison, on September 27, 2026, ran one run per task and condition and is recorded in
 [the research record](../../docs/research/USER-JOURNEY-AND-3D-WITH-WITHOUT-2026-09-27.md). This tool repeats it
-with at least five paired runs per task and condition, grading fixed before the first run, and a report that
+with at least five grouped runs per task and condition, grading fixed before the first run, and a report that
 lists every run.
 
 ## What one run is
@@ -14,19 +14,22 @@ lists every run.
 one run
 ├── a fresh project folder, configuration and session store, inside a sandbox that hides the home folder
 ├── condition
-│   ├── without_baltor: the task text only
-│   └── with_baltor: the runner first acts as the customer's client
-│       ├── searches Baltor with the task text (frozen once per task before the first run)
-│       ├── takes the top three skills of that search
-│       ├── downloads every file of each package, with digest checks
-│       └── places the files where OpenCode reads project skills (.opencode/skills/<name>/)
+│   ├── A without_baltor: the task text only
+│   ├── B with_baltor: the runner first acts as the customer's client
+│   │   ├── searches Baltor with the task text (frozen once per task before the first run)
+│   │   ├── takes the top three skills of that search
+│   │   ├── downloads every file of each package, with digest checks
+│   │   └── places the files where OpenCode reads project skills (.opencode/skills/<name>/)
+│   └── C with_baltor_domain: the same as B with the selection of a second, recorded search rule
+│       (when it selects exactly B's skills for a task, C is not run there and B's runs stand for it)
 ├── OpenCode starts once, with the same model, time budget and call ceiling in both conditions
 ├── every model call passes through the counting proxy (proxy.py)
 └── the frozen checker grades the output file (checks.py)
 ```
 
-No Baltor connection is open during a run, so model calls are spent on the task only. The prompt of the Baltor
-condition adds one sentence that names where the material is (`tasks.BALTOR_NOTE`).
+No Baltor connection is open during a run, so model calls are spent on the task only. The prompts of B and C add
+one sentence that names where the material is (`tasks.BALTOR_NOTE`), so B and C differ only in the skills placed.
+B measures today's product; C measures the library with a better selection that exists as a search option.
 
 ## Files
 
@@ -47,12 +50,14 @@ All machine paths live in a private configuration file (`showcase_3d_configurati
 python tools/showcase_3d/rerun.py freeze --config CONFIG.json [--extra-controls REAL-OUTPUTS.json]
 python tools/showcase_3d/rerun.py select --config CONFIG.json
 python tools/showcase_3d/rerun.py plan --config CONFIG.json --label rerun
+python tools/showcase_3d/rerun.py seal --config CONFIG.json --label rerun
 python tools/showcase_3d/rerun.py run --config CONFIG.json --label rerun
 python tools/showcase_3d/rerun.py report --config CONFIG.json --label rerun
 ```
 
-- `freeze` refuses to record anything unless every control behaves as expected. A run refuses to start when a
-  grading file changed after the freeze.
+- `freeze` refuses to record anything unless every control behaves as expected.
+- `seal` binds the grading manifest, both selection rules, each task's selections and the schedule into one digest.
+  A run refuses to start when any of them changed after the seal.
 - `run` is resumable. Before every batch it waits while a daily library slot would overlap the batch, or while a
   process matching a configured busy pattern runs (the daily library job, candidate review, component
   qualification).
@@ -67,7 +72,7 @@ SHA-256 digest and its place; whether OpenCode listed each placed skill before t
 every check; and each failure (time budget, call ceiling, endpoint error, incomplete delivery, checker error).
 
 The report gives the pass rate of each condition, overall and per task, with a Wilson 95 percent interval, the
-pooled difference with a Newcombe interval, and one row for every run.
+pooled differences B minus A and C minus A with Newcombe intervals, and one row for every run.
 
 ## Limits
 

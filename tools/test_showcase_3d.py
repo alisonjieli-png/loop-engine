@@ -163,16 +163,37 @@ class Records(unittest.TestCase):
         self.assertEqual(totals["calls_with_unknown_usage"], 1)
         self.assertEqual(rerun.token_totals([{"outcome": "refused"}])["prompt_tokens"], 0)
 
-    def test_the_schedule_pairs_both_conditions(self):
+    def test_the_schedule_groups_the_conditions_and_skips_c_where_it_is_b(self):
         config = {"runs_per_cell": 5, "seed": 7, "pairs_in_parallel": 2}
-        schedule = rerun.plan(config, "rerun", None, None)
-        runs = [run for batch in schedule["batches"] for pair in batch for run in pair["runs"]]
-        self.assertEqual(len(runs), 50)
-        self.assertEqual(len(set(runs)), 50)
-        for batch in schedule["batches"]:
-            for pair in batch:
-                self.assertEqual([r.rsplit("-", 1)[-1] for r in pair["runs"]], ["without_baltor", "with_baltor"])
-        self.assertEqual(schedule["digest"], rerun.plan(config, "rerun", None, None)["digest"])
+        same = {"t2_stand": True}
+        schedule = rerun.plan(config, "rerun", None, None, same)
+        groups = [group for batch in schedule["batches"] for group in batch]
+        runs = [entry["run_id"] for group in groups for entry in group["runs"]]
+        self.assertEqual(len(runs), 5 * 5 * 3 - 5)
+        self.assertEqual(len(set(runs)), len(runs))
+        for group in groups:
+            conditions = [entry["condition"] for entry in group["runs"]]
+            expected = ["without_baltor", "with_baltor"] + ([] if group["task"] == "t2_stand" else ["with_baltor_domain"])
+            self.assertEqual(conditions, expected)
+        self.assertEqual(schedule["c_uses_b_runs_for"], ["t2_stand"])
+        self.assertEqual(schedule["digest"], rerun.plan(config, "rerun", None, None, same)["digest"])
+
+    def test_b_runs_stand_for_c_where_the_selections_are_the_same(self):
+        def run(task, condition, passed):
+            return {"task": task, "condition": condition, "passed": passed}
+        runs = [run("t1_gear", "without_baltor", False), run("t1_gear", "with_baltor", True), run("t1_gear", "with_baltor_domain", True),
+                run("t2_stand", "without_baltor", True), run("t2_stand", "with_baltor", False)]
+        cells = rerun.summarize(runs, ["t2_stand"])["cells"]
+        self.assertEqual((cells["C"]["runs"], cells["C"]["passed"], cells["C"]["reused_from_b"]), (2, 1, 1))
+        self.assertEqual(cells["t2_stand:C"]["runs"], 1)
+        # Known-wrong control: without the reuse, C would silently lose the task.
+        self.assertNotIn("t2_stand:C", rerun.summarize(runs, [])["cells"])
+        differences = rerun.summarize(runs, ["t2_stand"])["differences"]
+        self.assertEqual(set(differences), {"B_minus_A", "C_minus_A"})
+
+    def test_c_has_b_prompt(self):
+        self.assertEqual(rerun.PROMPT_CONDITION["with_baltor_domain"], "with_baltor")
+        self.assertEqual(rerun.SELECTION_OF, {"with_baltor": "B", "with_baltor_domain": "C"})
 
     def test_conditions_differ_by_the_note_only(self):
         for task in tasks.TASKS:

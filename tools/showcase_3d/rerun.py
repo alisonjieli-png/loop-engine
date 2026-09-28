@@ -6,19 +6,25 @@ fixed number of paired runs, grades them with checks frozen before the first run
 
 Conditions, identical except for the Baltor material and one sentence that names where it is:
 
-    without_baltor   OpenCode on the task text only.
-    with_baltor      Before the harness starts, the runner acts as the customer's client: it searches Baltor with
-                     the task text, takes the top skills of that search (frozen once before the first run),
-                     downloads every file of each package with digest checks and places the files where OpenCode
-                     reads project skills (.opencode/skills/<name>/). A fresh harness then starts with exactly
-                     that material. No Baltor connection is open during the run.
+    without_baltor       (A) OpenCode on the task text only.
+    with_baltor          (B) Before the harness starts, the runner acts as the customer's client: it searches
+                         Baltor with the task text, takes the top skills of that search (frozen once before the first
+                         run), downloads every file of each package with digest checks and places the files where
+                         OpenCode reads project skills (.opencode/skills/<name>/). This is today's product.
+    with_baltor_domain   (C) The same, with the selection of a second search rule recorded before the first run
+                         (a one-line domain query in the rerun of September 28, 2026). It measures the library with a
+                         better selection that exists as a search option. C has B's prompt. When C selects exactly
+                         B's skills for a task, C is not run for that task and B's runs stand for it.
+
+No Baltor connection is open during a run.
 
 Both conditions use the same OpenCode binary, model, sandbox, time budget and call ceiling. Every model call goes
 through tools/showcase_3d/proxy.py, which records it.
 
 Commands (every command takes --config CONFIG.json; see README.md):
 
-    plan              write the paired, seeded schedule
+    plan              write the grouped, seeded schedule (after select)
+    seal              bind grading, selection rules, selections and schedule into one pre-run manifest
     freeze            run the checker controls and record every check definition with its digest
     select            search Baltor once per task and record the selected identities and digests
     probe-installer   ask the first-party installer, in preview, whether it can place the selection natively
@@ -54,9 +60,15 @@ TOOLS = HERE.parent
 REPOSITORY = TOOLS.parent
 SOURCE_ROOT = REPOSITORY / "src"
 sys.path.insert(0, str(HERE))
-from tasks import CONDITIONS, TASKS, check_definition_records, prompt_for  # noqa: E402
+from tasks import TASKS, check_definition_records, prompt_for  # noqa: E402
 
 RUN_RECORD = "showcase_3d_run/v1"
+PRERUN_RECORD = "showcase_3d_prerun_manifest/v1"
+#: The conditions of a run, the prompt each uses and the selection each places.
+RUN_CONDITIONS = ("without_baltor", "with_baltor", "with_baltor_domain")
+LETTER = {"without_baltor": "A", "with_baltor": "B", "with_baltor_domain": "C"}
+PROMPT_CONDITION = {"without_baltor": "without_baltor", "with_baltor": "with_baltor", "with_baltor_domain": "with_baltor"}
+SELECTION_OF = {"with_baltor": "B", "with_baltor_domain": "C"}
 MANIFEST_RECORD = "showcase_3d_check_manifest/v1"
 SELECTION_RECORD = "showcase_3d_selection/v1"
 SCHEDULE_RECORD = "showcase_3d_schedule/v1"
@@ -206,7 +218,7 @@ def load_config(path: Path) -> dict:
         raise SystemExit("the configuration must be showcase_3d_configuration/v1")
     for key in ("evidence_folder", "work_folder", "opencode", "node", "python_environment", "python_install_root",
                 "hidden_home", "playwright_core", "chrome", "three_package", "customer_client", "service_origin",
-                "service_credential_reference", "model_endpoint", "model", "proxy_port", "delivery_engine",
+                "service_credential_reference", "model_endpoint", "model", "proxy_port", "delivery_engine", "condition_c_rule",
                 "step_effects", "selection", "budget", "runs_per_cell", "pairs_in_parallel", "seed", "sharing"):
         if key not in config:
             raise SystemExit(f"the configuration lacks {key}")
@@ -276,16 +288,22 @@ def run_bounded(argv: list[str], timeout: float, env: dict, cwd: Path, sweep: Pa
 # plan, freeze, select
 
 
-def plan(config: dict, label: str, only_task: str | None, runs: int | None) -> dict:
+def plan(config: dict, label: str, only_task: str | None, runs: int | None, same_as_b: dict) -> dict:
+    """Groups of one task and run number, holding every condition that runs for that task, in a seeded order.
+    Condition C is left out of a task whose C selection is exactly B's; B's runs stand for C there."""
     tasks = [only_task] if only_task else list(TASKS)
     count = runs or int(config["runs_per_cell"])
-    pairs = [{"pair": f"{task}-r{n}", "task": task, "run_number": n} for task in tasks for n in range(1, count + 1)]
-    random.Random(int(config["seed"])).shuffle(pairs)
+    groups = []
+    for task in tasks:
+        conditions = [c for c in RUN_CONDITIONS if not (c == "with_baltor_domain" and same_as_b.get(task))]
+        for n in range(1, count + 1):
+            groups.append({"pair": f"{task}-r{n}", "task": task, "run_number": n,
+                           "runs": [{"condition": c, "run_id": f"{label}-{task}-r{n}-{c}"} for c in conditions]})
+    random.Random(int(config["seed"])).shuffle(groups)
     size = int(config["pairs_in_parallel"])
-    batches = [pairs[i:i + size] for i in range(0, len(pairs), size)]
-    schedule = {"record_type": SCHEDULE_RECORD, "label": label, "seed": config["seed"], "conditions": list(CONDITIONS),
-                "batches": [[{**pair, "runs": [f"{label}-{pair['pair']}-{condition}" for condition in CONDITIONS]}
-                             for pair in batch] for batch in batches]}
+    schedule = {"record_type": SCHEDULE_RECORD, "label": label, "seed": config["seed"], "conditions": list(RUN_CONDITIONS),
+                "c_uses_b_runs_for": sorted(t for t in tasks if same_as_b.get(t)),
+                "batches": [groups[i:i + size] for i in range(0, len(groups), size)]}
     schedule["digest"] = hashlib.sha256(json.dumps(schedule["batches"], sort_keys=True).encode()).hexdigest()
     return schedule
 
@@ -342,32 +360,78 @@ def client_configuration(config: dict, folder: Path) -> Path:
     return path
 
 
+def search_selection(config: dict, client_config: Path, key: str, folder: Path, name: str, query: str) -> dict:
+    rule = config["selection"]
+    done = subprocess.run(["python3", config["customer_client"], "--config", str(client_config), "search", query,
+                           "--limit", str(rule["search_limit"])], capture_output=True, text=True, timeout=120,
+                          env={**os.environ, "BALTOR_SERVICE_TOKEN": key})
+    if done.returncode != 0:
+        raise SystemExit(f"search failed for {name}: {scrub(done.stdout + done.stderr, key)[:300]}")
+    saved = folder / f"{name}.json"
+    saved.write_text(done.stdout)
+    result = json.loads(done.stdout); result = result.get("result", result)
+    items = [{"identity": hit["reference"]["identity"], "digest": hit["reference"]["body_digest"],
+              "kind": hit.get("kind"), "rank": rank + 1,
+              "files": len((hit.get("package") or {}).get("files") or []) or 1}
+             for rank, hit in enumerate(result["hits"]) if hit.get("kind") == rule["kind"]][:int(rule["top"])]
+    return {"query": query, "query_sha256": hashlib.sha256(query.encode()).hexdigest(), "search_file": saved.name,
+            "search_sha256": sha256_file(saved), "catalogue_release": result.get("catalogue_release"), "items": items}
+
+
 def select(config: dict) -> dict:
+    """B: the task text. C: the recorded second rule's query for the task. Both keep the top skills in the service's
+    order. A task whose C items are exactly B's (identity and digest) is marked, and C does not run for it."""
     evidence = Path(config["evidence_folder"])
     folder = evidence / "selection"; folder.mkdir(parents=True, exist_ok=True)
     client_config = client_configuration(config, evidence)
     key = service_key(config)
-    rule = config["selection"]
+    rule_c = json.loads(Path(config["condition_c_rule"]).read_text())
     chosen = {}
     for task, spec in TASKS.items():
-        query = spec["prompt"].removeprefix("Task: ")
-        done = subprocess.run(["python3", config["customer_client"], "--config", str(client_config), "search", query,
-                               "--limit", str(rule["search_limit"])], capture_output=True, text=True, timeout=120,
-                              env={**os.environ, "BALTOR_SERVICE_TOKEN": key})
-        if done.returncode != 0:
-            raise SystemExit(f"search failed for {task}: {scrub(done.stdout + done.stderr, key)[:300]}")
-        saved = folder / f"{task}.json"
-        saved.write_text(done.stdout)
-        result = json.loads(done.stdout); result = result.get("result", result)
-        items = [{"identity": hit["reference"]["identity"], "digest": hit["reference"]["body_digest"],
-                  "kind": hit.get("kind"), "rank": rank + 1,
-                  "files": len((hit.get("package") or {}).get("files") or []) or 1}
-                 for rank, hit in enumerate(result["hits"]) if hit.get("kind") == rule["kind"]][:int(rule["top"])]
-        chosen[task] = {"query_sha256": hashlib.sha256(query.encode()).hexdigest(), "search_file": saved.name,
-                        "search_sha256": sha256_file(saved), "catalogue_release": result.get("catalogue_release"),
-                        "items": items}
-    return {"record_type": SELECTION_RECORD, "selected_at": now(), "rule": rule, "step_effects": config["step_effects"],
-            "tasks": chosen}
+        b = search_selection(config, client_config, key, folder, f"{task}-B", spec["prompt"].removeprefix("Task: "))
+        c = search_selection(config, client_config, key, folder, f"{task}-C", rule_c["queries"][task])
+        same = sorted((i["identity"], i["digest"]) for i in b["items"]) == sorted((i["identity"], i["digest"]) for i in c["items"])
+        chosen[task] = {"B": b, "C": c, "c_same_as_b": same}
+    value = {"record_type": SELECTION_RECORD, "selected_at": now(), "rule_b": config["selection"],
+             "rule_c": {"path": Path(config["condition_c_rule"]).name, "digest": rule_c["digest"], "rule": rule_c["rule"]},
+             "step_effects": config["step_effects"], "tasks": chosen}
+    value["digest"] = hashlib.sha256(json.dumps({"rule_b": value["rule_b"], "rule_c": value["rule_c"], "tasks": {
+        t: {"B": [(i["identity"], i["digest"]) for i in v["B"]["items"]], "C": [(i["identity"], i["digest"]) for i in v["C"]["items"]],
+            "c_same_as_b": v["c_same_as_b"]} for t, v in chosen.items()}}, sort_keys=True).encode()).hexdigest()
+    return value
+
+
+def seal(config: dict, label: str) -> dict:
+    """One digest over everything fixed before the first run of a label: grading, rules, selections, schedule, budget."""
+    evidence = Path(config["evidence_folder"])
+    manifest = verify_frozen(config)
+    selection = json.loads((evidence / "selection.json").read_text())
+    schedule = json.loads((evidence / label / "schedule.json").read_text())
+    value = {"record_type": PRERUN_RECORD, "label": label, "sealed_at": now(),
+             "grading_manifest_digest": manifest["digest"], "grading_files": manifest["grading_files"],
+             "check_digests": {f"{c['task']}:{c['check']}": c["digest"] for c in manifest["checks"]},
+             "selection_digest": selection["digest"], "rule_b": selection["rule_b"], "rule_c": selection["rule_c"],
+             "selections": {t: {"B": [(i["identity"], i["digest"]) for i in v["B"]["items"]],
+                                "C": [(i["identity"], i["digest"]) for i in v["C"]["items"]], "c_same_as_b": v["c_same_as_b"]}
+                            for t, v in selection["tasks"].items()},
+             "schedule_digest": schedule["digest"], "c_uses_b_runs_for": schedule["c_uses_b_runs_for"],
+             "runs": sum(len(g["runs"]) for b in schedule["batches"] for g in b),
+             "budget": config["budget"], "model": config["model"], "delivery_engine": config["delivery_engine"],
+             "runner_files": RUNNER_DIGESTS}
+    value["digest"] = hashlib.sha256(json.dumps({k: v for k, v in value.items() if k != "sealed_at"}, sort_keys=True).encode()).hexdigest()
+    return value
+
+
+def verify_sealed(config: dict, label: str) -> dict:
+    evidence = Path(config["evidence_folder"])
+    sealed = json.loads((evidence / label / "prerun-manifest.json").read_text())
+    selection = json.loads((evidence / "selection.json").read_text())
+    schedule = json.loads((evidence / label / "schedule.json").read_text())
+    if selection["digest"] != sealed["selection_digest"] or schedule["digest"] != sealed["schedule_digest"]:
+        raise SystemExit("refused: the selection or the schedule changed after the seal")
+    if verify_frozen(config)["digest"] != sealed["grading_manifest_digest"]:
+        raise SystemExit("refused: the grading manifest changed after the seal")
+    return sealed
 
 
 # ----------------------------------------------------------------------------------------------------------------
@@ -542,11 +606,12 @@ def run_one(config: dict, label_folder: Path, run: dict, selection: dict, calls_
     subprocess.run(["git", "init", "-q", str(project)], check=True)
     key = service_key(config)
     delivery, delivery_seconds = None, 0.0
-    if condition == "with_baltor":
-        items = selection["tasks"][task]["items"]
+    if condition in SELECTION_OF:
+        chosen = selection["tasks"][task][SELECTION_OF[condition]]
+        items = chosen["items"]
         started = time.time()
         if config["delivery_engine"] == "customer_client_stage_and_place":
-            search_file = Path(config["evidence_folder"]) / "selection" / selection["tasks"][task]["search_file"]
+            search_file = Path(config["evidence_folder"]) / "selection" / chosen["search_file"]
             delivery = deliver_customer_client(config, work, project, items, search_file, client_config, key)
         elif config["delivery_engine"] == "first_party_installer":
             delivery = deliver_first_party_installer(config, work, project, items, key, run_id)
@@ -575,11 +640,12 @@ def run_one(config: dict, label_folder: Path, run: dict, selection: dict, calls_
     placed_folders = [entry["placed"]["skill_folder"].rsplit("/", 1)[-1] for entry in (delivery or {}).get("delivered", [])]
     listed = {name: name in names for name in placed_folders}
     version = subprocess.run([config["opencode"], "--version"], capture_output=True, text=True, timeout=60).stdout.strip()
-    prompt = prompt_for(task, condition)
+    prompt = prompt_for(task, PROMPT_CONDITION[condition])
     (out / "prompt.txt").write_text(prompt)
     limits = label_folder / "limits.json"
     set_limit(limits, run_id, calls_per_run)
     argv = [config["opencode"], "run", "--format", "json", "--auto", "--title", run_id, prompt]
+    load_at_start = [round(value, 1) for value in os.getloadavg()]
     started_at, t0 = now(), time.time()
     exit_code, stdout, stderr, timed_out, killed = run_bounded(["nice", "-n", "10"] + sandbox(config, work, project, argv),
                                                                int(config["budget"]["wall_seconds"]), environment, project, work)
@@ -622,7 +688,7 @@ def run_one(config: dict, label_folder: Path, run: dict, selection: dict, calls_
         failures.append("call_ceiling_reached")
     if any(c.get("outcome") != "ok" for c in physical):
         failures.append("model_endpoint_error")
-    if condition == "with_baltor" and (delivery or {}).get("not_delivered"):
+    if condition in SELECTION_OF and (delivery or {}).get("not_delivered"):
         failures.append("delivery_incomplete")
     if exit_code not in (0, None) and not refused:
         failures.append(f"harness_exit_{exit_code}")
@@ -631,6 +697,8 @@ def run_one(config: dict, label_folder: Path, run: dict, selection: dict, calls_
     if not check.get("passed"):
         failures.append("checks_failed")
     record = {"record_type": RUN_RECORD, "run_id": run_id, "label": label_folder.name, "task": task, "condition": condition,
+              "condition_letter": LETTER[condition], "prompt_condition": PROMPT_CONDITION[condition],
+              "selection": SELECTION_OF.get(condition),
               "run_number": run["run_number"], "pair": run["pair"], "batch": run["batch"], "started": started_at, "ended": now(),
               "wall_seconds": wall, "time_budget_seconds": int(config["budget"]["wall_seconds"]), "timed_out": timed_out,
               "exit_code": exit_code, "harness": {"name": "opencode", "version": version}, "model": config["model"],
@@ -644,7 +712,8 @@ def run_one(config: dict, label_folder: Path, run: dict, selection: dict, calls_
               "output_sha256": output_digest,
               "manifest_digest": json.loads((Path(config["evidence_folder"]) / "manifest.json").read_text())["digest"],
               "runner_files": RUNNER_DIGESTS, "processes_killed_at_budget": len(killed),
-              "delivery_engine": config["delivery_engine"] if condition == "with_baltor" else None}
+              "machine_load_average": {"at_start": load_at_start, "at_end": [round(v, 1) for v in os.getloadavg()]},
+              "delivery_engine": config["delivery_engine"] if condition in SELECTION_OF else None}
     write_new(out / "run.json", record)
     with (label_folder / "runs.jsonl").open("a") as handle:
         handle.write(json.dumps(record, sort_keys=True) + "\n")
@@ -674,7 +743,7 @@ def start_proxy(config: dict, label_folder: Path, session_ceiling: int) -> subpr
 
 
 def run_schedule(config: dict, label: str, calls_per_run: int, session_ceiling: int, maximum_wait_seconds: int) -> None:
-    verify_frozen(config)
+    verify_sealed(config, label)
     evidence = Path(config["evidence_folder"])
     label_folder = evidence / label
     schedule = json.loads((label_folder / "schedule.json").read_text())
@@ -685,9 +754,9 @@ def run_schedule(config: dict, label: str, calls_per_run: int, session_ceiling: 
     proxy = None
     try:
         for number, batch in enumerate(schedule["batches"], 1):
-            runs = [{"run_id": run_id, "task": pair["task"], "condition": condition, "run_number": pair["run_number"],
-                     "pair": pair["pair"], "batch": number}
-                    for pair in batch for run_id, condition in zip(pair["runs"], schedule["conditions"])]
+            runs = [{"run_id": entry["run_id"], "task": group["task"], "condition": entry["condition"],
+                     "run_number": group["run_number"], "pair": group["pair"], "batch": number}
+                    for group in batch for entry in group["runs"]]
             runs = [run for run in runs if not (label_folder / "runs" / run["run_id"] / "run.json").exists()]
             if not runs:
                 continue
@@ -718,47 +787,70 @@ def run_schedule(config: dict, label: str, calls_per_run: int, session_ceiling: 
 # Report
 
 
+def summarize(runs: list[dict], c_uses_b_runs_for: list[str]) -> dict:
+    """Cells per condition and per task and condition. For a task whose C selection is B's, B's runs count for C."""
+    cells = {}
+
+    def add(key, record):
+        cell = cells.setdefault(key, {"runs": 0, "passed": 0, "reused_from_b": 0})
+        cell["runs"] += 1; cell["passed"] += int(record["passed"])
+        return cell
+
+    for record in runs:
+        letter = LETTER[record["condition"]]
+        add(letter, record); add(f"{record['task']}:{letter}", record)
+        if letter == "B" and record["task"] in c_uses_b_runs_for:
+            add("C", record)["reused_from_b"] += 1
+            add(f"{record['task']}:C", record)["reused_from_b"] += 1
+    for cell in cells.values():
+        low, high = wilson(cell["passed"], cell["runs"])
+        cell.update({"rate": cell["passed"] / cell["runs"], "wilson95_low": low, "wilson95_high": high})
+    differences = {}
+    for other in ("B", "C"):
+        if "A" in cells and other in cells:
+            d, low, high = newcombe(cells[other]["passed"], cells[other]["runs"], cells["A"]["passed"], cells["A"]["runs"])
+            differences[f"{other}_minus_A"] = {"difference": d, "newcombe95_low": low, "newcombe95_high": high}
+    return {"cells": cells, "differences": differences}
+
+
 def report(label_folder: Path) -> dict:
     latest = {}
     for line in (label_folder / "runs.jsonl").read_text().splitlines():
         record = json.loads(line)
         latest[record["run_id"]] = record
-    runs = sorted(latest.values(), key=lambda r: (r["task"], r["run_number"], r["condition"]))
-    cells = {}
-    for record in runs:
-        for key in (record["condition"], f"{record['task']}:{record['condition']}"):
-            cell = cells.setdefault(key, {"runs": 0, "passed": 0})
-            cell["runs"] += 1; cell["passed"] += int(record["passed"])
-    for cell in cells.values():
-        low, high = wilson(cell["passed"], cell["runs"])
-        cell.update({"rate": cell["passed"] / cell["runs"], "wilson95_low": low, "wilson95_high": high})
-    difference = None
-    a, b = cells.get("with_baltor"), cells.get("without_baltor")
-    if a and b:
-        d, low, high = newcombe(a["passed"], a["runs"], b["passed"], b["runs"])
-        difference = {"with_minus_without": d, "newcombe95_low": low, "newcombe95_high": high,
-                      "note": "tasks are pooled; the tasks differ in difficulty"}
-    value = {"record_type": REPORT_RECORD, "label": label_folder.name, "written": now(), "cells": cells,
-             "difference": difference, "runs": runs}
+    runs = sorted(latest.values(), key=lambda r: (r["task"], r["run_number"], LETTER[r["condition"]]))
+    schedule = json.loads((label_folder / "schedule.json").read_text())
+    reuse = schedule.get("c_uses_b_runs_for", [])
+    summary = summarize(runs, reuse)
+    cells, differences = summary["cells"], summary["differences"]
+    value = {"record_type": REPORT_RECORD, "label": label_folder.name, "written": now(), **summary,
+             "c_uses_b_runs_for": reuse, "runs": runs}
     lines = [f"# 3D with and without Baltor: {label_folder.name}", "",
-             "| Condition | Runs | Passed | Pass rate | Wilson 95% interval |", "|---|---|---|---|---|"]
-    for key in sorted(cells):
+             "A runs OpenCode on the task text only. B measures today's product: the top three skills of Baltor's "
+             "search for the task text, placed whole in the harness. C measures the library with a better selection "
+             "that exists as a search option: the top three skills of the recorded second search rule, placed the same "
+             "way. B and C share one prompt; they differ only in the skills placed.", ""]
+    if reuse:
+        lines += [f"C selects exactly B's skills for {', '.join(reuse)}; C was not run there, and B's runs stand for C.", ""]
+    lines += ["| Cell | Runs | Passed | Pass rate | Wilson 95% interval |", "|---|---|---|---|---|"]
+    for key in sorted(cells, key=lambda k: (":" in k, k)):
         c = cells[key]
-        lines.append(f"| {key} | {c['runs']} | {c['passed']} | {c['rate']:.2f} | {c['wilson95_low']:.2f} to {c['wilson95_high']:.2f} |")
-    if difference:
-        lines += ["", f"Difference with minus without, tasks pooled: {difference['with_minus_without']:+.2f} "
-                      f"(Newcombe 95%: {difference['newcombe95_low']:+.2f} to {difference['newcombe95_high']:+.2f})."]
+        note = f" ({c['reused_from_b']} from B)" if c["reused_from_b"] else ""
+        lines.append(f"| {key} | {c['runs']}{note} | {c['passed']} | {c['rate']:.2f} | {c['wilson95_low']:.2f} to {c['wilson95_high']:.2f} |")
+    for name, d in differences.items():
+        lines += ["", f"{name.replace('_minus_', ' minus ')}, tasks pooled: {d['difference']:+.2f} "
+                      f"(Newcombe 95%: {d['newcombe95_low']:+.2f} to {d['newcombe95_high']:+.2f})."]
     recorded = [r for r in runs if "calls_over_300_seconds" in r]
     stalled = [r["run_id"] for r in recorded if r["calls_over_300_seconds"]]
     lines += ["", f"Runs with a model call over 300 seconds (a slow or stalled server): {len(stalled)} of {len(recorded)} "
                   f"that record it; not recorded for {len(runs) - len(recorded)}."]
-    lines += ["", "| Run | Task | Condition | No. | Pass | Calls | Prompt tokens | Completion tokens | Wall s | Longest call s | Baltor files | Failing checks | Failures |",
+    lines += ["", "| Run | Task | Cond. | No. | Pass | Calls | Prompt tokens | Completion tokens | Wall s | Longest call s | Baltor files | Failing checks | Failures |",
               "|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
     for r in runs:
         files = sum(len(d["placed"]["files"]) for d in (r.get("delivery") or {}).get("delivered", [])) if r.get("delivery") else 0
         failing = ", ".join(c["name"] for c in r["checks"] if not c["passed"]) or "none"
         longest = f"{r['longest_call_seconds']:.0f}" if "longest_call_seconds" in r else "not recorded"
-        lines.append(f"| {r['run_id']} | {r['task']} | {r['condition']} | {r['run_number']} | {'pass' if r['passed'] else 'fail'} | "
+        lines.append(f"| {r['run_id']} | {r['task']} | {LETTER[r['condition']]} | {r['run_number']} | {'pass' if r['passed'] else 'fail'} | "
                      f"{r['model_calls']} | {r['prompt_tokens']} | {r['completion_tokens']} | {r['wall_seconds']:.0f} | "
                      f"{longest} | {files} | {failing} | {', '.join(r['failures']) or 'none'} |")
     (label_folder / "report.md").write_text("\n".join(lines) + "\n")
@@ -768,7 +860,7 @@ def report(label_folder: Path) -> dict:
 
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("command", choices=("plan", "freeze", "select", "probe-installer", "run", "report"))
+    parser.add_argument("command", choices=("plan", "seal", "freeze", "select", "probe-installer", "run", "report"))
     parser.add_argument("--config", type=Path, required=True)
     parser.add_argument("--label", default="rerun", help="Evidence subfolder and run id prefix, for example dry or rerun.")
     parser.add_argument("--only-task", choices=tuple(TASKS), default=None)
@@ -783,10 +875,16 @@ def main(argv=None) -> int:
     evidence = Path(config["evidence_folder"]); evidence.mkdir(parents=True, exist_ok=True)
     label_folder = evidence / args.label
     if args.command == "plan":
-        schedule = plan(config, args.label, args.only_task, args.runs)
+        selection = json.loads((evidence / "selection.json").read_text())
+        same = {task: value["c_same_as_b"] for task, value in selection["tasks"].items()}
+        schedule = plan(config, args.label, args.only_task, args.runs, same)
         write_new(label_folder / "schedule.json", schedule)
-        print(json.dumps({"batches": len(schedule["batches"]), "runs": sum(2 * len(b) for b in schedule["batches"]),
-                          "digest": schedule["digest"]}))
+        print(json.dumps({"batches": len(schedule["batches"]), "runs": sum(len(g["runs"]) for b in schedule["batches"] for g in b),
+                          "c_uses_b_runs_for": schedule["c_uses_b_runs_for"], "digest": schedule["digest"]}))
+    elif args.command == "seal":
+        sealed = seal(config, args.label)
+        write_new(label_folder / "prerun-manifest.json", sealed)
+        print(json.dumps({"prerun_digest": sealed["digest"], "runs": sealed["runs"], "c_uses_b_runs_for": sealed["c_uses_b_runs_for"]}))
     elif args.command == "freeze":
         manifest = freeze(config, args.extra_controls)
         write_new(evidence / "manifest.json", manifest)
@@ -798,10 +896,11 @@ def main(argv=None) -> int:
         selection = json.loads((evidence / "selection.json").read_text())
         key, results = service_key(config), {}
         for task, chosen in selection["tasks"].items():
-            root = Path(config["work_folder"]) / "installer-probe" / f"{task}-{int(time.time())}"
-            (root / "project").mkdir(parents=True)
-            results[task] = deliver_first_party_installer(config, root, root / "project", chosen["items"], key,
-                                                         f"probe-{task}", preview=True)
+            for letter in ("B", "C"):
+                root = Path(config["work_folder"]) / "installer-probe" / f"{task}-{letter}-{int(time.time())}"
+                (root / "project").mkdir(parents=True)
+                results[f"{task}:{letter}"] = deliver_first_party_installer(config, root, root / "project", chosen[letter]["items"],
+                                                                           key, f"probe-{task}-{letter}", preview=True)
         write_new(evidence / f"installer-probe-{datetime.now(timezone.utc):%Y%m%dT%H%M%SZ}.json", results)
         for task, result in results.items():
             print(task, [(item["identity"], (item.get("refusal") or {}).get("code")) for item in result["items"]])
