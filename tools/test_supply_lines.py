@@ -490,6 +490,108 @@ class OpenApiLineTest(unittest.TestCase):
         self.assertIn(b"descriptions and examples are omitted", schema)
         self.assertEqual(payload["component_form"]["form"], "api_operation")
 
+    def test_a_specification_declares_its_own_licence_beside_its_repository(self):
+        from supply_lines import declared_licences as declared
+        from supply_lines import openapi_operations as line
+        from supply_lines.licences import RepositoryLicence
+        repository = declared.repository_declaration
+        self.assertEqual(repository({"license": {"name": "MIT", "identifier": "MIT"}})[0], "MIT")
+        self.assertEqual(repository({"license": {"name": "MIT", "url": "https://code.example.com/api/blob/main/LICENSE"}})[0],
+                         "MIT")
+        self.assertEqual(repository({"license": {"name": "Apache 2.0",
+                                                 "url": "https://www.apache.org/licenses/LICENSE-2.0.html"}})[0],
+                         "Apache-2.0")
+        self.assertIsNone(repository({"title": "none"}))
+        # Known wrong: a name off the table, an address naming another licence, an unaddressed generic name, and an
+        # identifier that is not one SPDX identifier.
+        for info in ({"license": {"name": "Proprietary"}},
+                     {"license": {"name": "MIT", "url": "https://www.gnu.org/licenses/gpl-3.0.html"}},
+                     {"license": {"name": "MIT", "url": "https://www.apache.org/licenses/LICENSE-2.0"}},
+                     {"license": {"name": "Creative Commons"}},
+                     {"license": {"name": "x", "identifier": "MIT OR GPL-3.0"}}):
+            self.assertIsNone(repository(info)[0], info)
+        # The directory mode also needs the address to confirm the name, word by word ("commit" is not MIT).
+        self.assertIsNone(declared.declared_licence({"license": {"name": "MIT",
+                                                                 "url": "https://example.org/commit/terms"}})[0])
+        self.assertEqual(declared.declared_licence({"license": {"name": "Anything", "identifier": "ISC"}})[0], "ISC")
+
+        class Texts:
+            def text(self, spdx):
+                return RepositoryLicence("github/choosealicense.com", "c" * 40, spdx, "agreed",
+                                         f"_licenses/{spdx.lower()}.txt", b"licence text " + spdx.encode(), spdx, spdx, 1.0)
+
+        mit = RepositoryLicence("example/api", "c" * 40, "MIT", "agreed", "LICENSE", LICENCE, "MIT", "MIT", 1.0)
+        self.assertIsNone(line.declared_beside({}, mit, Texts(), "example/api/openapi.json"))
+        same = line.declared_beside({"license": {"name": "MIT License"}}, mit, Texts(), "x")
+        self.assertEqual((same["spdx"], same["text"]), ("MIT", None))
+        other = line.declared_beside({"license": {"name": "Apache 2.0"}}, mit, Texts(), "x")
+        self.assertEqual(other["text"].spdx, "Apache-2.0")
+        with self.assertRaises(line.OperationRefused) as refused:
+            line.declared_beside({"license": {"name": "Proprietary"}}, mit, Texts(), "x")
+        self.assertEqual(refused.exception.reason, "licence_not_on_allowlist")
+        # A second allowlisted licence travels with the package, and the expression names both.
+        found, _refused = line.operations(SPECIFICATION, SOURCE)
+        get = next(operation for operation in found if operation.function == "get_thing")
+        generator = {"identity": "tools/supply_lines/openapi_operations.py", "version": "test",
+                     "code_revision": "a" * 40}
+        facts = {**SPEC_FACTS, "size_bytes": 10, "retrieved_at": "2026-09-27T00:00:00Z"}
+        with tempfile.TemporaryDirectory() as folder:
+            payload, bodies = line._package(get, {**facts, "declared_licence": other}, SOURCE, mit, generator,
+                                            LICENCE, "2026-09-27", Path(folder), {})
+            alone, _bodies = line._package(get, {**facts, "declared_licence": same}, SOURCE, mit, generator,
+                                           LICENCE, "2026-09-27", Path(folder), {})
+        self.assertEqual(payload["licence"]["spdx_expression"], "MIT AND Apache-2.0")
+        self.assertIn(line.SPECIFICATION_LICENCE_NAME, payload["licence"]["texts"])
+        self.assertEqual(alone["licence"]["spdx_expression"], "MIT")
+        self.assertNotIn(line.SPECIFICATION_LICENCE_NAME, alone["licence"]["texts"])
+
+    def test_generate_reads_each_specifications_own_licence_beside_the_repository_licence(self):
+        from loop_engine.core.library_ingestion.record_rules import git_blob_identity
+        from supply_lines import openapi_operations as line
+        from supply_lines.declared_licences import licence_text_paths
+        paths, _commit = licence_text_paths()
+        small = {"openapi": "3.0.3", "info": {"title": "Small", "version": "1"},
+                 "servers": [{"url": "https://api.example.com"}],
+                 "paths": {"/ping": {"get": {"operationId": "ping", "responses": {"200": {"description": "ok"}}}}}}
+
+        class Reader:
+            def __init__(self, document):
+                self.body = json.dumps(document).encode()
+
+            def github(self, path):
+                if path.endswith("/commits/main"):
+                    return _Answer(200, json.dumps({"sha": "c" * 40}).encode())
+                return _Answer(200, json.dumps({"sha": git_blob_identity(self.body)}).encode())
+
+            def get(self, url, cache_errors=False):
+                return _Answer(200, self.body)
+
+            def licence_text(self, repository, commit):
+                return "LICENSE", LICENCE, "MIT"
+
+            def pinned_file(self, repository, commit, path):
+                spdx = next(key for key, (where, _digest) in paths.items() if where == path)
+                return {"sha256": paths[spdx][1], "commit": commit, "bytes": b"text of " + spdx.encode(),
+                        "path": path}
+
+        def run(info):
+            document = {**small, "info": {**small["info"], **info}}
+            with tempfile.TemporaryDirectory() as folder:
+                return line.generate(Reader(document), [SOURCE], code_revision="a" * 40, licence_text=LICENCE,
+                                     generated_on="2026-09-27", staging=Path(folder))
+
+        built, refused, _facts, summary = run({"license": {"name": "Apache 2.0",
+                                                           "url": "https://www.apache.org/licenses/LICENSE-2.0.html"}})
+        self.assertEqual(refused, [])
+        self.assertEqual([payload["licence"]["spdx_expression"] for payload, _bodies in built], ["MIT AND Apache-2.0"])
+        self.assertEqual((summary[0]["licence"], summary[0]["declared_licence"]), ("MIT", "Apache-2.0"))
+        built, refused, _facts, _summary = run({})
+        self.assertEqual([payload["licence"]["spdx_expression"] for payload, _bodies in built], ["MIT"])
+        # Known wrong: a specification that declares a licence off the allowlist is refused whole, although its
+        # repository is MIT.
+        built, refused, _facts, _summary = run({"license": {"name": "Proprietary"}})
+        self.assertEqual((built, [row["reason"] for row in refused]), ([], ["licence_not_on_allowlist"]))
+
     def test_the_network_is_closed_while_generated_tests_run(self):
         from supply_lines import openapi_operations as line
         import urllib.request

@@ -44,15 +44,20 @@ from pathlib import Path
 
 from loop_engine.core.library_ingestion.record_rules import git_blob_identity
 
-from .licences import repository_licence
+from .declared_licences import LicenceTexts, repository_declaration
+from .licences import LICENCE_NOT_ON_ALLOWLIST, repository_licence
 from .packaging import (
     LICENCE_NAME, MAXIMUM_REVIEW_FILE_BYTES, UPSTREAM_LICENCE_NAME, PackageFile, SupplyPackage, build)
 from .reading import RAW_HOST, github_blob_address, https_address, is_https
 from .records import (
     BLOCKED_BY_STATIC_CHECK, GENERATED_CODE_LICENCE, GENERATED_TEST_FAILED, LICENCE_TEXT, OPENAPI_OPERATIONS,
-    PACKAGE_ABOVE_REVIEW_BOUND, REFUSAL_REASONS, SupplyRecordError, fact_source, provenance, refusal, upstream_key)
+    PACKAGE_ABOVE_REVIEW_BOUND, REFUSAL_REASONS, SupplyRecordError, fact_source, licence_allowed, provenance, refusal,
+    upstream_key)
 
-GENERATOR_VERSION = "1.3.0"
+GENERATOR_VERSION = "1.4.0"
+#: The text of a second allowlisted licence a specification declares beside its repository's licence.
+SPECIFICATION_LICENCE_NAME = "SPECIFICATION-LICENSE"
+DECLARED_TEXT_BASIS = "specification_info_license_declaration_text_from_choosealicense_at_the_pinned_commit"
 #: What the first success answer holds: JSON, text, other bytes, or nothing.
 JSON_ANSWER, TEXT_ANSWER, BINARY_ANSWER, NO_ANSWER = "json", "text", "binary", "empty"
 #: Refusal codes a package build may raise that the line keeps as they are; any other means its tests failed.
@@ -1268,8 +1273,22 @@ def run_tests(folder: Path, module: str) -> tuple:
 
 
 # -- reading a specification ---------------------------------------------------------------------------------------
-def read_specification(reader, source: dict, path: str) -> dict:
-    """The specification's bytes at the branch's head commit, proven by git blob identity, with its licence."""
+def declared_beside(info: dict, licence, texts, where: str) -> "dict | None":
+    """The specification's own licence declaration read beside its repository's licence: None when it declares
+    none; refused when it declares a licence off the allowlist; the text of a second allowlisted licence."""
+    declared = repository_declaration(info)
+    if declared is None:
+        return None
+    spdx, written, address = declared
+    if spdx is None or not licence_allowed(spdx):
+        raise OperationRefused(LICENCE_NOT_ON_ALLOWLIST, f"{where} declares {written[:60]!r} {address[:80]}")
+    return {"spdx": spdx, "declared": written[:120], "address": address[:300],
+            "text": texts.text(spdx) if spdx != licence.spdx else None}
+
+
+def read_specification(reader, source: dict, path: str, texts=None) -> dict:
+    """The specification's bytes at the branch's head commit, proven by git blob identity, with its licence and
+    its own declared licence."""
     repository = source["repository"]
     head = reader.github(f"repos/{repository}/commits/{source['branch']}")
     if head.status != 200:
@@ -1300,9 +1319,11 @@ def read_specification(reader, source: dict, path: str) -> dict:
         raise OperationRefused("specification_version_unsupported",
                                f"{repository}/{path}: {str(document.get('openapi') or document.get('swagger'))[:20]}")
     info = document.get("info") or {}
+    declared = declared_beside(info, licence, texts or LicenceTexts(reader), f"{repository}/{path}")
     return {"document": document, "repository": repository, "commit": commit, "path": path, "blob": blob,
             "sha256": raw.sha256, "size_bytes": len(raw.body), "retrieved_at": raw.retrieved_at, "bytes": raw.body,
-            "licence": licence, "title": re.sub(r"\s+", " ", str(info.get("title") or source["vendor"]))[:80],
+            "licence": licence, "declared_licence": declared,
+            "title": re.sub(r"\s+", " ", str(info.get("title") or source["vendor"]))[:80],
             "version": str(info.get("version") or "")[:40],
             "base_url_variable": f"{source['vendor'].upper()}_BASE_URL"}
 
@@ -1313,12 +1334,13 @@ def generate(reader, sources, *, code_revision: str, licence_text: bytes, genera
     built, refused, facts, summary = [], [], {}, []
     generator = {"identity": "tools/supply_lines/openapi_operations.py", "version": GENERATOR_VERSION,
                  "code_revision": code_revision}
+    texts = LicenceTexts(reader)
     for source in sources:
         taken = 0
         seen_modules = set()
         for path in source["paths"]:
             try:
-                spec = read_specification(reader, source, path)
+                spec = read_specification(reader, source, path, texts)
             except OperationRefused as error:
                 refused.append(refusal(OPENAPI_OPERATIONS, error.reason, f"{source['source_id']} {path}", error.detail))
                 summary.append({"source_id": source["source_id"], "path": path, "refused": error.reason})
@@ -1352,8 +1374,11 @@ def generate(reader, sources, *, code_revision: str, licence_text: bytes, genera
                 built.append(payload_bodies)
                 taken += 1
                 kept += 1
+            declared = spec.get("declared_licence") or {}
             summary.append({"source_id": source["source_id"], "path": path, "commit": spec["commit"],
-                            "sha256": spec["sha256"], "licence": licence.spdx, "operations": len(found),
+                            "sha256": spec["sha256"], "licence": licence.spdx,
+                            "declared_licence": declared.get("spdx"), "declared_as": declared.get("declared"),
+                            "operations": len(found),
                             "refused_while_reading": len(refusals), "packaged": kept})
     return built, refused, facts, summary
 
@@ -1420,8 +1445,14 @@ def _package(operation, spec, source, licence, generator, licence_text, generate
              PackageFile(LICENCE_NAME, licence_text, "other", LICENCE_TEXT),
              PackageFile(UPSTREAM_LICENCE_NAME, upstream, "other", LICENCE_TEXT,
                          {"url": licence_address, "sha256": licence.sha256})]
-    expression = GENERATED_CODE_LICENCE if licence.spdx == GENERATED_CODE_LICENCE else \
-        f"{GENERATED_CODE_LICENCE} AND {licence.spdx}"
+    second = (spec.get("declared_licence") or {}).get("text")
+    if second is not None:
+        # The specification declares an allowlisted licence other than its repository's: both travel.
+        files.append(PackageFile(SPECIFICATION_LICENCE_NAME, second.text, "other", LICENCE_TEXT,
+                                 {"url": github_blob_address(second.repository, second.commit, second.path),
+                                  "sha256": second.sha256}))
+    expression = " AND ".join(dict.fromkeys([GENERATED_CODE_LICENCE, licence.spdx] +
+                                            ([second.spdx] if second is not None else [])))
     spec_url = spec.get("url") or https_address(
         RAW_HOST, f"{spec['repository']}/{spec['commit']}/{urllib.parse.quote(spec['path'])}")
     facts = [fact_source(spec_url, spec["retrieved_at"], spec["sha256"], spec["size_bytes"], "specification",
@@ -1429,6 +1460,10 @@ def _package(operation, spec, source, licence, generator, licence_text, generate
                          evidence_sha256=licence.sha256),
              fact_source(licence_address, spec["retrieved_at"], licence.sha256, len(upstream), "licence_text",
                          spdx=licence.spdx, basis=spec.get("licence_text_basis", "licence_file_at_the_pinned_commit"))]
+    if second is not None:
+        facts.append(fact_source(github_blob_address(second.repository, second.commit, second.path),
+                                 spec["retrieved_at"], second.sha256, len(second.text), "licence_text",
+                                 spdx=second.spdx, basis=DECLARED_TEXT_BASIS))
     facts += list(spec.get("extra_facts") or ())
     effects = [("network", "sends_one_https_request_to_the_api")]
     credentials = []

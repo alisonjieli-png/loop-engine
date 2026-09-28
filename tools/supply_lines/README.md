@@ -62,6 +62,11 @@ Supply lines (each writes library_supply_candidate/v1 records)
 ├── openapi_operations: one client function per operation of a licensed OpenAPI specification
 │   ├── kind code_module, form api_operation; sources in openapi_sources.json
 │   ├── the file at the branch's head commit, proven by git blob identity, licence text agreed
+│   ├── the specification's own info.license (declared_licences.py): off the allowlist refuses the
+│   │   specification; a second allowlisted licence travels beside the repository's
+│   ├── directory mode (openapi_directory.py): every APIs.guru specification whose own declared licence,
+│   │   declared licence file or origin repository licence is allowlisted, minus what a curated source
+│   │   supplies, one package per host, method and path, in its own line state
 │   └── a stdlib client with argument checks, the credential by variable name, ApiError, and
 │       generated tests against a local mock that must pass before the package is kept
 ├── program_installs: one install recipe and typed wrapper per command-line program

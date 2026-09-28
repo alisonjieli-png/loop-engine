@@ -32,8 +32,9 @@ import re
 from collections import Counter
 from urllib.parse import urlsplit
 
-from loop_engine.core.library_ingestion.licences import TEMPLATES_FILE
-
+from .declared_licences import (
+    DECLARED_LICENCE_NAMES, LICENCE_TEXT_REPOSITORY, LicenceTexts, declared_licence, licence_file_repository,
+    licence_text_paths)
 from .licences import (
     AGREED, KNOWN_LICENCE_REFUSALS, LICENCE_NOT_ON_ALLOWLIST, LICENCE_SIGNALS_DISAGREE, LICENCE_UNKNOWN,
     RepositoryLicence, repository_licence)
@@ -48,32 +49,9 @@ DIRECTORY_HOST = "api.apis.guru"
 DIRECTORY_LIST = "v2/list.json"
 DIRECTORY_REPOSITORY = "APIs-guru/openapi-directory"
 DIRECTORY_LICENCE = "CC0-1.0"
-LICENCE_TEXT_REPOSITORY = "github/choosealicense.com"
 HOSTS = (DIRECTORY_HOST, "raw.githubusercontent.com")
-#: The licence names the directory's specifications declare, mapped to SPDX identifiers. Only exact names are
-#: mapped; a name not listed here is refused, never guessed from its words.
-DECLARED_LICENCE_NAMES = {
-    "MIT": "MIT", "MIT License": "MIT", "The MIT License (MIT)": "MIT", "Distributed under the MIT license": "MIT",
-    "Apache 2.0": "Apache-2.0", "Apache 2.0 License": "Apache-2.0", "Apache-2.0": "Apache-2.0",
-    "Apache v2 License": "Apache-2.0", "Apache License 2.0": "Apache-2.0", "Apache License, Version 2.0": "Apache-2.0",
-    "BSD-3-Clause": "BSD-3-Clause", "BSD-2-Clause": "BSD-2-Clause", "ISC": "ISC", "CC0 1.0": "CC0-1.0",
-    "CC0-1.0": "CC0-1.0", "Unlicense": "Unlicense", "CC-BY-4.0": "CC-BY-4.0", "Creative Commons": "CC-BY-4.0",
-    "CC-BY 4.0": "CC-BY-4.0", "Creative Commons Attribution 4.0 International": "CC-BY-4.0",
-    "Creative Commons Attribution 4.0 International Public License": "CC-BY-4.0", "BSD3": "BSD-3-Clause"}
-#: Names that say which licence only together with an address: "Creative Commons" is CC-BY-4.0 only when its
-#: address is that licence's.
-NAMES_NEEDING_AN_ADDRESS = frozenset({"Creative Commons"})
-#: The address fragments that confirm a declared licence; a declared address naming another licence is refused.
-LICENCE_ADDRESS_WORDS = {"MIT": ("mit",), "Apache-2.0": ("apache.org/licenses", "apache-2.0", "apache2"),
-                         "BSD-3-Clause": ("bsd-3",), "BSD-2-Clause": ("bsd-2",), "ISC": ("isc",),
-                         "CC0-1.0": ("cc0", "publicdomain/zero"), "Unlicense": ("unlicense",),
-                         "CC-BY-4.0": ("by/4.0", "cc-by-4.0")}
 _ORIGIN = re.compile(r"https://(?:raw\.githubusercontent\.com|github\.com)/([A-Za-z0-9][A-Za-z0-9-]{0,38})/"
                      r"([A-Za-z0-9._-]{1,100})/")
-#: A declared licence address that is the licence file of a GitHub repository (a blob page or its raw file).
-_LICENCE_FILE = re.compile(r"https://(?:github\.com/([A-Za-z0-9][A-Za-z0-9-]{0,38})/([A-Za-z0-9._-]{1,100})/blob|"
-                           r"raw\.githubusercontent\.com/([A-Za-z0-9][A-Za-z0-9-]{0,38})/([A-Za-z0-9._-]{1,100}))"
-                           r"/[^/?#]+/(?:LICEN[CS]E|COPYING)(?:\.[A-Za-z]{1,8})?\Z")
 _SEGMENT = re.compile(r"[^a-z0-9]+")
 BODY_IN, FORM_IN = "body", "formData"
 JSON_MEDIA = "application/json"
@@ -96,29 +74,6 @@ _AWS_MODEL = re.compile(r"https://raw\.githubusercontent\.com/aws/aws-sdk-js/[^/
 
 
 # -- licences ------------------------------------------------------------------------------------------------------
-def declared_licence(info: dict) -> "tuple | None":
-    """(SPDX identifier or None, declared name, declared address) of a specification's info.license, or None."""
-    licence = info.get("license") if isinstance(info, dict) else None
-    if not isinstance(licence, dict) or not str(licence.get("name") or "").strip():
-        return None
-    name, address = str(licence["name"]).strip(), str(licence.get("url") or "").strip()
-    spdx = DECLARED_LICENCE_NAMES.get(name)
-    if spdx and name in NAMES_NEEDING_AN_ADDRESS and not address:
-        spdx = None  # the name alone does not say which licence
-    if spdx and address and not any(word in address.lower() for word in LICENCE_ADDRESS_WORDS[spdx]):
-        spdx = None  # the address names another licence than the name does
-    return spdx, name, address
-
-
-def licence_file_repository(address: str) -> "str | None":
-    """owner/name of the GitHub repository whose licence file a declared licence address is, or None."""
-    match = _LICENCE_FILE.match(str(address or ""))
-    if match is None:
-        return None
-    owner, name = (match.group(1), match.group(2)) if match.group(1) else (match.group(3), match.group(4))
-    return f"{owner}/{name}"
-
-
 def origin_repository(info: dict) -> "str | None":
     origins = info.get("x-origin") if isinstance(info, dict) else None
     for origin in reversed(origins if isinstance(origins, list) else []):
@@ -126,32 +81,6 @@ def origin_repository(info: dict) -> "str | None":
         if match:
             return f"{match.group(1)}/{match.group(2)}"
     return None
-
-
-def licence_text_paths() -> tuple:
-    """(SPDX identifier to (path, SHA-256) of its text, commit) in github/choosealicense.com, as the licence matcher
-    of library ingestion pins them (licence_templates.json)."""
-    record = json.loads(TEMPLATES_FILE.read_text(encoding="utf-8"))
-    return {row["spdx"]: (row["path"], row["sha256"]) for row in record["templates"]}, record["source"]["commit"]
-
-
-class LicenceTexts:
-    """Licence texts from github/choosealicense.com at the commit the licence matcher pins, each checked by SHA-256."""
-
-    def __init__(self, reader) -> None:
-        self.reader = reader
-        self.paths, self.commit = licence_text_paths()
-        self.found = {}
-
-    def text(self, spdx: str) -> RepositoryLicence:
-        if spdx not in self.found:
-            path, digest = self.paths[spdx]
-            pinned = self.reader.pinned_file(LICENCE_TEXT_REPOSITORY, self.commit, path)
-            if pinned["sha256"] != digest:
-                raise SupplyRecordError("licence_text_changed", f"{path} is not the pinned text")
-            self.found[spdx] = RepositoryLicence(LICENCE_TEXT_REPOSITORY, pinned["commit"], spdx, AGREED, path,
-                                                 pinned["bytes"], spdx, spdx, 1.0)
-        return self.found[spdx]
 
 
 def _repository_decision(repository: str, reader, origins: dict) -> "RepositoryLicence | None":
