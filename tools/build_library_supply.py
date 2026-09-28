@@ -11,6 +11,8 @@ published.
 build_library_supply.py
 ├── mcp-registry   one protocol server connection per server of the official registry
 ├── openapi        one API operation client per operation of a licensed OpenAPI specification
+├── openapi-directory  the same for every APIs.guru specification whose own licence allows copying
+├── openapi-discovery  the same for every Google API discovery document of Google's Apache-2.0 client
 ├── programs       one install recipe with a typed wrapper per command-line program
 ├── data-tables    one reference data table with its schema, loader and tests
 └── report         the supply by family and form, and the projected composition
@@ -199,6 +201,23 @@ def openapi_directory(args) -> dict:
                   reader, facts, complete=False, scope=line.STATE_SCOPE)
 
 
+def openapi_discovery(args) -> dict:
+    from supply_lines import google_discovery as line
+    run_folder = _outside(args.run_folder)
+    run_folder.mkdir(parents=True, exist_ok=True)
+    revision = code_revision(args.authorize_store_writes)
+    reader = FactReader(run_folder, line.HOSTS, maximum_requests=args.maximum_requests,
+                        pause_seconds=args.pause_seconds, maximum_bytes=64 * 1024 * 1024)
+    built, refusals, facts, summary = line.generate(
+        reader, code_revision=revision, licence_text=LICENCE_FILE.read_bytes(), generated_on=now_utc()[:10],
+        staging=run_folder / "staging", only=args.api, maximum_apis=args.maximum_apis)
+    # A run that read every chosen document may withdraw what it no longer supplies; one that could not read a
+    # document keeps that document's earlier packages.
+    unread = any(row["reason"] == "specification_unreadable" for row in refusals)
+    return finish(args, records.OPENAPI_OPERATIONS, built, refusals, {"discovery": summary}, reader, facts,
+                  complete=not args.api and not args.maximum_apis and not unread, scope=line.STATE_SCOPE)
+
+
 def programs(args) -> dict:
     from supply_lines import program_installs as line
     run_folder = _outside(args.run_folder)
@@ -298,6 +317,10 @@ def parser() -> argparse.ArgumentParser:
     directory.add_argument("--maximum-apis", type=int, default=0, help="at most this many APIs, in name order")
     directory.add_argument("--exclude-api", action="append", help="leave out these APIs (name or provider), so a "
                            "large directory runs in slices whose packages are stored slice by slice")
+    discovery = commands.add_parser("openapi-discovery")
+    common(discovery)
+    discovery.add_argument("--api", action="append", help="only these API names (drive, compute, ...)")
+    discovery.add_argument("--maximum-apis", type=int, default=0, help="at most this many APIs, in path order")
     three = commands.add_parser("programs")
     common(three)
     three.add_argument("--formula", action="append", help="only these formulae")
@@ -320,8 +343,9 @@ def parser() -> argparse.ArgumentParser:
 
 def main(argv=None) -> int:
     args = parser().parse_args(argv)
-    {"mcp-registry": mcp_registry, "openapi": openapi, "openapi-directory": openapi_directory, "programs": programs,
-     "data-tables": data_tables, "report": report}[args.command](args)
+    {"mcp-registry": mcp_registry, "openapi": openapi, "openapi-directory": openapi_directory,
+     "openapi-discovery": openapi_discovery, "programs": programs, "data-tables": data_tables,
+     "report": report}[args.command](args)
     return 0
 
 

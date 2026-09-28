@@ -1216,6 +1216,138 @@ class OpenApiDirectoryTest(unittest.TestCase):
         self.assertEqual((found, [row["reason"] for row in refused]), ([], ["security_scheme_unsupported"]))
 
 
+DISCOVERY = {
+    "kind": "discovery#restDescription", "name": "things", "version": "v1", "title": "Things API",
+    "rootUrl": "https://things.googleapis.com/", "servicePath": "",
+    "parameters": {"alt": {"type": "string", "location": "query"}, "key": {"type": "string", "location": "query"}},
+    "auth": {"oauth2": {"scopes": {"https://www.googleapis.com/auth/cloud-platform": {"description": "all"}}}},
+    "schemas": {"Thing": {"id": "Thing", "type": "object", "properties": {
+        "name": {"type": "string"}, "size": {"type": "string", "format": "int64"},
+        "labels": {"type": "object", "additionalProperties": {"type": "string"}}, "extra": {"type": "any"},
+        "parts": {"type": "array", "items": {"$ref": "Thing"}}}}},
+    "resources": {"projects": {"resources": {"locations": {"resources": {"things": {"methods": {
+        "get": {"id": "things.projects.locations.things.get", "path": "v1/{+name}", "httpMethod": "GET",
+                "parameters": {"name": {"type": "string", "location": "path", "required": True,
+                                        "pattern": "^projects/[^/]+/locations/[^/]+/things/[^/]+$"},
+                               "view": {"type": "string", "location": "query", "enum": ["BASIC", "FULL"]}},
+                "response": {"$ref": "Thing"}, "scopes": ["https://www.googleapis.com/auth/cloud-platform"]},
+        "list": {"id": "things.projects.locations.things.list", "path": "v1/{+parent}/things", "httpMethod": "GET",
+                 "parameters": {"parent": {"type": "string", "location": "path", "required": True,
+                                           "pattern": "^projects/[^/]+/locations/[^/]+$"},
+                                "pageSize": {"type": "integer", "format": "int32", "location": "query",
+                                             "minimum": "1", "maximum": "100"},
+                                "labels": {"type": "string", "location": "query", "repeated": True}},
+                 "scopes": ["https://www.googleapis.com/auth/cloud-platform"]},
+        "create": {"id": "things.projects.locations.things.create", "path": "v1/{+parent}/things",
+                   "httpMethod": "POST",
+                   "parameters": {"parent": {"type": "string", "location": "path", "required": True}},
+                   "request": {"$ref": "Thing"}, "response": {"$ref": "Thing"},
+                   "scopes": ["https://www.googleapis.com/auth/cloud-platform"]}}}}}}}},
+    "methods": {"ping": {"id": "things.ping", "path": "v1/ping", "httpMethod": "GET"}}}
+
+
+class GoogleDiscoveryTest(unittest.TestCase):
+    def test_one_version_per_api_is_chosen_stable_first(self):
+        from supply_lines import google_discovery as line
+        folder = "googleapiclient/discovery_cache/documents/"
+        names = ["drive.v2.json", "drive.v3.json", "compute.alpha.json", "compute.v1.json", "compute.beta.json",
+                 "merchantapi.accounts_v1beta.json", "merchantapi.accounts_v1.json",
+                 "merchantapi.products_v1beta.json", "aiplatform.v1beta1.json", "aiplatform.v1.json",
+                 "labs.v1alpha.json", "labs.v1alpha2.json", "index.json"]
+        chosen = [(path.rsplit("/", 1)[-1]) for path, _name, _version in line.choose_documents(folder + name
+                                                                                           for name in names)]
+        self.assertEqual(chosen, ["aiplatform.v1.json", "compute.v1.json", "drive.v3.json", "labs.v1alpha2.json",
+                                  "merchantapi.accounts_v1.json", "merchantapi.products_v1beta.json"])
+        self.assertEqual(line.version_rank("v1p1beta1"), ("", (1, 1, 0, 1)))
+        self.assertIsNone(line.version_rank("alpha"))
+        self.assertEqual(line.vendor_of("merchantapi", "accounts_v1"), "google_merchantapi_accounts_v1")
+
+    def test_a_discovery_document_becomes_tested_clients_with_reserved_names(self):
+        from supply_lines import google_discovery as line
+        from supply_lines import openapi_operations as generator
+        document = line.discovery_to_openapi3(DISCOVERY)
+        self.assertEqual(document["servers"], [{"url": "https://things.googleapis.com"}])
+        self.assertEqual(document["components"]["schemas"]["Thing"]["properties"]["parts"],
+                         {"type": "array", "items": {"$ref": "#/components/schemas/Thing"}})
+        self.assertEqual(document["components"]["schemas"]["Thing"]["properties"]["extra"], {})
+        source = {"source_id": "google:things:v1", "vendor": "google_things_v1", "credential_variable":
+                  line.CREDENTIAL_VARIABLE, "credential_prefix": "GOOGLE", "maximum_operations": 50}
+        found, refused = generator.operations(document, source)
+        self.assertEqual(refused, [])
+        by_name = {operation.function: operation for operation in found}
+        self.assertEqual(sorted(by_name), ["ping", "projects_locations_things_create", "projects_locations_things_get",
+                                           "projects_locations_things_list"])
+        get = by_name["projects_locations_things_get"]
+        self.assertEqual((get.path, [row.reserved for row in get.parameters if row.location == "path"]),
+                         ("/v1/{name}", [True]))
+        self.assertEqual(get.parameters[0].example, "projects/example/locations/example/things/example")
+        self.assertEqual(get.auth["variable"], "GOOGLE_ACCESS_TOKEN")
+        self.assertIsNone(by_name["ping"].auth)
+        listing = by_name["projects_locations_things_list"]
+        self.assertEqual({row.wire: row.check.get("type") for row in listing.parameters},
+                         {"parent": ["string"], "pageSize": ["integer"], "labels": ["array"]})
+        spec = {**SPEC_FACTS, "base_url_variable": "GOOGLE_THINGS_V1_BASE_URL"}
+        with tempfile.TemporaryDirectory() as folder:
+            for operation in found:
+                target = Path(folder) / operation.module
+                target.mkdir()
+                client = generator.client_source(operation, spec)
+                (target / f"{operation.module}.py").write_text(client, encoding="utf-8")
+                tests = generator.test_source(operation, generator._example_arguments(operation),
+                                              generator._response_example(operation))
+                (target / f"test_{operation.module}.py").write_text(tests, encoding="utf-8")
+                passed, _count, output = generator.run_tests(target, operation.module)
+                self.assertTrue(passed, output)
+            # Known wrong: a client that escapes the slashes of a resource name fails its own test.
+            client = generator.client_source(get, spec)
+            broken = client.replace('safe="/" if wire_name in RESERVED_PATH else ""', 'safe=""')
+            self.assertNotEqual(broken, client)
+            (Path(folder) / get.module / f"{get.module}.py").write_text(broken, encoding="utf-8")
+            self.assertFalse(generator.run_tests(Path(folder) / get.module, get.module)[0])
+
+    def test_generate_reads_each_chosen_document_by_blob_identity_under_the_repository_licence(self):
+        from loop_engine.core.library_ingestion.record_rules import git_blob_identity
+        from supply_lines import google_discovery as line
+        body = json.dumps(DISCOVERY).encode()
+        folder = line.DISCOVERY_FOLDER
+        tree = {"tree": [{"path": f"{folder}/things.v1.json", "type": "blob", "sha": git_blob_identity(body)},
+                         {"path": f"{folder}/things.v1beta.json", "type": "blob", "sha": "0" * 40},
+                         {"path": "README.md", "type": "blob", "sha": "1" * 40}]}
+
+        class Reader:
+            def __init__(self, bytes_served):
+                self.bytes_served, self.asked = bytes_served, []
+
+            def github(self, path):
+                if "/commits/" in path:
+                    return _Answer(200, json.dumps({"sha": "c" * 40}).encode())
+                return _Answer(200, json.dumps(tree).encode())
+
+            def licence_text(self, repository, commit):
+                return "LICENSE", LICENCE, "MIT"
+
+            def get(self, url, cache_errors=False):
+                self.asked.append(url)
+                return _Answer(200, self.bytes_served)
+
+        reader = Reader(body)
+        with tempfile.TemporaryDirectory() as staging:
+            built, refused, _facts, summary = line.generate(reader, code_revision="a" * 40, licence_text=LICENCE,
+                                                            generated_on="2026-09-27", staging=Path(staging))
+        self.assertEqual((len(built), refused, summary["documents_chosen"]), (4, [], 1))
+        self.assertEqual(reader.asked, [f"https://raw.githubusercontent.com/{line.DISCOVERY_REPOSITORY}/{'c' * 40}/"
+                                        f"{folder}/things.v1.json"])
+        names = sorted(payload["name"] for payload, _bodies in built)
+        self.assertEqual(names[0], "google_things_v1-ping")
+        self.assertTrue(all(payload["licence"]["spdx_expression"] == "MIT" for payload, _bodies in built))
+        # Known wrong: bytes that are not the listed blob are refused, and nothing is built from them.
+        with tempfile.TemporaryDirectory() as staging:
+            built, refused, _facts, _summary = line.generate(Reader(body + b" "), code_revision="a" * 40,
+                                                             licence_text=LICENCE, generated_on="2026-09-27",
+                                                             staging=Path(staging))
+        self.assertEqual((built, [row["reason"] for row in refused]), ([], ["specification_unreadable"]))
+
+
 class VerbatimCodeSourcesTest(unittest.TestCase):
     def test_the_declaration_is_a_valid_import_source_of_code_modules_only(self):
         from licensed_import.harness_kinds import SourceScope, declared_kind

@@ -71,6 +71,8 @@ Supply lines (each writes library_supply_candidate/v1 records)
 │   │   by their declared style (deepObject brackets, exploded or comma lists); Swagger 2 is converted first
 │   ├── a self-hosted API with no public HTTPS address gets a client that sends nothing until the caller
 │   │   names one (base_url or the environment variable)
+│   ├── discovery mode (google_discovery.py): Google's discovery documents from its Apache-2.0 client
+│   │   repository, one version per API, resource names ({+name}) sent with their slashes
 │   └── a stdlib client with argument checks, the credential by variable name, ApiError, and
 │       generated tests against a local mock that must pass before the package is kept
 ├── program_installs: one install recipe and typed wrapper per command-line program

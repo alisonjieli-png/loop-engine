@@ -338,6 +338,19 @@ def synthesize(schema: dict, depth: int = 0, *, every_property: bool = False):
     return example(schema, depth, every_property) if example is not None else None
 
 
+#: A resource name pattern of path segments (^projects/[^/]+/locations/[^/]+$): its example fills each variable part.
+_NAME_PATTERN = re.compile(r"\^?((?:[A-Za-z][A-Za-z0-9_-]*/\[\^/\]\+/?)+)\$?")
+
+
+def reserved_example(schema: dict) -> str:
+    """An example resource name for a reserved-expansion parameter: from its pattern when the pattern spells the
+    segments, else two segments."""
+    match = _NAME_PATTERN.fullmatch(str((schema or {}).get("pattern") or ""))
+    if match:
+        return match.group(1).replace("[^/]+", "example").rstrip("/")
+    return "examples/example"
+
+
 # -- operations ----------------------------------------------------------------------------------------------------
 @dataclass
 class Parameter:
@@ -349,6 +362,8 @@ class Parameter:
     check: dict
     description: str
     example: object = None
+    #: A path parameter in reserved expansion ({+name} in the path key): its slashes are sent as they are.
+    reserved: bool = False
 
 
 @dataclass
@@ -726,6 +741,15 @@ def _operation(document, resolver, source, path, method, item, node, top_servers
     # is never sent, and a fixed query travels as query items on every call.
     sent_path, _separator, fixed_text = path.partition("#")[0].partition("?")
     fixed = urllib.parse.parse_qsl(fixed_text, keep_blank_values=True) + list(aws_query)
+    # RFC 6570 reserved expansion ({+name}, as Google's descriptions write a resource name such as
+    # projects/p/locations/l): the value keeps its slashes.
+    reserved = {name[1:] for name in re.findall(r"{([^}]+)}", sent_path) if name.startswith("+")}
+    sent_path = re.sub(r"{\+([^}]+)}", r"{\1}", sent_path)
+    for parameter in parameters:
+        if parameter.location == "path" and parameter.wire in reserved:
+            parameter.reserved = True
+            if parameter.example is None or "/" not in str(parameter.example):
+                parameter.example = reserved_example(parameter.schema)
     placeholders = re.findall(r"{([^}]+)}", sent_path)
     declared = {parameter.wire for parameter in parameters if parameter.location == "path"}
     if set(placeholders) - declared:
@@ -1008,6 +1032,9 @@ def _form_pairs(body):
     return pairs
 '''
 JSON_BODY_LINE = '        data = json.dumps(body).encode("utf-8")\n'
+PATH_QUOTE_LINE = '            path = path.replace("{" + wire_name + "}", urllib.parse.quote(_text(value), safe=""))\n'
+RESERVED_PATH_QUOTE_LINE = ('            path = path.replace("{" + wire_name + "}", urllib.parse.quote('
+                            '_text(value), safe="/" if wire_name in RESERVED_PATH else ""))\n')
 FORM_BODY_LINE = '        data = urllib.parse.urlencode(_form_pairs(body)).encode("ascii")\n'
 
 
@@ -1093,6 +1120,9 @@ def client_source(operation: Operation, spec: dict) -> str:
         runtime += SIGNER
     if form:
         runtime = runtime.replace(JSON_BODY_LINE, FORM_BODY_LINE) + FORM_ENCODER
+    reserved = tuple(parameter.wire for parameter in operation.parameters if parameter.reserved)
+    if reserved:
+        runtime = runtime.replace(PATH_QUOTE_LINE, RESERVED_PATH_QUOTE_LINE)
     constants = [
         f'OPERATION = {literal({"method": operation.method, "path": operation.path, "operation_id": operation.operation_id})}',
         f"BASE_URL = {operation.base_url!r}", f"BASE_URL_VARIABLE = {spec['base_url_variable']!r}",
@@ -1100,6 +1130,9 @@ def client_source(operation: Operation, spec: dict) -> str:
         f"FIXED_QUERY = {literal(operation.fixed_query)}",
         f"FIXED_HEADERS = {literal(operation.fixed_headers)}",
         f"BODY_MEDIA = {operation.body_media!r}",
+        *([f"#: Path parameters in reserved expansion: their slashes are sent as they are.",
+           f"RESERVED_PATH = {tuple(parameter.wire for parameter in operation.parameters if parameter.reserved)!r}"]
+          if any(parameter.reserved for parameter in operation.parameters) else []),
         *([f"BODY_ENCODING = {literal({name: (style, explode) for name, style, explode in operation.body_encoding})}"]
           if form else []),
         f"BASE_URL_TEMPLATE = {operation.base_url_template!r}",
@@ -1185,7 +1218,8 @@ def test_source(operation: Operation, call: dict, example) -> str:
         if parameter.location == "path":
             value = call[parameter.python]
             text = ("true" if value else "false") if isinstance(value, bool) else str(value)
-            expected_path = expected_path.replace("{" + parameter.wire + "}", urllib.parse.quote(text, safe=""))
+            expected_path = expected_path.replace("{" + parameter.wire + "}",
+                                                  urllib.parse.quote(text, safe="/" if parameter.reserved else ""))
     content_type = {JSON_ANSWER: "application/json", TEXT_ANSWER: "text/plain",
                     BINARY_ANSWER: "application/octet-stream", NO_ANSWER: ""}[operation.response_kind]
     payload = {JSON_ANSWER: "json.dumps(EXAMPLE).encode('utf-8')", TEXT_ANSWER: "b'example text'",
@@ -1205,6 +1239,9 @@ def test_source(operation: Operation, call: dict, example) -> str:
         address = urllib.parse.urlsplit(request.full_url)
         self.assertEqual(address.scheme, "https")
         self.assertEqual(urllib.parse.unquote(address.path), urllib.parse.unquote(EXPECTED_PATH))''']
+    if any(parameter.reserved for parameter in operation.parameters):
+        tests[-1] += '''
+        self.assertEqual(address.path, EXPECTED_PATH)'''
     if auth and auth["placement"] == "header":
         tests[-1] += f'''
         self.assertEqual(request.headers.get({auth["name"].capitalize()!r}), {auth["prefix"] + "test-credential"!r})'''

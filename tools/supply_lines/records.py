@@ -171,7 +171,7 @@ def record_id(line: str, key: str, package_digest: str) -> str:
 
 #: The state scopes of a line. A line written by two modes keeps one state per mode, so a complete run of one
 #: mode never withdraws what the other supplies (the curated and the directory mode of the API line).
-STATE_SCOPES = ("", "apis_guru_directory")
+STATE_SCOPES = ("", "apis_guru_directory", "google_discovery")
 
 
 def state_record_id(line: str, scope: str = "") -> str:
