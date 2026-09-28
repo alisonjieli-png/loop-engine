@@ -1,6 +1,3 @@
-# Hardcoding findings that are answered one by one: what the value is, why it is a decision, and when
-# the answer must be read again. Every entry names the finding id the audit reported, so a moved
-# line is a new finding and a removed literal is a new failure.
 schema: hardcoding_allowlist/v1
 entries:
 - finding_id: hardcoding.2ad82dccc16807a262b354e5
@@ -10986,287 +10983,6 @@ entries:
   classification: CLOSED_CONTROLLED_VOCABULARY
   created_on: '2026-09-28'
   expires_on: '2027-09-28'
-- owner: tools.heavy.sh:environment
-  rationale: 'A name of a shell variable this script declares and reads inside itself: the slot lock files,
-    the per-slot temp folder, and the preflight path. Shell variables are not deployment configuration
-    and cannot be set from a host file, an environment or a request; the audit reads the reference as
-    a value read at a source boundary because the name appears in a path expansion. Reviewed on 2026-09-28
-    from the triage worklist.'
-  classification: CLOSED_CONTROLLED_VOCABULARY
-  created_on: '2026-09-28'
-  expires_on: '2027-09-28'
-  finding_id: hardcoding.00e8e29173119602d473d98c
-- owner: tools.heavy.sh:environment
-  rationale: 'A name of a shell variable this script declares and reads inside itself: the slot lock files,
-    the per-slot temp folder, and the preflight path. Shell variables are not deployment configuration
-    and cannot be set from a host file, an environment or a request; the audit reads the reference as
-    a value read at a source boundary because the name appears in a path expansion. Reviewed on 2026-09-28
-    from the triage worklist.'
-  classification: CLOSED_CONTROLLED_VOCABULARY
-  created_on: '2026-09-28'
-  expires_on: '2027-09-28'
-  finding_id: hardcoding.0797cd99df7cc07e686763a9
-- owner: tools.heavy.sh:environment
-  rationale: 'A name of a shell variable this script declares and reads inside itself: the slot lock files,
-    the per-slot temp folder, and the preflight path. Shell variables are not deployment configuration
-    and cannot be set from a host file, an environment or a request; the audit reads the reference as
-    a value read at a source boundary because the name appears in a path expansion. Reviewed on 2026-09-28
-    from the triage worklist.'
-  classification: CLOSED_CONTROLLED_VOCABULARY
-  created_on: '2026-09-28'
-  expires_on: '2027-09-28'
-  finding_id: hardcoding.27b667d95f70a7ccfa7155ad
-- owner: tools.heavy.sh:environment
-  rationale: 'A name of a shell variable this script declares and reads inside itself: the slot lock files,
-    the per-slot temp folder, and the preflight path. Shell variables are not deployment configuration
-    and cannot be set from a host file, an environment or a request; the audit reads the reference as
-    a value read at a source boundary because the name appears in a path expansion. Reviewed on 2026-09-28
-    from the triage worklist.'
-  classification: CLOSED_CONTROLLED_VOCABULARY
-  created_on: '2026-09-28'
-  expires_on: '2027-09-28'
-  finding_id: hardcoding.2b20211d908907a16046a60f
-- owner: tools.heavy.sh:environment
-  rationale: 'A name of a shell variable this script declares and reads inside itself: the slot lock files,
-    the per-slot temp folder, and the preflight path. Shell variables are not deployment configuration
-    and cannot be set from a host file, an environment or a request; the audit reads the reference as
-    a value read at a source boundary because the name appears in a path expansion. Reviewed on 2026-09-28
-    from the triage worklist.'
-  classification: CLOSED_CONTROLLED_VOCABULARY
-  created_on: '2026-09-28'
-  expires_on: '2027-09-28'
-  finding_id: hardcoding.3d1a3c3e1ad4542e3586071c
-- owner: tools.heavy.sh:environment
-  rationale: 'A name of a shell variable this script declares and reads inside itself: the slot lock files,
-    the per-slot temp folder, and the preflight path. Shell variables are not deployment configuration
-    and cannot be set from a host file, an environment or a request; the audit reads the reference as
-    a value read at a source boundary because the name appears in a path expansion. Reviewed on 2026-09-28
-    from the triage worklist.'
-  classification: CLOSED_CONTROLLED_VOCABULARY
-  created_on: '2026-09-28'
-  expires_on: '2027-09-28'
-  finding_id: hardcoding.4df5a6d2e6ea1c87085b243c
-- owner: tools.heavy.sh:environment
-  rationale: 'A name of a shell variable this script declares and reads inside itself: the slot lock files,
-    the per-slot temp folder, and the preflight path. Shell variables are not deployment configuration
-    and cannot be set from a host file, an environment or a request; the audit reads the reference as
-    a value read at a source boundary because the name appears in a path expansion. Reviewed on 2026-09-28
-    from the triage worklist.'
-  classification: CLOSED_CONTROLLED_VOCABULARY
-  created_on: '2026-09-28'
-  expires_on: '2027-09-28'
-  finding_id: hardcoding.579db28843823194b489f12f
-- owner: tools.heavy.sh:environment
-  rationale: 'A name of a shell variable this script declares and reads inside itself: the slot lock files,
-    the per-slot temp folder, and the preflight path. Shell variables are not deployment configuration
-    and cannot be set from a host file, an environment or a request; the audit reads the reference as
-    a value read at a source boundary because the name appears in a path expansion. Reviewed on 2026-09-28
-    from the triage worklist.'
-  classification: CLOSED_CONTROLLED_VOCABULARY
-  created_on: '2026-09-28'
-  expires_on: '2027-09-28'
-  finding_id: hardcoding.694a377a9068fb6944363c6f
-- owner: tools.heavy.sh:environment
-  rationale: 'A name of a shell variable this script declares and reads inside itself: the slot lock files,
-    the per-slot temp folder, and the preflight path. Shell variables are not deployment configuration
-    and cannot be set from a host file, an environment or a request; the audit reads the reference as
-    a value read at a source boundary because the name appears in a path expansion. Reviewed on 2026-09-28
-    from the triage worklist.'
-  classification: CLOSED_CONTROLLED_VOCABULARY
-  created_on: '2026-09-28'
-  expires_on: '2027-09-28'
-  finding_id: hardcoding.6a6535eb07453d63c026c0f8
-- owner: tools.heavy.sh:environment
-  rationale: 'A name of a shell variable this script declares and reads inside itself: the slot lock files,
-    the per-slot temp folder, and the preflight path. Shell variables are not deployment configuration
-    and cannot be set from a host file, an environment or a request; the audit reads the reference as
-    a value read at a source boundary because the name appears in a path expansion. Reviewed on 2026-09-28
-    from the triage worklist.'
-  classification: CLOSED_CONTROLLED_VOCABULARY
-  created_on: '2026-09-28'
-  expires_on: '2027-09-28'
-  finding_id: hardcoding.719a898b277a34af60bf7aad
-- owner: tools.heavy.sh:environment
-  rationale: 'A name of a shell variable this script declares and reads inside itself: the slot lock files,
-    the per-slot temp folder, and the preflight path. Shell variables are not deployment configuration
-    and cannot be set from a host file, an environment or a request; the audit reads the reference as
-    a value read at a source boundary because the name appears in a path expansion. Reviewed on 2026-09-28
-    from the triage worklist.'
-  classification: CLOSED_CONTROLLED_VOCABULARY
-  created_on: '2026-09-28'
-  expires_on: '2027-09-28'
-  finding_id: hardcoding.771c455a956652d85fb8e4b8
-- owner: tools.heavy.sh:environment
-  rationale: 'A name of a shell variable this script declares and reads inside itself: the slot lock files,
-    the per-slot temp folder, and the preflight path. Shell variables are not deployment configuration
-    and cannot be set from a host file, an environment or a request; the audit reads the reference as
-    a value read at a source boundary because the name appears in a path expansion. Reviewed on 2026-09-28
-    from the triage worklist.'
-  classification: CLOSED_CONTROLLED_VOCABULARY
-  created_on: '2026-09-28'
-  expires_on: '2027-09-28'
-  finding_id: hardcoding.921d09d880909d3c058b4e41
-- owner: tools.heavy.sh:environment
-  rationale: 'A name of a shell variable this script declares and reads inside itself: the slot lock files,
-    the per-slot temp folder, and the preflight path. Shell variables are not deployment configuration
-    and cannot be set from a host file, an environment or a request; the audit reads the reference as
-    a value read at a source boundary because the name appears in a path expansion. Reviewed on 2026-09-28
-    from the triage worklist.'
-  classification: CLOSED_CONTROLLED_VOCABULARY
-  created_on: '2026-09-28'
-  expires_on: '2027-09-28'
-  finding_id: hardcoding.ae19dde9c73c96287a5d544e
-- owner: tools.heavy.sh:environment
-  rationale: 'A name of a shell variable this script declares and reads inside itself: the slot lock files,
-    the per-slot temp folder, and the preflight path. Shell variables are not deployment configuration
-    and cannot be set from a host file, an environment or a request; the audit reads the reference as
-    a value read at a source boundary because the name appears in a path expansion. Reviewed on 2026-09-28
-    from the triage worklist.'
-  classification: CLOSED_CONTROLLED_VOCABULARY
-  created_on: '2026-09-28'
-  expires_on: '2027-09-28'
-  finding_id: hardcoding.b14f8a473b1d2dcc8efbf831
-- owner: tools.heavy.sh:environment
-  rationale: 'A name of a shell variable this script declares and reads inside itself: the slot lock files,
-    the per-slot temp folder, and the preflight path. Shell variables are not deployment configuration
-    and cannot be set from a host file, an environment or a request; the audit reads the reference as
-    a value read at a source boundary because the name appears in a path expansion. Reviewed on 2026-09-28
-    from the triage worklist.'
-  classification: CLOSED_CONTROLLED_VOCABULARY
-  created_on: '2026-09-28'
-  expires_on: '2027-09-28'
-  finding_id: hardcoding.c67057d605a82060e60ef683
-- owner: tools.heavy.sh:environment
-  rationale: 'A name of a shell variable this script declares and reads inside itself: the slot lock files,
-    the per-slot temp folder, and the preflight path. Shell variables are not deployment configuration
-    and cannot be set from a host file, an environment or a request; the audit reads the reference as
-    a value read at a source boundary because the name appears in a path expansion. Reviewed on 2026-09-28
-    from the triage worklist.'
-  classification: CLOSED_CONTROLLED_VOCABULARY
-  created_on: '2026-09-28'
-  expires_on: '2027-09-28'
-  finding_id: hardcoding.db1bd84945285b5c042837ae
-- owner: tools.heavy.sh:environment
-  rationale: 'A name of a shell variable this script declares and reads inside itself: the slot lock files,
-    the per-slot temp folder, and the preflight path. Shell variables are not deployment configuration
-    and cannot be set from a host file, an environment or a request; the audit reads the reference as
-    a value read at a source boundary because the name appears in a path expansion. Reviewed on 2026-09-28
-    from the triage worklist.'
-  classification: CLOSED_CONTROLLED_VOCABULARY
-  created_on: '2026-09-28'
-  expires_on: '2027-09-28'
-  finding_id: hardcoding.dbfa8f5e310f522b97505479
-- owner: tools.heavy.sh:environment
-  rationale: 'A name of a shell variable this script declares and reads inside itself: the slot lock files,
-    the per-slot temp folder, and the preflight path. Shell variables are not deployment configuration
-    and cannot be set from a host file, an environment or a request; the audit reads the reference as
-    a value read at a source boundary because the name appears in a path expansion. Reviewed on 2026-09-28
-    from the triage worklist.'
-  classification: CLOSED_CONTROLLED_VOCABULARY
-  created_on: '2026-09-28'
-  expires_on: '2027-09-28'
-  finding_id: hardcoding.ef0d75f665160b0e3993c394
-- owner: tools.reap_leaked_temp.sh:environment
-  rationale: 'A name of a shell variable this script declares and reads inside itself: the reaper''s own
-    log folder and the dated record it writes. Shell variables are not deployment configuration and cannot
-    be set from a host file, an environment or a request; the audit reads the reference as a value read
-    at a source boundary because the name appears in a path expansion. Reviewed on 2026-09-28 from the
-    triage worklist.'
-  classification: CLOSED_CONTROLLED_VOCABULARY
-  created_on: '2026-09-28'
-  expires_on: '2027-09-28'
-  finding_id: hardcoding.13ca557a9e41749389d48d8a
-- owner: tools.reap_leaked_temp.sh:environment
-  rationale: 'A name of a shell variable this script declares and reads inside itself: the reaper''s own
-    log folder and the dated record it writes. Shell variables are not deployment configuration and cannot
-    be set from a host file, an environment or a request; the audit reads the reference as a value read
-    at a source boundary because the name appears in a path expansion. Reviewed on 2026-09-28 from the
-    triage worklist.'
-  classification: CLOSED_CONTROLLED_VOCABULARY
-  created_on: '2026-09-28'
-  expires_on: '2027-09-28'
-  finding_id: hardcoding.2cb05f7486876bbc475990f2
-- owner: tools.reap_leaked_temp.sh:environment
-  rationale: 'A name of a shell variable this script declares and reads inside itself: the reaper''s own
-    log folder and the dated record it writes. Shell variables are not deployment configuration and cannot
-    be set from a host file, an environment or a request; the audit reads the reference as a value read
-    at a source boundary because the name appears in a path expansion. Reviewed on 2026-09-28 from the
-    triage worklist.'
-  classification: CLOSED_CONTROLLED_VOCABULARY
-  created_on: '2026-09-28'
-  expires_on: '2027-09-28'
-  finding_id: hardcoding.5fe99101c48988fd3f6b23fb
-- owner: tools.reap_leaked_temp.sh:environment
-  rationale: 'A name of a shell variable this script declares and reads inside itself: the reaper''s own
-    log folder and the dated record it writes. Shell variables are not deployment configuration and cannot
-    be set from a host file, an environment or a request; the audit reads the reference as a value read
-    at a source boundary because the name appears in a path expansion. Reviewed on 2026-09-28 from the
-    triage worklist.'
-  classification: CLOSED_CONTROLLED_VOCABULARY
-  created_on: '2026-09-28'
-  expires_on: '2027-09-28'
-  finding_id: hardcoding.660a8525496e89c517806333
-- owner: tools.reap_leaked_temp.sh:environment
-  rationale: 'A name of a shell variable this script declares and reads inside itself: the reaper''s own
-    log folder and the dated record it writes. Shell variables are not deployment configuration and cannot
-    be set from a host file, an environment or a request; the audit reads the reference as a value read
-    at a source boundary because the name appears in a path expansion. Reviewed on 2026-09-28 from the
-    triage worklist.'
-  classification: CLOSED_CONTROLLED_VOCABULARY
-  created_on: '2026-09-28'
-  expires_on: '2027-09-28'
-  finding_id: hardcoding.74d0d2c724697655c6933361
-excluded_paths:
-- path: docs/verification/assets/live-baltor-morning-2026-09-23/browser-observations.json
-  owner: docs.verification.live-baltor-morning-2026-09-23
-  rationale: Frozen machine-produced public website observation. Literal addresses, response headers and
-    page text are recorded facts, never imported as runtime policy or model instructions. The exact digest
-    keeps this narrow; changed bytes are scanned again.
-  classification: GENERATED_EVIDENCE_RECORD
-  created_on: '2026-09-23'
-  expires_on: '2027-09-23'
-  sha256: e3742d45a8ff78664c9d394eab3bca47e9812167d524c94bdb5c893af2531435
-- path: docs/verification/assets/live-baltor-morning-2026-09-23/http-observations.json
-  owner: docs.verification.live-baltor-morning-2026-09-23
-  rationale: Frozen machine-produced public website observation. Literal addresses, response headers and
-    page text are recorded facts, never imported as runtime policy or model instructions. The exact digest
-    keeps this narrow; changed bytes are scanned again.
-  classification: GENERATED_EVIDENCE_RECORD
-  created_on: '2026-09-23'
-  expires_on: '2027-09-23'
-  sha256: ef182319e87a521a91b79336e9f97f7e80b36ec36bdb233d6c6c48e8266aa62e
-- path: embodiments/openinterpreter_rust/latest-release.json
-  owner: embodiments.openinterpreter_rust
-  rationale: 'The GitHub release listing copied from the upstream project for qualification provenance.
-    Every literal in it (asset names, download addresses, upload states) is the upstream project''s own
-    data, not a decision made in this repository, so the 229 findings it produced were noise. Measured
-    on 2026-09-13: excluding it removes exactly those findings and moves no other finding id. The file
-    stays in the scan''s skipped list with this classification, so the exclusion remains visible.'
-  classification: UPSTREAM_RECORD_COPY
-  created_on: 2026-09-13
-  sha256: 74771629648321ad370023977243266617ff6c6428fdb6e78036f2ec4719ea11
-  expires_on: 2027-09-13
-- path: embodiments/freebuff/npm-metadata.json
-  owner: embodiments.freebuff
-  rationale: The package registry record copied from the upstream project for qualification provenance;
-    every literal in it is the registry's own data (addresses, tarball locations), not a decision made
-    in this repository. The file stays in the scan's skipped list with this classification.
-  classification: UPSTREAM_RECORD_COPY
-  created_on: 2026-09-13
-  expires_on: 2027-09-13
-  sha256: a8f0c0473452a7318f07497bf77dc776e026b4175ccba59a47bedf17a215bd08
-- path: src/loop_engine/core/service_runtime/web_assets/supabase-client.js
-  owner: loop_engine.core.service_runtime.web_assets
-  rationale: 'The browser bundle generated from @supabase/supabase-js 2.116.0, with its dependency graph
-    pinned in tools/browser_identity_sdk/package-lock.json. Every literal in it is the upstream project''s
-    own code, such as links to its migration notes and its local development default, not a decision made
-    in this repository. Its licence terms are served beside it. The exclusion binds to these exact bytes:
-    a regenerated or edited bundle is scanned again until it is reviewed. Measured on 2026-09-20: excluding
-    it removes the findings of this file and moves no other finding id.'
-  classification: UPSTREAM_RECORD_COPY
-  created_on: 2026-09-20
-  sha256: 2c51934382bb7d6f9afd859989734562e267ad47296fa54432fbbcc1af5a95a0
-  expires_on: 2027-09-20
 - finding_id: hardcoding.7bf0a0868825a9b4f2d8c050
   owner: tools.component_qualification.controls
   rationale: 'A fixture address of the qualification self-test (FIXTURE_ADDRESSES in tools/component_qualification/controls.py):
@@ -11327,3 +11043,54 @@ excluded_paths:
   classification: STRATEGY_OR_PROVIDER_BINDING
   created_on: '2026-09-28'
   expires_on: '2027-09-28'
+excluded_paths:
+- path: docs/verification/assets/live-baltor-morning-2026-09-23/browser-observations.json
+  owner: docs.verification.live-baltor-morning-2026-09-23
+  rationale: Frozen machine-produced public website observation. Literal addresses, response headers and
+    page text are recorded facts, never imported as runtime policy or model instructions. The exact digest
+    keeps this narrow; changed bytes are scanned again.
+  classification: GENERATED_EVIDENCE_RECORD
+  created_on: '2026-09-23'
+  expires_on: '2027-09-23'
+  sha256: e3742d45a8ff78664c9d394eab3bca47e9812167d524c94bdb5c893af2531435
+- path: docs/verification/assets/live-baltor-morning-2026-09-23/http-observations.json
+  owner: docs.verification.live-baltor-morning-2026-09-23
+  rationale: Frozen machine-produced public website observation. Literal addresses, response headers and
+    page text are recorded facts, never imported as runtime policy or model instructions. The exact digest
+    keeps this narrow; changed bytes are scanned again.
+  classification: GENERATED_EVIDENCE_RECORD
+  created_on: '2026-09-23'
+  expires_on: '2027-09-23'
+  sha256: ef182319e87a521a91b79336e9f97f7e80b36ec36bdb233d6c6c48e8266aa62e
+- path: embodiments/openinterpreter_rust/latest-release.json
+  owner: embodiments.openinterpreter_rust
+  rationale: 'The GitHub release listing copied from the upstream project for qualification provenance.
+    Every literal in it (asset names, download addresses, upload states) is the upstream project''s own
+    data, not a decision made in this repository, so the 229 findings it produced were noise. Measured
+    on 2026-09-13: excluding it removes exactly those findings and moves no other finding id. The file
+    stays in the scan''s skipped list with this classification, so the exclusion remains visible.'
+  classification: UPSTREAM_RECORD_COPY
+  created_on: 2026-09-13
+  sha256: 74771629648321ad370023977243266617ff6c6428fdb6e78036f2ec4719ea11
+  expires_on: 2027-09-13
+- path: embodiments/freebuff/npm-metadata.json
+  owner: embodiments.freebuff
+  rationale: The package registry record copied from the upstream project for qualification provenance;
+    every literal in it is the registry's own data (addresses, tarball locations), not a decision made
+    in this repository. The file stays in the scan's skipped list with this classification.
+  classification: UPSTREAM_RECORD_COPY
+  created_on: 2026-09-13
+  expires_on: 2027-09-13
+  sha256: a8f0c0473452a7318f07497bf77dc776e026b4175ccba59a47bedf17a215bd08
+- path: src/loop_engine/core/service_runtime/web_assets/supabase-client.js
+  owner: loop_engine.core.service_runtime.web_assets
+  rationale: 'The browser bundle generated from @supabase/supabase-js 2.116.0, with its dependency graph
+    pinned in tools/browser_identity_sdk/package-lock.json. Every literal in it is the upstream project''s
+    own code, such as links to its migration notes and its local development default, not a decision made
+    in this repository. Its licence terms are served beside it. The exclusion binds to these exact bytes:
+    a regenerated or edited bundle is scanned again until it is reviewed. Measured on 2026-09-20: excluding
+    it removes the findings of this file and moves no other finding id.'
+  classification: UPSTREAM_RECORD_COPY
+  created_on: 2026-09-20
+  sha256: 2c51934382bb7d6f9afd859989734562e267ad47296fa54432fbbcc1af5a95a0
+  expires_on: 2027-09-20
