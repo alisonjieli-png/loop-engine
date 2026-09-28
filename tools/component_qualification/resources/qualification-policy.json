@@ -187,5 +187,65 @@
   "plugin_manifest"
  ],
  "effect_text_reason": "The licensed import's effect rules read words as actions a harness is told to take, which is right for instruction, skill, command and configuration files. A README, a JSON Schema or code comments of a generated client describe a remote API ('uploads a file'), whose effect the network effect covers; on September 28, 2026 those words produced 501 false effect findings (reads_files and writes_files in README.md and schema.json) on components whose syntax trees touch no local file. Python code is judged by its syntax tree.",
- "job_key_reason": "One package for one job: an API operation is its specification file and its operation (method, path and the specification's operation identifier, since a specification may define several operations on one method and path, as Box does with URL fragments and OpenAI with beta variants: 23 such packages were refused as copies on September 28, 2026 when the key held method and path only); a protocol server is its registry package; a program is its formula; a data table is its upstream file bytes. Two components with one job key are duplicates whatever their text."
+ "job_key_reason": "One package for one job: an API operation is its specification file and its operation (method, path and the specification's operation identifier, since a specification may define several operations on one method and path, as Box does with URL fragments and OpenAI with beta variants: 23 such packages were refused as copies on September 28, 2026 when the key held method and path only); a protocol server is its registry package; a program is its formula; a data table is its upstream file bytes. Two components with one job key are duplicates whatever their text.",
+ "composition": {
+  "targets_file": "src/loop_engine/data/library_composition.json",
+  "targets_reason": "Builder e's library_composition_targets/v1 (September 27, 2026) is the authority once integrated; these shares are its copy for a checkout that does not hold it yet.",
+  "targets": {
+   "executable_code": [
+    0.35,
+    "target"
+   ],
+   "connectors_and_extensions": [
+    0.2,
+    "target"
+   ],
+   "skills": [
+    0.2,
+    "cap"
+   ],
+   "agents_and_commands": [
+    0.1,
+    "target"
+   ],
+   "instructions_and_rules": [
+    0.08,
+    "cap"
+   ],
+   "data_and_contracts": [
+    0.07,
+    "target"
+   ]
+  },
+  "family_by_form": {
+   "api_operation": "executable_code",
+   "function": "executable_code",
+   "library_module": "executable_code",
+   "program": "executable_code",
+   "binary_install": "executable_code",
+   "mcp_server": "connectors_and_extensions",
+   "plugin": "connectors_and_extensions",
+   "hook": "connectors_and_extensions",
+   "marketplace": "connectors_and_extensions",
+   "data_table": "data_and_contracts",
+   "schema": "data_and_contracts",
+   "evaluation_set": "data_and_contracts",
+   "settings": "data_and_contracts"
+  },
+  "family_by_harness_kind": {
+   "skill": "skills",
+   "instruction_file": "instructions_and_rules",
+   "rules": "instructions_and_rules",
+   "subagent": "agents_and_commands",
+   "command": "agents_and_commands",
+   "protocol_server_configuration": "connectors_and_extensions",
+   "plugin_manifest": "connectors_and_extensions",
+   "marketplace": "connectors_and_extensions",
+   "hook": "connectors_and_extensions",
+   "code_module": "executable_code",
+   "tool": "executable_code",
+   "contract_schema": "data_and_contracts",
+   "harness_settings": "data_and_contracts"
+  }
+ }
 }

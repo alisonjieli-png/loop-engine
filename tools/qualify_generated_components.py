@@ -7,6 +7,8 @@
         --store-root STORE --ledger LEDGER --output REVIEW.json [--authorize-model-calls --call-ceiling N]
     PYTHONPATH=src:tools python tools/qualify_generated_components.py admit --qualification RUN \\
         --review REVIEW.json --store-root STORE --output FOLDER --recorded-at DATE
+    PYTHONPATH=src:tools python tools/qualify_generated_components.py composition --bundle BUNDLE \\
+        [--admitted FOLDER ...] [--output COMPOSITION.json]
 
 Qualification is deterministic and makes no model call. The sampled review asks one calibrated reviewer
 from a family other than the producer's about a random sample of each generator batch; model calls need
@@ -58,9 +60,14 @@ def command_self_test(options) -> dict:
 def command_qualify(options) -> dict:
     reader = StoreReader(options.store_root)
     try:
-        rows = reader.rows(lines=tuple(options.line), limit=options.limit)
+        rows = reader.rows(lines=tuple(options.line))
     finally:
         reader.close()
+    decided = set()
+    for path in options.exclude_identities:
+        decided |= {line.split()[0] for line in Path(path).read_text(encoding="utf-8").splitlines() if line.strip()}
+    rows = [row for row in rows if row["record_id"] not in decided]
+    rows = rows[:options.limit] if options.limit is not None else rows
     folder = options.output_folder
     folder.mkdir(parents=True, exist_ok=True)
 
@@ -79,6 +86,21 @@ def command_qualify(options) -> dict:
 def command_sample_review(options) -> dict:
     from tools.component_qualification import sampled_review
     return sampled_review.command(options, ROOT)
+
+
+def command_composition(options) -> dict:
+    from collections import Counter
+    from tools.component_qualification import composition
+    policy = checks.QualificationContext.load(ROOT).policy
+    served = composition.bundle_counts(options.bundle, policy)
+    admitted = Counter()
+    for folder in options.admitted:
+        admitted += composition.admitted_counts(folder, policy)
+    record = composition.report(policy, ROOT, served=served, admitted=admitted)
+    if options.output:
+        options.output.write_text(json.dumps(record, indent=1, sort_keys=True) + "\n")
+    return {family: {key: row[key] for key in ("served", "admitted", "share_served", "share_after", "target_share",
+                                               "bound")} for family, row in record["families"].items()}
 
 
 def command_admit(options) -> dict:
@@ -105,6 +127,9 @@ def main(argv=None) -> int:
             command.add_argument("--workers", type=int, default=qualify.default_workers())
             command.add_argument("--known-bundle", type=Path,
                                  help="A release bundle whose served digests count as existing components.")
+            command.add_argument("--exclude-identities", action="append", default=[],
+                                 help="A file of identities already decided (admitted, rejected, or in a withheld "
+                                      "batch); they are not qualified or sampled again.")
     review = commands.add_parser("sample-review")
     review.add_argument("--qualification", type=Path, required=True, help="A qualify run folder.")
     review.add_argument("--store-root", type=Path, required=True)
@@ -121,6 +146,9 @@ def main(argv=None) -> int:
     review.add_argument("--calibrate", action="store_true",
                         help="First ask the reviewer about the frozen native controls, one at a time.")
     review.add_argument("--authorize-model-calls", action="store_true")
+    review.add_argument("--measurement-only", default="",
+                        help="A written reason to ask the reviewer although it is not calibrated today; every "
+                             "decision is then recorded as a measurement and admits nothing.")
     review.add_argument("--seed", help="The sample seed; a fresh random seed when omitted (recorded either way).")
     admit = commands.add_parser("admit")
     admit.add_argument("--qualification", type=Path, required=True)
@@ -128,9 +156,13 @@ def main(argv=None) -> int:
     admit.add_argument("--store-root", type=Path, required=True)
     admit.add_argument("--output", type=Path, required=True)
     admit.add_argument("--recorded-at", required=True)
+    mix = commands.add_parser("composition")
+    mix.add_argument("--bundle", type=Path, required=True, help="The release bundle the library serves now.")
+    mix.add_argument("--admitted", type=Path, action="append", default=[], help="An admission folder.")
+    mix.add_argument("--output", type=Path)
     options = parser.parse_args(argv)
     handler = {"self-test": command_self_test, "qualify": command_qualify, "sample-review": command_sample_review,
-               "admit": command_admit}[options.command]
+               "admit": command_admit, "composition": command_composition}[options.command]
     print(json.dumps(handler(options), sort_keys=True, default=str))
     return 0
 

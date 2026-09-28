@@ -83,16 +83,21 @@ def _reviewer_entries(root: Path, reviewer: str, basis: dict) -> list:
              "produced_any_item_under_review": False}]
 
 
-def admit(qualification_folder: Path, review_path: Path, store_root: Path, output: Path, recorded_at: str,
-          root: Path) -> dict:
+def admit(qualification_folder: Path, review_path: Path, store_root: "Path | None", output: Path, recorded_at: str,
+          root: Path, *, components: "dict | None" = None) -> dict:
+    """Write the admission folder. ``components`` (identity to component) replaces the store for checks."""
     from tools.write_reviewed_catalogue import (FACET_ATTRIBUTES, HARNESS_KIND_ATTRIBUTE, STEP_FUNCTIONS_ATTRIBUTE,
                                                 TIER_ATTRIBUTE, declare, item_attributes)
     from tools.candidate_review.native import NativeReviewFile
     qualification = {}
-    for line in open(Path(qualification_folder) / "qualification.jsonl", encoding="utf-8"):
-        record = json.loads(line)
-        qualification[record["identity"]] = record
+    with open(Path(qualification_folder) / "qualification.jsonl", encoding="utf-8") as stream:
+        for line in stream:
+            record = json.loads(line)
+            qualification[record["identity"]] = record
     review = json.loads(Path(review_path).read_text(encoding="utf-8"))
+    if review.get("admissible") is not True:
+        raise ValueError("the sampled review is not admissible: " + "; ".join(review.get("admissibility_reasons")
+                                                                              or ["no admissibility record"]))
     output = Path(output)
     if output.exists():
         raise FileExistsError(f"{output} exists; an admission folder is written once")
@@ -101,8 +106,12 @@ def admit(qualification_folder: Path, review_path: Path, store_root: Path, outpu
                                                     .read_bytes()).hexdigest(),
              "sampled_review": str(review_path), "sampled_review_sha256": hashlib.sha256(
                  Path(review_path).read_bytes()).hexdigest(), "sampling_policy": review["policy"]}
-    reader = StoreReader(store_root)
-    rows_by_id = {row["record_id"]: row for row in reader.rows()}
+    reader = StoreReader(store_root) if components is None else None
+    rows_by_id = {row["record_id"]: row for row in reader.rows()} if reader is not None else {}
+
+    def load(identity):
+        return components[identity] if components is not None else reader.component(rows_by_id[identity])
+
     items, rows, bodies, report_batches, counts = [], [], {}, {}, Counter()
     for batch, entry in sorted(review["batches"].items()):
         decision = entry.get("decision") or {}
@@ -120,7 +129,7 @@ def admit(qualification_folder: Path, review_path: Path, store_root: Path, outpu
         batch_ref = f"sampled-review.json#{batch}"
         for identity in frame:
             record = qualification[identity]
-            component = reader.component(rows_by_id[identity])
+            component = load(identity)
             if component.package.package_digest != record["package_digest"]:
                 raise ValueError(f"{identity}: the stored package differs from the qualified package")
             sampled = verdicts.get(identity)
@@ -188,7 +197,8 @@ def admit(qualification_folder: Path, review_path: Path, store_root: Path, outpu
                          "prechecks": "passed"})
             counts[(component.line, component.form, attributes.get("harness_kind"),
                     "rejected" if rejected else "approved")] += 1
-    reader.close()
+    if reader is not None:
+        reader.close()
     approved = sum(1 for row in rows if row["outcome"] == "approved")
     rejected_count = len(rows) - approved
     reviewers = _reviewer_entries(root, review["reviewer"], basis)
@@ -228,6 +238,15 @@ def admit(qualification_folder: Path, review_path: Path, store_root: Path, outpu
               "by_line_form_kind": [{"line": line, "form": form, "harness_kind": kind, "outcome": outcome,
                                      "count": count} for (line, form, kind, outcome), count in sorted(counts.items())]}
     (output / "admission-report.json").write_text(json.dumps(report, indent=1, sort_keys=True) + "\n")
+    # Every identity a decision settled: admitted and rejected rows, and each member of a withheld batch's
+    # frame, so no later run samples the same components again until the generator changes (new bytes, new
+    # identities). Sampling a withheld batch again until it passes would defeat the rule.
+    decided = [f"{row['identity']} {row['outcome']} {recorded_at}" for row in rows]
+    for batch, entry in sorted(review["batches"].items()):
+        if (entry.get("decision") or {}).get("outcome") == "withheld":
+            decided += [f"{identity} withheld {recorded_at}" for identity, record in sorted(qualification.items())
+                        if record["batch"] == batch and record["outcome"] == "qualified"]
+    (output / "decided.txt").write_text("\n".join(decided) + ("\n" if decided else ""))
     return {key: report[key] for key in ("output", "approved", "rejected", "licences")} | {
         "batches": {batch: value["outcome"] for batch, value in report_batches.items()}}
 

@@ -278,6 +278,67 @@ def calibrate(root: Path, ledger: Path, reviewer: str, authorized: bool, calls_l
             "calls": len(result.calls), "totals": result.totals(), "set_sha256": report["set_sha256"]}
 
 
+class DispatchingPrecheck:
+    """Native control packages go to the native engines; generated components to their qualification record."""
+
+    def __init__(self, kind: str, native_engines: list, qualified_engine, native_identities: set) -> None:
+        self.kind, self.native_engines, self.qualified_engine = kind, native_engines, qualified_engine
+        self.native_identities = native_identities
+        self.engine_id = "native_or_qualification_record"
+
+    def availability(self):
+        return True, "", "1"
+
+    def check(self, request, context):
+        if request.identity in self.native_identities:
+            results = [engine.check(request, context) for engine in self.native_engines]
+            refused = [result for result in results if result.status == "refused"]
+            return refused[0] if refused else results[0]
+        return self.qualified_engine.check(request, context)
+
+
+def calibrate_mixed(root: Path, ledger: Path, reviewer: str, authorized: bool, real_requests: list,
+                    qualified: dict) -> dict:
+    """The frozen native controls in one batch of twelve with real sampled components between them, the way
+    the daily job gates its reviewer (controls at positions 1, 4, 7, 9 and 12)."""
+    from tools.candidate_review import calibration as calibration_module
+    from tools.candidate_review import engines as engine_factory
+    from tools.candidate_review.configuration import PRECHECK_KINDS
+    from tools.candidate_review.native_calibration import DEFAULT_SET, NativeCalibrationSet
+    from tools.candidate_review.panel import PanelRunRequest
+    configuration, criteria, instructions, _panel_unused = _panel(root, ledger, authorized, None)
+    controls = NativeCalibrationSet.load(DEFAULT_SET, root, criteria)
+    control_requests = [request for _item, request in controls.requests(None, None, criteria, instructions.sha256)]
+    real = list(real_requests[:MAXIMUM_BATCH - len(control_requests)])
+    if len(real) != MAXIMUM_BATCH - len(control_requests):
+        return {"status": "not_run", "reason": "too few sampled components for a mixed batch"}
+    native = engine_factory.build_precheck_engines(configuration)
+    names = {request.identity for request in control_requests}
+    prechecks = {kind: [DispatchingPrecheck(kind, list(native.get(kind, ())), QualificationPrecheck(kind, qualified,
+                                                                                                    set()), names)]
+                 for kind in PRECHECK_KINDS}
+    configuration, criteria, instructions, panel = _panel(root, ledger, authorized, prechecks)
+    slots = [round(index * (MAXIMUM_BATCH - 1) / (len(control_requests) - 1)) for index in range(len(control_requests))]
+    controls_left, reals_left = iter(control_requests), iter(real)
+    order = [next(controls_left) if position in slots else next(reals_left) for position in range(MAXIMUM_BATCH)]
+    group = configuration.installation(reviewer).quota_group
+    result = panel.run(PanelRunRequest(
+        run_id=f"sampled-calibration-mixed-{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}",
+        requests=tuple(order), population=controls.population({}), call_ceiling=1, token_ceiling=2_000_000,
+        model_calls_authorized=authorized, ask_every_eligible_reviewer=True,
+        excluded_installations=_exclusions(configuration, reviewer), batch_sizes={reviewer: MAXIMUM_BATCH},
+        quota_group_call_ceilings={group: 1}, repeated_failure_limit=2))
+    control_items = [item for item in result.items if item.identity in names]
+    view = type(result)(**{**result.__dict__, "items": control_items})
+    report = calibration_module.evaluate(controls, view)
+    row = report["installations"].get(reviewer, {"status": "not_reached"})
+    real_verdicts = {item.identity: [verdict["decision"] for verdict in item.verdicts] for item in result.items
+                     if item.identity not in names}
+    return {"status": row["status"], "false_approvals": row.get("false_approvals"),
+            "label_refusals": row.get("false_refusals"), "decisions": row.get("decisions"),
+            "real_verdicts": real_verdicts, "calls": len(result.calls), "totals": result.totals()}
+
+
 def command(options, root: Path) -> dict:
     from tools.candidate_review.panel import PanelRunRequest
     from tools.candidate_review.prompt import member_parts
@@ -339,15 +400,27 @@ def command(options, root: Path) -> dict:
     reader.close()
     total_calls = sum(len(value) for value in calls_plan.values())
     record["calls_planned"] = total_calls
-    calibration = None
+    calibration, used = {}, 0
     if options.calibrate and options.authorize_model_calls:
-        calibration = calibrate(root, options.ledger, options.reviewer, True, options.call_ceiling)
-        record["calibration"] = calibration
-        if calibration["status"] != "qualified":
-            record["stopped"] = "reviewer_not_calibrated"
-            options.output.write_text(json.dumps(record, indent=1, sort_keys=True, default=str) + "\n")
-            return {"stopped": record["stopped"], "calibration": calibration["status"]}
-    used = calibration["calls"] if calibration else 0
+        calibration["single"] = calibrate(root, options.ledger, options.reviewer, True, options.call_ceiling)
+        used += calibration["single"]["calls"]
+        # The smallest sampled packages fill the mixed batch, so twelve packages stay well inside one call.
+        reals = sorted((request for batch_calls in calls_plan.values() for members in batch_calls
+                        for request in members if request.identity not in planted),
+                       key=lambda request: (estimate_tokens(member_parts(request)), request.identity))
+        calibration["mixed_batch_of_12"] = calibrate_mixed(root, options.ledger, options.reviewer, True, reals,
+                                                           qualified)
+        used += calibration["mixed_batch_of_12"].get("calls", 0)
+    calibrated = bool(calibration) and all(row.get("status") == "qualified" for row in calibration.values())
+    record["calibration"] = calibration
+    record["admissible"] = calibrated and not options.measurement_only
+    record["admissibility_reasons"] = ([] if calibrated else ["reviewer_not_calibrated_today"]) + (
+        ["measurement_only: " + options.measurement_only] if options.measurement_only else [])
+    if not calibrated and not options.measurement_only:
+        record["stopped"] = "reviewer_not_calibrated"
+        options.output.write_text(json.dumps(record, indent=1, sort_keys=True, default=str) + "\n")
+        return {"stopped": record["stopped"], "calibration": {mode: row.get("status")
+                                                              for mode, row in calibration.items()}}
     prechecks = {kind: [QualificationPrecheck(kind, qualified, set(planted))] for kind in PRECHECK_KINDS}
     configuration, criteria, instructions, panel = _panel(root, options.ledger, options.authorize_model_calls,
                                                           prechecks)
@@ -397,13 +470,19 @@ def command(options, root: Path) -> dict:
         decision.update({"decided_at": _now(), "run_id": result.run_id, "stop_reason": result.stop_reason,
                          "controls_rejected": sum(1 for row in control_rows if row["decision"] == "reject"),
                          "controls_without_verdict": sum(1 for row in control_rows if row["decision"] is None)})
+        if not record["admissible"]:
+            # The rule's arithmetic is kept as a measurement; the decision itself admits nothing.
+            decision["measured_outcome"] = decision["outcome"]
+            decision["outcome"] = sampling.WITHHELD
+            decision["reasons"] = list(decision["reasons"]) + list(record["admissibility_reasons"])
+            decision["sample_complete"] = False
         decisions.append(decision)
         record["batches"][batch].update({"verdicts": sample_rows, "controls": control_rows, "decision": decision,
                                          "totals": result.totals()})
     record.update({"finished_at": _now(), "decisions": decisions, "calls_used": used,
                    "ledger": str(options.ledger)})
     options.output.write_text(json.dumps(record, indent=1, sort_keys=True, default=str) + "\n")
-    if options.history and options.authorize_model_calls:
+    if options.history and options.authorize_model_calls and record["admissible"]:
         with open(options.history, "a", encoding="utf-8") as stream:
             for decision in decisions:
                 stream.write(json.dumps(decision, sort_keys=True) + "\n")
