@@ -8242,6 +8242,8 @@ entries:
       tools/test_install_selected_material.py cover each branch, and a new loader shape needs its own
       qualification.
     classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-27'
+    expires_on: '2027-09-27'
   - finding_id: hardcoding.b9f243ba89d847c831301868
     owner: tools.knowledge_radar.assets.check_service_status.contracts.input.schema.json:$schema
     rationale: 'The JSON Schema draft identifier that the contract of the radar asset check_service_status
