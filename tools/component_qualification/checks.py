@@ -307,6 +307,14 @@ class LicenceProvenanceCheck:
                 upstream = row.get("upstream") if isinstance(row.get("upstream"), dict) else {}
                 if upstream.get("sha256") != row.get("digest") or not _pinned_address(upstream.get("url"), policy):
                     findings.append(("upstream_copy_not_bound", str(row.get("path"))))
+        # An upstream notice file (Apache-2.0 section 4(d)) is carried verbatim; one the record names that is not a
+        # verbatim upstream copy is refused, so the list cannot hide generated files from the duplicate check.
+        notices = licence.get("notices", [])
+        origins = {row.get("path"): row.get("origin") for row in record.get("files", []) if isinstance(row, dict)}
+        if not isinstance(notices, list) or any(origins.get(path) != "upstream_verbatim" for path in notices
+                                                if isinstance(path, str)) or not all(
+                isinstance(path, str) for path in notices):
+            findings.append(("notice_not_an_upstream_copy", json.dumps(notices)[:160]))
         findings += _pinned_launchers(component, policy)
         findings += _pinned_downloads(component, policy)
         return _result(self, findings)
@@ -756,9 +764,12 @@ class SecretsCheck:
 
 def distinctive_text(component, policy) -> str:
     """What makes a component itself: its code, schema, README and connection record, not the licence texts,
-    the attribution or the tests, which every member of a line shares by construction."""
+    the upstream notice files, the attribution or the tests, which every member of a line shares by construction."""
     record = component.candidate
-    skip = set((record.get("licence") or {}).get("texts") or []) | {(record.get("licence") or {}).get("attribution")}
+    licence = record.get("licence") or {}
+    notices = licence.get("notices") if isinstance(licence.get("notices"), list) else []
+    skip = (set(licence.get("texts") or []) | {path for path in notices if isinstance(path, str)}) | {
+        licence.get("attribution")}
     parts = []
     for entry in component.package.files:
         if entry.path in skip or is_test_file(entry.path) or not is_text(entry):

@@ -66,7 +66,9 @@ Generated component admission
 │   │   │   to the package digest, file list, required files
 │   │   ├── licence_provenance: accepted licence expression, licence texts,
 │   │   │   attribution naming every file digest, generator version and commit,
-│   │   │   pinned fact sources, pinned launcher packages and downloads
+│   │   │   pinned fact sources, pinned launcher packages and downloads, and
+│   │   │   upstream notice files (Apache-2.0 section 4(d)) that are verbatim
+│   │   │   upstream copies, which the duplicate pass leaves out like licence texts
 │   │   ├── parse and schema: Python, strict JSON, TOML, CSV, JSON Schema,
 │   │   │   harness configuration shapes
 │   │   ├── effects: declared effects cover the syntax tree of the code and the

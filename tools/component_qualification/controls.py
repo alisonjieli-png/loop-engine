@@ -414,6 +414,8 @@ CONTROLS = (
             lambda c: c.replaced(payloads=dict(c.payloads) | {"ATTRIBUTION.md": b"# Attribution\n\nNo digests.\n"})),
     Control("licence_text_restrictive", "licence_provenance", "code", "licence_text_unrecognized",
             lambda c: _edit(c, "LICENSE", lambda text: "Copyright (c) 2026 Example Holdings. All rights reserved.\n")),
+    Control("notice_names_generated_file", "licence_provenance", "code", "notice_not_an_upstream_copy",
+            lambda c: _with_record(c, licence__notices=["greeting_table.py"])),
     Control("documented_method_contradicted", "schema", "api", "documentation_contradicts_operation",
             lambda c: _edit(c, "get_greeting.py", lambda text: text.replace("'method': 'GET'", "'method': 'DELETE'")
                             .replace('method="GET"', 'method="DELETE"'))),
