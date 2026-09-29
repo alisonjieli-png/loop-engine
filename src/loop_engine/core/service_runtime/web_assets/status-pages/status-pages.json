@@ -930,6 +930,33 @@
     "choices": []
    },
    {
+    "name": "Component form",
+    "description": "What the component is (vocabulary component_form/v1): a function, a library module, a program, an API operation, a binary install recipe, a protocol server, a plugin, a plugin marketplace, a hook, a skill with or without scripts, an agent, a command, instructions, rules, a data table, a schema, settings or an evaluation set.",
+    "searchable": true,
+    "filterable": true,
+    "choices": [
+     "Function",
+     "Library module",
+     "Program",
+     "API operation",
+     "Binary install recipe",
+     "Protocol server",
+     "Plugin",
+     "Plugin marketplace",
+     "Hook",
+     "Skill with scripts",
+     "Skill",
+     "Agent",
+     "Command",
+     "Instructions",
+     "Rules",
+     "Data table",
+     "Schema",
+     "Settings",
+     "Evaluation set"
+    ]
+   },
+   {
     "name": "Job titles",
     "description": "The job titles the item names, from the pinned occupation grid (O*NET titles) and the packaged occupation seeds. Tagged by rules from the item's own words, so a tag says whom the item talks about, not that it was judged.",
     "searchable": true,
