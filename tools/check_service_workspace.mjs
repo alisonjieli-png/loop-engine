@@ -1172,6 +1172,8 @@ try {
      the browser fetches for a customer page is therefore read, not only the markup and the main script. The two typefaces
      and the page icons are binary files; they are read like the rest, so the coverage rule below needs no exception. */
   const servedFiles=["/assets/public-pages.js","/assets/public-pages.css","/assets/site-chrome.js","/assets/documentation-index.json","/assets/documentation.js","/assets/documentation.css","/assets/docs/what-baltor-is.html","/assets/docs/your-account.html","/assets/docs/searching-and-retrieving.html","/assets/docs/usage-and-what-you-pay-for.html","/assets/docs/troubleshooting.html","/assets/docs/serving-and-connections.html","/assets/docs/quickstart-claude-code.html","/assets/docs/quickstart-codex.html","/assets/docs/quickstart-opencode.html","/assets/docs/quickstart-pi.html","/assets/docs/quickstart-baltor-harness.html","/","/assets/service.js","/assets/client-access.js","/assets/pi/baltor.ts","/assets/catalogue-browser.js","/assets/architecture-story.js","/assets/supabase-client.js","/assets/service.css","/assets/architecture.css","/assets/client-recipes.json","/assets/third-party-notices.txt","/assets/geist.woff2","/assets/geist-mono.woff2","/assets/baltor-mark.svg","/assets/favicon-32.png","/assets/favicon-192.png","/assets/apple-touch-icon.png"];
+  servedFiles.push("/assets/docs/component-concepts.html","/assets/docs/updates-and-withdrawals.html","/assets/docs/common-questions.html",
+    ...["SKILL.md","LICENSE","scripts/baltor.py","references/client.md","assets/client.example.json","verification/test_client.py","SHA256SUMS"].map(path=>"/assets/baltor-library/"+path));
   /* The list is compared with the route table the service actually serves. The footer links to the open-source notices,
      so a customer reaches that file from every page, and a served asset added in the route table alone is a named
      failure here rather than a file nobody scans. The table lives in web_pages.py since September 21, 2026; this scan
@@ -2354,7 +2356,7 @@ try {
     data:{record_type:"service_retrieval_request/v2",query:"Alpha",mode:"lexical",top_n:10}});
   const downloaded=(await searched.json()).result.hits[0];
   const secondRead=await page.request.post(fixture.base+"/api/v1/download",{headers:{Authorization:"Bearer "+fixture.token},
-    data:{record_type:"service_provisioning_request/v1",operation:"read",identity:downloaded.reference.identity,expected_digest:downloaded.reference.body_digest,request_id:"usage-table-second-download"}});
+    data:{record_type:"service_provisioning_request/v2",operation:"read",identity:downloaded.reference.identity,expected_digest:downloaded.reference.body_digest,request_id:"usage-table-second-download",authority_effects:namedStepEffects}});
   const refreshUsage=async (target,shown)=>{await target.click("#refresh-usage");await target.waitForFunction(text=>document.querySelector("#usage")?.textContent.includes(text),shown);};
   const usageChecks=["usage_panel_shows_each_item_with_its_count_and_last_use","usage_panel_refuses_a_record_version_it_was_not_written_for","usage_table_fits_small_screens_and_enlarged_text"];
   const usageScenarioChecks={filled:[usageChecks[0],usageChecks[2]],other_version:[usageChecks[1]]};

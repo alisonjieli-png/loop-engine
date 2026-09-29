@@ -225,3 +225,37 @@ committed qualification population. No new paid model calls were made here.
 The first checkpoint passed CI, but no Fly release was initiated during this
 cycle. Current source changes, review binding and the remaining browser
 findings must retain their exact verification and deployment status.
+
+## Fresh review and browser repairs
+
+Commit `78ec298ba71c50c704f8076b65358b6245fab107` also passed CI, run
+`36632578121`. Its pristine status/index regeneration passed. The new program
+qualification at `/home/username/baltor-library/qualification-programs-78ec298b`
+checked 4,100 candidates in 54.3 seconds, qualified 4,099 and refused one,
+with no unreadable packages and no reused checks. Those are fast static checks,
+not proof of installation or execution of every program.
+
+The fresh version 2 review accepted the 3,910-member
+`program_installs/1.0.0@3e497b809fd8` batch. It reviewed 58 samples, found zero
+defects in that sample and rejected all six planted defective controls.
+Calibration passed the written rule; the single-item calibration also falsely
+rejected the known-good control, which remains in the report. The run used
+11 model calls and reported 614,165 tokens, including 160,576 calibration tokens
+and 453,589 batch-review tokens. The command's 500,000 token ceiling applied
+to batch review; calibration has separate existing ceilings. The call ceiling
+was 12. No additional subscription or credit purchase was made.
+
+The exact records and ledger are `review-v2.json` and `review-v2-ledger.jsonl`
+in that qualification folder. Acceptance does not claim zero defects throughout
+the entire population. The 189 members of the other program batch were not
+reviewed in this run. Admission additionally checks the current store version
+against the qualified version, not only the package bytes.
+
+The phone-layout probe identified the last media rule as forcing harness tabs
+onto one clipped row. Wrapping the buttons passed all four width/text-size
+cases. Browser-test coverage was extended to the newly served native package
+and documentation assets. The usage probe now uses the effect-aware request
+contract, and the list-request mutation tests its request declaration without
+expecting metadata rows to disappear. The full browser rerun writes
+`workspace-browser-fixed.json` in the private audit folder; its eventual result
+must be read before a release is called fully browser-qualified.

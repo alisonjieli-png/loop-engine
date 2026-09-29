@@ -717,6 +717,6 @@ html [data-view="home"] .hero-terminal-bar .hero-terminal-label{margin:.5rem .75
    Without this the first four harness tabs are covered and only the last one is reachable. */
 @media (max-width:760px){
   html [data-view="home"] .home-band[data-band="hero"]{padding-top:3.75rem}
-  html [data-view="home"] .hero-terminal-tabs{overflow-x:auto;flex-wrap:nowrap;scrollbar-width:thin}
-  html [data-view="home"] .hero-terminal-tabs button{flex:0 0 auto}
+  html [data-view="home"] .hero-terminal-tabs{overflow-x:visible;flex-wrap:wrap}
+  html [data-view="home"] .hero-terminal-tabs button{flex:0 1 auto;max-width:100%;white-space:normal}
 }

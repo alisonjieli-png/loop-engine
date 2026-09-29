@@ -450,6 +450,16 @@ class AdmissionTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "different package bytes"):
             self._admit(review, "changed_verdict")
 
+    def test_changed_store_metadata_is_not_hidden_by_unchanged_package_bytes(self):
+        path = self.qualification / "qualification.jsonl"
+        rows = [json.loads(line) for line in path.read_text().splitlines()]
+        for row in rows:
+            if row["identity"] == self.code.identity:
+                row["record_version"] = "different-metadata-version"
+        path.write_text("".join(json.dumps(row) + "\n" for row in rows))
+        with self.assertRaisesRegex(ValueError, "stored metadata differs"):
+            self._admit(self._review(), "changed_metadata")
+
     def test_legacy_review_without_population_binding_cannot_admit(self):
         review = self._review()
         document = json.loads(review.read_text())

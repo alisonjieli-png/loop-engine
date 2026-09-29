@@ -568,8 +568,9 @@ export async function runCatalogueBrowserChecks({browser, fixture, check, mutant
      expected:["browse_unspecified_compatibility_is_not_a_support_claim"]},
     {name:"list_without_every_step_effect", scenario:"catalogue",
      find:"...(named ? {authority_effects:named} : {})", replacement:"...{}",
-     expected:["browse_every_list_request_carries_every_step_effect", "browse_lists_a_file_that_declares_an_effect_with_that_effect",
-       "browse_table_rows_match_the_service_list"]},
+     // Listing is metadata-only. Missing allowances must change the request
+     // assertion, not hide rows; the separate body-read checks enforce effects.
+     expected:["browse_every_list_request_carries_every_step_effect"]},
     {name:"ignore_the_kind_filter", scenario:"kind_filter", find:"(!kind || harnessKindOf(row) === kind)", replacement:"true",
      expected:["browse_filters_by_kind_of_file_on_the_loaded_rows"]},
     {name:"search_a_hidden_library_tier_label", scenario:"unified_library",
