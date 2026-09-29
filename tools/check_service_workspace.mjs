@@ -550,15 +550,18 @@ const credentialTableName=/^(?:.*headers|env|environment)$/i,plainWord=/^[A-Za-z
 const soleServerEntry=value=>{let table=value;while(table&&!Object.keys(table).includes("url")){const inner=Object.values(table).filter(item=>item!==null&&typeof item==="object"&&!Array.isArray(item));table=inner.length===1?inner[0]:null;}return table;};
 const configurationProblems=(configuration,address,variable)=>{
   const references=[variable,"Bearer {env:"+variable+"}","Bearer ${"+variable+"}"],leaves=pathLeaves(configuration||{}),label=name=>keyShaped(name)?"(field)":name,place=leaf=>leaf.path.map(label).join("."),entry=soleServerEntry(configuration);
-  const credentialPosition=leaf=>leaf.path.some(name=>credentialTableName.test(name))||leaf.path.some(namesCredential)||(variable!==""&&String(leaf.value).includes(variable))||/\bbearer\b/i.test(String(leaf.value));
+  const recipeEffectNames=new Set(["pure","reads_fs","writes_fs","reads_secret","network","spawns_process"]);
+  const validEffects=value=>{const values=Array.isArray(value)?value:typeof value==="string"?value.split(",").map(item=>item.trim()):[];return values.length>0&&new Set(values).size===values.length&&values.every(item=>recipeEffectNames.has(item))&&(!values.includes("pure")||values.length===1);};
+  const effectMetadata=leaf=>leaf.path.at(-1)==="Baltor-Step-Effects"&&/headers$/i.test(leaf.path.at(-2)||"")&&typeof leaf.value==="string"&&validEffects(leaf.value);
+  const credentialPosition=leaf=>!effectMetadata(leaf)&&(leaf.path.some(name=>credentialTableName.test(name))||leaf.path.some(namesCredential)||(variable!==""&&String(leaf.value).includes(variable))||/\bbearer\b/i.test(String(leaf.value)));
   const schemaLeaf=leaf=>leaf.path.length===1&&leaf.path[0]==="$schema"&&typeof leaf.value==="string"&&/^https:\/\/[^\s@\\]+$/.test(leaf.value);
   return {schemas:leaves.filter(schemaLeaf).map(leaf=>leaf.value),
     credentials:leaves.filter(leaf=>credentialPosition(leaf)&&!references.includes(leaf.value)).map(place),
     addresses:[...(entry?.url===address&&leaves.filter(leaf=>leaf.path.at(-1)==="url").length===1?[]:["(the single server entry and its one url value)"]),
       ...Object.entries(entry||{}).filter(([name,item])=>item!==null&&typeof item==="object"&&!Array.isArray(item)&&!credentialTableName.test(name)).map(([name])=>"(a table of other settings) "+label(name)),
-      ...listPlaces(configuration||{}).map(path=>"(a list) "+path.map(label).join(".")),
+      ...listPlaces(configuration||{}).filter(path=>!(path.at(-1)==="step_effects"&&validEffects(path.reduce((value,key)=>value?.[key],configuration)))).map(path=>"(a list) "+path.map(label).join(".")),
       ...leaves.filter(leaf=>typeof leaf.value==="string"&&!(leaf.path.at(-1)==="url"&&leaf.value===address)&&!schemaLeaf(leaf)&&parsesAsAddress(leaf.value)).map(leaf=>"(parses as an address) "+place(leaf)),
-      ...leaves.filter(leaf=>typeof leaf.value==="string"&&!credentialPosition(leaf)&&!(leaf.path.at(-1)==="url"&&leaf.value===address)&&!schemaLeaf(leaf)&&!plainWord.test(leaf.value)).map(place),
+      ...leaves.filter(leaf=>typeof leaf.value==="string"&&!credentialPosition(leaf)&&!effectMetadata(leaf)&&!(leaf.path.at(-1)==="url"&&leaf.value===address)&&!schemaLeaf(leaf)&&!plainWord.test(leaf.value)).map(place),
       ...fieldNames(configuration||{}).filter(name=>!plainName.test(name)).map(name=>"(field name) "+label(name))]};
 };
 const sameHost=(left,right)=>{try{return new URL(left).host!==""&&new URL(left).host===new URL(right).host;}catch(_){return false;}};

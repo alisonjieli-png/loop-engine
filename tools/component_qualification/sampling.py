@@ -39,6 +39,21 @@ PLAN_RECORD = "generated_batch_sampling_plan/v1"
 DECISION_RECORD = "generated_batch_sampling_decision/v1"
 POLICY_RECORD = "generated_batch_sampling_policy/v1"
 HISTORY_RECORD = "generated_batch_sampling_history/v1"
+REVIEW_RECORD = "generated_batch_sampled_review/v2"
+
+
+def frame_digest(records) -> str:
+    """Bind the exact qualified identities, store versions and package bytes.
+
+    Counts alone do not identify a population. Qualification timestamps and
+    current checker results may change without changing the reviewed material.
+    """
+    rows = sorted((row["identity"], row["record_version"], row["package_digest"]) for row in records)
+    if len({row[0] for row in rows}) != len(rows):
+        raise ValueError("a review frame repeats an identity")
+    if any(not all(isinstance(value, str) and value for value in row) for row in rows):
+        raise ValueError("a review frame needs identity, store version and package digest")
+    return hashlib.sha256(json.dumps(rows, separators=(",", ":")).encode()).hexdigest()
 
 ZERO_ACCEPTANCE = "zero_acceptance_no_history"
 OBSERVED_RATE = "acceptance_number_from_observed_rate"

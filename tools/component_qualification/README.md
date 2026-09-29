@@ -103,6 +103,12 @@ Execution checks run again even when a previous record contains them, because
 the current record does not pin every interpreter, dependency and sandbox
 image required to validate an execution-cache hit.
 
+Sampled review version 2 binds the complete qualified population by identity,
+store version and package digest. Admission also checks sample membership and
+each verdict's body digest. Equal batch counts do not establish the same
+population. Version 1 review records cannot admit material through this path;
+rerun review rather than retroactively attaching a population claim.
+
 ## The acceptance rule
 
 The plan is a lot tolerance percent defective plan in the style of Dodge and
@@ -136,7 +142,7 @@ Romig. With the default policy (`generated_batch_sampling_policy/v1`):
 | `component_qualification_run/v1` | Counts by batch, refusal reasons, timings and throughput. |
 | `component_sandbox_run/v1` | One sandbox run: engine, limits, interpreter, imports and test counts. |
 | `generated_batch_sampling_policy/v1`, `generated_batch_sampling_plan/v1`, `generated_batch_sampling_decision/v1` | The rule, the plan with its operating characteristic, and the decision. |
-| `generated_batch_sampled_review/v1` | The seed, samples, planted controls, calibration, verdicts, decisions and admissibility of one review run. |
+| `generated_batch_sampled_review/v2` | The seed, exact population digest, samples, planted controls, calibration, verdicts, decisions and admissibility of one review run. |
 | `generated_component_admission_report/v1` | What an admission folder holds, by line, form and harness kind. |
 | `generated_admission_composition/v1` | Counts by component family against the composition targets. |
 

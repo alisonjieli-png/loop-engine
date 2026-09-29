@@ -279,3 +279,7 @@ differ from a regular API route. [Plugin guidelines](https://developers.openai.c
 allow existing entitlements but restrict in-plugin digital subscription sales.
 Do not design a marketplace checkout or promise remote GPU access from login
 alone. Exact eligibility and current policy need verification before launch.
+The plugin-guidelines page later returned 404 to direct fetches while remaining
+in official documentation search results. Treat the commerce boundary above
+as the last retrieved guidance, not proof of a newly available program or of
+restrictions being removed. Recheck the accessible official policy before submission.

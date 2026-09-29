@@ -36,7 +36,7 @@ import secrets as secrets_module
 from . import sampling
 from .components import GeneratedComponent, StoreReader
 
-SAMPLED_REVIEW_RECORD = "generated_batch_sampled_review/v1"
+SAMPLED_REVIEW_RECORD = sampling.REVIEW_RECORD
 QUALIFICATION_ENGINE = "component_qualification_record"
 CONTROL_ENGINE = "planted_reviewer_control"
 MAXIMUM_BATCH = 12
@@ -420,7 +420,9 @@ def command(options, root: Path) -> dict:
                     break
             batch_calls.append(members)
         plans[batch], samples[batch], calls_plan[batch] = plan, chosen, batch_calls
-        record["batches"][batch] = {"plan": plan.to_dict(), "sample": chosen, "calls_planned": len(batch_calls),
+        record["batches"][batch] = {"plan": plan.to_dict(), "sample": chosen,
+                                    "frame_sha256": sampling.frame_digest(qualified[identity] for identity in identities),
+                                    "calls_planned": len(batch_calls),
                                     "members_per_call": [len(members) for members in batch_calls]}
     reader.close()
     total_calls = sum(len(value) for value in calls_plan.values())

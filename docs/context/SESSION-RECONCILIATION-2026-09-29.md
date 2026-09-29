@@ -187,3 +187,41 @@ pass and CI still determine release eligibility. The subsequent targeted
 qualification, creative, outreach, source-watch and public-deck checks passed
 128 tests. The creative factory separately passed eight tests, including real
 native preparation from a pinned fixture repository and per-package execution.
+
+## Continuation after the first committed checkpoint
+
+Commit `de5df9d671872b74f7786240e42c4bef07fd1b9b` was pushed to main.
+CI run `36631234730` passed. The previously failing pristine-regeneration
+regression passed on that committed source, and the four regenerated status
+and index views matched the exported commit.
+
+The real creative seed was prepared from that revision at
+`/home/username/baltor-library/creative-seed-de5df9d6/candidates`:
+35 candidate packages, 280 file placements and 144 distinct payload digests.
+Preparation granted no approval and published nothing. The public catalogue
+therefore remains at the earlier observed count until independently admitted
+material is actually released.
+
+The full local browser run completed 820 of 840 checks and detected 171 of
+175 removed-guard controls. Its private report is
+`project-review-20260929-LWR6IQ/workspace-browser.json` under baltor-private.
+It exposed an actual setup bug: effect metadata in the connection recipe was
+treated as a credential, and the typed effect list was rejected as command
+arguments. The page and checker now distinguish that exact bounded metadata
+from credentials. A focused real-browser follow-up passed for Codex,
+OpenCode, Claude Code, Pi and Baltor Harness; tests still reject embedded
+credentials, unknown effects, incompatible pure effects and argument lists.
+The remaining full-suite findings cover asset-scan coverage, narrow-screen
+buttons, usage presentation and stale removed-guard expectations. They have
+not all been resolved or rerun. Do not claim full browser qualification.
+
+Admission review also found that a sampled batch was identified only by its
+size. Review record version 2 binds the exact identities, store versions and
+package digests, and admission checks the sample membership and verdict
+digests. Legacy version 1 reviews are refused, including the inherited Kimi
+record; do not backfill a digest into that old evidence. Rerun review on the
+committed qualification population. No new paid model calls were made here.
+
+The first checkpoint passed CI, but no Fly release was initiated during this
+cycle. Current source changes, review binding and the remaining browser
+findings must retain their exact verification and deployment status.

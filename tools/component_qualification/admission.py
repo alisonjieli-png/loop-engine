@@ -100,6 +100,9 @@ def admit(qualification_folder: Path, review_path: Path, store_root: "Path | Non
             record = json.loads(line)
             qualification[record["identity"]] = record
     review = json.loads(Path(review_path).read_text(encoding="utf-8"))
+    from . import sampling
+    if review.get("record_type") != sampling.REVIEW_RECORD:
+        raise ValueError("sampled review v2 with an exact population binding is required; rerun legacy review")
     if review.get("admissible") is not True:
         raise ValueError("the sampled review is not admissible: " + "; ".join(review.get("admissibility_reasons")
                                                                               or ["no admissibility record"]))
@@ -131,6 +134,15 @@ def admit(qualification_folder: Path, review_path: Path, store_root: "Path | Non
         if len(frame) != entry["plan"]["batch_size"]:
             raise ValueError(f"{batch}: the qualification frame ({len(frame)}) differs from the sampled batch "
                              f"({entry['plan']['batch_size']})")
+        if entry.get("frame_sha256") != sampling.frame_digest(qualification[identity] for identity in frame):
+            raise ValueError(f"{batch}: the exact qualified population differs from the reviewed frame")
+        chosen = entry.get("sample", [])
+        if (len(chosen) != len(set(chosen)) or set(chosen) != set(verdicts)
+                or not set(chosen) <= set(frame) or len(chosen) != decision["sampled"]):
+            raise ValueError(f"{batch}: sampled identities do not match the qualified population and verdicts")
+        if any(verdicts[identity].get("body_sha256") != qualification[identity]["package_digest"]
+               for identity in chosen):
+            raise ValueError(f"{batch}: a sampled verdict names different package bytes")
         batch_ref = f"sampled-review.json#{batch}"
         for identity in frame:
             record = qualification[identity]

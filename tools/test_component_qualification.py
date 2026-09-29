@@ -362,6 +362,7 @@ class AdmissionTests(unittest.TestCase):
         with open(qualification / "qualification.jsonl", "w") as stream:
             for component in (self.code, self.configuration):
                 stream.write(json.dumps({"identity": component.identity, "outcome": "qualified",
+                                         "record_version": component.record_version,
                                          "batch": component.batch, "package_digest": component.package.package_digest,
                                          "vetting": {"implementation_tested": "fixture"},
                                          "qualifier": {"code_revision": REVISION, "uncommitted_changes": False},
@@ -375,11 +376,16 @@ class AdmissionTests(unittest.TestCase):
     def _review(self, admissible=True, code_decision="approve"):
         decision = {"outcome": "accepted", "reasons": [], "sampled": 1, "acceptance_number": 0, "defective": 0,
                     "controls_planted": 1, "controls_rejected": 1}
-        review = {"reviewer": "tactical.gemma-4-coding-abliterated", "producer_family": "anthropic",
+        qualified = [json.loads(line) for line in (self.qualification / "qualification.jsonl").read_text().splitlines()]
+        review = {"record_type": sampling.REVIEW_RECORD,
+                  "reviewer": "tactical.gemma-4-coding-abliterated", "producer_family": "anthropic",
                   "policy": sampling.SamplingPolicy().to_dict(), "admissible": admissible,
                   "admissibility_reasons": [] if admissible else ["reviewer_not_calibrated_today"], "ledger": "l",
                   "batches": {
                       self.code.batch: {"plan": {"batch_size": 1}, "decision": decision,
+                                        "frame_sha256": sampling.frame_digest(row for row in qualified
+                                                                               if row["batch"] == self.code.batch),
+                                        "sample": [self.code.identity],
                                         "verdicts": [{"identity": self.code.identity, "decision": code_decision,
                                                       "criteria": [], "reason": "a reason" if code_decision != "approve"
                                                       else "", "call_ref": "run#1",
@@ -426,6 +432,40 @@ class AdmissionTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self._admit(self._review(admissible=False), "refused")
         self.assertFalse((self.folder / "refused").exists())
+
+    def test_same_population_size_cannot_substitute_different_reviewed_bytes(self):
+        review = self._review()
+        document = json.loads(review.read_text())
+        document["batches"][self.code.batch]["frame_sha256"] = "0" * 64
+        review.write_text(json.dumps(document))
+        with self.assertRaisesRegex(ValueError, "exact qualified population"):
+            self._admit(review, "changed_frame")
+        self.assertFalse((self.folder / "changed_frame").exists())
+
+    def test_a_sampled_verdict_must_match_its_exact_package_bytes(self):
+        review = self._review()
+        document = json.loads(review.read_text())
+        document["batches"][self.code.batch]["verdicts"][0]["body_sha256"] = "0" * 64
+        review.write_text(json.dumps(document))
+        with self.assertRaisesRegex(ValueError, "different package bytes"):
+            self._admit(review, "changed_verdict")
+
+    def test_legacy_review_without_population_binding_cannot_admit(self):
+        review = self._review()
+        document = json.loads(review.read_text())
+        document["record_type"] = "generated_batch_sampled_review/v1"
+        review.write_text(json.dumps(document))
+        with self.assertRaisesRegex(ValueError, "exact population binding"):
+            self._admit(review, "legacy")
+
+    def test_frame_identity_includes_store_version_and_digest_not_order(self):
+        original = [{"identity": "a", "record_version": "v1", "package_digest": "a" * 64},
+                    {"identity": "b", "record_version": "v1", "package_digest": "b" * 64}]
+        self.assertEqual(sampling.frame_digest(original), sampling.frame_digest(reversed(original)))
+        self.assertNotEqual(sampling.frame_digest(original), sampling.frame_digest(
+            [original[0], {**original[1], "identity": "c"}]))
+        self.assertNotEqual(sampling.frame_digest(original), sampling.frame_digest(
+            [original[0], {**original[1], "record_version": "v2"}]))
 
 
 if __name__ == "__main__":

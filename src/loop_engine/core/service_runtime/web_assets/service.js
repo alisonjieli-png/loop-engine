@@ -1011,8 +1011,17 @@ const applyPaymentState = name => {
   const mixedRun = run => /[0-9]/.test(run) && /[A-Za-z]/.test(run);
   const tokenShaped = text => /[A-Za-z0-9_-]{32,}/.test(text) || (text.match(/[A-Za-z0-9_-]{20,}/g) || []).some(mixedRun)
     || (text.match(/[A-Za-z0-9+\/=]{20,}/g) || []).some(run => /[+=]/.test(run) && mixedRun(run));
-  // A configuration holds tables and single settings only. A list is refused, because a list can carry the arguments of a command as plain words.
-  const settingsOnly = value => isTable(value) ? Object.values(value).every(settingsOnly) : typeof value === "string" || typeof value === "boolean" || Number.isFinite(value);
+  // Only the versioned effect declaration may hold a list; command arguments remain refused.
+  const recipeEffectNames = new Set(["pure", "reads_fs", "writes_fs", "reads_secret", "network", "spawns_process"]);
+  const validRecipeEffects = value => {
+    const values = Array.isArray(value) ? value : typeof value === "string" ? value.split(",").map(item => item.trim()) : [];
+    return values.length > 0 && new Set(values).size === values.length && values.every(item => recipeEffectNames.has(item))
+      && (!values.includes("pure") || values.length === 1);
+  };
+  const effectMetadata = item => item.key === "Baltor-Step-Effects" && /headers$/i.test(item.path.at(-2) || "") && item.string && validRecipeEffects(item.text);
+  const settingsOnly = (value, key = "") => isTable(value) ? Object.entries(value).every(([name, item]) => settingsOnly(item, name))
+    : Array.isArray(value) ? key === "step_effects" && validRecipeEffects(value)
+    : typeof value === "string" || typeof value === "boolean" || Number.isFinite(value);
   const plainHttps = text => { try { const url = new URL(text); return text.startsWith("https://") && !url.username && !url.password; } catch (_) { return false; } };
   // Two addresses sit on the same host. An address that cannot be read has no host, so it is never the same host as another one.
   const sameHost = (left, right) => { try { const host = new URL(left).host; return host !== "" && host === new URL(String(right)).host; } catch (_) { return false; } };
@@ -1033,7 +1042,7 @@ const applyPaymentState = name => {
     const references = [variable, "Bearer {env:" + variable + "}", "Bearer ${" + variable + "}"];
     // A credential position holds a declared reference to the variable and nothing else. Such a position is every value inside a table of headers or of
     // environment values, every value under a name that holds a credential, and every text that mentions the variable or a bearer value.
-    const credentialPosition = item => item.path.some(name => credentialTable.test(name)) || item.path.some(namesCredential) || item.text.includes(variable) || /\bbearer\b/i.test(item.text);
+    const credentialPosition = item => !effectMetadata(item) && (item.path.some(name => credentialTable.test(name)) || item.path.some(namesCredential) || item.text.includes(variable) || /\bbearer\b/i.test(item.text));
     for (const recipe of record.recipes) {
       if (!recipe || recipeTextFields.some(field => typeof recipe[field] !== "string" || !recipe[field]) || !["toml", "json"].includes(recipe.format) || !plainHttps(recipe.source_url)
         || !plainCommand.test(recipe.verification_command) || !isTable(recipe.configuration) || !settingsOnly(recipe.configuration)) return "unsupported_record";
@@ -1052,7 +1061,7 @@ const applyPaymentState = name => {
       const addressProblem = !entry || entry.url !== endpointPlaceholder
         || Object.entries(entry).some(([name, item]) => isTable(item) && !credentialTable.test(name))
         || values.filter(item => item.key === "url" || item.text.includes("{{")).length !== 1
-        || values.some(item => item.string && !credentialPosition(item) && item.text !== endpointPlaceholder && !settingWord.test(item.text) && !(item.path.length === 1 && item.key === "$schema" && plainHttps(item.text) && sameHost(item.text, recipe.source_url)));
+        || values.some(item => item.string && !credentialPosition(item) && !effectMetadata(item) && item.text !== endpointPlaceholder && !settingWord.test(item.text) && !(item.path.length === 1 && item.key === "$schema" && plainHttps(item.text) && sameHost(item.text, recipe.source_url)));
       if (addressProblem) return "address_rule";
     }
     return "";
