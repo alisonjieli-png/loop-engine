@@ -1,7 +1,7 @@
 {
  "record_type": "mcp_directory_manifest/v1",
- "generated_at": "2026-09-28T14:30:38Z",
- "row_count": 36569,
+ "generated_at": "2026-09-29T13:20:58Z",
+ "row_count": 36931,
  "columns": [
   "id",
   "name",
@@ -28,68 +28,68 @@
  "parts": [
   {
    "address": "/assets/directory/rows-0.json",
-   "rows": 4653,
-   "sha256": "e75a6f7462b74fdabb121d3cb2389f964f80cc942e6b51a05c1c671a9ea2ace9",
-   "bytes": 1261966
+   "rows": 4700,
+   "sha256": "cbfa27a4b0690500d11e0865e15858dac156546da85ee7c982dc752029627613",
+   "bytes": 1274915
   },
   {
    "address": "/assets/directory/rows-1.json",
-   "rows": 4518,
-   "sha256": "c1d0a85af6ff39cae04b0916e9e3a2f9a100945fd7addef4f7f62acd66c74dbb",
-   "bytes": 1232002
+   "rows": 4553,
+   "sha256": "52b59c22b62f5871663be43ef3d7d4647598e70aed708c3705e5378673b701e6",
+   "bytes": 1241453
   },
   {
    "address": "/assets/directory/rows-2.json",
-   "rows": 4584,
-   "sha256": "42ce8be217fd4848a9af30ddcc8b18246e3b5d426fcd6833a295a20d8863ec9e",
-   "bytes": 1250101
+   "rows": 4620,
+   "sha256": "a3a93202715b5a402201a4065e37498a9c0ccf431cfd4a4cfeaf4f2cd5396425",
+   "bytes": 1259817
   },
   {
    "address": "/assets/directory/rows-3.json",
-   "rows": 4536,
-   "sha256": "d6d8088569cf9d26f9c48c8f7d1619ccafe1a2c6e40b181d2d697652158b4e7f",
-   "bytes": 1238742
+   "rows": 4587,
+   "sha256": "38d82127e53c3753032d9af880a241ef07fe581891a4b0340760e5323658c499",
+   "bytes": 1252021
   },
   {
    "address": "/assets/directory/rows-4.json",
-   "rows": 4536,
-   "sha256": "d788686e1caf9780a84da6875cf2c30229e92da1ff2dbe04c62e172a2042c15e",
-   "bytes": 1236881
+   "rows": 4573,
+   "sha256": "6c51f08a5c539b35fcd3936a428f75782324acaa1bbc5a6e43a33ca18a003099",
+   "bytes": 1247289
   },
   {
    "address": "/assets/directory/rows-5.json",
-   "rows": 4639,
-   "sha256": "4875d0d4eb5f93d42a34c7315ec55457da6416baeec5db1b0a48aced9981657d",
-   "bytes": 1264695
+   "rows": 4691,
+   "sha256": "bd71b1af54fce2c9a2b478989aff6faa3e788ae8e72b58702b5e580b4568cb28",
+   "bytes": 1278801
   },
   {
    "address": "/assets/directory/rows-6.json",
-   "rows": 4548,
-   "sha256": "7104d854ee69fa108ac6f8f7dd5b62a5b29a77dc4d745aac1ad2d41277144313",
-   "bytes": 1233235
+   "rows": 4601,
+   "sha256": "1b9c589351a3bb6a2c72dd584ff9e025706b7945e214fab42ea53b05103b4008",
+   "bytes": 1247573
   },
   {
    "address": "/assets/directory/rows-7.json",
-   "rows": 4555,
-   "sha256": "029afcb38ebd0c34084fced694ce8fdf62dbecacef32864106d4f9bfd66b2927",
-   "bytes": 1242624
+   "rows": 4606,
+   "sha256": "3004e0fe636198ae455007b02060be6709c939e1c1fa17dd11ff69e7b5a62780",
+   "bytes": 1256667
   }
  ],
  "categories": [
   {
    "id": "developer-tools",
    "label": "Developer tools",
-   "rows": 2994
+   "rows": 3025
   },
   {
    "id": "databases",
    "label": "Databases and storage",
-   "rows": 764
+   "rows": 769
   },
   {
    "id": "search-web",
    "label": "Search and web data",
-   "rows": 1008
+   "rows": 1019
   },
   {
    "id": "browser",
@@ -99,112 +99,112 @@
   {
    "id": "cloud",
    "label": "Cloud and infrastructure",
-   "rows": 1396
+   "rows": 1407
   },
   {
    "id": "observability",
    "label": "Monitoring and observability",
-   "rows": 609
+   "rows": 615
   },
   {
    "id": "security",
    "label": "Security",
-   "rows": 644
+   "rows": 656
   },
   {
    "id": "documents",
    "label": "Documents and files",
-   "rows": 1265
+   "rows": 1284
   },
   {
    "id": "productivity",
    "label": "Notes and productivity",
-   "rows": 673
+   "rows": 686
   },
   {
    "id": "communication",
    "label": "Communication",
-   "rows": 1260
+   "rows": 1273
   },
   {
    "id": "project-management",
    "label": "Project management",
-   "rows": 660
+   "rows": 662
   },
   {
    "id": "business",
    "label": "Sales, marketing and commerce",
-   "rows": 2404
+   "rows": 2441
   },
   {
    "id": "finance",
    "label": "Finance and payments",
-   "rows": 2018
+   "rows": 2036
   },
   {
    "id": "crypto",
    "label": "Crypto and blockchain",
-   "rows": 1441
+   "rows": 1445
   },
   {
    "id": "ai-models",
    "label": "AI models and prompts",
-   "rows": 966
+   "rows": 977
   },
   {
    "id": "agents",
    "label": "Agent tools and marketplaces",
-   "rows": 746
+   "rows": 755
   },
   {
    "id": "media",
    "label": "Media and design",
-   "rows": 1404
+   "rows": 1422
   },
   {
    "id": "knowledge",
    "label": "Knowledge and memory",
-   "rows": 1072
+   "rows": 1080
   },
   {
    "id": "data",
    "label": "Data and analytics",
-   "rows": 763
+   "rows": 772
   },
   {
    "id": "maps-travel",
    "label": "Maps, travel and weather",
-   "rows": 939
+   "rows": 953
   },
   {
    "id": "science-health",
    "label": "Science, health and education",
-   "rows": 729
+   "rows": 738
   },
   {
    "id": "legal-public",
    "label": "Legal, government and public data",
-   "rows": 1085
+   "rows": 1089
   },
   {
    "id": "devices-home",
    "label": "Devices and home",
-   "rows": 282
+   "rows": 284
   },
   {
    "id": "games-entertainment",
    "label": "Games and entertainment",
-   "rows": 386
+   "rows": 391
   },
   {
    "id": "utilities",
    "label": "Utilities and reference",
-   "rows": 1417
+   "rows": 1421
   },
   {
    "id": "other",
    "label": "Other",
-   "rows": 9323
+   "rows": 9410
   }
  ],
  "location_kinds": [
@@ -255,8 +255,10 @@
   "BSD-2-Clause",
   "BSD-3-Clause",
   "BSL-1.1",
+  "BlueOak-1.0.0",
   "CC-BY-4.0",
   "CC-BY-SA-4.0",
+  "CC0-1.0",
   "EUPL-1.2",
   "GPL-2.0",
   "GPL-3.0",
@@ -285,8 +287,8 @@
   {
    "id": "registry",
    "bit": 1,
-   "rows": 36306,
-   "checked": "2026-09-28"
+   "rows": 36668,
+   "checked": "2026-09-29"
   },
   {
    "id": "codex",
@@ -304,13 +306,13 @@
    "id": "github",
    "bit": 8,
    "rows": 288,
-   "checked": "2026-09-28"
+   "checked": "2026-09-29"
   },
   {
    "id": "docker",
    "bit": 16,
    "rows": 311,
-   "checked": "2026-09-28"
+   "checked": "2026-09-29"
   }
  ],
  "commercial_relationship_schema": "directory_commercial_relationship/v1",
