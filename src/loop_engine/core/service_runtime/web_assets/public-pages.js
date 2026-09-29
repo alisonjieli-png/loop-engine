@@ -14,8 +14,7 @@
 (() => {
   const RESULT = "service_http_result/v1", HEALTH = "service_health/v2", CAPABILITIES = "service_capabilities/v1";
   const CATALOGUE = "service_catalogue_view/v1";
-  const SKILL_ROOTS = {"claude-code": ".claude/skills/", "codex": ".agents/skills/", "opencode": ".opencode/skills/", "pi": ".pi/skills/",
-    "baltor-harness": ".baltor/step/"};
+  const SKILL_ROOTS = {"claude-code": ".claude/skills/", "codex": ".agents/skills/", "opencode": ".opencode/skills/", "pi": ".pi/skills/"};
   /* Plain words for each check the health record names. A check this page has no words for is shown by its own name. */
   const CHECK_WORDS = {
     durable_store_answers: "Stored records answer",
@@ -186,8 +185,7 @@
      file its reviewed recipe in client-recipes.json names. The search and the download above the folder are the same for every
      harness, so they do not change. Without this script the folder stays the Claude Code one the page serves. */
   const HERO_FILES = {"claude-code": {instructions: "CLAUDE.md", tools: ".mcp.json"}, codex: {instructions: "AGENTS.md", tools: ".codex/config.toml"},
-    opencode: {instructions: "AGENTS.md", tools: "opencode.json"}, pi: {instructions: "AGENTS.md", tools: ".pi/baltor.json"},
-    "baltor-harness": {instructions: "task.md", tools: "loop-engine solve"}};
+    opencode: {instructions: "AGENTS.md", tools: "opencode.json"}, pi: {instructions: "AGENTS.md", tools: ".pi/baltor.json"}};
   const heroHarnesses = document.querySelector("[data-hero-harnesses]");
   const pickHeroHarness = harness => {
     const files = HERO_FILES[harness], root = SKILL_ROOTS[harness];

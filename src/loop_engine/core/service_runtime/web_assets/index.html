@@ -42,7 +42,7 @@
         </div>
 <figure class="hero-terminal" data-step-demo aria-labelledby="hero-terminal-title">
 <figcaption class="sr-only" id="hero-terminal-title">One step of a task: the search your harness sends, the download of the exact version it chose, and the folder it is placed in</figcaption>
-<div class="hero-terminal-bar"><div class="hero-terminal-tabs" role="group" aria-label="Show the folder for" data-hero-harnesses><button type="button" data-hero-harness="claude-code" aria-pressed="true">claude-code</button><button type="button" data-hero-harness="codex" aria-pressed="false">codex</button><button type="button" data-hero-harness="opencode" aria-pressed="false">opencode</button><button type="button" data-hero-harness="pi" aria-pressed="false">pi</button><button type="button" data-hero-harness="baltor-harness" aria-pressed="false">baltor-harness</button></div><p class="hero-terminal-label" data-demo-label="recorded">Real results from the library</p></div>
+<div class="hero-terminal-bar"><div class="hero-terminal-tabs" role="group" aria-label="Show the folder for" data-hero-harnesses><button type="button" data-hero-harness="claude-code" aria-pressed="true">claude-code</button><button type="button" data-hero-harness="codex" aria-pressed="false">codex</button><button type="button" data-hero-harness="opencode" aria-pressed="false">opencode</button><button type="button" data-hero-harness="pi" aria-pressed="false">pi</button></div><p class="hero-terminal-label" data-demo-label="recorded">Real results from the library</p></div>
 <div class="hero-scenarios" role="group" aria-label="Choose a step to look at">
 <button type="button" data-hero-scenario="dedupe" aria-pressed="true" class="is-active">Deduplicate a customer table</button>
 <button type="button" data-hero-scenario="overnight" aria-pressed="false">Fix a failing metric overnight</button>
@@ -67,12 +67,13 @@
 │       └── <span data-demo-path=".claude/skills/find-duplicate-records-with-blocking-keys/SKILL.md">SKILL.md</span>
 ├── <span data-hero-part="tools" data-hero-file="tools">.mcp.json</span>
 └── .baltor/step.lock.json</pre>
-<p class="hero-directory-note" data-hero-note>The local engine is built to assemble a directory like this for every step of a task. This step replaced <span data-hero-replaces>reading the whole table by hand to decide which rows are the same customer</span>.</p>
+<p class="hero-directory-note" data-hero-note>The local engine is built to assemble a directory like this for every step of a task.</p>
+<p class="hero-directory-saves" data-hero-saves>This step replaced <span data-hero-replaces>reading the whole table by hand to decide which rows are the same customer</span>.</p>
 </div>
 </div>
 </figure>
         <div class="hero-foot"><div class="hero-works">
-<div class="hero-works-group"><p>Files are placed for these five, and the placement was tested</p><ul class="hero-harnesses" aria-label="Harnesses with tested file placement"><li>Claude Code</li><li>Codex</li><li>OpenCode</li><li>Pi</li><li>Baltor Harness</li></ul><p class="hero-works-more"><a class="text-link" href="/setup" data-page="setup">See the exact file each one reads</a></p></div>
+<div class="hero-works-group"><p>These five are set up and supported</p><ul class="hero-harnesses" aria-label="Harnesses with tested file placement"><li>Claude Code</li><li>Codex</li><li>OpenCode</li><li>Pi</li><li>Baltor Harness</li></ul><p class="hero-works-more">The first four read a placed skill folder. The Baltor Harness has no skill folder yet: it reads library material from the task file, and the placement tool says so rather than inventing a path. <a class="text-link" href="/setup" data-page="setup">See the exact file each one reads</a></p></div>
 <div class="hero-works-group"><p>These connect too, through the Model Context Protocol</p><ul class="hero-harnesses hero-harnesses-protocol" data-protocol-clients aria-label="Harnesses that connect over the Model Context Protocol"><li>Cursor</li><li>Gemini CLI</li><li>GitHub Copilot</li><li>Windsurf</li><li>Cline</li><li>Roo Code</li><li>Kilo Code</li><li>Aider</li><li>Goose</li><li>Amp</li><li>Kiro</li><li>Zed</li><li>Qwen Code</li><li>Crush</li><li>Factory Droid</li><li>Hermes Agent</li><li>OpenClaw</li></ul><p class="hero-works-more">and any other client that speaks the protocol. These connect to the service; they do not read a placed file, because that is a property of a file layout, not of a protocol.</p></div>
 </div><a class="text-link" href="/demo" data-page="demo">Watch all five steps</a></div>
       </div>
