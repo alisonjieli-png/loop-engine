@@ -8,7 +8,7 @@ as current indefinitely.
 
 ## Latest checkpoint
 
-Fly release 51 is live. Its catalogue serves **27,811 packages and 88,373
+Fly release 52 is live. Its catalogue serves **27,811 packages and 88,373
 distinct payload files**, up by 3,910 packages and 19,551 files. The
 [publication evidence](../../artifacts/catalogue-publication-2026-09-29/programs-3910.json)
 records the exact release, digests, sample, transfer and live delivery check.
@@ -17,6 +17,9 @@ are still candidates, not part of that served count.
 
 The sections below retain earlier checkpoints. Read the final continuation
 section before repeating a qualification, model call, publication or deploy.
+The [release 52 record](../../artifacts/release-52-2026-09-29/README.md) records
+successful live checks and the workflow's final remote-exec timeout, followed
+by successful policy verification without a policy change.
 
 ## Owner direction carried forward
 
@@ -394,10 +397,46 @@ preserved beside the release README; the current record uses v1. The weekly
 reader's unknown-version refusal remains unchanged. Read the next commit's
 CI result before deploying this correction.
 
+## Release 52 checkpoint
+
+Commit `6940d5158690dc85bdb238c187a5dc3e372d167a` passed CI run `36645686094`.
+Deployment run `36646310068` placed the exact tested image and applied the
+packaged grants. Its final `apply-billing-policy` command hit a Machines API
+HTTP 408. GitHub therefore correctly records a failed workflow, although the
+new image was already live. The deployment gate was switched off and checked.
+
+Live health showed billing current. A process inspection found no earlier
+policy command running. The same existing command was started once under
+bounded detached execution and the service user, with no paid-access reset.
+It exited zero, reporting both policies current, no change, no ended paid
+access, no registered accounts and no provider calls. Its checkout and portal
+expectations match live capabilities. Results remain at
+`/data/incoming/release52-billing-policy.json` and
+`/data/incoming/release52-billing-policy-exit.json`.
+
+The new image is
+`sha256:780382cf39d002e226a139608e4e0a775f2a3da7b24a15e1268fd1ea3a7ca7d4`.
+The [release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-52.json)
+keeps release 51 as the rollback image. Resource sizes did not change.
+All ten service origins passed 40 public-route checks; the root site's live
+browser suite passed 218/218. The same route checker failed the old review
+wording before deployment. Private evidence is `release-52-hosts.json`,
+`release-52-live.json` and `pre-assurance-correction-hosts.json` in the audit
+folder. The active catalogue and its 88,373 distinct files did not change.
+
+The operator command calls `load_host_application`, which builds the full
+catalogue and search index before it handles billing. That coupling and the
+workflow's synchronous remote-exec call remain scaling work. The detached
+recovery proves current policy state; it does not make the workflow reliable
+for larger catalogues or turn its failed conclusion into success.
+
 ## Next work after publication
 
-1. Finish checks and release the assurance-description correction. Keep
-   historical records unchanged; regenerate current views from their sources.
+1. Decouple billing-policy operator initialization from full-catalogue loading
+   and use bounded durable result polling for long deployment operations.
+   Preserve policy-revision guards, no-account/no-provider behavior and the
+   prohibition on resetting paid access. The assurance correction itself is
+   now live; do not rerun a deployment merely to retry its confirmation.
 2. Independently review the 35 original seed packages, then expand original
    supply around demonstrated tasks and meaningful reusable contracts. A
    parameter change should reuse implementation bytes, not create a new file

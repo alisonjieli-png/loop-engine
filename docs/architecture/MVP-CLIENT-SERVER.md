@@ -2,7 +2,7 @@
 
 Kind: product architecture with measured local implementation and proposed hosting.
 Date: 2026-09-19. The [current deployment](#current-deployment) section was
-added on 2026-09-20 and last checked on 2026-09-29, after Fly release 51.
+added on 2026-09-20 and last checked on 2026-09-29, after Fly release 52.
 
 The hosted product manages accounts, subscriptions, and access to intelligence.
 The customer runs Loop Engine and the selected harnesses. A hosted intelligence
@@ -47,13 +47,17 @@ from the newest release record, follow the release record and correct this
 section. Update this section in the same change that records a new release.
 It describes a private pilot. It does not describe a qualified paid service.
 
-The latest deployment is Fly release 51, completed on September 29, 2026,
-from `081d8e24a9704cd8fc105d243390cc2041238966`, image
-`sha256:0401d2147a166163826575f7cba18a9bfbbae562cf1720c01da1a3c6f3bc00a9`.
-CI run `36638264614` and deployment run `36639204067` succeeded. The deployment
-setting was read back as false. The [release 51 record](../../artifacts/architecture-audit-2026-09-19/pilot-release-51.json)
-records rollback to release 50's image, 218/218 anonymous live browser checks,
-and HTTP 200 on all nine declared website hostnames. The
+The latest image deployment is Fly release 52, completed on September 29, 2026,
+from `6940d5158690dc85bdb238c187a5dc3e372d167a`, image
+`sha256:780382cf39d002e226a139608e4e0a775f2a3da7b24a15e1268fd1ea3a7ca7d4`.
+CI run `36645686094` passed. Deployment run `36646310068` deployed the tested
+image and applied grants, then failed on a remote-exec timeout while confirming
+the billing policy. The same idempotent command subsequently completed under
+bounded detached execution: policies current, nothing changed, no provider
+calls. The workflow remains recorded as failed. The deployment setting was
+read back as false. The [release 52 record](../../artifacts/architecture-audit-2026-09-19/pilot-release-52.json)
+records rollback to release 51's image, 218/218 anonymous live browser checks,
+and 40/40 HTTP checks across ten service origins. The
 [September 29 reconciliation](../context/SESSION-RECONCILIATION-2026-09-29.md)
 separates the deployed application, published catalogue and unapproved original
 creative seed. The separately published [catalogue record](../../artifacts/catalogue-publication-2026-09-29/programs-3910.json)
@@ -159,8 +163,8 @@ release check. Public registration is open, through Baltor's own sign-up only.
 | Subject | Current fact | Where to check it |
 |---|---|---|
 | Public brand | Baltor. Loop Engine remains the repository, the Python package, the `loop-engine` command and the technical name. The public capabilities record reports the display name `Baltor`. | [terminology.yaml](../../terminology.yaml), explained by [the developer language guide](../guides/developer-language.md) |
-| Host | Fly release 51 runs source `081d8e24a9704cd8fc105d243390cc2041238966` on the existing one-CPU, two-GB Machine and 25-GB volume. Image `sha256:0401d2147a166163826575f7cba18a9bfbbae562cf1720c01da1a3c6f3bc00a9`; successful deployment run `36639204067`. The deployment gate is off. | [Release 51 record](../../artifacts/architecture-audit-2026-09-19/pilot-release-51.json) |
-| Hostnames | All ten hostnames passed after release 40: `baltor.ai`, `www.baltor.ai`, `app.baltor.ai`, `baltor-pilot.fly.dev`, `demo.baltor.ai`, `examples.baltor.ai`, `docs.baltor.ai`, `status.baltor.ai`, `deck.baltor.ai` and `redteam.baltor.ai`. Root, health, registration and visible headings passed; sixty assets matched the source. The visitor check covered 54 pages, 225 views and 348 links. The public base address remains `https://baltor.ai`; every allowed hostname serves the protected routes. | [Release 40 evidence](../../artifacts/release-40-2026-09-27/README.md) |
+| Host | Fly release 52 runs CI-passed source `6940d5158690dc85bdb238c187a5dc3e372d167a` on the existing one-CPU, two-GB Machine and 25-GB volume. Image `sha256:780382cf39d002e226a139608e4e0a775f2a3da7b24a15e1268fd1ea3a7ca7d4`. Deployment run `36646310068` timed out after the image and grants were applied; separate policy verification succeeded unchanged. The deployment gate is off. | [Release 52 record](../../artifacts/architecture-audit-2026-09-19/pilot-release-52.json) |
+| Hostnames | Forty public HTTP checks passed across `baltor.ai`, `www.baltor.ai`, `app.baltor.ai`, `baltor-pilot.fly.dev`, `demo.baltor.ai`, `examples.baltor.ai`, `docs.baltor.ai`, `status.baltor.ai`, `deck.baltor.ai` and `redteam.baltor.ai`. They checked the home page, readiness, catalogue identity, counts and review explanation. The separate 218-check live browser run covered baltor.ai. These are not ten authenticated signup or payment journeys. | [Release 52 evidence](../../artifacts/release-52-2026-09-29/README.md) |
 | Host configuration | The file `/data/host.json` on the volume switches features on and off without a new image. It is not in the repository. On September 22, 2026 it gained `http.request_limits` with the client address read from the `Fly-Client-IP` header, after a backup to `/data/host.json.before-request-limits-20260922T181740`, and the Machine restarted at 18:17 UTC. Releases built after revision `e505eca` refuse a public binding without that setting. Every hostname above is listed in its `allowed_hosts` and `allowed_origins`; a hostname missing from those lists answers 421. On September 23, 2026 at 01:39 UTC, just before Fly release 15, it was backed up to `/data/host.json.before-release-15-20260923T013913` and its `http` block moved to the record `service_http_configuration/v2` with `protocol_versions` `2025-11-25` and `2026-07-28` (release 15 refuses the version 1 record and release 14 refuses version 2), and a `waitlist` block was added that names the Fly secret `BALTOR_WAITLIST_SOURCE_SECRET`, which keys the flood guard's source digest. Fly release 16 needed no host file change. On September 23 at 06:17 UTC, after a backup to `/data/host.json.before-catalogue-20260923T061642`, it gained a `catalogue` section (`service_catalogue_source/v1`, body store `/data/catalogue-bodies`), whose source moved from `image` to `store` at 06:20 UTC after the first catalogue release was published. On September 25, 2026 at 21:43 UTC, after a backup to `/data/host.json.before-license-policy-20260925T214308`, it gained `license_policy` (`service_host_license_policy/v1`) accepting MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC, CC0-1.0 and CC-BY-4.0; the policy is read at service start and the release 35 restart at 22:22 UTC loaded it, which let the 316-package Community release with its Apache-2.0 packages be served. | The release record, and the [September 21 handoff](../context/SESSION-HANDOFF-2026-09-21.md) for the hostname lists |
 | Product service | The command `loop-engine service serve`, from `src/loop_engine/core/service_runtime/`, built by [`Dockerfile.service`](../../Dockerfile.service). One process serves the website, the workspace, the `/api/v1/` interface and the Model Context Protocol endpoint `/mcp` from one origin. | [Two service commands](#two-service-commands) |
 | Durable records | One SQLite database and the served files on the encrypted Fly volume `vol_r7yg7go3n15mgqnr`, mounted at `/data`, with daily snapshots kept for five days. The volume was extended from 1 GB to 3 GB at 21:55 UTC on September 26, 2026, before the library crosses 10,000 packages, as the serving measurement recommends (artifacts/serving-measurement-2026-09-26); the filesystem grew online to 3.0 GB with 2.5 GB free and no restart. A partial upload of the 16:17 UTC slot's archive is kept set aside under `/data/incoming`. The snapshot `vs_pw1B1OwvpOjwizMBMYZVYPbb` was requested before release 12. No managed database is in use. The Supabase project exists and holds no tables, migrations or buckets. | The Machine status for the volume. The release record for the snapshot request. The takeover checkpoint for the snapshot schedule and the empty Supabase project. [Durable records today and planned](#durable-records-today-and-planned) |

@@ -5,6 +5,18 @@
   "releases": [
    {
     "kind": "service",
+    "number": 52,
+    "at": "2026-09-29T23:42:32Z",
+    "lines": [
+     "Public review descriptions distinguish per-item checks and screening from sampled independent review of generated batches.",
+     "Admission no longer implies that every item received a model verdict, was installed or executed, or improved a customer's task.",
+     "The existing versioned review labels and permissions are preserved; the customer interface remains one component library."
+    ],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
     "number": 51,
     "at": "2026-09-29T22:26:20Z",
     "lines": [
