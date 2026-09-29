@@ -541,9 +541,9 @@ html [data-view="home"] .band-hero .hero-price strong,html [data-view="home"] .b
 html [data-view="home"] .hero-terminal{min-width:0;margin:0;overflow:hidden;background:var(--night-rule);border:1px solid var(--night-rule);border-radius:var(--radius-card);text-align:left}
 html [data-view="home"] .hero-terminal-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:0 1rem;background:var(--code-bg);border-bottom:1px solid var(--night-rule)}
 html [data-view="home"] .hero-terminal-tabs{display:flex;flex-wrap:wrap;min-width:0;max-width:100%}
-html [data-view="home"] .hero-terminal-tabs button{flex:none;min-height:44px;margin:0;padding:0 1.125rem;border:0;border-right:1px solid var(--night-rule);border-radius:0;background:transparent;color:var(--night-muted);font-family:var(--font-mono);font-size:.8125rem;font-weight:500}
+html [data-view="home"] .hero-terminal-tabs button{flex:none;min-height:44px;margin:0;padding:0 1.125rem;border:0;border-right:1px solid var(--night-rule);border-radius:0;background:transparent;color:var(--night-muted);font-family:var(--font-mono);font-size:.8125rem;font-weight:500;cursor:pointer}
 html [data-view="home"] .hero-terminal-tabs button[aria-pressed="true"]{background:var(--night);color:var(--night-ink)}
-html [data-view="home"] .hero-terminal-tabs button:not(:disabled):hover{border-color:var(--night-rule);color:var(--night-ink)}
+html [data-view="home"] .hero-terminal-tabs button:not(:disabled):hover{background:color-mix(in srgb,var(--night-ink) 6%,transparent);color:var(--night-ink)}
 html [data-view="home"] .hero-terminal-tabs button:focus-visible{outline:2px solid var(--night-accent);outline-offset:-2px}
 html [data-view="home"] .hero-terminal-label{display:inline-flex;align-items:center;gap:.5rem;min-height:44px;margin:0;padding:0 1.125rem;color:var(--night-live);font-family:var(--font-mono);font-size:.75rem}
 html [data-view="home"] .hero-terminal-label::before{content:"";flex:none;width:6px;height:6px;border-radius:999px;background:currentColor}
@@ -569,7 +569,10 @@ html [data-view="home"] .hero-args div{display:flex;flex-wrap:wrap;align-items:b
 html [data-view="home"] .hero-args dt,html [data-view="home"] .hero-args dd{margin:0;padding:0;line-height:1.6}
 html [data-view="home"] .hero-args dd{min-width:0;margin:0;color:var(--night-ink);overflow-wrap:anywhere}
 html [data-view="home"] .hero-directory-head{gap:.5rem 1rem}
-html [data-view="home"] .hero-tree{font-size:.8125rem;line-height:1.55}
+/* The tree is one row per line. Each row is its own line box so a long path wraps as a block and the connectors
+   stay aligned on the left; the pre keeps the monospace face so the characters line up. */
+html [data-view="home"] .hero-tree{font-size:.8125rem;line-height:1.5;white-space:pre;overflow-x:auto;margin:0;padding:0}
+html [data-view="home"] .hero-tree .hero-tree-row{display:inline}
 html [data-view="home"] .hero-directory-note{padding-top:.75rem;font-family:var(--font-ui);font-size:.8125rem;line-height:1.5}
 html [data-view="home"] .hero-foot{margin-top:-1rem;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.25rem 1.5rem;color:var(--night-muted);font-size:.875rem}
 html [data-view="home"] .hero-works{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem .75rem}
@@ -672,13 +675,21 @@ main.status-page{flex:1 0 auto;display:flex;flex-direction:column;align-items:ce
 .empty-mark{background:var(--tint,#FFECDD);color:var(--accent)}
 
 /* Three worked steps on the homepage terminal, September 28, 2026: the owner asked for a worked example that is not a
-   trivial one, and for the whole terminal to change with the reader's choice. Each button names the step; hovering,
-   focusing or clicking it repaints the query, the search results, the download, the file tree and the saving. */
-html [data-view="home"] .hero-scenarios{display:flex;flex-wrap:wrap;gap:.5rem;padding:.75rem 0 0}
-html [data-view="home"] .hero-scenarios button{flex:1 1 12rem;min-height:44px;margin:0;padding:.5rem .875rem;border:1px solid var(--night-rule);border-radius:8px;background:transparent;color:var(--night-muted);font-family:var(--font-sans);font-size:.8125rem;font-weight:600;line-height:1.3;text-align:left}
-html [data-view="home"] .hero-scenarios button:hover{border-color:var(--night-accent);color:var(--night-ink)}
-html [data-view="home"] .hero-scenarios button[aria-pressed="true"]{background:var(--night);border-color:var(--night);color:var(--night-ink)}
-html [data-view="home"] .hero-scenarios button:focus-visible{outline:2px solid var(--night-accent);outline-offset:2px}
+   trivial one, and for the whole terminal to change with the reader's choice. Each button names the step and what it
+   produced; hovering, focusing or clicking it repaints the query, the search results, the download, the file tree and
+   the saving. They sit in one row beside the harness tabs, so they are a segmented control in the terminal's own bar
+   rather than a separate block of large cards, which is what the first version looked like. */
+html [data-view="home"] .hero-scenarios{display:inline-flex;flex-wrap:nowrap;gap:0;margin:0;padding:0;vertical-align:top}
+html [data-view="home"] .hero-scenarios button{display:flex;flex-direction:column;gap:.1rem;flex:1 1 0;cursor:pointer;min-width:0;min-height:44px;margin:0;padding:.5rem .9rem;border:0;border-top:1px solid var(--night-rule);border-left:1px solid var(--night-rule);border-radius:0;background:transparent;color:var(--night-muted);font-family:var(--font-ui);font-size:.75rem;font-weight:500;line-height:1.3;text-align:left}
+html [data-view="home"] .hero-scenarios button:first-child{border-left:0}
+html [data-view="home"] .hero-scenarios button strong{font-weight:600;color:inherit}
+html [data-view="home"] .hero-scenarios button span{font-size:.6875rem;font-weight:400;opacity:.75}
+html [data-view="home"] .hero-scenarios button:hover{color:var(--night-ink);background:color-mix(in srgb,var(--night-ink) 6%,transparent)}
+html [data-view="home"] .hero-scenarios button[aria-pressed="true"]{background:var(--night);color:var(--night-ink)}
+html [data-view="home"] .hero-scenarios button[aria-pressed="true"] span{opacity:.9}
+html [data-view="home"] .hero-scenarios button:focus-visible{outline:2px solid var(--night-accent);outline-offset:-2px}
+html [data-view="home"] .hero-directory-saves{color:var(--night-muted);font-size:.8125rem}
+/* The harness with no skill folder says so in the tree, in the placement tool's own words. */
 /* The two harness groups read as two different claims, so each carries its own plain sentence. */
 html [data-view="home"] .hero-works-group{margin-top:.75rem}
 /* The hero band is the night surface, so these two group headings take the night ink. They inherited the
@@ -694,3 +705,18 @@ html [data-view="home"] .hero-directory-saves{color:var(--night-muted);font-size
 /* The harness with no skill folder says so in the tree, in the placement tool's own words. */
 html [data-view="home"] .hero-tree .hero-tree-refusal{color:var(--night-accent)}
 html [data-view="home"] .hero-tree .hero-tree-reason{color:var(--night-muted)}
+/* One bar, two groups: the harness whose folder to show, and the step to look at. They share the bar's rule so the
+   terminal reads as one control strip rather than two competing ones. */
+html [data-view="home"] .hero-terminal-bar{display:flex;flex-wrap:wrap;align-items:stretch;gap:0;padding:0}
+html [data-view="home"] .hero-terminal-bar .hero-scenarios{margin:0;padding:0;border-left:0;width:100%;order:3}
+html [data-view="home"] .hero-terminal-bar .hero-terminal-label{margin:.5rem .75rem;flex:1 1 auto;min-width:0}
+@media (max-width:900px){
+  html [data-view="home"] .hero-scenarios button{max-width:none;flex:1 1 0}
+}
+/* On a narrow screen the sticky Menu button sits over the top of the page, so the hero terminal needs room for it.
+   Without this the first four harness tabs are covered and only the last one is reachable. */
+@media (max-width:760px){
+  html [data-view="home"] .home-band[data-band="hero"]{padding-top:3.75rem}
+  html [data-view="home"] .hero-terminal-tabs{overflow-x:auto;flex-wrap:nowrap;scrollbar-width:thin}
+  html [data-view="home"] .hero-terminal-tabs button{flex:0 0 auto}
+}

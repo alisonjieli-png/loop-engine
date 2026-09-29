@@ -224,7 +224,7 @@
       ],
       chosen: 0,
       step: "step-3-find-duplicates",
-      tree: ["CLAUDE.md", ".claude/skills/", "find-duplicate-records-with-blocking-keys/", "SKILL.md", ".mcp.json", ".baltor/step.lock.json"],
+      tree: [["CLAUDE.md", 1], [".claude/skills/", 1], ["find-duplicate-records-with-blocking-keys/", 2], ["SKILL.md", 3], [".mcp.json", 1], [".baltor/step.lock.json", 1]],
       replaces: "reading the whole table by hand to decide which rows are the same customer"
     },
     "overnight": {
@@ -238,7 +238,7 @@
       ],
       chosen: 1,
       step: "step-2-close-the-validation-gap",
-      tree: ["CLAUDE.md", ".claude/skills/", "read-the-train-validation-gap/", "SKILL.md", "contracts/", "task.schema.json", ".mcp.json", ".baltor/step.lock.json"],
+      tree: [["CLAUDE.md", 1], [".claude/skills/", 1], ["read-the-train-validation-gap/", 2], ["SKILL.md", 3], ["contracts/", 3], ["task.schema.json", 4], [".mcp.json", 1], [".baltor/step.lock.json", 1]],
       replaces: "a whole night of reading notebooks to find why the score stopped moving"
     },
     "handoff": {
@@ -251,7 +251,7 @@
       ],
       chosen: 0,
       step: "step-5-report-the-result",
-      tree: ["CLAUDE.md", ".claude/skills/", "report-observed-derived-assumed-and-unknown/", "SKILL.md", "report.md", "evidence/", ".mcp.json", ".baltor/step.lock.json"],
+      tree: [["CLAUDE.md", 1], [".claude/skills/", 1], ["report-observed-derived-assumed-and-unknown/", 2], ["SKILL.md", 3], ["report.md", 4], ["evidence/", 4], [".mcp.json", 1], [".baltor/step.lock.json", 1]],
       replaces: "writing a confident answer that hides which part was never checked"
     }
   };
@@ -319,15 +319,24 @@
     const files = HERO_FILES[harness] || HERO_FILES["claude-code"];
     const root = SKILL_ROOTS[harness];
     tree.dataset.heroHasSkills = root ? "true" : "false";
-    const rows = root ? scenario.tree : [scenario.step + "/", files.instructions, files.tools, ".baltor/", NO_SKILL_FOLDER + "/", "  ↳ refused:", "    engine_reads_library_material_only_from_the_task_file"];
-    rows.forEach((row, index) => {
+    /* Every row is one line of the <pre>, so a row is a block and the connectors always meet in the same column.
+       A row is written as its connector, then its name, then the line break; without that break the whole folder
+       collapses onto one line, which is what the first version of this figure did. The harness with no skill folder
+       says what is true: the task file it reads, and the refusal it returns. */
+    const rows = root ? [[scenario.step + "/", 0], ...scenario.tree]
+                      : [[scenario.step + "/", 0], [files.instructions, 1], [files.tools, 1], [".baltor/", 1],
+                         [NO_SKILL_FOLDER, 1], ["refused with:", 2],
+                         ["engine_reads_library_material_only_from_the_task_file", 3]];
+    rows.forEach(([row, depth]) => {
       const span = document.createElement("span");
+      span.className = "hero-tree-row";
       if (row === files.instructions) { span.dataset.heroPart = "instructions"; span.dataset.heroFile = "instructions"; }
       else if (row === root) { span.dataset.heroPart = "skills"; span.dataset.heroFile = "skills"; }
       else if (row === files.tools) { span.dataset.heroPart = "tools"; span.dataset.heroFile = "tools"; }
-      else if (row === NO_SKILL_FOLDER + "/") { span.className = "hero-tree-refusal"; }
-      else if (row.startsWith("engine_reads_")) { span.className = "hero-tree-reason"; }
-      tree.append(document.createTextNode(index === 0 ? row : "│   ".repeat(Math.max(0, index - 1)) + "└── " + row), span);
+      else if (row === NO_SKILL_FOLDER) { span.className += " hero-tree-refusal"; }
+      else if (row.startsWith("engine_reads_") || row === "refused with:") { span.className += " hero-tree-reason"; }
+      const connector = depth === 0 ? "" : "│  ".repeat(depth - 1) + "└── ";
+      tree.append(document.createTextNode(connector + row), span, document.createTextNode("\n"));
     });
   };
   heroScenarioButtons.forEach(button => {
