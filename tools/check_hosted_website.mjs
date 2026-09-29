@@ -138,10 +138,43 @@ try{
   const liveHeroDirectory=await page.evaluate(()=>{const band=document.querySelector('[data-view="home"] [data-band="hero"]');
     return {label:band?.querySelector("[data-hero-directory] [data-hero-label]")?.textContent.replace(/\s+/g," ").trim()||"",parts:[...(band?.querySelectorAll("[data-hero-part]")||[])].map(node=>node.dataset.heroPart),
       example:band?band.querySelectorAll("[data-step-demo], [data-demo-item], [data-demo-query], [data-demo-download], [data-task-demo]").length:0,text:band?.textContent.replace(/\s+/g," ")||""};});
-  const showsNoWorkedExample=state=>state.label==="Example layout"&&JSON.stringify(state.parts)===JSON.stringify(["instructions","skills","tools"])&&state.example===0
-    &&!/\bsearch:|\bsha256\b|Bytes match the digest/i.test(state.text);
-  check("live_hero_shows_a_working_directory_and_no_worked_example",showsNoWorkedExample(liveHeroDirectory));
-  check("hero_directory_check_rejects_a_worked_example_again",!showsNoWorkedExample({...liveHeroDirectory,example:1})&&!showsNoWorkedExample({...liveHeroDirectory,text:liveHeroDirectory.text+" search: split address lines sha256 53dc74e3"}));
+  /* The hero's directory, as the owner decided on September 24, 2026 and kept on September 28, 2026: the three parts a
+     step's folder is made of, under a label that says it is an example layout. The worked example the hero also carries
+     now lives in its own three-step control, and that control is checked on its own below, so this check holds the
+     directory to the directory's own claim instead of the whole band. */
+  const heroDirectoryIsAnExample=state=>state.label==="Example layout"&&JSON.stringify(state.parts)===JSON.stringify(["instructions","skills","tools"]);
+  check("live_hero_directory_shows_the_three_parts_under_an_example_label",heroDirectoryIsAnExample(liveHeroDirectory));
+  /* The directory figure itself carries no search, no reference, no digest and no download. The terminal beside it does, and
+     that is the recorded part the owner asked for; the directory is not allowed to restate it. */
+  const liveHeroDirectoryFigure=await page.evaluate(()=>{const band=document.querySelector('[data-view="home"] [data-band="hero"]');
+    const figure=band?.querySelector("[data-hero-directory]");
+    return {text:figure?.textContent.replace(/\s+/g," ")||""};});
+  check("live_hero_directory_figure_carries_no_search_no_digest_and_no_download",
+    !/\bsearch:|\bsha256\b|Bytes match the digest/i.test(liveHeroDirectoryFigure.text));
+  /* The hero's three worked steps, as the owner asked for on September 28, 2026: three steps, each with the step it is and
+     the result it produced, and exactly one of them marked as the recorded run so a reader cannot mistake a worked example
+     for a measured one. */
+  const liveHeroScenarios=await page.evaluate(()=>{const band=document.querySelector('[data-view="home"] [data-band="hero"]');
+    const group=band?.querySelector(".hero-scenarios");
+    const buttons=[...(group?.querySelectorAll("[data-hero-scenario]")||[])];
+    return {count:buttons.length,labelled:group?.getAttribute("aria-label")||"",
+      pressed:buttons.filter(b=>b.getAttribute("aria-pressed")==="true").length,
+      empty:buttons.filter(b=>!b.querySelector("strong")?.textContent.trim()||!b.querySelector("span")?.textContent.trim()).length,
+      recorded:buttons.filter(b=>/recorded|example/i.test(b.closest("[data-band]")?.textContent||"")).length,
+      text:group?.textContent.replace(/\s+/g," ")||""};});
+  check("live_hero_offers_three_worked_steps_each_naming_its_step_and_its_result",
+    liveHeroScenarios.count===3&&liveHeroScenarios.empty===0&&liveHeroScenarios.pressed===1&&/\bstep\b/i.test(liveHeroScenarios.labelled));
+  /* KNOWN_WRONG: two steps instead of three, two marked as chosen at once, a step with no result named, and a control that
+     never says it is choosing a step. Each is refused. */
+  const heroScenarioProblems=state=>[state.count!==3?"the hero offers "+state.count+" worked steps":null,
+    state.empty?"a worked step names no step or no result":null,state.pressed!==1?"the hero marks "+state.pressed+" steps as chosen":null,
+    /\bstep\b/i.test(state.labelled)?null:"the worked-step control does not say it is choosing a step"].filter(Boolean);
+  check("hero_worked_step_check_rejects_two_steps_two_chosen_and_an_unlabelled_control",
+    JSON.stringify(heroScenarioProblems(liveHeroScenarios))==="[]"
+    &&heroScenarioProblems({...liveHeroScenarios,count:2}).length===1
+    &&heroScenarioProblems({...liveHeroScenarios,pressed:2}).length===1
+    &&heroScenarioProblems({...liveHeroScenarios,empty:1}).length===1
+    &&heroScenarioProblems({...liveHeroScenarios,labelled:""}).length===1);
   /* Two actions in the hero: Get started, the one primary action, and Get set up, the guide. Since September 24, 2026 no line under
      them repeats what the two buttons say; the owner retired it as filler. */
   const liveHeroActions=await page.locator('[data-view="home"] .hero').evaluate(hero=>{const words=node=>node.textContent.replace(/[↗→]/g,"").replace(/\s+/g," ").trim(),shown=node=>node.getClientRects().length>0;
