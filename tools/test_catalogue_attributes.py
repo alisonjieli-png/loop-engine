@@ -84,8 +84,18 @@ class ComponentFormTest(unittest.TestCase):
         for name in ("function", "library_module", "program", "api_operation", "binary_install", "mcp_server",
                      "plugin", "data_table", "evaluation_set"):
             self.assertIn(name, attributes.COMPONENT_FORMS)
-        # The served vocabulary of harness kinds is unchanged: clients depend on it.
-        self.assertEqual(len(attributes.HARNESS_KINDS), 12)
+        # Every harness kind a package may declare has a label and maps to a form that can be served as it.
+        # This used to assert the count was 12, which pinned the vocabulary's size rather than the property a
+        # client depends on, and the owner's September 29, 2026 direction to add reference images, masks, pose
+        # layouts, 3D models, CAD models, templates and code examples could not be honoured while it stood.
+        for kind in attributes.HARNESS_KINDS:
+            self.assertIn(kind, attributes.HARNESS_KIND_LABELS, kind)
+            form = attributes.component_form_of(kind)
+            self.assertIn(form, attributes.COMPONENT_FORM_KINDS, f"{kind} -> {form}")
+            self.assertIn(kind, attributes.COMPONENT_FORM_KINDS[form], f"{kind} -> {form}")
+        # KNOWN_WRONG: a kind with no label, and a kind that resolves to a form which may not be served as it.
+        self.assertNotIn("reference_video", attributes.HARNESS_KINDS)
+        self.assertNotIn("mask", attributes.COMPONENT_FORM_KINDS["skill"])
         self.assertNotIn("component_form", attributes.HARNESS_KINDS)
 
     def test_the_form_is_derived_from_kind_roles_and_native_format(self):

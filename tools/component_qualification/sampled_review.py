@@ -234,6 +234,13 @@ def _chunks(requests, estimate, budget: int, maximum: int = MAXIMUM_BATCH) -> li
     return calls
 
 
+def _listed_model_versions() -> dict:
+    """The provider's served models, for the reviewers' availability probe. Read here so the
+    sampled review, the daily catalogue review and the tests share one import of the gateway."""
+    from tools.candidate_review.reviewers.gateway import listed_model_versions
+    return listed_model_versions()
+
+
 def _panel(root: Path, ledger: Path, authorized: bool, prechecks: dict):
     from tools.candidate_review import configuration as config
     from tools.candidate_review import engines, native_profile
@@ -244,11 +251,18 @@ def _panel(root: Path, ledger: Path, authorized: bool, prechecks: dict):
         (root / "tools/candidate_review/resources/panel.json").read_text(encoding="utf-8")))
     configuration = native_profile.configuration(base)
     criteria, instructions = native_profile.resources()
-    resolver = None
+    resolver, listing = None, None
     if authorized:
         from tools import operator_credentials
         resolver = operator_credentials.resolve
-    context = ReviewerContext(repository=root, credential_resolver=resolver)
+        # A gateway reviewer declares itself unavailable when the provider's model listing does
+        # not name its model. Reading the listing is a listing, not a model call, and the key
+        # stays in the environment. Without it every Ollama Cloud reviewer is ineligible for a
+        # reason that has nothing to do with the components, and the run reports a calibration
+        # that was never attempted.
+        read = _listed_model_versions()
+        listing = read["models"] if read.get("ok") else None
+    context = ReviewerContext(model_listing=listing, repository=root, credential_resolver=resolver)
     reviewers = {item.installation_id: engines.build_reviewer(item, configuration.policy, context)
                  for item in configuration.installations}
     panel = ReviewPanel(configuration, criteria, instructions, reviewers,

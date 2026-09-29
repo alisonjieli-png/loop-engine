@@ -7,6 +7,7 @@ from pathlib import Path
 import shutil
 import subprocess
 import tempfile
+import tempfile as _tempfile
 import unittest
 from unittest import mock
 
@@ -243,6 +244,51 @@ class ReviewAdapterTests(unittest.TestCase):
                          .check(request, None).status, "refused")
         planted = sampled_review.QualificationPrecheck("licence", {}, {self.code.identity}).check(request, None)
         self.assertEqual((planted.status, planted.engine_id), ("passed", sampled_review.CONTROL_ENGINE))
+
+    def test_an_authorized_panel_offers_the_provider_model_listing_to_its_reviewers(self):
+        """A gateway reviewer is only eligible when the provider listing names its model.
+
+        Known-wrong case: the panel is built with no listing, so every Ollama Cloud reviewer
+        answers "the provider's model listing does not name this model" and no review call is
+        ever made. The sampled review then reports a calibration it never ran, and the batch is
+        withheld for a reason that has nothing to do with the components.
+        """
+        import tempfile as _tempfile
+        from tools.candidate_review.reviewers import Availability
+        listing = {"ok": True, "models": {"glm-5.3": {"id": "glm-5.3"}, "kimi-k2.6": {"id": "kimi-k2.6"}}}
+        engine = mock.Mock()
+        engine.availability.return_value = Availability(True, "", "test", {}, "")
+        context_seen = {}
+        with _tempfile.TemporaryDirectory() as directory:
+            ledger = Path(directory) / "ledger.jsonl"
+
+            def capture(installation, policy, context):
+                context_seen["listing"] = context.model_listing
+                context_seen["resolver"] = context.credential_resolver
+                return engine
+
+            with mock.patch.object(sampled_review, "_listed_model_versions", return_value=listing, create=True), \
+                    mock.patch("tools.candidate_review.engines.build_reviewer", capture):
+                _configuration, _criteria, _instructions, panel = sampled_review._panel(ROOT, ledger, True, None)
+            self.assertEqual(context_seen["listing"], listing["models"])
+            self.assertIsNotNone(context_seen["resolver"])
+            self.assertIsNotNone(panel)
+
+    def test_an_unauthorized_panel_reads_no_provider_listing(self):
+        with mock.patch.object(sampled_review, "_listed_model_versions",
+                               side_effect=AssertionError("no provider listing"), create=True):
+            seen = {}
+
+            def capture(installation, policy, context):
+                seen["listing"] = context.model_listing
+                seen["resolver"] = context.credential_resolver
+                return mock.Mock()
+
+            with mock.patch("tools.candidate_review.engines.build_reviewer", capture):
+                with _tempfile.TemporaryDirectory() as directory:
+                    sampled_review._panel(ROOT, Path(directory) / "ledger.jsonl", False, None)
+            self.assertIsNone(seen["listing"])
+            self.assertIsNone(seen["resolver"])
 
 
 class AdmissionTests(unittest.TestCase):

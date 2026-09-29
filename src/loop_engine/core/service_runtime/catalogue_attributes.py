@@ -71,13 +71,38 @@ TIER_ATTRIBUTE = {"name": "tier", "type": "choice", "choices": list(TIERS), "sea
                                  "Community: automated checks and one independent review."}
 #: Every kind of file a harness picks up, in the order the pages list them.
 HARNESS_KINDS = ("skill", "instruction_file", "rules", "subagent", "command", "hook", "plugin_manifest",
-                 "marketplace", "protocol_server_configuration", "harness_settings", "contract_schema", "code_module")
+                 "marketplace", "protocol_server_configuration", "harness_settings", "contract_schema", "code_module",
+                 # The owner's September 29, 2026 direction: "images could be harness component files, masks could be
+                 # harness component masks, 3D models, STL files, 3D files, autocode styles, etc, all of these could
+                 # be reference files that a harness could analyze, understand". A harness reads these the way it
+                 # reads a skill: it places the file, the harness interprets it, and the file is versioned bytes.
+                 "reference_image", "mask", "pose_layout", "three_d_model", "cad_model", "template")
 HARNESS_KIND_LABELS = {"skill": "Skill", "instruction_file": "Instruction file", "rules": "Rules",
                        "subagent": "Subagent", "command": "Command", "hook": "Hook",
                        "plugin_manifest": "Plugin manifest", "marketplace": "Plugin marketplace",
                        "protocol_server_configuration": "Protocol server configuration",
                        "harness_settings": "Harness settings", "contract_schema": "Contract schema",
-                       "code_module": "Code module"}
+                       "code_module": "Code module", "reference_image": "Reference image", "mask": "Mask",
+                       "pose_layout": "Pose layout", "three_d_model": "3D model", "cad_model": "CAD model",
+                       "template": "Template"}
+#: What a harness is meant to do with a reference artifact. One PNG can be read for guidance, handed to a
+#: generator as an input, opened as an editable source, or kept as the evidence a check compares against. Those
+#: are four different uses of the same bytes, so the use is a declared field and not a guess from the file name.
+ASSET_ROLES = ("reference", "generation_input", "editable_source", "test_evidence")
+ASSET_ROLE_LABELS = {"reference": "Reference", "generation_input": "Generation input",
+                     "editable_source": "Editable source", "test_evidence": "Test evidence"}
+ASSET_ROLE_ATTRIBUTE = {"name": "asset_role", "type": "choice", "choices": list(ASSET_ROLES),
+                        "searchable": True, "filterable": True, "shown": True,
+                        "description": "What a harness does with this artifact: reads it for guidance, feeds it to a "
+                                       "generator, opens it as an editable source, or compares against it as evidence."}
+#: How a pose layout is drawn. A keypoint set is meaningless without its layout and its scale, and the common
+#: mistake is to read a 25-keypoint body layout as an 18-keypoint face-and-hands layout.
+POSE_LAYOUTS = ("coco18", "coco25", "openpose25", "face68", "hands21", "custom")
+#: What a mask's painted pixels mean. Inverting this silently inverts every later operation, so it is declared.
+MASK_POLARITIES = ("foreground", "background")
+#: The forms whose bytes a harness interprets rather than executes, and so carry the fields above.
+INTERPRETED_FORMS = ("reference_image", "mask", "pose_layout")
+ASSET_ROLE_FORMS = INTERPRETED_FORMS + ("three_d_model", "cad_model", "template", "code_example")
 HARNESS_KIND_ATTRIBUTE = {"name": "harness_kind", "type": "choice", "choices": list(HARNESS_KINDS),
                           "searchable": True, "filterable": True, "shown": True,
                           "description": "The kind of file a harness picks up: a skill, an instruction file, rules, a "
@@ -94,14 +119,20 @@ COMPONENT_FORMS = ("function", "library_module", "program", "api_operation", "bi
                    "skill_with_scripts", "skill",
                    "agent", "command",
                    "instructions", "rules",
-                   "data_table", "schema", "settings", "evaluation_set")
+                   "data_table", "schema", "settings", "evaluation_set",
+                   # A form is a role, not only a file type: the same PNG may be read as a reference, fed to a
+                   # generator, or kept as the evidence a check compares against, and the three are different uses.
+                   "reference_image", "mask", "pose_layout", "three_d_model", "cad_model", "template",
+                   "code_example")
 COMPONENT_FORM_LABELS = {"function": "Function", "library_module": "Library module", "program": "Program",
                          "api_operation": "API operation", "binary_install": "Binary install recipe",
                          "mcp_server": "Protocol server", "plugin": "Plugin", "marketplace": "Plugin marketplace",
                          "hook": "Hook", "skill_with_scripts": "Skill with scripts", "skill": "Skill",
                          "agent": "Agent", "command": "Command", "instructions": "Instructions", "rules": "Rules",
                          "data_table": "Data table", "schema": "Schema", "settings": "Settings",
-                         "evaluation_set": "Evaluation set"}
+                         "evaluation_set": "Evaluation set", "reference_image": "Reference image",
+                         "mask": "Mask", "pose_layout": "Pose layout", "three_d_model": "3D model",
+                         "cad_model": "CAD model", "template": "Template", "code_example": "Code example"}
 #: The harness kinds each form may be served as. A declaration outside this table is refused.
 COMPONENT_FORM_KINDS = {
     "function": ("code_module",), "library_module": ("code_module",), "program": ("code_module",),
@@ -110,13 +141,18 @@ COMPONENT_FORM_KINDS = {
     "marketplace": ("marketplace",), "hook": ("hook",), "skill_with_scripts": ("skill",), "skill": ("skill",),
     "agent": ("subagent",), "command": ("command",), "instructions": ("instruction_file",), "rules": ("rules",),
     "data_table": ("code_module", "contract_schema"), "schema": ("contract_schema",),
-    "settings": ("harness_settings",), "evaluation_set": ("code_module", "contract_schema")}
+    "settings": ("harness_settings",), "evaluation_set": ("code_module", "contract_schema"),
+    "reference_image": ("reference_image",), "mask": ("mask",), "pose_layout": ("pose_layout",),
+    "three_d_model": ("three_d_model",), "cad_model": ("cad_model",), "template": ("template",),
+    "code_example": ("code_module",)}
 #: The form of a package whose supply wrote none, by harness kind; a skill holding a script and a code module of
 #: a known native format are refined below.
 _KIND_FORMS = {"skill": "skill", "instruction_file": "instructions", "rules": "rules", "subagent": "agent",
                "command": "command", "hook": "hook", "plugin_manifest": "plugin", "marketplace": "marketplace",
                "protocol_server_configuration": "mcp_server", "harness_settings": "settings",
-               "contract_schema": "schema", "code_module": "library_module"}
+               "contract_schema": "schema", "code_module": "library_module",
+               "reference_image": "reference_image", "mask": "mask", "pose_layout": "pose_layout",
+               "three_d_model": "three_d_model", "cad_model": "cad_model", "template": "template"}
 #: Native formats whose form is known from the format alone, by harness kind: the licensed import's OpenCode tools
 #: are functions and its OpenCode plugin modules are plugins.
 _FORMAT_FORMS = {"code_module": {"opencode_tool": "function", "opencode_plugin": "plugin"}}
@@ -252,3 +288,33 @@ __all__ = ["TIERS", "TIER_ATTRIBUTE", "HARNESS_KINDS", "HARNESS_KIND_LABELS", "H
            "COMPONENT_FORM_KINDS", "COMPONENT_FORM_ATTRIBUTE", "FORM_BASES", "FORM_DECLARED", "FORM_DERIVED",
            "ComponentFormError", "check_form", "component_form_of", "component_form_record", "read_component_form",
            "component_form_label", "harness_kind_of", "harness_kind_label", "declare"]
+
+
+def asset_role_problems(component_form: str, attributes: dict) -> list:
+    """What a reference or creative artifact still has to declare before a harness can read it.
+
+    A harness is handed these bytes and interprets them; nothing tells it how. Three mistakes are silent and
+    each is refused here rather than corrected by the reader: an artifact with no declared role, a pose layout
+    read with no layout named, and a mask whose polarity was never stated. The last is the expensive one, because
+    an inverted mask inverts every selection made from it and the result still looks plausible.
+    """
+    problems: list = []
+    declared = (attributes or {}).get("asset_role")
+    if component_form in ASSET_ROLE_FORMS:
+        if declared is None:
+            problems.append("the artifact declares no asset_role")
+        elif declared not in ASSET_ROLES:
+            problems.append(f"the artifact declares the asset role {declared!r}")
+    if component_form == "pose_layout":
+        layout = (attributes or {}).get("pose_layout")
+        if layout is None:
+            problems.append("the pose layout names no layout, so its keypoints cannot be read")
+        elif layout not in POSE_LAYOUTS:
+            problems.append(f"the pose layout names the layout {layout!r}")
+    if component_form == "mask":
+        polarity = (attributes or {}).get("mask_polarity")
+        if polarity is None:
+            problems.append("the mask states no polarity, so its painted pixels are ambiguous")
+        elif polarity not in MASK_POLARITIES:
+            problems.append(f"the mask states the polarity {polarity!r}")
+    return problems
