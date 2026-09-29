@@ -57,11 +57,12 @@ def qualifier_changed(repository: Path) -> bool:
     return done.returncode != 0 or bool(done.stdout.strip())
 
 
-def _init_worker(repository, store_root, sandbox_settings, work_root, reuse):
+def _init_worker(repository, store_root, sandbox_settings, work_root, reuse, check_ids=None):
     _WORKER["context"] = checks.QualificationContext.load(Path(repository), sandbox_settings=sandbox_settings,
                                                           work_root=work_root)
     _WORKER["bodies"] = body_store(store_root)
     _WORKER["reuse"] = reuse or {}
+    _WORKER["check_ids"] = tuple(check_ids) if check_ids else FAST_CHECKS
 
 
 def reusable(record: "dict | None", row: dict, revision: str) -> bool:
@@ -71,6 +72,18 @@ def reusable(record: "dict | None", row: dict, revision: str) -> bool:
             and record.get("package_digest") == row.get("payload", {}).get("package_digest")
             and record.get("qualifier", {}).get("code_revision") == revision
             and record.get("qualifier", {}).get("uncommitted_changes") is False)
+
+
+#: The checks that execute a component's own code, and so cost a sandbox per component. The owner, September 29,
+#: 2026: "you need to stop strict overqualification of file components, if you keep trying to qualify every single
+#: one we will never be able to publish correctly... once things are on the server they should be accessible... we
+#: don't need to qualify everything pre-publication." These two stay available and are run by the sampled review,
+#: but the per-component pass runs the cheap deterministic checks only, so a whole line qualifies in minutes.
+EXECUTION_CHECKS = ("sandbox", "mutation")
+
+#: The checks every component must pass before it is admitted. Each reads the bytes already on disk and decides;
+#: none of them runs the component. Manifest, licence, parse, schema, effects, safety, secrets and duplicates.
+FAST_CHECKS = tuple(check.check_id for check in checks.CHECKS if check.check_id not in EXECUTION_CHECKS)
 
 
 def _check_one(row: dict) -> dict:
@@ -94,8 +107,11 @@ def _check_one(row: dict) -> dict:
                 "job_key": checks.job_key(component, context.policy), "reused_from": earlier["qualified_at"],
                 "seconds": round(time.monotonic() - started, 3)}
     results = []
+    selected = _WORKER.get("check_ids") or FAST_CHECKS
     for check in checks.CHECKS:
-        if check.check_id == "duplicates":
+        # The duplicate pass is population-level: it needs every component in the run at once, so the parent
+        # adds its result to each row afterwards. Running it here would answer "not decided" for every row.
+        if check.check_id not in selected or check.check_id == "duplicates":
             continue
         try:
             results.append(check.run(component, context).to_dict())
@@ -166,7 +182,7 @@ def load_reuse(paths, revision: str, environment_findings=()) -> dict:
 
 
 def qualify_rows(rows, *, repository: Path, store_root: Path, sandbox_settings, work_root: Path, workers: int,
-                 known_digests=None, output: Path, progress=None, reuse_paths=()) -> dict:
+                 known_digests=None, output: Path, progress=None, reuse_paths=(), check_ids=None) -> dict:
     """Qualify the named store rows; write one JSON line per component and return the run summary."""
     repository, work_root = Path(repository), Path(work_root)
     work_root.mkdir(parents=True, exist_ok=True)
@@ -184,7 +200,7 @@ def qualify_rows(rows, *, repository: Path, store_root: Path, sandbox_settings, 
     pool_started = time.monotonic()
     with multiprocessing.get_context("fork").Pool(
             processes=max(1, workers), initializer=_init_worker,
-            initargs=(str(repository), str(store_root), sandbox_settings, str(work_root), reuse)) as pool:
+            initargs=(str(repository), str(store_root), sandbox_settings, str(work_root), reuse, check_ids)) as pool:
         for number, row in enumerate(pool.imap_unordered(_check_one, rows, chunksize=4), 1):
             (unreadable if "unreadable" in row else checked).append(row)
             if progress and number % 500 == 0:

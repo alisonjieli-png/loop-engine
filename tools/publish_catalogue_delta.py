@@ -31,6 +31,7 @@ import json
 import os
 from pathlib import Path
 import shutil
+import shlex
 import subprocess
 import sys
 import tempfile
@@ -63,8 +64,19 @@ def fly(*arguments: str, timeout: int = EXEC_TIMEOUT) -> str:
 
 
 def machine_exec(command: str, *, as_service: bool = False, timeout: int = EXEC_TIMEOUT) -> str:
-    """Run one command on the Machine through the Machines API and return its stdout."""
-    remote = f"{AS_SERVICE} {command}" if as_service else command
+    """Run one command on the Machine through the Machines API and return its stdout.
+
+    The Machines API execs the command inside the Machine without a shell, so a redirect, a pipe or a glob
+    reaches the program as a plain argument and `find` refuses it: on September 29, 2026 the first run of
+    this tool failed with "paths must precede expression: `2>/dev/null'". The command is therefore wrapped in
+    `sh -c` here, once, so every caller can use ordinary shell syntax. The service prefix stays outside the
+    `sh -c` so it execs the command, not a shell, and the caller keeps its own environment.
+    """
+    # A command that already carries the service prefix is execed as it stands: the API runs it directly, so
+    # `setpriv` is the first program the Machine starts and it can drop to the service user. Wrapping that same
+    # command in a shell would start a shell as nobody first, and the inner setpriv would then fail to clear
+    # groups: "setgroups failed: Operation not permitted", which is what the first publish attempt reported.
+    remote = command if as_service else f"sh -c {shlex.quote(command)}"
     answer = json.loads(fly("machine", "exec", MACHINE, remote, "--app", APP, "--json", timeout=timeout))
     code = answer.get("exit_code") or 0
     if code:
@@ -79,17 +91,38 @@ def blob_digests(folder: Path) -> list[str]:
                   if path.is_file() and len(path.name) == 64)
 
 
-def remote_digests() -> set[str]:
+#: How many shard prefixes one Machines exec asks for. The API refuses a response over 10 MB once JSON encoded,
+#: and one whole-volume listing refused it on September 29, 2026 once the volume held several releases' blobs.
+#: A shard is one of the two hex characters a blob path starts with, so this bounds each answer to a small slice.
+SHARDS_PER_CALL = 8
+
+
+def shard_prefixes() -> list[str]:
+    """Every two hex characters a blob's shard directory can start with."""
+    return [f"{value:02x}" for value in range(256)]
+
+
+def remote_digests(shards: list[str] | None = None) -> set[str]:
     """Every blob digest already on the volume, wherever it was unpacked.
 
     A published release's own folder is removed after the pointer moves, so the present set is read
     from the whole data volume rather than from one release folder. An unreadable listing is an error
     rather than an empty set: treating it as empty would re-upload everything, which is correct but
     hides the fault this tool exists to avoid.
+
+    The volume is read a few shards at a time, because the whole-volume listing outgrew the response the
+    Machines API will carry. Asking for a shard the volume does not hold returns nothing, so a shard that
+    has never been written costs one empty answer rather than a fault.
     """
-    listing = machine_exec(
-        f"find /data -type f -path '*/blobs/sha256/*/*' -printf '%f\\n' 2>/dev/null")
-    return {name.strip() for name in listing.splitlines() if len(name.strip()) == 64}
+    prefixes = shard_prefixes() if shards is None else shards
+    present: set[str] = set()
+    for start in range(0, len(prefixes), SHARDS_PER_CALL):
+        batch = prefixes[start:start + SHARDS_PER_CALL]
+        paths = " -o ".join(f"-path '*/blobs/sha256/{value}/*'" for value in batch)
+        listing = machine_exec(
+            f"find /data -type f \\( {paths} \\) -printf '%f\\n' 2>/dev/null")
+        present.update(name.strip() for name in listing.splitlines() if len(name.strip()) == 64)
+    return present
 
 
 def group_batches(missing: list[str], sizes: dict[str, int]) -> list[list[str]]:

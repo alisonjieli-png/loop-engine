@@ -36,6 +36,20 @@ def _sandbox(options) -> SandboxSettings:
     return SandboxSettings(engine=options.engine, python=options.python)
 
 
+def _check_ids(mode):
+    """Which per-component checks this run applies.
+
+    ``fast`` is the default and runs the eight checks that read the bytes already on disk: manifest, licence,
+    parse, schema, effects, safety, secrets and duplicates. ``all`` adds the two that execute a component's own
+    code, a sandbox and a mutation, and costs a sandbox per component. The owner, September 29, 2026, asked for
+    the cheap set on every component and for a component that turns out to be broken to be reported after it is
+    served rather than held back before it is; the sampled review and the customer's report button still run the
+    execution checks, and a nightly rescan withdraws what a new rule refuses.
+    """
+    from tools.component_qualification import qualify
+    return None if mode == "all" else qualify.FAST_CHECKS
+
+
 def _known_digests(bundle: "Path | None") -> dict:
     """Served package digests of a release bundle, so a copy of a served component is refused."""
     if bundle is None:
@@ -78,7 +92,7 @@ def command_qualify(options) -> dict:
                                    sandbox_settings=_sandbox(options), work_root=options.work_root,
                                    workers=options.workers, known_digests=_known_digests(options.known_bundle),
                                    output=folder / "qualification.jsonl", progress=progress,
-                                   reuse_paths=options.reuse)
+                                   reuse_paths=options.reuse, check_ids=_check_ids(options.checks))
     (folder / "run.json").write_text(json.dumps(summary, indent=1, sort_keys=True) + "\n")
     return {key: summary[key] for key in ("components", "qualified", "refused", "unreadable", "reused", "seconds",
                                           "throughput")}
@@ -126,6 +140,9 @@ def main(argv=None) -> int:
             command.add_argument("--line", action="append", default=[])
             command.add_argument("--limit", type=int)
             command.add_argument("--workers", type=int, default=qualify.default_workers())
+            command.add_argument("--checks", choices=("fast", "all"), default="fast",
+                                 help="fast runs the eight checks that read the bytes on disk; all also runs each "
+                                      "component's own code in a sandbox, which costs a sandbox per component.")
             command.add_argument("--known-bundle", type=Path,
                                  help="A release bundle whose served digests count as existing components.")
             command.add_argument("--reuse", action="append", default=[],
