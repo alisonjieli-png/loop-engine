@@ -42,11 +42,11 @@
         </div>
 <figure class="hero-terminal" data-step-demo aria-labelledby="hero-terminal-title">
 <figcaption class="sr-only" id="hero-terminal-title">One step of a task: the search your harness sends, the download of the exact version it chose, and the folder it is placed in</figcaption>
-<div class="hero-terminal-bar"><div class="hero-terminal-tabs" role="group" aria-label="Show the folder for" data-hero-harnesses><button type="button" data-hero-harness="claude-code" aria-pressed="true">claude-code</button><button type="button" data-hero-harness="codex" aria-pressed="false">codex</button><button type="button" data-hero-harness="opencode" aria-pressed="false">opencode</button><button type="button" data-hero-harness="pi" aria-pressed="false">pi</button></div><p class="hero-terminal-label" data-demo-label="recorded">Real results from the library</p></div>
+<div class="hero-terminal-bar"><div class="hero-terminal-tabs" role="group" aria-label="Show the folder for" data-hero-harnesses><button type="button" data-hero-harness="claude-code" aria-pressed="true">claude-code</button><button type="button" data-hero-harness="codex" aria-pressed="false">codex</button><button type="button" data-hero-harness="opencode" aria-pressed="false">opencode</button><button type="button" data-hero-harness="pi" aria-pressed="false">pi</button><button type="button" data-hero-harness="baltor-harness" aria-pressed="false">baltor-harness</button></div><p class="hero-terminal-label" data-demo-label="recorded">Real results from the library</p></div>
 <div class="hero-scenarios" role="group" aria-label="Choose a step to look at">
-<button type="button" data-hero-scenario="dedupe" aria-pressed="true" class="is-active">Deduplicate a customer table</button>
-<button type="button" data-hero-scenario="overnight" aria-pressed="false">Fix a failing metric overnight</button>
-<button type="button" data-hero-scenario="handoff" aria-pressed="false">Hand a finished result over</button>
+<button type="button" data-hero-scenario="dedupe" aria-pressed="true" class="is-active"><strong>Deduplicate a customer table</strong><span>1,060 duplicates merged, no row deleted</span></button>
+<button type="button" data-hero-scenario="overnight" aria-pressed="false"><strong>Fix a failing metric overnight</strong><span>validation gap found and closed at 04:12</span></button>
+<button type="button" data-hero-scenario="handoff" aria-pressed="false"><strong>Hand a finished result over</strong><span>observed, derived and unknown, stated separately</span></button>
 </div>
 <div class="hero-panes">
 <div class="hero-pane" data-demo-stage="search" data-demo-evidence="recorded"><p class="hero-pane-name"># search</p>
@@ -68,7 +68,7 @@
 ├── <span data-hero-part="tools" data-hero-file="tools">.mcp.json</span>
 └── .baltor/step.lock.json</pre>
 <p class="hero-directory-note" data-hero-note>The local engine is built to assemble a directory like this for every step of a task.</p>
-<p class="hero-directory-saves" data-hero-saves>This step replaced <span data-hero-replaces>reading the whole table by hand to decide which rows are the same customer</span>.</p>
+<p class="hero-directory-saves" data-hero-saves><span data-hero-outcome>17,000 rows in, 15,940 out: 1,060 duplicates found and merged without deleting a row</span>. It replaced <span data-hero-replaces>reading the whole table by hand to decide which rows are the same customer</span>.</p>
 </div>
 </div>
 </figure>

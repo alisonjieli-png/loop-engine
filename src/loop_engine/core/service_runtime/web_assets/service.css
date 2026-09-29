@@ -686,3 +686,11 @@ html [data-view="home"] .hero-works-group{margin-top:.75rem}
 html [data-view="home"] .hero-works-group>p{margin:0 0 .5rem;font-size:.8125rem;font-weight:700;color:var(--night-ink)}
 html [data-view="home"] .hero-works-group .hero-works-more{color:var(--night-muted)}
 html [data-view="home"] .hero-works-group .hero-works-more{margin-top:.5rem}
+/* Each worked step names what it produced, so the three are told apart at a glance instead of by their titles. */
+html [data-view="home"] .hero-scenarios button strong{display:block;font-weight:700}
+html [data-view="home"] .hero-scenarios button span{display:block;margin-top:.15rem;font-weight:400;font-size:.75rem;opacity:.85}
+html [data-view="home"] .hero-scenarios button[aria-pressed="true"] span{opacity:.95}
+html [data-view="home"] .hero-directory-saves{color:var(--night-muted);font-size:.8125rem}
+/* The harness with no skill folder says so in the tree, in the placement tool's own words. */
+html [data-view="home"] .hero-tree .hero-tree-refusal{color:var(--night-accent)}
+html [data-view="home"] .hero-tree .hero-tree-reason{color:var(--night-muted)}

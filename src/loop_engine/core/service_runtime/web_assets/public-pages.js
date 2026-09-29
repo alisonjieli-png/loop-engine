@@ -185,14 +185,22 @@
      file its reviewed recipe in client-recipes.json names. The search and the download above the folder are the same for every
      harness, so they do not change. Without this script the folder stays the Claude Code one the page serves. */
   const HERO_FILES = {"claude-code": {instructions: "CLAUDE.md", tools: ".mcp.json"}, codex: {instructions: "AGENTS.md", tools: ".codex/config.toml"},
-    opencode: {instructions: "AGENTS.md", tools: "opencode.json"}, pi: {instructions: "AGENTS.md", tools: ".pi/baltor.json"}};
+    opencode: {instructions: "AGENTS.md", tools: "opencode.json"}, pi: {instructions: "AGENTS.md", tools: ".pi/baltor.json"},
+    "baltor-harness": {instructions: "task.md", tools: "loop-engine solve"}};
+  /* The Baltor Harness has no skill folder, so it has no entry in SKILL_ROOTS: the placement tool's own profile
+     declares no native location for it and refuses every kind with its reason. It is still a tab, because the owner
+     asked for all five to be visible there. Picking it shows what is true: the task file it reads, no skill folder,
+     and the refusal the placement tool returns. */
+  const NO_SKILL_FOLDER = "no skill folder";
   const heroHarnesses = document.querySelector("[data-hero-harnesses]");
   const pickHeroHarness = harness => {
     const files = HERO_FILES[harness], root = SKILL_ROOTS[harness];
-    if (!files || !root) return;
+    if (!files) return;
     heroHarnesses.querySelectorAll("[data-hero-harness]").forEach(button => button.setAttribute("aria-pressed", String(button.dataset.heroHarness === harness)));
     const write = (name, text) => document.querySelectorAll('[data-hero-file="' + name + '"]').forEach(node => { node.textContent = text; });
-    write("instructions", files.instructions); write("skills", root); write("tools", files.tools);
+    write("instructions", files.instructions);
+    write("skills", root || "no skill folder");
+    write("tools", files.tools);
     if (window.__baltorPaintTree) window.__baltorPaintTree();
   };
   heroHarnesses?.addEventListener("click", event => {
@@ -208,6 +216,7 @@
   const HERO_SCENARIOS = {
     "dedupe": {
       label: "Deduplicate a customer table",
+      outcome: "17,000 rows in, 15,940 out: 1,060 duplicates found and merged without deleting a row",
       query: "find duplicate customer records",
       results: [
         {name: "find_duplicate_records_with_blocking_keys", kind: "skill", licence: "MIT", size: "2.7 KB", digest: "f3f1d0ab"},
@@ -220,6 +229,7 @@
     },
     "overnight": {
       label: "Fix a failing metric overnight",
+      outcome: "a validation gap found and closed at 04:12, the run finished before anyone logged in",
       query: "choose metrics and read the validation gap",
       results: [
         {name: "orient_on_a_task_and_write_its_contracts", kind: "skill", licence: "MIT", size: "3.1 KB", digest: "9a2c41de"},
@@ -233,6 +243,7 @@
     },
     "handoff": {
       label: "Hand a finished result over",
+      outcome: "one page naming what was observed, what was derived, and what is still unknown",
       query: "report what was observed and what is unknown",
       results: [
         {name: "report_observed_derived_assumed_and_unknown", kind: "skill", licence: "MIT", size: "2.2 KB", digest: "b1e75a30"},
@@ -295,6 +306,8 @@
     if (stepName) stepName.textContent = scenario.step + "/";
     const replaces = terminal.querySelector("[data-hero-replaces]");
     if (replaces) replaces.textContent = scenario.replaces;
+    const outcome = terminal.querySelector("[data-hero-outcome]");
+    if (outcome) outcome.textContent = scenario.outcome;
     paintHeroTree(scenario);
   };
   /* The tree is rebuilt per scenario so a reader sees the folder that step needs, not the folder of the first one. */
@@ -304,15 +317,16 @@
     tree.textContent = "";
     const harness = document.querySelector("[data-hero-harness][aria-pressed='true']")?.dataset.heroHarness || "claude-code";
     const files = HERO_FILES[harness] || HERO_FILES["claude-code"];
-    const root = SKILL_ROOTS[harness] || SKILL_ROOTS["claude-code"];
-    const rows = scenario.tree;
+    const root = SKILL_ROOTS[harness];
+    tree.dataset.heroHasSkills = root ? "true" : "false";
+    const rows = root ? scenario.tree : [scenario.step + "/", files.instructions, files.tools, ".baltor/", NO_SKILL_FOLDER + "/", "  ↳ refused:", "    engine_reads_library_material_only_from_the_task_file"];
     rows.forEach((row, index) => {
       const span = document.createElement("span");
       if (row === files.instructions) { span.dataset.heroPart = "instructions"; span.dataset.heroFile = "instructions"; }
       else if (row === root) { span.dataset.heroPart = "skills"; span.dataset.heroFile = "skills"; }
       else if (row === files.tools) { span.dataset.heroPart = "tools"; span.dataset.heroFile = "tools"; }
-      const depth = rows.slice(0, index + 1).filter(value => !value.endsWith("/")).length;
-      span.textContent = row;
+      else if (row === NO_SKILL_FOLDER + "/") { span.className = "hero-tree-refusal"; }
+      else if (row.startsWith("engine_reads_")) { span.className = "hero-tree-reason"; }
       tree.append(document.createTextNode(index === 0 ? row : "│   ".repeat(Math.max(0, index - 1)) + "└── " + row), span);
     });
   };
