@@ -385,6 +385,15 @@ still reports older import/style and broad-exception findings in the touched
 modules; no clean full-Ruff result is claimed. The full browser and self-test
 runs must be read separately from these targeted results.
 
+Those runs subsequently passed: 3,688/3,688 self-tests with no provider calls,
+and 948/948 browser checks with all 197 broken-page controls detected. The
+pristine regeneration of committed `fb94d899` also passed. Its CI run
+`36645253101` found an evidence-format mistake: the release 51 record named an
+unsupported v2 while using the existing v1 fields. The original bytes are
+preserved beside the release README; the current record uses v1. The weekly
+reader's unknown-version refusal remains unchanged. Read the next commit's
+CI result before deploying this correction.
+
 ## Next work after publication
 
 1. Finish checks and release the assurance-description correction. Keep

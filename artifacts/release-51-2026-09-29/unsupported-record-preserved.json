@@ -1,5 +1,5 @@
 {
-  "record_type": "pilot_release_record/v1",
+  "record_type": "pilot_release_record/v2",
   "release": 51,
   "app": "baltor-pilot",
   "source_revision": "081d8e24a9704cd8fc105d243390cc2041238966",

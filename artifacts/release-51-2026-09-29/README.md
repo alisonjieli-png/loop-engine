@@ -4,6 +4,13 @@ The [release record](../architecture-audit-2026-09-19/pilot-release-51.json)
 is the authority for the deployed revision, image, rollback image and exact
 checks. It records the application release separately from catalogue updates.
 
+The first written copy accidentally named an unsupported `v2` record despite
+using the existing `v1` fields. CI run `36645253101` correctly refused it.
+The corrected record uses `pilot_release_record/v1`; no reader or unknown-version
+guard was weakened. The [original copy](unsupported-record-preserved.json) is
+preserved byte for byte, SHA-256
+`3cb8fb4e52a1e5e528a30c821b5c2ca1e8c6d4f95854e3a81a54c25655b7382f`.
+
 Source `081d8e24` passed CI run `36638264614` and deployed through guarded
 workflow run `36639204067`. The deployment setting was read back as false.
 The existing one-CPU, two-GB Machine and 25-GB volume were retained.
