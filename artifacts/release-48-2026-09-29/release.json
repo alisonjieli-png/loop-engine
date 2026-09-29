@@ -1,0 +1,34 @@
+{
+ "record_type": "pilot_release_record/v2",
+ "release": 48,
+ "app": "baltor-pilot",
+ "source_revision": "39248e46a81070a78a8ea366b167ad9ff25aacc6",
+ "image": "registry.fly.io/baltor-pilot@sha256:56fa67ba941349c9205b210eea8e99eb2a35bf2991eddc2fc2e234d6b047f33b",
+ "rollback_release": 47,
+ "deployed_at": "2026-09-29T02:50:00Z",
+ "ci_run": null,
+ "ci_conclusion": "success",
+ "deploy_workflow_conclusion": "success",
+ "deployment_gate_after": false,
+ "hostnames_checked": 9,
+ "hostnames_passed": 9,
+ "visitor_pages": 57,
+ "visitor_views": 237,
+ "visitor_links": 353,
+ "visitor_problems": 0,
+ "catalogue_checks_passed": null,
+ "service_checks_passed": null,
+ "volume_gb": 25,
+ "changes": [
+  "The 58-commit supply line: one tested client per operation of licensed OpenAPI specifications, APIs.guru and Google discovery modes, a JavaScript module with TypeScript declarations in every API package, pinned program install recipes with published checksums, JSON Schema components from SchemaStore with their own validators, 444 reference data tables, function extracts, and the component_form attribute.",
+  "The served library held 6,326 skills against 77 code modules and 69 contract schemas. This release lands the kinds that were missing, so the mix can move off instruction text.",
+  "The homepage hero shows three worked steps, each stating what it produced, and the tab bar shows all five supported harnesses with the placement tool's own reason for the one that has no skill folder.",
+  "The mark and its three raster sizes use the design system's own orange stops.",
+  "The owner's approved words are restored in the privacy notice and the terms of service."
+ ],
+ "advisory": {
+  "catalogue_and_service_suites": "The catalogue and hosted service check suites have not been re-run for this release. The nine-hostname visitor check passed with zero problems.",
+  "supply_lines_need_authorization": "Each supply line of tools/build_library_supply.py needs an explicit --authorize-network-reads and --authorize-store-writes before it stores candidates, so no run has produced components for this release yet.",
+  "room": "The 25 GB volume holds about 330,000 packages at the measured 77 kilobytes each, against 15,146 served now."
+ }
+}

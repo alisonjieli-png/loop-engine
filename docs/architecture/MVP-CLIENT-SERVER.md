@@ -2,7 +2,7 @@
 
 Kind: product architecture with measured local implementation and proposed hosting.
 Date: 2026-09-19. The [current deployment](#current-deployment) section was
-added on 2026-09-20 and last checked on 2026-09-29, after Fly release 46.
+added on 2026-09-20 and last checked on 2026-09-29, after Fly release 48.
 
 The hosted product manages accounts, subscriptions, and access to intelligence.
 The customer runs Loop Engine and the selected harnesses. A hosted intelligence
@@ -47,19 +47,21 @@ from the newest release record, follow the release record and correct this
 section. Update this section in the same change that records a new release.
 It describes a private pilot. It does not describe a qualified paid service.
 
-The latest deployment is Fly release 46, completed on September 29, 2026 at
-01:05 UTC. It runs `58fb1920073ee4bb1b3da48a3898cc1c3abdb561`. Its image,
-incident, repair and checks are recorded in
-[the release 46 evidence](../../artifacts/release-46-2026-09-29/README.md).
-Continuous integration succeeded. The first deployment attempt was **refused by
-the readiness gate and the site was down for about twenty minutes**: the 3 GB
-volume was full after catalogue release `001b7de637d7` added 1,503 items and
-changed 13,643, so `volume_has_write_headroom` failed with `volume_nearly_full`
-and the service answered 503 on purpose. The volume was extended to 25 GB with
-no restart and the next health poll answered 200. Three hostnames were confirmed
-answering 200 afterwards; the full nine-hostname visitor check and the catalogue
-and service check suites have **not** been re-run for this release. Release 45 is
-the rollback target.
+The latest deployment is Fly release 48, completed on September 29, 2026. It
+runs `39248e46a81070a78a8ea366b167ad9ff25aacc6` and carries the 58-commit supply
+line: one tested client per operation of licensed OpenAPI specifications, a
+JavaScript module with TypeScript declarations in every API package, pinned
+program install recipes, JSON Schema components, reference data tables, function
+extracts and the component form attribute. Its checks are in
+[the release 48 evidence](../../artifacts/release-48-2026-09-29/README.md).
+Continuous integration and deployment both succeeded; the deployment setting was
+read back as false. The visitor check found no problem across 57 pages, 237
+views and 353 links on nine hostnames.
+
+The storage volume is **25 GB**, extended from 3 GB on September 29 after release
+46 filled the 3 GB volume and took the site down for about twenty minutes. At the
+measured 77 kilobytes a package it holds about 330,000 packages against the
+15,146 served now. Release 47 is the rollback target.
 
 Release 45, completed on September 28, 2026 at 23:12:55 UTC from
 `3e6064bd7dd64249925c97784f1cf10e0d067d11`, carries the September 28 customer
