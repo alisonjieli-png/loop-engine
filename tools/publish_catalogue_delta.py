@@ -27,15 +27,20 @@ release uses. No secret is read here and no address is taken from the environmen
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
-import os
-from pathlib import Path
-import shutil
+import re
 import shlex
+import shutil
 import subprocess
 import sys
+import tarfile
 import tempfile
 import time
+import uuid
+from pathlib import Path
+from urllib.parse import urlunsplit
+from urllib.request import urlopen
 
 REMOTE_ROOT = "/data/incoming"
 MACHINE = "83733ea7779068"
@@ -88,7 +93,8 @@ def machine_exec(command: str, *, as_service: bool = False, timeout: int = EXEC_
 def blob_digests(folder: Path) -> list[str]:
     """Every blob digest a bundle folder holds, in a stable order."""
     return sorted(path.name for path in (folder / "blobs" / "sha256").glob("*/*")
-                  if path.is_file() and len(path.name) == 64)
+                  if path.is_file() and not path.is_symlink() and not path.parent.is_symlink()
+                  and re.fullmatch(r"[0-9a-f]{64}", path.name) and path.parent.name == path.name[:2])
 
 
 #: How many shard prefixes one Machines exec asks for. The API refuses a response over 10 MB once JSON encoded,
@@ -154,11 +160,35 @@ def stage_batch(bundle: Path, group: list[str], workdir: Path) -> Path:
     return stage
 
 
+def extract_archive(archive: str, digest: str, destination: str) -> None:
+    """Verify one trusted archive, start extraction once and poll its bounded receipt."""
+    measured = machine_exec(f"sha256sum {archive}").split()
+    if not measured or measured[0] != digest:
+        raise RuntimeError("uploaded archive digest differs; extraction was not started")
+    status, log = archive + ".status", archive + ".log"
+    command = f"tar -xf {archive} -C {destination} > {log} 2>&1; printf '%s' $? > {status}"
+    machine_exec(f"nohup sh -c {shlex.quote(command)} </dev/null >/dev/null 2>&1 &")
+    deadline = time.monotonic() + EXEC_TIMEOUT
+    while time.monotonic() < deadline:
+        state = machine_exec(f"test ! -f {status} || cat {status}").strip()
+        if state:
+            try:
+                exit_code = int(state)
+            except ValueError:
+                raise RuntimeError("archive extraction returned an unreadable status") from None
+            if exit_code != 0:
+                raise RuntimeError("archive extraction failed: " + machine_exec(f"tail -c 800 {log}"))
+            return
+        time.sleep(2)
+    raise RuntimeError("archive extraction outcome is uncertain; inspect its status before retrying")
+
+
 def upload_missing(bundle: Path, missing: list[str], remote: str) -> None:
     """Put the missing blobs into the remote release folder, then prove every one arrived whole.
 
-    Each put carries a directory of blobs at their own relative paths, so the bytes land where the
-    bundle reader looks for them. Afterwards the digests present under the release folder are read back
+    Each put carries a checksum-verified archive of blobs at their relative paths. Extraction is detached
+    and polled, so it is not bounded by the Machines API's short exec response window.
+    Afterwards the digests present under the release folder are read back
     and compared: a put that was cut short is a failure here, not a body that fails a customer's
     download later.
     """
@@ -171,8 +201,16 @@ def upload_missing(bundle: Path, missing: list[str], remote: str) -> None:
     try:
         for number, group in enumerate(groups, 1):
             stage = stage_batch(bundle, group, workdir)
-            fly("ssh", "sftp", "put", "-r", "-g", str(stage), f"{REMOTE_ROOT}/{remote}/",
-                "--app", APP, timeout=EXEC_TIMEOUT)
+            archive = workdir / f"batch-{number}.tar"
+            with tarfile.open(archive, "w") as stream:
+                for digest in group:
+                    relative = f"blobs/sha256/{digest[:2]}/{digest}"
+                    stream.add(stage / relative, arcname=relative, recursive=False)
+            remote_archive = f"{REMOTE_ROOT}/{remote}/batch-{number}.tar"
+            fly("ssh", "sftp", "put", str(archive), remote_archive,
+                "--machine", MACHINE, "--app", APP, timeout=EXEC_TIMEOUT)
+            extract_archive(remote_archive, hashlib.sha256(archive.read_bytes()).hexdigest(),
+                            f"{REMOTE_ROOT}/{remote}")
             print(f"  batch {number}/{len(groups)}: {len(group)} blobs, "
                   f"{sum(sizes.get(digest, 0) for digest in group) // 1024} KiB", flush=True)
     finally:
@@ -186,28 +224,58 @@ def upload_missing(bundle: Path, missing: list[str], remote: str) -> None:
 
 
 def active_release() -> str:
-    """The release the store's pointer names now, or an empty string when it cannot be read."""
+    """The publicly observed active view, or unknown. Publication uses a server-side CAS too."""
     try:
-        status = machine_exec(
-            f"{AS_SERVICE} loop-engine service catalogue-status --config /data/host.json",
-            as_service=True, timeout=120)
-    except (RuntimeError, ValueError):
-        return ""
-    try:
-        return (json.loads(status).get("result", {}) or {}).get("active_release_id", "")
-    except ValueError:
+        root = Path(__file__).resolve().parents[1]
+        hostname = json.loads((root / "src/loop_engine/core/service_runtime/web_site_map.json").read_text())["canonical_hostname"]
+        address = urlunsplit(("https", hostname, "/api/v1/health", "", ""))
+        with urlopen(address, timeout=15) as response:
+            raw = response.read(128 * 1024 + 1)
+        if len(raw) > 128 * 1024:
+            return ""
+        identifier = json.loads(raw)["result"]["catalogue_release"]["release_id"]
+        return identifier if isinstance(identifier, str) and re.fullmatch(r"[0-9a-f]{64}", identifier) else ""
+    except (OSError, ValueError, KeyError):
         return ""
 
 
-def publish(name: str, bundle: Path, digest: str) -> dict:
+def base_digests(folder: Path) -> set[str]:
+    """An earlier validated bundle supplies an upload optimization, never publication authority.
+
+    The service rechecks every referenced body before activation. Missing or
+    incorrect prior inventory therefore refuses publication rather than
+    publishing partial content. Hash the inventory before trusting its names.
+    """
+    header = json.loads((folder / "bundle.json").read_bytes())
+    inventory = (folder / "items.jsonl").read_bytes()
+    if hashlib.sha256(inventory).hexdigest() != header["items_digest"]:
+        raise ValueError("the base bundle inventory does not match its header")
+    rows = [json.loads(line) for line in inventory.splitlines()]
+    if len(rows) != header["items"]:
+        raise ValueError("the base bundle population differs from its header")
+    return {file["digest"] for row in rows for file in row["package"]["files"]}
+
+
+def publish(name: str, bundle: Path, digest: str, *, base_bundle: Path | None = None,
+            base_release: str | None = None) -> dict:
     """Upload what is missing, write the release folder, and move the pointer by the ordinary command."""
-    remote = f"delta-{name}-{int(time.time())}"
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,95}", name):
+        raise ValueError("a release name must be one safe path segment")
+    if not re.fullmatch(r"[0-9a-f]{64}", digest) or hashlib.sha256((bundle / "bundle.json").read_bytes()).hexdigest() != digest:
+        raise ValueError("the expected bundle digest must match the local header before upload")
+    if base_bundle is not None and (not base_release or not re.fullmatch(r"[0-9a-f]{64}", base_release)):
+        raise ValueError("a base bundle requires the exact release it represents")
+    if base_release is not None and active_release() != base_release:
+        raise RuntimeError("the active release differs from the declared base; no upload was started")
+    remote = f"delta-{name}-{uuid.uuid4().hex[:12]}"
+    result_path = f"{REMOTE_ROOT}/{remote}/publish-result.json"
+    kept_receipt = f"{REMOTE_ROOT}/{remote}.publish.json"
     machine_exec(f"mkdir -p {REMOTE_ROOT}/{remote}/blobs/sha256")
 
     local = blob_digests(bundle)
     sizes = {path.name: path.stat().st_size
              for path in (bundle / "blobs" / "sha256").glob("*/*") if path.is_file()}
-    present = remote_digests()
+    present = base_digests(base_bundle) if base_bundle is not None else remote_digests()
     missing = [value for value in local if value not in present]
     total_bytes = sum(sizes.values())
     missing_bytes = sum(sizes[value] for value in missing)
@@ -223,16 +291,19 @@ def publish(name: str, bundle: Path, digest: str) -> dict:
     upload_missing(bundle, missing, remote)
     for filename in ("bundle.json", "items.jsonl"):
         fly("ssh", "sftp", "put", str(bundle / filename), f"{REMOTE_ROOT}/{remote}/{filename}",
-            "--app", APP, timeout=EXEC_TIMEOUT)
-    machine_exec(f"{AS_SERVICE} chown -R 65534:65534 {REMOTE_ROOT}/{remote}", as_service=True, timeout=300)
+            "--machine", MACHINE, "--app", APP, timeout=EXEC_TIMEOUT)
+    # Payloads are readable; only the receipt's containing directory needs service ownership.
+    machine_exec(f"chown 65534:65534 {REMOTE_ROOT}/{remote}", timeout=60)
 
     before = active_release()
     if not before:
         raise RuntimeError("the active release could not be read before publishing; nothing was published")
+    if base_release is not None and before != base_release:
+        raise RuntimeError("the active release differs from the declared base; rebuild the combined snapshot")
     machine_exec(
         f"{AS_SERVICE} sh -c 'nohup loop-engine service publish-catalogue --config /data/host.json "
-        f"--bundle {REMOTE_ROOT}/{remote} --expected-bundle-digest {digest} "
-        f"> {REMOTE_ROOT}/delta.publish.json 2>&1 &'", as_service=True, timeout=120)
+        f"--bundle {REMOTE_ROOT}/{remote} --expected-bundle-digest {digest} --expected-release {before} "
+        f"> {result_path} 2>&1 &'", as_service=True, timeout=120)
 
     deadline = time.monotonic() + POINTER_WAIT_SECONDS
     minute = 0
@@ -240,19 +311,29 @@ def publish(name: str, bundle: Path, digest: str) -> dict:
         time.sleep(60)
         minute += 1
         now = active_release()
-        if now and now != before:
-            machine_exec(f"rm -r {REMOTE_ROOT}/{remote} {REMOTE_ROOT}/delta.publish.json", timeout=300)
-            return {"published": True, "active_release_id": now, "waited_minutes": minute, **plan}
+        if now:
+            try:
+                receipt = json.loads(machine_exec(f"tail -c 8192 {result_path}", timeout=60))
+                result = receipt.get("result", receipt)
+            except (RuntimeError, ValueError):
+                result = {}
+            if result.get("release_id") == now and result.get("bundle_digest") == digest:
+                # Keep the receipt. Only this completed, identified staging folder is disposable.
+                machine_exec(f"cp {result_path} {kept_receipt}", timeout=60)
+                machine_exec(f"rm -r {REMOTE_ROOT}/{remote}", timeout=300)
+                return {"published": True, "active_release_id": now, "waited_minutes": minute,
+                        "receipt": kept_receipt, **plan}
         try:
             refused = machine_exec(
-                f"grep -q '\\\"refused\\\": true\\|Error\\|Traceback' {REMOTE_ROOT}/delta.publish.json "
-                f"&& head -c 1200 {REMOTE_ROOT}/delta.publish.json", timeout=60)
+                f"grep -q '\\\"refused\\\": true\\|Error\\|Traceback' {result_path} "
+                f"&& head -c 1200 {result_path}", timeout=60)
         except RuntimeError:
             refused = ""
         if refused:
             raise RuntimeError(f"the publish refused:\n{refused}")
         print(f"  publishing, minute {minute} (active still {before[:12]})", flush=True)
-    raise RuntimeError("the active release did not change within two hours; nothing was published")
+    raise RuntimeError("the expected release was not confirmed before the wait deadline; inspect its receipt "
+                       "and active state before retrying the uncertain publication")
 
 
 def main() -> int:
@@ -260,6 +341,9 @@ def main() -> int:
     parser.add_argument("name")
     parser.add_argument("bundle_folder", type=Path)
     parser.add_argument("bundle_digest")
+    parser.add_argument("--base-bundle", type=Path,
+                        help="previous validated bundle inventory; avoids scanning the remote volume")
+    parser.add_argument("--base-release", help="the active release represented by the base bundle")
     parser.add_argument("--dry-run", action="store_true",
                         help="report the delta and write nothing")
     arguments = parser.parse_args()
@@ -272,7 +356,7 @@ def main() -> int:
         local = blob_digests(bundle)
         sizes = {path.name: path.stat().st_size
                  for path in (bundle / "blobs" / "sha256").glob("*/*") if path.is_file()}
-        present = remote_digests()
+        present = base_digests(arguments.base_bundle) if arguments.base_bundle is not None else remote_digests()
         missing = [value for value in local if value not in present]
         total = sum(sizes.values())
         print(json.dumps({"local_blobs": len(local), "already_present": len(local) - len(missing),
@@ -282,7 +366,8 @@ def main() -> int:
                           "batches": len(group_batches(missing, sizes))}, indent=2))
         return 0
     try:
-        print(json.dumps(publish(arguments.name, bundle, arguments.bundle_digest), indent=2))
+        print(json.dumps(publish(arguments.name, bundle, arguments.bundle_digest,
+                                 base_bundle=arguments.base_bundle, base_release=arguments.base_release), indent=2))
     except RuntimeError as error:
         print(f"the delta publish failed: {error}", file=sys.stderr)
         return 1
