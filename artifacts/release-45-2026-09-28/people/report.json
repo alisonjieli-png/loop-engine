@@ -1,0 +1,1882 @@
+{
+ "record_type": "live_site_for_people_check/v1",
+ "origin": "https://baltor.ai",
+ "checked_at": "2026-09-28T23:26:44.298Z",
+ "pages": 57,
+ "hostnames": 9,
+ "views": 237,
+ "links_checked": 353,
+ "problems": [],
+ "passed": true,
+ "rows": [
+  {
+   "address": "/",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Stop pasting skills into every project.",
+   "script_errors": 0
+  },
+  {
+   "address": "/get-started",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Get started with Baltor.",
+   "script_errors": 0
+  },
+  {
+   "address": "/setup",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Three steps to your first download.",
+   "script_errors": 0
+  },
+  {
+   "address": "/connect",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Three steps to your first download.",
+   "script_errors": 0
+  },
+  {
+   "address": "/how-it-works",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Big problems.Clear steps.",
+   "script_errors": 0
+  },
+  {
+   "address": "/pricing",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "One plan.The whole library.",
+   "script_errors": 0
+  },
+  {
+   "address": "/examples",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "See Baltor at work",
+   "script_errors": 0
+  },
+  {
+   "address": "/library",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "15,146 reviewed packages, ready for your harness",
+   "script_errors": 0
+  },
+  {
+   "address": "/directory",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "MCP servers and agent APIs.",
+   "script_errors": 0
+  },
+  {
+   "address": "/mcp-directory",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "MCP servers and agent APIs.",
+   "script_errors": 0
+  },
+  {
+   "address": "/use-cases",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "What teams do with Baltor.",
+   "script_errors": 0
+  },
+  {
+   "address": "/overnight",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Hand off the big job before you log off",
+   "script_errors": 0
+  },
+  {
+   "address": "/efficiency",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Stop paying for work already done",
+   "script_errors": 0
+  },
+  {
+   "address": "/learning",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Every run leaves a record",
+   "script_errors": 0
+  },
+  {
+   "address": "/for/coding-agents",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Your coding agent should not start from nothing",
+   "script_errors": 0
+  },
+  {
+   "address": "/for/engineering-teams",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Every agent on your team, one library",
+   "script_errors": 0
+  },
+  {
+   "address": "/for/comparing-tools",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "What Baltor is, and what it costs",
+   "script_errors": 0
+  },
+  {
+   "address": "/for/protocol-and-client",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "The protocol, the client and the setup",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Set up, search and download.",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/getting-set-up",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Three steps to your first download.",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/searching-and-retrieving",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Searching and retrieving",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/serving-and-connections",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Serving and connections",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/troubleshooting",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Troubleshooting",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/your-account",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Your account",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/usage-and-what-you-pay-for",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Usage and what you pay for",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/quickstart-claude-code",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Claude Code quickstart",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/quickstart-codex",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Codex quickstart",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/quickstart-opencode",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "OpenCode quickstart",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/quickstart-pi",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Pi quickstart",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/quickstart-baltor-harness",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Baltor Harness quickstart",
+   "script_errors": 0
+  },
+  {
+   "address": "/security",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Know what you share. Control what runs.",
+   "script_errors": 0
+  },
+  {
+   "address": "/status",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Service status",
+   "script_errors": 0
+  },
+  {
+   "address": "/models",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Models, open and hosted",
+   "script_errors": 0
+  },
+  {
+   "address": "/endpoints",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Endpoints and local runtimes",
+   "script_errors": 0
+  },
+  {
+   "address": "/can-i-run",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Can I run it?",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/what-baltor-is",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "What Baltor is",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/component-concepts",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Components, packages and files",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/updates-and-withdrawals",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Updates and withdrawals",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/common-questions",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Common questions",
+   "script_errors": 0
+  },
+  {
+   "address": "/waitlist",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Get started with Baltor.",
+   "script_errors": 0
+  },
+  {
+   "address": "/login",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Welcome back.",
+   "script_errors": 0
+  },
+  {
+   "address": "/privacy",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Baltor privacy notice",
+   "script_errors": 0
+  },
+  {
+   "address": "/terms",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Baltor terms of service",
+   "script_errors": 0
+  },
+  {
+   "address": "/deck",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "The right setup for every step your agent takes.",
+   "script_errors": 0
+  },
+  {
+   "address": "/signup",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Create your Baltor account.",
+   "script_errors": 0
+  },
+  {
+   "address": "/app",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Find material for your next task.",
+   "script_errors": 0
+  },
+  {
+   "address": "/account",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Overview",
+   "script_errors": 0
+  },
+  {
+   "address": "/admin",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Administration",
+   "script_errors": 0
+  },
+  {
+   "address": "/demo",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Clean a customer file in five steps",
+   "script_errors": 0
+  },
+  {
+   "address": "/demo/kaggle",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "From the metric to the submission",
+   "script_errors": 0
+  },
+  {
+   "address": "/case-studies/data-cleanup",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Data cleanup with and without Baltor",
+   "script_errors": 0
+  },
+  {
+   "address": "/case-studies/pi-and-gemma-4",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Pi and Gemma 4, from search to use",
+   "script_errors": 0
+  },
+  {
+   "address": "/case-studies/sign-up-protection",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Only Baltor can create your account",
+   "script_errors": 0
+  },
+  {
+   "address": "/case-studies/decision-red-team",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Modern slavery indicators in business-framed requests",
+   "script_errors": 0
+  },
+  {
+   "address": "/changelog",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Changelog",
+   "script_errors": 0
+  },
+  {
+   "address": "/features",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "What Baltor does today",
+   "script_errors": 0
+  },
+  {
+   "address": "/todo",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Open work",
+   "script_errors": 0
+  },
+  {
+   "address": "/",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Stop pasting skills into every project.",
+   "script_errors": 0
+  },
+  {
+   "address": "/get-started",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Get started with Baltor.",
+   "script_errors": 0
+  },
+  {
+   "address": "/setup",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Three steps to your first download.",
+   "script_errors": 0
+  },
+  {
+   "address": "/connect",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Three steps to your first download.",
+   "script_errors": 0
+  },
+  {
+   "address": "/how-it-works",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Big problems.Clear steps.",
+   "script_errors": 0
+  },
+  {
+   "address": "/pricing",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "One plan.The whole library.",
+   "script_errors": 0
+  },
+  {
+   "address": "/examples",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "See Baltor at work",
+   "script_errors": 0
+  },
+  {
+   "address": "/library",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "15,146 reviewed packages, ready for your harness",
+   "script_errors": 0
+  },
+  {
+   "address": "/directory",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "MCP servers and agent APIs.",
+   "script_errors": 0
+  },
+  {
+   "address": "/mcp-directory",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "MCP servers and agent APIs.",
+   "script_errors": 0
+  },
+  {
+   "address": "/use-cases",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "What teams do with Baltor.",
+   "script_errors": 0
+  },
+  {
+   "address": "/overnight",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Hand off the big job before you log off",
+   "script_errors": 0
+  },
+  {
+   "address": "/efficiency",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Stop paying for work already done",
+   "script_errors": 0
+  },
+  {
+   "address": "/learning",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Every run leaves a record",
+   "script_errors": 0
+  },
+  {
+   "address": "/for/coding-agents",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Your coding agent should not start from nothing",
+   "script_errors": 0
+  },
+  {
+   "address": "/for/engineering-teams",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Every agent on your team, one library",
+   "script_errors": 0
+  },
+  {
+   "address": "/for/comparing-tools",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "What Baltor is, and what it costs",
+   "script_errors": 0
+  },
+  {
+   "address": "/for/protocol-and-client",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "The protocol, the client and the setup",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Set up, search and download.",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/getting-set-up",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Three steps to your first download.",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/searching-and-retrieving",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Searching and retrieving",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/serving-and-connections",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Serving and connections",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/troubleshooting",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Troubleshooting",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/your-account",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Your account",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/usage-and-what-you-pay-for",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Usage and what you pay for",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/quickstart-claude-code",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Claude Code quickstart",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/quickstart-codex",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Codex quickstart",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/quickstart-opencode",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "OpenCode quickstart",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/quickstart-pi",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Pi quickstart",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/quickstart-baltor-harness",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Baltor Harness quickstart",
+   "script_errors": 0
+  },
+  {
+   "address": "/security",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Know what you share. Control what runs.",
+   "script_errors": 0
+  },
+  {
+   "address": "/status",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Service status",
+   "script_errors": 0
+  },
+  {
+   "address": "/models",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Models, open and hosted",
+   "script_errors": 0
+  },
+  {
+   "address": "/endpoints",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Endpoints and local runtimes",
+   "script_errors": 0
+  },
+  {
+   "address": "/can-i-run",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Can I run it?",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/what-baltor-is",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "What Baltor is",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/component-concepts",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Components, packages and files",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/updates-and-withdrawals",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Updates and withdrawals",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/common-questions",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Common questions",
+   "script_errors": 0
+  },
+  {
+   "address": "/waitlist",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Get started with Baltor.",
+   "script_errors": 0
+  },
+  {
+   "address": "/login",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Welcome back.",
+   "script_errors": 0
+  },
+  {
+   "address": "/privacy",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Baltor privacy notice",
+   "script_errors": 0
+  },
+  {
+   "address": "/terms",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Baltor terms of service",
+   "script_errors": 0
+  },
+  {
+   "address": "/deck",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "The right setup for every step your agent takes.",
+   "script_errors": 0
+  },
+  {
+   "address": "/signup",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Create your Baltor account.",
+   "script_errors": 0
+  },
+  {
+   "address": "/app",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Find material for your next task.",
+   "script_errors": 0
+  },
+  {
+   "address": "/account",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Overview",
+   "script_errors": 0
+  },
+  {
+   "address": "/admin",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Administration",
+   "script_errors": 0
+  },
+  {
+   "address": "/demo",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Clean a customer file in five steps",
+   "script_errors": 0
+  },
+  {
+   "address": "/demo/kaggle",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "From the metric to the submission",
+   "script_errors": 0
+  },
+  {
+   "address": "/case-studies/data-cleanup",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Data cleanup with and without Baltor",
+   "script_errors": 0
+  },
+  {
+   "address": "/case-studies/pi-and-gemma-4",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Pi and Gemma 4, from search to use",
+   "script_errors": 0
+  },
+  {
+   "address": "/case-studies/sign-up-protection",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Only Baltor can create your account",
+   "script_errors": 0
+  },
+  {
+   "address": "/case-studies/decision-red-team",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Modern slavery indicators in business-framed requests",
+   "script_errors": 0
+  },
+  {
+   "address": "/changelog",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Changelog",
+   "script_errors": 0
+  },
+  {
+   "address": "/features",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "What Baltor does today",
+   "script_errors": 0
+  },
+  {
+   "address": "/todo",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Open work",
+   "script_errors": 0
+  },
+  {
+   "address": "/",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Stop pasting skills into every project.",
+   "script_errors": 0
+  },
+  {
+   "address": "/get-started",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Get started with Baltor.",
+   "script_errors": 0
+  },
+  {
+   "address": "/setup",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Three steps to your first download.",
+   "script_errors": 0
+  },
+  {
+   "address": "/connect",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Three steps to your first download.",
+   "script_errors": 0
+  },
+  {
+   "address": "/how-it-works",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Big problems.Clear steps.",
+   "script_errors": 0
+  },
+  {
+   "address": "/pricing",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "One plan.The whole library.",
+   "script_errors": 0
+  },
+  {
+   "address": "/examples",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "See Baltor at work",
+   "script_errors": 0
+  },
+  {
+   "address": "/library",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "15,146 reviewed packages, ready for your harness",
+   "script_errors": 0
+  },
+  {
+   "address": "/directory",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "MCP servers and agent APIs.",
+   "script_errors": 0
+  },
+  {
+   "address": "/mcp-directory",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "MCP servers and agent APIs.",
+   "script_errors": 0
+  },
+  {
+   "address": "/use-cases",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "What teams do with Baltor.",
+   "script_errors": 0
+  },
+  {
+   "address": "/overnight",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Hand off the big job before you log off",
+   "script_errors": 0
+  },
+  {
+   "address": "/efficiency",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Stop paying for work already done",
+   "script_errors": 0
+  },
+  {
+   "address": "/learning",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Every run leaves a record",
+   "script_errors": 0
+  },
+  {
+   "address": "/for/coding-agents",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Your coding agent should not start from nothing",
+   "script_errors": 0
+  },
+  {
+   "address": "/for/engineering-teams",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Every agent on your team, one library",
+   "script_errors": 0
+  },
+  {
+   "address": "/for/comparing-tools",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "What Baltor is, and what it costs",
+   "script_errors": 0
+  },
+  {
+   "address": "/for/protocol-and-client",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "The protocol, the client and the setup",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Set up, search and download.",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/getting-set-up",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Three steps to your first download.",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/searching-and-retrieving",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Searching and retrieving",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/serving-and-connections",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Serving and connections",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/troubleshooting",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Troubleshooting",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/your-account",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Your account",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/usage-and-what-you-pay-for",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Usage and what you pay for",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/quickstart-claude-code",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Claude Code quickstart",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/quickstart-codex",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Codex quickstart",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/quickstart-opencode",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "OpenCode quickstart",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/quickstart-pi",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Pi quickstart",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/quickstart-baltor-harness",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Baltor Harness quickstart",
+   "script_errors": 0
+  },
+  {
+   "address": "/security",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Know what you share. Control what runs.",
+   "script_errors": 0
+  },
+  {
+   "address": "/status",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Service status",
+   "script_errors": 0
+  },
+  {
+   "address": "/models",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Models, open and hosted",
+   "script_errors": 0
+  },
+  {
+   "address": "/endpoints",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Endpoints and local runtimes",
+   "script_errors": 0
+  },
+  {
+   "address": "/can-i-run",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Can I run it?",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/what-baltor-is",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "What Baltor is",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/component-concepts",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Components, packages and files",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/updates-and-withdrawals",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Updates and withdrawals",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/common-questions",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Common questions",
+   "script_errors": 0
+  },
+  {
+   "address": "/waitlist",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Get started with Baltor.",
+   "script_errors": 0
+  },
+  {
+   "address": "/login",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Welcome back.",
+   "script_errors": 0
+  },
+  {
+   "address": "/privacy",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Baltor privacy notice",
+   "script_errors": 0
+  },
+  {
+   "address": "/terms",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Baltor terms of service",
+   "script_errors": 0
+  },
+  {
+   "address": "/deck",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "The right setup for every step your agent takes.",
+   "script_errors": 0
+  },
+  {
+   "address": "/signup",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Create your Baltor account.",
+   "script_errors": 0
+  },
+  {
+   "address": "/app",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Find material for your next task.",
+   "script_errors": 0
+  },
+  {
+   "address": "/account",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Overview",
+   "script_errors": 0
+  },
+  {
+   "address": "/admin",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Administration",
+   "script_errors": 0
+  },
+  {
+   "address": "/demo",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Clean a customer file in five steps",
+   "script_errors": 0
+  },
+  {
+   "address": "/demo/kaggle",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "From the metric to the submission",
+   "script_errors": 0
+  },
+  {
+   "address": "/case-studies/data-cleanup",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Data cleanup with and without Baltor",
+   "script_errors": 0
+  },
+  {
+   "address": "/case-studies/pi-and-gemma-4",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Pi and Gemma 4, from search to use",
+   "script_errors": 0
+  },
+  {
+   "address": "/case-studies/sign-up-protection",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Only Baltor can create your account",
+   "script_errors": 0
+  },
+  {
+   "address": "/case-studies/decision-red-team",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Modern slavery indicators in business-framed requests",
+   "script_errors": 0
+  },
+  {
+   "address": "/changelog",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Changelog",
+   "script_errors": 0
+  },
+  {
+   "address": "/features",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "What Baltor does today",
+   "script_errors": 0
+  },
+  {
+   "address": "/todo",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Open work",
+   "script_errors": 0
+  },
+  {
+   "address": "/",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Stop pasting skills into every project.",
+   "script_errors": 0
+  },
+  {
+   "address": "/get-started",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Get started with Baltor.",
+   "script_errors": 0
+  },
+  {
+   "address": "/setup",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Three steps to your first download.",
+   "script_errors": 0
+  },
+  {
+   "address": "/connect",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Three steps to your first download.",
+   "script_errors": 0
+  },
+  {
+   "address": "/how-it-works",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Big problems.Clear steps.",
+   "script_errors": 0
+  },
+  {
+   "address": "/pricing",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "One plan.The whole library.",
+   "script_errors": 0
+  },
+  {
+   "address": "/examples",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "See Baltor at work",
+   "script_errors": 0
+  },
+  {
+   "address": "/library",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "15,146 reviewed packages, ready for your harness",
+   "script_errors": 0
+  },
+  {
+   "address": "/directory",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "MCP servers and agent APIs.",
+   "script_errors": 0
+  },
+  {
+   "address": "/mcp-directory",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "MCP servers and agent APIs.",
+   "script_errors": 0
+  },
+  {
+   "address": "/use-cases",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "What teams do with Baltor.",
+   "script_errors": 0
+  },
+  {
+   "address": "/overnight",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Hand off the big job before you log off",
+   "script_errors": 0
+  },
+  {
+   "address": "/efficiency",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Stop paying for work already done",
+   "script_errors": 0
+  },
+  {
+   "address": "/learning",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Every run leaves a record",
+   "script_errors": 0
+  },
+  {
+   "address": "/for/coding-agents",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Your coding agent should not start from nothing",
+   "script_errors": 0
+  },
+  {
+   "address": "/for/engineering-teams",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Every agent on your team, one library",
+   "script_errors": 0
+  },
+  {
+   "address": "/for/comparing-tools",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "What Baltor is, and what it costs",
+   "script_errors": 0
+  },
+  {
+   "address": "/for/protocol-and-client",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "The protocol, the client and the setup",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Set up, search and download.",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/getting-set-up",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Three steps to your first download.",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/searching-and-retrieving",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Searching and retrieving",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/serving-and-connections",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Serving and connections",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/troubleshooting",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Troubleshooting",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/your-account",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Your account",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/usage-and-what-you-pay-for",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Usage and what you pay for",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/quickstart-claude-code",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Claude Code quickstart",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/quickstart-codex",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Codex quickstart",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/quickstart-opencode",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "OpenCode quickstart",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/quickstart-pi",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Pi quickstart",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/quickstart-baltor-harness",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Baltor Harness quickstart",
+   "script_errors": 0
+  },
+  {
+   "address": "/security",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Know what you share. Control what runs.",
+   "script_errors": 0
+  },
+  {
+   "address": "/status",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Service status",
+   "script_errors": 0
+  },
+  {
+   "address": "/models",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Models, open and hosted",
+   "script_errors": 0
+  },
+  {
+   "address": "/endpoints",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Endpoints and local runtimes",
+   "script_errors": 0
+  },
+  {
+   "address": "/can-i-run",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Can I run it?",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/what-baltor-is",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "What Baltor is",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/component-concepts",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Components, packages and files",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/updates-and-withdrawals",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Updates and withdrawals",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/common-questions",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Common questions",
+   "script_errors": 0
+  },
+  {
+   "address": "/waitlist",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Get started with Baltor.",
+   "script_errors": 0
+  },
+  {
+   "address": "/login",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Welcome back.",
+   "script_errors": 0
+  },
+  {
+   "address": "/privacy",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Baltor privacy notice",
+   "script_errors": 0
+  },
+  {
+   "address": "/terms",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Baltor terms of service",
+   "script_errors": 0
+  },
+  {
+   "address": "/deck",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "The right setup for every step your agent takes.",
+   "script_errors": 0
+  },
+  {
+   "address": "/signup",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Create your Baltor account.",
+   "script_errors": 0
+  },
+  {
+   "address": "/app",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Find material for your next task.",
+   "script_errors": 0
+  },
+  {
+   "address": "/account",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Overview",
+   "script_errors": 0
+  },
+  {
+   "address": "/admin",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Administration",
+   "script_errors": 0
+  },
+  {
+   "address": "/demo",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Clean a customer file in five steps",
+   "script_errors": 0
+  },
+  {
+   "address": "/demo/kaggle",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "From the metric to the submission",
+   "script_errors": 0
+  },
+  {
+   "address": "/case-studies/data-cleanup",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Data cleanup with and without Baltor",
+   "script_errors": 0
+  },
+  {
+   "address": "/case-studies/pi-and-gemma-4",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Pi and Gemma 4, from search to use",
+   "script_errors": 0
+  },
+  {
+   "address": "/case-studies/sign-up-protection",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Only Baltor can create your account",
+   "script_errors": 0
+  },
+  {
+   "address": "/case-studies/decision-red-team",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Modern slavery indicators in business-framed requests",
+   "script_errors": 0
+  },
+  {
+   "address": "/changelog",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Changelog",
+   "script_errors": 0
+  },
+  {
+   "address": "/features",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "What Baltor does today",
+   "script_errors": 0
+  },
+  {
+   "address": "/todo",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Open work",
+   "script_errors": 0
+  },
+  {
+   "hostname": "baltor.ai",
+   "status": 200,
+   "heading": "Stop pasting skills into every project."
+  },
+  {
+   "hostname": "www.baltor.ai",
+   "status": 200,
+   "heading": "Stop pasting skills into every project."
+  },
+  {
+   "hostname": "docs.baltor.ai",
+   "status": 200,
+   "heading": "Stop pasting skills into every project."
+  },
+  {
+   "hostname": "status.baltor.ai",
+   "status": 200,
+   "heading": "Stop pasting skills into every project."
+  },
+  {
+   "hostname": "examples.baltor.ai",
+   "status": 200,
+   "heading": "Stop pasting skills into every project."
+  },
+  {
+   "hostname": "demo.baltor.ai",
+   "status": 200,
+   "heading": "Stop pasting skills into every project."
+  },
+  {
+   "hostname": "app.baltor.ai",
+   "status": 200,
+   "heading": "Stop pasting skills into every project."
+  },
+  {
+   "hostname": "deck.baltor.ai",
+   "status": 200,
+   "heading": "The right setup for every step your agent takes."
+  },
+  {
+   "hostname": "redteam.baltor.ai",
+   "status": 200,
+   "heading": "Modern slavery indicators in business-framed requests"
+  }
+ ]
+}

@@ -100,9 +100,12 @@ try{
   const startsAtHeadline=value=>value.first==="H1"&&value.badges===0;
   check("live_homepage_opens_with_headline_without_category_badge",startsAtHeadline(heroOpening),heroOpening);
   check("category_badge_check_rejects_the_removed_pill",!startsAtHeadline({first:"P",badges:1})&&!startsAtHeadline({first:"H1",badges:1})&&startsAtHeadline({first:"H1",badges:0}));
-  /* The owner's category line stays in full in the footer, and the hero names the five harnesses the owner named, in order. */
+  /* The owner's category line stays in full in the footer, and the hero names the five harnesses the owner named, in order.
+     The two groups are separate claims: the five whose file placement was tested, and the protocol clients that only
+     connect. Only the first carries that claim, so only the first group is read here. Reading both counted the
+     protocol clients as placement claims, which is the false claim the owner asked to have corrected. */
   const liveCategory=await page.evaluate(()=>({footer:[...document.querySelectorAll("footer .footer-brand p")].map(node=>node.textContent.replace(/\s+/g," ").trim()).join("\n"),
-    harnesses:[...document.querySelectorAll('[data-view="home"] .hero-harnesses li')].filter(node=>node.getClientRects().length>0).map(node=>node.textContent.replace(/\s+/g," ").trim())}));
+    harnesses:[...document.querySelectorAll('[data-view="home"] .hero-harnesses:not(.hero-harnesses-protocol) li')].filter(node=>node.getClientRects().length>0).map(node=>node.textContent.replace(/\s+/g," ").trim())}));
   check("live_owner_category_line_stays_in_full_and_the_hero_names_the_harnesses",categoryProblems(liveCategory).length===0);
   check("category_line_check_rejects_a_shortened_line_a_missing_harness_and_a_status",categoryProblems({...liveCategory,footer:"Optimized operation."}).length===1
     &&categoryProblems({...liveCategory,harnesses:heroHarnesses.filter(name=>name!=="Pi")}).length===1&&categoryProblems({...liveCategory,harnesses:heroHarnesses.map(name=>name==="Pi"?"Pi Planned":name)}).length===1);

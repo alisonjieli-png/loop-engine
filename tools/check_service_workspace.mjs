@@ -815,7 +815,7 @@ try {
      on September 23, 2026, in that order, with no status word beside any of them. */
   const heroHarnesses=["Claude Code","Codex","OpenCode","Pi","Baltor Harness"];
   const categoryState=await page.evaluate(()=>({footer:[...document.querySelectorAll("footer .footer-brand p")].map(node=>node.textContent.replace(/\s+/g," ").trim()).join("\n"),
-    harnesses:[...document.querySelectorAll('[data-view="home"] .hero-harnesses li')].filter(node=>node.getClientRects().length>0).map(node=>node.textContent.replace(/\s+/g," ").trim())}));
+    harnesses:[...document.querySelectorAll('[data-view="home"] .hero-harnesses:not(.hero-harnesses-protocol) li')].filter(node=>node.getClientRects().length>0).map(node=>node.textContent.replace(/\s+/g," ").trim())}));
   const categoryProblems=state=>[...(/^Harness and agent optimized operation\.$/m.test(state.footer)?[]:["the footer does not carry the category line in full"]),
     ...(JSON.stringify(state.harnesses)===JSON.stringify(heroHarnesses)?[]:["the hero names "+JSON.stringify(state.harnesses)])];
   check("the_owner_category_line_stays_in_full_and_the_hero_names_the_harnesses",categoryProblems(categoryState).length===0,{...categoryState,problems:categoryProblems(categoryState)});
@@ -1060,7 +1060,7 @@ try {
   await plain.goto(fixture.base+"/");
   const plainHome=await plain.evaluate(()=>({price:document.querySelector('[data-view="home"] .hero-price')?.textContent.replace(/\s+/g," ").trim()||"",
     actions:["hero-primary","hero-setup"].filter(id=>(document.getElementById(id)?.getClientRects().length||0)>0),
-    harnesses:[...document.querySelectorAll('[data-view="home"] .hero-harnesses li')].filter(node=>node.getClientRects().length>0).map(node=>node.textContent.trim())}));
+    harnesses:[...document.querySelectorAll('[data-view="home"] .hero-harnesses:not(.hero-harnesses-protocol) li')].filter(node=>node.getClientRects().length>0).map(node=>node.textContent.trim())}));
   const plainProblems=[...(statesThePlanAndPrice(plainHome.price)?[]:["the hero shows no price"]),...(plainHome.actions.length===2?[]:["the hero shows the actions "+JSON.stringify(plainHome.actions)]),
     ...(JSON.stringify(plainHome.harnesses)===JSON.stringify(heroHarnesses)?[]:["the hero names "+JSON.stringify(plainHome.harnesses)]),...useCaseProblems(await homeCards(plain,'[data-view="home"] [data-use-case]',"useCase"))];
   check("homepage_reads_when_the_script_has_not_run",plainProblems.length===0,{problems:plainProblems});

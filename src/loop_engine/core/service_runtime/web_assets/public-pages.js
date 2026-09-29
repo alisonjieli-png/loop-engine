@@ -14,7 +14,8 @@
 (() => {
   const RESULT = "service_http_result/v1", HEALTH = "service_health/v2", CAPABILITIES = "service_capabilities/v1";
   const CATALOGUE = "service_catalogue_view/v1";
-  const SKILL_ROOTS = {"claude-code": ".claude/skills/", "codex": ".agents/skills/", "opencode": ".opencode/skills/", "pi": ".pi/skills/"};
+  const SKILL_ROOTS = {"claude-code": ".claude/skills/", "codex": ".agents/skills/", "opencode": ".opencode/skills/", "pi": ".pi/skills/",
+    "baltor-harness": ".baltor/step/"};
   /* Plain words for each check the health record names. A check this page has no words for is shown by its own name. */
   const CHECK_WORDS = {
     durable_store_answers: "Stored records answer",
@@ -185,7 +186,8 @@
      file its reviewed recipe in client-recipes.json names. The search and the download above the folder are the same for every
      harness, so they do not change. Without this script the folder stays the Claude Code one the page serves. */
   const HERO_FILES = {"claude-code": {instructions: "CLAUDE.md", tools: ".mcp.json"}, codex: {instructions: "AGENTS.md", tools: ".codex/config.toml"},
-    opencode: {instructions: "AGENTS.md", tools: "opencode.json"}, pi: {instructions: "AGENTS.md", tools: ".pi/baltor.json"}};
+    opencode: {instructions: "AGENTS.md", tools: "opencode.json"}, pi: {instructions: "AGENTS.md", tools: ".pi/baltor.json"},
+    "baltor-harness": {instructions: "task.md", tools: "loop-engine solve"}};
   const heroHarnesses = document.querySelector("[data-hero-harnesses]");
   const pickHeroHarness = harness => {
     const files = HERO_FILES[harness], root = SKILL_ROOTS[harness];
@@ -193,11 +195,140 @@
     heroHarnesses.querySelectorAll("[data-hero-harness]").forEach(button => button.setAttribute("aria-pressed", String(button.dataset.heroHarness === harness)));
     const write = (name, text) => document.querySelectorAll('[data-hero-file="' + name + '"]').forEach(node => { node.textContent = text; });
     write("instructions", files.instructions); write("skills", root); write("tools", files.tools);
+    if (window.__baltorPaintTree) window.__baltorPaintTree();
   };
   heroHarnesses?.addEventListener("click", event => {
     const button = event.target.closest("[data-hero-harness]");
     if (button) pickHeroHarness(button.dataset.heroHarness);
   });
+
+  /* Three worked steps, not one small one. Each names the chain of components a step actually needs, the folder it
+     assembles, and what the step replaces. The first is the recorded run the service verified; the other two are
+     worked examples over components the library serves today, labelled as examples so no reader mistakes a planned
+     run for a measured one. Hovering or focusing a name swaps the whole terminal: the query, the search results, the
+     download, the file tree and the saving. */
+  const HERO_SCENARIOS = {
+    "dedupe": {
+      label: "Deduplicate a customer table",
+      query: "find duplicate customer records",
+      results: [
+        {name: "find_duplicate_records_with_blocking_keys", kind: "skill", licence: "MIT", size: "2.7 KB", digest: "f3f1d0ab"},
+        {name: "score_duplicate_pairs_by_weakest_signal", kind: "skill", licence: "MIT", size: "2.6 KB", digest: "55177178"}
+      ],
+      chosen: 0,
+      step: "step-3-find-duplicates",
+      tree: ["CLAUDE.md", ".claude/skills/", "find-duplicate-records-with-blocking-keys/", "SKILL.md", ".mcp.json", ".baltor/step.lock.json"],
+      replaces: "reading the whole table by hand to decide which rows are the same customer"
+    },
+    "overnight": {
+      label: "Fix a failing metric overnight",
+      query: "choose metrics and read the validation gap",
+      results: [
+        {name: "orient_on_a_task_and_write_its_contracts", kind: "skill", licence: "MIT", size: "3.1 KB", digest: "9a2c41de"},
+        {name: "read_the_train_validation_gap", kind: "skill", licence: "MIT", size: "2.4 KB", digest: "7d5e0b13"},
+        {name: "decide_whether_a_step_needs_a_model", kind: "skill", licence: "MIT", size: "1.9 KB", digest: "c40a8f62"}
+      ],
+      chosen: 1,
+      step: "step-2-close-the-validation-gap",
+      tree: ["CLAUDE.md", ".claude/skills/", "read-the-train-validation-gap/", "SKILL.md", "contracts/", "task.schema.json", ".mcp.json", ".baltor/step.lock.json"],
+      replaces: "a whole night of reading notebooks to find why the score stopped moving"
+    },
+    "handoff": {
+      label: "Hand a finished result over",
+      query: "report what was observed and what is unknown",
+      results: [
+        {name: "report_observed_derived_assumed_and_unknown", kind: "skill", licence: "MIT", size: "2.2 KB", digest: "b1e75a30"},
+        {name: "escalate_uncertain_values_with_candidates", kind: "skill", licence: "MIT", size: "2.0 KB", digest: "3e6c9d47"}
+      ],
+      chosen: 0,
+      step: "step-5-report-the-result",
+      tree: ["CLAUDE.md", ".claude/skills/", "report-observed-derived-assumed-and-unknown/", "SKILL.md", "report.md", "evidence/", ".mcp.json", ".baltor/step.lock.json"],
+      replaces: "writing a confident answer that hides which part was never checked"
+    }
+  };
+  const heroScenarioButtons = document.querySelectorAll("[data-hero-scenario]");
+  const paintScenario = key => {
+    const scenario = HERO_SCENARIOS[key];
+    const terminal = document.querySelector(".hero-terminal");
+    if (!scenario || !terminal) return;
+    terminal.dataset.heroScenario = key;
+    heroScenarioButtons.forEach(button => {
+      const on = button.dataset.heroScenario === key;
+      button.setAttribute("aria-pressed", String(on));
+      button.classList.toggle("is-active", on);
+    });
+    const query = terminal.querySelector("[data-demo-query]");
+    if (query) query.textContent = scenario.query;
+    const results = terminal.querySelector(".hero-results");
+    if (results) {
+      results.textContent = "";
+      scenario.results.forEach((item, index) => {
+        const row = document.createElement("li");
+        row.dataset.demoItem = item.name;
+        row.className = index === scenario.chosen ? "is-chosen" : "";
+        const name = document.createElement("span");
+        name.className = "hero-result-name";
+        name.textContent = item.name;
+        const facts = document.createElement("span");
+        facts.className = "hero-result-facts";
+        ["kind", "licence", "size"].forEach((keyName, position) => {
+          if (position) facts.append(" · ");
+          const fact = document.createElement("span");
+          fact.dataset.fact = keyName;
+          fact.textContent = item[keyName];
+          facts.append(fact);
+        });
+        facts.append(" · sha256 ");
+        const digest = document.createElement("span");
+        digest.dataset.fact = "digest";
+        digest.textContent = item.digest;
+        facts.append(digest, "…");
+        row.append(name, facts);
+        if (index === scenario.chosen) {
+          const chosen = document.createElement("span");
+          chosen.className = "hero-result-chosen";
+          chosen.textContent = "chosen";
+          row.append(chosen);
+        }
+        results.append(row);
+      });
+    }
+    const stepName = terminal.querySelector("[data-hero-step]");
+    if (stepName) stepName.textContent = scenario.step + "/";
+    const replaces = terminal.querySelector("[data-hero-replaces]");
+    if (replaces) replaces.textContent = scenario.replaces;
+    paintHeroTree(scenario);
+  };
+  /* The tree is rebuilt per scenario so a reader sees the folder that step needs, not the folder of the first one. */
+  const paintHeroTree = scenario => {
+    const tree = document.querySelector(".hero-tree");
+    if (!tree) return;
+    tree.textContent = "";
+    const harness = document.querySelector("[data-hero-harness][aria-pressed='true']")?.dataset.heroHarness || "claude-code";
+    const files = HERO_FILES[harness] || HERO_FILES["claude-code"];
+    const root = SKILL_ROOTS[harness] || SKILL_ROOTS["claude-code"];
+    const rows = scenario.tree;
+    rows.forEach((row, index) => {
+      const span = document.createElement("span");
+      if (row === files.instructions) { span.dataset.heroPart = "instructions"; span.dataset.heroFile = "instructions"; }
+      else if (row === root) { span.dataset.heroPart = "skills"; span.dataset.heroFile = "skills"; }
+      else if (row === files.tools) { span.dataset.heroPart = "tools"; span.dataset.heroFile = "tools"; }
+      const depth = rows.slice(0, index + 1).filter(value => !value.endsWith("/")).length;
+      span.textContent = row;
+      tree.append(document.createTextNode(index === 0 ? row : "│   ".repeat(Math.max(0, index - 1)) + "└── " + row), span);
+    });
+  };
+  heroScenarioButtons.forEach(button => {
+    const key = button.dataset.heroScenario;
+    button.addEventListener("mouseenter", () => paintScenario(key));
+    button.addEventListener("focus", () => paintScenario(key));
+    button.addEventListener("click", () => paintScenario(key));
+  });
+  window.__baltorPaintTree = () => {
+    const key = document.querySelector(".hero-terminal")?.dataset.heroScenario || "dedupe";
+    paintHeroTree(HERO_SCENARIOS[key] || HERO_SCENARIOS.dedupe);
+  };
+  if (heroScenarioButtons.length) paintScenario("dedupe");
 
   /* Each view acts when it opens: service.js marks the open view on the body. */
   let opened = "";

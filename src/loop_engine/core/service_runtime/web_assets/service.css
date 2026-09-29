@@ -670,3 +670,19 @@ main.status-page{flex:1 0 auto;display:flex;flex-direction:column;align-items:ce
 .results .empty h3{margin:0 0 .375rem;color:var(--ink);font-size:1rem}
 .results .empty p{max-width:28rem;margin:0 auto}
 .empty-mark{background:var(--tint,#FFECDD);color:var(--accent)}
+
+/* Three worked steps on the homepage terminal, September 28, 2026: the owner asked for a worked example that is not a
+   trivial one, and for the whole terminal to change with the reader's choice. Each button names the step; hovering,
+   focusing or clicking it repaints the query, the search results, the download, the file tree and the saving. */
+html [data-view="home"] .hero-scenarios{display:flex;flex-wrap:wrap;gap:.5rem;padding:.75rem 0 0}
+html [data-view="home"] .hero-scenarios button{flex:1 1 12rem;min-height:44px;margin:0;padding:.5rem .875rem;border:1px solid var(--night-rule);border-radius:8px;background:transparent;color:var(--night-muted);font-family:var(--font-sans);font-size:.8125rem;font-weight:600;line-height:1.3;text-align:left}
+html [data-view="home"] .hero-scenarios button:hover{border-color:var(--night-accent);color:var(--night-ink)}
+html [data-view="home"] .hero-scenarios button[aria-pressed="true"]{background:var(--night);border-color:var(--night);color:var(--night-ink)}
+html [data-view="home"] .hero-scenarios button:focus-visible{outline:2px solid var(--night-accent);outline-offset:2px}
+/* The two harness groups read as two different claims, so each carries its own plain sentence. */
+html [data-view="home"] .hero-works-group{margin-top:.75rem}
+/* The hero band is the night surface, so these two group headings take the night ink. They inherited the
+   light-mode ink and measured 1.02:1 against the dark band, which the contrast gate refused. */
+html [data-view="home"] .hero-works-group>p{margin:0 0 .5rem;font-size:.8125rem;font-weight:700;color:var(--night-ink)}
+html [data-view="home"] .hero-works-group .hero-works-more{color:var(--night-muted)}
+html [data-view="home"] .hero-works-group .hero-works-more{margin-top:.5rem}

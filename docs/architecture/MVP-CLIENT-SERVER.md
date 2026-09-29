@@ -2,7 +2,7 @@
 
 Kind: product architecture with measured local implementation and proposed hosting.
 Date: 2026-09-19. The [current deployment](#current-deployment) section was
-added on 2026-09-20 and last checked on 2026-09-27, after Fly release 40.
+added on 2026-09-20 and last checked on 2026-09-28, after Fly release 45.
 
 The hosted product manages accounts, subscriptions, and access to intelligence.
 The customer runs Loop Engine and the selected harnesses. A hosted intelligence
@@ -47,21 +47,27 @@ from the newest release record, follow the release record and correct this
 section. Update this section in the same change that records a new release.
 It describes a private pilot. It does not describe a qualified paid service.
 
-The latest deployment is Fly release 44, completed on September 28, 2026 at
-11:10:55 UTC and checked afterwards. It runs
+The latest deployment is Fly release 45, completed on September 28, 2026 at
+23:12:55 UTC and checked afterwards. It runs
+`3e6064bd7dd64249925c97784f1cf10e0d067d11`, the September 28 customer delivery
+train. Its image, rollback target, continuous integration and checks are
+recorded in [the release 45 evidence](../../artifacts/release-45-2026-09-28/README.md).
+Continuous integration and deployment both succeeded; the deployment gate is
+false. The visitor check found no problem across 57 pages, 237 views and 353
+links on nine hostnames. The hosted service check passed nineteen of nineteen.
+Catalogue checks passed seven of nine: the two failures are the demonstration
+pages printing facts from the repository's manifest anchor while the served
+catalogue still serves the release it was published from, and
+`tools/record_demonstration_steps.py` now owns that class. Release 44 is the
+rollback target.
+
+Release 44, completed on September 28, 2026 at 11:10:55 UTC from
 `d4542e93c702dbb529be057ee9f480d40217691c`, the fifth consolidation train of
-September 27. Its image, rollback target, continuous integration and checks
-are recorded in
+September 27, is retained as the rollback target; its checks are in
 [`pilot-release-44.json`](../../artifacts/architecture-audit-2026-09-19/pilot-release-44.json)
 and [the release 44 evidence](../../artifacts/release-44-2026-09-28/README.md).
-Continuous integration and deployment both succeeded; the deployment gate is
-false. The visitor check found no problem across 57 pages, 237 views and 351
-links on nine hostnames. Catalogue checks passed nine of nine and the hosted
-service check passed nineteen of nineteen. Release 43 is the rollback target.
-
 Release 40, completed at 05:11:34 UTC the same day from
-`eae7946d836805afc7f0a007eece902c66d7bde6`, is retained as the rollback target;
-its checks are in
+`eae7946d836805afc7f0a007eece902c66d7bde6`, remains recorded in
 [`pilot-release-40.json`](../../artifacts/architecture-audit-2026-09-19/pilot-release-40.json)
 and [the release 40 evidence](../../artifacts/release-40-2026-09-27/README.md).
 Release 39's post-deployment command failure and successful grant/billing

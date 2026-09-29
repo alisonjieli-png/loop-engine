@@ -1,0 +1,37 @@
+{
+ "record_type": "pilot_release_record/v2",
+ "release": 45,
+ "app": "baltor-pilot",
+ "source_revision": "3e6064bd7dd64249925c97784f1cf10e0d067d11",
+ "image": "registry.fly.io/baltor-pilot@sha256:0c08fcd3e1e8cb0689a5ea6bc2db688e0e85c6bec58f11b48e93dc1e68356063",
+ "rollback_release": 44,
+ "rollback_image": "registry.fly.io/baltor-pilot@sha256:0b3e6782d9a96482a8264e7bda1d3a50eefcd81a1d094590016f5e7a5edaa188",
+ "deployed_at": "2026-09-28T23:12:55Z",
+ "ci_run": 36495706574,
+ "ci_conclusion": "success",
+ "deploy_run": 36496410671,
+ "deploy_workflow_conclusion": "success",
+ "deployment_gate_after": false,
+ "public_checks_passed": true,
+ "public_hosts_passed": 9,
+ "visitor_pages": 57,
+ "visitor_views": 237,
+ "visitor_links": 353,
+ "visitor_problems": 0,
+ "visitor_screenshots": 115,
+ "catalogue_checks_passed": 7,
+ "catalogue_checks_planned": 9,
+ "service_checks_passed": 19,
+ "service_checks_planned": 19,
+ "service_check_attempts": 1,
+ "advisory": {
+  "catalogue_demo_digest_staleness": "the two demonstration-digest checks fail because the repository manifest follows the latest anchor (train 6) while the served catalogue still serves release 44's anchored release; the demonstration-steps view and record_demonstration_steps.py now own this so each publish rewrites the printed digests from the release it serves.",
+  "service_read_path": "all 19 service checks pass after pilot-owner followed the new catalogue release (the documented post-release operator step); the two earlier failures were a mistyped probe digest, not a service defect. Metered read recorded exactly one unit."
+ },
+ "changes": [
+  "The two gates the September 28 sessions left failing are repaired: the hardcoding gate's allowlist carried crash-residue (23 redundant shell-variable entries made stale by the classifier, plus 6 findings misfiled into excluded_paths), and record_demonstration_steps.py was registered as the demonstration-steps generated view so the homepage demonstration digests regenerate from the release manifest instead of drifting.",
+  "The September 28 customer-delivery train is now live: store busy now surfaces a retryable refusal, the refusal-wording check reads key prefixes at word starts, the starter catalogue is re-anchored at the revision holding its cited bytes, and the hardcoding gate's new high finding carries a named decision.",
+  "tools/publish_catalogue_delta.py publishes a catalogue release uploading only the blobs the volume lacks (255.9 MB of 275 MB was cut by the old whole-tar path); a rerun resumes from what landed.",
+  "The owner-visible homepage names the tested harnesses and stops counting the library in 'reviewed' units."
+ ]
+}
