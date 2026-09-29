@@ -259,3 +259,51 @@ contract, and the list-request mutation tests its request declaration without
 expecting metadata rows to disappear. The full browser rerun writes
 `workspace-browser-fixed.json` in the private audit folder; its eventual result
 must be read before a release is called fully browser-qualified.
+
+## Admitted supply and prepared release
+
+The accepted batch is now admitted at
+`/home/username/baltor-library/admitted-programs-3404b33c`: 3,910 approved
+packages. The other program batch and the 35 original creative seed packages
+remain outside this admission. The combined license expression is
+`MIT AND BSD-2-Clause`, covering generated code and the carried source material;
+it is not a license grant for the binaries an end user may later install.
+
+Combination exposed another defect: using a combined catalogue as the base
+changed its Community rows to Verified and replaced reviewer groups. The
+combiner now preserves both, with a round-trip regression test. The failed
+intermediate folder `release-folders/programs-3404b33c` is retained with a
+DO-NOT-PUBLISH marker. Use
+`/home/username/baltor-library/release-folders/programs-preserved-3404b33c`.
+It preserves 42 Verified and 27,769 Community approvals as internal metadata.
+
+The prepared bundle is `/home/username/baltor-bundles/programs-3910-3404b33c`,
+digest `38c43ebea0380fd31fce30a9b8cd179c3aa7533674645162222799f80a090b48`:
+27,811 packages, 119,820 file placements and 88,373 distinct payload files
+totaling 358,526,742 bytes. That is 19,551 more distinct files than the earlier
+live snapshot. These are prepared counts, not a publication claim.
+
+The composition report shows executable code rising from 4.50% to 17.92%,
+skills falling from 41.75% to 35.88%, and instructions/rules falling from 23.53%
+to 20.22%. The existing catalogue already exceeds the final skill and
+instruction caps; this addition reduces that imbalance but does not satisfy
+the final balanced-library acceptance gate. Add varied executable and native
+material, rather than withdraw useful existing content just to change a ratio.
+
+The live host's exact license allowlist contains MIT and BSD-2-Clause separately
+but not the combined expression. Publication needs that explicit label added
+without changing the other host settings, followed by a service reload through
+the guarded release path. Do not weaken the license matcher or re-label package
+rights to force a publish. Read-only Fly inspection confirmed release 50,
+source `fc00e4173eddfa72dcd97d8bea6eb9b88e515eda`, image
+`sha256:dcb5ff23e47a92abbea2d1cc9bb596e1702c895a07b502a22d8cb852f36be843`,
+deployment run `36575611912`, on the existing one-CPU, two-GB Machine and 25-GB volume.
+
+The full browser rerun `workspace-browser-final.json` passed 945/946 checks
+and all 195 removed-guard controls. Its sole failure was an outdated empty-state
+wording assertion, now corrected and checked with positive/negative strings.
+The usage UI and tests now report counted uses, not every download: one item
+version counts once per calendar month. A real-browser probe confirmed three
+downloads of two distinct items produce two counted uses and the explanatory
+text. No billing rule was changed. Do not rewrite the historical browser
+report to claim a full 946/946 rerun.

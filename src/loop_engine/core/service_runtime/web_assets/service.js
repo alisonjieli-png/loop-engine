@@ -823,8 +823,8 @@ const applyPaymentState = name => {
     const rows = usageItems(value), view = $("usage-view");
     $("usage").textContent = JSON.stringify(value, null, 2); $("usage-raw").hidden = false;
     if (!rows) { downloadsTile("Unknown", "The usage record is in a version this page does not read."); view.replaceChildren(element("p", "This service answered with a usage record this page was not written for, so no table is shown. The raw record is below.", "usage-note")); return; }
-    if (!rows.length) { downloadsTile("0", "Nothing downloaded yet."); view.replaceChildren(element("p", "No downloads are recorded for this account yet. Each item your tools download appears here.", "usage-empty")); return; }
-    const labels = ["Item", "Downloads", "Last used"], total = rows.reduce((sum, row) => sum + row.records, 0);
+    if (!rows.length) { downloadsTile("0", "No library usage counted yet."); view.replaceChildren(element("p", "No library usage is recorded for this account yet.", "usage-empty")); return; }
+    const labels = ["Item", "Counted uses", "Last counted"], total = rows.reduce((sum, row) => sum + row.records, 0);
     const table = element("table", "", "usage-table"), head = document.createElement("thead"), heading = document.createElement("tr"), body = document.createElement("tbody");
     for (const label of labels) { const cell = element("th", label); cell.scope = "col"; heading.append(cell); }
     head.append(heading);
@@ -838,8 +838,10 @@ const applyPaymentState = name => {
       cells.forEach((cell, index) => { cell.dataset.label = labels[index]; line.append(cell); });
       body.append(line);
     }
-    table.append(element("caption", "Downloads recorded for this account, item by item", "sr-only"), head, body);
-    view.replaceChildren(element("p", total + (total === 1 ? " download of " : " downloads of ") + rows.length + (rows.length === 1 ? " item." : " items."), "usage-summary"), table);
+    table.append(element("caption", "Library usage recorded for this account, item by item", "sr-only"), head, body);
+    const basisNote = value.unit_rule === "one_per_item_version_per_calendar_month_utc"
+      ? " Repeated downloads of the same version in a calendar month count once." : " Counts follow the service's recorded usage rule.";
+    view.replaceChildren(element("p", total + (total === 1 ? " counted use across " : " counted uses across ") + rows.length + (rows.length === 1 ? " item." : " items.") + basisNote, "usage-summary"), table);
     downloadsTile(String(total), rows.length + (rows.length === 1 ? " item" : " different items") + ", from your usage record.");
   }
   $("refresh-usage").addEventListener("click", async () => {

@@ -12,6 +12,16 @@ PAGE = ROOT / "src/loop_engine/core/service_runtime/web_assets/service.js"
 
 
 class RecipeEffectTests(unittest.TestCase):
+    def test_empty_usage_wording_matches_the_accounting_record_not_download_events(self):
+        source = PAGE.read_text()
+        self.assertIn("No library usage is recorded for this account yet.", source)
+        self.assertIn("Repeated downloads of the same version in a calendar month count once.", source)
+        positive = "No library usage is recorded for this account yet."
+        pattern = re.compile(r"^No library usage is recorded\b", re.I)
+        self.assertTrue(pattern.search(positive))
+        for wrong in ("", "Usage is unavailable", "Downloads happened", "Nothing can be inferred"):
+            self.assertFalse(pattern.search(wrong))
+
     def test_effect_vocabulary_matches_the_existing_contract(self):
         for path in (PAGE, ROOT / "tools/check_service_workspace.mjs"):
             text = path.read_text()

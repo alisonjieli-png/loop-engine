@@ -131,6 +131,7 @@ def combine(options) -> dict:
     if missing:
         refuse("withdrawal_unknown", f"the base folder does not hold {missing}")
     group = [reviewer["reviewer_id"] for reviewer in base_review["reviewers"]]
+    groups = dict(base_review.get("reviewer_groups", {}))
     items = [row for row in base_items["items"] if row["reference"]["identity"] not in withdrawn]
     rows = []
     for row in base_review["rows"]:
@@ -138,8 +139,12 @@ def combine(options) -> dict:
             continue
         row = dict(row)
         if row["outcome"] in JUDGED:
-            row["tier"] = "verified"
-            row["reviewer_group"] = options.base_group
+            row.setdefault("tier", "verified")
+            if row["tier"] == "verified" and not row.get("reviewer_group"):
+                if options.base_group in groups and groups[options.base_group] != group:
+                    refuse("reviewer_group_conflict", "the default group names different reviewers")
+                groups[options.base_group] = group
+                row["reviewer_group"] = options.base_group
         row.setdefault("catalogued_on", str(base_review["recorded_at"])[:10])
         rows.append(row)
     reviewers = {reviewer["reviewer_id"]: reviewer for reviewer in base_review["reviewers"]}
@@ -155,6 +160,10 @@ def combine(options) -> dict:
         added_items, added_review = _json(folder / ITEMS_FILE), _json(folder / REVIEW_FILE)
         if added_items.get("record_type") != ITEMS_RECORD or added_review.get("record_type") != REVIEW_RECORD:
             refuse("record_unsupported", f"{folder} holds items v2 and reviews v2")
+        for name, members in added_review.get("reviewer_groups", {}).items():
+            if name in groups and groups[name] != members:
+                refuse("reviewer_group_conflict", f"{name} names different reviewers")
+            groups[name] = members
         known = {row["identity"] for row in rows}
         clash = sorted(known & {row["identity"] for row in added_review["rows"]})
         if clash:
@@ -186,7 +195,7 @@ def combine(options) -> dict:
     review = dict(base_review)
     review.update({
         "catalogue_folder": str(output), "reviewers": list(reviewers.values()),
-        "reviewer_groups": {options.base_group: group}, "rows": rows, "combined_from": combined_from,
+        "reviewer_groups": groups, "rows": rows, "combined_from": combined_from,
         "withdrawn": [{"identity": identity, "note": note} for identity, note in sorted(withdrawn.items())],
         "decision_rule": ("A Verified row is approved only when every reviewer of its reviewer group approves it; a "
                           "Community row only when its named reviewer, from a family that did not produce it, "

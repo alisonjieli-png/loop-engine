@@ -2,7 +2,7 @@
 
 Kind: product architecture with measured local implementation and proposed hosting.
 Date: 2026-09-19. The [current deployment](#current-deployment) section was
-added on 2026-09-20 and last checked on 2026-09-29, after Fly release 48.
+added on 2026-09-20 and last checked on 2026-09-29, after Fly release 50.
 
 The hosted product manages accounts, subscriptions, and access to intelligence.
 The customer runs Loop Engine and the selected harnesses. A hosted intelligence
@@ -47,8 +47,16 @@ from the newest release record, follow the release record and correct this
 section. Update this section in the same change that records a new release.
 It describes a private pilot. It does not describe a qualified paid service.
 
-The latest deployment is Fly release 48, completed on September 29, 2026. It
-runs `39248e46a81070a78a8ea366b167ad9ff25aacc6` and carries the 58-commit supply
+The latest observed deployment is Fly release 50, completed on September 29,
+2026, from `fc00e4173eddfa72dcd97d8bea6eb9b88e515eda`, image
+`sha256:dcb5ff23e47a92abbea2d1cc9bb596e1702c895a07b502a22d8cb852f36be843`.
+Read-only Machine inspection and deployment run `36575611912` agree on that
+image and revision. The [September 29 reconciliation](../context/SESSION-RECONCILIATION-2026-09-29.md)
+records the observation, the newer un-deployed source changes, and the
+prepared catalogue. Do not treat a prepared bundle as the active release.
+
+The preceding documented release 48
+ran `39248e46a81070a78a8ea366b167ad9ff25aacc6` and carried the 58-commit supply
 line: one tested client per operation of licensed OpenAPI specifications, a
 JavaScript module with TypeScript declarations in every API package, pinned
 program install recipes, JSON Schema components, reference data tables, function
@@ -61,7 +69,9 @@ views and 353 links on nine hostnames.
 The storage volume is **25 GB**, extended from 3 GB on September 29 after release
 46 filled the 3 GB volume and took the site down for about twenty minutes. At the
 measured 77 kilobytes a package it holds about 330,000 packages against the
-15,146 served now. Release 47 is the rollback target.
+23,901 packages in the observed live catalogue. Release 47 was the rollback
+target recorded for release 48; a new deployment must record its actual prior
+image rather than infer a rollback target from that older record.
 
 Release 45, completed on September 28, 2026 at 23:12:55 UTC from
 `3e6064bd7dd64249925c97784f1cf10e0d067d11`, carries the September 28 customer
@@ -144,7 +154,7 @@ release check. Public registration is open, through Baltor's own sign-up only.
 | Subject | Current fact | Where to check it |
 |---|---|---|
 | Public brand | Baltor. Loop Engine remains the repository, the Python package, the `loop-engine` command and the technical name. The public capabilities record reports the display name `Baltor`. | [terminology.yaml](../../terminology.yaml), explained by [the developer language guide](../guides/developer-language.md) |
-| Host | Fly.io release 40 runs on the existing single Machine. Image `sha256:be98a37bb29c1ae48c62c18d87c8fea5e9f0ba278ef546a217e245e277d8629e`, source `eae7946d836805afc7f0a007eece902c66d7bde6`, successful continuous integration 36296024475 and successful deployment 36296360212. Rollback is release 39, image `sha256:0b20d84c7fd72053b9f4e70d57f5820d9220afbf57b4b6c34a2707c71b99c0bd`. The deployment gate is off. | [Release 40 evidence](../../artifacts/release-40-2026-09-27/README.md) |
+| Host | Read-only inspection confirms Fly release 50 on the existing one-CPU, two-GB Machine and 25-GB volume. Source `fc00e4173eddfa72dcd97d8bea6eb9b88e515eda`, image `sha256:dcb5ff23e47a92abbea2d1cc9bb596e1702c895a07b502a22d8cb852f36be843`, deployment run `36575611912`. New source checkpoints and the prepared program batch are not described as deployed. | [September 29 reconciliation](../context/SESSION-RECONCILIATION-2026-09-29.md) |
 | Hostnames | All ten hostnames passed after release 40: `baltor.ai`, `www.baltor.ai`, `app.baltor.ai`, `baltor-pilot.fly.dev`, `demo.baltor.ai`, `examples.baltor.ai`, `docs.baltor.ai`, `status.baltor.ai`, `deck.baltor.ai` and `redteam.baltor.ai`. Root, health, registration and visible headings passed; sixty assets matched the source. The visitor check covered 54 pages, 225 views and 348 links. The public base address remains `https://baltor.ai`; every allowed hostname serves the protected routes. | [Release 40 evidence](../../artifacts/release-40-2026-09-27/README.md) |
 | Host configuration | The file `/data/host.json` on the volume switches features on and off without a new image. It is not in the repository. On September 22, 2026 it gained `http.request_limits` with the client address read from the `Fly-Client-IP` header, after a backup to `/data/host.json.before-request-limits-20260922T181740`, and the Machine restarted at 18:17 UTC. Releases built after revision `e505eca` refuse a public binding without that setting. Every hostname above is listed in its `allowed_hosts` and `allowed_origins`; a hostname missing from those lists answers 421. On September 23, 2026 at 01:39 UTC, just before Fly release 15, it was backed up to `/data/host.json.before-release-15-20260923T013913` and its `http` block moved to the record `service_http_configuration/v2` with `protocol_versions` `2025-11-25` and `2026-07-28` (release 15 refuses the version 1 record and release 14 refuses version 2), and a `waitlist` block was added that names the Fly secret `BALTOR_WAITLIST_SOURCE_SECRET`, which keys the flood guard's source digest. Fly release 16 needed no host file change. On September 23 at 06:17 UTC, after a backup to `/data/host.json.before-catalogue-20260923T061642`, it gained a `catalogue` section (`service_catalogue_source/v1`, body store `/data/catalogue-bodies`), whose source moved from `image` to `store` at 06:20 UTC after the first catalogue release was published. On September 25, 2026 at 21:43 UTC, after a backup to `/data/host.json.before-license-policy-20260925T214308`, it gained `license_policy` (`service_host_license_policy/v1`) accepting MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC, CC0-1.0 and CC-BY-4.0; the policy is read at service start and the release 35 restart at 22:22 UTC loaded it, which let the 316-package Community release with its Apache-2.0 packages be served. | The release record, and the [September 21 handoff](../context/SESSION-HANDOFF-2026-09-21.md) for the hostname lists |
 | Product service | The command `loop-engine service serve`, from `src/loop_engine/core/service_runtime/`, built by [`Dockerfile.service`](../../Dockerfile.service). One process serves the website, the workspace, the `/api/v1/` interface and the Model Context Protocol endpoint `/mcp` from one origin. | [Two service commands](#two-service-commands) |

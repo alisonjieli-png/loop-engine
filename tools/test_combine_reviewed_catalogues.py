@@ -121,6 +121,19 @@ class CombineTest(unittest.TestCase):
         self.assertEqual(dates["check_a_sum"], "2026-09-25", "a Community row keeps its own review date")
         self.assertEqual(dates[starter["identity"]], "2026-09-21", "a starter row keeps the starter review date")
 
+    def test_a_combined_base_does_not_upgrade_community_rows_or_replace_review_groups(self):
+        first = self.combined()
+        before = json.loads((first / "reviews.json").read_text())
+        second = self.root / "combined-again"
+        combine.combine(argparse.Namespace(base=first, base_group="unused-new-group", add=[], withdraw=[],
+                                           relabel_revision="", output=second))
+        after = json.loads((second / "reviews.json").read_text())
+        self.assertEqual(after["reviewer_groups"], before["reviewer_groups"])
+        self.assertEqual(after["rows"], before["rows"])
+        _schema, lines, _payloads = bundle_tool.build(second, accepted_licenses=("MIT",))
+        entry = next(row for row in lines if row["reference"]["identity"] == "check_a_sum")
+        self.assertEqual(entry["approval"]["tier"], "community")
+
     def test_a_verified_row_needs_every_reviewer_of_its_group_and_a_declared_group(self):
         folder = self.combined()
         review = json.loads((folder / "reviews.json").read_text())
