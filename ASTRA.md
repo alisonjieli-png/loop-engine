@@ -12,8 +12,11 @@ authority, and only the owner widens it.
 
 ## Current work and evidence
 
+The [context route](docs/context/START-HERE.md) names the newest handoff.
+Read [the current north star](docs/architecture/NORTH-STAR.md) and
+[owner decisions](docs/architecture/OWNER-DECISIONS.md) before choosing work.
 The [September 25 evening handoff](docs/context/SESSION-HANDOFF-2026-09-25-EVENING.md)
-is the newest dated record of what is live, what is in flight and what remains.
+is a historical record of what was live, in flight and open at that time.
 The [September 25 afternoon handoff](docs/context/SESSION-HANDOFF-2026-09-25-AFTERNOON.md)
 records what the owner asked for that day. The
 [September 25 session handoff](docs/context/SESSION-HANDOFF-2026-09-25.md) of

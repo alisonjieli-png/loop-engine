@@ -370,6 +370,11 @@ def command(options, root: Path) -> dict:
     for identity, record in qualified.items():
         if not options.batch or record["batch"] in options.batch:
             batches.setdefault(record["batch"], []).append(identity)
+    if options.authorize_model_calls and any(
+            qualified[identity].get("qualifier", {}).get("uncommitted_changes", True)
+            for identities in batches.values() for identity in identities):
+        raise ValueError("requalify selected batches with committed code before spending model calls; "
+                         "admission cannot use an uncommitted qualifier")
     history_rows = _history(options.history)
     seed = options.seed or secrets_module.token_hex(16)
     rng = random.Random(f"{seed}:controls")

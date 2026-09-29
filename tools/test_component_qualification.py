@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
+from types import SimpleNamespace
 import shutil
 import subprocess
 import tempfile
@@ -182,7 +183,9 @@ class NewRuleTests(unittest.TestCase):
 class ReuseTests(unittest.TestCase):
     def _record(self, **changes):
         record = {"identity": "a", "record_version": "v1", "package_digest": "d" * 64, "qualified_at": "2026-09-28T01:00:00Z",
-                  "qualifier": {"code_revision": "r" * 40, "uncommitted_changes": False}, "checks": []}
+                  "qualifier": {"code_revision": "r" * 40, "uncommitted_changes": False},
+                  "checks": [{"check_id": name, "status": checks.PASSED}
+                             for name in qualify.FAST_CHECKS]}
         record.update(changes)
         return record
 
@@ -196,6 +199,16 @@ class ReuseTests(unittest.TestCase):
                                                                   "uncommitted_changes": True}), row, "r" * 40))
         self.assertFalse(qualify.reusable(None, row, "r" * 40))
 
+    def test_a_fast_record_cannot_replace_requested_execution_checks(self):
+        row = {"record_id": "a", "record_version": "v1", "payload": {"package_digest": "d" * 64}}
+        all_checks = tuple(check.check_id for check in checks.CHECKS)
+        self.assertFalse(qualify.reusable(self._record(), row, "r" * 40, check_ids=all_checks))
+        full = self._record(checks=[{"check_id": name, "status": checks.PASSED} for name in all_checks])
+        # Existing records do not pin the execution environment for replay.
+        self.assertFalse(qualify.reusable(full, row, "r" * 40, check_ids=all_checks))
+        self.assertFalse(qualify.reusable(self._record(checks=[]), row, "r" * 40))
+        self.assertFalse(qualify.reusable(self._record(checks=None), row, "r" * 40))
+
     def test_load_reuse_keeps_the_newest_committed_record(self):
         folder = Path(tempfile.mkdtemp(prefix="reuse-"))
         self.addCleanup(shutil.rmtree, folder, True)
@@ -206,6 +219,54 @@ class ReuseTests(unittest.TestCase):
         loaded = qualify.load_reuse([path], "r" * 40)
         self.assertEqual(list(loaded), ["a"])
         self.assertEqual(loaded["a"]["qualified_at"], "2026-09-28T02:00:00Z")
+
+
+class CheckSelectionTests(unittest.TestCase):
+    def test_live_review_refuses_uncommitted_qualification_before_provider_access(self):
+        from tools.component_qualification import sampled_review
+        options = SimpleNamespace(qualification=Path("unused"), batch=[], authorize_model_calls=True)
+        with mock.patch.object(sampled_review, "_load_qualified", return_value={"candidate": {
+                "batch": "fixture", "qualifier": {"uncommitted_changes": True}}}), \
+                mock.patch.object(sampled_review, "_panel") as panel:
+            with self.assertRaisesRegex(ValueError, "requalify"):
+                sampled_review.command(options, ROOT)
+            panel.assert_not_called()
+
+    def test_the_command_all_mode_reaches_both_execution_checks(self):
+        from tools.qualify_generated_components import _check_ids
+        fixture = controls.code_fixture(REVISION)
+        invoked = []
+
+        def run_check(name, component, context):
+            invoked.append(name)
+            return checks.CheckResult(name, checks.VERSION, "format", checks.IMPLEMENTATION, checks.PASSED)
+
+        selected = _check_ids("all")
+        adapters = tuple(SimpleNamespace(check_id=check.check_id,
+                         run=lambda component, context, name=check.check_id: run_check(name, component, context))
+                         for check in checks.CHECKS)
+        with mock.patch.dict(qualify._WORKER, {"context": _context(), "bodies": None,
+                                             "reuse": {}, "check_ids": selected}, clear=True), \
+                mock.patch.object(qualify, "component_from_row", return_value=fixture), \
+                mock.patch.object(checks, "CHECKS", adapters):
+            qualify._check_one({})
+        self.assertIn("sandbox", invoked)
+        self.assertIn("mutation", invoked)
+        self.assertNotIn("duplicates", invoked)  # This check always runs over the population later.
+
+    def test_fast_mode_keeps_execution_optional(self):
+        from tools.qualify_generated_components import _check_ids
+        self.assertFalse(set(_check_ids("fast")) & set(qualify.EXECUTION_CHECKS))
+
+    def test_an_unrun_sandbox_is_not_a_failed_implementation(self):
+        rows = [{"check_id": name, "status": checks.PASSED, "notes": []} for name in qualify.FAST_CHECKS]
+        report = qualify.vetting(rows, _context().policy, "data_tables")
+        self.assertEqual(report["implementation_tested"], "not_tested")
+        self.assertEqual(report["compatibility_tested"]["state"], "not_tested")
+        rows.append({"check_id": "sandbox", "status": checks.REFUSED, "notes": []})
+        refused = qualify.vetting(rows, _context().policy, "data_tables")
+        self.assertEqual(refused["implementation_tested"], "failed")
+        self.assertEqual(refused["compatibility_tested"]["state"], "failed")
 
 
 class ReviewAdapterTests(unittest.TestCase):

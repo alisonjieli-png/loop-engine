@@ -100,6 +100,12 @@ ASSET_ROLE_ATTRIBUTE = {"name": "asset_role", "type": "choice", "choices": list(
 POSE_LAYOUTS = ("coco18", "coco25", "openpose25", "face68", "hands21", "custom")
 #: What a mask's painted pixels mean. Inverting this silently inverts every later operation, so it is declared.
 MASK_POLARITIES = ("foreground", "background")
+POSE_LAYOUT_ATTRIBUTE = {"name": "pose_layout", "type": "choice", "choices": list(POSE_LAYOUTS),
+                         "searchable": False, "filterable": True, "shown": True,
+                         "description": "The declared keypoint convention. Coordinates and scale require their own source record."}
+MASK_POLARITY_ATTRIBUTE = {"name": "mask_polarity", "type": "choice", "choices": list(MASK_POLARITIES),
+                           "searchable": False, "filterable": True, "shown": True,
+                           "description": "Whether painted mask pixels select the foreground or background."}
 #: The forms whose bytes a harness interprets rather than executes, and so carry the fields above.
 INTERPRETED_FORMS = ("reference_image", "mask", "pose_layout")
 ASSET_ROLE_FORMS = INTERPRETED_FORMS + ("three_d_model", "cad_model", "template", "code_example")
@@ -174,10 +180,12 @@ COMPONENT_FORM_ATTRIBUTE = {"name": "component_form", "type": "choice", "choices
                                            "skill with or without scripts, an agent, a command, instructions, "
                                            "rules, a data table, a schema, settings or an evaluation set."}
 WELL_KNOWN_ATTRIBUTES = (TIER_ATTRIBUTE, HARNESS_KIND_ATTRIBUTE, STEP_FUNCTIONS_ATTRIBUTE, COMPONENT_FORM_ATTRIBUTE,
+                         ASSET_ROLE_ATTRIBUTE, POSE_LAYOUT_ATTRIBUTE, MASK_POLARITY_ATTRIBUTE,
                          *FACET_ATTRIBUTES)
 #: The served names, written out here so the serving side names what it serves and the documentation check
 #: can hold a page to them; a declaration that drifts from this list is refused at import.
-WELL_KNOWN_ATTRIBUTE_NAMES = ("tier", "harness_kind", "step_functions", "component_form", "job_titles",
+WELL_KNOWN_ATTRIBUTE_NAMES = ("tier", "harness_kind", "step_functions", "component_form",
+                              "asset_role", "pose_layout", "mask_polarity", "job_titles",
                               "industries", "levels", "languages", "geographies")
 if set(COMPONENT_FORMS) != set(COMPONENT_FORM_LABELS) or set(COMPONENT_FORMS) != set(COMPONENT_FORM_KINDS):
     raise ImportError("the component forms, their labels and their harness kinds disagree")

@@ -879,7 +879,13 @@
    "Protocol server configuration",
    "Harness settings",
    "Contract schema",
-   "Code module"
+   "Code module",
+   "Reference image",
+   "Mask",
+   "Pose layout",
+   "3D model",
+   "CAD model",
+   "Template"
   ],
   "tiers": [
    {
@@ -919,7 +925,13 @@
      "Protocol server configuration",
      "Harness settings",
      "Contract schema",
-     "Code module"
+     "Code module",
+     "Reference image",
+     "Mask",
+     "Pose layout",
+     "3D model",
+     "CAD model",
+     "Template"
     ]
    },
    {
@@ -953,7 +965,50 @@
      "Data table",
      "Schema",
      "Settings",
-     "Evaluation set"
+     "Evaluation set",
+     "Reference image",
+     "Mask",
+     "Pose layout",
+     "3D model",
+     "CAD model",
+     "Template",
+     "Code example"
+    ]
+   },
+   {
+    "name": "Asset role",
+    "description": "What a harness does with this artifact: reads it for guidance, feeds it to a generator, opens it as an editable source, or compares against it as evidence.",
+    "searchable": true,
+    "filterable": true,
+    "choices": [
+     "Reference",
+     "Generation input",
+     "Editable source",
+     "Test evidence"
+    ]
+   },
+   {
+    "name": "Pose layout",
+    "description": "The declared keypoint convention. Coordinates and scale require their own source record.",
+    "searchable": false,
+    "filterable": true,
+    "choices": [
+     "Coco18",
+     "Coco25",
+     "Openpose25",
+     "Face68",
+     "Hands21",
+     "Custom"
+    ]
+   },
+   {
+    "name": "Mask polarity",
+    "description": "Whether painted mask pixels select the foreground or background.",
+    "searchable": false,
+    "filterable": true,
+    "choices": [
+     "Foreground",
+     "Background"
     ]
    },
    {
@@ -1165,6 +1220,12 @@
    {
     "section": "Library",
     "feature": "Served items",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Library",
+    "feature": "File population",
     "value": "",
     "fixed": false
    },

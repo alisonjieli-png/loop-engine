@@ -22,8 +22,9 @@ class CatalogueAttributeTest(unittest.TestCase):
         schema = CatalogueAttributeSchema.from_dict(attributes.declare({"record_type": "catalogue_attribute_schema/v1",
                                                                         "attributes": []}))
         self.assertEqual([item.name for item in schema.attributes],
-                         ["component_form", "geographies", "harness_kind", "industries", "job_titles", "languages",
-                          "levels", "step_functions", "tier"])
+                         sorted(attributes.WELL_KNOWN_ATTRIBUTE_NAMES))
+        self.assertTrue({"asset_role", "pose_layout", "mask_polarity"} <=
+                        {item.name for item in schema.attributes})
         self.assertEqual(tuple(item["name"] for item in attributes.WELL_KNOWN_ATTRIBUTES),
                          attributes.WELL_KNOWN_ATTRIBUTE_NAMES)
         values = schema.validate_values({"tier": "community", "harness_kind": "hook", "step_functions": ["acting"],

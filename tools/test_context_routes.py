@@ -157,6 +157,14 @@ AUTHORITY_RULES = (
 )
 #: The one standard that the swappable engine rule links, repository-relative.
 FUNCTIONAL_COMPONENT_STANDARD = "docs/architecture/FUNCTIONAL-COMPONENT-STANDARD.md"
+# The default documented by https://learn.chatgpt.com/docs/agent-configuration/agents-md.
+# Keep the entry instruction chain readable without a user-specific configuration override.
+DEFAULT_PROJECT_INSTRUCTION_BYTES = 32 * 1024
+
+
+def instruction_budget_exceeded(*documents):
+    return len("\n\n".join(documents).encode("utf-8")) > DEFAULT_PROJECT_INSTRUCTION_BYTES
+
 _COMMIT_WORD = r"(?:commit(?:s|ted|ting)?|push(?:es|ed|ing)?)"
 #: Sentence shapes that withhold the standing commit and push authority. Each
 #: is refused even when a writer means something narrower; a narrower rule is
@@ -537,6 +545,13 @@ class ContextRouteTests(unittest.TestCase):
 
     def test_entry_route_links_resolve(self):
         self.assertEqual(local_link_findings(ROOT, list(ENTRY_ROUTES))["findings"], [])
+
+    def test_project_instruction_chains_fit_the_native_default(self):
+        root = (ROOT / "AGENTS.md").read_text()
+        for scoped in ("", "devtools/AGENTS.md", "embodiments/AGENTS.md"):
+            selected = [root] + ([(ROOT / scoped).read_text()] if scoped else [])
+            self.assertFalse(instruction_budget_exceeded(*selected), scoped or "root")
+        self.assertTrue(instruction_budget_exceeded(root, "x" * DEFAULT_PROJECT_INSTRUCTION_BYTES))
 
     def test_old_outcome_reader_promise_is_detected(self):
         changed = dict(self.documents)

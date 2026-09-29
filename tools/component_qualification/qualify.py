@@ -65,20 +65,33 @@ def _init_worker(repository, store_root, sandbox_settings, work_root, reuse, che
     _WORKER["check_ids"] = tuple(check_ids) if check_ids else FAST_CHECKS
 
 
-def reusable(record: "dict | None", row: dict, revision: str) -> bool:
+def reusable(record: "dict | None", row: dict, revision: str, *, check_ids=None) -> bool:
     """Whether an earlier record covers this store row: same record version and package digest, checked by
-    the same committed qualifier revision. The duplicate pass never reuses anything."""
-    return (isinstance(record, dict) and record.get("record_version") == row["record_version"]
+    the same committed qualifier revision and covering every requested check.
+    The duplicate pass never reuses anything. A fast record cannot stand in for
+    execution checks that the caller explicitly requested."""
+    if not isinstance(record, dict):
+        return False
+    required = set(check_ids if check_ids is not None else FAST_CHECKS) - {"duplicates"}
+    # v1 does not bind a reused sandbox result to interpreter, dependency and
+    # sandbox image digests. Re-run execution until that environment is named.
+    if required & {"sandbox", "mutation"} or not isinstance(record.get("checks"), list):
+        return False
+    recorded = {item.get("check_id") for item in record["checks"]
+                if isinstance(item, dict) and item.get("status") in
+                (checks.PASSED, checks.REFUSED, checks.NOT_APPLICABLE)}
+    return (record.get("record_version") == row["record_version"]
             and record.get("package_digest") == row.get("payload", {}).get("package_digest")
             and record.get("qualifier", {}).get("code_revision") == revision
-            and record.get("qualifier", {}).get("uncommitted_changes") is False)
+            and record.get("qualifier", {}).get("uncommitted_changes") is False
+            and required <= recorded)
 
 
 #: The checks that execute a component's own code, and so cost a sandbox per component. The owner, September 29,
 #: 2026: "you need to stop strict overqualification of file components, if you keep trying to qualify every single
 #: one we will never be able to publish correctly... once things are on the server they should be accessible... we
-#: don't need to qualify everything pre-publication." These two stay available and are run by the sampled review,
-#: but the per-component pass runs the cheap deterministic checks only, so a whole line qualifies in minutes.
+#: don't need to qualify everything pre-publication." These two stay available through --checks all.
+#: Sampled model review reads selected packages; it does not itself run these execution checks.
 EXECUTION_CHECKS = ("sandbox", "mutation")
 
 #: The checks every component must pass before it is admitted. Each reads the bytes already on disk and decides;
@@ -102,7 +115,8 @@ def _check_one(row: dict) -> dict:
                 "licence_expression": component.licence_expression,
                 "declared_effects": list(component.candidate.get("declared_effects", [])),
                 "generator": component.generator,
-                "checks": [row for row in earlier["checks"] if row["check_id"] != "duplicates"],
+                "checks": [row for row in earlier["checks"]
+                           if row["check_id"] in _WORKER["check_ids"] and row["check_id"] != "duplicates"],
                 "distinctive": checks.distinctive_text(component, context.policy),
                 "job_key": checks.job_key(component, context.policy), "reused_from": earlier["qualified_at"],
                 "seconds": round(time.monotonic() - started, 3)}
@@ -147,9 +161,14 @@ def vetting(check_rows: list, policy: dict, line: str) -> dict:
         compatibility = {"state": "harness_formats_validated" if passed("schema") else "failed",
                          "evidence": harnesses, "runtime_started": False}
     else:
-        implementation = ("tests_passed_in_sandbox" if all(passed(name) for name in
-                                                          ("parse", "schema", "effects", "sandbox")) else "failed")
-        compatibility = {"state": "imports_in_sandbox" if passed("sandbox") else "failed",
+        prerequisite_failure = any(by_id.get(name, {}).get("status") == checks.REFUSED
+                                   for name in ("parse", "schema", "effects"))
+        implementation = ("failed" if prerequisite_failure else "not_tested" if "sandbox" not in by_id
+                          else "tests_passed_in_sandbox" if all(passed(name) for name in
+                                                               ("parse", "schema", "effects", "sandbox"))
+                          else "failed")
+        compatibility = {"state": ("not_tested" if "sandbox" not in by_id else
+                                    "imports_in_sandbox" if passed("sandbox") else "failed"),
                          "interpreter": summary.get("interpreter"), "runtime_started": passed("sandbox")}
     return {"source_identity_checked": passed("manifest") and passed("licence_provenance"),
             "implementation_tested": implementation, "tests": summary.get("tests"),
@@ -195,7 +214,7 @@ def qualify_rows(rows, *, repository: Path, store_root: Path, sandbox_settings, 
     environment_findings = tuple(context.policy["environment_findings"])
     earlier = load_reuse(reuse_paths, revision, environment_findings) if not uncommitted else {}
     reuse = {row["record_id"]: earlier[row["record_id"]] for row in rows
-             if reusable(earlier.get(row["record_id"]), row, revision)}
+             if reusable(earlier.get(row["record_id"]), row, revision, check_ids=check_ids)}
     checked, unreadable = [], []
     pool_started = time.monotonic()
     with multiprocessing.get_context("fork").Pool(

@@ -89,7 +89,7 @@
       "id": "skills_sh_api",
       "name": "skills.sh directory, leaderboard and audit pages",
       "kind": "web_page",
-      "url": "https://skills.sh/docs",
+      "url": "https://www.skills.sh/docs",
       "roadmap_step": "S-6.40",
       "license_state": "site content unverified for reuse; the referenced skills keep their own licences",
       "note": "Ingestion-surface candidate: catalog, search, curated, detail (content hash when snapshotted) and audit endpoints; authentication via Vercel OIDC tokens, so an importer must not assume anonymous access. Audit states are per scanner (Gen, Socket, Snyk) and can disagree or stay pending: keep scanner, date, digest, severity and coverage as separate fields."
@@ -141,9 +141,216 @@
       "id": "mcp_specification",
       "name": "Model Context Protocol specification",
       "kind": "web_page",
-      "url": "https://modelcontextprotocol.io/specification/2025-11-25",
+      "url": "https://modelcontextprotocol.io/specification/2026-07-28",
       "roadmap_step": "S-6.43",
       "license_state": "unknown"
+    },
+    {
+      "id": "openai_plugin_auth",
+      "name": "OpenAI plugin authorization",
+      "kind": "web_page",
+      "url": "https://developers.openai.com/plugins/build/auth.md",
+      "roadmap_step": "S-6.183",
+      "license_state": "Change detection only; exact code, content, asset and service rights are reviewed per intended use.",
+      "note": "A change is a research candidate, not approval to install, execute, copy or publish."
+    },
+    {
+      "id": "openai_plugin_policy",
+      "name": "OpenAI public plugin requirements",
+      "kind": "web_page",
+      "url": "https://developers.openai.com/plugins/app-guidelines.md",
+      "roadmap_step": "S-6.183",
+      "license_state": "Change detection only; exact code, content, asset and service rights are reviewed per intended use.",
+      "note": "A change is a research candidate, not approval to install, execute, copy or publish."
+    },
+    {
+      "id": "openai_plugin_extensions",
+      "name": "OpenAI plugin interface extensions",
+      "kind": "web_page",
+      "url": "https://developers.openai.com/plugins/build/extensions.md",
+      "roadmap_step": "S-6.183",
+      "license_state": "Change detection only; exact code, content, asset and service rights are reviewed per intended use.",
+      "note": "A change is a research candidate, not approval to install, execute, copy or publish."
+    },
+    {
+      "id": "openai_plan_usage",
+      "name": "ChatGPT plan-usage eligibility",
+      "kind": "web_page",
+      "url": "https://developers.openai.com/siwc/token-sharing-open-source.md",
+      "roadmap_step": "S-6.214",
+      "license_state": "Change detection only; exact code, content, asset and service rights are reviewed per intended use.",
+      "note": "A change is a research candidate, not approval to install, execute, copy or publish."
+    },
+    {
+      "id": "openai_plan_usage_limits",
+      "name": "ChatGPT plan-usage route limitations",
+      "kind": "web_page",
+      "url": "https://developers.openai.com/siwc/token-sharing-open-source/preview-limitations.md",
+      "roadmap_step": "S-6.214",
+      "license_state": "Change detection only; exact code, content, asset and service rights are reviewed per intended use.",
+      "note": "A change is a research candidate, not approval to install, execute, copy or publish."
+    },
+    {
+      "id": "openai_deprecations",
+      "name": "OpenAI API retirement notices",
+      "kind": "web_page",
+      "url": "https://developers.openai.com/api/docs/deprecations.md",
+      "roadmap_step": "S-6.46",
+      "license_state": "Change detection only; exact code, content, asset and service rights are reviewed per intended use.",
+      "note": "A change is a research candidate, not approval to install, execute, copy or publish."
+    },
+    {
+      "id": "hyperframes",
+      "name": "HyperFrames video renderer and production skills",
+      "kind": "github_repository",
+      "url": "https://github.com/heygen-com/hyperframes",
+      "roadmap_step": "S-6.214",
+      "license_state": "Change detection only; exact code, content, asset and service rights are reviewed per intended use.",
+      "note": "A change is a research candidate, not approval to install, execute, copy or publish."
+    },
+    {
+      "id": "playcanvas_skills",
+      "name": "Official PlayCanvas creative skills",
+      "kind": "github_repository",
+      "url": "https://github.com/playcanvas/skills",
+      "roadmap_step": "S-6.214",
+      "license_state": "Change detection only; exact code, content, asset and service rights are reviewed per intended use.",
+      "note": "A change is a research candidate, not approval to install, execute, copy or publish."
+    },
+    {
+      "id": "godot",
+      "name": "Godot engine releases and source",
+      "kind": "github_repository",
+      "url": "https://github.com/godotengine/godot",
+      "roadmap_step": "S-6.214",
+      "license_state": "Change detection only; exact code, content, asset and service rights are reviewed per intended use.",
+      "note": "A change is a research candidate, not approval to install, execute, copy or publish."
+    },
+    {
+      "id": "remotion_skills",
+      "name": "Official Remotion skills; engine terms are separate",
+      "kind": "github_repository",
+      "url": "https://github.com/remotion-dev/skills",
+      "roadmap_step": "S-6.214",
+      "license_state": "Change detection only; exact code, content, asset and service rights are reviewed per intended use.",
+      "note": "A change is a research candidate, not approval to install, execute, copy or publish."
+    },
+    {
+      "id": "miniflux",
+      "name": "Miniflux feed intake engine",
+      "kind": "github_repository",
+      "url": "https://github.com/miniflux/v2",
+      "roadmap_step": "S-6.214",
+      "license_state": "Change detection only; exact code, content, asset and service rights are reviewed per intended use.",
+      "note": "A change is a research candidate, not approval to install, execute, copy or publish."
+    },
+    {
+      "id": "engineering_feeds",
+      "name": "Engineering Blogs OPML source catalogue",
+      "kind": "github_repository",
+      "url": "https://github.com/kilimchoi/engineering-blogs",
+      "roadmap_step": "S-6.214",
+      "license_state": "Change detection only; exact code, content, asset and service rights are reviewed per intended use.",
+      "note": "A change is a research candidate, not approval to install, execute, copy or publish."
+    },
+    {
+      "id": "smallweb_feeds",
+      "name": "Kagi Small Web discovery catalogue",
+      "kind": "github_repository",
+      "url": "https://github.com/kagisearch/smallweb",
+      "roadmap_step": "S-6.214",
+      "license_state": "Change detection only; exact code, content, asset and service rights are reviewed per intended use.",
+      "note": "A change is a research candidate, not approval to install, execute, copy or publish."
+    },
+    {
+      "id": "cognee",
+      "name": "Cognee retrieval and memory candidate",
+      "kind": "github_repository",
+      "url": "https://github.com/topoteretes/cognee",
+      "roadmap_step": "S-6.214",
+      "license_state": "Change detection only; exact code, content, asset and service rights are reviewed per intended use.",
+      "note": "A change is a research candidate, not approval to install, execute, copy or publish."
+    },
+    {
+      "id": "harness_engineering",
+      "name": "WalkingLabs harness engineering course and scaffolding",
+      "kind": "github_repository",
+      "url": "https://github.com/walkinglabs/learn-harness-engineering",
+      "roadmap_step": "S-6.214",
+      "license_state": "Change detection only; exact code, content, asset and service rights are reviewed per intended use.",
+      "note": "A change is a research candidate, not approval to install, execute, copy or publish."
+    },
+    {
+      "id": "motion_broll",
+      "name": "Time-addressable motion B-roll",
+      "kind": "github_repository",
+      "url": "https://github.com/Barty-Bart/motion-graphics",
+      "roadmap_step": "S-6.215",
+      "license_state": "Not cleared for import; source change detection only.",
+      "note": "Research candidate. No installation, copying, execution or publication approval."
+    },
+    {
+      "id": "anidoodle",
+      "name": "Original code-rendered illustration and audio reference",
+      "kind": "github_repository",
+      "url": "https://github.com/alexgreensh/anidoodle",
+      "roadmap_step": "S-6.215",
+      "license_state": "Not cleared for import; source change detection only.",
+      "note": "Research candidate. No installation, copying, execution or publication approval."
+    },
+    {
+      "id": "text_to_lottie",
+      "name": "Editable Lottie authoring",
+      "kind": "github_repository",
+      "url": "https://github.com/diffusionstudio/lottie",
+      "roadmap_step": "S-6.215",
+      "license_state": "Not cleared for import; source change detection only.",
+      "note": "Research candidate. No installation, copying, execution or publication approval."
+    },
+    {
+      "id": "playcanvas_editor_mcp",
+      "name": "Official PlayCanvas editor and runtime control",
+      "kind": "github_repository",
+      "url": "https://github.com/playcanvas/editor-mcp-server",
+      "roadmap_step": "S-6.215",
+      "license_state": "Not cleared for import; source change detection only.",
+      "note": "Research candidate. No installation, copying, execution or publication approval."
+    },
+    {
+      "id": "godot_ai",
+      "name": "Community Godot editor and runtime control",
+      "kind": "github_repository",
+      "url": "https://github.com/hi-godot/godot-ai",
+      "roadmap_step": "S-6.215",
+      "license_state": "Not cleared for import; source change detection only.",
+      "note": "Research candidate. No installation, copying, execution or publication approval."
+    },
+    {
+      "id": "terrain3d",
+      "name": "Godot editable terrain add-on",
+      "kind": "github_repository",
+      "url": "https://github.com/TokisanGames/Terrain3D",
+      "roadmap_step": "S-6.215",
+      "license_state": "Not cleared for import; source change detection only.",
+      "note": "Research candidate. No installation, copying, execution or publication approval."
+    },
+    {
+      "id": "thi_ng",
+      "name": "Composable geometry and data operations",
+      "kind": "github_repository",
+      "url": "https://github.com/thi-ng/umbrella",
+      "roadmap_step": "S-6.215",
+      "license_state": "Not cleared for import; source change detection only.",
+      "note": "Research candidate. No installation, copying, execution or publication approval."
+    },
+    {
+      "id": "materialx",
+      "name": "Material interchange standard and implementation",
+      "kind": "github_repository",
+      "url": "https://github.com/AcademySoftwareFoundation/MaterialX",
+      "roadmap_step": "S-6.215",
+      "license_state": "Not cleared for import; source change detection only.",
+      "note": "Research candidate. No installation, copying, execution or publication approval."
     }
   ]
 }

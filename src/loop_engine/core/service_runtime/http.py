@@ -902,13 +902,22 @@ class ServiceHttpApplication:
             return None
         try:
             view = provisioning.current_view()
-            return sum(1 for identity in view.approved_bindings() if identity not in view.withdrawn)
+            return sum(1 for identity, binding in view.approved_bindings().items()
+                       if (identity, binding.body_digest) not in view.withdrawn)
         except Exception:
             return None
 
     def capabilities(self):
         from importlib.metadata import version
         session_options = self.billing_sessions.options() if self.billing_sessions is not None else {}
+        # Capture one view so the package and file populations cannot describe
+        # different releases when a background refresh swaps the active view.
+        population = None
+        if self.provisioning is not None:
+            try:
+                population = self.provisioning.current_view().file_population()
+            except ServiceRuntimeError:
+                population = None
         return {"record_type": "service_capabilities/v1", "api_version": "v1",
                 "website": {"display_name": self.configuration.display_name,
                             "registration_available": self.registration_available(),
@@ -948,7 +957,8 @@ class ServiceHttpApplication:
                             "undeclared_effects": "shown_with_effects_to_declare_and_refused_at_read",
                             "step_effects_refusal_code": STEP_EFFECTS_REQUIRED_CODE,
                             "step_effects_refusal_record_type": STEP_EFFECTS_REFUSAL_VERSION,
-                            "served_items": self.served_item_count()},
+                            "served_items": population["packages"] if population is not None else None,
+                            "file_population": population},
                 "retrieval": {"request_record_type": RETRIEVAL_REQUEST_VERSION,
                               "authority_effects": "metadata_eligibility_only",
                               "modes": ["lexical", "hybrid"], "lexical_backend": "sqlite_fts5",

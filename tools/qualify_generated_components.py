@@ -43,11 +43,12 @@ def _check_ids(mode):
     parse, schema, effects, safety, secrets and duplicates. ``all`` adds the two that execute a component's own
     code, a sandbox and a mutation, and costs a sandbox per component. The owner, September 29, 2026, asked for
     the cheap set on every component and for a component that turns out to be broken to be reported after it is
-    served rather than held back before it is; the sampled review and the customer's report button still run the
-    execution checks, and a nightly rescan withdraws what a new rule refuses.
+    served rather than held back before it is. Sampled review reads selected bytes; execution requires
+    an explicit all-checks run. Neither a feedback report nor a model verdict proves that tests ran.
     """
     from tools.component_qualification import qualify
-    return None if mode == "all" else qualify.FAST_CHECKS
+    modes = {"fast": qualify.FAST_CHECKS, "all": tuple(check.check_id for check in checks.CHECKS)}
+    return modes[mode]
 
 
 def _known_digests(bundle: "Path | None") -> dict:

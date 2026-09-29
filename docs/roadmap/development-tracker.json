@@ -1296,7 +1296,7 @@
      "S-6.197"
     ],
     "id": "S-6.214",
-    "next_local_work": "Codex writes the source adapters and the distillation records in its lane; Claude builds the day page, the RSS and JSON routes and the path from an entry to a candidate component.",
+    "next_local_work": "Continue the existing knowledge radar and source registry. September 29 working tree expands the change watch to 40 sources, retains the last successful baseline after failed reads and restores watch state between CI runners. Community research draft and unverified-lead functions use the existing external-message approval edge; no social post was sent. Qualify platform access before automated collection or posting, wire durable dispatch and replies through existing managed records, then finish the public day, RSS and JSON views and candidate admission.",
     "phase": 6,
     "status": "building",
     "title": "Daily distillations: new papers, skills, plugins, protocol servers, services and repositories, each served as a summary page, RSS, JSON and downloadable components",
@@ -1313,7 +1313,7 @@
      "S-6.213"
     ],
     "id": "S-6.215",
-    "next_local_work": "Integrate the delivery repair, then the serving engine with a volume sized for the full library within the infrastructure allowance, then run the supply lines and admission daily and record the file and package counts in each catalogue release record.",
+    "next_local_work": "September 29: qualify the new exact distinct-file metric, original creative native factory and contract-first reuse path. The initial 35 original callable tools are seed candidates, not one million components or a complete game engine. Expand functions, tools, shaders, geometry, native assets, scenes, controllers, audio, validators and workflow packages from task gaps and primary-source research. Preserve one implementation with parameterized reuse; do not inflate counts with copies or preset permutations. Requalify inherited batches from committed code before review/admission; most completed sampled batches were withheld and only one program-install batch was accepted. Measure serving memory, p95 search, transfer limits and delta publishing before exceeding current capacity.",
     "phase": 6,
     "status": "building",
     "title": "One million served harness component files: deterministic supply lines, test-based admission with a sampled independent review, a serving engine with delta releases, and full-package delivery",
@@ -5382,5 +5382,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:bf42cf955fa9cdea1aad004abf0bbfc041ff887d2fabddb3c9ed739b45a67327"
+ "source_fingerprint": "sha256:bb5136ded5b261fa2682b9fc290cd572364d02d3abcbd13754e51030d362d3c8"
 }

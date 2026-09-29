@@ -1,19 +1,22 @@
 # Baltor
 
-Harness and agent optimized operation.
+Reusable production material for the harness and tools you already use.
 
-Baltor makes coding harnesses and multi-agent systems as efficient as
-possible. The aim is a frontier harness, multi-agent system or fabric that can
-take on any unseen task in the most efficient way:
+Baltor supplies task-specific information, skills, tools, code and working
+files. The aim is to help harnesses complete unfamiliar creative and technical
+work under the customer's constraints:
 
 - the exact context each step needs, and no more;
 - code that already exists is reused instead of written again;
 - the right amount of intelligence and heuristics for each decision;
 - small models doing much more, including work that runs overnight.
 
-The task can be anything: a data pipeline, research, a data cleanup or a piece
-of software. Turning a complex problem into a solution you can run again is
-one benefit of this work. It is not the goal itself.
+The expanding creative scope includes editable motion, graphic design,
+parametric visuals, 3D scenes, audio and playable experiences. Technical work,
+research and data tasks remain part of the same library. Complete creative
+production and revision workflows are being qualified; this is not a claim
+that the hosted service already runs a creative studio. The
+[north star](docs/architecture/NORTH-STAR.md) states the current priorities.
 
 Baltor is the product and the website at <https://baltor.ai>. Loop Engine is
 this repository: the open engine behind Baltor, the Python package
@@ -97,7 +100,7 @@ Use cases we are building demonstrations for, each with and without Baltor:
   transformations;
 - a data science competition taken from task to submission.
 
-## Status on September 27, 2026
+## Status on September 29, 2026
 
 Working on the live service today:
 
@@ -117,22 +120,23 @@ Working on the live service today:
   effects and intended harness, then open an item's source and review details.
   The public library shows combined counts; admission records remain separate
   from the customer presentation;
+- complete package-file delivery through the download and protocol routes,
+  with exact digests and binary encoding where needed. Native placement is
+  a separate operation; the first-party library client places fetched skills;
 - an Administration view where a superadmin sees every account and can grant
   or revoke free monthly Baltor Pro and switch an account off or on. Staff
   roles are fixed in code: superadmin, developer and analytics.
 
 Not open yet:
 
-- items with more than one file, placed as a package in your harness working
-  directory;
+- general installation and verified native use of every package form across
+  every harness, browser or native creative application;
 - the engine starting a fresh standard harness for each step, and searching
   the library by itself.
 
-[Release 40](artifacts/release-40-2026-09-27/README.md) runs the compact source
-presentation and repaired account phone layout. All ten hostnames passed;
-the visitor sweep checked 54 pages, 225 views and 348 links with zero reported
-problems. A signed-in phone check opened component details with no horizontal
-page overflow and performed no download. The
+[Release 48](artifacts/release-48-2026-09-29/README.md) is the latest recorded
+service deployment at this checkpoint. Catalogue publication is a separate
+operation, so current library counts come from the active catalogue. The
 [current deployment](docs/architecture/MVP-CLIENT-SERVER.md#current-deployment)
 section records its image, source revision and rollback target. The [development tracker](docs/roadmap/DEVELOPMENT-TRACKER.md)
 lists what is being built now, next and later, generated from the
@@ -150,19 +154,24 @@ Library item
 │   ├── generation lanes on Ollama Cloud models and a Gemma 4 model server
 │   └── outside projects, used only as inspiration unless their licence
 │       allows copying
-├── Deterministic pre-checks: layout, digests, secrets, network use, effects,
-│   duplicates, and each package's own tests in a sandbox with no network
-├── Review panel: three approvals from three model families that did not
-│   write the item, and no rejection
+├── Deterministic pre-checks: layout, digests, licences, secrets, effects
+│   and duplicates; each record names the checks that actually ran
+├── Independent review: the applicable per-item or generator-batch policy,
+│   with calibrated reviewers from a family other than the producer's
+├── Optional execution qualification: imports, tests and mutation checks
+│   in a confined environment, recorded separately from static checks
 └── Catalogue release: published to the running service without a redeploy,
     with the previous release kept for rollback
 ```
 
-The candidate pool holds several thousand files across skills, instruction
+The candidate pool holds material across skills, instruction
 files, subagents, commands, hooks, rules, plugin manifests, protocol server
 configurations, permission settings, step packets and verifiers. None of them
-is served until the review approves it. The library target is 10,000
-approved items first and 100,000 after that.
+is served until the review approves it. The current library target is more than
+one million distinct served component files, with original code, tools,
+assets, contracts and workflows as well as skills. Distinct packages and
+distinct payload files are different measurements; this is a target, not the
+current served count.
 
 ## Connect your harness
 
@@ -208,9 +217,9 @@ engines.
 | Configuration search | grid, random, vector warm start and Optuna | evidence-based ranking across runs |
 | Step execution | the engine's own runtime and registered harness adapters | one fresh standard harness per step through the Agent Client Protocol, OpenCode first |
 
-The shared engine framework is designed and not built yet. It will index
-every slot, let a harness send engine preferences within its authority, and
-choose among eligible engines by declared order and recorded evidence. The
+Versioned engine records, a slot catalogue and bounded adapters exist. Shared
+selection across every component and end-to-end qualification of additional
+engines remain active work. Engine preferences never widen authority. The
 [components index](docs/components/README.md) holds a guide for each
 component.
 

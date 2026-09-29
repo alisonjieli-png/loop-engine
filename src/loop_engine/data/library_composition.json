@@ -47,10 +47,12 @@
   },
   {
    "family": "data_and_contracts",
-   "label": "Data tables, contracts, schemas and settings",
+   "label": "Data, contracts and reference assets",
    "share": 0.07,
    "bound": "target",
-   "forms": {"data_table": 0.45, "schema": 0.3, "evaluation_set": 0.15, "settings": 0.1}
+   "forms": {"data_table": 0.25, "schema": 0.2, "evaluation_set": 0.1, "settings": 0.1,
+             "reference_image": 0.05, "mask": 0.05, "pose_layout": 0.05, "three_d_model": 0.05,
+             "cad_model": 0.05, "template": 0.05, "code_example": 0.05}
   }
  ]
 }

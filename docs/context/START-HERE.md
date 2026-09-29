@@ -9,9 +9,27 @@ section of AGENTS.md, which also lists what still needs the owner. A
 historical instruction does not authorize a provider call, a deployment or a
 repeated effect beyond that recorded authority.
 
+## Off-repository component work
+
+Two component stores live outside this repository, under `~/baltor-private/`:
+the
+[component factory](COMPONENT-FACTORY-AND-LOCAL-COMPONENT-STORES-2026-09-29.md)
+and a verified first batch of four components. Read that note before touching
+either. It records where the output is, why the staged artifact packages cannot
+be read without a manifest, the dedup policy the owner's work depends on, and
+two defects that were found and fixed after the first claims of correctness.
+
 ## Current context route
 
-For the newest state, read the
+Read the [September 29 reconciliation](SESSION-RECONCILIATION-2026-09-29.md)
+first. It covers the Codex takeover, preserved work, honest review coverage,
+the original creative component factory, engine-control research, the exact
+distinct-file baseline and unfinished work toward the million-file target.
+The [OpenCode handoff](CODEX-ENGINE-ADOPTION-AND-SUPPLY-HANDOFF-2026-09-29.md)
+precedes it; its research verdicts and running-review state need the corrections
+in the reconciliation. The roadmap remains the task authority.
+
+For the preceding state, read the
 [September 28 session handoff](SESSION-HANDOFF-2026-09-28.md): release 44 as the live
 deployment, the four repaired gates of the customer delivery train and what each failure
 actually was, why the machine kept using swap and the guard that answers a run's question

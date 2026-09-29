@@ -35,6 +35,7 @@ import os
 
 from ..practitioner_runtime.provisioning import _item
 from .catalogue_body_flush import ExactFlushVolumeBodyStore
+from .catalogue_attributes import asset_role_problems
 from .catalogue_packages import (EXECUTABLE_EFFECT, FILE_BODY, CataloguePackage, VolumeBodyStore,
                                  exact_digest, sha256_hex)
 from .catalogue_schema import CatalogueAttributeSchema
@@ -196,6 +197,20 @@ def tier_refusal(approval):
     return "" if approval["tier"] in LIBRARY_TIERS else "library_tier_invalid"
 
 
+def validated_attributes(schema, attributes):
+    """Validate both field shapes and the interpretation required by a declared artifact form.
+
+    Publication and active-store loading share this boundary. These fields
+    describe use; they grant no execution or external processing authority.
+    Ordinary components do not acquire additional requirements.
+    """
+    values = schema.validate_values(attributes)
+    problems = asset_role_problems(values.get("component_form", ""), values)
+    if problems:
+        _refuse("artifact_interpretation_required", "; ".join(problems))
+    return values
+
+
 def validate_item(value, schema, *, license_policy, family_policy):
     """Apply the manifest rules, the two added rules and the tier rule to one bundle line."""
     if (not isinstance(value, dict)
@@ -218,7 +233,7 @@ def validate_item(value, schema, *, license_policy, family_policy):
         _refuse(refused, "an unapproved item, an approval of other bytes, an undeclared process effect and an "
                          "approval that names no known library tier are never published")
     approval = value["approval"]
-    return BundleItem(item, package, approval["approval_ref"], schema.validate_values(value["attributes"]),
+    return BundleItem(item, package, approval["approval_ref"], validated_attributes(schema, value["attributes"]),
                       approval["tier"])
 
 

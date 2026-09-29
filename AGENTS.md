@@ -20,269 +20,39 @@ documents from Taedri.
 
 ## North star and current initiatives
 
-Baltor is the public brand. Loop Engine is the repository, the Python package
-and the technical name. The product is a hosted intelligence service plus a
-local engine. Customers run their own harness and their own models. The
-service gives each step of a task the information, skills, tools and reusable
-code that the step needs, within the budget and permissions the customer sets.
+Baltor gives each step of a customer's chosen harness the materials, methods,
+tools, executable components and checks needed to complete useful work.
+Creative production is now a first-class focus: editable motion, graphics,
+parametric visuals, 3D scenes, audio and playable experiences. Technical
+reference laboratories and reusable code stay in the same library.
 
-The north star, in the owner's words of September 22, 2026: make coding
-harnesses and multi-agent systems as efficient as possible, so that they
-become a frontier harness, a frontier multi-agent system or a frontier
-fabric that can solve any unseen task in the most efficient way. That means
-the exact amount of context for each step, reusing code instead of
-rewriting it, the right amount of intelligence and heuristics for each
-decision, and small models doing much more, including work that runs
-overnight. The task can be anything: building a pipeline, research, data
-work, or software. Turning a complex problem into a solution that can be
-used again is one benefit of this, not the north star. Success means
-accepted work under the customer's constraints; it does not mean the fewest
-tokens, steps or model calls.
+The owner's September 29 direction keeps the target above one million distinct
+served component files, with original implementations and native materials,
+not just skills. A model should discover small contract cards, compose and
+order qualified capabilities, and load source only when needed. Preserve
+unchanged implementations instead of paying to generate them again. Every
+executable graph vertex remains a Loop; passive files and frame operations do
+not become separate model calls. The existing code-asset, solution-graph and
+engine-slot contracts own this behavior.
 
-The default design gives every step its own harness. The engine breaks the
-work into focused steps, and each step is a discrete cognitive or act step
-Loop node that runs in a unique, freshly started harness holding only the
-context that small step needs, so no harness suffers the context rot of a
-long, overloaded session. Read the
-[complete behavioral explanation](ASTRA.md#complete-behavioral-explanation)
-before describing one.
+Read [the current north star](docs/architecture/NORTH-STAR.md) before product,
+architecture or prioritization decisions. It preserves earlier owner direction
+and states the September 29 priorities. Read [owner decisions](docs/architecture/OWNER-DECISIONS.md)
+for pricing, admission, library composition and historical rationale. Neither
+file replaces the authority section below or the [roadmap](docs/roadmap/roadmap.yaml).
 
-The customers are developers, teams and agentic systems. A developer can
-leave a local model running overnight (for example Gemma 4) and wake up to
-finished work; an agentic system can solve large problems with smaller,
-cheaper models and the right context for each step. Baltor Pro connects the
-customer's client to a searchable library of anything that drops into a
-harness: AGENTS.md and other context files, skills, plugins and protocol
-server configurations. A paying customer authenticates (today through the
-Model Context Protocol endpoint), searches, retrieves the chosen material,
-and starts a harness for the step with exactly that material.
+The next proof is one complete creative project that produces an attractive
+result, survives a meaningful revision and reopens in a clean supported
+environment. Candidate counts, format checks, downloads and native loading
+are distinct from accepted work or measured benefit. Keep the no-extra-material
+baseline eligible. Each functional component retains its fixed typed edge and
+swappable engines; use existing code and qualified native tools first.
 
-The product answers six customer problems: too much context for a small
-task, an expensive model for every decision, missing domain expertise,
-paying to rewrite code that already exists, the same mistakes appearing
-again, and large multi-step, long-horizon problems that small and cheap
-models cannot finish alone. The benefits are drafts, not measured claims,
-until the [benefit evidence guide](docs/guides/launch-benefits-and-evidence.md)
-says otherwise: solving complex and long-horizon problems and producing
-reusable solutions, lower cost through cheaper models and fewer tokens, work
-that finishes overnight, and optimization, including turning
-non-deterministic work into deterministic solutions. Use cases to prove and
-show: a developer connects Baltor so that tickets are worked overnight on a
-local model; a developer cleans a data set without asking an expensive model
-to do simple transformations; a full solve of a data science competition from
-task to submission.
-
-Every functional component sits behind a fixed, typed, versioned edge with
-one or more swappable engines, as rule 6 of the
-[authority section](#commit-push-and-release-authority) states. The earlier
-custom loop-node engine may return as one more engine behind the same
-executor edge.
-
-### The September 27 direction
-
-On September 27, 2026 the owner added five things to this north star. Each
-stands until the owner changes it.
-
-**Knowledge that stays current, kept as decisions and capabilities.** The
-owner observed that a developer's edge is "knowledge on recent papers", which
-"isn't something that's moated", and asked Baltor to keep watching and
-serving "top benchmarks ... top specialized language models, top decision
-and thinking and reasoning models ... top pipelines for everything",
-infrastructure choices ("Fly.io versus Render ... uptime monitors"), and to
-expand into "3D, 2D, CAD, design, image scraping"; "every time it ages, ask
-questions like, Is this the most efficient way of doing things". In the
-owner's words: "top papers, top use cases, top solutions for X, Y, Z
-problems. Those are going to be more valuable than anything else we provide
-users." The same day the owner endorsed the central claim of a design for a
-daily research and capability release pipeline: "The central product is
-therefore not a daily digest or a directory. It is a maintained library of
-engineering decisions and executable capabilities: research once per
-relevant task and configuration, preserve the evidence, test the
-implementation, and let many harnesses reuse the result without repeating
-the investigation." The owner's rule for what becomes a file, in their words:
-"if the research time takes an engineer more than five minutes, multiple
-websites to go to, then it's not very trivial, and it's something that
-probably 10,000 engineers may be doing daily. We should just do that once
-and then put it into our context layer that serves it up as an appropriate
-file." A volatile fact is served as a tool that fetches it: "rather than
-holding stock price, we can hold tools that can call stock prices because
-the research time there is very trivial." The owner named further fields,
-among them "laws that have changed", "major geopolitical things",
-"contracts" and "stock trading information", and files that are "actual
-executable, like Python files, encapsulated TypeScript". Beside the
-component library, Baltor therefore maintains engineering decisions and
-executable capabilities: decision cards with their evidence, data files,
-tested code in Python or TypeScript, and tools for volatile facts. Each one
-carries the date it was checked and the date it must be checked again, and
-an aged item is researched again, not silently kept. Research workers
-propose claims and bundles; they hold no publishing credential, and
-publication goes through the independent review and the catalogue release
-path like every other package. Roadmap step S-6.214 is the first piece.
-
-Later the same day the owner set the aim: "ideally engineers would never
-need to search and read newsletters blogs, directories, list, their coding
-harness can do that already and no need to do it again, and we can do it
-daily and serve it to thousands of coding harnesses". The analysis the
-owner shared with it states the principle as "Research once, validate for
-defined conditions, distribute many times, and repeat only the work
-invalidated by a meaningful change", and the answer a harness receives as
-"Here is the currently qualified way to accomplish this task under your
-constraints, with the implementation, evidence, limitations, and update
-history already prepared". It removes "the obligation to browse
-repeatedly" but not "the ability to inspect evidence", and shares "the
-research broadly" but not "the assumption that every project is the same".
-Three rules follow. Research is kept in three sharing scopes: public and
-shared, private to one organization, and private to one case, and only the
-public scope is pooled across customers. Every answer states where it
-stands: an approved result, a candidate, needs research, needs local
-evaluation, blocked by policy, or no eligible option. Success is measured
-by research reuse and by accepted-task improvement over a harness's own
-browsing, never by counts of links, files or summaries. Other services
-cover parts of this; Baltor's claimed difference, turning outside
-discoveries into task-specific, executable, evidence-backed capabilities
-across different harnesses, is a hypothesis to test.
-
-**Four zones, run by agent teams.** The owner asked for "splitting the
-website server side that's public that interacts with the customer and the
-customer's harness, making sure that is appropriately compartmentalized",
-the client side ("the harness and setup, etc. in the MCP between those"),
-and "internal server-side as well as internal local components. And these
-internal components are meant to be swarms of agents or dedicated pipelines
-or individual agents with skills that do the work of a team of individuals.
-We don't have a team of individuals, but we do have a lot of agents." The
-code therefore falls into four zones: the public service, the customer
-client, internal server-side jobs and internal local pipelines. The internal
-zones are the staff: agent teams and pipelines that grow and review the
-library, release, research, measure and draft support. Each zone holds only
-its own credentials, and the public service never imports an internal
-pipeline. The
-[four-zone architecture record](docs/architecture/FOUR-ZONE-ARCHITECTURE-2026-09-27.md)
-maps every current component, job and workflow to its zone.
-
-**Agents are swappable; what each step receives is the product.** The
-owner asked the same afternoon about Omnigent and other meta layers: "you can
-swap the whole agent underneath and not rewrite anything?" The
-[agent meta-layer research](docs/research/AGENT-META-LAYERS-2026-09-27.md)
-found that swapping the agent is now a free configuration change (Omnigent,
-and the Agent Client Protocol with 41 agents in its registry), and that none
-of those layers supplies each step with reviewed files, skills and tools,
-places them where each agent reads them, checks that they loaded, or has an
-outside check accept the result. That is Baltor's product, still to be proven
-by the with-and-without measurement. Baltor therefore builds no orchestration
-interface and becomes something those layers call. The line the research
-recommends is "Swap agents with any meta-harness; Baltor supplies what each
-step needs." The harness executor slot uses the Agent Client Protocol first,
-driven by its registry.
-
-**Decide like a startup.** The owner asked engineering to "significantly
-increase your aggressive efforts to reconcile and consolidate all aspects of
-the code: all branches, all forks, all work trees, etc." and continued: "as
-a North Star when making decisions on how to do that merge, think of our
-100K MRR 90-day plan, and think of this as a startup. You should take on
-personas of a startup CEO, a startup CTO, an invested investor, a
-non-invested investor, an interested investor, different customer groups,
-different personas of customers, different marketing channels, etc." and
-"The evolution of this project has brought vast amounts of wealth and
-understanding and product-market fit research that all needs to be
-considered and worked into a flexible North Star."
-Weigh each choice by what it does for the ninety-day revenue plan: a visitor
-who reaches a first download in their own harness, a developer or team that
-pays, a channel that brings people who stay, and a claim proven with and
-without Baltor. The library counts as distinct useful components in the
-balanced mix the decision table sets, with the owner's goal of 100,000; a
-count of files or near copies is not progress. The plan's targets, its
-revenue analysis and the persona panel stay in the owner's private folder on
-the development workstation (`~/baltor-private/`), outside this public
-repository.
-
-**Flexible rules.** The owner: "We also need to watch out for any rules or
-tests that are not flexible enough as we continuously and iteratively
-develop." A check protects one named invariant and fails its known-wrong
-case. A check that pins whole-file bytes, page copy, counts, dates or the
-newest file name, where a narrower test of the same invariant exists, is
-replaced by the narrower test, which must still fail the known-wrong case.
-The guards of the authority section, secrets, permissions, spending and
-external effects are never loosened this way. The
-[rules flexibility audit](docs/architecture/RULES-FLEXIBILITY-AUDIT-2026-09-27.md)
-lists the current candidates.
-
-In one sentence: Baltor researches once what thousands of harnesses would
-otherwise each look up, and gives each step of a customer's harness the
-currently qualified files, decisions and tested capabilities for that step,
-checked again when a meaningful change invalidates them and proven with and
-without Baltor, under the customer's own budget and permissions; engineering
-picks the work that brings paying developers and teams soonest.
-
-```text
-Current initiatives, in priority order (September 27, 2026)
-├── 1. One main line, live and checked (D-18, S-6.29)
-│   ├── Every worktree line saved, then merged or archived; orphaned
-│   │   coordination notes committed
-│   ├── A free disk, and continuous integration that stays green after
-│   │   automated data refreshes
-│   ├── The daily job reads a publish from the service; the oracles run
-│   │   from a current main revision
-│   └── Releases only from checked main revisions, then live checks on
-│       every hostname
-├── 2. Activation and measurement (S-6.204, D-15, D-21, D-25)
-│   ├── A visitor counter and funnel events: visit, sign-up, first search,
-│   │   first download, return on day 2 and day 7, checkout
-│   ├── A first download inside each quickstart harness in under five
-│   │   minutes, measured
-│   ├── A free monthly download allowance measured against paid-only
-│   │   downloads
-│   ├── Listings in the plugin directories, the Model Context Protocol
-│   │   Registry and skills.sh (S-6.183)
-│   └── Setup for the layers that swap agents: an Omnigent quickstart and
-│       agent template, Zed, JetBrains Air and Goose
-├── 3. Maintained engineering decisions and capabilities (S-6.214)
-│   ├── Decision cards, data files, tested Python or TypeScript code and
-│   │   tools for volatile facts, each dated and checked again as it ages
-│   ├── Researched once per task and configuration; research workers
-│   │   propose, the independent review and catalogue release publish
-│   ├── Every answer states where it stands, from approved result to no
-│   │   eligible option; public, organization and case scopes kept apart
-│   └── Served to harnesses beside the component library, then new fields
-│       such as 3D, 2D, CAD and design
-├── 4. The Team plan (S-6.191, S-6.186)
-│   ├── One governed library across every harness a team uses: seats,
-│   │   private items through the same review, an allowlist, an audit log
-│   └── A published review method: named scanners, sandbox runs for code,
-│       second-family review, rescans and withdrawal records
-├── 5. Proof with and without Baltor (S-6.173, S-6.185, D-07 to D-09)
-│   ├── Per-step selection against native skill search, abstention measured
-│   ├── A Harbor run of registry agents with and without Baltor's material
-│   └── Overnight work on a cheap model under the same budget
-├── 6. The 100,000-component library in a balanced mix (D-26)
-│   ├── More functions, tools, programs, binaries, plugins and protocol
-│   │   servers; skills capped at a fifth
-│   └── A family short of supply exports fewer packages, never more skills
-├── 7. Engines behind fixed edges for every functional component (D-19, D-28)
-└── 8. Continuing work: durable cloud records (D-05), research, the Y
-       Combinator package and removal of unused pre-launch compatibility
-       (D-12)
-```
-
-The authoritative task state is [roadmap.yaml](docs/roadmap/roadmap.yaml) and
-its [generated status](docs/roadmap/CONTINUATION-STATUS.md). The
-[takeover checkpoint](docs/context/TAKEOVER-CHECKPOINT-2026-09-20.md) records
-the working cycle for changes, tests, checkpoints and releases, the private
-beta definition, and the live state and open findings of September 20. The
-newest dated handoff, named in the [context route](docs/context/START-HERE.md),
-records the live state since then. Follow the working cycle. In short:
-
-- Write the check for the known-wrong case before the repair. A removed guard
-  must fail a named check.
-- Record state in the roadmap and regenerate the status file. Do not start a
-  second task list, dashboard or plan.
-- Save every report under a new name. Keep failed attempts beside their
-  successors.
-- Release only from a committed revision whose continuous integration run
-  passed, deploy by image digest, and keep the previous image for rollback.
-- A record that an older release must not honor needs a new record version,
-  so that the older release refuses it.
-- Offered, fetched, loaded, used and verified are separate facts. A count of
-  passing checks is not a working customer journey.
+A discrete cognitive or act step Loop node retains the [complete behavioral
+explanation](ASTRA.md#complete-behavioral-explanation). A renderer's frames or
+scene objects are not additional Loop runtimes. Browser execution, an existing
+harness, a paired computer and managed execution are separate profiles, with
+separate identity, content access, inference funding and effect authority.
 
 ## Start here
 
@@ -546,527 +316,80 @@ recorded loss.
 
 ### Decisions that stand until the owner changes them
 
-On September 20, 2026, in the evening, the owner told engineering to stop
-bringing back decisions that engineering can make. The target is a system that
-is ready for paying customers. These judgment calls were made under that
-direction. Each stands until the owner changes it.
+The [owner decision table](docs/architecture/OWNER-DECISIONS.md) preserves the
+dated decisions, reasons and current clarifications. Read it for intelligence
+admission, pricing, composition and scope. It is linked here instead of
+repeated in every harness's startup context.
 
-| Decision | Choice and reason |
-|---|---|
-| Delegated decisions | On September 25, 2026 the owner delegated every decision in this table: "use your best judgement to resolve all of these 'your decisions' you can make decisions on your own for these". Each row below is therefore engineering's decision with its reason, and the [ninety-day plan](docs/context/NINETY-DAY-PLAN-2026-09-25.md) of that evening records the measured cycle times behind them. The owner changes any row by saying so. |
-| Approval of intelligence items | Publish after one screen, then let feedback withdraw. Before publication: the deterministic prechecks (format, licence on the accepted list, unsafe instructions, undeclared effects, secret-shaped values, exact and near copies), pinned provenance, and one screening call for up to 12 packages by one calibrated reviewer from a family that did not produce them, answering the written criteria of that material (the eight imported criteria for an imported package). A shorter four-question screen was measured on September 25, 2026 against the 240-package pilot on the same reviewer: it approved 7 of the 10 packages the written criteria rejected (plugin manifests that refer to files they do not include, and a rules fragment), so it is not the gate; the written criteria cost 52 seconds for 12 packages, which is fast enough. A reviewer that approves any known-wrong control that day is excluded until it passes again. Publication is automatic, by the daily job, with the internal community review profile; the customer interface presents one component library. After publication: a report button on every item (library page, catalogue browser and a protocol method); a report from a signed-in customer withdraws a Community item from serving within a minute and queues the full review, and a Verified item is withdrawn on a staff flag or on two reports from different customers; a nightly rescan with the current rules withdraws what fails a new rule; a weekly upstream check flags a repository gone, a licence changed or an advisory; second-family reviews run asynchronously and upgrade to Verified or withdraw. Every withdrawal keeps its record and note, and reinstatement is a new review of the same bytes. A producer family still never approves its own work, an approval grants no effect, and the owner can withdraw any item. Reason: the owner, September 25, 2026: "we need to speed up and review, and change the review process, maybe we can make the review process before publication simpler, but allow an ongoing feedback based process to unpublish certain things, flag them for additional review"; the same day the imported reader landed and the Tactical screen measured 52 seconds for 12 packages at a 96 percent yield, so one call is cheap and a second family before publication was the cost. The pilot's ten rejections were the control for the shorter screen, and it failed them. Roadmap step S-6.199. |
-| Price | One plan, Baltor Pro, 29 United States dollars each month. Comparable entry plans cost 19 to 29 dollars. Search is free, the measured unit is one downloaded item, and there is no overage billing at launch. The first 10 accounts from Baltor's own sign-up hold Baltor Pro free each month, and a superadmin can grant or revoke free monthly Baltor Pro for any account (the owner, September 23, 2026). September 25, 2026: an annual Baltor Pro at 290 dollars a year (two months free) is added when its Stripe price and its checks ship in one release, because a prepaid year helps cash and retention at this stage; the monthly price does not change. |
-| Payments | Live since September 21, 2026. The first call was to build and qualify everything in Stripe test mode and to wait for the owner's identity and bank verification. The owner activated the live account and supplied its key that morning. The live account `acct_1UHZ972IF9bCskLc` is separate from the sandbox `acct_1UHZ9KCCxLfArYED`, with charges and payouts enabled and nothing outstanding. Checkout and the customer portal were proven against the deployed service and nobody was charged, as the [live payments record](artifacts/architecture-audit-2026-09-19/live-payments-enabled-1.json) shows. The key is in the system keyring under `stripe-live` and reaches a command only through `tools/operator_credentials.py`. |
-| Sign-up email | The service creates the confirmation link through the identity provider's administration interface and sends its own email, so the whole journey stays on the baltor.ai domain and needs no change to provider settings that engineering cannot reach. |
-| Browsing for signed-in users | The owner's words were heard as browsing the intelligence layers. Signed-in users get a catalogue browser grouped by the four layers. It reached `main` and the live service in release 13 on September 22, 2026. |
-| Public positioning | The category line is harness and agent optimized operation, the owner's phrase. |
-| Hosting plans | Stay on the free Supabase and Resend plans. The owner, September 22, 2026: "Why do we need supabase and resend paid plans? I thought we don't need that?" The free limits (a project pauses after a week without activity; 100 emails a day) fit an invited beta; engineering keeps the identity project active and watches the email cap, and asks again only when usage nears a limit. September 25, 2026: engineering extends the Fly volume and Machine memory within the recorded 50-dollar monthly allowance when the serving measurement at 1,000, 5,000 and 10,000 packages needs it, and asks only for a size past the allowance, with the numbers. |
-| Public registration | Open since September 24, 2026, release 24. There is one way in: Baltor's own sign-up, with the address first, then the emailed link, then the password. Staff roles are fixed in code (superadmin, developer and analytics), and the host file only names who holds one. The reason and the live evidence are in the authority text above and in the [release 24 record](artifacts/architecture-audit-2026-09-19/pilot-release-24.json). |
-| Operator and contact | Baltor.AI, 1428 Bryn Mawr St, Saxton, PA 16678, United States, as the owner gave on September 22, 2026. The privacy notice names it. |
-| A library of 100,000 harness files | The owner, September 22, 2026: 10,000 fully searchable, retrievable, indexed harness intelligence files; material without a licence that allows direct copying is used only as inspiration for an original rewrite; reviews by Claude Code, Kimi, GLM, other Ollama models and Codex models; managed releases of new files; user settings with good defaults. Later the same evening: "we need to move towards a fully working SaaS, better UI/UX, and 100K harness files". So 10,000 is the first milestone and 100,000 the target, counted as distinct approved packages of any file type a harness reads, as the Intelligence rules define harness intelligence. Engineering's plan is roadmap step S-6.40 and the steps it names. Dated on September 25, 2026 from the measured throughput (the Tactical screen at 52 seconds for 12 packages, a 96 percent yield, 58,787 imported candidates on disk): 10,000 approved and served by October 5, 30,000 by October 31 and 100,000 by December 24, 2026, then 1,000 or more a day; each mark waits for the serving measurement at that size, not for a date. On September 27, 2026 the owner raised the goal: "We need to increase our goal to 100K library components, and a diverse well balanced library, not overweighted with skills.md, we should have more functions, tools, programs, binaries, plugins, etc". From that day the working goal is 100,000 components, counted as distinct useful components: approved, served and not withdrawn, one package for one job, never an exact or near copy of another, in the forms the Library composition row names. The dated marks above stay as the measured throughput plan. Later on September 27, 2026 the owner set the current goal: "our current goal now being 1 million harness component files within the next 3-5 days". Engineering counts each distinct file, with its own digest, that an approved, served and not withdrawn package delivers; at the measured 3.8 files per package that is about 265,000 packages. The licence rule, independent approval and the Library composition row still apply, and a file that fails them does not count. Roadmap step S-6.215 holds the plan. |
-| Library tiers | The owner, September 26, 2026, removed the customer-facing two-class system: present one component library, with combined counts by kind and individual source, licence, effects and review details. Do not show Verified/Community labels, tier badges or tier filters, and do not replace them with Baltor/Community classes. Existing wire labels **Verified** (`verified`) and **Community** (`community`) remain internal review metadata for the current versioned contracts; they do not describe authorship or customer categories. Their existing review requirements remain: full review uses at least two independent model families other than the producer with automated checks passing; the initial screen uses the written criteria and a calibrated reviewer from another family with deterministic prechecks. The approval and feedback-withdrawal rules in the preceding row still govern admission. The first catalogue retains its recorded review exception: its September 21, 2026 review does not establish two other model families, and that gap remains in its evidence until further review. This decision supersedes the earlier instructions to display those labels everywhere. |
-| Library composition | The library is every kind of file a harness picks up, in a declared mix, not skills first. From September 26, 2026 each export of the daily job draws its packages by shares: skills 30 percent, skills with scripts 10, subagents 12, commands 12, rules 8, instruction files 8, plugin manifests 6, hooks 5, protocol server configurations 3, marketplaces 2, contract schemas 2, code modules 1 and harness settings 1; an exhausted kind spills its share over to the others, and one argument of the export command changes a share. A package with code reaches Community when every executable file is text the reviewer read line by line under the executable-code criterion, a Python file parses and the effects rules find nothing undeclared; a package's own tests in a sandbox stay the route to Verified for code. Each served item carries step function tags (acting, analysis, building, operating, planning, reasoning, research, reviewing, verification, writing) that a rules engine writes from the item's own words and file roles, filterable in search and shown on the pages, with the engine named so a rule tag is never taken for a judged one. Reason: the owner, September 26, 2026: the library "should be skills, plugins, python scripts, literally a large mix of everything that can be placed into a harness working directory", with tags "by whether they support acting, reasoning, building, analysis, verification, etc"; that morning the 4,812 served packages held no script, because the export drew instruction-only packages first and the format rule held every package with code for sandbox tests that no imported skill ships. Roadmap steps S-6.205 and S-6.206. On September 27, 2026 the owner asked for "a diverse well balanced library, not overweighted with skills.md" with "more functions, tools, programs, binaries, plugins". Engineering's target composition for the 100,000 library: about 35 percent executable code (functions, library modules, programs, API operation clients and binary install recipes); about 20 percent protocol servers, plugins, marketplaces and hooks; at most 20 percent skills, preferring skills with scripts; about 10 percent subagents and commands; at most 8 percent instruction files and rules; and about 7 percent data tables, contracts, schemas and settings. When a family lacks supply, a daily slot exports fewer packages instead of refilling with skills beyond their cap. A binary is served as a pinned upstream install recipe with the upstream's published checksum, unless its licence allows redistribution. Each package carries a typed, versioned `component_form` attribute. The September 26 shares stay in the export until these shares ship; consolidation builder e implements them, the attribute and supply lines for protocol servers, API operation functions, command-line tools and data tables (handoff `~/baltor-private/consolidation-2026-09-27/handoffs/e.md`). Reason: on September 27 the served library held 42 percent skills and 26 percent instruction files against 8 percent code; the market research found catalogue size and skill files to be a commodity and tested executable capabilities to be where the value is; and SkillsBench found that model-written skills give no average benefit. |
-| Seed material from the owner's own volumes | A volume the owner attaches is inventoried read-only by one command (no copy, no hash, no file opened beyond its first bytes), outside the repository, and each project root is classed by typed provenance signals: a git remote under another account, a licence file naming another holder or a copyright line naming someone else makes the project third-party material, which is inspiration only under the licence rule; everything else keeps the owner's authorship declaration of September 26, 2026 as its recorded basis. Seed records are written per owner-authored project, generated harness packages cite their seed project and inventory revision, and they reach customers through the same prechecks, screening call and daily publish as every other package. Reason: the owner, September 26, 2026, attached a 7.3 TB drive of their own projects to be scanned "aggressively" as "seed material for harness component file generation", then other drives, "without license concerns, because everything on the drive was created and written by me as the original author"; the declaration is recorded, and the signals that contradict it for a given project are honoured, because a drive of thousands of projects also holds cloned repositories (the drive's own index names stable-diffusion-webui, AnyV2V, ffmpeg and comfy). Roadmap step S-6.207. |
-| Model roles are dynamic | Any model family may generate, review, tag, measure or repair library material: Claude Code agents author packages directly, the owner's Tactical server generates and reviews, Ollama Cloud models and Codex do both when their allowances allow. No family is fixed to one role. The one invariant stays: the family that produced an item never reviews or approves that item, so each pairing is chosen per item, and the scheduler picks the pairing by the day's calibration (accuracy) and the measured throughput of each lane. Reason: the owner, September 26, 2026: "Claude code agents can do all aspects, every LLM can do all aspects and we just dynamically adjust to be the most efficient in terms of throughput and accuracy, do not assign tactical only for independent review, or claude code only for X. Every LLM can do all", and the standing rule that a producer never approves its own work. |
-| Plans above Baltor Pro | The owner delegated the choice on September 24, 2026: "Proceed with all of this, you don't need my decision for these, use your best judgement". Baltor Pro stays at 29 United States dollars a month. Studio at 99 dollars a month adds private projects and versioned workflows with more storage; Team at 299 dollars a month adds seats, roles, a shared private library, budgets and approvals; an Organization plan is priced on request later. A plan is sold only when its features pass their checks, and its Stripe price is created in the same release. Reason: the owner's goal of $100K MRR within 90 days needs plans above one individual subscription, and nothing is sold before it works. |
-| Kaggle and OpenML showcases | The owner, September 24, 2026: "you should use your own judgement to enter a variety of Kaggle competitions or other openML problems, solutioning, building examples, that can showcase baltor", and "you have my go ahead to draft kaggle notebooks, systems, folders, experiement, ideate, learn". Engineering chooses and enters competitions and OpenML tasks that showcase Baltor, follows each competition's rules, and keeps code for a running competition off the public repository when its rules require sharing on Kaggle. For the Gemma 4 Developer Agent tracks engineering drafts the paper and the package, and the owner reviews them before the final submissions. |
+## Detailed engineering guidance
+
+The [engineering rules](docs/guides/repository-engineering-rules.md) preserve
+the complete requirements previously held here. Read the relevant section
+before changing its owning boundary.
 
 ## Pre-launch version policy
 
-The owner confirmed on September 19 that Loop Engine has not launched and
-has no users requiring old interfaces. Do not add or retain compatibility
-code solely for pre-launch record shapes, imports, aliases, or constructors.
-Update in-repository callers and tests to the current contract together.
-Keep explicit component, profile, record, and adapter versions, exact digests,
-and compatibility handshakes. Reject unsupported versions before effects.
-An incompatible version is not permission to silently downgrade or reinterpret
-fields. Preserve historical evidence bytes without making them active runtime
-inputs. See the [version policy](docs/architecture/ADR-PRELAUNCH-VERSIONED-CONTRACTS.md)
-for the distinction between contract versioning and legacy support.
-
-The owner's later September 19 clarification also requires deliberate runtime
-compatibility between independently deployed component versions. Negotiate
-the mutually supported protocol, schema, capabilities, and qualified adapter
-at initialization and validate the selected binding at use. Continuous
-integration tests this logic; it does not replace runtime negotiation. This
-does not revive obsolete pre-launch formats or permit automatic field guessing.
-Refuse a downgrade that loses required semantics, integrity, or authority checks.
+Keep versioned handshakes between independently deployed components. Refuse unsupported versions before effects. Preserve historical records without automatic legacy readers.
+See [the complete rule](docs/guides/repository-engineering-rules.md#pre-launch-version-policy).
 
 ## One Loop runtime
 
-Every executable graph vertex is a Loop. Do not create another operational
-runtime type.
-
-Before creating a class whose name ends in `Node`:
-
-1. Stop.
-2. Confirm that no active first-party `*Node` class is permitted.
-3. Represent the concept as a typed object consumed by `Loop`, a
-   `LoopProfileSpec`, a payload, a reference, a result, a report, a policy,
-   a contract, an artifact, or a RepositoryEntity.
-4. Retired serialized `kind: loop_node` records are unsupported runtime input.
-   Preserve historical files without an automatic migration reader.
-5. Do not create a Node subclass. The canonical Loop class refuses subclassing
-   at class-creation time.
-
-Before creating a new top-level folder:
-
-1. Identify its stable architectural boundary.
-2. Explain why attributes, records, or catalog queries are insufficient.
-3. Add a README and architecture contract.
-4. Add import-boundary tests.
-5. Update `architecture.yaml`.
-6. Create an architecture decision record when the architectural model changes.
-
-Do not infer executable behavior from prose, tags, labels, filenames,
-folder names, examples, or comments. Permissions, contracts, routing,
-budgets, compatibility, and lifecycle must come from structured typed
-fields.
-
-Keep these dimensions separate:
-
-```text
-Loop
-├── Operational relationship
-│   ├── Starting
-│   ├── Spawned by
-│   ├── Queried by
-│   ├── Retrieved by
-│   └── Connected from
-├── Role: Practitioner, Intelligence, or Solution
-├── Mode: deterministic, hybrid, or non-deterministic
-├── Step profile: atomic, compact, reference nine-step, or custom
-├── Typed input and output contract
-├── Loop condition and exit condition
-├── Budget and permissions
-└── Run History records
-```
-
-A Starting Loop has no incoming Loop relationship. A Spawned Loop records one
-spawning Loop ID. A spawning Loop and a Loop it spawns may use different
-modes. A mode never grants file, network, secret, model, spending, or
-external-effect authority. Active readers and writers must reject retired
-topology fields. Historical evidence may retain them without runtime support.
-
-Keep semantic relationships distinct. A Starting Practitioner may spawn a
-Practitioner subproblem Loop and query an Intelligence Query Loop. That Query
-Loop retrieves Intelligence Item Loops and returns typed references or
-material. A Starting Solution runs deterministic pipelines through Connected
-Solution Loops. Use Spawned Solution Loops only for a real dynamic branch,
-fallback, repair, or ensemble member.
-
-A Loop is the only executable graph vertex. Every displayed Loop names its
-role and exact profile, its own mode, typed input and output ports, loop
-condition, exit condition, and graph relationships. Passive records, services,
-ports, slots, and edges are not graph vertices. A Canvas or pipeline does not
-have one execution mode. It may declare only a policy for the modes permitted
-on its member Loops.
-
-Every operational boundary must appear in the existing
-`core.boundary_registry` with runtime type `Loop` and either an
-exact registered role profile or a validated typed profile source. Static
-Architecture has only three public capability groups: Intelligence Search and
-Retrieval, Web Research, and Custom Plugins. Providers, settings, workspaces,
-approvals, stores, Runtime Memory, Run History, reports, playback, and provider
-adapters are internal runtime mechanics. A capability or internal mechanic is
-not a graph vertex, but the work that uses it must be owned by a classified
-Loop. Missing, extra, unknown, unversioned, or role-incompatible boundaries
-fail conformance.
-
-Self-improvement is a Practitioner task. It stages candidates for independent
-review and cannot approve its own work.
+Loop is the only executable graph vertex. Practitioner, Intelligence and Solution are roles; deterministic, hybrid and non-deterministic are modes. No concrete Node or Loop subclass is introduced. Low-level operations stay inside their owning Loop unless independent governance is required.
+See [the complete rule](docs/guides/repository-engineering-rules.md#one-loop-runtime).
 
 ## Required architecture trees
 
-Use text trees or Mermaid trees whenever a document explains three or more
-architecture branches. A flat paragraph is not enough for the Loop hierarchy.
-Start with the complete classification tree before showing a specialized
-branch.
-
-```text
-Operational runtime type
-└── Loop
-    ├── Operational relationship
-    │   ├── Starting
-    │   ├── Spawned by
-    │   ├── Queried by
-    │   ├── Retrieved by
-    │   └── Connected from
-    ├── Role
-    │   ├── Practitioner
-    │   ├── Intelligence
-    │   └── Solution
-    ├── Versioned role profile
-    ├── Purpose and domain categories
-    ├── Run mode
-    │   ├── deterministic
-    │   ├── hybrid
-    │   └── non-deterministic, with model-led semantic work
-    ├── Step profile
-    ├── Typed input and output contract
-    ├── Loop condition
-    ├── Exit condition
-    ├── Graph relationships
-    ├── Budget, permissions, and effect policy
-    ├── Model settings when the selected mode permits a model
-    └── Run History records
-```
-
-Use the words precisely:
-
-- Runtime type answers, "What operational object runs?" The answer is always
-  `Loop`.
-- Relationship answers, "How did this Loop enter the active structure?" The
-  answer is Starting, Spawned by, Queried by, Retrieved by, or Connected from.
-- Role answers, "What broad responsibility does it have?" The answer is
-  Practitioner, Intelligence, or Solution.
-- Profile answers, "Which reusable versioned behavior preset does this Loop
-  use?"
-- Category answers, "How is this work classified for search, organization, or
-  reporting?" A category does not create a class or runtime.
-- Mode answers, "How is this Loop allowed to resolve its work?"
-- Step profile answers, "Which ordered steps can it run?"
-- Settings answer, "Which contracts, budgets, permissions, provider routes,
-  thinking power, and conditions apply?"
-- Loop and exit conditions answer, "When may this Loop continue, and exactly
-  when does it finish?"
-- Graph relationships answer, "Was this Loop starting, spawned, queried,
-  retrieved, or connected from another Loop?"
-
-Show the role profile branches when the document discusses role-specific
-behavior:
-
-```text
-Loop role profiles
-├── Practitioner
-│   ├── reference nine-step
-│   ├── compact five-step
-│   ├── research
-│   ├── solver
-│   ├── verifier
-│   ├── code execution
-│   └── self-improvement task
-├── Intelligence
-│   ├── cross-layer search and materialize
-│   ├── Context Intelligence
-│   │   └── serve, search, and frame
-│   ├── Code Intelligence
-│   │   └── resolve, invoke, and load
-│   ├── Runtime History and Solution Intelligence
-│   │   └── search, replay, and compare
-│   └── User Feedback Intelligence
-│       └── serve, scope, and interpret
-└── Solution
-    ├── atomic component
-    ├── pipeline
-    ├── router and fallback
-    ├── ensemble
-    └── validator
-```
-
-The Loop runtime defines three modes. A registered profile and an installed
-executor may support a subset. The in-process Solution runner supports all
-three modes when a compatible executor and exact model authority are supplied;
-without them, it returns a typed unavailable-executor failure. Thinking power
-and model routing apply only when a hybrid or non-deterministic Loop is
-authorized to call a model. They are not additional run modes.
+Use the complete classification before specialized architecture branches. The detailed rules contain the full trees and precise terminology. Preserve the complete behavioral explanation in ASTRA.md.
+See [the complete rule](docs/guides/repository-engineering-rules.md#required-architecture-trees).
 
 ## Typed boundaries and encapsulation
 
-- Prefer small immutable data classes and named configuration objects over
-  long positional argument lists or unstructured keyword dictionaries.
-- Give every Loop and Solution connection explicit typed input and output
-  ports. Refuse incompatible connections before execution.
-- Version public contracts, Loop profiles, serialized records, and adapter
-  handshakes.
-- Keep role, mode, step profile, effort budget, thinking power, provider, and
-  effect permissions as separate fields.
-- Separate discovery, eligibility, ranking, selection, materialization,
-  execution, evaluation, acceptance, and promotion.
-- Extend existing registries and event vocabularies. Do not create parallel
-  stores, event systems, runtime classes, or sources of truth.
+Keep typed, versioned requests, results and explicit failures at each edge. Separate discovery, selection, materialization, execution, evaluation, acceptance and promotion. Reuse existing registries and stores.
+See [the complete rule](docs/guides/repository-engineering-rules.md#typed-boundaries-and-encapsulation).
 
 ## Intelligence rules
 
-The four persistent intelligence layers are:
-
-1. Context Intelligence
-2. Code Intelligence
-3. Runtime History and Solution Intelligence
-4. User Feedback Intelligence
-
-Runtime Memory is separate, temporary, and scoped to one run. Source formats
-such as Markdown, skills, repositories, packages, transcripts, and vectors do
-not define new intelligence layers.
-
-Owner direction, September 21, 2026: intelligence material is also organized
-by family, which names what the material is built to follow. A family is not
-a layer, and a layer is not a family; an item's family is derived from the
-layer that holds its body, so the two axes cannot disagree.
-
-```text
-Intelligence families
-├── Loop-native intelligence
-│   ├── built for the Loop runtime
-│   └── bodies live in the four persistent layers
-├── Harness intelligence
-│   ├── any file a standard harness picks up from its working directory
-│   │   or its step configuration: instruction files such as AGENTS.md
-│   │   and CLAUDE.md, skills with their scripts, references and assets,
-│   │   tools and reusable code, subagent and command definitions, hooks,
-│   │   plugin declarations and protocol server configurations
-│   ├── for harnesses such as Codex, OpenCode, Claude Code and Pi
-│   └── bodies keep their own identity in the harness_local source layer,
-│       never a second copy of a body a Loop-native layer owns
-└── Open Knowledge Format intelligence
-    ├── generalized knowledge in open formats
-    ├── shaped by no harness and no runtime
-    └── classified into a persistent layer by meaning
-```
-
-The owner, September 22, 2026: "when we say harness intelligence, we mean
-any type of file that can be placed into a harness working directory and
-pickedup by the harness, not just MD files, it can also be tools, skills,
-agents.md, codex.md, etc". A served item is therefore a package of one or
-more files of any type a harness reads, each file with its own digest and
-its own place in the step's working directory or configuration. Today the
-served items are single Markdown files; multi-file packages and their
-placement are roadmap work (S-6.62 and S-6.44).
-
-The private beta serves harness intelligence first: the drop-in files a
-customer's existing harness can use immediately. Loop-native and Open
-Knowledge Format material remain part of the library and are served through
-the same contracts.
-
-Searching, selecting, materializing, framing, invoking, replaying, and
-interpreting intelligence are Loop operations. Search returns small typed
-references. Load a large body only after selection and permission checks.
-
-Imported and self-generated intelligence remains candidate-only until an
-independent process approves it. Never infer promotion from retrieval,
-execution, a good score, or model confidence.
-
-Code Intelligence must include an immutable source identity, provenance,
-license state, version, dependency information, typed contract, effects,
-tests, independent verification, and a digest before it is active.
+Retain the four persistent intelligence layers and separate temporary Runtime Memory. Harness, Loop-native and Open Knowledge Format families differ from layers. Any appropriate native file can be a component. Exact bytes, interpretation and use permissions remain separate.
+See [the complete rule](docs/guides/repository-engineering-rules.md#intelligence-rules).
 
 ## Managed notes and records
 
-For a host-configured managed note or report collection, use
-`loop-engine records` or `RecordOperationService`. Do not directly rewrite its
-database rows, current-reference metadata, immutable revision artifacts, or a
-future generated view. Preserve schema, namespace, expected revision, and exact
-write approval. Unknown commits are not successes.
-
-Ordinary source-code, schema, test, and hand-authored documentation edits remain
-permitted within the task. This does not migrate Run History or historical
-reports. Reuse the existing catalog/artifact contracts rather than creating a
-parallel store. See `docs/guides/queryable-records-and-storage.md` and
-`examples/24_managed_records/` for the current bounded tool.
+Use loop-engine records or RecordOperationService for a managed collection. Preserve namespaces, versions, approval and immutable revisions. Ordinary source and documentation edits remain normal development work.
+See [the complete rule](docs/guides/repository-engineering-rules.md#managed-notes-and-records).
 
 ## Models and providers
 
-- Use real configured providers for provider integration and performance
-  claims. A stub or injected transport may test a local contract, but it does
-  not prove provider integration or model quality.
-- Never silently replace a failed model call with canned or synthetic output.
-- Resolve output capacity from a source-backed record for the exact provider
-  and model. Without an explicit allocation, request that full capacity, not
-  an invented smaller default. A reasoning Loop or user may supply a typed
-  `ModelOutputAllocation` within the known capacity, bound to the route and
-  decision evidence. Capacity, selected allowance, and total-run authority
-  are separate. Unknown capacity requires an explicit unknown result; do not
-  turn a total budget or semantic size estimate into a provider limit.
-- Keep retry, same-provider fallback, cross-provider failover, formatting
-  repair, evaluator-triggered repair, and task replanning distinct.
-- Do not enable failover unless the run contract explicitly permits it.
-- Preserve provider-reported token usage. Missing usage and cost remain
-  unknown, not zero.
-- Never write API keys, authorization headers, private prompts, or raw secrets
-  to source files, events, reports, or exported traces.
+Real provider claims require observed calls and saved evidence. Never silently replace a failed call with synthetic output. Source-backed capacity, selected allocation, total authority and provider-reported usage are distinct. Secrets never enter reports or model context.
+See [the complete rule](docs/guides/repository-engineering-rules.md#models-and-providers).
 
 ## Effects, workspaces, and external tools
 
-- Discovery must be effect-free.
-- File writes, shell commands, network access, model calls, spending, and
-  external mutations require explicit typed authority.
-- Bind approvals to the exact requested effect. A changed effect needs a new
-  decision.
-- Use path-confined workspaces. Refuse path traversal, symlink escape, and
-  unsafe overwrite.
-- Run untrusted code in a declared sandbox with bounded resources and network
-  policy.
-- MCP tools, skills, providers, and external harnesses are adapters used by
-  Loops. They are not executable graph vertices or new runtime types.
-- Do not replay a committed external effect silently.
+Discovery is effect-free. File, shell, network, secret, model, spending and external effects require declared authority. Confine paths and sandbox untrusted code. Reconcile unknown external outcomes before retry. Content approval grants no effect.
+See [the complete rule](docs/guides/repository-engineering-rules.md#effects-workspaces-and-external-tools).
 
 ## Evidence and benchmarks
 
-State observed, inferred, assumed, missing, and disputed facts separately.
-Preserve failures and excluded attempts with the same prominence as successes.
-
-A full-system Loop Engine benchmark requires:
-
-```text
-frozen real task population
-  -> Starting Practitioner
-  -> reviewed Context and executable Code Intelligence
-  -> bounded Spawned Loops
-  -> candidate comparison and verification
-  -> compiled and executed Solution Canvas
-  -> independent evaluator
-  -> verified Run History, playback, and report
-```
-
-A component test, provider probe, deterministic replay, or partial path is not
-a full-system benchmark. Report the exact denominator, selection rule, metric
-direction, evaluator, failures, physical model calls, token-accounting
-completeness, elapsed time, cost state, artifacts, and limitations.
-
-For the current first benchmark campaign, selected solutioning runs are
-non-deterministic. Deterministic Spawned Loops may retrieve, execute, validate,
-and grade. Do not turn that campaign choice into a universal product rule.
-
-Published results from another harness may be cited as external evidence only
-with exact task population, model, harness version, evaluator, source, and
-limitations. Do not imply a fair head-to-head comparison when those controls
-differ.
+Separate observed, inferred, assumed, missing and disputed facts. Report the complete attempt population, failures, exclusions, accounting and limits. Component checks are not full-system benchmarks; vendor demonstrations are not local qualification.
+See [the complete rule](docs/guides/repository-engineering-rules.md#evidence-and-benchmarks).
 
 ## Public writing
 
-Follow `humanizer-context.md`.
-
-- The owner-facing marketing website uses Baltor and plain words such as
-  task, each step, tools, model, information and results. Do not display Loop,
-  Loop node, Loop Engine, runtime classification or role profiles on the
-  homepage, How it works or their shared footer. Keep exact runtime terms and
-  complete behavioral explanations in technical documentation and GitHub.
-  This presentation rule does not rename classes, contracts or the repository.
-- Do not use shorthand or introduce abbreviated aliases in explanations,
-  documentation, prompts, or handoffs. Repeat the full descriptive term even
-  after defining it. Preserve exact existing code identifiers and contract
-  fields rather than renaming them through prose.
-- Preserve the full phrase "discrete cognitive or act step Loop node" and its
-  complete behavioral explanation. Do not shorten the phrase, remove "node,"
-  substitute an acronym, or replace the explanation with a label. Read
-  [the complete explanation and session handoff](docs/context/DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-HANDOFF-2026-09-12.md).
-  This describes an executable graph vertex implemented by the canonical
-  `Loop`; it does not introduce a runtime class, role, or mode. Exact existing
-  code identifiers remain unchanged.
-- Preserve the complete initial configuration and ordered fallback priorities
-  for each dimension in
-  [the configuration dimension requirement](docs/architecture/DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-DIMENSIONS.md).
-  Read it before changing configuration, selection, recovery, or experiment
-  coverage. Do not reduce the requirement to harness and model choice or
-  mistake a documented requirement for implemented and qualified behavior.
-  The recorded dimensions are a required baseline, not an exhaustive list or
-  a maximum. Actively identify additional dimensions, refinements, and
-  interactions. Map each proposal to an existing owning boundary, state its
-  initial and fallback choices, and define a discriminating test. Keep
-  proposals distinct from approved contracts and qualified implementations.
-- Follow the [flexible cognitive and action composition direction](docs/architecture/FLEXIBLE-COGNITIVE-AND-ACTION-COMPOSITION.md)
-  and [configuration grid search guide](docs/guides/configuration-grid-search-and-optimization.md)
-  when extending behavior or designing comparisons. Support additional steps,
-  prompts, questions, intelligence, actions, and resource combinations as well
-  as compact procedures. Do not make minimal step count, prompt count, context,
-  or model use the universal objective. Preserve supported alternatives and
-  test both additions and removals. Artificial general intelligence is a
-  research ambition, not a new runtime, role, mode, or achieved capability claim.
-- Consider [layered harness wrappers and native control](docs/architecture/LAYERED-HARNESS-WRAPPERS-AND-NATIVE-CONTROL.md)
-  as independent configuration dimensions. Wrapper depth and order need not be
-  fixed. Resolve ownership of each native control, initial choices, and
-  fallback priorities explicitly. Wrappers remain internal mechanics unless
-  their work needs a separately governed canonical Loop. Native controls
-  never grant broader authority or replace independent task acceptance.
-  An outer Loop Engine Loop may govern a native harness's inner loop. Keep
-  cumulative authority, retry ownership, cancellation, and independent
-  acceptance explicit across both. Read `ASTRA.md` for the advisory criteria.
-- Use plain English suitable for a reader using English as a second language.
-- Start at the highest level and move toward details.
-- Use direct statements, useful examples, and ordinary names.
-- Avoid hype, AI slang, em dashes, en dashes, decorative slogans, and vague
-  evidence metaphors.
-- In public documents, prefer report, record, log, contract, event history, or
-  evidence when that word is accurate.
-- Keep current behavior separate from planned behavior.
-- Do not publish benchmark or provider claims that exceed saved evidence.
-- Marketing language and factual claims are different. Evaluative and
-  aspirational words are free: a reader takes them as enthusiasm, not as a
-  measurement. A number, a comparison to a named product, the words
-  guaranteed or always applied to an outcome, an invented customer, or a
-  capability the product lacks are statements of fact and need evidence.
-  The [product style guide](docs/guides/product-style-guide.md) holds the
-  test to apply.
+Follow humanizer-context.md. Use Baltor and plain customer words on marketing pages. Preserve exact technical vocabulary and the complete behavioral explanation in technical documentation. Separate implemented and planned behavior. Read the dimension, flexible-composition and layered-wrapper requirements before changing those boundaries.
+See [the complete rule](docs/guides/repository-engineering-rules.md#public-writing).
+The [dimension requirement](docs/architecture/DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-DIMENSIONS.md)
+remains directly discoverable from every coding-agent entry route.
 
 ## Semantic integration from Taedri
 
-Port an idea from `/home/username/taedri.dev` only when it fills a verified
-Loop Engine gap.
-
-For each proposed port:
-
-1. State the invariant in plain language.
-2. Map it to an existing Loop Engine component and public term.
-3. Check that no equivalent contract already exists.
-4. Implement the smallest typed extension at the authoritative boundary.
-5. Add positive, negative, ambiguous, adversarial, and unrelated tests when
-   the risk warrants them.
-6. Record provenance and the exact source revision used for design input.
-7. Verify the integrated behavior through Loop Engine, not through a copied
-   Taedri test harness.
-
-Do not import Taedri-specific authority levels, campaign paths, business
-claims, internal identifiers, or legacy terminology merely because they exist.
-The reference-source map is in `docs/context/REFERENCE-SOURCES.md`.
+Consult older or separate projects only for a verified gap, after reading REFERENCE-SOURCES.md. Map each invariant to an existing owner, preserve provenance and test integrated behavior. Do not import another authority system.
+See [the complete rule](docs/guides/repository-engineering-rules.md#semantic-integration-from-taedri).
 
 ## Persistent general solving
 
-The owner's September 14 direction is recorded as proposed invariants in the
-[Constitution](docs/architecture/CONSTITUTION.md#proposed-invariants-from-owner-direction)
-and designed in the
-[persistent general solving decision record](docs/architecture/ADR-PERSISTENT-GENERAL-SOLVING-AND-CONTRACT-FAILURE-REVIEW.md).
-Apply it to engine behavior and to your own development work:
-
-- Build general mechanisms. Do not add control flow, prompts, or checks
-  written for one task, dataset, or benchmark.
-- Persist within declared authority. Turn a failure into a typed next action.
-  End only for a verified result, exhausted declared authority, a question
-  that only the owner can answer, a cancellation, or a provider outage
-  recorded for resumption, and record which one.
-- When a check fails, first decide whether the work, the check, or the
-  environment is wrong, and record why. Do not weaken a check to make it
-  pass. A revised check must still reject a known-wrong answer.
-- Never let a review waive a permission, secret, network, spending, sandbox,
-  or external effect contract.
-- Treat a tool written during a run as a candidate until a different process
-  qualifies it.
-- Never end work on a fixed attempt count. When the same failure repeats,
-  change the approach: quote the failure, narrow the request to the failing
-  part, try another registered method, or carry the best result forward as
-  provisional with its findings recorded.
-- Work like a person with one project folder. The proposed task working
-  folder gathers supplied files, unpacked archives, downloads, generated
-  work, and outputs, persists across attempts, and is shared with Spawned
-  Loops through scoped views. Its first parts are implemented: supplied
-  archives are unpacked into a materials folder that the source inventory
-  walks, supplied binary files can be selected for a project's inputs, and
-  new task database campaign spaces supply every attachment as a source
-  file. Downloads kept as files and scoped views for Spawned Loops are not
-  implemented yet.
-- Run live experiments only under explicit owner authority. Record every
-  trial, including failures and outages, keep runners waiting through a
-  provider outage within a declared wait, and stop before an allowance is
-  drained.
-- Before committing, run the continuous integration commands on an export of
-  the exact tree, lint the full documentation scope, and confirm with mutants
-  that each new check fails when its behavior is removed.
+Persist toward an accepted outcome within declared authority. Diagnose whether a failure belongs to the work, check or environment. Preserve useful provisional work and failed attempts. No task-specific universal runtime logic or review-based expansion of effect authority.
+See [the complete rule](docs/guides/repository-engineering-rules.md#persistent-general-solving).
 
 ## Verification and completion
 
-Run the smallest relevant check first, then the owning component checks,
-self-test, conformance, clean installation, examples, and browser or playback
-checks when the claim depends on them.
-
-Do not report completion from intent, file presence, narrow tests, or an
-unverified diagram. Completion requires current evidence for every requested
-behavior and no known required work left.
+Use the smallest meaningful check, owning checks and required release gates on the exact candidate tree. Verify a changed guard with a known-wrong control. Use browser and native checks where needed. Report unfinished required work explicitly.
+See [the complete rule](docs/guides/repository-engineering-rules.md#verification-and-completion).

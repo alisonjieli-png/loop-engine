@@ -36,7 +36,9 @@ from build_host_catalogue_manifest import (
     APPROVED, ITEMS_FILE, ITEMS_RECORD_TYPE, REVIEW_FILE, ManifestBuildError, _read_json, _review_index, row_tier,
 )
 from loop_engine.core.practitioner_runtime.provisioning import _item
-from loop_engine.core.service_runtime.catalogue_bundle import BUNDLE_ITEM_RECORD_TYPE, read_bundle, write_bundle
+from loop_engine.core.service_runtime.catalogue_bundle import (
+    BUNDLE_ITEM_RECORD_TYPE, read_bundle, validated_attributes, write_bundle,
+)
 from loop_engine.core.service_runtime.catalogue_packages import (
     FILE_BODY, PACKAGE_BODY, CataloguePackage, CataloguePackageFile, sha256_hex,
 )
@@ -164,7 +166,7 @@ def build(folder, *, accepted_licenses, schema_path=None, include=(), batch="sta
                       # The review record approved these bytes under the tier its row names.
                       "approval": {"tier": row_tier(identity, review), "approval_ref": review["approval_ref"],
                                    "approved_digest": review["body_digest"]},
-                      "attributes": schema.validate_values(_attributes(row, review, recorded_at, batch, schema))})
+                      "attributes": validated_attributes(schema, _attributes(row, review, recorded_at, batch, schema))})
         payloads.extend(files)
     if not lines:
         raise ManifestBuildError("no_approved_items", "no item is approved, so there is nothing to bundle")

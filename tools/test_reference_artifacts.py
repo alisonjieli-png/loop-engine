@@ -9,10 +9,18 @@ layout read as the wrong keypoint set puts joints in the wrong places, and a mas
 inverts every selection made from it while still looking plausible.
 """
 import unittest
+from copy import deepcopy
 
 from loop_engine.core.service_runtime.catalogue_attributes import (
     ASSET_ROLES, COMPONENT_FORM_KINDS, COMPONENT_FORMS, HARNESS_KINDS, MASK_POLARITIES, POSE_LAYOUTS,
     asset_role_problems)
+from loop_engine.core.harness_intelligence import HarnessIntelligenceItem
+from loop_engine.core.service_runtime.catalogue_attributes import ASSET_ROLE_ATTRIBUTE, declare
+from loop_engine.core.service_runtime.catalogue_bundle import BUNDLE_ITEM_RECORD_TYPE, validate_item
+from loop_engine.core.service_runtime.catalogue_packages import CataloguePackage, CataloguePackageFile
+from loop_engine.core.service_runtime.catalogue_schema import CatalogueAttributeSchema
+from loop_engine.core.service_runtime.http_entrypoint import DEFAULT_FAMILY_POLICY, DEFAULT_LICENSE_POLICY
+from loop_engine.core.service_runtime.records import ServiceRuntimeError
 
 
 class ReferenceArtifactVocabulary(unittest.TestCase):
@@ -68,6 +76,57 @@ class ReferenceArtifactVocabulary(unittest.TestCase):
         self.assertEqual(ASSET_ROLES, ("reference", "generation_input", "editable_source", "test_evidence"))
         self.assertIn("openpose25", POSE_LAYOUTS)
         self.assertEqual(MASK_POLARITIES, ("foreground", "background"))
+
+
+class ReferenceArtifactAdmission(unittest.TestCase):
+    """Exercise the service's actual release reader, not just the isolated vocabulary helper."""
+
+    def setUp(self):
+        from loop_engine.core.service_runtime.catalogue_attributes import COMPONENT_FORM_ATTRIBUTE
+        self.schema = CatalogueAttributeSchema.from_dict(declare(
+            {"record_type": "catalogue_attribute_schema/v1", "attributes": []},
+            COMPONENT_FORM_ATTRIBUTE, ASSET_ROLE_ATTRIBUTE,
+            {"name": "mask_polarity", "type": "choice", "choices": list(MASK_POLARITIES)},
+            {"name": "pose_layout", "type": "choice", "choices": list(POSE_LAYOUTS)}))
+        package = CataloguePackage((CataloguePackageFile("assets/mask.png", "a" * 64, 10,
+                                                         "image/png", "skill_asset"),))
+        item = HarnessIntelligenceItem(identity="reference_mask", kind="instruction_file", purpose="Mask fixture",
+                                       digest=package.served_digest, size_bytes=package.served_size,
+                                       source_layer="harness_local", source_ref="fixture:reference-mask",
+                                       license_name="MIT", declared_effects=("reads_fs",))
+        self.line = {"record_type": BUNDLE_ITEM_RECORD_TYPE, "reference": item.reference(),
+                     "package": package.to_dict(),
+                     "approval": {"tier": "community", "approval_ref": "fixture:review",
+                                  "approved_digest": package.served_digest},
+                     "attributes": {"component_form": "mask", "asset_role": "reference",
+                                    "mask_polarity": "foreground"}}
+
+    def read(self, line):
+        return validate_item(line, self.schema, license_policy=DEFAULT_LICENSE_POLICY,
+                             family_policy=DEFAULT_FAMILY_POLICY)
+
+    def test_a_complete_reference_can_be_admitted(self):
+        self.assertIsNotNone(self.read(self.line))
+
+    def test_approval_cannot_hide_missing_mask_interpretation(self):
+        for missing in ("asset_role", "mask_polarity"):
+            line = deepcopy(self.line)
+            line["attributes"].pop(missing)
+            with self.assertRaises(ServiceRuntimeError) as caught:
+                self.read(line)
+            self.assertEqual(caught.exception.code, "artifact_interpretation_required")
+
+    def test_approval_cannot_hide_missing_pose_layout(self):
+        line = deepcopy(self.line)
+        line["attributes"] = {"component_form": "pose_layout", "asset_role": "reference"}
+        with self.assertRaises(ServiceRuntimeError) as caught:
+            self.read(line)
+        self.assertEqual(caught.exception.code, "artifact_interpretation_required")
+
+    def test_ordinary_components_need_no_artifact_fields(self):
+        line = deepcopy(self.line)
+        line["attributes"] = {"component_form": "instructions"}
+        self.assertIsNotNone(self.read(line))
 
 
 if __name__ == "__main__":

@@ -11,6 +11,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
   issues: write
 
 concurrency:
@@ -26,12 +27,30 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
+      - name: Restore the previous successful watch report
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/research-watch-prior"
+          for watch_previous_run in $(gh run list --repo "$GITHUB_REPOSITORY" --workflow research-watch.yml \
+              --branch main --status success --limit 5 --json databaseId --jq '.[].databaseId'); do
+            watch_previous_folder="$RUNNER_TEMP/research-watch-download-$watch_previous_run"
+            if gh run download "$watch_previous_run" --repo "$GITHUB_REPOSITORY" \
+                --name research-watch --dir "$watch_previous_folder" && \
+                test -f "$watch_previous_folder/research-watch.json"; then
+              cp "$watch_previous_folder/research-watch.json" \
+                "$RUNNER_TEMP/research-watch-prior/RESEARCH-SOURCE-WATCH-$watch_previous_run.json"
+              break
+            fi
+          done
       - name: Check every watched source
         id: watch
         run: |
           set -euo pipefail
           report="$RUNNER_TEMP/research-watch.json"
-          PYTHONPATH=src:tools python tools/refresh_research_sources.py --online --max-online-sources 20 --output "$report" > "$RUNNER_TEMP/research-watch.log" 2>&1 || true
+          PYTHONPATH=src:tools python tools/refresh_research_sources.py --online --max-online-sources 40 \
+            --prior-dir "$RUNNER_TEMP/research-watch-prior" --output "$report" > "$RUNNER_TEMP/research-watch.log" 2>&1 || true
           cat "$RUNNER_TEMP/research-watch.log"
           python3 tools/summarize_research_watch.py "$report" > "$RUNNER_TEMP/research-watch.md"
           echo "changed=$(python3 tools/summarize_research_watch.py "$report" --changed-count)" >> "$GITHUB_OUTPUT"

@@ -1,0 +1,339 @@
+# Baltor north star
+
+Kind: current product direction. Updated September 29, 2026 under the owner's request to reconcile the project and continue implementation. The [roadmap](../roadmap/roadmap.yaml) is the task authority. [AGENTS.md](../../AGENTS.md#commit-push-and-release-authority) governs authority.
+
+## Current direction
+
+Baltor supplies the materials, methods, executable capabilities and checks that help a person's chosen harness complete unfamiliar creative and technical work. Loop Engine remains the canonical execution architecture. Customers choose their model access and where supported work runs. Search, delivery, installation, native loading, execution and accepted results are separate observations.
+
+The creative focus is reusable production projects: editable motion, graphic design, parametric visuals, 3D scenes, audio and small playable experiences, with source, assets, declared parameters, dependencies and tested revisions. Technical decision laboratories and reusable code remain part of the same library. A reference image, mask, pose, native project, shader or failure example can be useful without becoming a prose skill. File count describes supply, not usefulness.
+
+The first commercial proof is a complete product-story project: make an attractive output from authorized assets, change text, imagery, timing and aspect ratio while retaining approved elements, then reopen the source and perform a named edit in a clean supported environment. Compare against a competent harness with relevant official skills and tools. Preserve unsuccessful attempts, human intervention, actual cost and aesthetic disagreement. This is a delivery target, not a claim of an implemented studio or a measured advantage.
+
+## Product boundaries
+
+- The library and current hosted service remain usable from existing harnesses.
+- A thin creative workbench adds reference selection, meaningful parameters, comparisons and export. Native editors and renderers remain eligible engines; no new universal editor or runtime is required.
+- Browser execution, a paired native worker, customer-managed cloud compute and managed execution are distinct routes. Each needs its own capability, authority, cancellation and data-transfer evidence.
+- Identity, Baltor entitlement, inference funding, renderer licensing and execution authority are separate. ChatGPT login alone supplies none of the other grants. Commercial plan sharing requires eligibility; it is not a generic API-key replacement.
+- One native integration should expose useful discovery and artifact operations through the same service. Public plugin distribution, a repository marketplace and enterprise procurement are different channels.
+- Parameter changes use deterministic code when suitable. Structural changes can use a bounded harness. Asset acquisition or generation has its own permission and cost. Rendering a frame is not automatically another model call.
+- A clean logical step may share immutable caches and a warm runtime when its qualified contract permits it. It must not share unrelated context, credentials or remaining authority. Fresh-process support remains an explicit profile, not a claim about every low-level operation.
+
+## Immediate engineering order
+
+1. Reconcile current instructions, source evidence and delivery state; preserve historical work and record coverage gaps.
+2. Repair qualification selection and assurance reporting; keep cheap checks as the default. Separate candidate retention, serving approval, native execution qualification and measured benefit.
+3. Deliver complete, interpreted packages through the existing body store and installer. Qualify large-asset transfer before offering native projects that exceed present limits.
+4. Grow original supply toward more than one million distinct served component files while completing a creative production and revision path. Keep a measured count of distinct payloads, packages, semantic capabilities and approved releases; repeated metadata and parameter permutations are not extra implementations.
+5. Extend the existing knowledge radar with dated source contracts and change-driven re-evaluation. Keep processing state separate from the decision to reuse, defer or publish material.
+6. Measure repeat use, accepted output, successful revisions, setup work and complete cost. Use those results to choose additional engines, collections and paid features.
+
+The September 29 continuation explicitly includes original code, shaders,
+geometry and scene generators, assets, contracts, fixtures, render tools and
+audio components. Skills can explain those capabilities; they are not the
+whole library. Search community workflows for missing functions, construct
+original implementations or use material with established permission, and
+qualify each release through the existing admission path.
+
+Engine control is an immediate capability target: inspect a known session,
+make a bounded change, run or render, observe state and output, exercise real
+inputs, check the result and preserve the editable project. Godot with Blender,
+PlayCanvas, Babylon.js and code-first browser rendering are separate candidate
+profiles. No MCP label implies all of those operations work.
+
+Community outreach belongs to internal research. Draft focused, disclosed
+questions, bind exact text and destination to existing effect approval, and
+turn replies into unverified leads before any component consideration. Do not
+auto-post across communities or bulk-ingest their content without appropriate
+access and reuse terms. See the [engine-control research record](../research/CREATIVE-COMPONENTS-AND-ENGINE-CONTROL-2026-09-29.md).
+
+## Architecture and engine selection
+
+The [functional component standard](FUNCTIONAL-COMPONENT-STANDARD.md) owns typed edges, swappable engines and conformance. A source-backed capability record is an input to selection, not proof that its engine is active. Reuse an existing slot and adapter before adding another abstraction. A renderer, physics engine, retrieval index, queue backend and OAuth provider solve different jobs. Their shared protocol does not imply identical behavior.
+
+Contract-first composition uses the existing code-asset cards, immutable body
+references, capability directory and solution graph. The model selects and
+orders components, binds parameters and requests only missing implementation
+work. Execution resolves exact bodies and checks contracts and effects again.
+Source is loaded for debugging or adaptation, not withheld from inspection.
+Compare complete cost and accepted results against direct generation before
+claiming output-token savings.
+
+Preserve native source formats. Connect the execution graph, scene hierarchy, dependency relationships and retrieved knowledge by exact identities while keeping their meanings distinct. Qualification distinguishes declared support, observed loading, tested behavior, known failure and unknown behavior.
+
+## Distribution, market and monetization
+
+Lead a creative entry point with a result a person can remix, inspect and revise. The existing engineering route remains. Positioning to test: create a reusable project, keep approved decisions through revisions, and use the customer's chosen tools. Competitors already offer skills, workflow canvases and editable source; none alone establishes a unique advantage.
+
+The current Baltor Pro offer stays in place while the creative experience is tested. Price future work around useful production kits, maintenance, saved work, private components and team handoff. Rendering and inference are separately attributed costs. No new paid feature is sold before its delivery path works. Plugin policy and partner-program eligibility determine commerce on each surface; the independent website remains the normal acquisition and account surface.
+
+## Earlier owner direction, preserved
+
+The following September 22 to 27 direction was moved from AGENTS.md to keep startup instructions within native context limits. Its quotes and history are retained. The current direction above resolves priorities. Dated counts and implementation descriptions are historical; use the latest handoff, current deployment record and source for present behavior.
+
+## North star and current initiatives
+
+Baltor is the public brand. Loop Engine is the repository, the Python package
+and the technical name. The product is a hosted intelligence service plus a
+local engine. Customers run their own harness and their own models. The
+service gives each step of a task the information, skills, tools and reusable
+code that the step needs, within the budget and permissions the customer sets.
+
+The north star, in the owner's words of September 22, 2026: make coding
+harnesses and multi-agent systems as efficient as possible, so that they
+become a frontier harness, a frontier multi-agent system or a frontier
+fabric that can solve any unseen task in the most efficient way. That means
+the exact amount of context for each step, reusing code instead of
+rewriting it, the right amount of intelligence and heuristics for each
+decision, and small models doing much more, including work that runs
+overnight. The task can be anything: building a pipeline, research, data
+work, or software. Turning a complex problem into a solution that can be
+used again is one benefit of this, not the north star. Success means
+accepted work under the customer's constraints; it does not mean the fewest
+tokens, steps or model calls.
+
+The default design gives every step its own harness. The engine breaks the
+work into focused steps, and each step is a discrete cognitive or act step
+Loop node that runs in a unique, freshly started harness holding only the
+context that small step needs, so no harness suffers the context rot of a
+long, overloaded session. Read the
+[complete behavioral explanation](../../ASTRA.md#complete-behavioral-explanation)
+before describing one.
+
+The customers are developers, teams and agentic systems. A developer can
+leave a local model running overnight (for example Gemma 4) and wake up to
+finished work; an agentic system can solve large problems with smaller,
+cheaper models and the right context for each step. Baltor Pro connects the
+customer's client to a searchable library of anything that drops into a
+harness: AGENTS.md and other context files, skills, plugins and protocol
+server configurations. A paying customer authenticates (today through the
+Model Context Protocol endpoint), searches, retrieves the chosen material,
+and starts a harness for the step with exactly that material.
+
+The product answers six customer problems: too much context for a small
+task, an expensive model for every decision, missing domain expertise,
+paying to rewrite code that already exists, the same mistakes appearing
+again, and large multi-step, long-horizon problems that small and cheap
+models cannot finish alone. The benefits are drafts, not measured claims,
+until the [benefit evidence guide](../../docs/guides/launch-benefits-and-evidence.md)
+says otherwise: solving complex and long-horizon problems and producing
+reusable solutions, lower cost through cheaper models and fewer tokens, work
+that finishes overnight, and optimization, including turning
+non-deterministic work into deterministic solutions. Use cases to prove and
+show: a developer connects Baltor so that tickets are worked overnight on a
+local model; a developer cleans a data set without asking an expensive model
+to do simple transformations; a full solve of a data science competition from
+task to submission.
+
+Every functional component sits behind a fixed, typed, versioned edge with
+one or more swappable engines, as rule 6 of the
+[authority section](../../AGENTS.md#commit-push-and-release-authority) states. The earlier
+custom loop-node engine may return as one more engine behind the same
+executor edge.
+
+### The September 27 direction
+
+On September 27, 2026 the owner added five things to this north star. Each
+stands until the owner changes it.
+
+**Knowledge that stays current, kept as decisions and capabilities.** The
+owner observed that a developer's edge is "knowledge on recent papers", which
+"isn't something that's moated", and asked Baltor to keep watching and
+serving "top benchmarks ... top specialized language models, top decision
+and thinking and reasoning models ... top pipelines for everything",
+infrastructure choices ("Fly.io versus Render ... uptime monitors"), and to
+expand into "3D, 2D, CAD, design, image scraping"; "every time it ages, ask
+questions like, Is this the most efficient way of doing things". In the
+owner's words: "top papers, top use cases, top solutions for X, Y, Z
+problems. Those are going to be more valuable than anything else we provide
+users." The same day the owner endorsed the central claim of a design for a
+daily research and capability release pipeline: "The central product is
+therefore not a daily digest or a directory. It is a maintained library of
+engineering decisions and executable capabilities: research once per
+relevant task and configuration, preserve the evidence, test the
+implementation, and let many harnesses reuse the result without repeating
+the investigation." The owner's rule for what becomes a file, in their words:
+"if the research time takes an engineer more than five minutes, multiple
+websites to go to, then it's not very trivial, and it's something that
+probably 10,000 engineers may be doing daily. We should just do that once
+and then put it into our context layer that serves it up as an appropriate
+file." A volatile fact is served as a tool that fetches it: "rather than
+holding stock price, we can hold tools that can call stock prices because
+the research time there is very trivial." The owner named further fields,
+among them "laws that have changed", "major geopolitical things",
+"contracts" and "stock trading information", and files that are "actual
+executable, like Python files, encapsulated TypeScript". Beside the
+component library, Baltor therefore maintains engineering decisions and
+executable capabilities: decision cards with their evidence, data files,
+tested code in Python or TypeScript, and tools for volatile facts. Each one
+carries the date it was checked and the date it must be checked again, and
+an aged item is researched again, not silently kept. Research workers
+propose claims and bundles; they hold no publishing credential, and
+publication goes through the independent review and the catalogue release
+path like every other package. Roadmap step S-6.214 is the first piece.
+
+Later the same day the owner set the aim: "ideally engineers would never
+need to search and read newsletters blogs, directories, list, their coding
+harness can do that already and no need to do it again, and we can do it
+daily and serve it to thousands of coding harnesses". The analysis the
+owner shared with it states the principle as "Research once, validate for
+defined conditions, distribute many times, and repeat only the work
+invalidated by a meaningful change", and the answer a harness receives as
+"Here is the currently qualified way to accomplish this task under your
+constraints, with the implementation, evidence, limitations, and update
+history already prepared". It removes "the obligation to browse
+repeatedly" but not "the ability to inspect evidence", and shares "the
+research broadly" but not "the assumption that every project is the same".
+Three rules follow. Research is kept in three sharing scopes: public and
+shared, private to one organization, and private to one case, and only the
+public scope is pooled across customers. Every answer states where it
+stands: an approved result, a candidate, needs research, needs local
+evaluation, blocked by policy, or no eligible option. Success is measured
+by research reuse and by accepted-task improvement over a harness's own
+browsing, never by counts of links, files or summaries. Other services
+cover parts of this; Baltor's claimed difference, turning outside
+discoveries into task-specific, executable, evidence-backed capabilities
+across different harnesses, is a hypothesis to test.
+
+**Four zones, run by agent teams.** The owner asked for "splitting the
+website server side that's public that interacts with the customer and the
+customer's harness, making sure that is appropriately compartmentalized",
+the client side ("the harness and setup, etc. in the MCP between those"),
+and "internal server-side as well as internal local components. And these
+internal components are meant to be swarms of agents or dedicated pipelines
+or individual agents with skills that do the work of a team of individuals.
+We don't have a team of individuals, but we do have a lot of agents." The
+code therefore falls into four zones: the public service, the customer
+client, internal server-side jobs and internal local pipelines. The internal
+zones are the staff: agent teams and pipelines that grow and review the
+library, release, research, measure and draft support. Each zone holds only
+its own credentials, and the public service never imports an internal
+pipeline. The
+[four-zone architecture record](../../docs/architecture/FOUR-ZONE-ARCHITECTURE-2026-09-27.md)
+maps every current component, job and workflow to its zone.
+
+**Agents are swappable; what each step receives is the product.** The
+owner asked the same afternoon about Omnigent and other meta layers: "you can
+swap the whole agent underneath and not rewrite anything?" The
+[agent meta-layer research](../../docs/research/AGENT-META-LAYERS-2026-09-27.md)
+found that swapping the agent is now a free configuration change (Omnigent,
+and the Agent Client Protocol with 41 agents in its registry), and that none
+of those layers supplies each step with reviewed files, skills and tools,
+places them where each agent reads them, checks that they loaded, or has an
+outside check accept the result. That is Baltor's product, still to be proven
+by the with-and-without measurement. Baltor therefore builds no orchestration
+interface and becomes something those layers call. The line the research
+recommends is "Swap agents with any meta-harness; Baltor supplies what each
+step needs." The harness executor slot uses the Agent Client Protocol first,
+driven by its registry.
+
+**Decide like a startup.** The owner asked engineering to "significantly
+increase your aggressive efforts to reconcile and consolidate all aspects of
+the code: all branches, all forks, all work trees, etc." and continued: "as
+a North Star when making decisions on how to do that merge, think of our
+100K MRR 90-day plan, and think of this as a startup. You should take on
+personas of a startup CEO, a startup CTO, an invested investor, a
+non-invested investor, an interested investor, different customer groups,
+different personas of customers, different marketing channels, etc." and
+"The evolution of this project has brought vast amounts of wealth and
+understanding and product-market fit research that all needs to be
+considered and worked into a flexible North Star."
+Weigh each choice by what it does for the ninety-day revenue plan: a visitor
+who reaches a first download in their own harness, a developer or team that
+pays, a channel that brings people who stay, and a claim proven with and
+without Baltor. The library counts as distinct useful components in the
+balanced mix the decision table sets, with the owner's goal of 100,000; a
+count of files or near copies is not progress. The plan's targets, its
+revenue analysis and the persona panel stay in the owner's private folder on
+the development workstation (`~/baltor-private/`), outside this public
+repository.
+
+**Flexible rules.** The owner: "We also need to watch out for any rules or
+tests that are not flexible enough as we continuously and iteratively
+develop." A check protects one named invariant and fails its known-wrong
+case. A check that pins whole-file bytes, page copy, counts, dates or the
+newest file name, where a narrower test of the same invariant exists, is
+replaced by the narrower test, which must still fail the known-wrong case.
+The guards of the authority section, secrets, permissions, spending and
+external effects are never loosened this way. The
+[rules flexibility audit](../../docs/architecture/RULES-FLEXIBILITY-AUDIT-2026-09-27.md)
+lists the current candidates.
+
+In one sentence: Baltor researches once what thousands of harnesses would
+otherwise each look up, and gives each step of a customer's harness the
+currently qualified files, decisions and tested capabilities for that step,
+checked again when a meaningful change invalidates them and proven with and
+without Baltor, under the customer's own budget and permissions; engineering
+picks the work that brings paying developers and teams soonest.
+
+```text
+Current initiatives, in priority order (September 27, 2026)
+├── 1. One main line, live and checked (D-18, S-6.29)
+│   ├── Every worktree line saved, then merged or archived; orphaned
+│   │   coordination notes committed
+│   ├── A free disk, and continuous integration that stays green after
+│   │   automated data refreshes
+│   ├── The daily job reads a publish from the service; the oracles run
+│   │   from a current main revision
+│   └── Releases only from checked main revisions, then live checks on
+│       every hostname
+├── 2. Activation and measurement (S-6.204, D-15, D-21, D-25)
+│   ├── A visitor counter and funnel events: visit, sign-up, first search,
+│   │   first download, return on day 2 and day 7, checkout
+│   ├── A first download inside each quickstart harness in under five
+│   │   minutes, measured
+│   ├── A free monthly download allowance measured against paid-only
+│   │   downloads
+│   ├── Listings in the plugin directories, the Model Context Protocol
+│   │   Registry and skills.sh (S-6.183)
+│   └── Setup for the layers that swap agents: an Omnigent quickstart and
+│       agent template, Zed, JetBrains Air and Goose
+├── 3. Maintained engineering decisions and capabilities (S-6.214)
+│   ├── Decision cards, data files, tested Python or TypeScript code and
+│   │   tools for volatile facts, each dated and checked again as it ages
+│   ├── Researched once per task and configuration; research workers
+│   │   propose, the independent review and catalogue release publish
+│   ├── Every answer states where it stands, from approved result to no
+│   │   eligible option; public, organization and case scopes kept apart
+│   └── Served to harnesses beside the component library, then new fields
+│       such as 3D, 2D, CAD and design
+├── 4. The Team plan (S-6.191, S-6.186)
+│   ├── One governed library across every harness a team uses: seats,
+│   │   private items through the same review, an allowlist, an audit log
+│   └── A published review method: named scanners, sandbox runs for code,
+│       second-family review, rescans and withdrawal records
+├── 5. Proof with and without Baltor (S-6.173, S-6.185, D-07 to D-09)
+│   ├── Per-step selection against native skill search, abstention measured
+│   ├── A Harbor run of registry agents with and without Baltor's material
+│   └── Overnight work on a cheap model under the same budget
+├── 6. The 100,000-component library in a balanced mix (D-26)
+│   ├── More functions, tools, programs, binaries, plugins and protocol
+│   │   servers; skills capped at a fifth
+│   └── A family short of supply exports fewer packages, never more skills
+├── 7. Engines behind fixed edges for every functional component (D-19, D-28)
+└── 8. Continuing work: durable cloud records (D-05), research, the Y
+       Combinator package and removal of unused pre-launch compatibility
+       (D-12)
+```
+
+The authoritative task state is [roadmap.yaml](../../docs/roadmap/roadmap.yaml) and
+its [generated status](../../docs/roadmap/CONTINUATION-STATUS.md). The
+[takeover checkpoint](../../docs/context/TAKEOVER-CHECKPOINT-2026-09-20.md) records
+the working cycle for changes, tests, checkpoints and releases, the private
+beta definition, and the live state and open findings of September 20. The
+newest dated handoff, named in the [context route](../../docs/context/START-HERE.md),
+records the live state since then. Follow the working cycle. In short:
+
+- Write the check for the known-wrong case before the repair. A removed guard
+  must fail a named check.
+- Record state in the roadmap and regenerate the status file. Do not start a
+  second task list, dashboard or plan.
+- Save every report under a new name. Keep failed attempts beside their
+  successors.
+- Release only from a committed revision whose continuous integration run
+  passed, deploy by image digest, and keep the previous image for rollback.
+- A record that an older release must not honor needs a new record version,
+  so that the older release refuses it.
+- Offered, fetched, loaded, used and verified are separate facts. A count of
+  passing checks is not a working customer journey.

@@ -14,6 +14,7 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+from dataclasses import replace
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
@@ -133,6 +134,55 @@ class LoopbackServiceTests(unittest.TestCase):
             with self.subTest(address=address):
                 self.assertEqual(page.status_code, 200)
                 self.assertEqual(shown_counts(page.text), [f"{served:,}"])
+
+
+class FilePopulationTests(unittest.TestCase):
+    def setUp(self):
+        from loop_engine.core.harness_intelligence import HarnessIntelligenceCatalogue, HarnessIntelligenceItem
+        from loop_engine.core.provisioning_server import ProvisioningQualification, ProvisioningQualificationResolver
+        from loop_engine.core.service_runtime.catalogue_packages import CataloguePackage, CataloguePackageFile, sha256_hex
+        from loop_engine.core.service_runtime.catalogue_serving import CatalogueView
+
+        def entry(name, body):
+            return CataloguePackageFile(name, sha256_hex(body), len(body), "text/plain", "skill_reference")
+
+        common = entry("references/shared.txt", b"shared")
+        self.packages = {"alpha": CataloguePackage((common, entry("a.txt", b"alpha"))),
+                         "beta": CataloguePackage((common, entry("b.txt", b"beta"))),
+                         "candidate": CataloguePackage((entry("c.txt", b"candidate"),))}
+        catalogue = HarnessIntelligenceCatalogue()
+        for identity, package in self.packages.items():
+            catalogue.register(HarnessIntelligenceItem(identity=identity, kind="skill", purpose=identity,
+                digest=package.served_digest, size_bytes=package.served_size, source_layer="harness_local",
+                source_ref="fixture:" + identity, license_name="MIT"))
+        resolver = ProvisioningQualificationResolver("fixture:population", lambda binding:
+            ProvisioningQualification(binding, "unknown", "host_attested") if binding.identity == "candidate" else
+            ProvisioningQualification(binding, "approved", "host_attested", "fixture:review", "verified"))
+        self.view = CatalogueView(catalogue, resolver, lambda _item: self.fail("counting must not read bodies"),
+                                  packages=self.packages)
+
+    def test_counts_distinct_files_separately_from_packages_and_placements(self):
+        result = self.view.file_population()
+        self.assertEqual(result["packages"], 2)
+        self.assertEqual(result["file_placements"], 4)
+        self.assertEqual(result["distinct_files"], 3)
+        self.assertEqual(result["distinct_file_bytes"], 15)
+        self.assertTrue(result["complete"])
+        # Package inventory documents and the unapproved candidate are not counted as delivered files.
+        self.assertEqual(result["duplicate_file_placements"], 1)
+
+    def test_withdrawal_removes_files_not_used_by_another_approved_package(self):
+        self.view.file_population()
+        updated = self.view.without({("beta", self.packages["beta"].served_digest)}, state_revision=1)
+        self.assertEqual(updated.file_population()["distinct_files"], 2)
+        self.assertEqual(updated.file_population()["packages"], 1)
+
+    def test_missing_manifest_is_unknown_not_an_invented_file(self):
+        result = replace(self.view, packages={"alpha": self.packages["alpha"]}).file_population()
+        self.assertFalse(result["complete"])
+        self.assertEqual(result["packages_without_file_manifest"], 1)
+        self.assertIsNone(result["distinct_files"])
+        self.assertEqual(result["observed_distinct_files"], 2)
 
 
 if __name__ == "__main__":

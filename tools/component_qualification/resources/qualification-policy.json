@@ -271,7 +271,14 @@
    "data_table": "data_and_contracts",
    "schema": "data_and_contracts",
    "evaluation_set": "data_and_contracts",
-   "settings": "data_and_contracts"
+   "settings": "data_and_contracts",
+   "reference_image": "data_and_contracts",
+   "mask": "data_and_contracts",
+   "pose_layout": "data_and_contracts",
+   "three_d_model": "data_and_contracts",
+   "cad_model": "data_and_contracts",
+   "template": "data_and_contracts",
+   "code_example": "data_and_contracts"
   },
   "family_by_harness_kind": {
    "skill": "skills",

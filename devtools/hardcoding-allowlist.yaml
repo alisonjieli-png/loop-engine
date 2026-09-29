@@ -1,5 +1,215 @@
 schema: hardcoding_allowlist/v1
 entries:
+- finding_id: hardcoding.00634844f9827af65a55515f
+  owner: "tools.research_source_watch.json:sources[28].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Intentional primary-source URL in the source watch registry, not an implementation-embedded endpoint. The manifest reader validates HTTPS, permitted hosts, identity uniqueness and a bounded source population before network access. Read-only change detection grants no installation, copying, execution or publication authority. tools/test_refresh_research_sources.py tests accepted manifests, refused URLs and failed-read freshness. Reviewed September 29, 2026."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.104842a84153b589bf14f29c
+  owner: "tools.research_source_watch.json:sources[34].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Intentional primary-source URL in the source watch registry, not an implementation-embedded endpoint. The manifest reader validates HTTPS, permitted hosts, identity uniqueness and a bounded source population before network access. Read-only change detection grants no installation, copying, execution or publication authority. tools/test_refresh_research_sources.py tests accepted manifests, refused URLs and failed-read freshness. Reviewed September 29, 2026."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.27e3878a916d475600f36467
+  owner: "tools.research_source_watch.json:sources[19].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Intentional primary-source URL in the source watch registry, not an implementation-embedded endpoint. The manifest reader validates HTTPS, permitted hosts, identity uniqueness and a bounded source population before network access. Read-only change detection grants no installation, copying, execution or publication authority. tools/test_refresh_research_sources.py tests accepted manifests, refused URLs and failed-read freshness. Reviewed September 29, 2026."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.38b11b0be6098a00973689fe
+  owner: "tools.research_source_watch.json:sources[25].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Intentional primary-source URL in the source watch registry, not an implementation-embedded endpoint. The manifest reader validates HTTPS, permitted hosts, identity uniqueness and a bounded source population before network access. Read-only change detection grants no installation, copying, execution or publication authority. tools/test_refresh_research_sources.py tests accepted manifests, refused URLs and failed-read freshness. Reviewed September 29, 2026."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.405b270fb1597127a855ac76
+  owner: "tools.research_source_watch.json:sources[36].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Intentional primary-source URL in the source watch registry, not an implementation-embedded endpoint. The manifest reader validates HTTPS, permitted hosts, identity uniqueness and a bounded source population before network access. Read-only change detection grants no installation, copying, execution or publication authority. tools/test_refresh_research_sources.py tests accepted manifests, refused URLs and failed-read freshness. Reviewed September 29, 2026."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.4064e9001dd0d22cf450d32d
+  owner: "tools.research_source_watch.json:sources[21].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Intentional primary-source URL in the source watch registry, not an implementation-embedded endpoint. The manifest reader validates HTTPS, permitted hosts, identity uniqueness and a bounded source population before network access. Read-only change detection grants no installation, copying, execution or publication authority. tools/test_refresh_research_sources.py tests accepted manifests, refused URLs and failed-read freshness. Reviewed September 29, 2026."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.47e032a78021da99ad12f5db
+  owner: "tools.research_source_watch.json:sources[38].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Intentional primary-source URL in the source watch registry, not an implementation-embedded endpoint. The manifest reader validates HTTPS, permitted hosts, identity uniqueness and a bounded source population before network access. Read-only change detection grants no installation, copying, execution or publication authority. tools/test_refresh_research_sources.py tests accepted manifests, refused URLs and failed-read freshness. Reviewed September 29, 2026."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.4b85515df0aa5e980126560d
+  owner: "tools.research_source_watch.json:sources[18].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Intentional primary-source URL in the source watch registry, not an implementation-embedded endpoint. The manifest reader validates HTTPS, permitted hosts, identity uniqueness and a bounded source population before network access. Read-only change detection grants no installation, copying, execution or publication authority. tools/test_refresh_research_sources.py tests accepted manifests, refused URLs and failed-read freshness. Reviewed September 29, 2026."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.4e50c1e61a36373b99cae764
+  owner: "tools.research_source_watch.json:sources[33].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Intentional primary-source URL in the source watch registry, not an implementation-embedded endpoint. The manifest reader validates HTTPS, permitted hosts, identity uniqueness and a bounded source population before network access. Read-only change detection grants no installation, copying, execution or publication authority. tools/test_refresh_research_sources.py tests accepted manifests, refused URLs and failed-read freshness. Reviewed September 29, 2026."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.5b798cb610bb91b399d38278
+  owner: "tools.research_source_watch.json:sources[27].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Intentional primary-source URL in the source watch registry, not an implementation-embedded endpoint. The manifest reader validates HTTPS, permitted hosts, identity uniqueness and a bounded source population before network access. Read-only change detection grants no installation, copying, execution or publication authority. tools/test_refresh_research_sources.py tests accepted manifests, refused URLs and failed-read freshness. Reviewed September 29, 2026."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.66f4f276ae6e2d957304723f
+  owner: "tools.research_source_watch.json:sources[29].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Intentional primary-source URL in the source watch registry, not an implementation-embedded endpoint. The manifest reader validates HTTPS, permitted hosts, identity uniqueness and a bounded source population before network access. Read-only change detection grants no installation, copying, execution or publication authority. tools/test_refresh_research_sources.py tests accepted manifests, refused URLs and failed-read freshness. Reviewed September 29, 2026."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.687fd73ced42c162d6019914
+  owner: "tools.research_source_watch.json:sources[30].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Intentional primary-source URL in the source watch registry, not an implementation-embedded endpoint. The manifest reader validates HTTPS, permitted hosts, identity uniqueness and a bounded source population before network access. Read-only change detection grants no installation, copying, execution or publication authority. tools/test_refresh_research_sources.py tests accepted manifests, refused URLs and failed-read freshness. Reviewed September 29, 2026."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.730c91e8e753d594a5d7d5d4
+  owner: "tools.research_source_watch.json:sources[17].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Intentional primary-source URL in the source watch registry, not an implementation-embedded endpoint. The manifest reader validates HTTPS, permitted hosts, identity uniqueness and a bounded source population before network access. Read-only change detection grants no installation, copying, execution or publication authority. tools/test_refresh_research_sources.py tests accepted manifests, refused URLs and failed-read freshness. Reviewed September 29, 2026."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.7e6c14bdf147358896a8bdf9
+  owner: "tools.research_source_watch.json:sources[32].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Intentional primary-source URL in the source watch registry, not an implementation-embedded endpoint. The manifest reader validates HTTPS, permitted hosts, identity uniqueness and a bounded source population before network access. Read-only change detection grants no installation, copying, execution or publication authority. tools/test_refresh_research_sources.py tests accepted manifests, refused URLs and failed-read freshness. Reviewed September 29, 2026."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.83f1cea85b54e13cd0c01ac1
+  owner: "tools.research_source_watch.json:sources[20].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Intentional primary-source URL in the source watch registry, not an implementation-embedded endpoint. The manifest reader validates HTTPS, permitted hosts, identity uniqueness and a bounded source population before network access. Read-only change detection grants no installation, copying, execution or publication authority. tools/test_refresh_research_sources.py tests accepted manifests, refused URLs and failed-read freshness. Reviewed September 29, 2026."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.854df3a4325a90a7b28c6be3
+  owner: "tools.research_source_watch.json:sources[26].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Intentional primary-source URL in the source watch registry, not an implementation-embedded endpoint. The manifest reader validates HTTPS, permitted hosts, identity uniqueness and a bounded source population before network access. Read-only change detection grants no installation, copying, execution or publication authority. tools/test_refresh_research_sources.py tests accepted manifests, refused URLs and failed-read freshness. Reviewed September 29, 2026."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.8743a6b5cd65b27e3c58fb11
+  owner: "tools.research_source_watch.json:sources[39].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Intentional primary-source URL in the source watch registry, not an implementation-embedded endpoint. The manifest reader validates HTTPS, permitted hosts, identity uniqueness and a bounded source population before network access. Read-only change detection grants no installation, copying, execution or publication authority. tools/test_refresh_research_sources.py tests accepted manifests, refused URLs and failed-read freshness. Reviewed September 29, 2026."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.938fc8c95b072b026300cbb8
+  owner: "tools.research_source_watch.json:sources[10].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Intentional primary-source URL in the source watch registry, not an implementation-embedded endpoint. The manifest reader validates HTTPS, permitted hosts, identity uniqueness and a bounded source population before network access. Read-only change detection grants no installation, copying, execution or publication authority. tools/test_refresh_research_sources.py tests accepted manifests, refused URLs and failed-read freshness. Reviewed September 29, 2026."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.9c34fc5498c74454cffbb27c
+  owner: "tools.research_source_watch.json:sources[35].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Intentional primary-source URL in the source watch registry, not an implementation-embedded endpoint. The manifest reader validates HTTPS, permitted hosts, identity uniqueness and a bounded source population before network access. Read-only change detection grants no installation, copying, execution or publication authority. tools/test_refresh_research_sources.py tests accepted manifests, refused URLs and failed-read freshness. Reviewed September 29, 2026."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.ada73f5d5c79ed72b929f00f
+  owner: "tools.research_source_watch.json:sources[37].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Intentional primary-source URL in the source watch registry, not an implementation-embedded endpoint. The manifest reader validates HTTPS, permitted hosts, identity uniqueness and a bounded source population before network access. Read-only change detection grants no installation, copying, execution or publication authority. tools/test_refresh_research_sources.py tests accepted manifests, refused URLs and failed-read freshness. Reviewed September 29, 2026."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.b4569314676c7a241cf521d9
+  owner: "tools.research_source_watch.json:sources[24].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Intentional primary-source URL in the source watch registry, not an implementation-embedded endpoint. The manifest reader validates HTTPS, permitted hosts, identity uniqueness and a bounded source population before network access. Read-only change detection grants no installation, copying, execution or publication authority. tools/test_refresh_research_sources.py tests accepted manifests, refused URLs and failed-read freshness. Reviewed September 29, 2026."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.d904b199fa53600cf052866f
+  owner: "tools.research_source_watch.json:sources[31].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Intentional primary-source URL in the source watch registry, not an implementation-embedded endpoint. The manifest reader validates HTTPS, permitted hosts, identity uniqueness and a bounded source population before network access. Read-only change detection grants no installation, copying, execution or publication authority. tools/test_refresh_research_sources.py tests accepted manifests, refused URLs and failed-read freshness. Reviewed September 29, 2026."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.dffdf4c5ff7de4e22b7adf91
+  owner: "tools.research_source_watch.json:sources[22].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Intentional primary-source URL in the source watch registry, not an implementation-embedded endpoint. The manifest reader validates HTTPS, permitted hosts, identity uniqueness and a bounded source population before network access. Read-only change detection grants no installation, copying, execution or publication authority. tools/test_refresh_research_sources.py tests accepted manifests, refused URLs and failed-read freshness. Reviewed September 29, 2026."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.e615b5b96821aa41bf9ba08b
+  owner: "tools.research_source_watch.json:sources[16].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Intentional primary-source URL in the source watch registry, not an implementation-embedded endpoint. The manifest reader validates HTTPS, permitted hosts, identity uniqueness and a bounded source population before network access. Read-only change detection grants no installation, copying, execution or publication authority. tools/test_refresh_research_sources.py tests accepted manifests, refused URLs and failed-read freshness. Reviewed September 29, 2026."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.f21d589988d43f3a3aaf5090
+  owner: "tools.research_source_watch.json:sources[23].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Intentional primary-source URL in the source watch registry, not an implementation-embedded endpoint. The manifest reader validates HTTPS, permitted hosts, identity uniqueness and a bounded source population before network access. Read-only change detection grants no installation, copying, execution or publication authority. tools/test_refresh_research_sources.py tests accepted manifests, refused URLs and failed-read freshness. Reviewed September 29, 2026."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.1ab7cc5185376c6551c5f400
+  owner: "tools.knowledge_radar.community-sources-v1.json:communities.proceduralgeneration"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Intentional community destination in the versioned internal research registry. Automatic collection and posting are disabled. community.py emits a draft and an exact external-message approval request, never sends it. tools/test_community_research.py checks unknown destinations, missing access evidence, content-bound operation identity and unverified reply status. This entry grants no platform access or content-reuse permission. Reviewed September 29, 2026."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.1baf8a28077225dde86af241
+  owner: "tools.knowledge_radar.community-sources-v1.json:communities.creativecoding"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Intentional community destination in the versioned internal research registry. Automatic collection and posting are disabled. community.py emits a draft and an exact external-message approval request, never sends it. tools/test_community_research.py checks unknown destinations, missing access evidence, content-bound operation identity and unverified reply status. This entry grants no platform access or content-reuse permission. Reviewed September 29, 2026."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.2510bd85816d1df42356b010
+  owner: "tools.knowledge_radar.community-sources-v1.json:communities.GraphicsProgramming"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Intentional community destination in the versioned internal research registry. Automatic collection and posting are disabled. community.py emits a draft and an exact external-message approval request, never sends it. tools/test_community_research.py checks unknown destinations, missing access evidence, content-bound operation identity and unverified reply status. This entry grants no platform access or content-reuse permission. Reviewed September 29, 2026."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.3ab9452a155500d5804fb56f
+  owner: "tools.knowledge_radar.community-sources-v1.json:communities.godot"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Intentional community destination in the versioned internal research registry. Automatic collection and posting are disabled. community.py emits a draft and an exact external-message approval request, never sends it. tools/test_community_research.py checks unknown destinations, missing access evidence, content-bound operation identity and unverified reply status. This entry grants no platform access or content-reuse permission. Reviewed September 29, 2026."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.4106fcf94cc5a46419fe9fdb
+  owner: "tools.knowledge_radar.community-sources-v1.json:communities.threejs"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Intentional community destination in the versioned internal research registry. Automatic collection and posting are disabled. community.py emits a draft and an exact external-message approval request, never sends it. tools/test_community_research.py checks unknown destinations, missing access evidence, content-bound operation identity and unverified reply status. This entry grants no platform access or content-reuse permission. Reviewed September 29, 2026."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.5a75e51aacd7774cc24e8622
+  owner: "tools.knowledge_radar.community-sources-v1.json:communities.LocalLLaMA"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Intentional community destination in the versioned internal research registry. Automatic collection and posting are disabled. community.py emits a draft and an exact external-message approval request, never sends it. tools/test_community_research.py checks unknown destinations, missing access evidence, content-bound operation identity and unverified reply status. This entry grants no platform access or content-reuse permission. Reviewed September 29, 2026."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.7e97320b158ddaa2cce86665
+  owner: "tools.knowledge_radar.community-sources-v1.json:communities.gamedev"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Intentional community destination in the versioned internal research registry. Automatic collection and posting are disabled. community.py emits a draft and an exact external-message approval request, never sends it. tools/test_community_research.py checks unknown destinations, missing access evidence, content-bound operation identity and unverified reply status. This entry grants no platform access or content-reuse permission. Reviewed September 29, 2026."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.9142a6f33de4e792f292d3d0
+  owner: "tools.knowledge_radar.community-sources-v1.json:communities.aigamedev"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Intentional community destination in the versioned internal research registry. Automatic collection and posting are disabled. community.py emits a draft and an exact external-message approval request, never sends it. tools/test_community_research.py checks unknown destinations, missing access evidence, content-bound operation identity and unverified reply status. This entry grants no platform access or content-reuse permission. Reviewed September 29, 2026."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.b0d1a8cd95164cebe7ed2e70
+  owner: "tools.knowledge_radar.community-sources-v1.json:communities.blender"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Intentional community destination in the versioned internal research registry. Automatic collection and posting are disabled. community.py emits a draft and an exact external-message approval request, never sends it. tools/test_community_research.py checks unknown destinations, missing access evidence, content-bound operation identity and unverified reply status. This entry grants no platform access or content-reuse permission. Reviewed September 29, 2026."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.c66a2b6f3492dce2c0a37812
+  owner: "tools.knowledge_radar.community-sources-v1.json:communities.MotionDesign"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Intentional community destination in the versioned internal research registry. Automatic collection and posting are disabled. community.py emits a draft and an exact external-message approval request, never sends it. tools/test_community_research.py checks unknown destinations, missing access evidence, content-bound operation identity and unverified reply status. This entry grants no platform access or content-reuse permission. Reviewed September 29, 2026."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
 - finding_id: hardcoding.2ad82dccc16807a262b354e5
   owner: tools.check_package_activation
   rationale: 'Scheme prefixes that mark a reference as a web address instead of a path inside the package.

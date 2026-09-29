@@ -149,7 +149,43 @@ class CatalogueView:
         return {"record_type": VIEW_SUMMARY_VERSION, "source": self.source, "release_id": self.release_id or None,
                 "content_digest": self.content_digest or None, "items": len(self.catalogue.items),
                 "withdrawn_left_out": len(self.withdrawn), "schema_digest": self.schema.digest,
-                "catalogue_state_revision": self.state_revision, "built_at": int(self.built_at)}
+                "catalogue_state_revision": self.state_revision, "built_at": int(self.built_at),
+                "file_population": self.file_population()}
+
+    def file_population(self):
+        """Count the approved view's distinct delivered bytes, not candidate rows or inventory documents.
+
+        A missing package manifest leaves the distinct-file total unknown.
+        Immutable served views cache this metadata-only calculation; a
+        withdrawal creates a new view and clears its cache. Direct fixtures
+        recheck their potentially changing qualification resolver.
+        """
+        with self._lazy.setdefault("population_lock", threading.Lock()):
+            if self.source != DIRECT_SOURCE and "file_population" in self._lazy:
+                return dict(self._lazy["file_population"])
+            files, placements, missing, packages = {}, 0, 0, 0
+            for identity, binding in self.approved_bindings().items():
+                if (identity, binding.body_digest) in self.withdrawn:
+                    continue
+                packages += 1
+                package = self.packages.get(identity)
+                if package is None:
+                    missing += 1
+                    continue
+                for entry in package.files:
+                    placements += 1
+                    if entry.digest in files and files[entry.digest] != entry.size_bytes:
+                        _refuse("package_file_size_conflict", "one file digest names different byte counts")
+                    files[entry.digest] = entry.size_bytes
+            result = {"record_type": "catalogue_file_population/v1", "packages": packages,
+                      "file_placements": placements, "distinct_files": len(files) if not missing else None,
+                      "observed_distinct_files": len(files),
+                      "distinct_file_bytes": sum(files.values()) if not missing else None,
+                      "duplicate_file_placements": placements - len(files),
+                      "packages_without_file_manifest": missing, "complete": not missing}
+            if self.source != DIRECT_SOURCE:
+                self._lazy["file_population"] = result
+            return dict(result)
 
     def shown_attributes(self, identity):
         return self.schema.shown_values(self.attributes.get(identity, {}))
@@ -240,7 +276,7 @@ def image_view(catalogue, resolver, reader, *, config=None, withdrawn=frozenset(
 def store_view(config, settings, *, license_policy, family_policy):
     """Build the view of the active release: verify every record and body, then index it once."""
     from ..practitioner_runtime.provisioning import _item
-    from .catalogue_bundle import item_version_tier
+    from .catalogue_bundle import item_version_tier, validated_attributes
     from .catalogue_releases import load_release, read_pointer, read_state, verify_release_bodies, withdrawal_notes
     from .catalogue_search import IndexEntry, ReleaseSearchIndex, entry_text
     binding = ServiceCatalogBinding(config)
@@ -268,7 +304,7 @@ def store_view(config, settings, *, license_policy, family_policy):
         if (item.identity, package.served_digest) in withdrawn:
             continue
         tier = item_version_tier(payload)
-        values = release.schema.validate_values(payload["attributes"])
+        values = validated_attributes(release.schema, payload["attributes"])
         catalogue.register(item)
         exact = ProvisioningItemBinding.from_item(item)
         approvals[item.identity] = ProvisioningQualification(exact, "approved", "host_attested", payload["approval_ref"],

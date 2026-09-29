@@ -76,7 +76,7 @@ Generated component admission
 │   │   ├── safety and secrets: the licensed import's scan engines, the review
 │   │   │   panel's static rules, minified code, test report tampering, the
 │   │   │   repository's secret patterns
-│   │   └── sandbox: every module imports and the package's own tests pass,
+│   │   └── optional sandbox: every module imports and the package's own tests pass,
 │   │       in bubblewrap with no network, hidden home and runtime folders,
 │   │       and CPU, memory, file size, open file and time limits
 │   └── population pass: exact copies, same-job packages (a job key per line,
@@ -92,6 +92,16 @@ Generated component admission
 └── 3. admission folder for accepted batches, in the format the combine and
     bundle tools read; rejected samples are recorded and never bundled
 ```
+
+The default fast route runs static checks and population deduplication.
+`--checks all` additionally requests sandbox and mutation checks. A fast
+record cannot stand in for these extra checks on a later full run. Sampled
+review reads package bytes; it does not execute the package. Omitted execution
+is recorded as not tested, not failed or passed. Community admission and
+execution qualification therefore make different claims.
+Execution checks run again even when a previous record contains them, because
+the current record does not pin every interpreter, dependency and sandbox
+image required to validate an execution-cache hit.
 
 ## The acceptance rule
 

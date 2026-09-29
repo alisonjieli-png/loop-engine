@@ -16,6 +16,17 @@ being current. The radar approves nothing, serves nothing and publishes
 nothing: its packages are candidates for the existing independent review and
 catalogue release path.
 
+`community.py` prepares disclosed questions for selected practitioner
+communities and converts research notes into unreviewed leads. Its posting
+request uses the existing `EXTERNAL_MESSAGE` effect and binds the exact
+account, destination, content and rules evidence. It sends nothing. Platform
+connection, approved dispatch, uncertain-outcome reconciliation and reply
+collection remain integration work. Store those records through
+`RecordOperationService`; do not add a second queue or approval system.
+Automated commercial Reddit access requires a platform-access review before
+activation. A public reply does not grant permission to redistribute its
+code, assets or prose. See [the source and engine record](../../docs/research/CREATIVE-COMPONENTS-AND-ENGINE-CONTROL-2026-09-29.md).
+
 ## Runtime classification
 
 ```text

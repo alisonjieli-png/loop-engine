@@ -1,6 +1,9 @@
 # Documentation
 
 Use the [main README](../README.md) for the public quickstart.
+The [current north star](architecture/NORTH-STAR.md) and
+[September 29 reconciliation](context/SESSION-RECONCILIATION-2026-09-29.md)
+state current direction, reviewed coverage and remaining work.
 For current development, open the
 [single development HTML](../artifacts/architecture-audit-2026-09-19/loop-engine-system-map.html),
 which embeds the dated

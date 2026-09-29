@@ -95,6 +95,17 @@ class ManifestChecks(unittest.TestCase):
         self.assertLessEqual(len(sources), watch.MAX_ONLINE_SOURCES)
         self.assertEqual(len(sources), len({row["url"] for row in sources}))
 
+    def test_current_platform_and_creative_sources_are_watched(self):
+        sources = watch.validate_manifest(json.loads(Path(__file__).with_name(
+            "research_source_watch.json").read_text("utf-8")))
+        urls = {row["url"] for row in sources}
+        self.assertIn("https://developers.openai.com/siwc/token-sharing-open-source/preview-limitations.md", urls)
+        self.assertIn("https://developers.openai.com/api/docs/deprecations.md", urls)
+        self.assertIn("https://github.com/heygen-com/hyperframes", urls)
+        self.assertIn("https://github.com/kilimchoi/engineering-blogs", urls)
+        self.assertIn("https://github.com/playcanvas/editor-mcp-server", urls)
+        self.assertIn("https://github.com/hi-godot/godot-ai", urls)
+
 
 class ObservationChecks(unittest.TestCase):
     def test_offline_mode_never_calls_network_and_keeps_change_unknown(self):
@@ -170,6 +181,19 @@ class ObservationChecks(unittest.TestCase):
 
 
 class ReportChecks(unittest.TestCase):
+    def test_failed_refresh_retains_the_baseline_without_claiming_a_fresh_observation(self):
+        previous = {(SOURCE["id"], SOURCE["kind"], SOURCE["url"]): ("b" * 40, "previous.json")}
+        report = watch.run_watch([SOURCE], online=True, prior=previous, opener=FakeOpener(error=TimeoutError()))
+        row = report["sources"][0]
+        self.assertIsNone(row["observed"])
+        self.assertIsNone(row["retrieved_at"])
+        self.assertEqual(row["change"], "unknown")
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "RESEARCH-SOURCE-WATCH-2026-09-29.json"
+            watch.write_new_report(path, report)
+            restored = watch.load_prior_observations(Path(directory))
+        self.assertEqual(restored[(SOURCE["id"], SOURCE["kind"], SOURCE["url"])][0], "b" * 40)
+
     def test_exclusive_write_keeps_prior_result_unchanged(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "RESEARCH-SOURCE-WATCH-2026-09-22.json"

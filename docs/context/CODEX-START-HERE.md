@@ -20,9 +20,10 @@ that behavior and does not replace the runtime handshake.
 
 | Need | Current route |
 |---|---|
+| Current takeover, million-file target, original creative supply and engine control | [September 29 reconciliation](SESSION-RECONCILIATION-2026-09-29.md), [north star](../architecture/NORTH-STAR.md) and [engine-control research](../research/CREATIVE-COMPONENTS-AND-ENGINE-CONTROL-2026-09-29.md). |
 | Latest Codex research, terminology, compiler profiles, library tooling and release 21 evidence | [September 23 Codex checkpoint](CODEX-RESEARCH-AND-DELIVERY-CHECKPOINT-2026-09-23.md), with worktree and evidence pointers; the roadmap remains task authority. |
 | Where the work stands: live source, customer checks, component supply and research | [September 27 release 40 addendum](RELEASE-40-AND-METADATA-ACTIVATION-2026-09-27.md), after the [September 27 component reuse handoff](COMPONENT-REUSE-AND-RESEARCH-2026-09-27.md) and [September 26 component expansion handoff](COMPONENT-EXPANSION-AND-CUSTOMER-JOURNEY-2026-09-26.md). Read the current deployment for exact live identities. |
-| Where the September 23 files are: patches, line notes, screenshots, test tools, worktrees and local copies of the claude.ai artifacts | [Handoff folder index](../../artifacts/handoff-2026-09-23/README.md). A clean checkout of `main` is at `/home/username/loop-engine-main`. |
+| Where the September 23 files were recorded: patches, line notes, screenshots, test tools and worktrees | [Historical handoff folder index](../../artifacts/handoff-2026-09-23/README.md). Its clean-checkout path was absent on September 29; inspect current Git state instead of assuming it exists. |
 | Current 100,000-package research and separate handbook component artifacts | [Component research index](../research/BALTOR-COMPONENT-RESEARCH-ARTIFACTS-2026-09-23.md) and [Codex side handoff](CODEX-SIDE-RESEARCH-HANDOFF-2026-09-22.md). |
 | Committing, pushing, branching, releasing, what still needs the owner, and the decisions that stand | [Commit, push and release authority](../../AGENTS.md#commit-push-and-release-authority) in AGENTS.md. No other document restates it. |
 | The working cycle, the repairs of September 20 and the private beta definition | [Takeover checkpoint](TAKEOVER-CHECKPOINT-2026-09-20.md). Its live-state table describes September 20. |

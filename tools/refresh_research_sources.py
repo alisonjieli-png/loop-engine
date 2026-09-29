@@ -29,10 +29,10 @@ SHA_PATTERN = re.compile(r"[0-9a-f]{40}\Z")
 HOST_LABEL = re.compile(r"[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\Z")
 REPO_PATH = re.compile(r"/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+/?\Z")
 MAX_MANIFEST_SOURCES = 50
-MAX_ONLINE_SOURCES = 20
+MAX_ONLINE_SOURCES = 40
 ALLOWED_PAGE_HOSTS = frozenset({"arxiv.org", "modelcontextprotocol.io",
-                                 "agentplugins.io", "skills.sh",
-                                 "jfrog.com"})
+                                 "agentplugins.io", "skills.sh", "www.skills.sh",
+                                 "jfrog.com", "developers.openai.com"})
 
 
 class _NoRedirect(HTTPRedirectHandler):
@@ -192,7 +192,7 @@ def load_prior_observations(directory: Path) -> dict[tuple[str, str, str], tuple
         for row in rows:
             if not isinstance(row, dict):
                 continue
-            observation = row.get("observed")
+            observation = row.get("observed") or row.get("last_successful_observation")
             if not isinstance(observation, dict) or not isinstance(observation.get("fingerprint"), str):
                 continue
             key = (row.get("id"), row.get("kind"), row.get("url"))
@@ -218,6 +218,11 @@ def run_watch(sources: list[dict[str, Any]], *, online: bool,
                                ("id", "name", "kind", "url", "roadmap_step", "license_state")}
         row.update({"checked_at": _utc_now(), "retrieved_at": None, "change": "unknown",
                     "comparison_basis": None, "observed": None, "failure": None})
+        key = (source["id"], source["kind"], source["url"])
+        if key in prior:
+            # Keep the prior comparison baseline through a failed read without
+            # reporting its bytes or date as a fresh observation.
+            row["last_successful_observation"] = {"fingerprint": prior[key][0], "source_report": prior[key][1]}
         if online:
             try:
                 observation = fetch_source(source, timeout_seconds=timeout_seconds,
@@ -259,6 +264,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--manifest", type=Path, default=ROOT / "tools/research_source_watch.json")
     parser.add_argument("--output-dir", type=Path, default=ROOT / "artifacts/research-source-watch")
     parser.add_argument("--output", type=Path, help="exact new report path; existing files are refused")
+    parser.add_argument("--prior-dir", type=Path, help="directory of previous reports, read only")
     parser.add_argument("--online", action="store_true", help="make bounded, read-only HTTPS checks")
     parser.add_argument("--timeout-seconds", type=float, default=5.0)
     parser.add_argument("--max-bytes", type=int, default=512_000)
@@ -268,7 +274,7 @@ def main(argv: list[str] | None = None) -> int:
         raw = args.manifest.read_bytes()
         sources = validate_manifest(json.loads(raw))
         output = args.output or (args.output_dir / (REPORT_PREFIX + datetime.now(timezone.utc).strftime("%Y-%m-%dT%H%M%S.%fZ") + ".json"))
-        prior = load_prior_observations(output.parent) if args.online else {}
+        prior = load_prior_observations(args.prior_dir or output.parent) if args.online else {}
         report = run_watch(sources, online=args.online, prior=prior,
                            timeout_seconds=args.timeout_seconds,
                            max_bytes=args.max_bytes,

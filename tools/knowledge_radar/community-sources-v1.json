@@ -1,0 +1,27 @@
+{
+  "record_type": "community_research_registry/v1",
+  "automatic_collection_enabled": false,
+  "automatic_posting_enabled": false,
+  "communities": {
+    "aigamedev": "https://www.reddit.com/r/aigamedev/",
+    "godot": "https://www.reddit.com/r/godot/",
+    "threejs": "https://www.reddit.com/r/threejs/",
+    "gamedev": "https://www.reddit.com/r/gamedev/",
+    "blender": "https://www.reddit.com/r/blender/",
+    "creativecoding": "https://www.reddit.com/r/creativecoding/",
+    "GraphicsProgramming": "https://www.reddit.com/r/GraphicsProgramming/",
+    "proceduralgeneration": "https://www.reddit.com/r/proceduralgeneration/",
+    "MotionDesign": "https://www.reddit.com/r/MotionDesign/",
+    "LocalLLaMA": "https://www.reddit.com/r/LocalLLaMA/"
+  },
+  "questions": [
+    "What engine, version, agent and MCP, CLI or scripting connection do you actually use?",
+    "What is one repeatable workflow that works well, with a source project or example if public?",
+    "Which assets did you supply, and which did the agent create or change?",
+    "How do you inspect runtime state, capture output and test real controls?",
+    "What failed, and what repair or reusable component made it work?",
+    "What did it cost in model usage, elapsed time and manual correction?",
+    "What is still difficult after the first demo, especially during revisions?",
+    "If you share code or assets, where is the license or reuse permission recorded?"
+  ]
+}
