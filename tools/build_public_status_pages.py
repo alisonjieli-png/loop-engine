@@ -400,7 +400,8 @@ def capabilities(source: str, module) -> list:
 def features(site_map: dict, layout: dict, public: PublicText, exclusions: dict) -> dict:
     from loop_engine.core.provisioning_server import LIBRARY_TIERS, TIER_LABELS
     from loop_engine.core.service_runtime import http as service_http
-    from loop_engine.core.service_runtime.catalogue_attributes import HARNESS_KINDS, WELL_KNOWN_ATTRIBUTES, harness_kind_label
+    from loop_engine.core.service_runtime.catalogue_attributes import (
+        COMPONENT_FORMS, HARNESS_KINDS, WELL_KNOWN_ATTRIBUTES, component_form_label, harness_kind_label)
     from loop_engine.core.service_runtime.catalogue_tiers import TIER_MEANINGS
     groups = []
     for group in site_map["groups"]:
@@ -408,7 +409,8 @@ def features(site_map: dict, layout: dict, public: PublicText, exclusions: dict)
                  for page in site_map["pages"] if page["group"] == group and page["indexed"] and page["address"] not in ADDRESSES]
         if pages:
             groups.append({"group": group, "pages": pages})
-    labels = {"tier": dict(TIER_LABELS), "harness_kind": {kind: harness_kind_label(kind) for kind in HARNESS_KINDS}}
+    labels = {"tier": dict(TIER_LABELS), "harness_kind": {kind: harness_kind_label(kind) for kind in HARNESS_KINDS},
+              "component_form": {form: component_form_label(form) for form in COMPONENT_FORMS}}
     attributes = [{"name": words(item["name"]), "description": item["description"], "searchable": bool(item["searchable"]),
                    "filterable": bool(item["filterable"]),
                    "choices": [labels.get(item["name"], {}).get(choice, words(choice)) for choice in item.get("choices", [])]}

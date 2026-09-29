@@ -1,0 +1,205 @@
+"""Build one supply package: its files, licence texts, attribution, checks and candidate record.
+
+```text
+One supplied package (catalogue_package/v1, body form "package")
+├── generated files: the harness files, the code, the schemas, the tests and README.md
+├── upstream files copied verbatim, when a licence allows it (a data file), with their digests
+├── LICENSE: the package licence text, and UPSTREAM-LICENSE when the upstream's licence differs
+└── ATTRIBUTION.md: the generator, every fact source with its digest and licence, every file's origin
+```
+
+The static checks of the licensed import (the built-in rules and the import's
+own rules) run over every text file before the record is built; a blocking
+finding refuses the package by rule name and a caution travels with it for
+the reviewer. A clean check is triage, not proof of safety.
+"""
+from __future__ import annotations
+
+import re
+from dataclasses import dataclass, field
+
+from loop_engine.core.library_ingestion.duplicates import normalized
+from loop_engine.core.library_ingestion.record_rules import bytes_digest
+from loop_engine.core.service_runtime.catalogue_attributes import FORM_DECLARED, component_form_record
+from loop_engine.core.service_runtime.catalogue_packages import (
+    EXECUTABLE_EFFECT, EXECUTABLE_ROLES, PACKAGE_BODY, CataloguePackage, CataloguePackageFile)
+
+from loop_engine.core.service_runtime.records import ServiceRuntimeError
+
+from licensed_import.checks import StaticChecks, blocking_rules, package_cautions
+from licensed_import.harness_kinds import media_type
+
+from .records import (
+    ATTRIBUTION, AUTHORING, CANDIDATE_RECORD_TYPE, FILE_ORIGINS, GENERATED, LICENCE_TEXT, NOTICE_FILE, REVIEW_PROFILE,
+    UPSTREAM_VERBATIM, SupplyRecordError, fact_source, licence_allowed, read_supply_candidate, record_id)
+
+ATTRIBUTION_NAME = "ATTRIBUTION.md"
+LICENCE_NAME = "LICENSE"
+#: The file a package carries for an upstream notice file (a second one gains its repository's name).
+UPSTREAM_NOTICE_NAME = "UPSTREAM-NOTICE"
+#: The basis of a notice file's fact source: the repository's NOTICE file read at the commit the package pins.
+NOTICE_BASIS = "notice_file_at_the_pinned_commit"
+
+
+def notice_files(notices) -> tuple:
+    """(package files, fact sources) for the upstream notice files a package carries, one per repository.
+
+    Apache-2.0 section 4(d) asks that a derivative work carry a readable copy of the attribution notices of the
+    work's NOTICE file. Each notice travels as a verbatim upstream copy bound to its address and digest, listed as
+    a notice (never as a licence text: it grants nothing), under the licence of the repository it belongs to."""
+    files, facts, seen = [], [], set()
+    for notice in notices or ():
+        if not notice or notice["repository"] in seen:
+            continue
+        seen.add(notice["repository"])
+        name = UPSTREAM_NOTICE_NAME if not files else \
+            f"{UPSTREAM_NOTICE_NAME}-{re.sub(r'[^A-Za-z0-9._-]+', '-', notice['repository'])}"
+        files.append(PackageFile(name, notice["bytes"], "other", UPSTREAM_VERBATIM,
+                                 {"url": notice["url"], "sha256": notice["sha256"]}, notice=True))
+        facts.append(fact_source(notice["url"], notice["retrieved_at"], notice["sha256"], len(notice["bytes"]),
+                                 NOTICE_FILE, spdx=notice["spdx"], basis=NOTICE_BASIS))
+    return files, facts
+
+
+#: The refusal code of a package whose file path the catalogue package refuses.
+PACKAGE_PATH_INVALID = "package_path_invalid"
+UPSTREAM_LICENCE_NAME = "UPSTREAM-LICENSE"
+#: The review panel reads files up to these bounds (tools/licensed_import/review_export.py); a package above them
+#: could never be reviewed, so a line refuses it before it is stored.
+MAXIMUM_REVIEW_FILE_BYTES = 256 * 1024
+MAXIMUM_REVIEW_PACKAGE_BYTES = 2 * 1024 * 1024
+_CHECKS = None
+
+
+def static_checks() -> StaticChecks:
+    """The licensed import's static checks, built once per process."""
+    global _CHECKS
+    if _CHECKS is None:
+        _CHECKS = StaticChecks({})
+    return _CHECKS
+
+
+@dataclass(frozen=True)
+class PackageFile:
+    path: str
+    data: bytes
+    role: str
+    origin: str = GENERATED
+    upstream: "dict | None" = None  # {"url": ..., "sha256": ...} for a verbatim copy
+    notice: bool = False  # an upstream repository's notice file (see notice_files)
+
+
+@dataclass
+class SupplyPackage:
+    """The facts one generator decided, before the package record is built."""
+
+    line: str
+    identity: str  # the stable upstream identity the key is derived from
+    key: str
+    kind: str
+    native_format: str
+    form: str
+    name: str
+    description: str
+    files: list
+    licence_expression: str
+    provenance: dict
+    placements: list
+    effects: list  # [(effect, rule)]
+    credentials: list
+    tests: dict
+    repository: dict
+    generated_on: str
+    comparison_text: str = ""
+    findings: list = field(default_factory=list)
+
+
+def attribution_text(package: SupplyPackage, rows) -> bytes:
+    """ATTRIBUTION.md: who wrote the package from which facts, under which licences, file by file."""
+    generator = package.provenance["generator"]
+    lines = ["# Attribution", "",
+             f"Baltor's deterministic generator `{generator['identity']}` version {generator['version']} "
+             f"(code revision {generator['code_revision']}) wrote this package on {package.generated_on} from the "
+             "facts listed below. No model wrote any of it.", "",
+             f"Package licence: {package.licence_expression}.", "",
+             "## Facts", "", "| Source | Role | Retrieved | SHA-256 | Licence |", "|---|---|---|---|---|"]
+    for fact in package.provenance["facts"]:
+        lines.append(f"| {fact['url']} | {fact['role']} | {fact['retrieved_at']} | `{fact['sha256']}` | "
+                     f"{fact['licence']['spdx_expression']} ({fact['licence']['basis']}) |")
+    lines += ["", "## Files", "", "| File | Origin | SHA-256 |", "|---|---|---|"]
+    for path, origin, digest in rows:
+        lines.append(f"| `{path}` | {origin} | `{digest}` |")
+    lines.append("")
+    return "\n".join(lines).encode("utf-8")
+
+
+def _entry(path: str, data: bytes, role: str) -> CataloguePackageFile:
+    return CataloguePackageFile(path, bytes_digest(data), len(data), media_type(path), role)
+
+
+def build(package: SupplyPackage, *, check: bool = True) -> tuple:
+    """(payload, bodies) of one package, or raise SupplyRecordError with a refusal reason."""
+    if not licence_allowed(package.licence_expression):
+        raise SupplyRecordError("licence_not_on_allowlist", package.licence_expression)
+    if not any(row.path == LICENCE_NAME for row in package.files):
+        raise SupplyRecordError("licence_files_missing", "a supplied package carries its licence text")
+    if any(row.origin not in FILE_ORIGINS for row in package.files):
+        raise SupplyRecordError("file_origins_invalid", "every file names its origin")
+    files = sorted(package.files, key=lambda row: row.path)
+    texts = [row.path for row in files if row.origin == LICENCE_TEXT]
+    notices = [row.path for row in files if row.notice]
+    rows = [(row.path, row.origin, bytes_digest(row.data)) for row in files]
+    attribution = attribution_text(package, rows)
+    files.append(PackageFile(ATTRIBUTION_NAME, attribution, "other", ATTRIBUTION))
+    if any(len(row.data) > MAXIMUM_REVIEW_FILE_BYTES for row in files) or \
+            sum(len(row.data) for row in files) > MAXIMUM_REVIEW_PACKAGE_BYTES:
+        raise SupplyRecordError("package_above_review_bound", package.name)
+    try:
+        entries = [_entry(row.path, row.data, row.role) for row in files]
+    except ServiceRuntimeError as error:
+        # A file path the catalogue package refuses (a segment outside letters, digits and ._@+-) refuses the
+        # package by name instead of stopping the run.
+        raise SupplyRecordError(PACKAGE_PATH_INVALID, str(error)[:200]) from None
+    catalogue_package = CataloguePackage(tuple(entries), PACKAGE_BODY)
+    findings = list(package.findings)
+    if check:
+        scanned = static_checks().scan({"package": [(row.path, row.data) for row in files]})
+        # The cautions the licensed import gives by kind: a hook runs on harness events, settings change the
+        # harness, a server configuration that downloads and runs a package says so.
+        findings += scanned.get("package", []) + package_cautions(package.kind, {row.path: row.data for row in files})
+        blocked = blocking_rules(findings)
+        if blocked:
+            raise SupplyRecordError("blocked_by_static_check", ",".join(blocked))
+    declared = set(package.effects)
+    for entry in entries:
+        if entry.role in EXECUTABLE_ROLES and not any(effect == EXECUTABLE_EFFECT for effect, _rule in declared):
+            # A package holding a file a harness may run declares a process effect (catalogue_packages.py), so a
+            # step without that authority is never offered it.
+            declared.add((EXECUTABLE_EFFECT, f"holds_an_executable_file {entry.path}"))
+    effects = sorted({effect for effect, _rule in declared})
+    evidence = [{"effect": effect, "rule": rule} for effect, rule in sorted(declared)]
+    identity = record_id(package.line, package.key, catalogue_package.package_digest)
+    payload = {
+        "record_type": CANDIDATE_RECORD_TYPE, "record_id": identity, "upstream_key": package.key,
+        "line": package.line, "kind": package.kind, "native_format": package.native_format,
+        "component_form": component_form_record(package.form, package.kind, FORM_DECLARED),
+        "name": package.name, "description": package.description[:1024],
+        "package": catalogue_package.to_dict(), "package_digest": catalogue_package.package_digest,
+        "files": [{**entry.to_dict(), "origin": row.origin, "upstream": row.upstream}
+                  for entry, row in zip(entries, files)],
+        "licence": {"spdx_expression": package.licence_expression, "texts": texts, "attribution": ATTRIBUTION_NAME,
+                    "notices": notices},
+        "provenance": package.provenance, "placements": package.placements, "declared_effects": effects,
+        "effect_evidence": evidence, "credentials": sorted(set(package.credentials)), "tests": package.tests,
+        "findings": sorted(findings, key=lambda row: (row.get("path", ""), row.get("line", 0), row["rule"])),
+        "authoring": AUTHORING, "review_profile": REVIEW_PROFILE, "lifecycle": "candidate",
+        "qualification": "not_independently_reviewed", "generated_on": package.generated_on,
+        "repository": package.repository, "sources": [package.line], "merged": [],
+        "comparison": {"normalized_sha256": bytes_digest(normalized(package.comparison_text or package.name)
+                                                         .encode("utf-8"))},
+        "version": {"previous_record_id": None},
+        "evidence": {"resolved": True, "materialized": True, "available": False, "loaded": False, "used": False,
+                     "verified": False}}
+    read_supply_candidate(payload)
+    bodies = {entry.digest: row.data for entry, row in zip(entries, files)}
+    return payload, bodies

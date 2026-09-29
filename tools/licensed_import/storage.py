@@ -40,6 +40,11 @@ from .records import (
     WITHDRAWN_LIFECYCLE)
 
 NAMESPACE = "library.import"
+#: Candidates the supply lines write (tools/supply_lines): packages Baltor generated from licensed facts, such as
+#: protocol server connections, API operation clients, program install recipes and data tables. They live in the
+#: same store behind the same edges, in a namespace of their own, so an export that reads only imported copies
+#: never meets a package its review profile cannot read.
+SUPPLY_NAMESPACE = "library.supply"
 SUPERSEDED_LIFECYCLE = "superseded"
 _BATCH_RECORDS = 200
 
@@ -114,19 +119,24 @@ class ImportStore:
         return report
 
 
-def candidate_store_record(payload: dict, lifecycle: str = CANDIDATE_LIFECYCLE) -> dict:
+def candidate_store_record(payload: dict, lifecycle: str = CANDIDATE_LIFECYCLE, namespace: str = NAMESPACE) -> dict:
     """The catalogue record of one candidate version; the payload is the candidate record itself."""
+    if namespace not in (NAMESPACE, SUPPLY_NAMESPACE):
+        raise ValueError(f"a candidate is stored in {NAMESPACE} or {SUPPLY_NAMESPACE}")
     repository = payload["provenance"]["repository"]
+    origin = payload["provenance"].get("origin", "github_repository")
     return {"record_id": payload["record_id"], "record_version": record_version({**payload, "lifecycle": lifecycle}),
             "intelligence_layer": KIND_LAYERS[payload["kind"]], "source_collection": "learned",
-            "artifact_kind": "intelligence_record", "lifecycle": lifecycle, "namespace": NAMESPACE,
+            "artifact_kind": "intelligence_record", "lifecycle": lifecycle, "namespace": namespace,
             "attributes": {"family": "harness", "kind": payload["kind"], "title": payload["name"],
                            "upstream_key": payload["upstream_key"], "package_digest": payload["package_digest"],
                            "license_spdx": payload["licence"]["spdx_expression"], "license_state": "pending_review",
-                           "authoring": payload["authoring"], "source_origins": [f"github_repository:{repository}"],
+                           "authoring": payload["authoring"], "source_origins": [f"{origin}:{repository}"],
                            "content_sha256": record_version(payload),
                            "normalized_sha256": payload["comparison"]["normalized_sha256"],
-                           "tags": [payload["kind"], payload["native_format"]]},
+                           "tags": [payload["kind"], payload["native_format"]],
+                           **({"component_form": payload["component_form"]["form"]}
+                              if isinstance(payload.get("component_form"), dict) else {})},
             "payload": {**payload, "lifecycle": lifecycle}}
 
 

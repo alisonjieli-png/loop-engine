@@ -76,9 +76,10 @@ class ImportedWriterTest(unittest.TestCase):
         # The writer tags each approved item with the kinds of step it supports (S-6.206) and its facets
         # (S-6.209): the fixture is an English review skill whose words name no job title, industry, level or
         # place, so it carries reviewing and english and nothing else; each tag names its rules engine and
-        # reaches the bundle line, and the schema declares every facet.
-        self.assertEqual(item["attributes"], {"harness_kind": "skill", "step_functions": ["reviewing"],
-                                              "languages": ["english"]})
+        # reaches the bundle line, and the schema declares every facet. Its component form (component_form/v1)
+        # follows from the harness kind and the file roles: a skill without a script is a skill.
+        self.assertEqual(item["attributes"], {"harness_kind": "skill", "component_form": "skill",
+                                              "step_functions": ["reviewing"], "languages": ["english"]})
         self.assertEqual(item["attribute_engines"],
                          {"step_functions": {"engine_id": "step_function_rules",
                                              "engine_version": writer.TAGGER.engine_version},
@@ -86,7 +87,8 @@ class ImportedWriterTest(unittest.TestCase):
                                         "engine_version": writer.FACET_TAGGER.engine_version}})
         schema = json.loads((reviewed / "attribute-schema.json").read_text())
         declared = [attribute["name"] for attribute in schema["attributes"]]
-        for name in ("step_functions", "job_titles", "industries", "levels", "languages", "geographies"):
+        for name in ("step_functions", "component_form", "job_titles", "industries", "levels", "languages",
+                     "geographies"):
             self.assertIn(name, declared)
         report = json.loads((reviewed / "writer-report.json").read_text())
         self.assertEqual(report["facets"]["languages"], {"english": 1})

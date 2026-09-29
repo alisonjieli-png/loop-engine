@@ -1,0 +1,100 @@
+{
+ "record_type": "licensed_import_sources/v1",
+ "curated_on": "2026-09-28",
+ "curated_by": "consolidation builder e",
+ "note": "Second round of executable code copied byte for byte through the licensed import (tools/import_licensed_harness_files.py --sources this file): MIT utility and algorithm libraries whose modules sit beside the test files that name them. Verbatim copies, so the imported review profile reads them today. Merge the rows into the licensed import's sources.json for scheduled rounds.",
+ "repositories": [
+  {
+   "source_id": "code.toss.es-toolkit",
+   "repository": "toss/es-toolkit",
+   "kinds": [
+    "code_module"
+   ],
+   "include": [
+    "src/*.ts"
+   ],
+   "exclude": [
+    "*.spec.ts",
+    "*.d.ts",
+    "*/index.ts",
+    "*.bench.ts",
+    "*/_internal/*"
+   ],
+   "note": "MIT. One utility function per module (array, object, string, function, math, predicate, promise and the lodash compatibility layer), each with the spec file beside it."
+  },
+  {
+   "source_id": "code.remeda",
+   "repository": "remeda/remeda",
+   "kinds": [
+    "code_module"
+   ],
+   "include": [
+    "packages/remeda/src/*.ts"
+   ],
+   "exclude": [
+    "*.test.ts",
+    "*.test-d.ts",
+    "*.d.ts",
+    "*/index.ts"
+   ],
+   "note": "MIT. One typed data utility per module, with its test file beside it when it has one."
+  },
+  {
+   "source_id": "code.radash",
+   "repository": "sodiray/radash",
+   "kinds": [
+    "code_module"
+   ],
+   "include": [
+    "src/*.ts"
+   ],
+   "exclude": [
+    "*.test.ts",
+    "*/index.ts",
+    "*.d.ts"
+   ],
+   "note": "MIT. Utility modules with their tests."
+  },
+  {
+   "source_id": "code.thealgorithms.ruby",
+   "repository": "TheAlgorithms/Ruby",
+   "kinds": [
+    "code_module"
+   ],
+   "include": [
+    "*.rb"
+   ],
+   "exclude": [
+    ".github/*",
+    "*_test.rb",
+    "*/test_*.rb"
+   ],
+   "note": "MIT. Ruby algorithms, each module with the test file that names it when there is one."
+  }
+ ],
+ "excluded_repositories": [],
+ "owner_seeds": [],
+ "research_seeds": [],
+ "feeds": [],
+ "awesome_lists": [],
+ "code_search": [],
+ "topic_search": {
+  "topics": [],
+  "created_ranges": [],
+  "minimum_stars": 0,
+  "pages": 0,
+  "note": "Not used by this declaration."
+ },
+ "npm_search": {
+  "texts": [],
+  "pages": 0,
+  "note": "Not used by this declaration."
+ },
+ "registry": {
+  "host": "registry.modelcontextprotocol.io",
+  "updated_since": "2026-09-27T00:00:00Z",
+  "page_size": 100,
+  "maximum_entries": 0,
+  "note": "Not used by this declaration; the supply line mcp_registry reads the registry."
+ }
+}

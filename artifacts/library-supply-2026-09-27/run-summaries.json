@@ -1,0 +1,640 @@
+{
+ "date": "2026-09-27",
+ "record_type": "library_supply_run_summaries/v1",
+ "runs": {
+  "data_tables": {
+   "candidates": 46,
+   "effects": {
+    "reads_fs": 46,
+    "spawns_process": 46
+   },
+   "finished_at": "2026-09-27T19:22:49Z",
+   "forms": {
+    "data_table": 46
+   },
+   "licences": {
+    "CC0-1.0 AND MIT": 7,
+    "MIT": 37,
+    "Unlicense AND MIT": 2
+   },
+   "line": "data_tables",
+   "record_type": "library_supply_run/v1",
+   "refused": 0,
+   "refused_by_reason": {},
+   "requests": {
+    "cache_hits": 29,
+    "github_graphql": 1,
+    "github_rest": 80,
+    "https": 46,
+    "network_requests": 127
+   },
+   "runs": 1,
+   "store": {
+    "components": 46,
+    "stored": true,
+    "superseded": 0,
+    "unchanged": 0,
+    "withdrawn": 0,
+    "written": 46
+   },
+   "tables_declared": 46
+  },
+  "mcp_registry": {
+   "candidates": 5592,
+   "effects": {
+    "network": 5592,
+    "reads_secret": 2420,
+    "spawns_process": 5592
+   },
+   "finished_at": "2026-09-27T19:09:21Z",
+   "forms": {
+    "mcp_server": 5592
+   },
+   "licences": {
+    "MIT": 5592
+   },
+   "line": "mcp_registry",
+   "record_type": "library_supply_run/v1",
+   "refused": 31080,
+   "refused_by_reason": {
+    "connection_files_invalid": 4,
+    "duplicate_package": 141,
+    "licence_not_on_allowlist": 232,
+    "licence_signals_disagree": 222,
+    "licence_unknown": 4909,
+    "no_npm_or_pypi_package": 2127,
+    "package_licence_not_on_allowlist": 25,
+    "package_type_not_rendered": 4,
+    "package_version_not_published": 20,
+    "package_version_unknown": 1,
+    "registry_status_not_active": 391,
+    "remote_only_server": 20599,
+    "required_arguments_not_rendered": 83,
+    "upstream_repository_not_on_github": 710,
+    "upstream_repository_unreadable": 1612
+   },
+   "registry_complete": true,
+   "registry_entries_read": 36672,
+   "requests": {
+    "cache_hits": 0,
+    "github_graphql": 407,
+    "github_rest": 9849,
+    "https": 6009,
+    "network_requests": 15898
+   },
+   "runs": 1,
+   "store": {
+    "components": 5592,
+    "stored": true,
+    "superseded": 0,
+    "unchanged": 0,
+    "withdrawn": 0,
+    "written": 5592
+   }
+  },
+  "openapi_operations": {
+   "candidates": 1339,
+   "effects": {
+    "network": 1339,
+    "reads_secret": 1337,
+    "spawns_process": 1339
+   },
+   "finished_at": "2026-09-27T19:31:32Z",
+   "forms": {
+    "api_operation": 1339
+   },
+   "licences": {
+    "MIT": 1050,
+    "MIT AND Apache-2.0": 289
+   },
+   "line": "openapi_operations",
+   "record_type": "library_supply_run/v1",
+   "refused": 52,
+   "refused_by_reason": {
+    "blocked_by_static_check": 1,
+    "duplicate_operation": 5,
+    "operation_body_not_json": 43,
+    "operation_parameters_unsupported": 3
+   },
+   "requests": {
+    "cache_hits": 77,
+    "github_graphql": 0,
+    "github_rest": 0,
+    "https": 0,
+    "network_requests": 0
+   },
+   "runs": 2,
+   "specifications": [
+    {
+     "commit": "83c9782f3e14d5c6e5a89c6eb92f872aa0dad64d",
+     "licence": "MIT",
+     "operations": 112,
+     "packaged": 112,
+     "path": "resend.json",
+     "refused_while_reading": 1,
+     "sha256": "834cc0af1324a7a01e8cbe7d125297a249233ecb0fd344faf1024acff9139949",
+     "source_id": "resend"
+    },
+    {
+     "commit": "bb8eb1ec745a3dfc1e06c40b6e641c9738393df6",
+     "licence": "MIT",
+     "operations": 243,
+     "packaged": 243,
+     "path": "specs/openapi.json",
+     "refused_while_reading": 3,
+     "sha256": "c7fcfce6c671c91491d62763b87cb373ac4aa9b649fba5d0e7fe86aedda9fbf3",
+     "source_id": "discord"
+    },
+    {
+     "commit": "bafb6ade833cc313d354c64644996537f5db5af5",
+     "licence": "MIT",
+     "operations": 342,
+     "packaged": 341,
+     "path": "openapi.json",
+     "refused_while_reading": 10,
+     "sha256": "a88cab8593fa91a4f42eb53a0cb420a5b1ec0c18cc24d29eebfea8ac845bfad0",
+     "source_id": "openai"
+    },
+    {
+     "commit": "933ec4c5d9f4dbdaaa823efa3a083cf177aecbde",
+     "licence": "Apache-2.0",
+     "operations": 289,
+     "packaged": 289,
+     "path": "openapi.json",
+     "refused_while_reading": 8,
+     "sha256": "0f8794edec1caf44761777f791b36388ec997f4220233a1a0166712e0d3b0a06",
+     "source_id": "box"
+    },
+    {
+     "commit": "fb95a935c87b79f7f982ac34bd37adab1f697dbc",
+     "licence": "MIT",
+     "operations": 3,
+     "packaged": 3,
+     "path": "spec/json/tsg_mail_v3.json",
+     "refused_while_reading": 0,
+     "sha256": "4ba24d0feb8a6b347f60528161d1cf0e7591987d2b3a64a6533685dc2b39d19f",
+     "source_id": "sendgrid"
+    },
+    {
+     "commit": "fb95a935c87b79f7f982ac34bd37adab1f697dbc",
+     "licence": "MIT",
+     "operations": 6,
+     "packaged": 6,
+     "path": "spec/json/tsg_api_keys_v3.json",
+     "refused_while_reading": 0,
+     "sha256": "e9800c8d707fc10f52cae750e803d13671e11c0ba7909cf9069a9fbff8ca4733",
+     "source_id": "sendgrid"
+    },
+    {
+     "commit": "fb95a935c87b79f7f982ac34bd37adab1f697dbc",
+     "licence": "MIT",
+     "operations": 30,
+     "packaged": 30,
+     "path": "spec/json/tsg_suppressions_v3.json",
+     "refused_while_reading": 3,
+     "sha256": "3d851d7bfbb9a6d446971ff114cf19e93caec246fed26532000915aae9cdf02f",
+     "source_id": "sendgrid"
+    },
+    {
+     "commit": "fb95a935c87b79f7f982ac34bd37adab1f697dbc",
+     "licence": "MIT",
+     "operations": 10,
+     "packaged": 10,
+     "path": "spec/json/tsg_stats_v3.json",
+     "refused_while_reading": 0,
+     "sha256": "ef57ba306851e5a84ec5bb12d2443bf2568a99b1d5417d7f694f5354708c72e8",
+     "source_id": "sendgrid"
+    },
+    {
+     "commit": "fb95a935c87b79f7f982ac34bd37adab1f697dbc",
+     "licence": "MIT",
+     "operations": 15,
+     "packaged": 15,
+     "path": "spec/json/tsg_mc_contacts_v3.json",
+     "refused_while_reading": 0,
+     "sha256": "ac1addaea901d16911297adc8f393862ad2d4feb413224535121426f1cd68191",
+     "source_id": "sendgrid"
+    },
+    {
+     "commit": "fb95a935c87b79f7f982ac34bd37adab1f697dbc",
+     "licence": "MIT",
+     "operations": 7,
+     "packaged": 5,
+     "path": "spec/json/tsg_mc_lists_v3.json",
+     "refused_while_reading": 0,
+     "sha256": "8dd337bd2ba2e3fdf729e120c892c52df7c4b87d3bd73b488ecea33a2117f790",
+     "source_id": "sendgrid"
+    },
+    {
+     "commit": "fb95a935c87b79f7f982ac34bd37adab1f697dbc",
+     "licence": "MIT",
+     "operations": 14,
+     "packaged": 13,
+     "path": "spec/json/tsg_subusers_v3.json",
+     "refused_while_reading": 0,
+     "sha256": "6178d23a6a8e1c7fcb2ff8bdf5ab8710666c8d4f86af1906239d1622db917695",
+     "source_id": "sendgrid"
+    },
+    {
+     "commit": "fb95a935c87b79f7f982ac34bd37adab1f697dbc",
+     "licence": "MIT",
+     "operations": 5,
+     "packaged": 5,
+     "path": "spec/json/tsg_alerts_v3.json",
+     "refused_while_reading": 0,
+     "sha256": "ac11c3cb30835fd3ee230a8c0c559a271d0184c2d3a76d75def9f4d00a007559",
+     "source_id": "sendgrid"
+    },
+    {
+     "commit": "fb95a935c87b79f7f982ac34bd37adab1f697dbc",
+     "licence": "MIT",
+     "operations": 16,
+     "packaged": 16,
+     "path": "spec/json/tsg_domain_authentication_v3.json",
+     "refused_while_reading": 0,
+     "sha256": "d4a78be111168d88e7fb5f38bab91c55e6024387751d60ffa5d419a48ccd6e60",
+     "source_id": "sendgrid"
+    },
+    {
+     "commit": "fb95a935c87b79f7f982ac34bd37adab1f697dbc",
+     "licence": "MIT",
+     "operations": 10,
+     "packaged": 10,
+     "path": "spec/json/tsg_link_branding_v3.json",
+     "refused_while_reading": 0,
+     "sha256": "465017e01a861dbca25d94183a857fcbbec0e45d83650efbb77eefa0c33acd14",
+     "source_id": "sendgrid"
+    },
+    {
+     "commit": "fb95a935c87b79f7f982ac34bd37adab1f697dbc",
+     "licence": "MIT",
+     "operations": 4,
+     "packaged": 4,
+     "path": "spec/json/tsg_email_validation_v3.json",
+     "refused_while_reading": 0,
+     "sha256": "847505bca7faa39bcd2ba13a7c002e09e46086960001ff1496e2153dc3301760",
+     "source_id": "sendgrid"
+    },
+    {
+     "commit": "fb95a935c87b79f7f982ac34bd37adab1f697dbc",
+     "licence": "MIT",
+     "operations": 1,
+     "packaged": 1,
+     "path": "spec/json/tsg_scopes_v3.json",
+     "refused_while_reading": 0,
+     "sha256": "d23f5b1be19c0dd78ac8d7121aa4096837b60eee51e42209e4d9a19d86ee08a2",
+     "source_id": "sendgrid"
+    },
+    {
+     "commit": "fb95a935c87b79f7f982ac34bd37adab1f697dbc",
+     "licence": "MIT",
+     "operations": 11,
+     "packaged": 10,
+     "path": "spec/json/tsg_mc_singlesends_v3.json",
+     "refused_while_reading": 0,
+     "sha256": "44cbc61b46652780137731b2a37075822ac944991ca13c4715f3867afe80c4a4",
+     "source_id": "sendgrid"
+    },
+    {
+     "commit": "fb95a935c87b79f7f982ac34bd37adab1f697dbc",
+     "licence": "MIT",
+     "operations": 13,
+     "packaged": 13,
+     "path": "spec/json/tsg_mail_settings_v3.json",
+     "refused_while_reading": 0,
+     "sha256": "a45de3ef51114c9bdb94a280b64f51a16eda044a9a17de669b7d941b5717ea5f",
+     "source_id": "sendgrid"
+    },
+    {
+     "commit": "448060d7829cae23166a2e443be48c2f2422280f",
+     "licence": "MIT",
+     "operations": 213,
+     "packaged": 213,
+     "path": "xero_accounting.yaml",
+     "refused_while_reading": 22,
+     "sha256": "0458b4ef9ed72d53fdab89a6c31422b155516115cfa8146ac451f51d778f4582",
+     "source_id": "xero_accounting"
+    }
+   ],
+   "store": {
+    "components": 1339,
+    "stored": true,
+    "superseded": 1262,
+    "unchanged": 0,
+    "withdrawn": 0,
+    "written": 1339
+   }
+  },
+  "openapi_operations_github_and_twilio": {
+   "candidates": 1681,
+   "effects": {
+    "network": 1681,
+    "reads_secret": 1681,
+    "spawns_process": 1681
+   },
+   "finished_at": "2026-09-27T20:13:04Z",
+   "forms": {
+    "api_operation": 1681
+   },
+   "licences": {
+    "MIT": 1681
+   },
+   "line": "openapi_operations",
+   "record_type": "library_supply_run/v1",
+   "refused": 253,
+   "refused_by_reason": {
+    "blocked_by_static_check": 1,
+    "duplicate_operation": 19,
+    "generated_test_failed": 5,
+    "operation_body_not_json": 228
+   },
+   "requests": {
+    "cache_hits": 22,
+    "github_graphql": 1,
+    "github_rest": 17,
+    "https": 13,
+    "network_requests": 31
+   },
+   "sources": [
+    "github",
+    "twilio"
+   ],
+   "specifications": [
+    {
+     "commit": "c6721f32a17a71397ae46be21be90d7f1a173b6e",
+     "licence": "MIT",
+     "operations": 1221,
+     "packaged": 1215,
+     "path": "descriptions/api.github.com/api.github.com.json",
+     "refused_while_reading": 3,
+     "sha256": "c3e138597750d638b718f0da91228416893eea56d497fda391ab10b2e84b08a1",
+     "source_id": "github"
+    },
+    {
+     "commit": "5aa7f31977ce5812f7b7bc1f46a38555ebaa2888",
+     "licence": "MIT",
+     "operations": 135,
+     "packaged": 135,
+     "path": "spec/json/twilio_api_v2010.json",
+     "refused_while_reading": 62,
+     "sha256": "170b3ccd0f891416840083d72f1795b1499b14a18d4873fd2b39f47ef84642d6",
+     "source_id": "twilio"
+    },
+    {
+     "commit": "5aa7f31977ce5812f7b7bc1f46a38555ebaa2888",
+     "licence": "MIT",
+     "operations": 42,
+     "packaged": 40,
+     "path": "spec/json/twilio_messaging_v1.json",
+     "refused_while_reading": 16,
+     "sha256": "611c6fde586347615039a7d8c87a4b10d39c6d8566b7d1a691353ef995aaa473",
+     "source_id": "twilio"
+    },
+    {
+     "commit": "5aa7f31977ce5812f7b7bc1f46a38555ebaa2888",
+     "licence": "MIT",
+     "operations": 36,
+     "packaged": 33,
+     "path": "spec/json/twilio_verify_v2.json",
+     "refused_while_reading": 21,
+     "sha256": "853929e61f260cca1b7d84d90f96396d00ded6915521329daf053fa1e1befff8",
+     "source_id": "twilio"
+    },
+    {
+     "commit": "5aa7f31977ce5812f7b7bc1f46a38555ebaa2888",
+     "licence": "MIT",
+     "operations": 65,
+     "packaged": 62,
+     "path": "spec/json/twilio_conversations_v1.json",
+     "refused_while_reading": 38,
+     "sha256": "6a37056c7727c1c1ce4d892de95963ccbdc479b5d2c44e867c44fe42d8e0355b",
+     "source_id": "twilio"
+    },
+    {
+     "commit": "5aa7f31977ce5812f7b7bc1f46a38555ebaa2888",
+     "licence": "MIT",
+     "operations": 10,
+     "packaged": 9,
+     "path": "spec/json/twilio_lookups_v2.json",
+     "refused_while_reading": 0,
+     "sha256": "94eecebb7c302115f35ce5842c9a82762495943071051f605c8482ab8c735e6b",
+     "source_id": "twilio"
+    },
+    {
+     "commit": "5aa7f31977ce5812f7b7bc1f46a38555ebaa2888",
+     "licence": "MIT",
+     "operations": 13,
+     "packaged": 13,
+     "path": "spec/json/twilio_studio_v2.json",
+     "refused_while_reading": 6,
+     "sha256": "c384dd0ef33198d3b592beaf9c1d095c338063969ab4ce92ddc5c2242c4677a3",
+     "source_id": "twilio"
+    },
+    {
+     "commit": "5aa7f31977ce5812f7b7bc1f46a38555ebaa2888",
+     "licence": "MIT",
+     "operations": 28,
+     "packaged": 25,
+     "path": "spec/json/twilio_serverless_v1.json",
+     "refused_while_reading": 11,
+     "sha256": "74f59534eb423d280a5fa93570b92ff1bb71cbb04441cd2c9036f5a8c248e455",
+     "source_id": "twilio"
+    },
+    {
+     "commit": "5aa7f31977ce5812f7b7bc1f46a38555ebaa2888",
+     "licence": "MIT",
+     "operations": 30,
+     "packaged": 27,
+     "path": "spec/json/twilio_sync_v1.json",
+     "refused_while_reading": 18,
+     "sha256": "0360fe39df8da59ebecefefbeb312aaae2d6e23faf783020486e3a743f499e92",
+     "source_id": "twilio"
+    },
+    {
+     "commit": "5aa7f31977ce5812f7b7bc1f46a38555ebaa2888",
+     "licence": "MIT",
+     "operations": 44,
+     "packaged": 44,
+     "path": "spec/json/twilio_taskrouter_v1.json",
+     "refused_while_reading": 17,
+     "sha256": "f431d2bc66ba14373a452e0e6d3795cb1576cf6c2e15352b5330b22a4d34d0bf",
+     "source_id": "twilio"
+    },
+    {
+     "commit": "5aa7f31977ce5812f7b7bc1f46a38555ebaa2888",
+     "licence": "MIT",
+     "operations": 27,
+     "packaged": 24,
+     "path": "spec/json/twilio_video_v1.json",
+     "refused_while_reading": 12,
+     "sha256": "162f62d432a227cb5aab8da45af7bbfceca5569feff4e26529504583946d1383",
+     "source_id": "twilio"
+    },
+    {
+     "commit": "5aa7f31977ce5812f7b7bc1f46a38555ebaa2888",
+     "licence": "MIT",
+     "operations": 20,
+     "packaged": 20,
+     "path": "spec/json/twilio_voice_v1.json",
+     "refused_while_reading": 12,
+     "sha256": "e218199d8d6d116e23697a6f78dfddc5f7d5d1a21b8b16c3a1b4d0855f162afe",
+     "source_id": "twilio"
+    },
+    {
+     "commit": "5aa7f31977ce5812f7b7bc1f46a38555ebaa2888",
+     "licence": "MIT",
+     "operations": 34,
+     "packaged": 34,
+     "path": "spec/json/twilio_numbers_v2.json",
+     "refused_while_reading": 13,
+     "sha256": "4063aad70da9dccdce60fbc81b5580767eec442b3c6791b3c149d4b9fa66c7b2",
+     "source_id": "twilio"
+    }
+   ],
+   "store": {
+    "components": 3020,
+    "stored": true,
+    "superseded": 0,
+    "unchanged": 0,
+    "withdrawn": 0,
+    "written": 1681
+   }
+  },
+  "program_installs": {
+   "candidates": 189,
+   "effects": {
+    "network": 89,
+    "reads_secret": 32,
+    "spawns_process": 189,
+    "writes_fs": 100
+   },
+   "finished_at": "2026-09-27T19:18:37Z",
+   "forms": {
+    "binary_install": 189
+   },
+   "licences": {
+    "MIT AND BSD-2-Clause": 189
+   },
+   "line": "program_installs",
+   "programs_declared": 200,
+   "record_type": "library_supply_run/v1",
+   "refused": 11,
+   "refused_by_reason": {
+    "formula_deprecated_or_disabled": 2,
+    "formula_licence_not_on_allowlist": 7,
+    "not_a_command_line_program": 2
+   },
+   "requests": {
+    "cache_hits": 0,
+    "github_graphql": 8,
+    "github_rest": 189,
+    "https": 201,
+    "network_requests": 398
+   },
+   "runs": 1,
+   "smoke_tests": {
+    "smoke_ran": 15,
+    "smoke_skipped": 174
+   },
+   "store": {
+    "components": 189,
+    "stored": true,
+    "superseded": 0,
+    "unchanged": 0,
+    "withdrawn": 0,
+    "written": 189
+   }
+  },
+  "verbatim_code_modules": {
+   "finished_at": "2026-09-27T19:42:03Z",
+   "importer": "tools/import_licensed_harness_files.py sync --sources tools/supply_lines/verbatim_code_sources.json",
+   "kept": 2459,
+   "line": "verbatim_code_modules",
+   "merged": 2,
+   "namespace": "library.import",
+   "near_duplicate_engine": [
+    "builtin_minhash_lsh"
+   ],
+   "record_type": "licensed_import_sync_summary/v1",
+   "repositories": {
+    "TheAlgorithms/Go": {
+     "candidates": 272,
+     "commit": "5ba447ec5ff3d1213de65b92e726ee74c5d5cc19",
+     "forms": {
+      "library_module": 272
+     },
+     "licences": {
+      "MIT": 272
+     },
+     "refusals": 0
+    },
+    "TheAlgorithms/Python": {
+     "candidates": 1127,
+     "commit": "7f81fcd68c195ce71534de09d1b69d2b61665902",
+     "forms": {
+      "library_module": 1127
+     },
+     "licences": {
+      "MIT": 1127
+     },
+     "refusals": 0
+    },
+    "TheAlgorithms/Rust": {
+     "candidates": 394,
+     "commit": "2345c668b05ecb6fa074138bdbc5a1cbf2afaec8",
+     "forms": {
+      "library_module": 394
+     },
+     "licences": {
+      "MIT": 394
+     },
+     "refusals": 0
+    },
+    "TheAlgorithms/TypeScript": {
+     "candidates": 105,
+     "commit": "19b4ced86c99815f142d4a46a028f55487b8038a",
+     "forms": {
+      "library_module": 105
+     },
+     "licences": {
+      "MIT": 105
+     },
+     "refusals": 0
+    },
+    "keon/algorithms": {
+     "candidates": 382,
+     "commit": "bd1d152f9ec7331c69be662831610b003b10fc7a",
+     "forms": {
+      "library_module": 382
+     },
+     "licences": {
+      "MIT": 382
+     },
+     "refusals": 0
+    },
+    "trekhleb/javascript-algorithms": {
+     "candidates": 181,
+     "commit": "85293e3e2b88f4d2ce330d956b139cf628aa1e82",
+     "forms": {
+      "library_module": 181
+     },
+     "licences": {
+      "MIT": 181
+     },
+     "refusals": 0
+    }
+   },
+   "written": {
+    "bodies": {
+     "already_present": 0,
+     "written": 5256
+    },
+    "candidates_written": 2459,
+    "ideas_written": 0,
+    "records_written": 2465,
+    "superseded": 0,
+    "withdrawals": 0
+   }
+  }
+ }
+}

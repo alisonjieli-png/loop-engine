@@ -1,0 +1,4918 @@
+{
+ "record_type": "library_supply_data_table_sources/v1",
+ "curated_on": "2026-09-28",
+ "curated_by": "consolidation builder e",
+ "rule": "Reference tables from repositories whose licence is on the owner's allowlist. The generator reads each file at the branch's head commit, proves its bytes by git blob identity, decides the licence from the text at that commit, and copies the file byte for byte. The shape says how the file holds its rows: records (a list of objects), keyed_records (an object of objects, the key a field), mapping (an object of values, key and value fields) or values (a list of values).",
+ "columns": [
+  "table_id",
+  "title",
+  "repository",
+  "branch",
+  "path",
+  "shape",
+  "key_field",
+  "value_field"
+ ],
+ "tables": [
+  [
+   "http_status_codes",
+   "HTTP status codes and their reason phrases",
+   "jshttp/statuses",
+   "master",
+   "codes.json",
+   "mapping",
+   "code",
+   "message"
+  ],
+  [
+   "mime_types",
+   "Media types with their sources, file extensions, compressibility and character sets",
+   "jshttp/mime-db",
+   "master",
+   "db.json",
+   "keyed_records",
+   "media_type",
+   null
+  ],
+  [
+   "country_names_en",
+   "Country and territory names in English by ISO 3166-1 alpha-2 code",
+   "umpirsky/country-list",
+   "master",
+   "data/en/country.json",
+   "mapping",
+   "code",
+   "name"
+  ],
+  [
+   "country_names_fr",
+   "Country and territory names in French by ISO 3166-1 alpha-2 code",
+   "umpirsky/country-list",
+   "master",
+   "data/fr/country.json",
+   "mapping",
+   "code",
+   "name"
+  ],
+  [
+   "country_names_de",
+   "Country and territory names in German by ISO 3166-1 alpha-2 code",
+   "umpirsky/country-list",
+   "master",
+   "data/de/country.json",
+   "mapping",
+   "code",
+   "name"
+  ],
+  [
+   "country_names_es",
+   "Country and territory names in Spanish by ISO 3166-1 alpha-2 code",
+   "umpirsky/country-list",
+   "master",
+   "data/es/country.json",
+   "mapping",
+   "code",
+   "name"
+  ],
+  [
+   "country_names_zh_cn",
+   "Country and territory names in Simplified Chinese by ISO 3166-1 alpha-2 code",
+   "umpirsky/country-list",
+   "master",
+   "data/zh_CN/country.json",
+   "mapping",
+   "code",
+   "name"
+  ],
+  [
+   "currency_names_en",
+   "Currency names in English by ISO 4217 code",
+   "umpirsky/currency-list",
+   "master",
+   "data/en/currency.json",
+   "mapping",
+   "code",
+   "name"
+  ],
+  [
+   "language_names_en",
+   "Language names in English by language code",
+   "umpirsky/language-list",
+   "master",
+   "data/en/language.json",
+   "mapping",
+   "code",
+   "name"
+  ],
+  [
+   "top_level_domains",
+   "Top-level domains",
+   "umpirsky/tld-list",
+   "master",
+   "data/en/tld.json",
+   "mapping",
+   "domain",
+   "name"
+  ],
+  [
+   "locale_names_en",
+   "Locale names in English by locale identifier",
+   "umpirsky/locale-list",
+   "master",
+   "data/en/locales.json",
+   "mapping",
+   "locale",
+   "name"
+  ],
+  [
+   "countries",
+   "Countries with native name, calling codes, continent, capital, currencies and languages",
+   "annexare/Countries",
+   "main",
+   "dist/countries.min.json",
+   "keyed_records",
+   "code",
+   null
+  ],
+  [
+   "currencies",
+   "Currencies with native names, symbols, ISO numeric codes and decimals",
+   "annexare/Countries",
+   "main",
+   "dist/currencies.min.json",
+   "keyed_records",
+   "code",
+   null
+  ],
+  [
+   "languages",
+   "Languages with native names and writing direction",
+   "annexare/Countries",
+   "main",
+   "dist/languages.min.json",
+   "keyed_records",
+   "code",
+   null
+  ],
+  [
+   "continents",
+   "Continent codes and names",
+   "annexare/Countries",
+   "main",
+   "dist/continents.min.json",
+   "mapping",
+   "code",
+   "name"
+  ],
+  [
+   "country_alpha3_to_alpha2",
+   "ISO 3166-1 alpha-3 country codes to alpha-2 codes",
+   "annexare/Countries",
+   "main",
+   "dist/minimal/countries.3to2.min.json",
+   "mapping",
+   "alpha3",
+   "alpha2"
+  ],
+  [
+   "time_zones",
+   "Time zones with abbreviations, UTC offsets, daylight saving and their IANA zone names",
+   "dmfilipenko/timezones.json",
+   "master",
+   "timezones.json",
+   "records",
+   "text",
+   null
+  ],
+  [
+   "iso_639_1_languages",
+   "ISO 639-1 language codes with ISO 639-2 codes, families, names and native names",
+   "haliaeetus/iso-639",
+   "master",
+   "data/iso_639-1.json",
+   "keyed_records",
+   "code",
+   null
+  ],
+  [
+   "iso_639_2_languages",
+   "ISO 639-2 language codes with names",
+   "haliaeetus/iso-639",
+   "master",
+   "data/iso_639-2.json",
+   "keyed_records",
+   "code",
+   null
+  ],
+  [
+   "binary_file_extensions",
+   "File extensions of binary formats",
+   "sindresorhus/binary-extensions",
+   "main",
+   "binary-extensions.json",
+   "values",
+   "extension",
+   null
+  ],
+  [
+   "text_file_extensions",
+   "File extensions of text formats",
+   "sindresorhus/text-extensions",
+   "main",
+   "text-extensions.json",
+   "values",
+   "extension",
+   null
+  ],
+  [
+   "html_tags",
+   "HTML element names",
+   "sindresorhus/html-tags",
+   "main",
+   "html-tags.json",
+   "values",
+   "tag",
+   null
+  ],
+  [
+   "html_void_tags",
+   "HTML void element names",
+   "sindresorhus/html-tags",
+   "main",
+   "html-tags-void.json",
+   "values",
+   "tag",
+   null
+  ],
+  [
+   "node_builtin_modules",
+   "Node.js built-in module names",
+   "sindresorhus/builtin-modules",
+   "main",
+   "builtin-modules.json",
+   "values",
+   "module",
+   null
+  ],
+  [
+   "file_extension_categories",
+   "File extensions with their format categories",
+   "dyne/file-extension-list",
+   "master",
+   "pub/extensions.json",
+   "mapping",
+   "extension",
+   "categories"
+  ],
+  [
+   "file_categories",
+   "File format categories with their extensions",
+   "dyne/file-extension-list",
+   "master",
+   "pub/categories.json",
+   "mapping",
+   "category",
+   "extensions"
+  ],
+  [
+   "css_units",
+   "CSS units with their specification groups and status",
+   "mdn/data",
+   "main",
+   "css/units.json",
+   "keyed_records",
+   "unit",
+   null
+  ],
+  [
+   "css_types",
+   "CSS value types with groups, status and documentation address",
+   "mdn/data",
+   "main",
+   "css/types.json",
+   "keyed_records",
+   "type",
+   null
+  ],
+  [
+   "css_at_rules",
+   "CSS at-rules with syntax, groups, status and documentation address",
+   "mdn/data",
+   "main",
+   "css/at-rules.json",
+   "keyed_records",
+   "at_rule",
+   null
+  ],
+  [
+   "css_selectors",
+   "CSS selectors with syntax, groups, status and documentation address",
+   "mdn/data",
+   "main",
+   "css/selectors.json",
+   "keyed_records",
+   "selector",
+   null
+  ],
+  [
+   "css_functions",
+   "CSS functions with syntax, groups, status and documentation address",
+   "mdn/data",
+   "main",
+   "css/functions.json",
+   "keyed_records",
+   "function",
+   null
+  ],
+  [
+   "css_syntaxes",
+   "CSS value definition syntaxes by name",
+   "mdn/data",
+   "main",
+   "css/syntaxes.json",
+   "keyed_records",
+   "name",
+   null
+  ],
+  [
+   "web_api_inheritance",
+   "Web API interfaces with the interface each inherits from and the mixins it implements",
+   "mdn/data",
+   "main",
+   "api/inheritance.json",
+   "keyed_records",
+   "interface",
+   null
+  ],
+  [
+   "country_calling_codes",
+   "Country calling codes",
+   "samayo/country-json",
+   "master",
+   "src/country-by-calling-code.json",
+   "records",
+   "country",
+   null
+  ],
+  [
+   "country_capitals",
+   "Country capital cities",
+   "samayo/country-json",
+   "master",
+   "src/country-by-capital-city.json",
+   "records",
+   "country",
+   null
+  ],
+  [
+   "country_continents",
+   "Countries by continent",
+   "samayo/country-json",
+   "master",
+   "src/country-by-continent.json",
+   "records",
+   "country",
+   null
+  ],
+  [
+   "country_currency_codes",
+   "Country currency codes",
+   "samayo/country-json",
+   "master",
+   "src/country-by-currency-code.json",
+   "mapping",
+   "country",
+   "currency_code"
+  ],
+  [
+   "country_domain_tlds",
+   "Country code top-level domains",
+   "samayo/country-json",
+   "master",
+   "src/country-by-domain-tld.json",
+   "records",
+   "country",
+   null
+  ],
+  [
+   "country_driving_sides",
+   "The side of the road each country drives on",
+   "samayo/country-json",
+   "master",
+   "src/country-by-driving-side.json",
+   "records",
+   "country",
+   null
+  ],
+  [
+   "country_bounding_boxes",
+   "Country bounding boxes (north, south, east and west coordinates)",
+   "samayo/country-json",
+   "master",
+   "src/country-by-geo-coordinates.json",
+   "records",
+   "country",
+   null
+  ],
+  [
+   "country_iso_numeric_codes",
+   "ISO 3166-1 numeric country codes",
+   "samayo/country-json",
+   "master",
+   "src/country-by-iso-numeric.json",
+   "records",
+   "country",
+   null
+  ],
+  [
+   "country_landlocked",
+   "Whether each country is landlocked",
+   "samayo/country-json",
+   "master",
+   "src/country-by-landlocked.json",
+   "records",
+   "country",
+   null
+  ],
+  [
+   "country_languages",
+   "Languages spoken in each country",
+   "samayo/country-json",
+   "master",
+   "src/country-by-languages.json",
+   "records",
+   "country",
+   null
+  ],
+  [
+   "country_regions",
+   "The world region of each country",
+   "samayo/country-json",
+   "master",
+   "src/country-by-region-in-world.json",
+   "records",
+   "country",
+   null
+  ],
+  [
+   "country_surface_areas",
+   "Country surface areas",
+   "samayo/country-json",
+   "master",
+   "src/country-by-surface-area.json",
+   "records",
+   "country",
+   null
+  ],
+  [
+   "country_barcode_prefixes",
+   "GS1 barcode prefixes by country",
+   "samayo/country-json",
+   "master",
+   "src/country-by-barcode-prefix.json",
+   "records",
+   "country",
+   null
+  ],
+  [
+   "fivethirtyeight_ahca_polls_ahca_polls",
+   "FiveThirtyEight data, ahca polls: ahca_polls.csv",
+   "fivethirtyeight/data",
+   "master",
+   "ahca-polls/ahca_polls.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_airline_safety_airline_safety",
+   "FiveThirtyEight data, airline safety: airline-safety.csv",
+   "fivethirtyeight/data",
+   "master",
+   "airline-safety/airline-safety.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_alcohol_consumption_drinks",
+   "FiveThirtyEight data, alcohol consumption: drinks.csv",
+   "fivethirtyeight/data",
+   "master",
+   "alcohol-consumption/drinks.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_antiquities_act_actions_under_antiquities_act",
+   "FiveThirtyEight data, antiquities act: actions_under_antiquities_act.csv",
+   "fivethirtyeight/data",
+   "master",
+   "antiquities-act/actions_under_antiquities_act.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_august_senate_polls_august_senate_polls",
+   "FiveThirtyEight data, august senate polls: august_senate_polls.csv",
+   "fivethirtyeight/data",
+   "master",
+   "august-senate-polls/august_senate_polls.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_avengers_avengers",
+   "FiveThirtyEight data, avengers: avengers.csv",
+   "fivethirtyeight/data",
+   "master",
+   "avengers/avengers.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_bachelorette_bachelorette",
+   "FiveThirtyEight data, bachelorette: bachelorette.csv",
+   "fivethirtyeight/data",
+   "master",
+   "bachelorette/bachelorette.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_bad_drivers_bad_drivers",
+   "FiveThirtyEight data, bad drivers: bad-drivers.csv",
+   "fivethirtyeight/data",
+   "master",
+   "bad-drivers/bad-drivers.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_bechdel_movies",
+   "FiveThirtyEight data, bechdel: movies.csv",
+   "fivethirtyeight/data",
+   "master",
+   "bechdel/movies.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_biopics_biopics",
+   "FiveThirtyEight data, biopics: biopics.csv",
+   "fivethirtyeight/data",
+   "master",
+   "biopics/biopics.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_births_us_births_1994_2003_cdc_nchs",
+   "FiveThirtyEight data, births: US_births_1994-2003_CDC_NCHS.csv",
+   "fivethirtyeight/data",
+   "master",
+   "births/US_births_1994-2003_CDC_NCHS.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_births_us_births_2000_2014_ssa",
+   "FiveThirtyEight data, births: US_births_2000-2014_SSA.csv",
+   "fivethirtyeight/data",
+   "master",
+   "births/US_births_2000-2014_SSA.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_bob_ross_elements_by_episode",
+   "FiveThirtyEight data, bob ross: elements-by-episode.csv",
+   "fivethirtyeight/data",
+   "master",
+   "bob-ross/elements-by-episode.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_cabinet_turnover_cabinet_turnover",
+   "FiveThirtyEight data, cabinet turnover: cabinet-turnover.csv",
+   "fivethirtyeight/data",
+   "master",
+   "cabinet-turnover/cabinet-turnover.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_candy_power_ranking_candy_data",
+   "FiveThirtyEight data, candy power ranking: candy-data.csv",
+   "fivethirtyeight/data",
+   "master",
+   "candy-power-ranking/candy-data.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_chess_transfers_transfers",
+   "FiveThirtyEight data, chess transfers: transfers.csv",
+   "fivethirtyeight/data",
+   "master",
+   "chess-transfers/transfers.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_classic_rock_classic_rock_song_list",
+   "FiveThirtyEight data, classic rock: classic-rock-song-list.csv",
+   "fivethirtyeight/data",
+   "master",
+   "classic-rock/classic-rock-song-list.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_college_majors_all_ages",
+   "FiveThirtyEight data, college majors: all-ages.csv",
+   "fivethirtyeight/data",
+   "master",
+   "college-majors/all-ages.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_college_majors_grad_students",
+   "FiveThirtyEight data, college majors: grad-students.csv",
+   "fivethirtyeight/data",
+   "master",
+   "college-majors/grad-students.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_college_majors_majors_list",
+   "FiveThirtyEight data, college majors: majors-list.csv",
+   "fivethirtyeight/data",
+   "master",
+   "college-majors/majors-list.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_college_majors_recent_grads",
+   "FiveThirtyEight data, college majors: recent-grads.csv",
+   "fivethirtyeight/data",
+   "master",
+   "college-majors/recent-grads.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_college_majors_women_stem",
+   "FiveThirtyEight data, college majors: women-stem.csv",
+   "fivethirtyeight/data",
+   "master",
+   "college-majors/women-stem.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_congress_resignations_congressional_resignati",
+   "FiveThirtyEight data, congress resignations: congressional_resignations.csv",
+   "fivethirtyeight/data",
+   "master",
+   "congress-resignations/congressional_resignations.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_cousin_marriage_cousin_marriage_data",
+   "FiveThirtyEight data, cousin marriage: cousin-marriage-data.csv",
+   "fivethirtyeight/data",
+   "master",
+   "cousin-marriage/cousin-marriage-data.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_covid_geography_mmsa_icu_beds",
+   "FiveThirtyEight data, covid geography: mmsa-icu-beds.csv",
+   "fivethirtyeight/data",
+   "master",
+   "covid-geography/mmsa-icu-beds.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_daily_show_guests_daily_show_guests",
+   "FiveThirtyEight data, daily show guests: daily_show_guests.csv",
+   "fivethirtyeight/data",
+   "master",
+   "daily-show-guests/daily_show_guests.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_democratic_bench_democratic_bench",
+   "FiveThirtyEight data, democratic bench: democratic-bench.csv",
+   "fivethirtyeight/data",
+   "master",
+   "democratic-bench/democratic-bench.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_district_urbanization_index_2022_urbanization",
+   "FiveThirtyEight data, district urbanization index 2022: urbanization-index-2022.csv",
+   "fivethirtyeight/data",
+   "master",
+   "district-urbanization-index-2022/urbanization-index-2022.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_drug_use_by_age_drug_use_by_age",
+   "FiveThirtyEight data, drug use by age: drug-use-by-age.csv",
+   "fivethirtyeight/data",
+   "master",
+   "drug-use-by-age/drug-use-by-age.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_early_senate_polls_early_senate_polls",
+   "FiveThirtyEight data, early senate polls: early-senate-polls.csv",
+   "fivethirtyeight/data",
+   "master",
+   "early-senate-polls/early-senate-polls.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_election_deniers_fivethirtyeight_election_den",
+   "FiveThirtyEight data, election deniers: fivethirtyeight_election_deniers.csv",
+   "fivethirtyeight/data",
+   "master",
+   "election-deniers/fivethirtyeight_election_deniers.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_elo_blatter_elo_blatter",
+   "FiveThirtyEight data, elo blatter: elo_blatter.csv",
+   "fivethirtyeight/data",
+   "master",
+   "elo-blatter/elo_blatter.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_endorsements_june_30_endorsements_june_30",
+   "FiveThirtyEight data, endorsements june 30: endorsements-june-30.csv",
+   "fivethirtyeight/data",
+   "master",
+   "endorsements-june-30/endorsements-june-30.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_fandango_fandango_score_comparison",
+   "FiveThirtyEight data, fandango: fandango_score_comparison.csv",
+   "fivethirtyeight/data",
+   "master",
+   "fandango/fandango_score_comparison.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_fandango_fandango_scrape",
+   "FiveThirtyEight data, fandango: fandango_scrape.csv",
+   "fivethirtyeight/data",
+   "master",
+   "fandango/fandango_scrape.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_fifa_fifa_countries_audience",
+   "FiveThirtyEight data, fifa: fifa_countries_audience.csv",
+   "fivethirtyeight/data",
+   "master",
+   "fifa/fifa_countries_audience.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_fight_songs_fight_songs",
+   "FiveThirtyEight data, fight songs: fight-songs.csv",
+   "fivethirtyeight/data",
+   "master",
+   "fight-songs/fight-songs.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_forecast_methodology_historical_senate_predic",
+   "FiveThirtyEight data, forecast methodology: historical-senate-predictions.csv",
+   "fivethirtyeight/data",
+   "master",
+   "forecast-methodology/historical-senate-predictions.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_forecast_review_forecast_results_2018",
+   "FiveThirtyEight data, forecast review: forecast_results_2018.csv",
+   "fivethirtyeight/data",
+   "master",
+   "forecast-review/forecast_results_2018.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_foul_balls_foul_balls",
+   "FiveThirtyEight data, foul balls: foul-balls.csv",
+   "fivethirtyeight/data",
+   "master",
+   "foul-balls/foul-balls.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_gop_candidate_visits_2024_candidate_visits",
+   "FiveThirtyEight data, gop candidate visits 2024: candidate_visits.csv",
+   "fivethirtyeight/data",
+   "master",
+   "gop-candidate-visits-2024/candidate_visits.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_gop_candidate_visits_2024_candidate_visits_20",
+   "FiveThirtyEight data, gop candidate visits 2024: candidate_visits_2024-01-11.csv",
+   "fivethirtyeight/data",
+   "master",
+   "gop-candidate-visits-2024/candidate_visits_2024-01-11.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_gop_delegate_benchmarks_2024_delegate_targets",
+   "FiveThirtyEight data, gop delegate benchmarks 2024: delegate_targets.csv",
+   "fivethirtyeight/data",
+   "master",
+   "gop-delegate-benchmarks-2024/delegate_targets.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_hate_crimes_hate_crimes",
+   "FiveThirtyEight data, hate crimes: hate_crimes.csv",
+   "fivethirtyeight/data",
+   "master",
+   "hate-crimes/hate_crimes.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_hip_hop_candidate_lyrics_genius_hip_hop_lyric",
+   "FiveThirtyEight data, hip hop candidate lyrics: genius_hip_hop_lyrics.csv",
+   "fivethirtyeight/data",
+   "master",
+   "hip-hop-candidate-lyrics/genius_hip_hop_lyrics.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_historical_ncaa_forecasts_historical_538_ncaa",
+   "FiveThirtyEight data, historical ncaa forecasts: historical-538-ncaa-tournament-model-results.csv",
+   "fivethirtyeight/data",
+   "master",
+   "historical-ncaa-forecasts/historical-538-ncaa-tournament-model-results.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_impeachment_polls_impeachment_polls",
+   "FiveThirtyEight data, impeachment polls: impeachment_polls.csv",
+   "fivethirtyeight/data",
+   "master",
+   "impeachment-polls/impeachment_polls.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_infrastructure_jobs_payroll_states",
+   "FiveThirtyEight data, infrastructure jobs: payroll-states.csv",
+   "fivethirtyeight/data",
+   "master",
+   "infrastructure-jobs/payroll-states.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_librarians_librarians_by_msa",
+   "FiveThirtyEight data, librarians: librarians-by-msa.csv",
+   "fivethirtyeight/data",
+   "master",
+   "librarians/librarians-by-msa.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_love_actually_love_actually_adjacencies",
+   "FiveThirtyEight data, love actually: love_actually_adjacencies.csv",
+   "fivethirtyeight/data",
+   "master",
+   "love-actually/love_actually_adjacencies.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_love_actually_love_actually_appearances",
+   "FiveThirtyEight data, love actually: love_actually_appearances.csv",
+   "fivethirtyeight/data",
+   "master",
+   "love-actually/love_actually_appearances.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_mad_men_performer_scores",
+   "FiveThirtyEight data, mad men: performer-scores.csv",
+   "fivethirtyeight/data",
+   "master",
+   "mad-men/performer-scores.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_mad_men_show_data",
+   "FiveThirtyEight data, mad men: show-data.csv",
+   "fivethirtyeight/data",
+   "master",
+   "mad-men/show-data.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_male_flight_attendants_male_flight_attendants",
+   "FiveThirtyEight data, male flight attendants: male-flight-attendants.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "male-flight-attendants/male-flight-attendants.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_00_no",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-00-no-moore.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-00-no-moore.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_00",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-00.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-00.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_01",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-01.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-01.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_02",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-02.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-02.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_03",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-03.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-03.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_04",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-04.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-04.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_05",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-05.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-05.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_06",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-06.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-06.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_07",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-07.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-07.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_08",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-08.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-08.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_09",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-09.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-09.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_10",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-10.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-10.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_11",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-11.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-11.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_12",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-12.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-12.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_13",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-13.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-13.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_14",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-14.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-14.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_15",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-15.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-15.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_16",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-16.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-16.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_17",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-17.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-17.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_18",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-18.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-18.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_19",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-19.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-19.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_20",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-20.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-20.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_21",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-21.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-21.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_22",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-22.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-22.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_23",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-23.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-23.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_24",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-24.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-24.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_25",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-25.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-25.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_26",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-26.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-26.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_27",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-27.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-27.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_28",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-28.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-28.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_29",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-29.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-29.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_30",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-30.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-30.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_31",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-31.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-31.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_32",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-32.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-32.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_33",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-33.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-33.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_34",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-34.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-34.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_35",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-35.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-35.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_36",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-36.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-36.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_37",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-37.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-37.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_38",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-38.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-38.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_39",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-39.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-39.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_40",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-40.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-40.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_41",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-41.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-41.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_42",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-42.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-42.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_43",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-43.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-43.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_44",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-44.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-44.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_45",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-45.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-45.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_46",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-46.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-46.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_47",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-47.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-47.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_48",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-48.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-48.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_49",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-49.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-49.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_50",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-50.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-50.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_51",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-51.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-51.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_52",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-52.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-52.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_53",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-53.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-53.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_54",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-54.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-54.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_55",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-55.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-55.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_56",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-56.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-56.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_57",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-57.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-57.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_58",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-58.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-58.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_59",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-59.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-59.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_60",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-60.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-60.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_61",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-61.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-61.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_62",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-62.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-62.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_2015_bracket_63",
+   "FiveThirtyEight data, march madness predictions 2015: bracket-63.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions-2015/mens/bracket-63.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_00",
+   "FiveThirtyEight data, march madness predictions: bracket-00.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-00.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_01",
+   "FiveThirtyEight data, march madness predictions: bracket-01.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-01.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_02",
+   "FiveThirtyEight data, march madness predictions: bracket-02.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-02.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_03",
+   "FiveThirtyEight data, march madness predictions: bracket-03.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-03.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_04",
+   "FiveThirtyEight data, march madness predictions: bracket-04.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-04.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_05",
+   "FiveThirtyEight data, march madness predictions: bracket-05.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-05.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_06",
+   "FiveThirtyEight data, march madness predictions: bracket-06.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-06.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_07",
+   "FiveThirtyEight data, march madness predictions: bracket-07.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-07.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_08",
+   "FiveThirtyEight data, march madness predictions: bracket-08.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-08.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_09",
+   "FiveThirtyEight data, march madness predictions: bracket-09.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-09.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_10",
+   "FiveThirtyEight data, march madness predictions: bracket-10.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-10.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_11",
+   "FiveThirtyEight data, march madness predictions: bracket-11.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-11.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_12",
+   "FiveThirtyEight data, march madness predictions: bracket-12.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-12.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_13",
+   "FiveThirtyEight data, march madness predictions: bracket-13.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-13.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_14",
+   "FiveThirtyEight data, march madness predictions: bracket-14.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-14.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_15",
+   "FiveThirtyEight data, march madness predictions: bracket-15.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-15.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_16",
+   "FiveThirtyEight data, march madness predictions: bracket-16.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-16.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_17",
+   "FiveThirtyEight data, march madness predictions: bracket-17.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-17.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_18",
+   "FiveThirtyEight data, march madness predictions: bracket-18.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-18.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_19",
+   "FiveThirtyEight data, march madness predictions: bracket-19.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-19.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_20",
+   "FiveThirtyEight data, march madness predictions: bracket-20.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-20.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_21",
+   "FiveThirtyEight data, march madness predictions: bracket-21.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-21.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_22",
+   "FiveThirtyEight data, march madness predictions: bracket-22.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-22.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_23",
+   "FiveThirtyEight data, march madness predictions: bracket-23.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-23.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_24",
+   "FiveThirtyEight data, march madness predictions: bracket-24.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-24.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_25",
+   "FiveThirtyEight data, march madness predictions: bracket-25.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-25.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_26",
+   "FiveThirtyEight data, march madness predictions: bracket-26.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-26.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_27",
+   "FiveThirtyEight data, march madness predictions: bracket-27.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-27.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_28",
+   "FiveThirtyEight data, march madness predictions: bracket-28.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-28.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_29",
+   "FiveThirtyEight data, march madness predictions: bracket-29.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-29.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_30",
+   "FiveThirtyEight data, march madness predictions: bracket-30.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-30.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_31",
+   "FiveThirtyEight data, march madness predictions: bracket-31.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-31.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_32",
+   "FiveThirtyEight data, march madness predictions: bracket-32.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-32.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_33",
+   "FiveThirtyEight data, march madness predictions: bracket-33.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-33.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_34",
+   "FiveThirtyEight data, march madness predictions: bracket-34.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-34.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_35",
+   "FiveThirtyEight data, march madness predictions: bracket-35.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-35.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_36",
+   "FiveThirtyEight data, march madness predictions: bracket-36.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-36.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_37",
+   "FiveThirtyEight data, march madness predictions: bracket-37.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-37.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_38",
+   "FiveThirtyEight data, march madness predictions: bracket-38.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-38.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_39",
+   "FiveThirtyEight data, march madness predictions: bracket-39.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-39.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_40",
+   "FiveThirtyEight data, march madness predictions: bracket-40.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-40.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_41",
+   "FiveThirtyEight data, march madness predictions: bracket-41.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-41.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_42",
+   "FiveThirtyEight data, march madness predictions: bracket-42.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-42.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_43",
+   "FiveThirtyEight data, march madness predictions: bracket-43.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-43.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_44",
+   "FiveThirtyEight data, march madness predictions: bracket-44.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-44.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_45",
+   "FiveThirtyEight data, march madness predictions: bracket-45.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-45.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_46",
+   "FiveThirtyEight data, march madness predictions: bracket-46.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-46.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_47",
+   "FiveThirtyEight data, march madness predictions: bracket-47.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-47.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_48",
+   "FiveThirtyEight data, march madness predictions: bracket-48.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-48.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_49",
+   "FiveThirtyEight data, march madness predictions: bracket-49.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-49.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_50",
+   "FiveThirtyEight data, march madness predictions: bracket-50.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-50.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_51",
+   "FiveThirtyEight data, march madness predictions: bracket-51.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-51.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_52",
+   "FiveThirtyEight data, march madness predictions: bracket-52.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-52.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_53",
+   "FiveThirtyEight data, march madness predictions: bracket-53.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-53.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_54",
+   "FiveThirtyEight data, march madness predictions: bracket-54.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-54.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_55",
+   "FiveThirtyEight data, march madness predictions: bracket-55.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-55.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_56",
+   "FiveThirtyEight data, march madness predictions: bracket-56.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-56.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_57",
+   "FiveThirtyEight data, march madness predictions: bracket-57.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-57.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_58",
+   "FiveThirtyEight data, march madness predictions: bracket-58.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-58.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_59",
+   "FiveThirtyEight data, march madness predictions: bracket-59.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-59.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_60",
+   "FiveThirtyEight data, march madness predictions: bracket-60.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-60.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_march_madness_predictions_bracket_61",
+   "FiveThirtyEight data, march madness predictions: bracket-61.csv",
+   "fivethirtyeight/data",
+   "master",
+   "march-madness-predictions/bracket-61.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_marriage_both_sexes",
+   "FiveThirtyEight data, marriage: both_sexes.csv",
+   "fivethirtyeight/data",
+   "master",
+   "marriage/both_sexes.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_marriage_divorce",
+   "FiveThirtyEight data, marriage: divorce.csv",
+   "fivethirtyeight/data",
+   "master",
+   "marriage/divorce.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_marriage_men",
+   "FiveThirtyEight data, marriage: men.csv",
+   "fivethirtyeight/data",
+   "master",
+   "marriage/men.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_marriage_women",
+   "FiveThirtyEight data, marriage: women.csv",
+   "fivethirtyeight/data",
+   "master",
+   "marriage/women.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_masculinity_survey_masculinity_survey",
+   "FiveThirtyEight data, masculinity survey: masculinity-survey.csv",
+   "fivethirtyeight/data",
+   "master",
+   "masculinity-survey/masculinity-survey.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_media_mentions_2020_cable_weekly",
+   "FiveThirtyEight data, media mentions 2020: cable_weekly.csv",
+   "fivethirtyeight/data",
+   "master",
+   "media-mentions-2020/cable_weekly.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_media_mentions_2020_online_weekly",
+   "FiveThirtyEight data, media mentions 2020: online_weekly.csv",
+   "fivethirtyeight/data",
+   "master",
+   "media-mentions-2020/online_weekly.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_mlb_allstar_teams_allstar_team_talent",
+   "FiveThirtyEight data, mlb allstar teams: allstar_team_talent.csv",
+   "fivethirtyeight/data",
+   "master",
+   "mlb-allstar-teams/allstar_team_talent.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_most_common_name_adjusted_name_combinations_l",
+   "FiveThirtyEight data, most common name: adjusted-name-combinations-list.csv",
+   "fivethirtyeight/data",
+   "master",
+   "most-common-name/adjusted-name-combinations-list.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_most_common_name_adjusted_name_combinations_m",
+   "FiveThirtyEight data, most common name: adjusted-name-combinations-matrix.csv",
+   "fivethirtyeight/data",
+   "master",
+   "most-common-name/adjusted-name-combinations-matrix.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_most_common_name_adjustments",
+   "FiveThirtyEight data, most common name: adjustments.csv",
+   "fivethirtyeight/data",
+   "master",
+   "most-common-name/adjustments.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_most_common_name_aging_curve",
+   "FiveThirtyEight data, most common name: aging-curve.csv",
+   "fivethirtyeight/data",
+   "master",
+   "most-common-name/aging-curve.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_most_common_name_independent_name_combination",
+   "FiveThirtyEight data, most common name: independent-name-combinations-by-pop.csv",
+   "fivethirtyeight/data",
+   "master",
+   "most-common-name/independent-name-combinations-by-pop.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_most_common_name_new_top_firstnames",
+   "FiveThirtyEight data, most common name: new-top-firstNames.csv",
+   "fivethirtyeight/data",
+   "master",
+   "most-common-name/new-top-firstNames.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_most_common_name_new_top_surnames",
+   "FiveThirtyEight data, most common name: new-top-surnames.csv",
+   "fivethirtyeight/data",
+   "master",
+   "most-common-name/new-top-surnames.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_most_common_name_state_pop",
+   "FiveThirtyEight data, most common name: state-pop.csv",
+   "fivethirtyeight/data",
+   "master",
+   "most-common-name/state-pop.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_mueller_polls_mueller_approval_polls",
+   "FiveThirtyEight data, mueller polls: mueller-approval-polls.csv",
+   "fivethirtyeight/data",
+   "master",
+   "mueller-polls/mueller-approval-polls.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_murder_2016_murder_2015_final",
+   "FiveThirtyEight data, murder_2016: murder_2015_final.csv",
+   "fivethirtyeight/data",
+   "master",
+   "murder_2016/murder_2015_final.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_murder_2016_murder_2016_prelim",
+   "FiveThirtyEight data, murder_2016: murder_2016_prelim.csv",
+   "fivethirtyeight/data",
+   "master",
+   "murder_2016/murder_2016_prelim.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_nba_draft_2015_historical_projections",
+   "FiveThirtyEight data, nba draft 2015: historical_projections.csv",
+   "fivethirtyeight/data",
+   "master",
+   "nba-draft-2015/historical_projections.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_nba_draymond_draymond",
+   "FiveThirtyEight data, nba draymond: draymond.csv",
+   "fivethirtyeight/data",
+   "master",
+   "nba-draymond/draymond.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_nba_tattoos_nba_tattoos_data",
+   "FiveThirtyEight data, nba tattoos: nba-tattoos-data.csv",
+   "fivethirtyeight/data",
+   "master",
+   "nba-tattoos/nba-tattoos-data.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_nba_winprobs_nba",
+   "FiveThirtyEight data, nba winprobs: nba.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "nba-winprobs/nba.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_ncaa_womens_basketball_tournament_ncaa_womens",
+   "FiveThirtyEight data, ncaa womens basketball tournament: ncaa-womens-basketball-tournament-history.csv",
+   "fivethirtyeight/data",
+   "master",
+   "ncaa-womens-basketball-tournament/ncaa-womens-basketball-tournament-history.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_next_bechdel_nextbechdel_alltests",
+   "FiveThirtyEight data, next bechdel: nextBechdel_allTests.csv",
+   "fivethirtyeight/data",
+   "master",
+   "next-bechdel/nextBechdel_allTests.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_next_bechdel_nextbechdel_castgender",
+   "FiveThirtyEight data, next bechdel: nextBechdel_castGender.csv",
+   "fivethirtyeight/data",
+   "master",
+   "next-bechdel/nextBechdel_castGender.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_nfl_fandom_nfl_fandom_data_google_trends",
+   "FiveThirtyEight data, nfl fandom: NFL_fandom_data-google_trends.csv",
+   "fivethirtyeight/data",
+   "master",
+   "nfl-fandom/NFL_fandom_data-google_trends.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_nfl_fandom_nfl_fandom_data_surveymonkey",
+   "FiveThirtyEight data, nfl fandom: NFL_fandom_data-surveymonkey.csv",
+   "fivethirtyeight/data",
+   "master",
+   "nfl-fandom/NFL_fandom_data-surveymonkey.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_nfl_favorite_team_team_picking_categories",
+   "FiveThirtyEight data, nfl favorite team: team-picking-categories.csv",
+   "fivethirtyeight/data",
+   "master",
+   "nfl-favorite-team/team-picking-categories.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_nfl_suspensions_nfl_suspensions_data",
+   "FiveThirtyEight data, nfl suspensions: nfl-suspensions-data.csv",
+   "fivethirtyeight/data",
+   "master",
+   "nfl-suspensions/nfl-suspensions-data.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_nfl_ticket_prices_2014_average_ticket_price",
+   "FiveThirtyEight data, nfl ticket prices: 2014-average-ticket-price.csv",
+   "fivethirtyeight/data",
+   "master",
+   "nfl-ticket-prices/2014-average-ticket-price.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_nfl_ticket_prices_jets_buyer",
+   "FiveThirtyEight data, nfl ticket prices: jets-buyer.csv",
+   "fivethirtyeight/data",
+   "master",
+   "nfl-ticket-prices/jets-buyer.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_nfl_ticket_prices_national_average",
+   "FiveThirtyEight data, nfl ticket prices: national-average.csv",
+   "fivethirtyeight/data",
+   "master",
+   "nfl-ticket-prices/national-average.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_nfl_wide_receivers_try_per_game_aging_curve",
+   "FiveThirtyEight data, nfl wide receivers: try-per-game-aging-curve.csv",
+   "fivethirtyeight/data",
+   "master",
+   "nfl-wide-receivers/try-per-game-aging-curve.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_nutrition_studies_raw_anonymized_data",
+   "FiveThirtyEight data, nutrition studies: raw_anonymized_data.csv",
+   "fivethirtyeight/data",
+   "master",
+   "nutrition-studies/raw_anonymized_data.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_off_year_turnout_2023_kentucky_turnout_2023",
+   "FiveThirtyEight data, off year turnout 2023: Kentucky_turnout_2023.csv",
+   "fivethirtyeight/data",
+   "master",
+   "off-year-turnout-2023/Kentucky_turnout_2023.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_off_year_turnout_2023_new_jersey_turnout_2023",
+   "FiveThirtyEight data, off year turnout 2023: New_Jersey_turnout_2023.csv",
+   "fivethirtyeight/data",
+   "master",
+   "off-year-turnout-2023/New_Jersey_turnout_2023.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_off_year_turnout_2023_ohio_turnout_2023",
+   "FiveThirtyEight data, off year turnout 2023: Ohio_turnout_2023.csv",
+   "fivethirtyeight/data",
+   "master",
+   "off-year-turnout-2023/Ohio_turnout_2023.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_off_year_turnout_2023_pennsylvania_turnout_20",
+   "FiveThirtyEight data, off year turnout 2023: Pennsylvania_turnout_2023.csv",
+   "fivethirtyeight/data",
+   "master",
+   "off-year-turnout-2023/Pennsylvania_turnout_2023.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_off_year_turnout_2023_virginia_turnout_2023",
+   "FiveThirtyEight data, off year turnout 2023: Virginia_turnout_2023.csv",
+   "fivethirtyeight/data",
+   "master",
+   "off-year-turnout-2023/Virginia_turnout_2023.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_partisan_lean_fivethirtyeight_partisan_lean_d",
+   "FiveThirtyEight data, partisan lean: fivethirtyeight_partisan_lean_DISTRICTS.csv",
+   "fivethirtyeight/data",
+   "master",
+   "partisan-lean/2018/fivethirtyeight_partisan_lean_DISTRICTS.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_partisan_lean_fivethirtyeight_partisan_lean_s",
+   "FiveThirtyEight data, partisan lean: fivethirtyeight_partisan_lean_STATES.csv",
+   "fivethirtyeight/data",
+   "master",
+   "partisan-lean/2018/fivethirtyeight_partisan_lean_STATES.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_pew_religions_current",
+   "FiveThirtyEight data, pew religions: current.csv",
+   "fivethirtyeight/data",
+   "master",
+   "pew-religions/current.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_police_killings_police_killings",
+   "FiveThirtyEight data, police killings: police_killings.csv",
+   "fivethirtyeight/data",
+   "master",
+   "police-killings/police_killings.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_police_locals_police_locals",
+   "FiveThirtyEight data, police locals: police-locals.csv",
+   "fivethirtyeight/data",
+   "master",
+   "police-locals/police-locals.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_political_elasticity_scores_elasticity_by_dis",
+   "FiveThirtyEight data, political elasticity scores: elasticity-by-district.csv",
+   "fivethirtyeight/data",
+   "master",
+   "political-elasticity-scores/elasticity-by-district.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_political_elasticity_scores_elasticity_by_sta",
+   "FiveThirtyEight data, political elasticity scores: elasticity-by-state.csv",
+   "fivethirtyeight/data",
+   "master",
+   "political-elasticity-scores/elasticity-by-state.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_poll_of_pollsters_poll_of_pollsters_2",
+   "FiveThirtyEight data, poll of pollsters: poll-of-pollsters-2.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "poll-of-pollsters/poll-of-pollsters-2.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_poll_of_pollsters_poll_of_pollsters_3",
+   "FiveThirtyEight data, poll of pollsters: poll-of-pollsters-3.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "poll-of-pollsters/poll-of-pollsters-3.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_poll_of_pollsters_poll_of_pollsters_4",
+   "FiveThirtyEight data, poll of pollsters: poll-of-pollsters-4.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "poll-of-pollsters/poll-of-pollsters-4.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_poll_of_pollsters_poll_of_pollsters_5",
+   "FiveThirtyEight data, poll of pollsters: poll-of-pollsters-5.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "poll-of-pollsters/poll-of-pollsters-5.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_poll_of_pollsters_poll_of_pollsters_6_iowa",
+   "FiveThirtyEight data, poll of pollsters: poll-of-pollsters-6-iowa.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "poll-of-pollsters/poll-of-pollsters-6-iowa.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_poll_of_pollsters_poll_of_pollsters_7",
+   "FiveThirtyEight data, poll of pollsters: poll-of-pollsters-7.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "poll-of-pollsters/poll-of-pollsters-7.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_poll_of_pollsters_poll_of_pollsters_anonymous",
+   "FiveThirtyEight data, poll of pollsters: poll-of-pollsters-anonymous-answers-2.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "poll-of-pollsters/poll-of-pollsters-anonymous-answers-2.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_poll_of_pollsters_poll_of_pollsters",
+   "FiveThirtyEight data, poll of pollsters: poll-of-pollsters.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "poll-of-pollsters/poll-of-pollsters.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_poll_quiz_guns_guns_polls",
+   "FiveThirtyEight data, poll quiz guns: guns-polls.csv",
+   "fivethirtyeight/data",
+   "master",
+   "poll-quiz-guns/guns-polls.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_polls_2024_presidential_primary_averages_old",
+   "FiveThirtyEight data, polls: 2024_presidential_primary_averages_old_model.csv",
+   "fivethirtyeight/data",
+   "master",
+   "polls/old_model/2024_presidential_primary_averages_old_model.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_polls_donald_trump_favorability_old_model",
+   "FiveThirtyEight data, polls: donald_trump_favorability_old_model.csv",
+   "fivethirtyeight/data",
+   "master",
+   "polls/old_model/donald_trump_favorability_old_model.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_polls_generic_ballot_averages_old_model",
+   "FiveThirtyEight data, polls: generic_ballot_averages_old_model.csv",
+   "fivethirtyeight/data",
+   "master",
+   "polls/old_model/generic_ballot_averages_old_model.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_polls_joe_biden_approval_old_model",
+   "FiveThirtyEight data, polls: joe_biden_approval_old_model.csv",
+   "fivethirtyeight/data",
+   "master",
+   "polls/old_model/joe_biden_approval_old_model.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_polls_kamala_harris_approval_old_model",
+   "FiveThirtyEight data, polls: kamala_harris_approval_old_model.csv",
+   "fivethirtyeight/data",
+   "master",
+   "polls/old_model/kamala_harris_approval_old_model.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_polls_mike_pence_favorability_old_model",
+   "FiveThirtyEight data, polls: mike_pence_favorability_old_model.csv",
+   "fivethirtyeight/data",
+   "master",
+   "polls/old_model/mike_pence_favorability_old_model.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_polls_nikki_haley_favorability_old_model",
+   "FiveThirtyEight data, polls: nikki_haley_favorability_old_model.csv",
+   "fivethirtyeight/data",
+   "master",
+   "polls/old_model/nikki_haley_favorability_old_model.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_polls_ron_desantis_favorability_old_model",
+   "FiveThirtyEight data, polls: ron_desantis_favorability_old_model.csv",
+   "fivethirtyeight/data",
+   "master",
+   "polls/old_model/ron_desantis_favorability_old_model.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_pollster_ratings_pollster_ratings",
+   "FiveThirtyEight data, pollster ratings: pollster-ratings.tsv",
+   "fivethirtyeight/data",
+   "master",
+   "pollster-ratings/2014/pollster-ratings.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_pollster_ratings_pollster_ratings_combined",
+   "FiveThirtyEight data, pollster ratings: pollster-ratings-combined.csv",
+   "fivethirtyeight/data",
+   "master",
+   "pollster-ratings/pollster-ratings-combined.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_potential_candidates_events",
+   "FiveThirtyEight data, potential candidates: events.csv",
+   "fivethirtyeight/data",
+   "master",
+   "potential-candidates/2015_01_14/events.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_potential_candidates_statements",
+   "FiveThirtyEight data, potential candidates: statements.csv",
+   "fivethirtyeight/data",
+   "master",
+   "potential-candidates/2015_01_14/statements.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_presidential_campaign_trail_clinton",
+   "FiveThirtyEight data, presidential campaign trail: clinton.csv",
+   "fivethirtyeight/data",
+   "master",
+   "presidential-campaign-trail/clinton.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_presidential_campaign_trail_trump",
+   "FiveThirtyEight data, presidential campaign trail: trump.csv",
+   "fivethirtyeight/data",
+   "master",
+   "presidential-campaign-trail/trump.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_presidential_commencement_speeches_commenceme",
+   "FiveThirtyEight data, presidential commencement speeches: commencement_speeches.csv",
+   "fivethirtyeight/data",
+   "master",
+   "presidential-commencement-speeches/commencement_speeches.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_primary_candidates_2018_dem_candidates",
+   "FiveThirtyEight data, primary candidates 2018: dem_candidates.csv",
+   "fivethirtyeight/data",
+   "master",
+   "primary-candidates-2018/dem_candidates.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_primary_candidates_2018_rep_candidates",
+   "FiveThirtyEight data, primary candidates 2018: rep_candidates.csv",
+   "fivethirtyeight/data",
+   "master",
+   "primary-candidates-2018/rep_candidates.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_primary_project_2022_dem_candidates",
+   "FiveThirtyEight data, primary project 2022: dem_candidates.csv",
+   "fivethirtyeight/data",
+   "master",
+   "primary-project-2022/dem_candidates.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_primary_project_2022_rep_candidates",
+   "FiveThirtyEight data, primary project 2022: rep_candidates.csv",
+   "fivethirtyeight/data",
+   "master",
+   "primary-project-2022/rep_candidates.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_puerto_rico_media_google_trends",
+   "FiveThirtyEight data, puerto rico media: google_trends.csv",
+   "fivethirtyeight/data",
+   "master",
+   "puerto-rico-media/google_trends.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_puerto_rico_media_mediacloud_hurricanes",
+   "FiveThirtyEight data, puerto rico media: mediacloud_hurricanes.csv",
+   "fivethirtyeight/data",
+   "master",
+   "puerto-rico-media/mediacloud_hurricanes.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_puerto_rico_media_mediacloud_states",
+   "FiveThirtyEight data, puerto rico media: mediacloud_states.csv",
+   "fivethirtyeight/data",
+   "master",
+   "puerto-rico-media/mediacloud_states.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_puerto_rico_media_mediacloud_top_online_news",
+   "FiveThirtyEight data, puerto rico media: mediacloud_top_online_news.csv",
+   "fivethirtyeight/data",
+   "master",
+   "puerto-rico-media/mediacloud_top_online_news.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_puerto_rico_media_mediacloud_trump",
+   "FiveThirtyEight data, puerto rico media: mediacloud_trump.csv",
+   "fivethirtyeight/data",
+   "master",
+   "puerto-rico-media/mediacloud_trump.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_puerto_rico_media_tv_hurricanes",
+   "FiveThirtyEight data, puerto rico media: tv_hurricanes.csv",
+   "fivethirtyeight/data",
+   "master",
+   "puerto-rico-media/tv_hurricanes.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_puerto_rico_media_tv_hurricanes_by_network",
+   "FiveThirtyEight data, puerto rico media: tv_hurricanes_by_network.csv",
+   "fivethirtyeight/data",
+   "master",
+   "puerto-rico-media/tv_hurricanes_by_network.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_puerto_rico_media_tv_states",
+   "FiveThirtyEight data, puerto rico media: tv_states.csv",
+   "fivethirtyeight/data",
+   "master",
+   "puerto-rico-media/tv_states.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_pulitzer_pulitzer_circulation_data",
+   "FiveThirtyEight data, pulitzer: pulitzer-circulation-data.csv",
+   "fivethirtyeight/data",
+   "master",
+   "pulitzer/pulitzer-circulation-data.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_quiet_caucus_2024_clustered_congress",
+   "FiveThirtyEight data, quiet caucus 2024: clustered_congress.csv",
+   "fivethirtyeight/data",
+   "master",
+   "quiet-caucus-2024/clustered_congress.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_rare_pepes_pepecash_prices",
+   "FiveThirtyEight data, rare pepes: pepecash_prices.csv",
+   "fivethirtyeight/data",
+   "master",
+   "rare-pepes/pepecash_prices.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_rare_pepes_xcp_prices",
+   "FiveThirtyEight data, rare pepes: xcp_prices.csv",
+   "fivethirtyeight/data",
+   "master",
+   "rare-pepes/xcp_prices.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_redistricting_alternate_maps_redistricting_al",
+   "FiveThirtyEight data, redistricting alternate maps: redistricting-alternate-maps.csv",
+   "fivethirtyeight/data",
+   "master",
+   "redistricting-alternate-maps/redistricting-alternate-maps.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_redlining_metro_grades",
+   "FiveThirtyEight data, redlining: metro-grades.csv",
+   "fivethirtyeight/data",
+   "master",
+   "redlining/metro-grades.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_riddler_castles_castle_solutions_2",
+   "FiveThirtyEight data, riddler castles: castle-solutions-2.csv",
+   "fivethirtyeight/data",
+   "master",
+   "riddler-castles/castle-solutions-2.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_riddler_castles_castle_solutions_3",
+   "FiveThirtyEight data, riddler castles: castle-solutions-3.csv",
+   "fivethirtyeight/data",
+   "master",
+   "riddler-castles/castle-solutions-3.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_riddler_castles_castle_solutions_4",
+   "FiveThirtyEight data, riddler castles: castle-solutions-4.csv",
+   "fivethirtyeight/data",
+   "master",
+   "riddler-castles/castle-solutions-4.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_riddler_castles_castle_solutions_5",
+   "FiveThirtyEight data, riddler castles: castle-solutions-5.csv",
+   "fivethirtyeight/data",
+   "master",
+   "riddler-castles/castle-solutions-5.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_russia_investigation_russia_investigation",
+   "FiveThirtyEight data, russia investigation: russia-investigation.csv",
+   "fivethirtyeight/data",
+   "master",
+   "russia-investigation/russia-investigation.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_san_andreas_earthquake_data",
+   "FiveThirtyEight data, san andreas: earthquake_data.csv",
+   "fivethirtyeight/data",
+   "master",
+   "san-andreas/earthquake_data.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_sandy_311_calls_sandy_311_calls_by_day",
+   "FiveThirtyEight data, sandy 311 calls: sandy-311-calls-by-day.csv",
+   "fivethirtyeight/data",
+   "master",
+   "sandy-311-calls/sandy-311-calls-by-day.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_science_giving_science_federal_giving",
+   "FiveThirtyEight data, science giving: science_federal_giving.csv",
+   "fivethirtyeight/data",
+   "master",
+   "science-giving/science_federal_giving.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_scrabble_games_scrabble_games",
+   "FiveThirtyEight data, scrabble games: scrabble_games.csv",
+   "fivethirtyeight/data",
+   "master",
+   "scrabble-games/scrabble_games.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_special_elections_special_elections",
+   "FiveThirtyEight data, special elections: special-elections.csv",
+   "fivethirtyeight/data",
+   "master",
+   "special-elections/special-elections.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_sports_political_donations_sports_political_d",
+   "FiveThirtyEight data, sports political donations: sports-political-donations.csv",
+   "fivethirtyeight/data",
+   "master",
+   "sports-political-donations/sports-political-donations.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_state_of_the_polls_2024_2012_polls",
+   "FiveThirtyEight data, state of the polls 2024: 2012_polls.csv",
+   "fivethirtyeight/data",
+   "master",
+   "state-of-the-polls-2024/2012_polls.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_state_of_the_polls_2024_2012_races",
+   "FiveThirtyEight data, state of the polls 2024: 2012_races.csv",
+   "fivethirtyeight/data",
+   "master",
+   "state-of-the-polls-2024/2012_races.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_state_of_the_polls_2024_2016_races",
+   "FiveThirtyEight data, state of the polls 2024: 2016_races.csv",
+   "fivethirtyeight/data",
+   "master",
+   "state-of-the-polls-2024/2016_races.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_state_of_the_polls_2024_2020_races",
+   "FiveThirtyEight data, state of the polls 2024: 2020_races.csv",
+   "fivethirtyeight/data",
+   "master",
+   "state-of-the-polls-2024/2020_races.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_state_of_the_polls_2024_2024_polls",
+   "FiveThirtyEight data, state of the polls 2024: 2024_polls.csv",
+   "fivethirtyeight/data",
+   "master",
+   "state-of-the-polls-2024/2024_polls.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_state_of_the_polls_2024_2024_races",
+   "FiveThirtyEight data, state of the polls 2024: 2024_races.csv",
+   "fivethirtyeight/data",
+   "master",
+   "state-of-the-polls-2024/2024_races.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_state_of_the_state_index",
+   "FiveThirtyEight data, state of the state: index.csv",
+   "fivethirtyeight/data",
+   "master",
+   "state-of-the-state/index.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_state_of_the_state_words",
+   "FiveThirtyEight data, state of the state: words.csv",
+   "fivethirtyeight/data",
+   "master",
+   "state-of-the-state/words.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_steak_survey_steak_risk_survey",
+   "FiveThirtyEight data, steak survey: steak-risk-survey.csv",
+   "fivethirtyeight/data",
+   "master",
+   "steak-survey/steak-risk-survey.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_tarantino_tarantino",
+   "FiveThirtyEight data, tarantino: tarantino.csv",
+   "fivethirtyeight/data",
+   "master",
+   "tarantino/tarantino.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_tennis_time_events_time",
+   "FiveThirtyEight data, tennis time: events_time.csv",
+   "fivethirtyeight/data",
+   "master",
+   "tennis-time/events_time.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_tennis_time_players_time",
+   "FiveThirtyEight data, tennis time: players_time.csv",
+   "fivethirtyeight/data",
+   "master",
+   "tennis-time/players_time.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_tennis_time_serve_times",
+   "FiveThirtyEight data, tennis time: serve_times.csv",
+   "fivethirtyeight/data",
+   "master",
+   "tennis-time/serve_times.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_tenth_circuit_tenth_circuit",
+   "FiveThirtyEight data, tenth circuit: tenth-circuit.csv",
+   "fivethirtyeight/data",
+   "master",
+   "tenth-circuit/tenth-circuit.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_terrorism_country_stats_1993_appendix2",
+   "FiveThirtyEight data, terrorism: country_stats_1993_appendix2.csv",
+   "fivethirtyeight/data",
+   "master",
+   "terrorism/country_stats_1993_appendix2.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_terrorism_eu_terrorism_fatalities_by_country",
+   "FiveThirtyEight data, terrorism: eu_terrorism_fatalities_by_country.csv",
+   "fivethirtyeight/data",
+   "master",
+   "terrorism/eu_terrorism_fatalities_by_country.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_terrorism_eu_terrorism_fatalities_by_year",
+   "FiveThirtyEight data, terrorism: eu_terrorism_fatalities_by_year.csv",
+   "fivethirtyeight/data",
+   "master",
+   "terrorism/eu_terrorism_fatalities_by_year.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_terrorism_france_terrorism_fatalities_by_year",
+   "FiveThirtyEight data, terrorism: france_terrorism_fatalities_by_year.csv",
+   "fivethirtyeight/data",
+   "master",
+   "terrorism/france_terrorism_fatalities_by_year.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_the_big_lies_long_shadow_bills",
+   "FiveThirtyEight data, the big lies long shadow: bills.csv",
+   "fivethirtyeight/data",
+   "master",
+   "the-big-lies-long-shadow/bills.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_trump_2_poll_issue_questions_trump_poll_issue",
+   "FiveThirtyEight data, trump 2 poll issue questions: trump-poll-issue-questions.csv",
+   "fivethirtyeight/data",
+   "master",
+   "trump-2-poll-issue-questions/trump-poll-issue-questions.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_trump_lawsuits_trump_lawsuits",
+   "FiveThirtyEight data, trump lawsuits: trump-lawsuits.csv",
+   "fivethirtyeight/data",
+   "master",
+   "trump-lawsuits/trump-lawsuits.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_trump_news_trump_news_data",
+   "FiveThirtyEight data, trump news: trump_news_data.csv",
+   "fivethirtyeight/data",
+   "master",
+   "trump-news/trump_news_data.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_trump_twitter_realdonaldtrump_poll_tweets",
+   "FiveThirtyEight data, trump twitter: realDonaldTrump_poll_tweets.csv",
+   "fivethirtyeight/data",
+   "master",
+   "trump-twitter/realDonaldTrump_poll_tweets.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_trump_world_trust_trumpworld_issue_1",
+   "FiveThirtyEight data, trump world trust: TRUMPWORLD-issue-1.csv",
+   "fivethirtyeight/data",
+   "master",
+   "trump-world-trust/TRUMPWORLD-issue-1.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_trump_world_trust_trumpworld_issue_2",
+   "FiveThirtyEight data, trump world trust: TRUMPWORLD-issue-2.csv",
+   "fivethirtyeight/data",
+   "master",
+   "trump-world-trust/TRUMPWORLD-issue-2.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_trump_world_trust_trumpworld_issue_3",
+   "FiveThirtyEight data, trump world trust: TRUMPWORLD-issue-3.csv",
+   "fivethirtyeight/data",
+   "master",
+   "trump-world-trust/TRUMPWORLD-issue-3.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_trump_world_trust_trumpworld_issue_4",
+   "FiveThirtyEight data, trump world trust: TRUMPWORLD-issue-4.csv",
+   "fivethirtyeight/data",
+   "master",
+   "trump-world-trust/TRUMPWORLD-issue-4.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_trump_world_trust_trumpworld_issue_5",
+   "FiveThirtyEight data, trump world trust: TRUMPWORLD-issue-5.csv",
+   "fivethirtyeight/data",
+   "master",
+   "trump-world-trust/TRUMPWORLD-issue-5.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_trump_world_trust_trumpworld_pres",
+   "FiveThirtyEight data, trump world trust: TRUMPWORLD-pres.csv",
+   "fivethirtyeight/data",
+   "master",
+   "trump-world-trust/TRUMPWORLD-pres.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_trump_world_trust_trumpworld_us",
+   "FiveThirtyEight data, trump world trust: TRUMPWORLD-us.csv",
+   "fivethirtyeight/data",
+   "master",
+   "trump-world-trust/TRUMPWORLD-us.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_undefeated_boxers_undefeated",
+   "FiveThirtyEight data, undefeated boxers: undefeated.csv",
+   "fivethirtyeight/data",
+   "master",
+   "undefeated-boxers/undefeated.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_unisex_names_aging_curve",
+   "FiveThirtyEight data, unisex names: aging_curve.csv",
+   "fivethirtyeight/data",
+   "master",
+   "unisex-names/aging_curve.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_unisex_names_unisex_names_table",
+   "FiveThirtyEight data, unisex names: unisex_names_table.csv",
+   "fivethirtyeight/data",
+   "master",
+   "unisex-names/unisex_names_table.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_urbanization_index_urbanization_state",
+   "FiveThirtyEight data, urbanization index: urbanization-state.csv",
+   "fivethirtyeight/data",
+   "master",
+   "urbanization-index/urbanization-state.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_us_weather_history_kclt",
+   "FiveThirtyEight data, us weather history: KCLT.csv",
+   "fivethirtyeight/data",
+   "master",
+   "us-weather-history/KCLT.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_us_weather_history_kcqt",
+   "FiveThirtyEight data, us weather history: KCQT.csv",
+   "fivethirtyeight/data",
+   "master",
+   "us-weather-history/KCQT.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_us_weather_history_khou",
+   "FiveThirtyEight data, us weather history: KHOU.csv",
+   "fivethirtyeight/data",
+   "master",
+   "us-weather-history/KHOU.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_us_weather_history_kind",
+   "FiveThirtyEight data, us weather history: KIND.csv",
+   "fivethirtyeight/data",
+   "master",
+   "us-weather-history/KIND.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_us_weather_history_kjax",
+   "FiveThirtyEight data, us weather history: KJAX.csv",
+   "fivethirtyeight/data",
+   "master",
+   "us-weather-history/KJAX.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_us_weather_history_kmdw",
+   "FiveThirtyEight data, us weather history: KMDW.csv",
+   "fivethirtyeight/data",
+   "master",
+   "us-weather-history/KMDW.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_us_weather_history_knyc",
+   "FiveThirtyEight data, us weather history: KNYC.csv",
+   "fivethirtyeight/data",
+   "master",
+   "us-weather-history/KNYC.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_us_weather_history_kphl",
+   "FiveThirtyEight data, us weather history: KPHL.csv",
+   "fivethirtyeight/data",
+   "master",
+   "us-weather-history/KPHL.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_us_weather_history_kphx",
+   "FiveThirtyEight data, us weather history: KPHX.csv",
+   "fivethirtyeight/data",
+   "master",
+   "us-weather-history/KPHX.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_us_weather_history_ksea",
+   "FiveThirtyEight data, us weather history: KSEA.csv",
+   "fivethirtyeight/data",
+   "master",
+   "us-weather-history/KSEA.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_voter_registration_new_voter_registrations",
+   "FiveThirtyEight data, voter registration: new-voter-registrations.csv",
+   "fivethirtyeight/data",
+   "master",
+   "voter-registration/new-voter-registrations.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_weather_check_weather_check",
+   "FiveThirtyEight data, weather check: weather-check.csv",
+   "fivethirtyeight/data",
+   "master",
+   "weather-check/weather-check.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_womens_world_cup_predictions_wwc_forecast_201",
+   "FiveThirtyEight data, womens world cup predictions: wwc-forecast-20150602-093000.csv",
+   "fivethirtyeight/data",
+   "master",
+   "womens-world-cup-predictions/wwc-forecast-20150602-093000.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_womens_world_cup_predictions_wwc_matches_2015",
+   "FiveThirtyEight data, womens world cup predictions: wwc-matches-20150602-093000.csv",
+   "fivethirtyeight/data",
+   "master",
+   "womens-world-cup-predictions/wwc-matches-20150602-093000.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140609_140000",
+   "FiveThirtyEight data, world cup predictions: wc-20140609-140000.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140609-140000.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140611_132709",
+   "FiveThirtyEight data, world cup predictions: wc-20140611-132709.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140611-132709.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140612_094254",
+   "FiveThirtyEight data, world cup predictions: wc-20140612-094254.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140612-094254.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140612_220228",
+   "FiveThirtyEight data, world cup predictions: wc-20140612-220228.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140612-220228.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140613_091928",
+   "FiveThirtyEight data, world cup predictions: wc-20140613-091928.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140613-091928.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140613_180212",
+   "FiveThirtyEight data, world cup predictions: wc-20140613-180212.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140613-180212.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140613_205820",
+   "FiveThirtyEight data, world cup predictions: wc-20140613-205820.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140613-205820.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140614_000045",
+   "FiveThirtyEight data, world cup predictions: wc-20140614-000045.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140614-000045.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140614_091756",
+   "FiveThirtyEight data, world cup predictions: wc-20140614-091756.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140614-091756.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140614_180027",
+   "FiveThirtyEight data, world cup predictions: wc-20140614-180027.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140614-180027.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140614_210740",
+   "FiveThirtyEight data, world cup predictions: wc-20140614-210740.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140614-210740.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140615_001554",
+   "FiveThirtyEight data, world cup predictions: wc-20140615-001554.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140615-001554.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140615_030217",
+   "FiveThirtyEight data, world cup predictions: wc-20140615-030217.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140615-030217.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140615_092237",
+   "FiveThirtyEight data, world cup predictions: wc-20140615-092237.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140615-092237.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140615_180820",
+   "FiveThirtyEight data, world cup predictions: wc-20140615-180820.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140615-180820.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140615_210736",
+   "FiveThirtyEight data, world cup predictions: wc-20140615-210736.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140615-210736.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140616_100604",
+   "FiveThirtyEight data, world cup predictions: wc-20140616-100604.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140616-100604.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140616_182949",
+   "FiveThirtyEight data, world cup predictions: wc-20140616-182949.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140616-182949.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140616_185551",
+   "FiveThirtyEight data, world cup predictions: wc-20140616-185551.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140616-185551.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140616_205307",
+   "FiveThirtyEight data, world cup predictions: wc-20140616-205307.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140616-205307.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140617_000315",
+   "FiveThirtyEight data, world cup predictions: wc-20140617-000315.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140617-000315.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140617_091836",
+   "FiveThirtyEight data, world cup predictions: wc-20140617-091836.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140617-091836.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140617_175702",
+   "FiveThirtyEight data, world cup predictions: wc-20140617-175702.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140617-175702.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140617_205249",
+   "FiveThirtyEight data, world cup predictions: wc-20140617-205249.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140617-205249.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140617_235154",
+   "FiveThirtyEight data, world cup predictions: wc-20140617-235154.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140617-235154.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140618_100110",
+   "FiveThirtyEight data, world cup predictions: wc-20140618-100110.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140618-100110.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140618_175722",
+   "FiveThirtyEight data, world cup predictions: wc-20140618-175722.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140618-175722.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140618_210231",
+   "FiveThirtyEight data, world cup predictions: wc-20140618-210231.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140618-210231.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140618_235413",
+   "FiveThirtyEight data, world cup predictions: wc-20140618-235413.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140618-235413.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140619_091907",
+   "FiveThirtyEight data, world cup predictions: wc-20140619-091907.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140619-091907.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140619_180248",
+   "FiveThirtyEight data, world cup predictions: wc-20140619-180248.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140619-180248.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140619_205931",
+   "FiveThirtyEight data, world cup predictions: wc-20140619-205931.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140619-205931.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140619_235903",
+   "FiveThirtyEight data, world cup predictions: wc-20140619-235903.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140619-235903.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140620_094015",
+   "FiveThirtyEight data, world cup predictions: wc-20140620-094015.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140620-094015.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140620_175706",
+   "FiveThirtyEight data, world cup predictions: wc-20140620-175706.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140620-175706.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140620_205534",
+   "FiveThirtyEight data, world cup predictions: wc-20140620-205534.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140620-205534.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140620_235753",
+   "FiveThirtyEight data, world cup predictions: wc-20140620-235753.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140620-235753.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140621_092639",
+   "FiveThirtyEight data, world cup predictions: wc-20140621-092639.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140621-092639.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140621_175630",
+   "FiveThirtyEight data, world cup predictions: wc-20140621-175630.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140621-175630.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140621_205738",
+   "FiveThirtyEight data, world cup predictions: wc-20140621-205738.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140621-205738.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140621_235521",
+   "FiveThirtyEight data, world cup predictions: wc-20140621-235521.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140621-235521.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140622_091255",
+   "FiveThirtyEight data, world cup predictions: wc-20140622-091255.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140622-091255.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140622_175429",
+   "FiveThirtyEight data, world cup predictions: wc-20140622-175429.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140622-175429.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140622_205351",
+   "FiveThirtyEight data, world cup predictions: wc-20140622-205351.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140622-205351.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140622_235721",
+   "FiveThirtyEight data, world cup predictions: wc-20140622-235721.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140622-235721.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140623_095120",
+   "FiveThirtyEight data, world cup predictions: wc-20140623-095120.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140623-095120.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140623_175427",
+   "FiveThirtyEight data, world cup predictions: wc-20140623-175427.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140623-175427.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140623_220333",
+   "FiveThirtyEight data, world cup predictions: wc-20140623-220333.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140623-220333.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140624_100611",
+   "FiveThirtyEight data, world cup predictions: wc-20140624-100611.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140624-100611.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140624_181518",
+   "FiveThirtyEight data, world cup predictions: wc-20140624-181518.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140624-181518.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140625_091929",
+   "FiveThirtyEight data, world cup predictions: wc-20140625-091929.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140625-091929.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140625_180355",
+   "FiveThirtyEight data, world cup predictions: wc-20140625-180355.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140625-180355.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140625_220012",
+   "FiveThirtyEight data, world cup predictions: wc-20140625-220012.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140625-220012.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140626_095930",
+   "FiveThirtyEight data, world cup predictions: wc-20140626-095930.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140626-095930.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140626_180150",
+   "FiveThirtyEight data, world cup predictions: wc-20140626-180150.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140626-180150.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140626_221022",
+   "FiveThirtyEight data, world cup predictions: wc-20140626-221022.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140626-221022.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140627_100126",
+   "FiveThirtyEight data, world cup predictions: wc-20140627-100126.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140627-100126.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140628_094211",
+   "FiveThirtyEight data, world cup predictions: wc-20140628-094211.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140628-094211.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140628_185951",
+   "FiveThirtyEight data, world cup predictions: wc-20140628-185951.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140628-185951.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140628_215357",
+   "FiveThirtyEight data, world cup predictions: wc-20140628-215357.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140628-215357.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140629_091813",
+   "FiveThirtyEight data, world cup predictions: wc-20140629-091813.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140629-091813.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140629_180901",
+   "FiveThirtyEight data, world cup predictions: wc-20140629-180901.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140629-180901.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140629_225940",
+   "FiveThirtyEight data, world cup predictions: wc-20140629-225940.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140629-225940.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140630_095330",
+   "FiveThirtyEight data, world cup predictions: wc-20140630-095330.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140630-095330.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140630_175910",
+   "FiveThirtyEight data, world cup predictions: wc-20140630-175910.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140630-175910.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140630_223910",
+   "FiveThirtyEight data, world cup predictions: wc-20140630-223910.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140630-223910.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140701_092605",
+   "FiveThirtyEight data, world cup predictions: wc-20140701-092605.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140701-092605.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140701_184332",
+   "FiveThirtyEight data, world cup predictions: wc-20140701-184332.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140701-184332.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140701_224103",
+   "FiveThirtyEight data, world cup predictions: wc-20140701-224103.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140701-224103.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140702_094046",
+   "FiveThirtyEight data, world cup predictions: wc-20140702-094046.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140702-094046.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140703_094053",
+   "FiveThirtyEight data, world cup predictions: wc-20140703-094053.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140703-094053.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140704_180211",
+   "FiveThirtyEight data, world cup predictions: wc-20140704-180211.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140704-180211.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140704_220110",
+   "FiveThirtyEight data, world cup predictions: wc-20140704-220110.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140704-220110.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140705_093245",
+   "FiveThirtyEight data, world cup predictions: wc-20140705-093245.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140705-093245.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140705_225331",
+   "FiveThirtyEight data, world cup predictions: wc-20140705-225331.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140705-225331.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140706_091537",
+   "FiveThirtyEight data, world cup predictions: wc-20140706-091537.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140706-091537.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140707_100337",
+   "FiveThirtyEight data, world cup predictions: wc-20140707-100337.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140707-100337.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140708_092538",
+   "FiveThirtyEight data, world cup predictions: wc-20140708-092538.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140708-092538.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140708_215459",
+   "FiveThirtyEight data, world cup predictions: wc-20140708-215459.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140708-215459.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140709_095047",
+   "FiveThirtyEight data, world cup predictions: wc-20140709-095047.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140709-095047.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140709_231617",
+   "FiveThirtyEight data, world cup predictions: wc-20140709-231617.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140709-231617.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140710_164509",
+   "FiveThirtyEight data, world cup predictions: wc-20140710-164509.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140710-164509.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140711_102258",
+   "FiveThirtyEight data, world cup predictions: wc-20140711-102258.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140711-102258.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fivethirtyeight_world_cup_predictions_wc_20140713_113900",
+   "FiveThirtyEight data, world cup predictions: wc-20140713-113900.csv",
+   "fivethirtyeight/data",
+   "master",
+   "world-cup-predictions/wc-20140713-113900.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "language_names_es",
+   "Language names in the es locale by code",
+   "umpirsky/language-list",
+   "master",
+   "data/es/language.json",
+   "mapping",
+   "code",
+   "name"
+  ],
+  [
+   "language_names_fr",
+   "Language names in the fr locale by code",
+   "umpirsky/language-list",
+   "master",
+   "data/fr/language.json",
+   "mapping",
+   "code",
+   "name"
+  ],
+  [
+   "language_names_de",
+   "Language names in the de locale by code",
+   "umpirsky/language-list",
+   "master",
+   "data/de/language.json",
+   "mapping",
+   "code",
+   "name"
+  ],
+  [
+   "language_names_zh",
+   "Language names in the zh locale by code",
+   "umpirsky/language-list",
+   "master",
+   "data/zh/language.json",
+   "mapping",
+   "code",
+   "name"
+  ],
+  [
+   "language_names_ja",
+   "Language names in the ja locale by code",
+   "umpirsky/language-list",
+   "master",
+   "data/ja/language.json",
+   "mapping",
+   "code",
+   "name"
+  ],
+  [
+   "language_names_pt",
+   "Language names in the pt locale by code",
+   "umpirsky/language-list",
+   "master",
+   "data/pt/language.json",
+   "mapping",
+   "code",
+   "name"
+  ],
+  [
+   "language_names_ru",
+   "Language names in the ru locale by code",
+   "umpirsky/language-list",
+   "master",
+   "data/ru/language.json",
+   "mapping",
+   "code",
+   "name"
+  ],
+  [
+   "language_names_ar",
+   "Language names in the ar locale by code",
+   "umpirsky/language-list",
+   "master",
+   "data/ar/language.json",
+   "mapping",
+   "code",
+   "name"
+  ],
+  [
+   "language_names_hi",
+   "Language names in the hi locale by code",
+   "umpirsky/language-list",
+   "master",
+   "data/hi/language.json",
+   "mapping",
+   "code",
+   "name"
+  ],
+  [
+   "language_names_it",
+   "Language names in the it locale by code",
+   "umpirsky/language-list",
+   "master",
+   "data/it/language.json",
+   "mapping",
+   "code",
+   "name"
+  ],
+  [
+   "language_names_ko",
+   "Language names in the ko locale by code",
+   "umpirsky/language-list",
+   "master",
+   "data/ko/language.json",
+   "mapping",
+   "code",
+   "name"
+  ],
+  [
+   "language_names_nl",
+   "Language names in the nl locale by code",
+   "umpirsky/language-list",
+   "master",
+   "data/nl/language.json",
+   "mapping",
+   "code",
+   "name"
+  ],
+  [
+   "language_names_tr",
+   "Language names in the tr locale by code",
+   "umpirsky/language-list",
+   "master",
+   "data/tr/language.json",
+   "mapping",
+   "code",
+   "name"
+  ],
+  [
+   "language_names_pl",
+   "Language names in the pl locale by code",
+   "umpirsky/language-list",
+   "master",
+   "data/pl/language.json",
+   "mapping",
+   "code",
+   "name"
+  ],
+  [
+   "currency_names_es",
+   "Currency names in the es locale by code",
+   "umpirsky/currency-list",
+   "master",
+   "data/es/currency.json",
+   "mapping",
+   "code",
+   "name"
+  ],
+  [
+   "currency_names_fr",
+   "Currency names in the fr locale by code",
+   "umpirsky/currency-list",
+   "master",
+   "data/fr/currency.json",
+   "mapping",
+   "code",
+   "name"
+  ],
+  [
+   "currency_names_de",
+   "Currency names in the de locale by code",
+   "umpirsky/currency-list",
+   "master",
+   "data/de/currency.json",
+   "mapping",
+   "code",
+   "name"
+  ],
+  [
+   "currency_names_zh",
+   "Currency names in the zh locale by code",
+   "umpirsky/currency-list",
+   "master",
+   "data/zh/currency.json",
+   "mapping",
+   "code",
+   "name"
+  ],
+  [
+   "currency_names_ja",
+   "Currency names in the ja locale by code",
+   "umpirsky/currency-list",
+   "master",
+   "data/ja/currency.json",
+   "mapping",
+   "code",
+   "name"
+  ],
+  [
+   "currency_names_pt",
+   "Currency names in the pt locale by code",
+   "umpirsky/currency-list",
+   "master",
+   "data/pt/currency.json",
+   "mapping",
+   "code",
+   "name"
+  ],
+  [
+   "currency_names_ru",
+   "Currency names in the ru locale by code",
+   "umpirsky/currency-list",
+   "master",
+   "data/ru/currency.json",
+   "mapping",
+   "code",
+   "name"
+  ],
+  [
+   "currency_names_ar",
+   "Currency names in the ar locale by code",
+   "umpirsky/currency-list",
+   "master",
+   "data/ar/currency.json",
+   "mapping",
+   "code",
+   "name"
+  ],
+  [
+   "currency_names_hi",
+   "Currency names in the hi locale by code",
+   "umpirsky/currency-list",
+   "master",
+   "data/hi/currency.json",
+   "mapping",
+   "code",
+   "name"
+  ],
+  [
+   "currency_names_it",
+   "Currency names in the it locale by code",
+   "umpirsky/currency-list",
+   "master",
+   "data/it/currency.json",
+   "mapping",
+   "code",
+   "name"
+  ],
+  [
+   "currency_names_ko",
+   "Currency names in the ko locale by code",
+   "umpirsky/currency-list",
+   "master",
+   "data/ko/currency.json",
+   "mapping",
+   "code",
+   "name"
+  ],
+  [
+   "currency_names_nl",
+   "Currency names in the nl locale by code",
+   "umpirsky/currency-list",
+   "master",
+   "data/nl/currency.json",
+   "mapping",
+   "code",
+   "name"
+  ],
+  [
+   "currency_names_tr",
+   "Currency names in the tr locale by code",
+   "umpirsky/currency-list",
+   "master",
+   "data/tr/currency.json",
+   "mapping",
+   "code",
+   "name"
+  ],
+  [
+   "currency_names_pl",
+   "Currency names in the pl locale by code",
+   "umpirsky/currency-list",
+   "master",
+   "data/pl/currency.json",
+   "mapping",
+   "code",
+   "name"
+  ],
+  [
+   "html_tag_names",
+   "HTML element names",
+   "sindresorhus/html-tags",
+   "main",
+   "html-tags.json",
+   "values",
+   "tag",
+   null
+  ],
+  [
+   "html_void_tag_names",
+   "HTML void element names",
+   "sindresorhus/html-tags",
+   "main",
+   "html-tags-void.json",
+   "values",
+   "tag",
+   null
+  ],
+  [
+   "cli_spinners",
+   "Terminal spinner animations with their frame intervals and frames",
+   "sindresorhus/cli-spinners",
+   "main",
+   "spinners.json",
+   "keyed_records",
+   "name",
+   null
+  ]
+ ]
+}

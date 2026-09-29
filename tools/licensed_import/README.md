@@ -264,6 +264,27 @@ PYTHONPATH=src:tools python tools/import_licensed_harness_files.py export-review
   --target 2000 --limit 2600 --per-repository 15 --kind-mix balanced
 ```
 
+Since September 27, 2026 the default is `--kind-mix composition`. The owner
+asked that day for 100,000 components in "a diverse well balanced library,
+not overweighted with skills.md". The library composition targets
+(`src/loop_engine/data/library_composition.json`, read by
+[`composition.py`](composition.py)) group every component form
+(`component_form/v1`) into six families with a share of the goal: executable
+code 35 percent, protocol servers, plugins, marketplaces and hooks 20 percent,
+skills at most 20 percent (skills with scripts preferred), subagents and
+commands 10 percent, instruction files and rules at most 8 percent, and data
+tables, contracts, schemas and settings 7 percent. Each family draws up to its
+quota of the slot (`--target`). A family that lacks supply leaves its quota
+empty, so the slot exports fewer packages instead of refilling with skills.
+`--library-bundle BUNDLE_FOLDER` makes the shares supply-aware: each family then
+draws by its remaining need to the goal, so the library reaches the target mix
+at 100,000. The candidates of the supply lines (namespace `library.supply`,
+written from licensed facts rather than copied) are read and counted by family
+as `held_for_review_profile`. The imported review profile reads only copied
+packages, so none of those candidates is exported until a review profile for
+them exists. The export report records the quotas, the supply, the selected and
+kept counts and the unfilled quota per family under `selection.composition`.
+
 ## Checks
 
 ```bash
