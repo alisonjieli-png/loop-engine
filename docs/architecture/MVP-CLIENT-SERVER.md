@@ -2,7 +2,7 @@
 
 Kind: product architecture with measured local implementation and proposed hosting.
 Date: 2026-09-19. The [current deployment](#current-deployment) section was
-added on 2026-09-20 and last checked on 2026-09-28, after Fly release 45.
+added on 2026-09-20 and last checked on 2026-09-29, after Fly release 46.
 
 The hosted product manages accounts, subscriptions, and access to intelligence.
 The customer runs Loop Engine and the selected harnesses. A hosted intelligence
@@ -47,23 +47,28 @@ from the newest release record, follow the release record and correct this
 section. Update this section in the same change that records a new release.
 It describes a private pilot. It does not describe a qualified paid service.
 
-The latest deployment is Fly release 45, completed on September 28, 2026 at
-23:12:55 UTC and checked afterwards. It runs
-`3e6064bd7dd64249925c97784f1cf10e0d067d11`, the September 28 customer delivery
-train. Its image, rollback target, continuous integration and checks are
-recorded in [the release 45 evidence](../../artifacts/release-45-2026-09-28/README.md).
-Continuous integration and deployment both succeeded; the deployment gate is
-false. The visitor check found no problem across 57 pages, 237 views and 353
-links on nine hostnames. The hosted service check passed nineteen of nineteen.
-Catalogue checks passed seven of nine: the two failures are the demonstration
-pages printing facts from the repository's manifest anchor while the served
-catalogue still serves the release it was published from, and
-`tools/record_demonstration_steps.py` now owns that class. Release 44 is the
-rollback target.
+The latest deployment is Fly release 46, completed on September 29, 2026 at
+01:05 UTC. It runs `58fb1920073ee4bb1b3da48a3898cc1c3abdb561`. Its image,
+incident, repair and checks are recorded in
+[the release 46 evidence](../../artifacts/release-46-2026-09-29/README.md).
+Continuous integration succeeded. The first deployment attempt was **refused by
+the readiness gate and the site was down for about twenty minutes**: the 3 GB
+volume was full after catalogue release `001b7de637d7` added 1,503 items and
+changed 13,643, so `volume_has_write_headroom` failed with `volume_nearly_full`
+and the service answered 503 on purpose. The volume was extended to 25 GB with
+no restart and the next health poll answered 200. Three hostnames were confirmed
+answering 200 afterwards; the full nine-hostname visitor check and the catalogue
+and service check suites have **not** been re-run for this release. Release 45 is
+the rollback target.
 
+Release 45, completed on September 28, 2026 at 23:12:55 UTC from
+`3e6064bd7dd64249925c97784f1cf10e0d067d11`, carries the September 28 customer
+delivery train. Its checks are in
+[the release 45 evidence](../../artifacts/release-45-2026-09-28/README.md): the
+visitor check found no problem across 57 pages, 237 views and 353 links on nine
+hostnames, and the hosted service check passed nineteen of nineteen.
 Release 44, completed on September 28, 2026 at 11:10:55 UTC from
-`d4542e93c702dbb529be057ee9f480d40217691c`, the fifth consolidation train of
-September 27, is retained as the rollback target; its checks are in
+`d4542e93c702dbb529be057ee9f480d40217691c`, remains recorded in
 [`pilot-release-44.json`](../../artifacts/architecture-audit-2026-09-19/pilot-release-44.json)
 and [the release 44 evidence](../../artifacts/release-44-2026-09-28/README.md).
 Release 40, completed at 05:11:34 UTC the same day from

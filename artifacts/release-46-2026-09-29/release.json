@@ -1,0 +1,39 @@
+{
+ "record_type": "pilot_release_record/v2",
+ "release": 46,
+ "app": "baltor-pilot",
+ "source_revision": "58fb1920073ee4bb1b3da48a3898cc1c3abdb561",
+ "image": "registry.fly.io/baltor-pilot@sha256:d614fdb6baccc617e5bf7515d4a727a488b7509874ef1f5cb80cec33dbdaef3c",
+ "rollback_release": 45,
+ "rollback_image": "registry.fly.io/baltor-pilot@sha256:0c08fcd3e1e8cb0689a5ea6bc2db688e0e85c6bec58f11b48e93dc1e68356063",
+ "deployed_at": "2026-09-29T01:05:01Z",
+ "ci_run": 36505423371,
+ "ci_conclusion": "success",
+ "deploy_run": 36505951640,
+ "deploy_workflow_conclusion": "failed_readiness_gate",
+ "deployment_gate_after": false,
+ "incident": {
+  "summary": "The first deployment attempt replaced the one Machine and the readiness gate refused every poll. The site's own health record named the cause: volume_has_write_headroom failed with volume_nearly_full. The 3 GB volume was full after catalogue release 001b7de637d7 added 1,503 items and changed 13,643 at 23:27 UTC on September 28. The service answered 503 on purpose and the gate was right to refuse, which left one Machine with no healthy version behind it.",
+  "repair": "flyctl volumes extend vol_r7yg7go3n15mgqnr --size 25 --app baltor-pilot. The Machine took the larger filesystem with no restart and the next health poll answered 200.",
+  "downtime_minutes_approx": 20,
+  "root_cause": "storage, not the change under test",
+  "volume_before_gb": 3,
+  "volume_after_gb": 25
+ },
+ "hostnames_checked": 3,
+ "hostnames_passed": 3,
+ "catalogue_checks_passed": null,
+ "service_checks_passed": null,
+ "advisory": {
+  "not_rechecked": "A full nine-hostname visitor check and the catalogue and service check suites have not been run against release 46. Three hostnames answer 200 and the new hero, the orange mark and the three worked steps are confirmed present in the served page.",
+  "workspace_check": "The browser workspace check holds at 814 of 840, up from 805, with no new failure. Its 26 remaining failures are not from this change.",
+  "single_machine_downtime": "One Machine holds the store, the bodies and the release pointer, so a code release that fails readiness still takes the site down. The zero-downtime shape the owner approved needs the on-disk serving engine, which is built and audited in a worktree but not merged."
+ },
+ "changes": [
+  "The homepage hero shows three worked steps instead of one trivial one; hovering, focusing or clicking a name repaints the query, the search results, the download, the file tree and what the step replaced.",
+  "The hero terminal's four tabs match what the placement tool supports, and the page no longer claims a skill folder for the Baltor Harness, which has none. The owner's five names stay in order.",
+  "The two harness lists say what each claim is: which five are set up and supported, and which clients connect over the Model Context Protocol without reading a placed file.",
+  "The mark and its three raster sizes use the design system's own orange stops, so the logo cannot drift from the buttons.",
+  "The owner's approved words are restored in the privacy notice and the terms of service, which the reviewed-material sweep had edited."
+ ]
+}
