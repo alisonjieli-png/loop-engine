@@ -5,6 +5,20 @@
   "releases": [
    {
     "kind": "service",
+    "number": 51,
+    "at": "2026-09-29T22:26:20Z",
+    "lines": [
+     "The service reports distinct payload-file counts separately from package counts and repeated file placements.",
+     "Connection settings accept the declared effect metadata while continuing to reject embedded credentials and unrelated commands.",
+     "The harness tabs wrap on narrow screens and with enlarged text.",
+     "The account panel explains counted library uses rather than treating repeated downloads as additional monthly usage.",
+     "Declared reference artifacts must include the interpretation metadata their format requires."
+    ],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
     "number": 44,
     "at": "2026-09-28T11:10:55Z",
     "lines": [
@@ -894,13 +908,13 @@
    },
    {
     "label": "Community",
-    "meaning": "Passed every automated check (licence allowlist, provenance, secret and safety scanners, and its own tests where it has code) and one independent review by a model family that did not produce it."
+    "meaning": "Admitted under its recorded qualification rule. Standard screening uses an independent per-item review; generated batches use per-item automated checks and independent sampled review by a model family that did not produce the generator. In that route, not every item receives a model review. The recorded evidence states which checks ran. Approval does not imply installation or execution, compatibility with every harness, or improved task results."
    }
   ],
   "attributes": [
    {
     "name": "Tier",
-    "description": "Verified: approved by independent reviewers of at least two model families. Community: automated checks and one independent review.",
+    "description": "Verified: approved by independent reviewers of at least two model families. Community: recorded checks with per-item or sampled independent review; execution is not implied.",
     "searchable": false,
     "filterable": true,
     "choices": [

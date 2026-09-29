@@ -97,6 +97,10 @@ class CombineTest(unittest.TestCase):
         starter = next(row for row in rows.values() if row["outcome"] == "approved" and row["identity"] != "check_a_sum")
         self.assertEqual((starter["tier"], starter["reviewer_group"]), ("verified", "starter-panel-2026-09-21"))
         self.assertEqual(rows["check_a_sum"]["tier"], "community")
+        self.assertIn("unsampled items have no per-item model verdict", review["decision_rule"])
+        self.assertIn("Execution is asserted only by the recorded checks", review["decision_rule"])
+        self.assertNotIn("No reviewer of an item's producer family judged it", review["decision_rule"],
+                         "the first catalogue retains its family exception")
         schema, lines, _payloads = bundle_tool.build(folder, accepted_licenses=("MIT",))
         tiers = {line["reference"]["identity"]: line["attributes"]["tier"] for line in lines}
         self.assertEqual(tiers["check_a_sum"], "community")

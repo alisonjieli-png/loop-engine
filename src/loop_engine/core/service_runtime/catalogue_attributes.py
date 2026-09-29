@@ -68,7 +68,8 @@ TIERS = ("verified", "community")
 TIER_ATTRIBUTE = {"name": "tier", "type": "choice", "choices": list(TIERS), "searchable": False,
                   "filterable": True, "shown": True,
                   "description": "Verified: approved by independent reviewers of at least two model families. "
-                                 "Community: automated checks and one independent review."}
+                                 "Community: recorded checks with per-item or sampled independent review; "
+                                 "execution is not implied."}
 #: Every kind of file a harness picks up, in the order the pages list them.
 HARNESS_KINDS = ("skill", "instruction_file", "rules", "subagent", "command", "hook", "plugin_manifest",
                  "marketplace", "protocol_server_configuration", "harness_settings", "contract_schema", "code_module",

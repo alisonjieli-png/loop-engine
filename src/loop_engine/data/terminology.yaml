@@ -979,11 +979,11 @@ vocabulary:
     definition: >-
       The library tier of an item that independent reviewers of at least two
       model families that did not produce it approved, with every automated
-      check passing. It is one of the two labels every search answer, the
-      catalogue browser and the public library page show beside an item, in
-      the words that the service publishes in its capabilities record
-      (catalogue_tiers.TIER_MEANINGS). Written with a capital letter when it
-      names the tier.
+      check passing, with the first catalogue's recorded family exception.
+      It remains internal review metadata in the current wire contracts,
+      not a customer-facing category or badge under the owner's September 26
+      decision. The service describes it in catalogue_tiers.TIER_MEANINGS.
+      Written with a capital letter when it names the tier.
     pattern: '\bVerified\b'
     case_sensitive: true
     may_appear:
@@ -997,13 +997,14 @@ vocabulary:
   Community:
     kind: customer_word
     definition: >-
-      The library tier of an item that passed every automated check (licence
-      allowlist, provenance, secret and safety scanners, and its own tests
-      where it has code) and one independent review by a model family that
-      did not produce it. Shown beside every such item wherever an account
-      searches, and an account can leave Community items out. Written with a
-      capital letter when it names the tier; the ordinary word community keeps
-      its ordinary meaning.
+      Internal review metadata for recorded per-item screening or, under the
+      September 29 generated-batch rule, per-item qualification plus independent
+      sampled review. Not every sampled-batch item receives a model verdict;
+      execution and installation are claimed only when its evidence records
+      them. The owner's September 26 decision forbids customer-facing tier
+      categories and badges. Existing versioned wire filters remain supported.
+      Written with a capital letter when it names the tier; the ordinary word
+      community keeps its ordinary meaning.
     pattern: '\bCommunity\b'
     case_sensitive: true
     may_appear:

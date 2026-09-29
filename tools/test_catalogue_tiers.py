@@ -65,6 +65,17 @@ class LibraryTierContractTests(unittest.TestCase):
                          [("verified", "Verified"), ("community", "Community")])
         self.assertEqual(legend["community_items"]["default"], "included")
 
+    def test_community_meaning_distinguishes_sampled_review_and_execution(self):
+        meaning = catalogue_tiers.TIER_MEANINGS["community"]
+        required = ("per-item automated checks", "independent sampled review",
+                    "not every item receives a model review", "does not imply installation or execution")
+        findings = lambda text: [phrase for phrase in required if phrase not in text]
+        self.assertEqual(findings(meaning), [])
+        # The former blanket claim fails even though the package passed its admission rule.
+        previous = ("Passed every automated check and its own tests where it has code "
+                    "and one independent review by a model family that did not produce it.")
+        self.assertEqual(len(findings(previous)), len(required))
+
     def test_the_meaning_of_verified_states_the_first_catalogue_exception(self):
         record = json.loads(FIRST_CATALOGUE_REVIEW.read_text(encoding="utf-8"))
         producer = json.loads(FIRST_CATALOGUE_PANEL.read_text(encoding="utf-8"))["producers"]["default_producer"]["family"]

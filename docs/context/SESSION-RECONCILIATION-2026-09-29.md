@@ -6,6 +6,18 @@ remains the task authority. Read [AGENTS.md](../../AGENTS.md), especially
 before acting. Recheck live state and Git rather than treating this snapshot
 as current indefinitely.
 
+## Latest checkpoint
+
+Fly release 51 is live. Its catalogue serves **27,811 packages and 88,373
+distinct payload files**, up by 3,910 packages and 19,551 files. The
+[publication evidence](../../artifacts/catalogue-publication-2026-09-29/programs-3910.json)
+records the exact release, digests, sample, transfer and live delivery check.
+The million-file target remains open. The 35 original creative seed packages
+are still candidates, not part of that served count.
+
+The sections below retain earlier checkpoints. Read the final continuation
+section before repeating a qualification, model call, publication or deploy.
+
 ## Owner direction carried forward
 
 The owner transferred the shared checkout from OpenCode to Codex, requested
@@ -137,7 +149,7 @@ removing collision failed the same assertion. The first camera and collision
 envelope were repaired after inspection, with failed/earlier outputs retained.
 This is an engine-command proof, not a finished game or tested MCP transport.
 
-## Continue in this order
+## Initial continuation plan
 
 1. Finish verification on the exact candidate tree, regenerate owned views,
    commit reviewed work to main and push. The incoming main revision
@@ -307,3 +319,102 @@ version counts once per calendar month. A real-browser probe confirmed three
 downloads of two distinct items produce two counted uses and the explanatory
 text. No billing rule was changed. Do not rewrite the historical browser
 report to claim a full 946/946 rerun.
+
+## Live release and catalogue publication
+
+Source `081d8e24a9704cd8fc105d243390cc2041238966` passed CI run
+`36638264614` and deployed as Fly release 51 through run `36639204067`.
+The [image release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-51.json)
+names the image and rollback image. The deployment gate was read back as off.
+The one-CPU, two-GB Machine and 25-GB volume are unchanged. Anonymous live
+browser checks passed 218/218, and nine declared website hostnames returned
+HTTP 200. These are not paid-transaction or universal native-client checks.
+
+The host now explicitly accepts `MIT AND BSD-2-Clause`; the other settings
+were preserved. The exact before/after digests and recoverable backup are in
+the image release record. This expression covers the recipe and source facts,
+not the upstream binary a customer may install.
+
+Publisher source `0c51d59a6e7347ff6c877bf46f4b51ac42ce6af8` passed CI run
+`36641945194`. It computes the delta from the validated prior bundle and checks
+the expected live release before publishing. It sends checksum-checked tar
+archives through SFTP, starts long extraction/publication work once, and polls
+small result records. It no longer needs a whole-volume digest scan for this path.
+Three archives transferred 19,551 new payloads (60,436,315 bytes); 68,822
+existing payloads were not resent. Temporary staging copies were removed only
+after this operation's result matched the live release and bundle digest.
+The body store, local bundle and remote publication record remain.
+
+The published catalogue is
+`b805860948b2625d08c2e53b62ebcf26c74d4948e69148ff3879bea87f08b92b`,
+content digest
+`2515f11ba5b7b41e2a34ecd5e67e5159f16c4097b4923baee0a3dd5aea601cc1`.
+Health and capabilities agree on 27,811 packages, 119,820 file placements and
+88,373 distinct files. The homepage shows 27,811. This supersedes the prepared
+counts above. A single observed refresh took 114.197 seconds; it is not a
+capacity or p95 benchmark. All prior items remain, with no withdrawals.
+
+The daily release's reviewed-folder list now includes the admitted program
+folder exactly once, and its explicit license list includes the combined
+expression, so a future daily build does not silently omit this batch. Both
+private files were backed up. No scheduled daily job was invoked here.
+
+An existing operator-key delivery attempt was refused as unauthorized. No
+credential was printed or altered. A separate operator-owned identity then
+received a 900-second credential and a grant for one exact new package. The
+deployed first-party client completed its handshake, search, manifest and all
+seven file downloads with matching digests: ten calls total, no execution and
+no downloaded text retained. The result record is
+`/data/incoming/live-program-probe-51.json`. This proves scoped delivery, not
+customer signup, billing or operation of the installed program.
+
+The final live inspection also found that the old capability legend and
+Security page claimed per-item model review and execution checks for all
+admitted files. The wording and its regression checks now distinguish per-item
+screening from sampled batch review, and approval from execution evidence.
+The combined-review summary retains those distinctions and the first
+catalogue's family exception. This changes descriptions, not admission rules,
+permissions, account plans or previously recorded evidence. Its deployed
+state must be recorded separately from release 51.
+
+For this correction, 82 targeted tests pass, as do documentation-index,
+Markdown, local links, site-map and conformance checks. The first conformance
+pass caught five uses of retired wording in this handoff; the wording was
+corrected and the gate passed without changing its rules. A direct Ruff pass
+still reports older import/style and broad-exception findings in the touched
+modules; no clean full-Ruff result is claimed. The full browser and self-test
+runs must be read separately from these targeted results.
+
+## Next work after publication
+
+1. Finish checks and release the assurance-description correction. Keep
+   historical records unchanged; regenerate current views from their sources.
+2. Independently review the 35 original seed packages, then expand original
+   supply around demonstrated tasks and meaningful reusable contracts. A
+   parameter change should reuse implementation bytes, not create a new file
+   merely to increase the count.
+3. Qualify one complete engine-control path and its revision benchmark.
+   Godot's small executed fixture is a starting point; browser-native
+   PlayCanvas, Babylon.js and Three.js remain distinct alternatives.
+4. Before another generated-batch admission, test combination of multiple
+   admission runs. The current deterministic reviewer ID is constant while
+   its installation digest includes the run basis, so the combiner may
+   correctly refuse a second run as conflicting. Fix the identity design,
+   not the combiner's conflict guard. Also avoid changing old items' batch
+   attributes on every composition; the current publication record reports 23,901
+   metadata changes although their bodies were reused.
+5. Measure full-size serving memory, p95 search and download behavior, large
+   binary/asset delivery and transfer recovery before scaling to a million.
+   Finish the composition targets and per-package execution coverage required
+   by the final acceptance gate. The current distinct-file count is not that
+   final qualification.
+6. Connect community drafts, approved dispatch and reply intake to existing
+   durable records. No social post or automatic Reddit crawl has been made.
+   Complete scoped history review and ingestion rather than claiming all
+   browser and chat history was read.
+
+Do not repeat the completed program review or publish just to reproduce a
+count. The legacy v1 review, uncommitted qualifier record and marked failed
+combined folder remain invalid inputs. No new infrastructure allowance,
+privacy purpose, commercial subscription-sharing access or plugin approval
+was obtained by this continuation.

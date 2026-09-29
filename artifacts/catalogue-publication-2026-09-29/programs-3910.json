@@ -1,0 +1,93 @@
+{
+  "record_type": "catalogue_publication_evidence/v1",
+  "observed_at": "2026-09-29T23:16:29Z",
+  "app_release": 51,
+  "app_source_revision": "081d8e24a9704cd8fc105d243390cc2041238966",
+  "publisher_revision": "0c51d59a6e7347ff6c877bf46f4b51ac42ce6af8",
+  "publisher_ci_run": 36641945194,
+  "publisher_ci_conclusion": "success",
+  "publication_receipt": {
+    "record_type": "service_catalogue_operation/v1",
+    "operation": "publish",
+    "state": "published",
+    "release_id": "b805860948b2625d08c2e53b62ebcf26c74d4948e69148ff3879bea87f08b92b",
+    "previous_release_id": "777f1c374003e7cf404c43d79be92e41f21d25053eff565c01590920cc1a266f",
+    "bundle_digest": "38c43ebea0380fd31fce30a9b8cd179c3aa7533674645162222799f80a090b48",
+    "content_digest": "2515f11ba5b7b41e2a34ecd5e67e5159f16c4097b4923baee0a3dd5aea601cc1",
+    "items": 27811,
+    "added": 3910,
+    "changed": 23901,
+    "withdrawn": 0,
+    "durable_withdrawals": 0,
+    "bodies_written": 19551
+  },
+  "live_file_population": {
+    "record_type": "catalogue_file_population/v1",
+    "packages": 27811,
+    "file_placements": 119820,
+    "distinct_files": 88373,
+    "observed_distinct_files": 88373,
+    "distinct_file_bytes": 358526742,
+    "duplicate_file_placements": 31447,
+    "packages_without_file_manifest": 0,
+    "complete": true
+  },
+  "previous_population": {
+    "packages": 23901,
+    "file_placements": 92450,
+    "distinct_files": 68822,
+    "distinct_file_bytes": 298090427
+  },
+  "delta_transfer": {
+    "new_payload_files": 19551,
+    "new_payload_bytes": 60436315,
+    "payload_archives": 3,
+    "unchanged_payload_files_not_resent": 68822,
+    "expected_prior_release_checked": true,
+    "own_receipt_matched_live_release_and_bundle": true,
+    "temporary_staging_removed_after_verification": true,
+    "receipt_kept_at": "/data/incoming/delta-programs-3910-3404b33c-d76413a5212b.publish.json"
+  },
+  "admission": {
+    "batch": "program_installs/1.0.0@3e497b809fd8",
+    "admitted_packages": 3910,
+    "sample_size": 58,
+    "sample_defects": 0,
+    "planted_defective_controls": 6,
+    "planted_defective_controls_rejected": 6,
+    "review_record_type": "generated_batch_sampled_review/v2",
+    "reviewer": "ollama.kimi-k2.6",
+    "producer_family": "anthropic",
+    "model_calls": 11,
+    "model_call_ceiling": 12,
+    "reported_tokens_including_calibration": 614165,
+    "review_sha256": "26c14c3cc869a043625c95f8666572af1acb6f0f41a030cd5532b62c7b8724a2",
+    "review_ledger_sha256": "14a0fce0b1346bd08f9c518a449cc77acd41619ebebef80b5f3d85f3debd2eb6",
+    "qualification_sha256": "ba713e7ac8a9ca1f67a5f61ca9c8617a908c87e8c5fb7f8b6d7e5c07012e24fc",
+    "admission_report_sha256": "f593b55e82dd2fc502515790474f4ce40499a82eafff3c74439a7a529b500d28",
+    "execution_scope": "Per-item static qualification and sampled review; not installation or execution of all represented programs."
+  },
+  "live_delivery_probe": {
+    "record_type": "live_program_package_delivery_check/v1",
+    "identity": "library.supply.program_installs.c0c54a76526e2872da1f16c0.8f45b3e0f51ccd58",
+    "package_digest": "8f45b3e0f51ccd581bec42cbe0b04881dc5827102184c72e76467d24e8de36fd",
+    "file_count": 7,
+    "files_digest_checked": 7,
+    "client_calls": 10,
+    "passed": true,
+    "credential_printed": false,
+    "body_text_kept": false,
+    "code_executed": false,
+    "probe_expires_at": 1790724183,
+    "scope": "One operator-owned, one-item-scoped, 900-second credential using the first-party client; not customer signup or payment qualification.",
+    "receipt": "/data/incoming/live-program-probe-51.json"
+  },
+  "assurance_limits": [
+    "The million-file target is not complete; these are approved served payload digests, not a million distinct semantic capabilities.",
+    "The 35 original creative seed packages remain candidates and are not included in the publication.",
+    "The catalogue composition moves toward the target but still exceeds the final skill and instruction caps.",
+    "The changed count includes internal batch-metadata changes to the 23901 prior items, not 23901 rewritten payload packages.",
+    "The licence expression for generated install recipes and source facts is not a redistribution grant for upstream program binaries.",
+    "Zero defects in a sample does not establish zero defects in every batch member."
+  ]
+}

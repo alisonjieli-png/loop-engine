@@ -45,7 +45,7 @@ for entry in (str(REPOSITORY / "src"),):
     if entry not in sys.path:
         sys.path.insert(0, entry)
 
-from loop_engine.core.service_runtime.catalogue_attributes import TIER_ATTRIBUTE, declare  # noqa: E402
+from loop_engine.core.service_runtime.catalogue_attributes import declare  # noqa: E402
 
 REVIEW_FILE, ITEMS_FILE, SCHEMA_FILE = "reviews.json", "items.json", "attribute-schema.json"
 REVIEW_RECORD = "starter_catalogue_independent_review/v2"
@@ -197,10 +197,12 @@ def combine(options) -> dict:
         "catalogue_folder": str(output), "reviewers": list(reviewers.values()),
         "reviewer_groups": groups, "rows": rows, "combined_from": combined_from,
         "withdrawn": [{"identity": identity, "note": note} for identity, note in sorted(withdrawn.items())],
-        "decision_rule": ("A Verified row is approved only when every reviewer of its reviewer group approves it; a "
-                          "Community row only when its named reviewer, from a family that did not produce it, "
-                          "approves it and every automated check passes. One written objection withholds approval. "
-                          "No reviewer of an item's producer family judged it."),
+        "decision_rule": ("Each row retains its recorded admission rule and exact-byte evidence. Full reviews and "
+                          "per-item screens retain their named decisions. Generated-batch admission retains its "
+                          "per-item qualification and accepted independent sampling decision; unsampled items have "
+                          "no per-item model verdict. Execution is asserted only by the recorded checks, not by a "
+                          "tier. A written rejection withholds that item. The first catalogue retains its recorded "
+                          "reviewer-family exception; combining records creates no new review."),
         "totals": {"items_in_catalogue": len(rows), "items_reviewed": len(rows) - counted["not_reviewed"],
                    "approved": counted["approved"],
                    "approved_as_reviewed": sum(1 for row in rows if row["outcome"] == "approved"

@@ -1,0 +1,37 @@
+{
+  "record_type": "pilot_release_record/v2",
+  "release": 51,
+  "app": "baltor-pilot",
+  "source_revision": "081d8e24a9704cd8fc105d243390cc2041238966",
+  "image": "registry.fly.io/baltor-pilot@sha256:0401d2147a166163826575f7cba18a9bfbbae562cf1720c01da1a3c6f3bc00a9",
+  "rollback_release": 50,
+  "rollback_image": "registry.fly.io/baltor-pilot@sha256:dcb5ff23e47a92abbea2d1cc9bb596e1702c895a07b502a22d8cb852f36be843",
+  "deployed_at": "2026-09-29T22:26:20Z",
+  "ci_run": 36638264614,
+  "ci_conclusion": "success",
+  "deploy_run": 36639204067,
+  "deploy_workflow_conclusion": "success",
+  "deployment_gate_after": false,
+  "hostnames_checked": 9,
+  "hostnames_passed": 9,
+  "service_checks_passed": 218,
+  "service_checks_total": 218,
+  "catalogue_checks_passed": null,
+  "volume_gb": 25,
+  "cpus": 1,
+  "memory_mb": 2048,
+  "changes": [
+    "The service reports distinct payload-file counts separately from package counts and repeated file placements.",
+    "Connection settings accept the declared effect metadata while continuing to reject embedded credentials and unrelated commands.",
+    "The harness tabs wrap on narrow screens and with enlarged text.",
+    "The account panel explains counted library uses rather than treating repeated downloads as additional monthly usage.",
+    "Declared reference artifacts must include the interpretation metadata their format requires."
+  ],
+  "advisory": {
+    "live_checks": "The 218 checks were anonymous read-only checks of the deployed site. The nine declared hostnames answered HTTP 200. This is not a new paid transaction or a qualification of every native client.",
+    "source_browser_checks": "The full local browser run passed 945 of 946 checks and all 195 failure controls. The sole outdated empty-wording assertion was corrected and checked separately. Do not describe that report as a full 946-check rerun.",
+    "catalogue_at_image_release": "The observed active catalogue still had 23901 packages and 68822 distinct payload files. The separately prepared 3910-package addition is not claimed as published by this image record.",
+    "license_policy": "Added the explicit MIT AND BSD-2-Clause label while preserving all other host settings. Backup: /data/host.json.before-program-license. Before SHA-256 64c039a70c8c95a7c3a334a04ff4577be088819d5e21ce39a7b9c607b8a39074; after 94c4829844a07cd6993a1844f101b97c6ecf4402caabcb01e7cde7ff0b270159.",
+    "optional_mail_hostname": "mail.baltor.ai is not one of the nine declared website hostnames; its previously reported DNS gap was not repaired by this release."
+  }
+}

@@ -21,10 +21,14 @@ Library tier of an approved item   label
 ├── verified                       Verified    approved by independent reviewers of at
 │                                              least two model families that did not
 │                                              produce it, every automated check passing
-└── community                      Community   every automated check passing and one
-                                               independent review by a family that did
-                                               not produce it
+└── community                      Community   recorded per-item screening, or per-item
+                                               qualification plus independent batch sampling;
+                                               the label does not imply execution
 ```
+
+These labels remain internal wire metadata, not customer-facing categories
+(owner decision, September 26). The current September 29 generated-batch rule
+and its recorded check coverage are described by `catalogue_tiers.py`.
 
 A request states which community items it may be offered. The default offers
 none, so a caller that says nothing, or reads a record version without tiers,

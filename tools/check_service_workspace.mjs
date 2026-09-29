@@ -2997,10 +2997,13 @@ try {
   const numberWords=["no","one","two","three","four","five","six","seven","eight","nine","ten"];
   const reviewClaims=()=>{const totals=catalogueReviews.totals,lenses=catalogueReviews.reviewers.map(item=>item.lens);
     const sameFamily=catalogueReviews.reviewers.some(item=>/\bclaude\b/i.test(item.label));
-    return ["An item joins the library only after independent reviewers approve its exact bytes.",
+    return ["Every admitted package has an approval record tied to its exact bytes.",
       ...(catalogueReviews.reviewers.every(item=>item.produced_any_item_under_review===false)?["No reviewer judges an item it wrote"]:[]),
       ...(reviewPanelPolicy.any_rejection_withholds_approval===true?["one written rejection keeps an item out, with the reason recorded."]:[]),
-      "a new item needs approval from at least "+numberWords[reviewPanelPolicy.minimum_approvals]+" reviewers of at least "+numberWords[reviewPanelPolicy.minimum_distinct_families]+" model families",
+      "Full per-item review needs approval from at least "+numberWords[reviewPanelPolicy.minimum_approvals]+" reviewers of at least "+numberWords[reviewPanelPolicy.minimum_distinct_families]+" model families",
+      "Generated batches use per-item automated checks and independent sampled review.",
+      "Not every package in an accepted batch receives a model review.",
+      "Approval does not imply installation or execution",
       ...(reviewPanelPolicy.exclude_producer_family===true?["none of them from the family of the model that wrote the item."]:[]),
       ...(reviewPanelPolicy.prechecks.licence?["a licence that is not accepted or that disagrees with the licence the item declares"]:[]),
       ...(reviewPanelPolicy.prechecks.format?["a missing part"]:[]),...(reviewPanelPolicy.prechecks.safety?["unsafe instructions"]:[]),
@@ -3208,6 +3211,12 @@ try {
      find:"const foundingOpen = !signedIn && capabilities?.record_type === CAPABILITIES_RECORD_TYPE && capabilities.website?.founding_offer_open === true;",replacement:"const foundingOpen = false;",
      expected:["pricing_and_get_started_state_the_founding_offer_while_places_remain"]},
     {name:"claim_three_model_families_for_review",scenario:"review_explained",path:"/security",find:"at least two model families",replacement:"at least three model families",
+     expected:["how_review_works_states_only_what_the_review_records_hold"]},
+    {name:"claim_each_sampled_batch_item_received_a_model_review",scenario:"review_explained",path:"/security",
+     find:"Not every package in an accepted batch receives a model review.",replacement:"Every package in an accepted batch receives a model review.",
+     expected:["how_review_works_states_only_what_the_review_records_hold"]},
+    {name:"claim_approval_proves_execution",scenario:"review_explained",path:"/security",
+     find:"Approval does not imply installation or execution",replacement:"Approval proves installation and execution",
      expected:["how_review_works_states_only_what_the_review_records_hold"]},
     {name:"hide_that_a_first_release_reviewer_shared_the_authors_model_family",scenario:"review_explained",path:"/security",
      find:" One of those reviewers came from the same model family as the model that wrote the items.",replacement:"",expected:["how_review_works_states_only_what_the_review_records_hold"]},

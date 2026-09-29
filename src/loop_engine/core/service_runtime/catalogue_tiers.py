@@ -10,11 +10,16 @@ the two tiers in its row "Library tiers":
 Library tier of an approved item   label       admission
 ├── verified                       Verified    independent reviewers of at least two model families
 │                                              that did not produce it; every automated check passes
-└── community                      Community   every automated check passes (licence allowlist,
-                                               provenance, secret and safety scanners, its own
-                                               tests where it has code) and one independent review
-                                               by a family that did not produce it
+└── community                      Community   recorded per-item screening, or deterministic
+                                               per-item qualification plus independent batch sampling;
+                                               execution is not implied by the label
 ```
+
+The owner's September 26 decision removed these labels from customer-facing
+categories. They remain in the versioned wire contract. The September 29
+generated-batch rule permits sampled review and optional execution checks;
+the legend must not describe that evidence as a model review or test run of
+every item. Per-item evidence, not the tier alone, states what actually ran.
 
 The reviewed catalogue names the tier of each approval, and the tier travels
 with the approval through the bundle, the item version record, the served view
@@ -59,11 +64,13 @@ TIER_MEANINGS = {
                     "this rule, is the exception: its items were written with Claude models and approved by three "
                     "reviewers that did not write them, and those reviews do not show two other model families. They "
                     "are reviewed again by two other model families as soon as those reviewers are available."),
-    COMMUNITY_TIER: ("Passed every automated check (licence allowlist, provenance, secret and safety scanners, and "
-                     "its own tests where it has code) and one independent review by a model family that did not "
-                     "produce it.")}
-#: The owner's decision labels community items everywhere and lets a search
-#: exclude them, so an account receives them by default.
+    COMMUNITY_TIER: ("Admitted under its recorded qualification rule. Standard screening uses an independent "
+                     "per-item review; generated batches use per-item automated checks and independent sampled "
+                     "review by a model family that did not produce the generator. In that route, not every item "
+                     "receives a model review. The recorded evidence states which checks ran. Approval does not "
+                     "imply installation or execution, compatibility with every harness, or improved task results.")}
+#: Existing wire settings include this admission class by default and may narrow it.
+#: Customer pages present one library, not the internal tier categories.
 DEFAULT_COMMUNITY_ITEMS = COMMUNITY_INCLUDED
 COMMUNITY_ITEM_MEANINGS = {
     COMMUNITY_EXCLUDED: "Verified items only.",

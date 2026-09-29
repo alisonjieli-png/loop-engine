@@ -18,8 +18,9 @@ the process effect, so the existing effect filter withholds it from a client
 that did not declare that authority.
 
 Every approval names its library tier (`catalogue_tiers.py`): `verified` for
-the review panel's approval and `community` for an item that passed every
-automated check and one independent review. A verified item version keeps the
+the review panel's approval and `community` for recorded per-item screening or
+per-item qualification with independent batch sampling. The tier does not
+assert per-item execution or a per-item model verdict. A verified item version keeps the
 `catalogue_item_version/v1` shape, so an older image still serves a
 verified-only release; a community item version is `catalogue_item_version/v2`,
 which names its tier and which an older image refuses.
