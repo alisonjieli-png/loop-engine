@@ -21,7 +21,6 @@ from loop_engine.core.intelligence_tagging import TagSet
 from loop_engine.core.model_call_records import default_secret_patterns
 from loop_engine.core.service_runtime.catalogue_packages import (
     EXECUTABLE_EFFECT,
-    MAXIMUM_PACKAGE_FILES,
     CataloguePackage,
     CataloguePackageFile,
     placement_path,
@@ -84,7 +83,7 @@ def _package(value, effects):
 
 
 def _files(values, effects):
-    if not isinstance(values, list) or not 1 <= len(values) <= MAXIMUM_PACKAGE_FILES:
+    if not isinstance(values, list) or not values:
         _refuse("native_files_required")
     metadata, bodies = [], {}
     for value in values:

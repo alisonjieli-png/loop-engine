@@ -29,6 +29,7 @@ a scheduled round continues where the last one stopped.
 from __future__ import annotations
 
 import json
+import hashlib
 import re
 from dataclasses import dataclass, field
 from urllib.parse import urlsplit
@@ -290,28 +291,45 @@ def topic_search(declaration: dict, api, *, query_budget: int, cursor: "dict | N
     return result
 
 
-def npm_search(declaration: dict, transport, *, request_budget: int) -> DiscoveryResult:
-    """Packages found by keyword, through the GitHub repository each one declares."""
+def npm_search(declaration: dict, transport, *, request_budget: int, cursor: "dict | None" = None) -> DiscoveryResult:
+    """Rotate bounded npm searches, keeping every declared query eligible across ticks."""
     result = DiscoveryResult()
     spec = declaration.get("npm_search") or {}
-    for text in spec.get("texts", ()):
-        for page in range(spec.get("pages", 1)):
-            if result.requests >= request_budget:
-                return result
-            response = transport.get("registry.npmjs.org", "/-/v1/search",
-                                     {"text": text, "size": 250, "from": page * 250})
-            result.requests += 1
-            if response.status != 200:
-                break
-            objects = json.loads(response.body).get("objects") or []
-            for item in objects:
-                package = item.get("package") or {}
-                repository = repository_name(((package.get("links") or {}).get("repository")) or "")
-                if repository:
-                    result.leads.append(lead(f"npm.{text}", NPM, repository,
-                                             detail={"package": package.get("name"), "version": package.get("version")}))
-            if len(objects) < 250:
-                break
+    cells = [(text, page) for page in range(spec.get("pages", 1)) for text in spec.get("texts", ())]
+    if not cells:
+        return result
+    signature = hashlib.sha256(json.dumps(cells, separators=(",", ":")).encode()).hexdigest()
+    position = (cursor or {}).get("next_position", 0) if (cursor or {}).get("queries_sha256") == signature else 0
+    if type(position) is not int or not 0 <= position < len(cells):
+        raise ValueError("invalid_npm_discovery_cursor")
+    for offset in range(min(max(0, request_budget), len(cells))):
+        index = (position + offset) % len(cells)
+        text, page = cells[index]
+        response = transport.get("registry.npmjs.org", "/-/v1/search",
+                                 {"text": text, "size": 250, "from": page * 250})
+        result.requests += 1
+        result.cursor = {"queries_sha256": signature, "next_position": (index + 1) % len(cells)}
+        if response.status != 200:
+            result.refusals.append(refusal("discovery", "source_unavailable", source_ids=(f"npm.{text}",),
+                                           detail=f"npm search HTTP {response.status}, page {page}"))
+            continue
+        try:
+            objects = json.loads(response.body)["objects"]
+            if not isinstance(objects, list):
+                raise ValueError("objects_not_list")
+        except (ValueError, KeyError, TypeError):
+            result.refusals.append(refusal("discovery", "source_unavailable", source_ids=(f"npm.{text}",),
+                                           detail=f"invalid npm search response, page {page}"))
+            continue
+        for item in objects:
+            package = item.get("package") or {} if isinstance(item, dict) else {}
+            if not isinstance(package, dict):
+                continue
+            links = package.get("links") or {}
+            repository = repository_name(links.get("repository", "")) if isinstance(links, dict) else None
+            if repository:
+                result.leads.append(lead(f"npm.{text}", NPM, repository,
+                                         detail={"package": package.get("name"), "version": package.get("version")}))
     return result
 
 

@@ -41,7 +41,6 @@ from dataclasses import dataclass, field
 from pathlib import PurePosixPath
 
 from loop_engine.core.library_ingestion.licences import is_licence_file, is_notice_file
-from loop_engine.core.service_runtime.catalogue_packages import MAXIMUM_PACKAGE_FILES
 
 from .records import (
     CODE_MODULE, COMMAND, CONTRACT_SCHEMA, HOOK, INSTRUCTION_FILE, MARKETPLACE, PACKAGE_KINDS,
@@ -58,7 +57,10 @@ EXCLUDED_SEGMENTS = frozenset({"node_modules", "vendor", ".venv", "venv", "site-
 DEFAULT_KINDS = (SKILL, INSTRUCTION_FILE, RULES, SUBAGENT, COMMAND, HOOK, PLUGIN_MANIFEST, MARKETPLACE,
                  PROTOCOL_SERVER, CODE_MODULE, SETTINGS)
 #: The subfolders of a skill that sits at a repository root; the rest of the root is the repository's.
-ROOT_SKILL_FOLDERS = ("scripts", "references", "assets", "templates", "examples", "resources", "reference")
+ROOT_SKILL_FOLDERS = ("scripts", "references", "assets", "templates", "examples", "resources", "reference",
+                     "mcp", "contracts", "schemas", "docs", "bin")
+ROOT_SKILL_MANIFESTS = frozenset({"package.json", "package-lock.json", "pyproject.toml", "uv.lock",
+                                "requirements.txt", "Cargo.toml", "Cargo.lock"})
 
 _INSTRUCTION_NAMES = {"agents.md", "agents.override.md", "claude.md", "gemini.md", ".goosehints"}
 _RULE_FILES = {".cursorrules", ".windsurfrules", ".clinerules"}
@@ -307,7 +309,8 @@ def _skill_members(root: str, primary: str, blobs: dict, skill_roots: set) -> li
         for path in blobs:
             first = _parts(path)[0]
             if path != primary and (first in ROOT_SKILL_FOLDERS or (len(_parts(path)) == 1 and
-                                                                     (is_licence_file(path) or is_notice_file(path)))):
+                                                                     (is_licence_file(path) or is_notice_file(path)
+                                                                      or path in ROOT_SKILL_MANIFESTS))):
                 members.append(path)
     else:
         prefix = root + "/"
@@ -401,8 +404,6 @@ def plan_packages(entries, scope: SourceScope = SourceScope(), repository: str =
                 stem = f"{owner}-{stem}" if owner else stem
             name = stem
         problems = []
-        if len(members) > MAXIMUM_PACKAGE_FILES:
-            problems.append("package_too_many_files")
         folder_prefix = (root + "/") if kind in (SKILL, HOOK) and root else None
         if folder_prefix is not None and any(other.startswith(folder_prefix) for other in special):
             reasons = {special[other].mode for other in special if other.startswith(folder_prefix)}

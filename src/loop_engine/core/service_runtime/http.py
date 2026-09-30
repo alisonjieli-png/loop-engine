@@ -24,7 +24,7 @@ from ..provisioning_mcp import TOOL_OPERATIONS, _schema
 from ..provisioning_server import OPERATIONS, ProvisioningError, ProvisioningItemBinding, tierless_answer
 from .catalogue_reports import (FEEDBACK_OPERATIONS, FLAG_OPERATION, MAXIMUM_REASON_CHARACTERS, REPORT_OPERATION,
                                 REPORT_TOOL)
-from .catalogue_packages import FILE_BODY, MAXIMUM_PACKAGE_FILES
+from .catalogue_packages import FILE_BODY
 from .catalogue_tiers import DEFAULT_LIBRARY_SETTINGS, narrowed, tier_legend
 from .http_auth import (
     HttpAuthenticationError, ServiceHttpAuthentication, ServiceHttpAuthenticator, validate_public_url,
@@ -49,7 +49,7 @@ from .model_directory_pages import moved_answer, rendered_page
 from . import library_page
 from . import red_team_page
 from . import status_pages
-from .web_pages import (CACHEABLE_WEB_ASSETS, GENERATED_WEB_FILES, HTML_MEDIA_TYPE, PUBLIC_ASSET_CACHE_CONTROL,
+from .web_pages import (CACHEABLE_WEB_ASSETS, CREATIVE_PREVIEW_PATH, GENERATED_WEB_FILES, HTML_MEDIA_TYPE, PUBLIC_ASSET_CACHE_CONTROL,
                         WEB_ASSETS, asset_etag, missing_address_page, served_asset, server_error_page,
                         validator_matches)
 
@@ -648,7 +648,7 @@ def protocol_tool_schema(operation):
             "One file of the item's package, by the path the search result's package lists. The answer holds that "
             "file's exact content.")
         schema["properties"]["file_offset"] = {
-            "type": "integer", "minimum": 0, "maximum": MAXIMUM_PACKAGE_FILES - 1,
+            "type": "integer", "minimum": 0,
             "description": "The first file of the package page to return, counted from 0 in the package's path "
                            "order. The answer's next_file_offset names the next page; null means the last page."}
     return schema
@@ -1980,12 +1980,16 @@ class ServiceHttpApplication:
                 task.cancel()
                 await asyncio.gather(task, return_exceptions=True)
 
-    def _page_headers(self):
+    def _page_headers(self, *, creative_preview=False):
         """The headers every served page carries, refusals included."""
         identity_origin = " " + self.browser_identity.configuration.project_url if self.browser_identity else ""
-        return {"Content-Security-Policy": "default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'; connect-src 'self'"
-                + identity_origin + "; base-uri 'none'; frame-ancestors 'none'; form-action 'none'",
-                "Referrer-Policy": "no-referrer", "X-Frame-Options": "DENY",
+        local_images = " blob: data:" if creative_preview else ""
+        local_connections = " blob:" if creative_preview else ""
+        ancestors = "'self'" if creative_preview else "'none'"
+        return {"Content-Security-Policy": "default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'"
+                + local_images + "; connect-src 'self'" + local_connections + identity_origin
+                + "; frame-src 'self'; base-uri 'none'; frame-ancestors " + ancestors + "; form-action 'none'",
+                "Referrer-Policy": "no-referrer", "X-Frame-Options": "SAMEORIGIN" if creative_preview else "DENY",
                 "Permissions-Policy": "camera=(), microphone=(), geolocation=()"}
 
     async def _web_route(self, request, Response, JSONResponse):
@@ -2011,7 +2015,7 @@ class ServiceHttpApplication:
             asset = status_pages.rendered(path, method, self.configuration.display_name, request.headers.get("host"))
         if asset is not None:
             body, media_type = asset
-            headers = self._page_headers()
+            headers = self._page_headers(creative_preview=path == CREATIVE_PREVIEW_PATH)
             if media_type == HTML_MEDIA_TYPE and path.startswith("/assets/"):
                 # A documentation body is part of a page, fetched by the page's
                 # script. A search engine may read it and must not list it alone.

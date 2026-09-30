@@ -29,3 +29,13 @@ export async function checkAudiences(page,check){
     &&audienceProblems(cards.map(card=>({...card,href:"/"}))).length>0
     &&audienceProblems(cards.map(card=>({...card,text:""}))).length>0);
 }
+
+export function useCaseProblems(groups){
+  const problems=[];
+  if(JSON.stringify(groups.map(group=>group.id))!==JSON.stringify(["engineers","designers","agents"]))problems.push("missing or repeated use-case audience");
+  for(const group of groups){
+    if(group.cases.length!==3||group.cases.some(row=>!row.title?.trim()||!row.href?.startsWith("/")))problems.push("each audience needs three linked use cases");
+    if(group.id==="designers"&&!/being qualified/i.test(group.text))problems.push("creative availability must remain clear");
+  }
+  return problems;
+}

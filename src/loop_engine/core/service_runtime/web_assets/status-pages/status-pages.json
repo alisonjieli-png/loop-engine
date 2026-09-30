@@ -5,6 +5,18 @@
   "releases": [
    {
     "kind": "service",
+    "number": 54,
+    "at": "2026-09-30T14:34:00Z",
+    "lines": [
+     "The homepage and public library show measured distinct files separately from packages.",
+     "The downloadable worker bundles OpenCode and the Baltor harness, with explicit fresh-process profiles and setup instructions.",
+     "The worker guide is registered in the site map; scheduled directory updates and a smaller deck payload are included."
+    ],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
     "number": 53,
     "at": "2026-09-30T05:55:10Z",
     "lines": [
@@ -698,6 +710,11 @@
       "description": "Watch one task run step by step, read what happened in four real cases, and try a first search yourself."
      },
      {
+      "address": "/top-mcps",
+      "title": "Top MCP servers",
+      "description": "A task-focused MCP shortlist with dated GitHub popularity, setup sources and clear limits on quality and Baltor usage claims."
+     },
+     {
       "address": "/library",
       "title": "The library",
       "description": "What the library holds, counted by every kind of harness file and its label, one item in full, and what the served release changed."
@@ -717,6 +734,11 @@
    {
     "group": "Use cases",
     "pages": [
+     {
+      "address": "/demo/ashen-wilds",
+      "title": "Ashen Wilds: a playable, editable 3D scene",
+      "description": "Play a fantasy arena, inspect character animations and export the original scene for Blender."
+     },
      {
       "address": "/use-cases",
       "title": "Use cases",
@@ -2039,7 +2061,7 @@
      },
      {
       "step": "S-6.183",
-      "title": "The front door outside baltor.ai: the GitHub page, a tagged release with a pinned install, and a listing in the official protocol server registry",
+      "title": "Distribution outside baltor.ai: pinned releases, the protocol registry and an OpenAI plugin",
       "status": "Named, not scheduled yet"
      },
      {

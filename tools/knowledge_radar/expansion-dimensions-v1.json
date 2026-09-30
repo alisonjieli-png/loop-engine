@@ -1,0 +1,40 @@
+{
+  "record_type": "community_expansion_policy/v1",
+  "revision": "2026-09-30",
+  "maximum_work_per_day": 32,
+  "maximum_model_dispatches_per_day": 96,
+  "reported_token_stop_after": 2000000,
+  "maximum_prompt_bytes": 48000,
+  "output_allocation_tokens": 8192,
+  "timeout_seconds": 180,
+  "model": "kimi-k2.6",
+  "producer_family": "moonshot",
+  "dimensions": ["industry", "use_case", "data_type", "job_title", "job_description", "project_stage", "failure_mode", "input_contract", "output_contract", "tool", "constraints", "delivery_format"],
+  "questions": [
+    "What recurring task or observed failure does this solve, and for whom?",
+    "Can an existing package or deterministic implementation do the work unchanged?",
+    "Which dimensions change the algorithm, required effects or acceptance check, and which are only applicability tags?",
+    "What must be known before execution, and what must remain unknown until a source is checked?",
+    "What is the smallest complete native artifact a harness can actually use?",
+    "What concrete input should pass, and what plausible wrong result must fail?",
+    "What can break on retry, revision, export, migration or a fresh-session reopen?",
+    "Which facts expire, which source rights are established, and which dependencies need a version check?",
+    "Can the result be a parameterized shared implementation rather than another copy?",
+    "Should this become one package, an update to an existing package, a reusable supply generator, or no new work?"
+  ],
+  "contexts": [
+    {"id":"social_video", "industry":"social and educational media", "use_case":"repeatable branded videos and review bundles", "job_title":"video systems designer", "job_description":"Compose sourced stories, Ken Burns motion, captions, split panels and procedural audio; preserve editable recipes and exact render checks.", "data_types":["caption","ken burns","ffmpeg","b-roll","split screen","video"], "signals":["visual_design","publication","audio"], "formats":["python_tool","typescript_tool","task_recipe"]},
+    {"id":"transit_story", "industry":"geography and transit education", "use_case":"station and place guessing videos and games", "job_title":"geospatial storyteller", "job_description":"Combine dated map and transit sources with route motion, reveal timing and attribution without asserting photorealism or surveying accuracy.", "data_types":["gtfs","station","railway","map","route","terrain"], "signals":["procedural_generation","geometry_and_rigging","workflow_detail"], "formats":["python_tool","typescript_tool","reference_collection","task_recipe"]},
+    {"id":"playable_learning", "industry":"interactive education", "use_case":"reusable quizzes and small playable explanations", "job_title":"educational game designer", "job_description":"Turn the same source-backed topic into a video, quiz or playable exercise with answer evidence, scoring, replay and accessibility checks.", "data_types":["quiz","game","score","answer","scene_document"], "signals":["gameplay","visual_design","failure_report"], "formats":["python_tool","typescript_tool","task_recipe"]},
+    {"id":"automation", "industry":"business operations", "use_case":"reusable automation and safe retries", "job_title":"automation engineer", "job_description":"Connect services and preserve correctness when tasks fail or repeat.", "data_types":["workflow_json","json_object","event"], "signals":["software_data","agent_control","workflow_detail"], "formats":["n8n_workflow","python_tool","task_recipe"]},
+    {"id":"data_quality", "industry":"data infrastructure", "use_case":"validate and repair data pipelines", "job_title":"data engineer", "job_description":"Transform records with explicit schemas, units and failure reports.", "data_types":["csv_table","sql_table","json_object"], "signals":["software_data","failure_report"], "formats":["python_tool","typescript_tool","reference_collection"]},
+    {"id":"scene_geometry", "industry":"3D design and games", "use_case":"construct and inspect editable geometry", "job_title":"technical artist", "job_description":"Build scenes with consistent transforms, topology and collision proxies.", "data_types":["mesh","scene_document","vector"], "signals":["geometry_and_rigging","procedural_generation","gameplay"], "formats":["python_tool","typescript_tool","task_recipe"]},
+    {"id":"motion", "industry":"media production", "use_case":"editable animation and reliable video exports", "job_title":"motion designer", "job_description":"Revise camera, layout and timing without damaging approved elements.", "data_types":["timeline","image","video"], "signals":["visual_design","publication"], "formats":["typescript_tool","python_tool","task_recipe"]},
+    {"id":"audio", "industry":"audio production", "use_case":"signal checks and transformations", "job_title":"audio engineer", "job_description":"Process audio with explicit sample rate, channels, duration and clipping checks.", "data_types":["audio","matrix","event"], "signals":["audio","cost_or_performance"], "formats":["python_tool","task_recipe"]},
+    {"id":"geospatial", "industry":"mapping and construction", "use_case":"prepare terrain and coordinate-aware scene inputs", "job_title":"geospatial analyst", "job_description":"Combine elevation and imagery while preserving coordinate systems and source resolution.", "data_types":["geolocation","raster","mesh"], "signals":["procedural_generation","geometry_and_rigging","software_data"], "formats":["python_tool","reference_collection","task_recipe"]},
+    {"id":"research", "industry":"research and education", "use_case":"reuse dated evidence and structured reference collections", "job_title":"research analyst", "job_description":"Organize evidence with dates, scope, uncertainty and reproducible queries.", "data_types":["reference_table","graph","text"], "signals":["workflow_detail","software_data","cost_or_performance"], "formats":["reference_collection","python_tool","task_recipe"]},
+    {"id":"mathematics", "industry":"scientific computing", "use_case":"checked algorithms and numerical assumptions", "job_title":"research software engineer", "job_description":"Translate mathematical methods into bounded implementations and discriminating examples.", "data_types":["matrix","vector","graph"], "signals":["software_data","cost_or_performance","failure_report"], "formats":["python_tool","typescript_tool","reference_collection"]},
+    {"id":"software_delivery", "industry":"software engineering", "use_case":"compatibility, testing and repeatable releases", "job_title":"platform engineer", "job_description":"Maintain software across dependency updates, retries and deployment boundaries.", "data_types":["version_range","yaml_config","log_lines"], "signals":["publication","software_data","failure_report"], "formats":["python_tool","typescript_tool","task_recipe"]},
+    {"id":"information_design", "industry":"graphic design", "use_case":"consistent layouts and accessible output", "job_title":"information designer", "job_description":"Turn structured content into editable layouts with testable spacing and contrast constraints.", "data_types":["document","vector","image"], "signals":["visual_design","workflow_detail"], "formats":["typescript_tool","python_tool","task_recipe"]}
+  ]
+}

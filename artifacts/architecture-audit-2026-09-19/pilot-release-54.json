@@ -1,0 +1,63 @@
+{
+  "record_type": "pilot_release_record/v1",
+  "release": 54,
+  "app": "baltor-pilot",
+  "source_revision": "1d35f6976264ee7188a7d4179e69fa6c171d57e2",
+  "image": "registry.fly.io/baltor-pilot@sha256:54f4c4626a8897b483572882dc0347017b3443a6d012cdc2b10a8726629d3104",
+  "rollback_release": 53,
+  "rollback_image": "registry.fly.io/baltor-pilot@sha256:c8f267b2f8998d3391fe1f628d1bbd39f85d3f7997fd58f5cd2e21eda86e1a14",
+  "deployed_at": "2026-09-30T14:34:00Z",
+  "ci_run": 36728313395,
+  "ci_conclusion": "success",
+  "deploy_run": 36729597142,
+  "deploy_workflow_conclusion": "success",
+  "grant_step_conclusion": "success",
+  "billing_step_conclusion": "success",
+  "deployment_gate_after": false,
+  "hostnames_checked": 10,
+  "hostnames_passed": 10,
+  "public_route_checks_passed": 60,
+  "public_route_checks_total": 60,
+  "service_checks_passed": 226,
+  "service_checks_total": 226,
+  "catalogue_checks_passed": null,
+  "volume_gb": 25,
+  "cpus": 1,
+  "memory_mb": 2048,
+  "worker_publish_run": 36729360796,
+  "worker_image": "ghcr.io/alisonjieli-png/loop-engine@sha256:0cbfc345ccbd1fdf3dca6abba61d40eaff6ecf41e781eeecd211883cf37fd5aa",
+  "worker_installed_checks": {"passed": 12, "total": 12, "external_provider_calls": 0},
+  "changes": [
+    "The homepage and public library show measured distinct files separately from packages.",
+    "The downloadable worker bundles OpenCode and the Baltor harness, with explicit fresh-process profiles and setup instructions.",
+    "The worker guide is registered in the site map; scheduled directory updates and a smaller deck payload are included."
+  ],
+  "catalogue_publication": {
+    "release_id": "f817b2b3e82daee0acd73e6ce295d3ddceecf9a45d0f4ebab35501bfc2a79fd3",
+    "previous_release_id": "b805860948b2625d08c2e53b62ebcf26c74d4948e69148ff3879bea87f08b92b",
+    "bundle_digest": "469ef34814cffea784f967ba46ad917e95aa70de0d42740face0caf25454f0fa",
+    "content_digest": "9ec90141a284c8a32b214ed29a7feabdcafba073cfe1e0bbaf84baa80e6cf936",
+    "packages": 30746,
+    "file_placements": 130568,
+    "distinct_files": 96064,
+    "distinct_file_bytes": 389920845,
+    "added_packages": 2935,
+    "added_distinct_files": 7691,
+    "missing_prior_packages": 0,
+    "changed_prior_payload_digests": 0,
+    "publication_record": "/data/incoming/delta-daily-2026-09-30-10-repaired-efb4522caccf.publish.json",
+    "observed_swap_seconds": 337.673
+  },
+  "evidence_sha256": {
+    "release54-public-browser.json": "f2ee439178e6dfddb20d29ebebffc53284d3d31a1828bf73f8f8a03374b6e385",
+    "release54-hosts.json": "c78d9707d3f0b055af93140065b844411d39b8c4a4e250afecb1f6656c98c500",
+    "published-worker-check.json": "d24769eff5b745e6537a578a8298fa0ba303ce2b155bd7f5a4a3e21601f768a6",
+    "library-count-audit-v1.json": "b96cc9c46bea7ad2a5ee4fdc6602b972dbd0e08d46aa0c768bd2f9b9d026beae"
+  },
+  "advisory": {
+    "visitor_check": "60 pages, 249 views and 357 links. Two observations of the same external GitHub link returned 503; a focused repeat returned first-party 302 and destination 200. The initial failure remains retained.",
+    "authenticated_check": "The old diagnostic account key was refused with 401. This attempt establishes no authenticated retrieval result; further scoped verification is recorded separately.",
+    "worker_scope": "Fresh native text turns and installation were exercised. Arbitrary customer task success and every upstream plugin remain unqualified.",
+    "resources": "No additional CPU, memory, volume or provider purchase."
+  }
+}

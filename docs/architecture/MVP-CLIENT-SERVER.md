@@ -2,7 +2,7 @@
 
 Kind: product architecture with measured local implementation and proposed hosting.
 Date: 2026-09-19. The [current deployment](#current-deployment) section was
-added on 2026-09-20 and last checked on 2026-09-29, after Fly release 52.
+added on 2026-09-20 and last checked on 2026-09-30, after Fly release 54.
 
 The hosted product manages accounts, subscriptions, and access to intelligence.
 The customer runs Loop Engine and the selected harnesses. A hosted intelligence
@@ -47,7 +47,21 @@ from the newest release record, follow the release record and correct this
 section. Update this section in the same change that records a new release.
 It describes a private pilot. It does not describe a qualified paid service.
 
-The latest image deployment is Fly release 53, completed on September 30, 2026,
+The latest image deployment is Fly release 54, completed on September 30, 2026,
+from `1d35f6976264ee7188a7d4179e69fa6c171d57e2`, image
+`sha256:54f4c4626a8897b483572882dc0347017b3443a6d012cdc2b10a8726629d3104`.
+CI run `36728313395` and deployment run `36729597142` passed, including grant
+and billing-policy confirmation. The deployment setting is off. The homepage
+and public library distinguish distinct files from packages; `/worker` serves
+the downloadable worker instructions and Compose file. The separately
+published catalogue `f817b2b3…` contains 30,746 packages and 96,064 distinct
+files. All prior package payload digests were preserved. The
+[release 54 record](../../artifacts/architecture-audit-2026-09-19/pilot-release-54.json)
+records rollback to release 53, public verification and remaining qualification
+limits. The [inventory audit](../../artifacts/library-audit-2026-09-30/README.md)
+separates stored candidates, qualified packages and live files.
+
+The preceding image deployment was Fly release 53, completed on September 30, 2026,
 from `fa1696b3b09c65beba27bfdd8938d9db33efa026`, image
 `sha256:c8f267b2f8998d3391fe1f628d1bbd39f85d3f7997fd58f5cd2e21eda86e1a14`.
 CI run `36669688050` passed. Deployment run `36675414386` deployed the tested

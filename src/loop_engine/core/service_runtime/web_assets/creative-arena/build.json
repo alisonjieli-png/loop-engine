@@ -1,0 +1,24 @@
+{
+  "files": {
+    "THREE-LICENSE.txt": "8b378ebe60e2fe500158cb0ac71cb5e8b7d92953c2abcc63a0eb90499653b5bc",
+    "arena.css": "60590cb8aded287e451a85a1949f0c8c06bf586ac37b1f9a66bf0192969aa8cf",
+    "arena.js": "0b3dbe5ed30e5bdb7360a80c41294cd8dbb5534c6921c16f4e097284628dea42",
+    "asset-briefs.json": "a0b61113c9566e6fad928ebedae4fbabc893128b09165baa48b7becb79731230",
+    "blender-import.py.txt": "829fbf2432713db10d5ea31e06de3a9c0b4bef367a52fb2e0f6ffd8614c11ecb",
+    "index.html": "1a0ecdabe196d363a6d748e9d84870760effcd4c24e47d1b4fd2b9c444d0e46c"
+  },
+  "record_type": "creative_arena_build/v1",
+  "source_sha256": {
+    "examples/32_creative_arena/arena.css": "60590cb8aded287e451a85a1949f0c8c06bf586ac37b1f9a66bf0192969aa8cf",
+    "examples/32_creative_arena/asset-briefs.json": "a0b61113c9566e6fad928ebedae4fbabc893128b09165baa48b7becb79731230",
+    "examples/32_creative_arena/blender-import.py": "829fbf2432713db10d5ea31e06de3a9c0b4bef367a52fb2e0f6ffd8614c11ecb",
+    "examples/32_creative_arena/build.mjs": "7591298f38578ded14666e65a1218cc817e378c94561b3cf86fed0cf21296c94",
+    "examples/32_creative_arena/index.html": "724e549689ac1c58f43108f6c7dc704738bbdcdd8de1e57526f071900f9a3d33",
+    "examples/32_creative_arena/package-lock.json": "4b8b11f1127d53f3e923a27cef05b03353c3e90876dcb18090127d20afa6134d",
+    "examples/32_creative_arena/package.json": "781784615d5076ff2fce0b04b51c4f74a5be828cc99994ce1a31c4fb1b7db5fe",
+    "examples/32_creative_arena/src/characters.mjs": "2da326c1690cb16c32d5c75800e739fe9d5f793828e70bf058cae9d78e11ca8f",
+    "examples/32_creative_arena/src/game.mjs": "949c4347717aaf2038968a52344b386432a4e586fa315d6b9d79e49152744dd3",
+    "examples/32_creative_arena/src/simulation.mjs": "3da84ebab09a2555dab82185cb65a447f01c8eb730aa975259172e45e989b16d",
+    "examples/32_creative_arena/src/world.mjs": "f7f6f6cfa6a93ff087a0d7e6f9da33dd6df662918a69ac325e8f28b43bdd14bf"
+  }
+}

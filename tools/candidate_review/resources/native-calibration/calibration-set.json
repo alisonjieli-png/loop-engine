@@ -2,7 +2,7 @@
   "record_type": "candidate_native_review_calibration_set/v1",
   "purpose": "A bounded set of known native-package correctness, contract, effect and source-claim controls; no error-rate estimate.",
   "catalogue_path": "tools/candidate_review/resources/native-calibration/catalogue",
-  "catalogue_items_sha256": "cfca4c76761dbcf831e300972baee5faf3ee2ffda2b7e0479f7266dfb39cef4c",
+  "catalogue_items_sha256": "a96a27a973762b42ba620a2877258ca5de99a426546569685be7a2c68efc0860",
   "source_package_identity": "schedule_dag_earliest_times",
   "source_package_digest": "8aef9a5ec06c3e79a7b5a95eb354ff039084fe99cf9f513292f9483c350fad86",
   "items": [

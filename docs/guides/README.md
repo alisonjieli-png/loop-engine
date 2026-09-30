@@ -28,7 +28,7 @@ the check that enforces them. The single structured source it points at is
 The downloadable worker also has an operating guide. Its model access and
 execution authority are separate from the hosted library subscription.
 
-These fifteen pages explain account access, client setup, selection and downloads,
+These pages explain account access, client setup, selection and downloads,
 updates and common questions, and give one quickstart for each harness.
 They separate a configured connection from a harness loading and using material. Every command, address, record type,
 refusal code and refusal status in them is held to the service source by

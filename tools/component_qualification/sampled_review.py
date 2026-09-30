@@ -463,6 +463,8 @@ def command(options, root: Path) -> dict:
             requests=requests, population={}, call_ceiling=ceiling,
             token_ceiling=options.token_ceiling or 20_000_000, model_calls_authorized=options.authorize_model_calls,
             batch_sizes={options.reviewer: size} if size > 1 else {},
+            batch_groups={options.reviewer: tuple(tuple(request.identity for request in members)
+                                                 for members in calls_plan[batch])} if size > 1 else {},
             excluded_installations=_exclusions(configuration, options.reviewer),
             quota_group_call_ceilings={group: ceiling}, repeated_failure_limit=3,
             collect_below_quorum_reason="Sampled review of generated components: one calibrated family that did "

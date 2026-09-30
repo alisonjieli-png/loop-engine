@@ -5,6 +5,15 @@ deliberately contain incorrect behavior, a conflicting contract, an undeclared
 effect or an unsupported source claim. Use them only through the calibration
 workflow and its bounded test environment.
 
+On September 30 the active catalogue's source binding was corrected to the
+committed scheduling control package manifest at `1d35f697`, instead of the
+unrelated `catalogue_packages.py` codec. Changing a transport resource limit
+had otherwise invalidated every calibration load. Package payloads, identities,
+planted defects and decision labels are unchanged. The catalogue and calibration
+digests changed, so earlier model calibration does not approve this new set.
+Historical reports retain their original bindings. The normal source-digest
+and committed-byte checks remain in force.
+
 `calibration-set.json` holds the decision labels and exact package digests.
 Those labels stay outside the package files and reviewer prompt. The normal
 native candidate reader verifies the complete inventory in `catalogue/`.

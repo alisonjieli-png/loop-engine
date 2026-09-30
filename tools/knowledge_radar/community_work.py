@@ -127,7 +127,9 @@ def component_work(lead):
     if "agent_control" in signals:
         work += ["bounded engine-control adapter with declared read and write operations"]
     return {"record_type": OUTPUT_CONTRACT, "source_url": lead["url"], "source_digest": lead["content_digest"],
+            "source_title": lead.get("title", ""),
             "tools_mentioned": lead["tools_mentioned"], "linked_sources": lead["linked_sources"],
+            "signal_hints": lead["signals"],
             "candidate_component_work": list(dict.fromkeys(work)),
             "research_questions": ["What exact versions, input assets and steps produced the result?",
                 "Which links contain editable source and explicit reuse rights?",

@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:e410598eb320163d9a34a9b562d787ad828f9558114c889ec9d90c6d76734cda`.
+Source fingerprint: `sha256:4b45081644c7d1cfdc3aef5ae0e917cc4368b2d1f77ff4790fd4f046ce2de6e7`.
 
 ## Where things stand
 
@@ -153,7 +153,7 @@ Source fingerprint: `sha256:e410598eb320163d9a34a9b562d787ad828f9558114c889ec9d9
 | S-6.192 | One privacy notice and terms revision for a paid service, drafted by engineering and approved by the owner before it is published | proposed | S-6.65 |
 | S-6.190 | Supply-chain trust for served material: a working disclosure route, a published threat model, signed catalogue releases verified before writing, and scan results per item | proposed | S-6.45, S-6.62 |
 | S-6.186 | Design partners and one weekly number: outside developers and teams through a finished task of their own, counted without tracking people | proposed | S-6.66, S-6.120 |
-| S-6.183 | The front door outside baltor.ai: the GitHub page, a tagged release with a pinned install, and a listing in the official protocol server registry | proposed | S-6.67 |
+| S-6.183 | Distribution outside baltor.ai: pinned releases, the protocol registry and an OpenAI plugin | proposed | S-6.67 |
 | S-6.181 | One truth on every public surface: a claims register that feeds a dated evidence page, each harness's recorded state beside its name, and a check over the website, the README, the deck and the capabilities record | proposed | S-6.33 |
 | S-6.19 | Continue flexible composition and controlled improvement research | proposed | S-6.3, S-6.20, S-6.14 |
 | S-6.84 | Write the functional component standard into the development rules, with a check for each rule | proposed | S-6.30, S-6.34 |

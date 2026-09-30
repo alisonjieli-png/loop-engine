@@ -37,7 +37,7 @@ const setsUpEveryNamedHarness=(names,tabs)=>names.length>0&&names.every(name=>ta
 const hash=value=>createHash("sha256").update(value).digest("hex");
 const assetDigests=new Map();
 const assetDigest=path=>{if(!assetDigests.has(path)){const name=path==="/assets/third-party-notices.txt"?"THIRD-PARTY-NOTICES.md":path.slice("/assets/".length);assetDigests.set(path,hash(readFileSync(resolve(root,"src/loop_engine/core/service_runtime/web_assets",name))));}return assetDigests.get(path);};
-const sameOriginAsset=(value,path)=>{try{const url=new URL(value,origin);return url.origin===origin&&url.pathname===path&&!url.username&&!url.password&&!url.hash&&url.search==="?v="+assetDigest(path);}catch(_){return false;}};
+const sameOriginAsset=(value,path,requireVersion=true)=>{try{const url=new URL(value,origin);return url.origin===origin&&url.pathname===path&&!url.username&&!url.password&&!url.hash&&(url.search===""?!requireVersion:url.search==="?v="+assetDigest(path));}catch(_){return false;}};
 /* The page this hostname shows at its root address, read through the typed reader of web_site_map.json, the one list of pages and
    hostnames. docs, status, examples and demo open their own page at the root since September 24, 2026; the homepage checks run
    where the root is the homepage, and every other check runs on every hostname. PYTHON names a qualified environment when the
@@ -71,7 +71,12 @@ try{
   check("hostname_root_check_rejects_another_view_title_or_canonical_address",!opensItsPage({...rootShown,views:[...rootShown.views,"home"]},rootPage)
     &&!opensItsPage({...rootShown,title:siteMap.display_name+" | The perfect harness setup for every task x"},rootPage)&&!opensItsPage({...rootShown,canonical:canonicalOrigin+"/other"},rootPage));
   const namedAssets=await page.evaluate(()=>[...document.querySelectorAll("[src],link[href],footer a[href]")].flatMap(node=>[node.getAttribute("src"),node.getAttribute("href")]).filter(Boolean).filter(value=>{try{return new URL(value,location.href).pathname.startsWith("/assets/");}catch(_){return false;}}));
-  check("live_asset_versions_bind_to_exact_packaged_bytes",namedAssets.length>0&&namedAssets.every(value=>sameOriginAsset(value,new URL(value,origin).pathname)));
+  check("live_asset_versions_bind_to_exact_packaged_bytes",namedAssets.length>0&&namedAssets.every(value=>{const path=new URL(value,origin).pathname;return sameOriginAsset(value,path,path!=="/assets/creative-arena/index.html");}));
+  const previewDocument=await page.request.get(origin+"/assets/creative-arena/index.html");
+  check("live_creative_preview_is_uncached_and_same_origin_only",previewDocument.status()===200
+    &&previewDocument.headers()["cache-control"]==="no-store"&&previewDocument.headers()["x-frame-options"]==="SAMEORIGIN"
+    &&sameOriginAsset("/assets/creative-arena/index.html","/assets/creative-arena/index.html",false)
+    &&!sameOriginAsset("/assets/creative-arena/index.html?other=1","/assets/creative-arena/index.html",false));
   const versionedMark="/assets/baltor-mark.svg?v="+assetDigest("/assets/baltor-mark.svg");
   check("live_asset_identity_check_refuses_foreign_origins_stale_versions_and_extra_parameters",sameOriginAsset(versionedMark,"/assets/baltor-mark.svg")
     &&["/assets/baltor-mark.svg",versionedMark.replace(/v=./,"v=x"),versionedMark+"&extra=1",versionedMark+"#other","https://foreign.example.invalid"+versionedMark].every(value=>!sameOriginAsset(value,"/assets/baltor-mark.svg")));

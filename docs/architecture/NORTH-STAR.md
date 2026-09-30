@@ -1,14 +1,132 @@
 # Baltor north star
 
-Kind: current product direction. Updated September 29, 2026 under the owner's request to reconcile the project and continue implementation. The [roadmap](../roadmap/roadmap.yaml) is the task authority. [AGENTS.md](../../AGENTS.md#commit-push-and-release-authority) governs authority.
+Kind: current product direction. Updated September 30, 2026 under the owner's request to reconcile counts, broaden the library and pursue the million-file and revenue goals. The [roadmap](../roadmap/roadmap.yaml) is the task authority. [AGENTS.md](../../AGENTS.md#commit-push-and-release-authority) governs authority.
 
 ## Current direction
 
+The [delivery and business plan](../roadmap/DELIVERY-SEQUENCE.md) orders the
+next work: customer first use, a controlled benefit comparison, complete
+packages, the creative proof, traceable retrieval, reference-video recreation,
+recurring source intake, broader execution choices and acquisition. It also records Blender
+setup profiles, motion retargeting, printing, short-form media, multi-session
+orchestration and the current limits on OpenAI plugin monetization.
+
 Baltor supplies the materials, methods, executable capabilities and checks that help a person's chosen harness complete unfamiliar creative and technical work. Loop Engine remains the canonical execution architecture. Customers choose their model access and where supported work runs. Search, delivery, installation, native loading, execution and accepted results are separate observations.
 
-The creative focus is reusable production projects: editable motion, graphic design, parametric visuals, 3D scenes, audio and small playable experiences, with source, assets, declared parameters, dependencies and tested revisions. Technical decision laboratories and reusable code remain part of the same library. A reference image, mask, pose, native project, shader or failure example can be useful without becoming a prose skill. File count describes supply, not usefulness.
+The library covers reusable knowledge and executable work across industries. It includes sourced reference data, lists and taxonomies; algorithms and formal mathematical results; benchmark and evaluation methods; software and MCP capabilities; automation workflows; and creative production projects. Native files include Python, TypeScript, other supported code, schemas, test fixtures, n8n workflow JSON, task recipes, scene documents, shaders, geometry, images, audio and editable project templates. A prose skill is one representation among these.
 
-The first commercial proof is a complete product-story project: make an attractive output from authorized assets, change text, imagery, timing and aspect ratio while retaining approved elements, then reopen the source and perform a named edit in a clean supported environment. Compare against a competent harness with relevant official skills and tools. Preserve unsuccessful attempts, human intervention, actual cost and aesthetic disagreement. This is a delivery target, not a claim of an implemented studio or a measured advantage.
+The owner's further September 30 direction includes downloadable prompts,
+parameterized prompt templates, task and harness templates, best-practice
+guides, advice, decision records and worked examples with supporting files.
+Each needs a distinct purpose, provenance, use conditions and checks; advice
+is not automatically verified knowledge. Track new models, including a future
+Gemini 4 release, through the existing model watch and provider interfaces.
+Source-backed availability and measured task performance precede adoption.
+The [file and model sections](../roadmap/DELIVERY-SEQUENCE.md#more-useful-file-forms-and-source-coverage)
+record the breadth, source trail and qualification steps.
+
+Creative production is a proof of the broader product. The immediate comparison uses the same 3D scene brief and model with and without Baltor's selected material, then exercises a meaningful revision and a fresh reopen. A product-story project remains a commercial proof target: change text, imagery, timing and aspect ratio while retaining approved elements. Record model calls, supplied material, human intervention, export success and aesthetic disagreement. A comparison with extra refinement reports that extra computation. These are delivery targets until their results have been observed.
+
+The September 30 reference-video direction adds a specific sales proof: accept
+a supported upload or permitted URL, explain its visible effects and timing,
+identify the tools, components and files needed, prepare the harness and prompts,
+then render an editable variation. Start with one rights-cleared short clip.
+Distinguish observation from inferred technique and unavailable capabilities
+from retrieved implementations. Completion requires a checked render, meaningful
+revision and clean reopen; a generated prompt alone is not recreation. The
+delivery plan owns the ordered gates. This end-to-end capability is not yet
+available.
+
+Benefit evidence must go beyond short text examples. The owner's later
+September 30 request calls for paired customer journeys on pipelines, data
+quality and standardization, entity matching, 3D and parametric generation,
+advanced debugging and Kubernetes. Use the same native harness, Ollama model,
+tools and total budget with and without live Baltor retrieval. Publish actual
+artifacts side by side, independently checked outcomes, overhead and failures.
+The [comparison programme](../roadmap/DELIVERY-SEQUENCE.md#customer-task-comparison-programme)
+defines the first tasks and controls. No general benefit is established by the
+current simple examples.
+
+## September 30 commitments
+
+The owner reaffirmed the one-million-file milestone and $100,000 in monthly recurring revenue, then extended the supply ambition to more than one million useful packages. Keep all three quantities separate. A package has a distinct reusable job and may deliver several files; an identical file counts once across packages. Publication counts come from the active, approved, non-withdrawn catalogue. Revenue comes from active paying subscriptions, normalized to a month and with discounts recorded; free accounts, downloads and candidate files do not establish revenue.
+
+Every count names its unit, state, scope and observation date. Report database records, logical packages, delivered file placements, distinct file digests, static qualification, independent approval, execution checks and live publication separately. The current inventory and release records supply the numbers. Candidate stores, historical versions, source indexes, repeated copies and generation forecasts cannot stand in for the live file total.
+
+Customers retrieve the material and control its execution in their own harness, editor, renderer or workflow system. They keep editable project state and can reuse downloaded material under its licence. Model access and execution may use their own machine or a provider they choose. Baltor's hosted service supplies discovery, delivery and maintained versions.
+
+Reusable material follows a common package structure:
+
+Delivery follows the task. Baltor may serve a complete native package, a
+small skill or tool that installs a pinned official upstream release, or a
+Baltor implementation behind the same typed edge. Preserve the official
+source, exact version, available integrity evidence, prerequisites and
+verification procedure in an installation recipe. A package runner or
+programming language does not define a separate library. Count served recipe
+files separately from files the customer later downloads upstream. The
+[capability supply map](CAPABILITY-SUPPLY-AND-RETRIEVAL.md) records these paths.
+
+Complete executables, Python distributions, Rust crates and binaries, OCI
+images, Dockerfiles, Compose configurations and environment recipes are
+eligible forms. Record operating system, processor architecture, toolchain,
+dependency locking, runtime requirements and observed checks. A container
+image may be pulled by digest from its official registry while Baltor serves
+its contract and run recipe. An installation method does not imply a shared
+execution environment or permission to run the artifact.
+
+Do not reject useful material because it crosses an invented file-count or
+work-count threshold. Size work against actual transport, memory, context,
+runtime and declared usage constraints. Keep those constraints visible and
+configurable at their owning boundary. Preserve a complete dependency closure;
+use an upstream recipe when that is the more useful delivery form.
+
+```text
+Capability or knowledge package
+├── task, intended users and conditions of use
+├── source, licence, revision, dates and freshness requirements
+├── native payload: data, code, workflow, method or editable project
+├── inputs, outputs, units, dependencies and required effects
+├── examples, checks, failure conditions and repair guidance
+└── compatibility, observed results and update history
+```
+
+Reference collections state how a list was selected or ranked. A benchmark ranking names the benchmark, version and measurement date. A data snapshot names its period, units and source. Volatile information has a refresh operation and an expiry rule. Formal results distinguish theorem statements, proof source and observed proof checking. Geospatial packages retain coordinate systems, vertical datums, resolution and source limits.
+
+Workflows and task recipes are first-class material. An n8n template retains its native JSON, supported node versions, credential references, input and output contracts, declared effects and an import or execution check appropriate to its claim. Workflow files and the workflow engine have separate licence and compatibility records. Templates contain no working customer credentials. Other automation formats use the same package requirements.
+
+The harness should inspect its first result, identify a specific defect, select a relevant capability, make a bounded improvement and check the result within its existing authority. Useful outcomes and failures from project work become candidates for reusable methods or tools after private details are removed and reuse rights are established. Parametric code enforces constraints within its declared domain; broader visual or physical correctness still needs the applicable checks.
+
+The expansion priority is to turn existing useful candidates into served capabilities while adding original implementations and sourced knowledge where the inventory has gaps. Target the requested next tranche of 10,000 to 100,000 meaningful new files across knowledge, code, workflows and creative tools. Preserve shared implementations and count identical payloads once. A new file needs a retrieval or execution purpose; naming variations and parameter permutations do not establish new capabilities.
+
+Internal research and production run daily. Public forums, permitted social-media discovery, news, RSS and primary documentation supply leads. Combine them with industry, use case, data type, job title, job description, failure mode and delivery-format dimensions. A bounded conversation identifies a recurring problem, searches existing material, asks discriminating questions, revises or rejects the proposal, then prepares a native candidate with contracts and checks. The existing independent review and publication path decides what becomes available. Reuse unchanged work; changed sources or demonstrated failures trigger a new revision. Record coverage, source failures, model usage, duplicates and the difference between candidates and published additions on every run.
+
+Competitor workflows are both research sources and comparison baselines. For 3D work, examine hosted asset generators, local models, parametric generators and complete scene workflows separately. Published integrations and downloadable output do not establish a Baltor advantage. Test the specific operations: part separation and reassembly, parameter edits, renderer import, material behavior, export, failure recovery and reopening. A pasted research report or claimed artifact pack is a lead until its sources and files are located and checked.
+
+Customer acquisition should demonstrate a complete job and its revision. Prioritize outcome pages for editable 3D scenes, reusable research and reference data, and software automation and workflows. Each page needs an example, an accurate availability statement, the downloaded artifacts and a setup path. Measure first successful use, repeat use, accepted revisions, conversion, retention and support cost. A page or a larger catalogue is an experiment toward the revenue target, not evidence that the target has been reached.
+
+## Operating measures and acquisition
+
+The [September 30 inventory audit](../../artifacts/library-audit-2026-09-30/README.md) is the reconciled baseline. The [current deployment](MVP-CLIENT-SERVER.md#current-deployment) identifies what is live. Use the active catalogue for the public count instead of copying a number into page text. Keep the million-file and revenue targets visible beside the customer outcomes below; none substitutes for the others.
+
+| Measure | Evidence required |
+| --- | --- |
+| Distinct published files | Approved, non-withdrawn package manifests and unique payload digests in the active release. |
+| Publication throughput | New distinct published files per day, rejection reasons, review failures and time from preparation to publication. |
+| First successful use | A customer retrieves material, uses it in the declared environment and passes the task's acceptance check. A download alone does not qualify. |
+| Repeat value | Customers return with another task or successfully revise and reopen their project; report the cohort size and time window. |
+| Commercial progress | Paying accounts, monthly recurring revenue, cancellations, conversion and contribution after model, rendering, infrastructure and support costs. Unknown values remain unknown. |
+
+Keep the Engineers, Designers and AI Agents entry paths. Add outcome pages beneath them, using one library, account and setup flow. The first page families have different evidence requirements:
+
+| Page family | Example to prove before claiming it works |
+| --- | --- |
+| Editable 3D scenes and motion | The same brief and model with and without selected Baltor material, followed by a camera or layout revision, export and a clean reopen. Publish the inputs, artifacts, computation and unsuccessful attempts. |
+| Research and reference data | A dated source-backed collection plus its query or refresh tool, showing when reuse is valid and when fresh research is required. |
+| Automation and n8n workflows | A downloadable native workflow with placeholder credentials, compatible node versions, sample inputs, a checked import and bounded execution, including failure and retry behavior. |
+
+Each page has one primary action that leads to its working example and setup instructions. Record visit, setup, first successful use, return and paid conversion using the approved measurement and privacy rules. Compare these outcomes by page and audience. Publish more specialized pages when a distinct task has both useful supply and an observed example; do not multiply nearly identical pages by industry name. A clearly labelled research preview may precede qualification, but it must not imply a working download or measured advantage.
+
+Work on supply conversion, one complete customer example and acquisition measurement together. The existing roadmap owns these tasks: [S-6.215](../roadmap/roadmap.yaml) for served supply, S-6.214 for maintained knowledge, S-6.56 for audience and outcome pages, and the existing benefit comparisons for task evidence. Review progress weekly against these measures. The next allocation of effort follows the observed bottleneck, whether it is missing useful material, failed review, slow retrieval, setup friction or customers not returning.
 
 ## Product boundaries
 
@@ -22,12 +140,13 @@ The first commercial proof is a complete product-story project: make an attracti
 
 ## Immediate engineering order
 
-1. Reconcile current instructions, source evidence and delivery state; preserve historical work and record coverage gaps.
-2. Repair qualification selection and assurance reporting; keep cheap checks as the default. Separate candidate retention, serving approval, native execution qualification and measured benefit.
-3. Deliver complete, interpreted packages through the existing body store and installer. Qualify large-asset transfer before offering native projects that exceed present limits.
-4. Grow original supply toward more than one million distinct served component files while completing a creative production and revision path. Keep a measured count of distinct payloads, packages, semantic capabilities and approved releases; repeated metadata and parameter permutations are not extra implementations.
-5. Extend the existing knowledge radar with dated source contracts and change-driven re-evaluation. Keep processing state separate from the decision to reuse, defer or publish material.
-6. Measure repeat use, accepted output, successful revisions, setup work and complete cost. Use those results to choose additional engines, collections and paid features.
+Follow the [delivery sequence](../roadmap/DELIVERY-SEQUENCE.md#delivery-order),
+with task state in roadmap.yaml. Complete each release's implementation,
+positive and known-wrong checks, main commit, continuous integration, deployment
+and live verification before presenting it as done or starting the next release.
+That sequence includes retrieval correctness and timing before the reference-video
+sales proof. Preserve the distinction between candidates, static qualification,
+independent admission, native execution and measured customer benefit throughout.
 
 The September 29 continuation explicitly includes original code, shaders,
 geometry and scene generators, assets, contracts, fixtures, render tools and
@@ -74,6 +193,15 @@ Preserve native source formats. Connect the execution graph, scene hierarchy, de
 Lead a creative entry point with a result a person can remix, inspect and revise. The existing engineering route remains. Positioning to test: create a reusable project, keep approved decisions through revisions, and use the customer's chosen tools. Competitors already offer skills, workflow canvases and editable source; none alone establishes a unique advantage.
 
 The current Baltor Pro offer stays in place while the creative experience is tested. Price future work around useful production kits, maintenance, saved work, private components and team handoff. Rendering and inference are separately attributed costs. No new paid feature is sold before its delivery path works. Plugin policy and partner-program eligibility determine commerce on each surface; the independent website remains the normal acquisition and account surface.
+
+OpenAI plugin distribution is an explicit launch route, open to verified
+individual developers as well as businesses under the current rules. The
+[delivery plan](../roadmap/DELIVERY-SEQUENCE.md#chatgpt-and-codex-distribution)
+tracks publisher verification, OAuth account linking, public legal/support
+pages, review fixtures and a working demo. Existing subscribers can use the
+plugin; current rules do not allow selling Baltor digital subscriptions or
+promoting upgrades inside it. Do not equate an MCP connection with approval,
+publication, legal readiness or a marketplace revenue-sharing arrangement.
 
 The [September 29 creative supply and launch plan](../roadmap/CREATIVE-SUPPLY-AND-LAUNCH-2026-09-29.md)
 adds procedural asset families, non-human rig references, style transforms,

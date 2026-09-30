@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="description" content="Play an original Three.js fantasy arena, inspect its character animations and export an editable scene for Blender.">
+  <title>Ashen Wilds · Baltor</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./arena.css">
+</head>
+<body>
+  <main id="arena" aria-label="Ashen Wilds fantasy arena">
+    <canvas id="world" aria-label="Interactive 3D fantasy game" tabindex="0"></canvas>
+    <header class="topbar">
+      <a class="brand" href="https://baltor.ai/examples" aria-label="Back to Baltor examples"><span class="brand-mark">B</span><span>BALTOR<span class="brand-sub">PLAYABLE WORLDS</span></span></a>
+      <div class="top-actions"><span class="scene-label"><i></i> THREE.JS SCENE</span><button id="sound" class="quiet" aria-pressed="false">Sound off</button><button id="pause" class="quiet">Pause</button></div>
+    </header>
+    <section class="quest" aria-label="Objective">
+      <div class="eyebrow">THE VERDANT RUINS</div>
+      <h1>Ashen Wilds</h1>
+      <p id="objective">Hold the gate. Defeat three waves.</p>
+      <div class="quest-progress"><span id="wave">Wave 1 / 3</span><span id="remaining">3 goblins</span></div>
+      <div class="wave-track"><i id="wave-fill"></i></div>
+    </section>
+    <aside class="tools" aria-label="Scene and animation tools">
+      <details id="scene-tools">
+        <summary>Scene tools <span>+</span></summary>
+        <div class="tool-body">
+          <label for="atmosphere">Environment</label>
+          <select id="atmosphere"><option value="dusk">Verdant dusk</option><option value="dawn">Golden morning</option><option value="astral">Astral night</option></select>
+          <label for="motion">Character animation</label>
+          <select id="motion"><option value="game">Gameplay</option><option value="Idle">Idle</option><option value="Run">Run cycle</option><option value="Sword">Sword attack</option><option value="Dance">Dance study</option></select>
+          <p class="tool-note" id="motion-note">Original rig and keyframe clips. Animation studies pause combat.</p>
+          <div class="tool-grid"><button id="frame">Save frame</button><button id="export-character">Export character</button></div>
+          <button id="export-scene" class="wide">Export scene for Blender <span>↗</span></button>
+          <label for="character-file" class="file-label">Use your own character (.glb)</label>
+          <input id="character-file" type="file" accept=".glb,model/gltf-binary">
+          <p class="tool-note">Imports stay in this tab. Included animation clips keep their names.</p>
+          <button id="briefs" class="text-button">Download original asset briefs</button>
+          <a class="text-button" href="./blender-import.py" download>Blender import and render script</a>
+        </div>
+      </details>
+    </aside>
+    <div id="reticle" aria-hidden="true"><span></span></div>
+    <section class="vitals" aria-label="Player status">
+      <div class="portrait" aria-hidden="true">✦</div>
+      <div class="vital-bars"><div class="vital-title"><span>THE WARDEN</span><span id="health-label">100</span></div><div class="health-track" role="progressbar" aria-label="Health" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><i id="health-fill"></i></div><div class="stamina-track" role="progressbar" aria-label="Stamina" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><i id="stamina-fill"></i></div></div>
+    </section>
+    <div class="controls"><span><kbd>W A S D</kbd> Move</span><span><kbd>Click / J</kbd> Strike</span><span><kbd>Space</kbd> Dodge</span><span><kbd>Shift</kbd> Sprint</span><span><kbd>Drag</kbd> Orbit</span></div>
+    <div class="touch-controls"><div id="joystick" aria-label="Drag to move"><span id="stick"></span></div><div class="touch-actions"><button id="touch-dodge" aria-label="Dodge">↗</button><button id="touch-attack" aria-label="Attack with sword">Strike</button></div></div>
+    <div class="world-caption">ORIGINAL PROCEDURAL ASSETS <span>·</span> EDITABLE GLB EXPORT</div>
+    <div id="notice" role="status" aria-live="polite"></div>
+    <section id="curtain" class="curtain" aria-label="Game status">
+      <div class="curtain-card"><div class="eyebrow">BALTOR ORIGINAL</div><h2 id="curtain-title">The gate is waiting.</h2><p id="curtain-copy">A sword, a small island, and something stirring in the ruins.</p><button id="begin" class="primary">Enter the wilds <span>→</span></button><p class="start-hint">Move with WASD. Click or press J to strike.</p></div>
+    </section>
+    <div id="hurt-flash" aria-hidden="true"></div>
+  </main>
+  <script type="module" src="./arena.js"></script>
+</body>
+</html>

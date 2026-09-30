@@ -1,9 +1,9 @@
 {
   "record_type": "starter_catalogue_candidate_items/v3",
-  "source_revision": "9c57c9a4c813578bffa504108ef9d785b308bb86",
+  "source_revision": "1d35f6976264ee7188a7d4179e69fa6c171d57e2",
   "source_digests": {
     "LICENSE": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
-    "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+    "tools/candidate_review/resources/native-calibration/catalogue/bodies/control_71af.package.json": "fc8ddf5d14cb21ab1291e0d502ea5e1f3fe49145e5abf2bc3f79086e7238cee8"
   },
   "publication": "not_published",
   "items": [
@@ -15,7 +15,7 @@
         "purpose": "Compute earliest starts and finishes for a bounded acyclic task graph with nonnegative integer durations.",
         "digest": "fc8ddf5d14cb21ab1291e0d502ea5e1f3fe49145e5abf2bc3f79086e7238cee8",
         "source_layer": "harness_local",
-        "source_ref": "src/loop_engine/core/service_runtime/catalogue_packages.py@9c57c9a4c813578bffa504108ef9d785b308bb86",
+        "source_ref": "tools/candidate_review/resources/native-calibration/catalogue/bodies/control_71af.package.json@1d35f6976264ee7188a7d4179e69fa6c171d57e2",
         "family": "harness",
         "size_bytes": 1477,
         "license": "MIT",
@@ -125,7 +125,7 @@
         "purpose": "Compute earliest starts and finishes for a bounded acyclic task graph with nonnegative integer durations.",
         "digest": "c7772995594907ff3953c2385bf789cd99cad46e7eef389fc11a8e4acb67da5e",
         "source_layer": "harness_local",
-        "source_ref": "src/loop_engine/core/service_runtime/catalogue_packages.py@9c57c9a4c813578bffa504108ef9d785b308bb86",
+        "source_ref": "tools/candidate_review/resources/native-calibration/catalogue/bodies/control_71af.package.json@1d35f6976264ee7188a7d4179e69fa6c171d57e2",
         "family": "harness",
         "size_bytes": 1477,
         "license": "MIT",
@@ -235,7 +235,7 @@
         "purpose": "Compute earliest starts and finishes for a bounded acyclic task graph with nonnegative integer durations.",
         "digest": "79704b428bc5be99c11572d5180cd3a69273015f7dcb63e9cddc117d39727a5e",
         "source_layer": "harness_local",
-        "source_ref": "src/loop_engine/core/service_runtime/catalogue_packages.py@9c57c9a4c813578bffa504108ef9d785b308bb86",
+        "source_ref": "tools/candidate_review/resources/native-calibration/catalogue/bodies/control_71af.package.json@1d35f6976264ee7188a7d4179e69fa6c171d57e2",
         "family": "harness",
         "size_bytes": 1477,
         "license": "MIT",
@@ -345,7 +345,7 @@
         "purpose": "Compute earliest starts and finishes for a bounded acyclic task graph with nonnegative integer durations.",
         "digest": "5ac3d88bc615b81e05dce0f657672e7f4c2f976af6167a4cce5415ff079e90aa",
         "source_layer": "harness_local",
-        "source_ref": "src/loop_engine/core/service_runtime/catalogue_packages.py@9c57c9a4c813578bffa504108ef9d785b308bb86",
+        "source_ref": "tools/candidate_review/resources/native-calibration/catalogue/bodies/control_71af.package.json@1d35f6976264ee7188a7d4179e69fa6c171d57e2",
         "family": "harness",
         "size_bytes": 1477,
         "license": "MIT",
@@ -455,7 +455,7 @@
         "purpose": "Compute earliest starts and finishes for a bounded acyclic task graph with nonnegative integer durations.",
         "digest": "7eaaa30f042a58d85a5e2bf83f1e004ca23e6c1e444c6ffe04bdd57cd0c4946e",
         "source_layer": "harness_local",
-        "source_ref": "src/loop_engine/core/service_runtime/catalogue_packages.py@9c57c9a4c813578bffa504108ef9d785b308bb86",
+        "source_ref": "tools/candidate_review/resources/native-calibration/catalogue/bodies/control_71af.package.json@1d35f6976264ee7188a7d4179e69fa6c171d57e2",
         "family": "harness",
         "size_bytes": 1477,
         "license": "MIT",

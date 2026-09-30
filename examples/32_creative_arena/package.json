@@ -1,0 +1,14 @@
+{
+  "name": "baltor-creative-arena",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "An editable Three.js fantasy combat and animation example for Baltor.",
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "serve": "python3 -m http.server 8094 --bind 127.0.0.1 --directory dist"
+  },
+  "dependencies": {"three": "0.186.1"},
+  "devDependencies": {"esbuild": "0.28.2"}
+}

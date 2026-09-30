@@ -11,7 +11,7 @@ lists those files, the way an image manifest lists its layers.
 
 ```text
 Catalogue package
-├── files, one to MAXIMUM_PACKAGE_FILES
+├── files, a complete nonempty inventory bounded by manifest and payload bytes
 │   ├── path        relative placement inside the package folder, never `..` or `.git`
 │   ├── digest      SHA-256 of the exact bytes
 │   ├── size_bytes  bounded by MAXIMUM_FILE_BYTES
@@ -65,9 +65,10 @@ EXECUTABLE_ROLES = ("skill_script", "hook", "executable_tool")
 EXECUTABLE_EFFECT = "spawns_process"
 BODY_FORMS = ("file", "package")
 FILE_BODY, PACKAGE_BODY = BODY_FORMS
-MAXIMUM_PACKAGE_FILES = 64
 MAXIMUM_FILE_BYTES = 8 * 1024 * 1024
 MAXIMUM_PACKAGE_BYTES = 32 * 1024 * 1024
+#: A manifest is itself a delivered file and uses the existing file-transfer byte budget.
+MAXIMUM_PACKAGE_MANIFEST_BYTES = MAXIMUM_FILE_BYTES
 MAXIMUM_PATH_CHARACTERS = 200
 MAXIMUM_PATH_DEPTH = 8
 _SEGMENT = re.compile(r"[A-Za-z0-9._@+-]{1,100}")
@@ -149,9 +150,9 @@ class CataloguePackage:
 
     def __post_init__(self):
         files = tuple(self.files)
-        if not 1 <= len(files) <= MAXIMUM_PACKAGE_FILES or any(
+        if not files or any(
                 not isinstance(entry, CataloguePackageFile) for entry in files):
-            _refuse("package_invalid", f"a package holds one to {MAXIMUM_PACKAGE_FILES} typed files")
+            _refuse("package_invalid", "a package holds a nonempty complete inventory of typed files")
         folded = [entry.path.casefold() for entry in files]
         if len(set(folded)) != len(folded):
             # Two paths that differ only in letter case land on one file on a
@@ -164,6 +165,8 @@ class CataloguePackage:
         if self.body_form == FILE_BODY and len(files) != 1:
             _refuse("package_body_form_invalid", "the file body form serves exactly one file")
         object.__setattr__(self, "files", tuple(sorted(files, key=lambda entry: entry.path)))
+        if len(self.document()) > MAXIMUM_PACKAGE_MANIFEST_BYTES:
+            _refuse("package_manifest_too_large", "the package manifest exceeds its file-transfer byte budget")
 
     def document(self):
         """The canonical package document; its digest is the package digest."""
@@ -205,6 +208,10 @@ class CataloguePackage:
 
 def parse_package_document(payload):
     """Read a served package document back into typed files, refusing any other shape."""
+    if isinstance(payload, str):
+        payload = payload.encode("utf-8")
+    if isinstance(payload, (bytes, bytearray)) and len(payload) > MAXIMUM_PACKAGE_MANIFEST_BYTES:
+        _refuse("package_manifest_too_large", "the package manifest exceeds its file-transfer byte budget")
     try:
         value = json.loads(payload)
     except (TypeError, ValueError):

@@ -318,7 +318,7 @@ main:has(> [data-view=pricing]:not([hidden])){max-width:none;padding:0}
 @media(max-width:860px){[data-view=pricing].pricing-page{padding:40px 16px}[data-view=pricing] .plan-card{padding:1.5rem}[data-view=pricing] .plan-price{font-size:3.5rem}
   [data-view=pricing] .pricing-questions{margin-top:40px}}
 
-[data-view=setup] .start-intro{gap:.75rem;padding:64px max(var(--band-gutter),calc((100% - var(--content-max)) / 2)) 32px;background:none;border:0}
+[data-view=setup] .start-intro{gap:.75rem;padding:64px max(var(--band-gutter),calc((100% - 64rem) / 2)) 32px;background:none;border:0}
 [data-view=setup] .start-intro h1{max-width:47.5rem;font-size:clamp(2.25rem,4.4vw,3.75rem);line-height:1.02;letter-spacing:-.04em;font-weight:600}
 [data-view=setup] .start-intro .eyebrow{margin:0}
 [data-view=setup] .start-layout{padding:0 max(var(--band-gutter),calc((100% - var(--content-max)) / 2)) 64px;gap:2rem}
@@ -345,7 +345,7 @@ main:has(> [data-view=pricing]:not([hidden])){max-width:none;padding:0}
 [data-view=setup] .recipe-actions button,[data-view=setup] .recipe-remove .button,[data-view=setup] .recipe-check .button{min-height:44px;border-radius:var(--radius-button)}
 [data-view=setup] #start-search .actions .button:not(.primary){border:1px solid var(--line-strong);background:var(--paper);color:var(--ink)}
 
-[data-view=setup] .start-layout{grid-template-columns:minmax(0,1fr) minmax(0,22rem);grid-template-areas:"nav nav" "cards side";gap:1.5rem 2rem}
+[data-view=setup] .start-layout{grid-template-columns:minmax(0,1fr);grid-template-areas:"nav" "cards" "side";gap:1.5rem}
 [data-view=setup] .start-steps-nav{grid-area:nav;position:static}
 [data-view=setup] .start-steps-nav ol{flex-direction:row;flex-wrap:wrap;gap:.5rem}
 [data-view=setup] .start-steps-nav a{padding:.625rem 1rem;border:1px solid var(--border);background:var(--paper)}
@@ -356,6 +356,35 @@ main:has(> [data-view=pricing]:not([hidden])){max-width:none;padding:0}
 [data-view=setup] .recipe-remove.start-side-card{background:var(--band)}
 [data-view=setup] .start-side-card .actions{flex-direction:column;align-items:stretch;gap:.5rem;margin:1rem 0 .5rem}
 [data-view=setup] .start-side-card .actions>*{justify-content:center}
+[data-view=setup] .start-cards,[data-view=setup] .start-aside{width:100%;max-width:64rem;margin-inline:auto}
+[data-view=setup] .start-steps-nav{max-width:64rem;width:100%;margin-inline:auto}
+[data-view=setup] .recipe-where{margin-bottom:.5rem;overflow-wrap:anywhere}
+[data-view=setup] #client-configuration-note{max-width:48rem;font-size:.9375rem;line-height:1.6}
+[data-view=setup] .recipe-token{max-width:48rem}
+[data-view=setup] .setup-worker-choice{display:flex;align-items:center;justify-content:space-between;gap:1.5rem;padding:1.25rem;margin:1.25rem 0 2rem;background:var(--band);border:1px solid var(--border);border-radius:var(--radius-card)}
+[data-view=setup] .setup-worker-choice h3{margin:0 0 .375rem;font-size:1.0625rem}
+[data-view=setup] .setup-worker-choice p{margin:0;color:var(--muted);max-width:38rem}
+[data-view=setup] .setup-worker-choice .button{flex:none}
+[data-view=setup] .setup-first-prompt{margin:1rem 0;padding:1rem 1.25rem;border-left:3px solid var(--accent);background:var(--band);font-size:1rem;max-width:48rem}
+[data-view=setup] .start-side-card summary{font-weight:600;cursor:pointer;min-height:44px;align-content:center}
+[data-view=use-cases] .use-audience{padding:2rem 0;border-top:1px solid var(--border)}
+[data-view=use-cases] .use-audience-heading{max-width:48rem;margin-bottom:1.5rem}
+[data-view=use-cases] .use-audience-heading h2{margin:0 0 .5rem;font-size:1.875rem;letter-spacing:-.025em}
+[data-view=use-cases] .use-audience-heading p{margin:0;color:var(--muted)}
+[data-view=use-cases] .use-audience .use-case-grid{padding:0;margin:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.25rem}
+[data-view=use-cases] .use-audience .use-case{display:flex;flex-direction:column;min-width:0;padding:1.5rem;border:1px solid var(--border);border-radius:var(--radius-card);background:var(--paper)}
+[data-view=use-cases] .use-audience .use-case h3{font-size:1.125rem;line-height:1.35;margin:0 0 .75rem}
+[data-view=use-cases] .use-audience .use-case p{color:var(--muted);flex:1;margin:0 0 1rem}
+[data-view=top-mcps] .mcp-shortlist-date{margin:0 0 1.5rem;color:var(--muted);font-size:.9375rem}
+.mcp-shortlist{list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.25rem;padding:0;margin:0}
+.mcp-pick{display:flex;flex-direction:column;gap:1rem;padding:1.5rem;border:1px solid var(--border);border-radius:var(--radius-card);background:var(--paper);min-width:0}
+.mcp-pick p,.mcp-pick h2{margin:0}.mcp-pick p{color:var(--muted)}.mcp-pick h2{font-size:1.375rem;line-height:1.3}
+.mcp-pick-heading{display:flex;gap:1rem}.mcp-pick-rank{color:var(--accent);font-family:var(--font-mono);font-size:.875rem;padding-top:.25rem}
+.mcp-pick-heading p{margin-top:.25rem;font-size:1rem}.mcp-pick-facts{display:flex;gap:2rem;margin:0}.mcp-pick-facts dt{color:var(--muted);font-size:.875rem}.mcp-pick-facts dd{margin:0;font-weight:600}
+.mcp-pick-caution{padding-top:1rem;border-top:1px solid var(--border);font-size:.9375rem}.mcp-pick .case-links{margin-top:auto;display:flex;gap:1.25rem;flex-wrap:wrap}
+.mcp-shortlist-method{margin-top:2rem;padding-top:2rem;border-top:1px solid var(--border);max-width:48rem}.mcp-shortlist-method h2{font-size:1.5rem}.mcp-shortlist-method h3{font-size:1.125rem;margin-top:1.5rem}
+@media(max-width:760px){.mcp-shortlist{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:760px){[data-view=setup] .setup-worker-choice{align-items:flex-start;flex-direction:column;gap:1rem}[data-view=use-cases] .use-audience .use-case-grid{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:980px){[data-view=setup] .start-layout{grid-template-columns:minmax(0,1fr);grid-template-areas:"nav" "cards" "side"}}
 @media(max-width:600px){[data-view=setup] .start-intro{padding:40px 16px 24px}[data-view=setup] .start-intro h1{font-size:2.25rem}
   [data-view=setup] .start-layout{padding:0 16px 40px}[data-view=setup] .start-card{padding:1.25rem}[data-view=setup] .start-side-card{padding:1.25rem}
@@ -729,3 +758,5 @@ html [data-view="home"] .hero-terminal-bar .hero-terminal-label{margin:.5rem .75
   html [data-view="home"] .hero-terminal-tabs{overflow-x:visible;flex-wrap:wrap}
   html [data-view="home"] .hero-terminal-tabs button{flex:0 1 auto;max-width:100%;white-space:normal}
 }
+.creative-arena-frame{display:block;width:100%;height:min(82vh,900px);min-height:640px;border:1px solid var(--border);border-radius:12px;background:#142f36}
+@media(max-width:600px){.creative-arena-frame{height:780px;min-height:0;border-radius:6px}}

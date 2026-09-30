@@ -201,6 +201,8 @@ class PanelRunRequest:
     quota_group_call_ceilings: dict = field(default_factory=dict)
     #: After this many identical failures in a row an installation is asked no more in the run; zero is off.
     repeated_failure_limit: int = 0
+    #: Optional exact request groups per installation, preserving a caller's context-budget plan.
+    batch_groups: dict = field(default_factory=dict)
 
     def __post_init__(self):
         if type(self.run_id) is not str or not self.run_id.strip():
@@ -233,6 +235,20 @@ class PanelRunRequest:
             refuse("invalid_run_request", "a quota group ceiling is a whole number of zero or more")
         if type(self.repeated_failure_limit) is not int or self.repeated_failure_limit < 0:
             refuse("invalid_run_request", "the repeated failure limit is a whole number of zero or more")
+        if type(self.batch_groups) is not dict:
+            refuse("invalid_run_request", "planned batch groups name their installation")
+        for name, groups in self.batch_groups.items():
+            size = self.batch_sizes.get(name, 1)
+            if type(name) is not str or size <= 1 or not isinstance(groups, (list, tuple)) or not groups:
+                refuse("invalid_run_request", "planned groups require a declared batched installation")
+            members = []
+            for group in groups:
+                if not isinstance(group, (list, tuple)) or not 1 <= len(group) <= size \
+                        or any(type(identity) is not str for identity in group):
+                    refuse("invalid_run_request", "a planned group is nonempty and respects its batch limit")
+                members.extend(group)
+            if len(members) != len(identities) or set(members) != set(identities):
+                refuse("invalid_run_request", "planned groups partition the exact run population once")
 
     @property
     def batched(self) -> bool:
@@ -666,8 +682,7 @@ class ReviewPanel:
             def ask_group(entry):
                 installation, rows = entry
                 size = run_request.batch_sizes.get(installation.installation_id, 1)
-                for start in range(0, len(rows), size):
-                    chunk = rows[start:start + size]
+                for chunk in self._batch_chunks(rows, installation.installation_id, run_request):
                     for row in chunk:
                         row["tried"].add(installation.installation_id)
                     if size == 1:
@@ -702,6 +717,16 @@ class ReviewPanel:
                     continue
             decided[request.identity] = self._decided(request, row["prechecks"], verdicts)
         return [decided[request.identity] for request in run_request.requests]
+
+    @staticmethod
+    def _batch_chunks(rows, installation_id, run_request):
+        groups = run_request.batch_groups.get(installation_id)
+        if groups is not None:
+            remaining = {row["request"].identity: row for row in rows}
+            return [chunk for group in groups
+                    if (chunk := [remaining[identity] for identity in group if identity in remaining])]
+        size = run_request.batch_sizes.get(installation_id, 1)
+        return [rows[start:start + size] for start in range(0, len(rows), size)]
 
     def _key(self, installation, request, run_request) -> str:
         """The key an installation's verdict on this item is stored under in this run's mode of asking."""

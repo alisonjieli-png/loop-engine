@@ -1,9 +1,12 @@
 {
  "record_type": "licensed_import_sources/v1",
- "curated_on": "2026-09-24",
+ "curated_on": "2026-09-30",
  "curated_by": "Claude Code, licensed import (S-2.27, S-6.81)",
  "note": "Every place the licensed import may look for harness files. A source grants nothing: network reads need the operator's flag and every file still passes the licence gate on its own. Repositories are read at their head commit when the round runs, and that exact commit is recorded. The September 23 curation (src/loop_engine/core/library_ingestion/outside_sources.yaml) is carried forward: its repositories are here, and the four collections it dropped are excluded.",
  "repositories": [
+  {"source_id": "curated.kajisho5.ffmpeg-skill", "repository": "kajisho5/ffmpeg-skill", "note": "Owner screenshot, September 30: the npm ffmpeg-skill package resolves to this repository. The observed npm version is 2.3.1; repository HEAD is a separate revision. Import complete dependency material and decide rights per file; do not execute its installer during discovery."},
+  {"source_id": "curated.n0an.ffmpeg-skill", "repository": "n0an/ffmpeg-skill", "note": "Separate FFmpeg guidance skill installable through the skills CLI. It is not the npm ffmpeg-skill package; preserve the distinct upstream identity and check its licence."},
+  {"source_id": "curated.remotion-dev.skills", "repository": "remotion-dev/skills", "note": "Official Remotion skill source for programmatic video. Skill-file rights and the renderer's commercial terms are separate; decide each imported file at its pinned source revision."},
   {"source_id": "curated.anthropics.skills", "repository": "anthropics/skills", "note": "No repository licence; each skill folder carries its own LICENSE.txt (Apache-2.0 for most, a source-available licence that forbids derivative works for the document skills). Decided file by file."},
   {"source_id": "curated.anthropics.claude-plugins-official", "repository": "anthropics/claude-plugins-official", "note": "Anthropic's managed directory of Claude Code plugins, Apache-2.0 at the root; plugin folders may carry their own licences."},
   {"source_id": "curated.anthropics.claude-code", "repository": "anthropics/claude-code", "note": "Its plugins folder holds Anthropic's example plugins under Anthropic's own terms; read so that copies of them elsewhere are recognized as restricted."},
@@ -102,7 +105,7 @@
   "note": "Repositories by topic, sorted by stars, each topic partitioned by creation date to pass the 1,000-result cap."
  },
  "npm_search": {
-  "texts": ["keywords:mcp-server", "keywords:claude-code", "keywords:agent-skills", "keywords:claude-code-plugin", "keywords:mcp"],
+  "texts": ["keywords:mcp-server", "keywords:claude-code", "keywords:agent-skills", "keywords:claude-code-plugin", "keywords:mcp", "keywords:agent-skill", "ffmpeg skill", "video editing skill", "remotion skills", "three.js skills", "blender skill", "godot skill", "geospatial skill", "workflow skills"],
   "pages": 2,
   "note": "npm packages by keyword; each package's declared GitHub repository is the lead, read only under an allowlisted licence."
  },

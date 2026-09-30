@@ -165,6 +165,15 @@ class SyncChecks(unittest.TestCase):
         reasons = sorted(row["payload"]["reason"] for row in self._records("withdrawal"))
         self.assertEqual(reasons, ["licence_changed", "licence_changed", "upstream_deleted"])
 
+    def test_a_changed_importer_reconsiders_an_unchanged_upstream_commit(self):
+        from unittest import mock
+        self._round("before-parser-change", REPOSITORIES, LICENCES)
+        with mock.patch("licensed_import.sync.processing_digest", return_value="e" * 64):
+            engine, *_rest = self._round("after-parser-change", REPOSITORIES, LICENCES)
+        self.assertIn("acme/tools", engine.opened)
+        state = self.store.get(source_state_record_id("acme/tools"))["payload"]
+        self.assertEqual(state["processing_digest"], "e" * 64)
+
     def test_the_report_counts_the_store_and_keeps_no_third_party_text(self):
         import json
         from licensed_import.report import build_report

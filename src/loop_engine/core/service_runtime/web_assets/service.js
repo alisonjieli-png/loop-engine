@@ -46,12 +46,13 @@
     history.replaceState({}, "", "/login");
     $("identity-message").textContent = "Your email link has returned to Baltor. Sign in to continue; the provider will check your confirmation status.";
   }
+  routeNames["/demo/ashen-wilds"] = "creative-arena";
   // Three addresses open views of their own: the Get started funnel, the page a message link opens, and the setup guide's
   // address. They are added here rather than in the table above, so that a change to either place merges on its own.
   routeNames["/get-started"] = "start"; routeNames["/auth/confirm"] = "confirm"; routeNames["/setup"] = "setup";
   /* The pages of September 24, 2026: the four audience pages, the demonstration of one task, three case studies and the
      service status. Each address names its own view; web_site_map.json lists them with their titles. */
-  Object.assign(routeNames, {"/worker":"worker", "/for/designers":"for-designers", "/for/coding-agents":"for-coding-agents", "/for/engineering-teams":"for-engineering-teams",
+  Object.assign(routeNames, {"/top-mcps":"top-mcps", "/worker":"worker", "/for/designers":"for-designers", "/for/coding-agents":"for-coding-agents", "/for/engineering-teams":"for-engineering-teams",
     "/for/comparing-tools":"for-comparing-tools", "/for/protocol-and-client":"for-protocol-and-client", "/demo":"demo", "/demo/kaggle":"demo-kaggle",
     "/case-studies/data-cleanup":"case-studies-data-cleanup", "/case-studies/pi-and-gemma-4":"case-studies-pi-and-gemma-4",
     "/case-studies/sign-up-protection":"case-studies-sign-up-protection", "/status":"status"});
@@ -87,7 +88,7 @@
   const route = () => { const name = routeNames[location.pathname] || (location.pathname.startsWith("/docs/") ? "docs" : "home"); show(name); setMenu(false); document.title = serviceName + " | " + {home:"For engineers, designers and AI agents", "use-cases":"Use cases", overnight:"Solve complex problems overnight", efficiency:"More efficient operation", learning:"Learning and optimization, built in", workspace:"Intelligence workspace", login:"Sign in", signup:"Account status", pricing:"Pricing", account:"Your account", admin:"Access administration", docs:"Documentation", about:"How it works", setup:"Get set up", waitlist:"Get started", examples:"Examples and case studies", security:"Access and data boundaries", privacy:"Privacy notice", terms:"Terms of service", start:"Get started", confirm:"Choose your password",
     "for-designers":"Creative work you can change again", "for-coding-agents":"Stop starting from nothing", "for-engineering-teams":"Expertise for the whole team", "for-comparing-tools":"What it is and what it costs",
     "for-protocol-and-client":"Protocol, client and setup", demo:"One task, step by step", "demo-kaggle":"A Kaggle competition, start to finish", "case-studies-data-cleanup":"Data cleanup with and without Baltor",
-    "case-studies-pi-and-gemma-4":"Pi and Gemma 4 on Ollama Cloud", "case-studies-sign-up-protection":"How sign-up is protected", status:"Service status"}[name]; if (name === "docs") window.BaltorDocumentation?.show(location.pathname); };
+    "case-studies-pi-and-gemma-4":"Pi and Gemma 4 on Ollama Cloud", "case-studies-sign-up-protection":"How sign-up is protected", "creative-arena":"Ashen Wilds", status:"Service status"}[name]; if (name === "docs") window.BaltorDocumentation?.show(location.pathname); };
   const navigate = path => { history.pushState({}, "", path); route(); $("main").focus({preventScroll:true}); const target = location.hash ? document.getElementById(location.hash.slice(1)) : null; if (target) target.scrollIntoView(); else scrollTo(0,0); };
   document.querySelectorAll("[data-page]").forEach(link => link.addEventListener("click", event => { if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) return; event.preventDefault(); if (link.dataset.afterLogin && routeNames[link.dataset.afterLogin]) afterLogin = link.dataset.afterLogin; navigate(link.getAttribute("href")); }));
   addEventListener("popstate", route); route();
@@ -1114,7 +1115,7 @@ const applyPaymentState = name => {
     $("client-verify-command").textContent = selected.verification_command; $("client-verify-note").textContent = selected.verification_note;
     $("client-version-note").textContent = selected.version_note;
     $("client-revoke-note").textContent = recipes.revocation_note; $("client-removal-note").textContent = selected.removal_note;
-    $("client-source").href = selected.source_url; $("client-source").textContent = selected.source_url;
+    $("client-source").href = selected.source_url; $("client-source").textContent = "Open the " + selected.name + " guide";
     $("copy-configuration").disabled = false; $("copy-configuration").textContent = "Copy configuration without secrets"; message("setup-message", "");
   }
   function chooseRecipe(id, focus) {

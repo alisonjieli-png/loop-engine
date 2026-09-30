@@ -101,8 +101,6 @@ MANIFEST_RECORD = "provisioning_manifest/v3"
 STEP_EFFECTS_HEADER = "Baltor-Step-Effects"
 #: The protocol read answer for a package of files: each file's exact content by page. The check follows every page.
 PACKAGE_READ_RECORD = "provisioning_package_read/v1"
-#: A package holds at most 64 files, so no honest package needs more pages than this.
-MAXIMUM_PACKAGE_PAGES = 64
 #: The search mode the served Pi extension sends, its SEARCH_MODE; a unit test holds the two to each other.
 EXTENSION_SEARCH_MODE = "hybrid"
 #: How many results the check asks for when the client, not the page, picks the number.
@@ -548,6 +546,11 @@ def _check_protocol_package(service, version, reference, facts, first, step):
     A file too large for one protocol answer is named under `omitted`; the download address serves it by path, so
     the check counts it as named, not delivered, and still requires every listed file to be delivered or named."""
     records, delivered, omitted, mismatched = [first], {}, {}, []
+    listed = first.get("package") or {}
+    listed_files = listed.get("files")
+    if not isinstance(listed_files, list) or not listed_files:
+        raise StepFailed("the package read lists no files")
+    previous_offset = 0
     while True:
         record = records[-1]
         if record.get("record_type") != PACKAGE_READ_RECORD or record.get("identity") != reference["identity"]:
@@ -561,8 +564,9 @@ def _check_protocol_package(service, version, reference, facts, first, step):
         following = record.get("next_file_offset")
         if following is None:
             break
-        if not isinstance(following, int) or len(records) > MAXIMUM_PACKAGE_PAGES:
-            raise StepFailed("the package pages do not end")
+        if type(following) is not int or not previous_offset < following < len(listed_files):
+            raise StepFailed("the package pages do not advance within the declared file inventory")
+        previous_offset = following
         _status, read = service.protocol({"jsonrpc": "2.0", "id": "qs-read-page", "method": "tools/call",
             "params": {"name": READ_TOOL, "arguments": {"identity": reference["identity"],
                                                          "request_id": facts["request_id"],

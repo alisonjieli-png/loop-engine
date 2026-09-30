@@ -26,6 +26,8 @@ import re
 from .web_site_map import SiteMap, load_site_map
 
 HTML_MEDIA_TYPE = "text/html"
+# Only this public example may be embedded by another page on this service.
+CREATIVE_PREVIEW_PATH = "/assets/creative-arena/index.html"
 #: The name of this deployment is written into a served page here. A packaged
 #: page carries the placeholder; no packaged file carries a deployment's name.
 SERVICE_NAME_PLACEHOLDER = b"{{SERVICE_NAME}}"
@@ -38,6 +40,13 @@ PACKAGED_ASSET_DIRECTORY = ("core", "service_runtime", "web_assets")
 #: service serves nothing else: not the repository, the source inventory, the
 #: host configuration or an internal report.
 WEB_ASSETS = {
+    "/demo/ashen-wilds": ("index.html", HTML_MEDIA_TYPE),
+    "/assets/creative-arena/index.html": ("creative-arena/index.html", HTML_MEDIA_TYPE),
+    "/assets/creative-arena/arena.js": ("creative-arena/arena.js", "text/javascript"),
+    "/assets/creative-arena/arena.css": ("creative-arena/arena.css", "text/css"),
+    "/assets/creative-arena/asset-briefs.json": ("creative-arena/asset-briefs.json", "application/json"),
+    "/assets/creative-arena/blender-import.py": ("creative-arena/blender-import.py.txt", "text/plain"),
+    "/assets/creative-arena/THREE-LICENSE.txt": ("creative-arena/THREE-LICENSE.txt", "text/plain"),
     "/": ("index.html", HTML_MEDIA_TYPE), "/app": ("index.html", HTML_MEDIA_TYPE),
     "/login": ("index.html", HTML_MEDIA_TYPE), "/signup": ("index.html", HTML_MEDIA_TYPE),
     "/account": ("index.html", HTML_MEDIA_TYPE),
@@ -60,6 +69,8 @@ WEB_ASSETS = {
     # app; /mcp-directory is its second address. tools/build_mcp_directory.py writes its data files and the
     # generated parts of the page, and the page script reads the files listed at the end of this table.
     "/directory": ("directory.html", HTML_MEDIA_TYPE), "/mcp-directory": ("directory.html", HTML_MEDIA_TYPE),
+    "/top-mcps": ("index.html", HTML_MEDIA_TYPE),
+    "/assets/top-mcps.json": ("top-mcps.json", "application/json"),
     "/auth/callback": ("index.html", HTML_MEDIA_TYPE), "/auth/confirm": ("index.html", HTML_MEDIA_TYPE),
     "/docs": ("index.html", HTML_MEDIA_TYPE), "/how-it-works": ("index.html", HTML_MEDIA_TYPE),
     "/pricing": ("index.html", HTML_MEDIA_TYPE),

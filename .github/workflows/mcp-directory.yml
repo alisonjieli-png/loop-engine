@@ -59,10 +59,15 @@ jobs:
           key: mcp-directory-state-${{ github.run_id }}
 
       - name: Build the data files and check them
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           PYTHONPATH=src:tools python tools/build_mcp_directory.py build --state "$RUNNER_TEMP/mcp-directory-state"
           PYTHONPATH=src:tools python tools/build_mcp_directory.py check
           PYTHONPATH=src:tools python -m unittest tools/test_build_mcp_directory.py
+          python tools/build_top_mcp_page.py --refresh --authorize-network-reads
+          python tools/build_top_mcp_page.py --check
+          PYTHONPATH=src:tools python -m unittest tools/test_top_mcp_page.py
 
       - name: Keep the build report and the data files
         if: always()
@@ -74,6 +79,7 @@ jobs:
             src/loop_engine/core/service_runtime/web_assets/directory
             src/loop_engine/core/service_runtime/web_assets/directory.html
             src/loop_engine/core/service_runtime/public_lists/directory.json
+            src/loop_engine/core/service_runtime/web_assets/top-mcps.json
           if-no-files-found: warn
           retention-days: 14
 
@@ -82,7 +88,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          data="src/loop_engine/core/service_runtime/web_assets/directory src/loop_engine/core/service_runtime/web_assets/directory.html src/loop_engine/core/service_runtime/public_lists/directory.json"
+          data="src/loop_engine/core/service_runtime/web_assets/directory src/loop_engine/core/service_runtime/web_assets/directory.html src/loop_engine/core/service_runtime/public_lists/directory.json src/loop_engine/core/service_runtime/web_assets/top-mcps.json src/loop_engine/core/service_runtime/web_assets/index.html"
           if git diff --quiet -- $data; then
             echo "The directory data did not change."
             exit 0

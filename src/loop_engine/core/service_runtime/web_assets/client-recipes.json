@@ -108,8 +108,8 @@
       "id": "baltor-harness",
       "name": "Baltor Harness",
       "format": "json",
-      "configuration_location": "No configuration file yet. The Baltor Harness steps in the linked guide use these values to search and download with your token, or use them with the engine's protocol client in Python.",
-      "configuration_note": "The Baltor Harness runs your task on your own model in small steps. It does not search or download from Baltor by itself yet: search and download with your token, add the downloaded material to your task file, then run loop-engine solve. The same address and variable work with the protocol client that ships with the engine (McpServerSpec, installed with loop-engine[integrations]). Keep the token in your environment, never in a file. Send the Baltor-Step-Effects header with every search and download, as the guide's commands do; it says what your task's steps may do with a Baltor item. Remove any effect your steps do not have.",
+      "configuration_location": "Manual library connection",
+      "configuration_note": "These are connection values for the Python protocol client, not a configuration file that the Baltor Harness loads automatically. Follow the linked guide to search, download and add the material to your task before running it. The engine does not select library material by itself yet. Keep only the step effects your task is authorized to use.",
       "configuration": {
         "mcp_servers": {
           "baltor": {

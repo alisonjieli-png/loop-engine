@@ -39,7 +39,8 @@ from .records import (
 
 _PACKAGE_CODES = {"package_path_invalid": "package_path_invalid", "package_path_duplicate": "package_path_invalid",
                   "package_file_too_large": "package_too_large", "package_too_large": "package_too_large",
-                  "package_invalid": "package_too_many_files", "package_media_type_invalid": "package_path_invalid"}
+                  "package_manifest_too_large": "package_too_large",
+                  "package_invalid": "empty_package", "package_media_type_invalid": "package_path_invalid"}
 MINIMUM_PRIMARY_CHARACTERS = 40
 
 

@@ -1,8 +1,10 @@
 # Loop Engine writing context
 
-Use this context when editing public Markdown with a prose-review or humanizer
-skill. This file owns the voice, the punctuation and the reference style. It
-does not own the vocabulary.
+Use this context for language throughout the product and repository: pages,
+setup, command help, errors, status messages, prompts, comments, docstrings,
+examples and documentation. It also guides a prose-review or humanizer skill.
+This file owns the voice, punctuation and reference style. It does not own
+the vocabulary.
 
 The vocabulary lives in [terminology.yaml](terminology.yaml), the single
 structured source. Every term there states its kind, its definition, the
@@ -32,6 +34,31 @@ internal vocabulary to understand one page.
 - Repeat the exact technical term when variation would create ambiguity.
 - Keep claims narrow and testable.
 - State current behavior separately from planned behavior.
+
+## Setup, system messages and source code
+
+A setup step explains what to do, where to do it, what success looks like and
+how to recover from failure. State prerequisites before the command that needs
+them. Use commands and configuration keys that the supported release accepts.
+
+An error names the failed operation and gives the next supported action when
+one is known. Keep its machine-readable code separate from its explanation.
+Do not invent a recovery action when the cause is unknown. A status message
+distinguishes waiting, running, failed and finished work. A successful
+download is not a successful installation.
+
+Comments explain a constraint, decision or non-obvious behavior. Docstrings
+describe the current inputs, outputs, effects and failures. Keep change
+history in commits and dated records. Prompts give a concrete assignment,
+available information, permitted actions and completion conditions without
+flattery or repetitive instructions.
+
+Edit prose without renaming identifiers, contract fields, refusal codes,
+commands or configuration keys for stylistic reasons. Preserve quoted owner
+instructions, historical evidence and third-party source bytes. Edit generated
+copy at its source and rebuild it through its existing generator. Read the
+affected help or screen after editing; a vocabulary scan or writing score
+does not establish that the result is clear.
 
 ## Full terms without shorthand
 

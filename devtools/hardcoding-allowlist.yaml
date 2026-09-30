@@ -1,5 +1,311 @@
 schema: hardcoding_allowlist/v1
 entries:
+- finding_id: hardcoding.1c52fe3be6f571d2f1d76e9e
+  owner: "loop_engine.core.service_runtime.web_assets.creative-arena.asset-briefs.json:reference"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 30, 2026: citation for the workflow inspiration only. Prompts and procedural assets are original; no Tripo asset or service call is bundled. The build manifest binds this passive record, and the example states its reuse limits."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.d7dc892258a3497920e19557
+  owner: "loop_engine.core.service_runtime.web_assets.top-mcps.json:items[0].docs"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 30, 2026: a public source or README link in a dated editorial shortlist, not a runtime provider binding. The builder binds repository identity to both URLs and states that stars are neither quality nor Baltor usage. test_top_mcp_page covers false popularity and source mismatch."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.76ff9f5f179f867d0c982a45
+  owner: "loop_engine.core.service_runtime.web_assets.top-mcps.json:items[0].source"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 30, 2026: a public source or README link in a dated editorial shortlist, not a runtime provider binding. The builder binds repository identity to both URLs and states that stars are neither quality nor Baltor usage. test_top_mcp_page covers false popularity and source mismatch."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.859e22b5d0bdfd84fe3a5885
+  owner: "loop_engine.core.service_runtime.web_assets.top-mcps.json:items[1].docs"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 30, 2026: a public source or README link in a dated editorial shortlist, not a runtime provider binding. The builder binds repository identity to both URLs and states that stars are neither quality nor Baltor usage. test_top_mcp_page covers false popularity and source mismatch."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.01a0445e99852205e7adce1e
+  owner: "loop_engine.core.service_runtime.web_assets.top-mcps.json:items[1].source"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 30, 2026: a public source or README link in a dated editorial shortlist, not a runtime provider binding. The builder binds repository identity to both URLs and states that stars are neither quality nor Baltor usage. test_top_mcp_page covers false popularity and source mismatch."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.27b67e008e0f1ad6f42362c5
+  owner: "loop_engine.core.service_runtime.web_assets.top-mcps.json:items[2].docs"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 30, 2026: a public source or README link in a dated editorial shortlist, not a runtime provider binding. The builder binds repository identity to both URLs and states that stars are neither quality nor Baltor usage. test_top_mcp_page covers false popularity and source mismatch."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.4a53182d9b3aa33119f63779
+  owner: "loop_engine.core.service_runtime.web_assets.top-mcps.json:items[2].source"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 30, 2026: a public source or README link in a dated editorial shortlist, not a runtime provider binding. The builder binds repository identity to both URLs and states that stars are neither quality nor Baltor usage. test_top_mcp_page covers false popularity and source mismatch."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.48144a1251b685d6e181a698
+  owner: "loop_engine.core.service_runtime.web_assets.top-mcps.json:items[3].docs"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 30, 2026: a public source or README link in a dated editorial shortlist, not a runtime provider binding. The builder binds repository identity to both URLs and states that stars are neither quality nor Baltor usage. test_top_mcp_page covers false popularity and source mismatch."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.2c70e80f4ad6758464d3ccf8
+  owner: "loop_engine.core.service_runtime.web_assets.top-mcps.json:items[3].source"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 30, 2026: a public source or README link in a dated editorial shortlist, not a runtime provider binding. The builder binds repository identity to both URLs and states that stars are neither quality nor Baltor usage. test_top_mcp_page covers false popularity and source mismatch."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.79a1418211af6ea283824715
+  owner: "loop_engine.core.service_runtime.web_assets.top-mcps.json:items[4].docs"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 30, 2026: a public source or README link in a dated editorial shortlist, not a runtime provider binding. The builder binds repository identity to both URLs and states that stars are neither quality nor Baltor usage. test_top_mcp_page covers false popularity and source mismatch."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.f7e448c26224e42f54665aac
+  owner: "loop_engine.core.service_runtime.web_assets.top-mcps.json:items[4].source"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 30, 2026: a public source or README link in a dated editorial shortlist, not a runtime provider binding. The builder binds repository identity to both URLs and states that stars are neither quality nor Baltor usage. test_top_mcp_page covers false popularity and source mismatch."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.3d79c04bb51c78b53a1e6bd2
+  owner: "loop_engine.core.service_runtime.web_assets.top-mcps.json:items[5].docs"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 30, 2026: a public source or README link in a dated editorial shortlist, not a runtime provider binding. The builder binds repository identity to both URLs and states that stars are neither quality nor Baltor usage. test_top_mcp_page covers false popularity and source mismatch."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.b928f6e5b6a53139b24812c6
+  owner: "loop_engine.core.service_runtime.web_assets.top-mcps.json:items[5].source"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 30, 2026: a public source or README link in a dated editorial shortlist, not a runtime provider binding. The builder binds repository identity to both URLs and states that stars are neither quality nor Baltor usage. test_top_mcp_page covers false popularity and source mismatch."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.7e9e0f228ebac759fe898113
+  owner: "tools.build_top_mcp_page:render"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed September 30, 2026: the owned shortlist contract validates canonical GitHub repository links and maps the closed publisher/community relationship to display copy. This selects no execution engine or paid service. Source-mismatch and relationship tests protect the record."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.6cdbc2722154f0a52c4490b5
+  owner: "tools.build_top_mcp_page:validate"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 30, 2026: the owned shortlist contract validates canonical GitHub repository links and maps the closed publisher/community relationship to display copy. This selects no execution engine or paid service. Source-mismatch and relationship tests protect the record."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.5d7d48a6f35df38d8821b5fb
+  owner: "tools.check_service_workspace.mjs:url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 30, 2026: a reserved .invalid origin is a known-wrong fixture, never fetched. The exact-origin check must refuse this lookalike iframe URL; the browser suite counts this removed-guard control."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.8d936e841d026738681f4832
+  owner: "tools.knowledge_radar.community-sources-v1.json:communities.3Dmodeling"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 30, 2026: an owner-requested research destination in the existing versioned source registry. Registration grants no collection, posting, copying or execution authority. Explicit adapter reads reserve quota and retain only source-linked leads; community and Reddit refusal tests cover source binding and unauthorized effects."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.2b0391e8ee91e7eecac3f6ee
+  owner: "tools.knowledge_radar.community-sources-v1.json:communities.AI3D"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 30, 2026: an owner-requested research destination in the existing versioned source registry. Registration grants no collection, posting, copying or execution authority. Explicit adapter reads reserve quota and retain only source-linked leads; community and Reddit refusal tests cover source binding and unauthorized effects."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.c7a50747d85fc647e848e1d3
+  owner: "tools.knowledge_radar.community-sources-v1.json:communities.AIDesign"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 30, 2026: an owner-requested research destination in the existing versioned source registry. Registration grants no collection, posting, copying or execution authority. Explicit adapter reads reserve quota and retain only source-linked leads; community and Reddit refusal tests cover source binding and unauthorized effects."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.22228f2b05af89a742c8207d
+  owner: "tools.knowledge_radar.community-sources-v1.json:communities.DesignAndAI"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 30, 2026: an owner-requested research destination in the existing versioned source registry. Registration grants no collection, posting, copying or execution authority. Explicit adapter reads reserve quota and retain only source-linked leads; community and Reddit refusal tests cover source binding and unauthorized effects."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.0822497236b0a945d45ee54f
+  owner: "tools.knowledge_radar.community-sources-v1.json:communities.GenAIDesignStudio"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 30, 2026: an owner-requested research destination in the existing versioned source registry. Registration grants no collection, posting, copying or execution authority. Explicit adapter reads reserve quota and retain only source-linked leads; community and Reddit refusal tests cover source binding and unauthorized effects."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.b8b0ff7887a1bbe692bcf184
+  owner: "tools.knowledge_radar.community-sources-v1.json:communities.StableDiffusion"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 30, 2026: an owner-requested research destination in the existing versioned source registry. Registration grants no collection, posting, copying or execution authority. Explicit adapter reads reserve quota and retain only source-linked leads; community and Reddit refusal tests cover source binding and unauthorized effects."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.e2fa5d2c5d65a4fa4cce31c4
+  owner: "tools.knowledge_radar.community-sources-v1.json:communities.TopologyAI"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 30, 2026: an owner-requested research destination in the existing versioned source registry. Registration grants no collection, posting, copying or execution authority. Explicit adapter reads reserve quota and retain only source-linked leads; community and Reddit refusal tests cover source binding and unauthorized effects."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.791c1097e6f5ca08742b4bf0
+  owner: "tools.knowledge_radar.community-sources-v1.json:communities.UXDesign"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 30, 2026: an owner-requested research destination in the existing versioned source registry. Registration grants no collection, posting, copying or execution authority. Explicit adapter reads reserve quota and retain only source-linked leads; community and Reddit refusal tests cover source binding and unauthorized effects."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.a81cf3d493c2bce475dd7cac
+  owner: "tools.knowledge_radar.community-sources-v1.json:communities.Unity3D"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 30, 2026: an owner-requested research destination in the existing versioned source registry. Registration grants no collection, posting, copying or execution authority. Explicit adapter reads reserve quota and retain only source-linked leads; community and Reddit refusal tests cover source binding and unauthorized effects."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.3c923e8930679831fc0b1369
+  owner: "tools.knowledge_radar.community-sources-v1.json:communities.aiArt"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 30, 2026: an owner-requested research destination in the existing versioned source registry. Registration grants no collection, posting, copying or execution authority. Explicit adapter reads reserve quota and retain only source-linked leads; community and Reddit refusal tests cover source binding and unauthorized effects."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.2a81a7b3f866d84685c0a58c
+  owner: "tools.knowledge_radar.community-sources-v1.json:communities.aifilmmaking"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 30, 2026: an owner-requested research destination in the existing versioned source registry. Registration grants no collection, posting, copying or execution authority. Explicit adapter reads reserve quota and retain only source-linked leads; community and Reddit refusal tests cover source binding and unauthorized effects."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.765efbc702d32622e60807e5
+  owner: "tools.knowledge_radar.community-sources-v1.json:communities.aivideo"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 30, 2026: an owner-requested research destination in the existing versioned source registry. Registration grants no collection, posting, copying or execution authority. Explicit adapter reads reserve quota and retain only source-linked leads; community and Reddit refusal tests cover source binding and unauthorized effects."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.79a0103e4e0c0ea5ffcc2442
+  owner: "tools.knowledge_radar.community-sources-v1.json:communities.comfyui"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 30, 2026: an owner-requested research destination in the existing versioned source registry. Registration grants no collection, posting, copying or execution authority. Explicit adapter reads reserve quota and retain only source-linked leads; community and Reddit refusal tests cover source binding and unauthorized effects."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.69b224917f1bdace30a5c890
+  owner: "tools.knowledge_radar.community-sources-v1.json:communities.gamedesign"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 30, 2026: an owner-requested research destination in the existing versioned source registry. Registration grants no collection, posting, copying or execution authority. Explicit adapter reads reserve quota and retain only source-linked leads; community and Reddit refusal tests cover source binding and unauthorized effects."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.d9d6a21fef2ecd93ea0a5567
+  owner: "tools.knowledge_radar.community-sources-v1.json:communities.generative"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 30, 2026: an owner-requested research destination in the existing versioned source registry. Registration grants no collection, posting, copying or execution authority. Explicit adapter reads reserve quota and retain only source-linked leads; community and Reddit refusal tests cover source binding and unauthorized effects."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.887024c6d0d4b2132b59457a
+  owner: "tools.knowledge_radar.community-sources-v1.json:communities.meshyai"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 30, 2026: an owner-requested research destination in the existing versioned source registry. Registration grants no collection, posting, copying or execution authority. Explicit adapter reads reserve quota and retain only source-linked leads; community and Reddit refusal tests cover source binding and unauthorized effects."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.d4dd0f595c2eb5f8e4a5f199
+  owner: "tools.knowledge_radar.community-sources-v1.json:communities.midjourney"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 30, 2026: an owner-requested research destination in the existing versioned source registry. Registration grants no collection, posting, copying or execution authority. Explicit adapter reads reserve quota and retain only source-linked leads; community and Reddit refusal tests cover source binding and unauthorized effects."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.65550ce2ca2e7b33da80edcf
+  owner: "tools.knowledge_radar.community-sources-v1.json:communities.unrealengine"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 30, 2026: an owner-requested research destination in the existing versioned source registry. Registration grants no collection, posting, copying or execution authority. Explicit adapter reads reserve quota and retain only source-linked leads; community and Reddit refusal tests cover source binding and unauthorized effects."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.ba8062ca185882dfdd6feecf
+  owner: "tools.knowledge_radar.community-sources-v1.json:communities.vibecoding"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 30, 2026: an owner-requested research destination in the existing versioned source registry. Registration grants no collection, posting, copying or execution authority. Explicit adapter reads reserve quota and retain only source-linked leads; community and Reddit refusal tests cover source binding and unauthorized effects."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.25999b26b581f38783236ade
+  owner: "tools.knowledge_radar.community-watch-v1.json:sources[6].terms_url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 30, 2026: a feed or terms URL belongs to the canonical source registry. Existing transport restricts public HTTPS destinations and bounded reads, and linked resources are not automatically fetched. Community-watch source and failed-read tests cover this boundary."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.d320e7b56c7f7dab4986987b
+  owner: "tools.knowledge_radar.community-watch-v1.json:sources[6].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 30, 2026: a feed or terms URL belongs to the canonical source registry. Existing transport restricts public HTTPS destinations and bounded reads, and linked resources are not automatically fetched. Community-watch source and failed-read tests cover this boundary."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.f69961277896ab16151ed052
+  owner: "tools.knowledge_radar.community-watch-v1.json:sources[7].terms_url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 30, 2026: a feed or terms URL belongs to the canonical source registry. Existing transport restricts public HTTPS destinations and bounded reads, and linked resources are not automatically fetched. Community-watch source and failed-read tests cover this boundary."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.f894a2396d7e0ee32ee1dc7c
+  owner: "tools.knowledge_radar.community-watch-v1.json:sources[7].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 30, 2026: a feed or terms URL belongs to the canonical source registry. Existing transport restricts public HTTPS destinations and bounded reads, and linked resources are not automatically fetched. Community-watch source and failed-read tests cover this boundary."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.699f85b04411a10c45c60195
+  owner: "tools.knowledge_radar.community-watch-v1.json:sources[8].terms_url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 30, 2026: a feed or terms URL belongs to the canonical source registry. Existing transport restricts public HTTPS destinations and bounded reads, and linked resources are not automatically fetched. Community-watch source and failed-read tests cover this boundary."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.43cc8a7cfa72d144e873250d
+  owner: "tools.knowledge_radar.community-watch-v1.json:sources[8].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 30, 2026: a feed or terms URL belongs to the canonical source registry. Existing transport restricts public HTTPS destinations and bounded reads, and linked resources are not automatically fetched. Community-watch source and failed-read tests cover this boundary."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.1b345ce2d836127b3cea2125
+  owner: "tools.knowledge_radar.expansion:run"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed September 30, 2026: one of the internal expansion contract's closed stages or outcomes, used with managed research records. These states cannot approve or publish a candidate. test_community_expansion covers duplicate methods, refusal, durable dispatch budgets and unknown accounting; source fingerprints refuse changed production code."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.6452ad665dfaaabe0b7b8dd0
+  owner: "tools.knowledge_radar.expansion:run"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed September 30, 2026: one of the internal expansion contract's closed stages or outcomes, used with managed research records. These states cannot approve or publish a candidate. test_community_expansion covers duplicate methods, refusal, durable dispatch budgets and unknown accounting; source fingerprints refuse changed production code."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.723bbe7c2f0db00fbdca41ba
+  owner: "tools.knowledge_radar.expansion:run"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed September 30, 2026: one of the internal expansion contract's closed stages or outcomes, used with managed research records. These states cannot approve or publish a candidate. test_community_expansion covers duplicate methods, refusal, durable dispatch budgets and unknown accounting; source fingerprints refuse changed production code."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.84da9c91c103ce19e59f9cb0
+  owner: "tools.knowledge_radar.expansion:run"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed September 30, 2026: one of the internal expansion contract's closed stages or outcomes, used with managed research records. These states cannot approve or publish a candidate. test_community_expansion covers duplicate methods, refusal, durable dispatch budgets and unknown accounting; source fingerprints refuse changed production code."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.95e8ca3711963eec2c66bb3f
+  owner: "tools.knowledge_radar.expansion:run"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed September 30, 2026: one of the internal expansion contract's closed stages or outcomes, used with managed research records. These states cannot approve or publish a candidate. test_community_expansion covers duplicate methods, refusal, durable dispatch budgets and unknown accounting; source fingerprints refuse changed production code."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.d670f11ca722eb315432a5e7
+  owner: "tools.knowledge_radar.expansion:run"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed September 30, 2026: one of the internal expansion contract's closed stages or outcomes, used with managed research records. These states cannot approve or publish a candidate. test_community_expansion covers duplicate methods, refusal, durable dispatch budgets and unknown accounting; source fingerprints refuse changed production code."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.f086502df7b189f9509f7a24
+  owner: "tools.knowledge_radar.expansion:run"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed September 30, 2026: one of the internal expansion contract's closed stages or outcomes, used with managed research records. These states cannot approve or publish a candidate. test_community_expansion covers duplicate methods, refusal, durable dispatch budgets and unknown accounting; source fingerprints refuse changed production code."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.1ff6e92ec797ea168010b465
+  owner: "tools.knowledge_radar.expansion_contracts"
+  classification: RESOURCE_OR_TEMPLATE
+  rationale: "Reviewed September 30, 2026: the canonical passive production prompt beside its output schema in the scoped expansion contract module. Its source digest is pinned before a production call; it requests original files and tests but grants no generated-code execution or publication. Schema, secret, native-payload and no-self-approval checks remain enforced."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.296446d5e786fe866125138f
+  owner: "tools.knowledge_radar.rapidapi_reddit:parse_posts"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 30, 2026: a canonical Reddit origin or HTTPS extraction pattern in the metadata normalizer, not a general fetch destination. Only the separately fixed RapidAPI host receives the credential. Links become leads and are not followed; exact subreddit, unsafe-link, redirect and response-bound tests cover this adapter."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.5d3053a87d0fe280e66b4fda
+  owner: "tools.knowledge_radar.rapidapi_reddit:parse_posts"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 30, 2026: a canonical Reddit origin or HTTPS extraction pattern in the metadata normalizer, not a general fetch destination. Only the separately fixed RapidAPI host receives the credential. Links become leads and are not followed; exact subreddit, unsafe-link, redirect and response-bound tests cover this adapter."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
 - finding_id: hardcoding.34e20b5e2ff81a8142b172bd
   owner: "containers.worker.compose.yaml:services.worker.environment[0]"
   classification: SECRET_OR_CREDENTIAL_REFERENCE
@@ -11794,6 +12100,13 @@ entries:
   created_on: '2026-09-27'
   expires_on: '2027-09-27'
 excluded_paths:
+- path: src/loop_engine/core/service_runtime/web_assets/creative-arena/arena.js
+  owner: examples.32_creative_arena
+  rationale: 'Reviewed September 30, 2026: esbuild bundles the pinned Three.js 0.186.1 library and the original example for browser delivery. Upstream WebGL literals are not Baltor configuration. The original inputs in examples/32_creative_arena/src remain scanned separately. build.json binds every input and output, tools/test_creative_arena.py checks those digests, and CI rebuilds with the pinned npm lock and compares exact bytes. The Three.js licence is served beside the bundle. This exclusion covers only these generated bytes and is invalidated by any rebuild change.'
+  classification: UPSTREAM_RECORD_COPY
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+  sha256: 0b3dbe5ed30e5bdb7360a80c41294cd8dbb5534c6921c16f4e097284628dea42
 - path: docs/verification/assets/live-baltor-morning-2026-09-23/browser-observations.json
   owner: docs.verification.live-baltor-morning-2026-09-23
   rationale: Frozen machine-produced public website observation. Literal addresses, response headers and

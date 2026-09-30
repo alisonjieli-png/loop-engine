@@ -31,6 +31,7 @@ twice. Nothing is approved, served or published.
 from __future__ import annotations
 
 import json
+import hashlib
 import threading
 import time
 from collections import Counter, defaultdict
@@ -246,6 +247,15 @@ def ordered(plans: dict) -> list:
     return sorted(plans.values(), key=lambda plan: (plan.priority, -plan.stars, plan.repository.lower()))
 
 
+def processing_digest():
+    """Bind cached source outcomes to the import rules that interpreted the bytes."""
+    from loop_engine.core.service_runtime import catalogue_packages
+    sources = [Path(__file__).with_name(name) for name in
+               ("sync.py", "harness_kinds.py", "packaging.py", "licensing.py", "checks.py")]
+    sources.append(Path(catalogue_packages.__file__))
+    return hashlib.sha256(b"".join(hashlib.sha256(path.read_bytes()).digest() for path in sources)).hexdigest()
+
+
 class SyncRound:
     """One restartable round over planned repositories, then deduplication and one write."""
 
@@ -259,6 +269,7 @@ class SyncRound:
         self.time_limit_seconds, self.imported_on = time_limit_seconds, imported_on or now_utc()[:10]
         self.corpora, self.maximum_file_bytes, self.clock = list(corpora), maximum_file_bytes, clock
         self.journal = Journal(self.run_folder)
+        self.processing_digest = processing_digest()
         self._quarantine_lock = threading.Lock()
 
     def previous_state(self, repository: str) -> "dict | None":
@@ -463,7 +474,8 @@ class SyncRound:
                 skipped.append((plan, decision))
                 continue
             previous = self.previous_state(plan.metadata.get("name") or plan.repository)
-            if previous and previous.get("commit") == plan.metadata.get("head"):
+            if (previous and previous.get("commit") == plan.metadata.get("head")
+                    and previous.get("processing_digest") == self.processing_digest):
                 skipped.append((plan, (UNCHANGED_STATE, "head_commit_already_synced")))
                 continue
             pending.append(plan)
@@ -642,6 +654,7 @@ class SyncRound:
                 continue
             payload = {"record_type": SOURCE_STATE_RECORD_TYPE, "repository": state["repository"],
                        "commit": state["commit"], "snapshot_engine": state["engine"], "synced_at": now_utc(),
+                       "processing_digest": self.processing_digest,
                        "packages": state["packages"], "ideas": state["ideas"]}
             record = state_store_record(payload, source_state_record_id(state["repository"]))
             current = self.store.get(record["record_id"])

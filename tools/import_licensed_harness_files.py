@@ -117,7 +117,8 @@ def discover(args) -> dict:
                                                              cursor=cursors.get(discovery.CODE_SEARCH)),
         discovery.TOPIC_SEARCH: lambda: discovery.topic_search(declaration, api, query_budget=args.topic_queries,
                                                                cursor=cursors.get(discovery.TOPIC_SEARCH)),
-        discovery.NPM: lambda: discovery.npm_search(declaration, https, request_budget=args.npm_requests),
+        discovery.NPM: lambda: discovery.npm_search(declaration, https, request_budget=args.npm_requests,
+                                                   cursor=cursors.get(discovery.NPM)),
         discovery.REGISTRY: lambda: discovery.registry_updates(declaration, https, request_budget=args.registry_requests,
                                                                cursor=cursors.get(discovery.REGISTRY)),
     }

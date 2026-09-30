@@ -216,6 +216,43 @@ class BatchPromptTest(unittest.TestCase):
 
 
 class BatchedPanelTest(unittest.TestCase):
+    def test_variable_sized_planned_groups_reach_each_reviewer_unchanged(self):
+        groups = ((ITEMS[0], ITEMS[1]), (ITEMS[2],), (ITEMS[3],))
+        with tempfile.TemporaryDirectory() as directory:
+            harness = Harness(directory, {name: batch_approving for name in ("a", "b", "c")},
+                              families=("zhipu", "deepseek", "openai"))
+            result = run(harness, requests(), batch_groups={name: groups for name in ("a", "b", "c")})
+            for name in ("a", "b", "c"):
+                actual = [tuple(identity for identity, _digest in members_of(prompt))
+                          for prompt in harness.calls(name)]
+                self.assertEqual(actual, list(groups), "a token-bounded plan must not be regrouped by item count")
+        self.assertEqual(set(outcomes(result).values()), {panel_module.APPROVED})
+        self.assertEqual(len(result.calls), 9)
+
+    def test_cached_members_do_not_merge_separate_planned_groups(self):
+        groups = ((ITEMS[0], ITEMS[1], ITEMS[2]), (ITEMS[3],))
+        with tempfile.TemporaryDirectory() as directory:
+            harness = Harness(directory, {name: batch_approving for name in ("a", "b", "c")},
+                              families=("zhipu", "deepseek", "openai"))
+            run(harness, requests(ITEMS[:2]))
+            result = run(harness, requests(), run_id="resume-with-plan",
+                         batch_groups={name: groups for name in ("a", "b", "c")})
+            for name in ("a", "b", "c"):
+                actual = [tuple(identity for identity, _digest in members_of(prompt))
+                          for prompt in harness.calls(name)[1:]]
+                self.assertEqual(actual, [(ITEMS[2],), (ITEMS[3],)])
+        self.assertEqual(set(outcomes(result).values()), {panel_module.APPROVED})
+
+    def test_invalid_group_partition_is_refused_before_any_call(self):
+        invalid = [((ITEMS[0],),), (ITEMS, (ITEMS[0],)),
+                   (ITEMS + ("not-in-this-run",),), ((), ITEMS)]
+        with tempfile.TemporaryDirectory() as directory:
+            harness = Harness(directory, {"a": batch_approving})
+            for groups in invalid:
+                with self.subTest(groups=groups), self.assertRaises(CandidateReviewError):
+                    run(harness, requests(), batch_groups={"a": groups})
+            self.assertEqual(harness.calls("a"), [])
+
     def test_three_families_approve_in_one_call_each(self):
         with tempfile.TemporaryDirectory() as directory:
             harness = Harness(directory, {"producer": batch_approving, "a": batch_approving,

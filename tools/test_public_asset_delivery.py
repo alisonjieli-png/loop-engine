@@ -57,6 +57,12 @@ class PublicAssetDelivery(unittest.TestCase):
         for path in paths:
             with self.subTest(path=path):
                 asset = self.client.get(path)
+                if path == '/assets/creative-arena/index.html':
+                    # The iframe document is fetched afresh; its scripts and
+                    # styles carry their own exact versions (test_creative_arena).
+                    self.assertEqual(asset.headers['cache-control'], 'no-store')
+                    self.assertEqual(asset.headers['x-frame-options'], 'SAMEORIGIN')
+                    continue
                 versions = parse_qs(urlsplit(path).query).get('v')
                 self.assertEqual(versions, [hashlib.sha256(asset.content).hexdigest()])
         self.assertEqual(page.headers['cache-control'], 'no-store')

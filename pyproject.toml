@@ -110,6 +110,7 @@ loop_engine = [
     "core/service_runtime/web_assets/pi/*.ts",  # The Baltor extension for Pi, served for download
     "core/service_runtime/web_assets/baltor-library/*.txt",  # The Baltor library skill, served for download
     "core/service_runtime/web_assets/baltor-library/**/*.txt",
+    "core/service_runtime/web_assets/creative-arena/*.txt",
     "**/*.json",          # manifests, evidence, and published measurements
     "**/*.jsonl",         # intelligence, governance, and run evidence
     "**/*.yaml",          # installed architecture and semantic projections

@@ -39,6 +39,28 @@ class _Https:
 
 
 class DiscoveryChecks(unittest.TestCase):
+    def test_npm_queries_rotate_with_a_persisted_cursor_before_reading_later_pages(self):
+        declaration = {"npm_search": {"texts": ["keywords:agent-skill", "ffmpeg skill", "remotion skill"], "pages": 2}}
+        answer = {"objects": [{"package": {"name": "ffmpeg-skill", "version": "2.3.1",
+                              "links": {"repository": "https://github.com/example/ffmpeg-skill"}}}]}
+        first = _Https([(200, answer), (200, answer)])
+        result = discovery.npm_search(declaration, first, request_budget=2)
+        self.assertEqual([call[2]["text"] for call in first.calls], declaration["npm_search"]["texts"][:2])
+        second = _Https([(200, answer), (200, answer)])
+        resumed = discovery.npm_search(declaration, second, request_budget=2, cursor=result.cursor)
+        self.assertEqual([(call[2]["text"], call[2]["from"]) for call in second.calls],
+                         [("remotion skill", 0), ("keywords:agent-skill", 250)])
+        self.assertEqual(resumed.leads[0]["detail"]["version"], "2.3.1")
+
+    def test_npm_failed_reads_are_reported_and_do_not_starve_the_next_query(self):
+        declaration = {"npm_search": {"texts": ["first", "second"], "pages": 1}}
+        result = discovery.npm_search(declaration, _Https([(502, {})]), request_budget=1)
+        self.assertEqual(result.leads, [])
+        self.assertEqual(result.refusals[0]["reason"], "source_unavailable")
+        transport = _Https([(200, {"objects": []})])
+        discovery.npm_search(declaration, transport, request_budget=1, cursor=result.cursor)
+        self.assertEqual(transport.calls[0][2]["text"], "second")
+
     def test_code_search_is_breadth_first_within_its_budget(self):
         declaration = {"code_search": [
             {"source_id": "code.a", "kind": "skill", "terms": ["filename:SKILL.md"], "size_bands": [[0, 10], [11, 20]],

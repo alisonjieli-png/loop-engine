@@ -53,7 +53,8 @@ material that drops into a harness working directory:
 - `AGENTS.md` and other context files;
 - skills (`SKILL.md`);
 - plugins and protocol server configurations;
-- reusable, tested code.
+- reusable code, tools, contracts and native working files, with the checks
+  performed on each package recorded in its details.
 
 Your harness searches the library, gets back short references (identity,
 purpose, source, licence, exact version and digest) and downloads only the
@@ -61,10 +62,12 @@ item a step chose. Access is checked again at download, and every delivery is
 recorded in your usage. Your models and your provider keys stay with you:
 Baltor never asks for a provider key and never calls a model on your behalf.
 
-The library is meant to be the one place that holds material scattered today
-across many skill sites, plugin directories and repositories. Each item is
-reviewed by someone other than its author before it is served, and retrieval
-hands each step a small, exact result.
+The library brings together material scattered across skill sites, plugin
+directories and repositories. Each item must pass its admission policy before
+it is served. That policy may use an independent per-item screen or automated
+checks with independent sampled review of a generated batch. Package details
+distinguish those checks from execution tests. Retrieval gives each step the
+material it chose.
 
 ## Who it is for
 
@@ -100,7 +103,7 @@ Use cases we are building demonstrations for, each with and without Baltor:
   transformations;
 - a data science competition taken from task to submission.
 
-## Status on September 29, 2026
+## Current delivery
 
 Working on the live service today:
 
@@ -125,20 +128,22 @@ Working on the live service today:
   a separate operation; the first-party library client places fetched skills;
 - an Administration view where a superadmin sees every account and can grant
   or revoke free monthly Baltor Pro and switch an account off or on. Staff
-  roles are fixed in code: superadmin, developer and analytics.
+  roles are fixed in code: superadmin, developer and analytics;
+- a [downloadable worker](docs/guides/container-worker.md) with OpenCode and
+  the Baltor text-response harness. Its installed checks exercise fresh
+  processes, selected step material and isolation of inherited context.
 
 Not open yet:
 
 - general installation and verified native use of every package form across
   every harness, browser or native creative application;
-- the engine starting a fresh standard harness for each step, and searching
-  the library by itself.
+- automatic library selection and verified task completion across the full
+  range of harnesses and package types.
 
-[Release 48](artifacts/release-48-2026-09-29/README.md) is the latest recorded
-service deployment at this checkpoint. Catalogue publication is a separate
-operation, so current library counts come from the active catalogue. The
-[current deployment](docs/architecture/MVP-CLIENT-SERVER.md#current-deployment)
-section records its image, source revision and rollback target. The [development tracker](docs/roadmap/DEVELOPMENT-TRACKER.md)
+The [current deployment](docs/architecture/MVP-CLIENT-SERVER.md#current-deployment)
+records the latest image, source revision and rollback target. Catalogue
+publication is separate, so current library counts come from the active
+catalogue. The [development tracker](docs/roadmap/DEVELOPMENT-TRACKER.md)
 lists what is being built now, next and later, generated from the
 [roadmap](docs/roadmap/roadmap.yaml).
 

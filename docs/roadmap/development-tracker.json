@@ -1296,7 +1296,7 @@
      "S-6.197"
     ],
     "id": "S-6.214",
-    "next_local_work": "September 29: bounded community watch now uses existing managed records and the reactive scheduler, six public forum feeds and optional native Codex web research with a durable four-invocation daily ceiling. Initial live feed pass observed 129 leads from 180 entries; these are keyword-classified unverified research, not approved components. One native web trial failed and a corrected trial found Time to Fly with reported token usage. Activate only a reviewed pinned schedule, preserve failed source state, and qualify collected evidence before candidate generation. No direct Reddit feed/API, social post or public summary publication was activated. Continue durable outreach and reply integration, public day/RSS/JSON views and admission. See docs/roadmap/CREATIVE-SUPPLY-AND-LAUNCH-2026-09-29.md.",
+    "next_local_work": "September 30: the community registry includes 29 requested design, game, modeling and adjacent sources. Two authorized Reddit34 API reads succeeded; the integrated aigamedev read converted 25 posts into 20 source-linked research work orders, not components. The adapter uses the keyring, durable dispatch reservations, bounded responses and observed quota; no recurring Reddit timer, model expansion or publication was activated. Preserve earlier failed source trials, review and pin the scheduler to committed code, and qualify evidence before candidate generation. Additional reddapi, reddit3 and Searx services still need verified endpoint contracts and allowance. Continue public day/RSS/JSON views and independent admission through the existing knowledge radar; see docs/roadmap/DELIVERY-SEQUENCE.md.",
     "phase": 6,
     "status": "building",
     "title": "Daily distillations: new papers, skills, plugins, protocol servers, services and repositories, each served as a summary page, RSS, JSON and downloadable components",
@@ -1313,7 +1313,7 @@
      "S-6.213"
     ],
     "id": "S-6.215",
-    "next_local_work": "September 29: the active b8058609 release serves 27811 packages and 88373 distinct payload files after 3910 program-install packages passed committed-code qualification and exact-population v2 sampled review. Delta publication transferred 19551 new files, and one scoped first-party-client check retrieved all seven files of a new package; this is not execution of every represented program. Evidence: artifacts/catalogue-publication-2026-09-29/programs-3910.json. The initial 35 original callable tools remain seed candidates. Expand functions, tools, shaders, geometry, native assets, scenes, controllers, audio, validators and workflow packages from demonstrated gaps. Preserve one implementation with parameterized reuse; do not inflate counts with copies or preset permutations. Qualify multiple admission-run reviewer identities, avoid metadata churn on unchanged items, measure serving memory and p95 search, and qualify large-asset delivery before exceeding current capacity. Final execution coverage and balanced-composition acceptance remain open.",
+    "next_local_work": "September 30: the active f817b2b3 release contains 30746 packages and 96064 distinct files after publishing 2935 approved packages and 7691 new file digests. Every prior package payload digest survived. The daily builder's stale schema omitted component_form; current-code recombination repaired this release, but the scheduled job's source pin still needs correction. The reconciled local candidate inventory has 769812 distinct files; 57613 generated packages with 411441 distinct files pass the matching static qualification snapshot, not independent approval or execution. Evidence: artifacts/library-audit-2026-09-30 and artifacts/architecture-audit-2026-09-19/pilot-release-54.json. Repair review request grouping that exceeds context limits and repair rejected function and recipe generators before new review. Expand sourced knowledge, typed executable tools, native workflows including n8n JSON, and creative capabilities toward the requested 10000 to 100000 meaningful new files. Original callable tools and procedural assets remain candidates. Preserve one implementation with parameterized reuse; do not inflate counts with copies or preset permutations. The observed serving-view swap took 337.673 seconds on one CPU and 2 GB: measure indexing memory and p95 search, and compare replaceable native search engines before choosing a rewrite. Complete execution coverage, balanced composition, million-file serving and measured customer benefit remain open.",
     "phase": 6,
     "status": "building",
     "title": "One million served harness component files: deterministic supply lines, test-based admission with a sampled independent review, a serving engine with delta releases, and full-package delivery",
@@ -2091,7 +2091,7 @@
      "S-6.30"
     ],
     "id": "S-6.32",
-    "next_local_work": "Wire the measured policy through the hosted slot and test its relevance floor, then compare lexical and eligible hybrid engines on a new frozen task-query population; do not tune on the same queries used to claim the result.",
+    "next_local_work": "Follow docs/roadmap/DELIVERY-SEQUENCE.md: join retrieval traces under S-6.51, freeze held-out wrong-file, wrong-format, stale, no-match and access-boundary cases, then measure cold/warm latency, memory, relevance and index refresh on a fixed population. Preserve the per-view index and qualify scoped ranking caches and a selectable Rust engine independently behind the hosted edge. The September 30 six-request diagnostic measured lexical median 113 ms and hybrid median 319 ms from one workstation, not a capacity or tail-latency benchmark. Shared caches must never decide account access, withdrawals or billing. Keep the relevance floor and no-answer controls; no tuning on the test queries or production switch without a measured comparison and rollback.",
     "phase": 6,
     "status": "proposed",
     "title": "Hosted search as an engine slot with the measured policy and a relevance floor",
@@ -2313,7 +2313,7 @@
      "S-6.41"
     ],
     "id": "S-6.51",
-    "next_local_work": "Add the request identity and the item version to the usage record, then the fetched-together table.",
+    "next_local_work": "September 30 direction: extend existing observability and usage records with a correlation identity across search, catalogue release, engine/version, cache outcome, ranked item versions/digests, fetch, installation and reported outcome. Measure authorization, candidate generation, ranking, serialization and transfer separately. Keep raw prompts, response bodies, media, credentials and account email out of ordinary telemetry. Reproduce confirmed slow or wrong-file cases as redacted regression fixtures; test trace completeness and unauthorized content exclusion before ranking or prefetch changes. See docs/roadmap/DELIVERY-SEQUENCE.md.",
     "phase": 6,
     "status": "proposed",
     "title": "Learn from retrieval: wrong context, repeated asks and items fetched together",
@@ -2358,7 +2358,7 @@
      "S-6.37"
     ],
     "id": "S-6.56",
-    "next_local_work": "Build the selector with the existing recorded runs and mark each missing demonstration as not yet recorded.",
+    "next_local_work": "September 30: the Engineers, Designers and AI Agents paths and the downloadable worker setup are deployed in release 54. Retain these audience routes and prepare distinct outcome pages for editable 3D scenes and motion, sourced research and reference data, and automation with native n8n workflows. Each needs a reproducible example, exact downloaded artifacts, an honest availability statement and one setup action. The new outcome pages are not yet built. Measure first successful use, repeat use and paid conversion by audience; do not mark a demonstration complete from a screenshot or a described run. The updated NORTH-STAR.md defines the page evidence and common scorecard.",
     "phase": 6,
     "status": "proposed",
     "title": "Landing pages and demonstration pages by role",
@@ -2680,10 +2680,10 @@
      "S-6.67"
     ],
     "id": "S-6.183",
-    "next_local_work": "Set the description, homepage and topics, cut a 0.x release with a pinned archive digest, then publish the registry entry. Focus: small; serves the first-journey measure.",
+    "next_local_work": "Follow docs/roadmap/DELIVERY-SEQUENCE.md. Keep GitHub and protocol-registry publication separate from OpenAI review. Prepare a narrow search/inspect/download plugin and its review fixtures; qualify OAuth, resource metadata, token checks and revocation using an established identity provider before submission. Audit existing legal pages against actual plugin data handling and draft changes for owner approval, without publishing new terms. The owner completes individual/business verification and any required account agreement. Current OpenAI rules permit existing paid-account access but not digital-subscription sales or upgrades inside the plugin. No verified publisher account or marketplace publication is established.",
     "phase": 6,
     "status": "proposed",
-    "title": "The front door outside baltor.ai: the GitHub page, a tagged release with a pinned install, and a listing in the official protocol server registry",
+    "title": "Distribution outside baltor.ai: pinned releases, the protocol registry and an OpenAI plugin",
     "waiting_on": [
      "S-6.67"
     ]
@@ -3155,7 +3155,7 @@
      "S-6.111"
     ],
     "id": "S-6.116",
-    "next_local_work": "Install a static ffmpeg in a folder under the home folder, freeze the M1 design, and render the two-clip pilot on the Tactical server.",
+    "next_local_work": "September 30: follow the reference-video sales-demo gates in docs/roadmap/DELIVERY-SEQUENCE.md after the first creative proof and retrieval correctness work. Inventory existing media and harness components, qualify short-clip upload/URL intake, then produce a timestamped breakdown and executable plan before attempting recreation. Start with known-source motion graphics, preserve editable output, and test an unavailable-effect case. The browser arena and Blender import are building blocks; arbitrary video-to-harness recreation is not implemented. No new provider purchase or unrequested media publication.",
     "phase": 6,
     "status": "proposed",
     "title": "media.baltor.ai: seeded short videos from the owner's media tools, made step by step",
@@ -3685,7 +3685,7 @@
      "S-6.165"
     ],
     "id": "S-6.173",
-    "next_local_work": "Write the frozen design and the price list, then run a five-task pilot on Ollama Cloud when the weekly allowance allows.",
+    "next_local_work": "September 30: follow docs/roadmap/DELIVERY-SEQUENCE.md#customer-task-comparison-programme. Freeze and test a nontrivial multi-source pipeline with quality, standardization and matching stages, then a separate editable creative revision task, before counted Ollama calls. Use the shipped customer setup and actual retrieval rather than hand-pasted files; keep acceptance cases outside the harness workspace. Reuse existing native harness and usage-capture adapters, declare call/time ceilings, and release replayable side-by-side evidence including failures before expanding to the remaining families. The four-call email pilot found a scorer defect and no normalization gain; it supports no benefit claim. Keep S-6.185's outside-population study separate.",
     "phase": 6,
     "status": "proposed",
     "title": "A harness efficiency benchmark with and without Baltor on the HarnessTax method, cheap models first",
@@ -5382,5 +5382,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:e410598eb320163d9a34a9b562d787ad828f9558114c889ec9d90c6d76734cda"
+ "source_fingerprint": "sha256:4b45081644c7d1cfdc3aef5ae0e917cc4368b2d1f77ff4790fd4f046ce2de6e7"
 }

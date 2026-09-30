@@ -1,0 +1,13 @@
+{
+  "record_type": "creative_asset_briefs/v1",
+  "origin": "Original Baltor briefs; no third-party prompt or model is reproduced.",
+  "external_generation_performed": false,
+  "reference": "https://www.tripo3d.ai/3d-prompts/categories/games",
+  "assets": [
+    {"id": "warden", "purpose": "Playable humanoid with a readable sword silhouette", "prompt": "An original woodland warden in a weathered teal tunic, dull silver shoulder armour, brass brow band and short rust-red cloak. Stylized faceted geometry with clear hands and feet. Neutral A-pose, separate sword, symmetric rest pose, no ground or background geometry. Keep costume parts clear of elbow and knee bends. Front faces positive Z, standing height 2.35 metres, feet on the origin plane.", "required_checks": ["scale and ground contact", "bone hierarchy", "shoulder and knee deformation", "material and texture availability", "idle, run and attack animation compatibility"]},
+    {"id": "goblin", "purpose": "Small, distinctive melee enemy", "prompt": "An original moss-green goblin with long triangular ears, broad cheekbones, short ivory tusks and worn brown leather clothing. A squat but clearly humanoid silhouette. Neutral symmetric A-pose with separated fingers and feet. Separate wooden club. Use simple readable shapes that remain recognizable at a small screen size. No scene, pedestal, lettering or accessories crossing the joints.", "required_checks": ["biped retarget mapping", "weapon attachment", "bounds and collisions", "texture rights", "walk and attack pose readability"]},
+    {"id": "ruined-gate", "purpose": "Editable fantasy arena landmark", "prompt": "A freestanding ruined stone arch with pale weathered blocks, small brass inlays and moss at its base. Separate left pillar, right pillar and arch blocks. Keep the opening unobstructed for a game portal. No characters, baked lighting, ground plane or invisible interior faces. Declare dimensions and pivot points for every part.", "required_checks": ["separate editable parts", "collision proxy", "texture resources", "scale", "camera clearance"]}
+  ],
+  "motion": {"rig": "baltor_biped/v1", "clips": ["Idle", "Run", "Sword", "Dance"], "source": "Original procedural keyframes", "video_capture": "not performed", "retargeting": "Imported GLB clips play when supplied; automatic video-to-character retargeting is not implemented in this example."},
+  "publication": "These example assets are not counted as independently admitted library components."
+}

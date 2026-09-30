@@ -12,6 +12,10 @@ superseded.
 What does not belong here: results (see `../verification/`), design
 decisions (see `../architecture/`), and research (see `../research/`).
 
+Use the [delivery and business plan](DELIVERY-SEQUENCE.md) for the current
+linear order, customer acceptance gates and supported distribution choices.
+It points to existing roadmap steps rather than maintaining another status list.
+
 Start with the [continuation and first-release plan](CONTINUATION-AND-LAUNCH.md)
 and its [generated status artifact](CONTINUATION-STATUS.md). The continuation
 track in `roadmap.yaml` takes precedence over the earlier list order and

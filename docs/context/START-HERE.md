@@ -21,6 +21,17 @@ two defects that were found and fixed after the first claims of correctness.
 
 ## Current context route
 
+Read the [delivery and business plan](../roadmap/DELIVERY-SEQUENCE.md) for the
+September 30 sequence and customer, creative, source, retrieval and distribution
+gates. A prototype, source read or transcript inventory does not complete those
+gates. Inspect current Git and release evidence before continuing.
+
+Read the [capability supply and retrieval guide](../architecture/CAPABILITY-SUPPLY-AND-RETRIEVAL.md)
+for the September 30 architecture map, complete-package and upstream-recipe
+delivery choices, and the actual hosted search implementation. The source
+currently includes unfinished September 30 research, packaging and interface
+work; inspect Git and the latest release record before treating it as deployed.
+
 Read the [community, assets and audience checkpoint](COMMUNITY-ASSETS-AND-AUDIENCES-2026-09-29.md)
 for the subsequent September 29 work: bounded discovery, private inventory,
 procedural generators, creative briefs and the Engineers, Designers and AI

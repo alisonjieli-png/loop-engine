@@ -1,6 +1,6 @@
 {
   "record_type": "community_watch_registry/v1",
-  "revision": "2026-09-29",
+  "revision": "2026-09-30",
   "maximum_reads_per_tick": 12,
   "maximum_entries_per_source": 40,
   "maximum_harness_runs_per_day": 4,
@@ -11,7 +11,10 @@
     {"id":"godot_forum","engine":"rss_atom","url":"https://forum.godotengine.org/latest.rss","interval_seconds":7200,"terms_url":"https://forum.godotengine.org/tos","use":"internal_link_discovery","enabled":true},
     {"id":"threejs_forum","engine":"rss_atom","url":"https://discourse.threejs.org/latest.rss","interval_seconds":7200,"terms_url":"https://discourse.threejs.org/tos","use":"internal_link_discovery","enabled":true},
     {"id":"blender_devtalk","engine":"rss_atom","url":"https://devtalk.blender.org/latest.rss","interval_seconds":7200,"terms_url":"https://devtalk.blender.org/tos","use":"internal_link_discovery","enabled":true},
-    {"id":"supercollider_forum","engine":"rss_atom","url":"https://scsynth.org/latest.rss","interval_seconds":7200,"terms_url":"https://scsynth.org/tos","use":"internal_link_discovery","enabled":true}
+    {"id":"supercollider_forum","engine":"rss_atom","url":"https://scsynth.org/latest.rss","interval_seconds":7200,"terms_url":"https://scsynth.org/tos","use":"internal_link_discovery","enabled":true},
+    {"id":"n8n_forum","engine":"rss_atom","url":"https://community.n8n.io/latest.rss","interval_seconds":7200,"terms_url":"https://community.n8n.io/tos","use":"internal_link_discovery","enabled":true},
+    {"id":"hacker_news","engine":"rss_atom","url":"https://news.ycombinator.com/rss","interval_seconds":14400,"terms_url":"https://www.ycombinator.com/legal/","use":"internal_link_discovery","enabled":true},
+    {"id":"github_news","engine":"rss_atom","url":"https://github.blog/feed/","interval_seconds":21600,"terms_url":"https://docs.github.com/en/site-policy/github-terms/github-terms-of-service","use":"internal_link_discovery","enabled":true}
   ],
   "research_topics": [
     {"id":"ai_game_workflows","query":"site:reddit.com/r/aigamedev (MCP OR workflow OR procedural) (Godot OR Blender OR Three.js)","domains":["reddit.com","github.com"],"interval_seconds":21600},
@@ -19,7 +22,11 @@
     {"id":"music_and_audio","query":"(site:reddit.com/r/AI_Music OR site:reddit.com/r/AudioProgramming) (workflow OR stems OR MIDI OR synthesis) tools","domains":["reddit.com","github.com"],"interval_seconds":21600},
     {"id":"game_publication","query":"(site:reddit.com/r/gamedev OR site:reddit.com/r/indiedev) (Steam OR itch.io) (export OR testing OR release) workflow","domains":["reddit.com","partner.steamgames.com","itch.io"],"interval_seconds":43200},
     {"id":"codex_showcases","query":"site:developers.openai.com/showcase (games OR design OR animation) \"Time to Fly\"","domains":["developers.openai.com","openai.com"],"interval_seconds":43200},
-    {"id":"data_and_saas","query":"(site:reddit.com/r/dataengineering OR site:reddit.com/r/SaaS) (workflow OR tool) (validation OR migration OR deduplication OR observability)","domains":["reddit.com","github.com"],"interval_seconds":43200}
+    {"id":"data_and_saas","query":"(site:reddit.com/r/dataengineering OR site:reddit.com/r/SaaS) (workflow OR tool) (validation OR migration OR deduplication OR observability)","domains":["reddit.com","github.com"],"interval_seconds":43200},
+    {"id":"automation_recipes","query":"(site:community.n8n.io OR site:reddit.com/r/n8n) (workflow OR template) (retry OR failed OR validation OR duplicate)","domains":["community.n8n.io","reddit.com","docs.n8n.io","github.com"],"interval_seconds":43200},
+    {"id":"geospatial_production","query":"(site:gis.stackexchange.com OR site:reddit.com/r/gis) (terrain OR elevation OR satellite) (coordinate OR seam OR workflow)","domains":["gis.stackexchange.com","reddit.com","usgs.gov","github.com"],"interval_seconds":86400},
+    {"id":"scientific_methods","query":"(site:discuss.scientific-python.org OR site:news.ycombinator.com) (numerical OR algorithm OR validation OR performance) reproducible","domains":["discuss.scientific-python.org","news.ycombinator.com","github.com"],"interval_seconds":86400},
+    {"id":"three_d_engines","query":"(site:docs.hyper3d.ai OR site:docs.meshy.ai OR site:github.com/princeton-vl) (export OR parts OR procedural OR material) limitations","domains":["docs.hyper3d.ai","docs.meshy.ai","github.com","docs.worldlabs.ai"],"interval_seconds":86400}
   ],
   "tools": {
     "godot":["Godot","GDScript"],"blender":["Blender","bpy"],"threejs":["Three.js","ThreeJS"],
@@ -30,7 +37,9 @@
     "supercollider":["SuperCollider","scsynth"],"faust":["Faust"],"demucs":["Demucs"],
     "ace_step":["ACE-Step","ACE Step"],"yue":["YuE"],"meshy":["Meshy"],"tripo":["Tripo3D","Tripo"],
     "codex":["Codex"],"claude":["Claude"],"postgresql":["PostgreSQL","Postgres"],
-    "duckdb":["DuckDB"],"dbt":["dbt"],"temporal":["Temporal"],"rapier":["Rapier"],"jolt":["Jolt"]
+    "duckdb":["DuckDB"],"dbt":["dbt"],"temporal":["Temporal"],"rapier":["Rapier"],"jolt":["Jolt"],
+    "n8n":["n8n"],"hyper3d":["Hyper3D","Rodin"],"sloyd":["Sloyd"],"procfunc":["ProcFunc","Infinigen"],
+    "trellis":["TRELLIS"],"world_labs":["World Labs","Marble","IMAGE-BLASTER"]
   },
   "signals": {
     "agent_control":["MCP","agent","Codex","Claude","LLM"],
@@ -40,7 +49,7 @@
     "audio":["audio","music","MIDI","stems","synthesis","mixing","loudness"],
     "gameplay":["gameplay","collision","controller","playtest","game","physics","navigation"],
     "publication":["Steam","itch.io","publishing","export","release build","store page"],
-    "software_data":["schema","migration","deduplication","pipeline","database","authentication","observability"],
+    "software_data":["schema","migration","deduplication","pipeline","database","authentication","observability","n8n","webhook","numerical"],
     "workflow_detail":["workflow","pipeline","step by step","source code","repository","how I built"],
     "failure_report":["failed","failure","broken","doesn't work","regression","bug","limitation"],
     "cost_or_performance":["tokens","quota","cost","latency","FPS","performance","memory","benchmark"]

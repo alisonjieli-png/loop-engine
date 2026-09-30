@@ -585,6 +585,11 @@ async function openConnect(context,base,{served,mutation}={}){
 async function checkShownRecipe(page,base,record,recipe,note){
   const endpoint=base+"/mcp",variable=record.credential_variable,id=recipe.id,content=selector=>page.locator(selector).evaluate(node=>node.textContent);
   await page.locator("#client-tab-"+id).click();
+  // Disclosures are part of the usable recipe, including secret and removal checks.
+  for(const selector of ['#client-compatibility','details.recipe-remove']){
+    const disclosure=page.locator(selector);
+    if(await disclosure.count()&&!await disclosure.evaluate(node=>node.open))await disclosure.locator('summary').click();
+  }
   const shown=await content("#client-configuration"),expected=withEndpoint(recipe.configuration,endpoint);
   let parsed=null;try{parsed=recipe.format==="toml"?readToml(shown):JSON.parse(shown);}catch(_){}
   note("recipe_renders_"+id,parsed!==null&&sameValue(parsed,expected)&&(recipe.format!=="json"||shown===JSON.stringify(expected,null,2))&&await content("#configuration-location")===recipe.configuration_location&&await content("#client-configuration-note")===recipe.configuration_note&&await content("#client-version-note")===recipe.version_note&&JSON.stringify(await page.locator('#client-tabs [role="tab"][aria-selected="true"]').allInnerTexts())===JSON.stringify([recipe.name]));
@@ -1175,6 +1180,9 @@ try {
   const assetRoutes=routeTable?[...routeTable[1].matchAll(/"(\/assets\/[^"]+)":/g)].map(found=>found[1]):[];
   servedFiles.push("/assets/procedural-bear-preview.svg","/assets/procedural-tree-preview.svg");
   servedFiles.push("/assets/worker-compose.yaml","/assets/docs/container-worker.html");
+  servedFiles.push("/assets/top-mcps.json",...[
+    "index.html","arena.js","arena.css","asset-briefs.json","blender-import.py","THREE-LICENSE.txt"
+  ].map(name=>"/assets/creative-arena/"+name));
   const unscannedFor=list=>assetRoutes.filter(path=>!list.includes(path));
   /* The deck's own files are read like every other served file. */
   servedFiles.push("/assets/deck.css","/assets/deck.js","/assets/deck-card.png");
@@ -1207,6 +1215,7 @@ try {
   const notOurText={"/assets/supabase-client.js":"the identity provider's own library","/assets/third-party-notices.txt":"the licence texts of other projects",
     "/assets/geist.woff2":"a typeface","/assets/geist-mono.woff2":"a typeface","/assets/baltor-mark.svg":"a picture","/assets/favicon-32.png":"a picture","/assets/favicon-192.png":"a picture","/assets/apple-touch-icon.png":"a picture"};
   notOurText["/assets/deck-card.png"]="a picture";
+  notOurText["/assets/creative-arena/THREE-LICENSE.txt"]="the Three.js licence text";
   const withoutComments=source=>source.replace(/\/\*[\s\S]*?\*\//g," ").replace(/(^|[\s;{}()\[\],])\/\/[^\n]*/g,"$1");
   const customerStrings=source=>[...withoutComments(source).matchAll(/"((?:[^"\\\n]|\\.)*)"|'((?:[^'\\\n]|\\.)*)'|`((?:[^`\\]|\\.)*)`/g)].map(found=>found[1]??found[2]??found[3]??"")
     .filter(value=>!/^[a-z][a-z0-9]*(?:[-_.:/][a-z0-9]+)*$/.test(value));
@@ -1406,9 +1415,9 @@ try {
   const orderedSteps=await page.locator("[data-get-started-step]").evaluateAll(items=>items.map(item=>({step:item.dataset.getStartedStep,index:item.querySelector(".feature-index").textContent.trim(),title:item.querySelector("[data-get-started-title]").textContent.trim()})));
   /* The Get started page leads with access, because search and downloads need an account; the connection and the first search
      follow. The first step is the panel the service's record chooses, so its title is the same in every state. */
-  const namesThreeStepsInOrder=steps=>JSON.stringify(steps.map(item=>item.step))===JSON.stringify(["access","connect","search"])&&steps.every((item,index)=>item.index.startsWith("Step "+(index+1)+" / ")&&item.title.length>0);
+  const namesThreeStepsInOrder=steps=>JSON.stringify(steps.map(item=>item.step))===JSON.stringify(["access","connect","search"])&&steps.every((item,index)=>new RegExp("^Step "+(index+1)+"(?:$| / )").test(item.index)&&item.title.length>0);
   check("get_started_page_names_the_three_steps_in_order",new URL(page.url()).pathname===getStartedPage&&namesThreeStepsInOrder(orderedSteps)&&await page.locator('[data-view="setup"]').isVisible(),{steps:orderedSteps});
-  check("get_started_step_check_rejects_a_wrong_order_or_a_missing_step",[[orderedSteps[1],orderedSteps[0],orderedSteps[2]],[orderedSteps[0],orderedSteps[1]],[orderedSteps[0],orderedSteps[2],orderedSteps[1]]].every(steps=>!namesThreeStepsInOrder(steps))&&namesThreeStepsInOrder(orderedSteps));
+  check("get_started_step_check_rejects_a_wrong_order_or_a_missing_step",[[orderedSteps[1],orderedSteps[0],orderedSteps[2]],[orderedSteps[0],orderedSteps[1]],[orderedSteps[0],orderedSteps[2],orderedSteps[1]],orderedSteps.map((item,index)=>index===0?{...item,index:"Step 9"}:item)].every(steps=>!namesThreeStepsInOrder(steps))&&namesThreeStepsInOrder(orderedSteps));
   await page.waitForFunction(()=>document.querySelectorAll('#client-tabs [role="tab"]').length>0||document.querySelector("#setup-message").textContent!=="");
   check("get_started_page_carries_the_copyable_connection_settings",await page.locator('#client-tabs[role="tablist"] [role="tab"]').count()===recipeRecord.recipes.length&&await page.locator("#client-configuration").count()===1&&await page.locator("#copy-configuration").count()===1);
   /* Every harness the hero names as one "Baltor sets up" has steps of its own on the guide: a reviewed connection entry among the
@@ -2827,7 +2836,8 @@ try {
       if(open)await target.waitForFunction(()=>document.getElementById("email-login")?.hidden===false,null,{timeout:10000}).catch(()=>{});
       if(path==="/setup")await target.waitForFunction(()=>document.querySelectorAll('#client-tabs [role="tab"]').length>0||document.getElementById("setup-message")?.textContent!=="",null,{timeout:10000}).catch(()=>{});
       found[path]=await target.evaluate(()=>{const view=[...document.querySelectorAll("[data-view]")].find(item=>!item.hidden);
-        return [document.querySelector("header")?.innerText||"",view?.innerText||"",document.querySelector("footer")?.innerText||""].join("\n");});
+        const disclosures=[...(view?.querySelectorAll('details:not([open])')||[])].filter(node=>!node.closest('[hidden]')).map(node=>node.textContent);
+        return [document.querySelector("header")?.innerText||"",view?.innerText||"",...disclosures,document.querySelector("footer")?.innerText||""].join("\n");});
     }
     const wrong=Object.entries(found).map(([path,words])=>[path,(open?closedAccessWords:openAccessWords).exec(words)?.[0]||""]).filter(([,words])=>words);
     const security=found["/security"]||"",about=found["/how-it-works"]||"";
@@ -3306,7 +3316,14 @@ try {
   const pageText=servedPage.status()===200?await servedPage.text():"";
   const namedScripts=[...new Set([...pageText.matchAll(/src="([^\"]+)"/g)].map(found=>internalReference(found[1])).filter(Boolean).map(value=>new URL(value,fixture.browse_base).pathname))];
   const namedAssets=[...pageText.matchAll(/(?:href|src)="([^\"]+)"/g)].map(found=>found[1]).filter(value=>{try{return new URL(value,fixture.browse_base).pathname.startsWith("/assets/");}catch(_){return false;}});
-  check("served_page_asset_versions_bind_to_exact_packaged_bytes",namedAssets.length>0&&namedAssets.every(value=>sameOriginAsset(value,fixture.browse_base,new URL(value,fixture.browse_base).pathname)),{assets:namedAssets});
+  // The no-store preview document is rendered with versioned dependencies; other named assets still require their digest.
+  const correctAssetVersions=values=>values.every(value=>{const path=new URL(value,fixture.browse_base).pathname;return sameOriginAsset(value,fixture.browse_base,path,path!=="/assets/creative-arena/index.html");});
+  check("served_page_asset_versions_bind_to_exact_packaged_bytes",namedAssets.length>0&&correctAssetVersions(namedAssets),{assets:namedAssets});
+  check("preview_document_exception_rejects_unversioned_scripts_and_other_origins",
+    correctAssetVersions(["/assets/creative-arena/index.html"])
+    &&!correctAssetVersions(["/assets/service.js"])
+    &&!correctAssetVersions(["https://other.invalid/assets/creative-arena/index.html"])
+    &&!correctAssetVersions(["/assets/creative-arena/index.html?v=wrong"]));
   const answered=[];
   for(const address of internalAddresses(pageText)) answered.push({address,status:(await plainContext.request.get(fixture.browse_base+address)).status()});
   check("every_address_the_page_names_is_answered_by_the_service",

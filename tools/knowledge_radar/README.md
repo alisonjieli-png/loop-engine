@@ -74,6 +74,93 @@ Scheduling must use a pinned reviewed checkout, not mutable source. This path
 does not post, install a discovered tool, approve a component or publish files.
 Its positive and refusal checks are `tools/test_community_watch.py`.
 
+## Authenticated community API intake
+
+`tools/read_reddit_research.py` reads the owner's selected Reddit34 endpoint
+through RapidAPI. The credential is resolved from the system keyring and sent
+only to the fixed provider host. The reader follows no redirect, performs no
+automatic retry and retains no thread body, author profile or media. It
+normalizes the observed response into the same `community_workflow_lead/v1`
+records that feed the existing managed store and reactive scheduler.
+
+The [community registry](community-sources-v1.json) holds the requested design,
+game, modeling, graphics and video sources. An explicit read can select one
+community; recurring runs rotate that registry. A private source record reserves
+each request before dispatch and carries the provider's remaining allowance.
+The next read waits at least a day and longer when needed to spread the
+remaining allowance over the provider's reset window. An uncertain request
+requires reconciliation before another call. This command alone installs no
+timer, invokes no model, approves no candidate and publishes nothing.
+
+```bash
+PYTHONPATH=src:tools .venv/bin/python tools/read_reddit_research.py \
+  --library /absolute/private/community-state --subreddit aigamedev \
+  --authorize-network-reads --authorize-local-writes --authorize-keyring-read
+```
+
+The existing credential reference is service `reddit34.p.rapidapi.com`, account
+`owner`, purpose `research-api`, application `loop-engine`. No key belongs in a
+command, registry, generated component or report. Other API providers need
+their own observed request contracts and account allowance before activation.
+
+Checks: `tools/test_rapidapi_reddit.py` and `tools/test_reddit_research.py` cover
+source binding, response failures, complete-window accounting, duplicate and
+removed posts, credential destination, quota pacing, queueing and uncertain
+outcomes. Forum claims remain unverified leads with no established reuse rights.
+
+## Daily source-led expansion
+
+`tools/expand_community_capabilities.py` consumes the watcher's research work
+orders and prepares complete native candidates. It uses the existing managed
+record store, model gateway and native preparation factory. Each work order
+has three bounded model turns: identify a useful opportunity, interrogate and
+revise it, then produce files. The second turn can choose reuse or defer;
+neither produces another package. This production critique is not independent
+review.
+
+The policy in `expansion-dimensions-v1.json` covers industry, use case, data
+type, role and job description, stage, failure, contracts, tools, constraints
+and delivery format. These are applicability dimensions. Package identity
+excludes title, industry and output format and instead binds the method,
+input/output contracts and discriminating checks. Exact method matches are
+reused. The existing candidate store is also searched read-only before the
+critique; that metadata search is bounded and reports incomplete coverage.
+It does not prove semantic uniqueness or approve an existing candidate.
+
+The default policy allows at most 32 work orders and 96 model dispatches per
+UTC day, with an 8,192-token output allocation and 180-second timeout per
+turn. Reported usage reaching two million tokens stops further dispatches;
+this is a post-call stop, not an exact preflight total-token bound. Unknown
+usage, an interrupted reservation or an unknown provider outcome blocks more
+calls that day. There is no failover, automatic retry or provider purchase.
+The scheduler must share one private state directory so repeated invocations
+share these limits.
+
+```bash
+PYTHONPATH=src:tools .venv/bin/python tools/expand_community_capabilities.py \
+  --library /absolute/private/community-state \
+  --candidate-store /absolute/private/import-store \
+  --maximum-work 32 --authorize-local-writes --authorize-model-calls
+```
+
+Without both grants the command returns a plan and writes nothing. Production
+requires the generator and policy to match the current committed revision.
+Use an immutable reviewed checkout for scheduling. Outputs include native
+payloads, the model's declared dependencies and effects, source references,
+contracts and test fixtures. They remain outside Git and are not executed by
+this command. A prepared catalogue is directly readable by
+`tools/review_catalogue_candidates.py --content-profile native-original`.
+Independent review, sandbox qualification and catalogue publication remain
+separate stages; a daily candidate count is never the live library count.
+
+The watcher includes forum, news and RSS metadata. Social-media and vendor
+research uses the separately authorized native web-research route. It does
+not scrape private communities, retain author profiles, post messages or
+republish discovered content. The source registry includes 3D generation,
+procedural systems, workflow automation and geospatial research topics.
+
+Checks: `tools/test_community_expansion.py` and `tools/test_community_watch.py`.
+
 ## Runtime classification
 
 ```text

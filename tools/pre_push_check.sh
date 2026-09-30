@@ -214,9 +214,11 @@ skip "Default-install onboarding proof" "continuous integration only: builds a w
 # The documentation job.
 if command -v node >/dev/null 2>&1; then
   gate "publish-guards" "Check the publication guards" "${step_shell[@]}" "$(ci_block docs "Check the publication guards")"
+  gate "creative-example" "Check the playable creative example" "${step_shell[@]}" "$(ci_block docs "Check the playable creative example")"
   gate "markdown" "Check Markdown structure" "${step_shell[@]}" "$(ci_block docs "Check Markdown structure")"
 else
   skip "Check the publication guards" "node is not installed"
+  skip "Check the playable creative example" "node is not installed"
   skip "Check Markdown structure" "node is not installed"
 fi
 # Public language is checked on the Markdown files that differ from origin/main: the ones this push would

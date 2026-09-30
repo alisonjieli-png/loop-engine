@@ -13,6 +13,18 @@
   ],
   "pages": [
     {
+      "address": "/demo/ashen-wilds",
+      "view": "creative-arena",
+      "title": "Ashen Wilds: a playable, editable 3D scene",
+      "description": "Play a fantasy arena, inspect character animations and export the original scene for Blender.",
+      "group": "Use cases",
+      "linked_from": ["page"],
+      "unlinked_reason": "",
+      "scroll_budget": "long",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
       "address": "/docs/container-worker",
       "view": "docs",
       "title": "Run the downloadable worker",
@@ -134,6 +146,18 @@
       ],
       "unlinked_reason": "",
       "scroll_budget": "page",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/top-mcps",
+      "view": "top-mcps",
+      "title": "Top MCP servers",
+      "description": "A task-focused MCP shortlist with dated GitHub popularity, setup sources and clear limits on quality and Baltor usage claims.",
+      "group": "Product",
+      "linked_from": ["footer", "page"],
+      "unlinked_reason": "",
+      "scroll_budget": "long",
       "price_in_first_screen": false,
       "indexed": true
     },
@@ -1051,6 +1075,11 @@
             "role": "link",
             "label": "Browse the library",
             "href": "/library"
+          },
+          {
+            "role": "link",
+            "label": "Top MCPs",
+            "href": "/top-mcps"
           },
           {
             "role": "link",

@@ -1260,7 +1260,7 @@ class NativePackageProjection:
         _native_require(type(self.target_root) is tuple, "package_projection_invalid")
         if self.target_root:
             validate_relative_parts(self.target_root)
-        _native_require(type(self.file_modes) is tuple and len(self.file_modes) <= 64
+        _native_require(type(self.file_modes) is tuple
                         and all(type(row) is tuple and len(row) == 2 and isinstance(row[0], str)
                                 for row in self.file_modes), "file_mode_inventory_mismatch")
         for path, mode in self.file_modes:

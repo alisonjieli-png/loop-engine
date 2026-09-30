@@ -16,7 +16,7 @@
       ],
       "text": "# Schedule earliest times in a dependency graph\n\nCompute earliest starts and finishes for a bounded acyclic task graph with nonnegative integer durations.\n",
       "sources": [
-        "src/loop_engine/core/service_runtime/catalogue_packages.py",
+        "tools/candidate_review/resources/native-calibration/catalogue/bodies/control_71af.package.json",
         "LICENSE"
       ],
       "symbols": [
@@ -107,9 +107,9 @@
       "body_path": "bodies/control_71af.package.json",
       "provenance": {
         "authoring": "original_assistant_authored",
-        "source_revision": "9c57c9a4c813578bffa504108ef9d785b308bb86",
+        "source_revision": "1d35f6976264ee7188a7d4179e69fa6c171d57e2",
         "source_digests": {
-          "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+          "tools/candidate_review/resources/native-calibration/catalogue/bodies/control_71af.package.json": "fc8ddf5d14cb21ab1291e0d502ea5e1f3fe49145e5abf2bc3f79086e7238cee8"
         },
         "license": {
           "expression": "MIT",
@@ -131,7 +131,7 @@
       ],
       "text": "# Schedule earliest times in a dependency graph\n\nCompute earliest starts and finishes for a bounded acyclic task graph with nonnegative integer durations.\n",
       "sources": [
-        "src/loop_engine/core/service_runtime/catalogue_packages.py",
+        "tools/candidate_review/resources/native-calibration/catalogue/bodies/control_71af.package.json",
         "LICENSE"
       ],
       "symbols": [
@@ -222,9 +222,9 @@
       "body_path": "bodies/control_c902.package.json",
       "provenance": {
         "authoring": "original_assistant_authored",
-        "source_revision": "9c57c9a4c813578bffa504108ef9d785b308bb86",
+        "source_revision": "1d35f6976264ee7188a7d4179e69fa6c171d57e2",
         "source_digests": {
-          "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+          "tools/candidate_review/resources/native-calibration/catalogue/bodies/control_71af.package.json": "fc8ddf5d14cb21ab1291e0d502ea5e1f3fe49145e5abf2bc3f79086e7238cee8"
         },
         "license": {
           "expression": "MIT",
@@ -246,7 +246,7 @@
       ],
       "text": "# Schedule earliest times in a dependency graph\n\nCompute earliest starts and finishes for a bounded acyclic task graph with nonnegative integer durations.\n",
       "sources": [
-        "src/loop_engine/core/service_runtime/catalogue_packages.py",
+        "tools/candidate_review/resources/native-calibration/catalogue/bodies/control_71af.package.json",
         "LICENSE"
       ],
       "symbols": [
@@ -337,9 +337,9 @@
       "body_path": "bodies/control_38d4.package.json",
       "provenance": {
         "authoring": "original_assistant_authored",
-        "source_revision": "9c57c9a4c813578bffa504108ef9d785b308bb86",
+        "source_revision": "1d35f6976264ee7188a7d4179e69fa6c171d57e2",
         "source_digests": {
-          "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+          "tools/candidate_review/resources/native-calibration/catalogue/bodies/control_71af.package.json": "fc8ddf5d14cb21ab1291e0d502ea5e1f3fe49145e5abf2bc3f79086e7238cee8"
         },
         "license": {
           "expression": "MIT",
@@ -361,7 +361,7 @@
       ],
       "text": "# Schedule earliest times in a dependency graph\n\nCompute earliest starts and finishes for a bounded acyclic task graph with nonnegative integer durations.\n",
       "sources": [
-        "src/loop_engine/core/service_runtime/catalogue_packages.py",
+        "tools/candidate_review/resources/native-calibration/catalogue/bodies/control_71af.package.json",
         "LICENSE"
       ],
       "symbols": [
@@ -452,9 +452,9 @@
       "body_path": "bodies/control_9bb0.package.json",
       "provenance": {
         "authoring": "original_assistant_authored",
-        "source_revision": "9c57c9a4c813578bffa504108ef9d785b308bb86",
+        "source_revision": "1d35f6976264ee7188a7d4179e69fa6c171d57e2",
         "source_digests": {
-          "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+          "tools/candidate_review/resources/native-calibration/catalogue/bodies/control_71af.package.json": "fc8ddf5d14cb21ab1291e0d502ea5e1f3fe49145e5abf2bc3f79086e7238cee8"
         },
         "license": {
           "expression": "MIT",
@@ -476,7 +476,7 @@
       ],
       "text": "# Schedule earliest times in a dependency graph\n\nCompute earliest starts and finishes for a bounded acyclic task graph with nonnegative integer durations.\n",
       "sources": [
-        "src/loop_engine/core/service_runtime/catalogue_packages.py",
+        "tools/candidate_review/resources/native-calibration/catalogue/bodies/control_71af.package.json",
         "LICENSE"
       ],
       "symbols": [
@@ -567,9 +567,9 @@
       "body_path": "bodies/control_e137.package.json",
       "provenance": {
         "authoring": "original_assistant_authored",
-        "source_revision": "9c57c9a4c813578bffa504108ef9d785b308bb86",
+        "source_revision": "1d35f6976264ee7188a7d4179e69fa6c171d57e2",
         "source_digests": {
-          "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+          "tools/candidate_review/resources/native-calibration/catalogue/bodies/control_71af.package.json": "fc8ddf5d14cb21ab1291e0d502ea5e1f3fe49145e5abf2bc3f79086e7238cee8"
         },
         "license": {
           "expression": "MIT",

@@ -74,6 +74,11 @@ def _python_view(name):
 
 
 VIEWS = (
+    View("top-mcp-shortlist",
+         ("src/loop_engine/core/service_runtime/web_assets/index.html",),
+         ("src/loop_engine/core/service_runtime/web_assets/top-mcps.json", "tools/build_top_mcp_page.py"),
+         ("{python}", "tools/build_top_mcp_page.py"),
+         "tools tests: test_top_mcp_page, dated popularity cards match their source record"),
     View("worker-site-files",
          ("src/loop_engine/core/service_runtime/web_assets/worker-compose.yaml",),
          ("containers/worker/compose.yaml", "tools/build_worker_site_files.py"),

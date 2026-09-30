@@ -4,11 +4,11 @@ import {spawn} from "node:child_process";
 import {createInterface} from "node:readline";
 import {existsSync,readFileSync,writeFileSync} from "node:fs";
 import {resolve} from "node:path";
-import {checkAudiences,heroProblems,heroCheckRejectsItsKnownWrongCases,audienceDestinations} from "./homepage_audience_checks.mjs";
+import {checkAudiences,heroProblems,heroCheckRejectsItsKnownWrongCases,audienceDestinations,useCaseProblems} from "./homepage_audience_checks.mjs";
 
 const root=resolve(new URL("..",import.meta.url).pathname),output=resolve(process.argv[2]||"");
 if(!output.endsWith(".json")||existsSync(output))throw new Error("A new report filename is required");
-for(const suffix of ["-home-desktop.png","-home-phone.png","-designers-desktop.png","-designers-phone.png","-worker-desktop.png","-worker-phone.png"])
+for(const suffix of ["-home-desktop.png","-home-phone.png","-designers-desktop.png","-designers-phone.png","-worker-desktop.png","-worker-phone.png","-setup-desktop.png","-setup-phone.png","-use-cases-desktop.png","-use-cases-phone.png"])
   if(existsSync(output.replace(/\.json$/,suffix)))throw new Error("Existing screenshot must not be overwritten");
 const source=`from contextlib import ExitStack
 from pathlib import Path
@@ -57,7 +57,30 @@ try{
       }
       await page.goto(fixture.base);
     }
+    await page.goto(fixture.base+"/use-cases");
+    const groups=await page.locator('[data-view="use-cases"] [data-use-audience]').evaluateAll(items=>items.map(item=>({id:item.dataset.useAudience,text:item.textContent,cases:[...item.querySelectorAll('.use-case')].map(row=>({title:row.querySelector('h3')?.textContent,href:row.querySelector('a')?.getAttribute('href')}))})));
+    check(device+"_three_use_cases_per_audience",useCaseProblems(groups).length===0);
+    check(device+"_use_case_controls_refuse_missing_group_and_missing_case",useCaseProblems(groups.slice(0,2)).length>0&&useCaseProblems(groups.map((group,index)=>index===0?{...group,cases:group.cases.slice(0,2)}:group)).length>0);
+    for(const href of new Set(groups.flatMap(group=>group.cases.map(row=>row.href))))check(device+"_use_case_target_"+href,(await page.request.get(fixture.base+href)).status()===200);
+    check(device+"_use_cases_no_overflow",await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+    await page.screenshot({path:output.replace(/\.json$/,"-use-cases-"+device+".png"),fullPage:true});
+    await page.goto(fixture.base+"/top-mcps");
+    const picks=JSON.parse(readFileSync(resolve(root,"src/loop_engine/core/service_runtime/web_assets/top-mcps.json"),"utf8"));
+    check(device+"_top_mcps_direct_route",await page.locator('[data-view="top-mcps"]:visible h1').count()===1);
+    check(device+"_top_mcps_matches_dated_record",await page.locator('[data-view="top-mcps"] [data-mcp-repository]').count()===picks.items.filter(row=>!row.archived).length&&(await page.locator('.mcp-shortlist-date').textContent()).includes(picks.checked_at));
+    check(device+"_top_mcps_does_not_invent_baltor_usage",/do not yet publish per-server Baltor usage/i.test(await page.locator('.mcp-shortlist-method').textContent()));
+    check(device+"_top_mcps_no_overflow",await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
     await page.goto(fixture.base+"/setup");
+    await page.locator('#client-tab-baltor-harness').waitFor();
+    await page.locator('#client-tab-baltor-harness').click();
+    check(device+"_manual_setup_is_labelled",/manual library connection/i.test(await page.locator('#configuration-location').textContent())&&/not a configuration file/i.test(await page.locator('#client-configuration-note').textContent()));
+    check(device+"_compatibility_is_available_without_crowding_quickstart",await page.locator('#client-compatibility').evaluate(node=>node.tagName==='DETAILS'&&!node.open&&node.querySelector('#client-version-note').textContent.length>0));
+    await page.locator('#client-compatibility summary').click();
+    check(device+"_compatibility_opens",await page.locator('#client-version-note').isVisible());
+    await page.locator('#client-compatibility summary').click();
+    check(device+"_setup_no_overflow",await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+    await page.evaluate(()=>scrollTo(0,0));
+    await page.screenshot({path:output.replace(/\.json$/,"-setup-"+device+".png"),fullPage:true});
     await page.locator('[data-view="setup"] a[data-page="worker"]').click();
     check(device+"_worker_setup_navigation",new URL(page.url()).pathname==="/worker"&&await page.locator('[data-view="worker"]:visible h1').count()===1);
     check(device+"_worker_direct_route",(await page.request.get(fixture.base+"/worker")).status()===200);
