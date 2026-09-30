@@ -1,7 +1,7 @@
 {
  "record_type": "mcp_directory_manifest/v1",
- "generated_at": "2026-09-29T13:20:58Z",
- "row_count": 36931,
+ "generated_at": "2026-09-30T13:01:24Z",
+ "row_count": 37236,
  "columns": [
   "id",
   "name",
@@ -28,128 +28,128 @@
  "parts": [
   {
    "address": "/assets/directory/rows-0.json",
-   "rows": 4700,
-   "sha256": "cbfa27a4b0690500d11e0865e15858dac156546da85ee7c982dc752029627613",
-   "bytes": 1274915
+   "rows": 4735,
+   "sha256": "1de156a27512e585d226a6bcd8026a1d9f221745a725b1918d40bf3896de8da1",
+   "bytes": 1285180
   },
   {
    "address": "/assets/directory/rows-1.json",
-   "rows": 4553,
-   "sha256": "52b59c22b62f5871663be43ef3d7d4647598e70aed708c3705e5378673b701e6",
-   "bytes": 1241453
+   "rows": 4594,
+   "sha256": "b19321fcab99f28c7a1d2fd9698408dacdfd6519272c256350733e107afa88e1",
+   "bytes": 1252815
   },
   {
    "address": "/assets/directory/rows-2.json",
-   "rows": 4620,
-   "sha256": "a3a93202715b5a402201a4065e37498a9c0ccf431cfd4a4cfeaf4f2cd5396425",
-   "bytes": 1259817
+   "rows": 4649,
+   "sha256": "cb3836ef52aded72f3909c387ecd2768272337ea8cc23eaac50a03825b06a835",
+   "bytes": 1267672
   },
   {
    "address": "/assets/directory/rows-3.json",
-   "rows": 4587,
-   "sha256": "38d82127e53c3753032d9af880a241ef07fe581891a4b0340760e5323658c499",
-   "bytes": 1252021
+   "rows": 4619,
+   "sha256": "fd6e3b34135d0b9b0ceee02e32e19dca3290470b0b9c8ec5b7a14609c1862226",
+   "bytes": 1260318
   },
   {
    "address": "/assets/directory/rows-4.json",
-   "rows": 4573,
-   "sha256": "6c51f08a5c539b35fcd3936a428f75782324acaa1bbc5a6e43a33ca18a003099",
-   "bytes": 1247289
+   "rows": 4613,
+   "sha256": "0cf75276491d1d163c685cc2de8a5693fe6cbc2c4d45e7c797211f5836ce884a",
+   "bytes": 1257743
   },
   {
    "address": "/assets/directory/rows-5.json",
-   "rows": 4691,
-   "sha256": "bd71b1af54fce2c9a2b478989aff6faa3e788ae8e72b58702b5e580b4568cb28",
-   "bytes": 1278801
+   "rows": 4728,
+   "sha256": "b804238d214adc94e4cc50d939e2a1cb15ae5e87f6495eaf89cd5b35f371b5ce",
+   "bytes": 1288894
   },
   {
    "address": "/assets/directory/rows-6.json",
-   "rows": 4601,
-   "sha256": "1b9c589351a3bb6a2c72dd584ff9e025706b7945e214fab42ea53b05103b4008",
-   "bytes": 1247573
+   "rows": 4649,
+   "sha256": "2d24f9e29649231b4e95ef83084a9888b6606b9a4d9fb73c61fb526b6a883d1d",
+   "bytes": 1261227
   },
   {
    "address": "/assets/directory/rows-7.json",
-   "rows": 4606,
-   "sha256": "3004e0fe636198ae455007b02060be6709c939e1c1fa17dd11ff69e7b5a62780",
-   "bytes": 1256667
+   "rows": 4649,
+   "sha256": "72848f72c66bc04f29625c423f433cdac48a743ba6c4dc8f7ed37e5671dc4820",
+   "bytes": 1268823
   }
  ],
  "categories": [
   {
    "id": "developer-tools",
    "label": "Developer tools",
-   "rows": 3025
+   "rows": 3039
   },
   {
    "id": "databases",
    "label": "Databases and storage",
-   "rows": 769
+   "rows": 773
   },
   {
    "id": "search-web",
    "label": "Search and web data",
-   "rows": 1019
+   "rows": 1028
   },
   {
    "id": "browser",
    "label": "Browser automation",
-   "rows": 321
+   "rows": 324
   },
   {
    "id": "cloud",
    "label": "Cloud and infrastructure",
-   "rows": 1407
+   "rows": 1428
   },
   {
    "id": "observability",
    "label": "Monitoring and observability",
-   "rows": 615
+   "rows": 619
   },
   {
    "id": "security",
    "label": "Security",
-   "rows": 656
+   "rows": 658
   },
   {
    "id": "documents",
    "label": "Documents and files",
-   "rows": 1284
+   "rows": 1288
   },
   {
    "id": "productivity",
    "label": "Notes and productivity",
-   "rows": 686
+   "rows": 697
   },
   {
    "id": "communication",
    "label": "Communication",
-   "rows": 1273
+   "rows": 1294
   },
   {
    "id": "project-management",
    "label": "Project management",
-   "rows": 662
+   "rows": 668
   },
   {
    "id": "business",
    "label": "Sales, marketing and commerce",
-   "rows": 2441
+   "rows": 2475
   },
   {
    "id": "finance",
    "label": "Finance and payments",
-   "rows": 2036
+   "rows": 2050
   },
   {
    "id": "crypto",
    "label": "Crypto and blockchain",
-   "rows": 1445
+   "rows": 1459
   },
   {
    "id": "ai-models",
    "label": "AI models and prompts",
-   "rows": 977
+   "rows": 981
   },
   {
    "id": "agents",
@@ -159,52 +159,52 @@
   {
    "id": "media",
    "label": "Media and design",
-   "rows": 1422
+   "rows": 1447
   },
   {
    "id": "knowledge",
    "label": "Knowledge and memory",
-   "rows": 1080
+   "rows": 1084
   },
   {
    "id": "data",
    "label": "Data and analytics",
-   "rows": 772
+   "rows": 780
   },
   {
    "id": "maps-travel",
    "label": "Maps, travel and weather",
-   "rows": 953
+   "rows": 965
   },
   {
    "id": "science-health",
    "label": "Science, health and education",
-   "rows": 738
+   "rows": 742
   },
   {
    "id": "legal-public",
    "label": "Legal, government and public data",
-   "rows": 1089
+   "rows": 1092
   },
   {
    "id": "devices-home",
    "label": "Devices and home",
-   "rows": 284
+   "rows": 288
   },
   {
    "id": "games-entertainment",
    "label": "Games and entertainment",
-   "rows": 391
+   "rows": 398
   },
   {
    "id": "utilities",
    "label": "Utilities and reference",
-   "rows": 1421
+   "rows": 1424
   },
   {
    "id": "other",
    "label": "Other",
-   "rows": 9410
+   "rows": 9480
   }
  ],
  "location_kinds": [
@@ -270,7 +270,8 @@
   "MPL-2.0",
   "Other",
   "PostgreSQL",
-  "Unlicense"
+  "Unlicense",
+  "WTFPL"
  ],
  "licence_bases": [
   "",
@@ -287,8 +288,8 @@
   {
    "id": "registry",
    "bit": 1,
-   "rows": 36668,
-   "checked": "2026-09-29"
+   "rows": 36973,
+   "checked": "2026-09-30"
   },
   {
    "id": "codex",
@@ -306,13 +307,13 @@
    "id": "github",
    "bit": 8,
    "rows": 288,
-   "checked": "2026-09-29"
+   "checked": "2026-09-30"
   },
   {
    "id": "docker",
    "bit": 16,
    "rows": 311,
-   "checked": "2026-09-29"
+   "checked": "2026-09-30"
   }
  ],
  "commercial_relationship_schema": "directory_commercial_relationship/v1",
