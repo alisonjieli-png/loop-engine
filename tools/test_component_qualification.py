@@ -410,7 +410,8 @@ class AdmissionTests(unittest.TestCase):
         self.assertEqual(list(index), [self.code.identity])
         row = index[self.code.identity]
         self.assertEqual({decision["reviewer_id"] for decision in row["decisions"]},
-                         {admission.ADMISSION_REVIEWER, "tactical.gemma-4-coding-abliterated"})
+                         {admission._admission_reviewer_id(_record["admission_basis"]),
+                          "tactical.gemma-4-coding-abliterated"})
 
     def test_a_rejected_sample_is_never_approved(self):
         from tools.build_host_catalogue_manifest import _review_index
@@ -418,6 +419,42 @@ class AdmissionTests(unittest.TestCase):
         self.assertEqual((result["approved"], result["rejected"]), (0, 1))
         _record, index = _review_index(self.folder / "rejected")
         self.assertEqual(index[self.code.identity]["outcome"], "rejected")
+
+    def test_distinct_admission_runs_combine_without_relabeling_review_evidence(self):
+        from argparse import Namespace
+        from tools import combine_reviewed_catalogues as combine
+        from tools.build_host_catalogue_manifest import _review_index
+
+        first_review = self._review()
+        self._admit(first_review, "first")
+        second = json.loads(first_review.read_text())
+        second["batches"][self.code.batch]["decision"] = {"outcome": "withheld", "reasons": ["not selected"]}
+        qualified = [json.loads(line) for line in (self.qualification / "qualification.jsonl").read_text().splitlines()]
+        second["batches"][self.configuration.batch] = {
+            "plan": {"batch_size": 1},
+            "frame_sha256": sampling.frame_digest(row for row in qualified if row["batch"] == self.configuration.batch),
+            "decision": {"outcome": "accepted", "reasons": [], "sampled": 1, "acceptance_number": 0,
+                         "defective": 0, "controls_planted": 1, "controls_rejected": 1},
+            "sample": [self.configuration.identity],
+            "verdicts": [{"identity": self.configuration.identity, "decision": "approve", "criteria": [],
+                          "reason": "", "call_ref": "second#1", "body_sha256": self.configuration.package.package_digest}]}
+        second_review = self.folder / "second-review.json"
+        second_review.write_text(json.dumps(second))
+        self._admit(second_review, "second")
+        combined = self.folder / "combined"
+        combine.combine(Namespace(base=self.folder / "first", base_group="first", add=[self.folder / "second"],
+                                  withdraw=[], relabel_revision="", output=combined))
+        record, index = _review_index(combined)
+        self.assertEqual(set(index), {self.code.identity, self.configuration.identity})
+        identifiers = []
+        for name, identity in (("first", self.code.identity), ("second", self.configuration.identity)):
+            original = json.loads((self.folder / name / "reviews.json").read_text())
+            row = next(row for row in original["rows"] if row["identity"] == identity)
+            self.assertEqual(index[identity]["decisions"], row["decisions"])
+            identifiers.append(next(reviewer["reviewer_id"] for reviewer in original["reviewers"]
+                                    if reviewer["family"] == "deterministic_process"))
+        self.assertNotEqual(*identifiers)
+        self.assertEqual(len(record["reviewers"]), 3)
 
     def test_an_uncommitted_qualifier_admits_nothing(self):
         path = self.qualification / "qualification.jsonl"

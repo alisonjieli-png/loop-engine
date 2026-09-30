@@ -436,7 +436,7 @@ const heroDirectory=target=>target.evaluate(()=>{
 const heroDirectoryProblems=state=>[...(state.shown?[]:["the hero shows no working directory"]),
   ...(JSON.stringify(state.parts)===JSON.stringify(heroDirectoryParts)?[]:["the directory holds the parts "+JSON.stringify(state.parts)]),
   ...(state.label==="Example layout"&&!invitationWords.test(state.label)?[]:["the directory is labelled "+JSON.stringify(state.label)]),
-  ...(/no manual search/i.test(state.text)&&/no manual setup/i.test(state.text)?[]:["the hero does not say the files are placed with no manual search and no manual setup"]),
+  ...(/\bby hand\b/i.test(state.text)?[]:["the hero does not describe the manual work in its example"]),
   ...(perStepClaim(state.text).length===0&&/\bbuilt to\b/i.test(state.note)?[]:["the hero states assembly for each step as a current capability: "+JSON.stringify(perStepClaim(state.text))]),
   ...(JSON.stringify(state.stages)===JSON.stringify(heroStages)?[]:["the terminal shows the parts "+JSON.stringify(state.stages)]),
   ...(JSON.stringify(state.tools)===JSON.stringify(heroTools)?[]:["the terminal calls "+JSON.stringify(state.tools)])];
@@ -894,7 +894,7 @@ try {
   check("hero_directory_check_rejects_placeholder_commands_a_missing_part_and_missing_words",heroDirectoryProblems({...hero,tools:["baltor.search","baltor.fetch"]}).length===1
     &&heroDirectoryProblems({...hero,stages:["search","folder"]}).length===1&&heroDirectoryProblems({...hero,stages:["search","search","download","folder"]}).length===1
     &&heroDirectoryProblems({...hero,parts:hero.parts.filter(part=>part!=="tools")}).length===1
-    &&heroDirectoryProblems({...hero,text:hero.text.replace(/no manual setup/ig,"")}).length===1);
+    &&heroDirectoryProblems({...hero,text:hero.text.replace(/by hand/ig,"")}).length===1);
   /* The known-wrong heroes of the owner's constraint of September 24, 2026: assembly for each step stated as what Baltor does today,
      as a label and as a sentence, and a note that no longer says the engine is built to do it. */
   check("per_step_assembly_check_rejects_a_current_capability_claim",["Assembled for this step.","Baltor assembles a directory like this for every step.","Built on demand for each step."].every(claim=>heroDirectoryProblems({...hero,text:hero.text+" "+claim}).length===1)
@@ -1173,6 +1173,7 @@ try {
      read http.py until September 22 and found no routes at all, which failed both checks below by name. */
   const routeTable=readFileSync(resolve(root,"src/loop_engine/core/service_runtime/web_pages.py"),"utf8").match(/^WEB_ASSETS = \{$([\s\S]*?)^\}$/m);
   const assetRoutes=routeTable?[...routeTable[1].matchAll(/"(\/assets\/[^"]+)":/g)].map(found=>found[1]):[];
+  servedFiles.push("/assets/procedural-bear-preview.svg","/assets/procedural-tree-preview.svg");
   const unscannedFor=list=>assetRoutes.filter(path=>!list.includes(path));
   /* The deck's own files are read like every other served file. */
   servedFiles.push("/assets/deck.css","/assets/deck.js","/assets/deck-card.png");
@@ -1211,7 +1212,7 @@ try {
   const privacyBlock=/<article id="privacy-notice" data-privacy-notice>[\s\S]*?<\/article>/;
   /* approved: the words each legal text is compared with; a known-wrong case below passes another approved text. */
   const withoutApprovedLegalText=(markup,approved={})=>withoutApprovedBlock(withoutApprovedTerms(markup,approved.terms||approvedTermsWords),privacyBlock,approved.privacy||approvedPrivacyWords);
-  const customerText=(path,text,approved)=>path==="/"||path.endsWith(".html")||listingTextRegistration(path)?.page?markupWords(withoutApprovedLegalText(text,approved)).join(" "):customerStrings(text).join("\n");
+  const customerText=(path,text,approved)=>path==="/"||path.endsWith(".html")||path.endsWith(".svg")||listingTextRegistration(path)?.page?markupWords(withoutApprovedLegalText(text,approved)).join(" "):customerStrings(text).join("\n");
   const invitationIn=(path,text,approved)=>{if(notOurText[path])return [];const read=customerText(path,withoutListingText(path,text),approved);return invitationWords.test(read)?[{path:"the served file "+path,rule:"invitation word",found:read.match(invitationWords)[0]}]:[];};
   /* A sentence written inside a legal text, just after the article's own opening tag, so the case depends on no word of the text. */
   const writtenInside=(block,sentence)=>block.replace(/^(<article[^>]*>)/,"$1<p>"+sentence+"</p>");

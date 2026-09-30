@@ -121,7 +121,7 @@ def proposals(repository, revision):
             rows.append({"id": "asset_" + family + "_" + group, "title": title + ": " + group.replace("_", " "),
                          "purpose": title + "; a parameterized constructor and structural sizing references, not a production-ready game asset.",
                          "sources": list(SOURCES), "layer": "code", "family": "procedural_asset_references", "kind": "tool",
-                         "search_tags": ["parametric", "glTF", category, family, "reference"], "tags": {"language": ["en"]},
+                         "search_tags": sorted({"parametric", "glTF", category, family, "reference"}), "tags": {"language": ["en"]},
                          "symbols": [family], "declared_effects": ["reads_fs", "spawns_process"], "styles": ["codex"],
                          "dependencies": ["python>=3.10"], "producer": {"producer_identity": "Baltor original procedural asset factory",
                             "family": "openai", "method_identity": "procedural_assets/v1"}, "files": [file_record(*row) for row in files]})

@@ -53,6 +53,11 @@ def _sha(value) -> str:
     return hashlib.sha256(json.dumps(value, sort_keys=True).encode()).hexdigest()
 
 
+def _admission_reviewer_id(basis: dict) -> str:
+    """Bind the deterministic admission participant to one exact evidence basis."""
+    return ADMISSION_REVIEWER + "." + _sha(basis)
+
+
 def reference_for(component) -> dict:
     """The served reference, built the way the licensed import builds its own."""
     from loop_engine.core.harness_intelligence import HarnessIntelligenceItem
@@ -77,7 +82,7 @@ def _reviewer_entries(root: Path, reviewer: str, basis: dict) -> list:
     panel = config.PanelConfiguration.from_dict(json.loads(
         (root / "tools/candidate_review/resources/panel.json").read_text(encoding="utf-8")))
     installation = panel.installation(reviewer)
-    return [{"reviewer_id": ADMISSION_REVIEWER,
+    return [{"reviewer_id": _admission_reviewer_id(basis),
              "label": "Independent test-based qualification and the accepted batch sampling decision",
              "family": "deterministic_process", "model": "none", "engine_kind": "qualification_and_batch_sampling",
              "installation_sha256": _sha(basis), "lens": "qualification_and_batch_acceptance",
@@ -154,7 +159,7 @@ def admit(qualification_folder: Path, review_path: Path, store_root: "Path | Non
             if component.package.package_digest != record["package_digest"]:
                 raise ValueError(f"{identity}: the stored package differs from the qualified package")
             sampled = verdicts.get(identity)
-            admission = {"reviewer_id": ADMISSION_REVIEWER, "decision": APPROVE, "reason": "", "findings": [],
+            admission = {"reviewer_id": _admission_reviewer_id(basis), "decision": APPROVE, "reason": "", "findings": [],
                          "body_sha256": record["package_digest"], "call_ref": "",
                          "basis": {"qualification_ref": f"qualification.jsonl#{identity}",
                                    "qualification_record_sha256": _sha(record), "batch": batch,

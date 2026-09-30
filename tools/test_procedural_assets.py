@@ -16,6 +16,7 @@ from xml.etree import ElementTree
 from jsonschema import Draft202012Validator
 
 from tools import native_harness_candidates as native
+from tools import prepare_harness_candidates as factory
 from tools.procedural_assets.catalogue import (
     FAMILIES,
     construct,
@@ -119,7 +120,8 @@ class ProceduralAssetTests(unittest.TestCase):
 
     def test_packages_fit_existing_contract_and_run_in_isolation(self):
         record = proposals(ROOT, "a" * 40)
-        native._proposal_metadata(record)
+        normalized = native._proposal_metadata(record)
+        factory._compile(normalized, "a" * 40, record["sources"], "MIT")
         self.assertEqual(len(record["proposals"]), 24)
         digests, placements, families = set(), 0, set()
         with tempfile.TemporaryDirectory() as temporary:
