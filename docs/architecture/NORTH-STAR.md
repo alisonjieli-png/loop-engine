@@ -93,8 +93,10 @@ Gemma 4 work, then expand by documented public benefit. Keep one library and
 the same independent admission rules. Free access is an explicit package
 policy, not a quality tier, nonprofit status or United Nations endorsement.
 The [Public Good plan](../roadmap/DELIVERY-SEQUENCE.md#free-public-good-components)
-defines anonymous delivery, rights, sensitive-data limits and the first proof.
+defines account-required free delivery, rights, sensitive-data limits and the first proof.
 This policy is approved direction; the public download route is not yet built.
+The owner's later clarification requires an enabled account for every free
+component download. Free access does not mean anonymous access.
 
 Reusable material follows a common package structure:
 

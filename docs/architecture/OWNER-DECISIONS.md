@@ -22,10 +22,13 @@ collection. Rate limits are permitted. This is a free-access exception to the
 subscription download policy, not a new review tier or a claim that Baltor is
 a nonprofit organization.
 
-Engineering will use an explicit, reviewed public-access grant for each exact
+Engineering will use an explicit, reviewed free-access grant for each exact
 package version. A source's topic tags cannot grant that access. Recipients
-need no nonprofit status; the planned public route needs neither payment nor
-an account. Rights, independent admission, withdrawal and safety checks still
+need no nonprofit status. The owner's later September 30 clarification is
+explicit: "we should not have anonymous downloads, you still need an account
+but it is free use of those components and files". Downloads require a normal
+enabled Baltor account, but no paid subscription. This replaces engineering's
+earlier anonymous-delivery proposal. Rights, independent admission, withdrawal and safety checks still
 apply. Free files do not include an unbounded model or hosting allowance.
 The [delivery plan](../roadmap/DELIVERY-SEQUENCE.md#free-public-good-components)
 owns the implementation and acceptance sequence. Public downloads under this

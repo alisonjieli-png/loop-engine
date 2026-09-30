@@ -6,6 +6,23 @@ Search returns small references so a step can choose useful material before
 loading its body. Download only the items the task needs, then verify their
 bytes and how the harness uses them.
 
+## Recorded demonstrations
+
+The guided data-cleanup and competition examples reproduce the packaged
+starter catalogue. They are not live searches. Their displayed hashes and
+ordering belong to the
+[recorded catalogue](https://github.com/alisonjieli-png/loop-engine/blob/e089582cb50d0bc4e5b28c915ac22edcb3f74f62/examples/29_intelligence_service/starter-catalogue/host-release/manifest.json),
+whose SHA-256 is
+`246bd27c8beeed4c84ad878c452646dc6333aacf3974e67560a3b7ecaeb2cf52`.
+Each example declares that snapshot in its metadata and visible description.
+
+The active catalogue can contain newer versions and different search results.
+Your harness must make a fresh authorized search, choose its reference, inspect
+the manifest and verify the downloaded bytes against that selected digest.
+Do not copy a hash from a recorded example into a current download request.
+Publication checks verify both the recorded source and current availability;
+they do not replace the customer's own permission and integrity checks.
+
 ## Search the authorized catalogue
 
 ```bash

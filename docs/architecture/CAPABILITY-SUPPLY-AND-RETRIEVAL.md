@@ -183,7 +183,11 @@ memory, bandwidth cost and required revocation delay. Private signed links are
 bearer credentials, not public-cache keys or permanent authorization. A short
 expiry bounds access but does not provide immediate withdrawal. Use a checking
 proxy or another qualified revocation mechanism when that delay is unacceptable.
-Public caching applies only to explicitly public, rights-cleared versions.
+Public Good library files still require a normal enabled account and a current
+download authorization, even without a paid subscription. Do not expose their
+origin blobs through an anonymous public URL or let a cache bypass that check.
+Keep public website assets and marketing previews separate from account-gated
+library delivery. Rights clearance alone does not grant anonymous access.
 
 Serve untrusted originals as downloads with verified media types and isolated
 origins. Do not let a supplied SVG, HTML file or filename execute in the signed-in

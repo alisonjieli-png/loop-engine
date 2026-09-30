@@ -30,7 +30,8 @@ features work. Existing pricing and infrastructure allowances stay governed
 by [owner decisions](../architecture/OWNER-DECISIONS.md) and AGENTS.md.
 
 Selected Public Good components will remain free without a subscription or
-proof of nonprofit status. Keep their delivery costs visible and their rate
+proof of nonprofit status. They still require a normal enabled Baltor account.
+Keep their delivery costs visible and their rate
 limits clear. They are a public service and a way to demonstrate useful work;
 do not count recipients as subscribers or promise a conversion rate. Paid
 library access and any future hosted execution remain separate products.
@@ -289,18 +290,19 @@ Baltor as a registered charity.
 
 Implement in this order through S-6.216:
 
-1. Add explicit, versioned public-access grants to the existing catalogue and
+1. Add explicit, versioned free-access grants to the existing catalogue and
    entitlement boundary. Only independently admitted, rights-cleared,
    non-withdrawn versions qualify. Preserve the normal paid and private paths.
-2. Provide public search, inspection and complete downloads for those versions
-   without payment or sign-in. Publish configurable request and byte limits,
+2. Use the normal account, sign-in and scoped-client-key path. Complete downloads
+   need an enabled account but no paid subscription. Publish configurable request and byte limits,
    return a clear retry delay, and account for service cost without billing a
-   free download. An optional account may retain activity; it is not required.
-3. Test anonymous success, full-package integrity, withdrawal, expired or
+   free download. Keep free-file activity separate from paid usage accounting.
+3. Test free-account success, anonymous refusal, disabled-account refusal,
+   full-package integrity, withdrawal, expired or
    substituted versions, paid/private isolation, forged public-benefit tags,
    cache revocation and concurrent rate limits. Use synthetic data throughout.
 4. Independently review the first package set, publish it through the existing
-   release path, then test a fresh anonymous browser and a supported harness.
+   release path, then test a fresh free account in a browser and a supported harness.
    A source list or downloadable prose file alone does not prove the tools work.
 
 Keep model access customer-supplied. Free component files do not promise free
@@ -309,6 +311,9 @@ Choose cache and abuse controls within the approved privacy notice; draft
 any new personal-data use for approval before enabling it. Do not require
 people to disclose worker status to obtain material. No component was admitted
 or made public under this new policy in this planning update.
+
+The owner explicitly ruled out anonymous downloads later on September 30.
+This is the current access requirement, including for harness API requests.
 
 ## Customer activity and download history
 

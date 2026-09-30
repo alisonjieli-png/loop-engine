@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:06930c78402d86de7bf7715c9d4c1e4d3cfb101ac3d1342206926d0486fc0e8c`.
+Source fingerprint: `sha256:3119323cc58733ded5ccdb9ec3a980283daec100219af7cd2f7a39ba8a6004b3`.
 
 ## Where things stand
 
@@ -126,7 +126,7 @@ Source fingerprint: `sha256:06930c78402d86de7bf7715c9d4c1e4d3cfb101ac3d134220692
 | S-6.209 | Occupation, industry, level, language and geography tags on every served file, searchable in the signed-in dashboard | proposed | S-6.206, S-6.40 |
 | S-6.202 | Quickstarts that are checked every night: one copy-paste setup per harness on Get set up, each run against the live endpoint | proposed | S-6.24, S-6.182 |
 | S-6.213 | The product as a harness file: a first-party Baltor skill any harness installs to search and fetch from the library, plus a daily public library snapshot from each catalogue release | proposed | S-6.202, S-6.212 |
-| S-6.216 | Free Public Good components with anonymous access, starting with DueCare worker protection | proposed | S-6.40, S-6.81, S-6.199 |
+| S-6.216 | Free Public Good components with required accounts, starting with DueCare worker protection | proposed | S-6.40, S-6.81, S-6.199 |
 | S-6.70 | Serve 100,000 packages: pass the capacity probe with paged listing and an indexed search | proposed | S-6.62, S-6.32 |
 | S-6.83 | Maintain 100,000 packages: re-verification, near-duplicates, deprecation and withdrawal | proposed | S-6.69, S-6.51 |
 | S-6.64 | Independently authored alternatives to restricted-source ideas | proposed | S-6.63 |

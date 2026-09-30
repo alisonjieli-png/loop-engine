@@ -5,7 +5,7 @@ Kind: generated planning artifact.
 Source: `roadmap.yaml`. Regenerate with
 `python tools/build_continuation_status.py`; `--check` rejects a stale view.
 
-Plan fingerprint: `06930c78402d86de7bf7715c9d4c1e4d3cfb101ac3d1342206926d0486fc0e8c`.
+Plan fingerprint: `3119323cc58733ded5ccdb9ec3a980283daec100219af7cd2f7a39ba8a6004b3`.
 
 Started: 2026-09-19T14:12:54Z. Historical target: 2026-09-20T14:12:54Z. This is not a release forecast.
 
@@ -1136,7 +1136,7 @@ Historical planning targets, not a current schedule, release forecast or complet
 | S-6.214 | Daily distillations: new papers, skills, plugins, protocol servers, services and repositories, each served as a summary page, RSS, JSON and downloadable components | building | S-6.213, S-6.102, S-6.81, S-6.197 |
 | S-6.215 | One million served harness component files: deterministic supply lines, test-based admission with a sampled independent review, a serving engine with delta releases, and full-package delivery | building | S-6.40, S-6.213 |
 | S-6.81 | Source scouts: search tools for skills, plugins, protocol servers and harness files | building | S-6.40, S-6.76 |
-| S-6.216 | Free Public Good components with anonymous access, starting with DueCare worker protection | proposed | S-6.40, S-6.81, S-6.199 |
+| S-6.216 | Free Public Good components with required accounts, starting with DueCare worker protection | proposed | S-6.40, S-6.81, S-6.199 |
 | S-6.63 | An independent review panel of several model families | building | S-6.45 |
 | S-6.119 | Community and Verified library tiers from the review panel, written as reviewed catalogue folders for release | building | S-6.63, S-6.40 |
 | S-6.62 | Catalogue releases and library settings with good defaults | building | S-6.40 |

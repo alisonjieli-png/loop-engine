@@ -2213,7 +2213,7 @@
     ]
    },
    {
-    "acceptance": "A person without an account or subscription downloads and uses the first reviewed worker-protection component set within clear public limits.",
+    "acceptance": "A person with an enabled account and no paid subscription downloads and uses the first reviewed worker-protection component set within clear public limits.",
     "blocked_on": "",
     "depends_on": [
      "S-6.40",
@@ -2221,10 +2221,10 @@
      "S-6.199"
     ],
     "id": "S-6.216",
-    "next_local_work": "After the release-reliability fix, implement the public-access policy at the existing catalogue and entitlement edge with exact-version grants and paid/private negative controls. Prepare the small DueCare-related candidate set in the delivery plan; preserve independent admission, per-file rights, model-weight terms and jurisdiction-specific freshness. Keep free files separate from paid inference or hosting and do not claim nonprofit status or UN endorsement.",
+    "next_local_work": "After the release-reliability fix, implement the account-required free-access policy at the existing catalogue and entitlement edge with exact-version grants and paid/private negative controls. Prepare the small DueCare-related candidate set in the delivery plan; preserve independent admission, per-file rights, model-weight terms and jurisdiction-specific freshness. Keep free files separate from paid inference or hosting and do not claim nonprofit status or UN endorsement.",
     "phase": 6,
     "status": "proposed",
-    "title": "Free Public Good components with anonymous access, starting with DueCare worker protection",
+    "title": "Free Public Good components with required accounts, starting with DueCare worker protection",
     "waiting_on": [
      "S-6.40",
      "S-6.81",
@@ -5402,5 +5402,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:06930c78402d86de7bf7715c9d4c1e4d3cfb101ac3d1342206926d0486fc0e8c"
+ "source_fingerprint": "sha256:3119323cc58733ded5ccdb9ec3a980283daec100219af7cd2f7a39ba8a6004b3"
 }
