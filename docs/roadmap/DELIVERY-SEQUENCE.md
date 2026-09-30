@@ -333,6 +333,53 @@ catalogue bytes. A faster engine must preserve authorization, withdrawals,
 relevance and exact file delivery; a warm-cache win must include misses,
 invalidation and concurrent callers. Record the rollout and rollback decision.
 
+## Avoid stale context
+
+Treat freshness as a claim-level property, not the age of a whole file. Stable
+algorithms, historical records, version-specific instructions and volatile
+claims need different handling. A model's remembered facts and a recently
+downloaded old document are not current verification.
+
+The existing knowledge radar already records source publication, observation,
+effective dates, last verification and review-after dates. Its brief builder
+separates expired claims and preserves old verification dates after failed
+reads. Federal regulatory listing questions exist, while cross-jurisdiction
+legal obligations remain an explicit gap. This is a foundation, not proof that
+every downloaded file or customer harness enforces freshness end to end.
+
+Extend S-6.214, S-6.32 and S-6.51 with these acceptance requirements:
+
+- A claim carries its source/revision, scope, last verification, applicable
+  version or jurisdiction, effective period, review trigger and uncertainty.
+  Keep observed date separate from publication and effective dates.
+- Before selection and use, the harness can distinguish current-for-scope,
+  historical, expired, superseded and unverified material. Cached metadata and
+  installed files retain those conditions; fetching old bytes today does not
+  renew a claim's verification date.
+- Refresh material when its source, model, dependency, policy or applicability
+  changes, as well as when its review date arrives. Stable reusable source does
+  not need regeneration merely because a model was released.
+- Legal claims require the relevant jurisdiction and as-of date, authoritative
+  text, effective dates and subsequent changes before consequential use. A
+  proposed rule is not a final rule, and a final rule may take effect later.
+  GovInfo's [Federal Register guide](https://www.govinfo.gov/help/fr) explains
+  those publication distinctions. Search listings and weekly polling do not
+  establish current applicability or replace appropriate legal review.
+- A failed refresh records a failure and its last successful check. If current
+  verification is required, show the gap or stop that consequential step;
+  historical material may still be used as explicitly historical context.
+  Content cannot grant network access or extra spending to refresh itself.
+- Test future effective dates, amendments, superseded versions, source outages,
+  expired caches, wrong jurisdictions and an old local download. A removed
+  freshness check must fail a known-wrong control, and the trace must identify
+  which evidence supported the eventual answer.
+
+The September 30 review also found generic benchmark wording in two legal
+research questions. Their guidance was corrected: a performance result cannot
+outrank legal authority. Regression checks cover the three regulatory question
+records and an expired legal-listing fixture. This corrects internal research
+context; it does not publish legal advice or establish worldwide legal coverage.
+
 ## Capability families to develop
 
 These are requested families and their first acceptance targets. Their
@@ -443,6 +490,67 @@ compare them against the same measured workload before changing the serving
 engine or buying infrastructure.
 
 ## Source programme and housekeeping
+
+### Faster updates and deployments
+
+This is S-6.200, with indexing work under S-6.32 and S-6.215. Keep catalogue
+publication, application deployment and model/provider configuration distinct.
+Catalogue deltas already publish new and changed bodies without rebuilding the
+service image; measure and preserve that path. A model announcement should not
+force regenerating unchanged materials or splitting the application.
+
+The September 30 checked revision `5a9c6e2c` completed CI in 395 seconds;
+the self-test job took 391 seconds and set that run's critical path. This is
+one run, not a run-history median. `Dockerfile.service` copies application
+source before building dependency wheels, and the Fly workflow uses a plain
+build without an explicit external cache. A source change therefore invalidates
+that dependency-build layer under Docker's
+[cache rules](https://docs.docker.com/build/cache/).
+
+Release 55 also exposed a more immediate reliability problem: its image build
+and container check took 122 seconds, image publication/deployment took 101
+seconds, then synchronous grant confirmation timed out after 65 seconds at
+the Machines API. The image was already running. Finish outcome reconciliation
+before retrying that operation. `apply_host_grants` still loads the full serving
+view and search index to count grants, whereas billing confirmation already
+uses a lightweight context in the current source. Remove that unnecessary
+grant-index dependency and qualify durable start/status/result handling before
+the next application release; do not skip the confirmation or repeat an
+operation whose outcome remains unknown. This repair takes precedence over
+optional deployment optimizations below.
+
+Apply improvements in this order, measuring a cold run, a warm run and a changed
+dependency or release each time:
+
+1. Record queue wait, each CI job, image build, transfer, startup, catalogue/index
+   readiness and live verification. Report the critical path and failure rate,
+   not just the fastest successful run.
+2. Separate pinned dependency build inputs from application source and qualify
+   external BuildKit cache reuse. Bind caches to lockfiles, platform, interpreter
+   and toolchain, and keep a clean uncached control. Docker's
+   [GitHub Actions cache guidance](https://docs.docker.com/build/cache/backends/gha/)
+   notes backend requirements, scope and cache-service limits. No credential
+   belongs in an image layer or cached build argument.
+3. Balance or shard the measured slow test work without dropping checks. Add a
+   records-only lane only after a tested dependency classifier proves which
+   checks are unaffected; a source, policy, schema or dependency change must
+   still run its required gates. Do not shorten a timeout to manufacture speed.
+4. Qualify incremental or prebuilt immutable search indexes tied to the exact
+   catalogue release, with atomic activation, live access checks and rollback.
+   Measure rebuild time, memory, stale results and interrupted activation.
+5. Consider separately released static assets or a service extraction only when
+   independent scaling, failure isolation or deployment cadence justifies it.
+   Keep the existing typed edges and measure network overhead, operating cost,
+   version skew and rollback. Rust can replace an engine without requiring a
+   microservice. Do not split identity, billing or access checks merely to make
+   a deployment smaller.
+
+Compare complete release time before and after, retaining failed attempts and
+all current authority and correctness gates. Image-layer reuse, catalogue
+deltas, incremental indexing and selective CI are different optimizations;
+none makes an untested candidate releasable.
+
+### Source intake and repository upkeep
 
 The [community registry](../../tools/knowledge_radar/community-sources-v1.json)
 contains the owner's design, game, modeling, graphics and video sources.

@@ -1,0 +1,90 @@
+{
+  "record_type": "pilot_release_record/v1",
+  "release": 55,
+  "app": "baltor-pilot",
+  "source_revision": "5a9c6e2c5c768c1747754eca28a3101563477eca",
+  "image": "registry.fly.io/baltor-pilot@sha256:c8778aa527226ac143e847609de6d928084d405e080e11c0cbee7b8ede59e9bd",
+  "rollback_release": 54,
+  "rollback_image": "registry.fly.io/baltor-pilot@sha256:54f4c4626a8897b483572882dc0347017b3443a6d012cdc2b10a8726629d3104",
+  "deployed_at": "2026-09-30T20:35:28Z",
+  "ci_run": 36772005998,
+  "ci_conclusion": "success",
+  "ci_seconds": 395,
+  "deploy_run": 36773368916,
+  "deploy_workflow_conclusion": "failure",
+  "image_deployment_conclusion": "success",
+  "grant_step_conclusion": "failure",
+  "billing_step_conclusion": "skipped",
+  "post_deployment_reconciled": true,
+  "deployment_gate_after": false,
+  "hostnames_checked": 10,
+  "hostnames_passed": 10,
+  "public_route_checks_passed": 90,
+  "public_route_checks_total": 90,
+  "service_checks_passed": 227,
+  "service_checks_total": 227,
+  "catalogue_checks_passed": null,
+  "volume_gb": 25,
+  "cpus": 1,
+  "memory_mb": 2048,
+  "catalogue": {
+    "release_id": "f817b2b3e82daee0acd73e6ce295d3ddceecf9a45d0f4ebab35501bfc2a79fd3",
+    "packages": 30746,
+    "file_placements": 130568,
+    "distinct_files": 96064,
+    "changed_by_this_application_release": false
+  },
+  "post_deployment_confirmation": {
+    "original_grant_command_observed_running_before_recovery": false,
+    "grant_method": "one bounded detached invocation of the existing command, with a durable reservation and exit record",
+    "grant_exit_code": 0,
+    "grant_seconds": 213.536,
+    "grant_tenants_registered": 0,
+    "grant_remote_accounts_created": false,
+    "grant_result": "/data/incoming/release55-grants.out.json",
+    "grant_exit_record": "/data/incoming/release55-grants.exit.json",
+    "billing_current": true,
+    "billing_changed": false,
+    "paid_access_ended_for_accounts": 0,
+    "billing_provider_calls": 0,
+    "checkout_matches_host": true,
+    "portal_matches_host": true
+  },
+  "creative_checks": {
+    "live_browser_passed": 7,
+    "live_browser_total": 7,
+    "blender_reopen_passed": 6,
+    "blender_reopen_total": 6,
+    "meshes": 892,
+    "rigs": 4,
+    "animation_actions": 16,
+    "blender_version": "4.5.3 LTS",
+    "webmcp_qualified": false
+  },
+  "rollback_check": {
+    "passed": 4,
+    "total": 4,
+    "scope": "Synthetic owner-bound key state read by the current source and actual release 54 image, without container network or provider calls; not a production-volume restore."
+  },
+  "changes": [
+    "Playable Three.js arena at /demo/ashen-wilds with original rigs, clips, scene revision and GLB export for Blender.",
+    "Three audience paths, clearer manual harness setup and a dated MCP shortlist at /top-mcps.",
+    "Complete-package resource support replaces the arbitrary 64-file cap with manifest and payload byte bounds.",
+    "Bounded Reddit metadata intake and source-led candidate tooling are committed; no recurring intake or model-production timer was activated."
+  ],
+  "evidence_sha256": {
+    "release55-pulse-after-confirmation.json": "8f1f605b1e07067ef6ea8feaefb619b5ca851f5a03585bc422b2fb5d4b89bce1",
+    "release55-newroutes-first.json": "2940935fe01ca39ebf497222ab7b3b9b924d79b968dd5f732396d391ddcb64de",
+    "release55-browser-first.json": "f5d694f62b68ed2d44795704cb6c65ed475ed5450a500ba9d3621a7fa5139921",
+    "release55-game-live/report.json": "e5dbead91e10fccb0a8850f2cf43ee0deb8f34a3d5ed1040486168115254d2d5",
+    "release55-game-live/blender-reopen.json": "b96e547d883338815b748323692c4e711dd7200493728f64b85d60efa9e8fe79",
+    "release55-grant-confirmation.json": "128629e521e402ff3a5ad433d98f8a8de744920cd7718f0b3a1984312c8967b8",
+    "release55-billing-confirmation.json": "c1656840b65afd015d3ccd53a94d57e95accdd2e18fb19d0894887305772e929"
+  },
+  "advisory": {
+    "workflow": "The image reached Fly, but synchronous grant confirmation received HTTP 408. The failed workflow remains a failed record; post-deployment state was separately reconciled and checked.",
+    "reliability": "Grant confirmation still constructs the full search index. Its redundant work and synchronous remote execution require repair before the next application release.",
+    "qualification": "The demo is not a with-and-without benefit comparison, a video-recreation system or a qualified WebMCP integration. No new library packages were admitted by this application rollout.",
+    "resources": "No CPU, memory, volume, provider purchase, live charge or new legal publication."
+  }
+}

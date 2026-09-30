@@ -1195,7 +1195,7 @@
      "S-6.180"
     ],
     "id": "S-6.200",
-    "next_local_work": "Read the first sharded run's job times into artifacts/ci-speed-2026-09-26/after.json, add the records-only lane, and record the run-history medians in the weekly number.",
+    "next_local_work": "September 30: follow the deployment-speed sequence in docs/roadmap/DELIVERY-SEQUENCE.md. CI 36772005998 passed in 395 seconds, with the 391-second self-test job on the critical path; this is one observation, not a median. Measure queue, CI, image build/transfer, startup/index readiness and live checks separately. Qualify pinned dependency layers plus external BuildKit caching, balance slow tests without dropping them, and prove a records-only classifier with source/policy/schema/dependency negative controls. Catalogue delta publication already exists; incremental indexes and independently released assets are separate candidates. Extract microservices only for a measured isolation, scaling or release-cadence need, with typed edges and version-skew/rollback tests.",
     "phase": 6,
     "status": "building",
     "title": "Continuous integration in 12 minutes or less, and fewer failed pushes: sharded self-test, cached environment, a records-only lane and a pre-push hook that runs the preflight",
@@ -5382,5 +5382,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:4b45081644c7d1cfdc3aef5ae0e917cc4368b2d1f77ff4790fd4f046ce2de6e7"
+ "source_fingerprint": "sha256:4f6381c4bc4dd4b34b2cd5239a681d740363c8b8f86ed1e3be74802237eff9a1"
 }

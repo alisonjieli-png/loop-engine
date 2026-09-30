@@ -2,7 +2,7 @@
 
 Kind: product architecture with measured local implementation and proposed hosting.
 Date: 2026-09-19. The [current deployment](#current-deployment) section was
-added on 2026-09-20 and last checked on 2026-09-30, after Fly release 54.
+added on 2026-09-20 and last checked on 2026-09-30, after Fly release 55.
 
 The hosted product manages accounts, subscriptions, and access to intelligence.
 The customer runs Loop Engine and the selected harnesses. A hosted intelligence
@@ -47,7 +47,25 @@ from the newest release record, follow the release record and correct this
 section. Update this section in the same change that records a new release.
 It describes a private pilot. It does not describe a qualified paid service.
 
-The latest image deployment is Fly release 54, completed on September 30, 2026,
+The latest image deployment is Fly release 55, completed on September 30, 2026,
+from `5a9c6e2c5c768c1747754eca28a3101563477eca`, image
+`sha256:c8778aa527226ac143e847609de6d928084d405e080e11c0cbee7b8ede59e9bd`.
+CI run `36772005998` passed. Deployment run `36773368916` placed the image,
+then failed on a Machines API timeout during grant confirmation. After a
+process check found no earlier grant command running, a bounded detached
+confirmation passed. Billing was confirmed separately with no policy change,
+no ended paid access and no provider calls. The deployment gate is off.
+The [release 55 record](../../artifacts/architecture-audit-2026-09-19/pilot-release-55.json)
+retains that failed workflow conclusion and the successful reconciliation,
+rollback image, 90 route checks over ten hostnames and 227 browser checks.
+The [release notes](../../artifacts/release-55-2026-09-30/README.md) describe
+the live `/demo/ashen-wilds` game, Blender export/reopen proof, `/top-mcps`,
+setup changes and package-resource fixes. The catalogue remains `f817b2b3…`,
+with 30,746 packages and 96,064 distinct files; this rollout published no
+new catalogue packages. Redundant index construction during grant confirmation
+remains a deployment-reliability defect.
+
+The preceding image deployment was Fly release 54, completed on September 30, 2026,
 from `1d35f6976264ee7188a7d4179e69fa6c171d57e2`, image
 `sha256:54f4c4626a8897b483572882dc0347017b3443a6d012cdc2b10a8726629d3104`.
 CI run `36728313395` and deployment run `36729597142` passed, including grant

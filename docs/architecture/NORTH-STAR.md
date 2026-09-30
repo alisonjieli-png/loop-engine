@@ -92,6 +92,15 @@ Capability or knowledge package
 
 Reference collections state how a list was selected or ranked. A benchmark ranking names the benchmark, version and measurement date. A data snapshot names its period, units and source. Volatile information has a refresh operation and an expiry rule. Formal results distinguish theorem statements, proof source and observed proof checking. Geospatial packages retain coordinate systems, vertical datums, resolution and source limits.
 
+Freshness must survive retrieval, caching, download and harness use. Distinguish
+stable knowledge, version-specific guidance, historical facts and claims that
+need a current check. Keep source publication, observation, verification and
+effective dates separate. For legal material, require jurisdiction, an as-of
+date and authoritative-source verification before consequential use; a failed
+refresh must not turn old context into a current answer. The
+[freshness gates](../roadmap/DELIVERY-SEQUENCE.md#avoid-stale-context) extend the
+existing knowledge radar rather than creating a second knowledge store.
+
 Workflows and task recipes are first-class material. An n8n template retains its native JSON, supported node versions, credential references, input and output contracts, declared effects and an import or execution check appropriate to its claim. Workflow files and the workflow engine have separate licence and compatibility records. Templates contain no working customer credentials. Other automation formats use the same package requirements.
 
 The harness should inspect its first result, identify a specific defect, select a relevant capability, make a bounded improvement and check the result within its existing authority. Useful outcomes and failures from project work become candidates for reusable methods or tools after private details are removed and reuse rights are established. Parametric code enforces constraints within its declared domain; broader visual or physical correctness still needs the applicable checks.

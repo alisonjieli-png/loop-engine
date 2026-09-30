@@ -111,6 +111,22 @@ class RegistryAndRuleChecks(unittest.TestCase):
             for asset in question.assets.values():
                 self.assertTrue((ROOT / "tools/knowledge_radar/assets" / asset / "asset.json").is_file(), asset)
 
+    def test_legal_research_keeps_official_authority_and_applicability_distinct(self):
+        registry = read_registry(REGISTRY)
+        for identity in ("regulation_us_federal_ai", "regulation_us_federal_privacy",
+                         "regulation_ai_privacy_by_jurisdiction"):
+            question = registry.question(identity)
+            with self.subTest(identity=identity):
+                self.assertEqual(question.sensitivity, "legal")
+                recheck = " ".join(question.recheck).lower()
+                for required in ("jurisdiction", "as-of", "official", "effective", "amendments"):
+                    self.assertIn(required, recheck)
+                changed = " ".join(question.would_change).lower()
+                self.assertIn("cannot override legal authority", changed)
+                self.assertNotIn("would outrank every listing", changed)
+                self.assertTrue(question.not_established)
+        self.assertEqual(registry.question("regulation_ai_privacy_by_jurisdiction").status, "declared_gap")
+
     def test_known_wrong_a_volatile_fact_stored_as_a_brief_is_refused(self):
         wrong = question_record(volatility="hours", refresh="daily", delivery=["brief"])
         with self.assertRaises(LibraryRecordError) as caught:
@@ -541,6 +557,17 @@ def _section_checks(question, *checks):
 
 
 class BriefChecks(unittest.TestCase):
+    def test_legal_listing_expiry_does_not_become_a_current_recommendation(self):
+        question = _question("regulation_us_federal_ai")
+        expired = claim("rule:fixture", "rule:fixture", "Expired rule listing",
+                        review_after="2026-09-01", engine="federal_register")
+        binding = question.sources[0]
+        checks = [SourceCheck(question.id, binding.engine, "1.0.0", binding.section,
+                              "checked_material_change", "", (expired,), 0, "2026-09-27T15:00:00Z")]
+        record = briefs.build_brief(question, briefs.build_sections(question, checks, [], "2026-09-27"), "2026-09-27")
+        self.assertEqual(record["state"], briefs.NO_RECOMMENDATION)
+        self.assertEqual([item["title"] for item in record["expired_claims"]], ["Expired rule listing"])
+
     def test_known_wrong_an_expired_claim_is_not_served_as_current(self):
         question = _question()
         fresh = claim("model:a", "model:a", "Alpha")

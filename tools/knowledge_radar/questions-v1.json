@@ -4149,13 +4149,14 @@
     "When does it take effect, and is the comment period open?"
    ],
    "recheck": [
-    "Read the official Federal Register edition; the web rendition is not the official legal edition."
+    "Verify the jurisdiction and the task's as-of date before applying any legal claim.",
+    "Read the official legal text, effective dates and subsequent amendments; a weekly listing check is not proof of current applicability."
    ],
    "not_established": [
-    "Whether a rule applies to a given product is not established here; this is not legal advice."
+    "A publication listing does not establish whether a rule is effective or applies to this product; this is not legal advice."
    ],
    "would_change": [
-    "The official edition, a court decision or agency guidance."
+    "An official amendment, correction, effective-date change, repeal or applicable court decision, checked for the relevant jurisdiction; a benchmark result cannot override legal authority."
    ],
    "limit": 12,
    "sources": [
@@ -4211,13 +4212,14 @@
     "Is the comment period open?"
    ],
    "recheck": [
-    "Read the official Federal Register edition; the web rendition is not the official legal edition."
+    "Verify the jurisdiction and the task's as-of date before applying any legal claim.",
+    "Read the official legal text, effective dates and subsequent amendments; a weekly listing check is not proof of current applicability."
    ],
    "not_established": [
-    "Applicability is not established here; this is not legal advice."
+    "A publication listing does not establish whether a rule is effective or applies to this product; this is not legal advice."
    ],
    "would_change": [
-    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+    "An official amendment, correction, effective-date change, repeal or applicable court decision, checked for the relevant jurisdiction; a benchmark result cannot override legal authority."
    ],
    "limit": 12,
    "sources": [
@@ -4273,13 +4275,14 @@
     "Which jurisdictions does the product serve?"
    ],
    "recheck": [
-    "Read the official legal text."
+    "Verify the jurisdiction and the task's as-of date before applying any legal claim.",
+    "Read the official legal text, effective dates and subsequent amendments; a weekly listing check is not proof of current applicability."
    ],
    "not_established": [
-    "No source used here measured these options on your own task, data or budget."
+    "Cross-jurisdiction obligations and applicability are not established; the required official-source engines and independent review remain a declared gap."
    ],
    "would_change": [
-    "A measured result on your own task, or on a frozen evaluation set close to it, would outrank every listing here."
+    "An official amendment, correction, effective-date change, repeal or applicable court decision, checked for the relevant jurisdiction; a benchmark result cannot override legal authority."
    ],
    "limit": 12,
    "sources": [],

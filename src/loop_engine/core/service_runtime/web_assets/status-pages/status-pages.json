@@ -5,6 +5,18 @@
   "releases": [
    {
     "kind": "service",
+    "number": 55,
+    "at": "2026-09-30T20:35:28Z",
+    "lines": [
+     "Three audience paths, clearer manual harness setup and a dated MCP shortlist at /top-mcps.",
+     "Complete-package resource support replaces the arbitrary 64-file cap with manifest and payload byte bounds.",
+     "Bounded Reddit metadata intake and source-led candidate tooling are committed; no recurring intake or model-production timer was activated."
+    ],
+    "seen_after_release": "",
+    "not_shown": 1
+   },
+   {
+    "kind": "service",
     "number": 54,
     "at": "2026-09-30T14:34:00Z",
     "lines": [

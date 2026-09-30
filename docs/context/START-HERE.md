@@ -21,6 +21,11 @@ two defects that were found and fixed after the first claims of correctness.
 
 ## Current context route
 
+Read the [September 30 handoff](SESSION-HANDOFF-2026-09-30.md) for release 55,
+its live creative proof, reconciled deployment timeout, customer-test results,
+history-review limits and the next ordered implementation work. The
+deployment record, not a prototype or a source count, establishes live state.
+
 Read the [delivery and business plan](../roadmap/DELIVERY-SEQUENCE.md) for the
 September 30 sequence and customer, creative, source, retrieval and distribution
 gates. A prototype, source read or transcript inventory does not complete those
