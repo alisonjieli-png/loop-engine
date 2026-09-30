@@ -5,7 +5,10 @@ A server that predates that rule cannot apply it, so it has to refuse the key
 record entirely. This drill writes service state with one code version, reads
 it with the real installed code of an older image, and records what happened.
 It contacts no provider, starts containers without a network and never writes
-a credential into its report.
+a credential into its report. Use --owner-aware for an image that understands
+the current key record: it must accept the enabled owner and then refuse the
+same key after that owner is disabled. The default retains the legacy schema
+refusal drill.
 """
 from __future__ import annotations
 
@@ -33,7 +36,8 @@ fixture = customer_prepared(root)
 issued = fixture.client_access.apply(fixture.customers["customer-a"], ServiceAccessRequest(
     "issue", "rollback-device", "alpha", label="Rollback drill", scopes=("provisioning:metadata",),
     lifetime_seconds=3600), session=fixture.customer_sessions["customer-a"])
-fixture.runtime.revoke_subject(SubjectBindingRequest("alpha", "https://identity.example", "customer-a"))
+if len(sys.argv) < 3 or sys.argv[2] != "keep_enabled":
+    fixture.runtime.revoke_subject(SubjectBindingRequest("alpha", "https://identity.example", "customer-a"))
 (root / "customer.key").write_text(issued["token"])
 (root / "host.key").write_text(fixture.keys["alpha"].key)
 """
@@ -55,6 +59,15 @@ for name in ("customer", "host"):
 print(json.dumps(result, sort_keys=True))
 """
 
+REVOKER = """
+import sys
+from pathlib import Path
+from loop_engine.core.service_runtime.records import ServiceRuntimeConfig, SubjectBindingRequest
+from loop_engine.core.service_runtime.runtime import ServiceRuntime
+runtime = ServiceRuntime(ServiceRuntimeConfig(str(Path(sys.argv[1]) / "service.db"), writes_authorized=True))
+runtime.revoke_subject(SubjectBindingRequest("alpha", "https://identity.example", "customer-a"))
+"""
+
 
 def run(command, **options):
     return subprocess.run(command, capture_output=True, text=True, timeout=300, **options)
@@ -66,9 +79,15 @@ def in_image(image, script, folder):
                 "--volume", f"{folder}:{WORK}", "--entrypoint", "python", image, "-c", script, WORK])
 
 
-def in_source(script, folder, repository):
+def in_source(script, folder, repository, *, keep_enabled=False):
     environment = {**os.environ, "PYTHONPATH": str(repository / "src"), "PYTHONDONTWRITEBYTECODE": "1"}
-    return run([sys.executable, "-c", script, str(folder)], env=environment)
+    return run([sys.executable, "-c", script, str(folder), *( ["keep_enabled"] if keep_enabled else [])], env=environment)
+
+
+def expected_refusal(case, *, owner_aware):
+    """A compatible image checks the owner; a legacy image rejects the schema."""
+    expected = "unauthorized" if owner_aware else "unsupported_or_corrupt_record"
+    return case.get("customer") == "refused:" + expected
 
 
 def image_identity(image):
@@ -86,6 +105,8 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--older-image", required=True, help="Image of the release a rollback would return to.")
     parser.add_argument("--unfixed-image", help="Optional image of the release candidate without the version change.")
+    parser.add_argument("--owner-aware", action="store_true",
+                        help="Qualify a compatible rollback image before and after disabling the key owner")
     parser.add_argument("--output", required=True, type=Path, help="New report path; an existing file is refused.")
     options = parser.parse_args(argv)
     repository = Path(__file__).resolve().parents[1]
@@ -97,14 +118,19 @@ def main(argv=None):
     with tempfile.TemporaryDirectory(prefix="rollback-key-version-") as directory:
         fixed = Path(directory) / "fixed"
         fixed.mkdir()
-        produced = in_source(PRODUCER, fixed, repository)
+        produced = in_source(PRODUCER, fixed, repository, keep_enabled=options.owner_aware)
         check("current_source_writes_the_service_state", produced.returncode == 0)
+        if options.owner_aware:
+            cases["enabled_owner_read_by_older_image"] = observed(in_image(options.older_image, READER, fixed))
+            check("older_image_accepts_the_enabled_customer_before_revocation",
+                  cases["enabled_owner_read_by_older_image"].get("customer") == "accepted")
+            check("current_source_disables_the_customer_owner", in_source(REVOKER, fixed, repository).returncode == 0)
         cases["current_source_read_by_current_source"] = observed(in_source(READER, fixed, repository))
         cases["current_source_read_by_older_image"] = observed(in_image(options.older_image, READER, fixed))
         check("current_server_refuses_a_key_whose_owner_was_disabled",
               cases["current_source_read_by_current_source"].get("customer") == "refused:unauthorized")
         check("older_image_refuses_the_customer_key_record",
-              cases["current_source_read_by_older_image"].get("customer") == "refused:unsupported_or_corrupt_record")
+              expected_refusal(cases["current_source_read_by_older_image"], owner_aware=options.owner_aware))
         check("older_image_still_accepts_a_host_issued_key",
               cases["current_source_read_by_older_image"].get("host") == "accepted")
         if options.unfixed_image:
@@ -122,6 +148,7 @@ def main(argv=None):
               "older_image": {"reference": options.older_image, "identity": image_identity(options.older_image)},
               "unfixed_image": ({"reference": options.unfixed_image, "identity": image_identity(options.unfixed_image)}
                                 if options.unfixed_image else None),
+              "owner_aware_image": options.owner_aware,
               "source": {name: hashlib.sha256((source / name).read_bytes()).hexdigest()
                          for name in ("access.py", "runtime.py", "records.py")},
               "cases": cases, "checks": checks, "passed": sum(row["passed"] for row in checks),

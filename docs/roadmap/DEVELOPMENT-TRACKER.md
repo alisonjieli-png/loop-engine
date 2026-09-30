@@ -3,13 +3,13 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:4f6381c4bc4dd4b34b2cd5239a681d740363c8b8f86ed1e3be74802237eff9a1`.
+Source fingerprint: `sha256:deee320ab4fc67e210db58385c8431f5257d416b2a70b5609d4509867cdc1964`.
 
 ## Where things stand
 
 | Lane | Steps |
 |---|---:|
-| Being built now | 64 |
+| Being built now | 65 |
 | Can start next | 15 |
 | Waiting on earlier work | 134 |
 | Blocked | 3 |
@@ -47,6 +47,7 @@ Source fingerprint: `sha256:4f6381c4bc4dd4b34b2cd5239a681d740363c8b8f86ed1e3be74
 | S-6.63 | An independent review panel of several model families | building | S-6.45 |
 | S-6.119 | Community and Verified library tiers from the review panel, written as reviewed catalogue folders for release | building | S-6.63, S-6.40 |
 | S-6.62 | Catalogue releases and library settings with good defaults | building | S-6.40 |
+| S-6.37 | Demonstrations, case studies and benchmarks with and without Baltor, each on its own subdomain | building | S-6.33 |
 | S-6.36 | Y Combinator application package, fact-checked | building | S-6.34 |
 | S-6.4 | Bind the provisioning catalogue to durable records and tenant disclosure authority | building | Connect authoritative qualification adapters for every intelligence layer and templates; add restore checks without treating host attestation as independent qualification. |
 | S-6.13 | Prepare portable deployment definitions and procedures for every hosting family | building |  |
@@ -125,16 +126,16 @@ Source fingerprint: `sha256:4f6381c4bc4dd4b34b2cd5239a681d740363c8b8f86ed1e3be74
 | S-6.209 | Occupation, industry, level, language and geography tags on every served file, searchable in the signed-in dashboard | proposed | S-6.206, S-6.40 |
 | S-6.202 | Quickstarts that are checked every night: one copy-paste setup per harness on Get set up, each run against the live endpoint | proposed | S-6.24, S-6.182 |
 | S-6.213 | The product as a harness file: a first-party Baltor skill any harness installs to search and fetch from the library, plus a daily public library snapshot from each catalogue release | proposed | S-6.202, S-6.212 |
+| S-6.216 | Free Public Good components with anonymous access, starting with DueCare worker protection | proposed | S-6.40, S-6.81, S-6.199 |
 | S-6.70 | Serve 100,000 packages: pass the capacity probe with paged listing and an indexed search | proposed | S-6.62, S-6.32 |
 | S-6.83 | Maintain 100,000 packages: re-verification, near-duplicates, deprecation and withdrawal | proposed | S-6.69, S-6.51 |
 | S-6.64 | Independently authored alternatives to restricted-source ideas | proposed | S-6.63 |
 | S-6.54 | Data-work intelligence packs as text and as tested code | proposed | S-6.40 |
 | S-6.53 | Generate intelligence along the occupation grid | proposed | S-6.40 |
 | S-6.45 | Make served files safe to trust: a malicious-skill regression set, exact licences and a bill of materials | proposed | S-6.40 |
-| S-6.41 | Harness run records for self-improvement | proposed | S-6.31 |
+| S-6.41 | Customer activity history and separately consented harness run records | proposed | S-6.31 |
 | S-6.51 | Learn from retrieval: wrong context, repeated asks and items fetched together | proposed | S-6.41 |
 | S-6.58 | Choose the model and the decision method for each step | proposed | S-6.31 |
-| S-6.37 | Demonstrations, case studies and benchmarks with and without Baltor, each on its own subdomain | proposed | S-6.33 |
 | S-6.56 | Landing pages and demonstration pages by role | proposed | S-6.37 |
 | S-6.47 | Measure each item against a no-skill arm and a raw-source arm before claiming a benefit | proposed | S-6.37 |
 | S-6.59 | Go-to-market: early, useful replies under popular posts, approved by a person | proposed | S-6.36 |
@@ -293,7 +294,7 @@ Source fingerprint: `sha256:4f6381c4bc4dd4b34b2cd5239a681d740363c8b8f86ed1e3be74
 | D-23 | Show, review, reach and scale | initial_service | 0 of 5 |
 | D-24 | Take requests for access and invite one person from them | initial_service | 0 of 3 |
 | D-25 | Go fully live: open registration and self-serve paid onboarding | public_launch | 2 of 17 |
-| D-26 | Reach 10,000 and then 100,000 approved harness packages, then add 100 to 1,000 a day | public_launch | 3 of 22 |
+| D-26 | Reach 10,000 and then 100,000 approved harness packages, then add 100 to 1,000 a day | public_launch | 3 of 23 |
 | D-27 | Clear components: one index, contract test kits and one home for every topic and term | continued_improvement | 0 of 4 |
 | D-28 | Selectable engines at every slot, with a Baltor-native engine beside every adopted project | continued_improvement | 0 of 9 |
 | D-29 | Agents that manage and improve the system | continued_improvement | 0 of 6 |

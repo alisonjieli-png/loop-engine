@@ -12,6 +12,25 @@ Kind: current decision route with retained dated decisions. The owner's current 
 - Local or browser execution does not imply that no information leaves the device. Record inference, rendering, external assets and telemetry separately. Current approved privacy terms govern public behavior.
 - The roadmap remains authoritative. Reconciliation changes priorities and evidence descriptions; a new design alone does not complete a task.
 
+## Public Good access, September 30, 2026
+
+The owner requested free harness components for everyone, including people
+without a subscription, starting with Taylor S. Amarel's DueCare, Gemma 4 and
+migrant-worker protection work. Other components with a documented public
+benefit, including relevant Sustainable Development Goals, may join the
+collection. Rate limits are permitted. This is a free-access exception to the
+subscription download policy, not a new review tier or a claim that Baltor is
+a nonprofit organization.
+
+Engineering will use an explicit, reviewed public-access grant for each exact
+package version. A source's topic tags cannot grant that access. Recipients
+need no nonprofit status; the planned public route needs neither payment nor
+an account. Rights, independent admission, withdrawal and safety checks still
+apply. Free files do not include an unbounded model or hosting allowance.
+The [delivery plan](../roadmap/DELIVERY-SEQUENCE.md#free-public-good-components)
+owns the implementation and acceptance sequence. Public downloads under this
+policy have not shipped.
+
 ## Retained decision table
 
 The table preserves the owner's dated decisions and rationales. Current clarifications above supersede older engineering descriptions of universal per-package execution checks, older counts and earlier creative priorities. Currency is established by current code and release records, not a quoted date.

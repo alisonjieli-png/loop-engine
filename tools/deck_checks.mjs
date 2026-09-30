@@ -176,7 +176,7 @@ export async function runDeckChecks({root,browser,base,localOnly,check,mutants,o
   const controls=[
     {name:"deck_plant_a_number_without_a_source",path:deckPaths.page,find:'<p class="deck-cover-note">',replacement:'<p>Used by 500 teams.</p><p class="deck-cover-note">',run:checkNumbers,expected:["deck_every_number_has_a_source_note"]},
     {name:"deck_plant_a_number_word_without_a_source",path:deckPaths.page,find:'<p class="deck-cover-note">',replacement:'<p>Ten times cheaper than a model call.</p><p class="deck-cover-note">',run:checkNumbers,expected:["deck_every_number_has_a_source_note"]},
-    {name:"deck_drop_the_fact_mark_of_a_number",path:deckPaths.page,find:'<article class="deck-tile" data-fact data-evidence="artifacts/architecture-audit-2026-09-19/pilot-release-24.json#/fly_release ',replacement:'<article class="deck-tile" data-evidence="artifacts/architecture-audit-2026-09-19/pilot-release-24.json#/fly_release ',run:checkNumbers,expected:["deck_every_number_has_a_source_note"]},
+    {name:"deck_drop_the_fact_mark_of_a_number",path:deckPaths.page,find:'<article class="deck-tile" data-fact ',replacement:'<article class="deck-tile" ',run:checkNumbers,expected:["deck_every_number_has_a_source_note"]},
     {name:"deck_drop_every_source_note",path:deckPaths.page,find:'class="deck-source"',replacement:'class="deck-caption"',run:checkNumbers,expected:["deck_every_number_has_a_source_note"]},
     {name:"deck_write_a_retired_word",path:deckPaths.page,find:'<p class="deck-cover-note">',replacement:'<p>Join the private beta.</p><p class="deck-cover-note">',run:checkWords,expected:["deck_names_no_retired_or_invitation_wording"]},
     {name:"deck_write_an_invitation_word_on_a_hidden_slide",path:deckPaths.page,find:"<p><strong>Live payments</strong>",replacement:"<p>Request an invitation; accounts open in small groups.</p><p><strong>Live payments</strong>",run:checkWords,expected:["deck_names_no_retired_or_invitation_wording"]},
@@ -196,4 +196,3 @@ export async function runDeckChecks({root,browser,base,localOnly,check,mutants,o
   }
   for(const context of opened)await context.close().catch(()=>{});
 }
-

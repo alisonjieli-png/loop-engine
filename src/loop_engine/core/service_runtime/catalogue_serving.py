@@ -18,6 +18,10 @@ every body digest, and replaces the view with one assignment. A failed build
 keeps the previous view and records the failure in the durable failure
 journal. A durable withdrawal is honoured in both sources: the view leaves the
 item out, and every manifest or body read checks the withdrawal record first.
+
+Maintenance can defer search preparation while retaining the same record,
+body and withdrawal checks. If that verified view is later searched, its
+original index builder prepares the full schema-aware index once.
 """
 from __future__ import annotations
 
@@ -135,6 +139,13 @@ class CatalogueView:
         """The view's one reusable index; a direct view rebuilds it only when its items change."""
         if self.index is not None:
             return self.index
+        if "index_builder" in self._lazy:
+            # Maintenance may inspect verified bindings without preparing search.
+            # A later search still uses this release's full schema and entries.
+            with self._lazy.setdefault("lock", threading.Lock()):
+                if "prepared_index" not in self._lazy:
+                    self._lazy["prepared_index"] = self._lazy["index_builder"]()
+                return self._lazy["prepared_index"]
         from .catalogue_search import index_for_items
         items = tuple(sorted(self.catalogue.items.values(), key=lambda item: item.identity))
         fingerprint = tuple((item.identity, item.digest, item.purpose) for item in items)
@@ -256,8 +267,9 @@ def _approved_resolver(resolver_id, approvals):
     return ProvisioningQualificationResolver(resolver_id, resolve)
 
 
-def image_view(catalogue, resolver, reader, *, config=None, withdrawn=frozenset(), state_revision=0):
-    """The view of the packaged manifest, with one index built now and durable withdrawals applied."""
+def image_view(catalogue, resolver, reader, *, config=None, withdrawn=frozenset(), state_revision=0,
+               prepare_search=True):
+    """The verified packaged view; serving prepares search, maintenance can defer it."""
     from .catalogue_search import index_for_items
     check = _withdrawal_check(config) if config is not None else None
     keep = {identity: item for identity, item in catalogue.items.items() if (identity, item.digest) not in withdrawn}
@@ -267,14 +279,17 @@ def image_view(catalogue, resolver, reader, *, config=None, withdrawn=frozenset(
             check(item.identity, item.digest)
         return reader(item)
     bindings = {identity: ProvisioningItemBinding.from_item(item) for identity, item in keep.items()}
+    def build_index():
+        return index_for_items(tuple(sorted(keep.values(), key=lambda item: item.identity)))
     return CatalogueView(HarnessIntelligenceCatalogue(dict(keep)), resolver, guarded_reader, source="image",
                          bindings=bindings, withdrawn=frozenset(withdrawn), withdrawal_check=check,
-                         index=index_for_items(tuple(sorted(keep.values(), key=lambda item: item.identity))),
+                         index=build_index() if prepare_search else None,
+                         _lazy={} if prepare_search else {"index_builder": build_index},
                          state_revision=state_revision, built_at=time.time())
 
 
-def store_view(config, settings, *, license_policy, family_policy):
-    """Build the view of the active release: verify every record and body, then index it once."""
+def store_view(config, settings, *, license_policy, family_policy, prepare_search=True):
+    """Verify every record and body; prepare search unless a maintenance caller defers it."""
     from ..practitioner_runtime.provisioning import _item
     from .catalogue_bundle import item_version_tier, validated_attributes
     from .catalogue_releases import load_release, read_pointer, read_state, verify_release_bodies, withdrawal_notes
@@ -322,12 +337,16 @@ def store_view(config, settings, *, license_policy, family_policy):
             return body_store.read(entry.digest, entry.size_bytes).decode("utf-8")
         return package.document().decode("utf-8")
     from .catalogue_releases import content_digest
+    index_entries, index_schema = tuple(entries), release.schema
+    def build_index():
+        return ReleaseSearchIndex(index_entries, index_schema)
     return CatalogueView(catalogue, _approved_resolver(STORE_RESOLVER_ID, approvals), reader, source=STORE_SOURCE,
                          release_id=release.release_id, content_digest=content_digest(release.schema.digest, release.items),
                          schema=release.schema, packages=packages, attributes=attributes, bindings=bindings,
                          withdrawn=frozenset(key for key in withdrawn if key[0] in dict(release.items)),
                          withdrawal_check=check, body_store=body_store,
-                         index=ReleaseSearchIndex(tuple(entries), release.schema),
+                         index=build_index() if prepare_search else None,
+                         _lazy={} if prepare_search else {"index_builder": build_index},
                          state_revision=state["revision"] if state else 0, built_at=time.time(),
                          changes=dict(release.document.get("changes") or {}),
                          withdrawal_notes={key: value for key, value in notes.items() if key[0] in dict(release.items)})
@@ -434,23 +453,26 @@ class CatalogueRefresher:
                 "last_swap_seconds": self.last_swap_seconds}
 
 
-def load_catalogue_view(configuration, config, *, license_policy, family_policy):
-    """The view a host file selects at start, after the catalogue state gate, and its source settings."""
+def load_catalogue_view(configuration, config, *, license_policy, family_policy, prepare_search=True):
+    """The fully verified view and source settings; maintenance may defer unused search only."""
     from .catalogue_releases import withdrawal_keys
     from .http_entrypoint import load_host_manifest
+    if type(prepare_search) is not bool:
+        _refuse("invalid_catalogue_load_profile", "search preparation is an explicit Boolean")
     settings = catalogue_settings(configuration)
     state = catalogue_state_gate(config, settings)
     if settings is not None and settings.source == STORE_SOURCE:
-        return store_view(config, settings, license_policy=license_policy, family_policy=family_policy), settings
+        return store_view(config, settings, license_policy=license_policy, family_policy=family_policy,
+                          prepare_search=prepare_search), settings
     catalogue, resolver, reader, _grants = load_host_manifest(
         configuration["manifest_path"], license_policy=license_policy, family_policy=family_policy)
     if settings is None:
-        return image_view(catalogue, resolver, reader), None
+        return image_view(catalogue, resolver, reader, prepare_search=prepare_search), None
     binding = ServiceCatalogBinding(config)
     with binding.store() as store:
         withdrawn = withdrawal_keys(binding, store)
     return image_view(catalogue, resolver, reader, config=config, withdrawn=withdrawn,
-                      state_revision=state["revision"] if state else 0), settings
+                      state_revision=state["revision"] if state else 0, prepare_search=prepare_search), settings
 
 
 def refresher_for(application, settings, *, license_policy, family_policy):

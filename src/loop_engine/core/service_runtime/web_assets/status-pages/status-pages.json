@@ -1487,11 +1487,11 @@
   ]
  },
  "todo": {
-  "steps": 267,
+  "steps": 268,
   "live": 5,
   "checked": 35,
-  "open": 227,
-  "listed": 195,
+  "open": 228,
+  "listed": 196,
   "groups": [
    {
     "title": "Ship the September 22 review: one main line, live checks and launch readiness",
@@ -1529,7 +1529,7 @@
      {
       "step": "S-6.37",
       "title": "Demonstrations, case studies and benchmarks with and without Baltor, each on its own subdomain",
-      "status": "Named, not scheduled yet"
+      "status": "In progress"
      }
     ]
    },
@@ -1678,7 +1678,7 @@
     "steps": [
      {
       "step": "S-6.41",
-      "title": "Harness run records for self-improvement",
+      "title": "Customer activity history and separately consented harness run records",
       "status": "Named, not scheduled yet"
      },
      {
@@ -1860,6 +1860,11 @@
       "step": "S-6.81",
       "title": "Source scouts: search tools for skills, plugins, protocol servers and harness files",
       "status": "In progress"
+     },
+     {
+      "step": "S-6.216",
+      "title": "Free Public Good components with anonymous access, starting with DueCare worker protection",
+      "status": "Named, not scheduled yet"
      },
      {
       "step": "S-6.119",

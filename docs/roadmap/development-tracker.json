@@ -3,7 +3,7 @@
   "blocked": 3,
   "done": 50,
   "next": 15,
-  "now": 64,
+  "now": 65,
   "waiting": 134
  },
  "lanes": {
@@ -1195,7 +1195,7 @@
      "S-6.180"
     ],
     "id": "S-6.200",
-    "next_local_work": "September 30: follow the deployment-speed sequence in docs/roadmap/DELIVERY-SEQUENCE.md. CI 36772005998 passed in 395 seconds, with the 391-second self-test job on the critical path; this is one observation, not a median. Measure queue, CI, image build/transfer, startup/index readiness and live checks separately. Qualify pinned dependency layers plus external BuildKit caching, balance slow tests without dropping them, and prove a records-only classifier with source/policy/schema/dependency negative controls. Catalogue delta publication already exists; incremental indexes and independently released assets are separate candidates. Extract microservices only for a measured isolation, scaling or release-cadence need, with typed edges and version-skew/rollback tests.",
+    "next_local_work": "September 30: qualify the lightweight grant bootstrap and durable bounded post-deployment confirmation against release 55. It avoids an unused search build and repeated dispatch after a lost reply without skipping body verification. Keep command-output, readiness, billing and rollback checks. Then follow the deployment-speed sequence in docs/roadmap/DELIVERY-SEQUENCE.md. CI 36772005998 passed in 395 seconds, with the 391-second self-test job on the critical path; this is one observation, not a median. Measure queue, CI, image build/transfer, startup/index readiness and live checks separately. Qualify pinned dependency layers plus external BuildKit caching, balance slow tests without dropping them, and prove a records-only classifier with source/policy/schema/dependency negative controls. Catalogue delta publication already exists; incremental indexes and independently released assets are separate candidates. Extract microservices only for a measured isolation, scaling or release-cadence need, with typed edges and version-skew/rollback tests.",
     "phase": 6,
     "status": "building",
     "title": "Continuous integration in 12 minutes or less, and fewer failed pushes: sharded self-test, cached environment, a records-only lane and a pre-push hook that runs the preflight",
@@ -1387,13 +1387,28 @@
     ]
    },
    {
+    "acceptance": "Each demonstration and benchmark has its own subdomain and page, a recorded run with and without Baltor, and the evidence a visitor can follow; every number on those pages traces to a saved record.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.33"
+    ],
+    "id": "S-6.37",
+    "next_local_work": "Build a harder population where the no-material arm does not already score near 1.0, reuse the frozen design, proxy, scorer and isolation recipe, and run it with a model that fails without help.",
+    "phase": 6,
+    "status": "building",
+    "title": "Demonstrations, case studies and benchmarks with and without Baltor, each on its own subdomain",
+    "waiting_on": [
+     "S-6.33"
+    ]
+   },
+   {
     "acceptance": "The application is ready for the owner to add the founder-only facts and submit before November 2, 2026, 8 p.m. Pacific.",
     "blocked_on": "",
     "depends_on": [
      "S-6.34"
     ],
     "id": "S-6.36",
-    "next_local_work": "Finish the draft and the fact check; the owner adds personal background, contact details and equity facts, and approves any team, funding or contact email slide for the deck.",
+    "next_local_work": "September 30: the website deck and How it works refresh preserve measured negative results, show the dated 30746-package and 96064-file catalogue, link the editable browser demo and distinguish Public Good access and video recreation from live features. The marketing exporter creates a thirty-second portrait draft and a two-minute landscape pitch with captions. Run the final source and browser checks, release the reviewed source, then retain a claim inventory for subsequent copy updates. Founder-only facts and final application submission remain with the owner.",
     "phase": 6,
     "status": "building",
     "title": "Y Combinator application package, fact-checked",
@@ -2198,6 +2213,25 @@
     ]
    },
    {
+    "acceptance": "A person without an account or subscription downloads and uses the first reviewed worker-protection component set within clear public limits.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.40",
+     "S-6.81",
+     "S-6.199"
+    ],
+    "id": "S-6.216",
+    "next_local_work": "After the release-reliability fix, implement the public-access policy at the existing catalogue and entitlement edge with exact-version grants and paid/private negative controls. Prepare the small DueCare-related candidate set in the delivery plan; preserve independent admission, per-file rights, model-weight terms and jurisdiction-specific freshness. Keep free files separate from paid inference or hosting and do not claim nonprofit status or UN endorsement.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Free Public Good components with anonymous access, starting with DueCare worker protection",
+    "waiting_on": [
+     "S-6.40",
+     "S-6.81",
+     "S-6.199"
+    ]
+   },
+   {
     "acceptance": "The live service answers search, listing and download at 100,000 approved packages within the probe's thresholds on the current machine size, or the scale plan names the next machine.",
     "blocked_on": "",
     "depends_on": [
@@ -2298,10 +2332,10 @@
      "S-6.31"
     ],
     "id": "S-6.41",
-    "next_local_work": "Define the record, the consent setting and the first use in ranking.",
+    "next_local_work": "September 30: implement the private activity timeline in docs/roadmap/DELIVERY-SEQUENCE.md. The current meter collapses repeated downloads of an item version within a month, so preserve it and add separate versioned delivery events through the existing store. Capture exact files, request correlation, time and outcome, with optional bounded client-reported task/harness/model/selection context. Missing context stays unknown; a sent response does not prove client verification, installation or accepted use. Add account-isolated pagination, filters and export, retention/redaction controls and failure/retry tests. Obtain approval for any required privacy-notice change before collecting new task context. Keep customer visibility separate from consent to ranking or learning use.",
     "phase": 6,
     "status": "proposed",
-    "title": "Harness run records for self-improvement",
+    "title": "Customer activity history and separately consented harness run records",
     "waiting_on": [
      "S-6.31"
     ]
@@ -2334,21 +2368,6 @@
     "title": "Choose the model and the decision method for each step",
     "waiting_on": [
      "S-6.31"
-    ]
-   },
-   {
-    "acceptance": "Each demonstration and benchmark has its own subdomain and page, a recorded run with and without Baltor, and the evidence a visitor can follow; every number on those pages traces to a saved record.",
-    "blocked_on": "",
-    "depends_on": [
-     "S-6.33"
-    ],
-    "id": "S-6.37",
-    "next_local_work": "Build a harder population where the no-material arm does not already score near 1.0, reuse the frozen design, proxy, scorer and isolation recipe, and run it with a model that fails without help.",
-    "phase": 6,
-    "status": "proposed",
-    "title": "Demonstrations, case studies and benchmarks with and without Baltor, each on its own subdomain",
-    "waiting_on": [
-     "S-6.33"
     ]
    },
    {
@@ -3155,7 +3174,7 @@
      "S-6.111"
     ],
     "id": "S-6.116",
-    "next_local_work": "September 30: follow the reference-video sales-demo gates in docs/roadmap/DELIVERY-SEQUENCE.md after the first creative proof and retrieval correctness work. Inventory existing media and harness components, qualify short-clip upload/URL intake, then produce a timestamped breakdown and executable plan before attempting recreation. Start with known-source motion graphics, preserve editable output, and test an unavailable-effect case. The browser arena and Blender import are building blocks; arbitrary video-to-harness recreation is not implemented. No new provider purchase or unrequested media publication.",
+    "next_local_work": "September 30: showcase/marketing/export.mjs produces silent captioned 30-second portrait and 120-second landscape drafts from original demo imagery and the packaged HTML deck, with duration, decode and source-digest checks. These are marketing exports, not video intake or an autonomous recreation result. Next, follow the reference-video sales-demo gates in docs/roadmap/DELIVERY-SEQUENCE.md after the first creative proof and retrieval correctness work. Inventory existing media and harness components, qualify short-clip upload/URL intake, then produce a timestamped breakdown and executable plan before attempting recreation. Start with known-source motion graphics, preserve editable output, and test an unavailable-effect case. The browser arena and Blender import are building blocks; arbitrary video-to-harness recreation is not implemented. No new provider purchase or unrequested media publication.",
     "phase": 6,
     "status": "proposed",
     "title": "media.baltor.ai: seeded short videos from the owner's media tools, made step by step",
@@ -4970,8 +4989,8 @@
    "id": "D-18",
    "stage": "initial_service",
    "status_counts": {
-    "building": 6,
-    "proposed": 3
+    "building": 7,
+    "proposed": 2
    },
    "steps": [
     "S-6.29",
@@ -5232,7 +5251,7 @@
    "status_counts": {
     "building": 12,
     "live_qualified": 3,
-    "proposed": 7
+    "proposed": 8
    },
    "steps": [
     "S-6.69",
@@ -5256,10 +5275,11 @@
     "S-6.119",
     "S-6.64",
     "S-6.88",
-    "S-6.215"
+    "S-6.215",
+    "S-6.216"
    ],
    "title": "Reach 10,000 and then 100,000 approved harness packages, then add 100 to 1,000 a day",
-   "total_steps": 22
+   "total_steps": 23
   },
   {
    "acceptance": "Every component has one contract, one guide, one owning folder, tested engines and simple names that do not conflict, and all of it is findable in one generated index.",
@@ -5382,5 +5402,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:4f6381c4bc4dd4b34b2cd5239a681d740363c8b8f86ed1e3be74802237eff9a1"
+ "source_fingerprint": "sha256:deee320ab4fc67e210db58385c8431f5257d416b2a70b5609d4509867cdc1964"
 }

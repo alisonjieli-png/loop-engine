@@ -248,6 +248,29 @@ read out of a refusal, and it writes nothing. The operator procedure is in
 
 ## Billing policies after a release
 
+Grant confirmation uses the verified catalogue directly, without constructing
+the web application or preparing a search index. It still validates every
+served body, the catalogue state version, licence and family policy, and
+durable withdrawals. Following accounts keep their denials and grant engine;
+snapshot grants change only for tenants named by the host manifest. Serving
+still prepares search at startup. An explicitly deferred view builds the same
+schema-aware index if it is later searched. The checks in
+`tools/test_grant_operator_bootstrap.py` cover both catalogue sources, retained
+access rules, corrupted bodies, and the known-wrong eager-loading path.
+
+The Fly release workflow runs grant and billing confirmation through
+`tools/fly_reconcile.py`. A short Machines API call reserves the operation on
+the volume and starts a detached supervisor; short status reads wait for its
+result. The operation identity binds the source revision, workflow run and
+one of the two container-qualified commands. The supervisor keeps an exclusive
+lock, runs the command as the service user, and stops its process group after
+600 seconds. The controller waits at most 660 seconds. A lost reply never
+triggers a second start. A timeout or interrupted operation keeps an uncertain
+record and blocks later operations until an operator reconciles the outcome.
+The existing command-output, billing-capability and readiness gates still
+decide release success. `tools/test_fly_reconcile.py` exercises detached
+execution, concurrency, lost replies, wrong bindings and timeout controls.
+
 The service stores two billing policies from the host file: the entitlement
 policy, which says which prices grant paid access, and the session policy,
 record `service_billing_session_policy/v2`, which holds the checkout and portal

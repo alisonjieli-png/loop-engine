@@ -208,9 +208,10 @@ jobs:
           # names. It goes through the Machines API exec call, as the command
           # run by hand did, because a remote shell from a new runner adds a
           # WireGuard peer to the organization that nothing removes. The call
-          # starts the command as root, so setpriv runs it as the service user
-          # that owns /data. The JSON answer carries the exit code, which is
-          # left out when it is zero, and the command's exact output.
+          # starts a bounded detached supervisor. A durable reservation stops
+          # a lost start response from dispatching the command again. Short
+          # status reads return its exact output after completion. setpriv
+          # runs the command as the service user that owns /data.
           # tools/check_fly_service_container.py ran the same command against
           # this image before it was published.
           # The replaced Machine can still be starting when the deploy returns (release 28's first run failed here), so the
@@ -223,7 +224,7 @@ jobs:
             sleep 5
           done
           [[ "${machine}" =~ ^[0-9a-f]{8,32}$ ]] || exit 1
-          applied="$(flyctl machine exec "${machine}" "${GRANT_COMMAND}" --app "${FLY_APP}" --json --timeout 120)"
+          applied="$(python3 tools/fly_reconcile.py --machine "${machine}" --app "${FLY_APP}" --operation apply-grants --command "${GRANT_COMMAND}" --revision "${RELEASE_REVISION}" --run-id "${GITHUB_RUN_ID}" --timeout 660)"
           printf '%s\n' "${applied}" | jq -e --arg manifest "${PACKAGED_MANIFEST}" '(.exit_code // 0) == 0 and (((.stdout // "") | fromjson?) // null | .record_type == "service_host_grant_application/v1" and .manifest_path == $manifest and .tenants_registered == 0 and .remote_accounts_created == false and (.granted_items_by_tenant | type == "object" and length > 0 and all(.[]; type == "number" and . > 0)))' >/dev/null
           curl --fail --silent --show-error --max-time 20 \
             "https://${FLY_APP}.fly.dev/api/v1/health" | jq -e "${SERVICE_READINESS_GATE}" >/dev/null
@@ -260,7 +261,7 @@ jobs:
             sleep 5
           done
           [[ "${machine}" =~ ^[0-9a-f]{8,32}$ ]] || exit 1
-          applied="$(flyctl machine exec "${machine}" "${BILLING_POLICY_COMMAND}" --app "${FLY_APP}" --json --timeout 120)"
+          applied="$(python3 tools/fly_reconcile.py --machine "${machine}" --app "${FLY_APP}" --operation apply-billing-policy --command "${BILLING_POLICY_COMMAND}" --revision "${RELEASE_REVISION}" --run-id "${GITHUB_RUN_ID}" --timeout 660)"
           # The record holds record versions, digests and, on a refusal, its
           # code. It holds no secret, and it is the release record's evidence.
           printf '%s\n' "${applied}" | jq -r '.stdout // ""'

@@ -32,10 +32,10 @@ READINESS = 'jq -e "${SERVICE_READINESS_GATE}" >/dev/null'
 #: call, the way it was run by hand after release 12. The JSON form carries the
 #: command's exit code and its exact standard output, with nothing of the
 #: command line tool's own mixed in.
-GRANT_CALL = 'flyctl machine exec "${machine}" "${GRANT_COMMAND}" --app "${FLY_APP}" --json --timeout 120'
+GRANT_CALL = 'python3 tools/fly_reconcile.py --machine "${machine}" --app "${FLY_APP}" --operation apply-grants --command "${GRANT_COMMAND}" --revision "${RELEASE_REVISION}" --run-id "${GITHUB_RUN_ID}" --timeout 660'
 GRANT_GATE = re.compile(r"""jq -e --arg manifest "\$\{PACKAGED_MANIFEST\}" '(.+?)' >/dev/null""")
 BILLING_STEP = "Apply the host billing policy on the one Machine"
-BILLING_CALL = 'flyctl machine exec "${machine}" "${BILLING_POLICY_COMMAND}" --app "${FLY_APP}" --json --timeout 120'
+BILLING_CALL = 'python3 tools/fly_reconcile.py --machine "${machine}" --app "${FLY_APP}" --operation apply-billing-policy --command "${BILLING_POLICY_COMMAND}" --revision "${RELEASE_REVISION}" --run-id "${GITHUB_RUN_ID}" --timeout 660'
 #: The billing step reads three filters out of its script: the gate on what the
 #: command printed, the filter that takes from that record what the host file
 #: offers, and the gate on the live capabilities record.
@@ -170,29 +170,29 @@ def billing_step_problems(workflow):
 
 
 def post_deploy_exec_timeout_problems(workflow):
-    """Observe the actual shell arguments with a fake flyctl; never contact Fly.
+    """Observe the helper arguments with a fake interpreter; never contact Fly.
 
-    Release 39's grants exec hit the default deadline after about 20 seconds.
-    Both reconciliation calls need the explicit, finite 120-second setting.
-    A comment containing that setting is not an execution argument.
+    The supervisor has a 600-second command limit and the polling controller
+    has a 660-second limit. A comment is not an execution argument.
     """
     problems = []
     for name in (GRANT_STEP, BILLING_STEP):
         row = next(step for step in workflow["jobs"]["pilot"]["steps"] if step.get("name") == name)
-        calls = re.findall(r'^\s*applied="\$\((flyctl machine exec .*)\)"$', row["run"], re.MULTILINE)
+        calls = re.findall(r'^\s*applied="\$\((python3 tools/fly_reconcile.py .*)\)"$', row["run"], re.MULTILINE)
         if len(calls) != 1:
             problems.append(name + ": expected one exec call")
             continue
         environment = {"PATH": os.environ["PATH"], "machine": "0123456789ab", "FLY_APP": "fixture-pilot",
-                       "GRANT_COMMAND": "fixture-grants", "BILLING_POLICY_COMMAND": "fixture-billing"}
+                       "GRANT_COMMAND": "fixture-grants", "BILLING_POLICY_COMMAND": "fixture-billing",
+                       "RELEASE_REVISION": "a" * 40, "GITHUB_RUN_ID": "123"}
         result = subprocess.run(["bash", "-euo", "pipefail", "-c",
-            'flyctl() { printf \'%s\\n\' "$@"; }\n' + calls[0]],
+            'python3() { printf \'%s\\n\' "$@"; }\n' + calls[0]],
             env=environment, capture_output=True, text=True, timeout=5)
         arguments = result.stdout.splitlines()
         values = [arguments[index + 1] if index + 1 < len(arguments) else ""
                   for index, value in enumerate(arguments) if value == "--timeout"]
-        if result.returncode or values != ["120"]:
-            problems.append(name + ": exec must carry one explicit 120-second timeout")
+        if result.returncode or values != ["660"]:
+            problems.append(name + ": controller must carry one explicit 660-second timeout")
     return problems
 
 
@@ -441,7 +441,7 @@ class FlyDeploymentTests(unittest.TestCase):
             step(steps)["run"] = GRANT_GATE.sub("cat >/dev/null", step(steps)["run"])
 
         def any_machine(steps):
-            step(steps)["run"] = step(steps)["run"].replace('exec "${machine}" ', "exec ")
+            step(steps)["run"] = step(steps)["run"].replace('--machine "${machine}" ', "")
 
         def through_a_remote_shell(steps):
             step(steps)["run"] = step(steps)["run"].replace(
@@ -474,9 +474,9 @@ class FlyDeploymentTests(unittest.TestCase):
                 with self.subTest(step=name, timeout=replacement):
                     workflow = copy.deepcopy(self.workflow)
                     row = next(step for step in workflow["jobs"]["pilot"]["steps"] if step.get("name") == name)
-                    row["run"] = row["run"].replace("--timeout 120", replacement)
+                    row["run"] = row["run"].replace("--timeout 660", replacement)
                     # A stale comment must never satisfy the argument check.
-                    row["run"] += "\n# --timeout 120\n"
+                    row["run"] += "\n# --timeout 660\n"
                     self.assertTrue(post_deploy_exec_timeout_problems(workflow))
 
     def test_every_release_step_ends_with_the_one_shared_readiness_gate(self):
@@ -655,7 +655,7 @@ class FlyDeploymentTests(unittest.TestCase):
             "without readiness": edit_run(lambda run: run.replace(READINESS, ">/dev/null")),
             "without the output gate": edit_run(lambda run: BILLING_GATE.sub("| cat >/dev/null", run)),
             "without the capabilities gate": edit_run(lambda run: CAPABILITIES_GATE.sub("cat >/dev/null", run)),
-            "any machine": edit_run(lambda run: run.replace('exec "${machine}" ', "exec ")),
+            "any machine": edit_run(lambda run: run.replace('--machine "${machine}" ', "")),
             "through a remote shell": edit_run(lambda run: run.replace(
                 BILLING_CALL, 'flyctl ssh console --app "${FLY_APP}" --command "${BILLING_POLICY_COMMAND}"')),
             "capabilities read before the command": edit_run(capabilities_before_the_command),

@@ -9,7 +9,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="{{SERVICE_NAME}}">
   <meta property="og:title" content="Baltor: the right setup for every step your agent takes">
-  <meta property="og:description" content="A short deck on Baltor, the library that puts reviewed skills, instructions, tools and plugins in each harness's working folder. Every number carries its source.">
+  <meta property="og:description" content="A short deck on Baltor's reusable code, tools, reference material and creative work. See the working service and the next proof.">
   <meta property="og:url" content="https://baltor.ai/deck">
   <meta property="og:image" content="https://baltor.ai/assets/deck-card.png">
   <meta property="og:image:type" content="image/png">
@@ -52,8 +52,8 @@
               <div class="deck-cover-copy">
                 <p class="deck-eyebrow">Harness and agent optimized operation</p>
                 <h1 id="cover-title">The right setup for every step your agent takes.</h1>
-                <p class="deck-lead">Baltor is a library of reviewed skills, instructions, tools and plugins. Your harness searches it, downloads only what a step needs, and checks every file before it lands in the working folder.</p>
-                <p class="deck-cover-note">A harness is the program that runs a coding agent. Baltor sets up <strong>Claude Code</strong>, <strong>Codex</strong>, <strong>OpenCode</strong>, <strong>Pi</strong> and the <strong>Baltor Harness</strong>.</p>
+                <p class="deck-lead">Baltor supplies reusable code, tools and reference material for your chosen AI harness. Search the library, inspect the selected package and download its files. Keep your own model access.</p>
+                <p class="deck-cover-note">Setup guides cover <strong>Claude Code</strong>, <strong>Codex</strong>, <strong>OpenCode</strong>, <strong>Pi</strong> and the <strong>Baltor Harness</strong>. Connection and installation steps differ by harness.</p>
               </div>
               <figure class="deck-cover-folder" aria-label="An example working folder for one step">
                 <figcaption>An example working folder for one step</figcaption>
@@ -91,20 +91,20 @@
             <div class="deck-slide-inner">
               <div class="deck-head">
                 <p class="deck-eyebrow">What Baltor is</p>
-                <h2 id="what-title">One library for everything a harness reads.</h2>
-                <p class="deck-lead">Baltor puts the right skills, instructions, tools and plugins in each harness's working folder, so every step starts with the material it needs and nothing else.</p>
+                <h2 id="what-title">Reusable files for technical and creative work</h2>
+                <p class="deck-lead">Choose material for the task: reusable implementations, reference data, prompts, workflows and checks. Complete packages keep their supporting files.</p>
               </div>
               <ul class="deck-kinds" aria-label="What the library holds">
                 <li><h3>Instruction files</h3><p><code>AGENTS.md</code>, <code>CLAUDE.md</code> and other context files</p></li>
                 <li><h3>Skills</h3><p><code>SKILL.md</code> with its scripts, references and assets</p></li>
                 <li><h3>Tools and reusable code</h3><p>Tested scripts and packages a step can run</p></li>
-                <li><h3>Subagents and commands</h3><p>Agent and command definitions</p></li>
-                <li><h3>Hooks</h3><p>Checks the harness runs by itself</p></li>
+                <li><h3>Data and workflows</h3><p>Schemas, reference tables and native workflow files</p></li>
+                <li><h3>Prompts and task briefs</h3><p>Reusable instructions, examples and expected results</p></li>
                 <li><h3>Protocol servers and plugins</h3><p>The tools a step may call</p></li>
               </ul>
               <div class="deck-principles">
-                <div><h3>Your models, your keys</h3><p>Baltor never asks for a model key and never calls a model for you.</p></div>
-                <div><h3>Reviewed before it is served</h3><p>Every item starts as a candidate. Independent reviewers approve it before anyone can download it.</p></div>
+                <div><h3>Your models, your keys</h3><p>Use your own model provider or local endpoint. Library access and model costs are separate.</p></div>
+                <div><h3>Reviewed before it is served</h3><p>Every item starts as a candidate. Independent screening and deterministic checks precede publication. Execution evidence varies by package.</p></div>
                 <div><h3>A fresh harness for each step</h3><p>The Baltor Harness already runs a task on your model in small steps. Starting a fresh standard harness for each step is not open yet.</p></div>
               </div>
               <p class="deck-source deck-slide-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/README.md#what-baltor-gives-your-harness">README.md</a>, what Baltor gives your harness, one harness for each step, and what is not open yet; the harness file definition in <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/AGENTS.md#intelligence-rules">AGENTS.md</a>.</p>
@@ -169,46 +169,40 @@
           <section class="deck-slide" id="live" data-slide aria-roledescription="slide" aria-labelledby="live-title">
             <div class="deck-slide-inner">
               <div class="deck-head">
-                <p class="deck-eyebrow">Live today</p>
-                <h2 id="live-title">Running at baltor.ai, with every check on the record.</h2>
+                <p class="deck-eyebrow">Available today</p>
+                <h2 id="live-title">A working library and an editable creative demo</h2>
+                <p class="deck-lead">The library delivers material. Your chosen harness does the work. The demo shows a separate creative project you can explore.</p>
               </div>
               <div class="deck-tiles">
-                <article class="deck-tile" data-fact data-evidence="artifacts/architecture-audit-2026-09-19/pilot-release-24.json#/fly_release artifacts/architecture-audit-2026-09-19/pilot-release-24.json#/deployed_at artifacts/architecture-audit-2026-09-19/pilot-release-24.json#/rollback_fly_release">
-                  <p class="deck-stat">Release 24</p>
-                  <p>Deployed on September 24, 2026 by image digest, from a commit whose continuous integration run passed. Release 23 is kept for rollback.</p>
-                  <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/artifacts/architecture-audit-2026-09-19/pilot-release-24.json">the release 24 record</a></p>
+                <article class="deck-tile" data-fact data-evidence="artifacts/architecture-audit-2026-09-19/pilot-release-55.json">
+                  <p class="deck-stat">30,746 packages</p>
+                  <p>96,064 distinct files in the September 30 catalogue snapshot. Package counts and file counts measure different things.</p>
+                  <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/artifacts/architecture-audit-2026-09-19/pilot-release-55.json">the dated catalogue record</a></p>
                 </article>
-                <article class="deck-tile" data-fact data-evidence="docs/architecture/MVP-CLIENT-SERVER.md">
-                  <p class="deck-stat">Public sign-up</p>
-                  <p>Open since September 24, 2026: your email address, then the link we send, then a password you choose. No other way in.</p>
-                  <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/docs/architecture/MVP-CLIENT-SERVER.md#current-deployment">MVP-CLIENT-SERVER.md</a>, the current deployment</p>
+                <article class="deck-tile" data-fact data-evidence="docs/components/service-runtime/README.md">
+                  <p class="deck-stat">Search and complete downloads</p>
+                  <p>Inspect the source, licence, version and required permissions. Download the selected package with its supporting files.</p>
+                  <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/docs/components/service-runtime/README.md">the service component guide</a></p>
                 </article>
-                <article class="deck-tile" data-fact data-evidence="src/loop_engine/core/service_runtime/web_assets/client-recipes.json#/recipes src/loop_engine/core/service_runtime/web_assets/client-recipes.json#/recipes/3/version_note">
-                  <p class="deck-stat">5 harnesses</p>
-                  <p>Connection entries for Claude Code, Codex, OpenCode, Pi and the Baltor Harness. Pi, running Gemma 4 on Ollama Cloud, found, installed and used a skill end to end on September 23, 2026.</p>
-                  <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/src/loop_engine/core/service_runtime/web_assets/client-recipes.json">client-recipes.json</a>, the reviewed connection entries</p>
+                <article class="deck-tile" data-fact data-evidence="src/loop_engine/core/service_runtime/web_assets/client-recipes.json">
+                  <p class="deck-stat">Your existing harness</p>
+                  <p>Connection guides for Claude Code, Codex, OpenCode, Pi and the Baltor Harness. Automatic placement and manual setup have different support.</p>
+                  <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/src/loop_engine/core/service_runtime/web_assets/client-recipes.json">the connection guide records</a></p>
                 </article>
-                <article class="deck-tile" data-fact data-evidence="artifacts/architecture-audit-2026-09-19/pilot-release-24.json#/catalogue_release_published/items examples/29_intelligence_service/starter-catalogue/reviews.json#/reviewers">
-                  <p class="deck-stat">43 reviewed skills</p>
-                  <p>Each approved by three independent reviewers, none of them its author. One written objection withholds approval.</p>
-                  <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/artifacts/architecture-audit-2026-09-19/pilot-release-24.json">the release 24 record</a> and <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/examples/29_intelligence_service/starter-catalogue/reviews.json">reviews.json</a></p>
+                <article class="deck-tile" data-fact data-evidence="artifacts/architecture-audit-2026-09-19/pilot-release-55.json">
+                  <p class="deck-stat">A playable fantasy arena</p>
+                  <p>Move, fight, change the scene and export an editable model. Open <a href="/demo/ashen-wilds">Ashen Wilds</a> in your browser.</p>
+                  <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/artifacts/architecture-audit-2026-09-19/pilot-release-55.json">the browser and Blender checks</a></p>
                 </article>
-                <article class="deck-tile" data-fact data-evidence="artifacts/architecture-audit-2026-09-19/pilot-release-24.json#/live_checks/catalogue_with_homepage_digest_guard/0 artifacts/architecture-audit-2026-09-19/pilot-release-24.json#/live_checks/catalogue_with_homepage_digest_guard/1">
-                  <p class="deck-stat">Licence and digest</p>
-                  <p>Every served item names its licence and its digest. After the release, the catalogue check compared the published digests with the served bytes: 7 of 7 passed.</p>
-                  <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/artifacts/architecture-audit-2026-09-19/pilot-release-24.json">the release 24 record</a> and the served <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/examples/29_intelligence_service/starter-catalogue/host-release/manifest.json">manifest.json</a></p>
+                <article class="deck-tile" data-fact data-evidence="artifacts/release-55-2026-09-30/README.md">
+                  <p class="deck-stat">Keep the project editable</p>
+                  <p>The demo export was imported, rendered and reopened in Blender. That proves this project path, not automatic video recreation.</p>
+                  <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/artifacts/release-55-2026-09-30/README.md">the creative proof and its limits</a></p>
                 </article>
-                <article class="deck-tile deck-tile-checks" data-fact data-evidence="artifacts/architecture-audit-2026-09-19/pilot-release-24.json#/live_checks/hosted_browser_checks_per_hostname_registration_open/0 artifacts/architecture-audit-2026-09-19/pilot-release-24.json#/live_checks/http_addresses_200/0 artifacts/architecture-audit-2026-09-19/pilot-release-24.json#/live_checks/service/0 artifacts/architecture-audit-2026-09-19/pilot-release-24.json#/live_checks/live_account_journeys/0 artifacts/architecture-audit-2026-09-19/pilot-release-24.json#/live_checks/live_staff_dashboard/0 artifacts/architecture-audit-2026-09-19/pilot-release-24.json#/live_checks/live_staff_dashboard/1">
-                  <p class="deck-stat">Checked live</p>
-                  <dl class="deck-checks">
-                    <div><dt>Browser checks, each hostname</dt><dd>163 of 163</dd></div>
-                    <div><dt>Public addresses answering</dt><dd>120 of 120</dd></div>
-                    <div><dt>Service checks</dt><dd>19 of 19</dd></div>
-                    <div><dt>Sign-up journeys</dt><dd>11 of 11</dd></div>
-                    <div><dt>Staff dashboard</dt><dd>10 of 12</dd></div>
-                  </dl>
-                  <p class="deck-tile-note">Both staff dashboard failures were mistakes in the checking script; the failed runs are kept.</p>
-                  <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/artifacts/architecture-audit-2026-09-19/pilot-release-24.json">the release 24 record</a>, its live checks</p>
+                <article class="deck-tile" data-fact data-evidence="docs/roadmap/DELIVERY-SEQUENCE.md">
+                  <p class="deck-stat">Account and usage</p>
+                  <p>Sign up, connect a scoped client key and inspect metered usage. A complete download activity timeline is not available yet.</p>
+                  <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/docs/roadmap/DELIVERY-SEQUENCE.md#customer-activity-and-download-history">current behavior and next steps</a></p>
                 </article>
               </div>
             </div>
@@ -246,54 +240,43 @@
             <div class="deck-slide-inner">
               <div class="deck-head">
                 <p class="deck-eyebrow">The library plan</p>
-                <h2 id="plan-title">Where the library goes, and the rates measured so far.</h2>
+                <h2 id="plan-title">The served library and its growth targets</h2>
                 <p class="deck-lead">Recorded supply and future targets are separate. Files count only when an approved, active package delivers them; repeated files count once.</p>
               </div>
               <ol class="deck-ladder">
-                <li class="is-live" data-fact data-evidence="docs/context/SESSION-RECONCILIATION-2026-09-29.md">
+                <li class="is-live" data-fact data-evidence="artifacts/architecture-audit-2026-09-19/pilot-release-55.json">
                   <span class="deck-tag is-live">Observed</span>
-                  <p class="deck-ladder-count">68,822</p>
-                  <p>distinct payload files in the September 29 catalogue snapshot</p>
-                  <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/docs/context/SESSION-RECONCILIATION-2026-09-29.md">the dated catalogue measurement</a></p>
+                  <p class="deck-ladder-count">96,064</p>
+                  <p>distinct files in the September 30 served catalogue</p>
+                  <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/artifacts/architecture-audit-2026-09-19/pilot-release-55.json">the dated catalogue measurement</a></p>
                 </li>
-                <li class="is-plan" data-fact data-evidence="docs/architecture/OWNER-DECISIONS.md">
-                  <span class="deck-tag is-plan">Plan</span>
-                  <p class="deck-ladder-count">10,000</p>
-                  <p>packages, an earlier planning milestone</p>
-                  <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/docs/architecture/OWNER-DECISIONS.md">the dated owner decisions</a></p>
+                <li class="is-live" data-fact data-evidence="artifacts/architecture-audit-2026-09-19/pilot-release-55.json">
+                  <span class="deck-tag is-live">Observed</span>
+                  <p class="deck-ladder-count">30,746</p>
+                  <p>packages in the same catalogue, each with a distinct reusable job</p>
+                  <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/artifacts/architecture-audit-2026-09-19/pilot-release-55.json">the dated catalogue measurement</a></p>
                 </li>
                 <li class="is-plan" data-fact data-evidence="docs/roadmap/roadmap.yaml">
                   <span class="deck-tag is-plan">Plan</span>
-                  <p class="deck-ladder-count">100,000</p>
-                  <p>packages, an intermediate supply target</p>
-                  <p class="deck-source">Source: roadmap step S-6.69 in <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/docs/roadmap/roadmap.yaml">roadmap.yaml</a></p>
+                  <p class="deck-ladder-count">One million</p>
+                  <p>distinct served component files, the next supply target</p>
+                  <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/docs/roadmap/roadmap.yaml">the file-supply roadmap</a></p>
                 </li>
-                <li class="is-aim" data-fact data-evidence="docs/research/MILLION-HARNESS-SUPPLY-NEXT-STEPS-2026-09-23.md docs/roadmap/roadmap.yaml">
+                <li class="is-aim" data-fact data-evidence="docs/architecture/NORTH-STAR.md">
                   <span class="deck-tag is-aim">Aim</span>
                   <p class="deck-ladder-count">One million</p>
-                  <p>distinct served component files, with original code, assets, tools and workflows</p>
-                  <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/docs/research/MILLION-HARNESS-SUPPLY-NEXT-STEPS-2026-09-23.md">MILLION-HARNESS-SUPPLY-NEXT-STEPS</a> and S-6.40 in <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/docs/roadmap/roadmap.yaml">roadmap.yaml</a></p>
+                  <p>useful packages, the longer-term supply target</p>
+                  <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/docs/architecture/NORTH-STAR.md">the current north star</a></p>
                 </li>
               </ol>
-              <h3 class="deck-subhead" id="plan-measured">Measured so far</h3>
+              <h3 class="deck-subhead" id="plan-measured">The next proofs</h3>
               <ul class="deck-rates">
-                <li data-fact data-evidence="examples/29_intelligence_service/starter-catalogue/reviews.json#/totals/approved examples/29_intelligence_service/starter-catalogue/reviews.json#/totals/items_reviewed examples/29_intelligence_service/starter-catalogue/reviews.json#/reviewers">
-                  <p><strong>43 of 49</strong> candidates approved by all three reviewers in the first review round.</p>
-                  <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/examples/29_intelligence_service/starter-catalogue/reviews.json">reviews.json</a></p>
-                </li>
-                <li data-fact data-evidence="artifacts/candidate-review-pilot-2026-09-22/README.md">
-                  <p><strong>0 of 30</strong> approved in the first pass of the multi-family review panel, each rejection written down with its reasons. The whole run, calibration included, took 658.5 seconds.</p>
-                  <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/artifacts/candidate-review-pilot-2026-09-22/README.md">the first review panel run</a></p>
-                </li>
-                <li data-fact data-evidence="artifacts/first-party-harness-candidates-2026-09-24-wave-5/README.md">
-                  <p><strong>56 of 75</strong> original multi-file packages passed the deterministic pre-checks in wave 5.</p>
-                  <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/artifacts/first-party-harness-candidates-2026-09-24-wave-5/README.md">the wave 5 record</a></p>
-                </li>
-                <li data-fact data-evidence="artifacts/library-ingestion-2026-09-23/README.md">
-                  <p><strong>3,251</strong> outside candidates staged for review in one import run, from 4,790 discovered; 187 kept as outlines only, because their licence permits no copy.</p>
-                  <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/artifacts/library-ingestion-2026-09-23/README.md">the ingestion record</a></p>
-                </li>
+                <li><p><strong>Customer benefit.</strong> Harder data, debugging, infrastructure and creative tasks, with and without Baltor. Keep unsuccessful results.</p></li>
+                <li><p><strong>Reference video.</strong> The next proof: explain a permitted clip, find the tools and prepare an editable variation. No automatic recreation today.</p></li>
+                <li><p><strong>Public Good.</strong> In development: free worker-protection components connected to DueCare, available without a subscription.</p></li>
+                <li><p><strong>Faster, traceable retrieval.</strong> Measure wrong files, stale sources and latency before choosing a cache or a Rust engine.</p></li>
               </ul>
+              <p class="deck-source deck-slide-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/docs/roadmap/DELIVERY-SEQUENCE.md">the ordered delivery and business plan</a>.</p>
             </div>
           </section>
 
@@ -302,8 +285,8 @@
               <div class="deck-split-text">
                 <div class="deck-head">
                   <p class="deck-eyebrow">Business model</p>
-                  <h2 id="business-title">One plan. The whole library.</h2>
-                  <p class="deck-lead">Customers bring their own model access, so model costs stay with their own provider. Baltor sells reviewed material and its delivery, never model calls.</p>
+                  <h2 id="business-title">Library access, with your own model provider</h2>
+                  <p class="deck-lead">Baltor Pro pays for access to the hosted library. You supply your model access and choose where the work runs. Managed execution remains a future option.</p>
                 </div>
                 <ul class="deck-points">
                   <li data-fact data-evidence="artifacts/release-24-2026-09-24/README.md src/loop_engine/core/service_runtime/account_policy.py">
@@ -314,9 +297,9 @@
                     <p><strong>Live payments</strong> through Stripe checkout and the customer portal since September 21, 2026.</p>
                     <p class="deck-source">Source: the payments decision in <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/AGENTS.md#decisions-that-stand-until-the-owner-changes-them">AGENTS.md</a></p>
                   </li>
-                  <li data-fact data-evidence="AGENTS.md">
-                    <p><strong>Comparable entry plans</strong> cost $19 to $29 a month.</p>
-                    <p class="deck-source">Source: the price decision in <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/AGENTS.md#decisions-that-stand-until-the-owner-changes-them">AGENTS.md</a> and <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/docs/guides/billing-setup-and-pricing.md">billing-setup-and-pricing.md</a></p>
+                  <li data-fact data-evidence="docs/architecture/OWNER-DECISIONS.md">
+                    <p><strong>Public Good access is in development.</strong> Selected worker-protection files will be free without a subscription. Model and hosting costs stay separate.</p>
+                    <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/docs/architecture/OWNER-DECISIONS.md#public-good-access-september-30-2026">the Public Good access policy</a></p>
                   </li>
                 </ul>
               </div>
@@ -325,12 +308,12 @@
                 <p class="deck-price-amount">$29 a month</p>
                 <ul class="deck-price-list">
                   <li>The whole library, searchable from your harness</li>
-                  <li>One downloaded item is the measured unit, with no overage billing</li>
+                  <li>One item version per month is the measured unit, with no overage billing</li>
                   <li>A personal key for each client you connect</li>
                   <li>Cancel any time from your account page</li>
                 </ul>
                 <a class="button primary deck-action" href="/get-started">Get started</a>
-                <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/README.md#status-on-september-24-2026">README.md</a>, status on the day of release 24</p>
+                <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/README.md">README.md</a>, the current plan and billing unit</p>
               </article>
             </div>
           </section>
@@ -367,7 +350,7 @@
               <div class="deck-head">
                 <p class="deck-eyebrow">Contact</p>
                 <h2 id="contact-title">Talk to us.</h2>
-                <p class="deck-lead">Create an account at baltor.ai and connect your harness, or write to the operator at the postal address in the privacy notice.</p>
+                <p class="deck-lead">Try the playable demo, explore the library, or create an account and follow the setup guide for your harness.</p>
               </div>
               <address class="deck-address" data-fact data-evidence="docs/legal/PRIVACY-NOTICE.md">
                 <span class="deck-address-name">Baltor.AI</span>

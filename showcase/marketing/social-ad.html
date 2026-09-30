@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Baltor social video source</title>
+<style>
+@font-face{font-family:Geist;src:url('/assets/geist.woff2')}*{box-sizing:border-box}
+html,body{margin:0;width:1080px;height:1920px;background:#160e09;color:#fff8f1;font-family:Geist,sans-serif}
+main{height:100%;position:relative;overflow:hidden;padding:132px 92px 156px;display:flex;flex-direction:column}
+.brand{display:flex;align-items:center;gap:22px;font-size:44px;font-weight:750;letter-spacing:-1px}
+.brand img{height:66px;width:66px}.label{color:#ffad66;letter-spacing:4px;text-transform:uppercase;font-size:26px;margin:90px 0 28px;font-weight:650}
+h1{font-size:104px;letter-spacing:-5px;line-height:1.04;margin:0;max-width:900px;font-weight:700}
+.description{font-size:37px;line-height:1.42;max-width:850px;margin:36px 0 42px;color:#eadcd0}
+.scene{width:896px;height:590px;object-fit:cover;border-radius:12px;object-position:center;display:block}
+.caption{font-size:25px;line-height:1.45;color:#cfb9a7;margin:21px 0 0}.destination{margin-top:auto;padding-top:35px;font-size:45px;font-weight:700;color:#ffad66}
+.footer{font-size:25px;color:#cfb9a7;margin:14px 0 0}body[data-scene="3"] h1{font-size:108px}body[data-scene="3"] .destination{font-size:72px}
+</style>
+</head>
+<body><main>
+<div class="brand"><img src="/assets/baltor-mark.svg" alt="">Baltor</div>
+<p class="label" id="label"></p><h1 id="headline"></h1><p class="description" id="description"></p>
+<img class="scene" src="/demo-frame.png" alt="An original scene from Baltor's playable Ashen Wilds demo">
+<p class="caption">Ashen Wilds · Playable browser demo with editable export</p>
+<div class="destination" id="destination"></div><p class="footer" id="footer"></p>
+</main>
+<script>
+const scenes=[
+{label:'For people building with AI',headline:'Start with reusable work.',description:'Code, tools and reference material for the AI harness you already use.',destination:'baltor.ai',footer:'Use your own model access.'},
+{label:'A library for your task',headline:'Find the files your task needs.',description:'Inspect the source, licence and version. Download a complete package.',destination:'Explore the Baltor library',footer:'Availability and checks vary by package.'},
+{label:'Try it in your browser',headline:'A world you can change.',description:'Play Ashen Wilds. Change the scene. Export an editable model for Blender.',destination:'baltor.ai/demo/ashen-wilds',footer:'A working demo, not automatic video recreation.'},
+{label:'Your harness. Your model.',headline:'Explore what you can build.',description:'Try the demo. Browse the library. Follow the setup guide for your harness.',destination:'baltor.ai',footer:'Reusable material. Work you control.'}
+];
+const index=Number(new URLSearchParams(location.search).get('scene')||0);
+if(!Number.isInteger(index)||!scenes[index])throw new Error('Unknown video scene');
+document.body.dataset.scene=String(index);
+for(const [id,text]of Object.entries(scenes[index]))document.getElementById(id).textContent=text;
+</script></body></html>

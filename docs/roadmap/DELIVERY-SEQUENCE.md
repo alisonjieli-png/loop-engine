@@ -29,6 +29,12 @@ Do not sell the planned higher tiers or managed execution before their
 features work. Existing pricing and infrastructure allowances stay governed
 by [owner decisions](../architecture/OWNER-DECISIONS.md) and AGENTS.md.
 
+Selected Public Good components will remain free without a subscription or
+proof of nonprofit status. Keep their delivery costs visible and their rate
+limits clear. They are a public service and a way to demonstrate useful work;
+do not count recipients as subscribers or promise a conversion rate. Paid
+library access and any future hosted execution remain separate products.
+
 The first customer paths are Engineers, Designers and AI Agents. Each needs a
 specific example, a supported setup route, the exact downloadable material and
 a useful first result. A newcomer should not need to understand the internal
@@ -157,6 +163,8 @@ but it must not delay a ready customer fix or start an unreviewed migration.
    useful accepted task remain separate gates.
    Include setup help and a clear support handoff. Recover and review the
    existing support implementation before buying or rebuilding a chat service.
+   Add the customer activity view defined below through S-6.41 and S-6.51;
+   keep delivery events separate from the monthly billing counter.
 3. **Measure whether the material helps.** Freeze the same task, model, harness,
    input files and acceptance checks for runs with and without Baltor. Include
    setup time, retrieval, physical calls, provider-reported usage, retries,
@@ -168,6 +176,8 @@ but it must not delay a ready customer fix or start an unreviewed migration.
    pinned official install recipes where they are more useful than copying an
    entire runtime. Qualify binary size, interrupted transfers and clean installs.
    These are S-6.40, S-6.81 and S-6.215 delivery work, not merely catalogue entries.
+   Add the bounded Public Good download route through S-6.216, then admit and
+   publish the first worker-protection package set under the policy below.
 5. **Ship the first creative proof.** Finish the browser fantasy arena, inspect
    its rig and animation clips, export an editable scene, make a meaningful
    revision and reopen it in a clean supported environment. Exercise movement,
@@ -207,11 +217,132 @@ but it must not delay a ready customer fix or start an unreviewed migration.
    newsletter and approved marketing work for acquisition; engineering does
    not purchase advertising. Measure first use and retention before adding
    paid features.
+   Keep the website pitch deck, homepage, How it works, audience pages and
+   setup documentation consistent with the same release evidence. Produce
+   the short captioned videos described below from working product surfaces.
 11. **Scale the parts that show value.** Expand distinct admitted capabilities,
     publication throughput and serving capacity toward S-6.215. Use observed
     customer failures, repeated tasks and successful revisions to choose the
     next components. Keep the million-file, package and revenue measures
     visible without treating one as proof of another.
+
+## Marketing videos and the website pitch
+
+The September 30 request adds a marketing video shorter than three minutes
+and a thirty-second social advertisement. Prepare an editable short master
+with captions, a landscape product walkthrough and a portrait social cut.
+The first cut should show the library's purpose, a real creative demo and the
+next action at baltor.ai. Use original visuals or rights-cleared assets and
+leave music out until its licence and commercial reuse conditions are clear.
+Keep text readable without sound and inside the platform's safe display area.
+
+The longer walkthrough should show what a customer can actually do: choose
+a harness, inspect material, download a complete package, and work with an
+editable result. Label illustrations and prototypes. Show with-and-without
+results only after the frozen comparison passes its evidence checks, even
+when the result shows no benefit. Automatic video recreation, Public Good
+downloads and managed execution stay marked planned until released.
+
+Refresh the website's existing HTML deck and key pages from current evidence,
+preserving controls, mobile layouts, links and dated failed results. Keep a
+copy inventory so setup instructions, the pitch and advertisements do not
+make different promises. Render and inspect the actual deck and video before
+publication, check duration and decoding, retain editable sources and captions,
+and verify the destination link. Engineering can prepare and publish the
+approved product materials; advertising purchases remain with the owner.
+
+## Free Public Good components
+
+The first collection draws on Taylor S. Amarel's
+[DueCare repository](https://github.com/TaylorAmarelTech/duecare) and its
+[Gemma 4 competition lineage](https://github.com/TaylorAmarelTech/gemma4_comp).
+The DueCare README inspected September 30 describes worker-protection
+guidance, reference packs, privacy controls and evaluation tools. It explicitly
+separates benchmark response quality from field effectiveness. None of its
+published results establishes a benefit from Baltor. Pin the source revision
+and inspect each package's rights before adapting or redistributing it; a
+repository licence does not settle model-weight or dataset terms.
+
+Start with a small set: source-refresh guidance with jurisdiction and checked
+dates; a data-minimization checklist; synthetic worker-support examples and
+evaluation fixtures; a supported DueCare installation recipe; and a harness
+brief that cites evidence, states uncertainty and routes consequential advice
+to qualified human help. Do not automatically submit reports to employers or
+authorities. Avoid collecting immigration status, identity documents, precise
+locations or real worker narratives in default logs. This is support material,
+not a determination that a worker or recruiter is involved in exploitation.
+
+The collection has a relevant public-benefit basis in
+[Sustainable Development Goal 8](https://sdgs.un.org/goals/goal8), particularly
+targets 8.7 and 8.8 on forced labour and labour rights, including migrant
+workers. Record the specific purpose and limitations of each package. Do not
+use SDG tags as access controls, claim United Nations endorsement or describe
+Baltor as a registered charity.
+
+Implement in this order through S-6.216:
+
+1. Add explicit, versioned public-access grants to the existing catalogue and
+   entitlement boundary. Only independently admitted, rights-cleared,
+   non-withdrawn versions qualify. Preserve the normal paid and private paths.
+2. Provide public search, inspection and complete downloads for those versions
+   without payment or sign-in. Publish configurable request and byte limits,
+   return a clear retry delay, and account for service cost without billing a
+   free download. An optional account may retain activity; it is not required.
+3. Test anonymous success, full-package integrity, withdrawal, expired or
+   substituted versions, paid/private isolation, forged public-benefit tags,
+   cache revocation and concurrent rate limits. Use synthetic data throughout.
+4. Independently review the first package set, publish it through the existing
+   release path, then test a fresh anonymous browser and a supported harness.
+   A source list or downloadable prose file alone does not prove the tools work.
+
+Keep model access customer-supplied. Free component files do not promise free
+Gemma inference, cloud rendering or an expanded infrastructure allowance.
+Choose cache and abuse controls within the approved privacy notice; draft
+any new personal-data use for approval before enabling it. Do not require
+people to disclose worker status to obtain material. No component was admitted
+or made public under this new policy in this planning update.
+
+## Customer activity and download history
+
+The owner wants to see every time a harness downloads files, what task it was
+working on and why it chose those files. This is S-6.41 and S-6.51 work. The
+current `/api/v1/usage` and dashboard show metered units, one item version per
+account per UTC calendar month. Repeated downloads are intentionally collapsed.
+They cannot reconstruct a complete activity history or a missing task reason.
+
+Build the account's private activity view over the existing managed record
+store, alongside the unchanged billing meter:
+
+1. Record a versioned delivery event for each logical download, with a request
+   correlation identity, server time, exact item/version/digest, package files,
+   bytes, outcome and client-key identity, never the key. Link retries and
+   package-file transfers without charging them as new monthly units.
+2. Let a supported harness supply a task/run/step reference, a short task label,
+   harness/model identity and a brief selection reason through a typed,
+   bounded, optional context contract. Label these as client-reported. Missing
+   context says not supplied; do not infer a task from the item's description
+   or fabricate an explanation after delivery. Do not collect hidden reasoning,
+   whole prompts, customer code, files or credentials by default.
+3. Show a searchable, paginated timeline grouped by task and package, with date,
+   harness, item and outcome filters, file details, exact versions and a safe
+   JSON/CSV export. State when recording began and the retention window. Older
+   monthly billing records remain billing history, not invented download events.
+4. Distinguish requested, server response prepared/sent, client digest-verified,
+   installed, loaded, used and task accepted. Preparing an HTTP response does
+   not prove that its bytes reached the client or were used successfully. Client
+   confirmations are separate evidence; absent confirmations remain unknown.
+5. Test cross-account isolation, forged cursors, logout during loading, retries,
+   partial packages, duplicate acknowledgments, log-write failures, redaction,
+   retention and export injection. Measure the extra write/latency cost and
+   keep account access checks current on every page and export.
+
+A customer's own activity history is distinct from permission to use it for
+ranking, self-improvement, training or marketing. Keep those choices separate.
+Review the actual new data flow against the approved privacy notice and obtain
+owner approval for required notice changes before collecting new task context.
+No activity log or retrospective task explanation has been launched by adding
+this plan. The first customer comparison should test this trace from a real
+harness to the dashboard when that path is implemented.
 
 ## Customer-task comparison programme
 
@@ -431,6 +562,45 @@ customer use and observed result. Keep it in the existing managed records and
 registries. The conversation-audit record explicitly names its unreviewed
 portions. New ideas enter the owning roadmap step rather than another parallel
 to-do list.
+
+## Rights-cleared media and reference collections
+
+Databases, URL collections, guidance, images, video, music, sounds and complete
+media files belong in the package mix under S-6.214 and S-6.215. A link index,
+an original generator and a redistributed asset are different products and
+need different evidence. Downloading a video does not make it newly generated
+or grant rights to sell it in a library.
+
+Start with owner-original media and verifiable public-domain or CC0 assets.
+Other licences need an explicit admission decision and their obligations
+carried into the package. Record the original publisher, exact source and
+file identity, observed licence, permitted commercial use and redistribution,
+attribution, modification/share-alike conditions, relevant releases and any
+uncertainty. Music can have separate composition, recording and performance
+rights. Preserve the rights evidence and recheck withdrawals or changed claims.
+
+Use YouTube as a discovery/reference source where access is permitted. A title
+or description saying no copyright is not sufficient evidence. YouTube's
+[API policies](https://developers.google.com/youtube/terms/developer-policies)
+restrict downloading or storing audiovisual copies without its prior written
+approval. Do not build bulk downloading or access-control circumvention around
+those labels. Prefer an authorized original-file download supplied by the
+creator or a suitable media repository; verify that route and its licence.
+
+Candidate sources include [Wikimedia Commons](https://commons.wikimedia.org/wiki/Commons:Reusing_content_outside_Wikimedia/licenses),
+whose file pages state the applicable licences, and
+[Freesound](https://freesound.org/help/faq/), which includes CC0, attribution and
+noncommercial licences. Neither name proves that every file is suitable for
+Baltor. Exclude unverified and noncommercial-only assets from commercial bundles;
+do not treat royalty-free as permission for standalone redistribution.
+
+Package cleared assets with attribution/licence files, media metadata, checksums,
+previews, usage examples and any source or generator needed for edits. Test
+decoding, codecs, dimensions/duration, missing dependencies and safe file paths.
+Use qualified large-file delivery or an authorized upstream recipe where current
+transport limits are insufficient. Count files actually served by Baltor, not
+every asset linked in a database. Native-use tests and independent admission
+still precede publication; no YouTube media was downloaded in this review.
 
 ## New model releases, including Gemini 4
 

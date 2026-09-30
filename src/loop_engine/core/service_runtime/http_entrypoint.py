@@ -559,8 +559,12 @@ def apply_host_grants(path):
     already exist, the grant set for that tenant is replaced by exactly what the
     manifest declares, and no tenant the manifest does not name is touched.
     """
-    application, configuration = load_host_application(path)
+    configuration = _validated_host_configuration(path)
     runtime = ServiceRuntime(ServiceRuntimeConfig(**configuration["runtime"]))
+    from .catalogue_serving import load_catalogue_view
+    view, _source = load_catalogue_view(configuration, runtime.config,
+        license_policy=host_license_policy(configuration), family_policy=host_family_policy(configuration),
+        prepare_search=False)
     _catalogue, _resolver, _reader, grants = load_host_manifest(
         configuration["manifest_path"], license_policy=host_license_policy(configuration),
         family_policy=host_family_policy(configuration))
@@ -568,7 +572,7 @@ def apply_host_grants(path):
     # manifest's snapshot over it would turn it back into a fixed list. Its
     # count is what it receives from the view this host serves now.
     from .catalogue_grants import following_release
-    view, applied, following = application.provisioning.current_view(), {}, []
+    applied, following = {}, []
     for tenant, selected in sorted(grants.items()):
         held = following_release(runtime, tenant)
         if held is not None:

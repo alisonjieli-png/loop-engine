@@ -55,6 +55,38 @@ Every count names its unit, state, scope and observation date. Report database r
 
 Customers retrieve the material and control its execution in their own harness, editor, renderer or workflow system. They keep editable project state and can reuse downloaded material under its licence. Model access and execution may use their own machine or a provider they choose. Baltor's hosted service supplies discovery, delivery and maintained versions.
 
+Customers should be able to inspect their own activity: exact files and versions
+requested, transfer outcomes, and the task and selection reason their harness
+explicitly supplied. Monthly billing units are not a complete download log.
+Keep client-reported intent and use separate from observed service delivery,
+leave missing reasons unknown, and do not collect whole prompts or hidden
+reasoning by default. The [activity plan](../roadmap/DELIVERY-SEQUENCE.md#customer-activity-and-download-history)
+sets the trace, privacy and acceptance requirements.
+
+The website deck, explanatory pages and marketing videos must describe the
+same product state. The owner requested a marketing walkthrough shorter than
+three minutes and a thirty-second social advertisement. Use working product
+surfaces, editable creative demonstrations and captions; planned features and
+unmeasured benefits must remain explicit. The delivery plan owns the formats,
+rights checks and publication sequence.
+
+Rights-cleared media is also first-class material: original or permitted images,
+videos, music, sounds, datasets and source-linked reference collections. A
+no-copyright label is not a licence or a download permission. Preserve provenance,
+redistribution and attribution conditions, native metadata and exact bytes.
+The [media plan](../roadmap/DELIVERY-SEQUENCE.md#rights-cleared-media-and-reference-collections)
+distinguishes discovery links, authorized asset downloads and original generation.
+
+The owner's September 30 Public Good direction makes selected components free
+to everyone without a subscription, subject to reasonable rate limits. Start
+with worker-protection material connected to Taylor S. Amarel's DueCare and
+Gemma 4 work, then expand by documented public benefit. Keep one library and
+the same independent admission rules. Free access is an explicit package
+policy, not a quality tier, nonprofit status or United Nations endorsement.
+The [Public Good plan](../roadmap/DELIVERY-SEQUENCE.md#free-public-good-components)
+defines anonymous delivery, rights, sensitive-data limits and the first proof.
+This policy is approved direction; the public download route is not yet built.
+
 Reusable material follows a common package structure:
 
 Delivery follows the task. Baltor may serve a complete native package, a
