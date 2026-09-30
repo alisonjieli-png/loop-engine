@@ -1,7 +1,7 @@
 {
   "record_type": "service_web_site_map/v3",
-  "decided_on": "2026-09-26",
-  "decided_by": "engineering, from the owner's September 23 design direction, September 24 page and hostname direction, and September 26 approval of longer case studies",
+  "decided_on": "2026-09-29",
+  "decided_by": "engineering, preserving earlier design and hostname direction and applying the owner's September 29 Engineers, Designers and AI Agents entry paths",
   "display_name": "Baltor",
   "canonical_hostname": "baltor.ai",
   "groups": [
@@ -15,8 +15,8 @@
     {
       "address": "/",
       "view": "home",
-      "title": "The perfect harness working directory for each task",
-      "description": "The working directory each step of your task needs, built on demand from a vetted library and placed where your harness reads it.",
+      "title": "For engineers, designers and AI agents",
+      "description": "One searchable library of reusable code, tools and reference material, with clear paths for engineers, designers and AI agents.",
       "group": "Product",
       "linked_from": [
         "header",
@@ -221,6 +221,18 @@
       "linked_from": [
         "footer"
       ],
+      "unlinked_reason": "",
+      "scroll_budget": "page",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/for/designers",
+      "view": "for-designers",
+      "title": "Creative work you can change again",
+      "description": "Explore Baltor's developing creative collection, original procedural reference prototypes and reusable art-direction approach.",
+      "group": "Use cases",
+      "linked_from": ["footer"],
       "unlinked_reason": "",
       "scroll_budget": "page",
       "price_in_first_screen": false,
@@ -1070,6 +1082,11 @@
             "role": "link",
             "label": "For coding agents",
             "href": "/for/coding-agents"
+          },
+          {
+            "role": "link",
+            "label": "For designers",
+            "href": "/for/designers"
           },
           {
             "role": "link",

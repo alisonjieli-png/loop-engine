@@ -14,7 +14,7 @@ import {resolve} from "node:path";
 
 /* Every page this module opens, in the order of the site map. */
 export const showcasePaths=["/demo","/demo/kaggle","/status","/examples","/case-studies/data-cleanup","/case-studies/pi-and-gemma-4","/case-studies/sign-up-protection",
-  "/for/coding-agents","/for/engineering-teams","/for/comparing-tools","/for/protocol-and-client"];
+  "/for/designers","/for/coding-agents","/for/engineering-teams","/for/comparing-tools","/for/protocol-and-client"];
 const slug=path=>path.slice(1).replace(/\//g,"-");
 /* The screenshots this module writes beside the report, one for each page at 1440 and at 390 pixels. */
 export const showcaseScreenshotSuffixes=showcasePaths.flatMap(path=>["-showcase-"+slug(path)+"-desktop.png","-showcase-"+slug(path)+"-mobile.png"]);

@@ -21,6 +21,12 @@ two defects that were found and fixed after the first claims of correctness.
 
 ## Current context route
 
+Read the [community, assets and audience checkpoint](COMMUNITY-ASSETS-AND-AUDIENCES-2026-09-29.md)
+for the subsequent September 29 work: bounded discovery, private inventory,
+procedural generators, creative briefs and the Engineers, Designers and AI
+Agents homepage paths. It distinguishes local checks, candidates and live
+deployment; verify its ongoing jobs before continuing.
+
 Read the [September 29 reconciliation](SESSION-RECONCILIATION-2026-09-29.md)
 first. It covers the Codex takeover, preserved work, honest review coverage,
 the original creative component factory, engine-control research, the exact

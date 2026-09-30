@@ -652,8 +652,8 @@
     "pages": [
      {
       "address": "/",
-      "title": "The perfect harness working directory for each task",
-      "description": "The working directory each step of your task needs, built on demand from a vetted library and placed where your harness reads it."
+      "title": "For engineers, designers and AI agents",
+      "description": "One searchable library of reusable code, tools and reference material, with clear paths for engineers, designers and AI agents."
      },
      {
       "address": "/get-started",
@@ -724,6 +724,11 @@
       "address": "/for/coding-agents",
       "title": "Stop starting from nothing",
       "description": "For a developer whose coding agent starts every task from nothing: give each step the guidance and reusable code it needs."
+     },
+     {
+      "address": "/for/designers",
+      "title": "Creative work you can change again",
+      "description": "Explore Baltor's developing creative collection, original procedural reference prototypes and reusable art-direction approach."
      },
      {
       "address": "/for/engineering-teams",

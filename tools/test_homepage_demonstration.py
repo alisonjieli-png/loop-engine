@@ -401,8 +401,10 @@ def hero_problems(page, served_tools=HERO_TOOLS):
     note = re.search(r"<p [^>]*data-hero-note[^>]*>([^<]*)</p>", hero)
     note = note.group(1) if note else ""
     words = " ".join(re.sub(r"<[^>]+>", " ", hero).split())
-    if not re.search(r"no manual search", words, re.IGNORECASE) or not re.search(r"no manual setup", words, re.IGNORECASE):
-        problems.append("the hero does not say the files are placed with no manual search and no manual setup")
+    # September 29 replaces the absolute no-setup claim with three audience paths.
+    for audience in ("engineers", "designers", "ai-agents"):
+        if f'data-audience="{audience}"' not in hero:
+            problems.append("the hero omits the " + audience + " entry point")
     # The owner decided on September 23, 2026 that the hero names the work it removes, and named it as the work done by
     # hand. The claim lives in the subhead, so it is read from there and not from the whole band: the worked example below
     # the hero also says "by hand" when it names the manual work that example replaces, and that sentence is not the claim.
@@ -492,12 +494,12 @@ class HomepageHeroTest(unittest.TestCase):
         # The terminal's label covers the search and the download, so its loss is reported for each of the two.
         self.assertEqual(len(hero_problems(_planted(self.page, ">Real results from the library<", ">Results<"), served_tool_names())), 2)
         self.assertEqual(len(hero_problems(_planted(self.page, '<span data-hero-part="tools"', "<span"), served_tool_names())), 1)
-        self.assertEqual(len(hero_problems(_planted(self.page, "No manual search, no manual setup.", "No manual search."), served_tool_names())), 1)
+        self.assertEqual(len(hero_problems(_planted(self.page, 'data-audience="designers"', 'data-audience="missing"'), served_tool_names())), 1)
         # KNOWN_WRONG: a subhead that keeps both "no manual" sentences but stops naming the work it removes. The worked
         # example below the hero still says "by hand" when it names the manual work that example replaces, so this planted
         # hero keeps those words elsewhere and the claim can only be read from the subhead. It failed only against the live
         # service on September 29, 2026, which is why the local check holds the same line as the hosted one.
-        self.assertEqual(hero_problems(_planted(self.page, " so you stop assembling them by hand.", ""), served_tool_names()),
+        self.assertEqual(hero_problems(_planted(self.page, " by hand.", "."), served_tool_names()),
                          ["the hero does not name the work it removes as the work done by hand"])
 
     def test_the_hero_search_and_download_are_this_release_own(self):
@@ -543,8 +545,8 @@ class HomepageHeroTest(unittest.TestCase):
         # KNOWN_WRONG, the owner's constraint of September 24, 2026: assembly for each step stated as what Baltor does today, as a
         # label beside the directory, as a sentence of the introduction, and as a note that no longer says the engine is built to.
         for planted in (_planted(self.page, '<p class="hero-directory-note"', '<p>Assembled for this step.</p><p class="hero-directory-note"'),
-                        _planted(self.page, "No manual search, no manual setup.</p>",
-                                 "No manual search, no manual setup. Baltor assembles one for every step.</p>"),
+                        _planted(self.page, "same work by hand.</p>",
+                                 "same work by hand. Baltor assembles one for every step.</p>"),
                         _planted(self.page, "The local engine is built to assemble a directory", "The local engine assembles a directory")):
             with self.subTest(planted=len(planted)):
                 self.assertTrue(any("current capability" in problem for problem in hero_problems(planted)))

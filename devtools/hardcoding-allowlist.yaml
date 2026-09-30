@@ -1,5 +1,125 @@
 schema: hardcoding_allowlist/v1
 entries:
+- finding_id: hardcoding.0052ca69b7e96ecc6819f0fe
+  owner: "tools.knowledge_radar.community-watch-v1.json:sources[3].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 29, 2026: a declared public feed or terms URL belongs in this versioned source registry, not in an execution engine. The reader and source transport enforce public HTTPS, explicit hosts, bounded reads and no automatic linked-resource fetching. Community-watch refusal fixtures cover source bindings, unsafe URLs and failed-read state."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.13126e96113eb8f5dd660b69
+  owner: "tools.knowledge_radar.community-watch-v1.json:sources[4].terms_url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 29, 2026: a declared public feed or terms URL belongs in this versioned source registry, not in an execution engine. The reader and source transport enforce public HTTPS, explicit hosts, bounded reads and no automatic linked-resource fetching. Community-watch refusal fixtures cover source bindings, unsafe URLs and failed-read state."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.1b85370c9f1f19afcb601138
+  owner: "tools.knowledge_radar.community-watch-v1.json:sources[3].terms_url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 29, 2026: a declared public feed or terms URL belongs in this versioned source registry, not in an execution engine. The reader and source transport enforce public HTTPS, explicit hosts, bounded reads and no automatic linked-resource fetching. Community-watch refusal fixtures cover source bindings, unsafe URLs and failed-read state."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.35391e4728782151dc580e42
+  owner: "tools.knowledge_radar.community-watch-v1.json:sources[4].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 29, 2026: a declared public feed or terms URL belongs in this versioned source registry, not in an execution engine. The reader and source transport enforce public HTTPS, explicit hosts, bounded reads and no automatic linked-resource fetching. Community-watch refusal fixtures cover source bindings, unsafe URLs and failed-read state."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.3557d0d2a06b93cb5ac6fb6f
+  owner: "tools.knowledge_radar.community-watch-v1.json:sources[1].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 29, 2026: a declared public feed or terms URL belongs in this versioned source registry, not in an execution engine. The reader and source transport enforce public HTTPS, explicit hosts, bounded reads and no automatic linked-resource fetching. Community-watch refusal fixtures cover source bindings, unsafe URLs and failed-read state."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.55f6575c6b669ee11ccc7bfa
+  owner: "tools.knowledge_radar.community-watch-v1.json:sources[2].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 29, 2026: a declared public feed or terms URL belongs in this versioned source registry, not in an execution engine. The reader and source transport enforce public HTTPS, explicit hosts, bounded reads and no automatic linked-resource fetching. Community-watch refusal fixtures cover source bindings, unsafe URLs and failed-read state."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.6df33456f1ca80651f81f46c
+  owner: "tools.knowledge_radar.community-watch-v1.json:sources[5].terms_url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 29, 2026: a declared public feed or terms URL belongs in this versioned source registry, not in an execution engine. The reader and source transport enforce public HTTPS, explicit hosts, bounded reads and no automatic linked-resource fetching. Community-watch refusal fixtures cover source bindings, unsafe URLs and failed-read state."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.883c1d013ae11c8f51787dd9
+  owner: "tools.knowledge_radar.community-watch-v1.json:sources[5].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 29, 2026: a declared public feed or terms URL belongs in this versioned source registry, not in an execution engine. The reader and source transport enforce public HTTPS, explicit hosts, bounded reads and no automatic linked-resource fetching. Community-watch refusal fixtures cover source bindings, unsafe URLs and failed-read state."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.9a09b66d8a338cfd690d9657
+  owner: "tools.knowledge_radar.community-watch-v1.json:sources[1].terms_url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 29, 2026: a declared public feed or terms URL belongs in this versioned source registry, not in an execution engine. The reader and source transport enforce public HTTPS, explicit hosts, bounded reads and no automatic linked-resource fetching. Community-watch refusal fixtures cover source bindings, unsafe URLs and failed-read state."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.aa4cddbb193df464c3366c63
+  owner: "tools.knowledge_radar.community-watch-v1.json:sources[0].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 29, 2026: a declared public feed or terms URL belongs in this versioned source registry, not in an execution engine. The reader and source transport enforce public HTTPS, explicit hosts, bounded reads and no automatic linked-resource fetching. Community-watch refusal fixtures cover source bindings, unsafe URLs and failed-read state."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.c4d6b00668797a2167cc41c1
+  owner: "tools.knowledge_radar.community-watch-v1.json:sources[2].terms_url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 29, 2026: a declared public feed or terms URL belongs in this versioned source registry, not in an execution engine. The reader and source transport enforce public HTTPS, explicit hosts, bounded reads and no automatic linked-resource fetching. Community-watch refusal fixtures cover source bindings, unsafe URLs and failed-read state."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.deae8e8a797e3c140692c963
+  owner: "tools.knowledge_radar.community-watch-v1.json:sources[0].terms_url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 29, 2026: a declared public feed or terms URL belongs in this versioned source registry, not in an execution engine. The reader and source transport enforce public HTTPS, explicit hosts, bounded reads and no automatic linked-resource fetching. Community-watch refusal fixtures cover source bindings, unsafe URLs and failed-read state."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.0e762233dddccbf02c433987
+  owner: "tools.knowledge_radar.community_harness:research"
+  classification: DEPLOYMENT_CONFIGURATION
+  rationale: "Reviewed September 29, 2026: this is a whitelisted environment variable NAME at the native harness process boundary, never a credential value. API-key variables are deliberately not inherited. The authorized-harness fixture asserts the restricted environment and read-only execution profile. No user-controlled environment expansion is accepted."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.38bd0385337863b77980fbb6
+  owner: "tools.knowledge_radar.community_harness:research"
+  classification: DEPLOYMENT_CONFIGURATION
+  rationale: "Reviewed September 29, 2026: this is a whitelisted environment variable NAME at the native harness process boundary, never a credential value. API-key variables are deliberately not inherited. The authorized-harness fixture asserts the restricted environment and read-only execution profile. No user-controlled environment expansion is accepted."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.63786658ff1b0e3bae373f9d
+  owner: "tools.knowledge_radar.community_harness:research"
+  classification: DEPLOYMENT_CONFIGURATION
+  rationale: "Reviewed September 29, 2026: this is a whitelisted environment variable NAME at the native harness process boundary, never a credential value. API-key variables are deliberately not inherited. The authorized-harness fixture asserts the restricted environment and read-only execution profile. No user-controlled environment expansion is accepted."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.9b254199418989b65cf81cb7
+  owner: "tools.knowledge_radar.community_harness:research"
+  classification: DEPLOYMENT_CONFIGURATION
+  rationale: "Reviewed September 29, 2026: this is a whitelisted environment variable NAME at the native harness process boundary, never a credential value. API-key variables are deliberately not inherited. The authorized-harness fixture asserts the restricted environment and read-only execution profile. No user-controlled environment expansion is accepted."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.e288030ae4254b260af28c75
+  owner: "tools.knowledge_radar.community_harness:research"
+  classification: DEPLOYMENT_CONFIGURATION
+  rationale: "Reviewed September 29, 2026: this is a whitelisted environment variable NAME at the native harness process boundary, never a credential value. API-key variables are deliberately not inherited. The authorized-harness fixture asserts the restricted environment and read-only execution profile. No user-controlled environment expansion is accepted."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.f505f119fe1d7e74f3c95566
+  owner: "tools.knowledge_radar.community_harness:research"
+  classification: DEPLOYMENT_CONFIGURATION
+  rationale: "Reviewed September 29, 2026: this is a whitelisted environment variable NAME at the native harness process boundary, never a credential value. API-key variables are deliberately not inherited. The authorized-harness fixture asserts the restricted environment and read-only execution profile. No user-controlled environment expansion is accepted."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.0ab6da976b00214ef5d57f8b
+  owner: "tools.knowledge_radar.community_intake:read_registry"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 29, 2026: this literal is the required HTTPS scheme used to validate a declared domain, not a provider endpoint. The canonical-public-URL validator refuses credentials, literal addresses, private suffixes and unsupported ports; the registry stores actual source bindings separately."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
+- finding_id: hardcoding.ce3bf829cd1be8e4cc4cbde7
+  owner: "tools.knowledge_radar.community_intake:read_registry"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed September 29, 2026: this literal is the required HTTPS scheme used to validate a declared domain, not a provider endpoint. The canonical-public-URL validator refuses credentials, literal addresses, private suffixes and unsupported ports; the registry stores actual source bindings separately."
+  created_on: '2026-09-29'
+  expires_on: '2027-03-29'
 - finding_id: hardcoding.00634844f9827af65a55515f
   owner: "tools.research_source_watch.json:sources[28].url"
   classification: STRATEGY_OR_PROVIDER_BINDING

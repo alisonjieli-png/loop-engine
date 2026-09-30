@@ -69,6 +69,7 @@ WEB_ASSETS = {
     "/waitlist": ("index.html", HTML_MEDIA_TYPE),
     # The four audience pages of the September 23 site map, restored on September 24, 2026.
     "/for/coding-agents": ("index.html", HTML_MEDIA_TYPE), "/for/engineering-teams": ("index.html", HTML_MEDIA_TYPE),
+    "/for/designers": ("index.html", HTML_MEDIA_TYPE),
     "/for/comparing-tools": ("index.html", HTML_MEDIA_TYPE), "/for/protocol-and-client": ("index.html", HTML_MEDIA_TYPE),
     # The showcase of September 24, 2026: one task shown step by step, three case studies written from saved
     # evidence, and the service status read live. demo.baltor.ai and status.baltor.ai open two of them at their root.
@@ -156,6 +157,8 @@ WEB_ASSETS = {
     # of September 23, 2026. Replacing these four files changes it everywhere, because the header,
     # the footer and the icons all read them.
     "/assets/baltor-mark.svg": ("baltor-mark.svg", "image/svg+xml"),
+    "/assets/procedural-bear-preview.svg": ("procedural-bear-preview.svg", "image/svg+xml"),
+    "/assets/procedural-tree-preview.svg": ("procedural-tree-preview.svg", "image/svg+xml"),
     "/assets/favicon-32.png": ("favicon-32.png", "image/png"),
     "/assets/favicon-192.png": ("favicon-192.png", "image/png"),
     "/assets/apple-touch-icon.png": ("apple-touch-icon.png", "image/png"),

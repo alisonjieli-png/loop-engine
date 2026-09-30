@@ -24,7 +24,7 @@ from tools.prepare_harness_candidates import (
 )
 
 
-def build(repository, folder, *, authorized=False):
+def build(repository, folder, *, authorized=False, proposal_factory=None):
     repository, folder = Path(repository).resolve(), Path(folder).absolute()
     if not authorized:
         raise ValueError("preparation is not authorized")
@@ -34,7 +34,7 @@ def build(repository, folder, *, authorized=False):
         raise ValueError("run folder must have an existing, non-symlink parent")
     revision = subprocess.run(["git", "-C", str(repository), "rev-parse", "HEAD"],
                               check=True, capture_output=True, text=True).stdout.strip()
-    record = proposals(repository, revision)
+    record = (proposal_factory or proposals)(repository, revision)
     _validated_sources(repository, record)
     folder.mkdir(mode=0o700)
     request_file = folder / "proposals.json"

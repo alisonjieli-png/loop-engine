@@ -519,6 +519,15 @@ main:has(> [data-view=pricing]:not([hidden])){max-width:none;padding:0}
   [data-view=admin]>*{grid-column:2;min-width:0}
   [data-view=admin]>.admin-sections{grid-column:1;grid-row:1/span 8;position:sticky;top:calc(var(--header-height,72px) + 1.5rem);flex-direction:column;align-items:stretch;margin:0}
 }
+/* Three paths share the library; their current availability is stated separately. */
+.audience-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;width:100%;text-align:left}
+.audience-card{display:flex;flex-direction:column;align-items:flex-start;gap:.9rem;min-width:0;padding:1.5rem;border:1px solid var(--night-rule);border-radius:var(--radius-card);background:color-mix(in srgb,var(--night-ink) 4%,var(--night));color:var(--night-ink)}
+.audience-card>*{margin:0}.audience-card .audience-label{font:500 .875rem var(--font-mono);color:var(--night-accent)}
+.audience-card h2{font-size:1.5rem;line-height:1.15;letter-spacing:-.02em}.audience-card>p:not(.audience-label){font-size:1rem;line-height:1.5;color:var(--night-muted)}
+.audience-card .audience-availability{font-size:.875rem}.audience-link{display:flex;align-items:center;justify-content:space-between;gap:1rem;width:100%;min-height:44px;margin-top:auto;padding-top:.5rem;font-size:1rem;font-weight:600;color:var(--night-ink);text-decoration:none;border-top:1px solid var(--night-rule)}
+.audience-link:focus-visible{outline:2px solid var(--night-accent);outline-offset:4px}.audience-link:hover{color:var(--night-accent)}
+.creative-reference-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.5rem;max-width:850px;margin:0 auto 2rem}.creative-reference-grid figure{margin:0}.creative-reference-grid img{display:block;width:100%;height:auto;border-radius:16px}.creative-reference-grid figcaption{font-size:.875rem;line-height:1.5;margin:.65rem 0;color:var(--muted)}
+@media(max-width:760px){.audience-grid{grid-template-columns:1fr}.audience-card{padding:1.25rem;gap:.65rem}.audience-card h2{font-size:1.35rem}.creative-reference-grid{grid-template-columns:1fr;max-width:420px}}
 /* design: home */
 
 html [data-view="home"]>.home-band{padding-top:2rem;padding-bottom:2rem}

@@ -1,6 +1,7 @@
 /* Real browser + HTTP + durable-domain checks. Providers are local fixtures.
    Removed-guard controls change the served page script in memory only, never a source file. */
 import {runSignupSessionBoundaries} from "./signup_session_boundary_checks.mjs";
+import {heroProblems,heroCheckRejectsItsKnownWrongCases,checkAudiences,keepsThePerStepOptionOut} from "./homepage_audience_checks.mjs";
 import {runShowcasePageChecks,showcasePaths,showcaseScreenshotSuffixes} from "./showcase_page_checks.mjs";
 import {runDirectoryChecks} from "./directory_browser_checks.mjs";
 import {internalTerms,publicVocabulary,retiredAccessWords,invitationWords,unpublishedTerms,cardStatusWords,retiredPhrases} from "./public_wording_rules.mjs";
@@ -769,17 +770,9 @@ try {
      beside it: the owner's earlier lines, a hero that names only one of the two, and a hero that promises a fresh harness again. */
   const heroCopy=await page.locator('[data-view="home"] .hero-copy').evaluate(node=>({headline:node.querySelector("h1")?.textContent.replace(/\s+/g," ").trim()||"",
     subhead:node.querySelector(".hero-subhead")?.textContent.replace(/\s+/g," ").trim()||"",text:node.textContent.replace(/\s+/g," ").trim()}));
-  const saysWhatBaltorIs=copy=>/\bharness\b/i.test(copy.headline+" "+copy.subhead)&&/\bskills\b/i.test(copy.subhead)&&/\btools\b/i.test(copy.subhead)&&/where (?:your|the|each) harness reads/i.test(copy.subhead);
-  const saysThePain=copy=>/\bby hand\b|\bno manual search\b/i.test(copy.subhead);
-  const keepsThePerStepOptionOut=copy=>!/fresh harness|harness (?:for|per) (?:each|every) step|one harness per step/i.test(copy.text);
-  const heroProblems=copy=>[...(saysWhatBaltorIs(copy)?[]:["the hero does not say what Baltor is and where the files go"]),...(saysThePain(copy)?[]:["the hero does not name the work it removes"]),
-    ...(keepsThePerStepOptionOut(copy)?[]:["the hero promises a fresh harness for each step"])];
   check("homepage_hero_says_what_baltor_is_and_the_pain_it_removes",heroProblems(heroCopy).length===0&&await page.locator('[data-view="home"] .boundary-figure').count()===0,{...heroCopy,problems:heroProblems(heroCopy)});
-  const earlierHero={headline:"Supercharge your developers and AI agents.",subhead:"Big tasks go better in small steps. Baltor is designed to give each step a fresh harness that holds only what that step needs, aiming to limit context drift and help smaller models do more of the work."};
-  check("hero_check_rejects_the_earlier_lines_a_hero_without_the_pain_and_a_fresh_harness_promise",heroProblems({...earlierHero,text:earlierHero.headline+" "+earlierHero.subhead}).length===3
-    &&heroProblems({headline:"The perfect harness setup for every task.",subhead:"Baltor finds skills, instructions and tools and puts each file where your harness reads it.",text:"The perfect harness setup for every task."}).length===1
-    &&heroProblems({headline:"Stop copying files by hand.",subhead:"Nobody has to search, sort or copy them by hand.",text:"Stop copying files by hand."}).length===1
-    &&heroProblems({...heroCopy,text:heroCopy.text+" Each step runs in a fresh harness."}).length===1);
+  check("hero_check_rejects_the_earlier_lines_a_hero_without_the_pain_and_a_fresh_harness_promise",heroCheckRejectsItsKnownWrongCases(heroCopy));
+  await checkAudiences(page,check);
   /* The model keys stay with the customer: the trust band says Baltor never asks for a model key, the footer says so on every page,
      and the closing caption claims no percentage. */
   const keyPromise=await page.evaluate(()=>({trust:document.querySelector('[data-band="trust"]')?.textContent.replace(/\s+/g," ")||"",footer:document.querySelector("footer .footer-bottom")?.textContent.replace(/\s+/g," ")||"",

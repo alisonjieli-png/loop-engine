@@ -50,6 +50,13 @@ access and reuse terms. See the [engine-control research record](../research/CRE
 
 ## Architecture and engine selection
 
+The owner further specified three homepage entry paths: Engineers, Designers
+and AI Agents. They share one library and account. Procedural generators,
+transformers, renderers and validators should be discoverable executable
+components, with method, engine and reproducibility kept separate. See
+[procedural harness components](PROCEDURAL-HARNESS-COMPONENTS.md) for the initial
+implemented package contract and the still-unqualified alternative engines.
+
 The [functional component standard](FUNCTIONAL-COMPONENT-STANDARD.md) owns typed edges, swappable engines and conformance. A source-backed capability record is an input to selection, not proof that its engine is active. Reuse an existing slot and adapter before adding another abstraction. A renderer, physics engine, retrieval index, queue backend and OAuth provider solve different jobs. Their shared protocol does not imply identical behavior.
 
 Contract-first composition uses the existing code-asset cards, immutable body

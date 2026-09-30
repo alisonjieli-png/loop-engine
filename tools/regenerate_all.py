@@ -74,6 +74,12 @@ def _python_view(name):
 
 
 VIEWS = (
+    View("asset-site-previews",
+         ("src/loop_engine/core/service_runtime/web_assets/procedural-bear-preview.svg",
+          "src/loop_engine/core/service_runtime/web_assets/procedural-tree-preview.svg"),
+         ("tools/procedural_assets/*.py", "tools/build_asset_site_previews.py"),
+         ("{python}", "-m", "tools.build_asset_site_previews"),
+         "tools tests: test_procedural_assets, website previews match the original constructors"),
     View("packaged-contracts",
          ("src/loop_engine/data/architecture.yaml", "src/loop_engine/data/terminology.yaml"),
          ("architecture.yaml", "terminology.yaml"),

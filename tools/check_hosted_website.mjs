@@ -17,11 +17,7 @@ const check=(name,passed)=>checks.push({name,passed:passed===true});
 /* The owner's decisions of September 23, 2026, written once as rules that the journey below and its known-wrong cases share.
    tools/check_service_workspace.mjs holds the same decisions against a local service. */
 const heroHarnesses=["Claude Code","Codex","OpenCode","Pi","Baltor Harness"];
-const heroProblems=copy=>[...(/\bharness\b/i.test(copy.headline+" "+copy.subhead)&&/\bskills\b/i.test(copy.subhead)&&/\btools\b/i.test(copy.subhead)&&/where (?:your|the|each) harness reads/i.test(copy.subhead)?[]:["the hero does not say what Baltor is and where the files go"]),
-  ...(/\bby hand\b/i.test(copy.subhead)?[]:["the hero does not name the work it removes"]),...(/fresh harness|harness (?:for|per) (?:each|every) step|one harness per step/i.test(copy.text)?["the hero promises a fresh harness for each step"]:[])];
-const heroCheckRejectsItsKnownWrongCases=copy=>{const earlier={headline:"Supercharge your developers and AI agents.",subhead:"Big tasks go better in small steps. Baltor is designed to give each step a fresh harness that holds only what that step needs."};
-  return heroProblems({...earlier,text:earlier.headline+" "+earlier.subhead}).length===3&&heroProblems({headline:"The perfect harness setup for every task.",subhead:"Baltor finds skills, instructions and tools and puts each file where your harness reads it.",text:""}).length===1
-    &&heroProblems({...copy,text:copy.text+" Each step runs in a fresh harness."}).some(problem=>problem.includes("fresh harness"));};
+import {heroProblems,heroCheckRejectsItsKnownWrongCases,checkAudiences} from "./homepage_audience_checks.mjs";
 const categoryProblems=state=>[...(/^Harness and agent optimized operation\.$/m.test(state.footer)?[]:["the footer does not carry the category line in full"]),...(JSON.stringify(state.harnesses)===JSON.stringify(heroHarnesses)?[]:["the hero names "+JSON.stringify(state.harnesses)])];
 const statesThePlanAndPrice=text=>/^Baltor Pro \$29 a month\b/.test(text)&&!/United States dollars|per month/i.test(text);
 const cardProblems=(cards,order)=>[...(JSON.stringify(cards.map(card=>card.name))!==JSON.stringify(order)?["the cards are "+JSON.stringify(cards.map(card=>card.name))]:[]),
@@ -58,7 +54,7 @@ const opensItsPage=(shown,entry)=>Boolean(entry)&&JSON.stringify(shown.views)===
 const shownPage=target=>target.evaluate(()=>({views:[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).map(item=>item.dataset.view),title:document.title,
   canonical:document.querySelector('link[rel="canonical"]')?.getAttribute("href")||"",brand:document.querySelector("header a.brand")?.getAttribute("href")||""}));
 /* The pages of September 24, 2026, checked on every hostname at their own addresses. */
-const showcasePaths=["/demo","/demo/kaggle","/status","/examples","/case-studies/data-cleanup","/case-studies/pi-and-gemma-4","/case-studies/sign-up-protection","/for/coding-agents","/for/engineering-teams","/for/comparing-tools","/for/protocol-and-client"];
+const showcasePaths=["/demo","/demo/kaggle","/status","/examples","/case-studies/data-cleanup","/case-studies/pi-and-gemma-4","/case-studies/sign-up-protection","/for/designers","/for/coding-agents","/for/engineering-teams","/for/comparing-tools","/for/protocol-and-client"];
 const browser=await chromium.launch({executablePath:"/opt/google/chrome/chrome",headless:true,args:["--no-sandbox"]});
 const context=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:"reduce"});
 await context.route("**/*",route=>{if(new URL(route.request().url()).origin===origin)route.continue();else{external.push(new URL(route.request().url()).origin);route.abort();}});
@@ -104,6 +100,7 @@ try{
     subhead:node.querySelector(".hero-subhead")?.textContent.replace(/\s+/g," ").trim()||"",text:node.textContent.replace(/\s+/g," ").trim()}));
   check("live_homepage_hero_says_what_baltor_is_and_the_pain_it_removes",heroProblems(liveHero).length===0&&await page.locator('[data-view="home"] .boundary-figure').count()===0);
   check("hero_check_rejects_the_earlier_lines_a_hero_without_the_pain_and_a_fresh_harness_promise",heroCheckRejectsItsKnownWrongCases(liveHero));
+  await checkAudiences(page,check);
   check("live_default_appearance_is_light",await page.evaluate(()=>document.documentElement.dataset.theme==="light"));
   check("live_how_it_works_covers_five_optimization_problems",await page.locator('[data-view="about"] [data-friction]').count()===5);
   const heroOpening=await page.locator('[data-view="home"] .hero-copy').evaluate(node=>({first:node.firstElementChild?.tagName,badges:node.querySelectorAll(".hero-chip").length}));

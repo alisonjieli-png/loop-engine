@@ -1279,14 +1279,15 @@ class StarterCatalogueChecks(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             folder = Path(directory).resolve() / "starter-catalogue"
             shutil.copytree(CATALOGUE, folder, ignore=shutil.ignore_patterns("__pycache__"))
+            repository = self._anchored_source_tree(directory, revision)
             self.assertEqual(
-                refresh.anchor(refresh.AnchorRequest(folder, ROOT, revision))["review_sheet_still_to_edit"], [])
+                refresh.anchor(refresh.AnchorRequest(folder, repository, revision))["review_sheet_still_to_edit"], [])
 
             sheet = folder / refresh.REVIEW_FILE
             earlier = (self.snapshot.items["previous_source_revisions"] or ["0" * 40])[-1]
             sheet.write_text(sheet.read_text(encoding="utf-8").replace(
                 revision[:refresh.SHORT_REVISION], earlier[:refresh.SHORT_REVISION]), encoding="utf-8")
-            found = refresh.anchor(refresh.AnchorRequest(folder, ROOT, revision))["review_sheet_still_to_edit"]
+            found = refresh.anchor(refresh.AnchorRequest(folder, repository, revision))["review_sheet_still_to_edit"]
             self.assertEqual(len(found), 1)
             self.assertIn(f"does not name revision {revision[:refresh.SHORT_REVISION]}", found[0])
     def test_a_file_cited_only_beside_general_practice_may_change_without_a_new_anchor(self):
@@ -1329,12 +1330,29 @@ class StarterCatalogueChecks(unittest.TestCase):
             shutil.copytree(CATALOGUE, folder, ignore=shutil.ignore_patterns("__pycache__"))
             before = (folder / "items.json").read_bytes()
             revision = self.snapshot.items["source_revision"]
-            self.assertFalse(refresh.anchor(refresh.AnchorRequest(folder, ROOT, revision))["written"])
+            repository = self._anchored_source_tree(directory, revision)
+            self.assertFalse(refresh.anchor(refresh.AnchorRequest(folder, repository, revision))["written"])
             with self.assertRaises(refresh.CatalogueRefreshError):
                 refresh.anchor(refresh.AnchorRequest(folder, ROOT, "0" * 40, True))
             with self.assertRaisesRegex(refresh.CatalogueRefreshError, "forty character revision"):
                 refresh.anchor(refresh.AnchorRequest(folder, ROOT, revision[:7], True))
             self.assertEqual((folder / "items.json").read_bytes(), before)
+            source = next(iter(self.snapshot.items["source_digests"]))
+            (repository / source).write_bytes((repository / source).read_bytes() + b"\n# changed fixture\n")
+            with self.assertRaisesRegex(refresh.CatalogueRefreshError, "cited files differ"):
+                refresh.anchor(refresh.AnchorRequest(folder, repository, revision))
+
+    def _anchored_source_tree(self, directory, revision):
+        """Read-only Git object access plus exact old bytes, independent of today's general-practice edits."""
+        repository = Path(directory).resolve() / "anchored-source"
+        repository.mkdir()
+        git_dir = self._git(ROOT, "rev-parse", "--absolute-git-dir").stdout.decode().strip()
+        (repository / ".git").write_text("gitdir: " + git_dir + "\n", encoding="utf-8")
+        for source in self.snapshot.items["source_digests"]:
+            target = repository / source
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(self._git(ROOT, "show", revision + ":" + source).stdout)
+        return repository
 
     def test_the_refresh_tool_reports_and_repairs_a_stale_body(self):
         refresh = _refresh_module()

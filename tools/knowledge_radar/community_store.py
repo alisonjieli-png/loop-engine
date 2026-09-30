@@ -31,6 +31,7 @@ from loop_engine.loop.effect_approval import (
 from loop_engine.loop.recursive_loop import LoopLedger
 
 DOCUMENT_VERSION = "community_watch_document/v1"
+RECORD_FOUND, RECORD_NOT_FOUND = "found", "not_found"
 SCHEMA = {"type": "object", "additionalProperties": False,
           "required": ["record_type", "kind", "source_id", "state", "data"], "properties": {
               "record_type": {"const": DOCUMENT_VERSION},
@@ -81,9 +82,9 @@ class CommunityStore:
 
     def get(self, identity, version=""):
         result = self.service.execute(RecordOperationRequest("get", identity, record_version=version, materialize=True))
-        if result.status == "not_found":
+        if result.status == RECORD_NOT_FOUND:
             return None
-        if result.status != "found" or not result.document_json:
+        if result.status != RECORD_FOUND or not result.document_json:
             raise ValueError("community_record_unavailable:" + result.status)
         return {"version": result.records[0]["record_version"], "document": json.loads(result.document_json)}
 
