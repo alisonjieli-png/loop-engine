@@ -788,6 +788,11 @@
     "group": "Documentation",
     "pages": [
      {
+      "address": "/docs/container-worker",
+      "title": "Run the downloadable worker",
+      "description": "Download the worker, choose a model and harness, and set explicit limits and project permissions."
+     },
+     {
       "address": "/docs",
       "title": "Documentation",
       "description": "Set up your harness, search the library, download checked files, and understand your account and your usage."

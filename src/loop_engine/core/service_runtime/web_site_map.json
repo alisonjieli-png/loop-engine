@@ -13,6 +13,18 @@
   ],
   "pages": [
     {
+      "address": "/docs/container-worker",
+      "view": "docs",
+      "title": "Run the downloadable worker",
+      "description": "Download the worker, choose a model and harness, and set explicit limits and project permissions.",
+      "group": "Documentation",
+      "linked_from": ["page"],
+      "unlinked_reason": "",
+      "scroll_budget": "documentation",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
       "address": "/worker",
       "view": "worker",
       "title": "Run Baltor on your own computer",
