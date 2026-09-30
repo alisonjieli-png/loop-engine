@@ -35,22 +35,23 @@ _SECRET_SHAPES = (re.compile(r"sk-[A-Za-z0-9]{20,}"), re.compile(r"AKIA[0-9A-Z]{
 def check_dockerfile(text: str) -> list[dict]:
     lines = [line.strip() for line in text.splitlines()]
     from_lines = [line for line in lines if line.startswith("FROM ")]
+    final_stage = lines[max((index for index, line in enumerate(lines) if line.startswith("FROM ")), default=0):]
     users = [line.split(None, 1)[1].split(":", 1)[0].strip().lower()
-             for line in lines if line.startswith("USER ")]
+             for line in final_stage if line.startswith("USER ")]
     commands = re.sub(r"\\\n\s*", " ", text).splitlines()
     installs = [line for line in commands
                 if line.startswith("RUN ") and "pip install" in line]
-    pinned = bool(from_lines) and bool(re.fullmatch(
-        r"FROM\s+\S+@sha256:[0-9a-f]{64}(?:\s+AS\s+\S+)?", from_lines[0]))
+    pinned = bool(from_lines) and all(re.fullmatch(
+        r"FROM\s+\S+@sha256:[0-9a-f]{64}(?:\s+AS\s+\S+)?", line) for line in from_lines)
     return [
-        {"check": "one_base_image", "passed": len(from_lines) == 1,
-         "detail": from_lines[0] if from_lines else "no FROM line"},
+        {"check": "base_images_declared", "passed": bool(from_lines),
+         "detail": "; ".join(from_lines) if from_lines else "no FROM line"},
         {"check": "base_image_digest_pinned", "passed": pinned,
          "detail": "pinned" if pinned else "a valid sha256 base image digest is required"},
         {"check": "runs_as_non_root", "passed": bool(users) and users[-1] not in ("0", "root")},
         {"check": "installation_failure_is_not_suppressed",
          "passed": bool(installs) and all("||" not in line for line in installs)},
-        {"check": "entry_point_is_loop_engine", "passed": any(line.startswith("ENTRYPOINT") and "loop-engine" in line for line in lines)},
+        {"check": "entry_point_is_loop_engine", "passed": any(line.startswith("ENTRYPOINT") and "loop-engine" in line for line in final_stage)},
         {"check": "no_secret_shape", "passed": not any(pattern.search(text) for pattern in _SECRET_SHAPES)},
     ]
 
@@ -96,12 +97,21 @@ def rejection_checks() -> list[dict]:
     """Counterexamples that must fail the recipe's named protections."""
     image = "FROM python:3.12-slim@sha256:" + "0" * 64 + "\n"
     clean = image + 'RUN python -m pip install .\nUSER 65534\nENTRYPOINT ["loop-engine"]\n'
+    builder = "FROM node:24@sha256:" + "1" * 64 + " AS harnesses\nUSER 65534\n"
 
     def passes(text, name):
         return next(item["passed"] for item in check_dockerfile(text) if item["check"] == name)
 
     return [
         {"check": "a_valid_recipe_passes", "passed": all(item["passed"] for item in check_dockerfile(clean))},
+        {"check": "a_valid_multistage_recipe_passes", "passed": all(item["passed"] for item in check_dockerfile(builder + clean))},
+        {"check": "an_unpinned_builder_is_refused",
+         "passed": not passes(builder.replace("@sha256:" + "1" * 64, "") + clean, "base_image_digest_pinned")},
+        {"check": "a_builder_user_cannot_supply_the_final_stage_user",
+         "passed": not passes(builder + clean.replace("USER 65534\n", ""), "runs_as_non_root")},
+        {"check": "a_builder_entrypoint_cannot_supply_the_final_stage_entrypoint",
+         "passed": not passes(builder + 'ENTRYPOINT ["loop-engine"]\n' + clean.replace('ENTRYPOINT ["loop-engine"]\n', ""),
+                              "entry_point_is_loop_engine")},
         {"check": "numeric_and_named_root_are_refused",
          "passed": all(not passes(clean.replace("USER 65534", "USER " + user), "runs_as_non_root")
                        for user in ("0", "0:0", "root", "root:65534"))},
