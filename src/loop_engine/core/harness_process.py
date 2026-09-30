@@ -20,6 +20,7 @@ import shutil
 import signal
 import socket
 import subprocess
+import sys
 import tempfile
 import threading
 import time
@@ -102,12 +103,15 @@ class HarnessProcessSpec:
     read_only_paths: tuple[str, ...]
     style: str
     catalog: object = field(default=None, repr=False, compare=False)
+    process_isolation: str = "bubblewrap"
     software_identities: tuple[tuple[str, str], ...] = field(init=False)
     recipe: object = field(init=False, repr=False, compare=False)
     recipe_modules: tuple = field(init=False, repr=False)
 
     def __post_init__(self):
         from .harness_execution_contracts import valid_harness_id
+        if self.process_isolation not in ("bubblewrap", "trusted_process"):
+            raise HarnessProcessError("an explicit supported process isolation profile is required")
         if (not valid_harness_id(self.harness_id) or not isinstance(self.package_version, str)
                 or not self.package_version.strip() or not isinstance(self.style, str) or not self.style):
             raise HarnessProcessError("exact harness identity and installed style are required")
@@ -147,9 +151,10 @@ class HarnessProcessSpec:
 
     @property
     def digest(self):
-        return _sha(_json({"record_type": "harness_process_spec/v2", "harness_id": self.harness_id,
+        return _sha(_json({"record_type": "harness_process_spec/v3", "harness_id": self.harness_id,
             "package_version": self.package_version, "command_prefix": self.command_prefix,
             "read_only_paths": self.read_only_paths, "style": self.style,
+            "process_isolation": self.process_isolation,
             "software_identities": self.software_identities,
             "recipe_digest": self.recipe.digest,
             "wire_codec_digests": [wire.digest for wire in self.catalog.wires_for(self.recipe)]}).encode())
@@ -316,6 +321,8 @@ def sandbox_arguments(launch: SandboxLaunch) -> list:
     Only the selected recipe's module and the codec module of each wire it
     declares are mounted beside the relay, so no other recipe is importable
     inside the sandbox."""
+    if launch.spec.process_isolation != "bubblewrap":
+        raise HarnessProcessError("this profile does not promise a per-step OS sandbox")
     run = Path(launch.run_directory)
     relay = Path(__file__).with_name("harness_process_relay.py")
     args = ["/usr/bin/bwrap", "--unshare-all", "--die-with-parent", "--new-session", "--clearenv",
@@ -387,6 +394,36 @@ def _relay_configuration(request) -> dict:
     return config
 
 
+def launch_environment(request, run):
+    """The chosen profile's complete environment, never inherited host values."""
+    environment = recipe_environment(request.spec, _request_values(request))
+    if request.spec.process_isolation == "trusted_process":
+        from dataclasses import replace
+        home = str(run / "work" / "home")
+        environment = replace(environment, path="/usr/local/bin:/usr/bin:/bin", home=home,
+                              config_home=home + "/.config", cache_home=home + "/.cache")
+    return environment
+
+
+def trusted_process_launch(request, run, socket_path):
+    """Fresh text-only processes; the host explicitly owns their outer isolation."""
+    relay_folder = run / "relay"
+    relay_folder.mkdir()
+    source = Path(__file__).with_name("harness_process_relay.py")
+    _write_private(relay_folder / "run.py", source.read_bytes())
+    for module in request.spec.recipe_modules:
+        _write_private(relay_folder / (module.module + ".py"), Path(module.path).read_bytes())
+    # A private Git root stops native instruction discovery at this assignment.
+    subprocess.run(["/usr/bin/git", "-C", str(run / "work"), "init", "--quiet"], check=True,
+                   env={"PATH": "/usr/bin:/bin", "GIT_CONFIG_GLOBAL": "/dev/null", "GIT_CONFIG_NOSYSTEM": "1"},
+                   capture_output=True, timeout=10)
+    configuration = _relay_configuration(request)
+    configuration.update(workspace_path=str(run / "work"), task_path=str(run / "task.txt"),
+                         broker_socket=str(socket_path))
+    _write_private(relay_folder / "config.json", _json(configuration).encode())
+    return [sys.executable, str(relay_folder / "run.py"), "--config", str(relay_folder / "config.json")]
+
+
 def _identity_payload(request, run, instruction_manifest) -> dict:
     """What the process identity digests: the spec, the request limits, the
     relay and exactly the recipe and codec modules this run mounts."""
@@ -396,8 +433,7 @@ def _identity_payload(request, run, instruction_manifest) -> dict:
             "timeout_seconds": request.timeout_seconds, "run": str(run),
             "instruction_manifest": instruction_manifest,
             "relay_digest": _path_digest(Path(__file__).with_name("harness_process_relay.py")),
-            "confined_environment_digest": recipe_environment(
-                request.spec, _request_values(request)).content_digest,
+            "confined_environment_digest": launch_environment(request, run).content_digest,
             "recipe_module_digests": {module.module: _path_digest(Path(module.path))
                                       for module in request.spec.recipe_modules}}
 
@@ -413,7 +449,7 @@ def run_harness_process(request: HarnessProcessRequest,
     if not isinstance(request, HarnessProcessRequest) or not callable(broker):
         raise HarnessProcessError("typed request and explicit model broker are required")
     request.spec.validate_unchanged()
-    if shutil.which("bwrap") != "/usr/bin/bwrap":
+    if request.spec.process_isolation == "bubblewrap" and shutil.which("bwrap") != "/usr/bin/bwrap":
         raise HarnessProcessError("qualified Bubblewrap executable is unavailable")
     from .harness_process_relay import _decode, _receive
     started = time.monotonic()
@@ -445,9 +481,14 @@ def run_harness_process(request: HarnessProcessRequest,
             listener.bind(str(socket_path))
             os.chmod(socket_path, 0o600)
             listener.listen(4)
-            proc = subprocess.Popen(_sandbox(request, run, socket_path),
+            command = (trusted_process_launch(request, run, socket_path)
+                       if request.spec.process_isolation == "trusted_process" else _sandbox(request, run, socket_path))
+            proc = subprocess.Popen(command,
                 stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                env={"PATH": default_confined_environment().path}, start_new_session=True)
+                env=(launch_environment(request, run).variables() if request.spec.process_isolation == "trusted_process"
+                     else {"PATH": default_confined_environment().path}),
+                cwd=str(run / "work") if request.spec.process_isolation == "trusted_process" else None,
+                start_new_session=True)
 
             def kill():
                 if proc.poll() is None:

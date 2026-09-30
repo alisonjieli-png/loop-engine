@@ -2,13 +2,13 @@
 import {chromium} from "../showcase/node_modules/playwright-core/index.mjs";
 import {spawn} from "node:child_process";
 import {createInterface} from "node:readline";
-import {existsSync,writeFileSync} from "node:fs";
+import {existsSync,readFileSync,writeFileSync} from "node:fs";
 import {resolve} from "node:path";
 import {checkAudiences,heroProblems,heroCheckRejectsItsKnownWrongCases,audienceDestinations} from "./homepage_audience_checks.mjs";
 
 const root=resolve(new URL("..",import.meta.url).pathname),output=resolve(process.argv[2]||"");
 if(!output.endsWith(".json")||existsSync(output))throw new Error("A new report filename is required");
-for(const suffix of ["-home-desktop.png","-home-phone.png","-designers-desktop.png","-designers-phone.png"])
+for(const suffix of ["-home-desktop.png","-home-phone.png","-designers-desktop.png","-designers-phone.png","-worker-desktop.png","-worker-phone.png"])
   if(existsSync(output.replace(/\.json$/,suffix)))throw new Error("Existing screenshot must not be overwritten");
 const source=`from contextlib import ExitStack
 from pathlib import Path
@@ -57,6 +57,20 @@ try{
       }
       await page.goto(fixture.base);
     }
+    await page.goto(fixture.base+"/setup");
+    await page.locator('[data-view="setup"] a[data-page="worker"]').click();
+    check(device+"_worker_setup_navigation",new URL(page.url()).pathname==="/worker"&&await page.locator('[data-view="worker"]:visible h1').count()===1);
+    check(device+"_worker_direct_route",(await page.request.get(fixture.base+"/worker")).status()===200);
+    const download=await page.locator('[data-view="worker"] a[download="compose.yaml"]').getAttribute("href");
+    const held=await page.request.get(fixture.base+download);
+    const actual=await held.text(),expected=readFileSync(resolve(root,"containers/worker/compose.yaml"),"utf8");
+    check(device+"_worker_download_matches_owned_profile",held.status()===200&&actual===expected);
+    check(device+"_worker_download_has_explicit_mount_and_resource_limits",actual.includes('./project:/work')&&actual.includes('read_only: true')&&actual.includes('cap_drop: [ALL]')&&actual.includes('pids_limit: 256'));
+    check(device+"_worker_page_has_no_overflow",await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+    await page.screenshot({path:output.replace(/\.json$/,"-worker-"+device+".png"),fullPage:true});
+    await page.locator('[data-view="worker"] a[href="/docs/container-worker"]').click();
+    await page.locator("#docs-article h2").first().waitFor();
+    check(device+"_worker_guide_loads_from_download_page",new URL(page.url()).pathname==="/docs/container-worker"&&await page.locator("#docs-article").getByText("Two isolation profiles",{exact:true}).count()===1);
     await context.close();
   }
 }finally{await browser.close();service.stdin.end("\n");lines.close();}

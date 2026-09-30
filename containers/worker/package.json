@@ -1,0 +1,9 @@
+{
+  "name": "baltor-worker-harnesses",
+  "version": "1.0.0",
+  "private": true,
+  "license": "MIT",
+  "dependencies": {
+    "opencode-ai": "1.17.9"
+  }
+}

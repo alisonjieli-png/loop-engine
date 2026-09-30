@@ -25,6 +25,9 @@ the check that enforces them. The single structured source it points at is
 
 ## For a paying customer of the hosted service
 
+The downloadable worker also has an operating guide. Its model access and
+execution authority are separate from the hosted library subscription.
+
 These fifteen pages explain account access, client setup, selection and downloads,
 updates and common questions, and give one quickstart for each harness.
 They separate a configured connection from a harness loading and using material. Every command, address, record type,
@@ -39,6 +42,7 @@ refusal whose status moves makes every page that states the old status fail.
 | [What Baltor is](service-what-baltor-is.md) | What the hosted service holds, what stays on your machine, and the families and layers that sort the material. |
 | [Your account](service-your-account.md) | Browser sessions, personal client tokens, scopes, grants and entitlements. |
 | [Getting set up](service-getting-set-up.md) | Account, client token, where the token is kept, the settings entry for each supported client, and how to tell the connection succeeded. |
+| [Downloadable worker](container-worker.md) | Bundled OpenCode and Baltor harnesses, model access, project mounts, saved work and explicit isolation profiles. |
 | [Searching and retrieving](service-searching-and-retrieving.md) | What a search returns, how to read and select a reference, how to download a body, and what one measured unit is. |
 | [Usage and what you pay for](service-usage-and-what-you-pay-for.md) | One measured unit is one downloaded item, what is free, where your usage is, and how a retry avoids a second measured unit. |
 | [Serving and connections](service-serving-and-connections.md) | Protocol versions, transport, addresses and common refusal codes. |

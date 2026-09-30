@@ -59,7 +59,7 @@ def _exchange(config, request):
         raise ValueError("request byte limit exceeded")
     with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as client:
         client.settimeout(config["timeout_seconds"])
-        client.connect("/relay/broker.sock")
+        client.connect(config.get("broker_socket", "/relay/broker.sock"))
         client.sendall(len(data).to_bytes(8, "big") + data)
         size = int.from_bytes(_receive(client, 8), "big")
         if size > config["maximum_response_bytes"]:
@@ -241,7 +241,11 @@ def _handler(config, wires):
 
 def main():
     """Prepare the recipe the configuration names, serve its wires, run it."""
-    config = _decode(Path("/relay/config.json").read_bytes())
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--config", type=Path, default=Path("/relay/config.json"))
+    args = parser.parse_args()
+    config = _decode(args.config.read_bytes())
     recipe = config["recipe"]
     wires = _wire_table(config)
     module = _load_mounted_module(recipe["module"], recipe["module_sha256"])

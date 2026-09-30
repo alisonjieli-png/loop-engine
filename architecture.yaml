@@ -1,5 +1,19 @@
 schema_version: 1
 
+worker_distribution:
+  component_path: containers/worker
+  architecture_contract: containers/README.md
+  builder: Dockerfile
+  launcher: containers/worker/run-task.py
+  public_command: loop-engine solve
+  native_configuration_version: 2
+  explicit_native_profile: trusted_process
+  physical_boundary: outer_docker_container
+  product_imports_distribution_support: false
+  adds_runtime_or_intelligence_layer: false
+  import_check: tools/test_worker_launcher.py
+  installed_check: tools/check_worker_bundle.py
+
 semantic_identity:
   authority: terminology.yaml
   installed_projection: src/loop_engine/data/semantic_data_dictionary.yaml

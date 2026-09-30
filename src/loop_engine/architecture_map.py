@@ -303,6 +303,7 @@ MODULE_MAP = {
         "harness_remaining_recipes", "harness_remaining_recipe_checks",
         "harness_recipes", "harness_recipe_catalog_checks",
         "harness_builtin_recipes", "harness_builtin_recipe_checks",
+        "harness_baltor_recipe",
         "harness_fresh_instances", "harness_fresh_instance_checks",
         "opencode_harness_adapter", "opencode_step_session",
         "opencode_step_session_checks",

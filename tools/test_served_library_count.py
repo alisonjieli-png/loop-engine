@@ -171,6 +171,17 @@ class FilePopulationTests(unittest.TestCase):
         # Package inventory documents and the unapproved candidate are not counted as delivered files.
         self.assertEqual(result["duplicate_file_placements"], 1)
 
+    def test_public_library_renders_the_measured_distinct_files_and_packages(self):
+        from loop_engine.core.service_runtime.library_page import library_body
+        html = library_body(replace(self.view, body_reader=lambda _item: "Allowed fixture sample"))
+        self.assertIn('<span class="lib-total">3</span> <span class="lib-title-words">distinct component files', html)
+        self.assertIn("3 distinct files delivered in 2 packages", html)
+        self.assertIn('<th scope="col" class="lib-num">Packages</th>', html)
+        # Four placements share one exact file; the unapproved candidate stays out.
+        changed = self.view.without({("beta", self.packages["beta"].served_digest)}, state_revision=1)
+        html = library_body(replace(changed, body_reader=lambda _item: "Allowed fixture sample"))
+        self.assertIn("2 distinct files delivered in 1 package", html)
+
     def test_withdrawal_removes_files_not_used_by_another_approved_package(self):
         self.view.file_population()
         updated = self.view.without({("beta", self.packages["beta"].served_digest)}, state_revision=1)

@@ -1,5 +1,5 @@
 {
- "index_digest": "79aa43a0db28cded45670600aec2914d001c34cc811654c7fb06c970cf79858d",
+ "index_digest": "01955ca3b1799d7a78697656109cbb4f15ca62cde12dcedf7761ab19e0def15d",
  "pages": {
   "common-questions": {
    "body_address": "/assets/docs/common-questions.html",
@@ -22,6 +22,17 @@
    "repository_path": "docs/guides/service-component-concepts.md",
    "source_digest": "efe2bf7b6a769721c6a457d8961ba010701bb47bd733f6ff80c47d860f90e918",
    "title": "Components, packages and files"
+  },
+  "container-worker": {
+   "body_address": "/assets/docs/container-worker.html",
+   "body_digest": "06cf6097866ec70b9b60161a01371ac2712cb092066ca0537e12a72eaaf886af",
+   "heading": "Run the downloadable worker",
+   "id": "container-worker",
+   "kind_line": "Kind: operating guide for the packaged worker and its explicit execution profiles.",
+   "record_type": "website_documentation_page/v1",
+   "repository_path": "docs/guides/container-worker.md",
+   "source_digest": "bf03769f10fcc6d4c11a0ceaf2216e17992bcfba2163ff266868a7c29c67ef50",
+   "title": "Downloadable worker"
   },
   "quickstart-baltor-harness": {
    "body_address": "/assets/docs/quickstart-baltor-harness.html",

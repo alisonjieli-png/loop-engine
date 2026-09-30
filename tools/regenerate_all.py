@@ -74,6 +74,11 @@ def _python_view(name):
 
 
 VIEWS = (
+    View("worker-site-files",
+         ("src/loop_engine/core/service_runtime/web_assets/worker-compose.yaml",),
+         ("containers/worker/compose.yaml", "tools/build_worker_site_files.py"),
+         ("{python}", "-m", "tools.build_worker_site_files"),
+         "tools tests: worker download configuration matches the container profile"),
     View("asset-site-previews",
          ("src/loop_engine/core/service_runtime/web_assets/procedural-bear-preview.svg",
           "src/loop_engine/core/service_runtime/web_assets/procedural-tree-preview.svg"),

@@ -112,7 +112,7 @@ class DocumentationAgreement(unittest.TestCase):
     def test_complete_current_docs_pass(self):
         result = self.report({})
         self.assertTrue(result["passed"], result["findings"])
-        self.assertEqual(result["pages"], 15)
+        self.assertEqual(result["pages"], 16)
 
     def test_removed_guards_have_discriminating_known_wrong_cases(self):
         from build_documentation_index import BODY_DIRECTORY, PAGE_TABLE_MODULE

@@ -13,6 +13,18 @@
   ],
   "pages": [
     {
+      "address": "/worker",
+      "view": "worker",
+      "title": "Run Baltor on your own computer",
+      "description": "Download a worker with OpenCode and the Baltor harness, connect your own model access and retain project artifacts and run history.",
+      "group": "Product",
+      "linked_from": ["page"],
+      "unlinked_reason": "",
+      "scroll_budget": "long",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
       "address": "/",
       "view": "home",
       "title": "For engineers, designers and AI agents",

@@ -7,6 +7,14 @@
       "title": "Start here",
       "pages": [
         {
+          "id": "container-worker",
+          "title": "Downloadable worker",
+          "summary": "Run bundled OpenCode and Baltor harnesses with your own project and model access.",
+          "address": "/docs/container-worker",
+          "body": "/assets/docs/container-worker.html",
+          "repository_path": "docs/guides/container-worker.md"
+        },
+        {
           "id": "get-set-up",
           "title": "Get set up",
           "summary": "Connect your client and make a first search.",

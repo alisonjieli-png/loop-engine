@@ -149,6 +149,14 @@ jobs:
               print(json.dumps({"suite": report["record_type"], "passed": report["passed"], "total": report["total"]}))
           '
 
+      - name: Verify bundled fresh native harnesses without a provider
+        if: steps.source.outputs.publish == 'true'
+        env:
+          SOURCE_REVISION: ${{ steps.source.outputs.revision }}
+        run: |
+          python3 tools/check_worker_bundle.py --image "loop-engine-verified:${SOURCE_REVISION}" \
+            --output "$RUNNER_TEMP/worker-harnesses.json"
+
       # Main can move while the image is being built and verified. The image
       # is still correct for the revision it was built from, but the moving
       # tags belong to the newer revision, so nothing is published here and

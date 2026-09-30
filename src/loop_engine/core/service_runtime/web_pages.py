@@ -70,6 +70,8 @@ WEB_ASSETS = {
     # The four audience pages of the September 23 site map, restored on September 24, 2026.
     "/for/coding-agents": ("index.html", HTML_MEDIA_TYPE), "/for/engineering-teams": ("index.html", HTML_MEDIA_TYPE),
     "/for/designers": ("index.html", HTML_MEDIA_TYPE),
+    "/worker": ("index.html", HTML_MEDIA_TYPE),
+    "/assets/worker-compose.yaml": ("worker-compose.yaml", "application/yaml"),
     "/for/comparing-tools": ("index.html", HTML_MEDIA_TYPE), "/for/protocol-and-client": ("index.html", HTML_MEDIA_TYPE),
     # The showcase of September 24, 2026: one task shown step by step, three case studies written from saved
     # evidence, and the service status read live. demo.baltor.ai and status.baltor.ai open two of them at their root.
@@ -121,6 +123,7 @@ WEB_ASSETS = {
     "/docs/troubleshooting": ("index.html", HTML_MEDIA_TYPE),
     "/docs/serving-and-connections": ("index.html", HTML_MEDIA_TYPE),
     "/docs/component-concepts": ("index.html", HTML_MEDIA_TYPE),
+    "/docs/container-worker": ("index.html", HTML_MEDIA_TYPE),
     "/docs/updates-and-withdrawals": ("index.html", HTML_MEDIA_TYPE),
     "/docs/common-questions": ("index.html", HTML_MEDIA_TYPE),
     # The setup guide is the Get set up page. This older documentation address opens it too.
@@ -142,6 +145,7 @@ WEB_ASSETS = {
     "/assets/docs/troubleshooting.html": ("docs/troubleshooting.html", HTML_MEDIA_TYPE),
     "/assets/docs/serving-and-connections.html": ("docs/serving-and-connections.html", HTML_MEDIA_TYPE),
     "/assets/docs/component-concepts.html": ("docs/component-concepts.html", HTML_MEDIA_TYPE),
+    "/assets/docs/container-worker.html": ("docs/container-worker.html", HTML_MEDIA_TYPE),
     "/assets/docs/updates-and-withdrawals.html": ("docs/updates-and-withdrawals.html", HTML_MEDIA_TYPE),
     "/assets/docs/common-questions.html": ("docs/common-questions.html", HTML_MEDIA_TYPE),
     "/assets/docs/quickstart-claude-code.html": ("docs/quickstart-claude-code.html", HTML_MEDIA_TYPE),

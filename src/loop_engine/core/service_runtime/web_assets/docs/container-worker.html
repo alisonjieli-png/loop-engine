@@ -1,0 +1,30 @@
+<p>The worker image includes the Loop Engine command, its Baltor text-response harness, OpenCode 1.17.9, Python, Node.js, npm, Git and Bubblewrap. No model, provider credential or customer project is baked into the image.</p>
+<p>The website instructions are at <code>/worker</code>. The current publication workflow builds Linux amd64. Docker Desktop can select <code>linux/amd64</code> on an ARM computer; that is emulation, not a qualification of a native ARM build. The Dockerfile can select the ARM OpenCode binary when an ARM image is deliberately built.</p>
+<h2 id="download-and-inspect">Download and inspect</h2>
+<pre><code class="language-bash">docker pull ghcr.io/alisonjieli-png/loop-engine:main
+docker run --rm --read-only --cap-drop ALL --security-opt no-new-privileges \
+  --tmpfs /tmp:rw,nosuid,size=512m \
+  ghcr.io/alisonjieli-png/loop-engine:main doctor --format json</code></pre>
+<p>The moving <code>main</code> tag follows a successfully tested source revision. For a repeatable installation, use the <code>sha-COMMIT</code> tag or image digest recorded by the publication workflow. The website deployment and the worker image are separate releases.</p>
+<p>Save <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/containers/worker/compose.yaml" rel="noopener noreferrer" target="_blank">the Compose configuration</a> as <code>compose.yaml</code> beside a new <code>project</code> directory. Put a task file there. On Linux, choose your own file ownership before mounting the directory:</p>
+<pre><code class="language-bash">export BALTOR_UID="$(id -u)"
+export BALTOR_GID="$(id -g)"
+docker compose run --rm worker</code></pre>
+<p>Only the selected project is mounted at <code>/work</code>. The configuration runs a non-root user, a read-only image, no Linux capabilities, a bounded temporary directory, one gigabyte of memory and a process limit. It does not mount the host Docker socket. Model calls require network access from the parent worker; the offline verification profile additionally disables that network.</p>
+<h2 id="choose-a-model-and-harness">Choose a model and harness</h2>
+<p>Export the credential your chosen provider uses in your own terminal. Compose passes only the listed provider variables to the parent worker. Never put a key in a task, a command argument, a project file or an image.</p>
+<p>This example selects an existing Ollama Cloud route and a thirty-call allocation. Choose a model your own account can use:</p>
+<pre><code class="language-bash">docker compose run --rm --entrypoint baltor-worker worker \
+  --task /work/task.md --provider ollama_cloud --model gemma4:31b \
+  --harness baltor --max-model-calls 30 --max-passes 4 \
+  --authorize-project-commands</code></pre>
+<p><code>baltor</code>, <code>opencode</code> and <code>gateway</code> are explicit choices. The first two use fresh native processes through the existing semantic response edge. The direct gateway option uses the engine's configured provider route. There is no automatic switch to a different model, provider or execution profile.</p>
+<p>The launcher creates a new <code>project/baltor-runs</code> subdirectory for each run. The existing public solve path retains task identity, cumulative authority, verification and Run History. Its adaptive planner can propose dependency-bound subproblems, repairs and later work while the run remains active and within its allocation. A terminal run is not rewritten to add work afterwards.</p>
+<p><code>--authorize-project-commands</code> explicitly permits the existing local command profile inside the worker. It is for trusted project work. This is not a separate kernel sandbox for generated commands. Leave the flag out when that authority is not intended; unavailable execution must remain unavailable.</p>
+<h2 id="two-isolation-profiles">Two isolation profiles</h2>
+<p>The supplied version 2 harness configurations explicitly select <code>trusted_process</code>. Each assignment gets its own process, Git root, home, configuration, private prompt and selected digest-bound recipe modules. The native process receives no provider credential. A private broker retains model identity, output allocation, accounting and permission checks. Native tools are disabled; the owning engine performs approved actions and evaluates the result.</p>
+<p>The outer Docker container is the physical boundary. The adapter therefore reports no per-process operating-system isolation. It must not satisfy a caller that requires the <code>os_sandbox</code> capability. A separately selected version 1 configuration retains the existing Bubblewrap profile. Failure of that profile never causes an implicit switch to trusted execution.</p>
+<p>This distinction follows the <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/docs/architecture/LAYERED-HARNESS-WRAPPERS-AND-NATIVE-CONTROL.md" rel="noopener noreferrer" target="_blank">layered harness design</a> and <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/embodiments/HARNESS-GUIDE.md" rel="noopener noreferrer" target="_blank">existing harness guide</a>.</p>
+<h2 id="what-the-checks-establish">What the checks establish</h2>
+<p><code>tools/check_worker_bundle.py</code> tests the installed image and two actual fresh native turns per adapter using a private fixture broker. It checks exact responses, separate process identities, step-specific material and rejection of inherited parent context. No external provider is called. Passing this check establishes packaging and process mechanics, not model quality, arbitrary task success, or compatibility of every upstream plugin.</p>
+<p>The hosted catalogue remains separate. Searching it requires the customer's personal Baltor key and current entitlement. A content download gives no additional execution permission. Model funding, library access and machine authority remain separate.</p>

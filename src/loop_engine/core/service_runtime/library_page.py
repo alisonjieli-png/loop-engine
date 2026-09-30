@@ -231,7 +231,7 @@ def _counts_table(rows) -> str:
                    f'<td class="lib-num lib-all">{count:,}</td></tr>' for kind, count in kinds)
     return ('<div class="md-table-wrap lib-kinds"><table class="md-table lib-kind-table" data-library-counts><thead><tr>'
             '<th scope="col">Kind of file</th><th scope="col" class="lib-bar-cell"><span class="sr-only">Share of the '
-            f'largest kind</span></th><th scope="col" class="lib-num">Components</th></tr></thead><tbody>{body}'
+            f'largest kind</span></th><th scope="col" class="lib-num">Packages</th></tr></thead><tbody>{body}'
             '<tr class="lib-total-row"><th scope="row">All kinds</th><td class="lib-bar-cell"></td>'
             f'<td class="lib-num lib-all">{len(rows):,}</td></tr></tbody></table></div>')
 
@@ -291,6 +291,14 @@ def library_body(view, rows=None) -> str:
     """The page's own markup inside the site frame, written from one view."""
     rows = library_rows(view) if rows is None else rows
     kinds = counts_by_harness_kind(rows)
+    population = view.file_population()
+    files = population.get("distinct_files")
+    measured = (population.get("record_type") == "catalogue_file_population/v1" and population.get("complete") is True
+                and population.get("packages") == len(rows) and type(files) is int and files >= 0)
+    package_word = "package" if len(rows) == 1 else "packages"
+    total, unit = (files, "distinct component files") if measured else (len(rows), "reviewed packages")
+    population_note = (f"{files:,} distinct files delivered in {len(rows):,} {package_word}. Identical shared files are counted once."
+                       if measured else "The distinct file total is not measured for this catalogue. Packages and files are different units.")
     chosen, body = sample(view, rows)
     kind_names = ", ".join(_plural(harness_kind_label(kind)) for kind, _counts in kinds[:6])
     contents = [("counts", "What is in it")]
@@ -298,13 +306,14 @@ def library_body(view, rows=None) -> str:
         contents.append(("sample", "One item in full"))
     contents += [("browse", "Search it as a table"), ("releases", "Releases")]
     intro = ('<div class="md-band md-intro lib-hero"><div class="lib-hero-grid"><h1 id="library-title">'
-             f'<span class="lib-total">{len(rows):,}</span> <span class="lib-title-words">reviewed packages, ready for '
+             f'<span class="lib-total">{total:,}</span> <span class="lib-title-words">{unit}, ready for '
              'your harness</span></h1><div class="lib-hero-copy">'
-             f'<p class="lede">{len(rows):,} packages a coding agent can fetch today, of {len(kinds)} kinds'
+             f'<p class="lede">{len(rows):,} {package_word} a coding agent can fetch today, of {len(kinds)} kinds'
              + (f" ({escape(kind_names)}" + (", and more" if len(kinds) > 6 else "") + ")" if kinds else "")
              + ". Every package names its source, its "
              "licence and its review. Create an account to search the whole library as a table and download the "
              "exact version your agent chose.</p>"
+             f'<p class="description" data-library-population>{population_note}</p>'
              f'<div class="md-actions"><a class="button primary" href="{SIGN_UP_ADDRESS}">Get started</a>'
              f'<a class="lib-text-link" href="{APP_LIBRARY_ADDRESS}">Sign in and browse</a></div></div></div>'
              '<nav class="md-contents lib-contents" aria-label="On this page">'

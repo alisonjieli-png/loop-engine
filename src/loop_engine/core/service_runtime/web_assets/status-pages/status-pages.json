@@ -5,6 +5,18 @@
   "releases": [
    {
     "kind": "service",
+    "number": 53,
+    "at": "2026-09-30T05:55:10Z",
+    "lines": [
+     "The homepage reports 88373 distinct files and 27811 packages separately from one active population.",
+     "The Engineers, Designers and AI Agents entry paths and directly served designer page are live.",
+     "The procedural candidate compiler and admission participant identities are repaired in source; those repairs do not publish candidates."
+    ],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
     "number": 52,
     "at": "2026-09-29T23:42:32Z",
     "lines": [
@@ -650,6 +662,11 @@
    {
     "group": "Product",
     "pages": [
+     {
+      "address": "/worker",
+      "title": "Run Baltor on your own computer",
+      "description": "Download a worker with OpenCode and the Baltor harness, connect your own model access and retain project artifacts and run history."
+     },
      {
       "address": "/",
       "title": "For engineers, designers and AI agents",

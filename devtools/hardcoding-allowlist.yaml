@@ -1,5 +1,77 @@
 schema: hardcoding_allowlist/v1
 entries:
+- finding_id: hardcoding.34e20b5e2ff81a8142b172bd
+  owner: "containers.worker.compose.yaml:services.worker.environment[0]"
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  rationale: "Reviewed September 30, 2026: the Compose boundary names an existing provider environment reference, never a value. Only explicitly listed variables enter the parent worker; native process environments do not inherit provider keys. The image carries no credential. Installed-image and confined-environment checks cover this boundary."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.4deadac243e8dce1858ddf0b
+  owner: "containers.worker.compose.yaml:services.worker.environment[1]"
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  rationale: "Reviewed September 30, 2026: this is the provider's environment variable NAME for the parent worker, not a credential value or native process grant. The explicit Compose list and installed confined-environment checks protect this distinction."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.96f77c8728ee48937f98fe09
+  owner: "containers.worker.compose.yaml:services.worker.environment[2]"
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  rationale: "Reviewed September 30, 2026: this is the provider's environment variable NAME for the parent worker, not a credential value or native process grant. The explicit Compose list and installed confined-environment checks protect this distinction."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.7abf567051972de3aab6be17
+  owner: "containers.worker.compose.yaml:services.worker.environment[3]"
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  rationale: "Reviewed September 30, 2026: this is the provider's environment variable NAME for the parent worker, not a credential value or native process grant. The explicit Compose list and installed confined-environment checks protect this distinction."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.c0236cf48dcf3c0182f6ebea
+  owner: "loop_engine.core.service_runtime.web_assets.worker-compose.yaml:services.worker.environment[0]"
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  rationale: "Reviewed September 30, 2026: this is the exact generated download of the owned Compose configuration's environment-reference list, not a secret value. The generator and exact served-file browser check detect divergence from containers/worker/compose.yaml."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.8dbf2e69df7ff4fec29763c9
+  owner: "loop_engine.core.service_runtime.web_assets.worker-compose.yaml:services.worker.environment[1]"
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  rationale: "Reviewed September 30, 2026: this is the exact generated download of the owned Compose configuration's environment-reference list, not a secret value. The generator and exact served-file browser check detect divergence from containers/worker/compose.yaml."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.0a421177d84f40ba68a8ab69
+  owner: "loop_engine.core.service_runtime.web_assets.worker-compose.yaml:services.worker.environment[2]"
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  rationale: "Reviewed September 30, 2026: this is the exact generated download of the owned Compose configuration's environment-reference list, not a secret value. The generator and exact served-file browser check detect divergence from containers/worker/compose.yaml."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.031bbe49907fd4bbc4bbe944
+  owner: "loop_engine.core.service_runtime.web_assets.worker-compose.yaml:services.worker.environment[3]"
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  rationale: "Reviewed September 30, 2026: this is the exact generated download of the owned Compose configuration's environment-reference list, not a secret value. The generator and exact served-file browser check detect divergence from containers/worker/compose.yaml."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.c72a2bb5252323c04d1fb377
+  owner: "loop_engine.core.harness_process:run_harness_process"
+  classification: DEPLOYMENT_CONFIGURATION
+  rationale: "Reviewed September 30, 2026: trusted_process is one value of the closed, validated process_isolation field, explicitly selected by a version 2 host configuration. It reports isolation none, never satisfies os_sandbox and never silently replaces Bubblewrap. Native profile and unknown-value refusal checks cover this branch."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.13a0943a953a6a93c3558422
+  owner: "loop_engine.core.harness_process:trusted_process_launch"
+  classification: DEPLOYMENT_CONFIGURATION
+  rationale: "Reviewed September 30, 2026: /dev/null explicitly disables the host's global Git configuration while a private assignment Git root is initialized. This fixed OS sink is not a customer path or inferred permission. Fresh-process tests cover private instruction discovery."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.31f843082ed4c4a74d3f4ea7
+  owner: "loop_engine.core.harness_process:trusted_process_launch"
+  classification: DEPLOYMENT_CONFIGURATION
+  rationale: "Reviewed September 30, 2026: the literal is the restricted PATH for the absolute /usr/bin/git initialization command, not an inherited host environment. Confined-environment and installed fresh-process tests exercise the boundary."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.b2cb14022be2261d3ba3d76f
+  owner: "loop_engine.core.harness_process:trusted_process_launch"
+  classification: DEPLOYMENT_CONFIGURATION
+  rationale: "Reviewed September 30, 2026: 1 is Git's explicit GIT_CONFIG_NOSYSTEM setting while an assignment-local Git root is initialized. It prevents loading host configuration and does not grant file access. Fresh-process and unknown-profile controls exercise this path."
+  created_on: '2026-09-30'
+  expires_on: '2027-03-30'
 - finding_id: hardcoding.0052ca69b7e96ecc6819f0fe
   owner: "tools.knowledge_radar.community-watch-v1.json:sources[3].url"
   classification: STRATEGY_OR_PROVIDER_BINDING

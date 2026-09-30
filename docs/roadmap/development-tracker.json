@@ -1076,7 +1076,7 @@
      "S-6.31"
     ],
     "id": "S-6.42",
-    "next_local_work": "Research the forks and run the independent-instance tests without model calls where possible.",
+    "next_local_work": "September 30 worker checkpoint: the pinned OpenCode 1.17.9 and Baltor text-response adapters passed 12 installed-image checks, including two actual fresh native turns each with a private fixture broker and no external provider. The explicit trusted_process profile reports no per-step OS sandbox; it does not silently replace Bubblewrap. The task launcher, Compose download, /worker page and operating guide are implemented and locally checked. Publish only after exact source CI and installed-image checks pass, then verify the website live. Continue fork research and real task qualification separately; packaging is not evidence of model quality or arbitrary task success.",
     "phase": 6,
     "status": "building",
     "title": "Harness landscape: forks of Pi and OpenCode, and independent instances in every supported harness",
@@ -5382,5 +5382,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:b607d4f562dfe5f90cbaed4447a1aa279a329ba8b0fb6799015d29dcdf3bbd19"
+ "source_fingerprint": "sha256:e410598eb320163d9a34a9b562d787ad828f9558114c889ec9d90c6d76734cda"
 }

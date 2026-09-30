@@ -137,13 +137,34 @@ class LibraryPageTests(unittest.TestCase):
     def test_the_page_keeps_every_rule(self):
         self.assertEqual(page_problems(self.html, self.view), [])
 
+    def test_complete_file_measurement_is_distinct_from_the_package_count(self):
+        population = {"record_type": "catalogue_file_population/v1", "complete": True, "packages": 5,
+                      "distinct_files": 9}
+        with mock.patch.object(CatalogueView, "file_population", return_value=population):
+            html = library_page.library_body(self.view)
+        self.assertIn('<span class="lib-total">9</span> <span class="lib-title-words">distinct component files', html)
+        self.assertIn("9 distinct files delivered in 5 packages. Identical shared files are counted once.", html)
+        self.assertIn("5 packages a coding agent can fetch today", html)
+        self.assertEqual(page_problems(html, self.view), [])
+
+    def test_missing_stale_or_invalid_measurements_never_become_a_file_total(self):
+        population = {"record_type": "catalogue_file_population/v1", "complete": True, "packages": 5,
+                      "distinct_files": 9}
+        for changed in ({**population, "complete": False}, {**population, "packages": 6},
+                        {**population, "distinct_files": None}, {**population, "distinct_files": True},
+                        {**population, "distinct_files": -1}, {**population, "record_type": "catalogue_file_population/v99"}):
+            with self.subTest(changed=changed), mock.patch.object(CatalogueView, "file_population", return_value=changed):
+                html = library_page.library_body(self.view)
+                self.assertIn('<span class="lib-total">5</span> <span class="lib-title-words">reviewed packages', html)
+                self.assertIn("The distinct file total is not measured", html)
+
     def test_the_counts_name_every_harness_kind_and_no_item_is_listed(self):
         self.assertIn("data-library-counts", self.html)
         self.assertEqual(counted_kinds(self.html), ["skill", "subagent", "hook"])
         self.assertEqual(listed(self.html), set())
         self.assertIn("5 packages a coding agent can fetch today, of 3 kinds", self.html)
         self.assertNotIn("2 Verified and 3 Community", self.html)
-        self.assertIn('<th scope="col" class="lib-num">Components</th>', self.html)
+        self.assertIn('<th scope="col" class="lib-num">Packages</th>', self.html)
         self.assertIn('href="/get-started"', self.html)
         self.assertIn('href="/app#browse-heading"', self.html)
 

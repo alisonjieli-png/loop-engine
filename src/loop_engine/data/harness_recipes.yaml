@@ -102,6 +102,19 @@ recipes:
     native_controls: *owning_loop
     distribution: {kind: npx, version: 0.85.1, sha256: null}
   - record_type: harness_recipe/v1
+    style: baltor
+    variant: text_response
+    module: harness_baltor_recipe
+    prepare_function: prepare_baltor_recipe
+    extract_function: extract_baltor_output
+    module_sha256: 62ca4f5ab1ce84bd3e701297316d4143301c011bf8b1b080cee973a95d908a67
+    wire_protocols: [openai_chat_completions]
+    instruction_style: standard
+    requires_context_capacity: false
+    sandbox_environment: []
+    native_controls: *owning_loop
+    distribution: {kind: binary, version: 1.0.0, sha256: null}
+  - record_type: harness_recipe/v1
     style: qwen_code
     variant: text_response
     module: harness_additional_recipes

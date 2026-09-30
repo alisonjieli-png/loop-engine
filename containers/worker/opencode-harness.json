@@ -1,0 +1,9 @@
+{
+  "schema_version": 2,
+  "process_isolation": "trusted_process",
+  "harness_id": "opencode",
+  "package_version": "1.17.9",
+  "style": "opencode",
+  "command_prefix": ["/usr/local/bin/opencode"],
+  "read_only_paths": ["/usr/local/lib/node_modules/opencode-ai"]
+}

@@ -1,0 +1,9 @@
+{
+  "schema_version": 2,
+  "process_isolation": "trusted_process",
+  "harness_id": "baltor",
+  "package_version": "1.0.0",
+  "style": "baltor",
+  "command_prefix": ["/usr/local/bin/python3", "/opt/baltor/baltor_harness.py"],
+  "read_only_paths": ["/opt/baltor/baltor_harness.py"]
+}

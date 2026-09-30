@@ -608,13 +608,16 @@ class GatewayHarnessProcessAdapter:
             harness_id=self.spec.harness_id, adapter_version='1.0.0+' + self.spec.digest,
             package_name=self.spec.harness_id, package_version=self.spec.package_version,
             available=True, features=('canonical_semantic_steps', 'gateway_broker'),
-            limitations=('native harness tools are disabled; the owning Loop executes engine capabilities',),
+            limitations=('native harness tools are disabled; the owning Loop executes engine capabilities',
+                         'trusted_process uses host-owned outer isolation; it has no per-step OS sandbox'
+                         if self.spec.process_isolation == 'trusted_process' else 'each process has its own OS sandbox'),
             execution_capabilities=HarnessExecutionCapabilities(
                 supported_features=('configuration_isolation', 'credential_isolation',
                                     'private_prompt_channel', 'private_raw_events',
                                     'process_tree_cancellation', 'model_routes'),
                 enforced_limits=('model_calls', 'total_tokens', 'maximum_output', 'wall_time'),
-                isolation='os_sandbox', evidence_refs=('harness_process_checks',)),
+                isolation='none' if self.spec.process_isolation == 'trusted_process' else 'os_sandbox',
+                evidence_refs=('harness_process_checks',)),
             adapter_contract_version=ADAPTER_CONTRACT_VERSION, engine_kind='text_relay_harness',
             supported_edge_contracts=(MODEL_RESPONSE_EDGE,))
 
@@ -649,6 +652,7 @@ class GatewayHarnessProcessAdapter:
                         'package_version': self.spec.package_version,
                         'exit_code': observed.exit_code, 'timed_out': observed.timed_out,
                         'errors': observed.errors, 'process_identity': observed.process_identity,
+                        'process_isolation': self.spec.process_isolation,
                         'broker_requests': observed.broker_request_count,
                         'received_requests': observed.received_request_count,
                         'instruction_manifest': list(observed.instruction_manifest),

@@ -1,0 +1,18 @@
+services:
+  worker:
+    image: ghcr.io/alisonjieli-png/loop-engine:main
+    platform: linux/amd64
+    user: "${BALTOR_UID:-65534}:${BALTOR_GID:-65534}"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    tmpfs: [/tmp:rw,nosuid,size=512m]
+    mem_limit: 1g
+    pids_limit: 256
+    volumes: ["./project:/work"]
+    environment:
+      - OLLAMA_API_KEY
+      - OPENAI_API_KEY
+      - ANTHROPIC_API_KEY
+      - MISTRAL_API_KEY
+    command: [doctor, --format, json]

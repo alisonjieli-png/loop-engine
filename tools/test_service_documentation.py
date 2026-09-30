@@ -16,6 +16,7 @@ from pathlib import Path
 
 from check_service_documentation import (
     DOCUMENTED_PAGES,
+    SERVICE_SOURCES,
     _raised_status,
     check,
     claim_findings,
@@ -26,16 +27,13 @@ from check_service_documentation import (
 REPOSITORY = Path(__file__).resolve().parents[1]
 #: The files the check reads. A temporary repository holds copies of these.
 COPIED = (
-    "src/loop_engine/core/service_runtime",
-    "src/loop_engine/core/provisioning_server.py",
-    "src/loop_engine/core/provisioning_mcp.py",
-    "src/loop_engine/core/harness_intelligence.py",
-    "src/loop_engine/core/facets.py",
-    "src/loop_engine/core/retrieval.py",
-    "src/loop_engine/service_cli.py",
+    *SERVICE_SOURCES,
     "src/loop_engine/cli_help.py",
+    "containers/worker/compose.yaml",
     *DOCUMENTED_PAGES,
 )
+SETUP_PAGE = "docs/guides/service-getting-set-up.md"
+WORKER_PAGE = "docs/guides/container-worker.md"
 #: A true refusal row on the troubleshooting page, and the same row with a
 #: status the service does not answer with.
 STATUS_PAGE = "docs/guides/service-troubleshooting.md"
@@ -290,7 +288,7 @@ class ServiceDocumentationCheck(unittest.TestCase):
     def test_a_command_the_interface_does_not_have_is_refused(self):
         with tempfile.TemporaryDirectory() as folder:
             root = build_copy(Path(folder))
-            page = root / DOCUMENTED_PAGES[0]
+            page = root / SETUP_PAGE
             page.write_text(page.read_text(encoding="utf-8")
                             + "\n```bash\nloop-engine service explode --config /absolute/path/host.json\n```\n",
                             encoding="utf-8")
@@ -300,7 +298,7 @@ class ServiceDocumentationCheck(unittest.TestCase):
     def test_a_client_command_no_recipe_publishes_is_refused(self):
         with tempfile.TemporaryDirectory() as folder:
             root = build_copy(Path(folder))
-            edit(root, DOCUMENTED_PAGES[0], "codex mcp list", "codex mcp inspect")
+            edit(root, SETUP_PAGE, "codex mcp list", "codex mcp inspect")
             report = check(root)
             self.assertIn("command", self.kinds(report))
             self.assertIn("codex mcp inspect", self.values(report))
@@ -308,7 +306,7 @@ class ServiceDocumentationCheck(unittest.TestCase):
     def test_a_served_recipe_that_no_page_documents_is_refused(self):
         with tempfile.TemporaryDirectory() as folder:
             root = build_copy(Path(folder))
-            edit(root, DOCUMENTED_PAGES[0], "```bash\ncodex mcp list\n```\n\n", "")
+            edit(root, SETUP_PAGE, "```bash\ncodex mcp list\n```\n\n", "")
             # Since September 26, 2026 the Codex quickstart confirms the same recipe, so the known-wrong
             # case removes the command there too; a recipe that one page still confirms is documented.
             edit(root, "docs/guides/quickstart-codex.md", "```bash\ncodex mcp list\n```\n\n", "")
@@ -322,6 +320,33 @@ class ServiceDocumentationCheck(unittest.TestCase):
             (root / DOCUMENTED_PAGES[3]).unlink()
             report = check(root)
             self.assertIn("page", self.kinds(report))
+
+    def test_worker_mount_is_held_to_the_actual_compose_file(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = build_copy(Path(folder))
+            self.assertEqual(check(root)["findings"], [])
+            edit(root, "containers/worker/compose.yaml", "./project:/work", "./project:/different")
+            report = check(root)
+            self.assertIn("address", self.kinds(report))
+            self.assertIn("/work", self.values(report))
+
+    def test_worker_mount_is_not_accepted_as_a_website_route(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = build_copy(Path(folder))
+            page = root / SETUP_PAGE
+            page.write_text(page.read_text() + "\nThe website serves `/work`.\n")
+            report = check(root)
+            self.assertTrue(any(row["page"] == SETUP_PAGE and row["kind"] == "address"
+                                and row["value"] == "/work" for row in report["findings"]))
+
+    def test_worker_process_profile_is_held_to_its_source(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = build_copy(Path(folder))
+            self.assertEqual(check(root)["findings"], [])
+            edit(root, "src/loop_engine/core/harness_process.py", "trusted_process", "other_process", every=True)
+            report = check(root)
+            self.assertTrue(any(row["page"] == WORKER_PAGE and row["kind"] == "name"
+                                and row["value"] == "trusted_process" for row in report["findings"]))
 
     def test_the_source_reader_finds_a_real_service_surface(self):
         facts = source_facts(REPOSITORY)

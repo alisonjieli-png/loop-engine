@@ -34,6 +34,7 @@ REPORT_VERSION = "service_documentation_check/v1"
 
 #: The customer pages this check owns. Each one is held to the service source.
 DOCUMENTED_PAGES = (
+    "docs/guides/container-worker.md",
     "docs/guides/service-getting-set-up.md",
     "docs/guides/service-searching-and-retrieving.md",
     "docs/guides/service-serving-and-connections.md",
@@ -54,6 +55,10 @@ DOCUMENTED_PAGES = (
 #: The service surface a customer meets. A documented name must exist in one of
 #: these files. Unrelated repository modules do not make a name real.
 SERVICE_SOURCES = (
+    "src/loop_engine/core/harness_process.py",
+    "src/loop_engine/core/harness_configuration.py",
+    "src/loop_engine/core/harness_execution_contracts.py",
+    "src/loop_engine/core/model_gateway.py",
     "src/loop_engine/core/service_runtime",
     "src/loop_engine/core/provisioning_server.py",
     "src/loop_engine/core/provisioning_mcp.py",
@@ -481,6 +486,12 @@ def claim_findings(text: str, facts: dict) -> list:
 def check(root: Path, pages=DOCUMENTED_PAGES) -> dict:
     """Return one report; every finding names the page, the fact and its kind."""
     facts = source_facts(root)
+    # The worker's mount is a filesystem path, not a public website route.
+    import yaml
+    worker = yaml.safe_load((root / "containers/worker/compose.yaml").read_text()) if (
+        root / "containers/worker/compose.yaml").is_file() else {}
+    worker_mounts = {entry.rsplit(":", 1)[-1] for entry in worker.get("services", {}).get("worker", {}).get("volumes", [])
+                     if isinstance(entry, str) and ":" in entry}
     findings, checked = [], 0
     documented_recipes = set()
 
@@ -521,7 +532,7 @@ def check(root: Path, pages=DOCUMENTED_PAGES) -> dict:
                     refuse(page, "scope", token, "this scope is not in the service vocabulary")
             elif ADDRESS.match(token):
                 checked += 1
-                if token not in facts["addresses"]:
+                if token not in facts["addresses"] and not (page == "docs/guides/container-worker.md" and token in worker_mounts):
                     refuse(page, "address", token, "the service serves no such address")
             elif NAME_TOKEN.match(token):
                 checked += 1

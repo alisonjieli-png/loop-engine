@@ -109,8 +109,10 @@ def load_harness_binding(path: str, *, work_root: str, socket_directory: str,
     value = json.loads(source.read_text(encoding='utf-8'), object_pairs_hook=unique)
     required = {'schema_version', 'harness_id', 'package_version', 'style',
                 'command_prefix', 'read_only_paths'}
-    if (type(value) is not dict or set(value) != required
-            or type(value['schema_version']) is not int or value['schema_version'] != 1):
+    if type(value) is not dict or type(value.get('schema_version')) is not int or value['schema_version'] not in (1, 2):
+        raise ValueError('unsupported harness configuration fields/version')
+    expected = required | ({'process_isolation'} if value['schema_version'] == 2 else set())
+    if set(value) != expected:
         raise ValueError('unsupported harness configuration fields/version')
     if not valid_harness_id(value['harness_id']) or expected_id and expected_id != value['harness_id']:
         raise ValueError('harness configuration identity mismatch')
@@ -120,7 +122,7 @@ def load_harness_binding(path: str, *, work_root: str, socket_directory: str,
     try:
         spec = HarnessProcessSpec(value['harness_id'], value['package_version'],
                                   tuple(value['command_prefix']), tuple(value['read_only_paths']),
-                                  value['style'])
+                                  value['style'], process_isolation=value.get('process_isolation', 'bubblewrap'))
     except HarnessProcessError as exc:
         if not allow_unavailable or not isinstance(exc, HarnessSetupUnavailable):
             raise

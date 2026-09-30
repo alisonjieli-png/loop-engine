@@ -1174,6 +1174,7 @@ try {
   const routeTable=readFileSync(resolve(root,"src/loop_engine/core/service_runtime/web_pages.py"),"utf8").match(/^WEB_ASSETS = \{$([\s\S]*?)^\}$/m);
   const assetRoutes=routeTable?[...routeTable[1].matchAll(/"(\/assets\/[^"]+)":/g)].map(found=>found[1]):[];
   servedFiles.push("/assets/procedural-bear-preview.svg","/assets/procedural-tree-preview.svg");
+  servedFiles.push("/assets/worker-compose.yaml","/assets/docs/container-worker.html");
   const unscannedFor=list=>assetRoutes.filter(path=>!list.includes(path));
   /* The deck's own files are read like every other served file. */
   servedFiles.push("/assets/deck.css","/assets/deck.js","/assets/deck-card.png");

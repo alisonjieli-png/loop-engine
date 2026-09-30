@@ -1,0 +1,61 @@
+{
+  "record_type": "pilot_release_record/v1",
+  "release": 53,
+  "app": "baltor-pilot",
+  "source_revision": "fa1696b3b09c65beba27bfdd8938d9db33efa026",
+  "image": "registry.fly.io/baltor-pilot@sha256:c8f267b2f8998d3391fe1f628d1bbd39f85d3f7997fd58f5cd2e21eda86e1a14",
+  "rollback_release": 52,
+  "rollback_image": "registry.fly.io/baltor-pilot@sha256:780382cf39d002e226a139608e4e0a775f2a3da7b24a15e1268fd1ea3a7ca7d4",
+  "deployed_at": "2026-09-30T05:55:10Z",
+  "ci_run": 36669688050,
+  "ci_conclusion": "success",
+  "deploy_run": 36675414386,
+  "deploy_workflow_conclusion": "failure",
+  "image_deploy_step_conclusion": "success",
+  "grant_step_conclusion": "failure",
+  "deployment_gate_after": false,
+  "hostnames_checked": 10,
+  "hostnames_passed": 10,
+  "public_route_checks_passed": 40,
+  "public_route_checks_total": 40,
+  "service_checks_passed": 226,
+  "service_checks_total": 226,
+  "catalogue_checks_passed": null,
+  "volume_gb": 25,
+  "cpus": 1,
+  "memory_mb": 2048,
+  "changes": [
+    "The homepage reports 88373 distinct files and 27811 packages separately from one active population.",
+    "The Engineers, Designers and AI Agents entry paths and directly served designer page are live.",
+    "The procedural candidate compiler and admission participant identities are repaired in source; those repairs do not publish candidates."
+  ],
+  "post_deployment_policy_check": {
+    "initial_failure": "The Machines API returned HTTP 408 for apply-grants after the image was deployed.",
+    "prior_command_still_running_before_retry": false,
+    "recovery": "Ran the existing idempotent grant and billing commands once under the service user with exclusive result files and a 300-second deadline per command.",
+    "grant_exit_code": 0,
+    "billing_exit_code": 0,
+    "every_installed_policy_current": true,
+    "changed": false,
+    "paid_access_ended_for_accounts": 0,
+    "tenants_registered": 0,
+    "remote_accounts_created": false,
+    "provider_calls": 0,
+    "checkout_expected": true,
+    "portal_expected": true,
+    "result_folder": "/data/incoming/release53-finalize"
+  },
+  "evidence_sha256": {
+    "release53-public-browser.json": "4e28c7e0d7b52958e0537d2e11039abf3826497f07b9e20e973058c7c3c5acbc",
+    "release53-hosts.json": "a537d57bd18b3761b8b3ad90fbb5ff274bb59367caf95a5a87e119468728072e",
+    "frozen-workspace-browser.json": "d7e7aea8b3c2d4b63b6d6a3fda8338195133b8d3e83d46a71299acdd24c7e67d"
+  },
+  "advisory": {
+    "workflow": "The workflow remains failed; successful manual initialization does not rewrite its conclusion. Synchronous grant initialization still requires durable polling or a smaller bootstrap.",
+    "source_checks": "CI passed on the exact source. Frozen browser checks passed 956/957; the sole failure was the deck loading-size budget, not corrected by weakening the check.",
+    "live_checks": "226 anonymous browser checks and 40 HTTP checks passed. Visitor QA found no problem across 58 pages, 241 views, 354 links and nine website hostnames.",
+    "catalogue": "The active catalogue remains b805860948b2625d08c2e53b62ebcf26c74d4948e69148ff3879bea87f08b92b with 27811 packages and 88373 distinct files. New candidates were not admitted or published.",
+    "resource_scope": "No additional Machine, CPU, memory, volume or provider purchase."
+  }
+}
+

@@ -47,7 +47,21 @@ from the newest release record, follow the release record and correct this
 section. Update this section in the same change that records a new release.
 It describes a private pilot. It does not describe a qualified paid service.
 
-The latest image deployment is Fly release 52, completed on September 29, 2026,
+The latest image deployment is Fly release 53, completed on September 30, 2026,
+from `fa1696b3b09c65beba27bfdd8938d9db33efa026`, image
+`sha256:c8f267b2f8998d3391fe1f628d1bbd39f85d3f7997fd58f5cd2e21eda86e1a14`.
+CI run `36669688050` passed. Deployment run `36675414386` deployed the tested
+image, then failed on a Machines API timeout during grant confirmation.
+The original command was no longer running before bounded detached grant and
+policy initialization completed successfully. No account was registered,
+paid access was preserved, and no provider was called. The deployment gate
+was read back as off. The [release 53 record](../../artifacts/architecture-audit-2026-09-19/pilot-release-53.json)
+records rollback to release 52, 226/226 anonymous browser checks and 40/40 HTTP
+checks across ten origins. The homepage now reports 88,373 distinct files
+separately from 27,811 packages. These are the same approved catalogue bytes,
+not newly admitted creative candidates.
+
+The preceding image deployment was Fly release 52 on September 29, 2026,
 from `6940d5158690dc85bdb238c187a5dc3e372d167a`, image
 `sha256:780382cf39d002e226a139608e4e0a775f2a3da7b24a15e1268fd1ea3a7ca7d4`.
 CI run `36645686094` passed. Deployment run `36646310068` deployed the tested

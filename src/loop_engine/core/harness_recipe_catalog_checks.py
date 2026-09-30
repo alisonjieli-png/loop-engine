@@ -491,8 +491,8 @@ def _coverage_checks(check):
     from .harness_recipes import TEXT_RESPONSE_VARIANT, release_recipe_catalog
     release = release_recipe_catalog()
     styles = sorted(item.style for item in release.recipes if item.variant == TEXT_RESPONSE_VARIANT)
-    check("the_catalogue_holds_one_text_response_record_for_each_of_the_eighteen_styles",
-          styles == sorted(HISTORICAL_TEXT_RESPONSE_STYLES), str(styles))
+    check("the_catalogue_holds_one_text_response_record_for_each_of_the_supported_styles",
+          styles == sorted((*HISTORICAL_TEXT_RESPONSE_STYLES, "baltor")), str(styles))
     from .harness_process import _output
     response = {"choices": [{"message": {"role": "assistant", "content": "answer"}}]}
     check("extraction_is_chosen_by_the_record",

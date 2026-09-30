@@ -51,7 +51,7 @@
   routeNames["/get-started"] = "start"; routeNames["/auth/confirm"] = "confirm"; routeNames["/setup"] = "setup";
   /* The pages of September 24, 2026: the four audience pages, the demonstration of one task, three case studies and the
      service status. Each address names its own view; web_site_map.json lists them with their titles. */
-  Object.assign(routeNames, {"/for/designers":"for-designers", "/for/coding-agents":"for-coding-agents", "/for/engineering-teams":"for-engineering-teams",
+  Object.assign(routeNames, {"/worker":"worker", "/for/designers":"for-designers", "/for/coding-agents":"for-coding-agents", "/for/engineering-teams":"for-engineering-teams",
     "/for/comparing-tools":"for-comparing-tools", "/for/protocol-and-client":"for-protocol-and-client", "/demo":"demo", "/demo/kaggle":"demo-kaggle",
     "/case-studies/data-cleanup":"case-studies-data-cleanup", "/case-studies/pi-and-gemma-4":"case-studies-pi-and-gemma-4",
     "/case-studies/sign-up-protection":"case-studies-sign-up-protection", "/status":"status"});
