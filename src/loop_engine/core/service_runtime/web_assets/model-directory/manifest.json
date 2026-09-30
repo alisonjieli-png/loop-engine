@@ -1,39 +1,39 @@
 {
- "built_at": "2026-09-29T14:07:01Z",
+ "built_at": "2026-09-30T13:49:31Z",
  "commercial_relationship_schema": "directory_commercial_relationship/v1",
  "counts": {
   "endpoints": 186,
-  "fit_rows": 1292,
-  "gone": 153,
-  "models": 2161,
+  "fit_rows": 1285,
+  "gone": 176,
+  "models": 2155,
   "moved": 30,
   "runtimes": 6,
-  "search_rows": 2161
+  "search_rows": 2155
  },
  "files": {
   "endpoints.json": {
-   "bytes": 1324190,
-   "sha256": "e6ee3d778c0726dd9b7766f8eacb68aa4c6faea539daf3e0dcfe2b9d499bba38"
+   "bytes": 1331080,
+   "sha256": "2a7d16f186dd98ab22571b17f27aa7217dcbaf0bfcad4f1fdf00160e5316599b"
   },
   "fit-index.json": {
-   "bytes": 261111,
-   "sha256": "d8171d292257d22f3a39067b442ad2845d5f26fcd889031ca10eef2bc58ce4f7"
+   "bytes": 260385,
+   "sha256": "698076a3a8493f970feda0feaba6e023c2c81898560ba042f0eed89291493ee6"
   },
   "hardware.json": {
    "bytes": 10009,
    "sha256": "5cef471389acea1215e70c060b47653ec79f37d9a723f859b1ab07b803f343c6"
   },
   "models.json": {
-   "bytes": 5505187,
-   "sha256": "454049211f097084a96e574e216cbe6d61708cd317fc1eee1222f79bbe508967"
+   "bytes": 5516625,
+   "sha256": "8024b7aed7b15903ebbff30d82909b1c8af891483fb0318e0c2a75624d351b0a"
   },
   "moved.json": {
-   "bytes": 22106,
-   "sha256": "95484ca49dec79cbefc419dbd13acd013af3114ccb0cd17c0d68b58270b8c982"
+   "bytes": 24837,
+   "sha256": "cf5b8941be38c49d3763e5406ebf5d0cca56b3bd3789d2729eabcf0fe1e96500"
   },
   "search-index.json": {
-   "bytes": 271502,
-   "sha256": "51c88a8dca697720b0c6919b90ab416e8751bc89a655b08eee5faef3cff57293"
+   "bytes": 270735,
+   "sha256": "5082780f0d85bedc538ae70ae04def14cc209e8515bd7a5a3d7221ec9c6210ba"
   }
  },
  "linked_only": [
@@ -58,53 +58,53 @@
  ],
  "model_rows_by_source": {
   "baltor_records": 4,
-  "huggingface": 1851,
-  "huggingface_config": 944,
-  "huggingface_gguf": 697,
-  "litellm": 323,
+  "huggingface": 1844,
+  "huggingface_config": 943,
+  "huggingface_gguf": 700,
+  "litellm": 324,
   "lmarena": 74,
-  "modelsdev": 589
+  "modelsdev": 590
  },
  "record_type": "model_directory_manifest/v2",
  "report": {
   "arena": {
    "joined": 74,
-   "read": "2026-09-29",
+   "read": "2026-09-30",
    "rows": 409,
    "state": "read"
   },
-  "configurations": 944,
-  "gguf_repositories": 697,
+  "configurations": 943,
+  "gguf_repositories": 700,
   "hosted_repositories": 0,
   "lists": [
    {
-    "added": 480,
+    "added": 479,
     "limit": 1000,
-    "read": "2026-09-29",
+    "read": "2026-09-30",
     "sort": "downloads",
     "state": "read",
     "task": "text-generation"
    },
    {
-    "added": 558,
+    "added": 556,
     "limit": 1000,
-    "read": "2026-09-29",
+    "read": "2026-09-30",
     "sort": "likes",
     "state": "read",
     "task": "text-generation"
    },
    {
-    "added": 104,
+    "added": 103,
     "limit": 500,
-    "read": "2026-09-29",
+    "read": "2026-09-30",
     "sort": "trendingScore",
     "state": "read",
     "task": "text-generation"
    },
    {
-    "added": 146,
+    "added": 145,
     "limit": 400,
-    "read": "2026-09-29",
+    "read": "2026-09-30",
     "sort": "downloads",
     "state": "read",
     "task": "image-text-to-text"
@@ -112,7 +112,7 @@
    {
     "added": 64,
     "limit": 200,
-    "read": "2026-09-29",
+    "read": "2026-09-30",
     "sort": "likes",
     "state": "read",
     "task": "image-text-to-text"
@@ -120,15 +120,15 @@
    {
     "added": 183,
     "limit": 250,
-    "read": "2026-09-29",
+    "read": "2026-09-30",
     "sort": "downloads",
     "state": "read",
     "task": "feature-extraction"
    },
    {
-    "added": 128,
+    "added": 127,
     "limit": 250,
-    "read": "2026-09-29",
+    "read": "2026-09-30",
     "sort": "downloads",
     "state": "read",
     "task": "sentence-similarity"
@@ -136,15 +136,15 @@
    {
     "added": 66,
     "limit": 120,
-    "read": "2026-09-29",
+    "read": "2026-09-30",
     "sort": "downloads",
     "state": "read",
     "task": "text-ranking"
    }
   ],
   "litellm": {
-   "entries": 3695,
-   "read": "2026-09-29",
+   "entries": 3710,
+   "read": "2026-09-30",
    "state": "read"
   },
   "reader": {
@@ -160,13 +160,13 @@
      "https_get:not_found": 7,
      "https_get:ok": 22
     },
-    "bytes": 56108544,
+    "bytes": 56077087,
     "requests": 83
    },
    "stopped_by": null
   },
   "refused": [],
-  "served_copies": 31,
+  "served_copies": 30,
   "served_repositories": 91
  },
  "sources": [
@@ -176,9 +176,9 @@
    "id": "huggingface",
    "licence": "Terms of service; each model card declares its own licence",
    "name": "Hugging Face Hub API",
-   "newest_read": "2026-09-29",
+   "newest_read": "2026-09-30",
    "oldest_read": "2026-09-28",
-   "rows": 1851,
+   "rows": 1844,
    "terms_address": "huggingface.co/terms-of-service",
    "use": "Licence, parameter count, publication date, downloads and task of open models, read within the API's published request limit."
   },
@@ -188,9 +188,9 @@
    "id": "huggingface_config",
    "licence": "Terms of service",
    "name": "Hugging Face model configurations",
-   "newest_read": "2026-09-29",
+   "newest_read": "2026-09-30",
    "oldest_read": "2026-09-26",
-   "rows": 944,
+   "rows": 943,
    "terms_address": "huggingface.co/terms-of-service",
    "use": "Layers, key and value heads, head size and context length, the numbers the memory formula needs."
   },
@@ -200,9 +200,9 @@
    "id": "huggingface_gguf",
    "licence": "Terms of service",
    "name": "Hugging Face GGUF file lists",
-   "newest_read": "2026-09-29",
+   "newest_read": "2026-09-30",
    "oldest_read": "2026-09-26",
-   "rows": 697,
+   "rows": 700,
    "terms_address": "huggingface.co/terms-of-service",
    "use": "The quantized files of a model and their sizes, from the GGUF copy its maker or the most downloaded copier publishes."
   },
@@ -212,9 +212,9 @@
    "id": "modelsdev",
    "licence": "MIT",
    "name": "models.dev",
-   "newest_read": "2026-09-29",
-   "oldest_read": "2026-09-29",
-   "rows": 775,
+   "newest_read": "2026-09-30",
+   "oldest_read": "2026-09-30",
+   "rows": 776,
    "terms_address": "github.com/anomalyco/models.dev/blob/dev/LICENSE",
    "use": "Provider prices with each record's own date, the limits and capabilities of the makers' own APIs, release dates, and each provider's documented address and key variable."
   },
@@ -224,9 +224,9 @@
    "id": "litellm",
    "licence": "MIT",
    "name": "LiteLLM model price and context file",
-   "newest_read": "2026-09-29",
-   "oldest_read": "2026-09-29",
-   "rows": 323,
+   "newest_read": "2026-09-30",
+   "oldest_read": "2026-09-30",
+   "rows": 324,
    "terms_address": "github.com/BerriAI/litellm/blob/main/LICENSE",
    "use": "Provider prices as listed on the day the file was read, and the input and output limits and tool calling, structured output and reasoning flags of the makers' own APIs."
   },
@@ -236,8 +236,8 @@
    "id": "lmarena",
    "licence": "CC BY 4.0",
    "name": "LMArena leaderboard dataset",
-   "newest_read": "2026-09-29",
-   "oldest_read": "2026-09-29",
+   "newest_read": "2026-09-30",
+   "oldest_read": "2026-09-30",
    "rows": 74,
    "terms_address": "creativecommons.org/licenses/by/4.0/",
    "use": "The overall text arena score with style control from the latest leaderboard, rounded to a whole number, for a hosted model the arena names with its maker's own identifier."

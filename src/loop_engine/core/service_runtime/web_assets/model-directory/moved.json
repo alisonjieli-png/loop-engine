@@ -6,6 +6,11 @@
    "since": "2026-09-29"
   },
   {
+   "address": "/models/ai-forever-rugpt3small-based-on-gpt2",
+   "reason": "not_listed",
+   "since": "2026-09-30"
+  },
+  {
    "address": "/models/aion-labs-aion-2-0",
    "reason": "refused_source",
    "since": "2026-09-27"
@@ -34,6 +39,11 @@
    "address": "/models/aion-labs-aion-rp-llama-3-1-8b",
    "reason": "refused_source",
    "since": "2026-09-27"
+  },
+  {
+   "address": "/models/allenai-molmo2-4b",
+   "reason": "not_listed",
+   "since": "2026-09-30"
   },
   {
    "address": "/models/amazon-nova-2-lite-v1",
@@ -76,9 +86,24 @@
    "since": "2026-09-27"
   },
   {
+   "address": "/models/apus-ailab-apus-openjev-v1-35b-a3b",
+   "reason": "not_listed",
+   "since": "2026-09-30"
+  },
+  {
    "address": "/models/apus-ailab-apus-openjev-v1-4b",
    "reason": "not_listed",
    "since": "2026-09-29"
+  },
+  {
+   "address": "/models/apus-ailab-apus-openjev-v1-9b",
+   "reason": "not_listed",
+   "since": "2026-09-30"
+  },
+  {
+   "address": "/models/armurai-pentest-ai",
+   "reason": "not_listed",
+   "since": "2026-09-30"
   },
   {
    "address": "/models/baidu-ernie-4-5-vl-424b-a47b-pt",
@@ -86,9 +111,24 @@
    "since": "2026-09-27"
   },
   {
-   "address": "/models/bennydaball-krea-2-engineer-v1",
+   "address": "/models/bench-labs-cagliostro-v3",
    "reason": "not_listed",
-   "since": "2026-09-28"
+   "since": "2026-09-30"
+  },
+  {
+   "address": "/models/bigcode-gpt-bigcode-santacoder",
+   "reason": "not_listed",
+   "since": "2026-09-30"
+  },
+  {
+   "address": "/models/bluenipples-anansi-35b-a3b",
+   "reason": "not_listed",
+   "since": "2026-09-30"
+  },
+  {
+   "address": "/models/bytedance-ouro-2-6b-thinking",
+   "reason": "not_listed",
+   "since": "2026-09-30"
   },
   {
    "address": "/models/bytedance-seed-seed-1-6",
@@ -126,6 +166,11 @@
    "since": "2026-09-29"
   },
   {
+   "address": "/models/code4lifeofficial-huydang-dek21-embedding-v2",
+   "reason": "not_listed",
+   "since": "2026-09-30"
+  },
+  {
    "address": "/models/cohere-command-a-plus",
    "reason": "refused_source",
    "since": "2026-09-27"
@@ -149,6 +194,16 @@
    "address": "/models/crumb-bloom-560m-rlhf-sd2-prompter-aesthetic",
    "reason": "not_listed",
    "since": "2026-09-29"
+  },
+  {
+   "address": "/models/danielheinz-e5-base-sts-en-de",
+   "reason": "not_listed",
+   "since": "2026-09-30"
+  },
+  {
+   "address": "/models/danish-foundation-models-dfm-mimir",
+   "reason": "not_listed",
+   "since": "2026-09-30"
   },
   {
    "address": "/models/dbourget-philai-embeddings-v1-1",
@@ -181,6 +236,11 @@
    "since": "2026-09-29"
   },
   {
+   "address": "/models/ewin-reg-minicpm5-1b-agentic-tooluse-merged-fp16",
+   "reason": "not_listed",
+   "since": "2026-09-30"
+  },
+  {
    "address": "/models/final-bench-darwin-397b-ztc",
    "reason": "not_listed",
    "since": "2026-09-29"
@@ -189,6 +249,11 @@
    "address": "/models/fireworks-ember-1",
    "reason": "refused_source",
    "since": "2026-09-27"
+  },
+  {
+   "address": "/models/gnani-gnani-evon-v3-3-30b-a3b",
+   "reason": "not_listed",
+   "since": "2026-09-30"
   },
   {
    "address": "/models/google-gemini-2-5-pro-preview",
@@ -201,6 +266,11 @@
    "since": "2026-09-29"
   },
   {
+   "address": "/models/h2oai-h2ovl-mississippi-800m",
+   "reason": "not_listed",
+   "since": "2026-09-30"
+  },
+  {
    "address": "/models/hpai-bsc-iris-14b",
    "reason": "not_listed",
    "since": "2026-09-29"
@@ -209,6 +279,11 @@
    "address": "/models/huihui-ai-huihui-ornith-1-5-9b-abliterated",
    "reason": "not_listed",
    "since": "2026-09-27"
+  },
+  {
+   "address": "/models/ifm-k2-horizon-375b-a23b",
+   "reason": "not_listed",
+   "since": "2026-09-30"
   },
   {
    "address": "/models/inclusionai-ling-3-0-flash-sante",
@@ -236,6 +311,11 @@
    "since": "2026-09-27"
   },
   {
+   "address": "/models/lgai-exaone-k-exaone-2-0-750b-a37b",
+   "reason": "not_listed",
+   "since": "2026-09-30"
+  },
+  {
    "address": "/models/liquidai-lfm2-5-8b-a1b-dspark",
    "reason": "not_listed",
    "since": "2026-09-28"
@@ -247,11 +327,6 @@
   },
   {
    "address": "/models/llava-hf-llava-1-5-13b-hf",
-   "reason": "not_listed",
-   "since": "2026-09-29"
-  },
-  {
-   "address": "/models/logic65-whittle-next-27b-a3b",
    "reason": "not_listed",
    "since": "2026-09-29"
   },
@@ -356,9 +431,24 @@
    "since": "2026-09-28"
   },
   {
-   "address": "/models/nvidia-nemotron-3-8b-chat-4k-rlhf",
+   "address": "/models/novi-ai-novi-nano-base",
    "reason": "not_listed",
-   "since": "2026-09-29"
+   "since": "2026-09-30"
+  },
+  {
+   "address": "/models/novi-ai-novi-nano-instruct",
+   "reason": "not_listed",
+   "since": "2026-09-30"
+  },
+  {
+   "address": "/models/open-lm-engine-rigel-base",
+   "reason": "not_listed",
+   "since": "2026-09-30"
+  },
+  {
+   "address": "/models/open-lm-engine-rigel-base-long",
+   "reason": "not_listed",
+   "since": "2026-09-30"
   },
   {
    "address": "/models/openai-gpt-3-5-turbo-0613",
@@ -601,6 +691,16 @@
    "since": "2026-09-27"
   },
   {
+   "address": "/models/rlhflow-llama3-iterative-dpo-final",
+   "reason": "not_listed",
+   "since": "2026-09-30"
+  },
+  {
+   "address": "/models/rlhflow-pair-preference-model-llama3-8b",
+   "reason": "not_listed",
+   "since": "2026-09-30"
+  },
+  {
    "address": "/models/sakana-fugu-max",
    "reason": "refused_source",
    "since": "2026-09-27"
@@ -661,6 +761,11 @@
    "since": "2026-09-29"
   },
   {
+   "address": "/models/techdotus-tokle-3m",
+   "reason": "not_listed",
+   "since": "2026-09-30"
+  },
+  {
    "address": "/models/thedrummer-skyfall-36b-v2",
    "reason": "refused_source",
    "since": "2026-09-27"
@@ -669,6 +774,16 @@
    "address": "/models/thedrummer-unslopnemo-12b-v4-1",
    "reason": "refused_source",
    "since": "2026-09-27"
+  },
+  {
+   "address": "/models/thesysdev-oui-1",
+   "reason": "not_listed",
+   "since": "2026-09-30"
+  },
+  {
+   "address": "/models/trl-internal-testing-tiny-qwen3-5forconditionalgeneration-3-8",
+   "reason": "not_listed",
+   "since": "2026-09-30"
   },
   {
    "address": "/models/typesafe-jev-router",
@@ -684,11 +799,6 @@
    "address": "/models/undi95-remm-slerp-l2-13b",
    "reason": "refused_source",
    "since": "2026-09-27"
-  },
-  {
-   "address": "/models/unslothai-8",
-   "reason": "not_listed",
-   "since": "2026-09-29"
   },
   {
    "address": "/models/unslothai-gcp",
@@ -749,6 +859,11 @@
    "address": "/models/yqi0-petitgpt",
    "reason": "not_listed",
    "since": "2026-09-29"
+  },
+  {
+   "address": "/models/yuhan123-vicuna-13b-self-consistency-neg-exp-var-5",
+   "reason": "not_listed",
+   "since": "2026-09-30"
   },
   {
    "address": "/models/yuxinlu1-gemma-4-12b-agentic-fable5-composer2-5-v2-3-5x-tau2",
