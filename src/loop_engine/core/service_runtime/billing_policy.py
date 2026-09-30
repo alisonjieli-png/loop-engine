@@ -25,7 +25,7 @@ owns the request owns these records.
 """
 from __future__ import annotations
 
-from dataclasses import asdict
+from dataclasses import asdict, dataclass
 import json
 
 from .billing_effects import SESSION_POLICY_IDENTITY, SESSION_POLICY_KIND, SESSION_POLICY_VERSION
@@ -48,6 +48,14 @@ REFUSAL_VERSION = "service_billing_policy_refusal/v1"
 #: the host file.
 APPLICATION_REFUSALS = ("session_price_not_in_billing_policy", PAID_ACCESS_REFUSAL,
                         "billing_policy_revision_required", "session_policy_revision_required")
+
+
+@dataclass
+class BillingPolicyContext:
+    """Passive operator dependencies, not an HTTP app, runtime or executable graph vertex."""
+    runtime: object
+    billing_processor: object = None
+    billing_sessions: object = None
 
 
 def _held_billing_policy(runtime):
@@ -170,8 +178,8 @@ def apply_billing_policy(application, configuration, *, reset_paid_access=False)
 
 def apply_host_billing_policy(path, *, reset_paid_access=False):
     """Load one host file and re-apply its billing policies."""
-    from .http_entrypoint import load_host_application
-    application, configuration = load_host_application(path)
+    from .http_entrypoint import load_host_billing_context
+    application, configuration = load_host_billing_context(path)
     return apply_billing_policy(application, configuration, reset_paid_access=reset_paid_access)
 
 

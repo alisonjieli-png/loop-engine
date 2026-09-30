@@ -39,6 +39,7 @@ import sys
 import time
 from collections import Counter
 from pathlib import Path
+from urllib.parse import urlsplit, urlunsplit
 
 RECORD_TYPE = "local_volume_inventory/v1"
 FILE_RECORD_TYPE = "local_volume_file/v1"
@@ -88,24 +89,52 @@ THIRD_PARTY_LICENCE = "third_party_licence_holder"
 THIRD_PARTY_COPYRIGHT = "third_party_copyright_line"
 OWNER_REMOTE = "owner_git_remote"
 OWNER_DECLARED = "owner_declared_no_contrary_signal"
+PROVENANCE_UNRESOLVED = "provenance_unresolved"
 PROGRESS_EVERY = 5000
 SAMPLE_SOURCE_FILES = 40
 HEAD_BYTES = 4096
 
 
-def _read_head(path: str, size: int = HEAD_BYTES) -> str:
+def _read_head(path: str, size: int = HEAD_BYTES, *, redact: bool = True) -> str:
+    if os.path.islink(path):
+        return ""
     try:
         with open(path, "rb") as stream:
-            return stream.read(size).decode("utf-8", "replace")
+            text = stream.read(size).decode("utf-8", "replace")
+            return _redact(text) if redact else text
     except OSError:
         return ""
 
 
-def _remotes(git_folder: str) -> list:
+def _redact(text: str) -> str:
+    """Remove common credential forms before any excerpt reaches an inventory."""
+    text = re.sub(r"-----BEGIN [^-]*PRIVATE KEY-----.*?(?:-----END [^-]*PRIVATE KEY-----|$)",
+                  "[private key omitted]", text, flags=re.DOTALL)
+    text = re.sub(r"(?i)\b(?:sk|rk|pk)[_-](?:live|test)[_-][A-Za-z0-9_-]+", "[credential omitted]", text)
+    text = re.sub(r"(?i)\b(?:gh[pousr]_[A-Za-z0-9_]{15,}|github_pat_[A-Za-z0-9_]+|sk-[A-Za-z0-9_-]{15,})",
+                  "[credential omitted]", text)
+    return re.sub(r"(?im)(\b(?:api[_-]?key|access[_-]?token|password|client[_-]?secret)\s*[:=]\s*)[^\s,;]+",
+                  r"\1[omitted]", text)
+
+
+def _remotes(git_folder: str, *, problems=None) -> list:
+    if os.path.islink(git_folder):
+        return []
     config = os.path.join(git_folder, "config")
     if not os.path.isfile(config):
         return []
-    return REMOTE_URL.findall(_read_head(config, 65536))
+    remotes = []
+    for value in REMOTE_URL.findall(_read_head(config, 65536, redact=False)):
+        if "://" in value:
+            try:
+                parsed = urlsplit(value)
+            except ValueError:
+                if problems is not None:
+                    problems.append("remote_url_unreadable")
+                continue
+            value = urlunsplit((parsed.scheme, parsed.hostname or "", parsed.path, "", ""))
+        remotes.append(_redact(value))
+    return remotes
 
 
 def _holders(text: str) -> list:
@@ -118,6 +147,8 @@ def _holders(text: str) -> list:
 
 
 def _classify(project: dict, owner_accounts: set, owner_names: set) -> str:
+    if project.get("provenance_issues"):
+        return PROVENANCE_UNRESOLVED
     owners = {owner.lower() for owner in project["remote_owners"]}
     if owners - owner_accounts:
         return THIRD_PARTY_REMOTE
@@ -180,7 +211,8 @@ class Inventory:
 
     def project(self, folder: str, names: list, top: str) -> dict:
         markers = sorted(name for name in names if name in PROJECT_MARKERS or name == GIT_MARKER)
-        remotes = _remotes(os.path.join(folder, GIT_MARKER)) if GIT_MARKER in names else []
+        problems = []
+        remotes = _remotes(os.path.join(folder, GIT_MARKER), problems=problems) if GIT_MARKER in names else []
         licence_holders, licence_files = [], []
         for name in names:
             if name in LICENCE_NAMES:
@@ -188,6 +220,7 @@ class Inventory:
                 licence_holders.extend(_holders(_read_head(os.path.join(folder, name))))
         row = {"record_type": PROJECT_RECORD_TYPE, "path": os.path.relpath(folder, self.volume), "top_folder": top,
                "name": os.path.basename(folder), "markers": markers, "git_remotes": remotes[:5],
+               "provenance_issues": problems,
                "remote_owners": sorted({match.group(1) for url in remotes for match in [GITHUB_OWNER.search(url)] if match}),
                "licence_files": licence_files, "licence_holders": sorted(set(licence_holders)),
                "copyright_holders": [], "source_files": 0, "files": 0, "size_bytes": 0, "languages": {},
@@ -214,7 +247,7 @@ class Inventory:
             return
         names = [entry.name for entry in listed]
         own = None
-        if any(name in PROJECT_MARKERS or name == GIT_MARKER for name in names) and depth > 0:
+        if any(name in PROJECT_MARKERS or name == GIT_MARKER for name in names):
             own = self.project(folder, names, top)
         current = own or project
         for entry in listed:
@@ -311,7 +344,14 @@ def main(argv=None) -> int:
     if not volume.is_dir():
         print(f"not a folder: {volume}", file=sys.stderr)
         return 2
-    output.mkdir(parents=True, exist_ok=False)
+    if output == volume or volume in output.parents:
+        print("write the inventory outside the scanned volume", file=sys.stderr)
+        return 2
+    if args.root and any(Path(root).is_absolute() or ".." in Path(root).parts
+                         or not (volume / root).resolve().is_relative_to(volume) for root in args.root):
+        print("a selected root must stay within the named volume", file=sys.stderr)
+        return 2
+    output.mkdir(parents=True, exist_ok=False, mode=0o700)
     roots = [str(volume / root) for root in args.root] if args.root else [
         entry.path for entry in os.scandir(volume) if entry.is_dir(follow_symlinks=False)
         and entry.name not in SKIPPED_FOLDERS and not entry.name.startswith(".")]

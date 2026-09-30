@@ -68,6 +68,13 @@ Lead a creative entry point with a result a person can remix, inspect and revise
 
 The current Baltor Pro offer stays in place while the creative experience is tested. Price future work around useful production kits, maintenance, saved work, private components and team handoff. Rendering and inference are separately attributed costs. No new paid feature is sold before its delivery path works. Plugin policy and partner-program eligibility determine commerce on each surface; the independent website remains the normal acquisition and account surface.
 
+The [September 29 creative supply and launch plan](../roadmap/CREATIVE-SUPPLY-AND-LAUNCH-2026-09-29.md)
+adds procedural asset families, non-human rig references, style transforms,
+private project discovery, address-to-scene composition and a newsletter-led
+launch. The owner reports more than 20,000 design-interested readers; that is
+an audience, not measured Baltor traction. The website and plugin share one
+service and entitlement, with commerce constrained by each channel's rules.
+
 ## Earlier owner direction, preserved
 
 The following September 22 to 27 direction was moved from AGENTS.md to keep startup instructions within native context limits. Its quotes and history are retained. The current direction above resolves priorities. Dated counts and implementation descriptions are historical; use the latest handoff, current deployment record and source for present behavior.

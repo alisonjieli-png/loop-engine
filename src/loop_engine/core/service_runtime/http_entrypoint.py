@@ -375,7 +375,7 @@ def signup_matches_the_browser_identity(settings, browser_identity):
                                            and browser_identity.configuration.email_signup_enabled)
 
 
-def load_host_application(path):
+def _validated_host_configuration(path):
     configuration = _host_json(path)
     allowed = {"record_type", "runtime", "http", "authentication", "manifest_path", "tenants", "billing", "administration",
                "browser_identity", "client_access", "promotions", "account_email", "observability", "waitlist",
@@ -383,6 +383,11 @@ def load_host_application(path):
     if (configuration.get("record_type") != HOST_CONFIGURATION_VERSION or set(configuration) - allowed
             or not {"runtime", "http", "authentication", "manifest_path"} <= set(configuration)):
         raise ServiceRuntimeError("unsupported_host_configuration")
+    return configuration
+
+
+def load_host_application(path):
+    configuration = _validated_host_configuration(path)
     license_policy = host_license_policy(configuration)
     family_policy = host_family_policy(configuration)
     accounts = account_policy(configuration)
@@ -474,6 +479,13 @@ def load_host_application(path):
     if configuration.get("administration"):
         from .access import ServiceAccessAdministration, ServiceAccessPolicy
         application.access_administration = ServiceAccessAdministration(runtime, ServiceAccessPolicy(**configuration["administration"]))
+    _install_billing(application, configuration)
+    return application, configuration
+
+
+def _install_billing(application, configuration):
+    """Install the same typed billing adapters for HTTP serving and bounded operator work."""
+    runtime = application.runtime
     if configuration.get("billing"):
         from .billing import StripeEventProcessor
         from .billing_records import StripeWebhookConfig, StripeEntitlementPolicy, StripeProviderConfig
@@ -493,7 +505,15 @@ def load_host_application(path):
             session_settings = dict(settings["sessions"])
             session_settings["plans"] = tuple(StripeSessionPlan(**row) for row in session_settings.get("plans", ()))
             application.billing_sessions = StripeSessionAdapter(runtime, StripeSessionConfiguration(**session_settings), environment_secret)
-    return application, configuration
+
+
+def load_host_billing_context(path):
+    """Load only the policies and store used by billing confirmation, without a catalogue or index."""
+    from .billing_policy import BillingPolicyContext
+    configuration = _validated_host_configuration(path)
+    context = BillingPolicyContext(ServiceRuntime(ServiceRuntimeConfig(**configuration["runtime"])))
+    _install_billing(context, configuration)
+    return context, configuration
 
 
 def configure_host(path):

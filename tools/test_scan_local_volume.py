@@ -74,6 +74,41 @@ class InventoryTest(unittest.TestCase):
         self.assertEqual(self.summary["projects_by_provenance_class"][scanner.OWNER_DECLARED], 1)
         self.assertIn("declared on September 26, 2026", self.summary["provenance_basis"])
 
+    def test_selected_top_level_project_is_not_lost(self):
+        destination = self.root / "selected-root"
+        self.assertEqual(scanner.main(["--volume", str(self.volume), "--root", "PROJECTS/resizer",
+                                       "--output", str(destination)]), 0)
+        summary = json.loads((destination / "summary.json").read_text())
+        self.assertEqual(summary["projects"], 1)
+
+    def test_roots_cannot_escape_and_inventory_cannot_feed_itself(self):
+        for root in ("../", str(self.root)):
+            with self.subTest(root=root):
+                self.assertEqual(scanner.main(["--volume", str(self.volume), "--root", root,
+                                               "--output", str(self.root / "refused")]), 2)
+        self.assertEqual(scanner.main(["--volume", str(self.volume), "--output", str(self.volume / "inventory")]), 2)
+
+    def test_inventory_excerpts_and_remotes_remove_credentials_and_skip_symlinks(self):
+        token = "ghp_" + "x" * 30
+        text = "api_key=" + token + "\npassword=example-secret\n"
+        self.assertNotIn(token, scanner._redact(text))
+        self.assertNotIn("example-secret", scanner._redact(text))
+        project = self.root / "remote-project"
+        _write(project, ".git/config", "url = https://user:example-secret@github.com/owner/repo.git?token=private\n")
+        self.assertEqual(scanner._remotes(str(project / ".git")), ["https://github.com/owner/repo.git"])
+        _write(project, ".git/config", "url = https://[broken-host/repo\n")
+        problems = []
+        self.assertEqual(scanner._remotes(str(project / ".git"), problems=problems), [])
+        self.assertEqual(problems, ["remote_url_unreadable"])
+        self.assertEqual(scanner._classify({"provenance_issues": problems}, set(), set()), scanner.PROVENANCE_UNRESOLVED)
+        _write(project, ".git/config", "url = https://" + token + "@github.com/owner/repo.git\n")
+        self.assertEqual(scanner._remotes(str(project / ".git")), ["https://github.com/owner/repo.git"])
+        outside = self.root / "outside.txt"
+        outside.write_text("private marker")
+        link = self.root / "link.txt"
+        link.symlink_to(outside)
+        self.assertEqual(scanner._read_head(str(link)), "")
+
     def test_vendored_and_system_folders_are_skipped_and_nothing_is_copied_or_hashed(self):
         files = [json.loads(line) for path in sorted(self.output.glob("files-*.jsonl"))
                  for line in path.read_text().splitlines()]

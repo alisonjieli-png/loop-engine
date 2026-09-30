@@ -907,6 +907,13 @@ class ServiceHttpApplication:
         except Exception:
             return None
 
+    def served_file_population(self):
+        """One approved active-view snapshot for the homepage's file and package counts."""
+        try:
+            return self.provisioning.current_view().file_population()
+        except Exception:
+            return None
+
     def capabilities(self):
         from importlib.metadata import version
         session_options = self.billing_sessions.options() if self.billing_sessions is not None else {}
@@ -1987,7 +1994,7 @@ class ServiceHttpApplication:
         # so it only chooses which page a hostname shows at its root address.
         # A page that shows the library's size shows the count served now, not the packaged one.
         asset = served_asset(path, method, self.configuration.display_name, request.headers.get("host"),
-                             library_count=self.served_item_count)
+                             library_population=self.served_file_population)
         if asset is None:
             # The model directory's pages are rendered from packaged records rather than listed as files.
             asset = rendered_page(path, method, self.configuration.display_name, request.headers.get("host"))

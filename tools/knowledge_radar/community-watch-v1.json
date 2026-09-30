@@ -1,0 +1,48 @@
+{
+  "record_type": "community_watch_registry/v1",
+  "revision": "2026-09-29",
+  "maximum_reads_per_tick": 12,
+  "maximum_entries_per_source": 40,
+  "maximum_harness_runs_per_day": 4,
+  "maximum_work_items_per_tick": 20,
+  "sources": [
+    {"id":"babylon_forum","engine":"rss_atom","url":"https://forum.babylonjs.com/latest.rss","interval_seconds":7200,"terms_url":"https://forum.babylonjs.com/tos","use":"internal_link_discovery","enabled":true},
+    {"id":"playcanvas_forum","engine":"rss_atom","url":"https://forum.playcanvas.com/latest.rss","interval_seconds":7200,"terms_url":"https://forum.playcanvas.com/tos","use":"internal_link_discovery","enabled":true},
+    {"id":"godot_forum","engine":"rss_atom","url":"https://forum.godotengine.org/latest.rss","interval_seconds":7200,"terms_url":"https://forum.godotengine.org/tos","use":"internal_link_discovery","enabled":true},
+    {"id":"threejs_forum","engine":"rss_atom","url":"https://discourse.threejs.org/latest.rss","interval_seconds":7200,"terms_url":"https://discourse.threejs.org/tos","use":"internal_link_discovery","enabled":true},
+    {"id":"blender_devtalk","engine":"rss_atom","url":"https://devtalk.blender.org/latest.rss","interval_seconds":7200,"terms_url":"https://devtalk.blender.org/tos","use":"internal_link_discovery","enabled":true},
+    {"id":"supercollider_forum","engine":"rss_atom","url":"https://scsynth.org/latest.rss","interval_seconds":7200,"terms_url":"https://scsynth.org/tos","use":"internal_link_discovery","enabled":true}
+  ],
+  "research_topics": [
+    {"id":"ai_game_workflows","query":"site:reddit.com/r/aigamedev (MCP OR workflow OR procedural) (Godot OR Blender OR Three.js)","domains":["reddit.com","github.com"],"interval_seconds":21600},
+    {"id":"motion_and_design","query":"(site:reddit.com/r/creativecoding OR site:reddit.com/r/MotionDesign) (Remotion OR HyperFrames OR shader OR agent) workflow","domains":["reddit.com","github.com"],"interval_seconds":21600},
+    {"id":"music_and_audio","query":"(site:reddit.com/r/AI_Music OR site:reddit.com/r/AudioProgramming) (workflow OR stems OR MIDI OR synthesis) tools","domains":["reddit.com","github.com"],"interval_seconds":21600},
+    {"id":"game_publication","query":"(site:reddit.com/r/gamedev OR site:reddit.com/r/indiedev) (Steam OR itch.io) (export OR testing OR release) workflow","domains":["reddit.com","partner.steamgames.com","itch.io"],"interval_seconds":43200},
+    {"id":"codex_showcases","query":"site:developers.openai.com/showcase (games OR design OR animation) \"Time to Fly\"","domains":["developers.openai.com","openai.com"],"interval_seconds":43200},
+    {"id":"data_and_saas","query":"(site:reddit.com/r/dataengineering OR site:reddit.com/r/SaaS) (workflow OR tool) (validation OR migration OR deduplication OR observability)","domains":["reddit.com","github.com"],"interval_seconds":43200}
+  ],
+  "tools": {
+    "godot":["Godot","GDScript"],"blender":["Blender","bpy"],"threejs":["Three.js","ThreeJS"],
+    "babylonjs":["Babylon.js","BabylonJS","Babylon Lite"],"playcanvas":["PlayCanvas"],
+    "unity":["Unity"],"unreal":["Unreal","UE5"],"bevy":["Bevy"],"phaser":["Phaser"],
+    "sdl":["SDL3","SDL2"],"remotion":["Remotion"],"hyperframes":["HyperFrames"],"manim":["Manim"],
+    "houdini":["Houdini"],"touchdesigner":["TouchDesigner"],"comfyui":["ComfyUI"],"ffmpeg":["FFmpeg"],
+    "supercollider":["SuperCollider","scsynth"],"faust":["Faust"],"demucs":["Demucs"],
+    "ace_step":["ACE-Step","ACE Step"],"yue":["YuE"],"meshy":["Meshy"],"tripo":["Tripo3D","Tripo"],
+    "codex":["Codex"],"claude":["Claude"],"postgresql":["PostgreSQL","Postgres"],
+    "duckdb":["DuckDB"],"dbt":["dbt"],"temporal":["Temporal"],"rapier":["Rapier"],"jolt":["Jolt"]
+  },
+  "signals": {
+    "agent_control":["MCP","agent","Codex","Claude","LLM"],
+    "procedural_generation":["procedural","generator","parametric","Geometry Nodes"],
+    "visual_design":["shader","material","texture","lighting","typography","layout","animation","diorama"],
+    "geometry_and_rigging":["mesh","vertices","vertex","topology","rigging","skinning","UV","glTF","GLB"],
+    "audio":["audio","music","MIDI","stems","synthesis","mixing","loudness"],
+    "gameplay":["gameplay","collision","controller","playtest","game","physics","navigation"],
+    "publication":["Steam","itch.io","publishing","export","release build","store page"],
+    "software_data":["schema","migration","deduplication","pipeline","database","authentication","observability"],
+    "workflow_detail":["workflow","pipeline","step by step","source code","repository","how I built"],
+    "failure_report":["failed","failure","broken","doesn't work","regression","bug","limitation"],
+    "cost_or_performance":["tokens","quota","cost","latency","FPS","performance","memory","benchmark"]
+  }
+}

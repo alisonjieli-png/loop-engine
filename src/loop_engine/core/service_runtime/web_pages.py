@@ -400,6 +400,8 @@ GENERATORS = {"/robots.txt": robots_text, "/sitemap.xml": sitemap_xml}
 LIBRARY_COUNT_MARK = b"data-library-count"
 _LIBRARY_COUNT = re.compile(rb"(?P<open><(?P<tag>[a-z][a-z0-9]*)\b[^>]*?\s" + LIBRARY_COUNT_MARK
                             + rb"(?=[\s=/>])[^>]*>)[^<]*(?P<close></(?P=tag)\s*>)", re.IGNORECASE)
+_LIBRARY_FILES = re.compile(rb"(?P<open><(?P<tag>[a-z][a-z0-9]*)\b[^>]*?\sdata-library-file-count"
+                            rb"(?=[\s=/>])[^>]*>)[^<]*(?P<close></(?P=tag)\s*>)", re.IGNORECASE)
 
 
 def with_library_count(body: bytes, count) -> bytes:
@@ -418,6 +420,18 @@ def with_library_count(body: bytes, count) -> bytes:
     return _LIBRARY_COUNT.sub(lambda match: match.group("open") + text + match.group("close"), body)
 
 
+def with_file_population(body: bytes, population) -> bytes:
+    """Render two units from one current view; unknown files never become a guessed total."""
+    known = isinstance(population, dict) and population.get("record_type") == "catalogue_file_population/v1"
+    packages = population.get("packages") if known else None
+    package_text = f"{packages:,}".encode("ascii") if type(packages) is int and packages >= 0 else b"Not measured"
+    body = _LIBRARY_COUNT.sub(lambda match: match.group("open") + package_text + match.group("close"), body)
+    count = population.get("distinct_files") if known else None
+    text = (f"{count:,}".encode("ascii") if known and population.get("complete") is True
+            and type(count) is int and count >= 0 else b"Not measured")
+    return _LIBRARY_FILES.sub(lambda match: match.group("open") + text + match.group("close"), body)
+
+
 def version_asset_references(body):
     """Fresh pages select fresh assets even while browsers cache the earlier release."""
     for path, version in packaged_asset_versions():
@@ -432,7 +446,7 @@ def validator_matches(value, etag):
                for part in value.split(","))
 
 
-def served_asset(path, method, display_name, host=None, site_map=None, library_count=None):
+def served_asset(path, method, display_name, host=None, site_map=None, library_count=None, library_population=None):
     """Return `(body, media_type)` for a served address, or None when this service serves none.
 
     The deployment's name is written into a served page here, so that a caller
@@ -442,6 +456,8 @@ def served_asset(path, method, display_name, host=None, site_map=None, library_c
     `library_count` is a function without arguments that returns how many
     packages the active catalogue serves now, or None; it is asked only for a
     page that shows that number, and its answer is written into the page.
+    `library_population` supplies one versioned snapshot for both packages and
+    distinct files. When supplied, it takes precedence over the package-only counter.
     """
     if method not in ("GET", "HEAD"):
         return None
@@ -461,7 +477,9 @@ def served_asset(path, method, display_name, host=None, site_map=None, library_c
     body = read_packaged_asset(name)
     if media_type == HTML_MEDIA_TYPE:
         body = body.replace(SERVICE_NAME_PLACEHOLDER, escape(display_name, quote=True).encode("utf-8"))
-        if library_count is not None and LIBRARY_COUNT_MARK in body:
+        if library_population is not None and LIBRARY_COUNT_MARK in body:
+            body = with_file_population(body, library_population())
+        elif library_count is not None and LIBRARY_COUNT_MARK in body:
             body = with_library_count(body, library_count())
         body = version_asset_references(body)
         head = page_head(site_map, path, host, display_name)

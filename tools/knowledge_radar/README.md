@@ -27,6 +27,53 @@ Automated commercial Reddit access requires a platform-access review before
 activation. A public reply does not grant permission to redistribute its
 code, assets or prose. See [the source and engine record](../../docs/research/CREATIVE-COMPONENTS-AND-ENGINE-CONTROL-2026-09-29.md).
 
+## Bounded community watch
+
+`tools/watch_community_workflows.py` adds a separate acquisition path to this
+component. Its `community-watch-v1.json` declares six public forum feeds and
+bounded research topics. Direct Reddit feeds and APIs are not enabled. An
+optional native Codex invocation uses the existing ChatGPT login and native
+web search to research one topic; it is not a substitute Reddit API or an
+access-control bypass.
+
+The operator must authorize network reads and private local writes. Native
+research needs its own grant. A tick reads at most twelve responses, considers
+at most forty entries per source, compiles twenty work orders and reserves at
+most one native invocation. The durable daily ceiling is four invocations.
+One invocation can contain several model turns; physical model calls are
+unknown when the harness does not report them. Token usage is preserved when
+reported. The search/page limits in its prompt are guidance, not a verified
+native enforcement counter. Process duration is bounded separately.
+
+Source state, leads, original summaries and work orders use the existing
+`RecordOperationService`. Queue admission and fenced worker completion use
+`SQLiteReactiveScheduler`. Feed reads and compilation run inside canonical
+Loops; the optional delegate is one bounded model-led Loop. There is no new
+runtime or approval path. State remains outside the repository. Thread bodies,
+author profiles, copied code and downloaded media are not retained. A source
+link or keyword classification establishes neither rights nor correctness.
+
+Failed reads preserve the last successful state and back off. Validators bind
+to the exact source URL. Repeated inputs do not create repeated work. A changed
+compiler has a new source digest, requeues saved leads and defers old briefs;
+bounded reconciliation reports incomplete coverage instead of claiming a full
+backfill. Per-run identifiers remain unique even within the same second.
+The persisted scheduler journal is not a complete native model transcript.
+
+Example, with a private directory chosen by the operator:
+
+```bash
+PYTHONPATH=src:tools .venv/bin/python tools/watch_community_workflows.py \
+  --library /absolute/private/community-state \
+  --authorize-network-reads --authorize-local-writes
+```
+
+Add `--authorize-native-research` only for the existing subscription route.
+Without both read and write grants the command returns a plan with no effects.
+Scheduling must use a pinned reviewed checkout, not mutable source. This path
+does not post, install a discovered tool, approve a component or publish files.
+Its positive and refusal checks are `tools/test_community_watch.py`.
+
 ## Runtime classification
 
 ```text
@@ -58,7 +105,7 @@ Operational runtime type
     └── Run History records
 ```
 
-A radar run is a Starting Practitioner task of the code execution profile
+A daily-brief radar run is a Starting Practitioner task of the code execution profile
 that an operator or a timer starts with the command above. It runs
 deterministically and makes no model call. Its source engines, the brief
 generator, the planner and the vetting checks are adapters and records the

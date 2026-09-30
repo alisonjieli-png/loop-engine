@@ -142,8 +142,15 @@
      redeploy changes it on the next visit. The number in the page stays for a reader without the script. */
   const applyLibraryCount = capabilities => {
     const served = capabilities?.library?.served_items;
-    if (!Number.isInteger(served) || served < 1) return;
-    for (const node of document.querySelectorAll("[data-library-count]")) node.textContent = served.toLocaleString("en-US");
+    if (Number.isSafeInteger(served) && served >= 0) {
+      for (const node of document.querySelectorAll("[data-library-count]")) node.textContent = served.toLocaleString("en-US");
+    }
+    const population = capabilities?.library?.file_population;
+    const known = population?.record_type === "catalogue_file_population/v1" && population.complete === true
+      && population.packages === served && Number.isSafeInteger(population.distinct_files) && population.distinct_files >= 0;
+    for (const node of document.querySelectorAll("[data-library-file-count]")) {
+      node.textContent = known ? population.distinct_files.toLocaleString("en-US") : "Not measured";
+    }
   };
 const applyPaymentState = name => {
     const state = paymentStates[name] || paymentStates.closed;

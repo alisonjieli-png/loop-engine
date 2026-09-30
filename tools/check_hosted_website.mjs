@@ -88,6 +88,16 @@ try{
   const liveTakesAddresses=liveReport.record_type==="service_capabilities/v1"&&(liveReport.website?.registration_available===true||liveReport.website?.waitlist_available===true);
   check("live_page_has_four_intelligence_layers",await page.locator('[data-view="about"] [data-intelligence-layer]').count()===4);
   if(rootIsHome){
+  const population=liveReport.library?.file_population;
+  const matchesPopulation=(files,packages,value)=>value?.record_type==="catalogue_file_population/v1"&&value.complete===true
+    &&Number.isSafeInteger(value.distinct_files)&&value.distinct_files>=0&&Number.isSafeInteger(value.packages)&&value.packages>=0
+    &&files===value.distinct_files.toLocaleString("en-US")&&packages===value.packages.toLocaleString("en-US");
+  const shownFiles=(await page.locator("[data-library-file-count]").first().textContent()).trim();
+  const shownPackages=(await page.locator("[data-library-count]").first().textContent()).trim();
+  check("live_homepage_separates_distinct_files_from_packages",matchesPopulation(shownFiles,shownPackages,population));
+  check("file_counter_refuses_placements_packages_and_incomplete_population",!matchesPopulation(shownFiles,shownPackages,{...population,complete:false})
+    &&!matchesPopulation(shownFiles,shownPackages,{...population,distinct_files:population.distinct_files+1})
+    &&!matchesPopulation(shownFiles,shownPackages,{...population,packages:population.packages+1}));
   /* The hero, as the owner decided on September 23, 2026: it says what Baltor is, the library of everything a harness can use,
      placed where the harness reads it, and the work it removes, done by hand; it no longer promises a fresh harness for each step. */
   const liveHero=await page.locator('[data-view="home"] .hero-copy').evaluate(node=>({headline:node.querySelector("h1")?.textContent.replace(/\s+/g," ").trim()||"",
