@@ -102,12 +102,17 @@ jobs:
             README.md CHANGELOG.md humanizer-context.md docs examples \
             case-studies benchmarks showcase
 
+          # The arena stylesheet uses CSS :first-child, :last-child and
+          # :nth-child selectors, not runtime topology or customer prose.
+          # Its README, HTML and JavaScript remain in this scan; a real-rg
+          # regression check proves that retired prose there is still refused.
           refuse_language \
             "Retired topology or decision language found. Use Starting, Spawned by, Queried by, Retrieved by, Connected from, or select next action." \
             --hidden -n -i \
             --glob '!docs/prompts/**' --glob '!docs/evidence/**' \
             --glob '!docs/verification/**' \
             --glob '!showcase/assets/**' \
+            --glob '!examples/32_creative_arena/arena.css' \
             --glob '!showcase/node_modules/**' --glob '!**/.cache/**' \
             '\bchild(?:ren)?\b|\broot[[:space:]_-]+loop\b|what[[:space:]_-]*is[[:space:]_-]*next|what[[:space:]_-]+next|whats[[:space:]_-]*next|whatnext' \
             README.md CHANGELOG.md humanizer-context.md docs examples \

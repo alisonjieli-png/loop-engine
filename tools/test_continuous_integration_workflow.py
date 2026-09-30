@@ -148,6 +148,27 @@ class RetiredLanguageGuardTests(WorkflowGuardTestCase):
         self.assertNotEqual(self.run_script(self.guard).returncode, 0)
         self.assertEqual(self.run_script(mutant).returncode, 0)
 
+    @unittest.skipUnless(shutil.which("rg"), "the real source scan requires ripgrep")
+    def test_css_selectors_are_not_topology_but_adjacent_prose_is_checked(self):
+        for name in ("README.md", "CHANGELOG.md", "humanizer-context.md"):
+            (self.workdir / name).write_text("Current documentation.\n")
+        for name in ("docs", "examples", "case-studies", "benchmarks", "showcase"):
+            (self.workdir / name).mkdir()
+        arena = self.workdir / "examples/32_creative_arena"
+        arena.mkdir()
+        (arena / "arena.css").write_text("p:last-child{color:red} p:nth-child(2){color:blue}\n")
+        self.assertEqual(self.run_script(self.guard).returncode, 0)
+        self.assertIn("--glob '!examples/32_creative_arena/arena.css'", self.guard)
+        without_exclusion = "\n".join(line for line in self.guard.splitlines()
+                                      if "--glob '!examples/32_creative_arena/arena.css'" not in line)
+        self.assertNotEqual(self.run_script(without_exclusion).returncode, 0)
+        for name in ("README.md", "index.html", "game.mjs"):
+            path = arena / name
+            path.write_text("A root loop creates child nodes.\n")
+            with self.subTest(name=name):
+                self.assertNotEqual(self.run_script(self.guard).returncode, 0)
+            path.unlink()
+
 
 class ArchitectureDiagramGuardTests(WorkflowGuardTestCase):
     """An extraction that produced nothing must not look like a rendered check."""
