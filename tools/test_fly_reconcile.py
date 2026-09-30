@@ -27,6 +27,8 @@ class FlyReconcileTests(unittest.TestCase):
             child.wait(timeout=8)
 
     def test_only_container_qualified_commands_are_available(self):
+        with self.assertRaises(ValueError):
+            controller.remote_command("erase", self.record)
         self.assertEqual(remote.COMMANDS["apply-grants"], list(container_check.POST_DEPLOY_GRANT_COMMAND))
         self.assertEqual(remote.COMMANDS["apply-billing-policy"], list(container_check.POST_DEPLOY_BILLING_POLICY_COMMAND))
         for arguments in (("configure", "a" * 40, "123"), ("apply-grants", "../escape", "123"),

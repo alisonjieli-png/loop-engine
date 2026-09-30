@@ -77,6 +77,15 @@ redistribution and attribution conditions, native metadata and exact bytes.
 The [media plan](../roadmap/DELIVERY-SEQUENCE.md#rights-cleared-media-and-reference-collections)
 distinguishes discovery links, authorized asset downloads and original generation.
 
+The owner's generated media, including TensorArt images and videos, is a
+candidate source for reusable B-roll. Keep generation provenance and reuse
+conditions rather than assuming that generated content is public domain.
+Large images and video masters belong behind qualified streaming/blob delivery,
+while the same catalogue searches their metadata and previews. Small scripts
+keep their supported delivery path. The
+[large-media architecture](CAPABILITY-SUPPLY-AND-RETRIEVAL.md#small-files-and-large-media)
+defines the shared identity, access and verification boundaries.
+
 The owner's September 30 Public Good direction makes selected components free
 to everyone without a subscription, subject to reasonable rate limits. Start
 with worker-protection material connected to Taylor S. Amarel's DueCare and

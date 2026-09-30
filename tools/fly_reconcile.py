@@ -17,6 +17,7 @@ import fly_reconcile_remote as remote
 
 
 def remote_command(mode, record):
+    mode = remote.OperationMode(mode).value
     source = Path(remote.__file__).read_text()
     # Import the exact reviewed source, without executing its file entry point.
     program = "scope={'__name__':'deployment_operation'}; exec(" + repr(source) + ",scope); scope['main'](" + repr(source) + ")"

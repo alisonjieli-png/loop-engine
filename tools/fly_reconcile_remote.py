@@ -5,6 +5,7 @@ start call reserves once; subsequent calls only read its result. This is
 operator tooling, not a customer endpoint or an execution engine.
 """
 import fcntl
+from enum import Enum
 import json
 import os
 from pathlib import Path
@@ -20,6 +21,14 @@ OUTPUT_LIMIT = 2 * 1024 * 1024
 COMMANDS = {name: ["setpriv", "--reuid=65534", "--regid=65534", "--clear-groups",
                    "loop-engine", "service", name, "--config", "/data/host.json"]
             for name in ("apply-grants", "apply-billing-policy")}
+
+
+class OperationMode(str, Enum):
+    """The closed operator protocol; only work executes the reserved command."""
+
+    START = "start"
+    STATUS = "status"
+    WORK = "work"
 
 
 def save(path, value):
@@ -92,7 +101,7 @@ def start(record, source):
             os.fsync(stream.fileno())
         # Transfer the lock to the detached supervisor. A lost start response
         # must never cause a second command; the durable reservation survives.
-        subprocess.Popen([sys.executable, str(script), "work", record["operation"],
+        subprocess.Popen([sys.executable, str(script), OperationMode.WORK.value, record["operation"],
                           record["revision"], record["run_id"], str(lock.fileno())],
                          stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
                          stderr=subprocess.DEVNULL, start_new_session=True,
@@ -127,13 +136,14 @@ def work(record, descriptor):
 
 
 def main(source=None):
-    mode, operation, revision, run_id = sys.argv[1:5]
+    mode_name, operation, revision, run_id = sys.argv[1:5]
+    mode = OperationMode(mode_name)
     record = binding(operation, revision, run_id)
-    if mode == "start":
+    if mode is OperationMode.START:
         result = start(record, source if source is not None else Path(__file__).read_text())
-    elif mode == "status":
+    elif mode is OperationMode.STATUS:
         result = status(record)
-    elif mode == "work":
+    elif mode is OperationMode.WORK:
         work(record, int(sys.argv[5]))
         return
     else:

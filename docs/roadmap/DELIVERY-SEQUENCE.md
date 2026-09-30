@@ -565,6 +565,12 @@ to-do list.
 
 ## Rights-cleared media and reference collections
 
+The [creative sourcing integration record](../research/CREATIVE-SOURCING-INTEGRATION-2026-09-30.md)
+preserves the owner's later content-studio dossiers, non-Reddit communities,
+daily-acquisition design, renderer checks and episode proposals. It separates
+supplied claims from primary pages inspected here. Use it to extend S-6.116,
+S-6.117 and S-6.214 without counting discoveries as admitted components.
+
 Databases, URL collections, guidance, images, video, music, sounds and complete
 media files belong in the package mix under S-6.214 and S-6.215. A link index,
 an original generator and a redistributed asset are different products and
@@ -578,6 +584,19 @@ file identity, observed licence, permitted commercial use and redistribution,
 attribution, modification/share-alike conditions, relevant releases and any
 uncertainty. Music can have separate composition, recording and performance
 rights. Preserve the rights evidence and recheck withdrawals or changed claims.
+
+Include the owner's generated images and videos, including TensorArt exports,
+as a candidate B-roll and asset collection. Preserve the original file, generation
+date, provider, model/version and available workflow, plus input-asset rights
+and the terms in force for that generation. Record commercial incorporation,
+modification and standalone redistribution separately from training permission.
+The [TensorArt terms](https://tensor.art/about/terms-of-service-new), inspected
+September 30, disclaim platform ownership claims over generated images but also
+retain user responsibilities and model-use conditions. They do not by themselves
+establish a blanket redistribution licence for every file in an account.
+Use an authorized export route, retain the owner's declaration and review any
+contrary evidence. Do not label generated work public domain by default. No
+TensorArt account or private media export was accessed in this pass.
 
 Use YouTube as a discovery/reference source where access is permitted. A title
 or description saying no copyright is not sufficient evidence. YouTube's
@@ -597,6 +616,15 @@ do not treat royalty-free as permission for standalone redistribution.
 Package cleared assets with attribution/licence files, media metadata, checksums,
 previews, usage examples and any source or generator needed for edits. Test
 decoding, codecs, dimensions/duration, missing dependencies and safe file paths.
+
+Keep one searchable catalogue for small files and large media. Build streaming
+and resumable blob delivery under the existing body-store boundary, with
+versioned client capabilities, exact hashes, scoped access and withdrawal checks.
+Measure bytes, memory and cost before choosing the provider. The current package
+limits are 8 MiB per file and 32 MiB per package; high-quality video masters need
+a qualified delivery extension, not a larger in-memory response. The
+[architecture](../architecture/CAPABILITY-SUPPLY-AND-RETRIEVAL.md#small-files-and-large-media)
+defines preview privacy, cache invalidation, retry accounting and acceptance tests.
 Use qualified large-file delivery or an authorized upstream recipe where current
 transport limits are insufficient. Count files actually served by Baltor, not
 every asset linked in a database. Native-use tests and independent admission

@@ -143,6 +143,61 @@ same qualification as a warm hit. The
 defines the required measurements and failure records. No Cloudflare KV cache
 or Rust service is represented as deployed by this diagram.
 
+## Small files and large media
+
+Use one catalogue and authorization model, with different byte-delivery
+capabilities. The current `catalogue_body_store/v1` implementation stores
+immutable bodies on the service volume. Its package contract bounds each file
+at 8 MiB and a package at 32 MiB. This is not yet a streaming service for large
+video masters. Raising those limits alone would not establish safe memory use,
+resumable delivery or cache revocation.
+
+The proposed path is:
+
+```text
+One approved catalogue and permission-scoped search
+├── Small descriptions, rights, versions and exact file manifests
+├── Small-file delivery through the current qualified path
+├── Large-media delivery through a qualified blob-store engine
+│   ├── Bounded streaming and resumable byte ranges
+│   ├── Authorized download grants and current withdrawal checks
+│   └── Separate previews, thumbnails and original files
+└── Customer harness verifies exact bytes and records transfer outcome
+```
+
+Keep the existing body-store owner and engine-selection standard. Add an
+explicit versioned capability for streaming and ranges where the current
+byte-returning edge is insufficient. A compatible client must negotiate that
+capability; an unsupported client receives a named refusal, not a partial file
+reported as a complete package. An object-store adapter does not introduce a
+new Loop runtime or a second component registry.
+
+Index descriptions, captions, transcripts, native metadata and declared rights.
+Keep raw images and video outside model context unless the task explicitly
+requests them. Visual-similarity search is a separately qualified engine, not
+a capability of today's character-hash vectors. A preview must name the exact
+original it represents and follow the same private/public access policy.
+
+Choose a blob provider only after measuring file sizes, transfer concurrency,
+memory, bandwidth cost and required revocation delay. Private signed links are
+bearer credentials, not public-cache keys or permanent authorization. A short
+expiry bounds access but does not provide immediate withdrawal. Use a checking
+proxy or another qualified revocation mechanism when that delay is unacceptable.
+Public caching applies only to explicitly public, rights-cleared versions.
+
+Serve untrusted originals as downloads with verified media types and isolated
+origins. Do not let a supplied SVG, HTML file or filename execute in the signed-in
+website's origin. Decode and transcode in a bounded sandbox; image dimensions,
+duration, decompressed size and parser failures matter alongside upload bytes.
+
+Test interrupted transfers, resume with a wrong digest, invalid and overlapping
+ranges, partial responses, expired grants, withdrawals, private-preview leakage,
+concurrent limits and incomplete client writes. Distinguish URL issuance,
+server/provider delivery and client checksum confirmation in the activity log.
+Do not bill a retry as another logical download. Keep large decoding and
+thumbnail jobs out of interactive search requests. The delivery plan and
+S-6.215 own this extension; no new blob service has been deployed.
+
 ## Creative production and daily research
 
 Reusable targets include Ken Burns motion, caption and panel layouts,
