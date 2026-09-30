@@ -7,7 +7,7 @@ archive wrote those panes with placeholder commands (baltor.search, baltor.fetch
 the protocol tools a harness really calls on this service, intelligence_search and provisioning_read, with a search whose
 references this check reruns against this release's library, in the same places with the same kind, licence, size and
 digest, and a download of the reference the search marked as chosen whose packaged bytes match its digest. The search and the
-download say "Real results from the library"; the folder stays an example layout with its built-to note, as below. A placeholder
+download say "Recorded starter-catalogue results"; the folder stays an example layout with its built-to note, as below. A placeholder
 command, a reference this release does not return in that place, a digest it does not hold, a download of another reference
 and a folder that places another skill are each a known-wrong hero.
 
@@ -56,7 +56,7 @@ STUDIES = ROOT / "case-studies"
 #: The results record whose design names, for each family, the items its material arms placed.
 STUDY_RESULTS = "data_cleanup_results/v1"
 STAGES = (("search", "recorded"), ("download", "recorded"), ("folder", "illustration"))
-LABEL_WORDS = {"recorded": "Real results from the library", "illustration": "Example layout"}
+LABEL_WORDS = {"recorded": "Recorded starter-catalogue results", "illustration": "Example layout"}
 #: The status words the owner removed from the homepage on September 23, 2026. No part of the demonstration says one.
 RETIRED_STATUS = re.compile(r"being built|being prepared|\bplanned\b|available now|coming soon", re.IGNORECASE)
 #: The address the served homepage writes into its connection entry. Once the page script has checked the
@@ -492,7 +492,7 @@ class HomepageHeroTest(unittest.TestCase):
         # KNOWN_WRONG: the recorded label gone from the terminal, a directory without its protocol server settings, and a hero that
         # no longer says the files are placed without manual setup.
         # The terminal's label covers the search and the download, so its loss is reported for each of the two.
-        self.assertEqual(len(hero_problems(_planted(self.page, ">Real results from the library<", ">Results<"), served_tool_names())), 2)
+        self.assertEqual(len(hero_problems(_planted(self.page, ">Recorded starter-catalogue results<", ">Results<"), served_tool_names())), 2)
         self.assertEqual(len(hero_problems(_planted(self.page, '<span data-hero-part="tools"', "<span"), served_tool_names())), 1)
         self.assertEqual(len(hero_problems(_planted(self.page, 'data-audience="designers"', 'data-audience="missing"'), served_tool_names())), 1)
         # KNOWN_WRONG: a subhead that keeps both "no manual" sentences but stops naming the work it removes. The worked

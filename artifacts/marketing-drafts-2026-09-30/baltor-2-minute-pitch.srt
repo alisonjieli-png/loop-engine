@@ -1,0 +1,39 @@
+1
+00:00:00,000 --> 00:00:12,000
+The right setup for every step your agent takes.
+
+2
+00:00:12,000 --> 00:00:24,000
+Is your AI spending effort in the wrong places?
+
+3
+00:00:24,000 --> 00:00:36,000
+Reusable files for technical and creative work
+
+4
+00:00:36,000 --> 00:00:48,000
+Search returns references. A step downloads only what it chose.
+
+5
+00:00:48,000 --> 00:01:00,000
+A working library and an editable creative demo
+
+6
+00:01:00,000 --> 00:01:12,000
+We test our own library, and publish the result when it says no.
+
+7
+00:01:12,000 --> 00:01:24,000
+The served library and its growth targets
+
+8
+00:01:24,000 --> 00:01:36,000
+Library access, with your own model provider
+
+9
+00:01:36,000 --> 00:01:48,000
+The formats became standards. Choosing and trusting the right file did not.
+
+10
+00:01:48,000 --> 00:02:00,000
+Talk to us.

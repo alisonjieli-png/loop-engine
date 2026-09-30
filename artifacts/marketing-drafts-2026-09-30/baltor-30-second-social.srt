@@ -1,0 +1,15 @@
+1
+00:00:00,000 --> 00:00:07,000
+Reusable code, tools and reference material for your own AI harness.
+
+2
+00:00:07,000 --> 00:00:14,000
+Inspect the source, licence and version. Download complete packages.
+
+3
+00:00:14,000 --> 00:00:24,000
+Play Ashen Wilds, change the scene and export an editable model for Blender.
+
+4
+00:00:24,000 --> 00:00:30,000
+Try the demo and explore the library at baltor.ai.

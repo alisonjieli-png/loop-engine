@@ -2,7 +2,7 @@
 
 Kind: product architecture with measured local implementation and proposed hosting.
 Date: 2026-09-19. The [current deployment](#current-deployment) section was
-added on 2026-09-20 and last checked on 2026-09-30, after Fly release 55.
+added on 2026-09-20 and last checked on 2026-09-30, after Fly release 56.
 
 The hosted product manages accounts, subscriptions, and access to intelligence.
 The customer runs Loop Engine and the selected harnesses. A hosted intelligence
@@ -47,7 +47,25 @@ from the newest release record, follow the release record and correct this
 section. Update this section in the same change that records a new release.
 It describes a private pilot. It does not describe a qualified paid service.
 
-The latest image deployment is Fly release 55, completed on September 30, 2026,
+The latest image deployment is Fly release 56, completed on September 30, 2026,
+from `e089582cb50d0bc4e5b28c915ac22edcb3f74f62`, image
+`sha256:704653dc02633d3357b4ad933d861cd8b4a90e792b25dff6256279f4398d5b49`.
+CI run `36785879432` and deployment run `36786587730` passed, including the
+durable grant and billing confirmation. The deployment gate is off. Grant
+confirmation took 46.152 seconds without constructing the unused search index;
+all body and policy checks remain. The preceding observation was 213.536
+seconds, not a controlled latency benchmark. Billing changed no policy and
+ended no paid access. The [release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-56.json)
+and [notes](../../artifacts/release-56-2026-09-30/README.md) retain the rollback
+image, ten-host verification, customer delivery check and a remaining gap:
+older guided demos show starter-snapshot hashes while the live catalogue serves
+newer versions. The client retrieved and verified the current files correctly;
+the demonstration scope needs a follow-up release. The catalogue is unchanged
+at 30,746 packages and 96,064 distinct files. The updated deck and language are
+live. Public Good downloads, activity history, large-media streaming and
+reference-video recreation remain in development.
+
+The preceding image deployment was Fly release 55, completed on September 30, 2026,
 from `5a9c6e2c5c768c1747754eca28a3101563477eca`, image
 `sha256:c8778aa527226ac143e847609de6d928084d405e080e11c0cbee7b8ede59e9bd`.
 CI run `36772005998` passed. Deployment run `36773368916` placed the image,
@@ -62,8 +80,8 @@ The [release notes](../../artifacts/release-55-2026-09-30/README.md) describe
 the live `/demo/ashen-wilds` game, Blender export/reopen proof, `/top-mcps`,
 setup changes and package-resource fixes. The catalogue remains `f817b2b3…`,
 with 30,746 packages and 96,064 distinct files; this rollout published no
-new catalogue packages. Redundant index construction during grant confirmation
-remains a deployment-reliability defect.
+new catalogue packages. At that release, redundant index construction during
+grant confirmation remained a deployment-reliability defect.
 
 The preceding image deployment was Fly release 54, completed on September 30, 2026,
 from `1d35f6976264ee7188a7d4179e69fa6c171d57e2`, image

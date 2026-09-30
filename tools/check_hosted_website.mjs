@@ -49,6 +49,9 @@ if(siteMapRead.status!==0)throw new Error("The typed reader refused the site map
 const siteMap=JSON.parse(siteMapRead.stdout),canonicalOrigin="https://"+siteMap.canonical_hostname;
 const rootAddress=siteMap.hostnames.find(item=>item.hostname===new URL(origin).hostname)?.address||"/";
 const rootPage=siteMap.pages.find(item=>item.address===rootAddress),rootIsHome=rootAddress==="/";
+/* Standalone roots such as the deck have no application status panel. Their
+   own view is checked first; shared application checks use its declared route. */
+const applicationAddress=rootIsHome?"/":siteMap.pages.find(item=>item.view==="about").address;
 const pageTitle=entry=>siteMap.display_name+" | "+entry.title;
 const opensItsPage=(shown,entry)=>Boolean(entry)&&JSON.stringify(shown.views)===JSON.stringify([entry.view])&&shown.title===pageTitle(entry)&&shown.canonical===canonicalOrigin+entry.address;
 const shownPage=target=>target.evaluate(()=>({views:[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).map(item=>item.dataset.view),title:document.title,
@@ -60,12 +63,13 @@ const context=await browser.newContext({viewport:{width:1440,height:1000},reduce
 await context.route("**/*",route=>{if(new URL(route.request().url()).origin===origin)route.continue();else{external.push(new URL(route.request().url()).origin);route.abort();}});
 const page=await context.newPage();page.on("pageerror",error=>errors.push(error.message));
 try{
-  const home=await page.goto(origin+"/");await page.waitForFunction(()=>document.querySelector(".boundary-zone")&&document.querySelector("#service-status").textContent.includes("Service available"));
+  const home=await page.goto(origin+"/");await page.locator(`[data-view="${rootPage.view}"]:visible`).waitFor();
   check("HTTPS_homepage_is_available",home.status()===200);
   /* The root of this hostname opens the page the site map names for it, with that page's own title and canonical address, and serves
      exactly what that page's own address serves here. Where that page is not the homepage, the brand leads to the homepage on the
      canonical hostname. The known-wrong roots: another view, the homepage's title, and another canonical address. */
   const rootShown=await shownPage(page);
+  const rootTermsLink=await page.locator(`a[href="/terms"],a[href="${canonicalOrigin}/terms"]`).count()>0;
   const rootBytes=await (await page.request.get(origin+"/",{maxRedirects:0})).text(),ownBytes=await (await page.request.get(origin+rootAddress,{maxRedirects:0})).text();
   check("live_hostname_root_opens_the_page_the_site_map_names",opensItsPage(rootShown,rootPage)&&rootBytes===ownBytes&&(rootIsHome||rootShown.brand===canonicalOrigin+"/"));
   check("hostname_root_check_rejects_another_view_title_or_canonical_address",!opensItsPage({...rootShown,views:[...rootShown.views,"home"]},rootPage)
@@ -83,6 +87,8 @@ try{
   /* Every access action says "Get started" and opens the funnel at /get-started in every state the deployed service reports; the
      funnel adapts. The owner, September 23, 2026: "remove all mentions of invitation only, this should be consistent as if it is
      fully working". The funnel takes an address where the service reports registration open or keeps a request list. */
+  if(!rootIsHome)await page.goto(origin+applicationAddress);
+  await page.waitForFunction(()=>document.querySelector(".boundary-zone")&&document.querySelector("#service-status")?.textContent.includes("Service available"));
   const liveReport=(await (await page.request.get(origin+"/api/v1/capabilities",{maxRedirects:0})).json())?.result||{};
   const liveOpen=liveReport.record_type==="service_capabilities/v1"&&liveReport.website?.registration_available===true;
   const liveLabel="Get started",livePath="/get-started";
@@ -277,7 +283,7 @@ try{
   const termsOperator="Operator: Baltor.AI, 1428 Bryn Mawr St, Saxton, PA 16678, United States.",termsDate="Last changed: September 23, 2026";
   const deepTerms=await page.request.get(origin+"/terms",{maxRedirects:0});
   check("live_terms_address_is_served_directly",deepTerms.status()===200&&(deepTerms.headers()["content-type"]||"").startsWith("text/html"));
-  await page.goto(origin+"/");await page.waitForFunction(()=>document.querySelector("#service-status").textContent.includes("Service available"));
+  await page.goto(origin+applicationAddress);await page.waitForFunction(()=>document.querySelector("#service-status").textContent.includes("Service available"));
   const liveFooterTerms=await page.locator('footer a[href="/terms"]').evaluateAll(items=>items.map(item=>({text:item.textContent.trim(),page:item.dataset.page||""})));
   check("live_footer_links_the_terms_of_service",liveFooterTerms.length===1&&liveFooterTerms[0].text==="Terms of service"&&liveFooterTerms[0].page==="terms");
   if(liveFooterTerms.length===1)await page.locator('footer a[href="/terms"]').click();
@@ -301,7 +307,9 @@ try{
     &&!consentHolds({...liveConsent,above:false},false)&&!consentHolds({...liveConsent,shown:false},true));
   /* The deployed markup is read whole, hidden views included. */
   const liveMarkup=await (await page.request.get(origin+"/",{maxRedirects:0})).text();
-  check("no_live_page_says_the_terms_are_unpublished",liveMarkup.includes("data-terms-of-service")&&!unpublishedTerms.test(liveMarkup));
+  const termsPublished=(hasLink,markup)=>hasLink&&!unpublishedTerms.test(markup);
+  check("no_live_page_says_the_terms_are_unpublished",termsPublished(rootTermsLink,liveMarkup));
+  check("terms_disclosure_refuses_a_missing_link_or_unpublished_notice",!termsPublished(false,"Terms of service")&&!termsPublished(true,"Terms of service: not yet published")&&termsPublished(true,"Terms of service"));
   check("unpublished_terms_check_rejects_the_old_footer_note",unpublishedTerms.test("Terms of service: not yet published")&&unpublishedTerms.test("The terms are still a draft.")&&!unpublishedTerms.test("Terms of service"));
   /* Read-only signup/funnel checks: never submit a signup or call the identity provider. */
   await page.goto(origin+"/get-started");await page.waitForFunction(()=>document.querySelector("#service-status").textContent.includes("Service available"));
@@ -329,7 +337,7 @@ try{
   await page.goto(origin+"/auth/confirm?token_hash=fixture-invalid&type=unsupported");
   await page.waitForFunction(()=>location.search===""&&document.body.dataset.page==="confirm");
   check("live_invalid_confirmation_clears_query_without_opening_a_password_form",await page.locator('#confirm-unusable').isVisible()&&await page.locator('#confirm-password-step').isHidden());
-  await page.goto(origin+"/");await page.waitForFunction(()=>document.querySelector(".boundary-zone"));
+  await page.goto(origin+applicationAddress);await page.waitForFunction(()=>document.querySelector(".boundary-zone"));
   for(const asset of ["public-pages.js","public-pages.css","documentation-index.json","documentation.js","documentation.css","docs/what-baltor-is.html","docs/your-account.html","docs/searching-and-retrieving.html","docs/usage-and-what-you-pay-for.html","docs/troubleshooting.html","docs/serving-and-connections.html","service.js","client-access.js","catalogue-browser.js","architecture-story.js","service.css","architecture.css","client-recipes.json","supabase-client.js","geist.woff2","geist-mono.woff2","baltor-mark.svg","favicon-32.png","favicon-192.png","apple-touch-icon.png"]){
     const response=await page.request.get(origin+"/assets/"+asset,{maxRedirects:0});
     check("deployed_bytes_match_tested_source_"+asset,response.status()===200&&hash(await response.body())===hash(readFileSync(resolve(root,"src/loop_engine/core/service_runtime/web_assets",asset))));

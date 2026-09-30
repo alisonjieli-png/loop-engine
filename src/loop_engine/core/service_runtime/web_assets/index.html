@@ -47,7 +47,7 @@
         </div>
 <figure class="hero-terminal" data-step-demo aria-labelledby="hero-terminal-title">
 <figcaption class="sr-only" id="hero-terminal-title">One step of a task: the search your harness sends, the download of the exact version it chose, and the folder it is placed in</figcaption>
-<div class="hero-terminal-bar"><div class="hero-terminal-tabs" role="group" aria-label="Show the folder for" data-hero-harnesses><button type="button" data-hero-harness="claude-code" aria-pressed="true">claude-code</button><button type="button" data-hero-harness="codex" aria-pressed="false">codex</button><button type="button" data-hero-harness="opencode" aria-pressed="false">opencode</button><button type="button" data-hero-harness="pi" aria-pressed="false">pi</button><button type="button" data-hero-harness="baltor-harness" aria-pressed="false">baltor-harness</button></div><p class="hero-terminal-label" data-demo-label="recorded">Real results from the library</p>
+<div class="hero-terminal-bar"><div class="hero-terminal-tabs" role="group" aria-label="Show the folder for" data-hero-harnesses><button type="button" data-hero-harness="claude-code" aria-pressed="true">claude-code</button><button type="button" data-hero-harness="codex" aria-pressed="false">codex</button><button type="button" data-hero-harness="opencode" aria-pressed="false">opencode</button><button type="button" data-hero-harness="pi" aria-pressed="false">pi</button><button type="button" data-hero-harness="baltor-harness" aria-pressed="false">baltor-harness</button></div><p class="hero-terminal-label" data-demo-label="recorded">Recorded starter-catalogue results</p>
 <div class="hero-scenarios" role="group" aria-label="Choose a step to look at">
 <button type="button" data-hero-scenario="dedupe" aria-pressed="true" class="is-active"><strong>Deduplicate a customer table</strong><span>1,060 duplicates merged, no row deleted</span></button>
 <button type="button" data-hero-scenario="overnight" aria-pressed="false"><strong>Fix a failing metric overnight</strong><span>validation gap found and closed at 04:12</span></button>
@@ -295,6 +295,7 @@ docker run --rm --read-only --cap-drop ALL --security-opt no-new-privileges \
     <section data-view="demo" hidden class="showcase-page" aria-labelledby="demo-title">
       <div class="showcase-intro" data-band="demo-intro"><a class="back-link" href="/examples" data-page="examples"><span aria-hidden="true">←</span> Examples</a><h1 id="demo-title">Clean a customer file in five steps</h1><p class="lede">A data cleanup task, broken into five small steps. Each step searches the library, downloads only the file it chose and puts it where the harness reads it.</p><div class="actions"><a class="button primary" href="/get-started" data-page="get-started">Get started</a><a class="button secondary" href="/setup" data-page="setup">Get set up</a></div></div>
       <div class="showcase-band" data-band="demo-steps">
+        <p class="caption" data-reference-scope="packaged-starter-catalogue/v1" data-reference-manifest-sha256="246bd27c8beeed4c84ad878c452646dc6333aacf3974e67560a3b7ecaeb2cf52">Recorded starter-catalogue results, not a live search. The current library can return different versions. Always use the digest returned by a fresh search before downloading. <a href="https://github.com/alisonjieli-png/loop-engine/blob/e089582cb50d0bc4e5b28c915ac22edcb3f74f62/examples/29_intelligence_service/starter-catalogue/host-release/manifest.json">Inspect the recorded catalogue</a>.</p>
         <div class="task-layout" data-task-demo>
           <div class="task-top">
             <div class="task-brief"><p class="task-brief-label">The task</p><p class="task-brief-text">Clean the customer file <code>customers.csv</code>: learn what its columns hold, split the addresses, find customers entered twice, propose merges without deleting a row, and hand over a checked copy.</p></div>
@@ -309,7 +310,7 @@ docker run --rm --read-only --cap-drop ALL --security-opt no-new-privileges \
           </div>
           <div class="task-panels" aria-live="polite">
 <article class="task-step" id="task-step-1" data-task-step="profile" aria-labelledby="task-step-1-title">
-<div class="task-step-head"><div><p class="task-step-count">Step 1 of 5</p><h3 id="task-step-1-title">Profile the columns</h3><p class="task-step-goal">Count what each column holds before anything changes.</p></div><p class="status-tag is-recorded" data-task-label="recorded">Real results from the library</p></div>
+<div class="task-step-head"><div><p class="task-step-count">Step 1 of 5</p><h3 id="task-step-1-title">Profile the columns</h3><p class="task-step-goal">Count what each column holds before anything changes.</p></div><p class="status-tag is-recorded" data-task-label="recorded">Recorded starter-catalogue results</p></div>
 <ol class="task-step-parts">
 <li class="task-part" data-task-stage="search" data-task-evidence="recorded"><p class="task-part-name">Search</p>
 <p class="step-demo-query"><svg class="step-demo-glass" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span class="step-demo-verb">search:</span> <code data-task-query>profile a text column before cleaning</code></p>
@@ -328,7 +329,7 @@ docker run --rm --read-only --cap-drop ALL --security-opt no-new-privileges \
 </ol>
 </article>
 <article class="task-step" id="task-step-2" data-task-step="split" aria-labelledby="task-step-2-title">
-<div class="task-step-head"><div><p class="task-step-count">Step 2 of 5</p><h3 id="task-step-2-title">Split the addresses</h3><p class="task-step-goal">Break each address line into number, street, city, region and postal code.</p></div><p class="status-tag is-recorded" data-task-label="recorded">Real results from the library</p></div>
+<div class="task-step-head"><div><p class="task-step-count">Step 2 of 5</p><h3 id="task-step-2-title">Split the addresses</h3><p class="task-step-goal">Break each address line into number, street, city, region and postal code.</p></div><p class="status-tag is-recorded" data-task-label="recorded">Recorded starter-catalogue results</p></div>
 <ol class="task-step-parts">
 <li class="task-part" data-task-stage="search" data-task-evidence="recorded"><p class="task-part-name">Search</p>
 <p class="step-demo-query"><svg class="step-demo-glass" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span class="step-demo-verb">search:</span> <code data-task-query>split address lines in a customer file</code></p>
@@ -348,7 +349,7 @@ docker run --rm --read-only --cap-drop ALL --security-opt no-new-privileges \
 </ol>
 </article>
 <article class="task-step" id="task-step-3" data-task-step="duplicates" aria-labelledby="task-step-3-title">
-<div class="task-step-head"><div><p class="task-step-count">Step 3 of 5</p><h3 id="task-step-3-title">Find duplicates</h3><p class="task-step-goal">Find the customers entered more than once.</p></div><p class="status-tag is-recorded" data-task-label="recorded">Real results from the library</p></div>
+<div class="task-step-head"><div><p class="task-step-count">Step 3 of 5</p><h3 id="task-step-3-title">Find duplicates</h3><p class="task-step-goal">Find the customers entered more than once.</p></div><p class="status-tag is-recorded" data-task-label="recorded">Recorded starter-catalogue results</p></div>
 <ol class="task-step-parts">
 <li class="task-part" data-task-stage="search" data-task-evidence="recorded"><p class="task-part-name">Search</p>
 <p class="step-demo-query"><svg class="step-demo-glass" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span class="step-demo-verb">search:</span> <code data-task-query>find duplicate customer records</code></p>
@@ -368,7 +369,7 @@ docker run --rm --read-only --cap-drop ALL --security-opt no-new-privileges \
 </ol>
 </article>
 <article class="task-step" id="task-step-4" data-task-step="merge" aria-labelledby="task-step-4-title">
-<div class="task-step-head"><div><p class="task-step-count">Step 4 of 5</p><h3 id="task-step-4-title">Propose merges</h3><p class="task-step-goal">Propose one survivor for each group of duplicates, without deleting a row.</p></div><p class="status-tag is-recorded" data-task-label="recorded">Real results from the library</p></div>
+<div class="task-step-head"><div><p class="task-step-count">Step 4 of 5</p><h3 id="task-step-4-title">Propose merges</h3><p class="task-step-goal">Propose one survivor for each group of duplicates, without deleting a row.</p></div><p class="status-tag is-recorded" data-task-label="recorded">Recorded starter-catalogue results</p></div>
 <ol class="task-step-parts">
 <li class="task-part" data-task-stage="search" data-task-evidence="recorded"><p class="task-part-name">Search</p>
 <p class="step-demo-query"><svg class="step-demo-glass" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span class="step-demo-verb">search:</span> <code data-task-query>propose a dedupe without deleting rows</code></p>
@@ -387,7 +388,7 @@ docker run --rm --read-only --cap-drop ALL --security-opt no-new-privileges \
 </ol>
 </article>
 <article class="task-step" id="task-step-5" data-task-step="handover" aria-labelledby="task-step-5-title">
-<div class="task-step-head"><div><p class="task-step-count">Step 5 of 5</p><h3 id="task-step-5-title">Hand over the copy</h3><p class="task-step-goal">Write the cleaned copy and the notes its reader needs.</p></div><p class="status-tag is-recorded" data-task-label="recorded">Real results from the library</p></div>
+<div class="task-step-head"><div><p class="task-step-count">Step 5 of 5</p><h3 id="task-step-5-title">Hand over the copy</h3><p class="task-step-goal">Write the cleaned copy and the notes its reader needs.</p></div><p class="status-tag is-recorded" data-task-label="recorded">Recorded starter-catalogue results</p></div>
 <ol class="task-step-parts">
 <li class="task-part" data-task-stage="search" data-task-evidence="recorded"><p class="task-part-name">Search</p>
 <p class="step-demo-query"><svg class="step-demo-glass" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span class="step-demo-verb">search:</span> <code data-task-query>hand over a cleaned file its consumer can use</code></p>
@@ -412,7 +413,7 @@ docker run --rm --read-only --cap-drop ALL --security-opt no-new-privileges \
       </div>
       <div class="showcase-band is-plain" data-band="demo-evidence">
         <div class="evidence-grid">
-          <section aria-labelledby="demo-recorded-title"><h2 id="demo-recorded-title">Real searches</h2><p>Every search on this page, and the results it returned in that order, come from the library as it is today.</p></section>
+          <section aria-labelledby="demo-recorded-title"><h2 id="demo-recorded-title">Recorded searches</h2><p>These searches reproduce the packaged starter catalogue identified above. They are recorded examples; a fresh search can return different results and versions.</p></section>
           <section aria-labelledby="demo-example-title"><h2 id="demo-example-title">Your agent chooses</h2><p>Here each step takes the first result. In your own run, your agent reads the results and picks the one that fits. The folders show where each harness reads the skill, and how one step's output feeds the next.</p></section>
           <section aria-labelledby="demo-measured-title"><h2 id="demo-measured-title">What a measured run found</h2><p>When we measured items like these in real steps, they did not make a cheap model better at data cleanup, and one made it worse. <a href="/case-studies/data-cleanup" data-page="case-studies-data-cleanup">Read the case study</a> or see <a href="/examples" data-page="examples">more examples</a>.</p></section>
         </div>
@@ -422,6 +423,7 @@ docker run --rm --read-only --cap-drop ALL --security-opt no-new-privileges \
     <section data-view="demo-kaggle" hidden class="showcase-page" aria-labelledby="kaggle-title">
       <div class="showcase-intro" data-band="kaggle-intro"><a class="back-link" href="/examples" data-page="examples"><span aria-hidden="true">←</span> Examples</a><h1 id="kaggle-title">From the metric to the submission</h1><p class="lede">A tabular competition, broken into six steps from the metric to the submission. Each step searches the library, downloads only the file it chose and puts it where the harness reads it.</p><div class="actions"><a class="button primary" href="/get-started" data-page="get-started">Get started</a><a class="button secondary" href="/demo" data-page="demo">See a data cleanup task</a></div></div>
       <div class="showcase-band" data-band="kaggle-steps">
+        <p class="caption" data-reference-scope="packaged-starter-catalogue/v1" data-reference-manifest-sha256="246bd27c8beeed4c84ad878c452646dc6333aacf3974e67560a3b7ecaeb2cf52">Recorded starter-catalogue results, not a live search. The current library can return different versions. Always use the digest returned by a fresh search before downloading. <a href="https://github.com/alisonjieli-png/loop-engine/blob/e089582cb50d0bc4e5b28c915ac22edcb3f74f62/examples/29_intelligence_service/starter-catalogue/host-release/manifest.json">Inspect the recorded catalogue</a>.</p>
         <div class="task-layout" data-task-demo="kaggle">
           <div class="task-top">
             <div class="task-brief"><p class="task-brief-label">The task</p><p class="task-brief-text">Predict the target of a tabular competition from <code>train.csv</code>, check that the score holds, and write <code>submission.csv</code> for <code>test.csv</code>.</p></div>
@@ -437,7 +439,7 @@ docker run --rm --read-only --cap-drop ALL --security-opt no-new-privileges \
           </div>
           <div class="task-panels" aria-live="polite">
 <article class="task-step" id="kaggle-step-1" data-task-step="kaggle-metric" aria-labelledby="kaggle-step-1-title">
-<div class="task-step-head"><div><p class="task-step-count">Step 1 of 6</p><h3 id="kaggle-step-1-title">Fix the metric</h3><p class="task-step-goal">Write down the competition&#x27;s metric and the validation plan before any model runs.</p></div><p class="status-tag is-recorded" data-task-label="recorded">Real results from the library</p></div>
+<div class="task-step-head"><div><p class="task-step-count">Step 1 of 6</p><h3 id="kaggle-step-1-title">Fix the metric</h3><p class="task-step-goal">Write down the competition&#x27;s metric and the validation plan before any model runs.</p></div><p class="status-tag is-recorded" data-task-label="recorded">Recorded starter-catalogue results</p></div>
 <ol class="task-step-parts">
 <li class="task-part" data-task-stage="search" data-task-evidence="recorded"><p class="task-part-name">Search</p>
 <p class="step-demo-query"><svg class="step-demo-glass" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span class="step-demo-verb">search:</span> <code data-task-query>freeze the success metric before measuring</code></p>
@@ -457,7 +459,7 @@ docker run --rm --read-only --cap-drop ALL --security-opt no-new-privileges \
 </ol>
 </article>
 <article class="task-step" id="kaggle-step-2" data-task-step="kaggle-splits" aria-labelledby="kaggle-step-2-title">
-<div class="task-step-head"><div><p class="task-step-count">Step 2 of 6</p><h3 id="kaggle-step-2-title">Audit the splits</h3><p class="task-step-goal">Check the training and test files for leakage, duplicates and label errors.</p></div><p class="status-tag is-recorded" data-task-label="recorded">Real results from the library</p></div>
+<div class="task-step-head"><div><p class="task-step-count">Step 2 of 6</p><h3 id="kaggle-step-2-title">Audit the splits</h3><p class="task-step-goal">Check the training and test files for leakage, duplicates and label errors.</p></div><p class="status-tag is-recorded" data-task-label="recorded">Recorded starter-catalogue results</p></div>
 <ol class="task-step-parts">
 <li class="task-part" data-task-stage="search" data-task-evidence="recorded"><p class="task-part-name">Search</p>
 <p class="step-demo-query"><svg class="step-demo-glass" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span class="step-demo-verb">search:</span> <code data-task-query>audit data splits for errors and leakage</code></p>
@@ -478,7 +480,7 @@ docker run --rm --read-only --cap-drop ALL --security-opt no-new-privileges \
 </ol>
 </article>
 <article class="task-step" id="kaggle-step-3" data-task-step="kaggle-baseline" aria-labelledby="kaggle-step-3-title">
-<div class="task-step-head"><div><p class="task-step-count">Step 3 of 6</p><h3 id="kaggle-step-3-title">Train a baseline</h3><p class="task-step-goal">Fit a first model and read the gap between training and validation scores.</p></div><p class="status-tag is-recorded" data-task-label="recorded">Real results from the library</p></div>
+<div class="task-step-head"><div><p class="task-step-count">Step 3 of 6</p><h3 id="kaggle-step-3-title">Train a baseline</h3><p class="task-step-goal">Fit a first model and read the gap between training and validation scores.</p></div><p class="status-tag is-recorded" data-task-label="recorded">Recorded starter-catalogue results</p></div>
 <ol class="task-step-parts">
 <li class="task-part" data-task-stage="search" data-task-evidence="recorded"><p class="task-part-name">Search</p>
 <p class="step-demo-query"><svg class="step-demo-glass" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span class="step-demo-verb">search:</span> <code data-task-query>read the train validation gap</code></p>
@@ -498,7 +500,7 @@ docker run --rm --read-only --cap-drop ALL --security-opt no-new-privileges \
 </ol>
 </article>
 <article class="task-step" id="kaggle-step-4" data-task-step="kaggle-errors" aria-labelledby="kaggle-step-4-title">
-<div class="task-step-head"><div><p class="task-step-count">Step 4 of 6</p><h3 id="kaggle-step-4-title">Find where it fails</h3><p class="task-step-goal">Group the validation errors by segment and look for repeated failures.</p></div><p class="status-tag is-recorded" data-task-label="recorded">Real results from the library</p></div>
+<div class="task-step-head"><div><p class="task-step-count">Step 4 of 6</p><h3 id="kaggle-step-4-title">Find where it fails</h3><p class="task-step-goal">Group the validation errors by segment and look for repeated failures.</p></div><p class="status-tag is-recorded" data-task-label="recorded">Recorded starter-catalogue results</p></div>
 <ol class="task-step-parts">
 <li class="task-part" data-task-stage="search" data-task-evidence="recorded"><p class="task-part-name">Search</p>
 <p class="step-demo-query"><svg class="step-demo-glass" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span class="step-demo-verb">search:</span> <code data-task-query>analyse errors by segment</code></p>
@@ -518,7 +520,7 @@ docker run --rm --read-only --cap-drop ALL --security-opt no-new-privileges \
 </ol>
 </article>
 <article class="task-step" id="kaggle-step-5" data-task-step="kaggle-stability" aria-labelledby="kaggle-step-5-title">
-<div class="task-step-head"><div><p class="task-step-count">Step 5 of 6</p><h3 id="kaggle-step-5-title">Check the score holds</h3><p class="task-step-goal">Rerun across seeds and folds, and keep only a result that holds.</p></div><p class="status-tag is-recorded" data-task-label="recorded">Real results from the library</p></div>
+<div class="task-step-head"><div><p class="task-step-count">Step 5 of 6</p><h3 id="kaggle-step-5-title">Check the score holds</h3><p class="task-step-goal">Rerun across seeds and folds, and keep only a result that holds.</p></div><p class="status-tag is-recorded" data-task-label="recorded">Recorded starter-catalogue results</p></div>
 <ol class="task-step-parts">
 <li class="task-part" data-task-stage="search" data-task-evidence="recorded"><p class="task-part-name">Search</p>
 <p class="step-demo-query"><svg class="step-demo-glass" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span class="step-demo-verb">search:</span> <code data-task-query>check that a result is stable and generalizes</code></p>
@@ -539,7 +541,7 @@ docker run --rm --read-only --cap-drop ALL --security-opt no-new-privileges \
 </ol>
 </article>
 <article class="task-step" id="kaggle-step-6" data-task-step="kaggle-submission" aria-labelledby="kaggle-step-6-title">
-<div class="task-step-head"><div><p class="task-step-count">Step 6 of 6</p><h3 id="kaggle-step-6-title">Write the submission</h3><p class="task-step-goal">Predict the test file and write the submission with a short report.</p></div><p class="status-tag is-recorded" data-task-label="recorded">Real results from the library</p></div>
+<div class="task-step-head"><div><p class="task-step-count">Step 6 of 6</p><h3 id="kaggle-step-6-title">Write the submission</h3><p class="task-step-goal">Predict the test file and write the submission with a short report.</p></div><p class="status-tag is-recorded" data-task-label="recorded">Recorded starter-catalogue results</p></div>
 <ol class="task-step-parts">
 <li class="task-part" data-task-stage="search" data-task-evidence="recorded"><p class="task-part-name">Search</p>
 <p class="step-demo-query"><svg class="step-demo-glass" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span class="step-demo-verb">search:</span> <code data-task-query>hand over a result its consumer can use</code></p>
@@ -563,7 +565,7 @@ docker run --rm --read-only --cap-drop ALL --security-opt no-new-privileges \
       </div>
       <div class="showcase-band is-plain" data-band="kaggle-evidence">
         <div class="evidence-grid">
-          <section aria-labelledby="kaggle-recorded-title"><h2 id="kaggle-recorded-title">Real searches</h2><p>Every search on this page, and the results it returned in that order, come from the library as it is today.</p></section>
+          <section aria-labelledby="kaggle-recorded-title"><h2 id="kaggle-recorded-title">Recorded searches</h2><p>These searches reproduce the packaged starter catalogue identified above. They are recorded examples; a fresh search can return different results and versions.</p></section>
           <section aria-labelledby="kaggle-example-title"><h2 id="kaggle-example-title">Your agent chooses</h2><p>Here each step takes the first result, and each folder shows where the harness reads the skill. This page shows how each step is set up, not a competition score.</p></section>
           <section aria-labelledby="kaggle-more-title"><h2 id="kaggle-more-title">More demonstrations</h2><p>See a <a href="/demo" data-page="demo">data cleanup task</a> step by step, or how a <a href="/overnight" data-page="overnight">long task runs overnight</a>.</p></section>
         </div>

@@ -5,9 +5,11 @@ the release carries, and this command asks the running service what it actually
 answers with. It reads only: it lists the items one account may see, searches
 for them, and asks for each rejected item by its exact identity to confirm the
 service refuses. It makes no body read and adds no usage record. It also reads
-the public demonstration pages, /demo and /demo/kaggle, and asks the service
-for the manifest of each item their steps name, because each step prints the
-digest of every reference it shows as a recorded fact from the served library.
+the public demonstration pages, /demo and /demo/kaggle. A declared starter
+snapshot must name its exact packaged manifest and show its recorded label;
+its printed digests are checked against that snapshot. An unmarked example
+still claims current references and is checked against live manifests. Both
+paths require the named items to remain available for a fresh selection.
 The homepage printed such a digest in its hero until September 24, 2026, when
 the owner asked for a hero without a worked example.
 
@@ -39,8 +41,10 @@ RELEASE_MANIFEST = "examples/29_intelligence_service/starter-catalogue/host-rele
 MAXIMUM_WITHDRAWN = 3
 #: The demonstration pages, each by its address and its view, whose steps print the digests of the references they show.
 DEMONSTRATION_PAGES = (("/demo", "demo"), ("/demo/kaggle", "demo-kaggle"))
-#: Seven catalogue disclosure checks and one digest check for each demonstration page.
-PLANNED_CHECKS = 7 + len(DEMONSTRATION_PAGES)
+#: Seven disclosure checks and both evidence and current-availability checks for each demo.
+PLANNED_CHECKS = 7 + 2 * len(DEMONSTRATION_PAGES)
+SNAPSHOT_SCOPE = "packaged-starter-catalogue/v1"
+SNAPSHOT_LABEL = "Recorded starter-catalogue results"
 #: The label every Community item carries in a search answer.
 COMMUNITY_TIER, COMMUNITY_LABEL = "community", "Community"
 #: One item of the homepage demonstration: its identity and the digest prefix it prints.
@@ -72,6 +76,22 @@ def demonstration_mismatches(shown, served):
     return {identity: {"shown": prefix, "served": (served.get(identity) or "")[:8]}
             for identity, prefix in sorted(shown.items())
             if not (served.get(identity) or "").startswith(prefix)}
+
+
+def demonstration_evidence_problems(page, view, served, packaged, manifest_digest):
+    """A declared snapshot binds exact source bytes; an unmarked demo claims live references."""
+    found = re.search(VIEW.format(re.escape(view)), page, re.S)
+    markup = found.group(0) if found else ""
+    scopes = re.findall(r'data-reference-scope="([^"]*)"', markup)
+    hashes = re.findall(r'data-reference-manifest-sha256="([^"]*)"', markup)
+    shown = demonstration_page_digests(page, view)
+    if not shown:
+        return {"evidence": "no demonstrated references"}
+    if not scopes and not hashes:
+        return demonstration_mismatches(shown, served)
+    if scopes != [SNAPSHOT_SCOPE] or hashes != [manifest_digest] or SNAPSHOT_LABEL not in markup:
+        return {"evidence": "snapshot scope, source identity or visible label does not match"}
+    return demonstration_mismatches(shown, packaged)
 
 
 def unapproved_verified_hits(verified_hits, approved):
@@ -216,9 +236,10 @@ def main():
                                                     {"Accept": "text/html"}), timeout=30) as response:
                 return response.read(4_000_000).decode("utf-8", "replace")
         # Each check reads the view of the page that printed the digests, from that page's own address.
-        shown = {address: demonstration_page_digests(public_page(address), view) for address, view in DEMONSTRATION_PAGES}
+        pages = {address: public_page(address) for address, _view in DEMONSTRATION_PAGES}
+        shown = {address: demonstration_page_digests(pages[address], view) for address, view in DEMONSTRATION_PAGES}
         served_digests = {}
-        # The pages print what a harness receives today, which asks with version 2: the default step effects and the
+        # Current availability uses version 2: the default step effects and the
         # account's library setting. Release 30 printed two items that read files, which a version 1 request, holding no
         # effect, is refused; this check asked with version 1 and failed although every harness received them.
         for identity in sorted(set().union(*shown.values())):
@@ -227,9 +248,13 @@ def main():
                  "identity": identity})
             served_digests[identity] = str(manifest.get("result", {}).get("digest", "")) if status == 200 else ""
         for address, view in DEMONSTRATION_PAGES:
-            mismatched = demonstration_mismatches(shown[address], served_digests)
-            check("the_demonstration_page_prints_the_digests_the_service_serves_" + view.replace("-", "_"),
+            packaged_digests = {row["reference"]["identity"]: row["reference"]["digest"] for row in released["items"]}
+            mismatched = demonstration_evidence_problems(pages[address], view, served_digests, packaged_digests,
+                hashlib.sha256((ROOT / RELEASE_MANIFEST).read_bytes()).hexdigest())
+            check("the_demonstration_matches_its_declared_catalogue_source_" + view.replace("-", "_"),
                   bool(shown[address]) and not mismatched, json.dumps(mismatched or sorted(shown[address])))
+            check("the_demonstration_identities_remain_available_for_fresh_selection_" + view.replace("-", "_"),
+                  bool(shown[address]) and all(served_digests.get(identity) for identity in shown[address]))
     except Exception as error:  # noqa: BLE001 - an interrupted check is reported, not hidden
         checks.append({"name": "remaining_checks_interrupted", "passed": False,
                        "error_type": type(error).__name__, "detail": str(error)[:300]})

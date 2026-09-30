@@ -9,7 +9,7 @@ reaches the network; the searches run on loopback over a temporary database.
 The demonstration at `/demo` breaks one data cleanup task into five steps, and the one at `/demo/kaggle` breaks a
 Kaggle competition into six, from the metric to the submission. Each step shows a search, the references it returned,
 a download of the one it chose and the folder where the harness reads it. The
-search and the download are real results from this release's library and say so; the folder is an example and
+search and download reproduce the packaged starter snapshot, not the changing live catalogue; the folder is an example and
 says so. Each rule below refuses one way the page could stop being true, and each has known-wrong pages
 beside it that the rule must report:
 
@@ -253,6 +253,20 @@ class DemonstrationPage(unittest.TestCase):
         planted = self.page.replace('data-fact="digest">' + digest + "<", 'data-fact="digest">' + digest[:-1] + ("0" if digest[-1] != "0" else "1") + "<", 1)
         self.assertNotEqual(planted, self.page)
         self.assertTrue(search_problems(read_steps(view_markup(planted, "demo")), self.searches, DEMONSTRATIONS["demo"]))
+
+    def test_the_recorded_examples_bind_the_packaged_snapshot_and_do_not_claim_a_live_search(self):
+        from check_hosted_catalogue import demonstration_evidence_problems, RELEASE_MANIFEST
+        import hashlib
+        import json
+        manifest_path = ROOT / RELEASE_MANIFEST
+        manifest = json.loads(manifest_path.read_text())
+        digests = {row["reference"]["identity"]: row["reference"]["digest"] for row in manifest["items"]}
+        fingerprint = hashlib.sha256(manifest_path.read_bytes()).hexdigest()
+        for view in DEMONSTRATIONS:
+            with self.subTest(view=view):
+                self.assertIn("not a live search", view_markup(self.page, view))
+                self.assertEqual(demonstration_evidence_problems(self.page, view, {}, digests, fingerprint), {})
+                self.assertTrue(demonstration_evidence_problems(self.page.replace(fingerprint, "0" * 64), view, {}, digests, fingerprint))
 
     def test_each_part_says_whether_it_is_recorded_or_an_example(self):
         for view in DEMONSTRATIONS:

@@ -61,7 +61,7 @@ class ViewDigestTests(unittest.TestCase):
     def test_every_demonstration_page_is_checked_on_its_own(self):
         from check_hosted_catalogue import DEMONSTRATION_PAGES, PLANNED_CHECKS
         self.assertEqual([view for _address, view in DEMONSTRATION_PAGES], ["demo", "demo-kaggle"])
-        self.assertEqual(PLANNED_CHECKS, 9)
+        self.assertEqual(PLANNED_CHECKS, 11)
         kaggle = ONE_PAGE.replace('data-view="demo" hidden', 'data-view="demo-kaggle" hidden')
         self.assertEqual(demonstration_page_digests(kaggle, "demo-kaggle"), {"profile_text_column_before_cleaning": "3274cbf5"})
         # KNOWN_WRONG: the view of the other demonstration is not read as this one.
@@ -69,6 +69,23 @@ class ViewDigestTests(unittest.TestCase):
 
 
 APPROVED = ["split_address_lines_into_components", "find_duplicate_records_with_blocking_keys"]
+
+
+class DeclaredSnapshotTests(unittest.TestCase):
+    def test_snapshot_requires_source_binding_and_an_explicit_label(self):
+        from check_hosted_catalogue import demonstration_evidence_problems, SNAPSHOT_SCOPE, SNAPSHOT_LABEL
+        marker = '<div data-reference-scope="' + SNAPSHOT_SCOPE + '" data-reference-manifest-sha256="' + 'a' * 64 + '">' + SNAPSHOT_LABEL + '</div>'
+        page = '<main>\n    <section data-view="demo">' + marker + PAGE + '</section>\n</main>'
+        newer = {key: "f" * 64 for key in SERVED}
+        check = lambda value: demonstration_evidence_problems(value, "demo", newer, SERVED, "a" * 64)
+        self.assertEqual(check(page), {})
+        for wrong in (page.replace("a" * 64, "b" * 64), page.replace(SNAPSHOT_SCOPE, "unknown/v1"),
+                      page.replace(SNAPSHOT_LABEL, "Live results"), page.replace(marker, ""),
+                      page.replace("53dc74e3", "00000000"), page.replace(marker, marker + marker)):
+            with self.subTest(wrong=wrong[:90]):
+                self.assertTrue(check(wrong))
+        live = page.replace(marker, "")
+        self.assertEqual(demonstration_evidence_problems(live, "demo", SERVED, newer, "a" * 64), {})
 
 
 class SearchTierTests(unittest.TestCase):

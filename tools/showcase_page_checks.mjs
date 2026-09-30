@@ -28,7 +28,7 @@ print(json.dumps({"site_map": as_plain_record(load_site_map()), "layout": as_pla
 const skillRoots={"claude-code":".claude/skills/","codex":".agents/skills/","opencode":".opencode/skills/","pi":".pi/skills/"};
 /* The label of each demonstrated search and download, as tools/test_homepage_demonstration.py names it. The owner retired the earlier
    label, "Recorded from this release's library", on September 24, 2026. */
-const recordedLabel="Real results from the library";
+const recordedLabel="Recorded starter-catalogue results";
 /* The phrases the owner retired from every page on September 24, 2026, and the few of the same kind removed with them: words that
    describe Baltor's own checks or repeat the navigation instead of telling a visitor something. Keep this list short; it is read in
    the rendered words of every page, so it never pins other copy. */
@@ -223,7 +223,7 @@ export async function runShowcasePageChecks({root,python,browser,context,fixture
   };
   await fillerScenario(check,siteMap.pages.map(entry=>entry.address));
   check("retired_phrase_check_finds_each_phrase_the_owner_named",["Get started creates your account. Get set up connects your harness.","Bytes match the digest",
-    "Recorded from this release’s library"].every(text=>fillerProblems([["/",text.replace(/[‘’]/g,"'")]]).length>=1)&&fillerProblems([["/","Real results from the library"]]).length===0);
+    "Recorded from this release’s library"].every(text=>fillerProblems([["/",text.replace(/[‘’]/g,"'")]]).length>=1)&&fillerProblems([["/","Recorded starter-catalogue results"]]).length===0);
   const fillerControls=[
     {name:"write_the_hero_buttons_line_back_on_a_page",addresses:["/examples"],change:{path:"/examples",find:'<h2 id="case-studies">Case studies</h2>',
       replacement:'<h2 id="case-studies">Case studies</h2><p><strong>Get started</strong> creates your account.</p>'}},

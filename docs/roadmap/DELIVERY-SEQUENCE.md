@@ -148,6 +148,14 @@ correctness, elapsed time, resource use and remaining limits on the exact
 candidate. Independent source research can continue within its allowance,
 but it must not delay a ready customer fix or start an unreviewed migration.
 
+Release 56 deployed the grant-maintenance repair and website pitch update.
+Its live checks also found a stale-example problem: the older guided demos
+show packaged starter references, while the active catalogue has newer file
+versions. Correct the visible scope and bind the snapshot before the next
+feature release. Preserve a separate check of current item availability and
+require a fresh search before a harness downloads. Recorded examples must not
+quietly become claims about a changing live search.
+
 1. **Reconcile and preserve the current work.** Account for inherited changes,
    source identities, failed checks and prior-session instructions. Correct
    stale startup links and implementation claims. Keep a coverage record for
