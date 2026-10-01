@@ -13105,26 +13105,6 @@
    null
   ],
   [
-   "food_composition_analytical_methods",
-   "Food composition analytical method vocabulary with English names and descriptions",
-   "BetuelRS/NutriDB",
-   "f0/fundacoes",
-   "vocab/analytical_methods.csv",
-   "csv_records",
-   "id",
-   null
-  ],
-  [
-   "insa_ciqual_food_identity_pairs",
-   "Portuguese INSA food codes matched to French Ciqual food codes with evidence",
-   "BetuelRS/NutriDB",
-   "f0/fundacoes",
-   "tests/golden/identity_pairs.csv",
-   "csv_records",
-   null,
-   null
-  ],
-  [
    "iucn_get_realms",
    "IUCN Global Ecosystem Typology realms (terrestrial, freshwater, marine and transitional) with types and keywords",
    "red-list-ecosystem/typology-map-data",
