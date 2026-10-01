@@ -13,12 +13,36 @@
   ],
   "pages": [
     {
+      "address": "/dot-context",
+      "view": "context",
+      "title": "Dot working context",
+      "description": "Prioritized research and acceptance tasks with dated, public-safe handoff instructions.",
+      "group": "Company",
+      "linked_from": [],
+      "unlinked_reason": "Owner-requested unlisted working brief for an authorized Dot; public content, without a navigation entry.",
+      "scroll_budget": "long",
+      "price_in_first_screen": false,
+      "indexed": false
+    },
+    {
+      "address": "/dot-feedback",
+      "view": "feedback",
+      "title": "Dot feedback review",
+      "description": "Reviewed, non-personal improvement themes and the authenticated feedback review workflow.",
+      "group": "Company",
+      "linked_from": ["page"],
+      "unlinked_reason": "",
+      "scroll_budget": "long",
+      "price_in_first_screen": false,
+      "indexed": false
+    },
+    {
       "address": "/public-good",
       "view": "public-good",
       "title": "Public Good",
       "description": "Browse useful component files for sustainable development and public-benefit work. Downloads require a Baltor account, not a paid subscription.",
       "group": "Product",
-      "linked_from": ["header"],
+      "linked_from": ["header", "footer"],
       "unlinked_reason": "",
       "scroll_budget": "long",
       "price_in_first_screen": false,
@@ -1114,6 +1138,11 @@
             "role": "link",
             "label": "Browse the library",
             "href": "/library"
+          },
+          {
+            "role": "link",
+            "label": "Public Good",
+            "href": "/public-good"
           },
           {
             "role": "link",

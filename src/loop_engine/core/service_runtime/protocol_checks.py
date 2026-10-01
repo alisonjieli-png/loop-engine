@@ -25,6 +25,8 @@ from .http_test_fixtures import HttpDomainFixture, running_http
 
 #: The per-request protocol version these checks qualify.
 _PER_REQUEST = "2026-07-28"
+_EXPECTED_TOOLS = {"provisioning_discover", "provisioning_list", "provisioning_manifest",
+                   "provisioning_read", "intelligence_search", "provisioning_report", "public_good_files"}
 
 
 @asynccontextmanager
@@ -86,7 +88,8 @@ async def _protocol_checks(check, root):
             fixture.runtime.set_grants("alpha", grants)
             async with _protocol_client(base, fixture, mode) as client:
                 tools = await client.list_tools()
-                check(names["profile"], client.protocol_version == expected and len(tools.tools) == 6)
+                check(names["profile"], client.protocol_version == expected
+                      and {tool.name for tool in tools.tools} == _EXPECTED_TOOLS)
                 found = await client.call_tool("intelligence_search", {"query": "alpha"})
                 check(names["search"],
                       not found.is_error and found.structured_content["result"]["hits"]
@@ -135,7 +138,7 @@ async def _protocol_checks(check, root):
         async with _protocol_client(base, fixture, "auto") as client:
             tools = await client.list_tools()
             check("an_automatic_client_selects_the_per_request_version_through_discovery",
-                  client.protocol_version == _PER_REQUEST and len(tools.tools) == 6)
+                  client.protocol_version == _PER_REQUEST and {tool.name for tool in tools.tools} == _EXPECTED_TOOLS)
             from .http import PROTOCOL_CACHE_SCOPE, PROTOCOL_CACHE_TTL_MS
             check("per_request_tool_list_carries_private_cache_hints",
                   tools.ttl_ms == PROTOCOL_CACHE_TTL_MS and tools.cache_scope == PROTOCOL_CACHE_SCOPE == "private")
@@ -237,7 +240,7 @@ async def _negotiation_checks(check, root):
                                                              "arguments": {"query": "alpha"}}, "2025-11-25", identity=4)
             check("the_negotiated_version_still_lists_and_calls_tools_end_to_end",
                   listed_answer.status_code == called_answer.status_code == 200
-                  and len(((listed or {}).get("result") or {}).get("tools", ())) == 6
+                  and {tool.get("name") for tool in ((listed or {}).get("result") or {}).get("tools", ())} == _EXPECTED_TOOLS
                   and ((called or {}).get("result") or {}).get("isError") is False
                   and bool(called["result"]["structuredContent"]["result"]["hits"]))
 
@@ -285,7 +288,7 @@ async def _configured_version_checks(check, root):
                           protocol["versions"] == ["2025-11-25"] and protocol["per_request_versions"] == []
                           and refused.status_code == 400 and refused.json()["error"]["code"] == -32022
                           and refused.json()["error"]["data"]["supported"] == ["2025-11-25"]
-                          and chosen == "2025-11-25" and len(listed.tools) == 6)
+                          and chosen == "2025-11-25" and {tool.name for tool in listed.tools} == _EXPECTED_TOOLS)
                 else:
                     refused = await client.post(base + "/mcp", headers=headers, json={
                         "jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {
@@ -298,7 +301,7 @@ async def _configured_version_checks(check, root):
                           protocol["versions"] == [_PER_REQUEST] and protocol["handshake_versions"] == []
                           and refused.status_code == 400 and refused.json()["error"]["code"] == -32022
                           and refused.json()["error"]["data"] == {"supported": [_PER_REQUEST], "requested": "2025-11-25"}
-                          and chosen == _PER_REQUEST and len(listed.tools) == 6)
+                          and chosen == _PER_REQUEST and {tool.name for tool in listed.tools} == _EXPECTED_TOOLS)
             if served == (_PER_REQUEST,):
                 # The binding is validated where it is used: a protocol
                 # library that cannot serve a configured version refuses the

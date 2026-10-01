@@ -621,6 +621,25 @@ curl -sS https://app.baltor.ai/api/v1/health
 
 ## Related reading
 
+### Unlisted Dot working pages
+
+The website renderer serves `/dot-context` and `/dot-feedback`, plus matching
+JSON representations. `dot_pages.py` reads the two explicitly reviewed public
+records in the packaged `dot` folder. They contain task briefs, research
+directions and non-personal issue summaries. They never read private feedback
+records, account data or local operator files. A page visit has no task-claim,
+submission or completion effect. The Dot keeps its progress in its own
+authorized workspace and uses its separately configured schedule.
+
+Both pages have search-index exclusion metadata and remain outside header,
+footer and sitemap navigation. The context page links its feedback companion.
+They are public URLs, not authenticated private storage. Each representation
+has an exact-content validator; each brief states its update and review dates.
+Editing a brief requires ordinary source review and deployment. Test the
+served HTML and JSON, forbidden methods, access-free reads, private-store
+isolation, escaped text, navigation exclusion and conditional reads with
+`tools/test_dot_pages.py`.
+
 Transport admission is separate from expensive work. The optional host field
 `http.maximum_transport_concurrency` defaults to 128 and accepts integers from
 2 through 128. Capabilities publish the `transport_concurrency` entry of `limits`.
@@ -658,6 +677,13 @@ counts distinguish useful payloads, supporting placements and packages;
 seventeen goal facets retain real zeros. The existing package endpoint is
 unchanged. The HTTP owner rechecks policy freshness before returning metadata
 and enforces the final response limit. Metadata grants no download authority.
+
+The authenticated protocol tool `public_good_files` uses that same file
+projection and filters. It requires the metadata scope before and after
+projection, rechecks the current policy and catalogue snapshot, and enforces
+the final protocol envelope limit. It supplies no file bodies and records no
+paid usage. The selected placement connects to the existing manifest and
+exact-path read operations. No second inventory or admission path is involved.
 
 File links carry the selected parent digest, safe path and file digest through
 the normal sign-in flow, including a login-page reload. Missing, duplicated,

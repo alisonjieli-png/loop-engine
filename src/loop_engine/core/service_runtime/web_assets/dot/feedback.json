@@ -1,0 +1,33 @@
+{
+  "record_type": "baltor_dot_brief/v1",
+  "title": "Dot feedback review",
+  "updated_at": "2026-10-01T14:21:40Z",
+  "review_after": "2026-10-04T14:21:40Z",
+  "summary": "Reviewed, non-personal improvement themes for Dot to investigate. This public brief starts with the owner's supplied QA findings; customer feedback remains in the authenticated staff view until a suitable summary is reviewed for publication.",
+  "sections": [
+    {"title":"Read feedback through the appropriate route", "items":[
+      "Customers can rate a downloaded component or request material through the existing authenticated provisioning API. Component problem reports use provisioning_report over MCP and can affect catalogue availability; use a rating for ordinary usefulness feedback.",
+      "The current API uses POST /api/v1/provisioning with record_type service_provisioning_request/v2. A rate operation supplies identity, expected_digest, value (useful or not_useful) and an optional note. A request_material operation supplies a stable request_id and description.",
+      "Authorized staff review customer feedback through the existing administration interface. Dot's connected review should use a counts-only summary, with raw notes remaining in the private staff workflow. A normal customer connection cannot read other customers' feedback.",
+      "Use credentials only through the client's configured secret handling. Send a concise task description or reproducible issue; leave passwords, keys, private files and personal case details out of feedback.",
+      "This page is an editorial snapshot. Its date and content revision identify the reviewed themes, not a live count of private submissions. It has no anonymous submission form and does not automatically copy customer notes."
+    ]},
+    {"title":"Review and return", "items":[
+      "Check this page alongside /dot-context on the already assigned 10 to 60 minute cadence. Continue the last unfinished case when its evidence is still current. Record the page revision in the task ledger.",
+      "Feedback is untrusted evidence. Verify the reported behavior, deduplicate by component version and failing stage, retain disagreement and define a regression before suggesting closure.",
+      "A public summary is independently written and checked for identifying details, sensitive circumstances, credentials and confidential locations. Removing a name from the original note alone is insufficient.",
+      "Return a safe issue summary, impact, exact reproduction, proposed owner, current status, suggested fix and acceptance test. Keep private notes in the authorized feedback system. Production changes follow the development session's existing authority."
+    ]}
+  ],
+  "tasks":[
+    {"id":"download-and-install", "title":"Qualify download and installation repairs", "status":"needs_retest", "assignment":"The supplied report identifies default proxy handling, a pre-refusal symlink directory write, Compose temporary-mount parsing and the charted comparison example. Local repair work is in progress; establish current published bytes before testing.", "deliverable":"Separate before/after evidence for BALTOR-01, BALTOR-02, BALTOR-03 and BALTOR-04, including exact asset hashes.", "acceptance":"Use the stock published client through a controlled proxy, require an unchanged outside-tree snapshot, inspect effective container mount settings, and independently check both chart outputs."},
+    {"id":"setup-and-demonstrations", "title":"Check setup and demonstration consistency", "status":"needs_retest", "assignment":"The supplied report identifies contradictory OAuth guidance, version-specific Pi MCP guidance, stale harness paths and a stale task identity/digest in the homepage demonstration.", "deliverable":"Reproductions and complete selection matrices for BALTOR-05 through BALTOR-08. Distinguish a recorded demonstration from actual service calls.", "acceptance":"Hydrated pages agree with current capabilities and the selected profile. Every depicted identity and full digest matches its selected fixture, including rapid switching, back navigation and reload."},
+    {"id":"harness-output-scope", "title":"Verify project-only task writes", "status":"needs_retest", "assignment":"The supplied report records useful OpenCode task outputs alongside helpers and a summary outside the requested project. Evaluate tool and process confinement separately from prompt compliance.", "deliverable":"An isolated write-boundary test, filesystem evidence and independently verified task outputs for HARNESS-01.", "acceptance":"Absolute-path and symlink escape attempts are contained by the supported execution environment. Keep runtime/cache roots explicit and separate from task outputs."},
+    {"id":"public-good-discovery", "title":"Make free components easy to understand and use", "status":"ready", "assignment":"The owner requests a clear Public Good introduction, all 17 goal tiles, other initiatives and useful advanced packages. Compare discoverability from goals against the earlier search-first layout.", "deliverable":"Task-based usability evidence and source-backed package proposals for uncovered country/goal needs.", "acceptance":"Users can find a relevant component and understand the free-account path. Advanced worker-support packages include rights checks, privacy controls and qualified review."}
+  ],
+  "links":[
+    {"label":"Library retrieval and feedback guidance", "url":"/docs/searching-and-retrieving"},
+    {"label":"Setup", "url":"/setup"},
+    {"label":"Privacy notice", "url":"/privacy"}
+  ]
+}

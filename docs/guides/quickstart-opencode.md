@@ -6,7 +6,7 @@ One page from an account to a checked download. Every address, field and command
 
 ## What you need
 
-- A Baltor account with an active plan. Create it on [Get started](https://app.baltor.ai/get-started).
+- A [Baltor account](https://app.baltor.ai/get-started). Public Good files are free with an account; Baltor Pro adds the full library.
 - A client token from [your account page](https://app.baltor.ai/account), under Your client tokens. The service shows it once.
 - OpenCode 1.x installed. Check the version with `opencode --version`. OpenCode 2.x uses a different configuration layout, and this page does not cover it.
 - A terminal where the token is set, because the entry reads it from the environment.
@@ -57,7 +57,13 @@ Search always shows every item your account may use, with its `declared_effects`
 opencode mcp list
 ```
 
-The list shows `baltor` as connected; it does not list the tools. In a session, the six tools are available: `intelligence_search`, `provisioning_discover`, `provisioning_list`, `provisioning_manifest`, `provisioning_read` and `provisioning_report`. This service uses a supplied token; do not start an OAuth login for it.
+The list shows `baltor` as connected; it does not list the tools. In a session,
+use `intelligence_search`, `provisioning_discover`, `provisioning_list`,
+`provisioning_manifest`, `provisioning_read`, `provisioning_report` or
+`public_good_files`. This recipe uses a supplied token and therefore sets
+`oauth` to false. Baltor also serves OAuth; the separate
+[OAuth connection guide](service-serving-and-connections.md#oauth-connections)
+describes account linking without passing a key through a conversation.
 
 ## Your first search
 
@@ -140,4 +146,14 @@ The answer's `result` is `service_session/v1`. Its `principal` names the account
 | `download_required` | 413 | The body is larger than the inline limit. Fetch it through `/api/v1/download`. |
 | `failed_attempt_limit_reached` | 429 | Too many refused attempts from your address. Fix the token, then wait a minute. |
 
-An entry with `oauth` set to true starts a login this service does not offer; keep it false. [Troubleshooting](service-troubleshooting.md) explains every code, [Service status](https://app.baltor.ai/status) shows a current outage, and [Serving and connections](service-serving-and-connections.md) names the protocol versions. The nightly record of this page's steps is written under `artifacts/quickstart-checks/` in the repository by [the quickstart check](../../tools/check_quickstarts.py).
+Keep `oauth` false for this supplied-token recipe. For an OAuth connection,
+follow the separate [connection guide](service-serving-and-connections.md#oauth-connections)
+and use the canonical `https://baltor.ai/mcp` endpoint; do not combine a stale
+Authorization header with an account-linking attempt. Qualification of this
+token recipe does not establish that every OpenCode version's OAuth flow works.
+[Troubleshooting](service-troubleshooting.md) explains every code,
+[Service status](https://app.baltor.ai/status) shows a current outage, and
+[Serving and connections](service-serving-and-connections.md) names the protocol
+versions. The nightly record of this page's steps is written under
+`artifacts/quickstart-checks/` in the repository by
+[the quickstart check](../../tools/check_quickstarts.py).

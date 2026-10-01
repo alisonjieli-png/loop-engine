@@ -190,6 +190,16 @@ goal gaps with sourced, useful material and record the free-account native
 journey before closing the task. The sequence below resumes from its first
 unfinished gate after this priority, not from another research-only reset.
 
+The owner's October 1 continuation requires completing coverage for every
+goal and wiring the connections, not increasing the headline count alone.
+The current next batch targets the twelve empty goals with distinct original
+tools and typed contracts. Candidate files do not fill a goal until independent
+admission, exact-version access and live retrieval pass. Add goal-filtered
+Public Good discovery to the existing protocol connection so harnesses can
+select the same files as website visitors; retain the existing exact-file
+download path and verify the complete browse-to-use journey. The dot's own
+connection, two-way intake and feedback still need separate acceptance.
+
 Track the access-grant review dates as housekeeping: the five original grants
 expire on October 31 UTC and the earlier selected grants on November 1 UTC.
 Review and renew eligible unchanged versions before expiry through the same
@@ -299,6 +309,106 @@ make different promises. Render and inspect the actual deck and video before
 publication, check duration and decoding, retain editable sources and captions,
 and verify the destination link. Engineering can prepare and publish the
 approved product materials; advertising purchases remain with the owner.
+
+## Native application component programme
+
+The owner's October 1 software direction adds a target of thousands of useful
+component files for desktop applications, bots, OpenAI automations and other
+orchestrators. This extends the same catalogue, qualification and release path.
+First finish the current user-path repairs and SDG coverage; develop the first
+application packs in parallel, then publish each accepted pack in sequence.
+
+| Application family | First useful package jobs | Acceptance evidence |
+| --- | --- | --- |
+| Blender | Parametric scene builders, reusable rigs, camera paths, material checks, render and export helpers. | Native scene opens, renders and survives a parameter revision and clean reopen. |
+| FreeCAD and OpenSCAD | Dimensioned parts, constraint and unit checks, assemblies, drawing/export recipes and fabrication preflight. | Boundary dimensions, topology and units checked against independent geometry; editable native source retained. |
+| Godot | Scene and interaction components, procedural levels, import checks, headless build and input-driven regression fixtures. | Project imports, plays through real inputs, exports and reopens in a clean supported environment. |
+| Inkscape, GIMP and Draw | Editable graphics, batch image operations, export checks, typography and accessible presentation components. | Native files and exported pixels checked; identify the exact Draw application before choosing its API. |
+| Kdenlive | Editable timelines, caption/audio alignment, title and transition components, render profiles and output quality checks. | Timeline reopens; output timing, visible motion, safe areas and sound are measured from the render. |
+| QGIS and ParaView | Geospatial cleanup, coordinate/units checks, map atlases, scientific visualization and reproducible export pipelines. | Results match known spatial/scientific fixtures and retain data-source provenance and transformation settings. |
+| KiCad | Symbols and footprints, mechanical-clearance checks, bills of materials and fabrication handoff helpers. | Native project reopens; independent geometry and rule checks accompany the output. Engineering approval remains a separate decision. |
+| 3D Slicer | Research-data import, segmentation comparison, geometry checks and reproducible visualization. | Synthetic or permitted de-identified datasets, versioned processing and expert reference checks; no clinical certification claim. |
+| Mousepad, Go and Solitaire | File-editing and application-state automation, controlled interaction fixtures and repeatable UI tests. | Resolve installed application identities first. The pictured Go label is not evidence of the Go programming language. |
+
+Each application pack can contain executable tools, plugins, native projects,
+data, schemas, harness instructions, context and tests. Count distinct useful
+files separately from support and repeated variants. Give each component a
+defined job and contract; splitting a script or multiplying preset labels does
+not create a new capability. Preserve native source, pinned dependencies,
+licences, expected effects and a supported host profile. Reuse qualified
+upstream engines through existing component slots before writing replacements.
+
+Grow supply through a capability inventory, small original or licensed packs,
+deterministic checks, independent admission, native task acceptance and exact
+publication. Automated repair uses the same path. Public-benefit relevance
+earns an explicit account-required free-access grant; an application name or
+SDG tag alone does not grant it. Keep daily additions, useful-file counts,
+application coverage, executed jobs and customer outcomes separate.
+
+The attached business ideas are discovery hypotheses for the same reusable
+packs: product-catalogue variants, fabrication preflight, assembly manuals,
+PCB handoff, contractor map packs, plugin compatibility tests, training labs,
+research reproducibility and open-source migration trials. Validate a buyer's
+workflow, accepted sample, revision effort and support/compute cost before
+promising a paid service. Institutional funding can support free public-good
+components. This is one product programme, not a commitment to launch thirty
+businesses.
+
+Record where every application runs: the dot cloud computer, connected
+computer, container, or separately authorized worker/virtual machine. Verify
+installation rights, CPU/GPU, memory, display and virtualization support on
+that host. A listed icon or installed hypervisor does not establish those
+capabilities. Keep application compatibility and model access independent.
+
+## Multidimensional research and component expansion
+
+The owner's October 1 direction extends S-6.215 and S-6.216: increase useful
+components across countries, industries and everyday tasks while retaining
+independent review and actual customer-use checks. Extend the existing
+knowledge radar, source contracts and harness idea matrix. Keep one working
+queue and one authoritative record for each kind of result.
+
+1. Reconcile the current source, live catalogue, exact file counts, pending
+   candidates, test findings and active writers. Preserve contrary evidence
+   and historical snapshots. Release status comes from the actual deployment.
+2. Generate reproducible search combinations across country/area, language,
+   SDG target, industry, occupation, audience, need, input/output format,
+   software, harness, failure mode, delivery form and source type. Record
+   the vocabulary revision and stable query identity. Deduplicate normalized
+   queries and source origins before execution.
+3. Execute rate-bounded batches through supported source adapters. Save the
+   cursor, attempts, useful discoveries, empty results and access failures.
+   Compare yield across dimensions and allocate later work to useful gaps.
+   Search operators target legitimate public sources and published resources.
+4. Inspect each promising source, its rights, version, dependencies and
+   supported use. Separate code, media, dataset and model-weight permissions.
+   Prepare small contract cards before loading source into generation.
+5. Produce original or licensed executable packages, parameterized functions,
+   native files, plugins, harness recipes, service/MCP capability references
+   and worked examples. Preserve existing implementations and fixed typed
+   edges; a parameter variation is not automatically a separate capability.
+6. Run deterministic checks, independent review, clean installation, native
+   use and relevant revision/reopen tests. Publish exact approved versions
+   through guarded delta releases. Public Good eligibility has its own
+   explicit purpose and free-access policy.
+7. Feed observed task failures and reviewed feedback back into the same queue.
+   Track planned queries, executed searches, opened sources, rights-cleared
+   candidates, useful distinct files, packages and accepted results separately.
+
+For Dot, `/dot-context` carries dated public task briefs and `/dot-feedback`
+carries reviewed non-personal themes. Matching JSON views support change
+detection. These URLs stay out of navigation and search indexes while remaining
+fetchable. Reading them starts no job and changes no account. Dot's existing
+task configuration controls the requested 10 to 60 minute check cadence;
+this repository change creates no duplicate schedule. Customer submissions
+use existing authenticated records; automated staff review exposes only
+counts through its separately authorized route.
+
+Start with a balanced country/SDG pilot, software-native components and
+service-capability recipes. Scale based on measured source yield, correctness,
+reuse and support cost. Retain accessibility, low-bandwidth and multilingual
+needs alongside commercial work. Source freshness and qualified review matter
+especially for migration, worker protection, health and legal material.
 
 ## Free Public Good components
 

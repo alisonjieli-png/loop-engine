@@ -6,7 +6,7 @@ license: MIT
 
 # Baltor library
 
-Requires Python 3.10+, POSIX filesystem operations, direct HTTPS access and a personal Baltor key supplied by environment reference.
+Requires Python 3.10+, POSIX filesystem operations, HTTPS access and a personal Baltor key supplied by environment reference. HTTPS requests follow the environment's proxy settings.
 
 Use `scripts/baltor.py` for the service boundary and for placement instead of recreating HTTP calls or writing downloaded files yourself. It searches metadata, stages selected downloads and places a fetched skill. It does not run downloaded files or call a model.
 

@@ -31,8 +31,10 @@ enabled Baltor account, but no paid subscription. This replaces engineering's
 earlier anonymous-delivery proposal. Rights, independent admission, withdrawal and safety checks still
 apply. Free files do not include an unbounded model or hosting allowance.
 The [delivery plan](../roadmap/DELIVERY-SEQUENCE.md#free-public-good-components)
-owns the implementation and acceptance sequence. Public downloads under this
-policy have not shipped.
+owns the implementation and acceptance sequence. Account-required free
+downloads are live; the [October 1 handoff](../context/SESSION-HANDOFF-2026-10-01.md)
+records the current population and remaining all-goal and native-use checks.
+Anonymous file bodies remain unavailable.
 
 Later that evening the owner made this the next delivery priority: "get the
 SDG public good policy and harness files fully populated and working" with a

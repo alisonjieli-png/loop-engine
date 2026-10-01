@@ -7,6 +7,12 @@
   const status=$('status'), items=$('items'), previous=$('previous'), next=$('next');
   if (!mode || !media || !initiative) {status.textContent='This page changed. Reload it to browse the current files.';return;}
   const labels=Object.fromEntries([...goal.options].filter(option=>/^\d+$/.test(option.value)).map(option=>[option.value,option.textContent]));
+  const validGoals=new Set(['','related',...Object.keys(labels)]);
+  const applyGoalFromAddress=()=>{
+    const values=new URL(location.href).searchParams.getAll('goal');
+    goal.value=values.length===1&&validGoals.has(values[0])?values[0]:'';
+  };
+  applyGoalFromAddress();
   let page=1, requestNumber=0, controller;
   const element=(tag,text,className)=>{const node=document.createElement(tag);if(text!==undefined)node.textContent=text;if(className)node.className=className;return node;};
   const integer=value=>Number.isSafeInteger(value)&&value>=0;
@@ -56,7 +62,7 @@
       element('p',file.media_types.join(' · '),'pg-meta'),element('p',goalText(first),'pg-meta'));
     const details=element('details',undefined,'pg-file-context');
     details.append(element('summary','Package context, licence and download options'));
-    details.append(element('p','Keep the package’s licence, references and dependency instructions. A file is not automatically installed or run.'));
+    details.append(element('p','Use the file with its package’s licence, references and dependency instructions. Follow your harness guide to install and run it.'));
     const choices=element('ul');
     for(const row of file.placements){
       const item=element('li');
@@ -86,6 +92,12 @@
       const record=validate((await answer.json()).result,files);if(mine!==requestNumber)return;
       items.replaceChildren(...record.items.map(files?fileCard:packageCard));
       $('population').textContent=record.distinct_useful_files.toLocaleString('en-US')+' distinct useful '+(record.distinct_useful_files===1?'file':'files')+' in '+record.packages.toLocaleString('en-US')+(record.packages===1?' package':' packages');
+      $('library-title').textContent=goal.value==='related'?'Other public-benefit initiatives':labels[goal.value]||'All Public Good components';
+      for(const row of record.goals){
+        const count=document.querySelector('[data-goal-count="'+row.id+'"]');
+        if(count)count.textContent=row[files?'files':'packages'].toLocaleString('en-US')+' '+(files?'useful files':'packages');
+      }
+      for(const tile of document.querySelectorAll('.pg-goal-tile'))tile.setAttribute('aria-current',tile.dataset.goal===goal.value?'true':'false');
       const unit=files?'file':'package';
       status.textContent=record.matches?record.matches.toLocaleString('en-US')+' matching '+unit+(record.matches===1?'':'s')+'. Account required for every download.'
         :'No published '+unit+'s match these filters. Try another goal or search.';
@@ -99,6 +111,14 @@
     }finally{if(mine===requestNumber)root.removeAttribute('aria-busy');}
   }
   form.addEventListener('submit',event=>{event.preventDefault();page=1;load();});
+  for(const tile of document.querySelectorAll('a[data-goal]'))tile.addEventListener('click',event=>{
+    if(event.button!==0||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;
+    const chosen=tile.dataset.goal;if(!validGoals.has(chosen))return;
+    event.preventDefault();goal.value=chosen;query.value='';mode.value='files';media.value='';initiative.value='';page=1;
+    history.pushState(null,'',tile.getAttribute('href'));load();
+    root.scrollIntoView({behavior:'auto',block:'start'});
+  });
+  window.addEventListener('popstate',()=>{applyGoalFromAddress();query.value='';page=1;load();});
   for(const control of [goal,media,initiative])control.addEventListener('change',()=>{page=1;load();});
   mode.addEventListener('change',()=>{page=1;media.value='';initiative.value='';load();});
   previous.addEventListener('click',()=>{if(page>1){page--;load();}});next.addEventListener('click',()=>{page++;load();});

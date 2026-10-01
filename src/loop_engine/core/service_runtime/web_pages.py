@@ -219,6 +219,9 @@ GENERATED_WEB_FILES = {
 #: the counted links of the public lists at /out/ (public_links.py), which only
 #: redirect to other sites.
 ROBOTS_DISALLOWED_PREFIXES = ("/api/", "/mcp", "/.well-known/", "/out/")
+# These unlisted public briefs must remain fetchable by the owner's Dot.
+# Their noindex metadata and sitemap exclusion, not a crawl ban, keep them unlisted.
+CRAWLABLE_UNLISTED_PAGES = frozenset({"/dot-context", "/dot-feedback"})
 #: Site map files written elsewhere that robots.txt names beside /sitemap.xml: the model directory's list of its model
 #: and endpoint pages, which are rendered from records rather than listed in the site map record.
 EXTRA_SITEMAPS = ("/models/sitemap.xml",)
@@ -399,7 +402,8 @@ def robots_text(site_map: SiteMap) -> bytes:
     lines = ["# " + site_map.display_name + ". Written from the website's site map; do not edit by hand.",
              "User-agent: *"]
     lines += ["Disallow: " + prefix for prefix in ROBOTS_DISALLOWED_PREFIXES]
-    lines += ["Disallow: " + page.address for page in site_map.pages if not page.indexed]
+    lines += ["Disallow: " + page.address for page in site_map.pages
+              if not page.indexed and page.address not in CRAWLABLE_UNLISTED_PAGES]
     lines += ["", "Sitemap: " + site_map.canonical_origin + "/sitemap.xml"]
     lines += ["Sitemap: " + site_map.canonical_origin + address for address in EXTRA_SITEMAPS]
     return ("\n".join(lines) + "\n").encode("utf-8")

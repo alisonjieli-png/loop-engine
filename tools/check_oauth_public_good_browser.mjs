@@ -60,12 +60,34 @@ try{
   check('public_good_'+width+'_no_horizontal_overflow',await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
   check('public_good_'+width+'_seventeen_goals',await page.locator('#public-good-goal option').count()===19);
   check('public_good_'+width+'_main_header_link',await page.locator('header a[href="/public-good"]').count()===1);
-  const placement=await page.locator('.pg-item').first().evaluate(node=>({top:node.getBoundingClientRect().top,height:innerHeight,
-   sections:['.pg-intro','.pg-advanced','.pg-options','.pg-filters','#public-good-population','#public-good-status'].map(selector=>{
-    const part=document.querySelector(selector),r=part.getBoundingClientRect();return{selector,top:r.top,height:r.height,display:getComputedStyle(part).display};})}));
-  check('public_good_'+width+'_first_result_in_view',placement.top<placement.height-40,placement);
+  check('public_good_'+width+'_goal_first_introduction',await page.locator('.pg-intro h1').isVisible()
+    &&await page.locator('.pg-goal-tile').count()===17
+    &&await page.locator('.pg-initiative-tile').count()===1
+    &&await page.evaluate(()=>document.querySelector('.pg-goals').getBoundingClientRect().top<document.querySelector('#public-good-filters').getBoundingClientRect().top));
+  const target=page.locator('.pg-goal-tile[data-goal="4"]');await target.focus();await page.keyboard.press('Enter');
+  await page.waitForFunction(()=>document.querySelector('.pg-goal-tile[data-goal="4"]').getAttribute('aria-current')==='true');
+  check('public_good_'+width+'_keyboard_tile_and_deep_link',new URL(page.url()).searchParams.get('goal')==='4'
+    &&await page.locator('#public-good-goal').inputValue()==='4'&&await page.locator('.pg-item').count()===1);
+  await page.reload();await page.waitForSelector('.pg-item');
+  check('public_good_'+width+'_reload_retains_goal',await page.locator('#public-good-goal').inputValue()==='4');
+  await page.locator('.pg-goal-tile[data-goal="1"]').click();
+  await page.waitForFunction(()=>document.getElementById('public-good-status').textContent.startsWith('No published'));
+  await page.goBack();await page.waitForSelector('.pg-item');
+  check('public_good_'+width+'_history_retains_goal',await page.locator('#public-good-goal').inputValue()==='4');
+  await page.goto(base+'/public-good');await page.waitForSelector('.pg-item');
   const file=output.replace(/\.json$/,`-public-good-${width}.png`);await page.screenshot({path:file,fullPage:true});screenshots.push(file);
  }
+ for(const address of ['/dot-context','/dot-feedback']){
+  for(const width of [1440,390]){
+   await page.setViewportSize({width,height:900});const answer=await page.goto(base+address);
+   check(address+'_'+width+'_server_rendered',answer.status()===200&&await page.locator('h1:visible').count()===1);
+   check(address+'_'+width+'_unlisted_no_overflow',(await answer.headerValue('x-robots-tag')).includes('noindex')
+    &&await page.locator('header a[href="'+address+'"], footer a[href="'+address+'"]').count()===0
+    &&await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+   const file=output.replace(/\.json$/,`-${address.slice(1)}-${width}.png`);await page.screenshot({path:file,fullPage:false});screenshots.push(file);
+  }
+ }
+ await page.goto(base+'/public-good');await page.waitForSelector('.pg-item');
  await page.selectOption('#public-good-goal','1');await page.waitForFunction(()=>document.getElementById('public-good-status').textContent.startsWith('No published'));
  check('empty_goal_is_honest',await page.locator('.pg-item').count()===0);
  await page.selectOption('#public-good-goal','4');await page.waitForSelector('.pg-item');
@@ -113,6 +135,9 @@ try{
  await page.goto(base+'/oauth/consent?authorization_id=invalid');await page.waitForSelector('[data-client-controls-unavailable]',{state:'attached'});
  check('missing_optional_key_controls_does_not_abort_oauth_page',await page.locator('#oauth-consent-status').textContent()!==''&&await page.locator('#oauth-consent-heading').isVisible());
  await page.goto(base+'/setup');await page.waitForSelector('#setup-create-token',{state:'visible'});
+ check('setup_authentication_matches_available_oauth',await page.locator('#setup-oauth').isVisible()
+   &&(await page.locator('#setup-authentication').textContent()).includes('OAuth')
+   &&!(await page.locator('.recipe-check').textContent()).includes('does not offer a browser-based authorization'));
  await page.locator('#setup-create-token').click();
  check('missing_key_controls_setup_link_reports_unavailable',await page.locator('[data-client-controls-unavailable]').isVisible()
    &&await page.locator('#client-access-controls').isHidden());

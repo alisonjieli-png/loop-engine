@@ -187,11 +187,8 @@
   const HERO_FILES = {"claude-code": {instructions: "CLAUDE.md", tools: ".mcp.json"}, codex: {instructions: "AGENTS.md", tools: ".codex/config.toml"},
     opencode: {instructions: "AGENTS.md", tools: "opencode.json"}, pi: {instructions: "AGENTS.md", tools: ".pi/baltor.json"},
     "baltor-harness": {instructions: "task.md", tools: "loop-engine solve"}};
-  /* The Baltor Harness has no skill folder, so it has no entry in SKILL_ROOTS: the placement tool's own profile
-     declares no native location for it and refuses every kind with its reason. It is still a tab, because the owner
-     asked for all five to be visible there. Picking it shows what is true: the task file it reads, no skill folder,
-     and the refusal the placement tool returns. */
-  const NO_SKILL_FOLDER = "no skill folder";
+  /* The task-file profile displays its documented input and output layout. Native skill profiles use SKILL_ROOTS. */
+  const TASK_MATERIAL_FILE = "item.md";
   const heroHarnesses = document.querySelector("[data-hero-harnesses]");
   const pickHeroHarness = harness => {
     const files = HERO_FILES[harness], root = SKILL_ROOTS[harness];
@@ -199,7 +196,7 @@
     heroHarnesses.querySelectorAll("[data-hero-harness]").forEach(button => button.setAttribute("aria-pressed", String(button.dataset.heroHarness === harness)));
     const write = (name, text) => document.querySelectorAll('[data-hero-file="' + name + '"]').forEach(node => { node.textContent = text; });
     write("instructions", files.instructions);
-    write("skills", root || "no skill folder");
+    write("skills", root || TASK_MATERIAL_FILE);
     write("tools", files.tools);
     if (window.__baltorPaintTree) window.__baltorPaintTree();
   };
@@ -219,8 +216,8 @@
       outcome: "17,000 rows in, 15,940 out: 1,060 duplicates found and merged without deleting a row",
       query: "find duplicate customer records",
       results: [
-        {name: "find_duplicate_records_with_blocking_keys", kind: "skill", licence: "MIT", size: "2.7 KB", digest: "f3f1d0ab"},
-        {name: "score_duplicate_pairs_by_weakest_signal", kind: "skill", licence: "MIT", size: "2.6 KB", digest: "55177178"}
+        {name: "find_duplicate_records_with_blocking_keys", kind: "skill", licence: "MIT", size: "2.7 KB", digest: "f3f1d0ab00e67c537c026820534090f37aebde5247b7de2462babd9e08575329"},
+        {name: "score_duplicate_pairs_by_weakest_signal", kind: "skill", licence: "MIT", size: "2.6 KB", digest: "551771788f4a1236262de17e5c162f5e211559d1a88c6f895fac91a55fb8d62e"}
       ],
       chosen: 0,
       step: "step-3-find-duplicates",
@@ -232,9 +229,9 @@
       outcome: "a validation gap found and closed at 04:12, the run finished before anyone logged in",
       query: "choose metrics and read the validation gap",
       results: [
-        {name: "orient_on_a_task_and_write_its_contracts", kind: "skill", licence: "MIT", size: "3.1 KB", digest: "9a2c41de"},
-        {name: "read_the_train_validation_gap", kind: "skill", licence: "MIT", size: "2.4 KB", digest: "7d5e0b13"},
-        {name: "decide_whether_a_step_needs_a_model", kind: "skill", licence: "MIT", size: "1.9 KB", digest: "c40a8f62"}
+        {name: "orient_on_a_task_and_write_its_contracts", kind: "skill", licence: "MIT", size: "2.9 KB", digest: "b757336f3b872c4e56798f1e56a689b747df6ac1254b98cf997f7fe102cccc87"},
+        {name: "read_the_train_validation_gap", kind: "skill", licence: "MIT", size: "2.8 KB", digest: "a1a18d104e7a61f01077e4ddbad049d2bbe29ad8254aef8973cdad65c033d0aa"},
+        {name: "decide_whether_a_step_needs_a_model", kind: "skill", licence: "MIT", size: "3.5 KB", digest: "c6d750c97d5164810c22f0a5d7f06d4a76069c8a32f957f7688a22d4346bdc3f"}
       ],
       chosen: 1,
       step: "step-2-close-the-validation-gap",
@@ -246,8 +243,8 @@
       outcome: "one page naming what was observed, what was derived, and what is still unknown",
       query: "report what was observed and what is unknown",
       results: [
-        {name: "report_observed_derived_assumed_and_unknown", kind: "skill", licence: "MIT", size: "2.2 KB", digest: "b1e75a30"},
-        {name: "escalate_uncertain_values_with_candidates", kind: "skill", licence: "MIT", size: "2.0 KB", digest: "3e6c9d47"}
+        {name: "report_observed_derived_assumed_and_unknown", kind: "skill", licence: "MIT", size: "2.3 KB", digest: "2a75039705293bb4df330c52b21c0e569ceccdb1474b83b8d38cca6f1eb22be3"},
+        {name: "escalate_uncertain_values_with_candidates", kind: "skill", licence: "MIT", size: "2.6 KB", digest: "851631ab2b4fd27f9f87e614562a6c39f31a3a9d9e9921df04b28db3f816b803"}
       ],
       chosen: 0,
       step: "step-5-report-the-result",
@@ -260,6 +257,8 @@
     const scenario = HERO_SCENARIOS[key];
     const terminal = document.querySelector(".hero-terminal");
     if (!scenario || !terminal) return;
+    const selected = scenario.results[scenario.chosen];
+    if (!selected || !/^[a-z][a-z0-9_]*$/.test(selected.name) || !/^[a-f0-9]{64}$/.test(selected.digest)) return;
     terminal.dataset.heroScenario = key;
     heroScenarioButtons.forEach(button => {
       const on = button.dataset.heroScenario === key;
@@ -274,6 +273,7 @@
       scenario.results.forEach((item, index) => {
         const row = document.createElement("li");
         row.dataset.demoItem = item.name;
+        row.dataset.demoDigest = item.digest;
         row.className = index === scenario.chosen ? "is-chosen" : "";
         const name = document.createElement("span");
         name.className = "hero-result-name";
@@ -290,7 +290,7 @@
         facts.append(" · sha256 ");
         const digest = document.createElement("span");
         digest.dataset.fact = "digest";
-        digest.textContent = item.digest;
+        digest.textContent = item.digest.slice(0, 8);
         facts.append(digest, "…");
         row.append(name, facts);
         if (index === scenario.chosen) {
@@ -302,6 +302,10 @@
         results.append(row);
       });
     }
+    const requested = terminal.querySelector("[data-demo-download]");
+    if (requested) { requested.dataset.demoDownload = selected.name; requested.textContent = selected.name; }
+    const expected = terminal.querySelector("[data-demo-expected-digest]");
+    if (expected) { expected.dataset.demoExpectedDigest = selected.digest; expected.textContent = selected.digest.slice(0, 8) + "…"; }
     const stepName = terminal.querySelector("[data-hero-step]");
     if (stepName) stepName.textContent = scenario.step + "/";
     const replaces = terminal.querySelector("[data-hero-replaces]");
@@ -321,22 +325,22 @@
     tree.dataset.heroHasSkills = root ? "true" : "false";
     /* Every row is one line of the <pre>, so a row is a block and the connectors always meet in the same column.
        A row is written as its connector, then its name, then the line break; without that break the whole folder
-       collapses onto one line, which is what the first version of this figure did. The harness with no skill folder
-       says what is true: the task file it reads, and the refusal it returns. */
-    const rows = root ? [[scenario.step + "/", 0], ...scenario.tree]
-                      : [[scenario.step + "/", 0], [files.instructions, 1], [files.tools, 1], [".baltor/", 1],
-                         [NO_SKILL_FOLDER, 1], ["refused with:", 2],
-                         ["engine_reads_library_material_only_from_the_task_file", 3]];
+       collapses onto one line. The task-file profile shows the files its quickstart uses. */
+    const selected = scenario.results[scenario.chosen];
+    const nativeName = selected.name.replaceAll("_", "-");
+    const rows = root ? [[scenario.step + "/", 0], [files.instructions, 1], [root, 1],
+                        [nativeName + "/", 2], ["SKILL.md", 3], [files.tools, 1], [".baltor/step.lock.json", 1]]
+                      : [[scenario.step + "/", 0], [files.instructions, 1], [TASK_MATERIAL_FILE, 1], ["baltor-run/", 1]];
     rows.forEach(([row, depth]) => {
       const span = document.createElement("span");
       span.className = "hero-tree-row";
       if (row === files.instructions) { span.dataset.heroPart = "instructions"; span.dataset.heroFile = "instructions"; }
       else if (row === root) { span.dataset.heroPart = "skills"; span.dataset.heroFile = "skills"; }
       else if (row === files.tools) { span.dataset.heroPart = "tools"; span.dataset.heroFile = "tools"; }
-      else if (row === NO_SKILL_FOLDER) { span.className += " hero-tree-refusal"; }
-      else if (row.startsWith("engine_reads_") || row === "refused with:") { span.className += " hero-tree-reason"; }
+      else if (root && row === "SKILL.md") { span.dataset.demoPath = root + nativeName + "/SKILL.md"; }
       const connector = depth === 0 ? "" : "│  ".repeat(depth - 1) + "└── ";
-      tree.append(document.createTextNode(connector + row), span, document.createTextNode("\n"));
+      span.textContent = row;
+      tree.append(document.createTextNode(connector), span, document.createTextNode("\n"));
     });
   };
   heroScenarioButtons.forEach(button => {

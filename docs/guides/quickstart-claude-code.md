@@ -6,7 +6,7 @@ One page from an account to a checked download. Every address, field and command
 
 ## What you need
 
-- A Baltor account with an active plan. Create it on [Get started](https://app.baltor.ai/get-started).
+- A [Baltor account](https://app.baltor.ai/get-started). Public Good files are free with an account; Baltor Pro adds the full library.
 - A client token from [your account page](https://app.baltor.ai/account), under Your client tokens. The service shows it once.
 - Claude Code installed, and a project folder that it opens. Check the version with `claude --version`.
 - A terminal where the token is set, because Claude Code reads it from the environment.

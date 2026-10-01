@@ -84,8 +84,8 @@
       "id": "pi",
       "name": "Pi",
       "format": "json",
-      "configuration_location": "A .pi/baltor.json file in your project folder, next to the Baltor extension file .pi/extensions/baltor.ts",
-      "configuration_note": "Pi has no built-in Model Context Protocol client, so Baltor connects through a small Pi extension. Save the extension this website serves at /assets/pi/baltor.ts as .pi/extensions/baltor.ts in your project folder, and read it first: Pi runs every extension in that folder with your permissions. Then create this file beside it. This file holds the name of the variable, never the token. The extension adds two tools, baltor_search and baltor_download. A download checks the published SHA-256 digest before it writes anything, then installs the skill in .pi/skills. step_effects says what your Pi steps may do with a Baltor item, and the extension sends it in the Baltor-Step-Effects header. Remove any effect Pi should not have. Search still shows every item with the effects it declares; a download of an item that declares an effect you left out is refused, and the refusal names the effect.",
+      "configuration_location": "Pi 0.73.1 extension: .pi/baltor.json beside .pi/extensions/baltor.ts. For Pi 0.99.2 native MCP, follow /docs/quickstart-pi.",
+      "configuration_note": "This recipe targets Pi 0.73.1 through the Baltor extension. Pi 0.99.2 has built-in MCP; its native setup is documented at /docs/quickstart-pi. Save the extension this website serves at /assets/pi/baltor.ts as .pi/extensions/baltor.ts in your project folder, and read it first: Pi runs every extension in that folder with your permissions. Then create this file beside it. This file holds the name of the variable, never the token. The extension adds two tools, baltor_search and baltor_download. A download checks the published SHA-256 digest before it writes anything, then installs the skill in .pi/skills. step_effects says what your Pi steps may do with a Baltor item, and the extension sends it in the Baltor-Step-Effects header. Remove any effect Pi should not have. Search still shows every item with the effects it declares; a download of an item that declares an effect you left out is refused, and the refusal names the effect.",
       "configuration": {
         "baltor": {
           "url": "{{ENDPOINT}}",
@@ -99,6 +99,7 @@
         }
       },
       "verification_command": "pi -p --baltor-check",
+      "additional_commands": ["pi mcp list", "pi mcp login baltor"],
       "verification_note": "Run this command in your project folder, in the terminal where BALTOR_SERVICE_TOKEN is set. It makes no model call. It shows whether the service answered, which account the token belongs to, and each installed Baltor skill with its digest check and whether Pi's skill loader accepts it. The last line says Result: ready. In a Pi session, enter /baltor for the same check.",
       "version_note": "Checked end to end with Pi 0.73.1 and Gemma 4 31B through Ollama Cloud on September 23, 2026: the model found and installed a Baltor skill with the two tools, and a new Pi session loaded that skill and used it. Check your installed version with pi --version.",
       "removal_note": "After the token is revoked, delete .pi/extensions/baltor.ts and .pi/baltor.json, and clear BALTOR_SERVICE_TOKEN from your environment. Installed skills stay in .pi/skills until you delete them. Their install records are in .pi/baltor/installed.",

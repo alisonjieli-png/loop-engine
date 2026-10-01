@@ -1,18 +1,18 @@
-<p>The Baltor Harness is Baltor's own engine: the free, open source <code>loop-engine</code> command, published on <a href="https://github.com/alisonjieli-png/loop-engine" rel="noopener noreferrer" target="_blank">GitHub</a>. It works through a task in small steps on the model you bring and keeps a record of every step. Today it does not search or download from Baltor by itself: you search and download with your token, check the digest, add the material to your task file, then run the task. Every address, field and command on this page is read from the service source, and a nightly check runs the same connection, search and download against the live service. The whole path was checked on September 23, 2026 with loop-engine 0.1.0 from GitHub main: install, doctor, the Ollama Cloud route, search, download with a digest check, and a task that used the downloaded item.</p>
+<p>Use the free, open-source Baltor Harness to run a task in small steps with your chosen model and a record of each step. Install the <code>loop-engine</code> command from <a href="https://github.com/alisonjieli-png/loop-engine" rel="noopener noreferrer" target="_blank">GitHub</a>, select library material, verify its files and include them in your task. This guide takes you through setup, search, download and an Ollama-backed run. The recorded September 23 journey used loop-engine 0.1.0 and checked each of those steps.</p>
 <h2 id="what-you-need">What you need</h2>
-<ul><li>A Baltor account with an active plan. Create it on <a href="/get-started">Get started</a>.</li><li>A client token from <a href="/account">your account page</a>, under Your client tokens. The service shows it once.</li><li>Python 3.10 or newer, <code>curl</code> and <code>sha256sum</code>.</li><li>A model you bring. The example below runs on Ollama Cloud with <code>OLLAMA_API_KEY</code> in your environment; a local model server works through the engine's own provider settings.</li></ul>
+<ul><li>A <a href="/get-started">Baltor account</a>. Public Good files are free with an account; Baltor Pro adds the full library.</li><li>A client token from <a href="/account">your account page</a>, under Your client tokens. The service shows it once.</li><li>Python 3.10 or newer, <code>curl</code> and <code>sha256sum</code>.</li><li>A model you bring. The example below runs on Ollama Cloud with <code>OLLAMA_API_KEY</code> in your environment; a local model server works through the engine's own provider settings.</li></ul>
 <h2 id="install-the-engine">Install the engine</h2>
 <pre><code class="language-bash">python3 -m venv ~/.baltor-harness
 ~/.baltor-harness/bin/pip install 'git+https://github.com/alisonjieli-png/loop-engine'
 export PATH="$HOME/.baltor-harness/bin:$PATH"
 loop-engine doctor</code></pre>
-<p>The first line of the answer ends with <code>CONFIGURATION VALID</code>. This checks the installation only: it makes no model call and does not contact Baltor. Check the installed version with <code>pip show loop-engine</code>.</p>
+<p>The first line of the answer ends with <code>CONFIGURATION VALID</code>. This confirms the local installation. Check the installed version with <code>pip show loop-engine</code>.</p>
 <h2 id="set-the-token">Set the token</h2>
 <p>The prompt below hides the value while you enter it, and the value stays out of the command history:</p>
 <pre><code class="language-bash">read -rsp "Baltor service token: " BALTOR_SERVICE_TOKEN
 export BALTOR_SERVICE_TOKEN</code></pre>
 <h2 id="the-connection-values">The connection values</h2>
-<p>There is no configuration file yet. The steps below use these values with <code>curl</code>. The same address and variable work with the protocol client that ships with the engine (<code>McpServerSpec</code>, installed with <code>loop-engine[integrations]</code>). Keep the token in your environment, never in a file.</p>
+<p>The commands below use these connection values with <code>curl</code>. The same address and credential variable work with the engine's protocol client (<code>McpServerSpec</code>, installed with <code>loop-engine[integrations]</code>). Keep the token in your environment.</p>
 <pre><code class="language-json">{
   "mcp_servers": {
     "baltor": {

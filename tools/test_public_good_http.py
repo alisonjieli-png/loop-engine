@@ -89,7 +89,7 @@ class PublicGoodHttp(unittest.TestCase):
         self.client = self.stack.enter_context(httpx.Client(base_url=self.base, headers=self.headers, trust_env=False, timeout=15))
         self.meter = self.stack.enter_context(mock.patch.object(self.runtime, 'record_usage', side_effect=AssertionError('free path attempted paid metering')))
 
-    def customer(self, subject):
+    def customer(self, subject, scopes=DEFAULT_SCOPES):
         issuer = 'https://synthetic-identity.example.test/auth/v1'
         self.runtime.ensure_subject_tenant(SubjectTenantRegistration(issuer, subject, 'customer', follows_active_release=True))
         principal = self.runtime.authenticate_subject(issuer, subject)
@@ -97,7 +97,7 @@ class PublicGoodHttp(unittest.TestCase):
                                        self.now[0] + 86400, DEFAULT_SCOPES)
         manager = ServiceAccessAdministration(self.runtime, ServiceClientAccessPolicy(writes_authorized=True))
         result = manager.apply(principal, ServiceAccessRequest('issue', 'synthetic-key-' + subject, principal.tenant_id,
-            label='Synthetic customer', scopes=DEFAULT_SCOPES, lifetime_seconds=86400), session=session)
+            label='Synthetic customer', scopes=scopes, lifetime_seconds=86400), session=session)
         return principal, result['token']
 
     def record(self, label, passed, **facts):
@@ -238,6 +238,100 @@ class PublicGoodHttp(unittest.TestCase):
         self.assertEqual(len(selected.structured_content['result']['files']), 1)
         self.assertEqual(single.structured_content['result']['body'].encode(), BODY)
         self.no_billing()
+
+    def test_protocol_public_good_files_matches_web_and_reads_exact_selection(self):
+        self.file_collection_grants()
+        fields = {'goal': '4', 'query': 'SKILL.md', 'package': 'public_bundle', 'page_size': 1}
+        expected = self.client.get('/api/v1/public-good/files', params=fields).json()['result']
+        async def run(mode):
+            async with _protocol_client(self.base, Credentials(self.raw), mode) as protocol:
+                listed = await protocol.list_tools()
+                tool = next(row for row in listed.tools if row.name == 'public_good_files')
+                self.assertTrue(tool.annotations.read_only_hint)
+                answer = await protocol.call_tool('public_good_files', fields)
+                self.assertFalse(answer.is_error, answer.structured_content)
+                self.assertEqual(answer.structured_content['result'], expected)
+                placement = answer.structured_content['result']['items'][0]['placements'][0]
+                selected = await protocol.call_tool('provisioning_read', {
+                    'identity': placement['identity'], 'expected_digest': placement['body_digest'],
+                    'path': placement['path'], 'request_id': 'selected-free-' + mode})
+                self.assertFalse(selected.is_error, selected.structured_content)
+                delivered = selected.structured_content['result']['files'][0]
+                self.assertEqual(hashlib.sha256(delivered['content'].encode()).hexdigest(),
+                    answer.structured_content['result']['items'][0]['file_sha256'])
+        for mode in ('legacy', '2026-07-28'):
+            with self.subTest(mode=mode):
+                asyncio.run(run(mode))
+        self.no_billing()
+
+    def test_protocol_public_good_media_type_uses_the_same_domain_as_http(self):
+        self.file_collection_grants()
+        media_type = 'a' * 63 + '/' + 'b' * 127
+        expected = self.client.get('/api/v1/public-good/files', params={'media_type': media_type}).json()['result']
+        async def read():
+            async with _protocol_client(self.base, Credentials(self.raw), 'legacy') as protocol:
+                return await protocol.call_tool('public_good_files', {'media_type': media_type})
+        answer = asyncio.run(read())
+        self.assertFalse(answer.is_error, answer.structured_content)
+        self.assertEqual(answer.structured_content['result'], expected)
+        self.assertEqual(expected['matches'], 0)
+        self.no_billing()
+
+    def test_protocol_public_good_files_refuses_invalid_scope_policy_and_envelope(self):
+        self.file_collection_grants()
+        async def read(fields=None, key=None):
+            async with _protocol_client(self.base, Credentials(key or self.raw), 'legacy') as protocol:
+                return await protocol.call_tool('public_good_files', fields or {})
+        for fields in ({'goal': '18'}, {'page_size': 51}, {'page': True}, {'page': 0},
+                       {'identity': 'paid_only'}, {'query': '\x00'}):
+            with self.subTest(fields=fields):
+                answer = asyncio.run(read(fields))
+                self.assertTrue(answer.is_error)
+        _, usage_key = self.customer('usage-only', scopes=('usage:read',))
+        denied = asyncio.run(read(key=usage_key))
+        self.assertTrue(denied.is_error)
+        self.assertIn(denied.structured_content['error']['code'], ('scope_required', 'insufficient_scope'))
+        from loop_engine.core.service_runtime import public_good_files
+        original = public_good_files.collection
+        def withdraw(view, snapshot, **fields):
+            result = original(view, snapshot, **fields)
+            self.configure(grants=[])
+            return result
+        with mock.patch.object(public_good_files, 'collection', withdraw):
+            changed = asyncio.run(read())
+        self.assertTrue(changed.is_error)
+        self.assertEqual(changed.structured_content['error']['code'], 'public_good_authority_changed')
+        self.assertNotIn('placements', json.dumps(changed.structured_content))
+        self.configure()
+        self.app.configuration = replace(self.app.configuration, maximum_response_bytes=256)
+        oversized = asyncio.run(read())
+        self.assertTrue(oversized.is_error)
+        self.assertEqual(oversized.structured_content['error']['code'], 'response_limit_exceeded')
+        self.assertEqual(len(self.rows(DELIVERY_KIND)), 0)
+        self.no_billing()
+
+    def test_protocol_public_good_files_rechecks_account_and_known_wrong_scope_control(self):
+        self.file_collection_grants()
+        async def read(key):
+            async with _protocol_client(self.base, Credentials(key), 'legacy') as protocol:
+                return await protocol.call_tool('public_good_files', {})
+        _, usage_key = self.customer('control-usage-only', scopes=('usage:read',))
+        self.assertTrue(asyncio.run(read(usage_key)).is_error)
+        with mock.patch.object(self.app, '_require_scope', return_value=None):
+            self.assertFalse(asyncio.run(read(usage_key)).is_error,
+                             'known-wrong missing scope guard must admit the otherwise refused query')
+        from loop_engine.core.service_runtime import public_good_files
+        original = public_good_files.collection
+        def disable(view, snapshot, **fields):
+            result = original(view, snapshot, **fields)
+            self.runtime.set_tenant_enabled(self.principal.tenant_id, False)
+            return result
+        with mock.patch.object(public_good_files, 'collection', disable):
+            answer = asyncio.run(read(self.raw))
+        self.assertTrue(answer.is_error)
+        self.assertNotIn('placements', json.dumps(answer.structured_content))
+        self.assertEqual(len(self.rows(DELIVERY_KIND)), 0)
+        self.assertEqual(self.meter.call_count, 0)
 
     def test_anonymous_disabled_ungranted_and_wrong_digest_body_refusals(self):
         with httpx.Client(base_url=self.base, trust_env=False, timeout=10) as anonymous:

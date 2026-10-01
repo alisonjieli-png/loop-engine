@@ -6,6 +6,41 @@ Search returns small references so a step can choose useful material before
 loading its body. Download only the items the task needs, then verify their
 bytes and how the harness uses them.
 
+## Find free Public Good files
+
+The [Public Good collection](https://baltor.ai/public-good) is free to download
+with an enabled account. No subscription or nonprofit status is required.
+Connect an OAuth-capable harness to `https://baltor.ai/mcp` using the
+[account-linking steps](service-serving-and-connections.md#oauth-connections).
+Metadata uses `provisioning:metadata`; downloads also need `provisioning:read`.
+
+Call the `public_good_files` protocol tool with a goal number as a string:
+
+```json
+{"goal":"6","page":1,"page_size":20}
+```
+
+Optional filters are `query`, `media_type`, `initiative` and `package`.
+Leave `goal` empty to include all goals, or use `related` for material without
+an explicit SDG association. `page_size` is at most 50. The same body-free
+result is available at `GET /api/v1/public-good/files` without signing in;
+protocol calls still require a valid connection.
+
+The `public_good_file_collection/v1` result keeps each file's SHA-256 and
+all its eligible package placements. Select a placement with `matches_filters`
+set to true. Inspect its package with `provisioning_manifest`, then pass that
+placement's `identity`, `body_digest` as `expected_digest`, and `path` to
+`provisioning_read`, with a new `request_id` for the logical download. Verify
+the exact returned bytes against `file_sha256`. A file can require other
+files in its package; retain its instructions, dependencies and relative paths.
+
+Counts distinguish useful files from support files and repeated placements.
+Goal counts overlap. Follow `has_next` and increase `page` to browse further;
+if `eligible_fingerprint` changes, restart pagination rather than combining
+different collection snapshots. Eligibility, scopes and declared step effects
+are checked again at download. Free downloads have separate request and byte
+limits, add no paid usage, and do not authorize running the downloaded code.
+
 ## Recorded demonstrations
 
 The guided data-cleanup and competition examples reproduce the packaged

@@ -1,12 +1,63 @@
 # Pi quickstart
 
-Kind: customer quickstart for Pi. It repeats the extension setup that Get set up publishes for Pi and adds the first search, the first download and the check that it worked.
+Kind: customer quickstart for native Pi 0.99.2 connections and the retained Pi 0.73.1 extension recipe.
 
-One page from an account to an installed, checked skill. Every address, field and command on it is read from the service source, and a nightly check runs the same connection, search and download against the live service in the shape the extension sends them. This is the one harness with a recorded end-to-end run: on September 23, 2026, Pi 0.73.1 with Gemma 4 31B through Ollama Cloud found and installed a Baltor skill with the two tools, and a new Pi session loaded that skill and used it. Read [the Pi case study](https://app.baltor.ai/case-studies/pi-and-gemma-4) for the record.
+Pi 0.99.2 connects to Baltor through its built-in MCP client. Use the native
+connection below for that version. The extension section preserves the
+Pi 0.73.1 recipe used by the [recorded Pi case study](https://app.baltor.ai/case-studies/pi-and-gemma-4).
+Check your installed version with `pi --version` before choosing a route.
+
+## Native MCP connection for Pi 0.99.2
+
+The current official package is `@earendil-works/pi-coding-agent`. Merge this
+entry into your user-level `~/.pi/agent/mcp.json`, preserving other servers:
+
+```json
+{
+  "mcpServers": {
+    "baltor": {
+      "url": "https://baltor.ai/mcp",
+      "headers": {"Baltor-Step-Effects": "reads_fs, writes_fs, spawns_process, network"},
+      "exposure": "direct"
+    }
+  }
+}
+```
+
+Keep only the step effects your work permits. For OAuth, start sign-in from Pi,
+use your Baltor account and review the consent screen:
+
+```bash
+pi mcp login baltor
+pi mcp list
+```
+
+Pi manages the connection credentials. Keep the OAuth entry free of an
+`Authorization` header. For a supplied-token connection instead, add
+`"Authorization": "Bearer ${BALTOR_SERVICE_TOKEN}"` to its headers and provide
+that variable privately to Pi. The [OAuth guide](service-serving-and-connections.md#oauth-connections)
+describes scopes and account linking.
+
+Use `intelligence_search` for the first `review inputs` query, or
+`public_good_files` for goal-filtered free material. Inspect a selected package
+with `provisioning_manifest` and retrieve its exact files with
+`provisioning_read`. Follow [the file guide](service-searching-and-retrieving.md#find-free-public-good-files)
+for hashes, package dependencies and native placement.
+
+Project resources and account consent are separate settings. Pi 0.99.2 reads
+project `.pi/mcp.json` and `.pi/skills` after the project is trusted. Its
+noninteractive default skips untrusted project resources. Use the user-level
+MCP file for personal connections. The session-only `--approve` option can
+authorize project-resource discovery for one isolated session; the shell MCP
+commands use their own documented options. See the pinned
+[MCP guide](https://github.com/earendil-works/pi/blob/v0.99.2/packages/coding-agent/docs/mcp.md)
+and [project security guide](https://github.com/earendil-works/pi/blob/v0.99.2/packages/coding-agent/docs/security.md).
+
+## Extension recipe for Pi 0.73.1
 
 ## What you need
 
-- A Baltor account with an active plan. Create it on [Get started](https://app.baltor.ai/get-started).
+- A [Baltor account](https://app.baltor.ai/get-started). Public Good files are free with an account; Baltor Pro adds the full library.
 - A client token from [your account page](https://app.baltor.ai/account), under Your client tokens. The service shows it once.
 - Pi installed, and a project folder that it opens. Check the version with `pi --version`.
 - A terminal where the token is set, because the extension reads it from the environment.
@@ -24,7 +75,9 @@ Start Pi from this terminal.
 
 ## Save the extension and its settings
 
-Pi has no built-in Model Context Protocol client, so Baltor connects through one small Pi extension. Pi runs every extension in `.pi/extensions` with your permissions and does not ask first, so read the file before you start Pi. It needs no other packages.
+For Pi 0.73.1, the Baltor extension supplies the connection and placement
+tools. Review the extension before starting Pi: it runs with your permissions.
+It uses the packages supplied with that Pi version.
 
 ```bash
 mkdir -p .pi/extensions

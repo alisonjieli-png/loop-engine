@@ -1,13 +1,31 @@
-<p>One page from an account to an installed, checked skill. Every address, field and command on it is read from the service source, and a nightly check runs the same connection, search and download against the live service in the shape the extension sends them. This is the one harness with a recorded end-to-end run: on September 23, 2026, Pi 0.73.1 with Gemma 4 31B through Ollama Cloud found and installed a Baltor skill with the two tools, and a new Pi session loaded that skill and used it. Read <a href="/case-studies/pi-and-gemma-4">the Pi case study</a> for the record.</p>
+<p>Pi 0.99.2 connects to Baltor through its built-in MCP client. Use the native connection below for that version. The extension section preserves the Pi 0.73.1 recipe used by the <a href="/case-studies/pi-and-gemma-4">recorded Pi case study</a>. Check your installed version with <code>pi --version</code> before choosing a route.</p>
+<h2 id="native-mcp-connection-for-pi-0992">Native MCP connection for Pi 0.99.2</h2>
+<p>The current official package is <code>@earendil-works/pi-coding-agent</code>. Merge this entry into your user-level <code>~/.pi/agent/mcp.json</code>, preserving other servers:</p>
+<pre><code class="language-json">{
+  "mcpServers": {
+    "baltor": {
+      "url": "https://baltor.ai/mcp",
+      "headers": {"Baltor-Step-Effects": "reads_fs, writes_fs, spawns_process, network"},
+      "exposure": "direct"
+    }
+  }
+}</code></pre>
+<p>Keep only the step effects your work permits. For OAuth, start sign-in from Pi, use your Baltor account and review the consent screen:</p>
+<pre><code class="language-bash">pi mcp login baltor
+pi mcp list</code></pre>
+<p>Pi manages the connection credentials. Keep the OAuth entry free of an <code>Authorization</code> header. For a supplied-token connection instead, add <code>"Authorization": "Bearer ${BALTOR_SERVICE_TOKEN}"</code> to its headers and provide that variable privately to Pi. The <a href="/docs/serving-and-connections#oauth-connections">OAuth guide</a> describes scopes and account linking.</p>
+<p>Use <code>intelligence_search</code> for the first <code>review inputs</code> query, or <code>public_good_files</code> for goal-filtered free material. Inspect a selected package with <code>provisioning_manifest</code> and retrieve its exact files with <code>provisioning_read</code>. Follow <a href="/docs/searching-and-retrieving#find-free-public-good-files">the file guide</a> for hashes, package dependencies and native placement.</p>
+<p>Project resources and account consent are separate settings. Pi 0.99.2 reads project <code>.pi/mcp.json</code> and <code>.pi/skills</code> after the project is trusted. Its noninteractive default skips untrusted project resources. Use the user-level MCP file for personal connections. The session-only <code>--approve</code> option can authorize project-resource discovery for one isolated session; the shell MCP commands use their own documented options. See the pinned <a href="https://github.com/earendil-works/pi/blob/v0.99.2/packages/coding-agent/docs/mcp.md" rel="noopener noreferrer" target="_blank">MCP guide</a> and <a href="https://github.com/earendil-works/pi/blob/v0.99.2/packages/coding-agent/docs/security.md" rel="noopener noreferrer" target="_blank">project security guide</a>.</p>
+<h2 id="extension-recipe-for-pi-0731">Extension recipe for Pi 0.73.1</h2>
 <h2 id="what-you-need">What you need</h2>
-<ul><li>A Baltor account with an active plan. Create it on <a href="/get-started">Get started</a>.</li><li>A client token from <a href="/account">your account page</a>, under Your client tokens. The service shows it once.</li><li>Pi installed, and a project folder that it opens. Check the version with <code>pi --version</code>.</li><li>A terminal where the token is set, because the extension reads it from the environment.</li></ul>
+<ul><li>A <a href="/get-started">Baltor account</a>. Public Good files are free with an account; Baltor Pro adds the full library.</li><li>A client token from <a href="/account">your account page</a>, under Your client tokens. The service shows it once.</li><li>Pi installed, and a project folder that it opens. Check the version with <code>pi --version</code>.</li><li>A terminal where the token is set, because the extension reads it from the environment.</li></ul>
 <h2 id="set-the-token">Set the token</h2>
 <p>The prompt below hides the value while you enter it, and the value stays out of the command history:</p>
 <pre><code class="language-bash">read -rsp "Baltor service token: " BALTOR_SERVICE_TOKEN
 export BALTOR_SERVICE_TOKEN</code></pre>
 <p>Start Pi from this terminal.</p>
 <h2 id="save-the-extension-and-its-settings">Save the extension and its settings</h2>
-<p>Pi has no built-in Model Context Protocol client, so Baltor connects through one small Pi extension. Pi runs every extension in <code>.pi/extensions</code> with your permissions and does not ask first, so read the file before you start Pi. It needs no other packages.</p>
+<p>For Pi 0.73.1, the Baltor extension supplies the connection and placement tools. Review the extension before starting Pi: it runs with your permissions. It uses the packages supplied with that Pi version.</p>
 <pre><code class="language-bash">mkdir -p .pi/extensions
 curl -fsSL https://baltor.ai/assets/pi/baltor.ts -o .pi/extensions/baltor.ts</code></pre>
 <p>Create <code>.pi/baltor.json</code> beside it. It holds the name of the variable, never the token:</p>

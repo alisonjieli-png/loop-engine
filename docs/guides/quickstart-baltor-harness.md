@@ -2,11 +2,16 @@
 
 Kind: customer quickstart for the Baltor Harness. It repeats the installation and the connection values that Get set up publishes for the Baltor Harness and adds the first search, the first download and the check that it worked.
 
-The Baltor Harness is Baltor's own engine: the free, open source `loop-engine` command, published on [GitHub](https://github.com/alisonjieli-png/loop-engine). It works through a task in small steps on the model you bring and keeps a record of every step. Today it does not search or download from Baltor by itself: you search and download with your token, check the digest, add the material to your task file, then run the task. Every address, field and command on this page is read from the service source, and a nightly check runs the same connection, search and download against the live service. The whole path was checked on September 23, 2026 with loop-engine 0.1.0 from GitHub main: install, doctor, the Ollama Cloud route, search, download with a digest check, and a task that used the downloaded item.
+Use the free, open-source Baltor Harness to run a task in small steps with your
+chosen model and a record of each step. Install the `loop-engine` command from
+[GitHub](https://github.com/alisonjieli-png/loop-engine), select library material,
+verify its files and include them in your task. This guide takes you through
+setup, search, download and an Ollama-backed run. The recorded September 23
+journey used loop-engine 0.1.0 and checked each of those steps.
 
 ## What you need
 
-- A Baltor account with an active plan. Create it on [Get started](https://app.baltor.ai/get-started).
+- A [Baltor account](https://app.baltor.ai/get-started). Public Good files are free with an account; Baltor Pro adds the full library.
 - A client token from [your account page](https://app.baltor.ai/account), under Your client tokens. The service shows it once.
 - Python 3.10 or newer, `curl` and `sha256sum`.
 - A model you bring. The example below runs on Ollama Cloud with `OLLAMA_API_KEY` in your environment; a local model server works through the engine's own provider settings.
@@ -20,7 +25,8 @@ export PATH="$HOME/.baltor-harness/bin:$PATH"
 loop-engine doctor
 ```
 
-The first line of the answer ends with `CONFIGURATION VALID`. This checks the installation only: it makes no model call and does not contact Baltor. Check the installed version with `pip show loop-engine`.
+The first line of the answer ends with `CONFIGURATION VALID`. This confirms
+the local installation. Check the installed version with `pip show loop-engine`.
 
 ## Set the token
 
@@ -33,7 +39,9 @@ export BALTOR_SERVICE_TOKEN
 
 ## The connection values
 
-There is no configuration file yet. The steps below use these values with `curl`. The same address and variable work with the protocol client that ships with the engine (`McpServerSpec`, installed with `loop-engine[integrations]`). Keep the token in your environment, never in a file.
+The commands below use these connection values with `curl`. The same address
+and credential variable work with the engine's protocol client (`McpServerSpec`,
+installed with `loop-engine[integrations]`). Keep the token in your environment.
 
 ```json
 {

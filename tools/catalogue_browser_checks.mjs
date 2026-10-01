@@ -523,7 +523,7 @@ export async function runCatalogueBrowserChecks({browser, fixture, check, mutant
     {name:"accept_a_group_the_page_does_not_know", scenario:"unknown_group",
      find:'if (!knownLayers.has(row.source_layer)) return "a group this page does not know";', replacement:"",
      expected:["browse_refuses_a_catalogue_that_names_a_group_it_does_not_know", "browse_names_the_reason_it_refused_a_catalogue"]},
-    {name:"trust_the_downloaded_bytes", scenario:"changed_download", find:"measured !== row.digest || ", replacement:"",
+    {name:"trust_the_downloaded_bytes", scenario:"changed_download", find:"measured !== (file ? file.fileDigest : row.digest) || ", replacement:"",
      expected:["browse_refuses_changed_download_bytes_and_saves_nothing"]},
     {name:"trust_the_reported_download_digest", scenario:"reported_digest", find:" || measured !== result.digest", replacement:"",
      expected:["browse_refuses_a_download_whose_reported_digest_disagrees"]},

@@ -1,6 +1,6 @@
 # Configuration and commands
 
-This is a standalone Python standard-library client. It requires Python 3.10+ and descriptor-relative, no-follow file operations supplied by POSIX. Windows file handling is not qualified. It uses direct HTTPS with normal certificate verification, ignores proxy environment variables and refuses redirects.
+This is a standalone Python standard-library client. It requires Python 3.10+ and descriptor-relative, no-follow file operations supplied by POSIX. Windows file handling awaits platform qualification. HTTPS uses normal certificate verification and the environment's proxy and bypass settings. Redirects are refused. An unavailable configured proxy produces a connection failure; the client does not retry that request through a direct connection.
 
 Copy the example config to a location owned by the customer and supply the personal Baltor key through the named environment variable using their existing secret settings. The exact config record is `baltor_library_client_configuration/v2`; it stores only the variable name. Retired configuration versions refuse rather than being guessed or migrated. The CLI accepts no token argument and prints bounded error codes rather than raw service messages. It cannot sign in, create an account, mint a key, open checkout or retrieve a provider key.
 

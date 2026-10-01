@@ -13,8 +13,8 @@
     },
     {
       "path": "SKILL.md",
-      "digest": "2b2e489481fe54a07aa7cde4fc2c69f0b49c842ec4420f3643af559c33ec3be8",
-      "size_bytes": 4425,
+      "digest": "df4032288cbd2a795c749520c1ec95e3358816615abcba4c29517527a97bae88",
+      "size_bytes": 4474,
       "media_type": "text/markdown",
       "role": "skill_definition"
     },
@@ -27,15 +27,15 @@
     },
     {
       "path": "references/client.md",
-      "digest": "a8ec833149bec1f47c4f2eef30eecd47c15dbe44ea200a7a51f10a39a253af16",
-      "size_bytes": 9344,
+      "digest": "e59062a5e3afa43932526ab2411128e50fee7cb8cebccecd359f2777ee19ba1e",
+      "size_bytes": 9485,
       "media_type": "text/markdown",
       "role": "skill_reference"
     },
     {
       "path": "scripts/baltor.py",
-      "digest": "fb91e58bdf8db6fe9b0b5b4ebe1dee521cef926cac0ef814a49f89929a11b56b",
-      "size_bytes": 43149,
+      "digest": "3993c0398a2c51599c23894dd59ec8c799bc91b32865b13e499af3ca8ac21f79",
+      "size_bytes": 43253,
       "media_type": "text/x-python",
       "role": "skill_script"
     },
@@ -50,7 +50,7 @@
   "package": {
     "record_type": "catalogue_package/v1",
     "body_form": "package",
-    "package_digest": "e013bf1a726ee59c636204d350d547984ad6a6fd804411063c2dd6f2c9a233dd",
+    "package_digest": "b1e61714cf272e413833e7a2d1d9bd3314e0e37fbcb107461c4536619a442d4a",
     "catalogue_identity": "baltor_library_client",
     "declared_effects": [
       "reads_fs",
@@ -94,7 +94,7 @@
     "credential_environment": "BALTOR_SERVICE_TOKEN"
   },
   "source": {
-    "delivery": "2026-10-01-user-acceptance-path-confinement",
+    "delivery": "2026-10-01-user-acceptance-path-confinement-and-proxy",
     "previous_version": "0.4.0",
     "previous_package_digest": "c27908e828db2ca64e1749bee0215a6253c5bb7a1ec03e771d1e3bbbfc224d20"
   }

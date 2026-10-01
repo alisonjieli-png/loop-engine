@@ -1770,6 +1770,21 @@ class ServiceHttpApplication:
                     raise ServiceHttpError("invalid_request") from None
         return {key: value for key, value in payload.items() if key != "record_type"}
 
+    def _public_good_collection(self, fields, *, file_view=True, authentication=None):
+        """One current metadata snapshot for website and authenticated protocol callers."""
+        if authentication is not None:
+            self._require_scope(self.authenticator.revalidate(authentication), "provisioning:metadata")
+        view = self.provisioning.current_view()
+        access = self.provisioning.public_good
+        snapshot = access.snapshot(view)
+        projection = public_good_files.collection if file_view else public_good_page.collection
+        result = projection(view, snapshot, **fields)
+        if access.snapshot(self.provisioning.current_view()).fingerprint != snapshot.fingerprint:
+            raise ServiceRuntimeError("public_good_authority_changed")
+        if authentication is not None:
+            self._require_scope(self.authenticator.revalidate(authentication), "provisioning:metadata")
+        return result
+
     def _validate_provisioning(self, payload):
         """(operation, fields, tiered) for a version 1 or a tier-aware version 2 request."""
         if payload.get("record_type") not in PROVISIONING_REQUEST_VERSIONS:
@@ -1821,6 +1836,14 @@ class ServiceHttpApplication:
             tools.append(types.Tool(name="intelligence_search", description=PROTOCOL_TOOL_DESCRIPTIONS["search"],
                 inputSchema=http_retrieval_schema(), annotations=types.ToolAnnotations(
                     readOnlyHint=True, destructiveHint=False, idempotentHint=True)))
+            tools.append(types.Tool(name=public_good_files.PROTOCOL_TOOL,
+                description="Browse free Public Good files by SDG goal (1 through 17), query, file type or initiative. "
+                    "Metadata only; no download or paid usage. Returns current counts and exact package/file "
+                    "identities. Use a matching placement's identity, body_digest as expected_digest, and path "
+                    "with provisioning_read, then verify file_sha256. A normal enabled account is required "
+                    "for downloads, with request and byte limits but no subscription. Metadata does not grant execution.",
+                inputSchema=public_good_files.query_schema(), annotations=types.ToolAnnotations(
+                    readOnlyHint=True, destructiveHint=False, idempotentHint=True)))
             # A harness reports an item it was served; a Community item is withdrawn at once and a Verified one on
             # the second report from another account (roadmap S-6.199). Only an account that read the item's body
             # at that digest may report it.
@@ -1844,6 +1867,10 @@ class ServiceHttpApplication:
                     fields, step = effect_selection(self._validate_search(arguments, versioned=False), effects)
                     output = await self._tenant_work(context, lambda: invoke_http_retrieval_as_loop(
                         lambda: self._search(context, fields, step)))
+                elif name == public_good_files.PROTOCOL_TOOL:
+                    validate(arguments, public_good_files.query_schema())
+                    output = await self._tenant_work(context, lambda: invoke_http_retrieval_as_loop(
+                        lambda: self._public_good_collection(arguments, authentication=context)))
                 elif name == REPORT_TOOL:
                     validate(arguments, feedback_schema())
                     output = await self._tenant_work(context, lambda: invoke_http_service_as_loop(
@@ -2142,6 +2169,9 @@ class ServiceHttpApplication:
         if asset is None:
             asset = public_good_page.rendered(path, method, self.configuration.display_name, request.headers.get("host"))
         if asset is None:
+            from . import dot_pages
+            asset = dot_pages.rendered(path, method, self.configuration.display_name, request.headers.get("host"))
+        if asset is None:
             # The decision red team page is rendered from its packaged record, at its address and at the root of its hostname.
             asset = red_team_page.rendered(path, method, self.configuration.display_name, request.headers.get("host"))
         if asset is None:
@@ -2150,6 +2180,11 @@ class ServiceHttpApplication:
         if asset is not None:
             body, media_type = asset
             headers = self._page_headers(creative_preview=path == CREATIVE_PREVIEW_PATH)
+            if path in ("/dot-context", "/dot-context.json", "/dot-feedback", "/dot-feedback.json"):
+                headers["X-Robots-Tag"] = "noindex, nofollow, noarchive"
+                headers["ETag"] = asset_etag(body)
+                if validator_matches(request.headers.get("if-none-match", ""), headers["ETag"]):
+                    return Response(status_code=304, headers=headers)
             if media_type == HTML_MEDIA_TYPE and path.startswith("/assets/"):
                 # A documentation body is part of a page, fetched by the page's
                 # script. A search engine may read it and must not list it alone.
@@ -2239,20 +2274,12 @@ class ServiceHttpApplication:
             raw_size = values.get("page_size", "20")
             if not re.fullmatch(r"[0-9]{1,2}", raw_size):
                 raise ServiceHttpError("invalid_public_good_query")
-            def public_collection():
-                view = self.provisioning.current_view()
-                access = self.provisioning.public_good
-                snapshot = access.snapshot(view)
-                options = {"query":values.get("query", ""), "goal":values.get("goal", ""), "page":int(raw_page)}
-                if file_view:
-                    result = public_good_files.collection(view, snapshot, **options, page_size=int(raw_size),
-                        media_type=values.get("media_type", ""), initiative=values.get("initiative", ""), package=values.get("package", ""))
-                else:
-                    result = public_good_page.collection(view, snapshot, **options)
-                if access.snapshot(view).fingerprint != snapshot.fingerprint:
-                    raise ServiceRuntimeError("public_good_authority_changed")
-                return result
-            output = await self._work(lambda: invoke_http_retrieval_as_loop(public_collection))
+            options = {"query":values.get("query", ""), "goal":values.get("goal", ""), "page":int(raw_page)}
+            if file_view:
+                options.update(page_size=int(raw_size), media_type=values.get("media_type", ""),
+                    initiative=values.get("initiative", ""), package=values.get("package", ""))
+            output = await self._work(lambda: invoke_http_retrieval_as_loop(
+                lambda: self._public_good_collection(options, file_view=file_view)))
         elif path == "/api/v1/health" and method == "GET":
             # Alive and ready are different answers. Alive says this process is
             # running. Ready says every required dependency answered just now.

@@ -198,6 +198,9 @@ class HttpOAuthIntegration(unittest.TestCase):
             async with _protocol_client(self.base, Credentials(tokens['access_token']), 'legacy') as protocol:
                 tools = await protocol.list_tools()
                 found = await protocol.call_tool('intelligence_search', {'query': 'alpha'})
+                public_good = await protocol.call_tool('public_good_files', {'goal': '4'})
+                self.assertFalse(public_good.is_error, public_good.structured_content)
+                self.assertEqual(public_good.structured_content['result']['record_type'], 'public_good_file_collection/v1')
                 denied = await protocol.call_tool('provisioning_read', {'identity': 'skill.alpha', 'request_id': 'scoped-denial'})
                 return len(tools.tools), not found.is_error and bool(found.structured_content['result']['hits']), denied.is_error, denied.structured_content['error']['code']
         count, found, denied, denied_code = asyncio.run(mcp())

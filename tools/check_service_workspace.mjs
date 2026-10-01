@@ -354,7 +354,7 @@ const menuState=target=>target.evaluate(()=>({links:[...document.querySelectorAl
   primary:Boolean(document.getElementById("header-primary")?.getClientRects().length),open:document.getElementById("menu-button")?.getAttribute("aria-expanded")==="true",
   focusMark:getComputedStyle(document.querySelector("header .menu-button")||document.body).outlineStyle,path:location.pathname}));
 /* The signed-out menu, in the order of the site map's signed-out header: the pages, the guide and Sign in. */
-const menuLinks=["How it works","Use cases","Library","Pricing","Docs","Get set up","Sign in"];
+const menuLinks=["How it works","Use cases","Library","Public Good","Pricing","Docs","Get set up","Sign in"];
 const menuWorks=states=>states.closed.links.length===0&&states.closed.primary&&!states.closed.open
   &&JSON.stringify(states.pressed.links)===JSON.stringify(menuLinks)&&states.pressed.open&&states.pressed.primary
   &&!states.escaped.open&&states.escaped.links.length===0
@@ -782,9 +782,9 @@ try {
      and the closing caption claims no percentage. */
   const keyPromise=await page.evaluate(()=>({trust:document.querySelector('[data-band="trust"]')?.textContent.replace(/\s+/g," ")||"",footer:document.querySelector("footer .footer-bottom")?.textContent.replace(/\s+/g," ")||"",
     limits:document.querySelector('[data-view="home"] .benefit-limits')?.textContent.replace(/\s+/g," ")||""}));
-  const keepsTheKeysPromise=state=>state.trust.includes("Baltor never asks for a model key")&&state.footer.includes("Your model keys stay with you")&&state.limits.includes("Savings depend on the task");
+  const keepsTheKeysPromise=state=>/model access stays with you/i.test(state.trust)&&/provider connection you control/i.test(state.trust)&&state.footer.includes("Your model keys stay with you")&&state.limits.includes("Savings depend on the task");
   check("homepage_says_the_model_keys_stay_with_the_customer",keepsTheKeysPromise(keyPromise),keyPromise);
-  check("model_key_check_rejects_a_page_that_drops_the_promise",!keepsTheKeysPromise({...keyPromise,trust:keyPromise.trust.replace("Baltor never asks for a model key","")})&&!keepsTheKeysPromise({...keyPromise,footer:""})&&!keepsTheKeysPromise({...keyPromise,limits:""}));
+  check("model_key_check_rejects_a_page_that_drops_the_promise",!keepsTheKeysPromise({...keyPromise,trust:""})&&!keepsTheKeysPromise({...keyPromise,footer:""})&&!keepsTheKeysPromise({...keyPromise,limits:""}));
   check("light_is_default_even_when_operating_system_is_dark",await page.evaluate(()=>document.documentElement.dataset.theme==="light"));
   /* The light ground is an off-white, not white, so the rule reads the ground the page paints in a light system setting and
      requires the same light ground in a dark one. Every channel of a light ground is at least 230. */
@@ -1180,6 +1180,7 @@ try {
   const assetRoutes=routeTable?[...routeTable[1].matchAll(/"(\/assets\/[^"]+)":/g)].map(found=>found[1]):[];
   servedFiles.push("/assets/procedural-bear-preview.svg","/assets/procedural-tree-preview.svg");
   servedFiles.push("/assets/worker-compose.yaml","/assets/docs/container-worker.html");
+  servedFiles.push("/assets/oauth-consent.js","/assets/public-good.js","/assets/public-good.css");
   servedFiles.push("/assets/top-mcps.json",...[
     "index.html","arena.js","arena.css","asset-briefs.json","blender-import.py","THREE-LICENSE.txt"
   ].map(name=>"/assets/creative-arena/"+name));
@@ -2020,7 +2021,7 @@ try {
      removed-guard controls serve the page script without the step that hides the signed-out entries and without the step that
      brings them back. */
   const signedOutHeader=[...menuLinks,accessLabels.closed];
-  const signedInHeader=["Workspace","Get set up","Library","Docs","Account","Sign out"];
+  const signedInHeader=["Workspace","Get set up","Library","Public Good","Docs","Account","Sign out"];
   const headerEntries=async (target,width)=>{
     await target.setViewportSize({width,height:1000});
     const button=target.locator("header .menu-button"),folded=await button.isVisible();
@@ -2282,13 +2283,12 @@ try {
   const protocolMethods=[]; const trackProtocol=request=>{if(new URL(request.url()).pathname==="/mcp")protocolMethods.push(request.postDataJSON()?.method);};page.on("request",trackProtocol);
   await page.click("#test-protocol"); await page.waitForFunction(()=>!document.querySelector("#test-protocol").disabled);
   check("protocol_connection_check_reports_actual_success",(await page.locator("#protocol-result").innerText()).includes("Service connection passed"),{message:await page.locator("#protocol-result").innerText()});
-  /* The service lists six tools since the report tool joined them (roadmap S-6.199); this check counted five until
-     September 26, 2026 and failed at any machine load. The names are compared, not only counted. */
+  /* Compare the full protocol surface, including Public Good metadata discovery. */
   const protocolTools=await page.locator("#protocol-tools li").allInnerTexts();
   check("browser_runs_real_initialize_notification_and_tools_list",JSON.stringify(protocolMethods)===JSON.stringify(["initialize","notifications/initialized","tools/list"])
-    &&JSON.stringify(protocolTools)===JSON.stringify(["provisioning_discover","provisioning_list","provisioning_manifest","provisioning_read","intelligence_search","provisioning_report"]),
-    {methods:protocolMethods,tools:protocolTools});
-  check("browser_check_does_not_claim_native_harness_qualification",(await page.locator("#protocol-result").innerText()).includes("Native client loading is not tested"));
+    &&JSON.stringify(protocolTools)===JSON.stringify(["provisioning_discover","provisioning_list","provisioning_manifest","provisioning_read","intelligence_search","public_good_files","provisioning_report"]),
+    {methods:[...protocolMethods],tools:protocolTools});
+  check("browser_connection_result_leads_to_a_separate_first_task",(await page.locator("#protocol-result").innerText()).includes("Next, follow your harness guide"));
   await page.route("**/mcp",async route=>{const body=route.request().postDataJSON();if(body?.method==="initialize")await route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({jsonrpc:"2.0",id:"wrong-request",result:{protocolVersion:"2025-11-25"}})});else await route.continue();});
   await page.click("#test-protocol");await page.waitForFunction(()=>document.querySelector("#protocol-result").textContent.includes("did not match"));
   check("mismatched_protocol_response_never_becomes_success",await page.locator("#protocol-tools li").count()===0&&!(await page.locator("#protocol-result").innerText()).includes("passed"));await page.unroute("**/mcp");page.off("request",trackProtocol);

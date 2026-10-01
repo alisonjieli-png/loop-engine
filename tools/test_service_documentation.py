@@ -330,6 +330,15 @@ class ServiceDocumentationCheck(unittest.TestCase):
             self.assertIn("address", self.kinds(report))
             self.assertIn("/work", self.values(report))
 
+    def test_public_good_link_is_held_to_its_actual_route_owner(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = build_copy(Path(folder))
+            self.assertEqual(check(root)["findings"], [])
+            edit(root, "src/loop_engine/core/service_runtime/public_good_page.py",
+                 'ADDRESS = "/public-good"', 'ADDRESS = "/changed-public-good"')
+            report = check(root)
+            self.assertIn("/public-good", self.values(report))
+
     def test_worker_mount_is_not_accepted_as_a_website_route(self):
         with tempfile.TemporaryDirectory() as folder:
             root = build_copy(Path(folder))

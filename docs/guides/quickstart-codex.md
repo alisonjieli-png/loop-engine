@@ -6,7 +6,7 @@ One page from an account to a checked download. Every address, field and command
 
 ## What you need
 
-- A Baltor account with an active plan. Create it on [Get started](https://app.baltor.ai/get-started).
+- A [Baltor account](https://app.baltor.ai/get-started). Public Good files are free with an account; Baltor Pro adds the full library.
 - A client token from [your account page](https://app.baltor.ai/account), under Your client tokens. The service shows it once.
 - Codex installed. Check the version with `codex --version`.
 - A terminal where the token is set, because Codex reads the token from the environment variable the table names.

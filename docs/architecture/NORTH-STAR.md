@@ -200,6 +200,41 @@ Competitor workflows are both research sources and comparison baselines. For 3D 
 
 Customer acquisition should demonstrate a complete job and its revision. Prioritize outcome pages for editable 3D scenes, reusable research and reference data, and software automation and workflows. Each page needs an example, an accurate availability statement, the downloaded artifacts and a setup path. Measure first successful use, repeat use, accepted revisions, conversion, retention and support cost. A page or a larger catalogue is an experiment toward the revenue target, not evidence that the target has been reached.
 
+## October 1 expansion and research method
+
+The owner extends the supply programme across countries, industries, public
+benefit, creative production and everyday work. Search coverage combines
+country or area, language, SDG target, industry, occupation, user need, task,
+input and output format, failure mode, application, harness and source type.
+Search operators help find official documentation, open data and reusable
+implementations. The existing knowledge radar and idea matrix own the queue,
+source evidence, duplicate handling and progression into component production.
+
+Turn findings into useful skills, plugins, executable tools, reusable
+parameterized functions, harness files, service capability references, MCP
+connection recipes and complete worked examples. A service reference states
+its actual operations, versions, authentication, permissions, costs, limits,
+failure behavior and evidence date. A tool call uses the existing effect and
+typed-edge contracts. Discovery never grants account access or execution.
+
+Preserve one unchanged implementation across parameter choices and harness
+adapters. Country-specific source data or a different supported workflow may
+justify separate material; renamed copies and permutations alone do not.
+The target remains millions of distinct useful files and packages, with their
+units measured separately from generated queries, discovered links, candidate
+records, independent approvals, published versions and accepted tasks.
+
+OpenAI Dots and other orchestrators are first-class customers of this common
+delivery journey. The unlisted context and reviewed-feedback pages give them
+dated research briefs and acceptance work. They use their own configured
+schedules, connections and authority, and save progress in the authorized
+workspace. Public pages contain reviewed public material; private customer
+notes remain behind their existing staff controls.
+
+The [delivery plan](../roadmap/DELIVERY-SEQUENCE.md#multidimensional-research-and-component-expansion)
+sets the implementation sequence. Reconcile new requests with the existing
+roadmap and observed release state before adding another queue or product.
+
 ## Operating measures and acquisition
 
 The [September 30 inventory audit](../../artifacts/library-audit-2026-09-30/README.md) is the reconciled baseline. The [current deployment](MVP-CLIENT-SERVER.md#current-deployment) identifies what is live. Use the active catalogue for the public count instead of copying a number into page text. Keep the million-file and revenue targets visible beside the customer outcomes below; none substitutes for the others.
@@ -225,6 +260,22 @@ Each page has one primary action that leads to its working example and setup ins
 Work on supply conversion, one complete customer example and acquisition measurement together. The existing roadmap owns these tasks: [S-6.215](../roadmap/roadmap.yaml) for served supply, S-6.214 for maintained knowledge, S-6.56 for audience and outcome pages, and the existing benefit comparisons for task evidence. Review progress weekly against these measures. The next allocation of effort follows the observed bottleneck, whether it is missing useful material, failed review, slow retrieval, setup friction or customers not returning.
 
 ## Product boundaries
+
+The owner's October 1 continuation requires a consistent customer journey
+across Claude Code, Codex, OpenCode, Pi, Baltor Harness and other supported
+clients: connect, discover, select, download, install or attach, load and use.
+Native directories and client protocols remain adapter details. Customer pages
+lead with useful actions and results; setup references hold compatibility
+requirements, and the acceptance record holds defects and incomplete tests.
+Preserve truthful claims and necessary permission, privacy and payment notices.
+
+Improve Baltor Harness through its existing owners toward comparable everyday
+use. First connect exact downloaded packages to the solve input path so a
+customer can use their native files without copying them into a task prompt.
+Then qualify automatic discovery and selection, governed activation, practical
+tool use, recovery and model-backed task outcomes. Compare the actual native
+journeys under stated versions and permissions; a shared marketing label or
+protocol connection does not establish feature parity.
 
 - The library and current hosted service remain usable from existing harnesses.
 - A thin creative workbench adds reference selection, meaningful parameters, comparisons and export. Native editors and renderers remain eligible engines; no new universal editor or runtime is required.

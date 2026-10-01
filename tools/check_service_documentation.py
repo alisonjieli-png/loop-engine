@@ -73,6 +73,7 @@ HTTP_MODULE = "src/loop_engine/core/service_runtime/http.py"
 #: The website address table moved out of the transport module on September
 #: 21, 2026. The addresses it serves are read from here as well.
 PAGES_MODULE = "src/loop_engine/core/service_runtime/web_pages.py"
+PUBLIC_GOOD_PAGE_MODULE = "src/loop_engine/core/service_runtime/public_good_page.py"
 RECORDS_MODULE = "src/loop_engine/core/service_runtime/records.py"
 ENTRYPOINT_MODULE = "src/loop_engine/core/service_runtime/http_entrypoint.py"
 CLI_HELP_MODULE = "src/loop_engine/cli_help.py"
@@ -317,7 +318,7 @@ def source_facts(root: Path) -> dict:
                         refusals.add(constants[inner.id])
 
     addresses = {"/mcp"}
-    for module in (HTTP_MODULE, PAGES_MODULE):
+    for module in (HTTP_MODULE, PAGES_MODULE, PUBLIC_GOOD_PAGE_MODULE):
         for node in ast.walk(trees[root / module]):
             if isinstance(node, ast.Constant) and isinstance(node.value, str) and node.value.startswith("/"):
                 addresses.add(node.value)
@@ -396,7 +397,8 @@ def source_facts(root: Path) -> dict:
             "refusal_statuses": _refusal_statuses(http_tree, raise_sites),
             "record_types": record_types, "strings": strings, "names": names,
             "service_commands": service_commands, "root_commands": root_commands,
-            "recipe_commands": {row["verification_command"]: row["id"] for row in recipes["recipes"]},
+            "recipe_commands": {command: row["id"] for row in recipes["recipes"]
+                                for command in (row["verification_command"], *row.get("additional_commands", ()))},
             "recipe_ids": {row["id"] for row in recipes["recipes"]},
             "credential_variable": recipes["credential_variable"]}
 

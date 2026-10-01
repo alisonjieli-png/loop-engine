@@ -34,9 +34,22 @@ from .records import ServiceRuntimeError
 COLLECTION_RECORD_TYPE = "public_good_file_collection/v1"
 MAXIMUM_QUERY_CHARACTERS, MAXIMUM_PACKAGE_FILTER_CHARACTERS = 200, 200
 MAXIMUM_PAGE, MAXIMUM_PAGE_SIZE = 10_000, 50
+PROTOCOL_TOOL = "public_good_files"
 _GOALS = tuple(range(1, 18))
 _GOAL_FILTERS = ("", "related", *(str(number) for number in _GOALS))
 _INITIATIVE = re.compile(r"[a-z][a-z0-9-]{0,63}")
+
+
+def query_schema() -> dict:
+    """The protocol adapter's bounded metadata query, using the web projection."""
+    return {"type": "object", "additionalProperties": False, "properties": {
+        "query": {"type": "string", "maxLength": MAXIMUM_QUERY_CHARACTERS},
+        "goal": {"type": "string", "enum": list(_GOAL_FILTERS)},
+        "media_type": {"type": "string", "pattern": "^(?:" + _MEDIA_TYPE.pattern + ")?$"},
+        "initiative": {"type": "string", "maxLength": 64},
+        "package": {"type": "string", "maxLength": MAXIMUM_PACKAGE_FILTER_CHARACTERS},
+        "page": {"type": "integer", "minimum": 1, "maximum": MAXIMUM_PAGE},
+        "page_size": {"type": "integer", "minimum": 1, "maximum": MAXIMUM_PAGE_SIZE}}}
 
 
 class FilePlacement(TypedDict):

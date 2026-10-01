@@ -9,17 +9,19 @@ from __future__ import annotations
 from html import escape
 import re
 
-ADDRESS, VIEW = "/public-good", "public-good"
+ADDRESS = "/public-good"
+VIEW = "public-good"
 COLLECTION_PATH = "/api/v1/public-good"
 # Short navigation descriptions, not claims of affiliation or UN-approved material.
 # Official goal definitions: https://sdgs.un.org/goals (checked September 30, 2026).
 GOALS = (
-    (1, "Poverty and income"), (2, "Food and agriculture"), (3, "Health and wellbeing"),
-    (4, "Education and learning"), (5, "Gender equality"), (6, "Water and sanitation"),
-    (7, "Energy access"), (8, "Work and worker protection"), (9, "Infrastructure and industry"),
-    (10, "Inclusion and inequality"), (11, "Cities and communities"), (12, "Resources and waste"),
-    (13, "Climate"), (14, "Oceans and coasts"), (15, "Land and biodiversity"),
-    (16, "Justice and public institutions"), (17, "Partnerships and public data"),
+    (1, "No poverty"), (2, "Zero hunger"), (3, "Good health and well-being"),
+    (4, "Quality education"), (5, "Gender equality"), (6, "Clean water and sanitation"),
+    (7, "Affordable and clean energy"), (8, "Decent work and economic growth"),
+    (9, "Industry, innovation and infrastructure"), (10, "Reduced inequalities"),
+    (11, "Sustainable cities and communities"), (12, "Responsible consumption and production"),
+    (13, "Climate action"), (14, "Life below water"), (15, "Life on land"),
+    (16, "Peace, justice and strong institutions"), (17, "Partnerships for the goals"),
 )
 
 
@@ -67,12 +69,37 @@ def collection(view, snapshot, *, query="", goal="", page=1, page_size=20):
 
 def body() -> str:
     options = ''.join(f'<option value="{number}">SDG {number} · {escape(label)}</option>' for number, label in GOALS)
+    tiles = ''.join(
+        f'<a class="pg-goal-tile" data-goal="{number}" href="/public-good?goal={number}#public-good-library">'
+        f'<span class="pg-goal-number">SDG {number}</span><h3>{escape(label)}</h3>'
+        f'<span class="pg-goal-count" data-goal-count="{number}">View components</span>'
+        '<span class="pg-goal-arrow" aria-hidden="true">↗</span></a>' for number, label in GOALS)
     return (
-        '<div class="pg-intro"><div><p class="pg-eyebrow">The Public Good collection</p>'
-        '<h1 id="public-good-title">Useful files for public-benefit work.</h1>'
-        '<p class="lede">Free to download with a Baltor account. No paid subscription or nonprofit status required.</p>'
-        '</div><a class="button secondary" href="#public-good-policy">Read the policy</a></div>'
-        '<div class="pg-workspace" data-public-good-browser>'
+        '<section class="pg-hero" aria-labelledby="public-good-title"><div class="pg-intro">'
+        '<div><p class="pg-eyebrow">Baltor Public Good</p>'
+        '<h1 id="public-good-title">Free harness components.<br>For work that helps people.</h1>'
+        '<p class="lede">Practical tools, code, skills and reference material for sustainable development '
+        'and public-benefit initiatives. Start with a goal, find useful components and bring them into your own AI tools.</p>'
+        '<p class="pg-commitment">A free Baltor account gives you access to the selected files, '
+        'with fair-use limits. Everyone can take part, including individuals, nonprofits and public-interest teams.</p>'
+        '<div class="actions"><a class="button primary" href="#public-good-goals">Explore the goals</a>'
+        '<a class="text-link" href="#public-good-policy">Our Public Good Policy</a></div></div>'
+        '<aside class="pg-promise" aria-label="The free collection"><span class="pg-free">Free with an account</span>'
+        '<p class="pg-counts" id="public-good-population">Explore the current collection</p>'
+        '<p>Choose a goal below. Each published component includes its purpose, licence and exact files.</p>'
+        '<a href="/get-started">Create your free account →</a></aside></div></section>'
+        '<section class="pg-goals" id="public-good-goals" aria-labelledby="public-good-goals-title">'
+        '<div class="pg-section-heading"><div><p class="pg-eyebrow">17 goals. Shared purpose.</p>'
+        '<h2 id="public-good-goals-title">Choose the work you care about.</h2></div>'
+        '<a class="text-link" data-goal="" href="/public-good#public-good-library">Browse all components →</a></div>'
+        '<div class="pg-goal-grid">' + tiles + '</div>'
+        '<a class="pg-initiative-tile" data-goal="related" href="/public-good?goal=related#public-good-library">'
+        '<div><h3>Other public-benefit initiatives</h3><p>Explore accessibility, open research, '
+        'public data, nonprofit operations and other work that serves the public.</p></div>'
+        '<span>Explore initiatives →</span></a></section>'
+        '<section id="public-good-library" class="pg-workspace" data-public-good-browser aria-labelledby="public-good-library-title">'
+        '<div class="pg-section-heading"><h2 id="public-good-library-title">All Public Good components</h2>'
+        '<a href="#public-good-goals">Choose another goal ↑</a></div>'
         '<details class="pg-advanced"><summary>More filters</summary>'
         '<div class="pg-options"><label for="public-good-view">Browse<select id="public-good-view">'
         '<option value="files">Files</option><option value="packages">Packages</option></select></label>'
@@ -85,16 +112,15 @@ def body() -> str:
         '<option value="">All goals and initiatives</option>' + options +
         '<option value="related">Other public-benefit initiatives</option></select></label>'
         '<button class="button primary" type="submit">Search</button></form>'
-        '<p class="pg-counts" id="public-good-population"></p>'
         '<p id="public-good-status" role="status" aria-live="polite">Loading the current collection…</p>'
         '<ul id="public-good-items" class="pg-items" aria-label="Public Good files and packages"></ul>'
         '<div class="pg-pagination"><button class="button secondary" type="button" id="public-good-previous" disabled>Previous</button>'
         '<span id="public-good-page"></span><button class="button secondary" type="button" id="public-good-next" disabled>Next</button></div>'
         '<details class="pg-coverage"><summary>Coverage across the 17 goals</summary>'
-        '<p>One file can support several goals. Counts overlap. A zero is an unfilled category, not a claim that every goal is covered. Related initiatives are counted separately.</p>'
+        '<p>One file can support several goals, so counts overlap. Each count reflects the currently published collection. Related initiatives are counted separately.</p>'
         '<ul id="public-good-coverage"></ul></details>'
         '<noscript><p>The collection filters need JavaScript. You can read the policy below and '
-        '<a href="/login">sign in</a> to use the library.</p></noscript></div>'
+        '<a href="/login">sign in</a> to use the library.</p></noscript></section>'
         '<section id="public-good-policy" class="pg-policy" aria-labelledby="public-good-policy-title">'
         '<h2 id="public-good-policy-title">The Public Good Policy</h2>'
         '<div class="pg-policy-grid"><div><h3>Free files, with an account</h3>'
@@ -116,7 +142,8 @@ def body() -> str:
         '<p>Model calls, rendering and other external services are not included. Bring your own model access and follow '
         'the <a href="/terms">terms</a> and <a href="/privacy">privacy notice</a>.</p></div></div>'
         '<div class="actions"><a class="button secondary" href="/get-started">Create a free account</a>'
-        '<a class="button secondary" href="/app#browse-heading">Sign in and use the library</a></div></section>'
+        '<a class="button secondary" href="/app#browse-heading">Sign in and use the library</a>'
+        '<a class="button secondary" href="/docs/searching-and-retrieving">Use these files in your harness</a></div></section>'
     )
 
 

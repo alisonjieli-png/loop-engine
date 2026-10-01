@@ -1203,7 +1203,7 @@ const applyPaymentState = name => {
       if (!Array.isArray(listed.tools) || !listed.tools.length || listed.tools.some(tool => typeof tool.name !== "string")) throw new Error("The service did not return a usable tool list.");
       if (epoch !== generation) return;
       for (const tool of listed.tools) $("protocol-tools").append(element("li", tool.name));
-      message("protocol-result", "Service connection passed. Protocol " + version + "; " + listed.tools.length + " tools available. No file bodies fetched or models called. Native client loading is not tested here.");
+      message("protocol-result", "Service connection passed. Protocol " + version + "; " + listed.tools.length + " tools available. Next, follow your harness guide to download a component and run a first task.");
     } catch (error) { if (epoch === generation) message("protocol-result", error.name === "AbortError" ? "The check timed out. No automatic retry was made." : said(error), failureState(error)); }
     finally { connectionBusy = false; if (epoch === generation) $("test-protocol").disabled = !token || !principalScopes.includes("provisioning:metadata"); }
   });
@@ -1240,6 +1240,7 @@ const applyPaymentState = name => {
       const oauthAvailable=oauth?.record_type==='service_oauth_server_capabilities/v1'&&oauth.available===true&&typeof oauth.resource==='string';
       $('setup-oauth').hidden=!oauthAvailable;
       $('setup-oauth-endpoint').textContent=oauthAvailable?oauth.resource:'';
+      $('setup-authentication').textContent=oauthAvailable?'OAuth sign-in or a scoped service token':'Scoped service token';
       registrationOpen = value.website.registration_available === true;
       applyAccessState(value.website.registration_available === true);
       applyRegistrationState(registrationOpen);
