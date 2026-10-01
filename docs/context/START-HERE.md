@@ -21,9 +21,11 @@ two defects that were found and fixed after the first claims of correctness.
 
 ## Current context route
 
-Read the [September 30 handoff](SESSION-HANDOFF-2026-09-30.md) for release 55,
-its live creative proof, reconciled deployment timeout, customer-test results,
-history-review limits and the next ordered implementation work. The
+Read the [September 30 evening handoff](SESSION-HANDOFF-2026-09-30-EVENING.md)
+for release 57, the repaired download failures, Public Good candidate batch,
+latest all-SDG page/access priority and the OpenAI dot investigation. The
+earlier [September 30 handoff](SESSION-HANDOFF-2026-09-30.md) preserves the
+creative and customer proofs and history-review limits. The
 deployment record, not a prototype or a source count, establishes live state.
 
 Read the [delivery and business plan](../roadmap/DELIVERY-SEQUENCE.md) for the

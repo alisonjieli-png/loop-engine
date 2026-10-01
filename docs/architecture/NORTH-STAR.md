@@ -98,6 +98,30 @@ This policy is approved direction; the public download route is not yet built.
 The owner's later clarification requires an enabled account for every free
 component download. Free access does not mean anonymous access.
 
+The owner's latest September 30 priority is a working Public Good collection
+covering all 17 SDGs and related public-benefit initiatives, with at least
+1,000 useful harness file components and a dedicated page in the main header.
+The page must browse the real admitted collection, not display a target as a
+served count. Report complete packages, distinct useful payload files and
+supporting files separately. An SDG tag alone does not establish relevance,
+qualification or free access. Finish this account-required path next after the
+current reliability release.
+
+Research how an OpenAI dot can supplement existing discovery, digestion and
+UI testing, including competitors, potential investors, influencers, strategies
+and MCPs. Keep the existing scheduler and admission owners. Findings become
+source-linked work orders; private notes are not durable publication records.
+Use separately authorized customer-test tasks and scoped credentials, not a
+default administrator identity. This is an investigation, not an installed dot
+or a new set of scheduled jobs.
+
+The owner's subsequent request adds an authenticated two-way interface for
+their dot: read tasks and status, submit research, ideas and candidate files,
+and receive review feedback. Use scoped website/API operations over existing
+records, not unrestricted production database access. Uploaded material stays
+untrusted until its owning checks and admission pass; connection, upload,
+review and publication are separate capabilities to implement and verify.
+
 Reusable material follows a common package structure:
 
 Delivery follows the task. Baltor may serve a complete native package, a

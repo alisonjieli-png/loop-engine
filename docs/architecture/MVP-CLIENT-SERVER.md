@@ -2,7 +2,7 @@
 
 Kind: product architecture with measured local implementation and proposed hosting.
 Date: 2026-09-19. The [current deployment](#current-deployment) section was
-added on 2026-09-20 and last checked on 2026-09-30, after Fly release 56.
+added on 2026-09-20 and last checked on 2026-09-30, after Fly release 57.
 
 The hosted product manages accounts, subscriptions, and access to intelligence.
 The customer runs Loop Engine and the selected harnesses. A hosted intelligence
@@ -47,7 +47,23 @@ from the newest release record, follow the release record and correct this
 section. Update this section in the same change that records a new release.
 It describes a private pilot. It does not describe a qualified paid service.
 
-The latest image deployment is Fly release 56, completed on September 30, 2026,
+The latest image deployment is Fly release 57, completed on September 30, 2026
+in the owner's timezone, from `24bd2482b594730b866158b736cefb53c8ecc1e3`, image
+`sha256:85bd47c156ebab40470361f2a59070bfe363ebde2b3b9bd02f6d0fdc44489917`.
+CI `36794461488` and deployment `36795042426` passed; the gate is off.
+The [release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-57.json)
+and [notes](../../artifacts/release-57-2026-09-30/README.md) record 2,118 browser
+checks over ten hosts, 50 pulse checks, 11 catalogue checks and seven customer
+delivery checks. Recorded demo references are now explicitly bound to their
+snapshot. Read contention retains typed failures, and failed service callbacks
+are not silently replayed. Grant confirmation took 52.737 seconds and billing
+0.72 seconds, with no changed policy or ended paid access. The separate live
+documentation suite passed 146/147: the desktop index height remains over its
+bound. The catalogue is unchanged at 30,746 packages and 96,064 distinct files.
+The next product priority is the owner's account-required free Public Good
+collection and main-header browser; it is not available in this release.
+
+The preceding image deployment was Fly release 56, completed on September 30, 2026,
 from `e089582cb50d0bc4e5b28c915ac22edcb3f74f62`, image
 `sha256:704653dc02633d3357b4ad933d861cd8b4a90e792b25dff6256279f4398d5b49`.
 CI run `36785879432` and deployment run `36786587730` passed, including the

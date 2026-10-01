@@ -3,8 +3,8 @@
   "blocked": 3,
   "done": 50,
   "next": 15,
-  "now": 65,
-  "waiting": 134
+  "now": 66,
+  "waiting": 133
  },
  "lanes": {
   "blocked": [
@@ -1195,7 +1195,7 @@
      "S-6.180"
     ],
     "id": "S-6.200",
-    "next_local_work": "September 30: qualify the lightweight grant bootstrap and durable bounded post-deployment confirmation against release 55. It avoids an unused search build and repeated dispatch after a lost reply without skipping body verification. Keep command-output, readiness, billing and rollback checks. Then follow the deployment-speed sequence in docs/roadmap/DELIVERY-SEQUENCE.md. CI 36772005998 passed in 395 seconds, with the 391-second self-test job on the critical path; this is one observation, not a median. Measure queue, CI, image build/transfer, startup/index readiness and live checks separately. Qualify pinned dependency layers plus external BuildKit caching, balance slow tests without dropping them, and prove a records-only classifier with source/policy/schema/dependency negative controls. Catalogue delta publication already exists; incremental indexes and independently released assets are separate candidates. Extract microservices only for a measured isolation, scaling or release-cadence need, with typed edges and version-skew/rollback tests.",
+    "next_local_work": "September 30: release 56 deployed the lightweight grant bootstrap and durable confirmation; release 57 confirmed grants in 52.737 seconds and billing in 0.72 seconds, preserving all access checks. Exact CI 36794461488 passed in 367 seconds; failed earlier candidates remain in the release record, so this is not a first-pass-success or median claim. Next follow docs/roadmap/DELIVERY-SEQUENCE.md: measure queue, CI, image build/transfer, startup/index readiness and live checks separately; qualify pinned dependency layers and external BuildKit caching, balance slow tests without dropping them, and prove a records-only classifier with source/policy/schema/dependency negative controls. Always regenerate records/status after new evidence. Catalogue deltas already exist; incremental indexes and independently released assets are separate candidates. Extract microservices only for a measured isolation, scaling or release-cadence need, with typed edges and version-skew/rollback tests.",
     "phase": 6,
     "status": "building",
     "title": "Continuous integration in 12 minutes or less, and fewer failed pushes: sharded self-test, cached environment, a records-only lane and a pre-push hook that runs the preflight",
@@ -1337,6 +1337,25 @@
     "waiting_on": [
      "S-6.40",
      "S-6.76"
+    ]
+   },
+   {
+    "acceptance": "A person with an enabled account and no paid subscription downloads and uses the first reviewed worker-protection component set within clear public limits.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.40",
+     "S-6.81",
+     "S-6.199"
+    ],
+    "id": "S-6.216",
+    "next_local_work": "Release 57 is live. Implement the item-specific account-required free exception at the existing catalogue/entitlement edge, without giving an entire free account paid body entitlement. Preserve exact-version grants, final revalidation, paid/private isolation, nonbillable receipts, report eligibility and atomic rate/byte limits. Build the main-header browser over real eligible metadata with no anonymous bodies. Independently qualify the private packages, audit existing supply and fill all17-goal gaps without padding counts. Preserve rights, model-weight terms and jurisdiction-specific freshness. Keep free files separate from paid inference/hosting and do not claim nonprofit status or UN endorsement.",
+    "phase": 6,
+    "status": "building",
+    "title": "Account-required Public Good collection, header-linked browsing and 1,000 useful components across all SDGs",
+    "waiting_on": [
+     "S-6.40",
+     "S-6.81",
+     "S-6.199"
     ]
    },
    {
@@ -2210,25 +2229,6 @@
     "waiting_on": [
      "S-6.202",
      "S-6.212"
-    ]
-   },
-   {
-    "acceptance": "A person with an enabled account and no paid subscription downloads and uses the first reviewed worker-protection component set within clear public limits.",
-    "blocked_on": "",
-    "depends_on": [
-     "S-6.40",
-     "S-6.81",
-     "S-6.199"
-    ],
-    "id": "S-6.216",
-    "next_local_work": "After the release-reliability fix, implement the account-required free-access policy at the existing catalogue and entitlement edge with exact-version grants and paid/private negative controls. Prepare the small DueCare-related candidate set in the delivery plan; preserve independent admission, per-file rights, model-weight terms and jurisdiction-specific freshness. Keep free files separate from paid inference or hosting and do not claim nonprofit status or UN endorsement.",
-    "phase": 6,
-    "status": "proposed",
-    "title": "Free Public Good components with required accounts, starting with DueCare worker protection",
-    "waiting_on": [
-     "S-6.40",
-     "S-6.81",
-     "S-6.199"
     ]
    },
    {
@@ -5249,9 +5249,9 @@
    "id": "D-26",
    "stage": "public_launch",
    "status_counts": {
-    "building": 12,
+    "building": 13,
     "live_qualified": 3,
-    "proposed": 8
+    "proposed": 7
    },
    "steps": [
     "S-6.69",
@@ -5402,5 +5402,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:3119323cc58733ded5ccdb9ec3a980283daec100219af7cd2f7a39ba8a6004b3"
+ "source_fingerprint": "sha256:f52a279bbb1020f4af4226219779746a620a3e9c6c0975a02f57b6ec0be606fa"
 }

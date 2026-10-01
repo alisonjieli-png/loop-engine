@@ -157,6 +157,15 @@ feature release. Preserve a separate check of current item availability and
 require a fresh search before a harness downloads. Recorded examples must not
 quietly become claims about a changing live search.
 
+The owner's latest September 30 instruction makes Public Good delivery the
+next product release after the reliability correction: an account-required,
+subscription-free path and a top-header page browsing the real collection
+across all 17 SDGs and related initiatives. The target is at least 1,000 useful
+harness file components. Count useful payloads separately from packages and
+support files, and show actual coverage rather than filling missing categories
+with unrelated material. This changes the immediate order; the remaining
+customer-comparison, creative and retrieval gates below still apply.
+
 1. **Reconcile and preserve the current work.** Account for inherited changes,
    source identities, failed checks and prior-session instructions. Correct
    stale startup links and implementation claims. Keep a coverage record for

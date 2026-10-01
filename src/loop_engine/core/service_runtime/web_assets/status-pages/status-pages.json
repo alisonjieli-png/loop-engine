@@ -5,6 +5,14 @@
   "releases": [
    {
     "kind": "service",
+    "number": 57,
+    "at": "2026-10-01T00:15:52Z",
+    "lines": [],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
     "number": 56,
     "at": "2026-09-30T22:40:34Z",
     "lines": [],
@@ -1871,8 +1879,8 @@
      },
      {
       "step": "S-6.216",
-      "title": "Free Public Good components with required accounts, starting with DueCare worker protection",
-      "status": "Named, not scheduled yet"
+      "title": "Account-required Public Good collection, header-linked browsing and 1,000 useful components across all SDGs",
+      "status": "In progress"
      },
      {
       "step": "S-6.119",

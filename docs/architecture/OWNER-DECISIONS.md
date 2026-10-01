@@ -34,6 +34,30 @@ The [delivery plan](../roadmap/DELIVERY-SEQUENCE.md#free-public-good-components)
 owns the implementation and acceptance sequence. Public downloads under this
 policy have not shipped.
 
+Later that evening the owner made this the next delivery priority: "get the
+SDG public good policy and harness files fully populated and working" with a
+dedicated page in the "top main header nav bar" and the ability to browse
+"1,000 of harness file components for all SDGs and similar public good
+initiatives". This authorizes the informational policy page, collection browser
+and account-required free delivery. It does not waive admission or rights
+checks, authorize anonymous file bodies, or make a planned count a published
+one. Preserve the distinction between useful files, complete packages and
+repeated support files. No nonprofit or UN endorsement is implied.
+
+The owner also requested research into an OpenAI dot supplementing internal
+research, digestion, scheduled work and UI/UX testing. Investigate useful
+roles and actual platform controls before installing schedules or connecting
+accounts. Ordinary product testing uses a scoped non-admin account; any
+administration test is a separate, explicitly bounded task with synthetic data.
+
+The owner then requested a way for their dot to interface with the website and
+database, share files, upload research, components and ideas, and communicate
+in both directions. Engineering will implement a scoped authenticated intake
+and feedback interface over the existing stores. This is not authority to hand
+out direct database credentials, execute submitted files or publish them
+without admission. Connecting the owner's actual dot and verifying its
+permissions remain distinct from building and testing the interface.
+
 ## Retained decision table
 
 The table preserves the owner's dated decisions and rationales. Current clarifications above supersede older engineering descriptions of universal per-package execution checks, older counts and earlier creative priorities. Currency is established by current code and release records, not a quoted date.

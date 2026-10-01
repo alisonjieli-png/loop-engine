@@ -3,15 +3,15 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:3119323cc58733ded5ccdb9ec3a980283daec100219af7cd2f7a39ba8a6004b3`.
+Source fingerprint: `sha256:f52a279bbb1020f4af4226219779746a620a3e9c6c0975a02f57b6ec0be606fa`.
 
 ## Where things stand
 
 | Lane | Steps |
 |---|---:|
-| Being built now | 65 |
+| Being built now | 66 |
 | Can start next | 15 |
-| Waiting on earlier work | 134 |
+| Waiting on earlier work | 133 |
 | Blocked | 3 |
 | Done | 50 |
 
@@ -44,6 +44,7 @@ Source fingerprint: `sha256:3119323cc58733ded5ccdb9ec3a980283daec100219af7cd2f7a
 | S-6.214 | Daily distillations: new papers, skills, plugins, protocol servers, services and repositories, each served as a summary page, RSS, JSON and downloadable components | building | S-6.213, S-6.81 |
 | S-6.215 | One million served harness component files: deterministic supply lines, test-based admission with a sampled independent review, a serving engine with delta releases, and full-package delivery | building | S-6.40, S-6.213 |
 | S-6.81 | Source scouts: search tools for skills, plugins, protocol servers and harness files | building | S-6.40, S-6.76 |
+| S-6.216 | Account-required Public Good collection, header-linked browsing and 1,000 useful components across all SDGs | building | S-6.40, S-6.81, S-6.199 |
 | S-6.63 | An independent review panel of several model families | building | S-6.45 |
 | S-6.119 | Community and Verified library tiers from the review panel, written as reviewed catalogue folders for release | building | S-6.63, S-6.40 |
 | S-6.62 | Catalogue releases and library settings with good defaults | building | S-6.40 |
@@ -126,7 +127,6 @@ Source fingerprint: `sha256:3119323cc58733ded5ccdb9ec3a980283daec100219af7cd2f7a
 | S-6.209 | Occupation, industry, level, language and geography tags on every served file, searchable in the signed-in dashboard | proposed | S-6.206, S-6.40 |
 | S-6.202 | Quickstarts that are checked every night: one copy-paste setup per harness on Get set up, each run against the live endpoint | proposed | S-6.24, S-6.182 |
 | S-6.213 | The product as a harness file: a first-party Baltor skill any harness installs to search and fetch from the library, plus a daily public library snapshot from each catalogue release | proposed | S-6.202, S-6.212 |
-| S-6.216 | Free Public Good components with required accounts, starting with DueCare worker protection | proposed | S-6.40, S-6.81, S-6.199 |
 | S-6.70 | Serve 100,000 packages: pass the capacity probe with paged listing and an indexed search | proposed | S-6.62, S-6.32 |
 | S-6.83 | Maintain 100,000 packages: re-verification, near-duplicates, deprecation and withdrawal | proposed | S-6.69, S-6.51 |
 | S-6.64 | Independently authored alternatives to restricted-source ideas | proposed | S-6.63 |
