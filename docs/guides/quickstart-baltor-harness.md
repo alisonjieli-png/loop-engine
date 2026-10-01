@@ -92,13 +92,26 @@ The download answers the bytes themselves, with the `X-Content-SHA256` header th
 
 ## Run a task with it
 
-Put the downloaded material where your task reads it and name it in the task file. Then run the task, for example on Ollama Cloud:
+For a complete package staged by the first-party library client's `fetch`
+command, pass the staging folder directly. Follow the
+[library client setup](quickstart-opencode.md#install-the-baltor-library-skill)
+and fetch the selected package into `selected-material`, then run:
 
 ```bash
-loop-engine solve --file task.md --ollama-api-key --model-route cloud.default --unattended --max-model-calls 60 --workspace baltor-run
+loop-engine solve --file task.md --material-package selected-material --allow-source-to-model --ollama-api-key --model-route cloud.default --unattended --max-model-calls 60 --workspace baltor-run
 ```
 
-`--workspace` must be an empty folder or one that does not exist yet. When the run ends it prints its output files; compare them with what you asked for. The engine's own verification is strict and can refuse a correct result, so check the output yourself.
+The harness verifies the package's exact files and lets the task select the
+parts it needs. The [native package-input guide](baltor-native-package-inputs.md)
+describes its supported inputs and checks. Install the current source version
+above to use this option. For a small single-file reference, you can also
+include its text in `task.md` and run the same command without the two package
+input options.
+
+Use an empty output folder for `--workspace`. Compare the result with an
+independent acceptance check and retain the selected-file evidence. Package
+input, automatic project discovery and active skill registration have separate
+qualification records.
 
 ## Check that it worked
 

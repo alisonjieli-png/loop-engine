@@ -22,13 +22,15 @@ STATUSES = {"ready", "needs_retest", "research", "awaiting_evidence", "complete"
 def validate_record(value):
     """Validate only the public editorial contract; personal-data review is also required."""
     def text(value):
-        return isinstance(value, str) and 0 < len(value.strip()) <= 6000
+        return isinstance(value, str) and bool(value.strip()) and len(value) <= 6000
     if not isinstance(value, dict) or set(value) != FIELDS or value["record_type"] != RECORD_TYPE:
         raise ValueError("invalid dot brief fields or version")
     if not text(value["title"]) or not text(value["summary"]):
         raise ValueError("invalid dot brief text")
     moments = []
     for name in ("updated_at", "review_after"):
+        if not isinstance(value[name], str) or len(value[name]) > 64:
+            raise ValueError("invalid dot brief time")
         moment = datetime.fromisoformat(value[name].replace("Z", "+00:00"))
         if moment.tzinfo is None:
             raise ValueError("dot brief times require a timezone")
@@ -53,8 +55,11 @@ def validate_record(value):
     for row in value["links"]:
         if (not isinstance(row, dict) or set(row) != {"label", "url"} or not all(text(v) for v in row.values())
                 or not (row["url"].startswith("https://") or row["url"].startswith("/"))
-                or row["url"].startswith("//") or any(ch.isspace() or ord(ch) < 32 for ch in row["url"])):
+                or row["url"].startswith("//") or "\\" in row["url"]
+                or any(ch.isspace() or ord(ch) < 32 for ch in row["url"])):
             raise ValueError("invalid dot brief link")
+        from .http_auth import validate_public_url
+        validate_public_url("https://baltor.ai" + row["url"] if row["url"].startswith("/") else row["url"])
     return value
 
 

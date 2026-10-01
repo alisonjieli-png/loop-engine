@@ -51,6 +51,13 @@ class DotPageTests(unittest.TestCase):
                        lambda row: row["tasks"][0].update(status="verified"),
                        lambda row: row["links"][0].update(url="javascript:alert(1)"),
                        lambda row: row["links"][0].update(url="//untrusted.example"),
+                       lambda row: row["links"][0].update(url="/\\outside.example/path"),
+                       lambda row: row["links"][0].update(url="https://"),
+                       lambda row: row["links"][0].update(url="https://user:synthetic-password@example.invalid/"),
+                       lambda row: row.update(title=" " * 10000 + "title"),
+                       lambda row: row.update(updated_at=None),
+                       lambda row: row.update(updated_at=123),
+                       lambda row: row.update(updated_at=[]),
                        lambda row: row.update(review_after=row["updated_at"]),
                        lambda row: row.update(updated_at="2026-10-01")):
             candidate = deepcopy(original)

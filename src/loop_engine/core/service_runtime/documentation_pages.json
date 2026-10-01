@@ -36,13 +36,13 @@
   },
   "quickstart-baltor-harness": {
    "body_address": "/assets/docs/quickstart-baltor-harness.html",
-   "body_digest": "3c39834e4e898ae50de8ad535d0fb2355324d79d000c4a5e4a3dcef3ca3d9be5",
+   "body_digest": "d27883c46f79d7f55b2de5aed40ec08b486f37b21379d1d6f0b96847dd7d73dc",
    "heading": "Baltor Harness quickstart",
    "id": "quickstart-baltor-harness",
    "kind_line": "Kind: customer quickstart for the Baltor Harness. It repeats the installation and the connection values that Get set up publishes for the Baltor Harness and adds the first search, the first download and the check that it worked.",
    "record_type": "website_documentation_page/v1",
    "repository_path": "docs/guides/quickstart-baltor-harness.md",
-   "source_digest": "f5c8ad8e1958966da2d249929c8765cdaf6f4a83a385e16b12874be3662dcda7",
+   "source_digest": "65fc689e900e136b78b836704ac82e22d1683dcb6ae4775085acff103e68e748",
    "title": "Baltor Harness quickstart"
   },
   "quickstart-claude-code": {
