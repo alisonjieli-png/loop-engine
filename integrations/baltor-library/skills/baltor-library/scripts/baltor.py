@@ -161,7 +161,8 @@ class Client:
         self.config = validate_configuration(config)
         require(type(credential) is str and (not credential or re.fullmatch(r'[\x21-\x7e]{1,4096}', credential)), 'credential_missing_or_invalid')
         self._credential = credential
-        self.opener = opener or urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedirect())
+        # Respect the customer's HTTPS proxy and NO_PROXY policy; keep TLS and redirect guards unchanged.
+        self.opener = opener or urllib.request.build_opener(urllib.request.ProxyHandler(), NoRedirect())
         self.capabilities, self.calls = None, 0
     def safe_json(self, value):
         encoded = json_bytes(value)
