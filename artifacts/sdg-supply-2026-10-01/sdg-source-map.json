@@ -1,0 +1,2745 @@
+{
+ "record_type": "sdg_supply_source_map/v1",
+ "created_on": "2026-10-01",
+ "meaning": "Proposed SDG goals per supply source, from the sourcing research. A proposal for reviewers attaching PublicGoodGrant goals after independent approval; it grants nothing.",
+ "sources": {
+  "tt_alcohol_consumption_by_country": [
+   3
+  ],
+  "tt_california_wildfire_incidents": [
+   11,
+   13,
+   15
+  ],
+  "tt_california_wildfire_damage_by_year": [
+   11,
+   13
+  ],
+  "tt_invasive_species_threat_by_country": [
+   15
+  ],
+  "tt_invasive_species_cost_by_country": [
+   2,
+   15
+  ],
+  "tt_invasive_species_africa_list": [
+   15
+  ],
+  "tt_malaria_deaths_per_100k": [
+   3
+  ],
+  "tt_malaria_incidence_per_1000_at_risk": [
+   3
+  ],
+  "tt_us_pretrial_jail_population": [
+   16
+  ],
+  "tt_us_prison_population_summary": [
+   16
+  ],
+  "tt_us_dairy_consumption_per_person": [
+   2
+  ],
+  "tt_us_milk_cow_facts": [
+   2
+  ],
+  "tt_us_milk_production_by_state": [
+   2
+  ],
+  "tt_us_federal_climate_spending": [
+   13
+  ],
+  "tt_us_federal_energy_rd_spending": [
+   7,
+   9
+  ],
+  "tt_us_federal_rd_spending": [
+   9
+  ],
+  "tt_us_earnings_female_to_male": [
+   5,
+   8
+  ],
+  "tt_us_employment_by_gender": [
+   5,
+   8
+  ],
+  "tt_women_research_by_field_country": [
+   5,
+   9
+  ],
+  "tt_us_manufacturing_trade_deficit": [
+   9,
+   17
+  ],
+  "tt_pension_spending_vs_aged_population": [
+   1
+  ],
+  "tt_nuclear_explosions": [
+   16
+  ],
+  "tt_us_bike_walk_commuting_by_city": [
+   3,
+   11
+  ],
+  "tt_international_murder_rates": [
+   16
+  ],
+  "tt_gun_murder_rates_by_country": [
+   16
+  ],
+  "tt_food_consumption_co2_by_country": [
+   2,
+   12,
+   13
+  ],
+  "tt_traumatic_brain_injury_by_age": [
+   3
+  ],
+  "tt_volcano_list": [
+   11,
+   13
+  ],
+  "tt_palmer_penguins": [
+   14,
+   15
+  ],
+  "tt_european_energy_by_type": [
+   7
+  ],
+  "tt_european_energy_country_totals": [
+   7
+  ],
+  "tt_plants_in_danger": [
+   15
+  ],
+  "tt_bbc_100_women_2020": [
+   5
+  ],
+  "tt_big_mac_index": [
+   10,
+   17
+  ],
+  "tt_transit_construction_costs": [
+   9,
+   11
+  ],
+  "tt_kenya_census_crops_by_county": [
+   2
+  ],
+  "tt_kenya_census_gender_by_county": [
+   5
+  ],
+  "tt_kenya_census_households_by_county": [
+   11
+  ],
+  "tt_us_income_distribution_by_race": [
+   1,
+   10
+  ],
+  "tt_us_income_limits_by_quintile": [
+   1,
+   10
+  ],
+  "tt_us_income_mean_by_quintile": [
+   1,
+   10
+  ],
+  "tt_us_wealth_by_race": [
+   1,
+   10
+  ],
+  "tt_us_home_ownership_by_race": [
+   1,
+   11
+  ],
+  "tt_us_retirement_savings_by_race": [
+   1,
+   10
+  ],
+  "tt_us_student_debt_by_race": [
+   1,
+   4
+  ],
+  "tt_us_lifetime_earnings_by_race_gender": [
+   5,
+   10
+  ],
+  "tt_brazil_forest_loss_drivers": [
+   15
+  ],
+  "tt_deforestation_by_source": [
+   12,
+   15
+  ],
+  "tt_forest_area_change_by_country": [
+   15
+  ],
+  "tt_us_broadband_availability_by_county": [
+   9
+  ],
+  "tt_us_city_park_rankings": [
+   11
+  ],
+  "tt_lemur_taxonomy": [
+   15
+  ],
+  "tt_us_registered_nurses_by_state": [
+   3,
+   8
+  ],
+  "tt_fish_stocks_sustainable_share": [
+   14
+  ],
+  "tt_global_fishery_catch_by_sector": [
+   14
+  ],
+  "tt_us_bee_colonies": [
+   2,
+   15
+  ],
+  "tt_freedom_in_the_world": [
+   16
+  ],
+  "tt_nz_life_tables": [
+   3
+  ],
+  "tt_clean_cooking_fuel_access": [
+   3,
+   7
+  ],
+  "tt_us_energy_average_cost": [
+   7
+  ],
+  "tt_us_energy_capacity": [
+   7,
+   9
+  ],
+  "tt_us_solar_ppa_prices": [
+   7
+  ],
+  "tt_us_wind_ppa_prices": [
+   7
+  ],
+  "tt_uk_sic_2007_condensed": [
+   8,
+   9
+  ],
+  "tt_cage_free_egg_percentages": [
+   2,
+   12
+  ],
+  "tt_us_egg_production": [
+   2,
+   12
+  ],
+  "tt_portal_project_species": [
+   15
+  ],
+  "tt_portal_project_plots": [
+   15
+  ],
+  "tt_global_temperature_anomalies": [
+   13
+  ],
+  "tt_zonal_temperature_anomalies": [
+   13
+  ],
+  "tt_global_human_day": [
+   5,
+   8
+  ],
+  "tt_global_economic_activity_time": [
+   8
+  ],
+  "tt_mr_trash_wheel_collections": [
+   12,
+   14
+  ],
+  "tt_worldwide_bureaucracy_by_country": [
+   16,
+   17
+  ],
+  "tt_worldwide_bureaucracy_series": [
+   16
+  ],
+  "tt_cia_factbook_country_stats": [
+   3,
+   17
+  ],
+  "tt_iso_3166_2_subdivisions": [
+   11,
+   17
+  ],
+  "tt_iso_3166_3_former_countries": [
+   17
+  ],
+  "tt_us_timely_effective_care_by_state": [
+   3
+  ],
+  "tt_measles_rubella_cases_by_year": [
+   3
+  ],
+  "tt_income_inequality_before_after_tax": [
+   1,
+   10
+  ],
+  "tt_flint_lead_samples_mdeq": [
+   3,
+   6
+  ],
+  "tt_uk_met_station_metadata": [
+   13
+  ],
+  "tt_edible_plants_database": [
+   2
+  ],
+  "tt_nz_agricultural_production": [
+   2
+  ],
+  "tt_norway_salmonid_monthly_losses": [
+   2,
+   14
+  ],
+  "tt_norway_salmonid_monthly_mortality": [
+   2,
+   14
+  ],
+  "tt_nova_scotia_ocean_temperature_deployments": [
+   14
+  ],
+  "tt_beaufort_wind_scale": [
+   13,
+   14
+  ],
+  "tt_sea_state_codes": [
+   14
+  ],
+  "tt_us_agricultural_trade_agreements": [
+   2,
+   17
+  ],
+  "tt_us_tariff_quantity_codes": [
+   17
+  ],
+  "tt_italy_industrial_production_food": [
+   2,
+   9
+  ],
+  "tt_lesotho_wool_trade": [
+   1,
+   17
+  ],
+  "big_mac_historical_source": [
+   10,
+   17
+  ],
+  "big_mac_source_data": [
+   10,
+   17
+  ],
+  "big_mac_adjusted_index": [
+   10,
+   17
+  ],
+  "plotly_us_agricultural_exports_2011": [
+   2,
+   17
+  ],
+  "plotly_ebola_2014_cases": [
+   3
+  ],
+  "plotly_world_gdp_2014_with_codes": [
+   8,
+   17
+  ],
+  "plotly_gapminder_with_codes": [
+   1,
+   3
+  ],
+  "plotly_us_cities_top_1000": [
+   11
+  ],
+  "pudding_birth_control_methods_ever_used": [
+   3,
+   5
+  ],
+  "pudding_birth_control_stop_reasons": [
+   3,
+   5
+  ],
+  "pudding_school_dress_code_sanctions": [
+   4,
+   5
+  ],
+  "ppi_sdg_indicators_mexico": [
+   17
+  ],
+  "ppi_sdg_expenditure": [
+   16,
+   17
+  ],
+  "ppi_indicator_interdependency_network": [
+   17
+  ],
+  "ppi_indicator_programme_links": [
+   16,
+   17
+  ],
+  "ppi_calibrated_parameters": [
+   17
+  ],
+  "african_countries_indicators": [
+   4,
+   17
+  ],
+  "cow_state_system_members": [
+   16,
+   17
+  ],
+  "icow_colonial_history": [
+   16,
+   17
+  ],
+  "github_innovation_graph_developers": [
+   9,
+   17
+  ],
+  "github_innovation_graph_organizations": [
+   9,
+   17
+  ],
+  "github_innovation_graph_repositories": [
+   9,
+   17
+  ],
+  "github_innovation_graph_git_pushes": [
+   9,
+   17
+  ],
+  "anti_gender_violence_art_database": [
+   5,
+   16
+  ],
+  "us_national_parks_recreation_visits": [
+   11,
+   15
+  ],
+  "tt_invasive_species_cost_share_gdp": [
+   15
+  ],
+  "tt_invasive_species_crop_threat": [
+   2,
+   15
+  ],
+  "tt_us_college_majors_women_share": [
+   4,
+   5,
+   8
+  ],
+  "tt_us_bachelor_attainment_by_race": [
+   4,
+   10
+  ],
+  "tt_us_female_bachelor_attainment_by_race": [
+   4,
+   5
+  ],
+  "tt_brazil_company_legal_nature_codes": [
+   8,
+   16
+  ],
+  "codecarbon_cloud_region_impact": [
+   7,
+   13
+  ],
+  "codecarbon_cpu_tdp": [
+   7,
+   12
+  ],
+  "codecarbon_carbon_intensity_per_source": [
+   7,
+   13
+  ],
+  "codecarbon_canada_energy_mix": [
+   7,
+   13
+  ],
+  "codecarbon_usa_state_emissions": [
+   7,
+   13
+  ],
+  "codecarbon_global_energy_mix": [
+   7,
+   13
+  ],
+  "codecarbon_eu_carbon_intensity": [
+   7,
+   13
+  ],
+  "codecarbon_amd_server_cpus": [
+   7,
+   12
+  ],
+  "codecarbon_intel_ark_cpus": [
+   7,
+   12
+  ],
+  "ccf_aws_instances": [
+   7,
+   12
+  ],
+  "ccf_azure_instances": [
+   7,
+   12
+  ],
+  "ccf_gcp_instances": [
+   7,
+   12
+  ],
+  "ccf_grid_emission_factors_aws": [
+   7,
+   13
+  ],
+  "ccf_grid_emission_factors_gcp": [
+   7,
+   13
+  ],
+  "mlco2_cloud_region_impact": [
+   7,
+   13
+  ],
+  "mlco2_cloud_gpu_instances": [
+   7,
+   12
+  ],
+  "mlco2_grid_yearly_averages": [
+   7,
+   13
+  ],
+  "gcp_region_carbon_free_energy": [
+   7,
+   13
+  ],
+  "ember_country_co2_intensity_2021": [
+   7,
+   13
+  ],
+  "grid_intensity_country_codes": [
+   7,
+   17
+  ],
+  "uk_ghg_emission_factors": [
+   12,
+   13
+  ],
+  "scarif_hp_product_footprints": [
+   12,
+   13
+  ],
+  "scarif_lenovo_product_footprints": [
+   12,
+   13
+  ],
+  "gsf_boavizta_cpu_tdp": [
+   7,
+   12
+  ],
+  "gsf_aws_instance_metadata": [
+   7,
+   12
+  ],
+  "gsf_azure_instance_metadata": [
+   7,
+   12
+  ],
+  "gsf_cloud_region_metadata": [
+   7,
+   13
+  ],
+  "nace_rev21_codes": [
+   8,
+   9
+  ],
+  "uk_sic_2007_codes": [
+   8,
+   9
+  ],
+  "epa_ghg_emission_factors": [
+   7,
+   13
+  ],
+  "naics_2022_level_crosswalk": [
+   9
+  ],
+  "naics_year_concordance": [
+   9
+  ],
+  "pucs_to_naics": [
+   12
+  ],
+  "naics_sector_levels": [
+   9
+  ],
+  "government_sector_codes": [
+   16,
+   17
+  ],
+  "household_sector_codes": [
+   12
+  ],
+  "us_census_regions_divisions": [
+   11,
+   17
+  ],
+  "ghgi_activity_to_naics": [
+   13
+  ],
+  "warm_activity_to_naics": [
+   12
+  ],
+  "calrecycle_waste_to_naics": [
+   12
+  ],
+  "epa_msw_facts_to_naics": [
+   12
+  ],
+  "eia_mer_to_naics": [
+   7
+  ],
+  "bls_green_industries_to_naics": [
+   8,
+   12
+  ],
+  "unep_irp_material_flows_to_naics": [
+   12
+  ],
+  "usgs_water_use_coefficients_naics": [
+   6,
+   12
+  ],
+  "usda_cropland_to_naics": [
+   2,
+   12
+  ],
+  "usda_livestock_to_naics": [
+   2,
+   12
+  ],
+  "epa_state_inventory_tool_to_naics": [
+   13
+  ],
+  "source_classification_codes_to_naics": [
+   9,
+   13
+  ],
+  "statcan_gdp_industries_to_naics": [
+   8,
+   9
+  ],
+  "epa_recycling_economic_info_to_naics": [
+   12
+  ],
+  "eia_cbecs_buildings_to_naics": [
+   7,
+   11
+  ],
+  "useeio_lcia_indicators": [
+   12,
+   13
+  ],
+  "useeio_lcia_factors": [
+   12,
+   13
+  ],
+  "bea_2017_sector_codes": [
+   8,
+   9
+  ],
+  "bea_2017_summary_schema": [
+   8,
+   9
+  ],
+  "bea_2017_detail_schema": [
+   8,
+   9
+  ],
+  "census_agriculture_to_naics": [
+   2,
+   9
+  ],
+  "bea_industry_to_commodity_names": [
+   9
+  ],
+  "useeio_waste_management_sectors": [
+   12
+  ],
+  "useeio_utility_sectors": [
+   6,
+   7
+  ],
+  "fedefl_contexts": [
+   12
+  ],
+  "fedefl_chemical_alt_units": [
+   12
+  ],
+  "fedefl_geological_flowables": [
+   12
+  ],
+  "fedefl_geological_alt_units": [
+   12
+  ],
+  "fedefl_biological_flowables": [
+   12,
+   15
+  ],
+  "fedefl_group_flowables": [
+   12
+  ],
+  "fedefl_energy_flowables": [
+   7,
+   12
+  ],
+  "fedefl_water_flowables": [
+   6,
+   12
+  ],
+  "fedefl_hazardous_air_pollutants": [
+   3,
+   12
+  ],
+  "fedefl_flow_exclusions": [
+   12
+  ],
+  "fedefl_secondary_context_membership": [
+   12
+  ],
+  "fedefl_ghgi_ar5_flow_mapping": [
+   13
+  ],
+  "fedefl_egrid_flow_mapping": [
+   7,
+   13
+  ],
+  "fedefl_warm_flow_mapping": [
+   12
+  ],
+  "fedefl_greet_flow_mapping": [
+   7,
+   13
+  ],
+  "fedefl_usgs_minerals_flow_mapping": [
+   12
+  ],
+  "netl_traci21_factors": [
+   12,
+   13
+  ],
+  "recipe2016_endpoint_midpoint": [
+   12
+  ],
+  "weidema_impact_valuation": [
+   12
+  ],
+  "lciafmt_ipcc_gwp_values": [
+   13
+  ],
+  "warm_v15_lcia_methods": [
+   12,
+   13
+  ],
+  "stewi_data_quality_reliability_scores": [
+   12,
+   13
+  ],
+  "rcra_waste_form_codes": [
+   12
+  ],
+  "tri_release_type_compartments": [
+   3,
+   12
+  ],
+  "sic_two_digit_codes": [
+   9
+  ],
+  "egrid_flow_compartments": [
+   7,
+   13
+  ],
+  "ghgrp_gas_mapping": [
+   13
+  ],
+  "tri_chemical_list_2023": [
+   3,
+   12
+  ],
+  "voc_srs_ids": [
+   3,
+   12
+  ],
+  "elci_international_electricity_mix": [
+   7
+  ],
+  "egrid_subregion_to_nerc": [
+   7
+  ],
+  "us_state_padd_regions": [
+   7
+  ],
+  "coal_state_to_basin": [
+   7
+  ],
+  "eia_to_netl_coal_basin": [
+   7
+  ],
+  "egrid_subregion_totals_2016": [
+   7,
+   13
+  ],
+  "egrid_subregion_generation_by_fuel_2016": [
+   7
+  ],
+  "reeds_global_warming_potentials": [
+   13
+  ],
+  "reeds_generator_emission_rates": [
+   7,
+   13
+  ],
+  "reeds_methane_leakage_rate": [
+   7,
+   13
+  ],
+  "reeds_hydrogen_leakage_rate": [
+   7,
+   13
+  ],
+  "atb2024_utility_pv_moderate": [
+   7
+  ],
+  "atb2024_onshore_wind_moderate": [
+   7
+  ],
+  "atb2024_battery_storage_moderate": [
+   7
+  ],
+  "atb2024_nuclear_moderate": [
+   7
+  ],
+  "atb2024_natural_gas_moderate": [
+   7
+  ],
+  "atb2024_geothermal_moderate": [
+   7
+  ],
+  "reeds_compressed_air_storage": [
+   7
+  ],
+  "reeds_beccs_reference": [
+   7,
+   13
+  ],
+  "reeds_mean_time_to_repair": [
+   7
+  ],
+  "reeds_unit_sizes": [
+   7
+  ],
+  "reeds_startup_costs": [
+   7
+  ],
+  "reeds_other_plant_characteristics": [
+   7
+  ],
+  "reeds_construction_schedules": [
+   7,
+   9
+  ],
+  "reeds_depreciation_schedules": [
+   7,
+   9
+  ],
+  "reeds_inflation_series": [
+   8
+  ],
+  "reeds_dollar_deflator": [
+   8
+  ],
+  "us_state_fips_codes": [
+   11,
+   17
+  ],
+  "reeds_fuel_to_technology": [
+   7
+  ],
+  "reeds_co2_storage_site_characteristics": [
+   13
+  ],
+  "reeds_biomass_supply_curve": [
+   7,
+   15
+  ],
+  "aeo2025_uranium_price_reference": [
+   7
+  ],
+  "aeo2025_coal_price_reference": [
+   7
+  ],
+  "aeo2025_natural_gas_price_reference": [
+   7
+  ],
+  "reeds_clean_generation_technologies": [
+   7
+  ],
+  "reeds_rec_trading_table": [
+   7
+  ],
+  "reopt_ghp_heating_thermal_factors": [
+   7,
+   11
+  ],
+  "reopt_chp_defaults": [
+   7
+  ],
+  "reopt_reference_building_electric_load": [
+   7,
+   11
+  ],
+  "reopt_reference_building_space_heating": [
+   7,
+   11
+  ],
+  "sandia_pv_module_parameters": [
+   7
+  ],
+  "premise_metal_intensities": [
+   7,
+   12
+  ],
+  "premise_solar_pv_efficiency": [
+   7
+  ],
+  "premise_oil_product_volumes": [
+   7,
+   12
+  ],
+  "premise_stationary_battery_scenarios": [
+   7
+  ],
+  "hbefa42_car_non_exhaust_emissions": [
+   3,
+   11
+  ],
+  "hbefa42_car_exhaust_emissions": [
+   3,
+   11,
+   13
+  ],
+  "hbefa42_truck_exhaust_emissions": [
+   3,
+   11,
+   13
+  ],
+  "nmhc_species_shares_cars": [
+   3
+  ],
+  "car_emission_degradation_factors": [
+   3,
+   11
+  ],
+  "carbon_offset_project_types": [
+   13,
+   15
+  ],
+  "carbon_offset_protocols": [
+   13
+  ],
+  "ocds_applies_to": [
+   12,
+   16
+  ],
+  "ocds_asset_class": [
+   9,
+   16
+  ],
+  "ocds_award_criteria": [
+   12,
+   16
+  ],
+  "ocds_award_criterion_fixed": [
+   12,
+   16
+  ],
+  "ocds_award_criterion_type": [
+   12,
+   16
+  ],
+  "ocds_award_status": [
+   12,
+   16
+  ],
+  "ocds_bid_status": [
+   12,
+   16
+  ],
+  "ocds_charge_paid_by": [
+   12,
+   16
+  ],
+  "ocds_contract_status": [
+   12,
+   16
+  ],
+  "ocds_country": [
+   16,
+   17
+  ],
+  "ocds_covered_by": [
+   12,
+   16
+  ],
+  "ocds_criterion_threshold": [
+   12,
+   16
+  ],
+  "ocds_criterion_weight": [
+   12,
+   16
+  ],
+  "ocds_currency": [
+   16,
+   17
+  ],
+  "ocds_debt_repayment_priority": [
+   16,
+   17
+  ],
+  "ocds_document_type": [
+   12,
+   16
+  ],
+  "ocds_dynamic_purchasing_system_status": [
+   12,
+   16
+  ],
+  "ocds_dynamic_purchasing_system_type": [
+   12,
+   16
+  ],
+  "ocds_extended_procurement_category": [
+   12,
+   16
+  ],
+  "ocds_financing_arrangement_type": [
+   9,
+   16,
+   17
+  ],
+  "ocds_financing_party_type": [
+   9,
+   16,
+   17
+  ],
+  "ocds_framework_agreement_method": [
+   12,
+   16
+  ],
+  "ocds_geometry_type": [
+   11,
+   16
+  ],
+  "ocds_item_classification_scheme": [
+   12,
+   16
+  ],
+  "ocds_location_gazetteers": [
+   11,
+   16
+  ],
+  "ocds_method": [
+   12,
+   16
+  ],
+  "ocds_method_of_payment": [
+   12,
+   16
+  ],
+  "ocds_milestone_status": [
+   12,
+   16
+  ],
+  "ocds_milestone_type": [
+   12,
+   16
+  ],
+  "ocds_monetary_value": [
+   12,
+   16
+  ],
+  "ocds_participation_fee_type": [
+   12,
+   16
+  ],
+  "ocds_party_role": [
+   12,
+   16
+  ],
+  "ocds_party_scale": [
+   8,
+   16
+  ],
+  "ocds_permission": [
+   12,
+   16
+  ],
+  "ocds_procurement_category": [
+   12,
+   16
+  ],
+  "ocds_related_process": [
+   12,
+   16
+  ],
+  "ocds_related_process_scheme": [
+   12,
+   16
+  ],
+  "ocds_release_tag": [
+   12,
+   16
+  ],
+  "ocds_reserved_participation": [
+   8,
+   10,
+   16
+  ],
+  "ocds_selection_criterion_type": [
+   12,
+   16
+  ],
+  "ocds_statistic": [
+   12,
+   16
+  ],
+  "ocds_submission_method": [
+   12,
+   16
+  ],
+  "ocds_submission_type": [
+   12,
+   16
+  ],
+  "ocds_sustainability_goal": [
+   12,
+   16
+  ],
+  "ocds_sustainability_strategy": [
+   12,
+   16
+  ],
+  "ocds_tender_status": [
+   12,
+   16
+  ],
+  "ocds_unit_classification_scheme": [
+   12,
+   16
+  ],
+  "ocds_eu_foreign_subsidy_measures": [
+   12,
+   16
+  ],
+  "ocds_eu_sources": [
+   12,
+   16
+  ],
+  "ocds_eu_voting_rights": [
+   12,
+   16
+  ],
+  "ocds_eu_bid_statistics": [
+   12,
+   16
+  ],
+  "eforms_ocds_buyer_contracting_type": [
+   12,
+   16
+  ],
+  "eforms_ocds_dps_usage": [
+   12,
+   16
+  ],
+  "eforms_ocds_environmental_impact": [
+   12,
+   13,
+   16
+  ],
+  "eforms_ocds_form_type": [
+   12,
+   16
+  ],
+  "eforms_ocds_framework_agreement_method": [
+   12,
+   16
+  ],
+  "eforms_ocds_gpp_criteria": [
+   12,
+   13,
+   16
+  ],
+  "eforms_ocds_innovative_acquisition": [
+   9,
+   16
+  ],
+  "eforms_ocds_number_fixed": [
+   12,
+   16
+  ],
+  "eforms_ocds_number_threshold": [
+   12,
+   16
+  ],
+  "eforms_ocds_number_weight": [
+   12,
+   16
+  ],
+  "eforms_ocds_organisation_role": [
+   12,
+   16
+  ],
+  "eforms_ocds_procurement_procedure_type": [
+   12,
+   16
+  ],
+  "eforms_ocds_received_submission_type": [
+   12,
+   16
+  ],
+  "eforms_ocds_selection_criterion": [
+   12,
+   16
+  ],
+  "eforms_ocds_social_objective": [
+   5,
+   10,
+   16
+  ],
+  "eforms_ocds_strategic_procurement": [
+   12,
+   13,
+   16
+  ],
+  "ocds_data_type": [
+   16
+  ],
+  "ocds_risk_allocation": [
+   9,
+   16,
+   17
+  ],
+  "ocds_risk_category": [
+   9,
+   16,
+   17
+  ],
+  "ocds_metric_id": [
+   9,
+   17
+  ],
+  "ocds_milestone_code": [
+   9,
+   17
+  ],
+  "ocds_administration_route": [
+   3,
+   16
+  ],
+  "ocds_dosage_form": [
+   3,
+   16
+  ],
+  "ocds_immediate_container": [
+   3,
+   16
+  ],
+  "ocds_exchange_rate_source": [
+   16,
+   17
+  ],
+  "ocds_pre_qualification_status": [
+   16
+  ],
+  "iati_activity_date_type": [
+   17
+  ],
+  "iati_activity_scope": [
+   17
+  ],
+  "iati_activity_status": [
+   17
+  ],
+  "iati_aid_type_category": [
+   17
+  ],
+  "iati_aid_type": [
+   17
+  ],
+  "iati_aid_type_vocabulary": [
+   17
+  ],
+  "iati_budget_identifier": [
+   17
+  ],
+  "iati_budget_identifier_sector_category": [
+   17
+  ],
+  "iati_budget_identifier_sector": [
+   17
+  ],
+  "iati_budget_identifier_vocabulary": [
+   17
+  ],
+  "iati_budget_not_provided": [
+   17
+  ],
+  "iati_budget_status": [
+   17
+  ],
+  "iati_budget_type": [
+   17
+  ],
+  "iati_crsadd_other_flags": [
+   17
+  ],
+  "iati_crschannel_code": [
+   17
+  ],
+  "iati_cashand_voucher_modalities": [
+   1,
+   17
+  ],
+  "iati_collaboration_type": [
+   17
+  ],
+  "iati_condition_type": [
+   17
+  ],
+  "iati_contact_type": [
+   17
+  ],
+  "iati_country": [
+   17
+  ],
+  "iati_currency": [
+   17
+  ],
+  "iati_description_type": [
+   17
+  ],
+  "iati_disbursement_channel": [
+   17
+  ],
+  "iati_document_category_category": [
+   17
+  ],
+  "iati_document_category": [
+   17
+  ],
+  "iati_earmarking_category": [
+   17
+  ],
+  "iati_finance_type_category": [
+   17
+  ],
+  "iati_finance_type": [
+   17
+  ],
+  "iati_flow_type": [
+   17
+  ],
+  "iati_gazetteer_agency": [
+   17
+  ],
+  "iati_geographic_exactness": [
+   17
+  ],
+  "iati_geographic_location_class": [
+   17
+  ],
+  "iati_geographic_location_reach": [
+   17
+  ],
+  "iati_geographic_vocabulary": [
+   17
+  ],
+  "iati_geographical_precision": [
+   17
+  ],
+  "iati_humanitarian_scope_type": [
+   1,
+   11,
+   17
+  ],
+  "iati_humanitarian_scope_vocabulary": [
+   1,
+   11,
+   17
+  ],
+  "iati_iatiorganisation_identifier": [
+   17
+  ],
+  "iati_indicator_measure": [
+   17
+  ],
+  "iati_indicator_vocabulary": [
+   17
+  ],
+  "iati_loan_repayment_period": [
+   17
+  ],
+  "iati_loan_repayment_type": [
+   17
+  ],
+  "iati_location_type_category": [
+   17
+  ],
+  "iati_location_type": [
+   17
+  ],
+  "iati_organisation_identifier": [
+   17
+  ],
+  "iati_organisation_role": [
+   17
+  ],
+  "iati_organisation_type": [
+   17
+  ],
+  "iati_other_identifier_type": [
+   17
+  ],
+  "iati_policy_marker": [
+   5,
+   13,
+   17
+  ],
+  "iati_policy_marker_vocabulary": [
+   17
+  ],
+  "iati_policy_significance": [
+   5,
+   13,
+   17
+  ],
+  "iati_publisher_type": [
+   17
+  ],
+  "iati_region": [
+   17
+  ],
+  "iati_region_vocabulary": [
+   17
+  ],
+  "iati_related_activity_type": [
+   17
+  ],
+  "iati_result_type": [
+   17
+  ],
+  "iati_sector": [
+   1,
+   2,
+   3,
+   6,
+   7,
+   17
+  ],
+  "iati_sector_category": [
+   1,
+   2,
+   3,
+   6,
+   7,
+   17
+  ],
+  "iati_sector_vocabulary": [
+   17
+  ],
+  "iati_tag_vocabulary": [
+   17
+  ],
+  "iati_tied_status": [
+   17
+  ],
+  "iati_transaction_type": [
+   17
+  ],
+  "iati_unsdg_goals": [
+   17
+  ],
+  "iati_unsdg_targets": [
+   17
+  ],
+  "iati_verification_status": [
+   17
+  ],
+  "unsd_sdg_goals": [
+   17
+  ],
+  "unsd_sdg_targets": [
+   17
+  ],
+  "unsd_sdg_series": [
+   17
+  ],
+  "sdg_sdmx_series_constraints": [
+   17
+  ],
+  "unsd_m49_regions_ldc_lldc_sids": [
+   1,
+   10,
+   17
+  ],
+  "unsd_m49_short_names_multilingual": [
+   17
+  ],
+  "ocha_countries_territories_ids": [
+   11,
+   17
+  ],
+  "ocha_countries_territories_hxl": [
+   11,
+   17
+  ],
+  "hdx_accepted_tags": [
+   17
+  ],
+  "country_codes_coordinates": [
+   17
+  ],
+  "hdx_signals_indicators": [
+   1,
+   2,
+   11,
+   16
+  ],
+  "gender_inequality_index_asia": [
+   5,
+   10
+  ],
+  "who_sdg_regions_country_groups": [
+   3,
+   17
+  ],
+  "who_agency_territory_groups": [
+   3,
+   17
+  ],
+  "wb_income_groups_unicef": [
+   1,
+   10,
+   17
+  ],
+  "unicef_programme_regions": [
+   17
+  ],
+  "dfid_country_names": [
+   17
+  ],
+  "oecd_crs_channel_codes": [
+   17
+  ],
+  "oecd_multilateral_channel_crosswalk": [
+   17
+  ],
+  "oecd_crs_purpose_groups": [
+   17
+  ],
+  "oecd_crs_modalities": [
+   17
+  ],
+  "oecd_crs_type_of_finance": [
+   17
+  ],
+  "oecd_dac1_aid_flow_types": [
+   17
+  ],
+  "oda_indicators": [
+   17
+  ],
+  "ifrc_disaster_types": [
+   1,
+   11,
+   13
+  ],
+  "ifrc_appeal_document_types": [
+   11,
+   17
+  ],
+  "ifrc_actions": [
+   11
+  ],
+  "ifrc_fdrs_indicator": [
+   17
+  ],
+  "ifrc_delegation_office_types": [
+   17
+  ],
+  "ifrc_componentratings": [
+   11,
+   13
+  ],
+  "ifrc_organizationtypes": [
+   17
+  ],
+  "ifrc_flash_actions": [
+   11
+  ],
+  "ifrc_per_components": [
+   11,
+   13
+  ],
+  "gcdb_hazard_cross_probability": [
+   11,
+   13
+  ],
+  "hxl_default_validation_schema": [
+   16,
+   17
+  ],
+  "bods_address_type": [
+   16
+  ],
+  "bods_annotation_motivation": [
+   16
+  ],
+  "bods_direct_or_indirect": [
+   16
+  ],
+  "bods_entity_subtype": [
+   16
+  ],
+  "bods_entity_type": [
+   16
+  ],
+  "bods_interest_type": [
+   16
+  ],
+  "bods_name_type": [
+   16
+  ],
+  "bods_person_type": [
+   16
+  ],
+  "bods_record_status": [
+   16
+  ],
+  "bods_record_type": [
+   16
+  ],
+  "bods_securities_identifier_schemes": [
+   16
+  ],
+  "bods_source_type": [
+   16
+  ],
+  "bods_unspecified_reason": [
+   16
+  ],
+  "us_competition_classification": [
+   16
+  ],
+  "us_reason_for_modification": [
+   16
+  ],
+  "us_vehicle": [
+   16
+  ],
+  "us_contract_type_of_contract_pricing": [
+   16
+  ],
+  "us_letter_contract": [
+   16
+  ],
+  "us_financing_status": [
+   17
+  ],
+  "us_financing_type": [
+   17
+  ],
+  "us_assistance_type_code": [
+   1,
+   17
+  ],
+  "us_action_type_code": [
+   17
+  ],
+  "us_national_interest_action_code": [
+   11,
+   16
+  ],
+  "us_contingency_humanitarian_peacekeeping_operation": [
+   11,
+   16
+  ],
+  "us_location_cow_ccode": [
+   16
+  ],
+  "us_location_country_codes": [
+   17
+  ],
+  "us_naics_hightech_bls": [
+   9
+  ],
+  "epa_304a_aquatic_life_human_health_criteria": [
+   6,
+   14
+  ],
+  "attains_parameter_to_wqp_characteristic": [
+   6
+  ],
+  "attains_water_type_salinity": [
+   6,
+   14
+  ],
+  "attains_water_type_to_wqp_location_type": [
+   6
+  ],
+  "wqp_monitoring_location_type_salinity": [
+   6,
+   14
+  ],
+  "wq_priority_characteristic_target_units": [
+   6
+  ],
+  "wq_priority_characteristic_synonyms": [
+   6
+  ],
+  "usgs_water_quality_units_speciation": [
+   6
+  ],
+  "wq_activity_relative_depth_categories": [
+   6
+  ],
+  "nitrogen_phosphorus_summation_key": [
+   6,
+   14
+  ],
+  "nitrogen_phosphorus_total_equations": [
+   6,
+   14
+  ],
+  "water_quality_portal_column_types": [
+   6
+  ],
+  "disease_eponyms_curated": [
+   3
+  ],
+  "disease_ontology_icd10_crosswalk": [
+   3
+  ],
+  "disease_ontology_mesh_crosswalk": [
+   3
+  ],
+  "disease_ontology_gard_rare_disease_crosswalk": [
+   3
+  ],
+  "disease_ontology_orphanet_crosswalk": [
+   3
+  ],
+  "disease_ontology_nci_thesaurus_crosswalk": [
+   3
+  ],
+  "disease_symptom_associations": [
+   3
+  ],
+  "disease_ontology_icdo_anatomy": [
+   3
+  ],
+  "disease_ontology_logical_definitions": [
+   3
+  ],
+  "envo_biome_hierarchy": [
+   14,
+   15
+  ],
+  "envo_lite_gsc_environment_terms": [
+   14,
+   15
+  ],
+  "envo_chemical_concentration_terms": [
+   6,
+   14
+  ],
+  "foodon_food_source_species": [
+   2,
+   14
+  ],
+  "foodon_fooddata_central_categories": [
+   2
+  ],
+  "foodon_food_products": [
+   2
+  ],
+  "foodon_food_processes": [
+   2,
+   12
+  ],
+  "unicef_maternal_mortality_ratio": [
+   3,
+   5
+  ],
+  "unicef_child_stunting_prevalence": [
+   2,
+   3
+  ],
+  "darwin_core_simple_terms": [
+   14,
+   15
+  ],
+  "darwin_core_all_terms": [
+   14,
+   15
+  ],
+  "chronometric_age_term_versions": [
+   15
+  ],
+  "latimer_core_collection_terms": [
+   15
+  ],
+  "latimer_core_term_categories": [
+   15
+  ],
+  "latimer_core_datatypes": [
+   15
+  ],
+  "latimer_core_skos_mappings": [
+   15
+  ],
+  "audubon_core_subject_part_vocabulary": [
+   15
+  ],
+  "audubon_core_subject_orientation_vocabulary": [
+   15
+  ],
+  "audubon_core_3d_media_terms": [
+   15
+  ],
+  "faostat_crop_items": [
+   2
+  ],
+  "fao_indicative_crop_classification_v10": [
+   2
+  ],
+  "fao_crop_botanical_names": [
+   2,
+   15
+  ],
+  "mapspam_crop_names": [
+   2
+  ],
+  "mapspam_crop_groups": [
+   2
+  ],
+  "mapspam_production_technologies": [
+   2
+  ],
+  "mapspam_variable_structure": [
+   2
+  ],
+  "ilo_reference_area_codes": [
+   5,
+   8,
+   17
+  ],
+  "imf_country_codes": [
+   17
+  ],
+  "world_bank_iso_country_codes": [
+   1,
+   17
+  ],
+  "human_capital_indicator_bounds": [
+   3,
+   4
+  ],
+  "human_capital_index_plus_codebook": [
+   3,
+   4
+  ],
+  "global_education_policy_dashboard_indicators": [
+   4
+  ],
+  "global_education_policy_dashboard_indicator_info": [
+   4
+  ],
+  "sanctsound_species_lookup": [
+   14
+  ],
+  "cremp_dry_tortugas_coral_stations": [
+   14
+  ],
+  "unicef_child_hazard_types": [
+   11,
+   13
+  ],
+  "tick_borne_pathogen_amplicon_targets": [
+   3,
+   15
+  ],
+  "cgiar_information_product_types": [
+   2,
+   17
+  ],
+  "plant_trait_eq_patterns": [
+   2,
+   15
+  ],
+  "plant_trait_composition_terms": [
+   2,
+   15
+  ],
+  "plant_trait_morphology_terms": [
+   2,
+   15
+  ],
+  "plant_trait_stress_responsivity_terms": [
+   2,
+   13,
+   15
+  ],
+  "plant_experimental_chemical_exposures": [
+   2
+  ],
+  "plant_experimental_organism_exposures": [
+   2,
+   15
+  ],
+  "medic_included_diseases": [
+   3
+  ],
+  "medical_action_food_avoidance": [
+   2,
+   3
+  ],
+  "urban_socioeconomic_vulnerability_census_variables": [
+   1,
+   11
+  ],
+  "ademe_transport_emission_factor_mapping": [
+   11,
+   13
+  ],
+  "odk_central": [
+   3,
+   6,
+   16,
+   17
+  ],
+  "openeo": [
+   2,
+   6,
+   13,
+   15
+  ],
+  "open_charge_map": [
+   7,
+   11,
+   13
+  ],
+  "motis": [
+   9,
+   11
+  ],
+  "mobility_database": [
+   11
+  ],
+  "digit": [
+   1,
+   3,
+   6,
+   11,
+   16
+  ],
+  "rafiki": [
+   1,
+   8,
+   10
+  ],
+  "sunbird_rc": [
+   4,
+   16
+  ],
+  "stac_extensions": [
+   2,
+   11,
+   13,
+   14,
+   15
+  ],
+  "gbfs": [
+   11,
+   13
+  ],
+  "mobility_database_catalogs": [
+   11
+  ],
+  "frictionless_data_package": [
+   16,
+   17
+  ],
+  "oemetadata": [
+   7,
+   13
+  ],
+  "osm_id_tagging_schema": [
+   11
+  ],
+  "osm_name_suggestion_index": [
+   11
+  ],
+  "worldbank_metadata_schemas": [
+   17
+  ],
+  "open_sdg_config": [
+   17
+  ],
+  "dpg_standard": [
+   17
+  ],
+  "nasa_cmr_umm": [
+   13,
+   14,
+   15
+  ],
+  "fluids": [
+   6,
+   7,
+   9
+  ],
+  "ht": [
+   7,
+   9,
+   13
+  ],
+  "chemicals": [
+   3,
+   7,
+   12,
+   13
+  ],
+  "keon_algorithms": [],
+  "aima": [],
+  "simplestatistics": [
+   3,
+   17
+  ],
+  "babel": [],
+  "grapefruit": [],
+  "python_utils": [],
+  "sqlglot": [],
+  "persian": [],
+  "tornado_httputil": [],
+  "luhn": [],
+  "pyrfc3339": [],
+  "amortization": [
+   1,
+   8
+  ],
+  "pytimeparse": [],
+  "langcodes": [],
+  "pythainlp": [],
+  "zulip": [
+   9,
+   17
+  ],
+  "moov_ach": [
+   8,
+   9
+  ],
+  "moov_watchman": [
+   8,
+   16
+  ],
+  "moov_fed": [
+   8,
+   9
+  ],
+  "moov_wire": [
+   8,
+   9
+  ],
+  "moov_imagecashletter": [
+   8,
+   9
+  ],
+  "moov_metro2": [
+   1,
+   8
+  ],
+  "acapy": [
+   9,
+   16
+  ],
+  "govstack_payments": [
+   1,
+   8,
+   16
+  ],
+  "govstack_registration": [
+   16,
+   17
+  ],
+  "govstack_registries": [
+   16,
+   17
+  ],
+  "alertmanager": [
+   9
+  ],
+  "unity_catalog": [
+   9,
+   17
+  ],
+  "svix": [
+   9
+  ],
+  "text_embeddings_inference": [
+   9
+  ],
+  "jupyterhub": [
+   4,
+   9
+  ],
+  "openmeter": [
+   9,
+   12
+  ],
+  "influxdb": [
+   9
+  ],
+  "osv": [
+   9,
+   16
+  ],
+  "sigstore_rekor": [
+   9,
+   16
+  ],
+  "sigstore_fulcio": [
+   9,
+   16
+  ],
+  "clair": [
+   9,
+   16
+  ],
+  "zot": [
+   9
+  ],
+  "libre_graph": [
+   9,
+   17
+  ],
+  "the_things_stack": [
+   9,
+   11
+  ],
+  "datadog": [
+   9
+  ],
+  "docusign": [
+   8,
+   16
+  ],
+  "lob": [
+   8,
+   9
+  ],
+  "ory_oathkeeper": [
+   9,
+   16
+  ],
+  "kong_admin": [
+   9
+  ],
+  "ollama": [
+   9
+  ],
+  "mistral": [
+   9
+  ],
+  "paystack": [
+   1,
+   8
+  ],
+  "clerk": [
+   9,
+   16
+  ],
+  "meilisearch": [
+   9
+  ],
+  "hyperledger_firefly": [
+   9,
+   17
+  ],
+  "govuk_pay": [
+   8,
+   16
+  ],
+  "lnd": [
+   1,
+   8
+  ],
+  "cosmos_sdk": [
+   8,
+   9
+  ],
+  "dif_universal_resolver": [
+   9,
+   16
+  ],
+  "dif_universal_registrar": [
+   9,
+   16
+  ],
+  "chirpstack": [
+   2,
+   9,
+   11
+  ],
+  "argo_rollouts": [
+   9
+  ],
+  "nginx_unit": [
+   9
+  ],
+  "kuma": [
+   9
+  ],
+  "wso2_apim": [
+   9
+  ],
+  "ory_polis": [
+   9,
+   16
+  ],
+  "parca": [
+   9,
+   12
+  ],
+  "strimzi_bridge": [
+   9
+  ],
+  "apicurio_registry": [
+   9,
+   17
+  ],
+  "kafbat_ui": [
+   9
+  ],
+  "llama_stack": [
+   9
+  ],
+  "deepgram": [
+   9,
+   10
+  ],
+  "portkey": [
+   9
+  ],
+  "crowdsec": [
+   9,
+   16
+  ],
+  "archivista": [
+   9,
+   16
+  ],
+  "guac": [
+   9,
+   16
+  ],
+  "lithic": [
+   8,
+   9
+  ],
+  "turso": [
+   9
+  ],
+  "chroma": [
+   9
+  ],
+  "gtfs_validator": [
+   9,
+   11
+  ],
+  "helicone": [
+   9
+  ],
+  "fiware": [
+   9,
+   11
+  ],
+  "sunbird_obsrv": [
+   4,
+   9,
+   17
+  ],
+  "cvat": [
+   9
+  ],
+  "prefect": [
+   9
+  ],
+  "haproxy_dataplane": [
+   9
+  ],
+  "fonttools": [
+   4,
+   9
+  ],
+  "thermo": [
+   7,
+   9,
+   12,
+   13
+  ],
+  "setuptools_utils": [
+   9
+  ],
+  "molmass": [
+   3,
+   9
+  ],
+  "rdflib": [
+   9,
+   17
+  ],
+  "xdoctest": [
+   4,
+   9
+  ],
+  "pyteomics": [
+   3,
+   9
+  ],
+  "sgp4": [
+   9,
+   13
+  ],
+  "fsspec_utils": [
+   9
+  ],
+  "mathopt": [
+   9
+  ],
+  "al_go_rithms": [
+   4,
+   9
+  ],
+  "fusionauth": [
+   9,
+   16
+  ],
+  "tractusx_dtr": [
+   9,
+   12
+  ],
+  "mailpit": [
+   9
+  ],
+  "deepl": [
+   4,
+   9
+  ],
+  "openbanking_uk_directory": [
+   8,
+   9
+  ],
+  "symphony": [
+   8,
+   9
+  ],
+  "sailpoint": [
+   9,
+   16
+  ],
+  "phrase_strings": [
+   4,
+   9
+  ],
+  "surrealdb": [
+   9
+  ],
+  "blockfrost": [
+   8,
+   9
+  ],
+  "hyperswitch": [
+   8,
+   9
+  ],
+  "formance_ledger": [
+   8,
+   9
+  ],
+  "manticore": [
+   9
+  ],
+  "pomerium_zero": [
+   9,
+   16
+  ],
+  "openziti": [
+   9,
+   16
+  ],
+  "firezone": [
+   9,
+   16
+  ],
+  "keycloak_admin_client": [
+   9,
+   16
+  ],
+  "gogs": [
+   9
+  ],
+  "gravitee_apim": [
+   9
+  ],
+  "supabase_auth": [
+   9,
+   16
+  ],
+  "hasura_data_connector": [
+   9
+  ],
+  "nhost": [
+   9
+  ],
+  "cal_diy": [
+   8,
+   9
+  ],
+  "trigger_dev": [
+   9
+  ],
+  "owncast": [
+   4,
+   9
+  ],
+  "komga": [
+   4,
+   9
+  ],
+  "evcc": [
+   7,
+   13
+  ],
+  "gematik_erp": [
+   3
+  ],
+  "stac_server": [
+   9,
+   13,
+   15
+  ],
+  "gematik_epa": [
+   3
+  ],
+  "gematik_vzd": [
+   3
+  ],
+  "govuk_content_data": [
+   16,
+   17
+  ],
+  "nasa_covid_api": [
+   3,
+   13
+  ],
+  "gematik_popp": [
+   3
+  ],
+  "digit_health_campaign": [
+   3,
+   16
+  ],
+  "ons_aims": [
+   11,
+   17
+  ],
+  "govuk_search_v2": [
+   16
+  ],
+  "dfe_signin_public": [
+   4,
+   16
+  ],
+  "moj_legal_framework": [
+   10,
+   16
+  ],
+  "ons_rm_collection_exercise": [
+   16,
+   17
+  ],
+  "ons_rm_case": [
+   16,
+   17
+  ],
+  "ons_rm_sample": [
+   16,
+   17
+  ],
+  "nhs_notify_supplier": [
+   3
+  ],
+  "cms_emmy": [
+   1,
+   3,
+   4
+  ],
+  "hmrc_pillar2": [
+   16,
+   17
+  ],
+  "moj_education_work_plan": [
+   4,
+   16
+  ],
+  "moj_laa_claims": [
+   10,
+   16
+  ],
+  "sunbird_user_registry": [
+   16,
+   17
+  ],
+  "who_tbsequencing": [
+   3
+  ],
+  "nasa_eis_dashboard": [
+   13,
+   15
+  ],
+  "adl_elrr_services": [
+   4,
+   8
+  ],
+  "adl_elrr_external": [
+   4,
+   8
+  ],
+  "govuk_one_login_ipv_reuse": [
+   16
+  ],
+  "govuk_one_login_account_mgmt": [
+   16
+  ],
+  "line": [
+   9,
+   17
+  ],
+  "outline": [
+   4,
+   9
+  ],
+  "neynar": [
+   9
+  ],
+  "mastercard_ob_us": [
+   8,
+   9
+  ],
+  "edfi_resources": [
+   4
+  ],
+  "edfi_descriptors": [
+   4
+  ],
+  "edfi": [
+   4
+  ],
+  "ga4gh_tes": [
+   3,
+   9
+  ],
+  "ga4gh_wes": [
+   3,
+   9
+  ],
+  "ga4gh_registry": [
+   3,
+   9
+  ],
+  "ga4gh_htsget": [
+   3,
+   9
+  ],
+  "identus_cloud_agent": [
+   9,
+   16
+  ],
+  "datacite": [
+   9,
+   17
+  ],
+  "owf_vc_api": [
+   9,
+   16
+  ],
+  "fhir_validator": [
+   3
+  ],
+  "kubeflow_model_registry": [
+   9
+  ],
+  "kubeedge": [
+   9
+  ],
+  "karmada": [
+   9
+  ],
+  "tekton_results": [
+   9
+  ],
+  "authzed": [
+   9,
+   16
+  ],
+  "kubescape": [
+   9,
+   16
+  ],
+  "mlserver": [
+   9
+  ],
+  "openlit": [
+   9
+  ],
+  "agentops": [
+   9
+  ],
+  "continue_hub": [
+   9
+  ],
+  "microcks": [
+   9
+  ],
+  "wiremock_admin": [
+   9
+  ],
+  "backstage_community_plugins": [
+   9
+  ],
+  "wso2_api_platform": [
+   9
+  ],
+  "wso2_agent_manager": [
+   9
+  ],
+  "spark_history_server": [
+   9
+  ],
+  "maas": [
+   9
+  ],
+  "stackrox": [
+   9,
+   16
+  ],
+  "chargebee": [
+   8,
+   9
+  ],
+  "semaphore": [
+   9
+  ],
+  "simple_org": [
+   3
+  ],
+  "seqrepo": [
+   3,
+   9
+  ],
+  "basyx_registry": [
+   9,
+   12
+  ],
+  "tractusx_puris": [
+   9,
+   12
+  ],
+  "tractusx_dim_wallet_stub": [
+   9,
+   16
+  ],
+  "tractusx_semantic_hub": [
+   9,
+   12
+  ],
+  "incus": [
+   9
+  ],
+  "tidb_dashboard": [
+   9
+  ],
+  "tidb_dm": [
+   9
+  ],
+  "langflow": [
+   9
+  ],
+  "dryad": [
+   9,
+   17
+  ],
+  "ofrep": [
+   9
+  ],
+  "go_feature_flag": [
+   9
+  ],
+  "hyperdx": [
+   9
+  ],
+  "open_inference": [
+   9
+  ],
+  "tractusx_irs": [
+   9,
+   12
+  ],
+  "tractusx_sde": [
+   9,
+   12
+  ],
+  "tractusx_autosetup": [
+   9
+  ]
+ },
+ "sources_per_goal": {
+  "1": 31,
+  "2": 46,
+  "3": 70,
+  "4": 29,
+  "5": 19,
+  "6": 23,
+  "7": 89,
+  "8": 47,
+  "9": 184,
+  "10": 21,
+  "11": 54,
+  "12": 122,
+  "13": 77,
+  "14": 24,
+  "15": 43,
+  "16": 163,
+  "17": 166
+ }
+}
