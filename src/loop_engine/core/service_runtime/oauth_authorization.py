@@ -11,7 +11,7 @@ as digests. Public PKCE clients are the only supported registration profile.
 from __future__ import annotations
 
 import asyncio
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 import hashlib
 import re
 import secrets
@@ -30,6 +30,7 @@ from .records import DEFAULT_SCOPES, ServicePrincipal, ServiceRuntimeError, dige
 from .runtime import ServiceRuntime, SESSION_REVOCATION, SUBJECT
 
 OAUTH_ACCESS_MODE = "oauth_access_token"
+POLICY_VERSION = "service_oauth_authorization_policy/v1"
 CLIENT, REQUEST, CODE, GRANT, ACCESS, REFRESH, LIMITS = (
     "service_oauth_client", "service_oauth_request", "service_oauth_code", "service_oauth_grant",
     "service_oauth_access", "service_oauth_refresh", "service_oauth_limits",
@@ -57,7 +58,7 @@ def _url(value, *, loopback=False):
         parsed.port
     except ValueError:
         raise ServiceRuntimeError("invalid_oauth_policy") from None
-    if (parsed.username or parsed.password or parsed.fragment or not parsed.hostname
+    if (parsed.username is not None or parsed.password is not None or "#" in value or not parsed.hostname
             or (parsed.scheme != "https" and not (loopback and parsed.scheme == "http"
                 and parsed.hostname in ("localhost", "127.0.0.1", "::1")))):
         raise ServiceRuntimeError("invalid_oauth_policy")
@@ -72,6 +73,7 @@ class OAuthAuthorizationPolicy:
     consent_url: str
     redirect_uris: tuple[str, ...] = ()
     redirect_uri_prefixes: tuple[str, ...] = ()
+    native_loopback_paths: tuple[str, ...] = ()
     allowed_scopes: tuple[str, ...] = DEFAULT_SCOPES
     authorization_lifetime_seconds: int = 600
     code_lifetime_seconds: int = 120
@@ -79,9 +81,12 @@ class OAuthAuthorizationPolicy:
     refresh_lifetime_seconds: int = 604800
     max_clients: int = 128
     max_records: int = 20000
+    record_type: str = POLICY_VERSION
 
     def __post_init__(self):
-        for name in ("redirect_uris", "redirect_uri_prefixes", "allowed_scopes"):
+        if self.record_type != POLICY_VERSION:
+            raise ServiceRuntimeError("unsupported_oauth_policy_version")
+        for name in ("redirect_uris", "redirect_uri_prefixes", "native_loopback_paths", "allowed_scopes"):
             value = getattr(self, name)
             if not isinstance(value, (list, tuple)) or any(type(item) is not str for item in value):
                 raise ServiceRuntimeError("invalid_oauth_policy")
@@ -96,7 +101,10 @@ class OAuthAuthorizationPolicy:
             _url(value, loopback=True)
         if set(self.redirect_uri_prefixes) - {OPENAI_CALLBACK_PREFIX}:
             raise ServiceRuntimeError("invalid_oauth_redirect_policy")
-        if not self.redirect_uris and not self.redirect_uri_prefixes:
+        if any(not re.fullmatch(r"/[A-Za-z0-9._~/-]*", path) or "//" in path
+               or any(part in (".", "..") for part in path.split("/")) for path in self.native_loopback_paths):
+            raise ServiceRuntimeError("invalid_oauth_redirect_policy")
+        if not self.redirect_uris and not self.redirect_uri_prefixes and not self.native_loopback_paths:
             raise ServiceRuntimeError("oauth_redirect_policy_required")
         for name in ("authorization_lifetime_seconds", "code_lifetime_seconds", "access_lifetime_seconds",
                      "refresh_lifetime_seconds", "max_clients", "max_records"):
@@ -110,10 +118,24 @@ class OAuthAuthorizationPolicy:
             raise ServiceRuntimeError("invalid_oauth_policy")
 
     def permits_redirect(self, value):
+        if not isinstance(value, str) or len(value) > 2048 or any(ord(c) < 33 for c in value) or "\\" in value:
+            return False
         if value in self.redirect_uris:
+            return True
+        try:
+            parsed = urlsplit(value)
+            port = parsed.port
+        except ValueError:
+            return False
+        if (parsed.scheme == "http" and parsed.hostname in ("localhost", "127.0.0.1", "::1")
+                and parsed.username is None and parsed.password is None and "?" not in value and "#" not in value
+                and parsed.path in self.native_loopback_paths and (port is None or 1 <= port <= 65535)):
             return True
         return any(value.startswith(prefix) and re.fullmatch(r"[A-Za-z0-9_-]{1,128}", value[len(prefix):])
                    for prefix in self.redirect_uri_prefixes)
+
+    def to_dict(self):
+        return asdict(self)
 
 
 @dataclass(frozen=True)

@@ -150,6 +150,30 @@ class OAuthAuthorizationTests(unittest.IsolatedAsyncioTestCase):
             replace(policy, redirect_uri_prefixes=("https://unapproved.example/",))
         with self.assertRaises(ServiceRuntimeError):
             replace(policy, issuer_url="https://baltor.example.test:99999")
+        with self.assertRaises(ServiceRuntimeError) as version:
+            replace(policy, record_type="service_oauth_authorization_policy/v2")
+        self.assertEqual(version.exception.code, "unsupported_oauth_policy_version")
+        self.assertEqual(OAuthAuthorizationPolicy(**json.loads(json.dumps(policy.to_dict()))), policy)
+
+    async def test_native_loopback_random_ports_keep_literal_hosts_and_paths(self):
+        policy = replace(self.policy, native_loopback_paths=("/oauth/callback",))
+        for uri in ("http://localhost:31415/oauth/callback", "http://127.0.0.1:65535/oauth/callback",
+                    "http://[::1]:48000/oauth/callback", "http://localhost/oauth/callback"):
+            self.assertTrue(policy.permits_redirect(uri))
+        for uri in ("https://localhost:31415/oauth/callback", "http://localhost.evil.example/oauth/callback",
+                    "http://localhost@evil.example/oauth/callback", "http://user@localhost:3000/oauth/callback",
+                    "http://@localhost:3000/oauth/callback", "http://localhost:3000/oauth/callback?",
+                    "http://localhost:3000/oauth/callback#",
+                    "http://127.0.0.2:3000/oauth/callback", "http://192.0.2.1:3000/oauth/callback",
+                    "http://[::2]:3000/oauth/callback", "http://localhost:0/oauth/callback",
+                    "http://localhost:65536/oauth/callback", "http://localhost:3000/other",
+                    "http://localhost:3000/oauth/../callback", "http://localhost:3000/oauth/%2e%2e/callback",
+                    "http://localhost:3000/oauth/callback?next=outside", "http://localhost:3000/oauth/callback#fragment",
+                    "http://localhost:3000//oauth/callback", "http://localhost:3000/oauth\\callback"):
+            self.assertFalse(policy.permits_redirect(uri), "a nonliteral native callback was accepted")
+        for path in ("//callback", "/oauth/../callback", "/oauth/%2e%2e/callback", "/callback?next=x"):
+            with self.assertRaises(ServiceRuntimeError):
+                replace(policy, native_loopback_paths=(path,))
 
     async def test_consent_is_explicit_single_use_and_denial_mints_no_code(self):
         pending = await self.pending()
