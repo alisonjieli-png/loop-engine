@@ -4913,6 +4913,5406 @@
    "keyed_records",
    "name",
    null
+  ],
+  [
+   "tt_alcohol_consumption_by_country",
+   "Alcohol consumption per person by country: beer, spirit and wine servings and litres of pure alcohol",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2018/2018-06-26/week13_alcohol_global.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_california_wildfire_incidents",
+   "California wildfires by year: number of fires, acres burned and dollar damage",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2018/2018-08-21/cal-fire-incidents.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_california_wildfire_damage_by_year",
+   "California wildfire structures destroyed by year",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2018/2018-08-21/calfire_damage.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_invasive_species_threat_by_country",
+   "Invasive species threat and total invasion cost by country (Paini et al.)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2018/2018-09-25/table_1.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_invasive_species_cost_by_country",
+   "Invasive species total and per-GDP invasion cost to agriculture by country",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2018/2018-09-25/table_2.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_invasive_species_africa_list",
+   "Invasive species present in African countries",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2018/2018-09-25/table_6.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_malaria_deaths_per_100k",
+   "Malaria deaths per 100,000 people by country and year (IHME via OWID)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2018/2018-11-13/malaria_deaths.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_malaria_incidence_per_1000_at_risk",
+   "Malaria incidence per 1,000 population at risk by country and year (WHO via OWID)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2018/2018-11-13/malaria_inc.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_us_pretrial_jail_population",
+   "United States pretrial jail population by urbanicity, race and year (Vera Institute)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2019/2019-01-22/pretrial_summary.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_us_prison_population_summary",
+   "United States prison population by urbanicity, race and year (Vera Institute)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2019/2019-01-22/prison_summary.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_us_dairy_consumption_per_person",
+   "United States dairy product consumption per person by year (USDA)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2019/2019-01-29/milk_products_facts.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_us_milk_cow_facts",
+   "United States milk cows, production per cow and feed prices by year (USDA)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2019/2019-01-29/milkcow_facts.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_us_milk_production_by_state",
+   "United States milk production by state, region and year (USDA)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2019/2019-01-29/state_milk_production.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_us_federal_climate_spending",
+   "United States federal climate change research spending by department and year",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2019/2019-02-12/climate_spending.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_us_federal_energy_rd_spending",
+   "United States Department of Energy research spending by program and year",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2019/2019-02-12/energy_spending.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_us_federal_rd_spending",
+   "United States federal research and development budget by agency and year",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2019/2019-02-12/fed_r_d_spending.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_us_earnings_female_to_male",
+   "United States women's earnings as a percent of men's by age group and year (BLS)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2019/2019-03-05/earnings_female.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_us_employment_by_gender",
+   "United States full-time and part-time employment shares by gender and year (BLS)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2019/2019-03-05/employed_gender.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_women_research_by_field_country",
+   "Share of women among research authors by field and country (Economist/Elsevier)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2019/2019-04-16/women_research.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_us_manufacturing_trade_deficit",
+   "United States trade deficit and manufacturing employment by year (Economist)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2019/2019-04-16/trade.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_pension_spending_vs_aged_population",
+   "Government pension spending and share of population over 65 by country (Economist)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2019/2019-04-16/pensions.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_nuclear_explosions",
+   "Nuclear explosions 1945-1998 with country, yield, depth and purpose (SIPRI)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2019/2019-08-20/nuclear_explosions.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_us_bike_walk_commuting_by_city",
+   "Bicycling and walking to work by United States city (ACS 2008-2012)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2019/2019-11-05/commute.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_international_murder_rates",
+   "Homicide rates per 100,000 by country (international comparison)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2019/2019-12-10/international_murders.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_gun_murder_rates_by_country",
+   "Gun murder rates per 100,000 by country",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2019/2019-12-10/gun_murders.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_food_consumption_co2_by_country",
+   "Food consumption and CO2 emissions by food category and country (nu3)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2020/2020-02-18/food_consumption.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_traumatic_brain_injury_by_age",
+   "United States traumatic brain injury counts and rates by age group and injury mechanism (CDC)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2020/2020-03-24/tbi_age.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_volcano_list",
+   "Holocene volcanoes with type, last eruption, elevation and nearby population (Smithsonian GVP)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2020/2020-05-12/volcano.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_palmer_penguins",
+   "Palmer Archipelago penguin measurements by species, island and sex",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2020/2020-07-28/penguins.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_european_energy_by_type",
+   "European electricity production by country and energy type (Eurostat)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2020/2020-08-04/energy_types.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_european_energy_country_totals",
+   "European electricity totals: production, imports, exports and losses by country (Eurostat)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2020/2020-08-04/country_totals.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_plants_in_danger",
+   "Extinct and threatened plant species with threats and actions taken (IUCN Red List)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2020/2020-08-18/plants.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_bbc_100_women_2020",
+   "BBC 100 Women of 2020 with country, role and category",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2020/2020-12-08/women.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_big_mac_index",
+   "The Economist's Big Mac index: local prices, dollar exchange rates and GDP per person",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2020/2020-12-22/big-mac.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_transit_construction_costs",
+   "Urban rail transit project construction costs per kilometre by city (Transit Costs Project)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2021/2021-01-05/transit_cost.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_kenya_census_crops_by_county",
+   "Kenya 2019 census: farming households by crop and county",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2021/2021-01-19/crops.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_kenya_census_gender_by_county",
+   "Kenya 2019 census: population by gender and county, including intersex",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2021/2021-01-19/gender.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_kenya_census_households_by_county",
+   "Kenya 2019 census: population, households and average household size by county",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2021/2021-01-19/households.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_us_income_distribution_by_race",
+   "United States household income distribution by race and year (Census)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2021/2021-02-09/income_distribution.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_us_income_limits_by_quintile",
+   "United States household income limits by quintile, race and year (Census)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2021/2021-02-09/income_limits.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_us_income_mean_by_quintile",
+   "United States mean household income by quintile, race and year (Census)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2021/2021-02-09/income_mean.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_us_wealth_by_race",
+   "United States family wealth by race and year (Urban Institute)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2021/2021-02-09/race_wealth.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_us_home_ownership_by_race",
+   "United States home ownership percentage by race and year (Urban Institute)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2021/2021-02-09/home_owner.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_us_retirement_savings_by_race",
+   "United States family liquid retirement savings by race and year (Urban Institute)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2021/2021-02-09/retirement.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_us_student_debt_by_race",
+   "United States share of families with student loan debt by race and year (Urban Institute)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2021/2021-02-09/student_debt.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_us_lifetime_earnings_by_race_gender",
+   "United States average lifetime earnings by race and gender (Urban Institute)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2021/2021-02-09/lifetime_earn.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_brazil_forest_loss_drivers",
+   "Brazilian Amazon forest loss by driver and year (OWID)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2021/2021-04-06/brazil_loss.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_deforestation_by_source",
+   "Tropical deforestation attributed to commodity drivers by country (OWID)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2021/2021-04-06/deforestation_by_source.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_forest_area_change_by_country",
+   "Net forest area conversion by country and year (OWID/FAO)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2021/2021-04-06/forest.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_us_broadband_availability_by_county",
+   "United States broadband availability and usage by county (FCC and Microsoft)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2021/2021-05-11/broadband.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_us_city_park_rankings",
+   "United States city park access and amenities rankings (Trust for Public Land ParkScore)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2021/2021-06-22/parks.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_lemur_taxonomy",
+   "Lemur taxonomy codes and species names (Duke Lemur Center)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2021/2021-08-24/taxonomy.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_us_registered_nurses_by_state",
+   "United States registered nurse employment and wages by state and year (BLS)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2021/2021-10-05/nurses.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_fish_stocks_sustainable_share",
+   "Share of fish stocks within biologically sustainable levels by year (FAO via OWID)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2021/2021-10-12/fish-stocks-within-sustainable-levels.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_global_fishery_catch_by_sector",
+   "Global fishery catch by sector: artisanal, industrial, recreational, subsistence (Sea Around Us via OWID)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2021/2021-10-12/global-fishery-catch-by-sector.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_us_bee_colonies",
+   "United States honey bee colonies, losses and additions by state and quarter (USDA)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2022/2022-01-11/colony.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_freedom_in_the_world",
+   "Freedom in the World civil liberties and political rights scores by country and year (Freedom House/UN)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2022/2022-02-22/freedom.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_nz_life_tables",
+   "New Zealand life tables: life expectancy by age, sex and period",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2022/2022-03-22/lifetables.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_clean_cooking_fuel_access",
+   "Share of population with access to clean fuels and technologies for cooking by country and year (OWID/World Bank)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2022/2022-04-12/fuel_access.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_us_energy_average_cost",
+   "United States average power purchase cost by energy source and year (Berkeley Lab)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2022/2022-05-03/average_cost.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_us_energy_capacity",
+   "United States power capacity under construction and in queue by energy type and year (Berkeley Lab)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2022/2022-05-03/capacity.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_us_solar_ppa_prices",
+   "United States utility-scale solar power purchase agreement prices and capacity (Berkeley Lab)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2022/2022-05-03/solar.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_us_wind_ppa_prices",
+   "United States wind power purchase agreement prices and capacity (Berkeley Lab)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2022/2022-05-03/wind.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_uk_sic_2007_condensed",
+   "UK Standard Industrial Classification 2007 condensed list of codes and descriptions",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2022/2022-06-28/SIC07_CH_condensed_list_en.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_cage_free_egg_percentages",
+   "United States share of cage-free hens and eggs by month (Humane League)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2023/2023-04-11/cage-free-percentages.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_us_egg_production",
+   "United States egg production by hen housing type and month (USDA)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2023/2023-04-11/egg-production.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_portal_project_species",
+   "Portal Project desert rodent species codes, names and taxa",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2023/2023-05-02/species.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_portal_project_plots",
+   "Portal Project experimental plot treatments",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2023/2023-05-02/plots.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_global_temperature_anomalies",
+   "NASA GISTEMP global monthly and seasonal temperature anomalies by year",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2023/2023-07-11/global_temps.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_zonal_temperature_anomalies",
+   "NASA GISTEMP annual temperature anomalies by latitude zone",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2023/2023-07-11/zonann_temps.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_global_human_day",
+   "The global human day: average hours per day spent on activities, by country (Human Chronome Project)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2023/2023-09-12/global_human_day.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_global_economic_activity_time",
+   "Global average hours per day by economic activity category (Human Chronome Project)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2023/2023-09-12/global_economic_activity.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_mr_trash_wheel_collections",
+   "Mr. Trash Wheel and sister wheels: litter collected per dumpster, including plastic bottles and bags",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2024/2024-03-05/trashwheel.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_worldwide_bureaucracy_by_country",
+   "Worldwide Bureaucracy Indicators country metadata: income group, region, lending type (World Bank)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2024/2024-04-30/wwbi_country.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_worldwide_bureaucracy_series",
+   "Worldwide Bureaucracy Indicators series codes and names (World Bank)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2024/2024-04-30/wwbi_series.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_cia_factbook_country_stats",
+   "CIA World Factbook country statistics: area, birth and death rates, infant mortality, life expectancy, population",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2024/2024-10-22/cia_factbook.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_iso_3166_2_subdivisions",
+   "ISO 3166-2 country subdivision codes, names and categories",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2024/2024-11-12/country_subdivisions.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_iso_3166_3_former_countries",
+   "ISO 3166-3 former country codes, names and withdrawal dates",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2024/2024-11-12/former_countries.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_us_timely_effective_care_by_state",
+   "United States hospital timely and effective care measures by state (CMS)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2025/2025-04-08/care_state.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_measles_rubella_cases_by_year",
+   "Measles and rubella cases by country and year (WHO provisional data)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2025/2025-06-24/cases_year.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_income_inequality_before_after_tax",
+   "Income inequality Gini before and after taxes by country and year (OWID/LIS)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2025/2025-08-05/income_inequality_processed.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_flint_lead_samples_mdeq",
+   "Flint, Michigan drinking water lead samples (Michigan DEQ)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2025/2025-11-04/flint_mdeq.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_uk_met_station_metadata",
+   "UK Met Office historic weather station metadata",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2025/2025-10-21/station_meta.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_edible_plants_database",
+   "Edible plant species with growing requirements, sowing and harvest guidance (GROW Observatory)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2026/2026-02-03/edible_plants.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_nz_agricultural_production",
+   "New Zealand agricultural production statistics by commodity and year (StatsNZ)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2026/2026-02-17/dataset.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_norway_salmonid_monthly_losses",
+   "Norwegian farmed salmonid monthly losses by cause and region (Norwegian Veterinary Institute)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2026/2026-03-17/monthly_losses_data.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_norway_salmonid_monthly_mortality",
+   "Norwegian farmed salmonid monthly mortality rates by region (Norwegian Veterinary Institute)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2026/2026-03-17/monthly_mortality_data.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_nova_scotia_ocean_temperature_deployments",
+   "Coastal ocean temperature sensor deployments in Nova Scotia (CMAR)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2026/2026-03-31/ocean_temperature_deployments.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_beaufort_wind_scale",
+   "Beaufort wind force scale with wind speeds and sea descriptions",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2026/2026-04-14/beaufort_scale.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_sea_state_codes",
+   "Sea state codes with wave heights and descriptions",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2026/2026-04-14/sea_states.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_us_agricultural_trade_agreements",
+   "US trade agreement and preference program codes for agricultural tariffs (USITC)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2026/2026-04-28/agreements.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_us_tariff_quantity_codes",
+   "US tariff database unit of quantity codes (USITC)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2026/2026-04-28/quantity_codes.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_italy_industrial_production_food",
+   "Italian industrial production index: food and beverages by month (ISTAT)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2026/2026-05-05/food_beverages.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_lesotho_wool_trade",
+   "Lesotho wool and mohair exports by partner and year (UN Comtrade)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2026/2026-08-04/basotho_wool.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "big_mac_historical_source",
+   "The Economist's Big Mac index historical source data: local prices and exchange rates",
+   "TheEconomist/big-mac-data",
+   "master",
+   "source-data/big-mac-historical-source-data.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "big_mac_source_data",
+   "The Economist's Big Mac index source data: local prices, exchange rates and GDP per person",
+   "TheEconomist/big-mac-data",
+   "master",
+   "source-data/big-mac-source-data.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "big_mac_adjusted_index",
+   "The Economist's GDP-adjusted Big Mac index by country and date",
+   "TheEconomist/big-mac-data",
+   "master",
+   "output-data/big-mac-adjusted-index.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "plotly_us_agricultural_exports_2011",
+   "United States agricultural exports by state and commodity, 2011 (USDA)",
+   "plotly/datasets",
+   "master",
+   "2011_us_ag_exports.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "plotly_ebola_2014_cases",
+   "Ebola outbreak 2014: cases and deaths by country and month",
+   "plotly/datasets",
+   "master",
+   "2014_ebola.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "plotly_world_gdp_2014_with_codes",
+   "World GDP in 2014 by country with ISO 3166-1 alpha-3 codes",
+   "plotly/datasets",
+   "master",
+   "2014_world_gdp_with_codes.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "plotly_gapminder_with_codes",
+   "Gapminder life expectancy, population and GDP per capita by country and year with ISO codes",
+   "plotly/datasets",
+   "master",
+   "gapminder_with_codes.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "plotly_us_cities_top_1000",
+   "Top 1,000 United States cities by population with coordinates",
+   "plotly/datasets",
+   "master",
+   "us-cities-top-1k.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "pudding_birth_control_methods_ever_used",
+   "Contraceptive methods ever used by US women (NSFG, The Pudding)",
+   "the-pudding/data",
+   "master",
+   "birth-control/everused.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "pudding_birth_control_stop_reasons",
+   "Reasons US women stopped using a contraceptive method (NSFG, The Pudding)",
+   "the-pudding/data",
+   "master",
+   "birth-control/stop_reasons.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "pudding_school_dress_code_sanctions",
+   "US school dress code sanctions by school (The Pudding)",
+   "the-pudding/data",
+   "master",
+   "dress-codes/sanctions.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "ppi_sdg_indicators_mexico",
+   "Policy Priority Inference tutorial: development indicator series by year with SDG and bounds",
+   "oguerrer/ppi",
+   "main",
+   "tutorials/clean_data/data_indicators.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "ppi_sdg_expenditure",
+   "Policy Priority Inference tutorial: government expenditure by programme over time",
+   "oguerrer/ppi",
+   "main",
+   "tutorials/clean_data/data_expenditure.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "ppi_indicator_interdependency_network",
+   "Policy Priority Inference tutorial: estimated interdependency network between development indicators",
+   "oguerrer/ppi",
+   "main",
+   "tutorials/clean_data/data_network.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "ppi_indicator_programme_links",
+   "Policy Priority Inference tutorial: relational table linking indicators to budget programmes",
+   "oguerrer/ppi",
+   "main",
+   "tutorials/clean_data/data_relational_table.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "ppi_calibrated_parameters",
+   "Policy Priority Inference tutorial: calibrated model parameters per indicator",
+   "oguerrer/ppi",
+   "main",
+   "tutorials/clean_data/parameters.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "african_countries_indicators",
+   "African countries indicators: education, literacy, population and data infrastructure",
+   "lightbluetitan/african_countries_indicators",
+   "main",
+   "data/african_countries_indicators.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "cow_state_system_members",
+   "Correlates of War state system membership 2016 with entry and exit dates",
+   "globalgov/manystates",
+   "main",
+   "data-raw/states/COW/states2016.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "icow_colonial_history",
+   "Issue Correlates of War colonial history: independence dates and former colonial rulers",
+   "globalgov/manystates",
+   "main",
+   "data-raw/states/ICOW/coldata110.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "github_innovation_graph_developers",
+   "GitHub Innovation Graph: developers by economy and quarter",
+   "github/innovationgraph",
+   "main",
+   "data/developers.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "github_innovation_graph_organizations",
+   "GitHub Innovation Graph: organizations by economy and quarter",
+   "github/innovationgraph",
+   "main",
+   "data/organizations.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "github_innovation_graph_repositories",
+   "GitHub Innovation Graph: repositories by economy and quarter",
+   "github/innovationgraph",
+   "main",
+   "data/repositories.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "github_innovation_graph_git_pushes",
+   "GitHub Innovation Graph: git pushes by economy and quarter",
+   "github/innovationgraph",
+   "main",
+   "data/git_pushes.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "anti_gender_violence_art_database",
+   "Art of anti-gender violence and feminicides database (Responsible Datasets in Context)",
+   "melaniewalsh/responsible-datasets-in-context",
+   "main",
+   "datasets/gender-violence/Art_of_Anti_Gender_Violence_and_Femincides_Database.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "us_national_parks_recreation_visits",
+   "US National Parks recreation visits 1979-2024",
+   "melaniewalsh/responsible-datasets-in-context",
+   "main",
+   "datasets/national-parks/US-National-Parks_RecreationVisits_1979-2024.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_invasive_species_cost_share_gdp",
+   "Invasive species invasion cost as a share of GDP by country (Paini et al.)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2018/2018-09-25/table_3.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_invasive_species_crop_threat",
+   "Invasive species cost to agriculture by country, ranked (Paini et al.)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2018/2018-09-25/table_4.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_us_college_majors_women_share",
+   "United States recent graduates by college major: earnings, unemployment and share of women",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2018/2018-10-16/recent-grads.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_us_bachelor_attainment_by_race",
+   "United States share of adults with a bachelor's degree by race and year (NCES)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2021/2021-02-02/bach_students.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_us_female_bachelor_attainment_by_race",
+   "United States share of women with a bachelor's degree by race and year (NCES)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2021/2021-02-02/female_bach_students.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "tt_brazil_company_legal_nature_codes",
+   "Brazil CNPJ company legal nature codes and descriptions (Receita Federal)",
+   "rfordatascience/tidytuesday",
+   "main",
+   "data/2026/2026-01-27/legal_nature.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "codecarbon_cloud_region_impact",
+   "Cloud provider regions with their grid carbon intensity (CodeCarbon)",
+   "mlco2/codecarbon",
+   "master",
+   "codecarbon/data/cloud/impact.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "codecarbon_cpu_tdp",
+   "CPU models with their thermal design power (CodeCarbon)",
+   "mlco2/codecarbon",
+   "master",
+   "codecarbon/data/hardware/cpu_power.csv",
+   "csv_records",
+   "Name",
+   null
+  ],
+  [
+   "codecarbon_carbon_intensity_per_source",
+   "Carbon intensity of electricity by generation source (CodeCarbon)",
+   "mlco2/codecarbon",
+   "master",
+   "codecarbon/data/private_infra/carbon_intensity_per_source.json",
+   "mapping",
+   "source",
+   "value"
+  ],
+  [
+   "codecarbon_canada_energy_mix",
+   "Canadian provinces' electricity generation mix (CodeCarbon)",
+   "mlco2/codecarbon",
+   "master",
+   "codecarbon/data/private_infra/2023/canada_energy_mix.json",
+   "keyed_records",
+   "province",
+   null
+  ],
+  [
+   "codecarbon_usa_state_emissions",
+   "US states' electricity emission rates (CodeCarbon)",
+   "mlco2/codecarbon",
+   "master",
+   "codecarbon/data/private_infra/2016/usa_emissions.json",
+   "keyed_records",
+   "state",
+   null
+  ],
+  [
+   "codecarbon_global_energy_mix",
+   "Countries' electricity generation mix and carbon intensity (CodeCarbon)",
+   "mlco2/codecarbon",
+   "master",
+   "codecarbon/data/private_infra/global_energy_mix.json",
+   "keyed_records",
+   "iso3_code",
+   null
+  ],
+  [
+   "codecarbon_eu_carbon_intensity",
+   "EU member states' electricity carbon intensity by year (EEA via CodeCarbon)",
+   "mlco2/codecarbon",
+   "master",
+   "codecarbon/data/private_infra/2020/eu-carbon-intensity-electricity.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "codecarbon_amd_server_cpus",
+   "AMD server CPU specifications with TDP (CodeCarbon)",
+   "mlco2/codecarbon",
+   "master",
+   "codecarbon/data/hardware/cpu_dataset_builder/amd_cpu_server_dataset.csv",
+   "csv_records",
+   "Name",
+   null
+  ],
+  [
+   "codecarbon_intel_ark_cpus",
+   "Intel ARK CPU specifications with TDP (CodeCarbon)",
+   "mlco2/codecarbon",
+   "master",
+   "codecarbon/data/hardware/cpu_dataset_builder/intel_cpu_ark_dataset.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "ccf_aws_instances",
+   "AWS instance types with CPU and memory specifications (Cloud Carbon Footprint)",
+   "cloud-carbon-footprint/ccf-coefficients",
+   "main",
+   "data/aws-instances-latest-2026.csv",
+   "csv_records",
+   "Instance Type",
+   null
+  ],
+  [
+   "ccf_azure_instances",
+   "Azure virtual machine sizes with hardware specifications (Cloud Carbon Footprint)",
+   "cloud-carbon-footprint/ccf-coefficients",
+   "main",
+   "data/azure-instances.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "ccf_gcp_instances",
+   "Google Cloud machine types with hardware specifications (Cloud Carbon Footprint)",
+   "cloud-carbon-footprint/ccf-coefficients",
+   "main",
+   "data/gcp-instances-latest-2026.csv",
+   "csv_records",
+   "Instance Type",
+   null
+  ],
+  [
+   "ccf_grid_emission_factors_aws",
+   "Grid emission factors of AWS regions (Cloud Carbon Footprint)",
+   "cloud-carbon-footprint/ccf-coefficients",
+   "main",
+   "data/grid-emissions-factors-aws.csv",
+   "csv_records",
+   "Region",
+   null
+  ],
+  [
+   "ccf_grid_emission_factors_gcp",
+   "Grid emission factors of Google Cloud regions (Cloud Carbon Footprint)",
+   "cloud-carbon-footprint/ccf-coefficients",
+   "main",
+   "data/grid-emissions-factors-gcp.csv",
+   "csv_records",
+   "Region",
+   null
+  ],
+  [
+   "mlco2_cloud_region_impact",
+   "Cloud regions with grid carbon intensity and sources (ML CO2 Impact)",
+   "mlco2/impact",
+   "master",
+   "data/impact.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "mlco2_cloud_gpu_instances",
+   "Cloud GPU instance types (ML CO2 Impact)",
+   "mlco2/impact",
+   "master",
+   "data/instances.csv",
+   "csv_records",
+   "id",
+   null
+  ],
+  [
+   "mlco2_grid_yearly_averages",
+   "Electricity grid zones' yearly average carbon intensity (ML CO2 Impact)",
+   "mlco2/impact",
+   "master",
+   "data/2021-10-27yearly_averages.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "gcp_region_carbon_free_energy",
+   "Google Cloud regions' carbon-free energy share and grid carbon intensity",
+   "GoogleCloudPlatform/region-carbon-info",
+   "main",
+   "data/yearly/2024.csv",
+   "csv_records",
+   "Google Cloud Region",
+   null
+  ],
+  [
+   "ember_country_co2_intensity_2021",
+   "Countries' electricity CO2 intensity from Ember (grid-intensity-go)",
+   "thegreenwebfoundation/grid-intensity-go",
+   "main",
+   "pkg/internal/data/co2-intensities-ember-2021.csv",
+   "csv_records",
+   "country_or_region",
+   null
+  ],
+  [
+   "grid_intensity_country_codes",
+   "Country codes used to look up grid intensity (grid-intensity-go)",
+   "thegreenwebfoundation/grid-intensity-go",
+   "main",
+   "hack/countries.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "uk_ghg_emission_factors",
+   "Greenhouse gas emission factors by activity and unit (Open Innovations)",
+   "open-innovations/carbon-emissions",
+   "main",
+   "data/emission_factors.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "scarif_hp_product_footprints",
+   "HP server product carbon footprints (SCARIF)",
+   "arc-research-lab/SCARIF",
+   "main",
+   "original_data/HP_data.csv",
+   "csv_records",
+   "Model",
+   null
+  ],
+  [
+   "scarif_lenovo_product_footprints",
+   "Lenovo server product carbon footprints (SCARIF)",
+   "arc-research-lab/SCARIF",
+   "main",
+   "original_data/Lenovo_data.csv",
+   "csv_records",
+   "name",
+   null
+  ],
+  [
+   "gsf_boavizta_cpu_tdp",
+   "CPU models with thermal design power from Boavizta (Green Software Foundation)",
+   "Green-Software-Foundation/if-data",
+   "main",
+   "boavizta-tdp-data.csv",
+   "csv_records",
+   "name",
+   null
+  ],
+  [
+   "gsf_aws_instance_metadata",
+   "AWS instance metadata for impact estimation (Green Software Foundation)",
+   "Green-Software-Foundation/if-data",
+   "main",
+   "cloud-metdata-aws-instances.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "gsf_azure_instance_metadata",
+   "Azure instance metadata for impact estimation (Green Software Foundation)",
+   "Green-Software-Foundation/if-data",
+   "main",
+   "cloud-metdata-azure-instances.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "gsf_cloud_region_metadata",
+   "Cloud regions with location and grid emission metadata (Green Software Foundation)",
+   "Green-Software-Foundation/if-data",
+   "main",
+   "region-metadata.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "nace_rev21_codes",
+   "NACE Rev. 2.1 statistical classification of economic activities",
+   "jnsprnw/nace-codes",
+   "master",
+   "data/source/codes-2.1.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "uk_sic_2007_codes",
+   "UK Standard Industrial Classification 2007 codes",
+   "bpluly/G30_SIC",
+   "master",
+   "SIC_CODES_2007.csv",
+   "csv_records",
+   "SIC 2007_CODE",
+   null
+  ],
+  [
+   "epa_ghg_emission_factors",
+   "EPA greenhouse gas emission factors for stationary combustion and fuels (FLOWSA)",
+   "USEPA/flowsa",
+   "master",
+   "flowsa/data/EPA_emissions_factors.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "naics_2022_level_crosswalk",
+   "NAICS 2022 codes crosswalked across 2 to 6 digit levels (FLOWSA)",
+   "USEPA/flowsa",
+   "master",
+   "flowsa/data/NAICS_2022_Crosswalk.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "naics_year_concordance",
+   "NAICS code concordance across 2002-2022 vintages (FLOWSA)",
+   "USEPA/flowsa",
+   "master",
+   "flowsa/data/NAICS_Year_Concordance.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "pucs_to_naics",
+   "Product use categories mapped to NAICS (FLOWSA)",
+   "USEPA/flowsa",
+   "master",
+   "flowsa/data/PUCS_to_NAICS.csv",
+   "csv_records",
+   "Activity",
+   null
+  ],
+  [
+   "naics_sector_levels",
+   "NAICS sector codes with their aggregation levels (FLOWSA)",
+   "USEPA/flowsa",
+   "master",
+   "flowsa/data/Sector_Levels.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "government_sector_codes",
+   "Government sector codes for US input-output accounts (FLOWSA)",
+   "USEPA/flowsa",
+   "master",
+   "flowsa/data/Government_SectorCodes.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "household_sector_codes",
+   "Household sector codes for US input-output accounts (FLOWSA)",
+   "USEPA/flowsa",
+   "master",
+   "flowsa/data/Household_SectorCodes.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "us_census_regions_divisions",
+   "US states by Census region and division (FLOWSA)",
+   "USEPA/flowsa",
+   "master",
+   "flowsa/data/Census_Regions_and_Divisions.csv",
+   "csv_records",
+   "Name",
+   null
+  ],
+  [
+   "ghgi_activity_to_naics",
+   "US GHG inventory activities mapped to NAICS sectors (FLOWSA)",
+   "USEPA/flowsa",
+   "master",
+   "flowsa/data/activitytosectormapping/NAICS_Crosswalk_EPA_GHGI.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "warm_activity_to_naics",
+   "EPA WARM waste management activities mapped to NAICS sectors (FLOWSA)",
+   "USEPA/flowsa",
+   "master",
+   "flowsa/data/activitytosectormapping/NAICS_Crosswalk_EPA_WARMer.csv",
+   "csv_records",
+   "Activity",
+   null
+  ],
+  [
+   "calrecycle_waste_to_naics",
+   "CalRecycle waste characterization materials mapped to NAICS (FLOWSA)",
+   "USEPA/flowsa",
+   "master",
+   "flowsa/data/activitytosectormapping/NAICS_Crosswalk_CalRecycle_WasteCharacterization.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "epa_msw_facts_to_naics",
+   "EPA municipal solid waste facts and figures activities mapped to NAICS (FLOWSA)",
+   "USEPA/flowsa",
+   "master",
+   "flowsa/data/activitytosectormapping/NAICS_Crosswalk_EPA_FactsAndFigures.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "eia_mer_to_naics",
+   "EIA monthly energy review activities mapped to NAICS (FLOWSA)",
+   "USEPA/flowsa",
+   "master",
+   "flowsa/data/activitytosectormapping/NAICS_Crosswalk_EIA_MER.csv",
+   "csv_records",
+   "Activity",
+   null
+  ],
+  [
+   "bls_green_industries_to_naics",
+   "BLS green goods and services industries mapped to NAICS (FLOWSA)",
+   "USEPA/flowsa",
+   "master",
+   "flowsa/data/activitytosectormapping/NAICS_Crosswalk_BLS_GreenIndustries.csv",
+   "csv_records",
+   "Activity",
+   null
+  ],
+  [
+   "unep_irp_material_flows_to_naics",
+   "UNEP IRP global material flows categories mapped to NAICS (FLOWSA)",
+   "USEPA/flowsa",
+   "master",
+   "flowsa/data/activitytosectormapping/NAICS_Crosswalk_UNEP_IRP_GMFD.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "usgs_water_use_coefficients_naics",
+   "USGS livestock water use coefficients mapped to NAICS (FLOWSA)",
+   "USEPA/flowsa",
+   "master",
+   "flowsa/data/activitytosectormapping/NAICS_Crosswalk_USGS_WU_Coef.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "usda_cropland_to_naics",
+   "USDA Census of Agriculture crops mapped to NAICS (FLOWSA)",
+   "USEPA/flowsa",
+   "master",
+   "flowsa/data/activitytosectormapping/NAICS_Crosswalk_USDA_CoA_Cropland.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "usda_livestock_to_naics",
+   "USDA Census of Agriculture livestock mapped to NAICS (FLOWSA)",
+   "USEPA/flowsa",
+   "master",
+   "flowsa/data/activitytosectormapping/NAICS_Crosswalk_USDA_CoA_Livestock.csv",
+   "csv_records",
+   "Activity",
+   null
+  ],
+  [
+   "epa_state_inventory_tool_to_naics",
+   "EPA State Inventory Tool emission activities mapped to NAICS (FLOWSA)",
+   "USEPA/flowsa",
+   "master",
+   "flowsa/data/activitytosectormapping/NAICS_Crosswalk_EPA_SIT.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "source_classification_codes_to_naics",
+   "EPA source classification codes mapped to NAICS (FLOWSA)",
+   "USEPA/flowsa",
+   "master",
+   "flowsa/data/activitytosectormapping/NAICS_Crosswalk_SCC.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "statcan_gdp_industries_to_naics",
+   "Statistics Canada GDP industries mapped to NAICS (FLOWSA)",
+   "USEPA/flowsa",
+   "master",
+   "flowsa/data/activitytosectormapping/NAICS_Crosswalk_StatCan_GDP.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "epa_recycling_economic_info_to_naics",
+   "EPA recycling economic information activities mapped to NAICS (FLOWSA)",
+   "USEPA/flowsa",
+   "master",
+   "flowsa/data/activitytosectormapping/NAICS_Crosswalk_EPA_REI.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "eia_cbecs_buildings_to_naics",
+   "EIA commercial building activities mapped to NAICS (FLOWSA)",
+   "USEPA/flowsa",
+   "master",
+   "flowsa/data/activitytosectormapping/NAICS_Crosswalk_EIA_CBECS_Land.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "useeio_lcia_indicators",
+   "USEEIO life cycle impact assessment indicators",
+   "USEPA/useeior",
+   "master",
+   "inst/extdata/USEEIO_LCIA_Indicators.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "useeio_lcia_factors",
+   "USEEIO life cycle impact characterization factors",
+   "USEPA/useeior",
+   "master",
+   "inst/extdata/USEEIO_LCIA_Factors.csv",
+   "csv_records",
+   "Flowable",
+   null
+  ],
+  [
+   "bea_2017_sector_codes",
+   "BEA 2017 sector codes and names (USEEIO)",
+   "USEPA/useeior",
+   "master",
+   "inst/extdata/BEA_2017_Sector_CodeName_mapping.csv",
+   "csv_records",
+   "BEA_2017_Sector_Code",
+   null
+  ],
+  [
+   "bea_2017_summary_schema",
+   "BEA 2017 summary input-output schema codes (USEEIO)",
+   "USEPA/useeior",
+   "master",
+   "inst/extdata/2017_Summary_Schema_Info.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "bea_2017_detail_schema",
+   "BEA 2017 detail input-output schema codes (USEEIO)",
+   "USEPA/useeior",
+   "master",
+   "inst/extdata/2017_Detail_Schema_Info.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "census_agriculture_to_naics",
+   "Census of Agriculture categories mapped to NAICS (USEEIO)",
+   "USEPA/useeior",
+   "master",
+   "inst/extdata/Crosswalk_CoAtoNAICS.csv",
+   "csv_records",
+   "NAICS8_Code",
+   null
+  ],
+  [
+   "bea_industry_to_commodity_names",
+   "BEA detail industries mapped to commodity names (USEEIO)",
+   "USEPA/useeior",
+   "master",
+   "inst/extdata/Crosswalk_DetailIndustrytoCommodityNameSchema.csv",
+   "csv_records",
+   "BEA_Detail_Code",
+   null
+  ],
+  [
+   "useeio_waste_management_sectors",
+   "Waste management sectors disaggregated for USEEIO",
+   "USEPA/useeior",
+   "master",
+   "inst/extdata/disaggspecs/WasteDisaggregation_Sectors.csv",
+   "csv_records",
+   "NAICS_2012_Code",
+   null
+  ],
+  [
+   "useeio_utility_sectors",
+   "Electric, gas and water utility sectors disaggregated for USEEIO",
+   "USEPA/useeior",
+   "master",
+   "inst/extdata/disaggspecs/UtilityDisaggregation_Sectors.csv",
+   "csv_records",
+   "NAICS_2012_Code",
+   null
+  ],
+  [
+   "fedefl_contexts",
+   "Federal LCA Commons elementary flow contexts (compartments)",
+   "USEPA/fedelemflowlist",
+   "master",
+   "fedelemflowlist/input/Contexts.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fedefl_chemical_alt_units",
+   "Alternate units and conversion factors of chemical flowables (FEDEFL)",
+   "USEPA/fedelemflowlist",
+   "master",
+   "fedelemflowlist/input/ChemicalsFlowableAltUnits.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fedefl_geological_flowables",
+   "Geological (resource) flowables of the Federal Elementary Flow List",
+   "USEPA/fedelemflowlist",
+   "master",
+   "fedelemflowlist/input/GeologicalFlowables.csv",
+   "csv_records",
+   "Flowable",
+   null
+  ],
+  [
+   "fedefl_geological_alt_units",
+   "Alternate units and conversion factors of geological flowables (FEDEFL)",
+   "USEPA/fedelemflowlist",
+   "master",
+   "fedelemflowlist/input/GeologicalFlowableAltUnits.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fedefl_biological_flowables",
+   "Biological flowables of the Federal Elementary Flow List",
+   "USEPA/fedelemflowlist",
+   "master",
+   "fedelemflowlist/input/BiologicalFlowables.csv",
+   "csv_records",
+   "Flowable",
+   null
+  ],
+  [
+   "fedefl_group_flowables",
+   "Grouped flowables of the Federal Elementary Flow List",
+   "USEPA/fedelemflowlist",
+   "master",
+   "fedelemflowlist/input/GroupsFlowables.csv",
+   "csv_records",
+   "Flowable",
+   null
+  ],
+  [
+   "fedefl_energy_flowables",
+   "Energy flowables of the Federal Elementary Flow List",
+   "USEPA/fedelemflowlist",
+   "master",
+   "fedelemflowlist/input/EnergyFlowables.csv",
+   "csv_records",
+   "Flowable",
+   null
+  ],
+  [
+   "fedefl_water_flowables",
+   "Water flowables of the Federal Elementary Flow List",
+   "USEPA/fedelemflowlist",
+   "master",
+   "fedelemflowlist/input/WaterFlowables.csv",
+   "csv_records",
+   "Flowable",
+   null
+  ],
+  [
+   "fedefl_hazardous_air_pollutants",
+   "Hazardous air pollutant flows (FEDEFL)",
+   "USEPA/fedelemflowlist",
+   "master",
+   "fedelemflowlist/input/HAP_flows.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fedefl_flow_exclusions",
+   "Flowable-context combinations excluded from the Federal Elementary Flow List",
+   "USEPA/fedelemflowlist",
+   "master",
+   "fedelemflowlist/input/FlowExclusions.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fedefl_secondary_context_membership",
+   "Secondary context membership of elementary flow compartments (FEDEFL)",
+   "USEPA/fedelemflowlist",
+   "master",
+   "fedelemflowlist/input/SecondaryContextMembership.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fedefl_ghgi_ar5_flow_mapping",
+   "US GHG inventory gases mapped to federal elementary flows (AR5 GWP100)",
+   "USEPA/fedelemflowlist",
+   "master",
+   "fedelemflowlist/flowmapping/GHGI_AR5_100.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fedefl_egrid_flow_mapping",
+   "eGRID emissions mapped to federal elementary flows",
+   "USEPA/fedelemflowlist",
+   "master",
+   "fedelemflowlist/flowmapping/eGRID.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fedefl_warm_flow_mapping",
+   "EPA WARM flows mapped to federal elementary flows",
+   "USEPA/fedelemflowlist",
+   "master",
+   "fedelemflowlist/flowmapping/WARM.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fedefl_greet_flow_mapping",
+   "GREET model flows mapped to federal elementary flows",
+   "USEPA/fedelemflowlist",
+   "master",
+   "fedelemflowlist/flowmapping/GREET.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "fedefl_usgs_minerals_flow_mapping",
+   "USGS mineral commodity flows mapped to federal elementary flows",
+   "USEPA/fedelemflowlist",
+   "master",
+   "fedelemflowlist/flowmapping/USGS_MCS.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "netl_traci21_factors",
+   "NETL TRACI 2.1 characterization factors",
+   "USEPA/LCIAformatter",
+   "master",
+   "lciafmt/data/NETL_TRACI2.1.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "recipe2016_endpoint_midpoint",
+   "ReCiPe 2016 midpoint to endpoint conversion factors",
+   "USEPA/LCIAformatter",
+   "master",
+   "lciafmt/data/ReCiPe2016_endpoint_to_midpoint.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "weidema_impact_valuation",
+   "Weidema monetary valuation of environmental impact categories",
+   "USEPA/LCIAformatter",
+   "master",
+   "lciafmt/data/Weidema_valuation.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "lciafmt_ipcc_gwp_values",
+   "IPCC global warming potential values by gas and horizon (LCIAformatter)",
+   "USEPA/LCIAformatter",
+   "master",
+   "lciafmt/data/IPCC_GWP_values.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "warm_v15_lcia_methods",
+   "EPA WARM v15 life cycle impact methods",
+   "USEPA/WARMer",
+   "main",
+   "warmer/data/WARMv15_lcia_methods.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "stewi_data_quality_reliability_scores",
+   "Emission inventory data quality reliability scores (StEWI)",
+   "USEPA/standardizedinventories",
+   "master",
+   "stewi/data/DQ_Reliability_Scores_Table3-3fromERGreport.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "rcra_waste_form_codes",
+   "RCRA hazardous waste form codes",
+   "USEPA/standardizedinventories",
+   "master",
+   "stewi/data/RCRAInfo/RCRA_LU_FORM_CODE.csv",
+   "csv_records",
+   "FORM_CODE",
+   null
+  ],
+  [
+   "tri_release_type_compartments",
+   "Toxics Release Inventory release types mapped to environmental compartments",
+   "USEPA/standardizedinventories",
+   "master",
+   "stewi/data/TRI/TRI_ReleaseType_to_Compartment.csv",
+   "csv_records",
+   "ReleaseType",
+   null
+  ],
+  [
+   "sic_two_digit_codes",
+   "Two-digit Standard Industrial Classification codes (StEWI)",
+   "USEPA/standardizedinventories",
+   "master",
+   "stewi/data/DMR/2_digit_SIC.csv",
+   "csv_records",
+   "SIC2",
+   null
+  ],
+  [
+   "egrid_flow_compartments",
+   "eGRID emission flows and their compartments (StEWI)",
+   "USEPA/standardizedinventories",
+   "master",
+   "stewi/data/eGRID/eGRID_flow_compartments.csv",
+   "csv_records",
+   "OriginalName",
+   null
+  ],
+  [
+   "ghgrp_gas_mapping",
+   "Greenhouse Gas Reporting Program gases mapped to flows (StEWI)",
+   "USEPA/standardizedinventories",
+   "master",
+   "stewi/data/GHGRP/ghg_mapping.csv",
+   "csv_records",
+   "Flow Description",
+   null
+  ],
+  [
+   "tri_chemical_list_2023",
+   "Toxics Release Inventory chemicals reportable in 2023 (StEWI)",
+   "USEPA/standardizedinventories",
+   "master",
+   "stewi/data/TRI/TRI_chem_release_2023.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "voc_srs_ids",
+   "Volatile organic compounds with EPA SRS identifiers (StEWI)",
+   "USEPA/standardizedinventories",
+   "master",
+   "stewicombo/data/VOC_SRS_IDs.csv",
+   "csv_records",
+   "SRS_IDs",
+   null
+  ],
+  [
+   "elci_international_electricity_mix",
+   "International electricity generation mix by country and fuel (ElectricityLCI)",
+   "USEPA/ElectricityLCI",
+   "master",
+   "electricitylci/data/International_Electricity_Mix.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "egrid_subregion_to_nerc",
+   "eGRID subregions mapped to NERC regions (ElectricityLCI)",
+   "USEPA/ElectricityLCI",
+   "master",
+   "electricitylci/data/egrid_subregion_to_NERC.csv",
+   "csv_records",
+   "Subregion",
+   null
+  ],
+  [
+   "us_state_padd_regions",
+   "US states by Petroleum Administration for Defense District (ElectricityLCI)",
+   "USEPA/ElectricityLCI",
+   "master",
+   "electricitylci/data/state_padd.csv",
+   "csv_records",
+   "state",
+   null
+  ],
+  [
+   "coal_state_to_basin",
+   "US coal-producing states mapped to coal basins (ElectricityLCI)",
+   "USEPA/ElectricityLCI",
+   "master",
+   "electricitylci/data/coal_state_to_basin.csv",
+   "csv_records",
+   "state",
+   null
+  ],
+  [
+   "eia_to_netl_coal_basin",
+   "EIA coal regions mapped to NETL coal basins (ElectricityLCI)",
+   "USEPA/ElectricityLCI",
+   "master",
+   "electricitylci/data/eia_to_netl_basin.csv",
+   "csv_records",
+   "eia_basin",
+   null
+  ],
+  [
+   "egrid_subregion_totals_2016",
+   "eGRID 2016 subregion emission totals (ElectricityLCI)",
+   "USEPA/ElectricityLCI",
+   "master",
+   "electricitylci/data/egrid_subregion_totals_reference_2016.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "egrid_subregion_generation_by_fuel_2016",
+   "eGRID 2016 subregion generation by fuel category (ElectricityLCI)",
+   "USEPA/ElectricityLCI",
+   "master",
+   "electricitylci/data/egrid_subregion_generation_by_fuelcategory_reference_2016.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "reeds_global_warming_potentials",
+   "Global warming potentials of CO2, CH4 and N2O used by ReEDS",
+   "NREL/ReEDS-2.0",
+   "main",
+   "inputs/emission_constraints/gwp.csv",
+   "csv_records",
+   "e",
+   null
+  ],
+  [
+   "reeds_generator_emission_rates",
+   "Generator emission rates by technology (ReEDS)",
+   "NREL/ReEDS-2.0",
+   "main",
+   "inputs/emission_constraints/emitrate.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "reeds_methane_leakage_rate",
+   "Natural gas methane leakage rates (ReEDS)",
+   "NREL/ReEDS-2.0",
+   "main",
+   "inputs/emission_constraints/methane_leakage_rate.csv",
+   "csv_records",
+   "t",
+   null
+  ],
+  [
+   "reeds_hydrogen_leakage_rate",
+   "Hydrogen leakage rates (ReEDS)",
+   "NREL/ReEDS-2.0",
+   "main",
+   "inputs/emission_constraints/h2_leakage_rate.csv",
+   "csv_records",
+   "i",
+   null
+  ],
+  [
+   "atb2024_utility_pv_moderate",
+   "Utility-scale PV cost and performance, ATB 2024 moderate (ReEDS)",
+   "NREL/ReEDS-2.0",
+   "main",
+   "inputs/plant_characteristics/upv_ATB_2024_moderate.csv",
+   "csv_records",
+   "t",
+   null
+  ],
+  [
+   "atb2024_onshore_wind_moderate",
+   "Onshore wind cost and performance, ATB 2024 moderate (ReEDS)",
+   "NREL/ReEDS-2.0",
+   "main",
+   "inputs/plant_characteristics/ons-wind_ATB_2024_moderate.csv",
+   "csv_records",
+   "Year",
+   null
+  ],
+  [
+   "atb2024_battery_storage_moderate",
+   "Battery storage cost and performance, ATB 2024 moderate (ReEDS)",
+   "NREL/ReEDS-2.0",
+   "main",
+   "inputs/plant_characteristics/battery_ATB_2024_moderate.csv",
+   "csv_records",
+   "t",
+   null
+  ],
+  [
+   "atb2024_nuclear_moderate",
+   "Nuclear plant cost and performance, ATB 2024 moderate (ReEDS)",
+   "NREL/ReEDS-2.0",
+   "main",
+   "inputs/plant_characteristics/nuclear_ATB_2024_moderate.csv",
+   "csv_records",
+   "t",
+   null
+  ],
+  [
+   "atb2024_natural_gas_moderate",
+   "Natural gas plant cost and performance, ATB 2024 moderate (ReEDS)",
+   "NREL/ReEDS-2.0",
+   "main",
+   "inputs/plant_characteristics/gas_ATB_2024_moderate.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "atb2024_geothermal_moderate",
+   "Geothermal cost and performance, ATB 2024 moderate (ReEDS)",
+   "NREL/ReEDS-2.0",
+   "main",
+   "inputs/plant_characteristics/geo_ATB_2024_moderate.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "reeds_compressed_air_storage",
+   "Compressed air energy storage cost and performance (ReEDS)",
+   "NREL/ReEDS-2.0",
+   "main",
+   "inputs/plant_characteristics/caes_reference.csv",
+   "csv_records",
+   "t",
+   null
+  ],
+  [
+   "reeds_beccs_reference",
+   "Bioenergy with carbon capture cost and performance (ReEDS)",
+   "NREL/ReEDS-2.0",
+   "main",
+   "inputs/plant_characteristics/beccs_reference.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "reeds_mean_time_to_repair",
+   "Mean time to repair of generator technologies (ReEDS)",
+   "NREL/ReEDS-2.0",
+   "main",
+   "inputs/plant_characteristics/mttr.csv",
+   "csv_records",
+   "tech",
+   null
+  ],
+  [
+   "reeds_unit_sizes",
+   "Typical unit sizes of generator technologies (ReEDS)",
+   "NREL/ReEDS-2.0",
+   "main",
+   "inputs/plant_characteristics/unitsize_atb.csv",
+   "csv_records",
+   "tech",
+   null
+  ],
+  [
+   "reeds_startup_costs",
+   "Startup costs of generator technologies (ReEDS)",
+   "NREL/ReEDS-2.0",
+   "main",
+   "inputs/plant_characteristics/startcost.csv",
+   "csv_records",
+   "*i",
+   null
+  ],
+  [
+   "reeds_other_plant_characteristics",
+   "Other generator plant characteristics (ReEDS)",
+   "NREL/ReEDS-2.0",
+   "main",
+   "inputs/plant_characteristics/other_plantchar.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "reeds_construction_schedules",
+   "Construction spending schedules of generator technologies (ReEDS)",
+   "NREL/ReEDS-2.0",
+   "main",
+   "inputs/financials/construction_schedules_default.csv",
+   "csv_records",
+   "t",
+   null
+  ],
+  [
+   "reeds_depreciation_schedules",
+   "Tax depreciation schedules of energy assets (ReEDS)",
+   "NREL/ReEDS-2.0",
+   "main",
+   "inputs/financials/depreciation_schedules_default.csv",
+   "csv_records",
+   "Schedule",
+   null
+  ],
+  [
+   "reeds_inflation_series",
+   "US inflation series used for dollar-year conversion (ReEDS)",
+   "NREL/ReEDS-2.0",
+   "main",
+   "inputs/financials/inflation_default.csv",
+   "csv_records",
+   "t",
+   null
+  ],
+  [
+   "reeds_dollar_deflator",
+   "Dollar-year deflators (ReEDS)",
+   "NREL/ReEDS-2.0",
+   "main",
+   "inputs/financials/deflator.csv",
+   "csv_records",
+   "*Dollar.Year",
+   null
+  ],
+  [
+   "us_state_fips_codes",
+   "US state FIPS codes and abbreviations (ReEDS)",
+   "NREL/ReEDS-2.0",
+   "main",
+   "inputs/shapefiles/state_fips_codes.csv",
+   "csv_records",
+   "state_code",
+   null
+  ],
+  [
+   "reeds_fuel_to_technology",
+   "Fuels mapped to the generator technologies that burn them (ReEDS)",
+   "NREL/ReEDS-2.0",
+   "main",
+   "inputs/sets/fuel2tech.csv",
+   "csv_records",
+   "i",
+   null
+  ],
+  [
+   "reeds_co2_storage_site_characteristics",
+   "CO2 storage site characteristics (ReEDS)",
+   "NREL/ReEDS-2.0",
+   "main",
+   "inputs/ctus/co2_site_char.csv",
+   "csv_records",
+   "cs",
+   null
+  ],
+  [
+   "reeds_biomass_supply_curve",
+   "Biomass supply curve by region and class (ReEDS)",
+   "NREL/ReEDS-2.0",
+   "main",
+   "inputs/supply_curve/bio_supplycurve.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "aeo2025_uranium_price_reference",
+   "Uranium fuel price, AEO 2025 reference (ReEDS)",
+   "NREL/ReEDS-2.0",
+   "main",
+   "inputs/fuelprices/uranium_AEO_2025_reference.csv",
+   "csv_records",
+   "year",
+   null
+  ],
+  [
+   "aeo2025_coal_price_reference",
+   "Coal fuel price by region, AEO 2025 reference (ReEDS)",
+   "NREL/ReEDS-2.0",
+   "main",
+   "inputs/fuelprices/coal_AEO_2025_reference.csv",
+   "csv_records",
+   "year",
+   null
+  ],
+  [
+   "aeo2025_natural_gas_price_reference",
+   "Natural gas price by census division, AEO 2025 reference (ReEDS)",
+   "NREL/ReEDS-2.0",
+   "main",
+   "inputs/fuelprices/ng_AEO_2025_reference.csv",
+   "csv_records",
+   "year",
+   null
+  ],
+  [
+   "reeds_clean_generation_technologies",
+   "Technologies eligible under national clean generation mandates (ReEDS)",
+   "NREL/ReEDS-2.0",
+   "main",
+   "inputs/national_generation/gen_mandate_tech_list.csv",
+   "csv_records",
+   "*i",
+   null
+  ],
+  [
+   "reeds_rec_trading_table",
+   "State renewable energy credit trading eligibility (ReEDS)",
+   "NREL/ReEDS-2.0",
+   "main",
+   "inputs/state_policies/rectable.csv",
+   "csv_records",
+   "st",
+   null
+  ],
+  [
+   "reopt_ghp_heating_thermal_factors",
+   "Geothermal heat pump space heating efficiency thermal factors by climate zone (REopt)",
+   "NREL/REopt.jl",
+   "master",
+   "data/ghp/ghp_space_heating_efficiency_thermal_factors.csv",
+   "csv_records",
+   "BuildingType",
+   null
+  ],
+  [
+   "reopt_chp_defaults",
+   "Combined heat and power default parameters by prime mover (REopt)",
+   "NREL/REopt.jl",
+   "master",
+   "data/chp/chp_defaults.json",
+   "keyed_records",
+   "prime_mover",
+   null
+  ],
+  [
+   "reopt_reference_building_electric_load",
+   "Annual electric load of DOE reference buildings by climate city (REopt)",
+   "NREL/REopt.jl",
+   "master",
+   "data/load_profiles/total_electric_annual_kwh.json",
+   "keyed_records",
+   "city",
+   null
+  ],
+  [
+   "reopt_reference_building_space_heating",
+   "Annual space heating load of DOE reference buildings by climate city (REopt)",
+   "NREL/REopt.jl",
+   "master",
+   "data/load_profiles/space_heating_annual_mmbtu.json",
+   "keyed_records",
+   "city",
+   null
+  ],
+  [
+   "sandia_pv_module_parameters",
+   "Sandia PV module performance model parameters (pvlib)",
+   "pvlib/pvlib-python",
+   "main",
+   "pvlib/data/sam-library-sandia-modules-2015-6-30.csv",
+   "csv_records",
+   "Name",
+   null
+  ],
+  [
+   "premise_metal_intensities",
+   "Metal intensities of energy technologies (premise)",
+   "polca/premise",
+   "master",
+   "premise/data/metals/metals_db.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "premise_solar_pv_efficiency",
+   "Solar PV module efficiency by technology and year (premise)",
+   "polca/premise",
+   "master",
+   "premise/data/renewables/efficiency_solar_PV.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "premise_oil_product_volumes",
+   "Oil refinery product volume shares (premise)",
+   "polca/premise",
+   "master",
+   "premise/data/fuels/oil_product_volumes.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "premise_stationary_battery_scenarios",
+   "Stationary battery chemistry market share scenarios (premise)",
+   "polca/premise",
+   "master",
+   "premise/data/battery/stationary_scenarios.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "hbefa42_car_non_exhaust_emissions",
+   "Passenger car non-exhaust emission factors from HBEFA 4.2 (premise)",
+   "polca/premise",
+   "master",
+   "premise/data/transport/car/EF_HBEFA42_non_exhaust.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "hbefa42_car_exhaust_emissions",
+   "Passenger car exhaust emission factors from HBEFA 4.2 (premise)",
+   "polca/premise",
+   "master",
+   "premise/data/transport/car/EF_HBEFA42_exhaust.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "hbefa42_truck_exhaust_emissions",
+   "Truck exhaust emission factors from HBEFA 4.2 (premise)",
+   "polca/premise",
+   "master",
+   "premise/data/transport/truck/EF_HBEFA42_exhaust.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "nmhc_species_shares_cars",
+   "Non-methane hydrocarbon species shares for car exhaust (premise)",
+   "polca/premise",
+   "master",
+   "premise/data/transport/car/NMHC_species.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "car_emission_degradation_factors",
+   "Car exhaust emission degradation factors by mileage (premise)",
+   "polca/premise",
+   "master",
+   "premise/data/transport/car/degradation_EF.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "carbon_offset_project_types",
+   "Carbon offset project types mapped to categories (CarbonPlan OffsetsDB)",
+   "carbonplan/offsets-db-data",
+   "main",
+   "offsets_db_data/configs/type-category-mapping.json",
+   "keyed_records",
+   "project_type",
+   null
+  ],
+  [
+   "carbon_offset_protocols",
+   "Carbon offset protocol names mapped across registries (CarbonPlan OffsetsDB)",
+   "carbonplan/offsets-db-data",
+   "main",
+   "offsets_db_data/configs/all-protocol-mapping.json",
+   "keyed_records",
+   "protocol",
+   null
+  ],
+  [
+   "ocds_applies_to",
+   "Open Contracting Data Standard codelist: applies to (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/appliesTo.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_asset_class",
+   "Open Contracting Data Standard codelist: asset class (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/assetClass.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_award_criteria",
+   "Open Contracting Data Standard codelist: award criteria (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/awardCriteria.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_award_criterion_fixed",
+   "Open Contracting Data Standard codelist: award criterion fixed (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/awardCriterionFixed.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_award_criterion_type",
+   "Open Contracting Data Standard codelist: award criterion type (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/awardCriterionType.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_award_status",
+   "Open Contracting Data Standard codelist: award status (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/awardStatus.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_bid_status",
+   "Open Contracting Data Standard codelist: bid status (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/bidStatus.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_charge_paid_by",
+   "Open Contracting Data Standard codelist: charge paid by (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/chargePaidBy.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_contract_status",
+   "Open Contracting Data Standard codelist: contract status (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/contractStatus.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_country",
+   "Open Contracting Data Standard codelist: country (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/country.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_covered_by",
+   "Open Contracting Data Standard codelist: covered by (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/coveredBy.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_criterion_threshold",
+   "Open Contracting Data Standard codelist: criterion threshold (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/criterionThreshold.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_criterion_weight",
+   "Open Contracting Data Standard codelist: criterion weight (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/criterionWeight.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_currency",
+   "Open Contracting Data Standard codelist: currency (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/currency.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_debt_repayment_priority",
+   "Open Contracting Data Standard codelist: debt repayment priority (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/debtRepaymentPriority.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_document_type",
+   "Open Contracting Data Standard codelist: document type (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/documentType.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_dynamic_purchasing_system_status",
+   "Open Contracting Data Standard codelist: dynamic purchasing system status (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/dynamicPurchasingSystemStatus.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_dynamic_purchasing_system_type",
+   "Open Contracting Data Standard codelist: dynamic purchasing system type (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/dynamicPurchasingSystemType.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_extended_procurement_category",
+   "Open Contracting Data Standard codelist: extended procurement category (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/extendedProcurementCategory.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_financing_arrangement_type",
+   "Open Contracting Data Standard codelist: financing arrangement type (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/financingArrangementType.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_financing_party_type",
+   "Open Contracting Data Standard codelist: financing party type (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/financingPartyType.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_framework_agreement_method",
+   "Open Contracting Data Standard codelist: framework agreement method (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/frameworkAgreementMethod.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_geometry_type",
+   "Open Contracting Data Standard codelist: geometry type (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/geometryType.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_item_classification_scheme",
+   "Open Contracting Data Standard codelist: item classification scheme (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/itemClassificationScheme.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_location_gazetteers",
+   "Open Contracting Data Standard codelist: location gazetteers (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/locationGazetteers.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_method",
+   "Open Contracting Data Standard codelist: method (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/method.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_method_of_payment",
+   "Open Contracting Data Standard codelist: method of payment (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/methodOfPayment.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_milestone_status",
+   "Open Contracting Data Standard codelist: milestone status (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/milestoneStatus.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_milestone_type",
+   "Open Contracting Data Standard codelist: milestone type (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/milestoneType.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_monetary_value",
+   "Open Contracting Data Standard codelist: monetary value (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/monetaryValue.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_participation_fee_type",
+   "Open Contracting Data Standard codelist: participation fee type (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/participationFeeType.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_party_role",
+   "Open Contracting Data Standard codelist: party role (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/partyRole.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_party_scale",
+   "Open Contracting Data Standard codelist: party scale (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/partyScale.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_permission",
+   "Open Contracting Data Standard codelist: permission (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/permission.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_procurement_category",
+   "Open Contracting Data Standard codelist: procurement category (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/procurementCategory.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_related_process",
+   "Open Contracting Data Standard codelist: related process (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/relatedProcess.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_related_process_scheme",
+   "Open Contracting Data Standard codelist: related process scheme (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/relatedProcessScheme.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_release_tag",
+   "Open Contracting Data Standard codelist: release tag (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/releaseTag.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_reserved_participation",
+   "Open Contracting Data Standard codelist: reserved participation (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/reservedParticipation.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_selection_criterion_type",
+   "Open Contracting Data Standard codelist: selection criterion type (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/selectionCriterionType.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_statistic",
+   "Open Contracting Data Standard codelist: statistic (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/statistic.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_submission_method",
+   "Open Contracting Data Standard codelist: submission method (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/submissionMethod.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_submission_type",
+   "Open Contracting Data Standard codelist: submission type (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/submissionType.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_sustainability_goal",
+   "Open Contracting Data Standard codelist: sustainability goal (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/sustainabilityGoal.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_sustainability_strategy",
+   "Open Contracting Data Standard codelist: sustainability strategy (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/sustainabilityStrategy.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_tender_status",
+   "Open Contracting Data Standard codelist: tender status (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/tenderStatus.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_unit_classification_scheme",
+   "Open Contracting Data Standard codelist: unit classification scheme (eForms profile, patched)",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "schema/patched/codelists/unitClassificationScheme.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_eu_foreign_subsidy_measures",
+   "Open Contracting Data Standard EU profile codelist: foreign subsidy measures",
+   "open-contracting-extensions/european-union",
+   "latest",
+   "schema/patched/codelists/foreignSubsidyMeasures.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_eu_sources",
+   "Open Contracting Data Standard EU profile codelist: sources",
+   "open-contracting-extensions/european-union",
+   "latest",
+   "schema/patched/codelists/sources.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_eu_voting_rights",
+   "Open Contracting Data Standard EU profile codelist: voting rights",
+   "open-contracting-extensions/european-union",
+   "latest",
+   "schema/patched/codelists/votingRights.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_eu_bid_statistics",
+   "Open Contracting Data Standard EU profile codelist: bid statistics",
+   "open-contracting-extensions/european-union",
+   "latest",
+   "schema/patched/codelists/bidStatistics.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "eforms_ocds_buyer_contracting_type",
+   "EU eForms buyer contracting type codes mapped to OCDS",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "docs/codelists/buyer-contracting-type.csv",
+   "csv_records",
+   "eForms code",
+   null
+  ],
+  [
+   "eforms_ocds_dps_usage",
+   "EU eForms dps usage codes mapped to OCDS",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "docs/codelists/dps-usage.csv",
+   "csv_records",
+   "eForms code",
+   null
+  ],
+  [
+   "eforms_ocds_environmental_impact",
+   "EU eForms environmental impact codes mapped to OCDS",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "docs/codelists/environmental-impact.csv",
+   "csv_records",
+   "eForms code",
+   null
+  ],
+  [
+   "eforms_ocds_form_type",
+   "EU eForms form type codes mapped to OCDS",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "docs/codelists/form-type.csv",
+   "csv_records",
+   "eForms code",
+   null
+  ],
+  [
+   "eforms_ocds_framework_agreement_method",
+   "EU eForms framework agreement method codes mapped to OCDS",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "docs/codelists/framework-agreement-method.csv",
+   "csv_records",
+   "eForms code",
+   null
+  ],
+  [
+   "eforms_ocds_gpp_criteria",
+   "EU eForms gpp criteria codes mapped to OCDS",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "docs/codelists/gpp-criteria.csv",
+   "csv_records",
+   "eForms code",
+   null
+  ],
+  [
+   "eforms_ocds_innovative_acquisition",
+   "EU eForms innovative acquisition codes mapped to OCDS",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "docs/codelists/innovative-acquisition.csv",
+   "csv_records",
+   "eForms code",
+   null
+  ],
+  [
+   "eforms_ocds_number_fixed",
+   "EU eForms number fixed codes mapped to OCDS",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "docs/codelists/number-fixed.csv",
+   "csv_records",
+   "eForms code",
+   null
+  ],
+  [
+   "eforms_ocds_number_threshold",
+   "EU eForms number threshold codes mapped to OCDS",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "docs/codelists/number-threshold.csv",
+   "csv_records",
+   "eForms code",
+   null
+  ],
+  [
+   "eforms_ocds_number_weight",
+   "EU eForms number weight codes mapped to OCDS",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "docs/codelists/number-weight.csv",
+   "csv_records",
+   "eForms code",
+   null
+  ],
+  [
+   "eforms_ocds_organisation_role",
+   "EU eForms organisation role codes mapped to OCDS",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "docs/codelists/organisation-role.csv",
+   "csv_records",
+   "eForms code",
+   null
+  ],
+  [
+   "eforms_ocds_procurement_procedure_type",
+   "EU eForms procurement procedure type codes mapped to OCDS",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "docs/codelists/procurement-procedure-type.csv",
+   "csv_records",
+   "eForms code",
+   null
+  ],
+  [
+   "eforms_ocds_received_submission_type",
+   "EU eForms received submission type codes mapped to OCDS",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "docs/codelists/received-submission-type.csv",
+   "csv_records",
+   "eForms code",
+   null
+  ],
+  [
+   "eforms_ocds_selection_criterion",
+   "EU eForms selection criterion codes mapped to OCDS",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "docs/codelists/selection-criterion.csv",
+   "csv_records",
+   "eForms code",
+   null
+  ],
+  [
+   "eforms_ocds_social_objective",
+   "EU eForms social objective codes mapped to OCDS",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "docs/codelists/social-objective.csv",
+   "csv_records",
+   "eForms code",
+   null
+  ],
+  [
+   "eforms_ocds_strategic_procurement",
+   "EU eForms strategic procurement codes mapped to OCDS",
+   "open-contracting-extensions/eforms",
+   "latest",
+   "docs/codelists/strategic-procurement.csv",
+   "csv_records",
+   "eForms code",
+   null
+  ],
+  [
+   "ocds_data_type",
+   "Open Contracting Data Standard requirements extension codelist: data type",
+   "open-contracting-extensions/ocds_requirements_extension",
+   "master",
+   "codelists/dataType.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_risk_allocation",
+   "Open Contracting Data Standard riskAllocation extension codelist: risk allocation",
+   "open-contracting-extensions/ocds_riskAllocation_extension",
+   "master",
+   "codelists/riskAllocation.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_risk_category",
+   "Open Contracting Data Standard riskAllocation extension codelist: risk category",
+   "open-contracting-extensions/ocds_riskAllocation_extension",
+   "master",
+   "codelists/riskCategory.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_metric_id",
+   "Open Contracting Data Standard ppp extension codelist: metric id",
+   "open-contracting-extensions/ocds_ppp_extension",
+   "1.1",
+   "codelists/metricID.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_milestone_code",
+   "Open Contracting Data Standard ppp extension codelist: milestone code",
+   "open-contracting-extensions/ocds_ppp_extension",
+   "1.1",
+   "codelists/milestoneCode.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_administration_route",
+   "Open Contracting Data Standard medicine extension codelist: administration route",
+   "open-contracting-extensions/ocds_medicine_extension",
+   "master",
+   "codelists/administrationRoute.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_dosage_form",
+   "Open Contracting Data Standard medicine extension codelist: dosage form",
+   "open-contracting-extensions/ocds_medicine_extension",
+   "master",
+   "codelists/dosageForm.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_immediate_container",
+   "Open Contracting Data Standard medicine extension codelist: immediate container",
+   "open-contracting-extensions/ocds_medicine_extension",
+   "master",
+   "codelists/immediateContainer.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_exchange_rate_source",
+   "Open Contracting Data Standard exchangeRate extension codelist: exchange rate source",
+   "open-contracting-extensions/ocds_exchangeRate_extension",
+   "master",
+   "codelists/exchangeRateSource.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "ocds_pre_qualification_status",
+   "Open Contracting Data Standard qualification extension codelist: pre qualification status",
+   "open-contracting-extensions/ocds_qualification_extension",
+   "master",
+   "codelists/preQualificationStatus.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "iati_activity_date_type",
+   "IATI Standard 2.03 codelist: Activity Date Type",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/ActivityDateType.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_activity_scope",
+   "IATI Standard 2.03 codelist: Activity Scope",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/ActivityScope.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_activity_status",
+   "IATI Standard 2.03 codelist: Activity Status",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/ActivityStatus.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_aid_type_category",
+   "IATI Standard 2.03 codelist: Aid Type category",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/AidType-category.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_aid_type",
+   "IATI Standard 2.03 codelist: Aid Type",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/AidType.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_aid_type_vocabulary",
+   "IATI Standard 2.03 codelist: Aid Type Vocabulary",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/AidTypeVocabulary.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_budget_identifier",
+   "IATI Standard 2.03 codelist: Budget Identifier",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/BudgetIdentifier.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_budget_identifier_sector_category",
+   "IATI Standard 2.03 codelist: Budget Identifier Sector category",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/BudgetIdentifierSector-category.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_budget_identifier_sector",
+   "IATI Standard 2.03 codelist: Budget Identifier Sector",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/BudgetIdentifierSector.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_budget_identifier_vocabulary",
+   "IATI Standard 2.03 codelist: Budget Identifier Vocabulary",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/BudgetIdentifierVocabulary.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_budget_not_provided",
+   "IATI Standard 2.03 codelist: Budget Not Provided",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/BudgetNotProvided.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_budget_status",
+   "IATI Standard 2.03 codelist: Budget Status",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/BudgetStatus.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_budget_type",
+   "IATI Standard 2.03 codelist: Budget Type",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/BudgetType.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_crsadd_other_flags",
+   "IATI Standard 2.03 codelist: CRSAdd Other Flags",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/CRSAddOtherFlags.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_crschannel_code",
+   "IATI Standard 2.03 codelist: CRSChannel Code",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/CRSChannelCode.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_cashand_voucher_modalities",
+   "IATI Standard 2.03 codelist: Cashand Voucher Modalities",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/CashandVoucherModalities.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_collaboration_type",
+   "IATI Standard 2.03 codelist: Collaboration Type",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/CollaborationType.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_condition_type",
+   "IATI Standard 2.03 codelist: Condition Type",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/ConditionType.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_contact_type",
+   "IATI Standard 2.03 codelist: Contact Type",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/ContactType.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_country",
+   "IATI Standard 2.03 codelist: Country",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/Country.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_currency",
+   "IATI Standard 2.03 codelist: Currency",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/Currency.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_description_type",
+   "IATI Standard 2.03 codelist: Description Type",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/DescriptionType.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_disbursement_channel",
+   "IATI Standard 2.03 codelist: Disbursement Channel",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/DisbursementChannel.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_document_category_category",
+   "IATI Standard 2.03 codelist: Document Category category",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/DocumentCategory-category.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_document_category",
+   "IATI Standard 2.03 codelist: Document Category",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/DocumentCategory.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_earmarking_category",
+   "IATI Standard 2.03 codelist: Earmarking Category",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/EarmarkingCategory.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_finance_type_category",
+   "IATI Standard 2.03 codelist: Finance Type category",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/FinanceType-category.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_finance_type",
+   "IATI Standard 2.03 codelist: Finance Type",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/FinanceType.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_flow_type",
+   "IATI Standard 2.03 codelist: Flow Type",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/FlowType.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_gazetteer_agency",
+   "IATI Standard 2.03 codelist: Gazetteer Agency",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/GazetteerAgency.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_geographic_exactness",
+   "IATI Standard 2.03 codelist: Geographic Exactness",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/GeographicExactness.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_geographic_location_class",
+   "IATI Standard 2.03 codelist: Geographic Location Class",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/GeographicLocationClass.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_geographic_location_reach",
+   "IATI Standard 2.03 codelist: Geographic Location Reach",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/GeographicLocationReach.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_geographic_vocabulary",
+   "IATI Standard 2.03 codelist: Geographic Vocabulary",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/GeographicVocabulary.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_geographical_precision",
+   "IATI Standard 2.03 codelist: Geographical Precision",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/GeographicalPrecision.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_humanitarian_scope_type",
+   "IATI Standard 2.03 codelist: Humanitarian Scope Type",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/HumanitarianScopeType.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_humanitarian_scope_vocabulary",
+   "IATI Standard 2.03 codelist: Humanitarian Scope Vocabulary",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/HumanitarianScopeVocabulary.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_iatiorganisation_identifier",
+   "IATI Standard 2.03 codelist: IATIOrganisation Identifier",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/IATIOrganisationIdentifier.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_indicator_measure",
+   "IATI Standard 2.03 codelist: Indicator Measure",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/IndicatorMeasure.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_indicator_vocabulary",
+   "IATI Standard 2.03 codelist: Indicator Vocabulary",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/IndicatorVocabulary.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_loan_repayment_period",
+   "IATI Standard 2.03 codelist: Loan Repayment Period",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/LoanRepaymentPeriod.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_loan_repayment_type",
+   "IATI Standard 2.03 codelist: Loan Repayment Type",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/LoanRepaymentType.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_location_type_category",
+   "IATI Standard 2.03 codelist: Location Type category",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/LocationType-category.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_location_type",
+   "IATI Standard 2.03 codelist: Location Type",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/LocationType.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_organisation_identifier",
+   "IATI Standard 2.03 codelist: Organisation Identifier",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/OrganisationIdentifier.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_organisation_role",
+   "IATI Standard 2.03 codelist: Organisation Role",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/OrganisationRole.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_organisation_type",
+   "IATI Standard 2.03 codelist: Organisation Type",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/OrganisationType.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_other_identifier_type",
+   "IATI Standard 2.03 codelist: Other Identifier Type",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/OtherIdentifierType.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_policy_marker",
+   "IATI Standard 2.03 codelist: Policy Marker",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/PolicyMarker.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_policy_marker_vocabulary",
+   "IATI Standard 2.03 codelist: Policy Marker Vocabulary",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/PolicyMarkerVocabulary.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_policy_significance",
+   "IATI Standard 2.03 codelist: Policy Significance",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/PolicySignificance.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_publisher_type",
+   "IATI Standard 2.03 codelist: Publisher Type",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/PublisherType.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_region",
+   "IATI Standard 2.03 codelist: Region",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/Region.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_region_vocabulary",
+   "IATI Standard 2.03 codelist: Region Vocabulary",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/RegionVocabulary.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_related_activity_type",
+   "IATI Standard 2.03 codelist: Related Activity Type",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/RelatedActivityType.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_result_type",
+   "IATI Standard 2.03 codelist: Result Type",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/ResultType.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_sector",
+   "IATI Standard 2.03 codelist: Sector",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/Sector.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_sector_category",
+   "IATI Standard 2.03 codelist: Sector Category",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/SectorCategory.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_sector_vocabulary",
+   "IATI Standard 2.03 codelist: Sector Vocabulary",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/SectorVocabulary.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_tag_vocabulary",
+   "IATI Standard 2.03 codelist: Tag Vocabulary",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/TagVocabulary.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_tied_status",
+   "IATI Standard 2.03 codelist: Tied Status",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/TiedStatus.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_transaction_type",
+   "IATI Standard 2.03 codelist: Transaction Type",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/TransactionType.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_unsdg_goals",
+   "IATI Standard 2.03 codelist: UNSDG Goals",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/UNSDG-Goals.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_unsdg_targets",
+   "IATI Standard 2.03 codelist: UNSDG Targets",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/UNSDG-Targets.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "iati_verification_status",
+   "IATI Standard 2.03 codelist: Verification Status",
+   "codywallace/South-South-Cooperation-Activities",
+   "main",
+   "data/codelists/203/codelists/downloads/clv2/csv/en/VerificationStatus.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "unsd_sdg_goals",
+   "UN Statistics Division SDG goals with short names, colours and keywords",
+   "UNStats-SDGs/sdg-metadata-api",
+   "master",
+   "data/goals-final.json",
+   "records",
+   "goal",
+   null
+  ],
+  [
+   "unsd_sdg_targets",
+   "UN Statistics Division SDG targets with their goal",
+   "UNStats-SDGs/sdg-metadata-api",
+   "master",
+   "data/targets-final.json",
+   "records",
+   "id",
+   null
+  ],
+  [
+   "unsd_sdg_series",
+   "UN Statistics Division SDG data series codes with tags, goals, targets and indicators",
+   "UNStats-SDGs/sdg-metadata-api",
+   "master",
+   "data/series-final.json",
+   "records",
+   "code",
+   null
+  ],
+  [
+   "sdg_sdmx_series_constraints",
+   "SDG global SDMX series with units and permitted disaggregations",
+   "open-sdg/sdg-build",
+   "2.5.0-dev",
+   "sdg/outputs/sdmx_global_content_constraints.csv",
+   "csv_records",
+   "SERIES",
+   null
+  ],
+  [
+   "unsd_m49_regions_ldc_lldc_sids",
+   "UN M49 countries and areas with regions, ISO codes and LDC, LLDC and SIDS flags",
+   "datactive/bigbang",
+   "main",
+   "examples/attendance/unsd.csv",
+   "csv_records",
+   "M49 Code",
+   null
+  ],
+  [
+   "unsd_m49_short_names_multilingual",
+   "UN M49 short country names in the six UN languages by ISO3",
+   "OCHA-DAP/hdx-cod-ab-checker",
+   "main",
+   "app/m49.csv",
+   "csv_records",
+   "iso3",
+   null
+  ],
+  [
+   "ocha_countries_territories_ids",
+   "OCHA countries and territories with M49, ISO, ReliefWeb, FTS and HRinfo identifiers",
+   "OCHA-DAP/ggeocode",
+   "master",
+   "inputs/iso3.csv",
+   "csv_records",
+   "ID",
+   null
+  ],
+  [
+   "ocha_countries_territories_hxl",
+   "HDX countries and territories taxonomy with HXL tags",
+   "OCHA-DAP/hdx-hapi-datamart",
+   "dev",
+   "hdx_hapi/datamart/list-data/2024-10-23-countries-and-territories-taxonomy-hxl-tags.csv",
+   "csv_records",
+   "ID",
+   null
+  ],
+  [
+   "hdx_accepted_tags",
+   "HDX accepted dataset tags vocabulary",
+   "OCHA-DAP/hdx-hapi-datamart",
+   "dev",
+   "hdx_hapi/datamart/list-data/2024-10-hdx-accepted-tags.csv",
+   "csv_records",
+   "tag",
+   null
+  ],
+  [
+   "country_codes_coordinates",
+   "Countries with ISO alpha-2, alpha-3, numeric codes and average coordinates",
+   "OCHA-DAP/hdx-signals-alerts",
+   "main",
+   "metadata/countries_codes_and_coordinates.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "hdx_signals_indicators",
+   "HDX Signals crisis alert indicators",
+   "OCHA-DAP/hdx-signals-alerts",
+   "main",
+   "metadata/signals_indicators.csv",
+   "csv_records",
+   "indicator_id",
+   null
+  ],
+  [
+   "gender_inequality_index_asia",
+   "Gender Inequality Index by country and year (ADPC GEM)",
+   "OCHA-DAP/hdx-scraper-adpc-gem",
+   "main",
+   "src/hdx/scraper/adpc_gem/data/GEM-GII.csv",
+   "csv_records",
+   "id",
+   null
+  ],
+  [
+   "who_sdg_regions_country_groups",
+   "WHO country SDG regions, LDC, SIDS/LLDC and member state flags",
+   "WorldHealthOrganization/bmat",
+   "master",
+   "data-raw/country_territory_data/sdg_regions_historical.csv",
+   "csv_records",
+   "iso3",
+   null
+  ],
+  [
+   "who_agency_territory_groups",
+   "UN agency territory groups for WHO maternal mortality reporting",
+   "WorldHealthOrganization/bmat",
+   "master",
+   "data-raw/country_territory_data/territory_groups_for_report/all_agency_territory_groups.csv",
+   "csv_records",
+   "iso_alpha_3_code",
+   null
+  ],
+  [
+   "wb_income_groups_unicef",
+   "World Bank income groups by country (UNICEF regional grouping table)",
+   "unicef/CCRR",
+   "main",
+   "misc/WB_INCOME.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "unicef_programme_regions",
+   "UNICEF programme regions by country",
+   "unicef/CCRR",
+   "main",
+   "misc/UNICEF_PROG_REG_GLOBAL.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "dfid_country_names",
+   "Country names by ISO 3166 alpha-2 code including historic codes (UK FCDO DevTracker)",
+   "DFID/devtracker-from-api",
+   "master",
+   "data/country-codes/country_codes.json",
+   "mapping",
+   "code",
+   "name"
+  ],
+  [
+   "oecd_crs_channel_codes",
+   "OECD CRS channel of delivery codes with acronyms and names",
+   "ONEcampaign/oda_data_package",
+   "main",
+   "src/oda_data/clean_data/crs_channel_mapping.csv",
+   "csv_records",
+   "channel_code",
+   null
+  ],
+  [
+   "oecd_multilateral_channel_crosswalk",
+   "OECD multilateral channel crosswalk",
+   "ONEcampaign/oda_data_package",
+   "main",
+   "src/oda_data/clean_data/multilateral_channel_crosswalk.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "oecd_crs_purpose_groups",
+   "OECD CRS purpose code groups",
+   "ONEcampaign/oda_data_package",
+   "main",
+   "src/oda_data/settings/crs_purpose.json",
+   "keyed_records",
+   "purpose_code",
+   null
+  ],
+  [
+   "oecd_crs_modalities",
+   "OECD CRS aid modalities",
+   "ONEcampaign/oda_data_package",
+   "main",
+   "src/oda_data/settings/crs_modalities.json",
+   "keyed_records",
+   "modality_code",
+   null
+  ],
+  [
+   "oecd_crs_type_of_finance",
+   "OECD CRS types of finance",
+   "ONEcampaign/oda_data_package",
+   "main",
+   "src/oda_data/settings/crs_type_of_finance.json",
+   "keyed_records",
+   "finance_code",
+   null
+  ],
+  [
+   "oecd_dac1_aid_flow_types",
+   "OECD DAC1 aid types with flow type codes",
+   "ONEcampaign/oda_data_package",
+   "main",
+   "src/oda_data/settings/dac1_aid_flow_types.json",
+   "keyed_records",
+   "aidtype_code",
+   null
+  ],
+  [
+   "oda_indicators",
+   "ODA indicator definitions with DAC source filters",
+   "ONEcampaign/oda_data_package",
+   "main",
+   "src/oda_data/settings/indicators.json",
+   "keyed_records",
+   "indicator",
+   null
+  ],
+  [
+   "ifrc_disaster_types",
+   "IFRC GO disaster types",
+   "IFRCGo/go-api",
+   "develop",
+   "api/fixtures/DisasterTypes.json",
+   "records",
+   "pk",
+   null
+  ],
+  [
+   "ifrc_appeal_document_types",
+   "IFRC GO appeal document types",
+   "IFRCGo/go-api",
+   "develop",
+   "api/fixtures/AppealDocumentTypes.json",
+   "records",
+   "pk",
+   null
+  ],
+  [
+   "ifrc_actions",
+   "IFRC GO emergency response actions",
+   "IFRCGo/go-api",
+   "develop",
+   "api/fixtures/Actions.json",
+   "records",
+   "pk",
+   null
+  ],
+  [
+   "ifrc_fdrs_indicator",
+   "IFRC FDRS income source indicators",
+   "IFRCGo/go-api",
+   "develop",
+   "databank/fixtures/fdrs_indicator.json",
+   "records",
+   "pk",
+   null
+  ],
+  [
+   "ifrc_delegation_office_types",
+   "IFRC delegation office types",
+   "IFRCGo/go-api",
+   "develop",
+   "local_units/fixtures/delegation_office_types.json",
+   "records",
+   "pk",
+   null
+  ],
+  [
+   "ifrc_componentratings",
+   "IFRC preparedness for effective response component ratings",
+   "IFRCGo/go-api",
+   "develop",
+   "per/fixtures/componentratings.json",
+   "records",
+   "pk",
+   null
+  ],
+  [
+   "ifrc_organizationtypes",
+   "IFRC PER organisation types",
+   "IFRCGo/go-api",
+   "develop",
+   "per/fixtures/organizationtypes.json",
+   "records",
+   "pk",
+   null
+  ],
+  [
+   "ifrc_flash_actions",
+   "IFRC flash update actions",
+   "IFRCGo/go-api",
+   "develop",
+   "flash_update/fixtures/flash_actions.json",
+   "records",
+   "pk",
+   null
+  ],
+  [
+   "ifrc_per_components",
+   "IFRC Preparedness for Effective Response components with thematic descriptions",
+   "IFRCGo/go-api",
+   "develop",
+   "per/fixtures/form_components.csv",
+   "csv_records",
+   "Component name",
+   null
+  ],
+  [
+   "gcdb_hazard_cross_probability",
+   "IFRC/UNDRR hazard cross-probability matrix by hazard abbreviation",
+   "IFRCGo/GCDB",
+   "main",
+   "Taxonomies/Hazard_CrossProbability.csv",
+   "csv_records",
+   "hazAb",
+   null
+  ],
+  [
+   "hxl_default_validation_schema",
+   "HXL default validation schema rules",
+   "HXLStandard/libhxl-python",
+   "dev",
+   "hxl/hxl-default-schema.json",
+   "records",
+   "#meta+comment",
+   null
+  ],
+  [
+   "bods_address_type",
+   "Beneficial Ownership Data Standard codelist: address type",
+   "openownership/bodsld",
+   "main",
+   "schemas/codelists/addressType.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "bods_annotation_motivation",
+   "Beneficial Ownership Data Standard codelist: annotation motivation",
+   "openownership/bodsld",
+   "main",
+   "schemas/codelists/annotationMotivation.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "bods_direct_or_indirect",
+   "Beneficial Ownership Data Standard codelist: direct or indirect",
+   "openownership/bodsld",
+   "main",
+   "schemas/codelists/directOrIndirect.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "bods_entity_subtype",
+   "Beneficial Ownership Data Standard codelist: entity subtype",
+   "openownership/bodsld",
+   "main",
+   "schemas/codelists/entitySubtype.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "bods_entity_type",
+   "Beneficial Ownership Data Standard codelist: entity type",
+   "openownership/bodsld",
+   "main",
+   "schemas/codelists/entityType.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "bods_interest_type",
+   "Beneficial Ownership Data Standard codelist: interest type",
+   "openownership/bodsld",
+   "main",
+   "schemas/codelists/interestType.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "bods_name_type",
+   "Beneficial Ownership Data Standard codelist: name type",
+   "openownership/bodsld",
+   "main",
+   "schemas/codelists/nameType.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "bods_person_type",
+   "Beneficial Ownership Data Standard codelist: person type",
+   "openownership/bodsld",
+   "main",
+   "schemas/codelists/personType.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "bods_record_status",
+   "Beneficial Ownership Data Standard codelist: record status",
+   "openownership/bodsld",
+   "main",
+   "schemas/codelists/recordStatus.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "bods_record_type",
+   "Beneficial Ownership Data Standard codelist: record type",
+   "openownership/bodsld",
+   "main",
+   "schemas/codelists/recordType.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "bods_securities_identifier_schemes",
+   "Beneficial Ownership Data Standard codelist: securities identifier schemes",
+   "openownership/bodsld",
+   "main",
+   "schemas/codelists/securitiesIdentifierSchemes.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "bods_source_type",
+   "Beneficial Ownership Data Standard codelist: source type",
+   "openownership/bodsld",
+   "main",
+   "schemas/codelists/sourceType.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "bods_unspecified_reason",
+   "Beneficial Ownership Data Standard codelist: unspecified reason",
+   "openownership/bodsld",
+   "main",
+   "schemas/codelists/unspecifiedReason.csv",
+   "csv_records",
+   "code",
+   null
+  ],
+  [
+   "us_competition_classification",
+   "US federal contract competition classification",
+   "CSISdefense/Lookup-Tables",
+   "master",
+   "contract/CompetitionClassification.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "us_reason_for_modification",
+   "US federal contract reasons for modification",
+   "CSISdefense/Lookup-Tables",
+   "master",
+   "contract/ReasonForModification.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "us_vehicle",
+   "US federal contract vehicles",
+   "CSISdefense/Lookup-Tables",
+   "master",
+   "contract/Vehicle.csv",
+   "csv_records",
+   "Vehicle.detail",
+   null
+  ],
+  [
+   "us_contract_type_of_contract_pricing",
+   "US federal type of contract pricing codes",
+   "CSISdefense/Lookup-Tables",
+   "master",
+   "contract/contract.TypeOfContractPricing.csv",
+   "csv_records",
+   "TypeOfContractPricing",
+   null
+  ],
+  [
+   "us_letter_contract",
+   "US federal letter contract codes",
+   "CSISdefense/Lookup-Tables",
+   "master",
+   "contract/LetterContract.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "us_financing_status",
+   "US federal assistance financing status",
+   "CSISdefense/Lookup-Tables",
+   "master",
+   "assistance/FinancingStatus.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "us_financing_type",
+   "US federal assistance financing types",
+   "CSISdefense/Lookup-Tables",
+   "master",
+   "assistance/FinancingType.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "us_assistance_type_code",
+   "US federal assistance type codes",
+   "CSISdefense/Lookup-Tables",
+   "master",
+   "assistance/assistance_type_code.csv",
+   "csv_records",
+   "assistance_type_code",
+   null
+  ],
+  [
+   "us_action_type_code",
+   "US federal assistance action type codes",
+   "CSISdefense/Lookup-Tables",
+   "master",
+   "assistance/action_type_code.csv",
+   "csv_records",
+   "action_type_code",
+   null
+  ],
+  [
+   "us_national_interest_action_code",
+   "US federal national interest action codes",
+   "CSISdefense/Lookup-Tables",
+   "master",
+   "assistance/NationalInterestActionCode.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "us_contingency_humanitarian_peacekeeping_operation",
+   "US federal contingency, humanitarian or peacekeeping operation codes",
+   "CSISdefense/Lookup-Tables",
+   "master",
+   "assistance/ContingencyHumanitarianPeacekeepingOperation.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "us_location_cow_ccode",
+   "Correlates of War country codes",
+   "CSISdefense/Lookup-Tables",
+   "master",
+   "location/Location_COW_ccode.csv",
+   "csv_records",
+   "StateAbb",
+   null
+  ],
+  [
+   "us_location_country_codes",
+   "Country codes crosswalk (FIPS, ISO, GENC) for US procurement",
+   "CSISdefense/Lookup-Tables",
+   "master",
+   "location/Location_CountryCodes.csv",
+   "csv_records",
+   "alpha-3",
+   null
+  ],
+  [
+   "us_naics_hightech_bls",
+   "BLS high-technology NAICS industries",
+   "CSISdefense/Lookup-Tables",
+   "master",
+   "economic/naics_hightech_bls.csv",
+   "csv_records",
+   "NaicsCode",
+   null
+  ],
+  [
+   "epa_304a_aquatic_life_human_health_criteria",
+   "EPA Clean Water Act 304(a) recommended aquatic life and human health water quality criteria by pollutant",
+   "USEPA/EPATADA",
+   "develop",
+   "inst/extdata/EPA304a_criteria_table.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "attains_parameter_to_wqp_characteristic",
+   "EPA ATTAINS impairment parameters crosswalked to Water Quality Portal characteristic names",
+   "USEPA/EPATADA",
+   "develop",
+   "inst/extdata/ATTAINSParamToWQPCharRef.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "attains_water_type_salinity",
+   "EPA ATTAINS assessment-unit water types classified as salt or fresh water",
+   "USEPA/EPATADA",
+   "develop",
+   "inst/extdata/ATTAINSWaterTypeToSaltFresh.csv",
+   "csv_records",
+   "ATTAINS.WaterType",
+   null
+  ],
+  [
+   "attains_water_type_to_wqp_location_type",
+   "EPA ATTAINS water types crosswalked to Water Quality Portal monitoring location types",
+   "USEPA/EPATADA",
+   "develop",
+   "inst/extdata/ATTAINSWaterTypeToWQPMonLocType.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "wqp_monitoring_location_type_salinity",
+   "Water Quality Portal monitoring location types classified as salt or fresh water",
+   "USEPA/EPATADA",
+   "develop",
+   "inst/extdata/WQPMonLocTypeToSaltFresh.csv",
+   "csv_records",
+   "Name",
+   null
+  ],
+  [
+   "wq_priority_characteristic_target_units",
+   "Target units for priority water quality characteristics (nutrients, metals, pathogens)",
+   "USEPA/EPATADA",
+   "develop",
+   "inst/extdata/TADAPriorityCharUnitRef.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "wq_priority_characteristic_synonyms",
+   "Water quality characteristic name synonyms harmonized to priority characteristics",
+   "USEPA/EPATADA",
+   "develop",
+   "inst/extdata/TADAPriorityCharConvertRef.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "usgs_water_quality_units_speciation",
+   "USGS water quality result units with speciation (as N, as P, as CaCO3) conversions",
+   "USEPA/EPATADA",
+   "develop",
+   "inst/extdata/USGS_units_speciation.csv",
+   "csv_records",
+   "Code",
+   null
+  ],
+  [
+   "wq_activity_relative_depth_categories",
+   "Water quality sampling activity depth names mapped to relative depth categories (surface, bottom, middle)",
+   "USEPA/EPATADA",
+   "develop",
+   "inst/extdata/TADAActivityRelativeDepthRef.csv",
+   "csv_records",
+   "Unique Identifier",
+   null
+  ],
+  [
+   "nitrogen_phosphorus_summation_key",
+   "Rules for summing nitrogen and phosphorus species into total N and total P from water quality results",
+   "USEPA/EPATADA",
+   "develop",
+   "inst/extdata/NPsummation_key.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "nitrogen_phosphorus_total_equations",
+   "Equations combining nitrogen and phosphorus fractions into totals",
+   "USEPA/EPATADA",
+   "develop",
+   "inst/extdata/NP_equations.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "water_quality_portal_column_types",
+   "Water Quality Portal result columns with their data types and descriptions",
+   "USEPA/EPATADA",
+   "develop",
+   "inst/extdata/TADAColTypeRef.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "disease_eponyms_curated",
+   "Curated disease eponyms with Disease Ontology identifiers",
+   "DiseaseOntology/DO.utils",
+   "main",
+   "data-raw/disease_eponyms_curated.tsv",
+   "tsv_records",
+   "word_lower",
+   null
+  ],
+  [
+   "disease_ontology_icd10_crosswalk",
+   "Disease Ontology terms cross-referenced to ICD-10-CM codes",
+   "DiseaseOntology/HumanDiseaseOntology",
+   "main",
+   "DOreports/ICD10inDO.tsv",
+   "tsv_records",
+   "id",
+   null
+  ],
+  [
+   "disease_ontology_mesh_crosswalk",
+   "Disease Ontology terms cross-referenced to MeSH descriptors",
+   "DiseaseOntology/HumanDiseaseOntology",
+   "main",
+   "DOreports/MESHinDO.tsv",
+   "tsv_records",
+   "id",
+   null
+  ],
+  [
+   "disease_ontology_gard_rare_disease_crosswalk",
+   "Disease Ontology terms cross-referenced to GARD rare disease identifiers",
+   "DiseaseOntology/HumanDiseaseOntology",
+   "main",
+   "DOreports/GARDinDO.tsv",
+   "tsv_records",
+   "id",
+   null
+  ],
+  [
+   "disease_ontology_orphanet_crosswalk",
+   "Disease Ontology terms cross-referenced to Orphanet rare disease codes",
+   "DiseaseOntology/HumanDiseaseOntology",
+   "main",
+   "DOreports/OrphanetinDO.tsv",
+   "tsv_records",
+   "id",
+   null
+  ],
+  [
+   "disease_ontology_nci_thesaurus_crosswalk",
+   "Disease Ontology terms cross-referenced to NCI Thesaurus codes",
+   "DiseaseOntology/HumanDiseaseOntology",
+   "main",
+   "DOreports/NCIinDO.tsv",
+   "tsv_records",
+   "id",
+   null
+  ],
+  [
+   "disease_symptom_associations",
+   "Disease Ontology diseases with their associated symptoms",
+   "DiseaseOntology/HumanDiseaseOntology",
+   "main",
+   "DOreports/requested/disease-symptom.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "disease_ontology_icdo_anatomy",
+   "Disease Ontology cancer terms with ICD-O topography and anatomical site",
+   "DiseaseOntology/HumanDiseaseOntology",
+   "main",
+   "DOreports/requested/DO-ICDO-anatomy.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "disease_ontology_logical_definitions",
+   "Disease Ontology terms with logical equivalence definitions",
+   "DiseaseOntology/HumanDiseaseOntology",
+   "main",
+   "DOreports/DO-equivalentClass.tsv",
+   "tsv_records",
+   "ID",
+   null
+  ],
+  [
+   "envo_biome_hierarchy",
+   "Environment Ontology biome classes and their hierarchy",
+   "EnvironmentOntology/envo",
+   "master",
+   "src/envo/subsets/biome-hierarchy.tsv",
+   "tsv_records",
+   "ID",
+   null
+  ],
+  [
+   "envo_lite_gsc_environment_terms",
+   "EnvO-Lite environment terms recommended by the Genomic Standards Consortium",
+   "EnvironmentOntology/envo",
+   "master",
+   "src/envo/subsets/EnvO-Lite-GSC.tsv",
+   "tsv_records",
+   "ID",
+   null
+  ],
+  [
+   "envo_chemical_concentration_terms",
+   "Environment Ontology chemical concentration terms (e.g. nitrate concentration of water)",
+   "EnvironmentOntology/envo",
+   "master",
+   "src/envo/modules/chemical_concentration.csv",
+   "csv_records",
+   "defined_class",
+   null
+  ],
+  [
+   "foodon_food_source_species",
+   "Animal species used as food sources in FoodOn with taxon identifiers",
+   "FoodOntology/foodon",
+   "master",
+   "src/ontology/imports/animal/resources/species_list.tsv",
+   "tsv_records",
+   "species",
+   null
+  ],
+  [
+   "foodon_fooddata_central_categories",
+   "USDA FoodData Central food categories mapped to FoodOn terms",
+   "FoodOntology/foodon",
+   "master",
+   "src/templates/fdc.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "foodon_food_products",
+   "FoodOn food product terms with parents and definitions",
+   "FoodOntology/foodon",
+   "master",
+   "src/templates/food_products.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "foodon_food_processes",
+   "FoodOn food processing terms with definitions",
+   "FoodOntology/foodon",
+   "master",
+   "src/templates/process_model.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "unicef_maternal_mortality_ratio",
+   "UNICEF maternal mortality ratio estimates by country",
+   "WorldHealthOrganization/epi50-vaccine-impact",
+   "master",
+   "input/unicef_maternal_mortality.csv",
+   "csv_records",
+   "iso",
+   null
+  ],
+  [
+   "unicef_child_stunting_prevalence",
+   "UNICEF child stunting prevalence by country and year",
+   "WorldHealthOrganization/epi50-vaccine-impact",
+   "master",
+   "input/unicef_stunting.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "darwin_core_simple_terms",
+   "Simple Darwin Core term names for biodiversity occurrence records",
+   "tdwg/dwc",
+   "master",
+   "dist/simple_dwc_vertical.csv",
+   "csv_records",
+   "type",
+   null
+  ],
+  [
+   "darwin_core_all_terms",
+   "All Darwin Core term names including class terms",
+   "tdwg/dwc",
+   "master",
+   "dist/all_dwc_vertical.csv",
+   "csv_records",
+   "type",
+   null
+  ],
+  [
+   "chronometric_age_term_versions",
+   "TDWG Chronometric Age term versions with status and definitions",
+   "tdwg/chrono",
+   "master",
+   "vocabulary/term_versions.csv",
+   "csv_records",
+   "iri",
+   null
+  ],
+  [
+   "latimer_core_collection_terms",
+   "TDWG Latimer Core natural science collection description terms",
+   "tdwg/ltc",
+   "main",
+   "source/terms/ltc_terms_source.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "latimer_core_term_categories",
+   "TDWG Latimer Core classes and categories",
+   "tdwg/ltc",
+   "main",
+   "source/terms/ltc_categories.csv",
+   "csv_records",
+   "display_order",
+   null
+  ],
+  [
+   "latimer_core_datatypes",
+   "TDWG Latimer Core data types",
+   "tdwg/ltc",
+   "main",
+   "source/terms/ltc_datatypes.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "latimer_core_skos_mappings",
+   "TDWG Latimer Core SKOS mappings to other standards",
+   "tdwg/ltc",
+   "main",
+   "source/terms/mapping/ltc_skos_mapping.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "audubon_core_subject_part_vocabulary",
+   "Audubon Core subject part controlled vocabulary (organism parts shown in media)",
+   "tdwg/ac",
+   "master",
+   "views/code/2021-05-05_build_jsonld/subjectPart.csv",
+   "csv_records",
+   "term_localName",
+   null
+  ],
+  [
+   "audubon_core_subject_orientation_vocabulary",
+   "Audubon Core subject orientation controlled vocabulary",
+   "tdwg/ac",
+   "master",
+   "views/code/2021-05-05_build_jsonld/subjectOrientation.csv",
+   "csv_records",
+   "term_localName",
+   null
+  ],
+  [
+   "audubon_core_3d_media_terms",
+   "Audubon Core proposed 3D media metadata terms",
+   "tdwg/ac",
+   "master",
+   "3d/process_files/ac_3d_terms.csv",
+   "csv_records",
+   "term_localName",
+   null
+  ],
+  [
+   "faostat_crop_items",
+   "FAOSTAT crop item codes and names",
+   "wri/MAPSPAM",
+   "master",
+   "FAO/FAOSTAT_crops_items.csv",
+   "csv_records",
+   "Item Code",
+   null
+  ],
+  [
+   "fao_indicative_crop_classification_v10",
+   "FAO Indicative Crop Classification (ICC 1.0) groups, classes and crops",
+   "wri/MAPSPAM",
+   "master",
+   "FAO/Indicative_Crop_Classification_Version_10.csv",
+   "csv_records",
+   "id",
+   null
+  ],
+  [
+   "fao_crop_botanical_names",
+   "FAO crop names with their botanical (scientific) names",
+   "wri/MAPSPAM",
+   "master",
+   "FAO/botanical_names.csv",
+   "csv_records",
+   "Crop name",
+   null
+  ],
+  [
+   "mapspam_crop_names",
+   "MapSPAM crop codes and names with FAO correspondence",
+   "wri/MAPSPAM",
+   "master",
+   "metadata_tables/mapspam_names.csv",
+   "csv_records",
+   "crop_number",
+   null
+  ],
+  [
+   "mapspam_crop_groups",
+   "MapSPAM crop list with crop groups and FAO codes",
+   "wri/MAPSPAM",
+   "master",
+   "metadata_tables/4-Methodology-Crops-of-SPAM-2005-2015-02-26.csv",
+   "csv_records",
+   "No. crt. ",
+   null
+  ],
+  [
+   "mapspam_production_technologies",
+   "MapSPAM farming production systems (irrigated, rainfed high-input, low-input, subsistence)",
+   "wri/MAPSPAM",
+   "master",
+   "metadata_tables/technologies.csv",
+   "csv_records",
+   "technology",
+   null
+  ],
+  [
+   "mapspam_variable_structure",
+   "MapSPAM variables (harvested area, physical area, production, yield)",
+   "wri/MAPSPAM",
+   "master",
+   "metadata_tables/structure_b.csv",
+   "csv_records",
+   "technology_base",
+   null
+  ],
+  [
+   "ilo_reference_area_codes",
+   "ILOSTAT reference area codes and names",
+   "worldbank/HCI-Plus",
+   "main",
+   "01_raw_data/metadata/ILO_reference_area.csv",
+   "csv_records",
+   "ref_area",
+   null
+  ],
+  [
+   "imf_country_codes",
+   "IMF country codes with ISO crosswalk",
+   "worldbank/HCI-Plus",
+   "main",
+   "01_raw_data/metadata/IMF_country_codes.csv",
+   "csv_records",
+   "IMF_code",
+   null
+  ],
+  [
+   "world_bank_iso_country_codes",
+   "Country ISO codes with World Bank region and income group",
+   "worldbank/HCI-Plus",
+   "main",
+   "01_raw_data/metadata/iso_codes.csv",
+   "csv_records",
+   "country",
+   null
+  ],
+  [
+   "human_capital_indicator_bounds",
+   "Human Capital Index Plus indicators with plausible lower and upper bounds",
+   "worldbank/HCI-Plus",
+   "main",
+   "02_programs/hci_plus/indicator_bounds.csv",
+   "csv_records",
+   "variable_family",
+   null
+  ],
+  [
+   "human_capital_index_plus_codebook",
+   "Human Capital Index Plus codebook of variables and indicator definitions",
+   "worldbank/HCI-Plus",
+   "main",
+   "codebook.csv",
+   "csv_records",
+   "repo_column",
+   null
+  ],
+  [
+   "global_education_policy_dashboard_indicators",
+   "Global Education Policy Dashboard indicators with definitions",
+   "worldbank/GEPD",
+   "master",
+   "Indicators/indicators_details.csv",
+   "csv_records",
+   null,
+   null
+  ],
+  [
+   "global_education_policy_dashboard_indicator_info",
+   "Global Education Policy Dashboard indicator series metadata",
+   "worldbank/GEPD",
+   "master",
+   "Country_Reports/Data/GEPD_Indicators_Info.csv",
+   "csv_records",
+   "Series",
+   null
+  ],
+  [
+   "sanctsound_species_lookup",
+   "SanctSound acoustic monitoring species codes with WoRMS identifiers",
+   "ioos/bio_data_guide",
+   "main",
+   "datasets/SanctSound/SanctSound_SpeciesLookupTable.csv",
+   "csv_records",
+   "vernacularName",
+   null
+  ],
+  [
+   "cremp_dry_tortugas_coral_stations",
+   "Coral Reef Evaluation and Monitoring Project stations in Dry Tortugas",
+   "ioos/bio_data_guide",
+   "main",
+   "datasets/CREMP_dry_tortugas/dt_Station_List_Master_160920.csv",
+   "csv_records",
+   "stationid",
+   null
+  ],
+  [
+   "unicef_child_hazard_types",
+   "UNICEF climate and disaster hazard types used in child exposure analysis",
+   "unicef/GCHD",
+   "main",
+   "exposure_analysis/subnational_level/config/hazard_info.json",
+   "records",
+   "code",
+   null
+  ],
+  [
+   "tick_borne_pathogen_amplicon_targets",
+   "CDC tick-borne pathogen surveillance amplicon targets",
+   "CDCgov/tick_surveillance",
+   "master",
+   "refseq/targets.tsv",
+   "tsv_records",
+   "ref_sequence_name",
+   null
+  ],
+  [
+   "cgiar_information_product_types",
+   "CGIAR CG Core information product types with definitions",
+   "AgriculturalSemantics/cg-core",
+   "master",
+   "data/IPtypes.csv",
+   "csv_records",
+   "Type",
+   null
+  ],
+  [
+   "plant_trait_eq_patterns",
+   "Plant Trait Ontology trait entity-quality definitions",
+   "Planteome/plant-trait-ontology",
+   "master",
+   "patterns/eq/eq.tsv",
+   "tsv_records",
+   "defined_class",
+   null
+  ],
+  [
+   "plant_trait_composition_terms",
+   "Plant Trait Ontology composition traits (content of chemicals in plant parts)",
+   "Planteome/plant-trait-ontology",
+   "master",
+   "patterns/composition/composition.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "plant_trait_morphology_terms",
+   "Plant Trait Ontology morphology traits",
+   "Planteome/plant-trait-ontology",
+   "master",
+   "patterns/morphology/morphology.tsv",
+   "tsv_records",
+   "defined_class",
+   null
+  ],
+  [
+   "plant_trait_stress_responsivity_terms",
+   "Plant Trait Ontology responsivity traits (sensitivity to drought, salt, pathogens)",
+   "Planteome/plant-trait-ontology",
+   "master",
+   "patterns/responsivity/responsivity.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "plant_experimental_chemical_exposures",
+   "Plant Experimental Conditions Ontology chemical exposure terms",
+   "Planteome/plant-experimental-conditions-ontology",
+   "master",
+   "src/ontology/patterns/exposure-chebi.tsv",
+   "tsv_records",
+   "defined_class",
+   null
+  ],
+  [
+   "plant_experimental_organism_exposures",
+   "Plant Experimental Conditions Ontology biotic (organism) exposure terms",
+   "Planteome/plant-experimental-conditions-ontology",
+   "master",
+   "src/ontology/patterns/exposure-ncbitaxon.tsv",
+   "tsv_records",
+   "defined_class",
+   null
+  ],
+  [
+   "medic_included_diseases",
+   "MEDIC disease list included for medical action indications",
+   "monarch-initiative/medic",
+   "main",
+   "medi/src/medi/pipelines/diseases/src/included-diseases.robot.tsv",
+   "tsv_records",
+   null,
+   null
+  ],
+  [
+   "medical_action_food_avoidance",
+   "Medical Action Ontology food avoidance actions (e.g. avoid gluten)",
+   "monarch-initiative/MAxO",
+   "master",
+   "src/patterns/data/manual/avoidance_of_food_intake.tsv",
+   "tsv_records",
+   "defined_class",
+   null
+  ],
+  [
+   "urban_socioeconomic_vulnerability_census_variables",
+   "Census variables used for urban socio-economic vulnerability indices",
+   "wri/cities-socio-economic-vulnerability",
+   "main",
+   "data/parameters/census_variables_mapping_v2.csv",
+   "csv_records",
+   "variable_name_raw",
+   null
+  ],
+  [
+   "ademe_transport_emission_factor_mapping",
+   "Transport modes mapped to ADEME Base Carbone emission factor identifiers",
+   "mobility-team/mobility",
+   "main",
+   "mobility/runtime/resources/ademe/mapping.csv",
+   "csv_records",
+   "ef_name",
+   null
   ]
  ]
 }
