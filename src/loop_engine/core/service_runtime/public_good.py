@@ -5,6 +5,8 @@ select already admitted bytes; tags never select access. Ordinary entitlement
 and paid usage records are unchanged. Reservations count each attempt, even
 failed reads, in an atomic per-account fixed window. Receipts record an
 authorized response, not proof that a network peer received it.
+One receipt per account/item version/month is replaced by later responses;
+it supports report eligibility, not the requested history of every download.
 """
 from __future__ import annotations
 
@@ -94,14 +96,17 @@ class PublicGoodGrant:
         for value in (self.approval_ref, self.rights_ref, self.public_benefit_reason):
             if not isinstance(value, str) or not value.strip() or len(value) > 2000 or not value.isprintable():
                 _refuse()
-        goals = tuple(self.sdg_goals) if isinstance(self.sdg_goals, (tuple, list)) else ()
-        if not goals or any(type(goal) is not int or not 1 <= goal <= 17 for goal in goals) or len(set(goals)) != len(goals):
+        if not isinstance(self.sdg_goals, (tuple, list)):
+            _refuse()
+        goals = tuple(self.sdg_goals)
+        if any(type(goal) is not int or not 1 <= goal <= 17 for goal in goals) or len(set(goals)) != len(goals):
             _refuse()
         object.__setattr__(self, "sdg_goals", tuple(sorted(goals)))
         initiatives = tuple(self.initiatives) if isinstance(self.initiatives, (list, tuple)) else None
-        if (initiatives is None or len(initiatives) > 32 or len(set(initiatives)) != len(initiatives)
+        if (initiatives is None or len(initiatives) > 32
                 or any(not isinstance(value, str) or not re.fullmatch("[a-z][a-z0-9-]{0,63}", value) for value in initiatives)
-                or type(self.active) is not bool):
+                or len(set(initiatives)) != len(initiatives) or type(self.active) is not bool
+                or not goals and not initiatives):
             _refuse()
         object.__setattr__(self, "initiatives", initiatives)
         if type(self.expires_at) is not int or self.expires_at <= 0:
@@ -377,7 +382,12 @@ class PublicGoodAccess:
         return True
 
     def complete(self, reservation, principal, view, *, response_bytes):
-        """Close a reservation and store a nonbillable exact-version response receipt."""
+        """Close a reservation and store an authorized_response, not network delivery.
+
+        The account/item-version/month key replaces the preceding receipt in
+        that month. Every-download history remains a separate unimplemented
+        transport/activity requirement.
+        """
         if type(response_bytes) is not int or response_bytes < 0 or not isinstance(reservation, PublicGoodReservation) or response_bytes > reservation.response_bytes:
             _refuse("public_good_reservation_invalid")
         from .usage_meter import usage_period

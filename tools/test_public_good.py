@@ -163,6 +163,27 @@ class PublicGoodTests(unittest.TestCase):
         resolver = ProvisioningQualificationResolver("failed", failed)
         self.assertFalse(self.service.snapshot(replace(self.view, qualification_resolver=resolver)).grants)
 
+    def test_related_initiative_alone_is_an_explicit_access_grant(self):
+        related = replace(self.grant, sdg_goals=(), initiatives=("worker-protection",))
+        self.configure(grants=(related,))
+        self.assertEqual(self.service.snapshot(self.view).grants[0].sdg_goals, ())
+        self.assertEqual(self.service.snapshot(self.view).grants[0].initiatives, ("worker-protection",))
+        self.assertFalse(self.ask()["metered"])
+
+    def test_associations_reject_empty_boolean_duplicate_and_malformed_values(self):
+        for changes in (
+            {"sdg_goals": (), "initiatives": ()},
+            {"sdg_goals": (True,), "initiatives": ("worker-protection",)},
+            {"sdg_goals": (8, 8)},
+            {"sdg_goals": "8", "initiatives": ("worker-protection",)},
+            {"sdg_goals": (), "initiatives": ("worker-protection", "worker-protection")},
+            {"sdg_goals": (), "initiatives": ("Uppercase",)},
+            {"sdg_goals": (), "initiatives": ("unsafe/path",)},
+            {"sdg_goals": (), "initiatives": (True,)},
+            {"sdg_goals": (), "initiatives": ([],)},
+        ):
+            with self.subTest(changes=changes):
+                self.assertEqual(self.code(lambda: replace(self.grant, **changes)), "public_good_record_invalid")
     def test_revocation_or_expiry_during_body_read_prevents_receipt_and_disclosure(self):
         self.before_read = lambda: self.configure(grants=())
         self.assertIn(self.code(self.ask), ("public_good_authority_changed", "item_unavailable"))
