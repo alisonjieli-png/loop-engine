@@ -3,9 +3,9 @@
 Internal service mechanics, not a runtime or an admission system. Operators
 select already admitted bytes; tags never select access. Ordinary entitlement
 and paid usage records are unchanged. Reservations count each attempt, even
-failed reads, in an atomic per-account fixed window. Receipts record an
+failed reads, in an atomic per-account fixed window. Delivery records state an
 authorized response, not proof that a network peer received it.
-One receipt per account/item version/month is replaced by later responses;
+One record per account/item version/month is replaced by later responses;
 it supports report eligibility, not the requested history of every download.
 """
 from __future__ import annotations
@@ -29,8 +29,8 @@ LIMITS_VERSION = "service_public_good_limits/v1"
 WINDOW_KIND = "service_public_good_window"
 WINDOW_VERSION = WINDOW_KIND + "/v1"
 HOST_WINDOW_KIND = "service_public_good_host_window"
-RECEIPT_KIND = "service_public_good_receipt"
-RECEIPT_VERSION = RECEIPT_KIND + "/v1"
+DELIVERY_KIND = "service_public_good_delivery"
+DELIVERY_VERSION = DELIVERY_KIND + "/v1"
 EVENT_KIND = "service_public_good_policy_event"
 MAXIMUM_CONCURRENT_RETRIES = 8
 
@@ -384,7 +384,7 @@ class PublicGoodAccess:
     def complete(self, reservation, principal, view, *, response_bytes):
         """Close a reservation and store an authorized_response, not network delivery.
 
-        The account/item-version/month key replaces the preceding receipt in
+        The account/item-version/month key replaces the preceding record in
         that month. Every-download history remains a separate unimplemented
         transport/activity requirement.
         """
@@ -398,23 +398,23 @@ class PublicGoodAccess:
                     now = self.runtime._now()
                     selected = reservation.grant
                     logical = (current.tenant_id, selected.binding.identity, selected.binding.body_digest, selected.item_version, usage_period(now))
-                    previous = self.catalog.read(store, RECEIPT_KIND, logical)
-                    payload = {"record_type": RECEIPT_VERSION, "tenant_id": current.tenant_id,
+                    previous = self.catalog.read(store, DELIVERY_KIND, logical)
+                    payload = {"record_type": DELIVERY_VERSION, "tenant_id": current.tenant_id,
                         "item_identity": selected.binding.identity, "body_digest": selected.binding.body_digest,
                         "item_version": selected.item_version, "policy_version": snapshot.version,
                         "response_bytes": response_bytes, "billed_quantity": 0, "at": now,
                         "outcome": "authorized_response", "request_id_digest": reservation.request_id_digest}
-                    receipt = self.catalog.record(RECEIPT_KIND, logical, payload, tenant_id=current.tenant_id)
+                    delivery = self.catalog.record(DELIVERY_KIND, logical, payload, tenant_id=current.tenant_id)
                     value = window["payload"]
                     updated = self.catalog.record(WINDOW_KIND, current.tenant_id,
                         {**value, "reservations": {**value["reservations"], reservation.reservation_id: {"proof": reservation._proof, "state": "complete"}}},
                         tenant_id=current.tenant_id)
-                    self.catalog.commit(store, (receipt, updated), (*guards, snapshot.guard, snapshot.state_guard,
-                        self.catalog.guard(window), self.catalog.guard(previous, receipt["record_id"])))
+                    self.catalog.commit(store, (delivery, updated), (*guards, snapshot.guard, snapshot.state_guard,
+                        self.catalog.guard(window), self.catalog.guard(previous, delivery["record_id"])))
                 # Clock expiry or revocation may have crossed the commit itself.
                 with self.catalog.store() as store:
                     self._validate(store, reservation, principal, view, completed=True)
-                return {**payload, "receipt_ref": receipt["record_id"], "committed": True}
+                return {**payload, "record_ref": delivery["record_id"], "committed": True}
             except ServiceRuntimeError as error:
                 if error.code != "concurrent_update" or attempt == MAXIMUM_CONCURRENT_RETRIES - 1:
                     raise
@@ -422,10 +422,10 @@ class PublicGoodAccess:
 
 
 def downloaded(binding, store, tenant_id, identity, body_digest):
-    """Exact free-response receipt for the existing customer-report boundary."""
-    for row in binding.rows(store, RECEIPT_KIND, tenant_id):
+    """Exact nonbillable delivery record for the existing customer-report boundary."""
+    for row in binding.rows(store, DELIVERY_KIND, tenant_id):
         value = row["payload"]
-        if (value.get("record_type") == RECEIPT_VERSION and value.get("tenant_id") == tenant_id
+        if (value.get("record_type") == DELIVERY_VERSION and value.get("tenant_id") == tenant_id
                 and value.get("item_identity") == identity and value.get("body_digest") == body_digest
                 and value.get("outcome") == "authorized_response" and value.get("billed_quantity") == 0):
             return True

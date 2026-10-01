@@ -184,7 +184,8 @@ class PublicGoodTests(unittest.TestCase):
         ):
             with self.subTest(changes=changes):
                 self.assertEqual(self.code(lambda: replace(self.grant, **changes)), "public_good_record_invalid")
-    def test_revocation_or_expiry_during_body_read_prevents_receipt_and_disclosure(self):
+
+    def test_revocation_or_expiry_during_body_read_prevents_delivery_record_and_disclosure(self):
         self.before_read = lambda: self.configure(grants=())
         self.assertIn(self.code(self.ask), ("public_good_authority_changed", "item_unavailable"))
         with self.runtime._catalog.store() as store:
@@ -196,6 +197,8 @@ class PublicGoodTests(unittest.TestCase):
         self.assertEqual(body["metered"], False)
         self.assertEqual(self.code(lambda: self.service.complete(reservation, self.principal, self.view, response_bytes=201)), "public_good_reservation_invalid")
         result = self.service.complete(reservation, self.principal, self.view, response_bytes=80)
+        self.assertEqual(result["record_type"], "service_public_good_delivery/v1")
+        self.assertEqual(result["record_ref"][:8], "service:")
         self.assertEqual(result["billed_quantity"], 0)
         self.assertEqual(self.code(lambda: self.service.revalidate(reservation, self.principal, self.view)), "public_good_reservation_closed")
 
@@ -250,7 +253,7 @@ class PublicGoodTests(unittest.TestCase):
             request_id="unplanned", public_good_reservation=None)), "public_good_authority_changed")
         self.assertFalse(self.reads)
 
-    def test_expiry_at_receipt_commit_prevents_a_successful_return(self):
+    def test_expiry_at_delivery_record_commit_prevents_a_successful_return(self):
         reservation = self.service.reserve(self.principal, self.view, "public.fixture", expected_digest=self.grant.binding.body_digest, request_id="expiry", response_bytes=100)
         original = type(self.service.catalog).commit
         def expiring_commit(binding, *args, **kwargs):
