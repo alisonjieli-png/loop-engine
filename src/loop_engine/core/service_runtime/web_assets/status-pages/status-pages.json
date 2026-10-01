@@ -1577,6 +1577,72 @@
     "fixed": false
    },
    {
+    "section": "Staff work",
+    "feature": "Endpoint",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Staff work",
+    "feature": "Request record type",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Staff work",
+    "feature": "Result record type",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Staff work",
+    "feature": "Http request bytes",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Staff work",
+    "feature": "Http response bytes",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Staff work",
+    "feature": "Maximum files",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Staff work",
+    "feature": "Maximum file bytes",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Staff work",
+    "feature": "Maximum total file bytes",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Staff work",
+    "feature": "Ordinary oauth access",
+    "value": "No",
+    "fixed": true
+   },
+   {
+    "section": "Staff work",
+    "feature": "Automatic execution",
+    "value": "No",
+    "fixed": true
+   },
+   {
+    "section": "Staff work",
+    "feature": "Automatic publication",
+    "value": "No",
+    "fixed": true
+   },
+   {
     "section": "Billing",
     "feature": "Webhook",
     "value": "",

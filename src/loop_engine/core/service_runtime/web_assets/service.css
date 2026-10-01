@@ -762,3 +762,7 @@ html [data-view="home"] .hero-terminal-bar .hero-terminal-label{margin:.5rem .75
 @media(max-width:600px){.creative-arena-frame{height:780px;min-height:0;border-radius:6px}}
 .oauth-consent-content{max-width:760px;overflow-wrap:anywhere}
 .oauth-consent-content>.eyebrow{font-family:var(--font-mono)}
+.dot-work-text{white-space:pre-wrap;overflow-wrap:anywhere;max-height:28rem;overflow:auto;font-size:.9375rem}
+#dot-work .workspace-grid>*{min-width:0}
+#dot-work-detail{overflow-wrap:anywhere}
+#dot-work-status{overflow-wrap:anywhere}

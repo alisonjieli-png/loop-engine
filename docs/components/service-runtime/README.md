@@ -129,6 +129,7 @@ component guide check rather than surviving here.
 | `/api/v1/admin/overview` | A staff member's role, its permissions and what the role may read. |
 | `/api/v1/admin/accounts` | The account list and one account action, for a superadmin. |
 | `/api/v1/admin/sign-up-links` | Baltor's own sign-up link for up to ten addresses, sent by a superadmin. |
+| `/api/v1/admin/work` | Private research, test and component reports with passive text/code attachments and linked replies, for authorized administrators. |
 | `/api/v1/billing/plans` | The plans on offer. |
 | `/api/v1/billing/checkout` | Start a checkout session. |
 | `/api/v1/billing/portal` | Open the customer portal. |
@@ -632,6 +633,18 @@ curl -sS https://app.baltor.ai/api/v1/health
 ## Related reading
 
 ### Unlisted Dot working pages
+
+`staff_work.py` connects the private Administration work log to
+`RecordOperationService`, the existing immutable artifact store and the
+service's `ServiceCatalogBinding`. Its CatalogStore adapter includes current
+staff/account guards in the atomic create precondition. Actor, namespace,
+storage paths and the exact effect approval come from the authenticated host.
+The closed report schema binds the public brief revision, task and submitted
+files. Replays retain exact identity; a saved report never approves content or
+executes files. HTTP and MCP perform completion-time authorization before
+releasing private results. See the
+[feedback and work-log guide](../../guides/customer-feedback-and-requests.md#private-work-reports-and-files)
+for fields, limits and remaining scope.
 
 The website renderer serves `/dot-context` and `/dot-feedback`, plus matching
 JSON representations. `dot_pages.py` reads the two explicitly reviewed public

@@ -81,7 +81,7 @@ MODULE_MAP = {
         "list_paging", "list_paging_checks",
         "commercial_relationship", "public_links",
         "red_team_page",
-        "feedback", "feedback_checks",
+        "feedback", "feedback_checks", "staff_work",
         "status_pages",
     ),
     "core.practitioner_runtime": ("__init__", "capabilities", "observations", "provisioning"),

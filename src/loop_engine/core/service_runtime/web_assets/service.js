@@ -4,7 +4,7 @@
   let token = "", generation = 0, busy = false, capabilities = null, accessOptions = null, accessRequest = null, accessBusy = false;
   let connectionBusy = false, recipes = null, afterLogin = null, principalScopes = [];
   let identityClient = null, identityConfiguration = null, authenticationMode = "host_key";
-  let clientAccess = null, catalogueBrowser = null, oauthConsent = null;
+  let clientAccess = null, catalogueBrowser = null, oauthConsent = null, staffWork = null;
   // What the funnel reads: whether the service reports account creation open, where a signed-in account's paid access comes
   // from, and whether this page has asked for a sign-up link.
   let registrationOpen = false, accessSource = "", funnelSent = false;
@@ -253,7 +253,7 @@ const applyPaymentState = name => {
     message("admin-message", "Sign in with your staff account or an authorized administrator service token.");
     $("test-protocol").disabled = true; $("setup-identity").textContent = "Sign in with a client token to run the connection check.";
     $("protocol-tools").replaceChildren(); message("protocol-result", "Not tested. No model calls are made by this check.");
-    clientAccess?.reset(); catalogueBrowser?.reset();
+    clientAccess?.reset(); catalogueBrowser?.reset(); staffWork?.reset();
     accessSource = ""; renderFunnel();
   }
   /* Signing out. The page forgets the access it holds at once, then asks the service and the identity provider to end the
@@ -319,6 +319,7 @@ const applyPaymentState = name => {
         const code = typeof record?.error?.code === "string" && record.error.code ? record.error.code : "request_failed";
         if (response.status === 401 && authenticated) disconnect();
         const refused = new Error("Service refused the request: " + String(code).slice(0, 100) + ".");
+        refused.status = response.status;
         /* The service's own words for this refusal, taken only as plain sentences of a bounded length. */
         const sentence = value => typeof value === "string" && value.trim() && value.length <= 400 && !/[<>]/.test(value) ? value.trim() : "";
         if (sentence(record?.error?.message)) refused.refusal = {code, status:response.status, message:sentence(record.error.message), next:sentence(record.error.next_action),
@@ -335,6 +336,9 @@ const applyPaymentState = name => {
     } finally { clearTimeout(timer); pending.delete(controller); }
   }
   function facts(target, entries) { target.replaceChildren(); for (const [name, value] of entries) target.append(element("dt", name), element("dd", value ?? "Unknown")); }
+  staffWork = window.BaltorStaffWork?.create({request, element,
+    current:() => ({connected:!!token, allowed:staffRole === "superadmin" || principalScopes.includes("access:manage"),
+      requestBytes:capabilities?.staff_work?.http_request_bytes || 65536})});
   /* A fact list drawn as tiles, such as the staff figures, keeps each name and its value together in one group. */
   const tiles = (target, entries) => { facts(target, entries); for (const name of [...target.querySelectorAll("dt")]) { const value = name.nextElementSibling, group = document.createElement("div"); name.before(group); group.append(name, value); } };
   /* The plan tile of the account overview names what covers the account, as the session record states it, and what the
@@ -408,6 +412,7 @@ const applyPaymentState = name => {
       if (administrator) await loadAccess();
       if (staffRole) await loadStaff().catch(error => message("staff-message", said(error), failureState(error)));
       if (administrator || ["superadmin", "analytics"].includes(staffRole)) await loadFeedback().catch(error => message("feedback-message", said(error), failureState(error)));
+      staffWork?.connectionChanged();
       clientAccess.connectionChanged(); catalogueBrowser?.connectionChanged();
     } catch (error) { disconnect(); message("connection-message", error.name === "AbortError" ? "Connection timed out. No automatic retry was made." : said(error), failureState(error)); }
   }

@@ -317,13 +317,16 @@ class ServiceFeedback:
         if staff is not None:
             if administration is None:
                 raise ServiceRuntimeError("account_administration_unavailable")
-            administration._current_session(store, staff)
+            _current, guards = administration._current_session(store, staff)
+            if administration.policy.role_for(staff.subject, staff.email) != staff.role:
+                raise ServiceRuntimeError("account_administration_forbidden")
             if permission not in permissions_for(staff.role):
                 raise ServiceRuntimeError("account_administration_forbidden")
         else:
-            current, _guards = self.runtime._revalidate(store, principal)
+            current, guards = self.runtime._revalidate(store, principal)
             if ACCESS_MANAGE_SCOPE not in current.scopes:
                 raise ServiceRuntimeError("account_administration_forbidden")
+        return guards
 
     def authorize_staff_view(self, principal, *, staff=None, administration=None):
         """Recheck the existing staff gate without rereading private feedback."""

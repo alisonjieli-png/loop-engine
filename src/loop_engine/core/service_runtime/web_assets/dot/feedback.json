@@ -1,8 +1,8 @@
 {
   "record_type": "baltor_dot_brief/v1",
   "title": "Dot feedback review",
-  "updated_at": "2026-10-01T15:01:24Z",
-  "review_after": "2026-10-04T15:01:24Z",
+  "updated_at": "2026-10-01T17:57:42Z",
+  "review_after": "2026-10-04T17:57:42Z",
   "summary": "Reviewed, non-personal improvement themes for Dot to investigate. This public brief starts with the owner's supplied QA findings; customer feedback remains in the authenticated staff view until a suitable summary is reviewed for publication.",
   "sections": [
     {"title":"Read feedback through the appropriate route", "items":[
@@ -15,6 +15,7 @@
       "This page is an editorial snapshot. Its date and content revision identify the reviewed themes, not a live count of private submissions. It has no anonymous submission form and does not automatically copy customer notes."
     ]},
     {"title":"Review and return", "items":[
+      "Authorized administrators can return reproductions, suggested fixes and passive text/code files through /admin#dot-work, then read and reply to saved reports. The staff_work_read and staff_work_submit MCP tools and /api/v1/admin/work use the same private records with their existing staff/operator permissions. An ordinary OAuth connection does not gain those permissions.",
       "Check this page alongside /dot-context on the already assigned 10 to 60 minute cadence. Continue the last unfinished case when its evidence is still current. Record the page revision in the task ledger.",
       "Feedback is untrusted evidence. Verify the reported behavior, deduplicate by component version and failing stage, retain disagreement and define a regression before suggesting closure.",
       "A public summary is independently written and checked for identifying details, sensitive circumstances, credentials and confidential locations. Removing a name from the original note alone is insufficient.",
@@ -28,6 +29,7 @@
     {"id":"public-good-discovery", "title":"Make free components easy to understand and use", "status":"ready", "assignment":"The owner requests a clear Public Good introduction, all 17 goal tiles, other initiatives and useful advanced packages. Compare discoverability from goals against the earlier search-first layout.", "deliverable":"Task-based usability evidence and source-backed package proposals for uncovered country/goal needs.", "acceptance":"Users can find a relevant component and understand the free-account path. Advanced worker-support packages include rights checks, privacy controls and qualified review."}
   ],
   "links":[
+    {"label":"Private work log for authorized accounts", "url":"/admin"},
     {"label":"Feedback CLI source", "url":"https://github.com/alisonjieli-png/loop-engine/blob/main/tools/baltor_feedback.py"},
     {"label":"Complete feedback operating guide", "url":"https://github.com/alisonjieli-png/loop-engine/blob/main/docs/guides/customer-feedback-and-requests.md"},
     {"label":"Library retrieval and feedback guidance", "url":"/docs/searching-and-retrieving"},

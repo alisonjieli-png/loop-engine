@@ -51,6 +51,20 @@ def validate_public_url(value, *, permit_loopback=False):
     return value.rstrip("/")
 
 
+def validate_reference_url(value):
+    """Validate inert HTTPS source metadata, retaining its query and fragment.
+
+    This does not grant network access and does not fetch the address. Unlike
+    configured service origins, document references can contain anchors.
+    """
+    parsed = urlsplit(value)
+    if (parsed.scheme != "https" or not parsed.hostname or parsed.username is not None
+            or parsed.password is not None or "\\" in value or any(c.isspace() for c in value)):
+        raise ValueError("reference URLs require HTTPS and no embedded credentials")
+    parsed.port
+    return value
+
+
 @dataclass(frozen=True)
 class ServiceHttpAuthentication:
     """Versioned host authentication settings, not credentials or tenant grants."""

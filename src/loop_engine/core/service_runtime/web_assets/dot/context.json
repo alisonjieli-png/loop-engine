@@ -1,8 +1,8 @@
 {
   "record_type": "baltor_dot_brief/v1",
   "title": "Dot working context",
-  "updated_at": "2026-10-01T15:01:24Z",
-  "review_after": "2026-10-04T15:01:24Z",
+  "updated_at": "2026-10-01T17:57:42Z",
+  "review_after": "2026-10-04T17:57:42Z",
   "summary": "Pick up useful research, reproduce customer problems and prepare reusable components for Baltor. Prioritize complete customer tasks, free Public Good materials and editable creative work.",
   "sections": [
     {"title": "Start each visit here", "items": [
@@ -28,6 +28,13 @@
       "Use search operators to find legitimate public resources. Keep private case details and secrets out of queries. Respect access terms, rate limits and source licensing. Revise low-yield search dimensions rather than repeatedly issuing near-duplicates.",
       "Each useful finding needs its canonical source, observation date, geography, language, license or unresolved rights, specific user task, proposed component contract, test fixture and maintenance owner. A search result alone is a discovery lead."
     ]},
+    {"title": "Send work back to Baltor", "items": [
+      "In your authorized signed-in browser, open /admin#dot-work. Choose a current task, report type and title, then save findings, source links and optional UTF-8 text/code files. Read a saved report to reply. The work log retains submitted files privately; it does not execute them or publish them in the library.",
+      "The work log also exposes GET/POST /api/v1/admin/work and the staff_work_read and staff_work_submit MCP tools to existing superadmin browser or operator authority. Ordinary OAuth delegation does not inherit staff permission. Use your available browser route rather than transferring session credentials into a prompt.",
+      "A submission binds request_id, brief, brief_revision, task_id, kind, title, message, links, files and reply_to. HTTP writes also name record_type service_staff_work_request/v1. Take brief_revision from the JSON brief's ETag. Reuse the exact request identity and content after an uncertain outcome; inspect the saved record before starting a different request.",
+      "Current file limits are 16 UTF-8 files, 64 KiB each and 256 KiB total. The private HTTP route has separately configured transport limits; MCP retains the ordinary protocol envelope limits. Split larger work into useful bounded submissions and keep large native/binary artifacts in an authorized location with a source link. Credentials and unrelated personal data do not belong in reports.",
+      "List reports by UTC day and optional task_id; the response says whether the first 100 matches are complete. Use the returned exact report ID to read attachments and their hashes. A saved report, peer test, review comment and independently admitted library component are different states."
+    ]},
     {"title": "Return a useful handoff", "items": [
       "Deliver source-linked findings, runnable files where authorized, exact versions, expected and actual results, first failures and recovery steps. Include the output location and hashes of files actually saved.",
       "Use passed, failed, blocked and not tested for each defined acceptance case. Keep output correctness, write confinement, native loading and complete journey acceptance separate.",
@@ -36,6 +43,7 @@
     ]}
   ],
   "tasks": [
+    {"id":"micro-components", "title":"Produce and test small reusable functions", "status":"ready", "assignment":"Build discrete text operations, conservative email normalization, explicit slang/glossary lookup, literal search, database/query helpers, offset-preserving retrieval chunks, ranking functions and useful corner cases. Inspect any candidate batches in the private work log first. Reuse unchanged implementations; a useful function does not need algorithmic novelty or a large application.", "deliverable":"Runnable code, small typed contracts, examples, focused tests and source/licence information. Submit the exact candidate files and observed checks through the work log. Report distinct functions, useful file digests and supporting files separately.", "acceptance":"Exercise real boundary cases, preserve failed attempts and verify outputs independently. Keep code generation, native loading, content admission, publication and useful customer outcomes separate. Private uploads do not bypass library review."},
     {"id":"customer-journeys", "title":"Run the published customer journey", "status":"needs_retest", "assignment":"Use clean projects and the published setup for Claude Code, Codex, OpenCode, Pi, Baltor Harness, Cursor and Gemini CLI where available. Test download, exact bytes, placement, restart, automatic discovery, actual loading, Ollama-backed work, independent output checks, usage and recovery separately. Record exact client versions and approved roots.", "deliverable":"A versioned harness matrix, reproducible commands, sanitized traces, independent output oracles and a revision map for BALTOR-01 through BALTOR-08 and HARNESS-01.", "acceptance":"Published recipes run unchanged or the failing stage is reproduced. Keep workarounds separate. Exercise wrong digests, symlinks, proxy routing, stale state, failed authentication and out-of-project write attempts in safe fixtures."},
     {"id":"public-good-usability", "title":"Check the free Public Good journey", "status":"needs_retest", "assignment":"Start signed out at /public-good. Inspect the hero, all 17 goal tiles, useful examples and other initiatives. Try mobile, keyboard, empty goals, filters, back navigation and a selected file through account sign-in.", "deliverable":"A short usability report with exact steps, screenshots and actionable fixes. Record current package and useful-file coverage by goal.", "acceptance":"A person can explain the free-account access promise and reach an exact useful package from a goal. Verify downloads and usage in an authorized account; browsing alone establishes metadata behavior."},
     {"id":"sdg-country-research", "title":"Expand practical SDG research country by country", "status":"ready", "assignment":"Use the research dimensions above. Start with underrepresented goals, execute a balanced pilot across regions and languages, then expand the query queue using measured yield. Investigate both reusable public projects and gaps that need original tools.", "deliverable":"A country/goal coverage register, deduplicated query queue, dated evidence catalog and prioritized component specifications. Save negative searches and rights gaps.", "acceptance":"Every proposed component solves a named task with source-backed inputs, declared effects, example output and an independent check. Report actual searches separately from the size of the generated queue."},
@@ -46,6 +54,8 @@
     {"id":"buyer-evidence", "title":"Connect working components to real demand", "status":"research", "assignment":"Use the owner's portfolio priorities to investigate Baltor, newsletter operations and creative production. Find dated organization-level need signals, current alternatives and acceptance requirements. Link harness setup, repair and testing offers to demonstrated problems.", "deliverable":"Three concise opportunity briefs with source links, a sample deliverable, full delivery/review costs and one small validation proposal per track. Keep outreach drafts unsent until authorized.", "acceptance":"Distinguish prospects, expressed interest, paid delivery and repeat demand. Return fewer prospects when evidence is weak. Preserve worker access and Public Good commitments."}
   ],
   "links": [
+    {"label":"Private work log for authorized accounts", "url":"/admin"},
+    {"label":"Current North Star", "url":"https://github.com/alisonjieli-png/loop-engine/blob/main/docs/architecture/NORTH-STAR.md"},
     {"label":"Feedback review brief", "url":"/dot-feedback"},
     {"label":"Public Good collection", "url":"/public-good"},
     {"label":"Setup and supported routes", "url":"/setup"},

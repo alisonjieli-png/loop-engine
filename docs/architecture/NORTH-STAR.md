@@ -224,6 +224,15 @@ publication checks to the exact proposed bytes. Track useful callable
 capabilities, payload files, examples, tests and harness wrappers separately.
 Measure successful reuse and new qualified supply, not research volume alone.
 
+The owner also asks for flexible product rules. Treat file-size profiles,
+research dimensions, review-batch sizes, supported formats and workflow
+defaults as choices to measure and configure, not permanent restrictions.
+Remove obsolete assumptions when a tested capability replaces them. Preserve
+typed boundaries and current permissions, and require evidence for a claimed
+result. A simple useful function is eligible without algorithmic novelty.
+The general privacy notice covers deliberate submissions and authorized data
+exchange; it is not automatic access to someone's computer or private records.
+
 The owner extends the supply programme across countries, industries, public
 benefit, creative production and everyday work. Search coverage combines
 country or area, language, SDG target, industry, occupation, user need, task,

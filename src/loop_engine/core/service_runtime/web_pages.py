@@ -74,6 +74,7 @@ WEB_ASSETS = {
     "/auth/callback": ("index.html", HTML_MEDIA_TYPE), "/auth/confirm": ("index.html", HTML_MEDIA_TYPE),
     "/oauth/consent": ("index.html", HTML_MEDIA_TYPE),
     "/assets/oauth-consent.js": ("oauth-consent.js", "text/javascript"),
+    "/assets/staff-work.js": ("staff-work.js", "text/javascript"),
     "/assets/public-good.js": ("public-good.js", "text/javascript"),
     "/assets/public-good.css": ("public-good.css", "text/css"),
     "/docs": ("index.html", HTML_MEDIA_TYPE), "/how-it-works": ("index.html", HTML_MEDIA_TYPE),

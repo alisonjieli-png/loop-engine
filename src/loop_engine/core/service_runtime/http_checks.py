@@ -61,6 +61,7 @@ def _web_checks(check, root):
             from .library_page import handles as _rendered_from_the_served_catalogue
             from .red_team_page import handles as _rendered_from_the_red_team_record
             from .public_good_page import ADDRESS as public_good_address
+            from .dot_pages import ROUTES as dot_routes
             linked = {value for value in _re.findall(r'(?:href|src)="(/[^"#?]*)"', page)}
             # The model directory's pages are rendered from its records after the page table finds nothing, the
             # library page from the catalogue the service serves, and the decision red team page from its packaged record.
@@ -69,6 +70,7 @@ def _web_checks(check, root):
                               and not _rendered_from_the_served_catalogue(value)
                               and not _rendered_from_the_red_team_record(value)
                               and value != public_good_address
+                              and value not in dot_routes
                               and not value.startswith("/api/")
                               and not value.startswith("/.well-known/") and value != "/mcp")
             check("every_internal_address_on_the_page_is_served", not unserved)
@@ -126,6 +128,8 @@ def _web_checks(check, root):
                 answered.add(_http.oauth_http.CONSENT_API_PATH)
             if "public_good_page.COLLECTION_PATH" in source:
                 answered.add(_http.public_good_page.COLLECTION_PATH)
+            if "path == staff_work.PATH" in source:
+                answered.add(_http.staff_work.PATH)
             check("the_route_table_names_every_address_the_router_answers",
                   len(answered) >= 10 and answered == set(_http.API_ROUTES))
             # The check above compares two lists in one file. This one asks the

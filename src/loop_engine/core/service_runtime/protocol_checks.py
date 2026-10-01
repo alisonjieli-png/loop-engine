@@ -27,7 +27,7 @@ from .http_test_fixtures import HttpDomainFixture, running_http
 _PER_REQUEST = "2026-07-28"
 _EXPECTED_TOOLS = {"provisioning_discover", "provisioning_list", "provisioning_manifest", "provisioning_read",
                    "intelligence_search", "provisioning_report", "provisioning_rate", "provisioning_request_material",
-                   "feedback_review", "public_good_files"}
+                   "feedback_review", "public_good_files", "staff_work_read", "staff_work_submit"}
 
 
 @asynccontextmanager

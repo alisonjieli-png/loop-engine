@@ -276,7 +276,7 @@ const approvedPrivacyWords=markdownWords(readFileSync(resolve(root,"docs/legal/P
 const termsBlock=/<article id="terms-of-service" data-terms-of-service>[\s\S]*?<\/article>/;
 /* Words of served markup as a reader sees them: an inline element such as a link, a code span or strong text joins the words
    around it, and every other tag separates words, so "(<code>iad</code>)" reads "(iad)" as the rendered notice does. */
-const markupWords=markup=>markup.replace(/<\/?(?:a|b|code|em|i|span|strong|time)\b[^>]*>/g,"").replace(/<[^>]*>/g," ").replace(/&#39;|&apos;/g,"'").replace(/&amp;/g,"&").split(/\s+/).filter(Boolean);
+const markupWords=markup=>markup.replace(/<\/?(?:a|b|code|em|i|span|strong|time)\b[^>]*>/g,"").replace(/<[^>]*>/g," ").replace(/&#(?:39|x27);|&apos;/gi,"'").replace(/&amp;/g,"&").split(/\s+/).filter(Boolean);
 const withoutApprovedBlock=(markup,block,approved)=>{const found=markup.match(block);return found&&sameWords(markupWords(found[0]),approved)?markup.replace(found[0],""):markup;};
 const withoutApprovedTerms=(markup,approved=approvedTermsWords)=>withoutApprovedBlock(markup,termsBlock,approved);
 /* A statement that the terms of service are not published. The owner approved and published them on September 23, 2026.
@@ -1180,7 +1180,7 @@ try {
   const assetRoutes=routeTable?[...routeTable[1].matchAll(/"(\/assets\/[^"]+)":/g)].map(found=>found[1]):[];
   servedFiles.push("/assets/procedural-bear-preview.svg","/assets/procedural-tree-preview.svg");
   servedFiles.push("/assets/worker-compose.yaml","/assets/docs/container-worker.html");
-  servedFiles.push("/assets/oauth-consent.js","/assets/public-good.js","/assets/public-good.css");
+  servedFiles.push("/assets/oauth-consent.js","/assets/public-good.js","/assets/public-good.css","/assets/staff-work.js");
   servedFiles.push("/assets/top-mcps.json",...[
     "index.html","arena.js","arena.css","asset-briefs.json","blender-import.py","THREE-LICENSE.txt"
   ].map(name=>"/assets/creative-arena/"+name));
@@ -1221,6 +1221,10 @@ try {
   const customerStrings=source=>[...withoutComments(source).matchAll(/"((?:[^"\\\n]|\\.)*)"|'((?:[^'\\\n]|\\.)*)'|`((?:[^`\\]|\\.)*)`/g)].map(found=>found[1]??found[2]??found[3]??"")
     .filter(value=>!/^[a-z][a-z0-9]*(?:[-_.:/][a-z0-9]+)*$/.test(value));
   const privacyBlock=/<article id="privacy-notice" data-privacy-notice>[\s\S]*?<\/article>/;
+  check("legal_word_comparison_accepts_equivalent_apostrophe_entities_but_not_changed_words",
+    sameWords(markupWords("<p>owner&#x27;s approval</p>"),["owner's","approval"])
+    &&sameWords(markupWords("<p>owner&#39;s approval</p>"),["owner's","approval"])
+    &&!sameWords(markupWords("<p>owner&#x27;s rejection</p>"),["owner's","approval"]));
   /* approved: the words each legal text is compared with; a known-wrong case below passes another approved text. */
   const withoutApprovedLegalText=(markup,approved={})=>withoutApprovedBlock(withoutApprovedTerms(markup,approved.terms||approvedTermsWords),privacyBlock,approved.privacy||approvedPrivacyWords);
   const customerText=(path,text,approved)=>path==="/"||path.endsWith(".html")||path.endsWith(".svg")||listingTextRegistration(path)?.page?markupWords(withoutApprovedLegalText(text,approved)).join(" "):customerStrings(text).join("\n");
@@ -2286,7 +2290,7 @@ try {
   /* Compare the full protocol surface, including Public Good metadata discovery. */
   const protocolTools=await page.locator("#protocol-tools li").allInnerTexts();
   check("browser_runs_real_initialize_notification_and_tools_list",JSON.stringify(protocolMethods)===JSON.stringify(["initialize","notifications/initialized","tools/list"])
-    &&JSON.stringify(protocolTools)===JSON.stringify(["provisioning_discover","provisioning_list","provisioning_manifest","provisioning_read","intelligence_search","public_good_files","provisioning_report","provisioning_rate","provisioning_request_material","feedback_review"]),
+    &&JSON.stringify(protocolTools)===JSON.stringify(["provisioning_discover","provisioning_list","provisioning_manifest","provisioning_read","intelligence_search","public_good_files","provisioning_report","provisioning_rate","provisioning_request_material","feedback_review","staff_work_read","staff_work_submit"]),
     {methods:[...protocolMethods],tools:protocolTools});
   check("browser_connection_result_leads_to_a_separate_first_task",(await page.locator("#protocol-result").innerText()).includes("Next, follow your harness guide"));
   await page.route("**/mcp",async route=>{const body=route.request().postDataJSON();if(body?.method==="initialize")await route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({jsonrpc:"2.0",id:"wrong-request",result:{protocolVersion:"2025-11-25"}})});else await route.continue();});

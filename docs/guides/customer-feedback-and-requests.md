@@ -84,11 +84,10 @@ found nothing. It holds no account and never the query text; a filter value is
 kept only when it is a short token of a declared attribute, and any other
 value is counted as `other`.
 
-The published privacy notice promises no log of requests that succeed and,
-since September 24, 2026, aggregate counts. Storing the query text would need
-a change to the notice, which the owner decides. The service therefore leaves
-the text out, and a guard in the source refuses a gap payload that carries it
-(`search_gap_holds_query_text`).
+The privacy notice distinguishes deliberate submissions from aggregate search
+gaps. The current search-gap operation leaves query text out, and a guard
+refuses a gap payload that carries it (`search_gap_holds_query_text`). This
+operation is not a general log of successful requests.
 
 ### What staff read
 
@@ -155,10 +154,11 @@ submitted text. It makes one attempt and never retries automatically. After an
 uncertain submission, keep its request identity and reconcile the outcome
 instead of silently creating another request.
 
-The feedback tools use the existing records and retention rules. They publish
-no customer text. The missing notice entries described below still need the
-owner's review; they do not authorize public disclosure or sending private
-feedback to a model.
+The feedback tools use the existing records and retention rules. The owner
+approved general voluntary submissions, uploads and data exchange on
+October 1. The privacy notice describes those purposes and current retention. These
+feedback calls still publish no customer text and invoke no model or external
+connection automatically.
 
 ### Refusals
 
@@ -192,12 +192,53 @@ PYTHONPATH=src:tools python tools/feedback_report.py --database /data/service.db
 
 ## Planned behaviour
 
-- The privacy notice does not yet name ratings or requests for material in
-  its table of what the service stores. The owner decides that change; until
-  then the website's rating buttons and request form state, beside each, that
-  the text is kept with the account.
 - A staff member cannot yet change the state of a request from `open`, and no
   rating or request is removed by the retention task. Both need their own
   steps.
 - The lanes do not yet read the suggestion file on their own; a person runs
   the report and hands the batch to a lane.
+
+## Private work reports and files
+
+The Administration page includes a Dot work log for authorized administrators.
+It accepts research, test results, component candidates, review replies and
+blockers through the existing managed-record and catalogue-store contracts.
+Each saved report is immutable. A reply is a new report linked to its parent;
+it neither marks a public task complete nor approves a library component.
+
+`POST /api/v1/admin/work` takes `service_staff_work_request/v1`, with
+`request_id`, `brief` (`context` or `feedback`), `brief_revision`, `task_id`,
+`kind`, `title`, `message`, `links`, `files` and `reply_to`. Empty lists and an
+empty `reply_to` are explicit. Get the current brief revision from the ETag of
+the matching public JSON brief. Each file names a relative `name` and UTF-8
+`content`. Exact bytes, including a byte-order mark and line endings, determine
+its stored checksum. The server derives the author from the authenticated
+account. Supplied actor, tenant, storage path or permission fields are refused.
+
+The response is `service_staff_work_result/v1`, naming its exact `id`,
+`record_version`, `committed`, `repeated` and `promotes_intelligence: false`.
+Repeating the same account/request identity and content returns the saved
+result. Different content conflicts. A new submission with a stale brief is
+refused; an exact replay of a saved submission keeps its original binding.
+An uncertain outcome needs inspection or the exact same request, not a new
+identity and an automatic retry.
+
+`GET /api/v1/admin/work?id=...` reads one complete report. Without `id`, use
+`day` in UTC and optional `task_id` to list up to one hundred matching reports.
+The result's `complete` flag identifies truncation. Narrow the task/day when
+needed. The first profile permits sixteen files, 64 KiB per file and 256 KiB
+of file content per submission. Private HTTP request and response limits are
+separately configurable, defaulting to 512 KiB and one MiB. Ordinary HTTP and
+MCP retain their existing limits; an encoded request must fit its transport.
+
+The MCP tools `staff_work_read` and `staff_work_submit` accept the same read
+or write fields without the HTTP `record_type`. Both require the existing
+superadmin browser or operator authority. Ordinary customer OAuth does not
+inherit staff access. The browser work log is the route for the owner's
+already signed-in Dot; no session credential needs to be copied into a prompt.
+
+Submissions are untrusted data. The service does not execute files, fetch
+source links, call models, send notifications or publish them automatically.
+Reports and attachments currently have no automatic expiry. The general
+privacy notice covers explicit submissions; it does not give every account
+access to this first interface or add a recurring schedule.

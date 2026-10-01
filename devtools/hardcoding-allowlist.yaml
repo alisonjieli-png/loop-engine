@@ -1,5 +1,68 @@
 schema: hardcoding_allowlist/v1
 entries:
+- finding_id: hardcoding.346b4725a769a49cba4da073
+  owner: loop_engine.core.service_runtime.web_assets.dot.context.json:links[1].url
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: 'Reviewed October 1 for release62: exact public editorial citation rendered as an escaped link, not an executable
+    provider binding. The new work-log and North Star links changed positions of existing reviewed references. No URL
+    is fetched, code imported, credential transferred or authority granted by this record; dot page schema/link/HTML/JSON
+    checks remain required. New private submissions cannot edit this public record.'
+  created_on: '2026-10-01'
+  expires_on: '2026-12-31'
+- finding_id: hardcoding.81929baf02e1995d1f54bd42
+  owner: loop_engine.core.service_runtime.web_assets.dot.context.json:links[6].url
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: 'Reviewed October 1 for release62: exact public editorial citation rendered as an escaped link, not an executable
+    provider binding. The new work-log and North Star links changed positions of existing reviewed references. No URL
+    is fetched, code imported, credential transferred or authority granted by this record; dot page schema/link/HTML/JSON
+    checks remain required. New private submissions cannot edit this public record.'
+  created_on: '2026-10-01'
+  expires_on: '2026-12-31'
+- finding_id: hardcoding.f86faa8d94ef11be460b2251
+  owner: loop_engine.core.service_runtime.web_assets.dot.context.json:links[7].url
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: 'Reviewed October 1 for release62: exact public editorial citation rendered as an escaped link, not an executable
+    provider binding. The new work-log and North Star links changed positions of existing reviewed references. No URL
+    is fetched, code imported, credential transferred or authority granted by this record; dot page schema/link/HTML/JSON
+    checks remain required. New private submissions cannot edit this public record.'
+  created_on: '2026-10-01'
+  expires_on: '2026-12-31'
+- finding_id: hardcoding.950e828e027374db1f0a5636
+  owner: loop_engine.core.service_runtime.web_assets.dot.context.json:links[8].url
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: 'Reviewed October 1 for release62: exact public editorial citation rendered as an escaped link, not an executable
+    provider binding. The new work-log and North Star links changed positions of existing reviewed references. No URL
+    is fetched, code imported, credential transferred or authority granted by this record; dot page schema/link/HTML/JSON
+    checks remain required. New private submissions cannot edit this public record.'
+  created_on: '2026-10-01'
+  expires_on: '2026-12-31'
+- finding_id: hardcoding.f7d24c293554827de9f25212
+  owner: loop_engine.core.service_runtime.web_assets.dot.context.json:links[9].url
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: 'Reviewed October 1 for release62: exact public editorial citation rendered as an escaped link, not an executable
+    provider binding. The new work-log and North Star links changed positions of existing reviewed references. No URL
+    is fetched, code imported, credential transferred or authority granted by this record; dot page schema/link/HTML/JSON
+    checks remain required. New private submissions cannot edit this public record.'
+  created_on: '2026-10-01'
+  expires_on: '2026-12-31'
+- finding_id: hardcoding.51e43f76e2c261255935c17b
+  owner: loop_engine.core.service_runtime.web_assets.dot.feedback.json:links[1].url
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: 'Reviewed October 1 for release62: exact public editorial citation rendered as an escaped link, not an executable
+    provider binding. The new work-log and North Star links changed positions of existing reviewed references. No URL
+    is fetched, code imported, credential transferred or authority granted by this record; dot page schema/link/HTML/JSON
+    checks remain required. New private submissions cannot edit this public record.'
+  created_on: '2026-10-01'
+  expires_on: '2026-12-31'
+- finding_id: hardcoding.11e14904416341532c183a61
+  owner: loop_engine.core.service_runtime.web_assets.dot.feedback.json:links[2].url
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: 'Reviewed October 1 for release62: exact public editorial citation rendered as an escaped link, not an executable
+    provider binding. The new work-log and North Star links changed positions of existing reviewed references. No URL
+    is fetched, code imported, credential transferred or authority granted by this record; dot page schema/link/HTML/JSON
+    checks remain required. New private submissions cannot edit this public record.'
+  created_on: '2026-10-01'
+  expires_on: '2026-12-31'
 - finding_id: hardcoding.d60ff14ce7b0dcca50faf671
   owner: loop_engine.core.service_runtime.http:ServiceHttpApplication._oauth_challenge
   classification: SECRET_OR_CREDENTIAL_REFERENCE

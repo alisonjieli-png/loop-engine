@@ -73,7 +73,9 @@ class DotPageTests(unittest.TestCase):
 
     def test_task_contract_contains_the_requested_work_and_no_claimed_schedule(self):
         record = pages.load_record("context")
-        self.assertEqual(len(record["tasks"]), 8)
+        required = {"customer-journeys", "public-good-usability", "sdg-country-research", "worker-protection",
+                    "native-app-components", "creative-proof", "feedback-review", "buyer-evidence", "micro-components"}
+        self.assertTrue(required <= {row["id"] for row in record["tasks"]})
         text = json.dumps(record)
         for value in ("country", "17 goals", "10 to 60 minutes", "Ollama", "DueCare", "independent", "source"):
             self.assertIn(value, text)

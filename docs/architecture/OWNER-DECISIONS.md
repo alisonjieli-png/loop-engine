@@ -91,6 +91,14 @@ start a recurring schedule or grant publication of unreviewed submissions.
 
 ## Retained decision table
 
+On October 1 the owner approved a general privacy update and implementation
+of uploads, reading and data exchange to improve Baltor, explicitly asking
+that the notice not be limited to staff. The notice describes voluntary
+submissions and permitted connections, their purposes, storage, access and
+current retention. The first work-log interface uses existing administrator
+authority; the general notice does not widen an individual account's scopes,
+publish private submissions or make a planned integration operational.
+
 The table preserves the owner's dated decisions and rationales. Current clarifications above supersede older engineering descriptions of universal per-package execution checks, older counts and earlier creative priorities. Currency is established by current code and release records, not a quoted date.
 
 ### Decisions that stand until the owner changes them
