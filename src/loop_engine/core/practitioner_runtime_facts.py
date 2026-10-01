@@ -28,6 +28,7 @@ import hashlib
 from ..templates.intake import CapturedInstructionProvenance
 from .adaptive_practitioner_validation import AdaptivePractitionerError
 from .adaptive_practitioner_source import inventory_source_files, project_input_path
+from .task_material_packages import has_source_material
 from .adaptive_practitioner_supervision import DEFAULT_SUPERVISION_POLICY
 from .generated_project import selected_execution_backend
 from .independent_verification import IndependentVerificationPolicy
@@ -50,7 +51,7 @@ RUNTIME_FACTS_RECORD_TYPE = "practitioner_runtime_facts/v1"
 def _source_manifest(services) -> dict | None:
     request = services.request
     if not (request.allow_source_materialization_to_model
-            and request.source_refs):
+            and has_source_material(request)):
         return None
     try:
         inventory = inventory_source_files(services)
@@ -127,7 +128,7 @@ def granted_permissions(request) -> tuple[str, ...]:
     """The permission names in force for this run, computed once here."""
     return tuple(name for name, allowed in (
         ("source_read", request.allow_source_materialization_to_model
-         and bool(request.source_refs)),
+         and has_source_material(request)),
         ("network_read", request.allow_network_reads),
         ("workspace_write", request.allow_workspace_writes),
         ("sandbox_command", request.allow_sandbox_commands)) if allowed)

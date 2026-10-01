@@ -213,6 +213,7 @@
     "core/service_runtime/list_paging_checks.py"
   ],
   "notes": [
+    "The two exact source-line fragments for core/task_material_packages.py preserve current deployed client-v2 interoperability, not public prose or a new record. They read the independently released client's literal record type and filename without renaming its bytes. Every other term occurrence and source path stays scanned; unsupported transfer versions refuse.",
     "The public directory's row files and link table (core/service_runtime/web_assets/directory and core/service_runtime/public_lists) hold names, descriptions and addresses written by the publishers of other products, rebuilt daily by tools/build_mcp_directory.py. They are left out of the retired nomenclature scan, as the upstream runtime copies are; the directory page, its script and every other served file stay scanned, and the browser checks read the page's own words through tools/listing_text.mjs.",
     "Project-owned uv-cache and npm-cache directories contain downloaded dependency archives, not first-party source terminology. They are excluded from the prose nomenclature scan; import/runtime source and adapter controls remain scanned. workspace_docker_cleanup_checks declares subprocess solely for its explicit opt-in container lifetime qualification; its folded self-test uses injected local fixtures.",
     "The pure harness recipe helpers listed in network_allowed_modules use urllib.parse solely to refuse non-loopback configuration addresses or translate protocol fields. On September 30, 2026 harness_baltor_recipe was added as the first-party native client: it accepts only the private 127.0.0.1 broker, refuses redirects and sends no provider credential. Its positive native-turn and adversarial origin tests are tools/test_harness_baltor_recipe.py. External provider transport remains in the canonical gateway adapters.",
@@ -318,6 +319,10 @@
       ],
       "_conformance_scan.py": [
         "ast.iter_child_nodes"
+      ],
+      "core/task_material_packages.py": [
+        "_FETCH_RECORD = \"baltor_library_fetch_receipt/v2\"",
+        "raw = _read(path / \"receipt.json\", MAXIMUM_FETCH_RECORD_BYTES)"
       ],
       "nomenclature_conformance.py": [
         "chronicle",

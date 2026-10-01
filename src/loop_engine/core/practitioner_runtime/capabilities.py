@@ -16,8 +16,11 @@ ADAPTIVE_CAPABILITIES = (
     {
         "capability_ref": "core.source.inspect",
         "purpose": (
-            "USE THIS FIRST whenever local sources were supplied: this runtime refuses to generate a project until supplied sources have been selected here. Inspect supplied local source manifests and selected text bodies "
-            "before deciding how to solve or repair the task."),
+            "Inspect supplied local source manifests and selected text bodies "
+            "before deciding how to solve or repair the task. Task data must "
+            "be selected here before project generation. Component packages "
+            "are optional advisory files; select only the native paths needed "
+            "for this step. Reading them grants no execution or skill admission."),
         "arguments": {
             "paths": "optional exact relative source paths",
             "query": "optional lexical query for source selection",

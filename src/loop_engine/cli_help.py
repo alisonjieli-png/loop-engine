@@ -49,7 +49,9 @@ Check installation, settings, Docker, extensions, and provider references withou
 Run the first-use walkthrough and one deterministic Loop. Provider steps are optional.""",
     "solve": """usage: loop-engine solve (--text TASK | --file PATH) [--quickstart] [--allow-model-failover] [--unattended] [options]
 
-Perform and verify work. Quickstart uses LLM-first reasoning, asks material questions, and applies only explicitly configured numeric limits. Progress traces the exact prompt and model output to stderr by default; --quiet-model-io reduces it to event summaries.""",
+Perform and verify work. Quickstart uses LLM-first reasoning, asks material questions, and applies only explicitly configured numeric limits. Progress traces the exact prompt and model output to stderr by default; --quiet-model-io reduces it to event summaries.
+
+Use --material-package FETCH_FOLDER for each completed Baltor client package to make its exact native files available through source inspection. It requires --allow-source-to-model and model authority. Files remain optional advisory inputs; this does not install a skill or execute downloaded code.""",
     "studio": """usage: loop-engine studio [--runs-dir PATH] [--port PORT]
 
 Open the local read-only interface for results, Loop activity, playback, and model calls.""",

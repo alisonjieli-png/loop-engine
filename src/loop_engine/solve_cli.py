@@ -277,6 +277,11 @@ def run_solve(args) -> int:
                 and not args.allow_source_to_model):
             raise PermissionError(
                 "local source tasks require --allow-source-to-model")
+        material_roots = getattr(args, "material_package", ()) or ()
+        if material_roots and not args.allow_source_to_model:
+            raise PermissionError("--material-package requires --allow-source-to-model")
+        from .core.task_material_packages import load_material_packages
+        material_packages = load_material_packages(material_roots)
         workspace = ""
         if args.workspace:
             selected = Path(args.workspace).expanduser().resolve()
@@ -371,6 +376,7 @@ def run_solve(args) -> int:
                     getattr(args, "allow_fast_path", False)),
                 extension_snapshot=
                     extension_application.snapshot.to_dict(),
+                material_packages=material_packages,
                 quiet_model_io=bool(getattr(args, "quiet_model_io", False)),
                 allow_local_execution=bool(
                     getattr(args, "allow_local_execution", False)),

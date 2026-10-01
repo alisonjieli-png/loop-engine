@@ -52,6 +52,7 @@ def build_adaptive_request(
         allow_sandbox_commands=request.allow_sandbox_commands,
         source_kind=request.intake.kind,
         source_refs=request.intake.external_source_refs,
+        material_packages=getattr(request, "material_packages", ()),
         instruction_provenance=request.intake.instruction_provenance,
         feedback=request.feedback,
         workspace_root=request.workspace_root,

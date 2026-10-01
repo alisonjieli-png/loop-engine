@@ -155,6 +155,10 @@ graph.
 
 ## What it can produce
 
+Selected library packages can enter a solve as exact native source files
+through `--material-package`. The [package input guide](../../guides/baltor-native-package-inputs.md)
+describes the file bindings, source selection and remaining activation limits.
+
 For response checks, repeated-work diagnosis, and optional candidate capture,
 read [Cognitive-act recovery](COGNITIVE-ACT-RECOVERY.md).
 

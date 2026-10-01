@@ -38,7 +38,8 @@ from .adaptive_practitioner_records import (
     ModelStepRequest)
 from .adaptive_practitioner_validation import AdaptivePractitionerError
 from .adaptive_practitioner_source import (
-    inspectable_source_files, project_input_path, source_profile_operation)
+    inspectable_source_files, inventory_source_files, project_input_path, source_profile_operation)
+from .task_material_packages import has_source_material
 from .runtime_capacity import model_evidence_bytes, paths_within_allowance
 
 SOURCE_ROLE_ORIENTATION_RECORD_TYPE = "source_role_orientation/v1"
@@ -284,10 +285,17 @@ def orient_source_roles(services) -> dict | None:
     """
     request = services.request
     if not (request.allow_source_materialization_to_model
-            and request.source_refs):
+            and has_source_material(request)):
         return None
     try:
-        files = inspectable_source_files(services)
+        inventory = inventory_source_files(services)
+        bound = {name for name, _material, _entry in inventory.material_bindings}
+        selected = {row.get("path") for inspection in getattr(services, "source_inspections", ())
+                    for row in inspection.get("selected", ()) if "content" in row}
+        # Ordinary task sources retain their orientation behavior. Optional
+        # component files are not sampled merely because a manifest was read.
+        files = tuple((name, path) for name, path in inventory.files
+                      if name not in bound or name in selected)
     except (AdaptivePractitionerError, OSError, ValueError):
         return None
     if not files:

@@ -22,6 +22,8 @@ from dataclasses import asdict, dataclass, field, fields, replace
 from pathlib import Path
 from typing import TYPE_CHECKING, Callable, Iterator, Protocol
 
+from .task_material_packages import (
+    MaterialPackage, has_source_material, validate_material_packages)
 from ..code_nodes.solution_model_port import (
     ModelExecution,
     ModelInvocationRequest,
@@ -799,8 +801,12 @@ class AdaptivePractitionerRequest:
     capture_recovery_learning: bool = False
     diagnose_unchanged_evidence: bool = False
     harness_provisioning_digest: str = ""
+    material_packages: tuple[MaterialPackage, ...] = ()
 
     def __post_init__(self) -> None:
+        validate_material_packages(self.material_packages)
+        if self.material_packages and self.allow_source_materialization_to_model is not True:
+            raise AdaptivePractitionerError("selected material packages require source-to-model authority")
         if (not isinstance(self.harness_provisioning_digest, str)
                 or (self.harness_provisioning_digest and (
                     len(self.harness_provisioning_digest) != 64
@@ -959,6 +965,7 @@ class AdaptivePractitionerRequest:
             },
             "source_kind": self.source_kind,
             "source_refs": list(self.source_refs),
+            "material_packages": [item.to_dict() for item in self.material_packages],
             "source_ref_states": source_ref_states(self.source_refs),
             "feedback": [item.to_dict() for item in self.feedback],
             "granularity_profile": self.granularity_profile,
@@ -1310,7 +1317,7 @@ class AdaptiveRunServices:
         """
         granted = set()
         if (self.request.allow_source_materialization_to_model
-                and bool(self.request.source_refs)):
+                and has_source_material(self.request)):
             granted.add("source_read")
         if self.request.allow_workspace_writes:
             granted.add("workspace_write")
@@ -1741,6 +1748,7 @@ class AdaptiveRunServices:
                 {"task_state": bounded_state,
                  "source_kind": self.request.source_kind,
                  "source_refs": list(self.request.source_refs),
+                 "material_packages": [item.card() for item in self.request.material_packages],
                  "task_feedback": [
                      item.to_dict() for item in self.request.feedback],
                  "interaction_mode": self.request.interaction_mode,
@@ -1813,7 +1821,7 @@ class AdaptiveRunServices:
         permissions = tuple(name for name, allowed in (
                 ("source_read",
                  self.request.allow_source_materialization_to_model
-                 and bool(self.request.source_refs)),
+                 and has_source_material(self.request)),
                 ("network_read", self.request.allow_network_reads),
                 ("workspace_write", self.request.allow_workspace_writes),
                 ("sandbox_command", self.request.allow_sandbox_commands),

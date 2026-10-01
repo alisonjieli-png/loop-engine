@@ -380,6 +380,10 @@ def main(argv=None) -> int:
                         help="repository path; pair with --text for its goal")
     parser.add_argument("--task-pack", default="",
                         help="versioned JSON task-pack path")
+    parser.add_argument("--material-package", action="append", default=[],
+                        help="completed Baltor client fetch folder to read as exact native "
+                             "source files; repeatable, requires --allow-source-to-model; "
+                             "does not install or execute the package")
     parser.add_argument("--solve", action="store_true",
                         help="solve a task from --text or --file")
     parser.add_argument("--workspace", default="",
@@ -391,8 +395,8 @@ def main(argv=None) -> int:
                              "unaccepted-pass, and depth limits; omitted means the repository default")
     parser.add_argument(
         "--allow-source-to-model", action="store_true",
-        help="allow supplied dataset or repository text to enter the selected "
-             "model context; required for model-backed local-source tasks")
+        help="allow supplied dataset, repository or selected package text to enter "
+             "the model context; required for model-backed local-source tasks")
     parser.add_argument("--templates", action="store_true",
                         help="list registered task templates")
     parser.add_argument("--learn", action="store_true",
@@ -574,6 +578,8 @@ def main(argv=None) -> int:
             parser.error("plugin requires discover, resolve, or inspect")
         raw_argv[:2] = ["--plugin-action", raw_argv[1]]
     args = parser.parse_args(raw_argv)
+    if args.material_package and not args.solve:
+        parser.error("--material-package applies only to solve")
     if args.allow_unbounded_total_tokens and not args.verify_live_model:
         parser.error("--allow-unbounded-total-tokens applies only to models probe")
     if args.unattended:

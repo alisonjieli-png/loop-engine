@@ -371,6 +371,7 @@ def failed_adaptive_output(
             {"state_version": version, **record} for version, record in
             sorted(services.carried_orientation_by_version.items())],
         "task_materials": services.task_materials,
+        "material_packages": [item.to_dict() for item in services.request.material_packages],
         "action_decisions": services.action_history,
         # A failed run still reports its best attempt, ranked by cross-attempt
         # agreement rather than by any value the model supplied.

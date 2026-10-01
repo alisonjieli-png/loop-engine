@@ -215,7 +215,7 @@ MODULE_MAP = {
         "adaptive_practitioner_scope_checks",
         "adaptive_practitioner_bindings", "adaptive_practitioner_bindings_checks",
         "adaptive_practitioner_orientation",
-        "adaptive_practitioner_orientation_repair", "task_materials",
+        "adaptive_practitioner_orientation_repair", "task_materials", "task_material_packages",
         "source_profile", "independent_judgment",
         "independent_failure_review", "independent_failure_review_checks",
         "adaptive_practitioner_prompting", "adaptive_practitioner_records",

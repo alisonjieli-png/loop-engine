@@ -611,7 +611,8 @@ def run_adaptive_practitioner(
                  if request.workspace_root else
                  runs_dir / f"{run_id}-workspace")
     source_paths = tuple(Path(value).expanduser().resolve()
-                         for value in request.source_refs
+                         for value in (*request.source_refs,
+                                       *(item.root for item in request.material_packages))
                          if not value.startswith(("http://", "https://")))
     if any(workspace == path or workspace in path.parents
            or path in workspace.parents
@@ -745,6 +746,7 @@ def run_adaptive_practitioner(
             {"state_version": version, **record} for version, record in
             sorted(services.carried_orientation_by_version.items())],
         "task_materials": services.task_materials,
+        "material_packages": [item.to_dict() for item in request.material_packages],
         "action_decisions": services.action_history,
         "context_snapshots": services.context_snapshots,
         "candidate_solution_canvases": services.candidate_canvases,

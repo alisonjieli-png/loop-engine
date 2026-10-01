@@ -1705,17 +1705,16 @@ PI_PROFILE = ClientLayoutProfile(
     observed_client_versions=("0.73.1",),
 )
 
-# The Baltor Harness joined the recipes registry on September 24, 2026. It reads
-# library material only from the task file today: its skill loader refuses a
-# served SKILL.md, so no kind has a native location and each is refused with its
-# reason. It prints no version and offers no listing, so no command is ever run.
+# Baltor solve reads completed package folders with --material-package through
+# its source owner. That explicit read does not create an auto-discovered skill
+# location or qualify this installer's placement path. No listing runs here.
 BALTOR_HARNESS_PROFILE = ClientLayoutProfile(
     client_kind="baltor-harness",
     executable_name="loop-engine",
     locations=(),
     unplaced_kinds=(
-        ("skill", "engine_reads_library_material_only_from_the_task_file"),
-        ("instruction_file", "engine_reads_library_material_only_from_the_task_file"),
+        ("skill", "engine_reads_selected_packages_through_explicit_material_package_input"),
+        ("instruction_file", "engine_reads_selected_packages_through_explicit_material_package_input"),
         ("reusable_code", "code_needs_independent_admission_before_local_use"),
         ("tool", "code_needs_independent_admission_before_local_use"),
     ),

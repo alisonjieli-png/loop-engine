@@ -22,6 +22,7 @@ from ..core.adaptive_practitioner_records import (
     StageAssistanceRuntimeBinding,
 )
 from ..core.generated_project import execute_generated_project
+from ..core.task_material_packages import MaterialPackage, validate_material_packages
 from ..core.independent_verification import IndependentVerificationPolicy
 from ..core.practitioner_runtime.provisioning import (
     HarnessProvisioningConfiguration, provisioning_summary,
@@ -145,8 +146,12 @@ class SolveRequest:
     #: model-led run starts with semantic orientation.
     allow_fast_path_resolution: bool = False
     harness_provisioning: HarnessProvisioningConfiguration | None = field(default=None, repr=False)
+    material_packages: tuple[MaterialPackage, ...] = ()
 
     def __post_init__(self) -> None:
+        validate_material_packages(self.material_packages)
+        if self.material_packages and self.allow_source_materialization_to_model is not True:
+            raise SolveError("selected material packages require source-to-model authority")
         if self.harness_provisioning is not None and not isinstance(
                 self.harness_provisioning, HarnessProvisioningConfiguration):
             raise SolveError("harness_provisioning must use its immutable configuration")

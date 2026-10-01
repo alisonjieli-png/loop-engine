@@ -104,7 +104,7 @@ def fork_services(spawning_service, spec, *, assignment_id=""):
     workspace = spawning_service.workspace_base / "spawned" / str(len(spawning_service.spawned_results) + 1)
     request = replace(
         spawning_service.request, task=delegated_task_text(spec), max_passes=spec.budget_passes,
-        source_kind="text", source_refs=(), feedback=(),
+        source_kind="text", source_refs=(), material_packages=(), feedback=(),
         workspace_root=str(workspace), instruction_provenance=None,
         allow_workspace_writes=allow_writes,
         allow_sandbox_commands=allow_commands,

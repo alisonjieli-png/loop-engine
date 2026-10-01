@@ -953,6 +953,8 @@ class InstallChecks(ServiceCase):
                          ((".pi", "skills"), "SKILL.md"))
         harness = tool.layout_profile_for("baltor-harness")
         self.assertEqual(harness.native_roots(), ())
+        self.assertEqual(dict(harness.unplaced_kinds)["skill"],
+                         "engine_reads_selected_packages_through_explicit_material_package_input")
         for kind in ("skill", "instruction_file", "reusable_code", "tool"):
             with self.subTest(kind=kind):
                 with self.assertRaises(tool.InstallRefusal) as refused:

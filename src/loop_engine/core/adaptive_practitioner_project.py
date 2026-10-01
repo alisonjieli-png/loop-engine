@@ -31,13 +31,14 @@ from dataclasses import asdict
 from pathlib import Path
 
 from ..loop.kernel import ExecutionPlan, PractitionerState
+from ..templates.intake import DATASET_INTAKE, REPOSITORY_INTAKE, TASK_PACK_INTAKE
 from .runtime_capacity import (
     model_evidence_bytes, supplied_input_ceiling)
 from .adaptive_practitioner_records import (
     AdaptiveRunServices, ModelStepRequest)
 from .adaptive_practitioner_source import (
     _resolve_requested_paths, inventory_source_files, project_input_path,
-    source_inspection_model_view)
+    material_source_metadata, read_inventory_source, source_inspection_model_view)
 from .context_artifacts import ContextArtifactRef
 from .generated_project import (
     ALLOWED_PYTHON_EXECUTABLES, GeneratedProjectCandidate,
@@ -366,8 +367,11 @@ def project_inputs(
 
 def _local_project_inputs(
         services: AdaptiveRunServices) -> tuple[GeneratedProjectInputArtifact, ...]:
-    if (services.request.source_kind not in {"dataset", "repository", "task_pack"}
-            or not services.request.source_refs):
+    task_sources_required = (bool(services.request.source_refs)
+                             and services.request.source_kind in (
+                                 DATASET_INTAKE, REPOSITORY_INTAKE, TASK_PACK_INTAKE))
+    if (not getattr(services.request, "material_packages", ())
+            and not task_sources_required):
         # A task pack can carry small attachment bodies inside its immutable
         # captured task text. In that case there is no external local source to
         # select or materialize. Requiring core.source.inspect here created an
@@ -404,11 +408,16 @@ def _local_project_inputs(
         raise GeneratedProjectError(
             f"selected local source paths are no longer available: {sorted(missing)}")
     selected_paths = tuple(selected_records)
-    if not selected_paths:
+    material_paths = {name for name, _material, _entry in inventory.material_bindings}
+    if task_sources_required and not any(path not in material_paths for path in selected_paths):
         raise GeneratedProjectError(
             "local sources were supplied but the model has not selected any "
             "through core.source.inspect; request manifest_paths from "
             "core.source.inspect first, then select exact paths")
+    if not selected_paths:
+        # Selected component packages are optional reference material.
+        # Merely supplying one must not force its use over the baseline.
+        return ()
     # Checked by size, before any body is read, against what this machine
     # measures right now rather than a number written here. Discovering the
     # limit halfway through a copy leaves the run diagnosing an executor error
@@ -429,8 +438,9 @@ def _local_project_inputs(
                 "select smaller sources, or read them with code that streams "
                 "rather than materializing them whole")
     return tuple(GeneratedProjectInputArtifact(
-        project_input_path(relative), available[relative].read_bytes(),
-        mimetypes.guess_type(available[relative].name)[0]
+        project_input_path(relative), read_inventory_source(inventory, relative),
+        material_source_metadata(inventory, relative).get("media_type")
+        or mimetypes.guess_type(available[relative].name)[0]
         or ("application/octet-stream" if relative in binary_paths
             else "text/plain"),
         selected_records[relative])

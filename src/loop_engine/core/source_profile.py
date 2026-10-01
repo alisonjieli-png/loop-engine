@@ -119,7 +119,7 @@ def source_profile_operation(
     # operation, and a call-time import also sees any replacement of these
     # helpers on that module.
     from .adaptive_practitioner_source import (
-        _exclusion_matches, _read_source_bytes, _resolve_requested_paths,
+        _exclusion_matches, read_inventory_source, material_source_metadata, _resolve_requested_paths,
         _source_text, inventory_source_files)
     inventory = inventory_source_files(services)
     files = dict(inventory.files)
@@ -156,7 +156,7 @@ def source_profile_operation(
     for raw, relative in sorted(resolved.items()):
         path = files[relative]
         try:
-            body = _read_source_bytes(path)
+            body = read_inventory_source(inventory, relative)
             text = _source_text(body)
         except (OSError, UnicodeError, ValueError):
             raise CapabilityRejected(CapabilityRejection(
@@ -174,6 +174,7 @@ def source_profile_operation(
             "fields": [],
             "field_profiles": [],
             "sample": text[:maximum_sample_bytes],
+            **material_source_metadata(inventory, relative),
         }
         if path.suffix.lower() in {".csv", ".tsv"}:
             delimiter = "\t" if path.suffix.lower() == ".tsv" else ","

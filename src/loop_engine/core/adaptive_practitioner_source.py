@@ -24,6 +24,7 @@ from .capability_rejection import (ADMITTED_VALUES_LIMIT, CapabilityRejected,
                                    CapabilityRejection, bounded_admitted_values)
 from .runtime_capacity import model_evidence_bytes
 from .context_budget import ContextBudgetPolicy
+from .task_material_packages import MaterialPackageError, read_material_file
 # The profile operation lives in source_profile; it is re-exported here for
 # callers that import it from this module.
 from .source_profile import source_profile_operation
@@ -246,6 +247,31 @@ class SourceInventory:
     files: tuple[tuple[str, Path], ...]
     records: tuple[SourceAdmissionRecord, ...]
     materializable: tuple[tuple[str, Path], ...] = ()
+    material_bindings: tuple = ()
+
+
+def read_inventory_source(inventory: SourceInventory, relative: str,
+                          limit: int | None = None) -> bytes:
+    """Use the same bound bytes for inspection, profiling and project inputs."""
+    binding = next(((material, entry) for name, material, entry
+                    in inventory.material_bindings if name == relative), None)
+    if binding is not None:
+        body = read_material_file(*binding)
+        return body if limit is None else body[:limit]
+    paths = {**dict(inventory.files), **dict(inventory.materializable)}
+    return _read_source_bytes(paths[relative], limit)
+
+
+def material_source_metadata(inventory: SourceInventory, relative: str) -> dict:
+    for name, material, entry in inventory.material_bindings:
+        if name == relative:
+            return {"package_identity": material.identity,
+                    "package_digest": material.selected_digest,
+                    "transfer_record_digest": material.transfer_record_digest,
+                    "package_file_path": entry.path, "file_role": entry.role,
+                    "media_type": entry.media_type,
+                    "use": "advisory_source_material", "runtime_admission": False}
+    return {}
 
 
 _IGNORED_SOURCE_DIRECTORIES = frozenset({
@@ -307,9 +333,9 @@ def inventory_source_files(services: AdaptiveRunServices) -> SourceInventory:
     limit = (model_evidence_bytes(services)
              if getattr(services.request, "context_budget", None) is not None
              else ContextBudgetPolicy().list_total_bytes)
-    admitted, records, identities, binary = {}, [], {}, {}
+    admitted, records, identities, binary, bindings = {}, [], {}, {}, []
 
-    def observe(path, relative, is_directory):
+    def observe(path, relative, is_directory, material=None, entry=None):
         reason = ("ignored_directory" if is_directory and path.name in _IGNORED_SOURCE_DIRECTORIES
                   else "hidden_path" if path.name.startswith(".")
                   else "protected_source_path" if path.name.casefold() in _PROTECTED_SOURCE_NAMES
@@ -354,9 +380,12 @@ def inventory_source_files(services: AdaptiveRunServices) -> SourceInventory:
             elif limit == 0 and size:
                 reason = "inspection_budget_unavailable"
             else:
-                body = _read_source_bytes(path, limit)
+                body = (read_material_file(material, entry)[:limit]
+                        if material is not None else _read_source_bytes(path, limit))
                 _source_text(body, complete=len(body) == size)
                 admitted[relative] = path
+        except MaterialPackageError:
+            reason = "material_binding_changed"
         except PermissionError:
             reason = "unreadable_source"
         except OSError:
@@ -369,6 +398,8 @@ def inventory_source_files(services: AdaptiveRunServices) -> SourceInventory:
         records.append(SourceAdmissionRecord(
             relative, "excluded" if reason else "admitted", reason or "utf8_text_sample",
             size, len(body), len(body) == size))
+        if material is not None and relative in {**admitted, **binary}:
+            bindings.append((relative, material, entry))
 
     for source_ref in (*services.request.source_refs, *getattr(services, "task_material_roots", ())):
         source = Path(source_ref).expanduser()
@@ -379,8 +410,18 @@ def inventory_source_files(services: AdaptiveRunServices) -> SourceInventory:
             records.append(SourceAdmissionRecord(source.name, "excluded", "source_missing"))
             continue
         observe(source, source.name, source.is_dir())
+    for material in getattr(services.request, "material_packages", ()):
+        for entry in material.package.files:
+            relative = material.source_path(entry)
+            # Explicit native members still obey the source owner's protected
+            # and hidden-path policy; selection is not a secret-read grant.
+            if any(part.startswith(".") or part.casefold() in _PROTECTED_SOURCE_NAMES
+                   or part in _IGNORED_SOURCE_DIRECTORIES for part in entry.path.split("/")):
+                records.append(SourceAdmissionRecord(relative, "excluded", "protected_material_path"))
+                continue
+            observe(material.local_path(entry), relative, False, material, entry)
     return SourceInventory(tuple(admitted.items()), tuple(records),
-                           tuple(binary.items()))
+                           tuple(binary.items()), tuple(bindings))
 
 
 def inspectable_source_files(
@@ -521,7 +562,7 @@ def source_inspection_operation(
     scored = []
     for relative, path in files:
         try:
-            body = _read_source_bytes(path)
+            body = read_inventory_source(inventory, relative)
             text = _source_text(body)
         except (OSError, UnicodeError, ValueError):
             admission = [replace(item, disposition="excluded", reason="source_changed_or_non_text")
@@ -544,6 +585,7 @@ def source_inspection_operation(
             "digest": hashlib.sha256(body).hexdigest(),
             "media_type": mimetypes.guess_type(path.name)[0] or "text/plain",
             "surface": surface,
+            **material_source_metadata(inventory, relative),
         }
         rows_by_path[relative] = row
         if query_terms and (path_hits or body_hits) \
@@ -580,8 +622,17 @@ def source_inspection_operation(
         if relative in binary_by_path:
             # Selected for a project's inputs only: sandboxed code reads the
             # bytes, and no model receives them, even with include_contents.
-            selected.append(_binary_selection_row(
-                relative, binary_by_path[relative]))
+            metadata = material_source_metadata(inventory, relative)
+            if metadata:
+                body = read_inventory_source(inventory, relative)
+                selected.append({"path": relative, "byte_count": len(body),
+                                 "digest": hashlib.sha256(body).hexdigest(),
+                                 "media_type": mimetypes.guess_type(relative)[0]
+                                 or "application/octet-stream",
+                                 "surface": _source_surface(relative),
+                                 "readable_by_model": False, **metadata})
+            else:
+                selected.append(_binary_selection_row(relative, binary_by_path[relative]))
             continue
         row = dict(rows_by_path[relative])
         if include_contents:
