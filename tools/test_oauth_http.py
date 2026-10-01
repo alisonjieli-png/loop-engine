@@ -171,6 +171,7 @@ class HttpOAuthIntegration(unittest.TestCase):
         self.assertEqual(protected['resource'], self.base + '/mcp')
         self.assertEqual(protected['authorization_servers'], [self.base])
         metadata = self.expect(self.client.get('/.well-known/oauth-authorization-server'), 200, 'authorization_discovery').json()
+        self.assertEqual(metadata['issuer'], protected['authorization_servers'][0])
         self.assertEqual(metadata['token_endpoint_auth_methods_supported'], ['none'])
         self.assertEqual(metadata['revocation_endpoint_auth_methods_supported'], ['none'])
         self.assertIn('S256', metadata['code_challenge_methods_supported'])

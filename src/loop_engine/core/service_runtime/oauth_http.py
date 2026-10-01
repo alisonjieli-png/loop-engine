@@ -142,6 +142,9 @@ class OAuthHttp:
         record = build_metadata(AnyHttpUrl(self.provider.policy.issuer_url),
             AnyHttpUrl(self.provider.policy.issuer_url + "/docs/searching-and-retrieving"),
             self.registration, RevocationOptions(enabled=True)).model_dump(mode="json", exclude_none=True)
+        # AnyHttpUrl adds a trailing slash to an origin. RFC 8414 discovery
+        # must publish exactly the issuer named by protected-resource metadata.
+        record["issuer"] = self.provider.policy.issuer_url
         # SDK supports public clients but omits this method from its default metadata.
         record["token_endpoint_auth_methods_supported"] = ["none"]
         record["revocation_endpoint_auth_methods_supported"] = ["none"]
