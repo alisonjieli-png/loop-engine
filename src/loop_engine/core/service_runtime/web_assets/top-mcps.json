@@ -1,14 +1,86 @@
 {
   "record_type": "mcp_shortlist/v1",
-  "checked_at": "2026-09-30",
+  "checked_at": "2026-10-01",
   "ranking": "GitHub stars among this editorial shortlist; not a quality score or Baltor usage count.",
   "baltor_usage_state": "not_measured",
   "items": [
-    {"name":"Context7", "repository":"upstash/context7", "stars":62560, "archived":false, "publisher":"Upstash", "relationship":"publisher", "task":"Find current library documentation", "reason":"Retrieve documentation and examples for the library a coding task actually uses.", "caution":"Check the selected library and version. Documentation retrieval does not test generated code.", "source":"https://github.com/upstash/context7", "docs":"https://github.com/upstash/context7#readme"},
-    {"name":"Playwright MCP", "repository":"microsoft/playwright-mcp", "stars":37714, "archived":false, "publisher":"Microsoft", "relationship":"publisher", "task":"Inspect and operate a browser", "reason":"Give a coding harness browser interactions for debugging and checking a web experience.", "caution":"Browser access can expose signed-in pages and trigger changes. Use a scoped browser profile.", "source":"https://github.com/microsoft/playwright-mcp", "docs":"https://github.com/microsoft/playwright-mcp#readme"},
-    {"name":"GitHub MCP Server", "repository":"github/github-mcp-server", "stars":33303, "archived":false, "publisher":"GitHub", "relationship":"publisher", "task":"Work with repositories and issues", "reason":"Let a harness inspect repository context and use supported GitHub operations.", "caution":"Enable only the toolsets and account permissions needed for the task.", "source":"https://github.com/github/github-mcp-server", "docs":"https://github.com/github/github-mcp-server#readme"},
-    {"name":"MCP for Blender", "repository":"ahujasid/mcp-for-blender", "stars":29741, "archived":false, "publisher":"ahujasid", "relationship":"community", "task":"Inspect and edit a Blender scene", "reason":"A community bridge for object, material and scene operations inside Blender.", "caution":"It can execute Python in Blender. Keep the connection local and test changes on a copy of the project.", "source":"https://github.com/ahujasid/mcp-for-blender", "docs":"https://github.com/ahujasid/mcp-for-blender#readme"},
-    {"name":"n8n MCP", "repository":"czlonkowski/n8n-mcp", "stars":23029, "archived":false, "publisher":"czlonkowski", "relationship":"community", "task":"Build and validate n8n workflows", "reason":"A community integration that supplies n8n node information and workflow-building operations.", "caution":"This is not n8n's own server. Workflow management depends on the connected instance and its credentials.", "source":"https://github.com/czlonkowski/n8n-mcp", "docs":"https://github.com/czlonkowski/n8n-mcp#readme"},
-    {"name":"Firecrawl MCP Server", "repository":"firecrawl/firecrawl-mcp-server", "stars":7534, "archived":false, "publisher":"Firecrawl", "relationship":"publisher", "task":"Search and extract web content", "reason":"Use supported search and extraction operations to gather information for a research task.", "caution":"Service access and usage charges are separate from Baltor. Source access and reuse restrictions still apply.", "source":"https://github.com/firecrawl/firecrawl-mcp-server", "docs":"https://github.com/firecrawl/firecrawl-mcp-server#readme"}
+    {
+      "name": "Context7",
+      "repository": "upstash/context7",
+      "stars": 62576,
+      "archived": false,
+      "publisher": "Upstash",
+      "relationship": "publisher",
+      "task": "Find current library documentation",
+      "reason": "Retrieve documentation and examples for the library a coding task actually uses.",
+      "caution": "Check the selected library and version. Documentation retrieval does not test generated code.",
+      "source": "https://github.com/upstash/context7",
+      "docs": "https://github.com/upstash/context7#readme"
+    },
+    {
+      "name": "Playwright MCP",
+      "repository": "microsoft/playwright-mcp",
+      "stars": 37737,
+      "archived": false,
+      "publisher": "Microsoft",
+      "relationship": "publisher",
+      "task": "Inspect and operate a browser",
+      "reason": "Give a coding harness browser interactions for debugging and checking a web experience.",
+      "caution": "Browser access can expose signed-in pages and trigger changes. Use a scoped browser profile.",
+      "source": "https://github.com/microsoft/playwright-mcp",
+      "docs": "https://github.com/microsoft/playwright-mcp#readme"
+    },
+    {
+      "name": "GitHub MCP Server",
+      "repository": "github/github-mcp-server",
+      "stars": 33312,
+      "archived": false,
+      "publisher": "GitHub",
+      "relationship": "publisher",
+      "task": "Work with repositories and issues",
+      "reason": "Let a harness inspect repository context and use supported GitHub operations.",
+      "caution": "Enable only the toolsets and account permissions needed for the task.",
+      "source": "https://github.com/github/github-mcp-server",
+      "docs": "https://github.com/github/github-mcp-server#readme"
+    },
+    {
+      "name": "MCP for Blender",
+      "repository": "ahujasid/mcp-for-blender",
+      "stars": 29805,
+      "archived": false,
+      "publisher": "ahujasid",
+      "relationship": "community",
+      "task": "Inspect and edit a Blender scene",
+      "reason": "A community bridge for object, material and scene operations inside Blender.",
+      "caution": "It can execute Python in Blender. Keep the connection local and test changes on a copy of the project.",
+      "source": "https://github.com/ahujasid/mcp-for-blender",
+      "docs": "https://github.com/ahujasid/mcp-for-blender#readme"
+    },
+    {
+      "name": "n8n MCP",
+      "repository": "czlonkowski/n8n-mcp",
+      "stars": 23030,
+      "archived": false,
+      "publisher": "czlonkowski",
+      "relationship": "community",
+      "task": "Build and validate n8n workflows",
+      "reason": "A community integration that supplies n8n node information and workflow-building operations.",
+      "caution": "This is not n8n's own server. Workflow management depends on the connected instance and its credentials.",
+      "source": "https://github.com/czlonkowski/n8n-mcp",
+      "docs": "https://github.com/czlonkowski/n8n-mcp#readme"
+    },
+    {
+      "name": "Firecrawl MCP Server",
+      "repository": "firecrawl/firecrawl-mcp-server",
+      "stars": 7538,
+      "archived": false,
+      "publisher": "Firecrawl",
+      "relationship": "publisher",
+      "task": "Search and extract web content",
+      "reason": "Use supported search and extraction operations to gather information for a research task.",
+      "caution": "Service access and usage charges are separate from Baltor. Source access and reuse restrictions still apply.",
+      "source": "https://github.com/firecrawl/firecrawl-mcp-server",
+      "docs": "https://github.com/firecrawl/firecrawl-mcp-server#readme"
+    }
   ]
 }
