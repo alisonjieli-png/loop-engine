@@ -510,6 +510,8 @@ def form_pairs(body: dict, encoding: tuple) -> list:
             return [pair for index, item in enumerate(value) for pair in deep(f"{prefix}[{index}]", item)]
         return [(prefix, text(value))]
 
+    if not isinstance(body, dict):
+        raise OperationRefused("operation_body_not_json", "a form body example that is not an object")
     pairs = []
     for name, value in body.items():
         if value is None:

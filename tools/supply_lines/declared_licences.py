@@ -39,7 +39,8 @@ DECLARED_LICENCE_NAMES = {
     "BSD-3-Clause": "BSD-3-Clause", "BSD-2-Clause": "BSD-2-Clause", "ISC": "ISC", "CC0 1.0": "CC0-1.0",
     "CC0-1.0": "CC0-1.0", "Unlicense": "Unlicense", "CC-BY-4.0": "CC-BY-4.0", "Creative Commons": "CC-BY-4.0",
     "CC-BY 4.0": "CC-BY-4.0", "Creative Commons Attribution 4.0 International": "CC-BY-4.0",
-    "Creative Commons Attribution 4.0 International Public License": "CC-BY-4.0", "BSD3": "BSD-3-Clause"}
+    "Creative Commons Attribution 4.0 International Public License": "CC-BY-4.0", "BSD3": "BSD-3-Clause",
+    "CC BY 4.0": "CC-BY-4.0", "Apache2": "Apache-2.0", "MIT license": "MIT"}
 #: Names that say which licence only together with an address: "Creative Commons" is CC-BY-4.0 only when its
 #: address is that licence's.
 NAMES_NEEDING_AN_ADDRESS = frozenset({"Creative Commons"})

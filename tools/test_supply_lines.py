@@ -708,6 +708,8 @@ class OpenApiLineTest(unittest.TestCase):
         self.assertEqual(line.form_pairs({"Event": ["a", "b"], "Codes": ["x", "y"]}, (("Codes", "form", False),)),
                          [("Event", "a"), ("Event", "b"), ("Codes", "x,y")])
         self.assertEqual(line.form_pairs({"point": {"x": 1, "y": 2}}, ()), [("x", "1"), ("y", "2")])
+        with self.assertRaises(line.OperationRefused):
+            line.form_pairs("grant_type=client_credentials", ())
         self.assertEqual(line.form_encoding({"encoding": {"b": {"style": "deepObject", "explode": True}, "a": {}}}),
                          (("a", "form", True), ("b", "deepObject", True)))
         spec = {"openapi": "3.0.0", "info": {"title": "Pay", "version": "1"},
