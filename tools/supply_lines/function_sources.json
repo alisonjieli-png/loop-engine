@@ -2860,6 +2860,214 @@
     "pythainlp/transliterate/wiktionary.py"
    ],
    "note": "Only pythainlp/transliterate/wiktionary.py is read; most PyThaiNLP examples need corpora or third-party models."
+  },
+  {
+   "source_id": "fonttools",
+   "title": "fontTools (font engineering: geometry, fixed-point, text and validator utilities)",
+   "repository": "fonttools/fonttools",
+   "branch": "main",
+   "package_root": "fontTools",
+   "vendor": "fonttools",
+   "maximum_functions": 54,
+   "modules": [
+    "Lib/fontTools/__init__.py",
+    "Lib/fontTools/misc/__init__.py",
+    "Lib/fontTools/misc/arrayTools.py",
+    "Lib/fontTools/misc/bezierTools.py",
+    "Lib/fontTools/misc/classifyTools.py",
+    "Lib/fontTools/misc/dictTools.py",
+    "Lib/fontTools/misc/eexec.py",
+    "Lib/fontTools/misc/filenames.py",
+    "Lib/fontTools/misc/fixedTools.py",
+    "Lib/fontTools/misc/intTools.py",
+    "Lib/fontTools/misc/roundTools.py",
+    "Lib/fontTools/misc/textTools.py",
+    "Lib/fontTools/misc/timeTools.py",
+    "Lib/fontTools/ttLib/__init__.py",
+    "Lib/fontTools/ttLib/sfnt.py",
+    "Lib/fontTools/ttLib/tables/O_S_2f_2.py",
+    "Lib/fontTools/ttLib/tables/__init__.py",
+    "Lib/fontTools/ttLib/woff2.py",
+    "Lib/fontTools/ufoLib/__init__.py",
+    "Lib/fontTools/ufoLib/converters.py",
+    "Lib/fontTools/ufoLib/kerning.py",
+    "Lib/fontTools/ufoLib/utils.py",
+    "Lib/fontTools/ufoLib/validators.py",
+    "Lib/fontTools/varLib/__init__.py",
+    "Lib/fontTools/varLib/featureVars.py",
+    "Lib/fontTools/varLib/models.py"
+   ]
+  },
+  {
+   "source_id": "thermo",
+   "title": "thermo (chemical engineering thermodynamics: activity models, electrolytes)",
+   "repository": "CalebBell/thermo",
+   "branch": "master",
+   "package_root": "thermo",
+   "vendor": "thermo",
+   "maximum_functions": 24,
+   "modules": [
+    "thermo/__init__.py",
+    "thermo/electrochem.py",
+    "thermo/group_contribution/__init__.py",
+    "thermo/group_contribution/bondi.py",
+    "thermo/group_contribution/group_contribution_base.py",
+    "thermo/nrtl.py",
+    "thermo/phase_identification.py",
+    "thermo/unifac.py",
+    "thermo/uniquac.py",
+    "thermo/utils/__init__.py",
+    "thermo/utils/functional.py"
+   ]
+  },
+  {
+   "source_id": "setuptools_utils",
+   "title": "setuptools (own name normalization, path and discovery helpers)",
+   "repository": "pypa/setuptools",
+   "branch": "main",
+   "package_root": "setuptools",
+   "vendor": "setuptools",
+   "maximum_functions": 16,
+   "modules": [
+    "setuptools/__init__.py",
+    "setuptools/_distutils/__init__.py",
+    "setuptools/_distutils/compilers/logging.py",
+    "setuptools/_normalization.py",
+    "setuptools/_path.py",
+    "setuptools/_static.py",
+    "setuptools/discovery.py"
+   ],
+   "note": "Only setuptools' own modules are read; the vendored packages under setuptools/_vendor carry their own licences and are left out."
+  },
+  {
+   "source_id": "molmass",
+   "title": "molmass (molecular mass, elemental composition and mass distribution)",
+   "repository": "cgohlke/molmass",
+   "branch": "master",
+   "package_root": "molmass",
+   "vendor": "molmass",
+   "maximum_functions": 14,
+   "modules": [
+    "molmass/__init__.py",
+    "molmass/molmass.py"
+   ]
+  },
+  {
+   "source_id": "rdflib",
+   "title": "RDFLib (RDF terms, N3 and JSON-LD helpers)",
+   "repository": "RDFLib/rdflib",
+   "branch": "main",
+   "package_root": "rdflib",
+   "vendor": "rdflib",
+   "maximum_functions": 13,
+   "modules": [
+    "rdflib/__init__.py",
+    "rdflib/compat.py",
+    "rdflib/plugins/__init__.py",
+    "rdflib/plugins/parsers/__init__.py",
+    "rdflib/plugins/parsers/notation3.py",
+    "rdflib/plugins/shared/__init__.py",
+    "rdflib/plugins/shared/jsonld/__init__.py",
+    "rdflib/plugins/shared/jsonld/util.py",
+    "rdflib/tools/__init__.py",
+    "rdflib/tools/csv2rdf.py",
+    "rdflib/util.py"
+   ]
+  },
+  {
+   "source_id": "xdoctest",
+   "title": "xdoctest (docstring parsing and text utilities)",
+   "repository": "Erotemic/xdoctest",
+   "branch": "main",
+   "package_root": "xdoctest",
+   "vendor": "xdoctest",
+   "maximum_functions": 12,
+   "modules": [
+    "src/xdoctest/__init__.py",
+    "src/xdoctest/checker.py",
+    "src/xdoctest/docstr/__init__.py",
+    "src/xdoctest/docstr/docscrape_google.py",
+    "src/xdoctest/utils/__init__.py",
+    "src/xdoctest/utils/util_str.py"
+   ]
+  },
+  {
+   "source_id": "pyteomics",
+   "title": "pyteomics (proteomics: peptide sequence parsing and cleavage)",
+   "repository": "levitsky/pyteomics",
+   "branch": "master",
+   "package_root": "pyteomics",
+   "vendor": "pyteomics",
+   "maximum_functions": 11,
+   "modules": [
+    "pyteomics/auxiliary/__init__.py",
+    "pyteomics/auxiliary/structures.py",
+    "pyteomics/auxiliary/utils.py",
+    "pyteomics/parser.py"
+   ]
+  },
+  {
+   "source_id": "sgp4",
+   "title": "sgp4 (satellite orbit propagation: Julian date helpers)",
+   "repository": "brandon-rhodes/python-sgp4",
+   "branch": "master",
+   "package_root": "sgp4",
+   "vendor": "sgp4",
+   "maximum_functions": 7,
+   "modules": [
+    "sgp4/__init__.py",
+    "sgp4/functions.py"
+   ]
+  },
+  {
+   "source_id": "fsspec_utils",
+   "title": "fsspec (filesystem utilities)",
+   "repository": "fsspec/filesystem_spec",
+   "branch": "master",
+   "package_root": "fsspec",
+   "vendor": "fsspec",
+   "maximum_functions": 7,
+   "modules": [
+    "fsspec/__init__.py",
+    "fsspec/utils.py"
+   ]
+  },
+  {
+   "source_id": "mathopt",
+   "title": "mathopt (addition chains for fast exponentiation)",
+   "repository": "CalebBell/mathopt",
+   "branch": "master",
+   "package_root": "mathopt",
+   "vendor": "mathopt",
+   "maximum_functions": 7,
+   "modules": [
+    "mathopt/addition_chain.py"
+   ]
+  },
+  {
+   "source_id": "al_go_rithms",
+   "title": "al-go-rithms (CC0 algorithm collection, Python files)",
+   "repository": "ZoranPandovski/al-go-rithms",
+   "branch": "master",
+   "package_root": "algo",
+   "vendor": "al_go_rithms",
+   "maximum_functions": 17,
+   "modules": [
+    "dp/kadane-_algorithm/py/TrieToSucceed_kadane.py",
+    "math/sum_of_digits/python/sum_of_digits.py",
+    "sort/python/bogosort.py",
+    "sort/python/bubble_sort.py",
+    "sort/python/comb_sort.py",
+    "sort/python/counting_sort.py",
+    "sort/python/heap_sort.py",
+    "sort/python/insertion_sort.py",
+    "sort/python/merge_sort.py",
+    "sort/python/quick_sort.py",
+    "sort/python/selection_sort.py",
+    "sort/python/shell_sort.py"
+   ],
+   "name_by_module": true,
+   "note": "Only the Python files whose doctests pass are read; the repository is a multi-language CC0 collection."
   }
  ]
 }
