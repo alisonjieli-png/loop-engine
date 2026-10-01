@@ -13,6 +13,30 @@
   ],
   "pages": [
     {
+      "address": "/public-good",
+      "view": "public-good",
+      "title": "Public Good",
+      "description": "Browse useful component files for sustainable development and public-benefit work. Downloads require a Baltor account, not a paid subscription.",
+      "group": "Product",
+      "linked_from": ["header"],
+      "unlinked_reason": "",
+      "scroll_budget": "long",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/oauth/consent",
+      "view": "oauth-consent",
+      "title": "Authorize a connection",
+      "description": "Sign in and review the permissions requested by an app connecting to your Baltor account.",
+      "group": "Account",
+      "linked_from": [],
+      "unlinked_reason": "OAuth clients open this private decision page for an exact pending authorization; it is not a navigation or search-index entry.",
+      "scroll_budget": "page",
+      "price_in_first_screen": false,
+      "indexed": false
+    },
+    {
       "address": "/demo/ashen-wilds",
       "view": "creative-arena",
       "title": "Ashen Wilds: a playable, editable 3D scene",
@@ -921,6 +945,11 @@
       },
       {
         "role": "link",
+        "label": "Public Good",
+        "href": "/public-good"
+      },
+      {
+        "role": "link",
         "label": "Pricing",
         "href": "/pricing"
       },
@@ -968,6 +997,11 @@
       },
       {
         "role": "link",
+        "label": "Public Good",
+        "href": "/public-good"
+      },
+      {
+        "role": "link",
         "label": "Docs",
         "href": "/docs"
       },
@@ -1002,6 +1036,11 @@
         "role": "link",
         "label": "Library",
         "href": "/library"
+      },
+      {
+        "role": "link",
+        "label": "Public Good",
+        "href": "/public-good"
       },
       {
         "role": "link",

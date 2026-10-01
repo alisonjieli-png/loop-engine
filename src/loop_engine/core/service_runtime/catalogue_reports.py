@@ -139,7 +139,8 @@ def downloaded(binding, store, tenant_id, identity, body_digest):
         value = row.get("payload", {})
         if value.get("item_identity") == identity and value.get("body_digest") == body_digest:
             return True
-    return False
+    from .public_good import downloaded as free_downloaded
+    return free_downloaded(binding, store, tenant_id, identity, body_digest)
 
 
 def withdrawal_note(kind):

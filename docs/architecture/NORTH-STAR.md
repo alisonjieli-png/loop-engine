@@ -122,6 +122,13 @@ records, not unrestricted production database access. Uploaded material stays
 untrusted until its owning checks and admission pass; connection, upload,
 review and publication are separate capabilities to implement and verify.
 
+OAuth is an immediate prerequisite: the owner's dot QA cannot safely complete
+the existing key-transfer setup. Implement a real authorization-code/PKCE flow
+with explicit consent, scoped resource-bound tokens, expiry and revocation,
+using the existing account identity. Discovery metadata alone is not a working
+flow. Keep API-key support for existing clients while qualifying the dot and
+native-harness sign-in paths.
+
 Reusable material follows a common package structure:
 
 Delivery follows the task. Baltor may serve a complete native package, a

@@ -4,7 +4,7 @@
   let token = "", generation = 0, busy = false, capabilities = null, accessOptions = null, accessRequest = null, accessBusy = false;
   let connectionBusy = false, recipes = null, afterLogin = null, principalScopes = [];
   let identityClient = null, identityConfiguration = null, authenticationMode = "host_key";
-  let clientAccess = null, catalogueBrowser = null;
+  let clientAccess = null, catalogueBrowser = null, oauthConsent = null;
   // What the funnel reads: whether the service reports account creation open, where a signed-in account's paid access comes
   // from, and whether this page has asked for a sign-up link.
   let registrationOpen = false, accessSource = "", funnelSent = false;
@@ -47,6 +47,13 @@
     $("identity-message").textContent = "Your email link has returned to Baltor. Sign in to continue; the provider will check your confirmation status.";
   }
   routeNames["/demo/ashen-wilds"] = "creative-arena";
+  routeNames["/oauth/consent"] = "oauth-consent";
+  const componentReturn = new URLSearchParams(location.search).getAll("component");
+  if (location.pathname === "/app" && componentReturn.length === 1 && /^[a-zA-Z0-9_.:-]{1,256}$/.test(componentReturn[0]))
+    afterLogin = "/app?component=" + encodeURIComponent(componentReturn[0]) + "#browse-heading";
+  const oauthReturnId = new URLSearchParams(location.search).get('oauth_authorization_id');
+  if(location.pathname==='/login' && window.BaltorOAuthConsent?.validId(oauthReturnId))
+    afterLogin='/oauth/consent?authorization_id='+encodeURIComponent(oauthReturnId);
   // Three addresses open views of their own: the Get started funnel, the page a message link opens, and the setup guide's
   // address. They are added here rather than in the table above, so that a change to either place merges on its own.
   routeNames["/get-started"] = "start"; routeNames["/auth/confirm"] = "confirm"; routeNames["/setup"] = "setup";
@@ -87,8 +94,8 @@
   // Opening a page closes the phone menu, which the page script would otherwise leave open over the new page.
   const route = () => { const name = routeNames[location.pathname] || (location.pathname.startsWith("/docs/") ? "docs" : "home"); show(name); setMenu(false); document.title = serviceName + " | " + {home:"For engineers, designers and AI agents", "use-cases":"Use cases", overnight:"Solve complex problems overnight", efficiency:"More efficient operation", learning:"Learning and optimization, built in", workspace:"Intelligence workspace", login:"Sign in", signup:"Account status", pricing:"Pricing", account:"Your account", admin:"Access administration", docs:"Documentation", about:"How it works", setup:"Get set up", waitlist:"Get started", examples:"Examples and case studies", security:"Access and data boundaries", privacy:"Privacy notice", terms:"Terms of service", start:"Get started", confirm:"Choose your password",
     "for-designers":"Creative work you can change again", "for-coding-agents":"Stop starting from nothing", "for-engineering-teams":"Expertise for the whole team", "for-comparing-tools":"What it is and what it costs",
-    "for-protocol-and-client":"Protocol, client and setup", demo:"One task, step by step", "demo-kaggle":"A Kaggle competition, start to finish", "case-studies-data-cleanup":"Data cleanup with and without Baltor",
-    "case-studies-pi-and-gemma-4":"Pi and Gemma 4 on Ollama Cloud", "case-studies-sign-up-protection":"How sign-up is protected", "creative-arena":"Ashen Wilds", status:"Service status"}[name]; if (name === "docs") window.BaltorDocumentation?.show(location.pathname); };
+    "oauth-consent":"Authorize a connection", "for-protocol-and-client":"Protocol, client and setup", demo:"One task, step by step", "demo-kaggle":"A Kaggle competition, start to finish", "case-studies-data-cleanup":"Data cleanup with and without Baltor",
+    "case-studies-pi-and-gemma-4":"Pi and Gemma 4 on Ollama Cloud", "case-studies-sign-up-protection":"How sign-up is protected", "creative-arena":"Ashen Wilds: a playable, editable 3D scene", status:"Service status"}[name]; if (name === "docs") window.BaltorDocumentation?.show(location.pathname); if(name==='oauth-consent')oauthConsent?.show(); };
   const navigate = path => { history.pushState({}, "", path); route(); $("main").focus({preventScroll:true}); const target = location.hash ? document.getElementById(location.hash.slice(1)) : null; if (target) target.scrollIntoView(); else scrollTo(0,0); };
   document.querySelectorAll("[data-page]").forEach(link => link.addEventListener("click", event => { if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) return; event.preventDefault(); if (link.dataset.afterLogin && routeNames[link.dataset.afterLogin]) afterLogin = link.dataset.afterLogin; navigate(link.getAttribute("href")); }));
   addEventListener("popstate", route); route();
@@ -377,6 +384,7 @@ const applyPaymentState = name => {
       renderFunnel();
       // A kept sign-in opened again by a reload stays on the page the person asked for.
       if (!stay) { const destination = afterLogin; afterLogin = null; navigate(destination || (administrator ? "/admin" : "/app")); }
+      oauthConsent?.connectionChanged();
       if (administrator) await loadAccess();
       if (staffRole) await loadStaff().catch(error => message("staff-message", said(error), failureState(error)));
       if (administrator || staffRole) await loadFeedback().catch(error => message("feedback-message", said(error), failureState(error)));
@@ -1189,6 +1197,10 @@ const applyPaymentState = name => {
   $("try-example").addEventListener("click", () => { navigate("/app"); $("query").value = "review inputs"; message("search-message", token ? "Example query prepared. Select Search to retrieve permitted references." : "Sign in first. This button does not submit a query or download a file."); });
   /* A reload or a typed address in a tab that keeps an email sign-in opens the same account again, on the page asked for. A page
      opened by a message link starts from that link instead and forgets a kept sign-in, and an expired one is forgotten. */
+  oauthConsent = window.BaltorOAuthConsent?.create({request,
+    browserSignedIn:()=>Boolean(token)&&authenticationMode==='browser_identity',epoch:()=>generation,
+    signIn:id=>{afterLogin='/oauth/consent?authorization_id='+encodeURIComponent(id);navigate('/login?oauth_authorization_id='+encodeURIComponent(id));}});
+  oauthConsent?.show();
   const kept = keptSession.read();
   if (kept && !confirmation && kept.expires_at > Date.now() / 1000 + 30) connectService(kept.access_token, false, {stay:true});
   else keptSession.clear();
@@ -1204,6 +1216,10 @@ const applyPaymentState = name => {
     $("test-protocol").disabled = !token || authenticationMode === "browser_identity" || !principalScopes.includes("provisioning:metadata") || connectionBusy;
     /* Public statements are read last and only from the record version this page was written against. An unexpected version keeps the careful state. */
     if (value.record_type === CAPABILITIES_RECORD_TYPE) {
+      const oauth=value.authorization_server;
+      const oauthAvailable=oauth?.record_type==='service_oauth_server_capabilities/v1'&&oauth.available===true&&typeof oauth.resource==='string';
+      $('setup-oauth').hidden=!oauthAvailable;
+      $('setup-oauth-endpoint').textContent=oauthAvailable?oauth.resource:'';
       registrationOpen = value.website.registration_available === true;
       applyAccessState(value.website.registration_available === true);
       applyRegistrationState(registrationOpen);

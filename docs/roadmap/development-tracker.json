@@ -1348,7 +1348,7 @@
      "S-6.199"
     ],
     "id": "S-6.216",
-    "next_local_work": "Release 57 is live. Implement the item-specific account-required free exception at the existing catalogue/entitlement edge, without giving an entire free account paid body entitlement. Preserve exact-version grants, final revalidation, paid/private isolation, nonbillable receipts, report eligibility and atomic rate/byte limits. Build the main-header browser over real eligible metadata with no anonymous bodies. Independently qualify the private packages, audit existing supply and fill all17-goal gaps without padding counts. Preserve rights, model-weight terms and jurisdiction-specific freshness. Keep free files separate from paid inference/hosting and do not claim nonprofit status or UN endorsement.",
+    "next_local_work": "Release 57 is live. OAuth is the immediate prerequisite because the owner's dot QA cannot transfer a long-lived key into its harness: qualify real PKCE/consent/scoped resource-bound tokens before claiming supported connection. Integrate the item-specific free exception without giving an entire free account paid body entitlement. Preserve exact-version grants, final revalidation, paid/private isolation, nonbillable delivery records, report eligibility and atomic rate/byte limits. Build the main-header browser over real eligible metadata with no anonymous bodies. Independently qualify private packages, audit existing supply and fill all 17 goal gaps without padding counts. Preserve rights, model-weight terms and jurisdiction-specific freshness. Keep free files separate from paid inference/hosting and do not claim nonprofit status or UN endorsement.",
     "phase": 6,
     "status": "building",
     "title": "Account-required Public Good collection, header-linked browsing and 1,000 useful components across all SDGs",
@@ -5402,5 +5402,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:f52a279bbb1020f4af4226219779746a620a3e9c6c0975a02f57b6ec0be606fa"
+ "source_fingerprint": "sha256:8f875422df57096a3129cbcb1ed6a32aa3e99033b41eb20eaa8c265bc1727f1d"
 }

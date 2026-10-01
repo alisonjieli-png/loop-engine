@@ -58,6 +58,12 @@ out direct database credentials, execute submitted files or publish them
 without admission. Connecting the owner's actual dot and verifying its
 permissions remain distinct from building and testing the interface.
 
+The owner's dot QA subsequently reported that it could not transfer the API
+key into its harness, and the owner requested OAuth urgently. OAuth sign-in is
+therefore the immediate connection prerequisite. Implement and qualify real
+consent, PKCE, resource and scope validation, expiry and revocation; do not
+report metadata or an ordinary website login as the completed OAuth flow.
+
 ## Retained decision table
 
 The table preserves the owner's dated decisions and rationales. Current clarifications above supersede older engineering descriptions of universal per-package execution checks, older counts and earlier creative priorities. Currency is established by current code and release records, not a quoted date.

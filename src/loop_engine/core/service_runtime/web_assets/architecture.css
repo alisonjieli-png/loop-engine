@@ -194,7 +194,7 @@ pre{background:var(--bg);border-color:var(--border);border-radius:var(--radius-f
 /* The dark tone. Only the bar's own tokens change, so every rule above holds in both tones. */
 body:has(main > [data-header-tone=dark]:not([hidden])) .header{--header-bg:var(--night-header-bg);--ink:var(--night-ink);--muted:var(--night-muted);--border:var(--night-rule);--line-strong:var(--night-rule);--tint:var(--night-card);--paper:var(--night);--accent:var(--night-accent);--button:var(--night-button);--button-hover:var(--night-button-hover);--button-ink:var(--night-button-ink);--panel-shadow:none;color-scheme:dark}
 /* A phone held sideways has a short screen, so the sticky bar is slimmer there. */
-@media(max-height:500px) and (max-width:1000px){.header{min-height:52px;padding-top:.25rem;padding-bottom:.25rem}}
+@media(max-height:500px) and (max-width:1000px){.header{min-height:52px;padding-top:4px;padding-bottom:3px}}
 /* A link to a part of a page lands below the sticky bar, not behind it. */
 main [id]{scroll-margin-top:5.25rem}
 @media(max-width:860px){main [id]{scroll-margin-top:4.75rem}}

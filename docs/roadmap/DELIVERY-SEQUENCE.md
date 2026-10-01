@@ -166,6 +166,13 @@ support files, and show actual coverage rather than filling missing categories
 with unrelated material. This changes the immediate order; the remaining
 customer-comparison, creative and retrieval gates below still apply.
 
+OAuth is now an immediate prerequisite for that release. The owner's dot QA
+could not complete manual API-key transfer into its harness. Build and test
+authorization-code/PKCE, explicit consent, exact resource/scopes, expiry,
+refresh and revocation through the existing identity. No static key belongs in
+chat or a prompt. Retain supported key clients; the new flow must demonstrate
+real authorized retrieval, not only discovery metadata.
+
 1. **Reconcile and preserve the current work.** Account for inherited changes,
    source identities, failed checks and prior-session instructions. Correct
    stale startup links and implementation claims. Keep a coverage record for

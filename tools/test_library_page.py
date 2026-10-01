@@ -106,12 +106,8 @@ def page_problems(html, view):
         problems.append("an item is listed one by one")
     fragments = SampleContent(html).parts
     kinds = [part["kind"] for part in fragments]
-    if (len(printed_bodies(html)) > 1 or html.count("<pre") != len(fragments)
-            or kinds not in ([], ["instructions"], ["instructions", "source"])):
-        problems.append("more than one body is printed")
-    _chosen, expected = library_page.sample(view, rows)
-    if expected is not None:
-        problems.extend(sample_content_problems(html, expected))
+    if printed_bodies(html) or fragments or "<pre" in html:
+        problems.append("an anonymous component body is printed")
     if SIZE_OR_DIGEST.search(visible_text(html)):
         problems.append("a size or a digest is shown")
     if set(counted_kinds(html)) != {row.harness_kind for row in rows}:
@@ -195,9 +191,9 @@ class LibraryPageTests(unittest.TestCase):
         self.assertEqual(rows["check_for_existing_work_before_building"].harness_kind, "skill")
         self.assertEqual(page_problems(library_page.library_body(view), view), [])
 
-    def test_one_item_is_printed_in_full_and_escaped(self):
-        self.assertEqual(printed_bodies(self.html), ["check_for_existing_work_before_building"])
-        self.assertIn("&lt;b&gt;markup&lt;/b&gt;", self.html)
+    def test_no_item_body_is_printed_anonymously(self):
+        self.assertEqual(printed_bodies(self.html), [])
+        self.assertNotIn("&lt;b&gt;markup&lt;/b&gt;", self.html)
         self.assertNotIn("<b>markup</b>", self.html)
 
     def test_internal_review_paths_do_not_create_public_classes(self):
@@ -248,8 +244,8 @@ class LibraryPageTests(unittest.TestCase):
         self.assertIsNone(library_page.rendered(library_page.empty_view(), "/library", "POST", "Baltor"))
         self.assertIsNone(library_page.rendered(library_page.empty_view(), "/libraries", "GET", "Baltor"))
 
-    def test_the_item_in_full_wraps_and_is_not_clipped(self):
-        self.assertRegex(self.html, r'<pre class="md-code md-code-wrap" data-library-sample=')
+    def test_no_anonymous_sample_uses_the_full_body_style(self):
+        self.assertNotRegex(self.html, r'<pre class="md-code md-code-wrap" data-library-sample=')
         css = (Path(__file__).resolve().parents[1] / "src/loop_engine/core/service_runtime/web_assets/model-directory.css"
                ).read_text(encoding="utf-8")
         rule = re.search(r"\.md-code-wrap\{([^}]*)\}", css)
@@ -274,7 +270,7 @@ class LibraryPageTests(unittest.TestCase):
 
     def test_known_wrong_a_second_body_is_found(self):
         html = self.html + '<pre data-library-sample="find_duplicate_records_with_blocking_keys">FIND DUPLICATES</pre>'
-        self.assertIn("more than one body is printed", page_problems(html, self.view))
+        self.assertIn("an anonymous component body is printed", page_problems(html, self.view))
 
     def test_known_wrong_a_size_or_a_digest_is_found(self):
         self.assertIn("a size or a digest is shown", page_problems(self.html + "<p>1,204 bytes</p>", self.view))
@@ -331,102 +327,39 @@ def sample_content_problems(html, expected):
     return problems
 
 
-class CompactSampleTests(unittest.TestCase):
-    def setUp(self):
-        self.original = (ROOT / "examples/29_intelligence_service/starter-catalogue/bodies/"
-                        "check_for_existing_work_before_building.md").read_text(encoding="utf-8")
-        self.purpose = "Long catalogue description that must not be repeated above the sample. " * 12
-        self.view = fixture_view(sample_body=self.original, sample_purpose=self.purpose)
-        self.html = library_page.library_body(self.view)
+class AccountRequiredSampleTests(unittest.TestCase):
+    def test_public_render_never_calls_the_body_reader(self):
+        view = fixture_view()
+        reader = mock.Mock(side_effect=AssertionError("anonymous body read"))
+        from dataclasses import replace
+        html = library_page.library_body(replace(view, body_reader=reader))
+        reader.assert_not_called()
+        self.assertIn("Every component download requires an account", html)
+        self.assertIn('href="/public-good"', html)
+        self.assertEqual(page_problems(html, view), [])
 
-    def test_heading_comes_from_markdown_h1_without_repeating_purpose(self):
-        self.assertIn('<h2 id="sample-title">Check for existing work before building</h2>', self.html)
-        self.assertNotIn(self.purpose, self.html)
+    def test_known_wrong_first_body_is_detected(self):
+        view = fixture_view()
+        html = library_page.library_body(view) + '<pre data-library-sample="leak">SECRET FIXTURE</pre>'
+        self.assertIn("an anonymous component body is printed", page_problems(html, view))
 
-    def test_source_appendix_is_collapsed_and_all_original_text_is_recoverable(self):
-        self.assertIn('<details class="lib-source-details">', self.html)
-        self.assertIn('<summary>Source details</summary>', self.html)
-        self.assertNotRegex(self.html, r'<details[^>]*\bopen(?:[\s=>])')
-        parsed = SampleContent(self.html)
-        self.assertEqual([part["kind"] for part in parsed.parts], ["instructions", "source"])
-        self.assertNotIn("src/loop_engine/", parsed.parts[0]["text"])
-        self.assertIn("src/loop_engine/", parsed.parts[1]["text"])
-        self.assertEqual(sample_content_problems(self.html, self.original), [])
-
-    def test_all_instruction_conditions_stay_visible(self):
-        main = SampleContent(self.html).parts[0]["text"]
-        self.assertEqual(main, self.original[:self.original.index("## Source")])
-        self.assertIn("Fall back to fresh reasoning when its reviewed scope does not cover the task.", main)
-        self.assertIn("## What to record", main)
-
-    def test_missing_citation_fails_exact_recovery(self):
-        wrong = self.html.replace("src/loop_engine/strings/question_engine.py", "", 1)
-        self.assertIn("original sample text lost or changed", sample_content_problems(wrong, self.original))
-
-    def test_truncated_instruction_or_lost_condition_fails_exact_recovery(self):
-        for text in ("Fall back to fresh reasoning when its reviewed scope does not cover the task.",
-                     "- The lifecycle state of reused material is respected."):
-            wrong = self.html.replace(text, "", 1)
-            self.assertIn("original sample text lost or changed", sample_content_problems(wrong, self.original))
-
-    def test_heading_instructions_and_sources_escape_html(self):
-        body = '# Use <img src=x onerror=alert(1)> safely\n\nIf <b>condition</b>, stop.\n\n## Source\n\n<script>alert(1)</script> & attribution\n'
-        html = library_page.library_body(fixture_view(sample_body=body))
-        self.assertNotIn("<img", html)
+    def test_metadata_is_escaped_and_bounded_without_reading_source(self):
+        body = "SECRET BODY MUST NEVER BE RENDERED"
+        purpose = "<script>alert(1)</script>" + "A" * 900
+        html = library_page.library_body(fixture_view(sample_body=body, sample_purpose=purpose))
+        self.assertNotIn(body, html)
         self.assertNotIn("<script>", html)
-        self.assertEqual(sample_content_problems(html, body), [])
-        wrong = html.replace("&lt;b&gt;", "<b>", 1).replace("&lt;/b&gt;", "</b>", 1)
-        self.assertIn("sample HTML was not escaped", sample_content_problems(wrong, body))
+        self.assertIn("&lt;script&gt;", html)
+        self.assertNotIn("A" * 500, html)
 
-    def test_a_source_heading_before_more_instructions_is_not_an_appendix(self):
-        body = '# Example\n\n## Source\nA citation.\n\n## Required condition\nNever omit this condition.\n'
-        html = library_page.library_body(fixture_view(sample_body=body))
-        self.assertNotIn('class="lib-source-details"', html)
-        self.assertEqual(SampleContent(html).parts[0]["text"], body)
-
-    def test_fenced_heading_is_not_source_metadata(self):
-        for fence in ('```', '~~~~'):
-            body = '# Example\n\n' + fence + '\n## Source\nA literal example.\n' + fence + '\n\nContinue only if checked.\n'
-            html = library_page.library_body(fixture_view(sample_body=body))
-            self.assertNotIn('class="lib-source-details"', html)
-            self.assertEqual(sample_content_problems(html, body), [])
-
-    def test_non_ascii_space_does_not_close_a_markdown_fence(self):
-        body = "# Title\n\n```text\nLiteral command.\n```\u00a0\n## Source\nRun only when the required check passed.\n"
-        html = library_page.library_body(fixture_view(sample_body=body))
-        self.assertNotIn('class="lib-source-details"', html)
-        self.assertEqual(SampleContent(html).parts[0]["text"], body)
-
-    def test_possible_raw_html_block_keeps_its_literal_heading_visible(self):
-        body = "# Title\n\n<pre>\n## Source\nRun only when the required check passed.\n</pre>\n"
-        html = library_page.library_body(fixture_view(sample_body=body))
-        self.assertNotIn('class="lib-source-details"', html)
-        self.assertEqual(SampleContent(html).parts[0]["text"], body)
-
-    def test_headingless_body_has_a_short_fallback_and_no_trim(self):
-        body = '\nOriginal text with no Markdown title.\n'
-        html = library_page.library_body(fixture_view(sample_body=body, sample_purpose=self.purpose))
-        self.assertIn('<h2 id="sample-title">Sample component</h2>', html)
-        self.assertNotIn(self.purpose, html)
-        self.assertEqual(sample_content_problems(html, body), [])
-
-    def test_crlf_and_trailing_text_remain_exact(self):
-        body = "# Example\r\n\r\nKeep every condition.\r\n\r\n## Sources\r\nCitation.\r\nLicence: MIT.\r\n"
-        html = library_page.library_body(fixture_view(sample_body=body))
-        self.assertEqual(sample_content_problems(html, body), [])
-
-    def test_split_sample_still_refuses_an_extra_body(self):
-        wrong = self.html + '<pre>Unrelated second component</pre>'
-        self.assertIn("more than one body is printed", page_problems(wrong, self.view))
-        self.assertEqual(page_problems(self.html, self.view), [])
-
-    def test_presentation_does_not_change_sample_or_download_identity(self):
-        item = self.view.catalogue.items[library_page.SAMPLE_PREFERENCE[0]]
-        before = (item.digest, item.size_bytes, self.view.body_reader(item))
-        library_page.library_body(self.view)
-        after = (item.digest, item.size_bytes, self.view.body_reader(item))
-        self.assertEqual(before, after)
-        self.assertEqual(after[2], self.original)
+    def test_render_does_not_change_download_bytes_or_digest(self):
+        original = "# Exact private body\n"
+        view = fixture_view(sample_body=original)
+        item = view.catalogue.items[library_page.SAMPLE_PREFERENCE[0]]
+        before = (item.digest, item.size_bytes, view.body_reader(item))
+        library_page.library_body(view)
+        self.assertEqual((item.digest, item.size_bytes, view.body_reader(item)), before)
+        self.assertEqual(before[2], original)
 
 
 if __name__ == "__main__":

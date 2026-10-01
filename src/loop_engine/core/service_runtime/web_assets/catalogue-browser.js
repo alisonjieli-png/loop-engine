@@ -263,6 +263,25 @@ window.BaltorCatalogueBrowser = {
       if (eligible()) message("browse-message", "Load the library to see every file your account may use.");
       else if (current().connected) message("browse-message",
         "This account may not list material. Ask the person who runs this service for permission to search and list.", true);
+      if (eligible()) openRequested();
+    }
+    // Public collection links select metadata directly; they never fetch a body or need the whole catalogue first.
+    async function openRequested() {
+      const values = new URLSearchParams(location.search).getAll("component");
+      if (location.pathname !== "/app" || values.length !== 1 || !/^[a-zA-Z0-9_.:-]{1,256}$/.test(values[0]) || !eligible()) return;
+      const identity = values[0], epoch = current().generation, declared = stepEffects();
+      if (!declared) return;
+      selected = identity;
+      message("browse-message", "Opening the component you selected. No file is downloaded until you choose it.");
+      try {
+        const row = await request(path, {record_type:requestVersion, operation:"manifest", identity, authority_effects:declared});
+        if (epoch !== current().generation || selected !== identity) return;
+        const problem = manifestProblem(row, {identity});
+        if (problem || !stated(row.purpose)) throw new Error(refused);
+        await choose(row);
+      } catch (error) {
+        if (epoch === current().generation && selected === identity) clearDetail(plainly(error.message));
+      }
     }
     /* A filter's choices come from the whole loaded library, so a filter can always be undone. */
     function options(select, values, everything) {
@@ -560,6 +579,6 @@ window.BaltorCatalogueBrowser = {
     $("browse-search").addEventListener("input", () => apply());
     for (const id of ["browse-kind", "browse-style", ...facetSelects]) $(id).addEventListener("change", () => apply());
     reset();
-    return {reset, connectionChanged, load};
+    return {reset, connectionChanged, load, openRequested};
   }
 };

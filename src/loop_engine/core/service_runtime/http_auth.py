@@ -20,6 +20,7 @@ AUTHENTICATION_RECORD_TYPE = "service_http_authentication/v1"
 HOST_KEY_AUTHENTICATION = "host_key"
 EXTERNAL_JWT_AUTHENTICATION = "external_jwt"
 BROWSER_IDENTITY_AUTHENTICATION = "browser_identity"
+OAUTH_ACCESS_AUTHENTICATION = "oauth_access_token"
 AUTHENTICATION_MODES = (HOST_KEY_AUTHENTICATION, EXTERNAL_JWT_AUTHENTICATION)
 
 
@@ -134,7 +135,7 @@ class AuthenticatedHttpRequest:
     @property
     def effective_scopes(self):
         held = set(self.principal.scopes)
-        if self.mode in (EXTERNAL_JWT_AUTHENTICATION, BROWSER_IDENTITY_AUTHENTICATION):
+        if self.mode in (EXTERNAL_JWT_AUTHENTICATION, BROWSER_IDENTITY_AUTHENTICATION, OAUTH_ACCESS_AUTHENTICATION):
             held.intersection_update(self.token_scopes)
         return tuple(sorted(held))
 
@@ -142,7 +143,7 @@ class AuthenticatedHttpRequest:
 class ServiceHttpAuthenticator:
     """Resolve durable keys or verify an external token using PyJWT."""
 
-    def __init__(self, runtime, configuration: ServiceHttpAuthentication, *, browser_identity=None):
+    def __init__(self, runtime, configuration: ServiceHttpAuthentication, *, browser_identity=None, oauth_authorization=None):
         if not isinstance(configuration, ServiceHttpAuthentication):
             raise TypeError("typed HTTP authentication settings are required")
         self.runtime = runtime
@@ -151,6 +152,10 @@ class ServiceHttpAuthenticator:
                                              or getattr(browser_identity, 'runtime', None) is not runtime):
             raise TypeError('browser identity must bind the same runtime and supported protocol')
         self.browser_identity = browser_identity
+        if oauth_authorization is not None and (getattr(oauth_authorization, "runtime", None) is not runtime
+                or not callable(getattr(oauth_authorization, "resolve_access", None))):
+            raise TypeError("OAuth authorization must bind the same runtime")
+        self.oauth_authorization = oauth_authorization
         self._keys = None
         if EXTERNAL_JWT_AUTHENTICATION in configuration.modes:
             from jwt import PyJWKClient
@@ -245,6 +250,12 @@ class ServiceHttpAuthenticator:
         call reaches no other service, so its cost is this machine's alone.
         """
         credential = self._credential(authorization, purpose)
+        if self.oauth_authorization is not None and credential.startswith("boat_"):
+            held = self.oauth_authorization.resolve_access(credential)
+            if held is None:
+                raise HttpAuthenticationError()
+            return AuthenticatedHttpRequest(held.principal, credential, OAUTH_ACCESS_AUTHENTICATION,
+                                            held.expires_at, held.scopes)
         if HOST_KEY_AUTHENTICATION not in self.configuration.modes:
             return None
         from .records import ServiceRuntimeError

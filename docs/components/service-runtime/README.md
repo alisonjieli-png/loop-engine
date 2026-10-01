@@ -621,6 +621,32 @@ curl -sS https://app.baltor.ai/api/v1/health
 
 ## Related reading
 
+The September 30 OAuth and Public Good transport work uses this same runtime,
+account identity and CatalogStore. `oauth_authorization.py` owns durable
+delegation; the pinned MCP SDK owns protocol handlers through `oauth_http.py`.
+The host enables that public-client PKCE profile only beside its existing
+HTTPS browser identity. Consent grants no billing or administration scope.
+See [serving and connections](../../guides/service-serving-and-connections.md#oauth-connections)
+for supported callbacks, discovery, ceilings and the still-unqualified real
+ChatGPT/dot connection.
+
+`public_good.py` overlays only operator-selected, admitted item versions.
+It changes neither paid entitlement nor ordinary version-one grants. The
+account and host reserve response-byte/request allowance atomically; denied
+or failed attempts can consume that allowance. The transport completes an
+authorized-response record only after body integrity and final serialized
+response size checks. The record is not proof of network delivery and does
+not supply the requested full activity timeline. Public browsing uses the
+metadata whitelist in `public_good_page.py`, never its body reader.
+
+Plan an exact grant file with `python -m
+loop_engine.core.service_runtime.public_good_operator --config ABSOLUTE_HOST
+--policy ABSOLUTE_POLICY`. Apply only with `--apply --expected-digest SHA256`
+from that plan; the policy also binds the held version and catalogue release.
+This is host administration of existing material, not content admission or a
+new engine/runtime. Selection reasons, licences, explicit useful-file paths
+and expiry remain reviewable. No SDG tag automatically grants access.
+
 - [Core Architecture](../core-architecture/README.md) for the capability groups
   a Loop may use.
 - [The four intelligence layers](../intelligence-layers/README.md) for what the

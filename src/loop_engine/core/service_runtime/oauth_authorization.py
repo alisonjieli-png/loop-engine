@@ -81,18 +81,21 @@ class OAuthAuthorizationPolicy:
     refresh_lifetime_seconds: int = 604800
     max_clients: int = 128
     max_records: int = 20000
+    allow_loopback_http: bool = False
     record_type: str = POLICY_VERSION
 
     def __post_init__(self):
         if self.record_type != POLICY_VERSION:
             raise ServiceRuntimeError("unsupported_oauth_policy_version")
+        if type(self.allow_loopback_http) is not bool:
+            raise ServiceRuntimeError("invalid_oauth_policy")
         for name in ("redirect_uris", "redirect_uri_prefixes", "native_loopback_paths", "allowed_scopes"):
             value = getattr(self, name)
             if not isinstance(value, (list, tuple)) or any(type(item) is not str for item in value):
                 raise ServiceRuntimeError("invalid_oauth_policy")
             object.__setattr__(self, name, tuple(value))
         for value in (self.issuer_url, self.resource_url, self.identity_issuer, self.consent_url):
-            _url(value)
+            _url(value, loopback=self.allow_loopback_http)
             if urlsplit(value).query:
                 raise ServiceRuntimeError("invalid_oauth_policy")
         if urlsplit(self.consent_url).netloc != urlsplit(self.issuer_url).netloc:

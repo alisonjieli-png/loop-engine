@@ -8,14 +8,14 @@ Roadmap step S-6.184 (September 24, 2026) made the page list every Verified item
 September 26, 2026: "we should make people sign up before showing them, and we should use a searchable table format
 not a random HTML table/rows, also size, and digest are useless pieces of information to waste space on showing and we
 need ALL types of harness working directory component files not just SKILLS". So this page lists no item one by one:
-it counts the library by harness kind, shows one item in full so a visitor can judge the material, and
+it counts the library by harness kind, shows one item's metadata, and
 sends the visitor to sign up; the searchable table of every item is the signed-in library in the app.
 
 ```text
 /library
 ├── the total in large type, the sentence that counts it by kind, and the one primary action
 ├── the combined counts by harness kind, from the served view, with each kind drawn to scale
-├── one item in full, read through the view like any served body
+├── one item's metadata, with no anonymous body read
 ├── the searchable table: after sign-up, in the app, at the plan's price from the layout standard record
 └── the served release: what it added, changed and withdrew
 ```
@@ -43,7 +43,7 @@ VIEW = "library"
 #: Where a signed-in account browses and searches the whole library as a table.
 APP_LIBRARY_ADDRESS = "/app#browse-heading"
 SIGN_UP_ADDRESS = "/get-started"
-#: The item printed in full when the served library holds it as Verified; otherwise the shortest Verified item.
+#: The metadata example when the served library holds it as Verified; otherwise the shortest Verified item.
 SAMPLE_PREFERENCE = ("check_for_existing_work_before_building",)
 #: The distribution whose own metadata names the public repository, from the project URLs in pyproject.toml.
 DISTRIBUTION = "loop-engine"
@@ -102,18 +102,12 @@ def library_rows(view) -> "list[LibraryRow]":
 
 
 def sample(view, rows):
-    """(row, body) of the one item printed in full, or (None, None) when the view serves no Verified item."""
+    """A metadata example only. The September 30 account rule excludes anonymous body reads."""
     verified = [row for row in rows if row.tier == VERIFIED_TIER]
     chosen = next((row for name in SAMPLE_PREFERENCE for row in verified if row.identity == name), None)
     if chosen is None:
         chosen = min(verified, key=lambda row: (row.size_bytes, row.identity), default=None)
-    if chosen is None:
-        return None, None
-    try:
-        body = view.body_reader(view.catalogue.items[chosen.identity])
-    except Exception:  # noqa: BLE001 - a body that cannot be read now is left out, never guessed
-        return chosen, None
-    return chosen, body if isinstance(body, str) else None
+    return chosen, None
 
 
 
@@ -302,8 +296,8 @@ def library_body(view, rows=None) -> str:
     chosen, body = sample(view, rows)
     kind_names = ", ".join(_plural(harness_kind_label(kind)) for kind, _counts in kinds[:6])
     contents = [("counts", "What is in it")]
-    if chosen is not None and body is not None:
-        contents.append(("sample", "One item in full"))
+    if chosen is not None:
+        contents.append(("sample", "One component's details"))
     contents += [("browse", "Search it as a table"), ("releases", "Releases")]
     intro = ('<div class="md-band md-intro lib-hero"><div class="lib-hero-grid"><h1 id="library-title">'
              f'<span class="lib-total">{total:,}</span> <span class="lib-title-words">{unit}, ready for '
@@ -327,27 +321,21 @@ def library_body(view, rows=None) -> str:
              '<div class="lib-cta-copy"><h2 id="browse-title">Search it as a table</h2><p class="md-reading">A signed-in '
              "account sees every file in one searchable table: its purpose, the kind of file, the kinds of "
              "step it supports, its licence and the effects it declares, with a search box and sortable columns. Each "
-             "row opens to the file's details and, with Baltor Pro, to the file itself.</p>"
+             "row opens to the file's details. Public Good files need an account but no paid plan; other files need the stated access.</p>"
              + (f'<p class="lib-cta-price">Baltor Pro, {escape(price)}. <a href="{APP_LIBRARY_ADDRESS}">Sign in and '
                 'browse</a></p>' if price else "")
              + f'</div><div class="md-actions"><a class="button primary" href="{SIGN_UP_ADDRESS}">Get started</a></div>'
              "</div></div>")
-    if chosen is not None and body is not None:
-        title, instructions, sources = _sample_display_parts(body)
-        source_details = (
-            '<details class="lib-source-details"><summary>Source details</summary>'
-            '<pre class="md-code md-code-wrap" data-sample-content="source">'
-            f'<code>{escape(sources)}</code></pre></details>' if sources else "")
+    if chosen is not None:
         shown = ('<div class="md-band lib-band" id="sample" aria-labelledby="sample-title"><div class="lib-split">'
-                 '<div class="lib-split-head"><p class="lib-sample-label">One item in full</p>'
-                 f'<h2 id="sample-title">{escape(title)}</h2>'
+                 '<div class="lib-split-head"><p class="lib-sample-label">One component’s details</p>'
+                 '<h2 id="sample-title">See what a component is for.</h2>'
                  f'<p class="md-reading">{escape(harness_kind_label(chosen.harness_kind))} · '
                  f'{escape(chosen.licence or "Licence not stated")} · {_review_link(chosen)}</p>'
-                 '<p class="md-reading">Every other body comes through an account and is checked against its exact version.</p></div>'
-                 '<figure class="lib-sample"><figcaption class="lib-sample-head">Instructions</figcaption>'
-                 f'<pre class="md-code md-code-wrap" data-library-sample="{escape(chosen.identity)}" '
-                 f'data-sample-content="instructions"><code>{escape(instructions)}</code></pre>'
-                 f'{source_details}</figure></div></div>')
+                 '<p class="md-reading">Every component download requires an account and is checked against its exact version.</p></div>'
+                 f'<div><p class="md-reading">{escape(chosen.purpose[:400])}</p>'
+                 f'<a href="{APP_LIBRARY_ADDRESS}">Sign in to inspect and download</a>'
+                 '<p><a href="/public-good">Browse the free Public Good collection</a></p></div></div></div>')
     else:
         shown = ""
     return intro + counts + shown + table + _release_band(view, rows)

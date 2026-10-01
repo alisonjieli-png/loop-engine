@@ -160,12 +160,8 @@ class ServiceFeedback:
 
     def _downloaded(self, store, tenant_id, identity, body_digest):
         """True when this account holds a usage record of exactly this item at this digest."""
-        catalog = self.runtime._catalog
-        for row in catalog.rows(store, USAGE, tenant_id):
-            value = row.get("payload", {})
-            if value.get("item_identity") == identity and value.get("body_digest") == body_digest:
-                return True
-        return False
+        from .catalogue_reports import downloaded
+        return downloaded(self.runtime._catalog, store, tenant_id, identity, body_digest)
 
     def rate(self, principal, fields):
         """Record one account's rating of an item it downloaded; a second rating of the item replaces the first."""

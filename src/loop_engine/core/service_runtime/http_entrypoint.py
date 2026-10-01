@@ -464,10 +464,13 @@ def load_host_application(path):
             display_name=transport.display_name, account_origins=origins)
     # The adapter is installed through the constructor, so that the declared
     # `account_email/v1` boundary is validated before the application exists.
+    from .oauth_http import default_provider
+    oauth_authorization = default_provider(runtime, browser_identity, transport)
     application = ServiceHttpApplication(runtime, binding, transport,
         ServiceHttpAuthentication(**configuration["authentication"]), browser_identity=browser_identity,
         client_access=client_access, promotions=promotions, account_email=account_email, waitlist=waitlist,
-        observability=observability_policy(configuration), retention=retention_policy(configuration))
+        observability=observability_policy(configuration), retention=retention_policy(configuration),
+        oauth_authorization=oauth_authorization)
     if browser_identity is not None:
         from .account_administration import AccountAdministration
         application.account_administration = AccountAdministration(runtime, accounts,

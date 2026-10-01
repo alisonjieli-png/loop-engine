@@ -72,6 +72,10 @@ WEB_ASSETS = {
     "/top-mcps": ("index.html", HTML_MEDIA_TYPE),
     "/assets/top-mcps.json": ("top-mcps.json", "application/json"),
     "/auth/callback": ("index.html", HTML_MEDIA_TYPE), "/auth/confirm": ("index.html", HTML_MEDIA_TYPE),
+    "/oauth/consent": ("index.html", HTML_MEDIA_TYPE),
+    "/assets/oauth-consent.js": ("oauth-consent.js", "text/javascript"),
+    "/assets/public-good.js": ("public-good.js", "text/javascript"),
+    "/assets/public-good.css": ("public-good.css", "text/css"),
     "/docs": ("index.html", HTML_MEDIA_TYPE), "/how-it-works": ("index.html", HTML_MEDIA_TYPE),
     "/pricing": ("index.html", HTML_MEDIA_TYPE),
     # The three hero use cases the owner named on September 23, 2026, and their hub page.

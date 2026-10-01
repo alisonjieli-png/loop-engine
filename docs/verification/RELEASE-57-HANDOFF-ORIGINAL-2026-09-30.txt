@@ -61,7 +61,7 @@ a whole free account to bodies would widen access incorrectly. The HTTP plan
 guard, provisioning tenant checks, cache identity, final file revalidation,
 withdrawals and report eligibility all need the same exact-version exception.
 Public library sample rendering currently prints a full body; do not reuse it
-as an anonymous Public Good file route. Keep nonbillable delivery records
+as an anonymous Public Good file route. Keep nonbillable delivery receipts
 separate from monthly paid usage.
 
 The owner also requested research into dots supporting competitors, investors,
@@ -86,7 +86,3 @@ adding a record, before committing; the missed index caused one failed CI.
 Keep failed checks and untouched older worktrees. No broader video-recreation,
 large-media streaming, activity history, OpenAI plugin or Rust-search capability
 was launched by these releases.
-
-Editorial correction: the original saved handoff is preserved byte-for-byte in
-`docs/verification/RELEASE-57-HANDOFF-ORIGINAL-2026-09-30.txt`. The active route
-uses the current record terminology; no release observation changed.

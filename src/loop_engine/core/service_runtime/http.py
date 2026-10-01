@@ -47,8 +47,10 @@ from .feedback import (ASK_FOR_MATERIAL_LINE, FEEDBACK_OPERATIONS as CUSTOMER_FE
                        ServiceFeedback)
 from .model_directory_pages import moved_answer, rendered_page
 from . import library_page
+from . import public_good_page
 from . import red_team_page
 from . import status_pages
+from . import oauth_http
 from .web_pages import (CACHEABLE_WEB_ASSETS, CREATIVE_PREVIEW_PATH, GENERATED_WEB_FILES, HTML_MEDIA_TYPE, PUBLIC_ASSET_CACHE_CONTROL,
                         WEB_ASSETS, asset_etag, missing_address_page, served_asset, server_error_page,
                         validator_matches)
@@ -117,7 +119,8 @@ PROTOCOL_TOOL_DESCRIPTIONS = {
              "one answer. Ask for the next page with file_offset set to next_file_offset, or for one file with "
              "path. Check each file's SHA-256 against its digest before you use it. Use the same request_id for "
              "every page and file of one item. The first read of an item version in a calendar month counts as "
-             "one download; every later read of it that month, pages and retries included, adds nothing. An item "
+             "one paid usage unit; every later read of it that month, pages and retries included, adds nothing. "
+             "An exact Public Good grant makes the read unmetered for an enabled account, with separate request and byte limits. An item "
              "whose effects your client did not declare in the "
              "Baltor-Step-Effects header is refused with step_effects_required, whose details name the effects to "
              "add. To save files in a project, use a command that writes the exact bytes, never a retyped copy."),
@@ -206,10 +209,13 @@ ADMIN_FEEDBACK_PATH = "/api/v1/admin/feedback"
 # address named in one and not the other is either unreachable or
 # unauthenticated and neither is visible from anywhere else.
 API_ROUTES = {
+    **oauth_http.OAUTH_ROUTES,
+    oauth_http.CONSENT_API_PATH: ("GET", "POST"),
     "/.well-known/oauth-protected-resource": ("GET",),
     "/.well-known/oauth-protected-resource/mcp": ("GET",),
     "/api/v1/health": ("GET",),
     "/api/v1/capabilities": ("GET",),
+    public_good_page.COLLECTION_PATH: ("GET",),
     "/api/v1/billing/webhook": ("POST",),
     "/api/v1/account/identity": ("GET",),
     "/api/v1/account/activate": ("POST",),
@@ -250,7 +256,8 @@ DECLARED_ROUTES = (*API_ROUTES, PROTOCOL_PATH, *WEB_ASSETS, *GENERATED_WEB_FILES
 #: itself is still recorded. A staff sign-up link request carries email
 #: addresses, which the published privacy notice keeps with the identity
 #: provider, so its body is never kept either.
-CREDENTIAL_BODY_ROUTES = ("/api/v1/account/signup", PROMOTION_REDEMPTION_PATH, ADMIN_SIGN_UP_LINKS_PATH)
+CREDENTIAL_BODY_ROUTES = ("/api/v1/account/signup", PROMOTION_REDEMPTION_PATH, ADMIN_SIGN_UP_LINKS_PATH,
+                          *oauth_http.CREDENTIAL_ROUTES)
 
 
 class ServiceHttpError(ValueError):
@@ -742,6 +749,9 @@ def _retry_refusal(code):
 
 def _status(error):
     code = getattr(error, "code", "operation_failed")
+    if isinstance(error, (oauth_http.AuthorizeError, oauth_http.TokenError, oauth_http.RegistrationError)):
+        code = error.error if error.error in oauth_http.OAUTH_ERRORS else "invalid_request"
+        return (403 if code == "access_denied" else 400), code
     if isinstance(error, ServiceHttpError):
         return error.status, code
     # Closed account creation is a state of the service, not a bad request. The identity codes stay ahead
@@ -823,6 +833,7 @@ class ServiceHttpApplication:
     #: The host's catalogue refresher, started with the application and
     #: stopped with it. None serves the catalogue loaded at start unchanged.
     catalogue_refresher: object | None = field(default=None, repr=False)
+    oauth_authorization: object | None = field(default=None, repr=False)
 
     def __post_init__(self):
         from .runtime import ServiceRuntime
@@ -835,7 +846,16 @@ class ServiceHttpApplication:
         if (EXTERNAL_JWT_AUTHENTICATION in self.authentication.modes
                 and self.authentication.audience != self.configuration.public_base_url + "/mcp"):
             raise ValueError("token audience must match the advertised service resource URL")
-        self.authenticator = ServiceHttpAuthenticator(self.runtime, self.authentication, browser_identity=self.browser_identity)
+        if self.oauth_authorization is not None:
+            from .oauth_authorization import OAuthAuthorizationProvider
+            if (not isinstance(self.oauth_authorization, OAuthAuthorizationProvider)
+                    or self.oauth_authorization.runtime is not self.runtime or self.browser_identity is None
+                    or self.oauth_authorization.policy.issuer_url != self.configuration.public_base_url
+                    or self.oauth_authorization.policy.resource_url != self.configuration.public_base_url + "/mcp"):
+                raise ValueError("OAuth must bind this service and its existing browser identity")
+        self.oauth_http = oauth_http.OAuthHttp(self.oauth_authorization) if self.oauth_authorization else None
+        self.authenticator = ServiceHttpAuthenticator(self.runtime, self.authentication, browser_identity=self.browser_identity,
+                                                      oauth_authorization=self.oauth_authorization)
         if self.client_access is not None:
             from .access import ServiceAccessAdministration, ServiceClientAccessPolicy
             if (not isinstance(self.client_access, ServiceAccessAdministration)
@@ -946,10 +966,18 @@ class ServiceHttpApplication:
                              "handshake_versions": list(self.configuration.handshake_protocol_versions),
                              "per_request_versions": list(self.configuration.per_request_protocol_versions),
                              "sdk_version": version("mcp"), "session_state": "stateless",
-                             "oauth_resource_metadata": EXTERNAL_JWT_AUTHENTICATION in self.authentication.modes,
-                             "oauth_authorization_server_installed": False,
+                             "oauth_resource_metadata": self.oauth_http is not None or EXTERNAL_JWT_AUTHENTICATION in self.authentication.modes,
+                             "oauth_authorization_server_installed": self.oauth_http is not None,
                              "external_authorization_flow_qualified": False},
                 "authentication": self.authentication.to_dict(),
+                "authorization_server": {"record_type":"service_oauth_server_capabilities/v1",
+                    "available":self.oauth_http is not None, "consent_required":True,
+                    "resource":self.configuration.public_base_url + "/mcp",
+                    "flow":"authorization_code_pkce_s256", "client_profile":"public",
+                    "refresh_supported":self.oauth_http is not None,
+                    "discovery":self.configuration.public_base_url + oauth_http.METADATA_PATH if self.oauth_http else None,
+                    "requests_per_minute_per_process":oauth_http.OAUTH_REQUESTS_PER_WINDOW,
+                    "registrations_per_minute_per_process":oauth_http.OAUTH_REGISTRATIONS_PER_WINDOW},
                 "operation_scopes": {"metadata_and_search": "provisioning:metadata",
                                      "body_and_download": "provisioning:read", "usage": "usage:read",
                                      "billing_sessions": BILLING_MANAGE_SCOPE},
@@ -1185,6 +1213,29 @@ class ServiceHttpApplication:
             waiting.add_done_callback(lambda done: done.exception() if not done.cancelled() else None)
             raise
 
+    async def _async_work(self, factory, *, shares=()):
+        """Bound SDK async authorization work; a timeout never releases or replays a running effect."""
+        release_shares = self._reserve(shares)
+        if not self._slots.acquire(blocking=False):
+            release_shares()
+            raise ServiceHttpError("service_busy", 503)
+        try:
+            waiting = asyncio.create_task(factory())
+        except Exception:
+            self._slots.release()
+            release_shares()
+            raise
+        def finished(done):
+            self._slots.release()
+            release_shares()
+            if not done.cancelled():
+                done.exception()
+        waiting.add_done_callback(finished)
+        try:
+            return await asyncio.wait_for(asyncio.shield(waiting), self.configuration.request_timeout_seconds)
+        except asyncio.TimeoutError:
+            raise ServiceHttpError("deadline_exceeded", 504) from None
+
     def library_settings(self, principal):
         """The account's library setting. Accounts do not store their own yet, so each has the default of the
         owner's "Library tiers" decision: every Community item, labelled; a request can narrow it."""
@@ -1196,7 +1247,7 @@ class ServiceHttpApplication:
         Removes `library_tiers` from the fields, because the provisioning boundary receives the resolved choice."""
         return narrowed(self.library_settings(principal), fields.pop("library_tiers", None))
 
-    def _invoke(self, authentication, operation, fields, *, tiered=False, encoding=JSON_ENCODING, step=None):
+    def _invoke(self, authentication, operation, fields, *, tiered=False, encoding=JSON_ENCODING, step=None, completions=None):
         """One provisioning operation for an authenticated request.
 
         `step` is the effects a tier-aware request's step holds (see `effect_selection`). Listed rows and a manifest
@@ -1223,7 +1274,10 @@ class ServiceHttpApplication:
                 raise ServiceHttpError("download_required", 413)
             if step is not None:
                 fields["authority_effects"] = list(step)
-        result = self.provisioning.invoke_for_principal(current.principal, operation, view=view, **fields)
+        reservation = (self._reserve_public_good(current, view, manifest, fields, self.configuration.maximum_response_bytes)
+                       if operation == READ_OPERATION else None)
+        result = self.provisioning.invoke_for_principal(current.principal, operation, view=view,
+            **({"public_good_reservation":reservation} if operation == READ_OPERATION else {}), **fields)
         if operation == LIST_OPERATION and callable(getattr(view, "shown_attributes", None)):
             # Each listed row carries the served attributes an account may see (the tier the row already names,
             # the kind of file a harness picks up and the step functions), so the signed-in table filters on
@@ -1245,6 +1299,11 @@ class ServiceHttpApplication:
             elif operation == DISCOVER_OPERATION:
                 result = {**result, "bodies_available": False}
         self.authenticator.revalidate(authentication)
+        if operation == READ_OPERATION:
+            if completions is not None:
+                completions.append((reservation, authentication, view))
+            else:
+                self._finish_public_good(reservation, authentication, view, len(_json_bytes(result)))
         if tiered:
             # Version 2 requests and protocol tools name each item's tier and its exact label.
             return result
@@ -1290,19 +1349,35 @@ class ServiceHttpApplication:
         read as metadata, which no effect withholds, and a declared effect the step did not declare refuses the read
         with `step_effects_required`, naming the header and the effects to add. The read itself then asks with the
         step's effects, so the provisioning boundary checks them a second time."""
-        self._require_plan(principal)
         wanted = {key: value for key, value in fields.items() if key != "request_id"}
         if step is None:
-            return self.provisioning.invoke_for_principal(principal, MANIFEST_OPERATION, view=view, **wanted)
-        manifest = self.provisioning.invoke_for_principal(principal, MANIFEST_OPERATION, view=view,
-                                                          **{**wanted, "authority_effects": list(EFFECTS)})
-        missing = effects_to_declare(manifest["declared_effects"], step)
-        if missing:
-            raise ServiceHttpError(STEP_EFFECTS_REQUIRED_CODE, 403,
-                                   details=step_effects_refusal(manifest["declared_effects"], step, missing))
+            manifest = self.provisioning.invoke_for_principal(principal, MANIFEST_OPERATION, view=view, **wanted)
+        else:
+            manifest = self.provisioning.invoke_for_principal(principal, MANIFEST_OPERATION, view=view,
+                                                              **{**wanted, "authority_effects": list(EFFECTS)})
+        if not self.provisioning.public_good.allows(principal, view, manifest["identity"], manifest["digest"]):
+            self._require_plan(principal)
+        if step is not None:
+            missing = effects_to_declare(manifest["declared_effects"], step)
+            if missing:
+                raise ServiceHttpError(STEP_EFFECTS_REQUIRED_CODE, 403,
+                                       details=step_effects_refusal(manifest["declared_effects"], step, missing))
         return manifest
 
-    def _protocol_read(self, authentication, fields, step=None):
+    def _reserve_public_good(self, authentication, view, manifest, fields, response_bytes):
+        self._require_scope(authentication, "provisioning:read")
+        return self.provisioning.public_good.reserve(authentication.principal, view, manifest["identity"],
+            expected_digest=manifest["digest"], request_id=fields["request_id"], response_bytes=response_bytes)
+
+    def _finish_public_good(self, reservation, authentication, view, response_bytes):
+        current = self.authenticator.revalidate(authentication)
+        self._require_scope(current, "provisioning:read")
+        if reservation is not None:
+            self.provisioning.public_good.complete(reservation, current.principal, view, response_bytes=response_bytes)
+        latest = self.authenticator.revalidate(authentication)
+        self._require_scope(latest, "provisioning:read")
+
+    def _protocol_read(self, authentication, fields, step=None, completions=None):
         """`provisioning_read` over the protocol: a single-file item's text inline, or a package's files by page.
 
         A single-file item asked without `path` or `file_offset` is answered as before, in `provisioning_body/v3`. A
@@ -1330,8 +1405,13 @@ class ServiceHttpApplication:
                 raise ServiceRuntimeError("package_files_unavailable")
             if manifest["size_bytes"] > self.configuration.maximum_inline_body_bytes:
                 raise ServiceHttpError("download_required", 413)
-            result = self.provisioning.invoke_for_principal(current.principal, READ_OPERATION, view=view, **fields)
-            self.authenticator.revalidate(authentication)
+            reservation = self._reserve_public_good(current, view, manifest, fields, self.configuration.maximum_response_bytes)
+            result = self.provisioning.invoke_for_principal(current.principal, READ_OPERATION, view=view,
+                public_good_reservation=reservation, **fields)
+            if completions is not None:
+                completions.append((reservation, authentication, view))
+            else:
+                self._finish_public_good(reservation, authentication, view, _protocol_cost(result))
             return result
         # The selection is checked before the metered read, so a wrong path or page is refused without a charge.
         if selected_path is not None:
@@ -1342,7 +1422,9 @@ class ServiceHttpApplication:
             if start >= len(package.files):
                 raise ServiceHttpError("file_offset_out_of_range")
             chosen = package.files[start:]
-        value = self.provisioning.invoke_for_principal(current.principal, READ_OPERATION, view=view, **fields)
+        reservation = self._reserve_public_good(current, view, manifest, fields, self.configuration.maximum_response_bytes)
+        value = self.provisioning.invoke_for_principal(current.principal, READ_OPERATION, view=view,
+            public_good_reservation=reservation, **fields)
         self.authenticator.revalidate(authentication)
         record = {"record_type": PACKAGE_READ_VERSION, "tenant_id": value["tenant_id"],
                   "identity": value["identity"], "digest": value["digest"], "size_bytes": value["size_bytes"],
@@ -1377,7 +1459,10 @@ class ServiceHttpApplication:
                 break
             record["files"].append(row)
             used += cost
-        self.authenticator.revalidate(authentication)
+        if completions is not None:
+            completions.append((reservation, authentication, view))
+        else:
+            self._finish_public_good(reservation, authentication, view, _protocol_cost(record))
         return record
 
     def _list_page(self, authentication, current, paged, step=None):
@@ -1416,6 +1501,7 @@ class ServiceHttpApplication:
         view = self.provisioning.current_view()
 
         fields = dict(fields)
+        public_good_fingerprint = self.provisioning.public_good.snapshot(view).fingerprint
         # The request as it was asked, kept before the library tier filter is resolved out of the fields, so a
         # search that finds nothing is counted with the tiers it asked for.
         requested = dict(fields)
@@ -1449,6 +1535,8 @@ class ServiceHttpApplication:
             if step is not None:
                 hits[-1]["effects_to_declare"] = effects_to_declare(row["declared_effects"], step)
         self._verify_search_snapshot(authentication, current, grant_guard)
+        if self.provisioning.public_good.snapshot(view).fingerprint != public_good_fingerprint:
+            raise ServiceRuntimeError("public_good_authority_changed")
         result = {"record_type": "service_retrieval_result/v1", "hits": hits,
                   **({"step_effects": list(step), "step_effects_header": STEP_EFFECTS_HEADER_NAME}
                      if step is not None else {}),
@@ -1727,6 +1815,7 @@ class ServiceHttpApplication:
             name, arguments = params.name, params.arguments or {}
             scope = ctx.request.scope
             details = None
+            completions = []
             try:
                 context = scope["service_authentication"]
                 effects = step_effects(ctx.request.headers)
@@ -1756,13 +1845,16 @@ class ServiceHttpApplication:
                     # Protocol tools serve harnesses, which read each item's tier and label in the answer. A read
                     # delivers a package's files as well as a single file's text.
                     output = await self._tenant_work(context, lambda: invoke_http_service_as_loop(operation,
-                        (lambda: self._protocol_read(context, arguments, step)) if operation == READ_OPERATION else
+                        (lambda: self._protocol_read(context, arguments, step, completions)) if operation == READ_OPERATION else
                         (lambda: self._invoke(context, operation, arguments, tiered=True,
                                               encoding=PROTOCOL_ENCODING, step=step))))
                 response = types.CallToolResult(content=[types.TextContent(type="text", text=_json_bytes(output).decode())],
                                                 structuredContent=output, isError=False)
-                if len(response.model_dump_json(by_alias=True).encode()) > self.configuration.maximum_response_bytes:
+                response_bytes = len(response.model_dump_json(by_alias=True).encode())
+                if response_bytes > self.configuration.maximum_response_bytes:
                     raise ServiceHttpError("response_limit_exceeded", 413)
+                for reservation, authentication, view in completions:
+                    await self._tenant_work(context, lambda: self._finish_public_good(reservation, authentication, view, response_bytes))
                 return response
             except ValidationError:
                 status, code = 400, "invalid_request"
@@ -1779,8 +1871,13 @@ class ServiceHttpApplication:
             await self._record_failure(scope, ctx.request, code, status)
             reference = scope.get(SCOPE_REFERENCE_KEY)
             refused = _error_record(code, status, details, reference.value if reference is not None else None)
+            challenge = {}
+            if self.oauth_http is not None and status in (401, 403) and code in (
+                    "unauthorized", "invalid_token", "insufficient_scope", "scope_required"):
+                needed = "provisioning:read" if TOOL_OPERATIONS.get(name) == READ_OPERATION else "provisioning:metadata"
+                challenge = {"_meta":{"mcp/www_authenticate":[self._oauth_challenge(code, needed)]}}
             return types.CallToolResult(content=[types.TextContent(type="text", text=_json_bytes(refused).decode())],
-                                        structuredContent=refused, isError=True)
+                                        structuredContent=refused, isError=True, **challenge)
 
         hint = CacheHint(ttl_ms=PROTOCOL_CACHE_TTL_MS, scope=PROTOCOL_CACHE_SCOPE)
         sdk = Server("loop-engine-intelligence", version="1.0.0", on_list_tools=list_tools, on_call_tool=call_tool,
@@ -1900,6 +1997,11 @@ class ServiceHttpApplication:
                 if code in RETRY_AFTER_SECONDS and details is None:
                     details = _retry_refusal(code)
                     added = {**(added or {}), "Retry-After": str(RETRY_AFTER_SECONDS[code])}
+                from .public_good import PublicGoodLimitError
+                if isinstance(error, PublicGoodLimitError):
+                    status = 429
+                    added = {**(added or {}), "Retry-After":str(error.retry_after_seconds)}
+                    details = {"record_type":"public_good_limit_refusal/v1", "retry_after_seconds":error.retry_after_seconds}
                 # The record is committed before the customer is told its name,
                 # so a reference in a refusal is one an operator can search for.
                 await self._record_failure(scope, request, code, status)
@@ -1930,10 +2032,8 @@ class ServiceHttpApplication:
                 else:
                     response = JSONResponse(_error_record(code, status, details, reference.value),
                                             status_code=status, headers={**cors, **(added or {})})
-                if status == 401:
-                    response.headers["WWW-Authenticate"] = ("Bearer resource_metadata=\""
-                        + config.public_base_url + "/.well-known/oauth-protected-resource/mcp\""
-                        if EXTERNAL_JWT_AUTHENTICATION in self.authentication.modes else "Bearer")
+                if status == 401 or code == "insufficient_scope":
+                    response.headers["WWW-Authenticate"] = self._oauth_challenge(code)
             cacheable_asset = (request.method in ("GET", "HEAD")
                                and request.url.path in CACHEABLE_WEB_ASSETS
                                and response.status_code in (200, 304))
@@ -1941,6 +2041,16 @@ class ServiceHttpApplication:
             response.headers["X-Content-Type-Options"] = "nosniff"
             await response(scope, receive, send)
         return Starlette(routes=[Mount("/", app=transport)], lifespan=lifespan)
+
+    def _oauth_challenge(self, code, scope=""):
+        if self.oauth_http is None and EXTERNAL_JWT_AUTHENTICATION not in self.authentication.modes:
+            return "Bearer"
+        challenge = 'Bearer resource_metadata="' + self.configuration.public_base_url + '/.well-known/oauth-protected-resource/mcp"'
+        if code in ("insufficient_scope", "scope_required"):
+            challenge += ', error="insufficient_scope"'
+            if scope:
+                challenge += ', scope="' + scope + '"'
+        return challenge
 
     async def _body(self, request):
         if request.headers.get("content-type", "").split(";", 1)[0].strip().lower() != "application/json":
@@ -1994,6 +2104,7 @@ class ServiceHttpApplication:
 
     async def _web_route(self, request, Response, JSONResponse):
         path, method, status_code = request.url.path, request.method, 200
+        completions = []
         # The Host was checked against the allowed hosts before this route ran,
         # so it only chooses which page a hostname shows at its root address.
         # A page that shows the library's size shows the count served now, not the packaged one.
@@ -2007,6 +2118,8 @@ class ServiceHttpApplication:
             # published without a redeploy reaches it within the refresher's minute.
             asset = library_page.rendered(self.provisioning.current_view(), path, method,
                                           self.configuration.display_name, request.headers.get("host"))
+        if asset is None:
+            asset = public_good_page.rendered(path, method, self.configuration.display_name, request.headers.get("host"))
         if asset is None:
             # The decision red team page is rendered from its packaged record, at its address and at the root of its hostname.
             asset = red_team_page.rendered(path, method, self.configuration.display_name, request.headers.get("host"))
@@ -2056,7 +2169,35 @@ class ServiceHttpApplication:
         # provider or an effect.
         if method not in API_ROUTES.get(path, ()):
             raise ServiceHttpError("route_unavailable", 404)
+        if path in oauth_http.OAUTH_ROUTES:
+            if self.oauth_http is None:
+                raise ServiceHttpError("external_authorization_not_configured", 404)
+            retry = self.oauth_http.permit(path, self._address_key(request))
+            if retry:
+                return JSONResponse({"error":"temporarily_unavailable"}, status_code=429,
+                                    headers={"Retry-After":str(retry)})
+            chunks, length = [], 0
+            async def oauth_body():
+                nonlocal length
+                async for chunk in request.stream():
+                    length += len(chunk)
+                    if length > min(oauth_http.MAXIMUM_OAUTH_REQUEST_BYTES, self.configuration.maximum_request_bytes):
+                        raise ServiceHttpError("request_limit_exceeded", 413)
+                    chunks.append(chunk)
+            if method == "POST":
+                try:
+                    await asyncio.wait_for(oauth_body(), self.configuration.request_timeout_seconds)
+                except asyncio.TimeoutError:
+                    return oauth_http.refusal(status=408)
+            return await self._async_work(lambda: self.oauth_http.handle(request, b"".join(chunks)),
+                                          shares=("oauth_authorization",))
         if path in ("/.well-known/oauth-protected-resource", "/.well-known/oauth-protected-resource/mcp") and method == "GET":
+            if self.oauth_authorization is not None:
+                return JSONResponse({"resource": self.oauth_authorization.policy.resource_url,
+                    "authorization_servers": [self.oauth_authorization.policy.issuer_url],
+                    "scopes_supported": list(self.oauth_authorization.policy.allowed_scopes),
+                    "bearer_methods_supported": ["header"], "resource_name": "Baltor library",
+                    "resource_documentation": self.configuration.public_base_url + "/docs/searching-and-retrieving"})
             if EXTERNAL_JWT_AUTHENTICATION not in self.authentication.modes:
                 raise ServiceHttpError("external_authorization_not_configured", 404)
             from .records import SCOPES
@@ -2064,7 +2205,25 @@ class ServiceHttpApplication:
                 "authorization_servers": [self.authentication.issuer],
                 "scopes_supported": sorted(set(SCOPES) | set(self.authentication.required_scopes)),
                 "bearer_methods_supported": ["header"], "resource_name": "Loop Engine Intelligence"})
-        if path == "/api/v1/health" and method == "GET":
+        if path == public_good_page.COLLECTION_PATH and method == "GET":
+            pairs = list(request.query_params.multi_items())
+            if len(pairs) != len(dict(pairs)) or set(dict(pairs)) - {"query", "goal", "page"}:
+                raise ServiceHttpError("invalid_public_good_query")
+            values = dict(pairs)
+            raw_page = values.get("page", "1")
+            if not re.fullmatch(r"[0-9]{1,5}", raw_page):
+                raise ServiceHttpError("invalid_public_good_query")
+            def public_collection():
+                view = self.provisioning.current_view()
+                access = self.provisioning.public_good
+                snapshot = access.snapshot(view)
+                result = public_good_page.collection(view, snapshot, query=values.get("query", ""),
+                    goal=values.get("goal", ""), page=int(raw_page))
+                if access.snapshot(view).fingerprint != snapshot.fingerprint:
+                    raise ServiceRuntimeError("public_good_authority_changed")
+                return result
+            output = await self._work(lambda: invoke_http_retrieval_as_loop(public_collection))
+        elif path == "/api/v1/health" and method == "GET":
             # Alive and ready are different answers. Alive says this process is
             # running. Ready says every required dependency answered just now.
             # A machine that is not ready answers 503, so the load balancer in
@@ -2126,7 +2285,30 @@ class ServiceHttpApplication:
                     lambda: self.waitlist.join(joining)))
         else:
             context = await self._authenticated(request)
-            if path == "/api/v1/session" and method == "GET":
+            if path == oauth_http.CONSENT_API_PATH:
+                from .http_auth import BROWSER_IDENTITY_AUTHENTICATION
+                if self.oauth_authorization is None or context.mode != BROWSER_IDENTITY_AUTHENTICATION:
+                    raise ServiceHttpError("browser_session_required", 403)
+                # Browser consent must be same-origin, not a bearer-enabled cross-site POST.
+                if method == "POST" and request.headers.getlist("origin") != [self.configuration.public_base_url]:
+                    raise ServiceHttpError("invalid_origin", 403)
+                if method == "GET":
+                    pairs = list(request.query_params.multi_items())
+                    if len(pairs) != 1 or pairs[0][0] != "authorization_id":
+                        raise ServiceHttpError("invalid_request")
+                    output = await self._async_work(lambda: self.oauth_authorization.inspect_consent(pairs[0][1]),
+                                                    shares=(context.principal.tenant_id,))
+                else:
+                    fields = _parse_json(await self._body(request))
+                    if (set(fields) != {"record_type", "authorization_id", "decision"}
+                            or fields["record_type"] != "service_oauth_consent_decision/v1"
+                            or fields["decision"] not in ("approve", "deny")):
+                        raise ServiceHttpError("invalid_request")
+                    decide = self.oauth_authorization.approve_consent if fields["decision"] == "approve" else self.oauth_authorization.deny_consent
+                    redirect = await self._async_work(lambda: decide(fields["authorization_id"], context),
+                                                     shares=(context.principal.tenant_id,))
+                    output = {"record_type":"service_oauth_consent_result/v1", "redirect_uri":redirect}
+            elif path == "/api/v1/session" and method == "GET":
                 # The access source lets the Get started page tell an invited
                 # account that its invitation covers the plan, instead of
                 # offering it a payment.
@@ -2270,8 +2452,15 @@ class ServiceHttpApplication:
                             fields["authority_effects"] = list(step)
                         if manifest["size_bytes"] > self.configuration.maximum_download_bytes:
                             raise ServiceHttpError("download_limit_exceeded", 413)
+                        planned = manifest["size_bytes"]
+                        if selected_path is not None:
+                            package = view.package_of(manifest["identity"])
+                            if package is None:
+                                raise ServiceRuntimeError("package_files_unavailable")
+                            planned = package.file(selected_path).size_bytes
+                        reservation = self._reserve_public_good(current, view, manifest, fields, planned)
                         value = self.provisioning.invoke_for_principal(current.principal, READ_OPERATION,
-                                                                        view=view, **fields)
+                            view=view, public_good_reservation=reservation, **fields)
                         self.authenticator.revalidate(context)
                         if len(value["body"].encode("utf-8")) > self.configuration.maximum_download_bytes:
                             raise ServiceHttpError("download_limit_exceeded", 413)
@@ -2282,7 +2471,9 @@ class ServiceHttpApplication:
                             payload, entry = view.read_package_file(value["identity"], selected_path)
                             if len(payload) > self.configuration.maximum_download_bytes:
                                 raise ServiceHttpError("download_limit_exceeded", 413)
+                            completions.append((reservation, context, view))
                             return {**value, "body": None, "file": payload, "digest": entry.digest}
+                        completions.append((reservation, context, view))
                         return value
                     output = await self._tenant_work(context, lambda: invoke_http_service_as_loop("download", download))
                     value = output["result"]
@@ -2291,10 +2482,12 @@ class ServiceHttpApplication:
                                "Content-Disposition": 'attachment; filename="intelligence.txt"'}
                     if tiered:
                         headers["X-Loop-Engine-Library-Tier"] = value.get("library_tier_label", "")
-                    return Response(value["file"] if value.get("file") is not None else value["body"].encode("utf-8"),
-                        media_type="application/octet-stream", headers=headers)
+                    body = value["file"] if value.get("file") is not None else value["body"].encode("utf-8")
+                    for reservation, authentication, view in completions:
+                        await self._tenant_work(context, lambda: self._finish_public_good(reservation, authentication, view, len(body)))
+                    return Response(body, media_type="application/octet-stream", headers=headers)
                 output = await self._tenant_work(context, lambda: invoke_http_service_as_loop(operation,
-                    lambda: self._invoke(context, operation, fields, tiered=tiered, step=step)))
+                    lambda: self._invoke(context, operation, fields, tiered=tiered, step=step, completions=completions)))
             elif path == "/api/v1/retrieval" and method == "POST":
                 fields, step = effect_selection(self._validate_search(_parse_json(await self._body(request))),
                                                 step_effects(request.headers))
@@ -2307,4 +2500,6 @@ class ServiceHttpApplication:
         encoded = _json_bytes(output)
         if len(encoded) > self.configuration.maximum_response_bytes:
             raise ServiceHttpError("response_limit_exceeded", 413)
+        for reservation, authentication, view in completions:
+            await self._tenant_work(authentication, lambda: self._finish_public_good(reservation, authentication, view, len(encoded)))
         return Response(encoded, media_type="application/json", status_code=status_code)

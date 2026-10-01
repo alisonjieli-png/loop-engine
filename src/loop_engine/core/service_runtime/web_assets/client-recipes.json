@@ -51,7 +51,7 @@
         }
       },
       "verification_command": "opencode mcp list",
-      "verification_note": "Confirm that Baltor connects and exposes its tools. This service uses a supplied token; do not start an OAuth login for it. OpenCode 2.x uses a different configuration layout.",
+      "verification_note": "Confirm that Baltor connects and exposes its tools. This recipe explicitly chooses a supplied token; do not combine its Authorization header with OAuth. The setup guide describes the separate OAuth connection. OpenCode 2.x uses a different configuration layout.",
       "version_note": "Documented 1.x configuration; native end-to-end qualification is pending. Check your installed version with opencode --version.",
       "removal_note": "After the token is revoked, delete the baltor entry from opencode.json and clear BALTOR_SERVICE_TOKEN from your environment.",
       "source_url": "https://opencode.ai/docs/mcp-servers/"

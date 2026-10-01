@@ -177,6 +177,8 @@
     "core/service_api.py",
     "core/service_runtime/http.py",
     "core/service_runtime/http_auth.py",
+    "core/service_runtime/oauth_authorization.py",
+    "core/service_runtime/oauth_http.py",
     "core/service_runtime/http_boundary_checks.py",
     "core/service_runtime/web_surface_checks.py",
     "core/service_runtime/http_checks.py",
@@ -845,6 +847,8 @@
     "maximum_total_bytes"
   ],
   "network_allowed_modules_reasons": {
+    "core/service_runtime/oauth_authorization.py": "Uses urllib.parse only to validate exact resource and registered callback addresses and construct redirects. It performs no outbound network request; existing browser identity and the host transport retain their authority. tools/test_oauth_http.py rejects outbound client imports in this module.",
+    "core/service_runtime/oauth_http.py": "Uses urllib.parse only to parse bounded form fields and encode the public-client revocation workaround. Pinned MCP handlers process inbound requests; this module creates no outbound client. tools/test_oauth_http.py checks the restricted import boundary.",
     "core/service_runtime/waitlist_checks.py": "Real loopback-only waiting list acceptance. The fixtures use owned temporary listeners and temporary records; no identity, payment or mail provider is contacted and no address is sent anywhere.",
     "core/service_runtime/access_checks.py": "Real loopback-only administrator acceptance uses temporary credentials and the existing owned fixture servers. It does not contact external providers or mint hosted keys.",
     "core/service_runtime/http.py": "The authenticated serving transport owns public Host/Origin checks and loopback-only acceptance. It does not perform customer harness execution.",

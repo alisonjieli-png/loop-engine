@@ -156,10 +156,10 @@ class ListSnapshot:
         return len(self.rows)
 
     @classmethod
-    def of(cls, answer, view):
+    def of(cls, answer, view, authority=""):
         rows = tuple((row["identity"], row["digest"]) for row in answer["items"])
         withheld = tuple({"identity": row["identity"], "reason": row["reason"]} for row in answer["withheld"])
-        document = {"release": view.release_id or "", "offered": rows,
+        document = {"release": view.release_id or "", "offered": rows, "public_good_authority":authority,
                     "withheld": [(row["identity"], row["reason"]) for row in withheld]}
         return cls(view.catalogue, rows, withheld[:MAXIMUM_WITHHELD_ROWS], len(withheld),
                    hashlib.sha256(_json_bytes(document)).hexdigest()[:32])
@@ -308,7 +308,8 @@ def list_page(paged, *, provisioning, runtime, cursors):
     position = cursors.read(cursor, tenant, request) if cursor is not None else None
     offset = position[0] if position is not None else 0
     _grants, guard = runtime.grant_snapshot(principal)
-    key = (tenant, guard.record_id, guard.record_version, guard.must_not_exist, request)
+    public_good_fingerprint = provisioning.public_good.snapshot(view).fingerprint
+    key = (tenant, guard.record_id, guard.record_version, guard.must_not_exist, request, public_good_fingerprint)
     snapshot, rows = cached_snapshot(view, key), None
     if snapshot is not None and (position is None or (position[1] == snapshot.digest and offset < snapshot.total)):
         # The page's rows are authorized again now, through the same boundary as a whole list, and must be
@@ -324,9 +325,10 @@ def list_page(paged, *, provisioning, runtime, cursors):
         # No snapshot, or one the cursor or the fresh rows disagree with: the whole list is taken again rather
         # than trusted, so a stale snapshot can neither refuse an unchanged walk nor continue a changed one.
         answer = provisioning.invoke_for_principal(principal, "list", view=view, **fields)
-        snapshot = ListSnapshot.of(answer, view)
+        snapshot = ListSnapshot.of(answer, view, public_good_fingerprint)
         _grants, after = runtime.grant_snapshot(principal)
-        if (after.record_id, after.record_version, after.must_not_exist) == key[1:4]:
+        if ((after.record_id, after.record_version, after.must_not_exist) == key[1:4]
+                and provisioning.public_good.snapshot(view).fingerprint == public_good_fingerprint):
             keep_snapshot(view, key, snapshot)
         rows = answer["items"][offset:offset + page_size]
     if position is not None:
@@ -345,4 +347,6 @@ def list_page(paged, *, provisioning, runtime, cursors):
     following = offset + used
     page["next_cursor"] = cursors.mint(tenant, request, following, snapshot.digest) \
         if following < snapshot.total else None
+    if provisioning.public_good.snapshot(view).fingerprint != public_good_fingerprint:
+        raise ServiceHttpError(LIST_RELEASE_CHANGED, 409)
     return page

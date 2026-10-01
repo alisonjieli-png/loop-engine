@@ -703,6 +703,11 @@
     "group": "Product",
     "pages": [
      {
+      "address": "/public-good",
+      "title": "Public Good",
+      "description": "Browse useful component files for sustainable development and public-benefit work. Downloads require a Baltor account, not a paid subscription."
+     },
+     {
       "address": "/worker",
       "title": "Run Baltor on your own computer",
       "description": "Download a worker with OpenCode and the Baltor harness, connect your own model access and retain project artifacts and run history."
@@ -1245,8 +1250,8 @@
    {
     "section": "Protocol",
     "feature": "Oauth authorization server installed",
-    "value": "No",
-    "fixed": true
+    "value": "",
+    "fixed": false
    },
    {
     "section": "Protocol",
@@ -1257,6 +1262,60 @@
    {
     "section": "Authentication",
     "feature": "Authentication",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Authorization server",
+    "feature": "Available",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Authorization server",
+    "feature": "Consent required",
+    "value": "Yes",
+    "fixed": true
+   },
+   {
+    "section": "Authorization server",
+    "feature": "Resource",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Authorization server",
+    "feature": "Flow",
+    "value": "authorization code pkce s256",
+    "fixed": true
+   },
+   {
+    "section": "Authorization server",
+    "feature": "Client profile",
+    "value": "public",
+    "fixed": true
+   },
+   {
+    "section": "Authorization server",
+    "feature": "Refresh supported",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Authorization server",
+    "feature": "Discovery",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Authorization server",
+    "feature": "Requests per minute per process",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Authorization server",
+    "feature": "Registrations per minute per process",
     "value": "",
     "fixed": false
    },

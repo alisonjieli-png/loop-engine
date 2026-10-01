@@ -18,8 +18,46 @@ source for them.
 Both use the Model Context Protocol at `/mcp` over `streamable_http`. The service
 reports `session_state` as `stateless`. Your service credential goes in the
 Authorization header on each request, independently of protocol negotiation.
-The published client recipes use a supplied token; an external authorization
-flow is not qualified by the current capabilities.
+The published token recipes remain usable. OAuth is also available when
+`authorization_server.available` is true; inspect the current deployment
+before choosing that flow. A generic identity-provider token is not an MCP token.
+
+## OAuth connections
+
+Add `https://baltor.ai/mcp` to an OAuth-capable MCP app. Start sign-in from
+that app, use your existing Baltor account, review the destination and scopes,
+and explicitly allow the connection. Do not paste a Baltor API key, browser
+session or model-provider key into a conversation to connect it.
+
+The current profile is authorization code with S256 PKCE for public clients.
+Discovery is at `/.well-known/oauth-protected-resource/mcp` and
+`/.well-known/oauth-authorization-server`. Dynamic registration uses `/register`
+and `token_endpoint_auth_method: none`. Supply the exact discovered resource
+in both authorization and token requests. Codes are short-lived and single-use;
+refresh rotates the token pair and cannot increase scopes. `/revoke` ends the
+delegation. Tokens are not returned on an uncertain store commit.
+
+Only `provisioning:metadata`, `provisioning:read` and `usage:read` are offered.
+No billing, account administration, raw database access or publication authority
+comes with this connection. Normal account permissions, withdrawals and
+Public Good limits remain in force. Refresh and account disabling are checked
+against Baltor's records; an upstream identity-provider change must reach those
+records before it takes effect on an existing delegation.
+
+The host admits the documented ChatGPT connector callbacks and explicitly
+listed native loopback paths. It does not accept arbitrary remote callback
+addresses. The supported loopback paths are `/callback`, `/oauth/callback`,
+`/auth/callback` and `/mcp/oauth/callback`; the client selects a valid port.
+No confidential-client, CIMD, ID-token or UserInfo support is advertised.
+
+This uses the existing account sign-in and pinned MCP transport. The bounded
+initial host profile retains at most 128 registered clients and 20,000 OAuth
+records; automatic expiry cleanup is not yet implemented. Client registration
+and authorization also have request limits. A real ChatGPT/dot account connection
+and marketplace review are separate from local protocol and browser tests.
+[OpenAI's authentication guide](https://developers.openai.com/plugins/build/auth)
+describes its connector requirements. OAuth does not itself grant permission
+to publish a plugin or enable a dot's schedules.
 
 The [2025-11-25 lifecycle](https://modelcontextprotocol.io/specification/2025-11-25/basic/lifecycle)
 allows a server to return a supported version when it cannot use the requested

@@ -86,6 +86,8 @@ class PublicGoodGrant:
     public_benefit_reason: str
     expires_at: int
     initiatives: tuple[str, ...] = ()
+    useful_paths: tuple[str, ...] = ()
+    display_name: str = ""
     active: bool = True
     record_type: str = GRANT_VERSION
 
@@ -109,6 +111,17 @@ class PublicGoodGrant:
                 or not goals and not initiatives):
             _refuse()
         object.__setattr__(self, "initiatives", initiatives)
+        from .catalogue_packages import placement_path
+        if not isinstance(self.useful_paths, (list, tuple)):
+            _refuse()
+        paths = tuple(self.useful_paths)
+        for path in paths:
+            placement_path(path)
+        if len(paths) != len(set(paths)):
+            _refuse()
+        object.__setattr__(self, "useful_paths", paths)
+        if not isinstance(self.display_name, str) or len(self.display_name) > 120 or self.display_name and not self.display_name.isprintable():
+            _refuse()
         if type(self.expires_at) is not int or self.expires_at <= 0:
             _refuse()
 
@@ -162,6 +175,10 @@ def _matches(grant, view):
             or ProvisioningItemBinding.from_item(item) != grant.binding
             or (item.identity, item.digest) in view.withdrawn):
         return False
+    if grant.useful_paths:
+        package = view.packages.get(item.identity)
+        if package is None or not set(grant.useful_paths) <= {entry.path for entry in package.files}:
+            return False
     try:
         decision = view.qualification_resolver.resolve(grant.binding)
     except Exception:
