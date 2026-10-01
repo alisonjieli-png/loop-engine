@@ -222,11 +222,11 @@ class EngineChecks(unittest.TestCase):
     def test_github_search_reads_names_and_counts_and_guards_descriptions(self):
         body = json.dumps({"incomplete_results": False, "items": [
             {"full_name": "Owner/Tool", "html_url": "https://github.com/Owner/Tool", "stargazers_count": 1200,
-             "forks_count": 5, "language": "Rust", "license": {"spdx_id": "MIT"}, "archived": False,
+             "forks_count": 5, "language": "Rust", "license": {"spdx_id": "MIT"}, "archived": False, "private": False,
              "created_at": "2024-01-02T03:04:05Z", "pushed_at": "2026-09-20T00:00:00Z", "topics": ["cli"],
              "description": "A long description that the radar must never repeat in a brief anywhere at all"},
             {"full_name": "Bad/Repo", "html_url": "https://github.com/Bad/Repo", "stargazers_count": 1,
-             "description": "x", "license": None, "archived": False}]}).encode()
+             "description": "x", "license": None, "archived": False, "private": False}]}).encode()
         network = FakeNetwork({"gh:search/repositories": (200, body)})
         answer = engines_network.GitHubSearch().read(context_for("tools_rust_rewrites", network=network))
         self.assertEqual(answer.status, "ok")
@@ -235,6 +235,29 @@ class EngineChecks(unittest.TestCase):
                          ("Owner/Tool", "MIT", 1200, "github:owner/tool"))
         self.assertIn("never repeat", answer.guard_texts[0])
         self.assertNotIn("description", json.dumps(first.to_dict()))
+
+    def test_github_rows_need_explicit_public_visibility_and_canonical_origin(self):
+        good = {"full_name": "Owner/Tool", "html_url": "https://github.com/Owner/Tool", "private": False,
+                "description": "private marker must not enter guards for invalid rows"}
+        wrong_rows = [{**good, **change} for change in (
+            {"private": True}, {"private": 0}, {"private": "false"}, {"visibility": "private"},
+            {"visibility": "internal"}, {"html_url": "https://example.invalid/Owner/Tool"},
+            {"html_url": "https://github.com/Another/Tool"},
+            {"html_url": "https://user@github.com/Owner/Tool"},
+            {"html_url": "https://github.com/Owner/Tool?token=synthetic"},
+        )]
+        wrong_rows.append({key: value for key, value in good.items() if key != "private"})
+        for item in wrong_rows:
+            with self.subTest(item=item):
+                network = FakeNetwork({"gh:search/repositories": (200, json.dumps({"items": [item]}).encode())})
+                answer = engines_network.GitHubSearch().read(context_for("tools_rust_rewrites", network=network))
+                self.assertEqual(answer.observations, ())
+                self.assertEqual(answer.guard_texts, ())
+                self.assertEqual(answer.status, "partial")
+                self.assertNotIn("Owner/Tool", json.dumps(answer.excluded))
+        network = FakeNetwork({"gh:search/repositories": (200, json.dumps({"items": [good]}).encode())})
+        answer = engines_network.GitHubSearch().read(context_for("tools_rust_rewrites", network=network))
+        self.assertEqual(len(answer.observations), 1)
 
     def test_a_missing_or_refused_source_is_gone_and_a_server_error_failed(self):
         gone = engines_network.GitHubSearch().read(context_for("tools_rust_rewrites", network=FakeNetwork(

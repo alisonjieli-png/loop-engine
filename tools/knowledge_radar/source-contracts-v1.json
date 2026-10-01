@@ -205,7 +205,7 @@
   {
    "record_type": "knowledge_radar_source_contract/v1",
    "engine_id": "github_search",
-   "parser_version": "1.0.0",
+   "parser_version": "1.0.1",
    "access_method": "gh_api",
    "hosts": [
     "api.github.com"

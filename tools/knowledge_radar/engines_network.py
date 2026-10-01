@@ -195,7 +195,7 @@ def _licence_of(spdx) -> "tuple[str | None, str]":
 
 
 class GitHubSearch:
-    engine_id, engine_version = "github_search", "1.0.0"
+    engine_id, engine_version = "github_search", "1.0.1"
     material_facts = ("licence", "archived")
 
     def read(self, context: ReadContext) -> EngineAnswer:
@@ -204,7 +204,8 @@ class GitHubSearch:
         if not 1 <= per_page <= 30:
             raise RadarEngineError("radar_parameter_invalid", "per_page is 1 to 30")
         sort = parameter(context, "sort", "stars", kind=str, choices=("stars", "updated", "forks"))
-        path = "search/repositories?" + urlencode({"q": query, "sort": sort, "order": "desc", "per_page": per_page})
+        order = parameter(context, "order", "desc", kind=str, choices=("asc", "desc"))
+        path = "search/repositories?" + urlencode({"q": query, "sort": sort, "order": order, "per_page": per_page})
         try:
             status, body = context.network.gh_get(self.engine_id, path)
         except (GitHubReadRefused, RequestCeilingReached) as error:
@@ -216,6 +217,15 @@ class GitHubSearch:
         rows, guards, excluded = [], [], []
         for item in data["items"]:
             if not isinstance(item, dict) or not isinstance(item.get("full_name"), str):
+                continue
+            # The request qualifier alone is not public-origin evidence. Never
+            # keep a private/ambiguous row's name, URL or description as metadata.
+            if item.get("private") is not False or item.get("visibility", "public") != "public":
+                excluded.append(("redacted GitHub row", "repository is not explicitly public"))
+                continue
+            full_name = item["full_name"]
+            if not re.fullmatch(rf"{_OWNER}/{_REPO}", full_name) or full_name.rsplit("/", 1)[-1] in (".", "..") or item.get("html_url") != "https://github.com/" + full_name:
+                excluded.append(("redacted GitHub row", "repository identity and canonical GitHub URL disagree"))
                 continue
             title, reason = clean_title(item["full_name"])
             if reason:
@@ -237,8 +247,8 @@ class GitHubSearch:
                        "topics": ", ".join(topics) if topics else None},
                 event_at=iso_time(item.get("created_at")), source_published_at=iso_time(item.get("pushed_at"))))
         chosen = ranked(rows, parameter(context, "rank_by", "stars", kind=str))
-        status_value = PARTIAL if data.get("incomplete_results") else OK
-        reason = "GitHub marked the search incomplete" if status_value == PARTIAL else ""
+        status_value = PARTIAL if data.get("incomplete_results") or excluded else OK
+        reason = "GitHub search was incomplete or rows failed source validation" if status_value == PARTIAL else ""
         return EngineAnswer(status_value, reason, tuple(chosen[:limit_of(context)]), 1, tuple(guards), tuple(excluded))
 
 

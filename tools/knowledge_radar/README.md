@@ -27,6 +27,134 @@ Automated commercial Reddit access requires a platform-access review before
 activation. A public reply does not grant permission to redistribute its
 code, assets or prose. See [the source and engine record](../../docs/research/CREATIVE-COMPONENTS-AND-ENGINE-CONTROL-2026-09-29.md).
 
+## Multidimensional query pages
+
+`tools/plan_knowledge_queries.py` extends this radar's discovery planning. It
+reuses the idea matrix's method vocabulary, the expansion policy's contexts,
+the existing source contracts and `CommunityStore`/`RecordOperationService`.
+It adds no scheduler, database implementation or source engine, calls no model
+and cannot approve or publish material. The original query compiler and its
+tests were produced by OpenAI; they do not change the Anthropic provenance of
+the older radar generator or assets.
+
+The typed edges are `knowledge_radar_query_matrix/v1`,
+`knowledge_radar_query_cursor/v1`, `knowledge_radar_query/v1`,
+`knowledge_radar_query_page/v1` and `knowledge_radar_query_tick/v1`.
+Readers reject unknown versions, extra fields, invalid bounds and changed
+cursor bindings. The validated matrix is an immutable snapshot. A cursor
+binds the vocabulary, routes, source contracts and implementation files.
+Query identity binds normalized source/query text; work identity also binds
+the source contract, explicit dispatch parameters and implementation. Neither is a component
+method identity. Reuse unchanged implementations across applicability facets.
+
+```text
+Existing Practitioner/code-execution Loop and managed records
+├── Lazy query pages: country/area, SDG target, industry, task, audience,
+│   occupation, language, artifact form, harness, source kind, failure mode
+├── Existing radar source edge: public repository metadata, bounded reads
+└── Observed origins awaiting source, rights, relevance and qualification checks
+    └── Existing component preparation/admission/publication path; no automatic grant
+```
+
+The deterministic coprime traversal spreads successive queries over all
+dimensions and rotates routes. It does not allocate the whole Cartesian
+product. The upper-bound combination count includes hypotheses that may be
+duplicates, incompatible or useless. Pages report examined combinations,
+deduplicated planned queries, exclusions and emitted-value coverage. Executed
+queries, physical request reservations/logs, empty reads, partial responses,
+failures and distinct observed origins are separate counters. None measures
+useful files, complete world/source coverage or accepted customer outcomes.
+
+The language facet contains English language names; it does not translate
+queries. The live pilot used three simple phrases, each read twice during
+development. Discovery yield for the default conjunctive country/method
+matrix remains unmeasured. Requiring country or industry words can miss
+globally reusable code whose documentation does not mention those facets.
+
+The default country vocabulary is an explicit 16-name pilot. For a full
+source-bound inventory, pass `--country-inventory` with
+`knowledge_radar_country_inventory/v1`: `source_url`, `source_sha256`,
+`observed_on`, `rights_basis`, `coverage` (`declared_m49_snapshot` or
+`pilot_subset`), and `entries` of distinct three-digit `m49`/`name` pairs.
+`source_sha256` may bind an exact source manifest for multiple files. Preserve
+that manifest, upstream notices and code/name mappings beside the input.
+Inventory completeness must be compared with a dated primary snapshot;
+structural validation alone does not certify it. Country/area names are not
+legal jurisdictions or sovereignty claims. Aggregate regions are separate.
+The command never fetches or redistributes a country taxonomy on its own.
+
+Preview (no files or requests):
+
+```sh
+PYTHONPATH=src:tools python tools/plan_knowledge_queries.py \
+  --state /path/to/private/community-state --page-size 10
+```
+
+Add `--authorize-local-writes` to save one page in that same managed store.
+Existing `source` and `run` records own the cursor, page journal, planned
+queries, attempts and observed origins; planned queries never masquerade as
+observed community leads. The existing `scan.lock` serializes operators.
+Page journals recover a partial enqueue without losing or doubling work.
+Recovery replays the bounded page and checks its queries, route, facets,
+purpose, counters and next cursor. A query's managed record identity must
+match its exact work identity before dispatch.
+Execution selects only this exact plan's queued work; another plan in the
+same store is not drained. A duplicate already pending under an earlier plan
+stays owned by that earlier plan. It is not re-enqueued as a new capability.
+
+Only `github_search` currently has a compatible keyword-query binding.
+`--execute-queued --authorize-network-reads --authorize-local-writes` enables
+it, through the existing canonical Loop, `RadarNetwork` and `RequestBudget`.
+Defaults are five operations, five physical requests and five per source;
+each is separately bounded by flags and the existing source contract. Public
+repository search is forced. Quoted terms cannot introduce search operators.
+The GitHub adapter also requires an explicit `private: false` response field,
+no contradictory visibility, and a canonical GitHub URL matching `full_name`.
+Rejected rows leave no repository name, URL or description in saved results.
+The selected engine identity/version must match the source contract.
+Official-web and other incompatible source routes remain `deferred_adapter`.
+No scraping fallback, broad credential access or private-source dork is added.
+
+Use only public, non-confidential vocabulary. Repository secret patterns and
+query-specific email, private-path and confidentiality markers reject obvious
+cases before storage. These are heuristic checks. They cannot infer whether
+an arbitrary phrase is confidential; the operator remains responsible for
+the terms authorized for external search.
+
+An attempt intent is recorded before the dispatch hold. An orphaned intent
+alone means no request was dispatched. Once the hold is reserved, interruption
+leaves `reserved_unknown_outcome` until an operator reconciles the request
+log. Query holds use query identity, and source access/rate holds use source
+identity; changing a parser or implementation version cannot clear them.
+Earlier unresolved records keep their holds. Reconciliation reads at most
+1,000 records in each of four state/kind windows and stops dispatch if a
+window might be incomplete. The queued lookup has its own 1,000-record cap.
+The planner does not claim an exhaustive census from a capped window.
+
+A saved attempt result can survive an interrupted origin fold. The read is
+not repeated; an operator must reconcile the missing fold and hold. This
+command does not perform that reconciliation automatically. Saved failed
+attempts with access/rate refusals also hold the source, even if the process
+stopped before writing its source-hold record. Reconciliation must preserve
+the failed response and rationale in a new managed revision, mark the
+reconciled attempt complete, and resolve its work/dispatch/source holds.
+Changing only a hold flag does not clear the unresolved attempt evidence.
+The inner failed outcome remains failed; completion records reconciliation,
+not a successful source read. Store checks
+detect corrupt or mismatched records, not a malicious writer who can replace
+the entire trusted operator store and its inputs.
+
+Source observations keep licence *declarations*, not redistribution grants.
+Exact versions, payload/media/model/data rights, direct relevance, privacy,
+compatibility, meaningful positive/negative checks and independent admission
+remain gates. Services/MCP/SaaS require their actual operations,
+authentication, costs, limits, effects and evidence date before a useful
+reference or connection recipe is proposed. Query output alone cannot do so.
+
+Offline checks: `PYTHONPATH=src:tools python -m unittest
+tools.test_knowledge_query_matrix tools.test_harness_idea_matrix
+tools.test_knowledge_radar tools.test_community_watch`.
+
 ## Bounded community watch
 
 `tools/watch_community_workflows.py` adds a separate acquisition path to this
