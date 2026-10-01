@@ -96,6 +96,10 @@ Supply lines (each writes library_supply_candidate/v1 records)
     ├── kind contract_schema, form schema
     ├── SchemaStore mode (json_schemas.py): the latest version of each schema family with the
     │   repository's own valid and invalid examples beside it
+    ├── curated mode (json_schemas.py, generate_curated): each schema json_schema_sources.json declares
+    │   (open standards: STAC extensions, GBFS, Frictionless, World Bank, NASA CMR and others), copied byte
+    │   for byte with the repository's own examples, or else generated instances and known-wrong values;
+    │   a reference to a sibling file or another address refuses it by name; its own line state
     └── API component mode (api_schemas.py): every named object of a curated OpenAPI specification,
         with the specification's example, generated instances and known-wrong values
 ```
@@ -165,6 +169,9 @@ PYTHONPATH=src:tools python tools/build_library_supply.py programs \
 PYTHONPATH=src:tools python tools/build_library_supply.py data-tables \
   --run-folder /home/username/baltor-library/supply/data-tables/DATE \
   --authorize-network-reads --authorize-store-writes [--table ID]
+PYTHONPATH=src:tools python tools/build_library_supply.py curated-schemas \
+  --run-folder /home/username/baltor-library/supply/json-schemas/DATE \
+  --authorize-network-reads --authorize-store-writes [--source ID]
 PYTHONPATH=src:tools python tools/build_library_supply.py report \
   --library-bundle /home/username/baltor-bundles/RELEASE --output REPORT.json
 ```

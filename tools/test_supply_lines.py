@@ -1941,6 +1941,140 @@ class SchemaCheckTest(unittest.TestCase):
             read_supply_candidate(wrong)
 
 
+
+class CuratedSchemasTest(unittest.TestCase):
+    def test_curated_sources_give_one_row_per_repository_and_examples_match_segment_for_segment(self):
+        from supply_lines import json_schemas as line
+        rows = line.read_sources()
+        stac = [row for row in rows if row["source_id"] == "stac_extensions"]
+        self.assertGreater(len(stac), 50)
+        self.assertIn(("stac-extensions/eo", "eo"), {(row["repository"], row["schemas"][0]["name"]) for row in stac})
+        self.assertEqual(len({(row["repository"], entry["path"]) for row in rows for entry in row["schemas"]}),
+                         sum(len(row["schemas"]) for row in rows))
+        blobs = {"data/a.json": ("1", 10), "data/b.json": ("2", 10), "data/deep/c.json": ("3", 10),
+                 "data/big.json": ("4", line.MAXIMUM_EXAMPLE_BYTES + 1)}
+        self.assertEqual(line.example_paths({"valid_examples_glob": "data/*.json"}, blobs, "valid"),
+                         ["data/a.json", "data/b.json"])
+        self.assertEqual(line.example_paths({"valid_examples_glob": "data/*.json", "maximum_examples": 1}, blobs,
+                                            "valid"), ["data/a.json"])
+        self.assertEqual(line.example_paths({"invalid_examples": ["data/b.json"]}, blobs, "invalid"), ["data/b.json"])
+        self.assertTrue(line.is_sibling_reference("./field.json"))
+        self.assertFalse(line.is_sibling_reference("https://example.org/field.json"))
+        # Known wrong: a row both listing and matching its examples, a vendor that is not a lower-case word, and a
+        # record of another type are refused when the sources are read.
+        for record in ({"record_type": line.SOURCES_RECORD_TYPE, "sources": [
+                           {"source_id": "x", "repository": "o/r", "branch": "main", "vendor": "x",
+                            "schemas": [{"path": "s.json", "valid_examples": ["a.json"], "valid_examples_glob": "*.json"}]}]},
+                       {"record_type": line.SOURCES_RECORD_TYPE, "sources": [
+                           {"source_id": "x", "repository": "o/r", "branch": "main", "vendor": "X-Y",
+                            "schemas": [{"path": "s.json"}]}]},
+                       {"record_type": "library_supply_function_sources/v1", "sources": []}):
+            with tempfile.TemporaryDirectory() as folder:
+                path = Path(folder) / "sources.json"
+                path.write_text(json.dumps(record), encoding="utf-8")
+                with self.assertRaises(ValueError):
+                    line.read_sources(path)
+
+    def test_an_instance_built_from_the_schemas_own_keywords_passes_its_validator(self):
+        from supply_lines import json_schemas as line
+        from supply_lines import schema_check as check
+        schema = {"type": "object", "required": ["version", "updated", "data"],
+                  "properties": {"version": {"const": "3.0"}, "updated": {"type": "string", "format": "date-time"},
+                                 "data": {"$ref": "#/definitions/data"}},
+                  "definitions": {"data": {"type": "object", "required": ["feeds"], "properties": {"feeds": {
+                      "type": "array", "items": {"type": "object", "required": ["name", "url"],
+                                                 "properties": {"name": {"enum": ["a", "b"]},
+                                                                "url": {"type": "string", "format": "uri"}}},
+                      "contains": {"properties": {"name": {"const": "b"}}}}}},
+                      "size": {"oneOf": [{"type": "string", "minLength": 3}, {"type": "integer", "minimum": 2}]}}}
+        built = line.minimal_instance(schema, schema)
+        self.assertEqual(check.errors(built, schema), [])
+        self.assertEqual(built["data"]["feeds"], [{"name": "b", "url": "https://example.org/"}])
+        self.assertEqual(line.minimal_instance(schema["definitions"]["size"], schema), "example")
+        # Known wrong: a pattern is not followed, so the instance it builds is refused and the caller drops it.
+        patterned = {"type": "string", "pattern": "^[0-9]+$"}
+        self.assertNotEqual(check.errors(line.minimal_instance(patterned, patterned), patterned), [])
+
+    def test_generate_curated_packages_examples_or_generated_instances_and_refuses_by_name(self):
+        from loop_engine.core.library_ingestion.record_rules import git_blob_identity
+        from supply_lines import json_schemas as line
+        thing = {"$schema": "http://json-schema.org/draft-07/schema#", "title": "Thing", "type": "object",
+                 "required": ["id"], "properties": {"id": {"type": "string"}, "size": {"type": "integer"}},
+                 "additionalProperties": False}
+        config = {"$schema": "https://json-schema.org/draft/2020-12/schema", "title": "Config", "type": "object",
+                  "required": ["name", "mode"],
+                  "properties": {"name": {"type": "string"}, "mode": {"$ref": "#/$defs/mode"}},
+                  "$defs": {"mode": {"enum": ["fast", "slow"]}}}
+        files = {"schemas/thing.json": json.dumps(thing).encode(),
+                 "data/things/a.json": b'{"id": "a", "size": 1}',
+                 "data/things/b.json": b'{"size": "large"}',
+                 "data/wrong/c.json": b'{"id": 3}',
+                 "schemas/config.json": json.dumps(config).encode(),
+                 "schemas/item.json": b'{"properties": {"field": {"$ref": "./field.json"}}}',
+                 "schemas/remote.json": b'{"$ref": "https://example.org/other.json"}',
+                 "schemas/strict.json": b'{"type": "object", "required": ["id"]}',
+                 "data/strict.json": b'{}'}
+        tree = {"tree": [{"path": path, "type": "blob", "sha": git_blob_identity(data), "size": len(data)}
+                         for path, data in files.items()]}
+        schemas = [{"path": "schemas/thing.json", "name": "thing", "valid_examples_glob": "data/things/*.json",
+                    "invalid_examples": ["data/wrong/c.json"]},
+                   {"path": "schemas/config.json", "name": "config"},
+                   {"path": "schemas/item.json", "name": "item"},
+                   {"path": "schemas/remote.json", "name": "remote"},
+                   {"path": "schemas/strict.json", "name": "strict", "valid_examples": ["data/strict.json"]},
+                   {"path": "schemas/thing.json", "name": "Thing"}]
+        sources = [{"source_id": "standard", "repository": "example/standard", "branch": "main", "vendor": "example",
+                    "schemas": schemas},
+                   {"source_id": "copyleft", "repository": "example/copyleft", "branch": "main", "vendor": "other",
+                    "schemas": [{"path": "schemas/thing.json", "name": "thing"}]}]
+
+        class Reader:
+            def github(self, path):
+                if "/commits/" in path:
+                    return _Answer(200, json.dumps({"sha": "c" * 40}).encode())
+                return _Answer(200, json.dumps(tree).encode())
+
+            def licence_text(self, repository, commit):
+                # Known wrong: the copyleft repository's interface and text disagree.
+                return "LICENSE", LICENCE, "GPL-3.0" if repository == "example/copyleft" else "MIT"
+
+            def get(self, url, cache_errors=False):
+                return _Answer(200, files[url.split("c" * 40 + "/", 1)[1]])
+
+            def pinned_file(self, repository, commit, path):
+                raise LookupError(path)  # no notice file
+
+        with tempfile.TemporaryDirectory() as staging:
+            built, refused, _facts, summary = line.generate_curated(Reader(), sources, code_revision="a" * 40,
+                                                                    licence_text=LICENCE, generated_on="2026-10-01",
+                                                                    staging=Path(staging))
+        self.assertEqual(sorted((row["reason"], row["subject"].split(":")[-1]) for row in refused),
+                         [("duplicate_schema", "schemas/thing.json"), ("licence_signals_disagree", "copyleft example/copyleft"),
+                          ("needs_a_sibling_schema", "schemas/item.json"),
+                          ("needs_an_outside_reference", "schemas/remote.json"),
+                          ("valid_example_rejected", "schemas/strict.json")])
+        packages = {payload["repository"]["schema"]: payload for payload, _bodies in built}
+        self.assertEqual(sorted(packages), ["schemas/config.json", "schemas/thing.json"])
+        # The repository's examples: the rejected valid one is left out and counted, the caught invalid one kept.
+        examples = packages["schemas/thing.json"]
+        paths = {entry["path"] for entry in examples["package"]["files"]}
+        self.assertTrue({"example_thing.schema.json", "examples/valid/a.json", "examples/invalid/c.json"} <= paths)
+        self.assertNotIn("examples/valid/b.json", paths)
+        self.assertEqual((examples["tests"]["valid_examples"], examples["tests"]["invalid_examples"]), (1, 1))
+        self.assertEqual(summary[0]["valid_examples_rejected"], 1)
+        schema_row = next(row for row in examples["files"] if row["path"] == "example_thing.schema.json")
+        self.assertEqual(schema_row["origin"], records.UPSTREAM_VERBATIM)
+        # No examples: generated instances with known-wrong values, and the schema still copied byte for byte.
+        generated = packages["schemas/config.json"]
+        self.assertGreaterEqual(generated["tests"]["valid_instances"], 1)
+        self.assertEqual(generated["tests"]["known_wrong"], 2)
+        self.assertEqual((generated["component_form"]["form"], generated["kind"]), ("schema", "contract_schema"))
+        self.assertEqual(generated["repository"]["source_id"], "standard")
+        self.assertEqual(generated["provenance"]["repository"], "example/standard")
+        self.assertEqual([row["source_id"] for row in summary], ["standard"])
+        self.assertEqual(records.state_record_id(records.JSON_SCHEMAS, line.CURATED_STATE_SCOPE),
+                         "library.supply.state.json_schemas.curated_schemas")
+
 class ApiSchemasTest(unittest.TestCase):
     def test_named_objects_become_json_schemas_with_valid_and_known_wrong_instances(self):
         from supply_lines import api_schemas as line

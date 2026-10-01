@@ -1,0 +1,362 @@
+{
+ "record_type": "library_supply_json_schema_sources/v1",
+ "curated_on": "2026-10-01",
+ "curated_by": "consolidation builder e",
+ "rule": "JSON Schemas of SDG-relevant open standards in repositories whose licence is on the owner's allowlist. The generator reads each repository at the branch's head commit (HEAD is the default branch), decides its licence from GitHub's licence interface and the licence text at that commit, proves every file by git blob identity and copies each schema byte for byte. A row listing repositories declares the same schema path in each (one extension per repository), named after the repository. valid_examples and invalid_examples list example files; a _glob matches the tree segment for segment; at most maximum_examples (20 by default) are read, in path order. A schema without examples is tested by its own example and generated instances. A schema that refers to a sibling file or another address is refused, never bundled.",
+ "sources": [
+  {
+   "source_id": "stac_extensions",
+   "title": "STAC extensions",
+   "repositories": [
+    "stac-extensions/file",
+    "stac-extensions/timestamps",
+    "stac-extensions/label",
+    "stac-extensions/pointcloud",
+    "stac-extensions/sar",
+    "stac-extensions/sat",
+    "stac-extensions/processing",
+    "stac-extensions/version",
+    "stac-extensions/remote-data",
+    "stac-extensions/raster",
+    "stac-extensions/mgrs",
+    "stac-extensions/eo",
+    "stac-extensions/view",
+    "stac-extensions/scientific",
+    "stac-extensions/classification",
+    "stac-extensions/virtual-assets",
+    "stac-extensions/ssys",
+    "stac-extensions/ml-aoi",
+    "stac-extensions/anonymized-location",
+    "stac-extensions/order",
+    "stac-extensions/table",
+    "stac-extensions/perspective-imagery",
+    "stac-extensions/video",
+    "stac-extensions/web-map-links",
+    "stac-extensions/grid",
+    "stac-extensions/accuracy",
+    "stac-extensions/hsi",
+    "stac-extensions/themes",
+    "stac-extensions/insar",
+    "stac-extensions/goes",
+    "stac-extensions/stats",
+    "stac-extensions/forecast",
+    "stac-extensions/noaa-mrms-qpe",
+    "stac-extensions/usfws-nwi",
+    "stac-extensions/language",
+    "stac-extensions/archive",
+    "stac-extensions/cf",
+    "stac-extensions/osc",
+    "stac-extensions/contacts",
+    "stac-extensions/stereo-imagery",
+    "stac-extensions/render",
+    "stac-extensions/ceos-ard",
+    "stac-extensions/landsat",
+    "stac-extensions/sentinel-2",
+    "stac-extensions/sentinel-1",
+    "stac-extensions/sentinel-5p",
+    "stac-extensions/moving-features",
+    "stac-extensions/cmip6",
+    "stac-extensions/product",
+    "stac-extensions/earthquake",
+    "stac-extensions/attribution",
+    "stac-extensions/application",
+    "stac-extensions/zarr",
+    "stac-extensions/region",
+    "stac-extensions/external-ids",
+    "stac-extensions/dggs",
+    "stac-extensions/vector",
+    "stac-extensions/instruments",
+    "stac-extensions/vpp",
+    "stac-extensions/vcs",
+    "stac-extensions/maps"
+   ],
+   "branch": "HEAD",
+   "vendor": "stac",
+   "schemas": [
+    {
+     "path": "json-schema/schema.json",
+     "valid_examples_glob": "examples/*.json"
+    }
+   ]
+  },
+  {
+   "source_id": "gbfs",
+   "title": "General Bikeshare Feed Specification 3.0",
+   "repository": "MobilityData/gbfs-json-schema",
+   "branch": "master",
+   "vendor": "gbfs",
+   "schemas": [
+    {
+     "path": "v3.0/gbfs.json"
+    },
+    {
+     "path": "v3.0/gbfs_versions.json"
+    },
+    {
+     "path": "v3.0/geofencing_zones.json"
+    },
+    {
+     "path": "v3.0/manifest.json"
+    },
+    {
+     "path": "v3.0/station_information.json"
+    },
+    {
+     "path": "v3.0/station_status.json"
+    },
+    {
+     "path": "v3.0/system_alerts.json"
+    },
+    {
+     "path": "v3.0/system_information.json"
+    },
+    {
+     "path": "v3.0/system_pricing_plans.json"
+    },
+    {
+     "path": "v3.0/system_regions.json"
+    },
+    {
+     "path": "v3.0/vehicle_status.json"
+    },
+    {
+     "path": "v3.0/vehicle_types.json"
+    }
+   ]
+  },
+  {
+   "source_id": "mobility_database_catalogs",
+   "title": "Mobility Database catalogs",
+   "repository": "MobilityData/mobility-database-catalogs",
+   "branch": "main",
+   "vendor": "mobility_database",
+   "schemas": [
+    {
+     "path": "schemas/gtfs_schedule_source_schema.json",
+    "name": "gtfs-schedule-source",
+     "valid_examples_glob": "catalogs/sources/gtfs/schedule/*.json"
+    },
+    {
+     "path": "schemas/gtfs_realtime_source_schema.json",
+    "name": "gtfs-realtime-source",
+     "valid_examples_glob": "catalogs/sources/gtfs/realtime/*.json"
+    }
+   ]
+  },
+  {
+   "source_id": "frictionless_data_package",
+   "title": "Frictionless Data Package 2.0 profiles",
+   "repository": "frictionlessdata/specs",
+   "branch": "main",
+   "vendor": "frictionless",
+   "schemas": [
+    {
+     "path": "public/profiles/2.0/datapackage.json"
+    },
+    {
+     "path": "public/profiles/2.0/dataresource.json"
+    },
+    {
+     "path": "public/profiles/2.0/tabledialect.json"
+    },
+    {
+     "path": "public/profiles/2.0/tableschema.json"
+    }
+   ]
+  },
+  {
+   "source_id": "oemetadata",
+   "title": "Open Energy Platform metadata 2.1",
+   "repository": "OpenEnergyPlatform/oemetadata",
+   "branch": "develop",
+   "vendor": "oemetadata",
+   "schemas": [
+    {
+     "path": "oemetadata/v2/v21/schema.json",
+     "name": "oemetadata",
+     "valid_examples": [
+      "oemetadata/v2/v21/example.json",
+      "oemetadata/v2/v21/template.json"
+     ]
+    }
+   ]
+  },
+  {
+   "source_id": "osm_id_tagging_schema",
+   "title": "OpenStreetMap iD tagging schema",
+   "repository": "openstreetmap/id-tagging-schema",
+   "branch": "main",
+   "vendor": "osm_id_tagging",
+   "schemas": [
+    {
+     "path": "schemas/field.json",
+     "valid_examples_glob": "data/fields/*.json"
+    },
+    {
+     "path": "schemas/preset_category.json",
+     "valid_examples_glob": "data/preset_categories/*.json"
+    },
+    {
+     "path": "schemas/deprecated.json",
+     "valid_examples": [
+      "data/deprecated.json"
+     ]
+    },
+    {
+     "path": "schemas/discarded.json",
+     "valid_examples": [
+      "data/discarded.json"
+     ]
+    },
+    {
+     "path": "schemas/preset_defaults.json",
+     "valid_examples": [
+      "data/preset_defaults.json"
+     ]
+    }
+   ]
+  },
+  {
+   "source_id": "osm_name_suggestion_index",
+   "title": "OpenStreetMap name suggestion index",
+   "repository": "osmlab/name-suggestion-index",
+   "branch": "main",
+   "vendor": "name_suggestion_index",
+   "schemas": [
+    {
+     "path": "schema/categories.json",
+     "valid_examples_glob": "data/brands/*/*.json"
+    },
+    {
+     "path": "schema/genericWords.json",
+     "valid_examples": [
+      "config/genericWords.json"
+     ]
+    },
+    {
+     "path": "schema/replacements.json",
+     "valid_examples": [
+      "config/replacements.json"
+     ]
+    },
+    {
+     "path": "schema/trees.json",
+     "valid_examples": [
+      "config/trees.json"
+     ]
+    },
+    {
+     "path": "schema/geojson.json",
+     "valid_examples_glob": "features/*/*.geojson",
+     "maximum_examples": 10
+    }
+   ]
+  },
+  {
+   "source_id": "worldbank_metadata_schemas",
+   "title": "World Bank metadata schemas",
+   "repository": "worldbank/metadata-schemas",
+   "branch": "main",
+   "vendor": "worldbank",
+   "schemas": [
+    {
+     "path": "schemas/datacite-schema.json",
+     "name": "datacite"
+    },
+    {
+     "path": "schemas/datafile-schema.json",
+     "name": "datafile"
+    },
+    {
+     "path": "schemas/dcmi-schema.json",
+     "name": "dcmi"
+    },
+    {
+     "path": "schemas/provenance-schema.json",
+     "name": "provenance"
+    },
+    {
+     "path": "schemas/resource-schema.json",
+     "name": "resource"
+    },
+    {
+     "path": "schemas/variable-group-schema.json",
+     "name": "variable-group"
+    },
+    {
+     "path": "schemas/variable-schema.json",
+     "name": "variable"
+    }
+   ]
+  },
+  {
+   "source_id": "open_sdg_config",
+   "title": "Open SDG configuration",
+   "repository": "open-sdg/open-sdg",
+   "branch": "2.5.0-dev",
+   "vendor": "open_sdg",
+   "schemas": [
+    {
+     "path": "_includes/assets/js/config-schema/schema-indicator-config.json",
+     "name": "indicator-config"
+    },
+    {
+     "path": "_includes/assets/js/config-schema/schema-site-config.json",
+     "name": "site-config"
+    }
+   ]
+  },
+  {
+   "source_id": "dpg_standard",
+   "title": "Digital Public Goods nominees",
+   "repository": "DPGAlliance/publicgoods-candidates",
+   "branch": "main",
+   "vendor": "dpg",
+   "schemas": [
+    {
+     "path": "nominee-schema.json",
+     "name": "nominee",
+     "valid_examples_glob": "nominees/*.json"
+    },
+    {
+     "path": "screening-schema.json",
+     "name": "screening",
+     "valid_examples_glob": "screening/*.json"
+    }
+   ]
+  },
+  {
+   "source_id": "nasa_cmr_umm",
+   "title": "NASA Common Metadata Repository UMM schemas",
+   "repository": "nasa/Common-Metadata-Repository",
+   "branch": "master",
+   "vendor": "nasa_cmr",
+   "schemas": [
+    {
+     "path": "schemas/resources/schemas/citation/v1.0.0/schema.json",
+     "name": "citation"
+    },
+    {
+     "path": "schemas/resources/schemas/grid/v0.0.1/schema.json",
+     "name": "grid"
+    },
+    {
+     "path": "schemas/resources/schemas/provider/v1.0.0/schema.json",
+     "name": "provider"
+    },
+    {
+     "path": "schemas/resources/schemas/order-option/v1.0.0/schema.json",
+     "name": "order-option"
+    },
+    {
+     "path": "schemas/resources/schemas/data-quality-summary/v1.0.0/schema.json",
+     "name": "data-quality-summary"
+    },
+    {
+     "path": "schemas/resources/schemas/config/v0.0.1/schema.json",
+     "name": "config"
+    }
+   ]
+  }
+ ]
+}

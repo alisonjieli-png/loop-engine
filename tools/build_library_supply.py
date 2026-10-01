@@ -17,6 +17,7 @@ build_library_supply.py
 ├── data-tables    one reference data table with its schema, loader and tests
 ├── functions      one documented function of a permissively licensed library, with the code it needs
 ├── schemas        one SchemaStore JSON Schema with a validator and its own examples as tests
+├── curated-schemas  one JSON Schema of a curated repository (json_schema_sources.json), with tests
 ├── api-schemas    one JSON Schema per named object of a curated OpenAPI specification, with tests
 └── report         the supply by family and form, and the projected composition
 ```
@@ -322,6 +323,25 @@ def schemas(args) -> dict:
                   complete=not args.schema and not args.maximum_schemas and not unread)
 
 
+def curated_schemas(args) -> dict:
+    from supply_lines import json_schemas as line
+    run_folder = _outside(args.run_folder)
+    run_folder.mkdir(parents=True, exist_ok=True)
+    revision = code_revision(args.authorize_store_writes)
+    reader = FactReader(run_folder, line.HOSTS, maximum_requests=args.maximum_requests,
+                        pause_seconds=args.pause_seconds)
+    sources = line.read_sources()
+    if args.source:
+        sources = [row for row in sources if row["source_id"] in args.source or row["repository"] in args.source]
+    built, refusals, facts, summary = line.generate_curated(reader, sources, code_revision=revision,
+                                                            licence_text=LICENCE_FILE.read_bytes(),
+                                                            generated_on=now_utc()[:10],
+                                                            staging=run_folder / "staging")
+    unread = any(row["reason"] in ("source_unreadable", "schema_unreadable") for row in refusals)
+    return finish(args, records.JSON_SCHEMAS, built, refusals, {"sources": summary}, reader, facts,
+                  complete=not args.source and not unread, scope=line.CURATED_STATE_SCOPE)
+
+
 def api_schemas(args) -> dict:
     from supply_lines import api_schemas as line
     from supply_lines import openapi_operations
@@ -410,6 +430,10 @@ def parser() -> argparse.ArgumentParser:
     common(schemas_command)
     schemas_command.add_argument("--schema", action="append", help="only these SchemaStore schema names")
     schemas_command.add_argument("--maximum-schemas", type=int, default=0)
+    curated_schemas_command = commands.add_parser("curated-schemas")
+    common(curated_schemas_command)
+    curated_schemas_command.add_argument("--source", action="append", help="only these source identities (or "
+                                         "repositories) of json_schema_sources.json")
     api_schemas_command = commands.add_parser("api-schemas")
     common(api_schemas_command)
     api_schemas_command.add_argument("--source", action="append", help="only these source identities of "
@@ -434,7 +458,8 @@ def main(argv=None) -> int:
     args.started_at, args.started_clock = now_utc(), time.monotonic()
     {"mcp-registry": mcp_registry, "openapi": openapi, "openapi-directory": openapi_directory,
      "openapi-discovery": openapi_discovery, "programs": programs, "data-tables": data_tables,
-     "functions": functions, "schemas": schemas, "api-schemas": api_schemas, "report": report}[args.command](args)
+     "functions": functions, "schemas": schemas, "curated-schemas": curated_schemas, "api-schemas": api_schemas,
+     "report": report}[args.command](args)
     return 0
 
 
