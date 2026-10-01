@@ -8,12 +8,25 @@ the broader creative, customer-comparison and business programme.
 
 ## Verified live state
 
-Application release 59 runs source `6b03ebba1b0b1b409ff303c6ecf76e041d5bb5c6`.
+Application release 60 runs source `1c22a63fa794d4f26454dbd7bb4e3ad4e56d16b0`.
+The [release-60 record](../../artifacts/architecture-audit-2026-09-19/pilot-release-60.json)
+names its exact image and release-59 rollback. CI and guarded deployment passed,
+and the deployment gate is off. The repeated concurrent population passed:
+2,118 browser assertions across ten hosts, fifty pulse requests, forty-eight
+Public Good checks and the OAuth exact-file/refresh/revocation probe. Four
+additional simultaneous public pages returned 77 responses without server
+errors. Documentation passed 147 assertions. A wrong selector in the first
+additional page test remains saved beside its corrected passing successor.
+Large-response concurrency and sustained traffic remain unqualified.
+
+Preceding application release 59 ran `6b03ebba1b0b1b409ff303c6ecf76e041d5bb5c6`.
 Its [release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-59.json)
 retains exact image, rollback, 48 final file-browser checks, a complete
 1,011-file metadata walk and the separate successful OAuth probe. Concurrent
 checks also reproduced an upstream connection-limit refusal; the broad
-browser matrix is incomplete. The transport-capacity repair is in progress.
+browser matrix was incomplete. Release 60 subsequently repaired that transport
+threshold and passed the repeated population; retain the failed release-59
+attempt rather than rewriting its result.
 
 Preceding application release 58 ran `0926cdb90c45137b7f577970bd1143f7d9fe41cf`.
 CI and guarded Fly deployment passed; the `pilot` deployment gate is off.
@@ -75,7 +88,7 @@ to Uvicorn's 32 open-connection/task limit, not the eight-operation pool or a
 restart. Separate and bound those limits, repeat a known-wrong control and
 rerun the concurrent population. A lower-load pass is not a repair.
 
-The candidate patch from detached `2eecf67b` now separates a keyword-only
+The deployed patch from detached `2eecf67b` now separates a keyword-only
 transport threshold, default 128 with bounds 2 to 128. Eight expensive workers,
 four-operation account shares, byte limits and timeouts remain unchanged.
 In real loopback tests, 24 held keep-alives plus 72 simultaneous page requests
@@ -83,8 +96,9 @@ produce 72 transport refusals at the old threshold and 72 successes at the
 new threshold. The boundary still refuses and recovers. This small-response
 result is not qualification of 128 simultaneous maximum-size bodies. See the
 [performance record](../verification/PUBLIC-GOOD-PERFORMANCE-2026-10-01.md)
-for the separate request profile and private evidence. Its CI/deployment/live
-burst checks remain required before calling the capacity repair complete.
+for the separate request profile and private evidence. Exact main CI,
+deployment and repeated live burst checks passed in release 60. This closes
+the observed small-page refusal, not general throughput or memory qualification.
 
 ## Scheduled publisher preservation finding
 
@@ -128,8 +142,8 @@ The [dot research](../research/DOT-AUTOMATION-2026-09-30.md) distinguishes
 proactive read/private notes from separately assigned actions. Two-way uploads,
 research work orders and marketplace publication are not implemented.
 
-The broader plan remains linear: finish Public Good supply/access and the
-free native journey; fix the scheduled preservation path; qualify demanding
+The broader plan remains linear: fix the fenced scheduled preservation path;
+finish remaining Public Good goal coverage and the free native journey; qualify demanding
 paired customer tasks; join retrieval and download traces; improve measured
 caching or engine bottlenecks; then prove one rights-cleared reference video
 to an editable, revised and reopened project. The existing marketing drafts
@@ -140,6 +154,9 @@ history, large-media streaming and general video recreation remain open.
 
 All roots below are under `/home/username/baltor-private`:
 
+- `release60-20261001-bvZa0j`: successful release, concurrent checks, viewport
+  captures, rollback and retained failed CI/test attempts.
+- `release59-20261001-KBeUi1`: the live capacity failure and lower-load checks.
 - `release58-20260930-VrOYyv`: live release, failed attempts, OAuth probe and
   local next-release checks.
 - `public-good-publication-20261001-QPkzXx`: combined policy, live plan/apply

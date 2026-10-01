@@ -176,10 +176,11 @@ population and failed attempts. No static key belongs in chat or a prompt.
 Retain supported key clients and separately verify the owner's actual dot.
 
 Release 59 deployed individual-file browsing, exact download links and scoped
-policy maintenance. Its live burst test exposed a separate connection limit;
-finish that bounded capacity repair before qualifying the concurrent journey.
-The immediate next supply cycle remains S-6.216, using exact free-access
-selection and independent admission without replacing the existing catalogue.
+policy maintenance. Release 60 repaired the observed small-page transport
+refusal and passed the repeated concurrent customer checks. Next repair the
+fenced scheduled publisher under S-6.197, preserving live rows and versions
+before rearming it. Then continue S-6.216: fill goal gaps and verify native
+free-account use, with exact free-access selection and independent admission.
 The [October 1 catalogue/access update](../../artifacts/public-good-release-2026-10-01/README.md)
 now serves 1,011 useful files across 412 free packages: 996 selected existing
 files and fifteen original program/schema files. Review excluded unrelated
@@ -188,6 +189,12 @@ selector do not prove all-SDG coverage. Fill the remaining
 goal gaps with sourced, useful material and record the free-account native
 journey before closing the task. The sequence below resumes from its first
 unfinished gate after this priority, not from another research-only reset.
+
+Track the access-grant review dates as housekeeping: the five original grants
+expire on October 31 UTC and the earlier selected grants on November 1 UTC.
+Review and renew eligible unchanged versions before expiry through the same
+guarded operator path. Never remove expiry checks or relabel stale source
+guidance as current to keep a count high.
 
 1. **Reconcile and preserve the current work.** Account for inherited changes,
    source identities, failed checks and prior-session instructions. Correct

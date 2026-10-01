@@ -16,7 +16,7 @@ the application, including completed keep-alive connections. See
 [settings](https://uvicorn.dev/settings/) and
 [server behavior](https://uvicorn.dev/server-behavior/).
 
-The candidate separates a bounded transport setting, default 128, from eight
+The implementation separates a bounded transport setting, default 128, from eight
 workers and four-operation account shares. The same real loopback experiment
 holds 24 completed keep-alives, then sends 72 page/asset requests together.
 At the old limit all 72 receive transport 503 while all eight workers are free.
@@ -67,7 +67,10 @@ These results do not predict Fly's one-shared-CPU, 2 GB, Python 3.12 latency.
 
 ## Next decisions
 
-Release and verify the transport correction first. Then measure dispatch,
+Release 60 subsequently deployed the correction and passed the repeated
+concurrent browser, metadata and OAuth population, plus a four-page public
+burst with 77 responses and no server errors. See the
+[release record](../../artifacts/release-60-2026-10-01/README.md). Then measure dispatch,
 handler, SQLite and identity-provider time separately on paced live requests.
 The saved incident includes a 9,594 ms package response and 5,567 ms account
 response; local timing alone does not explain them. Evaluate bounded reuse of
@@ -80,5 +83,5 @@ by this diagnostic.
 Private evidence is retained under
 `/home/username/baltor-private/transport-concurrency-20261001-5yXf8P` and
 `/home/username/baltor-private/public-good-perf-review-20261001-H9Lv0t`.
-The current deployment and release records determine whether the transport
-candidate is live; a passing local test is not a production rollout.
+The current deployment and release records determine live state; the local
+measurements above are not promoted into a hosted throughput or memory claim.

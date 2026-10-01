@@ -112,8 +112,9 @@ The page must browse the real admitted collection, not display a target as a
 served count. Report complete packages, distinct useful payload files and
 supporting files separately. An SDG tag alone does not establish relevance,
 qualification or free access. Release 59 exposes individual file paths,
-licences and exact download choices. Its connection-capacity finding remains
-an immediate repair; expand relevant supply and retain honest empty goal
+licences and exact download choices. Release 60 repaired its observed bounded
+page-burst connection refusal and passed the repeated live checks. Expand
+relevant supply and retain honest empty goal
 categories until components pass admission. Supporting metadata does not
 count toward the useful-file target.
 

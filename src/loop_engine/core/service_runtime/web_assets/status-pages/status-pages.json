@@ -5,6 +5,17 @@
   "releases": [
    {
     "kind": "service",
+    "number": 60,
+    "at": "2026-10-01T05:46:04Z",
+    "lines": [
+     "Fixed the connection limit behind a reproduced page-loading failure when several browser sessions opened together.",
+     "Kept account and download allowances unchanged while verifying Public Good browsing and sign-in on the live website."
+    ],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
     "number": 59,
     "at": "2026-10-01T04:45:25Z",
     "lines": [],

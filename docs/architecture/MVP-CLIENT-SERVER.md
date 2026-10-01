@@ -2,7 +2,7 @@
 
 Kind: product architecture with measured local implementation and proposed hosting.
 Date: 2026-09-19. The [current deployment](#current-deployment) section was
-added on 2026-09-20 and last checked on 2026-10-01, after Fly release 59.
+added on 2026-09-20 and last checked on 2026-10-01, after Fly release 60.
 
 The hosted product manages accounts, subscriptions, and access to intelligence.
 The customer runs Loop Engine and the selected harnesses. A hosted intelligence
@@ -47,7 +47,24 @@ from the newest release record, follow the release record and correct this
 section. Update this section in the same change that records a new release.
 It describes a private pilot. It does not describe a qualified paid service.
 
-The latest image deployment is Fly release 59, completed on October 1, 2026
+The latest image deployment is Fly release 60, completed on October 1, 2026
+from `1c22a63fa794d4f26454dbd7bb4e3ad4e56d16b0`, image
+`sha256:b8fa95d5d7ad9003d4d8f29953476c2a1dc3e1a127265ac15caa60bb2ab0b6e2`.
+CI `36820388956` and deployment `36821113262` passed; the gate is off.
+The [release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-60.json)
+and [notes](../../artifacts/release-60-2026-10-01/README.md) record the separated
+128 transport threshold with unchanged eight-operation/four-account limits.
+The repeated concurrent population passed: 2,118 browser assertions across
+ten hosts, fifty route requests, forty-eight Public Good checks, complete
+1,011-file pagination and OAuth exact-file delivery/refresh/revocation with
+unchanged paid usage. Four extra concurrent pages returned 77 responses with
+no server errors; documentation passed 147 assertions. Large-response
+concurrency, sustained throughput and the actual owner's dot are not qualified.
+The full catalogue remains 30,751 packages and 96,120 distinct files; Public
+Good remains 412 packages and 1,011 useful files. All-goal supply and rearming
+the fenced scheduled publisher are still unfinished.
+
+The preceding image deployment was Fly release 59, completed on October 1, 2026
 from `6b03ebba1b0b1b409ff303c6ecf76e041d5bb5c6`, image
 `sha256:68da8354ccfba49a2b6966102e1c1b25dbe6859e5f365cd1ae487834edd1fc44`.
 CI `36815833584` and deployment `36816354979` passed; the gate is off.
