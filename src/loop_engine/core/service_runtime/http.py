@@ -48,6 +48,7 @@ from .feedback import (ASK_FOR_MATERIAL_LINE, FEEDBACK_OPERATIONS as CUSTOMER_FE
 from .model_directory_pages import moved_answer, rendered_page
 from . import library_page
 from . import public_good_page
+from . import dot_pages
 from . import public_good_files
 from . import red_team_page
 from . import status_pages
@@ -2169,7 +2170,6 @@ class ServiceHttpApplication:
         if asset is None:
             asset = public_good_page.rendered(path, method, self.configuration.display_name, request.headers.get("host"))
         if asset is None:
-            from . import dot_pages
             asset = dot_pages.rendered(path, method, self.configuration.display_name, request.headers.get("host"))
         if asset is None:
             # The decision red team page is rendered from its packaged record, at its address and at the root of its hostname.
@@ -2180,7 +2180,7 @@ class ServiceHttpApplication:
         if asset is not None:
             body, media_type = asset
             headers = self._page_headers(creative_preview=path == CREATIVE_PREVIEW_PATH)
-            if path in ("/dot-context", "/dot-context.json", "/dot-feedback", "/dot-feedback.json"):
+            if path in dot_pages.ROUTES:
                 headers["X-Robots-Tag"] = "noindex, nofollow, noarchive"
                 headers["ETag"] = asset_etag(body)
                 if validator_matches(request.headers.get("if-none-match", ""), headers["ETag"]):

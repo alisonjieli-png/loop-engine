@@ -38,7 +38,7 @@ from html.parser import HTMLParser
 import re
 from xml.etree import ElementTree
 
-from .web_pages import (GENERATED_WEB_FILES, HTML_MEDIA_TYPE, ROBOTS_DISALLOWED_PREFIXES, PageHeadError,
+from .web_pages import (CRAWLABLE_UNLISTED_PAGES, GENERATED_WEB_FILES, HTML_MEDIA_TYPE, ROBOTS_DISALLOWED_PREFIXES, PageHeadError,
                         served_asset, with_page_head)
 from .web_site_map import load_site_map
 
@@ -175,7 +175,8 @@ def listing_problems(site_map, serve) -> list:
         problems.append(f"sitemap.xml lists {sorted(set(listed) ^ set(wanted))} differently from the site map")
     lines = robots[0].decode("utf-8").splitlines()
     disallowed = [line.split(":", 1)[1].strip() for line in lines if line.startswith("Disallow:")]
-    expected = [*ROBOTS_DISALLOWED_PREFIXES, *(page.address for page in site_map.pages if not page.indexed)]
+    expected = [*ROBOTS_DISALLOWED_PREFIXES, *(page.address for page in site_map.pages
+                if not page.indexed and page.address not in CRAWLABLE_UNLISTED_PAGES)]
     if disallowed != expected:
         problems.append(f"robots.txt leaves out {sorted(set(disallowed) ^ set(expected))} differently from the site map")
     if "Sitemap: " + site_map.canonical_origin + "/sitemap.xml" not in lines or "User-agent: *" not in lines:
@@ -188,7 +189,7 @@ def listing_problems(site_map, serve) -> list:
 def _served(site_map=None):
     """Serve an address as the service does: its page table first, then the pages the model directory renders, then
     the library page, rendered here from a view that serves nothing because no catalogue runs in a check."""
-    from . import library_page, red_team_page, status_pages, public_good_page
+    from . import dot_pages, library_page, red_team_page, status_pages, public_good_page
     from .model_directory_pages import rendered_page
 
     def serve(address, host):
@@ -197,6 +198,8 @@ def _served(site_map=None):
             answer = rendered_page(address, "GET", DISPLAY_NAME, host)
         if answer is None:
             answer = public_good_page.rendered(address, "GET", DISPLAY_NAME, host)
+        if answer is None:
+            answer = dot_pages.rendered(address, "GET", DISPLAY_NAME, host)
         if answer is None and library_page.handles(address):
             answer = library_page.rendered(library_page.empty_view(), address, "GET", DISPLAY_NAME, host)
         if answer is None:

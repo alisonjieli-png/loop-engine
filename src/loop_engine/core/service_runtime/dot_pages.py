@@ -13,6 +13,7 @@ from html import escape
 import json
 
 ADDRESSES = {"/dot-context": "context", "/dot-feedback": "feedback"}
+ROUTES = (*ADDRESSES, *(address + ".json" for address in ADDRESSES))
 RECORD_TYPE = "baltor_dot_brief/v1"
 FIELDS = {"record_type", "title", "updated_at", "review_after", "summary", "sections", "tasks", "links"}
 TASK_FIELDS = {"id", "title", "status", "assignment", "deliverable", "acceptance"}

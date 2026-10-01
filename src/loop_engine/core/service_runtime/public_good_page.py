@@ -131,7 +131,7 @@ def body() -> str:
         '<a href="https://sdgs.un.org/goals" rel="noreferrer">17 Sustainable Development Goals</a> '
         'and related work such as worker protection, accessibility, education and responsible use of public data. '
         'Each listed version has a specific public-benefit reason. A topic tag alone does not make a file eligible.</p>'
-        '<p>Baltor is not presenting itself as a charity or claiming United Nations endorsement.</p></div>'
+        '<p>This is an independent Baltor initiative, organized around practical public-benefit work.</p></div>'
         '<div><h3>Licences and checks still apply</h3><p>Every file keeps its own licence and conditions. '
         'Free access does not mean public domain, permission to reuse unrelated media, or proof of effectiveness in the field. '
         'Check current sources before using time-sensitive guidance, especially law, health or safety information.</p>'

@@ -407,7 +407,7 @@ const applyPaymentState = name => {
       oauthConsent?.connectionChanged();
       if (administrator) await loadAccess();
       if (staffRole) await loadStaff().catch(error => message("staff-message", said(error), failureState(error)));
-      if (administrator || staffRole) await loadFeedback().catch(error => message("feedback-message", said(error), failureState(error)));
+      if (administrator || ["superadmin", "analytics"].includes(staffRole)) await loadFeedback().catch(error => message("feedback-message", said(error), failureState(error)));
       clientAccess.connectionChanged(); catalogueBrowser?.connectionChanged();
     } catch (error) { disconnect(); message("connection-message", error.name === "AbortError" ? "Connection timed out. No automatic retry was made." : said(error), failureState(error)); }
   }
@@ -819,11 +819,27 @@ const applyPaymentState = name => {
     } catch (error) { message("material-request-message", error.name === "AbortError" ? "The wait ended. Send the same text again to reconcile; it is not recorded twice." : said(error), failureState(error)); }
     finally { $("material-request-button").disabled = !token; }
   });
-  /* The staff view of feedback: how downloads were rated, what customers asked for, and the hours in which searches
-     found nothing. The service decides who may read it: a staff role that reads usage counts, or an administrator token. */
+  /* Analytics reads scalar counts. Detailed customer text stays with staff who may read account details. */
+  let feedbackRequestNumber = 0;
   async function loadFeedback() {
-    const view = await request("/api/v1/admin/feedback");
+    const epoch = generation, mine = ++feedbackRequestNumber;
+    const detailed = principalScopes.includes("access:manage") || staffRole === "superadmin";
+    $("feedback-counts").replaceChildren(); $("feedback-requests").replaceChildren(); $("feedback-gaps").replaceChildren();
     $("feedback-admin").hidden = false;
+    message("feedback-message", "Loading feedback…");
+    const view = await request(detailed ? "/api/v1/admin/feedback" : "/api/v1/admin/feedback/summary");
+    if (epoch !== generation || mine !== feedbackRequestNumber) return;
+    if (!detailed) {
+      const values = [view?.ratings?.useful, view?.ratings?.not_useful, view?.ratings?.items_rated,
+        view?.material_requests?.total, view?.search_gaps?.searches];
+      if (view?.record_type !== "service_feedback_summary/v1" || !values.every(value => Number.isSafeInteger(value) && value >= 0))
+        throw new Error("Feedback counts could not be read. Refresh to try again.");
+      tiles($("feedback-counts"), [["Rated useful", String(values[0])], ["Rated not useful", String(values[1])],
+        ["Items rated", String(values[2])], ["Requests for material", String(values[3])], ["Searches with no result", String(values[4])]]);
+      message("feedback-message", "Aggregate feedback counts for your analytics role. Detailed notes stay in the restricted staff view.");
+      return;
+    }
+    if (view?.record_type !== "service_feedback_view/v1") throw new Error("Feedback could not be read. Refresh to try again.");
     tiles($("feedback-counts"), [["Rated useful", String(view.ratings.useful)], ["Rated not useful", String(view.ratings.not_useful)],
       ["Items rated", String(view.ratings.items.length)], ["Requests for material", String(view.material_requests.length)],
       ["Hours with a search that found nothing", String(view.search_gaps.length)]]);
