@@ -2,7 +2,7 @@
 
 Kind: product architecture with measured local implementation and proposed hosting.
 Date: 2026-09-19. The [current deployment](#current-deployment) section was
-added on 2026-09-20 and last checked on 2026-09-30, after Fly release 57.
+added on 2026-09-20 and last checked on 2026-10-01, after Fly release 58.
 
 The hosted product manages accounts, subscriptions, and access to intelligence.
 The customer runs Loop Engine and the selected harnesses. A hosted intelligence
@@ -47,7 +47,32 @@ from the newest release record, follow the release record and correct this
 section. Update this section in the same change that records a new release.
 It describes a private pilot. It does not describe a qualified paid service.
 
-The latest image deployment is Fly release 57, completed on September 30, 2026
+The latest image deployment is Fly release 58, completed on September 30, 2026
+in the owner's timezone, from `0926cdb90c45137b7f577970bd1143f7d9fe41cf`, image
+`sha256:1a8fd1e22b79047a67a7a4188122c4a18d9ca3fbd53c88a7334cd42d7aa556ff`.
+CI `36806897008` and deployment `36807534138` passed; the `pilot` gate is off.
+The [release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-58.json)
+and [notes](../../artifacts/release-58-2026-09-30/README.md) retain 2,118 final
+browser checks over ten hosts, 50 pulse checks, 147 documentation checks and
+57 Public Good checks, with failed attempts and subsequent corrections.
+The main header now links `/public-good`; the initial exact-version policy
+makes ten packages and fourteen useful files free with an enabled account.
+Anonymous file downloads remain refused. OAuth authorization code with S256
+proof keys, explicit consent and resource-bound scopes is live at `/mcp`.
+A live engineering customer completed the flow, downloaded one hash-verified
+instruction file, refreshed with narrower scopes and revoked its QA delegation.
+Its paid usage stayed unchanged; its existing entitlement means this is not
+an unpaid production-account proof. The actual owner's dot is not connected.
+The catalogue is unchanged at 30,746 packages and 96,064 distinct files.
+The subsequent [October 1 catalogue and policy update](../../artifacts/public-good-release-2026-10-01/README.md)
+published five original packages while preserving every prior row/version.
+Active catalogue `9ed0fcd7a70ed541411ec564949c8ab2e74336f847c10388f8bdde023ce9855d`
+now contains 30,751 packages and 96,120 distinct files. Policy
+`548011d4931e48c085aea26b6394dcad` selects 412 packages and 1,011 distinct
+useful files for account-required free access. Individual-file browsing,
+all-SDG coverage and two-way dot uploads remain follow-up work.
+
+The preceding image deployment was Fly release 57, completed on September 30, 2026
 in the owner's timezone, from `24bd2482b594730b866158b736cefb53c8ecc1e3`, image
 `sha256:85bd47c156ebab40470361f2a59070bfe363ebde2b3b9bd02f6d0fdc44489917`.
 CI `36794461488` and deployment `36795042426` passed; the gate is off.
@@ -439,7 +464,7 @@ What is deployed is recorded in [current deployment](#current-deployment).
 | Canonical Loop, typed graphs, local harness mechanics, search and export | Existing implementations with repaired local contract checks. Complete native/provider qualification is not established. |
 | Public solve provisioning | Current integration and verification work. Exact configuration reaches scoped assignments; preparation is not proof of native loading. |
 | Tenant-safe provisioning domain | Local versioned policy and qualification binding implemented with contract checks. The qualification resolver is a trusted host callback; authoritative adapters across all four layers are not wired. Host attestation is not independent qualification. |
-| Protocol transport | Real local HTTP and Streamable HTTP requests use protocol `2025-11-25` through the `initialize` handshake and `2026-07-28` with the version on every request, through `mcp==2.2.0`. The official client exercises discovery, metadata retrieval, exact body delivery and idempotent usage at both versions. Live end-user OAuth is not qualified. An `initialize` that asks for an unserved version is answered with `2025-11-25`, as the 2025-11-25 lifecycle requires, and any other request that names an unserved version is refused before any effect with the error that lists the served versions. The deployed release is described under [current deployment](#current-deployment). |
+| Protocol transport | Real local HTTP and Streamable HTTP requests use protocol `2025-11-25` through the `initialize` handshake and `2026-07-28` with the version on every request, through `mcp==2.2.0`. The official client exercises discovery, metadata retrieval, exact body delivery and idempotent usage at both versions. Release 58 also passed a live customer OAuth code/PKCE, consent, MCP retrieval, refresh and revocation probe; the owner's actual dot remains unqualified. An `initialize` that asks for an unserved version is answered with `2025-11-25`, as the 2025-11-25 lifecycle requires, and any other request that names an unserved version is refused before any effect with the error that lists the served versions. The deployed release is described under [current deployment](#current-deployment). |
 | Authenticated template, graph, and package delivery | Required integration, not yet complete. Current provisioning has four declared resource kinds and returns text bodies; that does not establish the full typed package and graph-delivery workflow. |
 | Identity and billing domain | Durable tenants, key and subject revocation, scoped grants, signed Stripe events and current-state reconciliation have local checks. Website sign-in and real provider accounts remain unqualified. Checkout and portal adapters are a separate integration slice. |
 | Website, dashboard and Supabase adapters | Updated on September 20, 2026: the website, the token-based workspace and the administrator dashboard run in the pilot. Release 7 carried the browser identity and account-activation code, switched off by host configuration. The personal client key code first shipped in release 8 and is also switched off. The public capabilities record of release 8 reports `browser_identity_available` false and `client_access_available` false. The takeover checkpoint records that the account and personal key code was checked against the real identity provider. The release record states that release 8 qualifies no customer journey. Supabase database and storage adapters remain open work. The diagram is not deployment evidence. |

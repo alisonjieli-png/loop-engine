@@ -158,6 +158,66 @@ class PublicGoodHttp(unittest.TestCase):
         self.assertEqual(binary.headers['x-content-sha256'], hashlib.sha256(BINARY).hexdigest())
         self.no_billing()
 
+    def file_collection_grants(self):
+        self.grants = [replace(grant, useful_paths=('SKILL.md',), display_name='Synthetic public method',
+                               initiatives=('accessible-learning',)) for grant in self.grants]
+        self.configure()
+
+    def test_public_file_metadata_filters_and_pagination_do_not_read_bodies(self):
+        self.file_collection_grants()
+        from loop_engine.core.service_runtime.catalogue_serving import CatalogueView
+        with mock.patch.object(CatalogueView, 'read_package_file', side_effect=AssertionError('metadata read file bytes')):
+            with httpx.Client(base_url=self.base, trust_env=False, timeout=10) as anonymous:
+                first = self.expect(anonymous.get('/api/v1/public-good/files?page_size=1'), 200, 'anonymous_file_metadata').json()['result']
+                second = self.expect(anonymous.get('/api/v1/public-good/files?page_size=1&page=2'), 200, 'next_metadata_page').json()['result']
+                filtered = self.expect(anonymous.get('/api/v1/public-good/files', params={
+                    'goal': '4', 'media_type': 'text/markdown', 'initiative': 'accessible-learning',
+                    'package': 'public_bundle', 'query': 'SKILL.md'}), 200, 'conjunctive_file_filters').json()['result']
+        self.assertEqual(first['record_type'], 'public_good_file_collection/v1')
+        self.assertEqual((first['packages'], first['distinct_useful_files'], first['file_placements']), (2, 2, 4))
+        self.assertTrue(first['authentication_required'])
+        self.assertFalse(first['subscription_required'])
+        self.assertTrue(first['has_next'])
+        self.assertFalse(second['has_next'])
+        self.assertNotEqual(first['items'][0]['file_sha256'], second['items'][0]['file_sha256'])
+        self.assertEqual(filtered['matches'], 1)
+        placement = filtered['items'][0]['placements'][0]
+        self.assertEqual((placement['identity'], placement['path']), ('public_bundle', 'SKILL.md'))
+        self.assertEqual(placement['body_digest'], self.view.catalogue.items['public_bundle'].digest)
+        self.assertNotIn(BODY.decode(), json.dumps(first))
+        self.assertEqual(len(self.rows(DELIVERY_KIND)), 0)
+        self.no_billing()
+
+    def test_public_file_query_validation_and_envelope_limit(self):
+        self.file_collection_grants()
+        invalid = ('page=0', 'page=10001', 'page=1&page=2', 'page_size=0', 'page_size=51',
+                   'page_size=100', 'page_size=true', 'goal=18', 'media_type=text',
+                   'initiative=Bad%20Value', 'unrecognized=1', 'query=%00')
+        for query in invalid:
+            with self.subTest(query=query):
+                self.expect(self.client.get('/api/v1/public-good/files?' + query), 400, 'invalid_file_query_refused')
+        self.expect(self.client.get('/api/v1/public-good?page_size=1'), 400, 'package_query_contract_unchanged')
+        self.app.configuration = replace(self.app.configuration, maximum_response_bytes=256)
+        self.expect(self.client.get('/api/v1/public-good/files'), 413, 'file_metadata_envelope_refused')
+        self.no_billing()
+
+    def test_public_file_projection_rechecks_policy_and_expiry(self):
+        self.file_collection_grants()
+        from loop_engine.core.service_runtime import public_good_files
+        original = public_good_files.collection
+        def withdraw(view, snapshot, **fields):
+            result = original(view, snapshot, **fields)
+            self.configure(grants=[])
+            return result
+        with mock.patch.object(public_good_files, 'collection', withdraw):
+            response = self.expect(self.client.get('/api/v1/public-good/files'), 409, 'file_metadata_policy_changed')
+            self.assertNotIn('placements', response.text)
+        self.configure()
+        self.now[0] += 121
+        expired = self.expect(self.client.get('/api/v1/public-good/files'), 200, 'expired_file_inventory').json()['result']
+        self.assertEqual((expired['packages'], expired['distinct_useful_files'], expired['items']), (0, 0, []))
+        self.no_billing()
+
     def test_real_mcp_package_and_file_delivery_without_billing(self):
         async def run():
             async with _protocol_client(self.base, Credentials(self.raw), 'legacy') as protocol:

@@ -18,11 +18,11 @@ entries:
   rationale: 'Reviewed September 30: exact documented ChatGPT stable redirect admitted by the default host-owned OAuth policy. It is not requested over the network by Baltor and no arbitrary remote callback is inferred from it. The policy is typed and explicit; clients without the documented issuer response use the separately admitted connector callback prefix.'
   created_on: '2026-09-30'
   expires_on: '2026-12-31'
-- finding_id: hardcoding.0adec72ded9032952f8029b8
+- finding_id: hardcoding.ad9d5e475837af91e8bab132
   owner: loop_engine.core.service_runtime.public_good_page:body
   classification: RESOURCE_OR_TEMPLATE
-  rationale: 'Reviewed September 30: static HTML of the Public Good policy and filter controls, rendered through the existing website frame. This is presentation, not executable harness instructions or access authority. Counts and access come from the versioned domain projection; the real browser and site-map tests cover these controls. User text is never interpolated into this literal.'
-  created_on: '2026-09-30'
+  rationale: 'Reviewed October 1: updated static HTML for the Public Good policy and file/package filters, rendered through the existing website frame. This is presentation, not executable harness instructions or access authority. Counts and access come from the versioned domain projections; browser and site-map tests cover the controls. User text is never interpolated into this literal. This exact finding replaces the earlier HTML finding, not a broader exemption.'
+  created_on: '2026-10-01'
   expires_on: '2027-03-30'
 - finding_id: hardcoding.2cdb6e040e2eca43b8b083b3
   owner: tools.check_oauth_public_good_browser.mjs:access_token

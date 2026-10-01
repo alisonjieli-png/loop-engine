@@ -49,8 +49,14 @@
   routeNames["/demo/ashen-wilds"] = "creative-arena";
   routeNames["/oauth/consent"] = "oauth-consent";
   const componentReturn = new URLSearchParams(location.search).getAll("component");
-  if (location.pathname === "/app" && componentReturn.length === 1 && /^[a-zA-Z0-9_.:-]{1,256}$/.test(componentReturn[0]))
-    afterLogin = "/app?component=" + encodeURIComponent(componentReturn[0]) + "#browse-heading";
+  if (["/app", "/login"].includes(location.pathname) && componentReturn.length === 1 && /^[a-zA-Z0-9_.:-]{1,256}$/.test(componentReturn[0])) {
+    const selected = new URLSearchParams({component:componentReturn[0]});
+    // Keep even an invalid file selection so the signed-in browser refuses it;
+    // dropping it would turn a file request into a different package download.
+    const supplied = new URLSearchParams(location.search);
+    for (const name of ["file","body_digest","file_digest"]) for (const value of supplied.getAll(name)) selected.append(name,value);
+    afterLogin = "/app?" + selected + "#browse-heading";
+  }
   const oauthReturnId = new URLSearchParams(location.search).get('oauth_authorization_id');
   if(location.pathname==='/login' && window.BaltorOAuthConsent?.validId(oauthReturnId))
     afterLogin='/oauth/consent?authorization_id='+encodeURIComponent(oauthReturnId);
@@ -96,7 +102,14 @@
     "for-designers":"Creative work you can change again", "for-coding-agents":"Stop starting from nothing", "for-engineering-teams":"Expertise for the whole team", "for-comparing-tools":"What it is and what it costs",
     "oauth-consent":"Authorize a connection", "for-protocol-and-client":"Protocol, client and setup", demo:"One task, step by step", "demo-kaggle":"A Kaggle competition, start to finish", "case-studies-data-cleanup":"Data cleanup with and without Baltor",
     "case-studies-pi-and-gemma-4":"Pi and Gemma 4 on Ollama Cloud", "case-studies-sign-up-protection":"How sign-up is protected", "creative-arena":"Ashen Wilds: a playable, editable 3D scene", status:"Service status"}[name]; if (name === "docs") window.BaltorDocumentation?.show(location.pathname); if(name==='oauth-consent')oauthConsent?.show(); };
-  const navigate = path => { history.pushState({}, "", path); route(); $("main").focus({preventScroll:true}); const target = location.hash ? document.getElementById(location.hash.slice(1)) : null; if (target) target.scrollIntoView(); else scrollTo(0,0); };
+  // Carry only the explicit catalogue selection across login reloads. No
+  // user-supplied return URL, credential or external redirect is accepted.
+  const loginPath = path => path === "/login" && afterLogin?.startsWith("/app?")
+    ? "/login" + new URL(afterLogin, location.origin).search : path;
+  const navigate = path => { history.pushState({}, "", loginPath(path)); route(); $("main").focus({preventScroll:true}); const target = location.hash ? document.getElementById(location.hash.slice(1)) : null; if (target) target.scrollIntoView(); else scrollTo(0,0); };
+  document.querySelectorAll('a[href="/login"][data-page]:not([data-after-login])').forEach(link => {
+    link.setAttribute("href", loginPath("/login"));
+  });
   document.querySelectorAll("[data-page]").forEach(link => link.addEventListener("click", event => { if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) return; event.preventDefault(); if (link.dataset.afterLogin && routeNames[link.dataset.afterLogin]) afterLogin = link.dataset.afterLogin; navigate(link.getAttribute("href")); }));
   addEventListener("popstate", route); route();
   addEventListener("keydown", event => { if (event.key === "Escape" && menuButton.getAttribute("aria-expanded") === "true") { setMenu(false); menuButton.focus(); } });
@@ -336,9 +349,16 @@ const applyPaymentState = name => {
   }
   /* The downloads tile of the account overview is drawn from the same usage record as the table, or says it is not loaded. */
   function downloadsTile(value, note) { $("account-tile-downloads").textContent = value; $("account-tile-downloads-note").textContent = note; }
-  clientAccess = window.BaltorClientAccess.create({request, element, message, said, failureState,
+  clientAccess = window.BaltorClientAccess?.create({request, element, message, said, failureState,
     current:() => ({connected:!!token, mode:authenticationMode, generation, known:capabilities !== null,
-      available:capabilities?.record_type === CAPABILITIES_RECORD_TYPE && capabilities.website.client_access_available === true})});
+      available:capabilities?.record_type === CAPABILITIES_RECORD_TYPE && capabilities.website.client_access_available === true})}) || {
+    reset(){}, connectionChanged(){}, async refresh(){}
+  };
+  if (!window.BaltorClientAccess) {
+    const warning = element("p", "Client-token controls could not be loaded. Reload this page to use them. OAuth sign-in is separate.", "error");
+    warning.dataset.clientControlsUnavailable = "true";
+    $("account-keys").append(warning);
+  }
   // Browsing the permitted catalogue lives in its own file. It is given the same authenticated request
   // boundary and reads the connection state rather than keeping its own copy of the token.
   /* Every step effect the service names in its capabilities record, or null before the record is read. Listing and

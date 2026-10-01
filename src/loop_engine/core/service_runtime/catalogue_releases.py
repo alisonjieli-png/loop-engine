@@ -35,7 +35,7 @@ from dataclasses import dataclass
 import time
 
 from .catalogue_bundle import ITEM_VERSION_RECORD_TYPES, canonical_bytes, note
-from .catalogue_packages import CataloguePackage, sha256_hex
+from .catalogue_packages import CataloguePackage, exact_digest, sha256_hex
 from .catalogue_schema import CatalogueAttributeSchema
 from .records import ServiceRuntimeError, identifier
 from .storage import ServiceCatalogBinding
@@ -91,6 +91,23 @@ class LoadedRelease:
     @property
     def items(self):
         return tuple((row["reference"]["identity"], digest) for digest, row in self.versions)
+
+
+@dataclass(frozen=True)
+class ReleaseHeader:
+    """Verified full header/schema/membership only; no item or body qualification."""
+
+    release_id: str
+    document: dict
+    schema: CatalogueAttributeSchema
+
+    @property
+    def items(self):
+        return tuple((identity, version) for identity, version in self.document["items"])
+
+    @property
+    def content_digest(self):
+        return content_digest(self.schema.digest, self.items)
 
 
 def _payload(binding, store, kind, logical, record_type):
@@ -156,29 +173,63 @@ def is_withdrawn(binding, store, identity, body_digest):
     return row is not None
 
 
-def load_release(binding, store, release_id):
-    """Read one release and every record it names, verifying each digest."""
-    row, document = _payload(binding, store, RELEASE_KIND, release_id, RELEASE_RECORD_TYPE)
+def load_release_header(binding, store, release_id):
+    """Validate the complete immutable release header, schema and membership.
+
+    Both full serving and scoped operator validation use this reader. Returning
+    a header does not assert that any of its item records or bodies were read.
+    """
+    _row, document = _payload(binding, store, RELEASE_KIND, release_id, RELEASE_RECORD_TYPE)
     if document is None:
         _refuse("catalogue_release_not_found", "the store holds no release with that identity")
-    if document.get("release_id") != release_id or release_digest(document) != release_id:
+    try:
+        matched = document.get("release_id") == release_id and release_digest(document) == release_id
+    except (TypeError, ValueError):
+        matched = False
+    if not matched:
         _refuse("catalogue_release_digest_mismatch", "the release record differs from its digest")
-    _schema_row, schema_payload = _payload(binding, store, SCHEMA_KIND, document["schema_digest"],
+    schema_digest = document.get("schema_digest")
+    exact_digest(schema_digest, "catalogue_release_digest_mismatch")
+    _schema_row, schema_payload = _payload(binding, store, SCHEMA_KIND, schema_digest,
                                            "catalogue_attribute_schema/v1")
     if schema_payload is None:
         _refuse("catalogue_release_incomplete", "the release names a schema the store does not hold")
     schema = CatalogueAttributeSchema.from_dict(schema_payload)
-    if schema.digest != document["schema_digest"]:
+    if schema.digest != schema_digest:
         _refuse("catalogue_release_digest_mismatch", "the schema record differs from its digest")
-    versions = []
-    for identity, version in document["items"]:
-        _item_row, payload = _payload(binding, store, ITEM_KIND, version, ITEM_VERSION_RECORD_TYPES)
-        if payload is None:
-            _refuse("catalogue_release_incomplete", "the release names an item version the store does not hold")
-        if sha256_hex(canonical_bytes(payload)) != version or payload["reference"]["identity"] != identity:
-            _refuse("catalogue_release_digest_mismatch", "an item version record differs from its digest")
-        versions.append((version, payload))
-    return LoadedRelease(release_id, document, schema, tuple(versions))
+    items, identities = document.get("items"), set()
+    if not isinstance(items, list):
+        _refuse("catalogue_release_digest_mismatch", "release membership is an exact list")
+    for pair in items:
+        if (not isinstance(pair, list) or len(pair) != 2 or not isinstance(pair[0], str)
+                or not pair[0] or pair[0] in identities):
+            _refuse("catalogue_release_digest_mismatch", "release membership names each identity once")
+        exact_digest(pair[1], "catalogue_release_digest_mismatch")
+        identities.add(pair[0])
+    return ReleaseHeader(release_id, document, schema)
+
+
+def load_item_version(binding, store, identity, version):
+    """Read one canonical item record, bound to an identity and content digest."""
+    _item_row, payload = _payload(binding, store, ITEM_KIND, version, ITEM_VERSION_RECORD_TYPES)
+    if payload is None:
+        _refuse("catalogue_release_incomplete", "the release names an item version the store does not hold")
+    try:
+        matched = (sha256_hex(canonical_bytes(payload)) == version and isinstance(payload.get("reference"), dict)
+                   and payload["reference"].get("identity") == identity)
+    except (TypeError, ValueError):
+        matched = False
+    if not matched:
+        _refuse("catalogue_release_digest_mismatch", "an item version record differs from its digest")
+    return payload
+
+
+def load_release(binding, store, release_id):
+    """Read one release and every record it names, verifying each digest."""
+    header = load_release_header(binding, store, release_id)
+    versions = tuple((version, load_item_version(binding, store, identity, version))
+                     for identity, version in header.items)
+    return LoadedRelease(release_id, header.document, header.schema, versions)
 
 
 def _marker_row(binding, previous, clock, *, state_version=CATALOGUE_STATE_VERSION):

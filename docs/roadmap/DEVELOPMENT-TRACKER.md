@@ -3,17 +3,17 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:8f875422df57096a3129cbcb1ed6a32aa3e99033b41eb20eaa8c265bc1727f1d`.
+Source fingerprint: `sha256:5371a1a5b8c25aa26a99426efb0febb3355a27fe23e6390a7fc6bf1bedcba340`.
 
 ## Where things stand
 
 | Lane | Steps |
 |---|---:|
-| Being built now | 66 |
+| Being built now | 67 |
 | Can start next | 15 |
 | Waiting on earlier work | 133 |
 | Blocked | 3 |
-| Done | 50 |
+| Done | 49 |
 
 ## Being built now
 
@@ -30,18 +30,19 @@ Source fingerprint: `sha256:8f875422df57096a3129cbcb1ed6a32aa3e99033b41eb20eaa8c
 | S-6.31 | The harness executor slot: delegate each step to a standard harness | building | S-6.30 |
 | S-6.42 | Harness landscape: forks of Pi and OpenCode, and independent instances in every supported harness | building | S-6.31 |
 | S-6.69 | The package factory: 10,000, then 100,000 approved packages, then 100 to 1,000 more each day | building | S-6.40, S-6.63, S-6.62 |
-| S-6.199 | Publish after one screen, then let feedback withdraw: the four-question screening review, automatic Community publication, a report button, nightly rescans, upstream checks and withdrawal rules | building | S-6.62 |
+| S-6.197 | One unattended daily job from the day's approvals to a checked live catalogue release, with automatic rollback | building | S-6.62, S-6.119 |
+| S-6.199 | Publish after one screen, then let feedback withdraw: the four-question screening review, automatic Community publication, a report button, nightly rescans, upstream checks and withdrawal rules | building | S-6.197, S-6.62 |
 | S-6.203 | 10,000 packages served: measured at 1,000, 5,000 and 10,000, paged listing, one indexable page per item with sitemap entries | building | S-6.62, S-6.184, S-6.199 |
-| S-6.205 | Library composition: every kind a harness picks up in every export, code read by the reviewer at Community, and the mix recorded per release | building | Let the 16:17 UTC slot run with the balanced mix, read its export report's mix_kept and the writer's counts by kind, then sample ten approved packages with scripts and check each reviewer answer against the code. |
+| S-6.205 | Library composition: every kind a harness picks up in every export, code read by the reviewer at Community, and the mix recorded per release | building | S-6.197 |
 | S-6.206 | Step function tags: each served item carries the kinds of step it supports (acting, analysis, building, operating, planning, reasoning, research, reviewing, verification, writing), filterable in search and shown on the pages | building | S-6.62, S-6.205 |
-| S-6.207 | The owner's own volumes as seed material: a read-only inventory with provenance classes, seed records per project, and generated harness files reviewed and published under the owner's authorship declaration | building | S-6.40, S-6.205 |
+| S-6.207 | The owner's own volumes as seed material: a read-only inventory with provenance classes, seed records per project, and generated harness files reviewed and published under the owner's authorship declaration | building | S-6.40, S-6.197, S-6.205 |
 | S-6.200 | Continuous integration in 12 minutes or less, and fewer failed pushes: sharded self-test, cached environment, a records-only lane and a pre-push hook that runs the preflight | building | S-6.180 |
 | S-6.201 | A page or a demo from one typed record, live on its own hostname within an hour: the page generator, the demo generator and hostname automation | building | S-6.67, S-6.62 |
 | S-6.204 | The weekly number: visitors, accounts, paying subscribers and served packages, read from the service's own records and published to staff | building | S-6.120, S-6.6 |
 | S-6.210 | Every owner request tracked: one ledger row per request with its steps and live state, checked against the roadmap and reported daily | building | S-6.76 |
 | S-6.211 | User Feedback Intelligence on the hosted service: a rating of each download, requests for material and search gap counts, read by staff and turned into generation ideas | building | S-6.199, S-6.120 |
 | S-6.212 | Unlinked public changelog, feature list and todo pages generated from the release records and the roadmap | building | S-6.67, S-6.35 |
-| S-6.214 | Daily distillations: new papers, skills, plugins, protocol servers, services and repositories, each served as a summary page, RSS, JSON and downloadable components | building | S-6.213, S-6.81 |
+| S-6.214 | Daily distillations: new papers, skills, plugins, protocol servers, services and repositories, each served as a summary page, RSS, JSON and downloadable components | building | S-6.213, S-6.81, S-6.197 |
 | S-6.215 | One million served harness component files: deterministic supply lines, test-based admission with a sampled independent review, a serving engine with delta releases, and full-package delivery | building | S-6.40, S-6.213 |
 | S-6.81 | Source scouts: search tools for skills, plugins, protocol servers and harness files | building | S-6.40, S-6.76 |
 | S-6.216 | Account-required Public Good collection, header-linked browsing and 1,000 useful components across all SDGs | building | S-6.40, S-6.81, S-6.199 |
@@ -126,7 +127,7 @@ Source fingerprint: `sha256:8f875422df57096a3129cbcb1ed6a32aa3e99033b41eb20eaa8c
 | S-6.40 | Grow the library: original package factory first, scheduled source ingestion later | proposed | S-6.30 |
 | S-6.209 | Occupation, industry, level, language and geography tags on every served file, searchable in the signed-in dashboard | proposed | S-6.206, S-6.40 |
 | S-6.202 | Quickstarts that are checked every night: one copy-paste setup per harness on Get set up, each run against the live endpoint | proposed | S-6.24, S-6.182 |
-| S-6.213 | The product as a harness file: a first-party Baltor skill any harness installs to search and fetch from the library, plus a daily public library snapshot from each catalogue release | proposed | S-6.202, S-6.212 |
+| S-6.213 | The product as a harness file: a first-party Baltor skill any harness installs to search and fetch from the library, plus a daily public library snapshot from each catalogue release | proposed | S-6.202, S-6.212, S-6.197 |
 | S-6.70 | Serve 100,000 packages: pass the capacity probe with paged listing and an indexed search | proposed | S-6.62, S-6.32 |
 | S-6.83 | Maintain 100,000 packages: re-verification, near-duplicates, deprecation and withdrawal | proposed | S-6.69, S-6.51 |
 | S-6.64 | Independently authored alternatives to restricted-source ideas | proposed | S-6.63 |
@@ -294,7 +295,7 @@ Source fingerprint: `sha256:8f875422df57096a3129cbcb1ed6a32aa3e99033b41eb20eaa8c
 | D-23 | Show, review, reach and scale | initial_service | 0 of 5 |
 | D-24 | Take requests for access and invite one person from them | initial_service | 0 of 3 |
 | D-25 | Go fully live: open registration and self-serve paid onboarding | public_launch | 2 of 17 |
-| D-26 | Reach 10,000 and then 100,000 approved harness packages, then add 100 to 1,000 a day | public_launch | 3 of 23 |
+| D-26 | Reach 10,000 and then 100,000 approved harness packages, then add 100 to 1,000 a day | public_launch | 2 of 23 |
 | D-27 | Clear components: one index, contract test kits and one home for every topic and term | continued_improvement | 0 of 4 |
 | D-28 | Selectable engines at every slot, with a Baltor-native engine beside every adopted project | continued_improvement | 0 of 9 |
 | D-29 | Agents that manage and improve the system | continued_improvement | 0 of 6 |
@@ -324,7 +325,7 @@ Source fingerprint: `sha256:8f875422df57096a3129cbcb1ed6a32aa3e99033b41eb20eaa8c
 | OWNER-18 | Choose the paid identity and email plans, which take hosting above the recorded allowance | before_public |
 | OWNER-19 | Name who approves and posts replies, and from which accounts | optional |
 
-## Done (50 steps)
+## Done (49 steps)
 
 - S-6.43: Speak the current protocol revision: negotiate the 2026-07-28 Model Context Protocol beside 2025-11-25 (live_qualified)
 - S-6.89: Superadmin user management and the first 10 accounts free each month (live_qualified)
@@ -332,7 +333,6 @@ Source fingerprint: `sha256:8f875422df57096a3129cbcb1ed6a32aa3e99033b41eb20eaa8c
 - S-6.102: A free public directory of MCP servers and agent APIs at /directory (offline_verified)
 - S-6.101: A public directory of models, endpoints and local runtimes, with a can-I-run hardware check, at /models, /endpoints and /can-i-run (offline_verified)
 - S-6.196: The review panel reads imported packages: a reader for the imported layout, criteria written for imported material, calibration controls and a yield pilot (live_qualified)
-- S-6.197: One unattended daily job from the day's approvals to a checked live catalogue release, with automatic rollback (live_qualified)
 - S-6.208: One component library with combined kind counts, source and review details, and no customer-facing review classes (live_qualified)
 - S-6.17: Maintain one continuation plan and regenerate its status artifact (offline_verified)
 - S-6.121: The deck at deck.baltor.ai: every number from a saved record, the hostname root, and the slides only the owner can supply (offline_verified)

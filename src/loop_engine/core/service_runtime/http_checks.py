@@ -124,7 +124,7 @@ def _web_checks(check, root):
                 answered.update(_http.oauth_http.OAUTH_ROUTES)
             if "path == oauth_http.CONSENT_API_PATH" in source:
                 answered.add(_http.oauth_http.CONSENT_API_PATH)
-            if "path == public_good_page.COLLECTION_PATH" in source:
+            if "public_good_page.COLLECTION_PATH" in source:
                 answered.add(_http.public_good_page.COLLECTION_PATH)
             check("the_route_table_names_every_address_the_router_answers",
                   len(answered) >= 10 and answered == set(_http.API_ROUTES))

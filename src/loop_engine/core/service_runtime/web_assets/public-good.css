@@ -4,6 +4,14 @@
 .pg-intro .lede {max-width:700px;margin:0;font-size:1.05rem;}
 .pg-eyebrow {font-family:var(--font-mono);font-size:.875rem;font-weight:650;margin:0;}
 .pg-workspace {border-top:2px solid currentColor;padding-top:1.5rem;}
+.pg-options {display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:1rem;}
+.pg-options label {font-size:.875rem;font-weight:600;}
+.pg-options select {min-height:44px;font:inherit;font-weight:400;}
+.pg-file-path {font-family:var(--font-mono);font-size:.875rem!important;overflow-wrap:anywhere;}
+.pg-file-context {border-top:1px solid var(--border);padding-top:.75rem;}
+.pg-file-context summary {font-size:.875rem;cursor:pointer;min-height:44px;align-content:center;}
+.pg-file-context ul {padding-left:1rem;}
+.pg-file-context li {margin-bottom:1rem;}
 .pg-filters {display:grid;grid-template-columns:minmax(210px,1fr) minmax(230px,.75fr) auto;gap:1rem;align-items:end;}
 .pg-filters label {display:grid;gap:.45rem;font-size:.9rem;font-weight:600;}
 .pg-filters input,.pg-filters select {width:100%;min-height:46px;padding:.65rem .75rem;font:inherit;font-weight:400;}
@@ -26,5 +34,5 @@
 .pg-policy h3 {font-size:1.15rem;margin:0 0 .7rem;}
 .pg-policy p {font-size:1rem;line-height:1.6;margin:0 0 1rem;}
 .pg-policy .actions {margin-top:1.5rem;}
-@media(max-width:800px){.pg-intro{display:block;}.pg-intro>.button{margin-top:1rem;}.pg-filters{grid-template-columns:1fr;}.pg-items,.pg-policy-grid{grid-template-columns:1fr;}.pg-coverage ul{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:800px){.pg-intro{display:block;}.pg-intro>.button{margin-top:1rem;}.pg-filters,.pg-options{grid-template-columns:1fr;}.pg-items,.pg-policy-grid{grid-template-columns:1fr;}.pg-coverage ul{grid-template-columns:repeat(2,minmax(0,1fr));}}
 @media(max-width:420px){[data-view="public-good"]{padding:24px 16px 32px;}.pg-coverage ul{grid-template-columns:1fr;}}

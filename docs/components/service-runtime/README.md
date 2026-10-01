@@ -637,7 +637,21 @@ or failed attempts can consume that allowance. The transport completes an
 authorized-response record only after body integrity and final serialized
 response size checks. The record is not proof of network delivery and does
 not supply the requested full activity timeline. Public browsing uses the
-metadata whitelist in `public_good_page.py`, never its body reader.
+metadata whitelist in `public_good_page.py`, never its body reader. The
+individual-file projection in `public_good_files.py` groups identical useful
+digests while retaining every eligible parent, path, version and licence.
+`GET /api/v1/public-good/files` accepts `query`, `goal`, `media_type`,
+`initiative`, `package`, `page` and `page_size` (at most fifty). Combined
+filters must match one useful placement, not unrelated parents. Global
+counts distinguish useful payloads, supporting placements and packages;
+seventeen goal facets retain real zeros. The existing package endpoint is
+unchanged. The HTTP owner rechecks policy freshness before returning metadata
+and enforces the final response limit. Metadata grants no download authority.
+
+File links carry the selected parent digest, safe path and file digest through
+the normal sign-in flow, including a login-page reload. Missing, duplicated,
+invalid or stale selections do not fall back to a package download. The
+authenticated download checks both the current parent and returned file bytes.
 
 Plan an exact grant file with `python -m
 loop_engine.core.service_runtime.public_good_operator --config ABSOLUTE_HOST
@@ -646,6 +660,12 @@ from that plan; the policy also binds the held version and catalogue release.
 This is host administration of existing material, not content admission or a
 new engine/runtime. Selection reasons, licences, explicit useful-file paths
 and expiry remain reviewable. No SDG tag automatically grants access.
+The operator reads at most 2 MB and 2,048 grant records before opening the
+host context. `public_good_selection.py` uses the canonical release readers
+to check full membership and every selected file without rebuilding search
+or installing a partial serving view. The full serving loader still owns
+whole-catalogue qualification. State and pointer checks also apply when the
+previous free-access policy is empty.
 
 - [Core Architecture](../core-architecture/README.md) for the capability groups
   a Loop may use.

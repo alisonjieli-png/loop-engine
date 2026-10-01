@@ -37,6 +37,21 @@ window.BaltorEffects = (() => {
   return Object.freeze({requested, beyondReading, plainly});
 })();
 window.BaltorCatalogueBrowser = {
+  /* A file link carries a selection, never authority. Reject partial or ambiguous
+     selections rather than silently downloading its package manifest instead. */
+  fileSelection(search) {
+    const params = new URLSearchParams(search);
+    const names = ["file", "body_digest", "file_digest"];
+    if (!names.some(name => params.has(name))) return null;
+    if (names.some(name => params.getAll(name).length !== 1) || params.getAll("component").length !== 1)
+      throw new Error("This file link is incomplete. Open it again from Public Good.");
+    const path = params.get("file"), identity = params.get("component"), bodyDigest = params.get("body_digest"), fileDigest = params.get("file_digest");
+    if (!/^[a-zA-Z0-9_.:-]{1,256}$/.test(identity || "") || !/^[0-9a-f]{64}$/.test(bodyDigest || "") || !/^[0-9a-f]{64}$/.test(fileDigest || "")
+        || !path || path.length > 200 || path.split("/").length > 8
+        || path.split("/").some(part => !/^[A-Za-z0-9_.@+-]{1,100}$/.test(part) || [".", "..", ".git"].includes(part.toLowerCase())))
+      throw new Error("This file link is invalid. Open it again from Public Good.");
+    return {identity, path, bodyDigest, fileDigest};
+  },
   /* The five facets, each a served keyword list under its attribute name: the select that filters on it,
      the plain name of the facet and the wording of its empty choice. A value is shown exactly as the
      service sent it, because the vocabulary is the service's, not this page's. The three functions below
@@ -274,7 +289,9 @@ window.BaltorCatalogueBrowser = {
       selected = identity;
       message("browse-message", "Opening the component you selected. No file is downloaded until you choose it.");
       try {
-        const row = await request(path, {record_type:requestVersion, operation:"manifest", identity, authority_effects:declared});
+        const file = facetRules.fileSelection(location.search);
+        const row = await request(path, {record_type:requestVersion, operation:"manifest", identity, authority_effects:declared,
+          ...(file ? {expected_digest:file.bodyDigest} : {})});
         if (epoch !== current().generation || selected !== identity) return;
         const problem = manifestProblem(row, {identity});
         if (problem || !stated(row.purpose)) throw new Error(refused);
@@ -412,6 +429,9 @@ window.BaltorCatalogueBrowser = {
       const epoch = current().generation;
       showDetail(row, null, "Checking this item with the service…");
       try {
+        const linked = facetRules.fileSelection(location.search);
+        const file = linked?.identity === row.identity ? linked : null;
+        if (file && file.bodyDigest !== row.digest) throw new Error("This package changed. Open its current file from Public Good.");
         const value = await request(path, {record_type:requestVersion, operation:"manifest",
           identity:row.identity, expected_digest:row.digest, ...effectsAsked(row)});
         if (epoch !== current().generation || selected !== row.identity) return;
@@ -429,6 +449,7 @@ window.BaltorCatalogueBrowser = {
           ["Step functions", shownValues.step_functions],
           ...facets.map(([name, , label]) => [label, facetOf(row, name).join(", ") || "Not tagged"]),
           ["Exact reference", row.identity],
+          ...(file ? [["Selected file", file.path], ["Package context", "Keep its licence, references and dependency instructions with this file."]] : []),
           ["Where it comes from", value.source_ref],
           ["Licence", stated(value.license) ? value.license : "Not stated"],
           ["Declared effects", value.declared_effects.length ? value.declared_effects.join(", ") : "None declared"],
@@ -437,9 +458,9 @@ window.BaltorCatalogueBrowser = {
           ["The file itself", value.body_allowed ? "You may fetch it. Access is checked again on the way." : "Not granted to this account."]], "");
         $("browse-detail").append(reportControl(row));
         if (!value.body_allowed) { note.textContent = "This account may read the details above, not the file."; return; }
-        const button = element("button", "Download this version", "quiet");
+        const button = element("button", file ? "Download selected file" : "Download this version", "quiet");
         button.type = "button"; button.id = "browse-download";
-        button.addEventListener("click", () => fetchBody(row, button, note));
+        button.addEventListener("click", () => fetchBody(row, button, note, file));
         note.textContent = "Fetching this file records usage. The bytes are checked against the exact version that was listed.";
         $("browse-detail").insertBefore(button, note);
       } catch (error) {
@@ -451,16 +472,16 @@ window.BaltorCatalogueBrowser = {
     /* The download repeats the check the service already made: the bytes are measured here, and they
        must match both the digest that was listed and the digest the service reported for the answer it
        sent. A file that fails either comparison is never saved. */
-    async function fetchBody(row, button, status) {
-      const key = row.identity + ":" + row.digest, epoch = current().generation;
+    async function fetchBody(row, button, status, file = null) {
+      const key = row.identity + ":" + row.digest + (file ? ":" + file.path : ""), epoch = current().generation;
       if (!downloads.has(key)) downloads.set(key, crypto.randomUUID());
       button.disabled = true; status.textContent = "Fetching the selected revision…";
       try {
         const result = await request(downloadPath, {record_type:requestVersion, operation:"read",
-          identity:row.identity, expected_digest:row.digest, request_id:downloads.get(key), ...effectsAsked(row)}, true, true);
+          identity:row.identity, expected_digest:row.digest, request_id:downloads.get(key), ...(file ? {path:file.path} : {}), ...effectsAsked(row)}, true, true);
         const measured = [...new Uint8Array(await crypto.subtle.digest("SHA-256", result.bytes))]
           .map(number => number.toString(16).padStart(2, "0")).join("");
-        if (measured !== row.digest || measured !== result.digest) {
+        if (measured !== (file ? file.fileDigest : row.digest) || measured !== result.digest) {
           throw new Error("The bytes that arrived do not match the selected item. Nothing was saved.");
         }
         /* The bytes arrived and they match, but the reader may have signed out while they were being
@@ -469,7 +490,7 @@ window.BaltorCatalogueBrowser = {
         if (epoch !== current().generation || result.epoch !== current().generation) return;
         const objectUrl = URL.createObjectURL(new Blob([result.bytes], {type:"application/octet-stream"}));
         const link = element("a", "Download");
-        link.href = objectUrl; link.download = "intelligence-" + measured.slice(0, 12) + ".txt"; link.click();
+        link.href = objectUrl; link.download = file ? file.path.split("/").pop() : "intelligence-" + measured.slice(0, 12) + ".txt"; link.click();
         setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
         status.textContent = "Downloaded and checked. Loading it into your own tool and accepting the result are separate steps.";
         ratingPair(row, status);

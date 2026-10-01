@@ -98,9 +98,10 @@ Optional ChatGPT plan usage has its own eligibility, authorization and
 accounting. Keep it distinct from Baltor's subscription and from permission to
 execute a task. The
 [sign-in guidance](https://developers.openai.com/siwc/ui-ux-guidelines)
-requires that distinction. The current live Baltor capabilities do not advertise
-an installed OAuth authorization server. Implement and test the required
-sign-in path before submitting an authenticated plugin.
+requires that distinction. Release 58 now advertises and serves the OAuth
+authorization flow. A live engineering customer completed it and retrieved an
+exact file. The actual OpenAI client connection, publisher verification and
+submission cases remain gates before submitting an authenticated plugin.
 
 Use an established identity provider for OAuth 2.1, with resource and issuer
 metadata, authorization-code/PKCE, scoped tokens and per-request validation.
@@ -166,12 +167,25 @@ support files, and show actual coverage rather than filling missing categories
 with unrelated material. This changes the immediate order; the remaining
 customer-comparison, creative and retrieval gates below still apply.
 
-OAuth is now an immediate prerequisite for that release. The owner's dot QA
-could not complete manual API-key transfer into its harness. Build and test
-authorization-code/PKCE, explicit consent, exact resource/scopes, expiry,
-refresh and revocation through the existing identity. No static key belongs in
-chat or a prompt. Retain supported key clients; the new flow must demonstrate
-real authorized retrieval, not only discovery metadata.
+Release 58 completed the first Public Good delivery and OAuth prerequisite:
+the main header links the policy, ten packages are free with an account, and
+a live engineering customer completed authorization-code/PKCE, explicit
+consent, exact resource/scopes, retrieval, refresh and revocation. The
+[release notes](../../artifacts/release-58-2026-09-30/README.md) state the
+population and failed attempts. No static key belongs in chat or a prompt.
+Retain supported key clients and separately verify the owner's actual dot.
+
+The immediate next cycle remains S-6.216: release individual-file browsing,
+expand exact free-access selection from already admitted supply, then publish
+independently admitted originals without replacing the existing catalogue.
+The [October 1 catalogue/access update](../../artifacts/public-good-release-2026-10-01/README.md)
+now serves 1,011 useful files across 412 free packages: 996 selected existing
+files and fifteen original program/schema files. Review excluded unrelated
+selections and metadata-only files. The live count and a displayed goal
+selector do not prove all-SDG coverage. Fill the remaining
+goal gaps with sourced, useful material and record the free-account native
+journey before closing the task. The sequence below resumes from its first
+unfinished gate after this priority, not from another research-only reset.
 
 1. **Reconcile and preserve the current work.** Account for inherited changes,
    source identities, failed checks and prior-session instructions. Correct
@@ -265,8 +279,9 @@ The longer walkthrough should show what a customer can actually do: choose
 a harness, inspect material, download a complete package, and work with an
 editable result. Label illustrations and prototypes. Show with-and-without
 results only after the frozen comparison passes its evidence checks, even
-when the result shows no benefit. Automatic video recreation, Public Good
-downloads and managed execution stay marked planned until released.
+when the result shows no benefit. Automatic video recreation and managed
+execution stay marked planned until released. Public Good delivery is live
+in release 58; show the current collection and limits, not an unserved target.
 
 Refresh the website's existing HTML deck and key pages from current evidence,
 preserving controls, mobile layouts, links and dated failed results. Keep a
@@ -325,16 +340,28 @@ Keep model access customer-supplied. Free component files do not promise free
 Gemma inference, cloud rendering or an expanded infrastructure allowance.
 Choose cache and abuse controls within the approved privacy notice; draft
 any new personal-data use for approval before enabling it. Do not require
-people to disclose worker status to obtain material. No component was admitted
-or made public under this new policy in this planning update.
+people to disclose worker status to obtain material. Release 58 made the first
+ten already-admitted packages free under exact-version policy grants. Its
+synthetic unpaid-account checks cover HTTP, MCP and browser download; the live
+OAuth probe used an existing entitled customer and did not test an unpaid
+production account or the owner's actual dot.
 
 The owner explicitly ruled out anonymous downloads later on September 30.
 This is the current access requirement, including for harness API requests.
 
 The first [Public Good candidate batch](../verification/PUBLIC-GOOD-CANDIDATES-2026-09-30.md)
 contains nine executable packages, 93 file placements and 88 distinct files.
-The coordinator reran 132 unit tests successfully. Independent admission
-and live free-access grants remain the next publication gates.
+The coordinator reran 132 unit tests successfully. Subsequent independent
+review admitted five revised packages: support-data minimization, jurisdiction
+source freshness, percentage comparison, resource-directory checks and
+water-meter auditing. Their native exports passed 69 layout tests. The SRT
+candidate remains held after a long malformed caption exposed a runtime
+problem; the other revised candidates lack independent approval. Preserve
+all twelve review/calibration calls, failures and provider usage. No new call
+may be hidden as a retry of this exhausted batch. These five exports still
+were subsequently published by the guarded full-catalogue delta path and
+included in the October 1 free-access policy. Their delivery does not complete
+every SDG or the free-account native-use proof.
 
 ## Customer activity and download history
 

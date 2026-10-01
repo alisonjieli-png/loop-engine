@@ -60,7 +60,7 @@ MODULE_MAP = {
         "http", "http_auth", "http_entrypoint", "http_checks", "http_boundary_checks",
         "http_test_fixtures", "refusals", "web_pages", "web_site_map", "web_surface_checks", "access", "access_checks",
         "browser_identity", "browser_identity_checks",
-        "oauth_authorization", "oauth_http", "public_good", "public_good_operator", "public_good_page",
+        "oauth_authorization", "oauth_http", "public_good", "public_good_operator", "public_good_page", "public_good_files", "public_good_selection",
         "request_limits", "request_limit_checks", "capacity_checks",
         "promotions", "promotion_checks",
         "account_email", "account_email_checks",

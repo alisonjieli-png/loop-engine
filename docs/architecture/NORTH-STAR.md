@@ -1,6 +1,6 @@
 # Baltor north star
 
-Kind: current product direction. Updated September 30, 2026 under the owner's request to reconcile counts, broaden the library and pursue the million-file and revenue goals. The [roadmap](../roadmap/roadmap.yaml) is the task authority. [AGENTS.md](../../AGENTS.md#commit-push-and-release-authority) governs authority.
+Kind: current product direction. Updated October 1, 2026 under the owner's request to reconcile counts, broaden the library and pursue the million-file and revenue goals. The [roadmap](../roadmap/roadmap.yaml) is the task authority. [AGENTS.md](../../AGENTS.md#commit-push-and-release-authority) governs authority.
 
 ## Current direction
 
@@ -94,7 +94,14 @@ the same independent admission rules. Free access is an explicit package
 policy, not a quality tier, nonprofit status or United Nations endorsement.
 The [Public Good plan](../roadmap/DELIVERY-SEQUENCE.md#free-public-good-components)
 defines account-required free delivery, rights, sensitive-data limits and the first proof.
-This policy is approved direction; the public download route is not yet built.
+Release 58 deployed the main-header policy/browser and exact-version free
+delivery through the existing account, HTTP and MCP boundaries. Its initial
+collection contains ten packages and fourteen distinct useful files; see the
+[release record](../../artifacts/release-58-2026-09-30/README.md).
+The subsequent [October 1 catalogue update](../../artifacts/public-good-release-2026-10-01/README.md)
+expanded free access to 412 packages and 1,011 distinct useful files without
+changing existing versions. All-SDG coverage and native customer-use proof
+remain open; the count does not close those gates.
 The owner's later clarification requires an enabled account for every free
 component download. Free access does not mean anonymous access.
 
@@ -104,8 +111,10 @@ covering all 17 SDGs and related public-benefit initiatives, with at least
 The page must browse the real admitted collection, not display a target as a
 served count. Report complete packages, distinct useful payload files and
 supporting files separately. An SDG tag alone does not establish relevance,
-qualification or free access. Finish this account-required path next after the
-current reliability release.
+qualification or free access. The next release must expand actual useful
+supply, expose individual file paths and licences, and retain honest empty
+goal categories until relevant components pass admission. Do not stop at the
+initial ten packages or count supporting metadata toward the target.
 
 Research how an OpenAI dot can supplement existing discovery, digestion and
 UI testing, including competitors, potential investors, influencers, strategies
@@ -122,12 +131,14 @@ records, not unrestricted production database access. Uploaded material stays
 untrusted until its owning checks and admission pass; connection, upload,
 review and publication are separate capabilities to implement and verify.
 
-OAuth is an immediate prerequisite: the owner's dot QA cannot safely complete
-the existing key-transfer setup. Implement a real authorization-code/PKCE flow
-with explicit consent, scoped resource-bound tokens, expiry and revocation,
-using the existing account identity. Discovery metadata alone is not a working
-flow. Keep API-key support for existing clients while qualifying the dot and
-native-harness sign-in paths.
+OAuth was an immediate prerequisite because the owner's dot QA could not safely
+complete key transfer. Release 58 now supplies authorization-code/PKCE, explicit
+consent, scoped resource-bound tokens, expiry, refresh and revocation through
+the existing account identity. A live engineering account retrieved and
+verified an exact file through that flow without increasing paid usage.
+The owner's actual dot and native-harness account linking still need their own
+checks. Keep API-key support for existing clients; working discovery or a test
+client does not establish a marketplace submission or every client connection.
 
 Reusable material follows a common package structure:
 

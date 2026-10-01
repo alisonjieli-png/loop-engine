@@ -48,6 +48,7 @@ from .feedback import (ASK_FOR_MATERIAL_LINE, FEEDBACK_OPERATIONS as CUSTOMER_FE
 from .model_directory_pages import moved_answer, rendered_page
 from . import library_page
 from . import public_good_page
+from . import public_good_files
 from . import red_team_page
 from . import status_pages
 from . import oauth_http
@@ -216,6 +217,7 @@ API_ROUTES = {
     "/api/v1/health": ("GET",),
     "/api/v1/capabilities": ("GET",),
     public_good_page.COLLECTION_PATH: ("GET",),
+    "/api/v1/public-good/files": ("GET",),
     "/api/v1/billing/webhook": ("POST",),
     "/api/v1/account/identity": ("GET",),
     "/api/v1/account/activate": ("POST",),
@@ -776,7 +778,7 @@ def _status(error):
                 "free_monthly_already_held", "free_monthly_not_held", "account_state_unchanged",
                 "account_administration_request_identity_conflict", "sign_up_links_in_progress",
                 "rating_requires_download", "report_requires_download", "material_request_identity_conflict",
-                "usage_identity_conflict"):
+                "usage_identity_conflict", "public_good_authority_changed"):
         return 409, code
     # Accepted requests to join the waiting list, counted for one declared
     # source. It is a wait like the failed-attempt limit, not a bad request.
@@ -2211,20 +2213,29 @@ class ServiceHttpApplication:
                 "authorization_servers": [self.authentication.issuer],
                 "scopes_supported": sorted(set(SCOPES) | set(self.authentication.required_scopes)),
                 "bearer_methods_supported": ["header"], "resource_name": "Loop Engine Intelligence"})
-        if path == public_good_page.COLLECTION_PATH and method == "GET":
+        if path in (public_good_page.COLLECTION_PATH, "/api/v1/public-good/files") and method == "GET":
+            file_view = path.endswith("/files")
             pairs = list(request.query_params.multi_items())
-            if len(pairs) != len(dict(pairs)) or set(dict(pairs)) - {"query", "goal", "page"}:
+            allowed = {"query", "goal", "page"} | ({"media_type", "initiative", "package", "page_size"} if file_view else set())
+            if len(pairs) != len(dict(pairs)) or set(dict(pairs)) - allowed:
                 raise ServiceHttpError("invalid_public_good_query")
             values = dict(pairs)
             raw_page = values.get("page", "1")
             if not re.fullmatch(r"[0-9]{1,5}", raw_page):
                 raise ServiceHttpError("invalid_public_good_query")
+            raw_size = values.get("page_size", "20")
+            if not re.fullmatch(r"[0-9]{1,2}", raw_size):
+                raise ServiceHttpError("invalid_public_good_query")
             def public_collection():
                 view = self.provisioning.current_view()
                 access = self.provisioning.public_good
                 snapshot = access.snapshot(view)
-                result = public_good_page.collection(view, snapshot, query=values.get("query", ""),
-                    goal=values.get("goal", ""), page=int(raw_page))
+                options = {"query":values.get("query", ""), "goal":values.get("goal", ""), "page":int(raw_page)}
+                if file_view:
+                    result = public_good_files.collection(view, snapshot, **options, page_size=int(raw_size),
+                        media_type=values.get("media_type", ""), initiative=values.get("initiative", ""), package=values.get("package", ""))
+                else:
+                    result = public_good_page.collection(view, snapshot, **options)
                 if access.snapshot(view).fingerprint != snapshot.fingerprint:
                     raise ServiceRuntimeError("public_good_authority_changed")
                 return result
