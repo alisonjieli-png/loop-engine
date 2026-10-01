@@ -21,7 +21,10 @@ two defects that were found and fixed after the first claims of correctness.
 
 ## Current context route
 
-Read the [October 1 handoff](SESSION-HANDOFF-2026-10-01.md) for live release 60,
+Read the [release 61 handoff](SESSION-HANDOFF-2026-10-01-RELEASE61.md) for the
+live Dot context/feedback pages, staff access boundaries, stock-client repairs,
+the configuration-permission incident and recovery, and small-component work.
+The [earlier October 1 handoff](SESSION-HANDOFF-2026-10-01.md) records release 60,
 working OAuth, 1,011 browsable useful Public Good files, the verified bounded
 connection-capacity repair and the fenced stale scheduled publisher. The
 [September 30 evening handoff](SESSION-HANDOFF-2026-09-30-EVENING.md) preserves

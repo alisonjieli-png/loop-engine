@@ -19,8 +19,36 @@ of infinite provider capacity or permission to purchase extra service.
 
 Engineering reproduced the Compose and directory-placement defects below
 against the published source and added failing-before/passing-after checks.
-Those source repairs are not yet a deployed release. Production remains the
-release named by the [current deployment](../architecture/MVP-CLIENT-SERVER.md#current-deployment).
+The subsequent release-61 observations below qualify specified published
+repairs. Production remains the release named by the
+[current deployment](../architecture/MVP-CLIENT-SERVER.md#current-deployment).
+
+## Release 61 fresh observations
+
+Source `117d43fc` is deployed. All six published client 0.4.1 files and their
+checksum list match the source package. The stock downloaded copy passes
+fifty supplied tests, ten independent filesystem probes and fifteen controlled
+TLS/CONNECT proxy tests without an adapter. Homepage selection passes all
+259 checks against the live site. Public Good and Dot pass sixty live checks,
+including complete 1,011-useful-file pagination. These populations remain
+separate from the supplied historical report.
+
+The account role requested by the owner is verified against the confirmed
+provider identity, with its plan unchanged. Private feedback remains behind
+staff access; ordinary OAuth scopes did not expand. Local staff-role browser
+checks pass, but the actual owner's Dot session was not available here.
+
+The post-deployment staff update caused a configuration-permission outage.
+Changing only the exact file's metadata restored service-identity readability;
+fresh health and account checks pass after cold startup. The
+[release notes](../../artifacts/release-61-2026-10-01/README.md) preserve the
+failure and staged-read regression. Website availability during that interval
+was a real failure, not a test-adapter problem.
+
+The repaired chart remains unpublished pending derived-licence qualification.
+Project-output confinement, full native client coverage, real free-account
+task completion and all-SDG supply remain open. The historical rows below
+retain their original states; this section supplies the later evidence.
 
 ## Supplied report reconciliation
 

@@ -5,6 +5,20 @@
   "releases": [
    {
     "kind": "service",
+    "number": 61,
+    "at": "2026-10-01T16:09:13Z",
+    "lines": [
+     "Goal-first Public Good introduction, all seventeen goal tiles and related initiatives, with current availability.",
+     "Unlisted public Dot context and editorial feedback pages, revision-bound JSON and explicit permission boundaries.",
+     "Customer feedback through MCP, API and standalone CLI; counts-only staff summary and protected private feedback.",
+     "Published client0.4.1 proxy and path-confinement repairs, quoted Compose mount and version-specific setup guidance.",
+     "Homepage task and harness state consistency; exact native-package input for Baltor Harness; guarded catalogue-preservation tooling."
+    ],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
     "number": 60,
     "at": "2026-10-01T05:46:04Z",
     "lines": [

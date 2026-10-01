@@ -202,6 +202,28 @@ Customer acquisition should demonstrate a complete job and its revision. Priorit
 
 ## October 1 expansion and research method
 
+The owner's later October 1 direction sets an ambition of ten million useful
+Public Good component files across all 17 SDGs and related initiatives. This
+extends the supply programme; it is not an inventory or delivery claim. Keep
+the earlier million-file milestone, complete-package target and commercial
+goals visible, with separate counts and evidence for each.
+
+Small, discrete capabilities are an immediate production priority. Useful
+material includes a conservative email normalizer, a parameterized text
+operation, an explicit slang-dictionary matcher, a literal search helper,
+a database query, a retrieval chunker and a corner-case fixture. Do not wait
+for a large application or elaborate skill before delivering a useful
+function. Each callable has a small typed contract, representative inputs,
+observable outputs and focused checks. A skill provides discovery and guidance
+where it helps; it does not replace the executable implementation.
+
+Produce reusable primitives alongside complete customer projects. Preserve
+the same implementation across parameter choices, retain uncertain or
+imperfect private candidates with their findings, and apply the existing
+publication checks to the exact proposed bytes. Track useful callable
+capabilities, payload files, examples, tests and harness wrappers separately.
+Measure successful reuse and new qualified supply, not research volume alone.
+
 The owner extends the supply programme across countries, industries, public
 benefit, creative production and everyday work. Search coverage combines
 country or area, language, SDG target, industry, occupation, user need, task,

@@ -410,6 +410,24 @@ reuse and support cost. Retain accessibility, low-bandwidth and multilingual
 needs alongside commercial work. Source freshness and qualified review matter
 especially for migration, worker protection, health and legal material.
 
+The owner's later clarification gives small functions their own production
+lane within this programme. Begin with text and Unicode operations,
+conservative email handling, explicit dictionary matching, query escaping,
+line search, offset-preserving chunks, ranking fusion and citation checks.
+Deliver the callable implementation, typed input/output, useful examples and
+corner-case tests without requiring a larger application first. Reuse existing
+qualified implementations when suitable. Ordinary functions run without a
+model call; discovery or orchestration may use a model when authorized.
+
+For each batch, report distinct jobs and useful payload digests separately
+from supporting examples, tests and repeated harness files. Count a schema
+as useful when it independently serves a declared validation contract. Preserve
+failed candidates and reasons. Review useful examples on their actual input
+domains: an email syntax check is not deliverability, dictionary matches are
+not judgments about people, and a retrieval score is not a truth assessment.
+The ten-million-file Public Good ambition calls for many useful independent
+jobs, maintained local data and supported formats, not renamed permutations.
+
 ## Free Public Good components
 
 The first collection draws on Taylor S. Amarel's

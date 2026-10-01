@@ -2,7 +2,7 @@
 
 Kind: product architecture with measured local implementation and proposed hosting.
 Date: 2026-09-19. The [current deployment](#current-deployment) section was
-added on 2026-09-20 and last checked on 2026-10-01, after Fly release 60.
+added on 2026-09-20 and last checked on 2026-10-01, after Fly release 61.
 
 The hosted product manages accounts, subscriptions, and access to intelligence.
 The customer runs Loop Engine and the selected harnesses. A hosted intelligence
@@ -47,7 +47,31 @@ from the newest release record, follow the release record and correct this
 section. Update this section in the same change that records a new release.
 It describes a private pilot. It does not describe a qualified paid service.
 
-The latest image deployment is Fly release 60, completed on October 1, 2026
+The latest image deployment is Fly release 61, completed on October 1, 2026
+from `117d43fcab110471df983599a55911ec43252881`, image
+`sha256:d0c0cd63de09440f041889cd351bd486ba2442f3c520599a3fa51c15eb987ead`.
+CI `36888149782` and deployment `36889262009` passed; the gate is off.
+The [release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-61.json)
+and [notes](../../artifacts/release-61-2026-10-01/README.md) record goal-first
+Public Good browsing, unlisted public Dot briefs, feedback MCP/API/CLI routes,
+protected staff feedback, client 0.4.1 and homepage state repairs. Public
+Good/Dot passes sixty live checks; homepage selection passes 259; the exact
+published stock client passes 75 supplied and independent tests. All ten
+hostnames pass 2,118 browser assertions. The
+owner-requested staff assignment is verified privately, with the plan unchanged.
+The actual owner's Dot session has not been exercised here.
+
+After deployment, an operator configuration update set mode `0600` while
+retaining root ownership, preventing the service UID from reading it after
+restart. The exact file's ownership and mode were repaired without changing its bytes;
+the service identity read check, account-role check and fresh health checks
+pass. A staged-configuration check now catches the original wrong-owner case.
+Cold startup remains slow and needs measurement. The release record preserves
+the incident, failures and limitations rather than reporting uninterrupted
+availability. Catalogue and Public Good counts remain unchanged, and the old
+scheduled publisher remains fenced. Release 60 is the rollback image.
+
+The preceding image deployment was Fly release 60, completed on October 1, 2026
 from `1c22a63fa794d4f26454dbd7bb4e3ad4e56d16b0`, image
 `sha256:b8fa95d5d7ad9003d4d8f29953476c2a1dc3e1a127265ac15caa60bb2ab0b6e2`.
 CI `36820388956` and deployment `36821113262` passed; the gate is off.

@@ -66,6 +66,29 @@ therefore the immediate connection prerequisite. Implement and qualify real
 consent, PKCE, resource and scope validation, expiry and revocation; do not
 report metadata or an ordinary website login as the completed OAuth flow.
 
+## Small components and wider Public Good supply, October 1, 2026
+
+The owner requested deeper coverage of every SDG, including research into AI
+for Good and Gemma 4 Good competitions, toward ten million useful Public Good
+component files. Competition entries are sources of practical needs and
+candidate methods; recognition is not Baltor qualification or redistribution
+permission. Separate code, data, model and media rights.
+
+The owner's subsequent concern is production of discrete small functions,
+files and skills: email standardization, slang lookup, text operations, basic
+retrieval, grep-style searches, database queries and useful corner cases.
+Engineering should produce these directly when their job is clear, alongside
+larger packages. Small size is not a reason to reject a useful component.
+Parameter choices and repeated wrappers do not each become a new capability.
+The existing roadmap, candidate retention and independent publication owners
+remain in place; the target does not substitute for an observed count.
+
+The owner explicitly requested superadmin access for their existing confirmed
+account and intends to use its signed-in browser with Dot. The exact identity
+binding belongs in private host configuration, not this public document.
+Browser staff permissions do not silently expand existing OAuth delegations,
+start a recurring schedule or grant publication of unreviewed submissions.
+
 ## Retained decision table
 
 The table preserves the owner's dated decisions and rationales. Current clarifications above supersede older engineering descriptions of universal per-package execution checks, older counts and earlier creative priorities. Currency is established by current code and release records, not a quoted date.
