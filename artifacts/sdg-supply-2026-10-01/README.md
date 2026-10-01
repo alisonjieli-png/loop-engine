@@ -25,13 +25,16 @@ namespace.
 | 2 | function_extracts | 11 libraries | 78 | 262 |
 | 3 | openapi_operations | 107 | 7,994 | 1,083 |
 | 3 | json_schemas (API components) | same 107 | 7,607 | 5,697 |
+| 2b | data_tables | 874 tables (thin SDGs, fixture banks) | 874 | 0 |
 
 Measured afterwards from the store, over records whose provenance names the
 generating revisions: **31,059 candidate packages and 184,087 distinct file
 bodies** that no other supply candidate holds. Of those, 151,937 are
 generated code, tests, schemas and READMEs, 905 are upstream files copied
 byte for byte, and 31,245 are attribution and licence files. The north star
-does not count the last group as useful files. None of this is a served
+does not count the last group as useful files. The later 874-table batch
+(revisions `fa346712` and `eafa4fe8`) added 874 packages and 5,366 new bodies
+by the run's own store report, for about 31,933 packages and 189,453 bodies. None of this is a served
 count; the catalogue's served-file measure is unchanged until review.
 
 The packages name the original revisions `c625853a`, `872379b1`, `01fe31fd`,
@@ -54,7 +57,7 @@ commits as a git bundle and the revision map.
 
 ## SDG coverage and the next step
 
-[`sdg-source-map.json`](sdg-source-map.json) proposes SDG goals for 762
+[`sdg-source-map.json`](sdg-source-map.json) proposes SDG goals for 1,638
 sources. It feeds reviewers attaching `PublicGoodGrant` goals after
 independent approval, and grants nothing by itself. SDG 5, 10, 14, 6 and 4
 have the fewest sources and remain the thinnest goals.
