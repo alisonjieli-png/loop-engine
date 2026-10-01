@@ -187,6 +187,16 @@ class OfflineTests(unittest.TestCase):
    assert_refusal(self,'output_write_failed',lambda:out.write('payload/escape',b'x'))
    assert_refusal(self,'output_path_invalid',lambda:out.write('../escape',b'x'))
   self.assertFalse((outside/'escape').exists());self.assertFalse((self.base/'escape').exists())
+ def test_ensure_directory_refuses_symlink_before_creating_any_descendant(self):
+  outside=self.base/'outside';outside.mkdir();link=self.base/'link';link.symlink_to(outside,target_is_directory=True)
+  assert_refusal(self,'directory_not_plain',lambda:client.ensure_directory(link/'new'/'nested'))
+  self.assertEqual(list(outside.iterdir()),[])
+ def test_ensure_directory_creates_real_missing_parents_and_refuses_file(self):
+  target=self.base/'real'/'nested';self.assertEqual(client.ensure_directory(target),target)
+  self.assertTrue(target.is_dir());self.assertEqual(client.ensure_directory(target),target)
+  leaf=self.base/'file';leaf.write_text('keep')
+  assert_refusal(self,'directory_not_plain',lambda:client.ensure_directory(leaf/'new'))
+  self.assertEqual(leaf.read_text(),'keep')
  def test_selected_access_refusal_makes_no_manifest_request(self):
   c,t=ready();assert_refusal(self,'selected_body_not_allowed',lambda:client.fetch(c,'sample','1'*64,'req',self.base/'out',search_record('1'*64,None,allowed=False)));self.assertEqual(len(t.requests),1)
  def test_argument_error_does_not_echo_a_secret(self):

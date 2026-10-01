@@ -1,6 +1,6 @@
 # Baltor library skill
 
-One first-party skill, version 0.4.0, for Claude Code, Codex, OpenCode and Pi.
+One first-party skill, version 0.4.1, for Claude Code, Codex, OpenCode and Pi.
 It searches the Baltor library, stages one selected item or complete package
 in a new folder after it checks versions, sizes and SHA-256 digests, and
 places a fetched skill in the client's own skill folder byte for byte. It never
@@ -30,12 +30,15 @@ integrations/baltor-library
 
 ## Status
 
-- Version 0.4.0 is pinned. `release.json` records the SHA-256 digest of each
-  file and the package digest; `release.json` also names the 0.3.0 package
+- Version 0.4.1 is pinned. `release.json` records the SHA-256 digest of each
+  file and the package digest; `release.json` also names the 0.4.0 package
   digest it replaces. The repository check
   `tools/test_baltor_library_integration.py` fails when a byte, a manifest
   version or a native folder changes without the record, and when the copy
   the website serves at `/assets/baltor-library/` differs from these files.
+- Version 0.4.1 refuses symlink ancestry before creating any descendant
+  directory. The regression reproduced an empty directory outside the intended
+  location under version 0.4.0. No downloaded payload was needed to expose it.
 - What 0.4.0 changed, after a customer run on September 27, 2026 found that a
   model retyping a downloaded skill corrupted it: the new `install` command
   places a fetched skill byte for byte, and `verify` checks it later; the
@@ -46,7 +49,7 @@ integrations/baltor-library
   that recorded nothing and names a short wait is sent again after it.
 - The skill is not in the Baltor catalogue. The 0.3.0 bytes are catalogue
   candidate `baltor_library_client`, which waits for independent review; the
-  0.4.0 bytes need their own review before they enter the catalogue. This
+  0.4.1 bytes need their own review before they enter the catalogue. This
   folder is the source distribution of the same files.
 - Observed for version 0.3.0 on September 27, 2026, with the network switched
   off, an empty home folder and no model call. Claude Code 2.1.283 installed
@@ -58,7 +61,7 @@ integrations/baltor-library
   a package and from `.pi/skills`. In a customer run the same day, 0.3.0
   fetched a complete 18-file package from baltor.ai with every file digest
   checked.
-- Not observed yet for 0.4.0: a client loading a skill that `install` placed,
+- Not observed yet for 0.4.1: a client loading a skill that `install` placed,
   a model choosing the skill during a real task, and Windows. The client
   declares POSIX file operations.
 

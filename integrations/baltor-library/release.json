@@ -1,7 +1,7 @@
 {
   "record_type": "baltor_library_integration_release/v1",
   "name": "baltor-library",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "skill_folder": "skills/baltor-library",
   "files": [
     {
@@ -34,15 +34,15 @@
     },
     {
       "path": "scripts/baltor.py",
-      "digest": "47a1ab1062af3cdccab647d576b286cd177f3a6cabe173b7d32514b7408ffb5a",
-      "size_bytes": 42875,
+      "digest": "fb91e58bdf8db6fe9b0b5b4ebe1dee521cef926cac0ef814a49f89929a11b56b",
+      "size_bytes": 43149,
       "media_type": "text/x-python",
       "role": "skill_script"
     },
     {
       "path": "verification/test_client.py",
-      "digest": "0caa181672e69cbf04f56d16e772b9b9f73bda42f9a9bb636ee9cdf081a94bb0",
-      "size_bytes": 30182,
+      "digest": "00a4bf9f2fb7f0da6533a03644be58f51dd83ad08067b591458c25fdb71a723e",
+      "size_bytes": 30969,
       "media_type": "text/x-python",
       "role": "skill_script"
     }
@@ -50,7 +50,7 @@
   "package": {
     "record_type": "catalogue_package/v1",
     "body_form": "package",
-    "package_digest": "c27908e828db2ca64e1749bee0215a6253c5bb7a1ec03e771d1e3bbbfc224d20",
+    "package_digest": "e013bf1a726ee59c636204d350d547984ad6a6fd804411063c2dd6f2c9a233dd",
     "catalogue_identity": "baltor_library_client",
     "declared_effects": [
       "reads_fs",
@@ -94,8 +94,8 @@
     "credential_environment": "BALTOR_SERVICE_TOKEN"
   },
   "source": {
-    "delivery": "consolidation-g/2026-09-27-customer-delivery-path",
-    "previous_version": "0.3.0",
-    "previous_package_digest": "ab45e58b1e1a601b4bc97ab0df84e4c4b37ca814b6c1c9bba5dfdc32578e3926"
+    "delivery": "2026-10-01-user-acceptance-path-confinement",
+    "previous_version": "0.4.0",
+    "previous_package_digest": "c27908e828db2ca64e1749bee0215a6253c5bb7a1ec03e771d1e3bbbfc224d20"
   }
 }

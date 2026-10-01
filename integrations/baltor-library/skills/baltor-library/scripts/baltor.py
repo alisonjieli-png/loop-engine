@@ -21,7 +21,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from urllib.parse import urlsplit
 
-VERSION = '0.4.0'
+VERSION = '0.4.1'
 JSON_LIMIT = 16 * 1024 * 1024
 FILE_LIMIT = 8 * 1024 * 1024
 PACKAGE_LIMIT = 32 * 1024 * 1024
@@ -486,20 +486,25 @@ def fetch(client, selected_identity, digest, request_id, output, selection):
             raise Refusal('local_fetch_failed') from None
 
 def ensure_directory(path):
-    """Create a folder and its missing parents, then refuse unless every part of it is a plain folder."""
+    """Open each parent without following links before creating its descendants."""
     path = Path(path).absolute()
     require('..' not in path.parts, 'directory_path_invalid')
-    current = Path(path.anchor)
-    for part in path.parts[1:]:
-        current = current / part
+    require(os.mkdir in os.supports_dir_fd, 'confined_filesystem_unavailable')
+    with directory_fd(path.anchor) as anchor:
+        fd = os.dup(anchor)
         try:
-            os.mkdir(current, 0o755)
-        except FileExistsError:
-            pass
+            for part in path.parts[1:]:
+                try:
+                    os.mkdir(part, 0o755, dir_fd=fd)
+                except FileExistsError:
+                    pass
+                nxt = os.open(part, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=fd)
+                os.close(fd)
+                fd = nxt
         except OSError:
             raise Refusal('directory_not_plain') from None
-    with directory_fd(path):
-        pass
+        finally:
+            os.close(fd)
     return path
 
 def exists(path):

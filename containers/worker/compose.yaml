@@ -6,7 +6,7 @@ services:
     read_only: true
     cap_drop: [ALL]
     security_opt: [no-new-privileges:true]
-    tmpfs: [/tmp:rw,nosuid,size=512m]
+    tmpfs: ["/tmp:rw,nosuid,size=512m"]
     mem_limit: 1g
     pids_limit: 256
     volumes: ["./project:/work"]

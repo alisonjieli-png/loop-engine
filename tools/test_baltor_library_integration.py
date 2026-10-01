@@ -2,7 +2,7 @@
 
 Kind: continuous integration check.
 
-The folder integrations/baltor-library carries one skill, version 0.4.0, with a Claude Code plugin, a Codex
+The folder integrations/baltor-library carries one skill, version 0.4.1, with a Claude Code plugin, a Codex
 plugin and a Pi package around the same six files. This module holds the promises its README makes:
 
 - the files are the pinned bytes of release.json, whose package digest is the digest of catalogue candidate
@@ -312,13 +312,13 @@ class PinnedReleaseChecks(unittest.TestCase):
             self.assertTrue(any("Codex plugin names version '0.3.1'" in problem for problem in pin_problems(copy)))
 
     def test_the_package_digest_is_the_pinned_version(self):
-        # Version 0.4.0 replaced the 0.3.0 catalogue candidate's bytes; the new bytes need their own review.
+        # The path-confinement repair has its own exact version; it is not an approval of new catalogue bytes.
         release = read_json(PACKAGE / "release.json")
         self.assertEqual(release["package"]["catalogue_identity"], "baltor_library_client")
         self.assertEqual(release["package"]["package_digest"],
-                         "c27908e828db2ca64e1749bee0215a6253c5bb7a1ec03e771d1e3bbbfc224d20")
+                         "e013bf1a726ee59c636204d350d547984ad6a6fd804411063c2dd6f2c9a233dd")
         self.assertEqual(release["source"]["previous_package_digest"],
-                         "ab45e58b1e1a601b4bc97ab0df84e4c4b37ca814b6c1c9bba5dfdc32578e3926")
+                         "c27908e828db2ca64e1749bee0215a6253c5bb7a1ec03e771d1e3bbbfc224d20")
         self.assertEqual(release["package"]["catalogue_publication"], "not_published")
 
     def test_the_website_serves_the_pinned_files(self):
