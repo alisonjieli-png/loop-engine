@@ -623,7 +623,7 @@ curl -sS https://app.baltor.ai/api/v1/health
 
 Transport admission is separate from expensive work. The optional host field
 `http.maximum_transport_concurrency` defaults to 128 and accepts integers from
-2 through 128. Capabilities publish it as `limits.transport_concurrency`.
+2 through 128. Capabilities publish the `transport_concurrency` entry of `limits`.
 Uvicorn counts open connections or in-flight tasks at request admission;
 this is not a bound on accepted TCP sockets or total response memory. The
 eight expensive-operation workers, per-account shares, byte caps and timeouts
