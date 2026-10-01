@@ -17,7 +17,7 @@ import math
 import re
 import uuid
 
-from ..provisioning_server import ACCOUNT_GRANT_RECORD_TYPE, ProvisioningGrant, ProvisioningItemBinding, ProvisioningQualification
+from ..provisioning_server import ACCOUNT_GRANT_RECORD_TYPE, QUALIFICATION_APPROVED, ProvisioningGrant, ProvisioningItemBinding, ProvisioningQualification
 from .catalogue_grants import release_following_grants, snapshot_grants
 from .records import CLIENT_ACCESS_PROFILE, ServiceRuntimeError, digest, text
 
@@ -183,7 +183,7 @@ def _matches(grant, view):
         decision = view.qualification_resolver.resolve(grant.binding)
     except Exception:
         return False
-    return (isinstance(decision, ProvisioningQualification) and decision.status == "approved" and decision.binding == grant.binding
+    return (isinstance(decision, ProvisioningQualification) and decision.status == QUALIFICATION_APPROVED and decision.binding == grant.binding
             and decision.approval_ref == grant.approval_ref)
 
 

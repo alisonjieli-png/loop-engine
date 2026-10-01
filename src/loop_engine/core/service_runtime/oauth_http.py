@@ -11,7 +11,7 @@ import math
 import threading
 import time
 from collections import OrderedDict
-from urllib.parse import parse_qsl, urlencode
+from urllib.parse import parse_qsl, urlencode, urlsplit
 
 from mcp.server.auth.handlers.authorize import AuthorizationHandler
 from mcp.server.auth.handlers.register import RegistrationHandler
@@ -29,8 +29,12 @@ from starlette.responses import JSONResponse
 from .records import ServiceRuntimeError
 
 METADATA_PATH = "/.well-known/oauth-authorization-server"
-AUTHORIZE_PATH, TOKEN_PATH, REGISTER_PATH, REVOKE_PATH = "/authorize", "/token", "/register", "/revoke"
-CONSENT_PATH, CONSENT_API_PATH = "/oauth/consent", "/api/v1/oauth/consent"
+AUTHORIZE_PATH = "/authorize"
+TOKEN_PATH = "/token"
+REGISTER_PATH = "/register"
+REVOKE_PATH = "/revoke"
+CONSENT_PATH = "/oauth/consent"
+CONSENT_API_PATH = "/api/v1/oauth/consent"
 OAUTH_ROUTES = {METADATA_PATH:("GET",), AUTHORIZE_PATH:("GET", "POST"), TOKEN_PATH:("POST",),
                 REGISTER_PATH:("POST",), REVOKE_PATH:("POST",)}
 CREDENTIAL_ROUTES = (AUTHORIZE_PATH, TOKEN_PATH, REGISTER_PATH, REVOKE_PATH, CONSENT_API_PATH)
@@ -52,8 +56,8 @@ def default_provider(runtime, browser_identity, configuration):
     """
     from .oauth_authorization import OPENAI_CALLBACK_PREFIX, OAuthAuthorizationPolicy, OAuthAuthorizationProvider
     if (browser_identity is None or runtime.config.writes_authorized is not True
-            or not configuration.public_base_url.startswith("https://")
-            or not browser_identity.configuration.project_url.startswith("https://")):
+            or urlsplit(configuration.public_base_url).scheme != "https"
+            or urlsplit(browser_identity.configuration.project_url).scheme != "https"):
         return None
     origin = configuration.public_base_url
     policy = OAuthAuthorizationPolicy(origin, origin + "/mcp", browser_identity.configuration.project_url + "/auth/v1",

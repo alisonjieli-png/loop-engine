@@ -46,8 +46,8 @@ records before it takes effect on an existing delegation.
 
 The host admits the documented ChatGPT connector callbacks and explicitly
 listed native loopback paths. It does not accept arbitrary remote callback
-addresses. The supported loopback paths are `/callback`, `/oauth/callback`,
-`/auth/callback` and `/mcp/oauth/callback`; the client selects a valid port.
+addresses. The supported client-local paths are /callback, /oauth/callback,
+/auth/callback and /mcp/oauth/callback; the client selects a valid port.
 No confidential-client, CIMD, ID-token or UserInfo support is advertised.
 
 This uses the existing account sign-in and pinned MCP transport. The bounded

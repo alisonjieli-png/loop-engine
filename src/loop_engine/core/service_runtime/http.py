@@ -749,9 +749,6 @@ def _retry_refusal(code):
 
 def _status(error):
     code = getattr(error, "code", "operation_failed")
-    if isinstance(error, (oauth_http.AuthorizeError, oauth_http.TokenError, oauth_http.RegistrationError)):
-        code = error.error if error.error in oauth_http.OAUTH_ERRORS else "invalid_request"
-        return (403 if code == "access_denied" else 400), code
     if isinstance(error, ServiceHttpError):
         return error.status, code
     # Closed account creation is a state of the service, not a bad request. The identity codes stay ahead
@@ -1235,6 +1232,15 @@ class ServiceHttpApplication:
             return await asyncio.wait_for(asyncio.shield(waiting), self.configuration.request_timeout_seconds)
         except asyncio.TimeoutError:
             raise ServiceHttpError("deadline_exceeded", 504) from None
+
+    async def _consent_work(self, factory, *, shares):
+        """Map the SDK's consent failures at its adapter, before the shared refusal table."""
+        try:
+            return await self._async_work(factory, shares=shares)
+        except (oauth_http.AuthorizeError, oauth_http.TokenError) as error:
+            if error.error == "access_denied":
+                raise ServiceHttpError("access_denied", 403) from None
+            raise ServiceHttpError("invalid_request", 400) from None
 
     def library_settings(self, principal):
         """The account's library setting. Accounts do not store their own yet, so each has the default of the
@@ -2296,7 +2302,7 @@ class ServiceHttpApplication:
                     pairs = list(request.query_params.multi_items())
                     if len(pairs) != 1 or pairs[0][0] != "authorization_id":
                         raise ServiceHttpError("invalid_request")
-                    output = await self._async_work(lambda: self.oauth_authorization.inspect_consent(pairs[0][1]),
+                    output = await self._consent_work(lambda: self.oauth_authorization.inspect_consent(pairs[0][1]),
                                                     shares=(context.principal.tenant_id,))
                 else:
                     fields = _parse_json(await self._body(request))
@@ -2305,7 +2311,7 @@ class ServiceHttpApplication:
                             or fields["decision"] not in ("approve", "deny")):
                         raise ServiceHttpError("invalid_request")
                     decide = self.oauth_authorization.approve_consent if fields["decision"] == "approve" else self.oauth_authorization.deny_consent
-                    redirect = await self._async_work(lambda: decide(fields["authorization_id"], context),
+                    redirect = await self._consent_work(lambda: decide(fields["authorization_id"], context),
                                                      shares=(context.principal.tenant_id,))
                     output = {"record_type":"service_oauth_consent_result/v1", "redirect_uri":redirect}
             elif path == "/api/v1/session" and method == "GET":

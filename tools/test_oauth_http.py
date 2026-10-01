@@ -342,6 +342,28 @@ class HttpOAuthIntegration(unittest.TestCase):
 
 
 class OAuthImportBoundary(unittest.TestCase):
+    def test_sdk_error_adapter_preserves_type_fields_and_python_tracebacks(self):
+        from contextlib import contextmanager
+        from dataclasses import FrozenInstanceError
+        from loop_engine.core.service_runtime import oauth_authorization as adapted
+        from mcp.server.auth import provider as sdk
+        @contextmanager
+        def scope():
+            yield
+        for name in ('AuthorizeError','RegistrationError','TokenError'):
+            cls, base = getattr(adapted,name), getattr(sdk,name)
+            error = cls('invalid_request','Synthetic refusal')
+            self.assertIsInstance(error,base)
+            error.__traceback__ = None
+            with self.assertRaises(FrozenInstanceError):
+                error.error = 'access_denied'
+            with self.assertRaises(base) as captured:
+                with scope():
+                    raise error
+            self.assertIs(captured.exception,error)
+            with self.assertRaises(FrozenInstanceError):
+                base('invalid_request','Known wrong frozen error').__traceback__ = None
+
     def test_authorization_and_inbound_adapter_have_no_outbound_client_imports(self):
         import ast
         from loop_engine.core.service_runtime import oauth_authorization, oauth_http

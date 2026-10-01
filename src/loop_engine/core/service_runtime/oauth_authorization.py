@@ -18,8 +18,8 @@ import secrets
 from urllib.parse import urlsplit
 
 from mcp.server.auth.provider import (
-    AccessToken, AuthorizationCode, AuthorizationParams, AuthorizeError,
-    RefreshToken, RegistrationError, TokenError, construct_redirect_uri,
+    AccessToken, AuthorizationCode, AuthorizationParams, AuthorizeError as _SdkAuthorizeError,
+    RefreshToken, RegistrationError as _SdkRegistrationError, TokenError as _SdkTokenError, construct_redirect_uri,
 )
 from mcp.shared.auth import OAuthClientInformationFull, OAuthToken
 
@@ -28,6 +28,32 @@ from .browser_identity import VerifiedIdentity
 from .http_auth import AuthenticatedHttpRequest, BROWSER_IDENTITY_AUTHENTICATION
 from .records import DEFAULT_SCOPES, ServicePrincipal, ServiceRuntimeError, digest
 from .runtime import ServiceRuntime, SESSION_REVOCATION, SUBJECT
+
+
+class _ExceptionTraceback:
+    """Keep SDK 2.2.0's error fields frozen, but permit Python's exception machinery.
+
+    contextlib/unittest on supported Python 3.11/3.12 assign traceback metadata.
+    The SDK's frozen dataclass exceptions otherwise replace the real refusal
+    with FrozenInstanceError. These subtypes still match every SDK handler.
+    """
+    def __setattr__(self, name, value):
+        if name in ("__traceback__", "__context__", "__cause__", "__suppress_context__"):
+            return BaseException.__setattr__(self, name, value)
+        return super().__setattr__(name, value)
+
+
+class AuthorizeError(_ExceptionTraceback, _SdkAuthorizeError):
+    """SDK-compatible authorization refusal with normal Python traceback behavior."""
+
+
+class RegistrationError(_ExceptionTraceback, _SdkRegistrationError):
+    """SDK-compatible registration refusal with normal Python traceback behavior."""
+
+
+class TokenError(_ExceptionTraceback, _SdkTokenError):
+    """SDK-compatible token refusal with normal Python traceback behavior."""
+
 
 OAUTH_ACCESS_MODE = "oauth_access_token"
 POLICY_VERSION = "service_oauth_authorization_policy/v1"
