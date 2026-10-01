@@ -2286,7 +2286,7 @@ try {
   /* Compare the full protocol surface, including Public Good metadata discovery. */
   const protocolTools=await page.locator("#protocol-tools li").allInnerTexts();
   check("browser_runs_real_initialize_notification_and_tools_list",JSON.stringify(protocolMethods)===JSON.stringify(["initialize","notifications/initialized","tools/list"])
-    &&JSON.stringify(protocolTools)===JSON.stringify(["provisioning_discover","provisioning_list","provisioning_manifest","provisioning_read","intelligence_search","public_good_files","provisioning_report"]),
+    &&JSON.stringify(protocolTools)===JSON.stringify(["provisioning_discover","provisioning_list","provisioning_manifest","provisioning_read","intelligence_search","public_good_files","provisioning_report","provisioning_rate","provisioning_request_material","feedback_review"]),
     {methods:[...protocolMethods],tools:protocolTools});
   check("browser_connection_result_leads_to_a_separate_first_task",(await page.locator("#protocol-result").innerText()).includes("Next, follow your harness guide"));
   await page.route("**/mcp",async route=>{const body=route.request().postDataJSON();if(body?.method==="initialize")await route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({jsonrpc:"2.0",id:"wrong-request",result:{protocolVersion:"2025-11-25"}})});else await route.continue();});

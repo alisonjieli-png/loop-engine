@@ -93,6 +93,37 @@ commands, configuration or logs. Never capture an expanded operator environment.
 | UAT-15 | The owner's dot reports a disconnected test environment before OAuth retest completion. Independently, engineering reads the live setup page and confirms that its OAuth instructions coexist with a sentence denying browser-based authorization. | Preserve the interrupted run as unverified, correct the contradictory setup caption and derive the authentication label from the current capabilities response. Run a fresh live flow after release. | Source corrected and a browser regression added. The interrupted dot run supplies no new OAuth verdict; earlier successful production evidence remains separate. |
 | UAT-16 | The owner identifies defensive implementation language and inconsistent harness journeys on the homepage. The Baltor profile displays an installation refusal instead of a useful workflow. | Lead with setup actions and outcomes; show the current task input layout, keep compatibility in references, and connect verified package files directly to the existing solve input path. | Homepage, pricing and quickstart copy revised in source. Native package-input implementation is in progress; loading, activation and accepted model-backed results have separate checks. |
 
+## October 1 feedback and Dot handoff checks
+
+The new unlisted context and feedback pages share exact HTML/JSON content,
+dated review instructions and content validators. Anonymous reading has no
+feedback-store access or submission effect. The pages remain fetchable for
+Dot while noindex metadata and navigation/sitemap exclusion keep them
+unlisted. They are public content, not private storage. Seven route/record
+tests and the independent fourteen-test Dot/site-map audit pass. Review
+caught timestamp typing, raw text-length and link-validation gaps; regression
+fixtures now refuse those inputs. The first wider self-test also caught a
+missing architecture-map registration and old website test adapters; these
+are repaired before the release gate is rerun.
+
+Customer feedback now has MCP rate and material-request tools, the existing
+API path and a one-shot CLI. The staff-only summary exposes scalar counts.
+Review found that the previous analytics path could read notes despite its
+counts-only role definition. The repaired raw view requires account-detail
+permission or operator authority; analytics uses the counts projection.
+Both responses revalidate access after serialization. Focused checks include
+an actual synthetic OAuth delegation, revoked operator access, staff-role
+demotion and a known-wrong permission control. The browser renderer clears
+earlier details and ignores stale responses; eight focused UI controls pass.
+
+The public feedback page contains reviewed, non-personal themes from the
+owner's QA report. It never exports private notes automatically. The approved
+privacy notice still lacks a complete description of the existing feedback
+records and retention; changing that legal notice remains a separate owner
+approval. Optional request-body diagnostics can retain submitted text when
+explicitly enabled; the default metadata-only journal does not. No new
+diagnostic policy, credential grant or live feedback submission was made.
+
 ## Native discovery observations
 
 The corrected bootstrap client is version 0.4.1. Independent isolated tests

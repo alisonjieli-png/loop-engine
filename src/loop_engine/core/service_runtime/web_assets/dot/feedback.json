@@ -1,14 +1,16 @@
 {
   "record_type": "baltor_dot_brief/v1",
   "title": "Dot feedback review",
-  "updated_at": "2026-10-01T14:21:40Z",
-  "review_after": "2026-10-04T14:21:40Z",
+  "updated_at": "2026-10-01T15:01:24Z",
+  "review_after": "2026-10-04T15:01:24Z",
   "summary": "Reviewed, non-personal improvement themes for Dot to investigate. This public brief starts with the owner's supplied QA findings; customer feedback remains in the authenticated staff view until a suitable summary is reviewed for publication.",
   "sections": [
     {"title":"Read feedback through the appropriate route", "items":[
-      "Customers can rate a downloaded component or request material through the existing authenticated provisioning API. Component problem reports use provisioning_report over MCP and can affect catalogue availability; use a rating for ordinary usefulness feedback.",
+      "Customers can rate a downloaded component or request material through MCP, API or the standalone CLI. MCP tools provisioning_rate and provisioning_request_material use the same authenticated records as the website. Component problem reports use provisioning_report and can affect catalogue availability; use a rating for ordinary usefulness feedback.",
       "The current API uses POST /api/v1/provisioning with record_type service_provisioning_request/v2. A rate operation supplies identity, expected_digest, value (useful or not_useful) and an optional note. A request_material operation supplies a stable request_id and description.",
-      "Authorized staff review customer feedback through the existing administration interface. Dot's connected review should use a counts-only summary, with raw notes remaining in the private staff workflow. A normal customer connection cannot read other customers' feedback.",
+      "Staff-authorized Dot connections can call feedback_review over MCP, or GET /api/v1/admin/feedback/summary, for aggregate counts. The existing analytics role receives counts; detailed notes require superadmin or operator authority. Ordinary OAuth delegation carries customer scopes and cannot read the staff summary. This public reviewed brief remains readable without a staff connection.",
+      "From the source checkout, run python3 tools/baltor_feedback.py rate < rating.json, python3 tools/baltor_feedback.py request_material < request.json, or python3 tools/baltor_feedback.py review. The CLI reads BALTOR_SERVICE_TOKEN from the environment, accepts bounded JSON fields on stdin and makes one request. Its review operation returns counts only. The source and operating guide are linked below.",
+      "Ratings require the exact version previously downloaded by the submitting account. Repeating a rating replaces it; repeating a material request with the same request_id and text returns its existing result. A changed text needs a new request_id. Notes and request descriptions are stored with the account for staff and currently have no automatic expiry.",
       "Use credentials only through the client's configured secret handling. Send a concise task description or reproducible issue; leave passwords, keys, private files and personal case details out of feedback.",
       "This page is an editorial snapshot. Its date and content revision identify the reviewed themes, not a live count of private submissions. It has no anonymous submission form and does not automatically copy customer notes."
     ]},
@@ -26,6 +28,8 @@
     {"id":"public-good-discovery", "title":"Make free components easy to understand and use", "status":"ready", "assignment":"The owner requests a clear Public Good introduction, all 17 goal tiles, other initiatives and useful advanced packages. Compare discoverability from goals against the earlier search-first layout.", "deliverable":"Task-based usability evidence and source-backed package proposals for uncovered country/goal needs.", "acceptance":"Users can find a relevant component and understand the free-account path. Advanced worker-support packages include rights checks, privacy controls and qualified review."}
   ],
   "links":[
+    {"label":"Feedback CLI source", "url":"https://github.com/alisonjieli-png/loop-engine/blob/main/tools/baltor_feedback.py"},
+    {"label":"Complete feedback operating guide", "url":"https://github.com/alisonjieli-png/loop-engine/blob/main/docs/guides/customer-feedback-and-requests.md"},
     {"label":"Library retrieval and feedback guidance", "url":"/docs/searching-and-retrieving"},
     {"label":"Setup", "url":"/setup"},
     {"label":"Privacy notice", "url":"/privacy"}
