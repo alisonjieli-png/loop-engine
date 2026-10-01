@@ -2,7 +2,7 @@
 window.BaltorOAuthConsent = (() => {
   const version = 'service_oauth_consent/v1';
   const scopeLabels = {
-    'provisioning:metadata':'Search and inspect the component library available to your account.',
+    'provisioning:metadata':'Search and inspect your component library, rate downloaded material and send requests for material to staff.',
     'provisioning:read':'Download permitted files and report problems with material you have used.',
     'usage:read':'Read your own recorded library usage.'
   };

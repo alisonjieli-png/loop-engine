@@ -115,6 +115,11 @@ Both responses revalidate access after serialization. Focused checks include
 an actual synthetic OAuth delegation, revoked operator access, staff-role
 demotion and a known-wrong permission control. The browser renderer clears
 earlier details and ignores stale responses; eight focused UI controls pass.
+The independent real-browser review passes forty checks across ordinary,
+developer, analytics and superadmin sessions, including a held successful
+response arriving after logout. The broad website run passes 958 checks and
+detects all 197 injected faults. A separate repeated self-test passes all
+3,689 checks, with two optional integrations explicitly not exercised.
 
 The public feedback page contains reviewed, non-personal themes from the
 owner's QA report. It never exports private notes automatically. The approved

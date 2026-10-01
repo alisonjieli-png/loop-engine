@@ -6,7 +6,7 @@ window.BaltorClientAccess = {
   create({request, element, message, current, said = error => error.message, failureState = () => true}) {
     const $ = id => document.getElementById(id);
     const path = "/api/v1/account/access", version = "service_client_access_request/v1";
-    const scopeLabels = {"provisioning:metadata":"Search permitted material", "provisioning:read":"Download permitted material", "usage:read":"Read service usage"};
+    const scopeLabels = {"provisioning:metadata":"Search material and send library feedback", "provisioning:read":"Download permitted material", "usage:read":"Read service usage"};
     let options = null, active = false, submission = null, loading = null, opened = false;
     const revocations = new Map();
     const eligible = () => { const state = current(); return state.connected && state.mode === "browser_identity" && state.available; };

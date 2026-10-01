@@ -38,6 +38,11 @@ refresh rotates the token pair and cannot increase scopes. `/revoke` ends the
 delegation. Tokens are not returned on an uncertain store commit.
 
 Only `provisioning:metadata`, `provisioning:read` and `usage:read` are offered.
+The metadata scope includes search, inspection, ratings of downloaded material
+and requests for material. These feedback actions write intentional submissions
+for staff. The download scope permits eligible file reads and component problem
+reports. Usage access reads the account's own recorded usage. The consent page
+and client-token labels describe these existing permissions.
 No billing, account administration, raw database access or publication authority
 comes with this connection. Normal account permissions, withdrawals and
 Public Good limits remain in force. Refresh and account disabling are checked

@@ -102,13 +102,13 @@
   },
   "serving-and-connections": {
    "body_address": "/assets/docs/serving-and-connections.html",
-   "body_digest": "ca5b9eb102b05ed73a98a1c668a219d738c4ded90e05536d0f37bd95826f9a7a",
+   "body_digest": "8c37f38b8b56a2fca90e1a914d3bcaa25e5c88060bd77cec6203e094e44c050b",
    "heading": "Serving and connections",
    "id": "serving-and-connections",
    "kind_line": "Kind: technical reference for the published protocol, direct interface and refusal codes.",
    "record_type": "website_documentation_page/v1",
    "repository_path": "docs/guides/service-serving-and-connections.md",
-   "source_digest": "94be9f0875ef248a151cb79110f9706f3a82686646c282cff11bd35780e3035e",
+   "source_digest": "00a96e55015e17e5ae794460ddb99f914eb87a3f57e5ecd2bfa2fc9d2fda9ae3",
    "title": "Serving and connections"
   },
   "troubleshooting": {

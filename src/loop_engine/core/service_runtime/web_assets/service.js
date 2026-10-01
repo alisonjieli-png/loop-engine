@@ -250,7 +250,7 @@ const applyPaymentState = name => {
     $("feedback-admin").hidden = true; $("feedback-counts").replaceChildren(); $("feedback-requests").replaceChildren(); $("feedback-gaps").replaceChildren(); message("feedback-message", "");
     $("material-request-description").value = ""; message("material-request-message", materialRequestNote);
     $("issued-token").value = ""; $("issued-access").hidden = true; $("access-list").replaceChildren(); $("token-label").value = "";
-    message("admin-message", "Sign in with an administrator service token. Email is not required.");
+    message("admin-message", "Sign in with your staff account or an authorized administrator service token.");
     $("test-protocol").disabled = true; $("setup-identity").textContent = "Sign in with a client token to run the connection check.";
     $("protocol-tools").replaceChildren(); message("protocol-result", "Not tested. No model calls are made by this check.");
     clientAccess?.reset(); catalogueBrowser?.reset();

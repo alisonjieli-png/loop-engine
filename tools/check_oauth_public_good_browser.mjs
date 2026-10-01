@@ -34,7 +34,7 @@ try:
 finally:
     case.stack.close()
 `;
-let child,browser,fixtureStderr='';
+let child,browser,lastPage,fixtureStderr='';
 try{
  child=spawn(resolve(root,'.venv/bin/python'),['-u','-c',boot],{cwd:root,env:{...process.env,PYTHONPATH:'src:tools'},stdio:['pipe','pipe','pipe']});
  child.stderr.on('data',chunk=>{fixtureStderr=(fixtureStderr+chunk.toString()).slice(-4000);});
@@ -53,7 +53,7 @@ try{
   if(url.origin+url.pathname===fixture.callback){callback=url.href;return route.fulfill({status:200,contentType:'text/html',body:'<h1>Synthetic app callback</h1>'});}
   blocked.push(url.origin+url.pathname);return route.abort();
  });
- const page=await context.newPage();page.on('pageerror',error=>errors.push(String(error)));
+ const page=await context.newPage();lastPage=page;page.on('pageerror',error=>errors.push(String(error)));
  for(const width of [1440,390]){
   await page.setViewportSize({width,height:900});await page.goto(base+'/public-good');
   await page.waitForSelector('.pg-item');
@@ -103,6 +103,7 @@ try{
  await page.fill('#login-email','synthetic@example.invalid');await page.fill('#login-password','synthetic-password-not-a-real-secret');await page.locator('#email-login-button').click();
  await page.waitForFunction(()=>location.pathname==='/oauth/consent'&&!document.getElementById('oauth-approve').disabled);
  check('normal_sign_in_resumes_consent_without_api_key',decisions===0&&await page.locator('#oauth-client-name').textContent()==='Synthetic QA client');
+ check('consent_explains_metadata_feedback_writes',(await page.locator('#oauth-consent-scopes').textContent()).includes('send requests for material to staff'));
  for(const width of [1440,390]){
   await page.setViewportSize({width,height:900});check('consent_'+width+'_no_overflow',await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
   const file=output.replace(/\.json$/,`-consent-${width}.png`);await page.screenshot({path:file,fullPage:false});screenshots.push(file);
@@ -142,7 +143,9 @@ try{
  check('missing_key_controls_setup_link_reports_unavailable',await page.locator('[data-client-controls-unavailable]').isVisible()
    &&await page.locator('#client-access-controls').isHidden());
  check('no_browser_errors',errors.length===0,{errors});check('no_unexpected_network',blocked.length===0,{blocked});
-}catch(error){checks.push({name:'completed_browser_sequence',passed:false,detail:{message:String(error)}});}
+}catch(error){checks.push({name:'completed_browser_sequence',passed:false,detail:{message:String(error),
+ state:lastPage?await lastPage.evaluate(()=>({path:location.pathname,
+  fields:Object.fromEntries(['connection-state','browse-detail','browse-message','oauth-consent-status'].map(id=>[id,document.getElementById(id)?.textContent?.slice(0,1000)||'']))})).catch(()=>null):null}});}
 finally{if(browser)await browser.close();if(child&&child.exitCode===null&&child.signalCode===null){
  const ended=new Promise(done=>child.once('exit',done));child.stdin.end('\n');await ended;}
  writeFileSync(output,JSON.stringify({record_type:'oauth_public_good_browser_check/v1',all_passed:checks.every(check=>check.passed),checks,errors,blocked,screenshots,limits:['Synthetic identity provider; production and real ChatGPT connections are separate checks.']},null,2)+'\n');}
