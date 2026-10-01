@@ -563,6 +563,16 @@ has the full rules and the
 [operations runbook](../../guides/launch-setup-runbook.md#publish-and-roll-back-a-catalogue-release)
 the procedure.
 
+Daily/additive operator tooling uses `tools/reconcile_catalogue_bundle.py`
+before `tools/publish_catalogue_delta.py`: unchanged canonical rows and exact
+versions are retained, additions/replacements/withdrawals are declared, and
+the same observed base is bound through build, pre-upload and server-side
+compare-and-swap.
+The private proof adds no admission or access authority. A delta-only baseline
+uses explicit read-only blob roots; the output remains a full metadata snapshot
+with delta blobs, not a claimed full-body archive. The runbook's preservation
+procedure includes the rearm gates; the tooling does not change schedules.
+
 ## Designed but not built
 
 The component reports these as explicit negative facts rather than leaving them

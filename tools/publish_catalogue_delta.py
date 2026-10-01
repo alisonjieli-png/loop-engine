@@ -16,13 +16,22 @@ Measured on September 28, 2026 against the slot bundle daily-2026-09-28-10: 51,5
 were uploaded whole, of which the volume already held almost every byte. This tool uploads the missing
 share and writes the two manifest files instead.
 
-Usage: publish_catalogue_delta.py NAME BUNDLE_FOLDER BUNDLE_DIGEST [--dry-run]
+Usage: publish_catalogue_delta.py NAME BUNDLE_FOLDER BUNDLE_DIGEST
+       --base-bundle BASE --base-release RELEASE --reconciliation-digest DIGEST
+       [--body-root ROOT] [--accept-license LICENSE] [--dry-run]
   NAME           the slot name, used for the staging folder and the record
   BUNDLE_FOLDER  the local bundle directory holding bundle.json, items.jsonl and blobs/
   BUNDLE_DIGEST  the digest the bundle builder printed
 
 Every command is reached through tools/fly_operator.py, the same operator credential path the rest of the
 release uses. No secret is read here and no address is taken from the environment.
+
+Existing releases require an exact full baseline and the reconciliation proof
+from reconcile_catalogue_bundle.py. A delta-only baseline needs explicit local
+body roots for its missing files. Bootstrap and deliberate rollback remain the
+existing service operator's separate operations; no-base delta publication is
+not a bypass around preservation. Dry-run checks the local proof/bytes but makes
+no live request, so it is not a current-live publication permission.
 """
 from __future__ import annotations
 
@@ -223,8 +232,8 @@ def upload_missing(bundle: Path, missing: list[str], remote: str) -> None:
         raise RuntimeError(f"{len(absent)} blobs did not arrive, so nothing was published: {absent[:5]}")
 
 
-def active_release() -> str:
-    """The publicly observed active view, or unknown. Publication uses a server-side CAS too."""
+def active_catalogue() -> dict:
+    """Bounded public metadata only. A failed/unknown view grants nothing."""
     try:
         root = Path(__file__).resolve().parents[1]
         hostname = json.loads((root / "src/loop_engine/core/service_runtime/web_site_map.json").read_text())["canonical_hostname"]
@@ -232,11 +241,17 @@ def active_release() -> str:
         with urlopen(address, timeout=15) as response:
             raw = response.read(128 * 1024 + 1)
         if len(raw) > 128 * 1024:
-            return ""
-        identifier = json.loads(raw)["result"]["catalogue_release"]["release_id"]
-        return identifier if isinstance(identifier, str) and re.fullmatch(r"[0-9a-f]{64}", identifier) else ""
+            return {}
+        view = json.loads(raw)["result"]["catalogue_release"]
+        return view if isinstance(view, dict) else {}
     except (OSError, ValueError, KeyError):
-        return ""
+        return {}
+
+
+def active_release() -> str:
+    """Current pointer observation; success also needs our exact result and header digest."""
+    identifier = active_catalogue().get("release_id")
+    return identifier if isinstance(identifier, str) and re.fullmatch(r"[0-9a-f]{64}", identifier) else ""
 
 
 def base_digests(folder: Path) -> set[str]:
@@ -256,17 +271,38 @@ def base_digests(folder: Path) -> set[str]:
     return {file["digest"] for row in rows for file in row["package"]["files"]}
 
 
+def publication_inputs(bundle, digest, base_bundle, base_release, reconciliation_digest, body_roots, accepted_licenses):
+    """Read-only exact preservation and complete local-byte qualification before remote effects."""
+    from reconcile_catalogue_bundle import (PROOF_FILE, check_proof, load_bundle, read_control, verify_files)
+    if (base_bundle is None or not isinstance(base_release, str) or not re.fullmatch(r"[0-9a-f]{64}", base_release)
+            or not isinstance(reconciliation_digest, str) or not re.fullmatch(r"[0-9a-f]{64}", reconciliation_digest)):
+        raise ValueError("a current base bundle/release and exact reconciliation digest are required")
+    raw, proof = read_control(bundle / PROOF_FILE)
+    if hashlib.sha256(raw).hexdigest() != reconciliation_digest:
+        raise ValueError("reconciliation proof differs from its expected digest")
+    base, candidate = (load_bundle(Path(folder), accepted_licenses) for folder in (base_bundle, bundle))
+    if candidate.digest != digest:
+        raise ValueError("the expected bundle digest must match the local header before upload")
+    changes = check_proof(base, candidate, proof)
+    if changes.base_release != base_release:
+        raise ValueError("publication and build name different base releases")
+    held = verify_files(base, body_roots)
+    verify_files(candidate, (base.folder / "blobs", *body_roots))
+    return base, changes, proof, set(held)
+
+
 def publish(name: str, bundle: Path, digest: str, *, base_bundle: Path | None = None,
-            base_release: str | None = None) -> dict:
+            base_release: str | None = None, reconciliation_digest: str | None = None,
+            body_roots=(), accepted_licenses=("MIT",)) -> dict:
     """Upload what is missing, write the release folder, and move the pointer by the ordinary command."""
     if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,95}", name):
         raise ValueError("a release name must be one safe path segment")
     if not re.fullmatch(r"[0-9a-f]{64}", digest) or hashlib.sha256((bundle / "bundle.json").read_bytes()).hexdigest() != digest:
         raise ValueError("the expected bundle digest must match the local header before upload")
-    if base_bundle is not None and (not base_release or not re.fullmatch(r"[0-9a-f]{64}", base_release)):
-        raise ValueError("a base bundle requires the exact release it represents")
-    if base_release is not None and active_release() != base_release:
-        raise RuntimeError("the active release differs from the declared base; no upload was started")
+    from reconcile_catalogue_bundle import require_live_base
+    base, changes, proof, present = publication_inputs(bundle, digest, base_bundle, base_release,
+        reconciliation_digest, body_roots, accepted_licenses)
+    require_live_base(base, changes, active_catalogue())
     remote = f"delta-{name}-{uuid.uuid4().hex[:12]}"
     result_path = f"{REMOTE_ROOT}/{remote}/publish-result.json"
     kept_receipt = f"{REMOTE_ROOT}/{remote}.publish.json"
@@ -275,7 +311,6 @@ def publish(name: str, bundle: Path, digest: str, *, base_bundle: Path | None = 
     local = blob_digests(bundle)
     sizes = {path.name: path.stat().st_size
              for path in (bundle / "blobs" / "sha256").glob("*/*") if path.is_file()}
-    present = base_digests(base_bundle) if base_bundle is not None else remote_digests()
     missing = [value for value in local if value not in present]
     total_bytes = sum(sizes.values())
     missing_bytes = sum(sizes[value] for value in missing)
@@ -283,11 +318,10 @@ def publish(name: str, bundle: Path, digest: str, *, base_bundle: Path | None = 
             "already_present": len(local) - len(missing), "uploading": len(missing),
             "bundle_bytes": total_bytes, "upload_bytes": missing_bytes,
             "share_of_full_upload": round(missing_bytes / total_bytes, 4) if total_bytes else None,
-            "batches": len(group_batches(missing, sizes))}
+            "batches": len(group_batches(missing, sizes)), "base_release": base_release,
+            "reconciliation_digest": reconciliation_digest}
     print(json.dumps(plan, indent=2), flush=True)
-    if not local:
-        raise RuntimeError("the bundle holds no blobs, so nothing would be published")
-
+    # A declared withdrawal-only/no-op snapshot can have no new local blobs.
     upload_missing(bundle, missing, remote)
     for filename in ("bundle.json", "items.jsonl"):
         fly("ssh", "sftp", "put", str(bundle / filename), f"{REMOTE_ROOT}/{remote}/{filename}",
@@ -295,11 +329,8 @@ def publish(name: str, bundle: Path, digest: str, *, base_bundle: Path | None = 
     # Payloads are readable; only the receipt's containing directory needs service ownership.
     machine_exec(f"chown 65534:65534 {REMOTE_ROOT}/{remote}", timeout=60)
 
-    before = active_release()
-    if not before:
-        raise RuntimeError("the active release could not be read before publishing; nothing was published")
-    if base_release is not None and before != base_release:
-        raise RuntimeError("the active release differs from the declared base; rebuild the combined snapshot")
+    require_live_base(base, changes, active_catalogue())
+    before = base_release
     machine_exec(
         f"{AS_SERVICE} sh -c 'nohup loop-engine service publish-catalogue --config /data/host.json "
         f"--bundle {REMOTE_ROOT}/{remote} --expected-bundle-digest {digest} --expected-release {before} "
@@ -310,19 +341,23 @@ def publish(name: str, bundle: Path, digest: str, *, base_bundle: Path | None = 
     while time.monotonic() < deadline:
         time.sleep(60)
         minute += 1
-        now = active_release()
+        observed = active_catalogue()
+        now = observed.get("release_id", "")
         if now:
             try:
                 receipt = json.loads(machine_exec(f"tail -c 8192 {result_path}", timeout=60))
                 result = receipt.get("result", receipt)
             except (RuntimeError, ValueError):
                 result = {}
-            if result.get("release_id") == now and result.get("bundle_digest") == digest:
+            if (result.get("release_id") == now == proof["result_release"]
+                    and result.get("content_digest") == observed.get("content_digest") == proof["result_content_digest"]
+                    and result.get("bundle_digest") == digest):
                 # Keep the receipt. Only this completed, identified staging folder is disposable.
                 machine_exec(f"cp {result_path} {kept_receipt}", timeout=60)
                 machine_exec(f"rm -r {REMOTE_ROOT}/{remote}", timeout=300)
                 return {"published": True, "active_release_id": now, "waited_minutes": minute,
-                        "receipt": kept_receipt, **plan}
+                        "receipt": kept_receipt, "bundle_digest": digest,
+                        "content_digest": proof["result_content_digest"], **plan}
         try:
             refused = machine_exec(
                 f"grep -q '\\\"refused\\\": true\\|Error\\|Traceback' {result_path} "
@@ -344,6 +379,10 @@ def main() -> int:
     parser.add_argument("--base-bundle", type=Path,
                         help="previous validated bundle inventory; avoids scanning the remote volume")
     parser.add_argument("--base-release", help="the active release represented by the base bundle")
+    parser.add_argument("--reconciliation-digest", help="SHA-256 of the exact private reconciliation.json proof")
+    parser.add_argument("--body-root", action="append", type=Path, default=[],
+                        help="Explicit read-only blob root (holding sha256/) for a delta-only baseline")
+    parser.add_argument("--accept-license", action="append", default=[], help="Repeat the host's accepted licence labels")
     parser.add_argument("--dry-run", action="store_true",
                         help="report the delta and write nothing")
     arguments = parser.parse_args()
@@ -353,10 +392,16 @@ def main() -> int:
             print(f"the bundle folder has no {required}", file=sys.stderr)
             return 2
     if arguments.dry_run:
+        try:
+            _base, _changes, _proof, present = publication_inputs(bundle, arguments.bundle_digest,
+                arguments.base_bundle, arguments.base_release, arguments.reconciliation_digest,
+                tuple(arguments.body_root), tuple(arguments.accept_license) or ("MIT",))
+        except (OSError, ValueError, RuntimeError) as error:
+            print(f"the delta plan refused: {error}", file=sys.stderr)
+            return 1
         local = blob_digests(bundle)
         sizes = {path.name: path.stat().st_size
                  for path in (bundle / "blobs" / "sha256").glob("*/*") if path.is_file()}
-        present = base_digests(arguments.base_bundle) if arguments.base_bundle is not None else remote_digests()
         missing = [value for value in local if value not in present]
         total = sum(sizes.values())
         print(json.dumps({"local_blobs": len(local), "already_present": len(local) - len(missing),
@@ -367,8 +412,11 @@ def main() -> int:
         return 0
     try:
         print(json.dumps(publish(arguments.name, bundle, arguments.bundle_digest,
-                                 base_bundle=arguments.base_bundle, base_release=arguments.base_release), indent=2))
-    except RuntimeError as error:
+                                 base_bundle=arguments.base_bundle, base_release=arguments.base_release,
+                                 reconciliation_digest=arguments.reconciliation_digest,
+                                 body_roots=tuple(arguments.body_root),
+                                 accepted_licenses=tuple(arguments.accept_license) or ("MIT",)), indent=2))
+    except (OSError, ValueError, RuntimeError) as error:
         print(f"the delta publish failed: {error}", file=sys.stderr)
         return 1
     return 0

@@ -158,105 +158,147 @@ class DeltaUploadGuarantees(unittest.TestCase):
 
 
 class DeltaPublishOrder(unittest.TestCase):
-    """The pointer moves by the ordinary command, and only after every blob is present."""
+    """Current-base publication, exercised through real local bundle/proof readers."""
 
-    def test_the_publish_command_carries_the_builders_digest_and_the_staged_release(self):
-        recorded = []
+    def setUp(self):
+        import reconcile_catalogue_bundle as reconcile
+        from test_reconcile_catalogue_bundle import bundle, line, request, observation
+        self.reconcile = reconcile
+        self.folder = tempfile.TemporaryDirectory()
+        self.addCleanup(self.folder.cleanup)
+        root = Path(self.folder.name)
+        self.base = bundle(root/'base', [line('old','held')], ['held'])
+        self.update = bundle(root/'update', [line('new','new'),line('same-bytes','held')], ['new','held'])
+        changes = request(self.base, additions=('new','same-bytes'))
+        self.before = observation(self.base)
+        self.output = root/'output'
+        self.plan = reconcile.write_reconciled(self.base,(self.update,),changes,self.output,self.before)
+        self.digest = self.plan['bundle_digest']
+        self.kwargs = {'base_bundle':self.base.folder, 'base_release':'a'*64,
+                       'reconciliation_digest':self.plan['reconciliation_digest']}
+        self.proof = json.loads((self.output/reconcile.PROOF_FILE).read_text())
+        self.after = {**self.before, 'release_id':self.proof['result_release'],
+                      'content_digest':self.proof['result_content_digest'], 'items':3}
+        self.result = {'release_id':self.after['release_id'], 'content_digest':self.after['content_digest'],
+                       'bundle_digest':self.digest}
+        self.commands = []
 
-        # A real prior release id, so the flow reaches the publish command; the pointer never moves
-        # because every later status read still names the old release, and the wait expires.
-        prior = "release-before"
+    def execute(self, command, **kwargs):
+        self.commands.append(command)
+        return json.dumps({'result':self.result}) if 'tail -c' in command else ''
 
-        def fake_exec(command, **kwargs):
-            recorded.append(command)
-            if "catalogue-status" in command:
-                return json.dumps({"result": {"active_release_id": prior}})
-            return ""
+    def simulate(self, observations=None):
+        from contextlib import ExitStack
+        with ExitStack() as stack:
+            stack.enter_context(mock.patch.object(delta,'machine_exec',side_effect=self.execute))
+            stack.enter_context(mock.patch.object(delta,'active_catalogue',side_effect=observations or [self.before,self.before,self.after]))
+            upload=stack.enter_context(mock.patch.object(delta,'upload_missing'))
+            stack.enter_context(mock.patch.object(delta,'fly',return_value=''))
+            stack.enter_context(mock.patch.object(delta.time,'monotonic',side_effect=[0,0,2]))
+            stack.enter_context(mock.patch.object(delta.time,'sleep'))
+            stack.enter_context(mock.patch.object(delta,'POINTER_WAIT_SECONDS',1))
+            answer=delta.publish('slot',self.output,self.digest,**self.kwargs)
+            return answer,upload
 
-        with tempfile.TemporaryDirectory() as tmp:
-            bundle = _bundle(Path(tmp), {"a" * 64: 4})
-            digest = hashlib.sha256((bundle / "bundle.json").read_bytes()).hexdigest()
-            with mock.patch.object(delta, "machine_exec", side_effect=fake_exec), \
-                    mock.patch.object(delta, "active_release", return_value=prior), \
-                    mock.patch.object(delta, "upload_missing") as upload, \
-                    mock.patch.object(delta, "fly", return_value=""), \
-                    mock.patch.object(delta, "POINTER_WAIT_SECONDS", 0):
-                with self.assertRaises(RuntimeError):
-                    delta.publish("slot", bundle, digest)
-        self.assertEqual(upload.call_count, 1, "every blob is uploaded before the pointer moves")
-        joined = " ".join(recorded)
-        self.assertIn("publish-catalogue", joined)
-        self.assertIn(digest, joined)
-        self.assertIn("--expected-bundle-digest", joined)
-        self.assertIn("--expected-release " + prior, joined)
+    def test_exact_result_and_live_content_confirm_only_our_release(self):
+        answer,upload=self.simulate()
+        self.assertTrue(answer['published'])
+        self.assertEqual(answer['active_release_id'],self.proof['result_release'])
+        self.assertEqual(upload.call_args.args[1],[hashlib.sha256(b'new').hexdigest()])
+        command=next(value for value in self.commands if 'publish-catalogue' in value)
+        self.assertIn('--expected-bundle-digest '+self.digest,command)
+        self.assertIn('--expected-release '+'a'*64,command)
+        self.assertTrue(any('rm -r' in command for command in self.commands))
 
-    def test_publish_uploads_only_the_blobs_the_volume_lacks(self):
-        # Known-wrong control for the delta itself: when the arithmetic was ignored and every local
-        # blob uploaded, this saw the whole bundle going up and failed.
-        prior = "release-before"
-        recorded = []
+    def test_a_stale_base_refuses_before_any_remote_effect(self):
+        with mock.patch.object(delta,'active_catalogue',return_value={**self.before,'release_id':'b'*64}), \
+                mock.patch.object(delta,'machine_exec') as remote, mock.patch.object(delta,'upload_missing') as upload:
+            with self.assertRaisesRegex(ValueError,'live baseline'):
+                delta.publish('slot',self.output,self.digest,**self.kwargs)
+            remote.assert_not_called()
+            upload.assert_not_called()
 
-        def fake_exec(command, **kwargs):
-            recorded.append(command)
-            if "catalogue-status" in command:
-                return json.dumps({"result": {"active_release_id": prior}})
-            return ""
+    def test_base_content_mismatch_refuses_before_any_remote_effect(self):
+        with mock.patch.object(delta,'active_catalogue',return_value={**self.before,'content_digest':'b'*64}), \
+                mock.patch.object(delta,'machine_exec') as remote:
+            with self.assertRaisesRegex(ValueError,'live baseline'):
+                delta.publish('slot',self.output,self.digest,**self.kwargs)
+            remote.assert_not_called()
 
-        with tempfile.TemporaryDirectory() as tmp:
-            bundle = _bundle(Path(tmp), {"a" * 64: 4, "b" * 64: 4, "c" * 64: 4})
-            with mock.patch.object(delta, "machine_exec", side_effect=fake_exec), \
-                    mock.patch.object(delta, "active_release", return_value=prior), \
-                    mock.patch.object(delta, "remote_digests", return_value={"a" * 64, "b" * 64}), \
-                    mock.patch.object(delta, "fly", return_value=""), \
-                    mock.patch.object(delta, "POINTER_WAIT_SECONDS", 0):
-                upload = mock.MagicMock()
-                with mock.patch.object(delta, "upload_missing", upload):
-                    with self.assertRaises(RuntimeError):
-                        delta.publish("slot", bundle, hashlib.sha256((bundle / "bundle.json").read_bytes()).hexdigest())
-        self.assertEqual(upload.call_args.args[1], ["c" * 64],
-                         "only the blob the volume lacks is uploaded")
+    def test_concurrent_pointer_move_after_upload_refuses_server_publish(self):
+        with self.assertRaisesRegex(ValueError,'live baseline'):
+            self.simulate([self.before,{**self.before,'release_id':'c'*64}])
+        self.assertFalse(any('publish-catalogue' in command for command in self.commands))
+        self.assertFalse(any('rm -r' in command for command in self.commands))
 
-    def test_a_bundle_with_no_blobs_refuses_before_any_upload(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            bundle = Path(tmp)
-            (bundle / "blobs" / "sha256").mkdir(parents=True)
-            (bundle / "bundle.json").write_text("{}")
-            (bundle / "items.jsonl").write_text("")
-            with mock.patch.object(delta, "machine_exec", return_value=""), \
-                    mock.patch.object(delta, "upload_missing") as upload:
-                with self.assertRaises(RuntimeError):
-                    delta.publish("slot", bundle, hashlib.sha256((bundle / "bundle.json").read_bytes()).hexdigest())
-        self.assertEqual(upload.call_count, 0)
+    def test_unrelated_pointer_or_wrong_result_content_never_confirms(self):
+        for mutate in ('pointer','result_content','live_content'):
+            with self.subTest(mutate=mutate):
+                self.commands=[]
+                after=dict(self.after)
+                self.result={'release_id':self.after['release_id'],'content_digest':self.after['content_digest'],'bundle_digest':self.digest}
+                if mutate=='pointer':after['release_id']='c'*64;self.result['release_id']='c'*64
+                elif mutate=='result_content':self.result['content_digest']='d'*64
+                else:after['content_digest']='e'*64
+                with self.assertRaisesRegex(RuntimeError,'uncertain publication'):
+                    self.simulate([self.before,self.before,after])
+                self.assertFalse(any('rm -r' in command for command in self.commands))
 
-    def test_bad_names_and_wrong_header_digests_refuse_before_remote_effects(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            bundle = _bundle(Path(tmp), {"a" * 64: 4})
-            for name, digest in (("../escape", "d" * 64), ("safe", "0" * 64)):
-                with mock.patch.object(delta, "machine_exec") as remote:
-                    with self.assertRaises(ValueError):
-                        delta.publish(name, bundle, digest)
-                    remote.assert_not_called()
+    def test_changed_proof_or_missing_base_is_not_a_legacy_bypass(self):
+        for kwargs in ({}, {**self.kwargs,'reconciliation_digest':'0'*64},
+                       {**self.kwargs,'base_release':'b'*64}):
+            with self.subTest(kwargs=kwargs), mock.patch.object(delta,'machine_exec') as remote:
+                with self.assertRaises(ValueError):
+                    delta.publish('slot',self.output,self.digest,**kwargs)
+                remote.assert_not_called()
 
-    def test_another_publishers_pointer_does_not_confirm_or_clean_our_upload(self):
-        recorded = []
-        def execute(command, **kwargs):
-            recorded.append(command)
-            if "tail -c" in command:
-                return json.dumps({"result": {"release_id": "another", "bundle_digest": "different"}})
-            return ""
-        with tempfile.TemporaryDirectory() as tmp:
-            bundle = _bundle(Path(tmp), {"a" * 64: 4})
-            digest = hashlib.sha256((bundle / "bundle.json").read_bytes()).hexdigest()
-            with mock.patch.object(delta, "machine_exec", side_effect=execute), \
-                    mock.patch.object(delta, "remote_digests", return_value={"a" * 64}), \
-                    mock.patch.object(delta, "active_release", side_effect=["before", "another"]), \
-                    mock.patch.object(delta, "fly", return_value=""), \
-                    mock.patch.object(delta.time, "monotonic", side_effect=[0, 0, 2]), \
-                    mock.patch.object(delta.time, "sleep"), mock.patch.object(delta, "POINTER_WAIT_SECONDS", 1):
-                with self.assertRaisesRegex(RuntimeError, "uncertain publication"):
-                    delta.publish("safe", bundle, digest)
-        self.assertFalse(any("rm -r" in command for command in recorded))
+    def test_bad_names_and_wrong_headers_refuse_before_remote_effects(self):
+        for name,digest in (('../escape',self.digest),('safe','0'*64)):
+            with mock.patch.object(delta,'machine_exec') as remote:
+                with self.assertRaises(ValueError):
+                    delta.publish(name,self.output,digest,**self.kwargs)
+                remote.assert_not_called()
 
+    def test_declared_withdrawal_only_snapshot_needs_no_new_blob_upload(self):
+        from test_reconcile_catalogue_bundle import bundle,line,request,observation
+        root=Path(self.folder.name)
+        base=bundle(root/'withdraw-base',[line('kept','held'),line('removed','removed')],['held','removed'])
+        version=next(item.version for item in base.items if item.identity=='removed')
+        changes=request(base,withdrawals=({'identity':'removed','expected_version':version,'note':'Explicit withdrawal'},))
+        self.before=observation(base)
+        self.base=base
+        self.output=root/'withdraw-output'
+        self.plan=self.reconcile.write_reconciled(base,(),changes,self.output,self.before)
+        self.digest=self.plan['bundle_digest']
+        self.kwargs={'base_bundle':base.folder,'base_release':'a'*64,'reconciliation_digest':self.plan['reconciliation_digest']}
+        self.proof=json.loads((self.output/self.reconcile.PROOF_FILE).read_text())
+        self.after={**self.before,'release_id':self.proof['result_release'],'content_digest':self.proof['result_content_digest'],'items':1}
+        self.result={'release_id':self.after['release_id'],'content_digest':self.after['content_digest'],'bundle_digest':self.digest}
+        answer,upload=self.simulate()
+        self.assertTrue(answer['published'])
+        self.assertEqual(upload.call_args.args[1],[])
+
+    def test_missing_live_row_with_a_rehashed_proof_still_refuses(self):
+        from test_reconcile_catalogue_bundle import bundle,line
+        bad=bundle(Path(self.folder.name)/'bad',[line('new','new'),line('same-bytes','held')],['new','held'])
+        proof={**self.proof,'bundle_digest':bad.digest}
+        raw=json.dumps(proof).encode()
+        (bad.folder/self.reconcile.PROOF_FILE).write_bytes(raw)
+        with mock.patch.object(delta,'machine_exec') as remote:
+            with self.assertRaisesRegex(ValueError,'preservation'):
+                delta.publish('slot',bad.folder,bad.digest,base_bundle=self.base.folder,
+                    base_release='a'*64,reconciliation_digest=hashlib.sha256(raw).hexdigest())
+            remote.assert_not_called()
+
+    def test_dry_run_verifies_locally_without_any_live_request(self):
+        argv=['publish_catalogue_delta.py','slot',str(self.output),self.digest,
+              '--base-bundle',str(self.base.folder),'--base-release','a'*64,
+              '--reconciliation-digest',self.plan['reconciliation_digest'],'--dry-run']
+        with mock.patch('sys.argv',argv),mock.patch.object(delta,'active_catalogue') as live, \
+                mock.patch.object(delta,'machine_exec') as remote:
+            self.assertEqual(delta.main(),0)
+            live.assert_not_called()
+            remote.assert_not_called()
 
 if __name__ == "__main__":
     unittest.main()

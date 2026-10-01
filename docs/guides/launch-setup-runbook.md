@@ -450,7 +450,7 @@ Once, before the first release:
    `ssh sftp put`, and restart the Machine. From this moment release 16 and
    every older release refuse the host file. Check that `/api/v1/health` answers ready.
 
-For each release:
+For an initial bootstrap only (later updates use the preservation procedure below):
 
 1. Build the bundle on this workstation, outside the repository:
    `PYTHONPATH=src python tools/build_catalogue_release_bundle.py --catalogue examples/29_intelligence_service/starter-catalogue --output ~/baltor-bundles/NAME --notes "WHAT CHANGED" --write`.
@@ -494,6 +494,83 @@ For each release:
    `flyctl machine exec MACHINE "AS_SERVICE rm -r /data/incoming/NAME /data/incoming/NAME.tar" --app baltor-pilot`.
    The body store keeps its own copy, and two copies of a large library take a
    large share of the one gigabyte volume.
+
+#### Preserve the current catalogue on daily and additive updates
+
+Start from the full metadata snapshot of the current live release. A source
+folder list can omit later additions, and changing an old row's batch attribute
+changes its exact item version. Keep the private publication entrypoints fenced
+until the coordinating operator has reviewed and rearmed the preservation path.
+The October 1 handoff records the incident that led to that fence.
+
+1. Capture the live release identity and select its **full metadata** base bundle.
+   The reconciliation tool compares release, content digest, schema and population
+   with bounded public health metadata. A stale registry snapshot is refused.
+   A delta-only base needs explicit `--body-root` directories containing its
+   missing `sha256/` files; it is not a complete body archive.
+2. Build only newly reviewed material with `tools/build_catalogue_release_bundle.py`.
+   Do not rebuild the old starter-plus-all-folders snapshot. Batch tags belong to
+   the new rows only. Updates may have a subset schema, but their actual
+   attributes must fit the unchanged live schema.
+3. Prepare one strict `catalogue_reconciliation_request/v1` JSON object with
+   `base_release`, `base_bundle_digest`, `additions` (new identity strings),
+   `replacements` (`identity`, `expected_version`), and `withdrawals` (`identity`,
+   `expected_version`, `note`). Every update identity must be declared exactly
+   once. Undeclared collisions, omissions, stale versions and batch-only
+   retagging refuse. Overlapping operations and schema migrations are not
+   inferred. Durable withdrawals remain authoritative at the service.
+4. Run the reconciler outside the repository, repeating `--accept-license` for
+   the host's accepted labels and `--body-root` for explicit baseline sources:
+
+   ```bash
+   PYTHONPATH=src:tools python tools/reconcile_catalogue_bundle.py \
+     --base-bundle /absolute/current-bundle \
+     --update-bundle /absolute/reviewed-additions-bundle \
+     --changes /absolute/reconciliation-request.json \
+     --body-root /absolute/earlier-full-bundle/blobs \
+     --accept-license MIT --output /absolute/new-bundle --write
+   ```
+
+   Without `--write`, the result explicitly describes metadata checks only.
+   Writing verifies every required baseline/update blob, preserves unchanged
+   canonical rows and versions, and creates a full metadata snapshot with only
+   new blobs. Its private `reconciliation.json` binds the declarations, baseline,
+   new header, and predicted release/content digests. Save the printed
+   `bundle_digest` and `reconciliation_digest`; never upload the proof as material.
+5. First run the local-only delta dry-run, then the same command without
+   `--dry-run` only under the coordinating operator's publication authority:
+
+   ```bash
+   PYTHONPATH=src:tools python tools/publish_catalogue_delta.py \
+     NAME /absolute/new-bundle BUNDLE_DIGEST \
+     --base-bundle /absolute/current-bundle --base-release CAPTURED_RELEASE \
+     --reconciliation-digest RECONCILIATION_DIGEST \
+     --body-root /absolute/earlier-full-bundle/blobs --accept-license MIT --dry-run
+   ```
+
+   Dry-run reads no live service and grants no publication permission. Actual
+   publication revalidates local proof/bytes, checks the **same captured base**
+   before upload and before the service's `--expected-release` compare-and-swap,
+   and confirms both the completed operation and observed live release/content
+   digests. Another publisher's pointer movement is not success. Preserve an
+   unknown outcome and its staging data; inspect it before any retry.
+
+Compatibility: bundle/item/service record versions do not change. The delta
+operator requires a base, exact reconciliation proof digest and explicit
+licence policy; older unbound calls fail before remote effects. Existing success
+fields remain, with baseline/proof/content bindings added. Bootstrap and guarded
+rollback are separate service operations, not a fallback around preservation.
+An intentional replacement changes its exact item version and therefore needs
+separate review of any exact-version access grant; this tool never widens access.
+
+Before rearming the private daily wrapper: pin it to reviewed committed code;
+replace its combine/bundle/publish stages with the additions-only sequence above;
+retain pending exports, independent reviews and failed-run journals; prove the
+current whole baseline unchanged in a local rehearsal; and pass the missing-row,
+retagging, stale/concurrent-base and false-success controls. Keep the legacy
+unconditional publisher retired. The current tests are
+`tools/test_reconcile_catalogue_bundle.py` and `tools/test_publish_catalogue_delta.py`.
+The repair itself changes no cron entry, process or production state.
 
 To roll back a release, read the active and earlier release identities with
 `catalogue-status`, then run
