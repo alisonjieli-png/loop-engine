@@ -175,9 +175,11 @@ consent, exact resource/scopes, retrieval, refresh and revocation. The
 population and failed attempts. No static key belongs in chat or a prompt.
 Retain supported key clients and separately verify the owner's actual dot.
 
-The immediate next cycle remains S-6.216: release individual-file browsing,
-expand exact free-access selection from already admitted supply, then publish
-independently admitted originals without replacing the existing catalogue.
+Release 59 deployed individual-file browsing, exact download links and scoped
+policy maintenance. Its live burst test exposed a separate connection limit;
+finish that bounded capacity repair before qualifying the concurrent journey.
+The immediate next supply cycle remains S-6.216, using exact free-access
+selection and independent admission without replacing the existing catalogue.
 The [October 1 catalogue/access update](../../artifacts/public-good-release-2026-10-01/README.md)
 now serves 1,011 useful files across 412 free packages: 996 selected existing
 files and fifteen original program/schema files. Review excluded unrelated
@@ -358,7 +360,7 @@ water-meter auditing. Their native exports passed 69 layout tests. The SRT
 candidate remains held after a long malformed caption exposed a runtime
 problem; the other revised candidates lack independent approval. Preserve
 all twelve review/calibration calls, failures and provider usage. No new call
-may be hidden as a retry of this exhausted batch. These five exports still
+may be hidden as a retry of this exhausted batch. The five exports
 were subsequently published by the guarded full-catalogue delta path and
 included in the October 1 free-access policy. Their delivery does not complete
 every SDG or the free-account native-use proof.

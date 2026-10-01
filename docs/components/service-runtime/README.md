@@ -621,6 +621,17 @@ curl -sS https://app.baltor.ai/api/v1/health
 
 ## Related reading
 
+Transport admission is separate from expensive work. The optional host field
+`http.maximum_transport_concurrency` defaults to 128 and accepts integers from
+2 through 128. Capabilities publish it as `limits.transport_concurrency`.
+Uvicorn counts open connections or in-flight tasks at request admission;
+this is not a bound on accepted TCP sockets or total response memory. The
+eight expensive-operation workers, per-account shares, byte caps and timeouts
+are unchanged. The [October 1 measurements](../../verification/PUBLIC-GOOD-PERFORMANCE-2026-10-01.md)
+retain the old-limit failure, small-response qualification and remaining
+large-response and hosted-load limits. See the current deployment record
+before treating a source change as live.
+
 The September 30 OAuth and Public Good transport work uses this same runtime,
 account identity and CatalogStore. `oauth_authorization.py` owns durable
 delegation; the pinned MCP SDK owns protocol handlers through `oauth_http.py`.

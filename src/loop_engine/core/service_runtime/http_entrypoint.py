@@ -769,7 +769,7 @@ def main(argv=None):
     import uvicorn
     uvicorn.run(application.create_app(), host=arguments.host, port=arguments.port,
                 proxy_headers=False, access_log=False,
-                limit_concurrency=application.configuration.maximum_concurrent_operations * 4)
+                limit_concurrency=application.configuration.maximum_transport_concurrency)
     return 0
 
 

@@ -8,7 +8,14 @@ the broader creative, customer-comparison and business programme.
 
 ## Verified live state
 
-Application release 58 runs source `0926cdb90c45137b7f577970bd1143f7d9fe41cf`.
+Application release 59 runs source `6b03ebba1b0b1b409ff303c6ecf76e041d5bb5c6`.
+Its [release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-59.json)
+retains exact image, rollback, 48 final file-browser checks, a complete
+1,011-file metadata walk and the separate successful OAuth probe. Concurrent
+checks also reproduced an upstream connection-limit refusal; the broad
+browser matrix is incomplete. The transport-capacity repair is in progress.
+
+Preceding application release 58 ran `0926cdb90c45137b7f577970bd1143f7d9fe41cf`.
 CI and guarded Fly deployment passed; the `pilot` deployment gate is off.
 The [release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-58.json)
 names image and rollback. Final observations: 2,118 browser checks across ten
@@ -38,9 +45,9 @@ exceeds the numeric one-thousand threshold but does not establish all-SDG
 coverage: explicit current goal associations are 4, 6, 8, 10 and 13, beside
 related initiatives. Do not relabel unrelated material to fill zeros.
 
-## Next application release
+## Individual file release and capacity repair
 
-Main is integrating two detached backend commits, `9ee492f2` and `2174d27d`,
+Release 59 integrated detached backend commits `9ee492f2` and `2174d27d`
 with root-owned HTTP and website changes. Inspect Git before continuing.
 The individual-file browser shows paths, file type, parent version, licence,
 public-benefit purpose and download choices. Identical bytes retain all
@@ -54,15 +61,30 @@ membership and only the selected exact versions and files. It never installs
 a partial serving view or claims whole-catalogue body qualification. Existing
 policy digest, expected-version and atomic access guards remain authoritative.
 The live temporary helper applied the same reviewed policy through the old
-release's existing writer in 0.5081 seconds. The ordinary source path still
-needs its own application release before being called deployed.
+release's existing writer in 0.5081 seconds. The ordinary source path is now
+deployed in release 59; its full serving loader remains separate.
 
-Local browser tests passed 24 checks, with independent reproductions and
+Local browser tests passed 26 checks, with independent reproductions and
 retests for lost login intent and missing optional controls. Focused tests
 include invalid paths, conflicting filters, policy changes, expiry, anonymous
-refusal, response limits and no paid metering. CI and deployment of this
-next source snapshot are still required. Do not confuse the already-live
-catalogue policy with the pending individual-file interface.
+refusal, response limits and no paid metering. CI and deployment passed.
+Live file browsing passed 48 final checks after preserving one burst-related
+asset timeout and one wrong test MIME expectation. The general matrix was
+stopped after four complete hosts and one failure. Logs bind the consent 503
+to Uvicorn's 32 open-connection/task limit, not the eight-operation pool or a
+restart. Separate and bound those limits, repeat a known-wrong control and
+rerun the concurrent population. A lower-load pass is not a repair.
+
+The candidate patch from detached `2eecf67b` now separates a keyword-only
+transport threshold, default 128 with bounds 2 to 128. Eight expensive workers,
+four-operation account shares, byte limits and timeouts remain unchanged.
+In real loopback tests, 24 held keep-alives plus 72 simultaneous page requests
+produce 72 transport refusals at the old threshold and 72 successes at the
+new threshold. The boundary still refuses and recovers. This small-response
+result is not qualification of 128 simultaneous maximum-size bodies. See the
+[performance record](../verification/PUBLIC-GOOD-PERFORMANCE-2026-10-01.md)
+for the separate request profile and private evidence. Its CI/deployment/live
+burst checks remain required before calling the capacity repair complete.
 
 ## Scheduled publisher preservation finding
 

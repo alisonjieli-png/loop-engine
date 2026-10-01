@@ -111,10 +111,11 @@ covering all 17 SDGs and related public-benefit initiatives, with at least
 The page must browse the real admitted collection, not display a target as a
 served count. Report complete packages, distinct useful payload files and
 supporting files separately. An SDG tag alone does not establish relevance,
-qualification or free access. The next release must expand actual useful
-supply, expose individual file paths and licences, and retain honest empty
-goal categories until relevant components pass admission. Do not stop at the
-initial ten packages or count supporting metadata toward the target.
+qualification or free access. Release 59 exposes individual file paths,
+licences and exact download choices. Its connection-capacity finding remains
+an immediate repair; expand relevant supply and retain honest empty goal
+categories until components pass admission. Supporting metadata does not
+count toward the useful-file target.
 
 Research how an OpenAI dot can supplement existing discovery, digestion and
 UI testing, including competitors, potential investors, influencers, strategies

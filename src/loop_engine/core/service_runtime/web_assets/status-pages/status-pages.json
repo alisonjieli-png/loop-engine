@@ -5,6 +5,14 @@
   "releases": [
    {
     "kind": "service",
+    "number": 59,
+    "at": "2026-10-01T04:45:25Z",
+    "lines": [],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
     "number": 58,
     "at": "2026-10-01T02:51:47Z",
     "lines": [],
@@ -1510,6 +1518,12 @@
    {
     "section": "Limits",
     "feature": "Concurrent operations",
+    "value": "",
+    "fixed": false
+   },
+   {
+    "section": "Limits",
+    "feature": "Transport concurrency",
     "value": "",
     "fixed": false
    },

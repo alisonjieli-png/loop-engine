@@ -727,13 +727,14 @@ def _transport_checks(check, root):
         configuration = service.application.configuration
         from .http import MAXIMUM_JSON_NESTING_DEPTH
         check("capabilities_publish_the_limit_beside_the_unchanged_existing_limits",
-              {key: limits[key] for key in ("request_bytes", "response_bytes", "search_results", "concurrent_operations",
+              {key: limits[key] for key in ("request_bytes", "response_bytes", "search_results", "concurrent_operations", "transport_concurrency",
                                             "concurrent_operations_for_each_account", "request_nesting_depth",
                                             "concurrent_operations_waiting_on_another_service")}
               == {"request_bytes": configuration.maximum_request_bytes,
                   "response_bytes": configuration.maximum_response_bytes,
                   "search_results": configuration.maximum_search_results,
                   "concurrent_operations": configuration.maximum_concurrent_operations,
+                  "transport_concurrency": configuration.maximum_transport_concurrency,
                   "concurrent_operations_for_each_account":
                       configuration.maximum_concurrent_operations_for_each_tenant,
                   "concurrent_operations_waiting_on_another_service":
@@ -743,7 +744,7 @@ def _transport_checks(check, root):
               and limits["failed_attempts_per_address"]["failures_allowed"] == 3
               and limits["failed_attempts_per_address"]["active"] is True
               and limits["failed_attempts_per_address"]["client_address_source"] == SOCKET_PEER_SOURCE
-              and set(limits) == {"request_bytes", "response_bytes", "search_results", "concurrent_operations",
+              and set(limits) == {"request_bytes", "response_bytes", "search_results", "concurrent_operations", "transport_concurrency",
                                   "concurrent_operations_for_each_account", "request_nesting_depth",
                                   "concurrent_operations_waiting_on_another_service",
                                   "failed_attempts_per_address"})

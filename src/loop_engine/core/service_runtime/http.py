@@ -277,6 +277,12 @@ class ServiceHttpError(ValueError):
         self.protocol_error = protocol_error
 
 
+# Uvicorn counts open connections OR ASGI tasks, not this service's workers.
+# Match the existing bounded proxy profile without growing the expensive pool.
+# This is a request-admission threshold, not a total RSS/socket-buffer budget.
+MINIMUM_TRANSPORT_CONCURRENCY, MAXIMUM_TRANSPORT_CONCURRENCY = 2, 128
+
+
 @dataclass(frozen=True)
 class ServiceHttpConfiguration:
     """Exact host transport settings and resource ceilings."""
@@ -291,6 +297,7 @@ class ServiceHttpConfiguration:
     maximum_download_bytes: int = 64 * 1024 * 1024
     maximum_search_results: int = 50
     maximum_concurrent_operations: int = 8
+    maximum_transport_concurrency: int = field(default=MAXIMUM_TRANSPORT_CONCURRENCY, kw_only=True)
     request_timeout_seconds: float = 30.0
     allow_loopback_http: bool = False
     request_limits: ServiceRequestLimits = ServiceRequestLimits()
@@ -329,6 +336,11 @@ class ServiceHttpConfiguration:
                      "maximum_download_bytes", "maximum_search_results", "maximum_concurrent_operations"):
             if type(getattr(self, name)) is not int or getattr(self, name) < 1:
                 raise ValueError("HTTP resource limits must be positive integers")
+        if (type(self.maximum_transport_concurrency) is not int
+                or not MINIMUM_TRANSPORT_CONCURRENCY <= self.maximum_transport_concurrency <= MAXIMUM_TRANSPORT_CONCURRENCY):
+            # A threshold of one rejects the first connection: Uvicorn adds
+            # that connection before checking >=. None/zero must not disable it.
+            raise ValueError("transport concurrency must be an integer from 2 through 128")
         if self.maximum_inline_body_bytes > self.maximum_download_bytes:
             raise ValueError("inline body allowance cannot exceed download allowance")
         if (type(self.request_timeout_seconds) not in (int, float)
@@ -1016,6 +1028,7 @@ class ServiceHttpApplication:
                            "response_bytes": self.configuration.maximum_response_bytes,
                            "search_results": self.configuration.maximum_search_results,
                            "concurrent_operations": self.configuration.maximum_concurrent_operations,
+                           "transport_concurrency": self.configuration.maximum_transport_concurrency,
                            "concurrent_operations_for_each_account":
                                self.configuration.maximum_concurrent_operations_for_each_tenant,
                            "concurrent_operations_waiting_on_another_service":

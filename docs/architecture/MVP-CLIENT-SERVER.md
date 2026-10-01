@@ -2,7 +2,7 @@
 
 Kind: product architecture with measured local implementation and proposed hosting.
 Date: 2026-09-19. The [current deployment](#current-deployment) section was
-added on 2026-09-20 and last checked on 2026-10-01, after Fly release 58.
+added on 2026-09-20 and last checked on 2026-10-01, after Fly release 59.
 
 The hosted product manages accounts, subscriptions, and access to intelligence.
 The customer runs Loop Engine and the selected harnesses. A hosted intelligence
@@ -47,7 +47,25 @@ from the newest release record, follow the release record and correct this
 section. Update this section in the same change that records a new release.
 It describes a private pilot. It does not describe a qualified paid service.
 
-The latest image deployment is Fly release 58, completed on September 30, 2026
+The latest image deployment is Fly release 59, completed on October 1, 2026
+from `6b03ebba1b0b1b409ff303c6ecf76e041d5bb5c6`, image
+`sha256:68da8354ccfba49a2b6966102e1c1b25dbe6859e5f365cd1ae487834edd1fc44`.
+CI `36815833584` and deployment `36816354979` passed; the gate is off.
+The [release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-59.json)
+and [notes](../../artifacts/release-59-2026-10-01/README.md) document the live
+individual-file browser, exact download links, login-refresh retention and
+scoped policy maintenance. All ten hosts passed pulse and file-metadata
+checks; all 1,011 useful digests were paginated. Forty-eight final Public Good
+checks and a separate live OAuth/exact-file probe passed. A concurrent probe
+population exposed a 32-connection/task transport limit: its general browser
+matrix is incomplete, and the failed OAuth consent request is preserved.
+The immediate repair separates bounded transport capacity from the unchanged
+eight expensive-operation workers. Lower-load success does not close that
+finding. Catalogue `9ed0fcd7…` and free policy `548011d4…` remain unchanged:
+30,751 total packages, 96,120 distinct files; 412 free packages and 1,011
+useful Public Good files. All-SDG coverage and actual dot connection remain open.
+
+The preceding image deployment was Fly release 58, completed on September 30, 2026
 in the owner's timezone, from `0926cdb90c45137b7f577970bd1143f7d9fe41cf`, image
 `sha256:1a8fd1e22b79047a67a7a4188122c4a18d9ca3fbd53c88a7334cd42d7aa556ff`.
 CI `36806897008` and deployment `36807534138` passed; the `pilot` gate is off.

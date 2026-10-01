@@ -93,7 +93,8 @@ def running_http(fixture, *, authentication=None, application_factory=None, bill
                    authentication(configuration) if callable(authentication) else
                    authentication or ServiceHttpAuthentication(), billing_processor=billing_processor))
     server = uvicorn.Server(uvicorn.Config(service.create_app(), log_level="error", access_log=False,
-                                          proxy_headers=False, timeout_graceful_shutdown=2))
+                                          proxy_headers=False, timeout_graceful_shutdown=2,
+                                          limit_concurrency=configuration.maximum_transport_concurrency))
     worker = threading.Thread(target=lambda: server.run(sockets=[bound]), daemon=True)
     worker.start()
     deadline = time.monotonic() + 5
