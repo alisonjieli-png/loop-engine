@@ -92,13 +92,73 @@ the text out, and a guard in the source refuses a gap payload that carries it
 
 ### What staff read
 
-A staff member whose role reads usage counts, or an operator whose token holds
+A superadmin whose role holds `accounts.list`, or an operator whose token holds
 the `access:manage` scope, opens the administration page and sees Feedback
 from customers: how downloads were rated, every request for material with
 its account and date, and the hours in which searches found nothing. The same
 view is served at `/api/v1/admin/feedback` as `service_feedback_view/v1`, with
-`ratings`, `material_requests` and `search_gaps`. Any other caller is refused
-with `account_administration_forbidden`.
+`ratings`, `material_requests` and `search_gaps`. Analytics staff may read the
+counts-only summary below, not this private view. Developers and ordinary
+customers may read neither. A caller without the required role or scope is
+refused before private feedback is returned.
+
+### Connected harnesses and the feedback command
+
+The Model Context Protocol tools `provisioning_rate` and
+`provisioning_request_material` accept the same fields as the corresponding
+HTTP operations, without `record_type` or `operation`. They require the
+existing `provisioning:metadata` scope. A connected harness using an ordinary
+OAuth delegation can submit them without transferring a key into its prompt.
+Ratings still require an exact-version download, including an eligible Public
+Good download. Neither operation counts as another paid download.
+
+Notes and descriptions are private staff feedback, stored with the account.
+They are not automatically published or expired. Include no secrets or
+private project data. A rating replaces the earlier rating and increments
+its revision, so its tool does not claim exact idempotency. A material request
+retains its existing request-identity rule. The separate `provisioning_report`
+tool reports an item defect and can withdraw material; a rating is not a
+withdrawal report.
+
+The `feedback_review` tool takes an empty object and returns only
+`service_feedback_summary/v1`: `ratings` (`useful`, `not_useful`,
+`items_rated`), `material_requests` (`total`, `open`) and `search_gaps`
+(`groups`, `searches`). The same result is available through
+`GET /api/v1/admin/feedback/summary`. No note, description, account or item
+identity, request digest, filter value or timestamp is returned.
+
+This summary retains the existing staff gate: an operator credential with
+`access:manage`, or a current staff browser session permitted to read usage
+counts. Ordinary OAuth delegation cannot acquire that scope or a staff role.
+The service checks access again after serialization. The full private view
+keeps its schema but requires `accounts.list` or `access:manage`. The counts endpoint is not public,
+and an unlisted page is not an authorization boundary.
+
+The repository command `tools/baltor_feedback.py` is a standalone Python 3.10+
+client. It uses the same HTTP operations and reads a credential from the named
+environment variable, `BALTOR_SERVICE_TOKEN` by default. It does not create,
+refresh or export credentials, accept a token argument, or change a harness's
+configuration. Customer fields arrive as one JSON object on standard input:
+
+```bash
+python3 tools/baltor_feedback.py request_material --origin https://baltor.ai < request-fields.json
+python3 tools/baltor_feedback.py rate --origin https://baltor.ai < rating-fields.json
+python3 tools/baltor_feedback.py review --origin https://baltor.ai
+```
+
+The first two files contain the fields in the tables above, without
+`record_type` or `operation`. The last command requires the existing staff or
+operator authority; it returns counts only. Configure only a trusted Baltor
+origin, never an address copied from feedback. The client honors environment
+proxy settings, verifies HTTPS, refuses redirects and prints no credential or
+submitted text. It makes one attempt and never retries automatically. After an
+uncertain submission, keep its request identity and reconcile the outcome
+instead of silently creating another request.
+
+The feedback tools use the existing records and retention rules. They publish
+no customer text. The missing notice entries described below still need the
+owner's review; they do not authorize public disclosure or sending private
+feedback to a model.
 
 ### Refusals
 

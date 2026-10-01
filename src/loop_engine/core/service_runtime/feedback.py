@@ -49,7 +49,7 @@ from __future__ import annotations
 import re
 import time
 
-from .account_policy import USAGE_COUNTS, permissions_for
+from .account_policy import ACCOUNTS_LIST, USAGE_COUNTS, permissions_for
 from .records import ACCESS_MANAGE_SCOPE, ServiceCommitUnknown, ServiceRuntimeError, canonical, digest, identifier
 from .runtime import PROVISIONING_METADATA_SCOPE, USAGE, ServiceRuntime
 
@@ -59,8 +59,11 @@ RATING_RESULT_VERSION = "catalogue_item_rating_result/v1"
 REQUEST_RESULT_VERSION = "material_request_result/v1"
 GAP_RESULT_VERSION = "search_gap_result/v1"
 STAFF_VIEW_VERSION = "service_feedback_view/v1"
+SUMMARY_VERSION = "service_feedback_summary/v1"
 RATE_OPERATION, REQUEST_MATERIAL_OPERATION = "rate", "request_material"
 FEEDBACK_OPERATIONS = (RATE_OPERATION, REQUEST_MATERIAL_OPERATION)
+FEEDBACK_TOOLS = {"provisioning_rate": RATE_OPERATION, "provisioning_request_material": REQUEST_MATERIAL_OPERATION}
+REVIEW_TOOL = "feedback_review"
 USEFUL, NOT_USEFUL = "useful", "not_useful"
 RATING_VALUES = (USEFUL, NOT_USEFUL)
 #: The most text a customer may type into a rating note and into a request for material.
@@ -84,6 +87,40 @@ GAP_HOLDS_QUERY_TEXT = "search_gap_holds_query_text"
 _DIGEST = re.compile(r"[0-9a-f]{64}")
 _FILTER_TOKEN = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.:-]{0,63}")
 OTHER_FILTER_VALUE = "other"
+
+
+def request_schema(operation):
+    """The existing customer-feedback fields, as closed MCP input schemas."""
+    if operation == RATE_OPERATION:
+        return {"type": "object", "additionalProperties": False,
+                "required": ["identity", "expected_digest", "value"],
+                "properties": {"identity": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"},
+                               "expected_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+                               "value": {"enum": list(RATING_VALUES)},
+                               "note": {"type": "string", "maxLength": NOTE_LIMIT}}}
+    if operation == REQUEST_MATERIAL_OPERATION:
+        return {"type": "object", "additionalProperties": False, "required": ["request_id", "description"],
+                "properties": {"request_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"},
+                               "description": {"type": "string", "minLength": 1, "maxLength": DESCRIPTION_LIMIT}}}
+    raise ServiceRuntimeError("unsupported_operation")
+
+
+def summary(view):
+    """Closed counts for an authorized staff reader, never a public publication projection.
+
+    Do not copy notes, request text, account or item identities, request
+    digests, arbitrary filters, timestamps or raw rows.
+    """
+    if not isinstance(view, dict) or view.get("record_type") != STAFF_VIEW_VERSION:
+        raise ServiceRuntimeError("unsupported_or_corrupt_record")
+    ratings, requests, gaps = view["ratings"], view["material_requests"], view["search_gaps"]
+    counts = {"useful": ratings[USEFUL], "not_useful": ratings[NOT_USEFUL], "items_rated": len(ratings["items"])}
+    searches = [row["searches"] for row in gaps]
+    if any(type(value) is not int or value < 0 for value in (*counts.values(), *searches)):
+        raise ServiceRuntimeError("unsupported_or_corrupt_record")
+    return {"record_type": SUMMARY_VERSION, "ratings": counts,
+            "material_requests": {"total": len(requests), "open": sum(row.get("state") == "open" for row in requests)},
+            "search_gaps": {"groups": len(gaps), "searches": sum(searches)}}
 
 
 def _bounded_text(value, limit, code, *, required):
@@ -245,7 +282,7 @@ class ServiceFeedback:
                 "searches": payload["searches"]}
 
     def staff_view(self, principal, *, staff=None, administration=None):
-        """What staff read: every rating, request and gap, for a staff role that reads usage counts or an operator.
+        """Every private rating, request and gap, for account-list staff or an operator.
 
         A staff session is rechecked at its record, the sign-out record and the
         expiry, as every other staff read is. Without one, the principal must
@@ -253,16 +290,7 @@ class ServiceFeedback:
         """
         catalog = self.runtime._catalog
         with catalog.store() as store:
-            if staff is not None:
-                if administration is None:
-                    raise ServiceRuntimeError("account_administration_unavailable")
-                administration._current_session(store, staff)
-                if USAGE_COUNTS not in permissions_for(staff.role):
-                    raise ServiceRuntimeError("account_administration_forbidden")
-            else:
-                current, _guards = self.runtime._revalidate(store, principal)
-                if ACCESS_MANAGE_SCOPE not in current.scopes:
-                    raise ServiceRuntimeError("account_administration_forbidden")
+            self._authorize_staff_view(store, principal, staff, administration)
             ratings = [row["payload"] for row in catalog.rows_all(store, RATING_KIND)]
             requests = [row["payload"] for row in catalog.rows_all(store, REQUEST_KIND)]
             gaps = [row["payload"] for row in catalog.rows_all(store, GAP_KIND)]
@@ -284,6 +312,42 @@ class ServiceFeedback:
                                                                     "hit_count", "searches")} for value in gaps),
                                       key=lambda row: (row["hour"], row["mode"], canonical(row["filters"])),
                                       reverse=True)}
+
+    def _authorize_staff_view(self, store, principal, staff, administration, permission=ACCOUNTS_LIST):
+        if staff is not None:
+            if administration is None:
+                raise ServiceRuntimeError("account_administration_unavailable")
+            administration._current_session(store, staff)
+            if permission not in permissions_for(staff.role):
+                raise ServiceRuntimeError("account_administration_forbidden")
+        else:
+            current, _guards = self.runtime._revalidate(store, principal)
+            if ACCESS_MANAGE_SCOPE not in current.scopes:
+                raise ServiceRuntimeError("account_administration_forbidden")
+
+    def authorize_staff_view(self, principal, *, staff=None, administration=None):
+        """Recheck the existing staff gate without rereading private feedback."""
+        with self.runtime._catalog.store() as store:
+            self._authorize_staff_view(store, principal, staff, administration)
+
+    def staff_summary(self, principal, *, staff=None, administration=None):
+        """Count stored feedback under the usage-count permission, without building a private-text view."""
+        catalog = self.runtime._catalog
+        with catalog.store() as store:
+            self._authorize_staff_view(store, principal, staff, administration, USAGE_COUNTS)
+            ratings = [row["payload"] for row in catalog.rows_all(store, RATING_KIND)]
+            requests = [row["payload"] for row in catalog.rows_all(store, REQUEST_KIND)]
+            gaps = [row["payload"] for row in catalog.rows_all(store, GAP_KIND)]
+        return summary({"record_type": STAFF_VIEW_VERSION,
+            "ratings": {USEFUL: sum(row["value"] == USEFUL for row in ratings),
+                        NOT_USEFUL: sum(row["value"] == NOT_USEFUL for row in ratings),
+                        "items": list({row["item_identity"] for row in ratings})},
+            "material_requests": [{"state": row["state"]} for row in requests],
+            "search_gaps": [{"searches": row["searches"]} for row in gaps]})
+
+    def authorize_staff_summary(self, principal, *, staff=None, administration=None):
+        with self.runtime._catalog.store() as store:
+            self._authorize_staff_view(store, principal, staff, administration, USAGE_COUNTS)
 
 
 def feedback_rows(runtime):

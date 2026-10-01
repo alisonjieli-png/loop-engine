@@ -25,8 +25,9 @@ from .http_test_fixtures import HttpDomainFixture, running_http
 
 #: The per-request protocol version these checks qualify.
 _PER_REQUEST = "2026-07-28"
-_EXPECTED_TOOLS = {"provisioning_discover", "provisioning_list", "provisioning_manifest",
-                   "provisioning_read", "intelligence_search", "provisioning_report", "public_good_files"}
+_EXPECTED_TOOLS = {"provisioning_discover", "provisioning_list", "provisioning_manifest", "provisioning_read",
+                   "intelligence_search", "provisioning_report", "provisioning_rate", "provisioning_request_material",
+                   "feedback_review", "public_good_files"}
 
 
 @asynccontextmanager

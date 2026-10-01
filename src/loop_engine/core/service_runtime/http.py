@@ -45,6 +45,7 @@ from .waitlist import ServiceWaitlist, administer_waitlist, join_request
 # operations above (a report, a staff flag), so they are imported under their own name.
 from .feedback import (ASK_FOR_MATERIAL_LINE, FEEDBACK_OPERATIONS as CUSTOMER_FEEDBACK_OPERATIONS, RATE_OPERATION,
                        ServiceFeedback)
+from . import feedback as customer_feedback
 from .model_directory_pages import moved_answer, rendered_page
 from . import library_page
 from . import public_good_page
@@ -202,6 +203,7 @@ ADMIN_SIGN_UP_LINKS_PATH = "/api/v1/admin/sign-up-links"
 #: material and the hours in which searches found nothing. A staff role that
 #: reads usage counts reads it, as does an operator with the administration scope.
 ADMIN_FEEDBACK_PATH = "/api/v1/admin/feedback"
+ADMIN_FEEDBACK_SUMMARY_PATH = "/api/v1/admin/feedback/summary"
 # Every address the interface router answers, with the methods it answers for
 # it. The router reads this before it asks who is calling, so that an address
 # the service does not serve is a missing page rather than a credential
@@ -234,6 +236,7 @@ API_ROUTES = {
     ADMIN_ACCOUNTS_PATH: ("GET", "POST"),
     ADMIN_SIGN_UP_LINKS_PATH: ("POST",),
     ADMIN_FEEDBACK_PATH: ("GET",),
+    ADMIN_FEEDBACK_SUMMARY_PATH: ("GET",),
     "/api/v1/session": ("GET",),
     "/api/v1/usage": ("GET",),
     "/api/v1/provisioning": ("POST",),
@@ -1586,16 +1589,31 @@ class ServiceHttpApplication:
         self.authenticator.revalidate(authentication)
         return result
 
-    def _staff_feedback(self, context):
-        """The feedback view for an operator with the administration scope or a staff role that reads usage counts."""
+    def _staff_feedback_authority(self, context):
+        """Resolve the existing gate; an ordinary OAuth token gains no staff role."""
         current = self.authenticator.revalidate(context)
         if ACCESS_MANAGE_SCOPE in current.effective_scopes:
-            return self.feedback.staff_view(current.principal)
+            return current, {}
         if self.account_administration is None:
             # No staff role can exist on a host that installs no administration, so the caller is not staff.
             raise ServiceRuntimeError("account_administration_forbidden")
         staff = self.account_administration.staff_session(current, self.authenticator.credential_digest(current))
-        return self.feedback.staff_view(current.principal, staff=staff, administration=self.account_administration)
+        return current, {"staff": staff, "administration": self.account_administration}
+
+    def _staff_feedback(self, context):
+        """The unchanged private full view behind the existing staff/operator gate."""
+        current, authority = self._staff_feedback_authority(context)
+        return self.feedback.staff_view(current.principal, **authority)
+
+    def _staff_feedback_summary(self, context):
+        current, authority = self._staff_feedback_authority(context)
+        return self.feedback.staff_summary(current.principal, **authority)
+
+    def _verify_staff_feedback(self, context, *, summary=True):
+        """Completion-time authorization, without another feedback scan or a new grant."""
+        current, authority = self._staff_feedback_authority(context)
+        check = self.feedback.authorize_staff_summary if summary else self.feedback.authorize_staff_view
+        check(current.principal, **authority)
 
     def _verify_search_snapshot(self, authentication, initial, grant_guard):
         """Authorize the completed metadata response before releasing any result.
@@ -1852,6 +1870,25 @@ class ServiceHttpApplication:
                 description="Report a problem with an item your account downloaded, at the digest you received",
                 inputSchema=feedback_schema(), annotations=types.ToolAnnotations(
                     readOnlyHint=False, destructiveHint=False, idempotentHint=True)))
+            for name, operation in customer_feedback.FEEDBACK_TOOLS.items():
+                description = ("Rate an exact item version your account downloaded as useful or not_useful. "
+                               "A later rating replaces the earlier rating. The optional note is stored with your "
+                               "account for staff, with no automatic expiry or public publication. "
+                               "Do not include secrets or private project data."
+                               if operation == RATE_OPERATION else
+                               "Request material the library lacks. The description is stored with your account "
+                               "for staff, with no automatic expiry or public publication. Use one request_id for "
+                               "the logical request; the same identity with different text is refused. "
+                               "Do not include secrets or private project data.")
+                tools.append(types.Tool(name=name, description=description,
+                    inputSchema=customer_feedback.request_schema(operation), annotations=types.ToolAnnotations(
+                        readOnlyHint=False, destructiveHint=False, idempotentHint=operation != RATE_OPERATION)))
+            tools.append(types.Tool(name=customer_feedback.REVIEW_TOOL,
+                description="Read staff/operator-only aggregate feedback counts. No notes, descriptions, account "
+                            "or item identities, filters or timestamps are returned. Requires existing access:manage "
+                            "authority or an eligible staff browser session; ordinary OAuth delegation cannot read this view.",
+                inputSchema={"type": "object", "additionalProperties": False, "properties": {}},
+                annotations=types.ToolAnnotations(readOnlyHint=True, destructiveHint=False, idempotentHint=True)))
             return types.ListToolsResult(tools=tools)
 
         async def call_tool(ctx, params):
@@ -1876,6 +1913,16 @@ class ServiceHttpApplication:
                     validate(arguments, feedback_schema())
                     output = await self._tenant_work(context, lambda: invoke_http_service_as_loop(
                         "catalogue_" + REPORT_OPERATION, lambda: self._feedback(context, REPORT_OPERATION, arguments)))
+                elif name in customer_feedback.FEEDBACK_TOOLS:
+                    operation = customer_feedback.FEEDBACK_TOOLS[name]
+                    validate(arguments, customer_feedback.request_schema(operation))
+                    output = await self._tenant_work(context, lambda: invoke_http_service_as_loop(operation,
+                        lambda: self._customer_feedback(context, operation, arguments)))
+                elif name == customer_feedback.REVIEW_TOOL:
+                    validate(arguments, {"type": "object", "additionalProperties": False, "properties": {}})
+                    output = await self._work(lambda: invoke_http_service_as_loop("feedback_summary",
+                        lambda: self._staff_feedback_summary(context)),
+                        shares=(context.principal.tenant_id, EXTERNAL_PROVIDER_SHARE))
                 else:
                     operation = TOOL_OPERATIONS.get(name)
                     if operation is None:
@@ -1902,6 +1949,9 @@ class ServiceHttpApplication:
                 response_bytes = len(response.model_dump_json(by_alias=True).encode())
                 if response_bytes > self.configuration.maximum_response_bytes:
                     raise ServiceHttpError("response_limit_exceeded", 413)
+                if name == customer_feedback.REVIEW_TOOL:
+                    await self._work(lambda: self._verify_staff_feedback(context),
+                                     shares=(context.principal.tenant_id, EXTERNAL_PROVIDER_SHARE))
                 for reservation, authentication, view in completions:
                     await self._tenant_work(context, lambda: self._finish_public_good(reservation, authentication, view, response_bytes))
                 return response
@@ -2454,13 +2504,14 @@ class ServiceHttpApplication:
                 output = await self._work(lambda: invoke_http_service_as_loop(operation,
                     lambda: self._create_billing_session(context, payload)),
                     shares=(context.principal.tenant_id, EXTERNAL_PROVIDER_SHARE))
-            elif path == ADMIN_FEEDBACK_PATH and method == "GET":
+            elif path in (ADMIN_FEEDBACK_PATH, ADMIN_FEEDBACK_SUMMARY_PATH) and method == "GET":
                 if request.query_params:
                     raise ServiceHttpError("unknown_request_field")
                 # A staff session is rechecked at the identity provider's records, so this read draws on the
                 # share of work that waits on another service, as every other staff route does.
                 output = await self._work(lambda: invoke_http_service_as_loop("feedback_administration",
-                    lambda: self._staff_feedback(context)),
+                    lambda: (self._staff_feedback_summary(context) if path == ADMIN_FEEDBACK_SUMMARY_PATH
+                             else self._staff_feedback(context))),
                     shares=(context.principal.tenant_id, EXTERNAL_PROVIDER_SHARE))
             elif (path == "/api/v1/provisioning" and method == "POST"
                   and (payload := _parse_json(await self._body(request))).get("operation") in CUSTOMER_FEEDBACK_OPERATIONS):
@@ -2557,6 +2608,9 @@ class ServiceHttpApplication:
         encoded = _json_bytes(output)
         if len(encoded) > self.configuration.maximum_response_bytes:
             raise ServiceHttpError("response_limit_exceeded", 413)
+        if path in (ADMIN_FEEDBACK_PATH, ADMIN_FEEDBACK_SUMMARY_PATH):
+            await self._work(lambda: self._verify_staff_feedback(context, summary=path == ADMIN_FEEDBACK_SUMMARY_PATH),
+                             shares=(context.principal.tenant_id, EXTERNAL_PROVIDER_SHARE))
         for reservation, authentication, view in completions:
             await self._tenant_work(authentication, lambda: self._finish_public_good(reservation, authentication, view, len(encoded)))
         return Response(encoded, media_type="application/json", status_code=status_code)
