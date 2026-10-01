@@ -186,6 +186,13 @@ def _types(schema: dict) -> list:
     return kinds
 
 
+def required_names(schema: dict) -> list:
+    """The required property names of an object schema; a draft 3 boolean (required: true on a property) names
+    none of its parent's fields."""
+    names = schema.get("required")
+    return [name for name in names if isinstance(name, str)] if isinstance(names, list) else []
+
+
 def check_schema(schema, depth: int = 0, *, request: bool = True) -> dict:
     """The part of a schema a client checks before sending: types, enumerations, required fields and nesting."""
     if not isinstance(schema, dict):
@@ -193,13 +200,13 @@ def check_schema(schema, depth: int = 0, *, request: bool = True) -> dict:
     result = {}
     if "allOf" in schema and isinstance(schema["allOf"], list):
         merged = {key: value for key, value in schema.items() if key != "allOf"}
-        properties, required = dict(merged.get("properties") or {}), list(merged.get("required") or [])
+        properties, required = dict(merged.get("properties") or {}), required_names(merged)
         kinds = _types(merged)
         for part in schema["allOf"]:
             if isinstance(part, dict):
                 properties.update({key: value for key, value in (part.get("properties") or {}).items()
                                    if key not in properties})
-                required += [name for name in part.get("required") or () if isinstance(name, str)]
+                required += required_names(part)
                 kinds = kinds or _types(part)
         schema = {**merged, "properties": properties, "required": required, **({"type": kinds} if kinds else {})}
         if not kinds and properties:
@@ -226,7 +233,7 @@ def check_schema(schema, depth: int = 0, *, request: bool = True) -> dict:
         if isinstance(properties, dict) and properties:
             result["properties"] = {name: check_schema(part, depth + 1, request=request)
                                     for name, part in properties.items() if isinstance(part, dict)}
-        required = [name for name in schema.get("required") or () if isinstance(name, str)]
+        required = required_names(schema)
         if request and isinstance(properties, dict):
             required = [name for name in required if not (properties.get(name) or {}).get("readOnly")]
         if required:
