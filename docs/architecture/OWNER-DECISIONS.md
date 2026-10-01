@@ -89,6 +89,19 @@ binding belongs in private host configuration, not this public document.
 Browser staff permissions do not silently expand existing OAuth delegations,
 start a recurring schedule or grant publication of unreviewed submissions.
 
+Later on October 1 the owner asked engineering to "iteratively look and
+generate 100,000 unique files to help support our north star goals and north
+star SDG public good policies". Offered a small-utility batch, the SDG
+research queue and SDG implementation, the owner chose all of them. Licensed
+upstream reads, deterministic supply-line generation and candidate store
+writes for SDG-relevant and small callable components are authorized. This
+does not authorize admission, publication, rearming the fenced publisher or
+anonymous file bodies; every new file is a review candidate until the
+existing review and release path approves it. The 100,000 figure counts new
+distinct candidate file bodies. Useful-file counts still follow the north
+star measure, and country, language, synonym or version permutations do not
+count.
+
 ## Retained decision table
 
 On October 1 the owner approved a general privacy update and implementation
