@@ -60,6 +60,10 @@ try{
   check('public_good_'+width+'_no_horizontal_overflow',await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
   check('public_good_'+width+'_seventeen_goals',await page.locator('#public-good-goal option').count()===19);
   check('public_good_'+width+'_main_header_link',await page.locator('header a[href="/public-good"]').count()===1);
+  const placement=await page.locator('.pg-item').first().evaluate(node=>({top:node.getBoundingClientRect().top,height:innerHeight,
+   sections:['.pg-intro','.pg-advanced','.pg-options','.pg-filters','#public-good-population','#public-good-status'].map(selector=>{
+    const part=document.querySelector(selector),r=part.getBoundingClientRect();return{selector,top:r.top,height:r.height,display:getComputedStyle(part).display};})}));
+  check('public_good_'+width+'_first_result_in_view',placement.top<placement.height-40,placement);
   const file=output.replace(/\.json$/,`-public-good-${width}.png`);await page.screenshot({path:file,fullPage:true});screenshots.push(file);
  }
  await page.selectOption('#public-good-goal','1');await page.waitForFunction(()=>document.getElementById('public-good-status').textContent.startsWith('No published'));

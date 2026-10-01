@@ -4,6 +4,8 @@
 .pg-intro .lede {max-width:700px;margin:0;font-size:1.05rem;}
 .pg-eyebrow {font-family:var(--font-mono);font-size:.875rem;font-weight:650;margin:0;}
 .pg-workspace {border-top:2px solid currentColor;padding-top:1.5rem;}
+.pg-advanced {margin-bottom:1rem;}
+.pg-advanced summary {cursor:pointer;min-height:44px;align-content:center;font-size:.9rem;font-weight:600;}
 .pg-options {display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:1rem;}
 .pg-options label {font-size:.875rem;font-weight:600;}
 .pg-options select {min-height:44px;font:inherit;font-weight:400;}
@@ -13,7 +15,7 @@
 .pg-file-context ul {padding-left:1rem;}
 .pg-file-context li {margin-bottom:1rem;}
 .pg-filters {display:grid;grid-template-columns:minmax(210px,1fr) minmax(230px,.75fr) auto;gap:1rem;align-items:end;}
-.pg-filters label {display:grid;gap:.45rem;font-size:.9rem;font-weight:600;}
+.pg-filters label {display:grid;gap:.45rem;font-size:.9rem;font-weight:600;margin:0;}
 .pg-filters input,.pg-filters select {width:100%;min-height:46px;padding:.65rem .75rem;font:inherit;font-weight:400;}
 .pg-filters .button {min-height:46px;}
 .pg-counts {font-size:1rem;font-weight:650;margin:1.3rem 0 .35rem;}
