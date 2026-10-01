@@ -41,6 +41,11 @@
    "since": "2026-09-27"
   },
   {
+   "address": "/models/alibaba-nlp-gme-qwen2-vl-2b-instruct",
+   "reason": "not_listed",
+   "since": "2026-10-01"
+  },
+  {
    "address": "/models/allenai-molmo2-4b",
    "reason": "not_listed",
    "since": "2026-09-30"
@@ -119,6 +124,11 @@
    "address": "/models/bigcode-gpt-bigcode-santacoder",
    "reason": "not_listed",
    "since": "2026-09-30"
+  },
+  {
+   "address": "/models/blackfrost-ai-k2-horizon-mova-36b-a4b-derisked-bf16",
+   "reason": "not_listed",
+   "since": "2026-10-01"
   },
   {
    "address": "/models/bluenipples-anansi-35b-a3b",
@@ -206,9 +216,19 @@
    "since": "2026-09-30"
   },
   {
+   "address": "/models/danish-foundation-models-dfm-mimir-v1-5",
+   "reason": "not_listed",
+   "since": "2026-10-01"
+  },
+  {
    "address": "/models/dbourget-philai-embeddings-v1-1",
    "reason": "not_listed",
    "since": "2026-09-28"
+  },
+  {
+   "address": "/models/deepseek-ai-deepseek-math-7b-instruct",
+   "reason": "not_listed",
+   "since": "2026-10-01"
   },
   {
    "address": "/models/dots-studio-dots-3-note-preview",
@@ -217,11 +237,6 @@
   },
   {
    "address": "/models/eleutherai-pythia-2-8b",
-   "reason": "not_listed",
-   "since": "2026-09-28"
-  },
-  {
-   "address": "/models/empero-ai-qwable-9b-claude-fable-5",
    "reason": "not_listed",
    "since": "2026-09-28"
   },
@@ -241,6 +256,11 @@
    "since": "2026-09-30"
   },
   {
+   "address": "/models/facebook-opt-6-7b",
+   "reason": "not_listed",
+   "since": "2026-10-01"
+  },
+  {
    "address": "/models/final-bench-darwin-397b-ztc",
    "reason": "not_listed",
    "since": "2026-09-29"
@@ -249,6 +269,16 @@
    "address": "/models/fireworks-ember-1",
    "reason": "refused_source",
    "since": "2026-09-27"
+  },
+  {
+   "address": "/models/forgeworks-forgeplex-m1-6m",
+   "reason": "not_listed",
+   "since": "2026-10-01"
+  },
+  {
+   "address": "/models/gefgu-modernbert-activity-aligner",
+   "reason": "not_listed",
+   "since": "2026-10-01"
   },
   {
    "address": "/models/gnani-gnani-evon-v3-3-30b-a3b",
@@ -261,6 +291,11 @@
    "since": "2026-09-27"
   },
   {
+   "address": "/models/gryphe-gemma-4-26b-a4b-styletune-v2",
+   "reason": "not_listed",
+   "since": "2026-10-01"
+  },
+  {
    "address": "/models/gryphe-gemma-4-31b-styletune",
    "reason": "not_listed",
    "since": "2026-09-29"
@@ -269,6 +304,16 @@
    "address": "/models/h2oai-h2ovl-mississippi-800m",
    "reason": "not_listed",
    "since": "2026-09-30"
+  },
+  {
+   "address": "/models/harry19081-wald-4b",
+   "reason": "not_listed",
+   "since": "2026-10-01"
+  },
+  {
+   "address": "/models/heydariai-persian-embeddings",
+   "reason": "not_listed",
+   "since": "2026-10-01"
   },
   {
    "address": "/models/hpai-bsc-iris-14b",
@@ -281,9 +326,29 @@
    "since": "2026-09-27"
   },
   {
+   "address": "/models/huihui-ai-huihui-qwen3-4b-abliterated-v2",
+   "reason": "not_listed",
+   "since": "2026-10-01"
+  },
+  {
+   "address": "/models/hunter-p-roleplay-xing4-0-29b",
+   "reason": "not_listed",
+   "since": "2026-10-01"
+  },
+  {
+   "address": "/models/ifm-amber",
+   "reason": "not_listed",
+   "since": "2026-10-01"
+  },
+  {
    "address": "/models/ifm-k2-horizon-375b-a23b",
    "reason": "not_listed",
    "since": "2026-09-30"
+  },
+  {
+   "address": "/models/inclusionai-ling-3-0-flash-dspark",
+   "reason": "not_listed",
+   "since": "2026-10-01"
   },
   {
    "address": "/models/inclusionai-ling-3-0-flash-sante",
@@ -306,6 +371,11 @@
    "since": "2026-09-29"
   },
   {
+   "address": "/models/juinron-hummingbird-v2",
+   "reason": "not_listed",
+   "since": "2026-10-01"
+  },
+  {
    "address": "/models/kwaipilot-kat-coder-pro-v2-5",
    "reason": "refused_source",
    "since": "2026-09-27"
@@ -326,9 +396,19 @@
    "since": "2026-09-29"
   },
   {
+   "address": "/models/liquidai-lfm2-5-vl-1-6b",
+   "reason": "not_listed",
+   "since": "2026-10-01"
+  },
+  {
    "address": "/models/llava-hf-llava-1-5-13b-hf",
    "reason": "not_listed",
    "since": "2026-09-29"
+  },
+  {
+   "address": "/models/lmms-lab-llava-onevision-qwen2-7b-ov",
+   "reason": "not_listed",
+   "since": "2026-10-01"
   },
   {
    "address": "/models/logics-mllm-logics-swe-qwen3-6-27b",
@@ -406,6 +486,11 @@
    "since": "2026-09-27"
   },
   {
+   "address": "/models/ml-intern-lab-qwen-image-2-1-pe-t2i-pocket-2b",
+   "reason": "not_listed",
+   "since": "2026-10-01"
+  },
+  {
    "address": "/models/mlabonne-lfm2-5-230m-chess",
    "reason": "not_listed",
    "since": "2026-09-29"
@@ -426,6 +511,16 @@
    "since": "2026-09-27"
   },
   {
+   "address": "/models/movingcastles-zero",
+   "reason": "not_listed",
+   "since": "2026-10-01"
+  },
+  {
+   "address": "/models/naver-hyperclovax-hyperclovax-seed-think-14b",
+   "reason": "not_listed",
+   "since": "2026-10-01"
+  },
+  {
    "address": "/models/notnotsamuel-lfm2-5-350m-rlcd",
    "reason": "not_listed",
    "since": "2026-09-28"
@@ -439,6 +534,16 @@
    "address": "/models/novi-ai-novi-nano-instruct",
    "reason": "not_listed",
    "since": "2026-09-30"
+  },
+  {
+   "address": "/models/nvidia-deepseek-v3-2-nvfp4",
+   "reason": "not_listed",
+   "since": "2026-10-01"
+  },
+  {
+   "address": "/models/nvidia-nemotron-3-nano-omni-30b-a3b-reasoning-bf16",
+   "reason": "not_listed",
+   "since": "2026-10-01"
   },
   {
    "address": "/models/open-lm-engine-rigel-base",
@@ -566,6 +671,11 @@
    "since": "2026-09-27"
   },
   {
+   "address": "/models/opencompass-compassjudger-2-32b-instruct",
+   "reason": "not_listed",
+   "since": "2026-10-01"
+  },
+  {
    "address": "/models/paradigma-inc-limite-1b-base",
    "reason": "not_listed",
    "since": "2026-09-29"
@@ -591,6 +701,16 @@
    "since": "2026-09-27"
   },
   {
+   "address": "/models/petruhonk-qwen3-8-9b-distill-uncensored-heretic",
+   "reason": "not_listed",
+   "since": "2026-10-01"
+  },
+  {
+   "address": "/models/pfnet-plamo-3-610m-fin-instruct",
+   "reason": "not_listed",
+   "since": "2026-10-01"
+  },
+  {
    "address": "/models/pocketdoc-dans-personalityengine-v1-3-0-24b",
    "reason": "not_listed",
    "since": "2026-09-27"
@@ -614,6 +734,11 @@
    "address": "/models/q-project-q-omni-53m-experimental",
    "reason": "not_listed",
    "since": "2026-09-29"
+  },
+  {
+   "address": "/models/qwen-qwen-72b-chat",
+   "reason": "not_listed",
+   "since": "2026-10-01"
   },
   {
    "address": "/models/qwen-qwen-plus-2025-07-28",
@@ -721,6 +846,11 @@
    "since": "2026-09-28"
   },
   {
+   "address": "/models/skt-a-x-4-0-light",
+   "reason": "not_listed",
+   "since": "2026-10-01"
+  },
+  {
    "address": "/models/slayerlab-pollock-mini-lm-125m",
    "reason": "not_listed",
    "since": "2026-09-27"
@@ -761,11 +891,6 @@
    "since": "2026-09-29"
   },
   {
-   "address": "/models/techdotus-tokle-3m",
-   "reason": "not_listed",
-   "since": "2026-09-30"
-  },
-  {
    "address": "/models/thedrummer-skyfall-36b-v2",
    "reason": "refused_source",
    "since": "2026-09-27"
@@ -801,6 +926,16 @@
    "since": "2026-09-27"
   },
   {
+   "address": "/models/unsloth-glm-4-7-flash",
+   "reason": "not_listed",
+   "since": "2026-10-01"
+  },
+  {
+   "address": "/models/unslothai-8",
+   "reason": "not_listed",
+   "since": "2026-10-01"
+  },
+  {
    "address": "/models/unslothai-gcp",
    "reason": "not_listed",
    "since": "2026-09-29"
@@ -821,9 +956,9 @@
    "since": "2026-09-28"
   },
   {
-   "address": "/models/vxtzq-crowd-v1",
+   "address": "/models/ut-ifml-dqwen3-5-9b-base",
    "reason": "not_listed",
-   "since": "2026-09-29"
+   "since": "2026-10-01"
   },
   {
    "address": "/models/whitecircle-glm-4-7-flash-coder",
@@ -851,11 +986,6 @@
    "since": "2026-09-27"
   },
   {
-   "address": "/models/xhtoken-spark-x2-5-1-7b",
-   "reason": "not_listed",
-   "since": "2026-09-28"
-  },
-  {
    "address": "/models/yqi0-petitgpt",
    "reason": "not_listed",
    "since": "2026-09-29"
@@ -866,9 +996,14 @@
    "since": "2026-09-30"
   },
   {
-   "address": "/models/yuxinlu1-gemma-4-12b-agentic-fable5-composer2-5-v2-3-5x-tau2",
+   "address": "/models/yuhan123-vicuna-13b-self-consistency-random-var-2",
    "reason": "not_listed",
-   "since": "2026-09-28"
+   "since": "2026-10-01"
+  },
+  {
+   "address": "/models/yuhan123-vicuna-13b-self-consistency-random-var-4",
+   "reason": "not_listed",
+   "since": "2026-10-01"
   },
   {
    "address": "/models/z-ai-glm-5-3-prime",
@@ -879,6 +1014,11 @@
    "address": "/models/zed-industries-zeta-2-1",
    "reason": "not_listed",
    "since": "2026-09-27"
+  },
+  {
+   "address": "/models/zysec-ai-securityllm",
+   "reason": "not_listed",
+   "since": "2026-10-01"
   }
  ],
  "moved": [
