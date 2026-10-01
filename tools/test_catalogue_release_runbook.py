@@ -37,6 +37,7 @@ RELEASE_17_STEP = """7. The first time only, move accounts to grants that follow
    `flyctl machine exec MACHINE "AS_SERVICE loop-engine service follow-catalogue-release --config /data/host.json --all-tenants" --app baltor-pilot --json`.
 """
 COMMAND = re.compile(r"loop-engine service ([^\"`]+)")
+FENCED_CODE = re.compile(r"^[ \t]*```[^\n]*\n(.*?)^[ \t]*```[ \t]*$", re.MULTILINE | re.DOTALL)
 
 
 def section(text):
@@ -49,8 +50,10 @@ def section(text):
 def service_commands(text):
     """Every documented `loop-engine service` command, as the entry point receives it without `--config`."""
     commands = []
-    for span in re.findall(r"`([^`]+)`", text):
-        for found in COMMAND.findall(span):
+    spans = FENCED_CODE.findall(text)
+    spans += re.findall(r"`([^`]+)`", FENCED_CODE.sub("", text))
+    for span in spans:
+        for found in (entry for line in span.replace("\\\n", " ").splitlines() for entry in COMMAND.findall(line)):
             words = shlex.split(found)
             if "--config" in words:
                 at = words.index("--config")
@@ -80,6 +83,15 @@ class CatalogueReleaseRunbook(unittest.TestCase):
     def test_the_first_time_follow_step_is_the_step_the_service_checks_replay(self):
         self.assertEqual(follow_step_findings(self.text), [])
         self.assertIn(FIRST_RELEASE_FOLLOW_STEP, service_commands(self.text))
+
+    def test_fenced_examples_do_not_hide_later_inline_recovery_commands(self):
+        text = ('An example:\n\n   ```bash\n   python tools/example.py --dry-run\n   ```\n\n'
+                '`loop-engine service stop-following-catalogue-release --config /data/host.json --tenant fixture`')
+        self.assertEqual(service_commands(text), [('stop-following-catalogue-release', '--tenant', 'fixture')])
+        self.assertEqual(service_commands('```bash\nloop-engine service catalogue-status --config /data/host.json\n```'),
+                         [('catalogue-status',)])
+        self.assertEqual(service_commands('```bash\nloop-engine service catalogue-status\nloop-engine service unknown-command\n```'),
+                         [('catalogue-status',), ('unknown-command',)])
 
     def test_the_first_time_step_as_written_for_release_17_is_refused(self):
         self.assertEqual(service_commands(RELEASE_17_STEP), [RELEASE_17_FOLLOW_STEP])

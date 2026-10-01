@@ -18,10 +18,52 @@ entries:
   rationale: 'Reviewed September 30: exact documented ChatGPT stable redirect admitted by the default host-owned OAuth policy. It is not requested over the network by Baltor and no arbitrary remote callback is inferred from it. The policy is typed and explicit; clients without the documented issuer response use the separately admitted connector callback prefix.'
   created_on: '2026-09-30'
   expires_on: '2026-12-31'
-- finding_id: hardcoding.ad9d5e475837af91e8bab132
+- finding_id: hardcoding.0b11ec6804b30a4f9f3d5521
   owner: loop_engine.core.service_runtime.public_good_page:body
   classification: RESOURCE_OR_TEMPLATE
-  rationale: 'Reviewed October 1: updated static HTML for the Public Good policy and file/package filters, rendered through the existing website frame. This is presentation, not executable harness instructions or access authority. Counts and access come from the versioned domain projections; browser and site-map tests cover the controls. User text is never interpolated into this literal. This exact finding replaces the earlier HTML finding, not a broader exemption.'
+  rationale: 'Reviewed October 1: static HTML for the SDG-first Public Good page, policy and file/package filters, rendered through the existing website frame. This is presentation, not executable harness instructions or access authority. Counts and access come from the versioned domain projections; the 42-check browser journey, 958-check website run and site-map checks cover the controls. User text is never interpolated into this literal. This exact finding replaces the earlier HTML finding, not a broader exemption.'
+  created_on: '2026-10-01'
+  expires_on: '2027-03-30'
+- finding_id: hardcoding.dae9072570234b387ef8bba4
+  owner: loop_engine.core.service_runtime.web_assets.dot.context.json:links[4].url
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: 'Reviewed October 1: an official country/area classification citation in a versioned public research brief. The renderer emits an escaped link and performs no network request or credential transfer. It grants no data redistribution or task authority.'
+  created_on: '2026-10-01'
+  expires_on: '2026-12-31'
+- finding_id: hardcoding.0574b9d4a2db0346ed5575e2
+  owner: loop_engine.core.service_runtime.web_assets.dot.context.json:links[5].url
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: 'Reviewed October 1: the official SDG goals citation in the public research brief, not a runtime provider binding or endorsement. The page/JSON consistency and link validation tests cover its presentation; the server does not fetch it.'
+  created_on: '2026-10-01'
+  expires_on: '2026-12-31'
+- finding_id: hardcoding.b5d809258a082c833d27e89c
+  owner: loop_engine.core.service_runtime.web_assets.dot.context.json:links[6].url
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: 'Reviewed October 1: the owner-supplied public DueCare competition repository is a research starting point. Rendering this citation neither imports code nor qualifies its claims, rights or dependencies. Later use retains separate review and effect authority.'
+  created_on: '2026-10-01'
+  expires_on: '2026-12-31'
+- finding_id: hardcoding.31b748527fb0b06d999bdc40
+  owner: loop_engine.core.service_runtime.web_assets.dot.context.json:links[7].url
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: 'Reviewed October 1: a public competition citation requested as a research source. The website renders an escaped ordinary link, without automated collection, source execution, account access or permission to republish entries.'
+  created_on: '2026-10-01'
+  expires_on: '2026-12-31'
+- finding_id: hardcoding.b9d75144d41729c44c61b57f
+  owner: loop_engine.core.service_runtime.web_assets.dot.feedback.json:links[0].url
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: 'Reviewed October 1: first-party feedback CLI source link in an editorial public brief. This is navigation, not a hidden provider call; the service neither downloads nor executes the linked program. The CLI has its own explicit credential and origin checks.'
+  created_on: '2026-10-01'
+  expires_on: '2026-12-31'
+- finding_id: hardcoding.0374f7203135c2369d09d9ef
+  owner: loop_engine.core.service_runtime.web_assets.dot.feedback.json:links[1].url
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: 'Reviewed October 1: first-party feedback operating-guide link in the public brief. The page emits escaped text and makes no request to the repository or private feedback store. This exact citation remains separate from execution authority.'
+  created_on: '2026-10-01'
+  expires_on: '2026-12-31'
+- finding_id: hardcoding.f01525d4d568b4323e2ca81e
+  owner: tools.baltor_feedback:main
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: 'Reviewed October 1: the standalone first-party feedback CLI defaults to Baltor HTTPS, and --origin explicitly selects an alternative. Origin validation, TLS, redirect refusal, bounded responses, no automatic retries and credential redaction are tested. This is the client transport owner, not an implicit model-provider selection.'
   created_on: '2026-10-01'
   expires_on: '2027-03-30'
 - finding_id: hardcoding.2cdb6e040e2eca43b8b083b3

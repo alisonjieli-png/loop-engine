@@ -204,8 +204,8 @@ def main(argv=None):
             raise Refusal("invalid_timeout")
         if not re.fullmatch(r'[A-Z][A-Z0-9_]{0,79}', options.credential_environment):
             raise Refusal("invalid_credential_reference")
-        credential = os.environ.get(options.credential_environment, '')
-        if not re.fullmatch(r'[\x21-\x7e]{1,4096}', credential):
+        credential = os.environ.get(options.credential_environment)
+        if not isinstance(credential, str) or not re.fullmatch(r'[\x21-\x7e]{1,4096}', credential):
             raise Refusal("credential_missing_or_invalid")
         fields = {} if options.operation == 'review' else fields_for(options.operation, sys.stdin.buffer.read(INPUT_LIMIT+1))
         if contains_credential(fields, credential):

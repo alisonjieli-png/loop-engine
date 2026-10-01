@@ -55,12 +55,13 @@ def validate_record(value):
             raise ValueError("invalid dot brief section")
     for row in value["links"]:
         if (not isinstance(row, dict) or set(row) != {"label", "url"} or not all(text(v) for v in row.values())
-                or not (row["url"].startswith("https://") or row["url"].startswith("/"))
                 or row["url"].startswith("//") or "\\" in row["url"]
                 or any(ch.isspace() or ord(ch) < 32 for ch in row["url"])):
             raise ValueError("invalid dot brief link")
         from .http_auth import validate_public_url
-        validate_public_url("https://baltor.ai" + row["url"] if row["url"].startswith("/") else row["url"])
+        from .web_pages import packaged_site_map
+        validate_public_url(packaged_site_map().canonical_origin + row["url"]
+                            if row["url"].startswith("/") else row["url"])
     return value
 
 
