@@ -47,11 +47,16 @@ from loop_engine.core.service_runtime import runtime as service_runtime
 from loop_engine.core.service_runtime import usage_meter
 from loop_engine.core.service_runtime.http_test_fixtures import HttpDomainFixture, running_http
 from loop_engine.core.service_runtime.storage import ServiceCatalogBinding
+from loop_engine.core.service_runtime import storage as service_storage
 from loop_engine.core.service_runtime import access as service_access
-from loop_engine.core.service_runtime.records import TenantKeyIssue, TenantRegistration
+from loop_engine.core.service_runtime.records import (ServiceCommitUnknown, ServiceRuntimeError,
+                                                     TenantKeyIssue, TenantRegistration)
 from loop_engine.core.service_runtime.catalogue_grants import follow_active_release
 from loop_engine.core.provisioning_server import ProvisioningMeterRequest
-from loop_engine.catalog.protocol import CatalogRecordPrecondition, CatalogWriteBatch, StoreBusy
+from loop_engine.catalog.protocol import (CatalogBatchAcknowledgment, CatalogRecordPrecondition, CatalogWriteBatch,
+                                         StoreBusy, StoreError)
+from loop_engine.catalog.query import IntelligenceQuery
+from loop_engine.loop.encapsulate import as_loop
 from loop_engine.catalog.stores import sqlite_store
 from loop_engine.core.service_runtime.protocol_checks import _protocol_client
 
@@ -542,7 +547,7 @@ class ConcurrentDownloadsOnOneAccount(unittest.TestCase):
         finally:
             stop.set()
             rival.join(30)
-        precise = {(429, "tenant_concurrency_limit_reached"), (503, "usage_store_busy")}
+        precise = {(429, "tenant_concurrency_limit_reached"), (503, "usage_store_busy"), (503, "store_busy")}
         for status, code, retry_after in outcomes:
             self.assertTrue(status == 200 or ((status, code) in precise and retry_after == "1"), outcomes)
         self.assertTrue(any(status == 200 for status, _code, _retry in outcomes), outcomes)
@@ -556,6 +561,137 @@ class ConcurrentDownloadsOnOneAccount(unittest.TestCase):
     def test_known_wrong_a_busy_store_read_as_an_unknown_write_refuses_the_download(self):
         with mock.patch.object(sqlite_store, "_busy", lambda error: False):
             self.assertFalse(download_waits_out_a_held_lock(self.service, "old-classification"))
+
+    def test_authentication_read_contention_is_not_an_invalid_key(self):
+        with mock.patch.object(sqlite_store.SQLiteRecordStore, "get", side_effect=StoreBusy("busy read")):
+            answer = self.service.client.post("/api/v1/download", json=v2(
+                "read", identity="one_file", request_id="auth-read-busy"))
+        self.assertEqual((answer.status_code, answer.json()["error"]["code"]), (503, "store_busy"))
+        self.assertEqual(answer.headers.get("retry-after"), "1")
+        self.assertNotIn("nothing_recorded", answer.json()["error"]["details"])
+        self.assertEqual(self.service.usage(), 0)
+
+    def test_unavailable_read_is_not_an_invalid_key(self):
+        with mock.patch.object(sqlite_store.SQLiteRecordStore, "get", side_effect=StoreError("read failure")):
+            answer = self.service.client.post("/api/v1/download", json=v2(
+                "read", identity="one_file", request_id="auth-read-unavailable"))
+        self.assertEqual((answer.status_code, answer.json()["error"]["code"]), (503, "store_unavailable"))
+        self.assertEqual(self.service.usage(), 0)
+
+    def test_busy_prewrite_meter_read_is_retryable_and_records_nothing(self):
+        original = ServiceCatalogBinding.read
+        def read(binding, store, kind, identity):
+            if kind == service_runtime.USAGE:
+                raise StoreBusy("usage lookup busy")
+            return original(binding, store, kind, identity)
+        with mock.patch.object(ServiceCatalogBinding, "read", read), \
+                mock.patch.object(usage_meter, "METER_WRITE_SECONDS", 0.01):
+            answer = self.service.client.post("/api/v1/download", json=v2(
+                "read", identity="one_file", request_id="meter-read-busy"))
+        self.assertEqual((answer.status_code, answer.json()["error"]["code"]), (503, "usage_store_busy"))
+        self.assertTrue(answer.json()["error"]["details"]["nothing_recorded"])
+        self.assertEqual(answer.headers.get("retry-after"), "1")
+        self.assertEqual(self.service.usage(), 0)
+
+    def test_busy_revalidation_after_metering_does_not_claim_nothing_recorded(self):
+        original_batch = sqlite_store.SQLiteRecordStore.apply_batch
+        original_revalidate = service_runtime.ServiceRuntime.revalidate
+        writes = []
+        def apply_batch(store, request):
+            result = original_batch(store, request)
+            if any(row.get("artifact_kind") == service_runtime.USAGE for row in request.records):
+                writes.append(request.digest)
+            return result
+        def revalidate(runtime, principal):
+            if writes:
+                raise ServiceRuntimeError("store_busy")
+            return original_revalidate(runtime, principal)
+        with mock.patch.object(sqlite_store.SQLiteRecordStore, "apply_batch", apply_batch), \
+                mock.patch.object(service_runtime.ServiceRuntime, "revalidate", revalidate):
+            answer = self.service.client.post("/api/v1/download", json=v2(
+                "read", identity="one_file", request_id="postmeter-read-busy"))
+        self.assertEqual((answer.status_code, answer.json()["error"]["code"]), (503, "store_busy"))
+        self.assertEqual(answer.headers.get("retry-after"), "1")
+        self.assertNotIn("nothing_recorded", answer.json()["error"]["details"])
+        self.assertEqual(len(writes), 1)
+        self.assertEqual(self.service.usage(), 1)
+
+
+class ReadContentionAndOneShotEffects(unittest.TestCase):
+    """Deterministic controls for read errors and the hidden callback replay found by CI."""
+
+    def test_sqlite_get_and_query_keep_the_busy_type(self):
+        with tempfile.TemporaryDirectory() as folder, mock.patch.object(sqlite_store, "BUSY_TIMEOUT_SECONDS", 0.02):
+            path = str(Path(folder) / "records.sqlite")
+            store = sqlite_store.SQLiteRecordStore(path)
+            rival = sqlite3.connect(path)
+            try:
+                rival.execute("BEGIN EXCLUSIVE")
+                with self.assertRaises(StoreBusy):
+                    store.get("not-present")
+                with self.assertRaises(StoreBusy):
+                    store.query(IntelligenceQuery())
+            finally:
+                rival.rollback()
+                rival.close()
+                store.close()
+
+    def test_failed_callable_is_not_replayed_even_if_a_second_call_would_succeed(self):
+        calls, failure = [], ServiceRuntimeError("store_busy")
+        def once():
+            calls.append(1)
+            if len(calls) == 1:
+                raise failure
+            return "unauthorized second effect"
+        result = as_loop("one bounded effect", once)
+        self.assertEqual(calls, [1])
+        self.assertIs(result["error"], failure)
+        self.assertIsNone(result["value"])
+        self.assertEqual(result["accepted"], 0)
+
+    def test_http_loop_preserves_one_unknown_effect_without_replay(self):
+        calls = []
+        def uncertain():
+            calls.append(1)
+            raise ServiceCommitUnknown()
+        with self.assertRaises(ServiceCommitUnknown):
+            service_http.invoke_http_service_as_loop("download", uncertain)
+        self.assertEqual(calls, [1])
+
+    def test_tenant_resolver_keeps_its_typed_busy_refusal(self):
+        from loop_engine.core.provisioning_server import ProvisioningError, ProvisioningServer, ProvisioningTenantResolver
+        server = object.__new__(ProvisioningServer)
+        def busy(_key):
+            raise ProvisioningError("lookup busy", "store_busy")
+        object.__setattr__(server, "tenant_resolver", ProvisioningTenantResolver("test_busy", busy))
+        with self.assertRaises(ProvisioningError) as caught:
+            server.tenant_for("test-credential")
+        self.assertEqual(caught.exception.code, "store_busy")
+
+    def test_confirmation_retries_reads_without_repeating_a_committed_batch(self):
+        with tempfile.TemporaryDirectory() as folder:
+            case = Fixture(Path(folder) / "service")
+            binding = ServiceCatalogBinding(case.config)
+            row = binding.record("test", "one", {"record_type": "test/v1"})
+            store = mock.Mock()
+            store.apply_batch.side_effect = lambda batch: CatalogBatchAcknowledgment(batch.digest, True)
+            store.get.side_effect = [StoreBusy("confirmation busy"), row]
+            binding.commit(store, (row,), (binding.guard(None, row["record_id"]),))
+            self.assertEqual(store.apply_batch.call_count, 1)
+            self.assertEqual(store.get.call_count, 2)
+
+    def test_exhausted_confirmation_stays_unknown_and_never_rewrites(self):
+        with tempfile.TemporaryDirectory() as folder:
+            case = Fixture(Path(folder) / "service")
+            binding = ServiceCatalogBinding(case.config)
+            row = binding.record("test", "one", {"record_type": "test/v1"})
+            store = mock.Mock()
+            store.apply_batch.side_effect = lambda batch: CatalogBatchAcknowledgment(batch.digest, True)
+            store.get.side_effect = StoreBusy("confirmation still busy")
+            with mock.patch.object(service_storage, "COMMIT_CONFIRMATION_SECONDS", 0), \
+                    self.assertRaises(ServiceCommitUnknown):
+                binding.commit(store, (row,), (binding.guard(None, row["record_id"]),))
+            self.assertEqual(store.apply_batch.call_count, 1)
 
 
 

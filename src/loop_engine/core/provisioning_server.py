@@ -426,6 +426,9 @@ class ProvisioningServer:
         if self.tenant_resolver is not None:
             try:
                 tenant = self.tenant_resolver.resolve(key)
+            except ProvisioningError:
+                # A host resolver may report a definite service refusal; it is not evidence of an invalid key.
+                raise
             except Exception:
                 raise ProvisioningError("authentication failed", "unauthorized") from None
             if not isinstance(tenant, ProvisioningTenant) or not hmac.compare_digest(tenant.key_digest, key_digest(key)):

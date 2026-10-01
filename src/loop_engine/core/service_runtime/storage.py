@@ -12,6 +12,7 @@ from contextlib import contextmanager
 from dataclasses import dataclass, field
 import json
 import threading
+import time
 from typing import Callable
 import uuid
 
@@ -25,13 +26,15 @@ from ...catalog.stores.sqlite_store import SQLiteRecordStore
 from .records import (SERVICE_COLLECTION, ServiceCommitUnknown, ServiceRuntimeConfig,
                       ServiceRuntimeError, canonical, digest)
 
-#: The refusal of a write the store did not apply because other work held it locked past the wait. Nothing was
-#: written, so the same operation may be sent again.
+#: A store read or uncommitted batch was blocked. This does not assert that an earlier operation wrote nothing.
 STORE_BUSY_CODE = "store_busy"
 #: How long one write waits behind the other writes of this process to the same store before it answers
 #: `store_busy`. The store is one serialized writer, so queueing here costs no throughput, and a queue is fairer than
 #: every thread retrying inside SQLite's own busy wait, where one writer can lose to the others until it times out.
 WRITE_QUEUE_SECONDS = 5.0
+#: A committed batch has this retry window, plus an in-flight store call's timeout, for read-only confirmation.
+#: Exhaustion stays unknown, never a no-write refusal or another write attempt.
+COMMIT_CONFIRMATION_SECONDS, COMMIT_CONFIRMATION_RETRY_SECONDS = 5.0, 0.05
 _WRITE_QUEUES, _WRITE_QUEUES_GUARD = {}, threading.Lock()
 
 
@@ -78,6 +81,10 @@ class ServiceCatalogBinding:
             if write:
                 require_atomic_batch(store)
             yield store
+        except StoreBusy:
+            raise ServiceRuntimeError(STORE_BUSY_CODE, "the store read stayed locked; retry") from None
+        except StoreError:
+            raise ServiceRuntimeError("store_unavailable") from None
         finally:
             store.close()
 
@@ -163,12 +170,21 @@ class ServiceCatalogBinding:
                 or acknowledgment.batch_digest != request.digest or acknowledgment.committed is not True):
             raise ServiceCommitUnknown()
         removed_versions = {guard.record_id: guard.record_version for guard in request.preconditions}
-        try:
-            confirmed = (all(store.get(row["record_id"]) == row for row in request.records)
-                         and all(_no_longer_held(store.get(identity), removed_versions[identity])
-                                 for identity in request.removals))
-        except Exception:
-            confirmed = False
+        deadline = time.monotonic() + COMMIT_CONFIRMATION_SECONDS
+        while True:
+            try:
+                confirmed = (all(store.get(row["record_id"]) == row for row in request.records)
+                             and all(_no_longer_held(store.get(identity), removed_versions[identity])
+                                     for identity in request.removals))
+                break
+            except StoreBusy:
+                if time.monotonic() + COMMIT_CONFIRMATION_RETRY_SECONDS >= deadline:
+                    confirmed = False
+                    break
+                time.sleep(COMMIT_CONFIRMATION_RETRY_SECONDS)
+            except Exception:
+                confirmed = False
+                break
         if not confirmed:
             raise ServiceCommitUnknown()
         return acknowledgment

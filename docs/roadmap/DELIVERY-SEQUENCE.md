@@ -315,6 +315,11 @@ or made public under this new policy in this planning update.
 The owner explicitly ruled out anonymous downloads later on September 30.
 This is the current access requirement, including for harness API requests.
 
+The first [Public Good candidate batch](../verification/PUBLIC-GOOD-CANDIDATES-2026-09-30.md)
+contains nine executable packages, 93 file placements and 88 distinct files.
+The coordinator reran 132 unit tests successfully. Independent admission
+and live free-access grants remain the next publication gates.
+
 ## Customer activity and download history
 
 The owner wants to see every time a harness downloads files, what task it was
@@ -721,14 +726,13 @@ that dependency-build layer under Docker's
 Release 55 also exposed a more immediate reliability problem: its image build
 and container check took 122 seconds, image publication/deployment took 101
 seconds, then synchronous grant confirmation timed out after 65 seconds at
-the Machines API. The image was already running. Finish outcome reconciliation
-before retrying that operation. `apply_host_grants` still loads the full serving
-view and search index to count grants, whereas billing confirmation already
-uses a lightweight context in the current source. Remove that unnecessary
-grant-index dependency and qualify durable start/status/result handling before
-the next application release; do not skip the confirmation or repeat an
-operation whose outcome remains unknown. This repair takes precedence over
-optional deployment optimizations below.
+the Machines API. The image was already running. Release 56 repaired the
+unnecessary grant-index construction and deployed durable start/status/result
+handling. Grant confirmation took 46.152 seconds, compared with the preceding
+213.536-second reconciled operation. These are separate deployment observations,
+not a controlled speed benchmark. Billing already used a lightweight context.
+Keep confirmation, access checks and outcome reconciliation; never repeat an
+operation whose outcome remains unknown.
 
 Apply improvements in this order, measuring a cold run, a warm run and a changed
 dependency or release each time:

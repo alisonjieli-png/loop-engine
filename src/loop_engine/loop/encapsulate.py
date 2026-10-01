@@ -429,21 +429,25 @@ def as_loop(objective: str, thing, *, kind: str | None = None, inputs=None,
     holder: dict = {}
 
     def handler(lp: Loop, step: str, context: dict) -> StepOutcome:
+        if "outcome" in holder:
+            # An explicitly supplied start definition can allow another mode or iteration. It cannot grant
+            # a second effect through this run-once boundary; preserve the first outcome without replay.
+            return holder["outcome"]
         if kind == "callable":
             try:
                 holder["value"] = thing(inputs) if inputs is not None else thing()
             except Exception as e:
                 holder["error"] = e
-                return StepOutcome(output=f"serve:raised:{type(e).__name__}",
-                                   mode="deterministic", confidence=0.2,
-                                   failed=True)
-            return StepOutcome(output="serve:done", mode="deterministic",
-                               confidence=0.95)
-        holder["value"] = thing                          # data: serve it verbatim
-        return StepOutcome(output="serve:data", mode="deterministic",
-                           confidence=0.95)
+                holder["outcome"] = StepOutcome(output=f"serve:raised:{type(e).__name__}",
+                                                mode="deterministic", confidence=0.2, failed=True)
+            else:
+                holder["outcome"] = StepOutcome(output="serve:done", mode="deterministic", confidence=0.95)
+        else:
+            holder["value"] = thing                      # data: serve it verbatim
+            holder["outcome"] = StepOutcome(output="serve:data", mode="deterministic", confidence=0.95)
+        return holder["outcome"]
 
-    res = loop.run(handler=handler, max_steps=2)
+    res = loop.run(handler=handler, max_steps=1)
     out = {"record_type": "as_loop/v1", "kind": kind, "loop_id": res.loop_id,
            "value": holder.get("value"), "error": holder.get("error"),
            "stopped": res.stopped, "model_calls": res.model_calls,

@@ -127,9 +127,17 @@ class SQLiteRecordStore:
             authority="authoritative")
 
     def get(self, record_id: str, version: str | None = None) -> dict | None:
-        row = self._con.execute(
-            "SELECT * FROM records WHERE record_id = ?",
-            (record_id,)).fetchone()
+        try:
+            cursor = self._con.execute(
+                "SELECT * FROM records WHERE record_id = ?", (record_id,))
+            try:
+                row = cursor.fetchone()
+            finally:
+                cursor.close()
+        except sqlite3.Error as exc:
+            if _busy(exc):
+                raise StoreBusy("SQLite stayed locked; the record could not be read") from exc
+            raise StoreError("SQLite record read failed") from exc
         if row is None:
             return None
         record = self._row_to_record(row)
@@ -164,12 +172,18 @@ class SQLiteRecordStore:
         if query.limit == 0:
             return
         where, params = scalar_sql_predicates(query)
-        cursor = self._con.execute("SELECT * FROM records" + where, params)
+        cursor = None
         try:
+            cursor = self._con.execute("SELECT * FROM records" + where, params)
             records = (self._row_to_record(row) for row in cursor)
             yield from iter_query_records(records, query)
+        except sqlite3.Error as exc:
+            if _busy(exc):
+                raise StoreBusy("SQLite stayed locked; the query could not finish") from exc
+            raise StoreError("SQLite record query failed") from exc
         finally:
-            cursor.close()
+            if cursor is not None:
+                cursor.close()
 
     def put(self, record: dict, *, precondition: dict | None = None) -> dict:
         if self._read_only:

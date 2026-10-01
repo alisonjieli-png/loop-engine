@@ -28,10 +28,12 @@ class PreconditionFailed(StoreError):
 
 
 class StoreBusy(StoreError):
-    """The store stayed locked by other work past its wait, and it wrote nothing of the batch.
+    """A read or batch stayed locked by other work past its wait.
 
-    A store raises this only when it knows the batch was not applied, for example after its own rollback, so the
-    same batch may be sent again. Any other failure of a write leaves its outcome unknown."""
+    A failed read performs no write and makes no statement about earlier writes. For a batch, a store raises this
+    only when it knows the batch was not applied, for example after its own rollback, so that batch may be sent
+    again. A busy verification read after a commit does not undo the commit or authorize another write.
+    Any other failure of a write leaves its outcome unknown."""
 
 
 ATOMIC_BATCH_VERSION = "catalog_atomic_write_batch/v1"

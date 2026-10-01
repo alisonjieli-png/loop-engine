@@ -18,7 +18,7 @@ import secrets
 
 from ..harness_intelligence import HarnessIntelligenceCatalogue
 from ..provisioning_server import (
-    METERING_POLICIES, ProvisioningAccessPolicy, ProvisioningMeterRefusal, ProvisioningQualificationResolver,
+    METERING_POLICIES, ProvisioningAccessPolicy, ProvisioningError, ProvisioningMeterRefusal, ProvisioningQualificationResolver,
     ProvisioningRequest, ProvisioningServer, ProvisioningTenant, ProvisioningTenantResolver,
 )
 from ..service_api import key_digest
@@ -115,12 +115,15 @@ class DurableProvisioningBinding:
         def resolve_tenant(supplied):
             if not isinstance(supplied, str) or not hmac.compare_digest(supplied, internal_key):
                 raise ServiceRuntimeError("unauthorized")
-            latest = self.runtime.revalidate(current)
-            if required not in latest.scopes:
-                raise ServiceRuntimeError("scope_required")
-            _grants, observed = self.runtime.grant_snapshot(latest)
-            if observed != grant_guard:
-                raise ServiceRuntimeError("disclosure_grant_changed")
+            try:
+                latest = self.runtime.revalidate(current)
+                if required not in latest.scopes:
+                    raise ServiceRuntimeError("scope_required")
+                _grants, observed = self.runtime.grant_snapshot(latest)
+                if observed != grant_guard:
+                    raise ServiceRuntimeError("disclosure_grant_changed")
+            except ServiceRuntimeError as refusal:
+                raise ProvisioningError("the durable tenant resolver refused this request", refusal.code) from None
             return ProvisioningTenant(latest.tenant_id, held_digest, latest.entitlement)
 
         tenant = resolve_tenant(internal_key)

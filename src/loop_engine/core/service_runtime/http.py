@@ -789,7 +789,7 @@ def _status(error):
     if code in ("item_unavailable", "managed_access_token_not_found", "waitlist_entry_not_found",
                 "item_withdrawn", "package_file_not_found", "package_files_unavailable", "account_not_found"):
         return 404, code
-    if code in ("meter_commit_unknown", "commit_unknown", "usage_store_busy", "store_busy",
+    if code in ("meter_commit_unknown", "commit_unknown", "usage_store_busy", "store_busy", "store_unavailable",
                 "session_operation_in_progress",
                 "session_reconciliation_window_exhausted", "session_network_authority_required",
                 "billing_customer_not_bound", "session_record_unavailable",

@@ -218,6 +218,9 @@ These are the refusals a client meets most often:
 | `billing_customer_binding_mismatch` | The stored payment customer does not match the provider's. |
 | `concurrent_update` | Another writer changed the record; read it again and retry. |
 | `commit_unknown` | The effect may or may not have committed. It is never reported as success. |
+| `store_busy` | A store read or uncommitted batch stayed locked; retry after the stated delay. This says nothing about earlier writes. |
+| `usage_store_busy` | The meter exhausted its pre-commit retry window; no usage unit was recorded by that attempt. |
+| `store_unavailable` | The store could not be read or opened; this is not evidence of an invalid credential. |
 | `item_withdrawn` | The item version was withdrawn from the library after the served view was built. |
 | `search_filter_not_allowed` | A search filtered on an attribute that is undeclared, internal or not filterable. |
 | `package_file_not_found` | A download named a path the item's package does not hold. |
@@ -237,6 +240,17 @@ record itself is `service_request_limits/v1`.
 `service_cli_error/v1` with `effect_commitment` set to `not_asserted` and
 `automatic_retry` set to false. An unknown commit is not a success and is never
 retried on its own.
+
+SQLite reads preserve the adapter's busy/error distinction through authentication,
+tenant revalidation and metering. A confirmed batch is never repeated to repair
+a failed confirmation read. The service retries only those reads within a
+five-second retry window, plus any in-flight store call's timeout; exhaustion
+remains `commit_unknown`. The canonical `as_loop` wrapper invokes a callable
+at most once, including when it raises. A failure does not authorize another
+domain attempt. `tools/test_customer_delivery_path.py` covers real exclusive
+read locks, typed HTTP refusals, the no-write claim, one-shot callbacks and
+post-commit uncertainty. SQLite documents read contention separately from
+authentication in its [result-code reference](https://www.sqlite.org/rescode.html#busy).
 
 Every refusal also carries `request_reference`, a name issued for that one
 request from the operating system random source and from nothing else. Before
