@@ -267,6 +267,23 @@ def self_test() -> dict:
 
     check("explicit_host_unmetered_grant_is_supported_without_false_metering", explicit_unmetered)
 
+    def account_only_grant():
+        server, decisions, reads, meter, _ = fixture()
+        grants = tuple(replace(grant, metering="unmetered", record_type=serving.ACCOUNT_GRANT_RECORD_TYPE)
+                       if grant.tenant_id == "free" and grant.binding.identity == "skill.reviewed" else grant
+                       for grant in server.access_policy.grants)
+        server.replace_access_policy(replace(server.access_policy, grants=grants))
+        manifest = ask(server, "manifest", key="free-key")
+        result = ask(server, "read", key="free-key")
+        return (manifest["body_allowed"] and not result["metered"]
+                and refusal(lambda: ask(server, "read", key="free-key", identity="tool.files",
+                                        authority_effects=("reads_fs",)), "body_forbidden")
+                and refusal(lambda: serving.ProvisioningGrant("free", decisions["skill.reviewed"].binding,
+                    True, "required", serving.ACCOUNT_GRANT_RECORD_TYPE), "invalid_account_grant")
+                and reads == ["skill.reviewed"] and not meter.rows)
+
+    check("account_only_body_exception_is_exact_versioned_and_never_inferred_from_unmetered", account_only_grant)
+
     for label, callback in (
             ("none", lambda request: None),
             ("untyped", lambda request: {"committed": True}),

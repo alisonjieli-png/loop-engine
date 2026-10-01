@@ -15,7 +15,7 @@ import secrets
 import time
 import uuid
 
-from ..provisioning_server import ProvisioningGrant, ProvisioningItemBinding, ProvisioningMeterRequest
+from ..provisioning_server import GRANT_RECORD_TYPE, ProvisioningGrant, ProvisioningItemBinding, ProvisioningMeterRequest
 from .records import (
     BILLING_CUSTOMER_ACCOUNT_RELEASE_VERSION,
     BILLING_CUSTOMER_OUTCOME_VERSION, BILLING_MANAGE_SCOPE, CLIENT_ACCESS_PROFILE, BillingCustomerAccountRelease,
@@ -374,6 +374,8 @@ class ServiceRuntime:
         grants = tuple(grants)
         if any(not isinstance(grant, ProvisioningGrant) or grant.tenant_id != tenant_id for grant in grants):
             raise ServiceRuntimeError("invalid_disclosure_grant")
+        if any(grant.record_type != GRANT_RECORD_TYPE for grant in grants):
+            raise ServiceRuntimeError("public_good_requires_exact_policy")
         if len({grant.binding.identity for grant in grants}) != len(grants):
             raise ServiceRuntimeError("duplicate_disclosure_grant")
         with self._catalog.store(write=True) as store:

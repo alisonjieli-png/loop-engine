@@ -117,6 +117,8 @@ class CatalogueView:
     #: library page keeps the record and the note of an item withdrawn after the release was published.
     withdrawal_notes: dict = field(default_factory=dict, repr=False, compare=False)
     _lazy: dict = field(default_factory=dict, repr=False, compare=False)
+    #: Exact release item-version hashes, distinct from package/body digests.
+    item_versions: dict = field(default_factory=dict, repr=False)
 
     def approved_bindings(self):
         """identity -> exact binding of every item this view approves."""
@@ -349,6 +351,8 @@ def store_view(config, settings, *, license_policy, family_policy, prepare_searc
                          _lazy={} if prepare_search else {"index_builder": build_index},
                          state_revision=state["revision"] if state else 0, built_at=time.time(),
                          changes=dict(release.document.get("changes") or {}),
+                         item_versions={payload["reference"]["identity"]: version for version, payload in release.versions
+                                        if payload["reference"]["identity"] in bindings},
                          withdrawal_notes={key: value for key, value in notes.items() if key[0] in dict(release.items)})
 
 

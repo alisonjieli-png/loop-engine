@@ -74,6 +74,8 @@ REFUSAL_RECORD_TYPE = "provisioning_refusal/v2"
 BINDING_RECORD_TYPE = "provisioning_item_binding/v1"
 POLICY_RECORD_TYPE = "provisioning_access_policy/v1"
 GRANT_RECORD_TYPE = "provisioning_grant/v1"
+# Explicit item-level exception. Version 1 unmetered grants still require a plan.
+ACCOUNT_GRANT_RECORD_TYPE = "provisioning_grant/v2"
 #: Version 2 adds the library tier of every approval.
 QUALIFICATION_RECORD_TYPE = "provisioning_qualification/v2"
 RESOLVER_RECORD_TYPE = "provisioning_qualification_resolver/v1"
@@ -240,12 +242,19 @@ class ProvisioningGrant:
     record_type: str = GRANT_RECORD_TYPE
 
     def __post_init__(self) -> None:
-        _version(self.record_type, GRANT_RECORD_TYPE)
+        if self.record_type not in (GRANT_RECORD_TYPE, ACCOUNT_GRANT_RECORD_TYPE):
+            _version(self.record_type, GRANT_RECORD_TYPE)
         _name(self.tenant_id, "tenant identity")
         if not isinstance(self.binding, ProvisioningItemBinding):
             raise ProvisioningError("a grant requires an exact item binding")
         if type(self.body_allowed) is not bool or self.metering not in METERING_POLICIES:
             raise ProvisioningError("a grant requires explicit body and metering policies")
+        if self.record_type == ACCOUNT_GRANT_RECORD_TYPE and self.metering != "unmetered":
+            raise ProvisioningError("account-only grants are explicitly unmetered", "invalid_account_grant")
+
+    def permits_body(self, entitlement):
+        """Version 2 is installed only after the host checked the enabled account."""
+        return self.body_allowed and (entitlement == ENTITLEMENTS[1] or self.record_type == ACCOUNT_GRANT_RECORD_TYPE)
 
 
 @dataclass(frozen=True)
@@ -501,8 +510,7 @@ class ProvisioningServer:
                 offered.append({**item.reference(), "qualification_basis": decision.basis,
                                 **tier_fields(decision),
                                 "metering_policy": grant.metering,
-                                "body_allowed": grant.body_allowed
-                                and tenant.entitlement == ENTITLEMENTS[1]})
+                                "body_allowed": grant.permits_body(tenant.entitlement)})
         offered.sort(key=lambda row: (TIER_ORDER[row["library_tier"]], row["identity"]))
         withheld.sort(key=lambda row: row["identity"])
         return offered, withheld
@@ -547,7 +555,7 @@ class ProvisioningServer:
                 **{key: value for key, value in item.reference().items() if key != "record_type"},
                 "qualification_basis": decision.basis, **tier_fields(decision),
                 "metering_policy": grant.metering,
-                "body_allowed": grant.body_allowed and tenant.entitlement == ENTITLEMENTS[1],
+                "body_allowed": grant.permits_body(tenant.entitlement),
                 "verify_before_use": True, "metered": False}
 
     def _recheck(self, tenant, request, binding, grant, decision) -> None:
@@ -560,7 +568,7 @@ class ProvisioningServer:
 
     def _read(self, tenant: ProvisioningTenant, request: ProvisioningRequest) -> dict:
         item, grant, decision = self._item(tenant, request)
-        if tenant.entitlement != ENTITLEMENTS[1] or grant.body_allowed is not True:
+        if not grant.permits_body(tenant.entitlement):
             raise ProvisioningError("body disclosure is not authorized", "body_forbidden")
         if not callable(self.body_reader):
             raise ProvisioningError("body reader is unavailable", "body_reader_unavailable")
