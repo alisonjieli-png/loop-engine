@@ -91,6 +91,11 @@
    "since": "2026-09-27"
   },
   {
+   "address": "/models/apple-simplesd-4b-thinking",
+   "reason": "not_listed",
+   "since": "2026-10-02"
+  },
+  {
    "address": "/models/apus-ailab-apus-openjev-v1-35b-a3b",
    "reason": "not_listed",
    "since": "2026-09-30"
@@ -104,6 +109,11 @@
    "address": "/models/apus-ailab-apus-openjev-v1-9b",
    "reason": "not_listed",
    "since": "2026-09-30"
+  },
+  {
+   "address": "/models/arko007-zenyx-base-220m",
+   "reason": "not_listed",
+   "since": "2026-10-02"
   },
   {
    "address": "/models/armurai-pentest-ai",
@@ -226,6 +236,11 @@
    "since": "2026-09-28"
   },
   {
+   "address": "/models/deeppavlov-rubert-base-cased-sentence",
+   "reason": "not_listed",
+   "since": "2026-10-02"
+  },
+  {
    "address": "/models/deepseek-ai-deepseek-math-7b-instruct",
    "reason": "not_listed",
    "since": "2026-10-01"
@@ -249,11 +264,6 @@
    "address": "/models/epiculous-fett-uccine-long-noodle-7b-120k-context",
    "reason": "not_listed",
    "since": "2026-09-29"
-  },
-  {
-   "address": "/models/ewin-reg-minicpm5-1b-agentic-tooluse-merged-fp16",
-   "reason": "not_listed",
-   "since": "2026-09-30"
   },
   {
    "address": "/models/facebook-opt-6-7b",
@@ -291,14 +301,19 @@
    "since": "2026-09-27"
   },
   {
-   "address": "/models/gryphe-gemma-4-26b-a4b-styletune-v2",
+   "address": "/models/gritlm-gritlm-7b",
    "reason": "not_listed",
-   "since": "2026-10-01"
+   "since": "2026-10-02"
   },
   {
    "address": "/models/gryphe-gemma-4-31b-styletune",
    "reason": "not_listed",
    "since": "2026-09-29"
+  },
+  {
+   "address": "/models/gryphe-pantheon-reasoning-26b-a4b-1-1-v2",
+   "reason": "not_listed",
+   "since": "2026-10-02"
   },
   {
    "address": "/models/h2oai-h2ovl-mississippi-800m",
@@ -321,14 +336,14 @@
    "since": "2026-09-29"
   },
   {
-   "address": "/models/huihui-ai-huihui-ornith-1-5-9b-abliterated",
-   "reason": "not_listed",
-   "since": "2026-09-27"
-  },
-  {
    "address": "/models/huihui-ai-huihui-qwen3-4b-abliterated-v2",
    "reason": "not_listed",
    "since": "2026-10-01"
+  },
+  {
+   "address": "/models/huihui-ai-huihui-spark-x2-5-4b-abliterated",
+   "reason": "not_listed",
+   "since": "2026-10-02"
   },
   {
    "address": "/models/hunter-p-roleplay-xing4-0-29b",
@@ -339,11 +354,6 @@
    "address": "/models/ifm-amber",
    "reason": "not_listed",
    "since": "2026-10-01"
-  },
-  {
-   "address": "/models/ifm-k2-horizon-375b-a23b",
-   "reason": "not_listed",
-   "since": "2026-09-30"
   },
   {
    "address": "/models/inclusionai-ling-3-0-flash-dspark",
@@ -371,14 +381,34 @@
    "since": "2026-09-29"
   },
   {
+   "address": "/models/jinho8345-bros-base-uncased",
+   "reason": "not_listed",
+   "since": "2026-10-02"
+  },
+  {
    "address": "/models/juinron-hummingbird-v2",
    "reason": "not_listed",
    "since": "2026-10-01"
   },
   {
+   "address": "/models/junshim-when2think-thinkonly-1-5b",
+   "reason": "not_listed",
+   "since": "2026-10-02"
+  },
+  {
+   "address": "/models/kalm-embedding-kalm-reranker-v1-nano",
+   "reason": "not_listed",
+   "since": "2026-10-02"
+  },
+  {
    "address": "/models/kwaipilot-kat-coder-pro-v2-5",
    "reason": "refused_source",
    "since": "2026-09-27"
+  },
+  {
+   "address": "/models/laap-ai-qwen-base-invoicev1-01-1-5b",
+   "reason": "not_listed",
+   "since": "2026-10-02"
   },
   {
    "address": "/models/lgai-exaone-k-exaone-2-0-750b-a37b",
@@ -419,6 +449,11 @@
    "address": "/models/mancer-weaver",
    "reason": "refused_source",
    "since": "2026-09-27"
+  },
+  {
+   "address": "/models/mindlab-research-macaron-v1-1",
+   "reason": "not_listed",
+   "since": "2026-10-02"
   },
   {
    "address": "/models/minimax-minimax-m1",
@@ -716,6 +751,11 @@
    "since": "2026-09-27"
   },
   {
+   "address": "/models/portulan-serafim-100m-portuguese-pt-sentence-encoder-ir",
+   "reason": "not_listed",
+   "since": "2026-10-02"
+  },
+  {
    "address": "/models/prefeitura-rio-rio-3-5-open-397b",
    "reason": "not_listed",
    "since": "2026-09-29"
@@ -821,9 +861,9 @@
    "since": "2026-09-30"
   },
   {
-   "address": "/models/rlhflow-pair-preference-model-llama3-8b",
+   "address": "/models/saicr-nacr",
    "reason": "not_listed",
-   "since": "2026-09-30"
+   "since": "2026-10-02"
   },
   {
    "address": "/models/sakana-fugu-max",
@@ -839,6 +879,11 @@
    "address": "/models/sao10k-l3-8b-lunaris-v1",
    "reason": "refused_source",
    "since": "2026-09-27"
+  },
+  {
+   "address": "/models/sdadas-polish-reranker-large-ranknet",
+   "reason": "not_listed",
+   "since": "2026-10-02"
   },
   {
    "address": "/models/sdadas-st-polish-paraphrase-from-mpnet",
@@ -876,16 +921,6 @@
    "since": "2026-09-27"
   },
   {
-   "address": "/models/supralabs-supra2-medium-instruct",
-   "reason": "not_listed",
-   "since": "2026-09-29"
-  },
-  {
-   "address": "/models/supralabs-supra2-nano",
-   "reason": "not_listed",
-   "since": "2026-09-29"
-  },
-  {
    "address": "/models/surjolabs-surjo-100m",
    "reason": "not_listed",
    "since": "2026-09-29"
@@ -904,6 +939,11 @@
    "address": "/models/thesysdev-oui-1",
    "reason": "not_listed",
    "since": "2026-09-30"
+  },
+  {
+   "address": "/models/trevorjs-gemma-4-31b-it-uncensored",
+   "reason": "not_listed",
+   "since": "2026-10-02"
   },
   {
    "address": "/models/trl-internal-testing-tiny-qwen3-5forconditionalgeneration-3-8",
@@ -986,9 +1026,24 @@
    "since": "2026-09-27"
   },
   {
+   "address": "/models/xformai-opt-125m-gqa-ub-6-best-for-kv-cache",
+   "reason": "not_listed",
+   "since": "2026-10-02"
+  },
+  {
    "address": "/models/yqi0-petitgpt",
    "reason": "not_listed",
    "since": "2026-09-29"
+  },
+  {
+   "address": "/models/yuhan123-vicuna-13b-self-consistency-neg-exp-var-1",
+   "reason": "not_listed",
+   "since": "2026-10-02"
+  },
+  {
+   "address": "/models/yuhan123-vicuna-13b-self-consistency-neg-exp-var-4",
+   "reason": "not_listed",
+   "since": "2026-10-02"
   },
   {
    "address": "/models/yuhan123-vicuna-13b-self-consistency-neg-exp-var-5",
@@ -1011,14 +1066,14 @@
    "since": "2026-09-27"
   },
   {
+   "address": "/models/zai-org-glm-5-3-bf16",
+   "reason": "not_listed",
+   "since": "2026-10-02"
+  },
+  {
    "address": "/models/zed-industries-zeta-2-1",
    "reason": "not_listed",
    "since": "2026-09-27"
-  },
-  {
-   "address": "/models/zysec-ai-securityllm",
-   "reason": "not_listed",
-   "since": "2026-10-01"
   }
  ],
  "moved": [
