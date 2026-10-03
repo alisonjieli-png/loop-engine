@@ -146,9 +146,9 @@
    "since": "2026-09-30"
   },
   {
-   "address": "/models/bytedance-ouro-2-6b-thinking",
+   "address": "/models/brao-llama-2-7b-hallucination-detection",
    "reason": "not_listed",
-   "since": "2026-09-30"
+   "since": "2026-10-03"
   },
   {
    "address": "/models/bytedance-seed-seed-1-6",
@@ -191,6 +191,16 @@
    "since": "2026-09-30"
   },
   {
+   "address": "/models/cohere-c4ai-aya-expanse-8b",
+   "reason": "not_listed",
+   "since": "2026-10-03"
+  },
+  {
+   "address": "/models/cohere-c4ai-aya-vision-8b",
+   "reason": "not_listed",
+   "since": "2026-10-03"
+  },
+  {
    "address": "/models/cohere-command-a-plus",
    "reason": "refused_source",
    "since": "2026-09-27"
@@ -211,9 +221,19 @@
    "since": "2026-09-28"
   },
   {
+   "address": "/models/cross-encoder-testing-reranker-bert-tiny-gooaq-bce-openvino",
+   "reason": "not_listed",
+   "since": "2026-10-03"
+  },
+  {
    "address": "/models/crumb-bloom-560m-rlhf-sd2-prompter-aesthetic",
    "reason": "not_listed",
    "since": "2026-09-29"
+  },
+  {
+   "address": "/models/dancingiguana-music-generation",
+   "reason": "not_listed",
+   "since": "2026-10-03"
   },
   {
    "address": "/models/danielheinz-e5-base-sts-en-de",
@@ -231,6 +251,11 @@
    "since": "2026-10-01"
   },
   {
+   "address": "/models/darioooooo0o-spark-4b-engram",
+   "reason": "not_listed",
+   "since": "2026-10-03"
+  },
+  {
    "address": "/models/dbourget-philai-embeddings-v1-1",
    "reason": "not_listed",
    "since": "2026-09-28"
@@ -244,6 +269,11 @@
    "address": "/models/deepseek-ai-deepseek-math-7b-instruct",
    "reason": "not_listed",
    "since": "2026-10-01"
+  },
+  {
+   "address": "/models/dicta-il-dictabert-lex",
+   "reason": "not_listed",
+   "since": "2026-10-03"
   },
   {
    "address": "/models/dots-studio-dots-3-note-preview",
@@ -266,9 +296,19 @@
    "since": "2026-09-29"
   },
   {
+   "address": "/models/facebook-opt-2-7b",
+   "reason": "not_listed",
+   "since": "2026-10-03"
+  },
+  {
    "address": "/models/facebook-opt-6-7b",
    "reason": "not_listed",
    "since": "2026-10-01"
+  },
+  {
+   "address": "/models/farbodtavakkoli-otel-llm-20b-reasoning",
+   "reason": "not_listed",
+   "since": "2026-10-03"
   },
   {
    "address": "/models/final-bench-darwin-397b-ztc",
@@ -306,6 +346,11 @@
    "since": "2026-10-02"
   },
   {
+   "address": "/models/gronlp-gpt2-small-dutch",
+   "reason": "not_listed",
+   "since": "2026-10-03"
+  },
+  {
    "address": "/models/gryphe-gemma-4-31b-styletune",
    "reason": "not_listed",
    "since": "2026-09-29"
@@ -321,6 +366,11 @@
    "since": "2026-09-30"
   },
   {
+   "address": "/models/hai929-the-guagellm-23m",
+   "reason": "not_listed",
+   "since": "2026-10-03"
+  },
+  {
    "address": "/models/harry19081-wald-4b",
    "reason": "not_listed",
    "since": "2026-10-01"
@@ -334,6 +384,11 @@
    "address": "/models/hpai-bsc-iris-14b",
    "reason": "not_listed",
    "since": "2026-09-29"
+  },
+  {
+   "address": "/models/huihui-ai-huihui-ornith-1-5-9b-abliterated",
+   "reason": "not_listed",
+   "since": "2026-10-03"
   },
   {
    "address": "/models/huihui-ai-huihui-qwen3-4b-abliterated-v2",
@@ -396,9 +451,9 @@
    "since": "2026-10-02"
   },
   {
-   "address": "/models/kalm-embedding-kalm-reranker-v1-nano",
+   "address": "/models/kaikaku-epicure-core",
    "reason": "not_listed",
-   "since": "2026-10-02"
+   "since": "2026-10-03"
   },
   {
    "address": "/models/kwaipilot-kat-coder-pro-v2-5",
@@ -409,6 +464,11 @@
    "address": "/models/laap-ai-qwen-base-invoicev1-01-1-5b",
    "reason": "not_listed",
    "since": "2026-10-02"
+  },
+  {
+   "address": "/models/lajavaness-bilingual-embedding-large",
+   "reason": "not_listed",
+   "since": "2026-10-03"
   },
   {
    "address": "/models/lgai-exaone-k-exaone-2-0-750b-a37b",
@@ -436,9 +496,19 @@
    "since": "2026-09-29"
   },
   {
+   "address": "/models/llm-agents-tora-70b-v1-0",
+   "reason": "not_listed",
+   "since": "2026-10-03"
+  },
+  {
    "address": "/models/lmms-lab-llava-onevision-qwen2-7b-ov",
    "reason": "not_listed",
    "since": "2026-10-01"
+  },
+  {
+   "address": "/models/logic65-whittle-next-27b-a3b",
+   "reason": "not_listed",
+   "since": "2026-10-03"
   },
   {
    "address": "/models/logics-mllm-logics-swe-qwen3-6-27b",
@@ -449,6 +519,11 @@
    "address": "/models/mancer-weaver",
    "reason": "refused_source",
    "since": "2026-09-27"
+  },
+  {
+   "address": "/models/mannix-ita-qwen3-6-27b-a3b-coder",
+   "reason": "not_listed",
+   "since": "2026-10-03"
   },
   {
    "address": "/models/mindlab-research-macaron-v1-1",
@@ -551,6 +626,11 @@
    "since": "2026-10-01"
   },
   {
+   "address": "/models/mrm8488-codegpt-small-finetuned-python-token-completion",
+   "reason": "not_listed",
+   "since": "2026-10-03"
+  },
+  {
    "address": "/models/naver-hyperclovax-hyperclovax-seed-think-14b",
    "reason": "not_listed",
    "since": "2026-10-01"
@@ -574,6 +654,11 @@
    "address": "/models/nvidia-deepseek-v3-2-nvfp4",
    "reason": "not_listed",
    "since": "2026-10-01"
+  },
+  {
+   "address": "/models/nvidia-nemotron-3-8b-chat-4k-rlhf",
+   "reason": "not_listed",
+   "since": "2026-10-03"
   },
   {
    "address": "/models/nvidia-nemotron-3-nano-omni-30b-a3b-reasoning-bf16",
@@ -721,6 +806,11 @@
    "since": "2026-09-29"
   },
   {
+   "address": "/models/peft-internal-testing-tiny-random-llamaforcausallm",
+   "reason": "not_listed",
+   "since": "2026-10-03"
+  },
+  {
    "address": "/models/perceptron-perceptron-mk1",
    "reason": "refused_source",
    "since": "2026-09-27"
@@ -769,6 +859,11 @@
    "address": "/models/pritamdeka-pubmedbert-mnli-snli-scinli-scitail-mednli-stsb",
    "reason": "not_listed",
    "since": "2026-09-29"
+  },
+  {
+   "address": "/models/prithivmlmods-orion-9b-agentic-codecore-merge",
+   "reason": "not_listed",
+   "since": "2026-10-03"
   },
   {
    "address": "/models/q-project-q-omni-53m-experimental",
@@ -831,6 +926,11 @@
    "since": "2026-09-27"
   },
   {
+   "address": "/models/raxcore-dev-rax-4-5",
+   "reason": "not_listed",
+   "since": "2026-10-03"
+  },
+  {
    "address": "/models/rekaai-reka-edge-2603",
    "reason": "refused_source",
    "since": "2026-09-27"
@@ -881,6 +981,11 @@
    "since": "2026-09-27"
   },
   {
+   "address": "/models/sciphi-sciphi-self-rag-mistral-7b-32k",
+   "reason": "not_listed",
+   "since": "2026-10-03"
+  },
+  {
    "address": "/models/sdadas-polish-reranker-large-ranknet",
    "reason": "not_listed",
    "since": "2026-10-02"
@@ -921,6 +1026,11 @@
    "since": "2026-09-27"
   },
   {
+   "address": "/models/supralabs-supra2-medium-instruct",
+   "reason": "not_listed",
+   "since": "2026-10-03"
+  },
+  {
    "address": "/models/surjolabs-surjo-100m",
    "reason": "not_listed",
    "since": "2026-09-29"
@@ -946,6 +1056,11 @@
    "since": "2026-10-02"
   },
   {
+   "address": "/models/trl-internal-testing-small-qwen2forcausallm-2-5",
+   "reason": "not_listed",
+   "since": "2026-10-03"
+  },
+  {
    "address": "/models/trl-internal-testing-tiny-qwen3-5forconditionalgeneration-3-8",
    "reason": "not_listed",
    "since": "2026-09-30"
@@ -954,6 +1069,11 @@
    "address": "/models/typesafe-jev-router",
    "reason": "refused_source",
    "since": "2026-09-27"
+  },
+  {
+   "address": "/models/typhoon-ai-typhoon-ocr-3b",
+   "reason": "not_listed",
+   "since": "2026-10-03"
   },
   {
    "address": "/models/unbiased-pareto",
@@ -1031,6 +1151,16 @@
    "since": "2026-10-02"
   },
   {
+   "address": "/models/xhtoken-spark-x2-5-1-7b",
+   "reason": "not_listed",
+   "since": "2026-10-03"
+  },
+  {
+   "address": "/models/yoojongchoi-llama-3-1-8b-instruct-ft-hallucination-detection",
+   "reason": "not_listed",
+   "since": "2026-10-03"
+  },
+  {
    "address": "/models/yqi0-petitgpt",
    "reason": "not_listed",
    "since": "2026-09-29"
@@ -1074,6 +1204,11 @@
    "address": "/models/zed-industries-zeta-2-1",
    "reason": "not_listed",
    "since": "2026-09-27"
+  },
+  {
+   "address": "/models/zysec-ai-securityllm",
+   "reason": "not_listed",
+   "since": "2026-10-03"
   }
  ],
  "moved": [
