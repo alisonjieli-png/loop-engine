@@ -7,7 +7,8 @@
 ├── state/status.json                     the last run's state for a timer or an operator
 └── <YYYY-MM-DD>/                         one folder per UTC day
     ├── raw/<executor>/<qq>/<attempt>.json.gz   one response: request (no credential), status, kept headers,
-    │                                           the body bytes (bounded, base64), their SHA-256; gzip
+    │                                           the body (bounded; text as text, other bytes as base64) and
+    │                                           its SHA-256; gzip
     ├── routed/<line or pool>.jsonl       one row per new candidate proposed to a line or pool
     └── run-<id>.json                     the run's report
 ```
@@ -223,8 +224,12 @@ class Ledger:
                     "executor_id": query.executor_id, "request": request, "target": answer.target,
                     "status": answer.status, "headers": answer.headers, "elapsed_ms": round(answer.elapsed_ms, 1),
                     "truncated": answer.truncated, "error_class": answer.error_class, "stored_at": stamp(self.clock()),
-                    "body_sha256": hashlib.sha256(body).hexdigest(), "body_bytes": len(body),
-                    "body_base64": base64.b64encode(body).decode("ascii")}
+                    "body_sha256": hashlib.sha256(body).hexdigest(), "body_bytes": len(body)}
+        try:
+            # Text bodies stay text, so gzip sees the JSON itself; anything else is kept exactly as base64.
+            envelope["body_text"] = body.decode("utf-8")
+        except UnicodeDecodeError:
+            envelope["body_base64"] = base64.b64encode(body).decode("ascii")
         data = gzip.compress(json.dumps(envelope, sort_keys=True).encode(), compresslevel=6)
         path = self.evidence_path(query.executor_id, attempt_id)
         path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
@@ -358,7 +363,10 @@ class Ledger:
         envelope = json.loads(gzip.decompress(Path(path).read_bytes()))
         if envelope.get("record_type") != EVIDENCE:
             raise ValueError("evidence_version")
-        envelope["body"] = base64.b64decode(envelope.pop("body_base64"))
+        if "body_text" in envelope:
+            envelope["body"] = envelope.pop("body_text").encode("utf-8")
+        else:
+            envelope["body"] = base64.b64decode(envelope.pop("body_base64"))
         if hashlib.sha256(envelope["body"]).hexdigest() != envelope["body_sha256"]:
             raise ValueError("evidence_body_digest")
         return envelope
