@@ -665,13 +665,15 @@ class NgramIndex:
             raise NgramRetrievalError(
                 "document_similarity needs DocumentSimilarityRequest")
         left_id, right_id = request.left_id, request.right_id
-        if left_id == right_id:
-            return 1.0
         if left_id not in self._by_id or right_id not in self._by_id:
             raise NgramRetrievalError("document similarity IDs must exist")
         eligible = set(self._eligible_ids(request.allowed_scopes))
         if left_id not in eligible or right_id not in eligible:
             raise NgramRetrievalError("document pair is outside allowed_scopes")
+        # Identity scores 1.0 only after both checks: an unknown document or
+        # one outside the caller's scopes is refused, never a perfect match.
+        if left_id == right_id:
+            return 1.0
         policy = request.fusion_policy or FusionPolicy()
         weights = policy.weights()
         denominator = weights["character"] + weights["word"]
