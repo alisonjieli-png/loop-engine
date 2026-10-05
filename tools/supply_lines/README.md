@@ -87,9 +87,13 @@ Supply lines (each writes library_supply_candidate/v1 records)
 │   └── the upstream file byte for byte, its licence text beside it, a loader that refuses a
 │       changed file or a row that breaks the schema
 ├── function_extracts: one documented function of a permissive library with exactly the code it needs
-│   ├── kind code_module, form function; libraries in function_sources.json
+│   ├── kind code_module, form function; libraries in function_sources.json; generator 1.2.0
 │   ├── the function and its closure copied whole statement by statement across the package's own
-│   │   modules; standard library imports written as imports; any other dependency refuses it
+│   │   modules, names only annotations read among them; standard library imports written as imports;
+│   │   any other dependency refuses it
+│   ├── refused by name as well: a module's own test or demonstration, a docstring without words, a
+│   │   copied module that states a licence other than the repository's
+│   ├── effects read from the syntax tree of the code and of its docstring examples, never from words
 │   └── its docstring examples run as doctests, and the same function raising NotImplementedError
 │       under its own docstring must fail them
 └── json_schemas: one JSON Schema with schema_check.py (a small validator) and tests
@@ -197,6 +201,45 @@ keeps it a candidate.
 ```bash
 PYTHONPATH=src:tools python -m unittest tools.test_supply_lines
 ```
+
+## Generator 1.2.0 of function_extracts
+
+The sampled review of September 30, 2026 withheld
+`function_extracts/1.1.0@8ebc4a99e5a6` with 21 of its 58 sampled packages
+defective (the tolerance is 5 percent), so the decision ledger refuses to
+sample version 1.1.0 into acceptance again. Each of the 21 packages was read
+from the import store and each reviewer finding from the review ledger, and
+every factual claim was checked by running the extracted code. The primary
+root causes:
+
+| Root cause | Packages | Of 21 |
+|---|---|---|
+| Generator defect | `decorator` (NLTK's copy of Michele Simionato's BSD decorator module, labelled Apache-2.0 without its notice); `predecessor`, `is_json`, `inverse` (names only annotations read left unbound); `update_header` (file effects it does not have); `validate` (another function's parameter list as its only text); `encrypt` (an example as its description, and test counts that disagreed); `test_rabin_karp`, `test_motion` (a module's own tests packaged as jobs) | 9 |
+| Source library | `first_molar_mass` (returns the exception), `find_unit_clauses` (ignores its model argument), `secant_method` (bound to one equation), `find_median` (wrong for an unsorted list), `simplify_kmap` (lists minterms and does not simplify), `calculate_pi` (names the wrong algorithm), `rank_of_matrix` (wrong for 340 of 3,000 random matrices, and changes its input), `perfect_cube` (wrong for 97 of the first 100 cubes), `is_valid_email_address` (accepts a domain that ends in a hyphen), `chose_rws` (never selects past `population_size`) | 10 |
+| Reviewer error | `quantile` (the `start - 1` the reviewer called a bug is guarded, and every interval of 201 arrays answers correctly); `standardization` (`statistics.stdev` refusing a single value is its documented behaviour, and `round` is exact) | 2 |
+
+Besides its primary cause, 10 of the 21 packages declared a file effect they
+do not have (5 rejections cite it), and 15 had a README that misdescribed the
+function. All 10 source-library defects come from TheAlgorithms/Python.
+
+What 1.2.0 changes, each with a known-wrong control in
+`tools/test_supply_lines.py` that fails on 1.1.0, measured on the cached
+sources of the September 28 and October 1 runs (read offline on October 5:
+1.1.0 writes 3,067 packages from them and 1.2.0 writes 2,795):
+
+- Effects come from the syntax tree of the code and of its docstring
+  examples. 1.1.0 read the module's words with the instruction-file rules:
+  868 of its packages declared a file effect and none holds a file call.
+  1.2.0 declares one, for `load_chemical_preferences`, which reads files.
+- The README holds the whole signature (1.1.0 cut 301 at their first line),
+  the docstring's own description (498 summaries held examples), shortened
+  only between sentences or words, and test counts as doctest counts them.
+- Names only annotations read are bound. `typing.get_type_hints` failed for
+  312 of 1.1.0's packages and fails for 19 of 1.2.0's, each a name the
+  upstream binds only under `TYPE_CHECKING`, as in the upstream module.
+- New named refusals: `not_a_reusable_job` (11 of 1.1.0's packages),
+  `no_description` (232) and `module_licence_differs` (17), with their
+  measured rules beside the constants in `function_extracts.py`.
 
 ## Limits
 

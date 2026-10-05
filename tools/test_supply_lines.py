@@ -1736,6 +1736,41 @@ def fetch(url):
 '''
 
 
+def _extract(files: dict, **source) -> tuple:
+    """(built packages by function name with their files, refusal reasons by function name) of the function line
+    over a repository holding files (path -> text), with an MIT licence and no notice file."""
+    from supply_lines import function_extracts as line
+    from loop_engine.core.library_ingestion.record_rules import git_blob_identity
+    data = {path: text.encode() for path, text in files.items()}
+    tree = {"tree": [{"path": path, "type": "blob", "sha": git_blob_identity(body)} for path, body in data.items()]}
+
+    class Reader:
+        def github(self, path):
+            if "/commits/" in path:
+                return _Answer(200, json.dumps({"sha": "c" * 40}).encode())
+            return _Answer(200, json.dumps(tree).encode())
+
+        def get(self, url, cache_errors=False):
+            return _Answer(200, data[url.split("c" * 40 + "/", 1)[1]])
+
+        def licence_text(self, repository, commit):
+            return "LICENSE", LICENCE, "MIT"
+
+        def pinned_file(self, repository, commit, path):
+            raise LookupError(path)
+
+    declared = {"source_id": "lib", "title": "lib", "repository": "example/lib", "branch": "main",
+                "package_root": "lib", "vendor": "lib", "modules": sorted(files), **source}
+    with tempfile.TemporaryDirectory() as staging:
+        built, refused, _facts, _summary = line.generate(Reader(), [declared], code_revision="a" * 40,
+                                                         licence_text=LICENCE, generated_on="2026-10-05",
+                                                         staging=Path(staging))
+    packages = {payload["repository"]["function"]: (payload, {entry["path"]: bodies[entry["digest"]].decode()
+                                                              for entry in payload["package"]["files"]})
+                for payload, bodies in built}
+    return packages, {row["subject"].rsplit(" ", 1)[-1]: row["reason"] for row in refused}
+
+
 class FunctionExtractsTest(unittest.TestCase):
     def test_documented_functions_are_copied_with_their_closure_and_tested(self):
         from supply_lines import function_extracts as line
@@ -1795,17 +1830,51 @@ import typing as t
 import lib2 as pkg
 from .words import _join as join_words
 from somewhere_else import OnlyInAnnotations
+from typing_extensions import TypeGuard
+
+if t.TYPE_CHECKING:
+    from _typeshed import SupportsWrite
 
 T = t.TypeVar("T")
 
 
-def shout(word: OnlyInAnnotations) -> T:
+def shout(word: T) -> T:
     """Louder.
 
     >>> shout("hi")
     'HI!'
     """
     return word.upper() + "!"
+
+
+def is_word(value: t.Any) -> TypeGuard[str]:
+    """Whether value is a string.
+
+    >>> is_word("a")
+    True
+    """
+    return isinstance(value, str)
+
+
+def write_word(word: str, out: "SupportsWrite[str]") -> None:
+    """Write the word.
+
+    >>> import io
+    >>> buffer = io.StringIO()
+    >>> write_word("a", buffer)
+    >>> buffer.getvalue()
+    'a'
+    """
+    out.write(word)
+
+
+def strange(value: OnlyInAnnotations) -> int:
+    """Its annotation names another package.
+
+    >>> strange(1)
+    1
+    """
+    return value
 
 
 def shout_all(words):
@@ -1827,15 +1896,41 @@ def _join(parts):
         init = "from .text import shout, shout_all\n"
         modules = {path: (line.module_statements(path, source), source) for path, source in
                    (("lib2/text.py", text), ("lib2/words.py", words), ("lib2/__init__.py", init))}
+        # A name only annotations read is bound like any other name, so the written module shows none it does not
+        # bind. 1.1.0 left them out: its pydash packages showed t.Any and TypeGuard, and typing.get_type_hints
+        # raised NameError (the September 30 review rejected two of them for it).
         closure = line.closure_of("shout", "lib2/text.py", modules, "lib2")
-        # Names only annotations read are left out when annotations are never evaluated.
-        self.assertEqual([sorted(row.binds) for row in closure.statements], [["shout"]])
+        self.assertEqual([sorted(row.binds) for row in closure.statements], [["T"], ["shout"]])
+        self.assertEqual(closure.imports, {"t": ("typing", None)})
+        # A typing_extensions name typing provides is imported from typing: the annotation is never evaluated, and
+        # the module needs no package beside the standard library.
+        closure = line.closure_of("is_word", "lib2/text.py", modules, "lib2")
+        self.assertEqual(closure.imports, {"t": ("typing", None), "TypeGuard": ("typing", "TypeGuard")})
+        self.assertEqual(closure.backports, {"TypeGuard": "TypeGuard"})
+        import importlib.util
+        import typing
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "extracted_is_word.py"
+            path.write_text(line.module_text(closure, "is_word", "# header\n"), encoding="utf-8")
+            specification = importlib.util.spec_from_file_location("extracted_is_word", path)
+            extracted = importlib.util.module_from_spec(specification)
+            specification.loader.exec_module(extracted)
+        self.assertEqual(typing.get_type_hints(extracted.is_word), {"value": typing.Any,
+                                                                     "return": typing.TypeGuard[str]})
+        # A quoted annotation is read too, and a name bound only under TYPE_CHECKING comes with its block, copied
+        # whole: its imports never run, so _typeshed refuses nothing.
+        closure = line.closure_of("write_word", "lib2/text.py", modules, "lib2")
+        self.assertEqual([(row.type_checking, sorted(row.binds)) for row in closure.statements],
+                         [(True, ["SupportsWrite"]), (False, ["write_word"])])
+        # A name only annotations read that needs another package refuses the function, as a name it runs does.
+        with self.assertRaises(line.ExtractRefused) as refused:
+            line.closure_of("strange", "lib2/text.py", modules, "lib2")
+        self.assertEqual(refused.exception.reason, "needs_a_dependency")
         closure = line.closure_of("shout_all", "lib2/text.py", modules, "lib2")
         self.assertEqual(closure.aliases, {"join_words": "_join"})
         self.assertEqual({alias: sorted(names) for alias, (_module, names) in closure.namespaces.items()},
                          {"pkg": ["shout"]})
         written = line.module_text(closure, "shout_all", "# header\n")
-        import importlib.util
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder) / "extracted_shout_all.py"
             path.write_text(written, encoding="utf-8")
@@ -1862,6 +1957,256 @@ def _join(parts):
         finally:
             line.MAXIMUM_CLOSURE_LINES = saved
         self.assertEqual(refused.exception.reason, "closure_too_large")
+
+    # The four tests below are the known-wrong controls of the defect classes the sampled review of September 30,
+    # 2026 found in generator 1.1.0 (21 of 58 sampled packages defective): each fails on 1.1.0.
+    def test_effects_are_read_from_the_syntax_tree_and_the_examples_never_from_words(self):
+        # 1.1.0 read the module's words with the instruction-file rules: "value > high" was a shell redirect
+        # (writes_fs) and "Find the" a file read (reads_fs). 868 of the 3,067 packages it wrote from the cached
+        # sources declared a file effect and none of them holds a file call.
+        files = {"lib/core.py": '''import os
+
+
+def clamp(value, low, high):
+    """Find the value within bounds: a value > high is cut to high.
+
+    >>> clamp(5, 0, 3)
+    3
+    """
+    return low if value < low else high if value > high else value
+
+
+def save(text, path):
+    """Write text to a file.
+
+    >>> save("x", os.devnull)
+    1
+    """
+    with open(path, "w") as handle:
+        return handle.write(text)
+
+
+def size(path):
+    """The size of a file, given its name.
+
+    >>> size(os.__file__) > 0
+    True
+    """
+    return os.stat(path).st_size
+
+
+def first_word(text):
+    """The first word of a text.
+
+    >>> with open(os.devnull) as handle:
+    ...     first_word(handle.read() + "word and more")
+    'word'
+    """
+    return text.split()[0]
+'''}
+        packages, reasons = _extract(files)
+        evidence = {name: {row["effect"]: row["rule"] for row in payload["effect_evidence"]}
+                    for name, (payload, _written) in packages.items()}
+        self.assertEqual(sorted(packages), ["clamp", "first_word", "save", "size"], reasons)
+        # The test file a harness runs is the only effect of clamp: no file effect from its words.
+        self.assertEqual(packages["clamp"][0]["declared_effects"], ["spawns_process"])
+        self.assertEqual([sorted(evidence["save"]), sorted(evidence["size"])],
+                         [["spawns_process", "writes_fs"], ["reads_fs", "spawns_process"]])
+        self.assertRegex(evidence["save"]["writes_fs"], r"^calls open at line \d+$")
+        self.assertRegex(evidence["size"]["reads_fs"], r"^calls os\.stat at line \d+$")
+        self.assertEqual(evidence["first_word"]["reads_fs"], "calls open in an example of first_word")
+
+    def test_the_readme_shows_the_whole_signature_its_own_description_and_what_the_tests_run(self):
+        from supply_lines import function_extracts as line
+        # 1.1.0 showed a signature's first source line (`def chose_rws(`), took the docstring's first paragraph
+        # whole (into the examples when no blank line came first) and cut it at 300 characters, inside a number:
+        # find_median's README showed 2.6 for 2.65. It also said "runs the 1 examples of the docstrings (4 test
+        # runs)" when the function's one example sat beside its helpers' examples.
+        files = {"lib/core.py": '''def times(values, factor):
+    """Each value times the factor.
+
+    >>> times([1], 3)
+    [3]
+    >>> times([], 3)
+    []
+    """
+    return [value * factor for value in values]
+
+
+def scaled(
+    values,
+    factor=2,
+):
+    """Multiply each value by the factor.
+    >>> scaled([1, 2])
+    [2, 4]
+    """
+    return times(values, factor)
+'''}
+        packages, _reasons = _extract(files)
+        readme = packages["scaled"][1]["README.md"]
+        self.assertIn("`def scaled(values, factor=2):`", readme)
+        self.assertIn("\n\nMultiply each value by the factor.\n\n", readme)
+        self.assertNotIn(">>>", readme)
+        self.assertIn("Besides the function it defines `times`, which the function or its examples use", readme)
+        self.assertIn("runs all 3 docstring examples of `lib_scaled.py` as doctests, offline, one test per "
+                      "docstring (2 tests); 1 of them is the function's own.", readme)
+        self.assertIn("runs the function's 2 docstring examples as doctests, offline (1 test).",
+                      packages["times"][1]["README.md"])
+        self.assertEqual(line.shortened("The median of the list is 2.65 here. More words follow it.", 40),
+                         "The median of the list is 2.65 here.")
+        self.assertEqual(line.shortened("A median of 2.65 for the five values in the list", 22),
+                         "A median of 2.65 for…")
+        self.assertEqual(line.description_of(":param n: a number\n:return: true if n is prime\n>>> f(2)\nTrue"),
+                         "Returns: true if n is prime")
+        self.assertEqual(line.description_of("Returns:\n--------\n>>> f(2)\nTrue"), "")
+
+    def test_a_module_test_a_demonstration_or_a_docstring_without_words_is_not_packaged(self):
+        # 1.1.0 packaged TheAlgorithms' test_rabin_karp and test_motion as jobs, and functions whose docstrings
+        # hold examples and nothing else (secant_method, encrypt) or a parameter list (validate).
+        files = {"lib/core.py": '''def double(x):
+    """Twice x.
+
+    >>> double(2)
+    4
+    """
+    return 2 * x
+
+
+def test_double():
+    """Checks double.
+
+    >>> test_double()
+    ok
+    """
+    assert double(2) == 4
+    print("ok")
+
+
+def main():
+    """Shows double at work.
+
+    >>> main()
+    4
+    """
+    print(double(2))
+
+
+def bare(x):
+    """
+    >>> bare(1)
+    1
+    """
+    return x
+
+
+def listed(x):
+    """
+    Input Parameters:
+    -----------------
+    x: a value
+
+    Returns:
+    --------
+    >>> listed(1)
+    1
+    """
+    return x
+
+
+def doubled(x):
+    """
+    :param x: a number
+    :return: the number doubled
+    >>> doubled(2)
+    4
+    """
+    return 2 * x
+''', "lib/runner.py": '''def main(n):
+    """Run the doubling n times from one.
+
+    >>> main(3)
+    8
+    """
+    value = 1
+    for _ in range(n):
+        value *= 2
+    return value
+'''}
+        packages, reasons = _extract(files, name_by_module=True)
+        self.assertEqual({name: reasons.get(name) for name in ("test_double", "main", "bare", "listed")},
+                         {"test_double": "not_a_reusable_job", "main": "not_a_reusable_job",
+                          "bare": "no_description", "listed": "no_description"})
+        self.assertEqual(sorted(packages), ["double", "doubled", "main"])  # main(n) runs its module's algorithm
+        self.assertEqual(packages["main"][0]["repository"]["module"], "lib/runner.py")
+        self.assertIn("\n\nReturns: the number doubled\n\n", packages["doubled"][1]["README.md"])
+
+    def test_a_copied_module_under_another_licence_refuses_the_functions_it_covers(self):
+        # NLTK's decorators.py is Michele Simionato's decorator module, distributed under the BSD licence; 1.1.0
+        # packaged its functions as Apache-2.0 without the notice the BSD terms require, and fluids' twelve SciPy
+        # temperature conversions as MIT. A statement in a module's header covers the whole module; a later one
+        # covers the definitions it names; words that name no licence state nothing.
+        files = {
+            "lib/vendored.py": '''"""A helper module copied from another project.
+
+Copyright Someone Else, distributed under the terms of the BSD License.
+"""
+
+
+def tidy(text):
+    """Strip and lower a text.
+
+    >>> tidy(" A ")
+    'a'
+    """
+    return text.strip().lower()
+''',
+            "lib/temperature.py": '''"""Temperatures, by the project's own authors."""
+import math
+
+"""
+The functions c2k and k2c come from SciPy, copyright SciPy Developers, under the BSD 3-Clause licence:
+Redistribution and use in source and binary forms, with or without modification, are permitted provided
+that the following conditions are met.
+"""
+
+
+def c2k(c):
+    """Celsius to kelvin.
+
+    >>> c2k(0)
+    273.15
+    """
+    return c + 273.15
+
+
+def kelvin_of(c):
+    """Kelvin for a Celsius temperature, rounded down.
+
+    >>> kelvin_of(1)
+    274
+    """
+    return math.floor(c + 273.15)
+''',
+            "lib/catalog.py": '''"""Message catalogs."""
+
+TEMPLATE = """# This file is distributed under the same license as the PROJECT project.
+# Copyright (C) YEAR ORGANIZATION
+"""
+
+
+def header(project):
+    """The catalog header for a project.
+
+    >>> header("x").startswith("# This file")
+    True
+    """
+    return TEMPLATE.replace("PROJECT", project)
+'''}
+        packages, reasons = _extract(files)
+        self.assertEqual({name: reasons.get(name) for name in ("tidy", "c2k")},
+                         {"tidy": "module_licence_differs", "c2k": "module_licence_differs"})
+        self.assertEqual(sorted(packages), ["header", "kelvin_of"])
 
 
 class SchemaCheckTest(unittest.TestCase):
