@@ -104,20 +104,26 @@ Supply lines (each writes library_supply_candidate/v1 records)
 │   │   or TSV files keyed by a field or by their row number)
 │   └── the upstream file byte for byte, its licence text beside it, a loader that refuses a
 │       changed file or a row that breaks the schema
-├── publisher_tables: one data table per series or table an official publisher serves at its own address
+├── publisher_tables: one data table per series, table or chart a publisher serves at its own address
 │   ├── kind code_module, form data_table; collections in publisher_table_sources.json; the table half
 │   │   (shapes, schema, loader, tests) is data_tables.py's, the fact half is publisher_tables.py's
 │   ├── facts: the exact bytes at an HTTPS address on the collection's declared hosts (an archive member
 │   │   the declaration names), their SHA-256 and retrieval time; GitHub is never read
-│   ├── licence bound to the exact series or release with its evidence address: a World Development
+│   ├── licence bound to the exact series, release or chart with its evidence address: a World Development
 │   │   Indicators series by its own metadata's License_Type ("CC BY-4.0" alone maps, to CC-BY-4.0; SIPRI
 │   │   terms and CC BY 3.0 IGO refuse the series by name); the O*NET 31.0 Database by its licence page and
-│   │   the release's own Read Me together; the legal code from creativecommons.org as UPSTREAM-LICENSE
-│   ├── one package per series or table, never per country or year; the job key is the publisher and the
-│   │   series (schema.json), so a series retrieved again is the same job
+│   │   the release's own Read Me together; an Our World in Data chart by its own page's licence statement
+│   │   and every origin of every indicator stating CC BY 4.0 in that indicator's metadata; the legal code
+│   │   from creativecommons.org as UPSTREAM-LICENSE
+│   ├── one package per series, table or chart, never per country or year; the job key is the publisher
+│   │   and the series (schema.json), so a series retrieved again is the same job; a chart that only
+│   │   republishes World Development Indicators series is refused as a duplicate (covered_by)
 │   ├── SDG goals by a rule that is data (wdi_sdg_goals.json: the longest code prefix, else the series'
-│   │   topic, each with its reason; O*NET: goals 4 and 8 for the release), in the candidate's repository
-│   │   record and in the run's sdg-goals.json; proposals for reviewers, nothing granted
+│   │   topic, each with its reason; O*NET: goals 4 and 8 for the release; Our World in Data: the
+│   │   publisher's own SDG Tracker pages that list the chart), in the candidate's repository record and
+│   │   in the run's sdg-goals.json; proposals for reviewers, nothing granted
+│   ├── held, never read: the UN SDG Global Database (UNdata's terms are not an allowlisted licence) and
+│   │   FAOSTAT (its manifest names no licence per dataset)
 │   └── a data file above the 256 KiB file bound kept as parts cut at record ends that join to the exact
 │       bytes; a table whose package would pass the 2 MiB bound refused as table_above_review_bound
 ├── function_extracts: one documented function of a permissive library with exactly the code it needs
@@ -225,6 +231,7 @@ PYTHONPATH=src:tools python tools/build_library_supply.py data-tables \
 PYTHONPATH=src:tools python tools/build_library_supply.py publisher-tables --collection world_bank_wdi \
   --run-folder /home/username/baltor-library/supply/publisher-tables/DATE \
   --authorize-network-reads --authorize-store-writes [--series CODE] [--maximum-series N]
+  # --collection onet_database (--series names a table) or our_world_in_data (--series names a chart)
 PYTHONPATH=src:tools python tools/build_library_supply.py curated-schemas \
   --run-folder /home/username/baltor-library/supply/json-schemas/DATE \
   --authorize-network-reads --authorize-store-writes [--source ID]
@@ -376,3 +383,46 @@ measured.
 - Scenes that typeset with LaTeX (`MathTex`, `Tex` and the classes built on them) are refused while no
   LaTeX is installed; Typst scenes need the `typst` extra (`manim[typst]`), which their requirements name.
 - Nothing here was loaded by a harness.
+
+### Publisher tables, measured in the October 5, 2026 dry runs
+
+Dry runs with `--materialize` and no store write; the run folders are under
+`/home/username/baltor-library/supply/publisher-tables/2026-10-05-*`.
+
+- World Development Indicators: 1,483 of the catalogue's 1,498 series kept,
+  104 of them in two parts. Refused: 9 by their own `License_Type` (6 under
+  SIPRI terms, 3 under CC BY 3.0 IGO); 4 Worldwide Governance Indicators
+  scores and estimates whose download repeats every economy, so the key
+  cannot be unique; 2 that the World Bank serves only from its Health
+  Nutrition and Population database. Reading every series' metadata and
+  download took 2,989 requests in 53 minutes at one a second (the World
+  Bank publishes no numeric rate). Values stay text as published; regional
+  and income-group aggregates are rows beside economies, and the World
+  Bank's country metadata (region, income group) is not packaged.
+- Proposed goals of the kept series: 1: 45, 2: 57, 3: 139, 4: 169, 5: 21,
+  6: 32, 7: 32, 8: 410, 9: 73, 10: 65, 11: 30, 12: 33, 13: 59, 14: 6,
+  15: 26, 16: 28, 17: 354; 67 series (population by age and sex, armed
+  forces) have no goal of their own.
+- O*NET 31.0 Database: 32 of 45 tables kept (goals 4 and 8). The 13 whose
+  package would pass 2 MiB are refused, not sampled or split across
+  packages: Abilities, Job Titles, Knowledge, Occupation Level Metadata,
+  Software Skills, Specific Interest Areas, Task Ratings, Task Statements,
+  Training and Experience, Transferable Skills, Work Activities, Work
+  Context and Work Styles. The release is one 13 MB archive, byte for byte
+  the copy in `/home/username/loop-engine-data/onet/31.0`.
+- Our World in Data: 18 of the 499 charts its 17 SDG Tracker pages list are
+  kept, covering 11 goals. 274 are refused by licence: 198 name an origin
+  "(c) United Nations", and the rest CC BY 3.0 IGO, CC BY-NC-SA, CC0, a
+  copyright notice or an indicator the publisher marks non-redistributable.
+  90 more are refused because the chart's page carries only the site footer,
+  not the chart's own licence statement, 55 as republished World
+  Development Indicators series, 11 for an origin with no licence, and 51
+  are unreadable (44 slugs redirect and the reader follows no redirect; 7
+  charts name no indicator). Because of those redirects no Our World in
+  Data run is complete, so none withdraws anything. CC0 origins are refused
+  until the CC0 legal code travels beside the data.
+- Held, never read: the UN SDG Global Database (UNdata's terms are not an
+  allowlisted licence) and FAOSTAT (no licence named per dataset); see
+  `held` in `publisher_table_sources.json`.
+- The goals are proposals in the candidate's repository record and the
+  run's `sdg-goals.json`; no PublicGoodGrant is written here.
