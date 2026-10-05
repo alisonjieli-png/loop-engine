@@ -100,8 +100,12 @@ collection contains ten packages and fourteen distinct useful files; see the
 [release record](../../artifacts/release-58-2026-09-30/README.md).
 The subsequent [October 1 catalogue update](../../artifacts/public-good-release-2026-10-01/README.md)
 expanded free access to 412 packages and 1,011 distinct useful files without
-changing existing versions. All-SDG coverage and native customer-use proof
-remain open; the count does not close those gates.
+changing existing versions. The [October 5 update](../../artifacts/public-good-release-2026-10-05/README.md)
+added six original packages for goals 7, 9, 11, 12, 14 and 15: 418 packages,
+1,029 distinct useful files and 11 of 17 goals with at least one package. Every
+grant expires at the end of October unless a reviewed policy renews it.
+All-SDG coverage and native customer-use proof remain open; the count does not
+close those gates.
 The owner's later clarification requires an enabled account for every free
 component download. Free access does not mean anonymous access.
 
