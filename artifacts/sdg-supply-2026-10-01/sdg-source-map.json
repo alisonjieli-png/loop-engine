@@ -6330,25 +6330,694 @@
   ],
   "electric": [
    9
+  ],
+  "dta_observatory_app": [
+   16
+  ],
+  "biocontainers": [
+   3,
+   9
+  ],
+  "nci_ccdi_federation_api_spec": [
+   3,
+   9
+  ],
+  "nci_webtools_dceg_forgedb": [
+   3,
+   9
+  ],
+  "cdc_dibbs_ecr_refiner": [
+   3
+  ],
+  "cda_helpdesk": [
+   3,
+   9
+  ],
+  "dfe_caseworkdesktoptool": [
+   4
+  ],
+  "dfe_academies": [
+   4
+  ],
+  "dfe_complete_conversions_transfers_chang": [
+   4
+  ],
+  "dfe_education_benchmarking_and_insights": [
+   4
+  ],
+  "dfe_external_applications": [
+   4
+  ],
+  "dfe_flexforms": [
+   4
+  ],
+  "dfe_npq_registration": [
+   11,
+   16
+  ],
+  "dfe_persons": [
+   4
+  ],
+  "dfe_register_early_career_teachers_publi": [
+   11,
+   16
+  ],
+  "terra_azul": [
+   3,
+   9
+  ],
+  "terra_jade_data_repo": [
+   3,
+   9
+  ],
+  "terra_tanagra": [
+   3,
+   9
+  ],
+  "terra_tanagra_vumc_admin": [
+   3,
+   9
+  ],
+  "terra_axon_server": [
+   3,
+   9
+  ],
+  "terra_external_credentials_manager": [
+   3,
+   9
+  ],
+  "terra_policy": [
+   3,
+   9
+  ],
+  "terra_scientific_pipelines": [
+   3,
+   9
+  ],
+  "terra_user_manager": [
+   3,
+   9
+  ],
+  "egi_datahub_adapter": [
+   9
+  ],
+  "flexmeasures": [
+   7,
+   13
+  ],
+  "gsa_emuseum": [
+   11,
+   16
+  ],
+  "govstack_consent": [
+   16,
+   17
+  ],
+  "govstack_emarketplace": [
+   16,
+   17
+  ],
+  "govstack_esignature": [
+   16,
+   17
+  ],
+  "govstack_gis": [
+   11,
+   16
+  ],
+  "govstack_workflow": [
+   16,
+   17
+  ],
+  "hmlr_llc1_document": [
+   1,
+   16
+  ],
+  "hmlr_search": [
+   1,
+   16
+  ],
+  "hmlr_search_local_land_charge": [
+   1,
+   16
+  ],
+  "hmlr_storage": [
+   1,
+   16
+  ],
+  "mte_ecobalyse": [
+   12,
+   13
+  ],
+  "ncats_nodenormalization": [
+   3,
+   9
+  ],
+  "ons_eq_cir_fastapi": [
+   17
+  ],
+  "ons_ras_rm_secure_message_v2": [
+   17
+  ],
+  "ons_sds": [
+   17
+  ],
+  "ons_sdx_transformer": [
+   17
+  ],
+  "renci_tx_queue": [
+   16
+  ],
+  "rtx": [
+   3,
+   9
+  ],
+  "esfa_apim_endpoints": [
+   4,
+   8
+  ],
+  "esfa_courses": [
+   4,
+   8
+  ],
+  "esfa_digital_certification": [
+   4,
+   8
+  ],
+  "esfa_learner_data": [
+   4,
+   8
+  ],
+  "esfa_location": [
+   4,
+   8
+  ],
+  "esfa_recruit": [
+   4,
+   8
+  ],
+  "sunbird_community": [
+   4
+  ],
+  "home_office_digital_evidence_archive_on": [
+   16
+  ],
+  "ocha_hpc": [
+   1,
+   2,
+   17
+  ],
+  "adl_dle_ecc": [
+   4
+  ],
+  "adl_dle_elrr": [
+   4
+  ],
+  "agstack_openagri_weatherservice": [
+   2,
+   13
+  ],
+  "govuk_chat": [
+   16
+  ],
+  "arxiv_submit_ce": [
+   9
+  ],
+  "bcgov_ecc_iosas_institute": [
+   4
+  ],
+  "bcgov_nrpti": [
+   15,
+   16
+  ],
+  "bcgov_services_portal": [
+   16
+  ],
+  "bcgov_bc_emli_application_sys": [
+   11,
+   13
+  ],
+  "bcgov_bcros_common": [
+   16
+  ],
+  "bcgov_bcwild": [
+   15,
+   16
+  ],
+  "bcgov_digital_trust_common": [
+   16
+  ],
+  "bcgov_eagle": [
+   15,
+   16
+  ],
+  "bcgov_embc_eaf": [
+   11,
+   13
+  ],
+  "bcgov_embc_ess": [
+   11,
+   13
+  ],
+  "bcgov_enhanced_travel_screening": [
+   3
+  ],
+  "bcgov_gcpe_news_api_client": [
+   16
+  ],
+  "bcgov_gcpe_news_dashboard": [
+   16
+  ],
+  "bcgov_jag_csrs_portal_public": [
+   16
+  ],
+  "bcgov_jag_file_submission": [
+   16
+  ],
+  "bcgov_jag_traffic_courts_online": [
+   16
+  ],
+  "bcgov_landuseplanning": [
+   15,
+   16
+  ],
+  "bcgov_lucy_web": [
+   15,
+   16
+  ],
+  "bcgov_nr_brmb_pit_claim": [
+   15,
+   16
+  ],
+  "bcgov_nr_fom": [
+   15,
+   16
+  ],
+  "bcgov_nr_forests_access_management": [
+   15,
+   16
+  ],
+  "bcgov_nr_vdyp": [
+   15,
+   16
+  ],
+  "bcgov_queue_management": [
+   16
+  ],
+  "bcgov_rsbc_digital_forms": [
+   16
+  ],
+  "bcgov_rsbc_dmf": [
+   16
+  ],
+  "bcgov_tenant_management_system": [
+   16
+  ],
+  "bcgov_wildlife_incident_safety_reporting": [
+   15,
+   16
+  ],
+  "beckn_ocpi_adaptor": [
+   7,
+   11
+  ],
+  "beckn_dhp_bap_client_layer": [
+   3
+  ],
+  "beckn_missions": [
+   2,
+   7
+  ],
+  "betagouv_communs_de_la_transition_ecolog": [
+   11,
+   13
+  ],
+  "betagouv_mon_entreprise": [
+   8
+  ],
+  "betagouv_monstage": [
+   4,
+   8
+  ],
+  "betagouv_pop": [
+   11
+  ],
+  "betagouv_reva": [
+   4,
+   8
+  ],
+  "betagouv_zacharie": [
+   2,
+   3
+  ],
+  "biotools_diff_fuse": [
+   3,
+   9
+  ],
+  "biothings_nameresolutionapi": [
+   3,
+   9
+  ],
+  "biothings_annotator": [
+   3,
+   9
+  ],
+  "broad_depmap": [
+   3,
+   9
+  ],
+  "broad_genetics_kp_dev": [
+   3,
+   9
+  ],
+  "broad_juniper": [
+   3,
+   9
+  ],
+  "broad_molecular_data_provider": [
+   3,
+   9
+  ],
+  "broad_sharpener": [
+   3,
+   9
+  ],
+  "broad_annotated_variant_search": [
+   3,
+   9
+  ],
+  "cabinet_office_gap_find_applicant": [
+   16,
+   17
+  ],
+  "cds_canadalogin_migration": [
+   16
+  ],
+  "cddo_data_marketplace_beta": [
+   16,
+   17
+  ],
+  "cfa_civic_tech_taxonomy": [
+   16
+  ],
+  "mhclg_funding_service_data_standards": [
+   11
+  ],
+  "companies_house_efs_submission": [
+   8,
+   16
+  ],
+  "companies_house_officer_filing": [
+   8,
+   16
+  ],
+  "companies_house_penalty_payment": [
+   8,
+   16
+  ],
+  "datacite_sashimi": [
+   9
+  ],
+  "datosgobar_georef_ar": [
+   11
+  ],
+  "datosgobar_series_tiempo_ar": [
+   8,
+   17
+  ],
+  "digitalservice_a2j_kommunikationsplattfo": [
+   16
+  ],
+  "dwp_claim_manager": [
+   1,
+   10
+  ],
+  "dwp_doc_submission_manager": [
+   1,
+   10
+  ],
+  "ria_riha_browser": [
+   16
+  ],
+  "digit_common": [
+   11,
+   16
+  ],
+  "digit_works": [
+   11,
+   16
+  ],
+  "digit_core": [
+   11,
+   16
+  ],
+  "digit_core_docs": [
+   11,
+   16
+  ],
+  "digit_egov_rnd": [
+   11,
+   16
+  ],
+  "hmcts_audit_reports": [
+   16
+  ],
+  "hmcts_crime_caseadmin_case_document_know": [
+   16
+  ],
+  "hmcts_dcs_crime_caseadmin": [
+   16
+  ],
+  "hmcts_appreg": [
+   16
+  ],
+  "hmcts_ccd_data_store": [
+   16
+  ],
+  "hmcts_cpp_context_listing_courtscheduler": [
+   16
+  ],
+  "hmcts_service_api_marketplace": [
+   16
+  ],
+  "hmcts_service_cp_crime_results_store": [
+   16
+  ],
+  "hmcts_service_cp_crime_yot_results_distr": [
+   16
+  ],
+  "hmrc_customer_profile": [
+   16,
+   17
+  ],
+  "hmrc_individuals_income": [
+   16,
+   17
+  ],
+  "hmrc_mobile_help_to_save": [
+   16,
+   17
+  ],
+  "hmrc_mobile_messages": [
+   16,
+   17
+  ],
+  "hmrc_mobile_paye": [
+   16,
+   17
+  ],
+  "hmrc_mobile_payments": [
+   16,
+   17
+  ],
+  "hmrc_mobile_user_contact": [
+   16,
+   17
+  ],
+  "hmrc_organisations_details": [
+   16,
+   17
+  ],
+  "hmrc_organisations_matching": [
+   16,
+   17
+  ],
+  "hmrc_time_to_pay_proxy": [
+   16,
+   17
+  ],
+  "hmrc_vat": [
+   16,
+   17
+  ],
+  "intrahealth_client_registry": [
+   11,
+   16
+  ],
+  "invenio_openapi": [
+   9
+  ],
+  "italia_spid_sp_sapspid": [
+   16
+  ],
+  "moj_cica_review_case_documents": [
+   16
+  ],
+  "moj_complexity_of_need": [
+   16
+  ],
+  "moj_integration_hub_file_transfer": [
+   16
+  ],
+  "moj_laa_civil_manage": [
+   16
+  ],
+  "moj_laa_court_data_adaptor": [
+   16
+  ],
+  "moj_laa_criminal_applications_datastore": [
+   16
+  ],
+  "moj_laa_hmrc_interface_service": [
+   16
+  ],
+  "moj_licences": [
+   16
+  ],
+  "moj_offender_management_allocation_manag": [
+   16
+  ],
+  "xroad_x_road_kafka_adapter": [
+   16
+  ],
+  "ocds_kingfisher_process": [
+   16
+  ],
+  "openedx_django_user_tasks": [
+   4
+  ],
+  "pagopa_debt_position": [
+   16,
+   17
+  ],
+  "pagopa_fdr_2_event_hub": [
+   16,
+   17
+  ],
+  "pagopa_fdr_xml_to_json": [
+   16,
+   17
+  ],
+  "pagopa_observability_bdi": [
+   16,
+   17
+  ],
+  "odi_care_theodi_org": [
+   16
+  ],
+  "gen3_arborist": [
+   3,
+   9
+  ],
+  "gen3_argo_wrapper": [
+   3,
+   9
+  ],
+  "gen3_audit": [
+   3,
+   9
+  ],
+  "gen3_cohort_middleware": [
+   3,
+   9
+  ],
+  "gen3_fence": [
+   3,
+   9
+  ],
+  "gen3_ai": [
+   3,
+   9
+  ],
+  "gen3_analysis": [
+   3,
+   9
+  ],
+  "gen3_discovery_ai": [
+   3,
+   9
+  ],
+  "gen3_workflow": [
+   3,
+   9
+  ],
+  "gen3_hatchery": [
+   3,
+   9
+  ],
+  "gen3_indexd": [
+   3,
+   9
+  ],
+  "gen3_manifestservice": [
+   3,
+   9
+  ],
+  "gen3_metadata": [
+   3,
+   9
+  ],
+  "gen3_peregrine": [
+   3,
+   9
+  ],
+  "gen3_requestor": [
+   3,
+   9
+  ],
+  "gen3_sheepdog": [
+   3,
+   9
+  ],
+  "gen3_sower": [
+   3,
+   9
+  ],
+  "gen3_ssjdispatcher": [
+   3,
+   9
+  ],
+  "gen3_workspace_token": [
+   3,
+   9
+  ],
+  "moj_opg_data_lpa_codes": [
+   16
+  ],
+  "moj_opg_file_service": [
+   16
+  ],
+  "moj_opg_search_service": [
+   16
   ]
  },
  "sources_per_goal": {
-  "1": 64,
-  "2": 167,
-  "3": 150,
-  "4": 160,
+  "1": 71,
+  "2": 171,
+  "3": 197,
+  "4": 180,
   "5": 53,
   "6": 64,
-  "7": 117,
-  "8": 100,
-  "9": 644,
-  "10": 88,
-  "11": 100,
-  "12": 165,
-  "13": 236,
+  "7": 120,
+  "8": 113,
+  "9": 691,
+  "10": 90,
+  "11": 118,
+  "12": 166,
+  "13": 243,
   "14": 97,
-  "15": 129,
-  "16": 224,
-  "17": 255
+  "15": 139,
+  "16": 317,
+  "17": 282
  }
 }
