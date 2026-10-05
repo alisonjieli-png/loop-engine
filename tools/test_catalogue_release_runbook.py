@@ -37,7 +37,11 @@ RELEASE_17_STEP = """7. The first time only, move accounts to grants that follow
    `flyctl machine exec MACHINE "AS_SERVICE loop-engine service follow-catalogue-release --config /data/host.json --all-tenants" --app baltor-pilot --json`.
 """
 COMMAND = re.compile(r"loop-engine service ([^\"`]+)")
-FENCED_CODE = re.compile(r"^[ \t]*```[^\n]*\n(.*?)^[ \t]*```[ \t]*$", re.MULTILINE | re.DOTALL)
+#: A fence of three or more backticks or tildes, closed by at least as many of the same mark or by the end.
+FENCED_CODE = re.compile(r"^[ \t]*(?P<fence>(?P<mark>[`~])(?P=mark){2,})[^\n]*\n(?P<code>.*?)"
+                         r"(?:^[ \t]*(?P=fence)(?P=mark)*[ \t]*$|\Z)", re.MULTILINE | re.DOTALL)
+#: Lines indented four columns after a blank line; an indented line cannot continue a paragraph as code.
+INDENTED_CODE = re.compile(r"(?:\A|^(?:[ \t]*\n)+)(?P<code>(?:(?: {4}| {0,3}\t)[^\n]*(?:\n|\Z))+)", re.MULTILINE)
 
 
 def section(text):
@@ -50,8 +54,10 @@ def section(text):
 def service_commands(text):
     """Every documented `loop-engine service` command, as the entry point receives it without `--config`."""
     commands = []
-    spans = FENCED_CODE.findall(text)
-    spans += re.findall(r"`([^`]+)`", FENCED_CODE.sub("", text))
+    spans = [block["code"] for block in FENCED_CODE.finditer(text)]
+    prose = FENCED_CODE.sub("", text)
+    spans += [block["code"] for block in INDENTED_CODE.finditer(prose)]
+    spans += re.findall(r"`([^`]+)`", INDENTED_CODE.sub("\n\n", prose))
     for span in spans:
         for found in (entry for line in span.replace("\\\n", " ").splitlines() for entry in COMMAND.findall(line)):
             words = shlex.split(found)
@@ -92,6 +98,28 @@ class CatalogueReleaseRunbook(unittest.TestCase):
                          [('catalogue-status',)])
         self.assertEqual(service_commands('```bash\nloop-engine service catalogue-status\nloop-engine service unknown-command\n```'),
                          [('catalogue-status',), ('unknown-command',)])
+        stop = '`loop-engine service stop-following-catalogue-release --tenant fixture`'
+        for example in ('~~~bash\npython tools/example.py --dry-run\n~~~\n\n', '    python tools/example.py --dry-run\n\n'):
+            with self.subTest(example=example):
+                self.assertEqual(service_commands(example + stop), [('stop-following-catalogue-release', '--tenant', 'fixture')])
+
+    def test_the_release_17_step_is_refused_in_every_markdown_code_form(self):
+        # Known wrong until October 5, 2026: only ``` fences and inline code were read, so the same step in any of these
+        # forms was not checked at all.
+        step = "loop-engine service follow-catalogue-release --config /data/host.json --all-tenants"
+        for form, block in (("tilde fence", f"~~~bash\n{step}\n~~~\n"),
+                            ("tilde fence holding a backtick line", f"~~~\n```\n{step}\n~~~\n"),
+                            ("longer fence holding a shorter one", f"````markdown\n```\n{step}\n````\n"),
+                            ("unterminated fence", f"```bash\n{step}\n"),
+                            ("indented block", f"    {step}\n"),
+                            ("tab-indented block", f"\t{step}\n")):
+            with self.subTest(form=form):
+                changed = self.text.rstrip("\n") + "\n\n" + block
+                self.assertIn(RELEASE_17_FOLLOW_STEP, service_commands(changed))
+                self.assertIn("a follow step moves every account: follow-catalogue-release --all-tenants",
+                              follow_step_findings(changed))
+        # An indented line that continues a paragraph is prose, as Markdown renders it.
+        self.assertEqual(service_commands(f"Run this:\n    {step}\n"), [])
 
     def test_the_first_time_step_as_written_for_release_17_is_refused(self):
         self.assertEqual(service_commands(RELEASE_17_STEP), [RELEASE_17_FOLLOW_STEP])
