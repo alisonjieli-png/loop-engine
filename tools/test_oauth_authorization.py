@@ -16,7 +16,7 @@ from urllib.parse import parse_qs, urlencode, urlsplit
 
 from mcp.server.auth.handlers.token import TokenHandler
 from mcp.server.auth.middleware.client_auth import ClientAuthenticator
-from mcp.server.auth.provider import AuthorizationParams, AuthorizeError, RegistrationError, TokenError
+from mcp.server.auth.provider import AuthorizationParams, AuthorizeError, RefreshToken, RegistrationError, TokenError
 from mcp.shared.auth import OAuthClientInformationFull, OAuthToken
 from starlette.datastructures import FormData
 from starlette.requests import Request
@@ -392,6 +392,80 @@ class OAuthAuthorizationTests(unittest.IsolatedAsyncioTestCase):
                 resource=self.policy.resource_url))
         self.assertEqual(caught.exception.code, "oauth_storage_limit")
         self.assertEqual(len(self.rows(GRANT)), before)
+
+    async def test_dead_rows_free_capacity_and_the_counter_counts_what_is_stored(self):
+        """Known wrong (October 5 review, a): the counter only ever grew. At a 12-record ceiling the third
+        authorization was refused, so was a refresh of a valid grant, and after every grant was revoked and expired,
+        new authorizations stayed refused for good with every dead row still stored."""
+        self.provider = OAuthAuthorizationProvider(self.runtime, replace(self.policy, max_records=12, max_clients=2))
+        issued = [await self.issue() for _ in range(3)]
+        tokens = issued[0]
+        for _ in range(3):  # At the ceiling, each refresh frees the pair it replaces.
+            loaded = await self.provider.load_refresh_token(self.client, tokens.refresh_token)
+            tokens = await self.provider.exchange_refresh_token(self.client, loaded, list(DEFAULT_SCOPES))
+        self.assertIsNotNone(await self.provider.load_access_token(tokens.access_token))
+        self.assertEqual(self.counter()["records"], sum(self.stored().values()))
+        self.assertEqual(self.counter()["records"], 10)
+        for held in (tokens, *issued[1:]):
+            await self.provider.revoke_token(RefreshToken(token=held.refresh_token, client_id=self.client.client_id,
+                                                          scopes=list(DEFAULT_SCOPES), expires_at=None))
+        self.now += self.policy.refresh_lifetime_seconds + 1
+        self.authentication = replace(self.authentication, expires_at=self.now + 3600)
+        fresh = await self.issue()
+        self.assertIsNotNone(await self.provider.load_access_token(fresh.access_token))
+        self.assertEqual(self.stored(), {CLIENT: 1, REQUEST: 0, CODE: 1, GRANT: 1, ACCESS: 1, REFRESH: 1})
+        self.assertEqual(self.counter(), {**self.counter(), "records": 5, "clients": 1})
+
+    async def test_unused_dynamic_clients_free_registration_after_their_first_authorization_lifetime(self):
+        """Known wrong (October 5 review, a): every registration counted for good, so anonymous /register at 10 a
+        minute closed registration permanently after max_clients (128) clients, still refused ten years later."""
+        self.provider = OAuthAuthorizationProvider(self.runtime, replace(self.policy, max_clients=4))
+        def client(name):
+            return self.client.model_copy(update={"client_id": name})
+        connected = await self.issue()
+        for name in ("pending-client", "idle-1", "idle-2"):
+            await self.provider.register_client(client(name))
+        self.now += 10
+        with self.assertRaises(ServiceRuntimeError) as full:  # Every other client is new or holds a live grant.
+            await self.provider.register_client(client("refused"))
+        self.assertEqual(full.exception.code, "oauth_storage_limit")
+        self.now += self.policy.authorization_lifetime_seconds - 20
+        await self.provider.authorize(client("pending-client"), self.params())
+        self.now += 100
+        await self.provider.register_client(client("later"))
+        present = {name: await self.provider.get_client(name) is not None
+                   for name in ("synthetic-client", "pending-client", "idle-1", "idle-2", "later")}
+        self.assertEqual(present, {"synthetic-client": True, "pending-client": True, "idle-1": False, "idle-2": False, "later": True})
+        self.assertEqual(self.counter()["clients"], 3)
+        await self.provider.register_client(self.client)  # The same metadata again is the same client.
+        self.assertEqual((self.counter()["clients"], len(self.rows(CLIENT))), (3, 3))
+        loaded = await self.provider.load_refresh_token(self.client, connected.refresh_token)
+        self.assertIsNotNone(await self.provider.exchange_refresh_token(self.client, loaded, list(DEFAULT_SCOPES)))
+
+    async def test_a_removal_pass_that_finds_no_room_waits_in_proportion_to_what_it_read(self):
+        from loop_engine.core.service_runtime import oauth_authorization as oauth
+        constrained = OAuthAuthorizationProvider(self.runtime, replace(self.policy, max_records=1, max_clients=1))
+        scans = []
+        original = ServiceCatalogBinding.rows
+        def rows(binding, store, kind, tenant_id):
+            scans.append(kind)
+            return original(binding, store, kind, tenant_id)
+        async def refused():
+            with self.assertRaises(ServiceRuntimeError) as caught:
+                await constrained.authorize(self.client, self.params())
+            self.assertEqual(caught.exception.code, "oauth_storage_limit")
+            return len(scans)
+        with mock.patch.object(ServiceCatalogBinding, "rows", rows):
+            first = await refused()
+            self.assertGreater(first, 0, "a write at the ceiling looks for rows it can remove")
+            self.assertEqual(await refused(), 2 * first, "reading one row is cheap enough to repeat at once")
+            with mock.patch.object(oauth, "RECLAIM_RETRY_SECONDS_PER_ROW", 30):  # The cost of 10,000 rows, for one.
+                third = await refused()
+                self.now += 29
+                fourth = await refused()
+                self.now += 1
+                fifth = await refused()
+        self.assertEqual((third, fourth, fifth), (3 * first, 3 * first, 4 * first))
 
     async def test_sdk_pkce_and_redirect_controls_before_domain_exchange(self):
         raw = await self.code()

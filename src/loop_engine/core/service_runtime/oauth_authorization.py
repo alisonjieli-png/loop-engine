@@ -74,6 +74,13 @@ FIELDS = {
 TOKEN_PATTERN = re.compile(r"(?:boar|boac|boat|bort)_[A-Za-z0-9_-]{43}\Z")
 CLIENT_PATTERN = re.compile(r"[A-Za-z0-9_.:-]{1,128}\Z")
 OPENAI_CALLBACK_PREFIX = "https://chatgpt.com/connector/oauth/"
+#: A write that would pass a storage ceiling removes at most this many rows no request can use any more.
+RECLAIM_LIMIT = 10_000
+#: Looking for those rows reads every OAuth row of the policy, about 60 microseconds a row (1.2 seconds at 20,000).
+#: After a look that leaves less than 1/64 of a ceiling free, writes that would pass a ceiling are refused without
+#: another look for this many seconds per row it read, whole seconds only: a minute at 20,000 rows and none below 334.
+#: So a store full of live rows spends about 2% of its time looking, not one look for every refused write.
+RECLAIM_RETRY_SECONDS_PER_ROW = 0.003
 
 
 def _url(value, *, loopback=False):
@@ -181,8 +188,10 @@ class OAuthAccessContext:
 class OAuthAuthorizationProvider:
     """SDK provider with atomic single-use codes, rotating grants and live account checks.
 
-    max_records caps retained OAuth payload rows, excluding the one counter row.
-    No expired rows are silently deleted and no quota counter is reset here.
+    max_records caps retained OAuth payload rows, excluding the one counter row,
+    and max_clients the registered clients among them. A write that would pass
+    a ceiling first removes the rows no request can use any more (_reclaim) and
+    recounts the rows that stay; nothing else deletes a row or resets the counter.
     Storage/unknown-commit errors propagate; callers must not return credentials
     or repeat a write after such an error. All blocking store work uses threads.
     """
@@ -192,6 +201,7 @@ class OAuthAuthorizationProvider:
             raise ServiceRuntimeError("invalid_oauth_policy")
         self.runtime, self.policy, self.catalog = runtime, policy, runtime._catalog
         self.policy_id = digest(["service_oauth/v1", policy.issuer_url, policy.resource_url, policy.identity_issuer])
+        self._reclaim_after = 0  # Read and written only inside the counter's turn (_commit).
 
     def _now(self):
         return int(self.runtime._now())
@@ -231,12 +241,86 @@ class OAuthAuthorizationProvider:
             if any(type(value[key]) is not int or value[key] < 0 for key in ("records", "clients")):
                 raise ServiceRuntimeError("oauth_record_invalid")
             count, clients = value["records"] + new_records, value["clients"] + new_clients
+            removals = ()
             if count > self.policy.max_records or clients > self.policy.max_clients:
-                raise ServiceRuntimeError("oauth_storage_limit")
+                count, clients, removals, removal_guards = self._reclaim(store, records, guards, new_records, new_clients)
+                guards.extend(removal_guards)
             counter = self._record(LIMITS, self.policy_id, {"records": count, "clients": clients})
             records.append(counter)
             guards.append(self.catalog.guard(prior, counter["record_id"]))
-            return self.catalog.commit(store, records, guards)
+            return self.catalog.commit(store, records, guards, removals)
+
+    def _reclaim(self, store, records, guards, new_records, new_clients):
+        """Make room by removing in this write's batch the rows no request can use any more, as the write leaves them.
+
+        Those are decided or expired requests, used or expired codes, revoked or expired grants, and tokens that
+        expired or whose grant is gone, dead or at another generation, so a refresh frees the pair it replaces. Only
+        when the client ceiling is passed, also clients with no live request, code or grant once their first
+        authorization lifetime has passed. A row this provider cannot read is kept. The counts are taken from the
+        stored rows, so the counter counts exactly what stays. Every removal carries the exact version it was read at.
+        """
+        now = self._now()
+        if now < self._reclaim_after:
+            raise ServiceRuntimeError("oauth_storage_limit")
+        written = {row["record_id"]: row for row in records}
+        stored = {kind: [row for row in self.catalog.rows(store, kind, "")
+                         if isinstance(row.get("payload"), dict) and row["payload"].get("policy_id") == self.policy_id]
+                  for kind in (CLIENT, REQUEST, CODE, GRANT, ACCESS, REFRESH)}
+        values = {}
+        for kind, rows in stored.items():
+            current = {row["record_id"]: row for row in rows}
+            current.update({identity: row for identity, row in written.items() if row["artifact_kind"] == kind})
+            values[kind] = {}
+            for identity, row in current.items():
+                try:
+                    values[kind][identity] = self._payload(row, kind)
+                except ServiceRuntimeError:
+                    values[kind][identity] = None
+        def alive(kind, value):
+            if kind == REQUEST:
+                return value["status"] == "pending" and value["expires_at"] > now
+            if kind == CODE:
+                return value["status"] == "ready" and value["expires_at"] > now
+            if kind == GRANT:
+                return value["revoked"] is False and value["expires_at"] > now
+            identity = self.catalog.identity(GRANT, value["grant_id"])
+            grant = values[GRANT].get(identity)
+            if identity in values[GRANT] and grant is None:
+                return True
+            return (value["expires_at"] > now and grant is not None and alive(GRANT, grant)
+                    and grant["generation"] == value["generation"])
+        dead = [row for kind in (REQUEST, CODE, GRANT, ACCESS, REFRESH) for row in stored[kind]
+                if row["record_id"] not in written and values[kind][row["record_id"]] is not None
+                and not alive(kind, values[kind][row["record_id"]])]
+        clients = len(stored[CLIENT]) + new_clients
+        if clients > self.policy.max_clients:
+            used = {value["client_id"] for kind in (REQUEST, CODE, GRANT) for value in values[kind].values()
+                    if value is not None and alive(kind, value)}
+            for row in stored[CLIENT]:
+                value = values[CLIENT][row["record_id"]]
+                issued = value["client"].get("client_id_issued_at") if value is not None else None
+                if (value is not None and row["record_id"] not in written and value["client"].get("client_id") not in used
+                        and not (type(issued) is int and issued + self.policy.authorization_lifetime_seconds > now)):
+                    dead.append(row)
+        guarded = {guard.record_id: guard for guard in guards}
+        removals, removal_guards = [], []
+        for row in dead:
+            if len(removals) == RECLAIM_LIMIT:
+                break
+            guard = guarded.get(row["record_id"])
+            if guard is None:
+                removal_guards.append(self.catalog.guard(row))
+            elif guard.must_not_exist or guard.record_version != row["record_version"]:
+                continue
+            removals.append(row)
+        count = sum(map(len, stored.values())) + new_records - len(removals)
+        clients -= sum(row["artifact_kind"] == CLIENT for row in removals)
+        if (count > self.policy.max_records - self.policy.max_records // 64
+                or clients > self.policy.max_clients - self.policy.max_clients // 64):
+            self._reclaim_after = now + int(sum(map(len, stored.values())) * RECLAIM_RETRY_SECONDS_PER_ROW)
+        if count > self.policy.max_records or clients > self.policy.max_clients:
+            raise ServiceRuntimeError("oauth_storage_limit")
+        return count, clients, [row["record_id"] for row in removals], removal_guards
 
     def _client(self, store, client_id):
         if not isinstance(client_id, str) or not CLIENT_PATTERN.fullmatch(client_id):
@@ -284,9 +368,13 @@ class OAuthAuthorizationProvider:
                 prior, held = self._read(store, CLIENT, client.client_id)
                 data = {"client": client.model_dump(mode="json"), "enabled": True}
                 if held is not None:
-                    if held["client"] != data["client"] or held["enabled"] is not True:
+                    # The time of issue is the first registration's; the same metadata again is the same client.
+                    if {**held["client"], "client_id_issued_at": None} != data["client"] or held["enabled"] is not True:
                         raise RegistrationError("invalid_client_metadata", "client identity already exists")
                     return
+                # The time of issue lets an unused client be removed at the client ceiling once its first
+                # authorization lifetime has passed (_reclaim); a client stored without one counts as old.
+                data["client"]["client_id_issued_at"] = self._now()
                 row = self._record(CLIENT, client.client_id, data)
                 self._commit(store, (row,), (self.catalog.guard(prior, row["record_id"]),), new_records=1, new_clients=1)
         return await asyncio.to_thread(register)
