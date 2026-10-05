@@ -90,6 +90,9 @@ Generated component admission
 │   │   batch of twelve; a reviewer that approves one reviews nothing admissible
 │   ├── batch calls through the unchanged panel, native criteria and native
 │   │   reviewer instructions, with a planted known-wrong control in each call
+│   ├── each call planned within the reviewer's declared window less its output
+│   │   allocation, at 1.35 reported tokens per estimated token; a run that may
+│   │   call a model refuses before its first call when a planned call cannot fit
 │   └── decision per batch by the written rule, appended to the decision ledger
 └── 3. admission folder for accepted batches, in the format the combine and
     bundle tools read, only for decisions the decision ledger records;
@@ -143,17 +146,23 @@ reviewer does not see the rows left out. Of the 1,870 data files of the
 September 28 and October 1, 2026 data table runs, 578 are excerpted and
 1,127 are sent whole; the longest excerpt is 18,535 characters.
 
-Calls are filled within the reviewer's context window. The room for a call's
-sampled members is the window less the answer allowance, the batch
-instructions, the request's own sentences and 20,000 tokens for each planted
-control; a control larger than that is not planted, and another member is
-tried. Before any model call the run builds every planned call exactly as the
-panel will and refuses when one does not fit, because the model gateway
-refuses such a call before it reaches the provider. For `ollama.kimi-k2.6`
-the room is 122,039 tokens of its 131,072-token window. The fixed
-150,000-token budget that planned the September 30, 2026 data table calls
-exceeded it, and the gateway refused all three calls unanswered. A reviewer
-that declares no window keeps the fixed budget.
+Calls are filled within the reviewer's context window. A call's allowance is
+the window less the answer allowance, divided by 1.35, the largest ratio of
+provider-reported to estimated input tokens seen, so a call fits the
+provider's own count as well as the gateway's estimate. The room for a call's
+sampled members and planted controls is that allowance less the batch
+instructions and the batch prompt's own words (200 tokens, and 100 for each of
+up to twelve members). Members leave 20,000 tokens for each planted control,
+and a control is planted only where it fits the call's leftover room;
+otherwise another member is tried. Before any model call the run builds every
+planned call exactly as the panel will and refuses when one is over the
+allowance, does not fit the window with its answer allowance, or holds fewer
+planted controls than asked, because the model gateway refuses a call over
+the window before it reaches the provider. For `ollama.kimi-k2.6` the
+allowance is 91,022 estimated tokens of its 131,072-token window and the room
+88,909. The fixed 150,000-token budget that planned the September 30, 2026
+data table calls exceeded the window, and the gateway refused all three calls
+unanswered. A reviewer that declares no window keeps the fixed budget.
 
 ## The acceptance rule
 
@@ -390,6 +399,15 @@ PYTHONPATH=src:tools python -m unittest tools.test_component_qualification \
 - Nothing chains the last ledger line to a later one. Its digest is kept only
   in the review record of the run that appended it, or in the backfill's
   report.
+- A call's allowance divides the reviewer's declared window, less its output
+  allocation, by 1.35, the largest ratio of provider-reported to estimated
+  input tokens seen (Kimi K2.6, September 30, 2026: 96,751 estimated, 126,997
+  reported). Content that tokenizes more densely could still exceed a
+  provider's own window. A sampled package too large for one call with its
+  planted control refuses the run before any call; rerun the other batches
+  with the same `--seed`. The excerpt rule shortens only large data files, so
+  a package whose other files are too large waits for a review that excerpts
+  them.
 - A run that stops after its first review call and before its append, for
   example when its process is killed, records nothing in the decision ledger.
   The review panel's own ledger keeps that run's calls and verdicts; read it

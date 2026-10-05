@@ -369,7 +369,11 @@ class ReviewRunTests(unittest.TestCase):
     def _offline(self, panel):
         """The run with the scripted panel; the provider listing fails the check if it is ever read."""
         store = {component.identity: component for component in self.components}
-        reader = SimpleNamespace(rows=lambda lines=(): [{"record_id": identity} for identity in store],
+
+        def every_row(lines=()):
+            raise AssertionError("a sampled review reads each component by its key, never every supply candidate")
+
+        reader = SimpleNamespace(rows=every_row, row=lambda identity: {"record_id": identity},
                                  component=lambda row: store[row["record_id"]], close=lambda: None)
         real, built = sampled_review._panel, []
 
@@ -496,6 +500,64 @@ class ReviewRunTests(unittest.TestCase):
             result = sampled_review.command(self._options(measurement_only="a reviewer trial"), ROOT)
         self.assertEqual(result["decisions"][self.batch]["outcome"], sampling.WITHHELD)
         self.assertEqual(self._entries(), [])
+
+    def _with_readme(self, index: int, size: int):
+        """The batch with one component's README grown to ``size`` bytes, its qualification record rewritten."""
+        base = self.components[index]
+        grown = base.replaced(payloads=dict(base.payloads) | {"README.md": b"# Greeting table\n\n"
+                                                                          + b"A greeting row.\n" * (size // 16)})
+        grown = grown.replaced(identity=f"library.supply.data_tables.{'f' * 23}{index}.{grown.package.package_digest[:16]}")
+        self.components[index] = grown
+        (self.qualification / "qualification.jsonl").write_text("".join(json.dumps({
+            "identity": component.identity, "outcome": "qualified", "batch": component.batch,
+            "record_version": component.record_version, "package_digest": component.package.package_digest,
+            "qualifier": dict(QUALIFIER), "checks": []}) + "\n" for component in self.components))
+        return grown
+
+    def test_the_call_allowance_is_the_reviewer_window_less_its_output(self):
+        configuration = sampled_review._panel(ROOT, self.folder / "unused-ledger.jsonl", False, None)[0]
+        kimi, glm = configuration.installation(REVIEWER), configuration.installation("ollama.glm-5.3")
+        self.assertEqual(sampled_review.call_allowance(configuration, kimi), int((131_072 - 8_192) / 1.35))
+        self.assertEqual(sampled_review.call_allowance(configuration, glm), int((131_072 - 32_768) / 1.35))
+        self.assertLess(sampled_review.call_allowance(configuration, kimi), sampled_review.CALL_TOKEN_BUDGET)
+
+    def test_a_large_member_gets_its_own_call_and_a_control_that_fits(self):
+        from tools.candidate_review.prompt import build_batch_prompt
+        large = self._with_readme(3, 240_000)
+        panel = ScriptedPanel(approve=[component.identity for component in self.components])
+        with self._offline(panel):
+            sampled_review.command(self._options(), ROOT)
+        record = json.loads((self.folder / "review.json").read_text())
+        configuration, _criteria, instructions, _panel = sampled_review._panel(ROOT, self.folder / "unused.jsonl",
+                                                                               False, None)
+        installation = configuration.installation(REVIEWER)
+        self.assertEqual(record["calls_that_do_not_fit"], [])
+        planted = {row["identity"] for row in record["batches"][self.batch]["controls"]}
+        requests = {request.identity: request for run in panel.runs for request in run.requests}
+        groups = [group for run in panel.runs for group in run.batch_groups.get(REVIEWER, ())]
+        self.assertGreater(len(groups), 1)
+        for group in groups:
+            prompt = build_batch_prompt([requests[identity] for identity in group], installation, instructions)
+            self.assertLessEqual(prompt.estimated_input_tokens, record["call_allowance"])
+            self.assertEqual(sum(1 for identity in group if identity in planted), 1)
+        alone = next(group for group in groups if large.identity in group)
+        self.assertEqual(sorted(identity for identity in alone if identity not in planted), [large.identity])
+
+    def test_a_member_too_large_for_one_call_refuses_before_any_model_call(self):
+        """Known-wrong control: the fixed 150,000-token plan sent calls over the reviewer's 131,072-token window,
+        which the gateway refused unsent, leaving the sample incomplete and the batch withheld."""
+        self._with_readme(5, 520_000)
+        panel = ScriptedPanel(approve=[component.identity for component in self.components])
+        with self._offline(panel) as run:
+            with self.assertRaisesRegex(ValueError, "do not fit"):
+                sampled_review.command(self._options(), ROOT)
+        run.single.assert_not_called()
+        run.mixed.assert_not_called()
+        self.assertEqual((panel.runs, self._entries()), ([], []))
+        with self._offline(ScriptedPanel()):
+            sampled_review.command(self._options(authorize_model_calls=False), ROOT)
+        unfit = json.loads((self.folder / "review.json").read_text())["calls_that_do_not_fit"]
+        self.assertEqual([row["planted_controls"] for row in unfit], [0])
 
     def test_the_plan_reads_the_generator_rate_from_the_ledger(self):
         earlier = _records("data_tables/1.0.0@" + "e" * 12, 1767, "e")

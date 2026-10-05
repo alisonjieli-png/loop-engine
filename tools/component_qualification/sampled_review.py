@@ -10,7 +10,8 @@ Sampled review of one qualification run (hybrid: deterministic sampling, one mod
 │      rate as the decision ledger records it (sampling.plan_for), and a recorded random seed; calls are
 │      filled within the reviewer's context window, a large data file is shown as a bounded excerpt
 │      (excerpts.py), and a run refuses before any model call when a planned call does not fit the window
-│      or its call ceiling does not cover the calibration and every planned call
+│      or the call allowance, holds fewer planted controls than asked, or its call ceiling does not cover
+│      the calibration and every planned call
 ├── 3. optional calibration: the frozen native controls, one call each; a reviewer that approves a
 │      known-wrong control, or leaves one without a verdict, reviews nothing in this run
 ├── 4. review: the sampled packages in batch calls to one installation of a family that did not write
@@ -49,12 +50,20 @@ QUALIFICATION_ENGINE = "component_qualification_record"
 CONTROL_ENGINE = "planted_reviewer_control"
 MAXIMUM_BATCH = 12
 CALL_TOKEN_BUDGET = 150_000
-#: The estimated input tokens room is kept for each planted control in a call; a control larger than this is not
-#: planted, and another unsampled member is tried in its place.
+#: Provider-reported input tokens per estimated token (UTF-8 bytes over four). The largest ratio observed is 1.31:
+#: on September 30, 2026 Kimi K2.6 read a program-install call estimated at 96,751 tokens as 126,997. A call is
+#: planned so that its estimate times this ratio stays within its reviewer's declared context window less the
+#: output allocation.
+TOKEN_ESTIMATE_RATIO = 1.35
+#: The estimated input tokens kept in each call for one planted control while its members are packed. A control is
+#: planted only where it fits the call's leftover room; a larger one is not planted, and another unsampled member is
+#: tried in its place.
 CONTROL_RESERVE_TOKENS = 20_000
-#: Estimated tokens of the batch prompt around each candidate (its fence markers and its line in the answer order),
-#: and of the request's opening and closing sentences.
-MEMBER_FRAMING_TOKENS, CALL_FRAMING_TOKENS = 64, 128
+#: The batch prompt's own words around its members: the opening line, each member's fence and order line (about 64
+#: tokens each), and the closing answer request, generously bounded per member. The exact prompt is built and
+#: checked before any call.
+BATCH_WORDS_TOKENS = 200
+MEMBER_WORDS_TOKENS = 100
 PRODUCER_METHOD = "library_supply_generator"
 
 #: The planted control kinds, each named once, with the native criterion its defect violates.
@@ -243,23 +252,26 @@ def _calibration_calls(root: Path, criteria, instructions) -> int:
 
 
 def _call_limits(configuration, installation, instructions) -> tuple:
-    """(input tokens a call's sampled members may fill, the reviewer's context window, its answer allowance).
+    """(input tokens a call's sampled members and planted controls may fill, the reviewer's context window, its
+    answer allowance).
 
     The model gateway refuses a call before it reaches the provider when the call's estimated input plus its answer
     allowance exceeds the reviewer's declared context window. A fixed budget above that window (150,000 tokens
     against 131,072 for ollama.kimi-k2.6) let the September 30, 2026 data table calls be planned and then refused
-    unanswered, so the members' room is the window less the allowance, the batch instructions, the request's own
-    sentences and the room kept for each planted control. A reviewer that declares no window keeps the fixed
-    budget; window and allowance are then None."""
+    unanswered. The room is the call allowance (call_allowance: the window less the answer allowance, over the
+    observed ratio of provider-reported to estimated tokens, so a call fits the provider's own count as well) less
+    the batch instructions and the batch prompt's own words; members leave the room kept for each planted control.
+    A reviewer that declares no window keeps the fixed budget; window and allowance are then None."""
     from tools.candidate_review.prompt import batch_system
     from loop_engine.core.context_budget import estimate_tokens
     settings = dict(installation.settings)
     window = settings.get("maximum_context_tokens")
+    room = (call_allowance(configuration, installation) - estimate_tokens(batch_system(installation, instructions))
+            - BATCH_WORDS_TOKENS - MEMBER_WORDS_TOKENS * MAXIMUM_BATCH)
     if type(window) is not int or window <= 0:
-        return CALL_TOKEN_BUDGET, None, None
+        return room, None, None
     allowance = settings.get("output_allocation_tokens") or configuration.policy.output_allocation_tokens
-    system = estimate_tokens(batch_system(installation, instructions))
-    return min(CALL_TOKEN_BUDGET, window - allowance - system - CALL_FRAMING_TOKENS), window, allowance
+    return room, window, allowance
 
 
 def _chunks(requests, estimate, budget: int, maximum: int = MAXIMUM_BATCH) -> list:
@@ -277,6 +289,43 @@ def _chunks(requests, estimate, budget: int, maximum: int = MAXIMUM_BATCH) -> li
     if current:
         calls.append(current)
     return calls
+
+
+def call_allowance(configuration, installation) -> int:
+    """The estimated input tokens, system part included, that one call to this reviewer may hold.
+
+    Until October 5, 2026 every call was planned against a fixed 150,000 tokens, more than the 131,072 every
+    gateway reviewer declares. The gateway refuses a call whose estimate does not fit before it reaches the
+    provider, so the members of that call get no verdict, and a sample left incomplete withholds its whole
+    batch for good. The allowance is the declared context window less the reviewer's output allocation, divided
+    by the observed ratio of reported to estimated tokens. A reviewer that declares no window keeps the fixed
+    budget."""
+    settings = dict(installation.settings)
+    context = settings.get("maximum_context_tokens")
+    output = settings.get("output_allocation_tokens") or configuration.policy.output_allocation_tokens
+    if type(context) is not int or type(output) is not int or context <= output:
+        return CALL_TOKEN_BUDGET
+    return min(CALL_TOKEN_BUDGET, int((context - output) / TOKEN_ESTIMATE_RATIO))
+
+
+def calls_that_do_not_fit(calls_plan: dict, planted: dict, installation, instructions, allowance: int,
+                          controls_per_call: int) -> list:
+    """Each planned call whose exact batch prompt is over the allowance or holds too few planted controls."""
+    from tools.candidate_review.prompt import build_batch_prompt, member_parts
+    from loop_engine.core.context_budget import estimate_tokens
+    problems = []
+    for batch, batch_calls in sorted(calls_plan.items()):
+        for number, members in enumerate(batch_calls, 1):
+            controls = sum(1 for request in members if request.identity in planted)
+            tokens = build_batch_prompt(members, installation, instructions).estimated_input_tokens
+            if tokens > allowance or controls < controls_per_call:
+                sizes = sorted((estimate_tokens(member_parts(request)), request.identity) for request in members
+                               if request.identity not in planted)
+                problems.append({"batch": batch, "call": number, "estimated_tokens": tokens,
+                                 "allowance": allowance, "planted_controls": controls, "members": len(members),
+                                 "largest_member": sizes[-1][1] if sizes else "",
+                                 "largest_member_tokens": sizes[-1][0] if sizes else 0})
+    return problems
 
 
 def _listed_model_versions() -> dict:
@@ -451,20 +500,22 @@ def _review(options, root: Path, ledger) -> dict:
     seed = options.seed or secrets_module.token_hex(16)
     rng = random.Random(f"{seed}:controls")
     policy = sampling.SamplingPolicy()
+    # Each component is read by its key when it is used; reading every supply candidate first held 7.25 GB.
     reader = StoreReader(options.store_root)
-    rows = {row["record_id"]: row for row in reader.rows()}
     plans, samples, calls_plan, planted, all_requests = {}, {}, {}, {}, []
-    record = {"record_type": SAMPLED_REVIEW_RECORD, "started_at": started, "qualification": str(options.qualification),
-              "reviewer": options.reviewer, "producer_family": options.producer_family, "seed": seed,
-              "policy": policy.to_dict(), "call_token_budget": CALL_TOKEN_BUDGET, "batches": {},
-              "decision_ledger": None if ledger is None else {
-                  "path": str(ledger.path), "sha256_at_start": ledger.sha256, "entries_at_start": len(ledger.entries)}}
     configuration, criteria, instructions, _unused = _panel(root, options.ledger, False, None)
     installation = configuration.installation(options.reviewer)
-    room, window, allowance = _call_limits(configuration, installation, instructions)
+    allowance = call_allowance(configuration, installation)
+    record = {"record_type": SAMPLED_REVIEW_RECORD, "started_at": started, "qualification": str(options.qualification),
+              "reviewer": options.reviewer, "producer_family": options.producer_family, "seed": seed,
+              "policy": policy.to_dict(), "call_token_budget": CALL_TOKEN_BUDGET, "call_allowance": allowance,
+              "token_estimate_ratio": TOKEN_ESTIMATE_RATIO, "batches": {},
+              "decision_ledger": None if ledger is None else {
+                  "path": str(ledger.path), "sha256_at_start": ledger.sha256, "entries_at_start": len(ledger.entries)}}
+    room, window, answer = _call_limits(configuration, installation, instructions)
     data_folders = excerpts.policy_data_folders()
     record["call_limits"] = {"members_input_tokens": room, "context_window_tokens": window,
-                             "answer_allowance_tokens": allowance, "control_reserve_tokens": CONTROL_RESERVE_TOKENS,
+                             "answer_allowance_tokens": answer, "control_reserve_tokens": CONTROL_RESERVE_TOKENS,
                              "excerpt_rule": excerpts.RULE, "excerpt_threshold_bytes": excerpts.THRESHOLD_BYTES}
     for batch, identities in sorted(batches.items()):
         # The observed rate belongs to the generator (line and version), so a batch written again at a later
@@ -472,31 +523,34 @@ def _review(options, root: Path, ledger) -> dict:
         history = sampling.GeneratorHistory.from_decisions(sampling.generator_of(batch), history_rows)
         plan = sampling.plan_for(batch, len(identities), history, policy)
         chosen = sampling.draw_sample(identities, plan.sample_size, f"{seed}:{batch}")
-        components = {identity: reader.component(rows[identity]) for identity in chosen}
+        components = {identity: reader.component(reader.row(identity)) for identity in chosen}
         requests = [review_request(components[identity], criteria, instructions.sha256, options.producer_family,
                                    data_folders) for identity in chosen]
         unsampled = sorted(set(identities) - set(chosen)) or sorted(identities)
-        estimate = lambda request: estimate_tokens(member_parts(request)) + MEMBER_FRAMING_TOKENS  # noqa: E731
+        estimate = lambda request: estimate_tokens(member_parts(request))  # noqa: E731
         if not 1 <= options.controls_per_call < MAXIMUM_BATCH:
             raise ValueError("each call holds at least one planted control and at least one sampled component")
-        calls = _chunks(requests, estimate, room - CONTROL_RESERVE_TOKENS * options.controls_per_call,
+        # Members fill a call up to the reviewer's allowance less the room its planted controls take.
+        calls = _chunks(requests, estimate, max(1, room - CONTROL_RESERVE_TOKENS * options.controls_per_call),
                         MAXIMUM_BATCH - options.controls_per_call)
         batch_calls, kinds = [], [kind for kind in CONTROL_KINDS]
         rng.shuffle(kinds)
         for number, call in enumerate(calls):
             members = list(call)
+            left = room - sum(estimate(request) for request in call)
             for extra in range(options.controls_per_call):
                 for attempt in range(len(kinds) * 4):
                     kind = kinds[(number * options.controls_per_call + extra + attempt) % len(kinds)]
-                    base = reader.component(rows[rng.choice(unsampled)])
+                    base = reader.component(reader.row(rng.choice(unsampled)))
                     probe = plant(base, kind, base.identity)
                     if probe is None:
                         continue
                     control = plant(base, kind, _neutral_identity(base, rng, probe.package.package_digest))
                     control_request = review_request(control, criteria, instructions.sha256,
                                                      options.producer_family, data_folders)
-                    if estimate(control_request) > CONTROL_RESERVE_TOKENS:
-                        continue  # the call keeps room for a control this size only; try another member
+                    if estimate(control_request) > left:
+                        continue  # a control that would push the call over its reviewer's allowance; try another
+                    left -= estimate(control_request)
                     planted[control.identity] = {"kind": kind, "criterion": CONTROL_KINDS[kind][0], "batch": batch,
                                                  "base_identity": base.identity,
                                                  "package_digest": control.package.package_digest,
@@ -517,14 +571,32 @@ def _review(options, root: Path, ledger) -> dict:
     reader.close()
     total_calls = sum(len(value) for value in calls_plan.values())
     record["calls_planned"] = total_calls
+    over = []
     if window is not None:
         over = [f"{batch} call {number}: {tokens:,} input tokens" for batch, entry in sorted(record["batches"].items())
-                for number, tokens in enumerate(entry["call_input_tokens"], 1) if tokens + allowance > window]
+                for number, tokens in enumerate(entry["call_input_tokens"], 1) if tokens + answer > window]
         record["calls_over_context_window"] = over
-        if over and options.authorize_model_calls:
-            raise ValueError(f"planned calls that do not fit {options.reviewer}'s context window of {window:,} tokens "
-                             f"with its {allowance:,}-token answer allowance, which the gateway would refuse "
-                             "unanswered: " + "; ".join(over))
+    # A call over its reviewer's window is refused unsent, and one over the allowance may be read past the window by
+    # the provider's own count; either leaves its sampled components without a verdict, which withholds the batch. A
+    # call without its planted control cannot show a reviewer that approves everything. A run that may call a model
+    # therefore refuses before its first call instead.
+    unfit = calls_that_do_not_fit(calls_plan, planted, installation, instructions, allowance,
+                                  options.controls_per_call)
+    record["calls_that_do_not_fit"] = unfit
+    if (over or unfit) and options.authorize_model_calls:
+        reasons = [f"planned calls that do not fit {options.reviewer}'s context window of {window:,} tokens with its "
+                   f"{answer:,}-token answer allowance, which the gateway would refuse unanswered: " + "; ".join(over)
+                   ] if over else []
+        if unfit:
+            reasons.append(
+                f"{len(unfit)} planned call(s) do not fit {options.reviewer}'s allowance of {allowance} estimated "
+                "tokens with a planted control: " + "; ".join(
+                    f"{row['batch']} call {row['call']} ({row['estimated_tokens']} tokens, {row['planted_controls']} "
+                    f"control(s), largest member {row['largest_member']} at {row['largest_member_tokens']} tokens)"
+                    for row in unfit))
+        raise ValueError(". ".join(reasons)
+                         + ". Name the other batches with --batch and keep the same --seed, so their samples do not "
+                           "change.")
     if options.authorize_model_calls and options.calibrate and not options.measurement_only:
         # Every decision of this run settles its frame in the decision ledger, so a batch the ceiling could not
         # finish would be withheld for want of calls and never sampled again. Refuse before the first call instead.

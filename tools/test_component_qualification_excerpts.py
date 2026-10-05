@@ -159,19 +159,27 @@ class CallLimitTests(unittest.TestCase):
             ROOT, folder / "ledger.jsonl", False, None)
         self.installation = self.configuration.installation(REVIEWER)
 
+    def _words(self, installation) -> int:
+        """The batch instructions and the batch prompt's own words, which a call's room leaves out."""
+        return (prompt_module.estimate_tokens(prompt_module.batch_system(installation, self.instructions))
+                + sampled_review.BATCH_WORDS_TOKENS + sampled_review.MEMBER_WORDS_TOKENS * sampled_review.MAXIMUM_BATCH)
+
     def test_the_members_room_follows_the_reviewer_context_window(self):
         room, window, allowance = sampled_review._call_limits(self.configuration, self.installation,
                                                               self.instructions)
         self.assertEqual((window, allowance), (131_072, 8_192))
-        system = prompt_module.estimate_tokens(prompt_module.batch_system(self.installation, self.instructions))
-        self.assertEqual(room, window - allowance - system - sampled_review.CALL_FRAMING_TOKENS)
+        # The room is the call allowance (the window less the answer allowance, over the observed ratio of
+        # provider-reported to estimated tokens) less the batch instructions and the prompt's own words.
+        self.assertEqual(room, int((window - allowance) / sampled_review.TOKEN_ESTIMATE_RATIO)
+                         - self._words(self.installation))
+        self.assertLess(room, window - allowance - self._words(self.installation))
         # Known wrong: the fixed budget the September 30 calls were planned under exceeds what the window holds.
         self.assertGreater(sampled_review.CALL_TOKEN_BUDGET - sampled_review.CONTROL_RESERVE_TOKENS, room)
 
     def test_a_reviewer_without_a_declared_window_keeps_the_fixed_budget(self):
         tactical = self.configuration.installation("tactical.gemma-4-coding-abliterated")
         self.assertEqual(sampled_review._call_limits(self.configuration, tactical, self.instructions),
-                         (sampled_review.CALL_TOKEN_BUDGET, None, None))
+                         (sampled_review.CALL_TOKEN_BUDGET - self._words(tactical), None, None))
 
 
 class ScriptedPanel:
@@ -221,7 +229,10 @@ class LargePackageRunTests(unittest.TestCase):
     @contextmanager
     def _offline(self, panel):
         store = {component.identity: component for component in self.components}
-        reader = SimpleNamespace(rows=lambda lines=(): [{"record_id": identity} for identity in store],
+        def every_row(lines=()):
+            raise AssertionError("a sampled review reads each component by its key, never every supply candidate")
+
+        reader = SimpleNamespace(rows=every_row, row=lambda identity: {"record_id": identity},
                                  component=lambda row: store[row["record_id"]], close=lambda: None)
         real = sampled_review._panel
 

@@ -575,6 +575,21 @@ class AdmissionTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "stored metadata differs"):
             self._admit(self._review(), "changed_metadata")
 
+    def test_admission_reads_each_component_by_its_key(self):
+        """Admission once read every supply candidate of the store first (7.25 GB on October 5, 2026)."""
+        store = {self.code.identity: self.code, self.configuration.identity: self.configuration}
+
+        def every_row(lines=()):
+            raise AssertionError("admission reads each component by its key, never every supply candidate")
+
+        reader = SimpleNamespace(rows=every_row, row=lambda identity: {"record_id": identity},
+                                 component=lambda row: store[row["record_id"]], close=lambda: None)
+        with mock.patch.object(admission, "StoreReader", return_value=reader) as opened:
+            result = admission.admit(self.qualification, self._review(), self.folder / "store", self.folder / "keyed",
+                                     "2026-09-28", ROOT, decisions_path=self.ledger)
+        opened.assert_called_once_with(self.folder / "store")
+        self.assertEqual((result["approved"], result["rejected"]), (1, 0))
+
     def test_legacy_review_without_population_binding_cannot_admit(self):
         review = self._review()
         document = json.loads(review.read_text())

@@ -135,10 +135,10 @@ def admit(qualification_folder: Path, review_path: Path, store_root: "Path | Non
              "decision_ledger": {"path": str(ledger.path), "sha256": ledger.sha256, "entries": len(ledger.entries),
                                  "sequences": sequences}}
     reader = StoreReader(store_root) if components is None else None
-    rows_by_id = {row["record_id"]: row for row in reader.rows()} if reader is not None else {}
 
     def load(identity):
-        return components[identity] if components is not None else reader.component(rows_by_id[identity])
+        # One keyed read per admitted component, not every supply candidate of the store first.
+        return components[identity] if components is not None else reader.component(reader.row(identity))
 
     items, rows, bodies, report_batches, counts = [], [], {}, {}, Counter()
     for batch, entry in sorted(review["batches"].items()):
