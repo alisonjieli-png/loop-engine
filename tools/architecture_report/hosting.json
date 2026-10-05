@@ -288,14 +288,14 @@
   ],
   "costs": [
     {
-      "item": "One Fly Machine: shared-cpu-1x, 2 GB, iad",
-      "monthly": "About $10.70",
-      "conditions": "This Machine is running now. Automatic stop is off, so it is billed continuously. Additional Machines are billed separately.",
+      "item": "One Fly Machine: shared-cpu-2x, 4 GB, iad",
+      "monthly": "About $25.40",
+      "conditions": "From release 63 (October 5, 2026). Fly's published table read that day lists shared-cpu-2x with 2 GB at $13.39 a month in iad, plus about $6.00 a GB a month for additional memory; shared-cpu-1x with 2 GB, the size until then, was $13.14. The 2 GB Machine had about 630 MB free while serving 30,757 items, and the serving design holds the catalogue view and search index in memory. This Machine is running now. Automatic stop is off, so it is billed continuously. Additional Machines are billed separately.",
       "source": "https://fly.io/docs/about/pricing/"
     },
     {
-      "item": "One encrypted Fly volume, 1 GB, iad",
-      "monthly": "About $0.15",
+      "item": "One encrypted Fly volume, 25 GB, iad",
+      "monthly": "About $3.75",
       "conditions": "In use. A volume is billed per provisioned GB and keeps billing while the Machine is stopped. The five daily snapshots are charged separately, and a snapshot is not a complete backup plan.",
       "source": "https://fly.io/docs/about/pricing/"
     },
@@ -313,7 +313,7 @@
     },
     {
       "item": "What the running pilot costs today",
-      "monthly": "About $10.85",
+      "monthly": "About $29.15",
       "conditions": "The Machine plus the volume. Supabase and Resend are on free profiles. This is a planning example from published prices, not an invoice.",
       "source": "https://fly.io/docs/about/pricing/"
     },
