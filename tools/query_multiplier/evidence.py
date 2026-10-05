@@ -166,6 +166,14 @@ class Ledger:
             return None if row is None or row[0] != "executed" else False
         return parse_stamp(row[1]) > self.clock()
 
+    def due_queries(self, executor_id: str, *, limit: int = 20) -> list:
+        """Executed queries of one executor whose refresh period has passed, most productive first."""
+        with self.lock:
+            return self.db.execute(
+                "select query_id, product_id, k, page, request, new_unique from queries where executor_id=? and "
+                "state='executed' and next_due_at <= ? order by new_unique desc, next_due_at limit ?",
+                (executor_id, stamp(self.clock()), limit)).fetchall()
+
     def plan(self, query) -> None:
         """Record a planned query once; planning twice keeps the first record."""
         with self.lock:

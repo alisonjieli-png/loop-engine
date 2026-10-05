@@ -139,7 +139,9 @@ compared with. The cursor binds the product, the library's dimension digests,
 the executor and the planner's own code; a changed product starts its own
 cursor, and the ledger still prevents repeats. A query executed inside its
 refresh period (per source, 14 to 90 days) is skipped; once due it is planned
-again and counted as a refresh.
+again and counted as a refresh. Every tenth pick of a lane also looks for an
+executed query whose period has passed, most productive first, and sends the
+same request again, so a productive probe keeps surfacing a source's new items.
 
 Query identity is the SHA-256 of the executor and its exact rendered request, so
 the same request reached from two products, two plans or an imported queue is one

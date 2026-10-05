@@ -487,6 +487,39 @@ class RefreshTests(Temporary):
         self.assertIsNone(ledger.within_refresh("never-planned"))
 
 
+class RefreshLaneTests(Temporary):
+    def lane_with_one_execution(self, clock):
+        ledger = self.ledger(clock=clock)
+        library = small_library()
+        executors = registry()
+        [built] = read_plan(plan(product("repos", "github_repositories", [("sdg_target", None), ("licence", 0)])), library, executors)
+        transport = FakeTransport(repo_rows("a/b"))
+        run = Run(library=library, products=[built], executors=executors, transport=transport, ledger=ledger, minutes=1,
+                  resolve_licences=False)
+        lane = run.lanes[0]
+        stream = lane.streams[0]
+        first = stream.next()
+        lane.attempt(first, stream)
+        return lane, first, transport, ledger
+
+    def test_a_due_query_is_refreshed_with_the_same_request(self):
+        clock = ClockedLedger(datetime(2026, 10, 5, tzinfo=timezone.utc))
+        lane, first, transport, ledger = self.lane_with_one_execution(clock)
+        clock.now += timedelta(days=31)
+        refreshed, _ = lane.due_refresh()
+        self.assertEqual((refreshed.query_id, refreshed.request, refreshed.origin), (first.query_id, first.request, "refresh"))
+        lane.attempt(refreshed, lane.streams[0])
+        self.assertEqual(ledger.scalar("select executions from queries where query_id=?", (first.query_id,)), 2)
+        self.assertEqual(len(transport.sent), 2)
+
+    def test_known_wrong_a_query_inside_its_period_is_not_refreshed(self):
+        clock = ClockedLedger(datetime(2026, 10, 5, tzinfo=timezone.utc))
+        lane, first, transport, ledger = self.lane_with_one_execution(clock)
+        clock.now += timedelta(days=29)
+        self.assertIsNone(lane.due_refresh())
+        self.assertEqual(len(transport.sent), 1)
+
+
 CHILD = textwrap.dedent("""
     import os, signal, sys
     sys.path[:0] = [{src!r}, {tools!r}, {root!r}]

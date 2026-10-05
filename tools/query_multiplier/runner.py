@@ -37,6 +37,8 @@ from .transport import RequestRefused, github_allowance
 GITHUB_CORE_FLOOR = 1500
 SEARCH_RESERVE = {"github_repositories": ("search", 6), "github_code": ("code_search", 4)}
 FOLLOW_UNIQUE_SHARE = 0.5
+#: Every tenth pick of a lane looks for an executed query whose refresh period has passed.
+REFRESH_EVERY = 10
 
 
 class ProductStream:
@@ -115,6 +117,8 @@ class Lane:
         self.statuses = Counter()
         self.refusals = Counter()
         self.errors = []
+        self.picks = 0
+        self.refreshed = set()
         self.last_sent = 0.0
         self.next_allowed = 0.0
         self.done_reason = ""
@@ -123,6 +127,11 @@ class Lane:
     def choose(self):
         if self.follow:
             return self.follow.pop(0)
+        self.picks += 1
+        if self.picks % REFRESH_EVERY == 0:
+            refreshed = self.due_refresh()
+            if refreshed is not None:
+                return refreshed
         live = [stream for stream in self.streams if not stream.exhausted]
         if not live:
             return None, None
@@ -320,7 +329,7 @@ class Lane:
                                     datetime.now(timezone.utc) + timedelta(seconds=int(parts["t"]) + 5), attempt_id)
 
     def maybe_follow(self, query, stream, parsed, folded):
-        if stream is None or query.page > stream.product.follow_pages or not parsed.items:
+        if stream is None or query.origin == "refresh" or query.page > stream.product.follow_pages or not parsed.items:
             return
         if len(parsed.items) < self.executor.per_page or not parsed.total_count:
             return
@@ -337,8 +346,21 @@ class Lane:
             self.follow.append((follow, stream))
             self.stats["follow_pages_planned"] += 1
 
-    def choose_follow(self):
-        return self.follow.pop(0)
+    def due_refresh(self):
+        """One executed query whose refresh period has passed, most productive first: the same request again, so
+        a source's new items surface; a query inside its period is never repeated."""
+        ledger = self.run.ledger
+        for query_id, product_id, k, page, request, _ in ledger.due_queries(self.executor.executor_id, limit=5):
+            if query_id in self.refreshed:
+                continue
+            self.refreshed.add(query_id)
+            stream = next((item for item in self.streams if getattr(item.product, "id", None) == product_id), None)
+            if stream is None:
+                continue
+            self.stats["refreshes_planned"] += 1
+            return PlannedQuery(product_id, self.executor.executor_id, k, {}, json.loads(request), query_id, page,
+                                origin="refresh"), stream
+        return None
 
 
 class LicenceLane:
