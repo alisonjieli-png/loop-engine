@@ -36,6 +36,7 @@ WRITE_QUEUE_SECONDS = 5.0
 #: Exhaustion stays unknown, never a no-write refusal or another write attempt.
 COMMIT_CONFIRMATION_SECONDS, COMMIT_CONFIRMATION_RETRY_SECONDS = 5.0, 0.05
 _WRITE_QUEUES, _WRITE_QUEUES_GUARD = {}, threading.Lock()
+_RECORD_QUEUES = {}
 
 
 def write_queue(database_path):
@@ -130,6 +131,24 @@ class ServiceCatalogBinding:
             source_collections=(SERVICE_COLLECTION,), artifact_kinds=(kind,)))
         return [row for row in rows if row.get("namespace") == self.config.namespace
                 and row.get("source_collection") == SERVICE_COLLECTION and row.get("artifact_kind") == kind]
+
+    @contextmanager
+    def serialized(self, name):
+        """Take turns with the other read-modify-writes of this process on one named record, such as a shared counter.
+
+        Hold it from the read of that record to the commit of its new version. Every write still carries the exact
+        version guard of what it read, so a write of another process is still refused as concurrent_update, never
+        overwritten; the queue only stops the writes of this process from refusing one another on a record they all
+        change. It is re-entrant, and a wait past WRITE_QUEUE_SECONDS answers store_busy with nothing written.
+        """
+        with _WRITE_QUEUES_GUARD:
+            queue = _RECORD_QUEUES.setdefault((self.config.database_path, name), threading.RLock())
+        if not queue.acquire(timeout=WRITE_QUEUE_SECONDS):
+            raise ServiceRuntimeError(STORE_BUSY_CODE, "other writes held the record; nothing was written; retry")
+        try:
+            yield
+        finally:
+            queue.release()
 
     @staticmethod
     def guard(row, identity=None):

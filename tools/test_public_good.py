@@ -306,6 +306,79 @@ class PublicGoodTests(unittest.TestCase):
         self.assertEqual((host["requests"], window["requests"]), (2, 1))
         self.assertEqual(list(window["reservations"]), [mine.reservation_id])
 
+    def account(self, name):
+        self.runtime.ensure_subject_tenant(SubjectTenantRegistration("https://identity.example", name, "customer"))
+        return self.runtime.authenticate_subject("https://identity.example", name)
+
+    def interleaved(self, principal, request_ids):
+        """Patch the commit so that before each commit on this thread a reservation by `principal` runs at once."""
+        main, threads, outcomes = threading.current_thread(), [], []
+        def reserve(request_id):
+            try:
+                outcomes.append(self.service.reserve(principal, self.view, "public.fixture",
+                    expected_digest=self.grant.binding.body_digest, request_id=request_id, response_bytes=1))
+            except ServiceRuntimeError as error:
+                outcomes.append(error.code)
+        original = type(self.service.catalog).commit
+        def commit(binding, *args, **kwargs):
+            if threading.current_thread() is main:
+                threads.append(threading.Thread(target=reserve, args=(next(request_ids),)))
+                threads[-1].start()
+                threads[-1].join(timeout=0.5)
+            return original(binding, *args, **kwargs)
+        return patch.object(type(self.service.catalog), "commit", commit), threads, outcomes
+
+    def test_a_reservation_waits_for_another_accounts_reservation_instead_of_refusing(self):
+        """Known wrong (October 5 review, b): reservations read the shared host window outside any lock and committed
+        under its version guard, so while other accounts reserved, the eight immediate retries ran out and the
+        customer got 409 concurrent_update (about 226 of 400 under the review's stress script)."""
+        patched, threads, outcomes = self.interleaved(self.account("second-account"), iter("other-%d" % n for n in range(8)))
+        with patched:
+            mine = self.service.reserve(self.principal, self.view, "public.fixture",
+                expected_digest=self.grant.binding.body_digest, request_id="mine", response_bytes=1)
+            for thread in threads:
+                thread.join(timeout=10)
+        self.assertIsInstance(mine, pg.PublicGoodReservation)
+        self.assertEqual([type(value) for value in outcomes], [pg.PublicGoodReservation])
+        with self.runtime._catalog.store() as store:
+            host = self.runtime._catalog.read(store, pg.HOST_WINDOW_KIND, "all_accounts")["payload"]
+        self.assertEqual(host["requests"], 2)
+
+    def test_a_completion_waits_for_the_same_accounts_reservation_instead_of_refusing(self):
+        """Known wrong (October 5 review, b): a completion rewrote the account window under its version guard with no
+        lock, so the same account's other downloads reserving at once made it run out of retries after the read."""
+        reservation = self.service.reserve(self.principal, self.view, "public.fixture",
+            expected_digest=self.grant.binding.body_digest, request_id="planned", response_bytes=100)
+        patched, threads, outcomes = self.interleaved(self.principal, iter("same-account-%d" % n for n in range(8)))
+        with patched:
+            result = self.service.complete(reservation, self.principal, self.view, response_bytes=50)
+            for thread in threads:
+                thread.join(timeout=10)
+        self.assertEqual(result["committed"], True)
+        self.assertEqual([type(value) for value in outcomes], [pg.PublicGoodReservation])
+        with self.runtime._catalog.store() as store:
+            window = self.runtime._catalog.read(store, pg.WINDOW_KIND, self.principal.tenant_id)["payload"]
+        self.assertEqual(sorted(entry["state"] for entry in window["reservations"].values()), ["complete", "reserved"])
+
+    def test_concurrent_reservations_of_many_accounts_succeed_and_never_pass_the_host_ceiling(self):
+        self.configure(limits=pg.PublicGoodLimits(requests_per_window=100, host_requests_per_window=50))
+        principals = [self.account("stress-%d" % n) for n in range(8)]
+        def attempt(index):
+            try:
+                self.service.reserve(principals[index % 8], self.view, "public.fixture",
+                    expected_digest=self.grant.binding.body_digest, request_id="stress-%d" % index, response_bytes=1)
+                return "reserved"
+            except ServiceRuntimeError as error:
+                return error.code
+        with ThreadPoolExecutor(max_workers=16) as executor:
+            outcomes = list(executor.map(attempt, range(80)))
+        self.assertEqual((outcomes.count("reserved"), outcomes.count("public_good_rate_limited")), (50, 30))
+        with self.runtime._catalog.store() as store:
+            host = self.runtime._catalog.read(store, pg.HOST_WINDOW_KIND, "all_accounts")["payload"]
+            windows = [self.runtime._catalog.read(store, pg.WINDOW_KIND, principal.tenant_id)["payload"] for principal in principals]
+        self.assertEqual(host["requests"], 50)
+        self.assertEqual(sum(window["requests"] for window in windows), 50)
+
     def test_shared_host_ceiling_limits_different_accounts_atomically(self):
         self.configure(limits=pg.PublicGoodLimits(host_requests_per_window=1))
         self.runtime.ensure_subject_tenant(SubjectTenantRegistration("https://identity.example", "second-account", "customer"))

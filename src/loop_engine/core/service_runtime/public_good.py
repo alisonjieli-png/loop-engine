@@ -345,25 +345,28 @@ class PublicGoodAccess:
                         return None
                     if response_bytes > snapshot.limits.maximum_response_bytes:
                         _refuse("public_good_response_limit")
-                    now = self.runtime._now()
-                    previous, window = self._window(store, current.tenant_id, now, snapshot.limits)
-                    previous_host, host_window = self._window(store, "", now, snapshot.limits, host=True)
-                    if window["requests"] >= snapshot.limits.requests_per_window or window["bytes_reserved"] + response_bytes > snapshot.limits.bytes_per_window:
-                        raise PublicGoodLimitError(window["end"] - now)
-                    if (host_window["requests"] >= snapshot.limits.host_requests_per_window
-                            or host_window["bytes_reserved"] + response_bytes > snapshot.limits.host_bytes_per_window):
-                        raise PublicGoodLimitError(host_window["end"] - now)
-                    reservation = PublicGoodReservation(current.tenant_id, grant, snapshot.version, uuid.uuid4().hex,
-                        digest(request_id), response_bytes, min(window["end"], grant.expires_at), tuple(guards), self._issuer)
-                    reservation = replace(reservation, _proof=self._proof(reservation))
-                    updated = {**window, "requests": window["requests"] + 1, "bytes_reserved": window["bytes_reserved"] + response_bytes,
-                               "reservations": {**window["reservations"], reservation.reservation_id: {"proof": reservation._proof, "state": "reserved"}}}
-                    row = self.catalog.record(WINDOW_KIND, current.tenant_id, updated, tenant_id=current.tenant_id)
-                    host_row = self.catalog.record(HOST_WINDOW_KIND, "all_accounts",
-                        {**host_window, "requests": host_window["requests"] + 1,
-                         "bytes_reserved": host_window["bytes_reserved"] + response_bytes})
-                    self.catalog.commit(store, (row, host_row), (*guards, snapshot.guard, snapshot.state_guard,
-                        self.catalog.guard(previous, row["record_id"]), self.catalog.guard(previous_host, host_row["record_id"])))
+                    # Every reservation changes the one host window. The window writes of this process take turns from
+                    # reading the windows to the commit, so they wait for one another instead of refusing one another.
+                    with self.catalog.serialized(WINDOW_KIND):
+                        now = self.runtime._now()
+                        previous, window = self._window(store, current.tenant_id, now, snapshot.limits)
+                        previous_host, host_window = self._window(store, "", now, snapshot.limits, host=True)
+                        if window["requests"] >= snapshot.limits.requests_per_window or window["bytes_reserved"] + response_bytes > snapshot.limits.bytes_per_window:
+                            raise PublicGoodLimitError(window["end"] - now)
+                        if (host_window["requests"] >= snapshot.limits.host_requests_per_window
+                                or host_window["bytes_reserved"] + response_bytes > snapshot.limits.host_bytes_per_window):
+                            raise PublicGoodLimitError(host_window["end"] - now)
+                        reservation = PublicGoodReservation(current.tenant_id, grant, snapshot.version, uuid.uuid4().hex,
+                            digest(request_id), response_bytes, min(window["end"], grant.expires_at), tuple(guards), self._issuer)
+                        reservation = replace(reservation, _proof=self._proof(reservation))
+                        updated = {**window, "requests": window["requests"] + 1, "bytes_reserved": window["bytes_reserved"] + response_bytes,
+                                   "reservations": {**window["reservations"], reservation.reservation_id: {"proof": reservation._proof, "state": "reserved"}}}
+                        row = self.catalog.record(WINDOW_KIND, current.tenant_id, updated, tenant_id=current.tenant_id)
+                        host_row = self.catalog.record(HOST_WINDOW_KIND, "all_accounts",
+                            {**host_window, "requests": host_window["requests"] + 1,
+                             "bytes_reserved": host_window["bytes_reserved"] + response_bytes})
+                        self.catalog.commit(store, (row, host_row), (*guards, snapshot.guard, snapshot.state_guard,
+                            self.catalog.guard(previous, row["record_id"]), self.catalog.guard(previous_host, host_row["record_id"])))
                 return reservation
             except ServiceRuntimeError as error:
                 if error.code != "concurrent_update" or attempt == MAXIMUM_CONCURRENT_RETRIES - 1:
@@ -371,6 +374,10 @@ class PublicGoodAccess:
         _refuse("concurrent_update")
 
     def _validate(self, store, reservation, principal, view, *, completed=False):
+        current, guards, snapshot = self._authorized(store, reservation, principal, view)
+        return current, guards, snapshot, self._held(store, reservation, current, completed=completed)
+
+    def _authorized(self, store, reservation, principal, view):
         if (not isinstance(reservation, PublicGoodReservation) or reservation._issuer is not self._issuer
                 or not hmac.compare_digest(reservation._proof, self._proof(reservation))):
             _refuse("public_good_reservation_invalid")
@@ -383,6 +390,9 @@ class PublicGoodAccess:
             _refuse("public_good_authority_changed")
         if view.withdrawal_check is not None:
             view.withdrawal_check(grant.binding.identity, grant.binding.body_digest)
+        return current, guards, snapshot
+
+    def _held(self, store, reservation, current, *, completed=False):
         window = self.catalog.read(store, WINDOW_KIND, current.tenant_id)
         value = window["payload"] if window else {}
         entry = value.get("reservations", {}).get(reservation.reservation_id, {})
@@ -390,7 +400,7 @@ class PublicGoodAccess:
             _refuse("public_good_reservation_invalid")
         if entry.get("state") != ("complete" if completed else "reserved"):
             _refuse("public_good_reservation_closed")
-        return current, guards, snapshot, window
+        return window
 
     def revalidate(self, reservation, principal, view):
         """Final transport guard, including policy, expiry, scope, account and withdrawal."""
@@ -411,23 +421,26 @@ class PublicGoodAccess:
         for attempt in range(MAXIMUM_CONCURRENT_RETRIES):
             try:
                 with self.catalog.store(write=True) as store:
-                    current, guards, snapshot, window = self._validate(store, reservation, principal, view)
-                    now = self.runtime._now()
-                    selected = reservation.grant
-                    logical = (current.tenant_id, selected.binding.identity, selected.binding.body_digest, selected.item_version, usage_period(now))
-                    previous = self.catalog.read(store, DELIVERY_KIND, logical)
-                    payload = {"record_type": DELIVERY_VERSION, "tenant_id": current.tenant_id,
-                        "item_identity": selected.binding.identity, "body_digest": selected.binding.body_digest,
-                        "item_version": selected.item_version, "policy_version": snapshot.version,
-                        "response_bytes": response_bytes, "billed_quantity": 0, "at": now,
-                        "outcome": "authorized_response", "request_id_digest": reservation.request_id_digest}
-                    delivery = self.catalog.record(DELIVERY_KIND, logical, payload, tenant_id=current.tenant_id)
-                    value = window["payload"]
-                    updated = self.catalog.record(WINDOW_KIND, current.tenant_id,
-                        {**value, "reservations": {**value["reservations"], reservation.reservation_id: {"proof": reservation._proof, "state": "complete"}}},
-                        tenant_id=current.tenant_id)
-                    self.catalog.commit(store, (delivery, updated), (*guards, snapshot.guard, snapshot.state_guard,
-                        self.catalog.guard(window), self.catalog.guard(previous, delivery["record_id"])))
+                    current, guards, snapshot = self._authorized(store, reservation, principal, view)
+                    # The account window takes turns with the reservations of this process, as in `reserve`.
+                    with self.catalog.serialized(WINDOW_KIND):
+                        window = self._held(store, reservation, current)
+                        now = self.runtime._now()
+                        selected = reservation.grant
+                        logical = (current.tenant_id, selected.binding.identity, selected.binding.body_digest, selected.item_version, usage_period(now))
+                        previous = self.catalog.read(store, DELIVERY_KIND, logical)
+                        payload = {"record_type": DELIVERY_VERSION, "tenant_id": current.tenant_id,
+                            "item_identity": selected.binding.identity, "body_digest": selected.binding.body_digest,
+                            "item_version": selected.item_version, "policy_version": snapshot.version,
+                            "response_bytes": response_bytes, "billed_quantity": 0, "at": now,
+                            "outcome": "authorized_response", "request_id_digest": reservation.request_id_digest}
+                        delivery = self.catalog.record(DELIVERY_KIND, logical, payload, tenant_id=current.tenant_id)
+                        value = window["payload"]
+                        updated = self.catalog.record(WINDOW_KIND, current.tenant_id,
+                            {**value, "reservations": {**value["reservations"], reservation.reservation_id: {"proof": reservation._proof, "state": "complete"}}},
+                            tenant_id=current.tenant_id)
+                        self.catalog.commit(store, (delivery, updated), (*guards, snapshot.guard, snapshot.state_guard,
+                            self.catalog.guard(window), self.catalog.guard(previous, delivery["record_id"])))
                 # Clock expiry or revocation may have crossed the commit itself.
                 with self.catalog.store() as store:
                     self._validate(store, reservation, principal, view, completed=True)
