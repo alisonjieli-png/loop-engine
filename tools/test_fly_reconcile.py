@@ -28,6 +28,25 @@ class FlyReconcileTests(unittest.TestCase):
         for child in self.children:
             child.wait(timeout=8)
 
+    def test_every_command_fits_the_machines_api_and_carries_the_exact_source(self):
+        # October 5, 2026: the Machines API refused an 18,853-byte command (the source inlined twice) with
+        # PayloadTooLarge, so the deploy's apply-grants step never started. The source now travels compressed, once.
+        import base64
+        import shlex
+        import zlib
+        source = Path(remote.__file__).read_text()
+        for mode in ("start", "status", "reconcile"):
+            command = controller.remote_command(mode, self.record)
+            self.assertLessEqual(len(command.encode("utf-8")), controller.MAXIMUM_COMMAND_BYTES)
+            program = shlex.split(command)[2]
+            packed = program.split("b64decode(", 1)[1].split(")", 1)[0].strip("'")
+            self.assertEqual(zlib.decompress(base64.b64decode(packed)).decode("utf-8"), source)
+        # KNOWN_WRONG: the form that failed live, the source inlined twice and uncompressed, is over the bound.
+        doubled = ("scope={'__name__':'deployment_operation'}; exec(" + repr(source) + ",scope); scope['main'](" +
+                   repr(source) + ")")
+        self.assertGreater(len(shlex.join(["python", "-c", doubled, "status", "apply-grants", "a" * 40, "123"]).encode()),
+                           controller.MAXIMUM_COMMAND_BYTES)
+
     def test_only_container_qualified_commands_are_available(self):
         with self.assertRaises(ValueError):
             controller.remote_command("erase", self.record)

@@ -7,6 +7,7 @@ command output and service readiness after this helper succeeds. With
 sends one reconcile call for its binding instead; that call runs nothing.
 """
 import argparse
+import base64
 import json
 from pathlib import Path
 import re
@@ -14,16 +15,27 @@ import shlex
 import subprocess
 import sys
 import time
+import zlib
 
 import fly_reconcile_remote as remote
+
+
+#: The longest exec command this helper sends. On October 5, 2026 the Machines API refused an 18,853-byte command with
+#: PayloadTooLarge, and a 12,805-byte command had worked, so the reviewed source travels compressed and once.
+MAXIMUM_COMMAND_BYTES = 12000
 
 
 def remote_command(mode, record):
     mode = remote.OperationMode(mode).value
     source = Path(remote.__file__).read_text()
-    # Import the exact reviewed source, without executing its file entry point.
-    program = "scope={'__name__':'deployment_operation'}; exec(" + repr(source) + ",scope); scope['main'](" + repr(source) + ")"
-    return shlex.join(["python", "-c", program, mode, record["operation"], record["revision"], record["run_id"]])
+    packed = base64.b64encode(zlib.compress(source.encode("utf-8"), 9)).decode("ascii")
+    # Import the exact reviewed source, without executing its file entry point; the remote side receives the same text.
+    program = ("import base64,zlib; source=zlib.decompress(base64.b64decode(" + repr(packed) + ")).decode('utf-8'); "
+               "scope={'__name__':'deployment_operation'}; exec(source,scope); scope['main'](source)")
+    command = shlex.join(["python", "-c", program, mode, record["operation"], record["revision"], record["run_id"]])
+    if len(command.encode("utf-8")) > MAXIMUM_COMMAND_BYTES:
+        raise ValueError("deployment_command_too_large")
+    return command
 
 
 def invoke(app, machine, mode, record):
