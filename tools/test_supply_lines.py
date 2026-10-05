@@ -1439,6 +1439,14 @@ class PublisherTableLineTest(unittest.TestCase):
         # A refused series' data is never read.
         collection = line.read_sources()["collections"]["world_bank_wdi"]
         self.assertNotIn(collection["data_address"].format(series="GD_WBL_OVL_LAW"), reader.asked)
+        # Known wrong: a download the publisher serves from another of its databases names that database in its
+        # member, which the declared pattern does not match, so the series is refused with the member it found.
+        other = dict(answers)
+        address = collection["data_address"].format(series="SP.DYN.LE00.IN")
+        other[address] = (200, _zip({"API_SP.DYN.LE00.IN_DS16_en_csv_v2_467035.csv": data}))
+        built_other, refused_other, *_rest = self._generate(other, only=("SP.DYN.LE00.IN",))
+        self.assertEqual((built_other, [row["reason"] for row in refused_other]), ([], ["archive_member_missing"]))
+        self.assertIn("API_SP.DYN.LE00.IN_DS16_en_csv_v2_467035.csv", refused_other[0]["detail"])
         decisions = {row["value"]: row["decision"] for row in summary["licence_decisions"]}
         self.assertEqual(decisions["CC BY 3.0 IGO"], "licence_not_on_allowlist")
         # Only the exact mapped value passes: a lookalike is refused, whatever licence it seems to name.

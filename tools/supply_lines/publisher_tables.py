@@ -296,7 +296,11 @@ def archive_member(body: bytes, pattern: str) -> tuple:
     except (zipfile.BadZipFile, ValueError) as error:
         raise TableRefused("source_unreadable", f"not a ZIP archive: {type(error).__name__}") from None
     if len(found) != 1:
-        raise TableRefused("archive_member_missing", f"{len(found)} members match {pattern}")
+        # The names found say why: the World Bank serves a few World Development Indicators series only from
+        # another of its databases (API_SH.STA.ORCF.ZS_DS16_..., Health Nutrition and Population Statistics), whose
+        # bytes the series' own licence evidence does not cover.
+        held = ", ".join(info.filename for info in archive.infolist() if not info.is_dir())
+        raise TableRefused("archive_member_missing", f"{len(found)} members match {pattern}; the archive holds {held}")
     if found[0].file_size > MAXIMUM_MEMBER_BYTES:
         raise TableRefused("table_above_review_bound", f"{found[0].filename}: {found[0].file_size} bytes")
     try:
