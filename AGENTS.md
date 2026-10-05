@@ -292,8 +292,16 @@ registration on September 24, 2026. Closing the provider's own sign-up is still
 worth doing once its authorization is renewed.
 Intelligence is published only after
 the independent review process in the decision table approves it, and a
-producer never approves its own work. Everything else that engineering can
-decide, it decides.
+producer never approves its own work. That was the rule until October 5, 2026,
+when the owner said: "Can you streamline or even completely remove the
+independent review, independent review should be an ongoing processes, not
+something that stops publications." Since that day, material that passes the
+blocking deterministic qualification is published, and the independent review
+continues after publication as an audit that withdraws what it rejects, as the
+decision table's row "Independent review after publication" states. A producer
+still never approves its own work: the audit's reviewer is of a family that did
+not produce the material. Everything else that engineering can decide, it
+decides.
 
 ### How reviewed work reaches `main` without losing any of it
 

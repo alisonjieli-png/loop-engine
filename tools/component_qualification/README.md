@@ -99,6 +99,57 @@ Generated component admission
     rejected samples are recorded and never bundled
 ```
 
+## Admission by qualification, independent review ongoing (October 5, 2026)
+
+The owner, October 5, 2026: "Can you streamline or even completely remove the
+independent review, independent review should be an ongoing processes, not
+something that stops publications." Since then deterministic qualification is
+the blocking step and the independent review runs after publication:
+
+```text
+Generated component admission from October 5, 2026
+├── 1. qualification, unchanged and blocking (licence and provenance, secrets,
+│      safety rules, parse and schema, effects, duplicates, the sandbox where
+│      requested)
+├── 2. admit-qualified (qualified_admission.py, no model call)
+│   ├── held generator versions: a recorded defect rate at or above the
+│   │   tolerance in the decision ledger, or named in the held-versions file
+│   │   the lead controls (line/version or line/*)
+│   ├── left out: a component a reviewer rejected (ledger, by identity or
+│   │   package digest)
+│   └── rows: community tier, approval state "qualified", rule
+│       "deterministic_qualification_independent_review_ongoing", one decision
+│       from the named deterministic participant; never recorded as reviewed
+├── 3. publication by the lead through the guarded release path
+└── 4. the ongoing audit (audit.py), one scheduled run a day
+    ├── each published batch the ledger has not decided, sampled under the plan
+    │   rules above, reviewed by the calibrated reviewer of a family that did
+    │   not write the generators, within a daily ceiling of 60 calls
+    ├── each decision appended to the decision ledger with its rejected members
+    ├── each rejected component: a ready withdrawal request with the exact
+    │   operator command; the lead runs it on production, the job never does
+    └── a generator version whose recorded rate reaches the tolerance is added
+        to the held-versions file, so nothing more of it is admitted
+```
+
+The approval basis is the review row's `approval_state`. The release tools'
+shared reader (`tools/build_host_catalogue_manifest.py`, used by the bundle
+builder) accepts `qualified` only on a community row that names the
+qualification rule, and refuses a qualified row that names the verified tier
+and a reviewed or carried row that names the qualification rule. The served
+approval keeps its shape (tier, approval reference and approved digest), so
+the service reads it without change. `tools/write_reviewed_catalogue.py
+--approval-basis qualification` writes native candidate folders the same way:
+licence allowlist, every native pre-check, every given scan record, and a
+rejection in any given ledger still withholds. The carry tool never carries a
+qualified approval: changed bytes are qualified again.
+
+The canonical files sit beside the decision ledger in
+`/home/username/baltor-library/generated-admission/`:
+`held-generator-versions.json` (`generated_held_generator_versions/v1`) and
+`audit/` (the audit configuration, its runs with their panel ledgers, the
+withdrawal requests and `status.json`).
+
 The default fast route runs static checks and population deduplication.
 `--checks all` additionally requests sandbox and mutation checks. A fast
 record cannot stand in for these extra checks on a later full run. Sampled
@@ -315,6 +366,10 @@ zero-acceptance sample of 55 or 56.
 | `generated_batch_sampled_review/v2` | The seed, exact population digest, samples, planted controls, calibration, verdicts, decisions and admissibility of one review run, and the decision ledger it read and appended to. |
 | `generated_batch_decision_ledger/v1`, `generated_batch_decision_entry/v1` | The decision ledger's header, and one complete batch decision with its plan, frame and deciding review, chained by digest. |
 | `generated_component_admission_report/v1` | What an admission folder holds, by line, form and harness kind. |
+| `generated_qualified_admission_report/v1` | What an admit-qualified folder holds: admitted, left out with reasons, held generators, by line, form and kind. |
+| `generated_held_generator_versions/v1` | The generator versions held from admission, each with its reason, date and who held it. |
+| `generated_audit_configuration/v1`, `generated_audit_status/v1` | The ongoing audit's reviewer, daily ceiling, folders and paths; the last run's calls, decisions, withdrawals, holds and waiting batches. |
+| `catalogue_withdrawal_request/v1` | One rejected published component: the reviewer's reason and the exact operator withdrawal command, not yet run. |
 | `generated_admission_composition/v1` | Counts by component family against the composition targets. |
 
 The vetting dimensions stay separate: `source_identity_checked`,
@@ -343,6 +398,11 @@ PYTHONPATH=src:tools python tools/qualify_generated_components.py admit \
   --recorded-at DATE
 PYTHONPATH=src:tools python tools/qualify_generated_components.py composition \
   --bundle BUNDLE --admitted FOLDER
+PYTHONPATH=src:tools python tools/qualify_generated_components.py admit-qualified \
+  --qualification RUN --store-root STORE --decisions LEDGER \
+  --held-versions /home/username/baltor-library/generated-admission/held-generator-versions.json \
+  --output FOLDER --recorded-at DATE [--line LINE]
+PYTHONPATH=src:tools python tools/qualify_generated_components.py audit --config AUDIT.json
 ```
 
 Without `--authorize-model-calls` the review sends nothing and decides
@@ -391,6 +451,18 @@ PYTHONPATH=src:tools python -m unittest tools.test_component_qualification \
   qualification refuses its package as `binary_file_unverified`: 165 of the
   1,872 data table candidates qualified on October 5, 2026. The excerpt rule
   leaves a declared binary file alone.
+- An admit-qualified component has no model verdict until the audit samples
+  its batch, and an unsampled component never gets one. Its row says so:
+  approval state `qualified`, independent review `ongoing`.
+- On October 5, 2026 the measured adversarial reviewer (Kimi K2.6) rejected 17
+  of 30 sampled JSON schemas and 13 of 30 protocol server configurations while
+  rejecting every planted control. Most reasons applied the native code
+  criteria to configuration-only packages (no verification procedure, effects
+  declared by variable name), one rejected a server whose registry entry
+  itself pins another package version, and a few named real schema defects
+  (tests with no known-wrong instance, a README that calls cut-off references
+  resolved). The audit's reviewer is chosen from those measurements; a strict
+  reviewer can hold a generator version for reasons that are not defects.
 - The decision ledger guards the reviews this tool runs. It is a local file:
   a review given a newly created ledger reads no history, so every run must
   name the canonical ledger, and `admit` must be given the same one. A review
