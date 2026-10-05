@@ -17,8 +17,9 @@ from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from loop_engine.core.task_material_packages import (
-    MaterialPackageError, load_material_package, load_material_packages)
-from loop_engine.core.service_runtime.catalogue_packages import CataloguePackage, CataloguePackageFile
+    MaterialPackageError, load_material_package, load_material_packages, read_material_file)
+from loop_engine.core.service_runtime.catalogue_packages import (
+    PACKAGE_RECORD_TYPE, CataloguePackage, CataloguePackageFile)
 from loop_engine.core.adaptive_practitioner_records import AdaptivePractitionerRequest
 from loop_engine.core.adaptive_practitioner_source import (
     inventory_source_files, read_inventory_source, source_inspection_operation)
@@ -190,10 +191,35 @@ class MaterialIntakeChecks(unittest.TestCase):
                     load_material_package(str(self.stage))
                 self.record = original
                 self.rewrite()
-        self.record["files"][0]["path"] = "../escape"
-        self.rewrite()
-        with self.assertRaises(MaterialPackageError):
-            load_material_package(str(self.stage))
+        # Each receipt below is self-consistent: its body is the package
+        # document of its own files and selected_digest is that body's digest,
+        # so only the placement-path guard can refuse it. (The earlier check
+        # kept a stale digest, which the binding refused even with the guard
+        # removed.) The same receipt with a safe path loads, as a control.
+        outside = self.root / "outside.txt"
+        outside.write_bytes(b"OUTSIDE-SECRET\n")
+
+        def consistent(name, path):
+            row = {"path": path, "digest": sha(outside.read_bytes()), "size_bytes": len(outside.read_bytes()),
+                   "media_type": "text/plain", "role": "skill_reference"}
+            document = json.dumps({"record_type": PACKAGE_RECORD_TYPE, "files": [row]},
+                                  sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+            root = self.root / name
+            (root / "payload/references").mkdir(parents=True)
+            (root / "body").write_bytes(document)
+            (root / "receipt.json").write_text(json.dumps({**self.record, "selected_digest": sha(document),
+                                                           "files": [row]}))
+            return root
+
+        inside = consistent("inside", "references/outside.txt")
+        (inside / "payload/references/outside.txt").write_bytes(outside.read_bytes())
+        material = load_material_package(str(inside))
+        self.assertEqual(read_material_file(material, material.package.files[0]), b"OUTSIDE-SECRET\n")
+        for number, path in enumerate(("../../outside.txt", "references/../../../outside.txt")):
+            with self.subTest(path=path):
+                with self.assertRaises(MaterialPackageError) as refused:
+                    load_material_package(str(consistent(f"escape-{number}", path)))
+                self.assertEqual(str(refused.exception), "material_package_binding_invalid")
 
     def test_duplicate_json_and_bool_size_refuse(self):
         raw = (self.stage / "receipt.json").read_bytes()
