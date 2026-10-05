@@ -911,22 +911,41 @@ def duplicate_findings(components, policy, *, known_digests=None) -> dict:
                                     for component in components), policy, known_digests=known_digests)
 
 
+def comparison_parts(text: str) -> tuple:
+    """What the duplicate pass needs of one distinctive text: the SHA-256 of its normalized form and its
+    five-word shingles as sorted distinct 64-bit hashes (tools/global_component_duplicates.shingle_hashes)."""
+    from loop_engine.core.library_ingestion.duplicates import normalized
+    from tools.global_component_duplicates import shingle_hashes
+    import hashlib
+    return hashlib.sha256(normalized(text).encode()).hexdigest(), shingle_hashes(text)
+
+
 def duplicate_findings_from(subjects, policy, *, known_digests=None) -> dict:
     """Identity to duplicate findings, from (identity, package digest, distinctive text, job key) subjects.
+
+    See duplicate_findings_hashed, which this calls with each text's comparison parts."""
+    return duplicate_findings_hashed(((identity, digest, *comparison_parts(text), key)
+                                      for identity, digest, text, key in subjects), policy,
+                                     known_digests=known_digests)
+
+
+def duplicate_findings_hashed(subjects, policy, *, known_digests=None) -> dict:
+    """Identity to duplicate findings, from (identity, package digest, normalized text digest, shingle hashes,
+    job key) subjects, the text's parts as ``comparison_parts`` makes them.
 
     The first of a group in identity order is kept. Exact: the same package digest, a digest already known
     (the served library, earlier admissions), the same normalized distinctive text, or the same job key.
     Near: five-word shingle Jaccard of the distinctive text at or above the policy threshold, confirmed
-    exactly with prefix filtering (tools/global_component_duplicates.py)."""
-    from loop_engine.core.library_ingestion.duplicates import normalized, shingles
-    from tools.global_component_duplicates import prefix_pairs
-    import hashlib
+    exactly with prefix filtering over the shingles' 64-bit hashes (tools/global_component_duplicates.py,
+    prefix_pairs_hashed, which finds the pairs prefix_pairs finds over the strings). Until October 5, 2026 the
+    pass held every shingle string: a population of 118,106 generated API clients needed about 52 GB, and the
+    out-of-memory killer stopped that qualification run in this pass at 35 GB with no record written."""
+    from tools.global_component_duplicates import prefix_pairs_hashed
     known_digests = dict(known_digests or {})
     ordered = sorted(subjects, key=lambda subject: subject[0])
     findings = {subject[0]: [] for subject in ordered}
     by_package, by_text, by_job, documents = {}, {}, {}, {}
-    for identity, digest, text, key in ordered:
-        text_digest = hashlib.sha256(normalized(text).encode()).hexdigest()
+    for identity, digest, text_digest, tokens, key in ordered:
         if digest in known_digests:
             findings[identity].append(("exact_copy_of_existing", known_digests[digest]))
             continue
@@ -942,11 +961,11 @@ def duplicate_findings_from(subjects, policy, *, known_digests=None) -> dict:
         by_package[digest], by_text[text_digest] = identity, identity
         if key is not None:
             by_job[key] = identity
-        documents[identity] = shingles(text)
+        documents[identity] = tokens
     numerator, denominator = policy["near_duplicate_threshold"].split("/")
     threshold = Fraction(int(numerator), int(denominator))
-    for left, right, intersection, union in prefix_pairs({key: value for key, value in documents.items() if value},
-                                                          threshold):
+    for left, right, intersection, union in prefix_pairs_hashed(
+            {key: value for key, value in documents.items() if len(value)}, threshold):
         first, second = sorted((left, right))
         if not findings[second]:
             findings[second].append(("near_copy", f"{first} at {intersection / union:.3f}"))

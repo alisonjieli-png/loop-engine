@@ -80,7 +80,9 @@ Generated component admission
 │   │       in bubblewrap with no network, hidden home and runtime folders,
 │   │       and CPU, memory, file size, open file and time limits
 │   └── population pass: exact copies, same-job packages (a job key per line,
-│       declared in the policy data) and near copies
+│       declared in the policy data) and near copies; each worker sends the
+│       parent a digest of the component's normalized text and its shingles as
+│       sorted 64-bit hashes, and the parent spools every checked row to disk
 ├── 2. sampled review (one model family that did not write the generators)
 │   ├── decision ledger, read first: a run that may call a model refuses
 │   │   without it, and a batch whose frame it already decided is refused
@@ -426,7 +428,8 @@ PYTHONPATH=src:tools python -m unittest tools.test_component_qualification \
 | Licensed import `StaticChecks`, `package_effects` | Adopted for safety scanning and for instruction and configuration effects; not for README or schema words, which describe a remote API. |
 | Review panel prechecks: safety rules, secret patterns | Adopted unchanged. |
 | Review panel, native criteria and instructions, ledger | Adopted for the sampled review; the pre-check edge is served by the qualification record. The native prompt gained one optional part, a review file's labelled excerpt (`ReviewExcerpt`), which only this route sets, so every other prompt is unchanged. |
-| `tools/global_component_duplicates.py` prefix filtering | Adopted for near copies with exact Jaccard confirmation. |
+| `tools/global_component_duplicates.py` prefix filtering | Adopted for near copies with exact Jaccard confirmation. Since October 5, 2026 over 64-bit shingle hashes (`prefix_pairs_hashed`), which yields the pairs, counts and order `prefix_pairs` yields over the strings: the string sets of the 118,106-component API client line needed about 52 GB, and that run was killed at 35 GB in this pass. |
+| `tools/global_component_duplicate_disk.py` (SQLite, resumable) | Not adopted for qualification: it stores every text and shingle profile on disk and reads candidates back one query at a time; sorted hash arrays in memory are about 3 GB at 118,106 components and need no second store. |
 | ANSI/ASQ Z1.4 and ISO 2859 switching tables | Rejected as tables: they index by lot size classes and inspection levels. The exact hypergeometric and binomial computation gives the same guarantees for any batch size and states them directly. |
 | Dodge and Romig LTPD plans | Adopted as the method: consumer's risk at the tolerance defect rate, producer's risk at the process average. |
 

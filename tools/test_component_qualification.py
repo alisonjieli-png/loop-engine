@@ -703,5 +703,163 @@ class AdmissionTests(unittest.TestCase):
         self.assertNotEqual(sampling.frame_digest(original), sampling.frame_digest(
             [original[0], {**original[1], "record_version": "v2"}]))
 
+
+def _reference_findings(subjects, policy, known_digests=None) -> dict:
+    """The duplicate pass as it ran until October 5, 2026: every shingle string held in a set and prefix_pairs over
+    the strings. The hashed pass that replaced it must give exactly these findings."""
+    import hashlib
+    from fractions import Fraction
+    from loop_engine.core.library_ingestion.duplicates import normalized, shingles
+    from tools.global_component_duplicates import prefix_pairs
+    known = dict(known_digests or {})
+    ordered = sorted(subjects, key=lambda subject: subject[0])
+    findings = {subject[0]: [] for subject in ordered}
+    by_package, by_text, by_job, documents = {}, {}, {}, {}
+    for identity, digest, text, key in ordered:
+        text_digest = hashlib.sha256(normalized(text).encode()).hexdigest()
+        if digest in known:
+            findings[identity].append(("exact_copy_of_existing", known[digest]))
+            continue
+        if digest in by_package:
+            findings[identity].append(("exact_package_copy", by_package[digest]))
+            continue
+        if text_digest in by_text:
+            findings[identity].append(("exact_content_copy", by_text[text_digest]))
+            continue
+        if key is not None and key in by_job:
+            findings[identity].append(("same_job_as", by_job[key]))
+            continue
+        by_package[digest], by_text[text_digest] = identity, identity
+        if key is not None:
+            by_job[key] = identity
+        documents[identity] = shingles(text)
+    numerator, denominator = policy["near_duplicate_threshold"].split("/")
+    for left, right, intersection, union in prefix_pairs({key: value for key, value in documents.items() if value},
+                                                          Fraction(int(numerator), int(denominator))):
+        first, second = sorted((left, right))
+        if not findings[second]:
+            findings[second].append(("near_copy", f"{first} at {intersection / union:.3f}"))
+    return findings
+
+
+def _population(seed: int, count: int = 240):
+    """Subjects with exact package and text copies, shared job keys, near copies at several distances and texts
+    shorter than one shingle, drawn from a small vocabulary so that many pairs are near."""
+    import hashlib
+    import random
+    rng = random.Random(seed)
+    words = [f"w{number}" for number in range(300)]
+    bases = [" ".join(rng.choice(words) for _ in range(rng.choice((0, 3, 40, 400, 1200)))) for _ in range(30)]
+    subjects = []
+    for number in range(count):
+        tokens = rng.choice(bases).split()
+        for _ in range(rng.choice((0, 0, 1, 1, 2, 5, 30))):
+            if tokens:
+                tokens[rng.randrange(len(tokens))] = rng.choice(words)
+        digest = hashlib.sha256(f"package {rng.randrange(count * 2)}".encode()).hexdigest()
+        key = rng.choice((None, None, None, f"job {rng.randrange(60)}"))
+        subjects.append((f"library.supply.fixture.{number:05d}", digest, " ".join(tokens), key))
+    return subjects, {subjects[3][1]: "served.item"}
+
+
+class HashedDuplicatePassTests(unittest.TestCase):
+    """The duplicate pass compares 64-bit shingle hashes (October 5, 2026), so that a line of 118,106 API clients
+    fits in memory; its findings must be the ones the string pass gave."""
+
+    def setUp(self):
+        self.policy = _context().policy
+
+    def test_hashed_prefix_pairs_yield_the_string_pairs_in_order(self):
+        import random
+        from fractions import Fraction
+        from loop_engine.core.library_ingestion.duplicates import shingles
+        from tools.global_component_duplicates import prefix_pairs, prefix_pairs_hashed, shingle_hashes
+        for seed in (1, 2, 3):
+            subjects, _known = _population(seed)
+            texts = {identity: text for identity, _digest, text, _key in subjects}
+            strings = {key: shingles(text) for key, text in texts.items()}
+            hashed = {key: shingle_hashes(text) for key, text in texts.items()}
+            self.assertEqual({key: len(value) for key, value in strings.items()},
+                             {key: len(value) for key, value in hashed.items()})
+            for threshold in (Fraction(49, 50), Fraction(17, 20), Fraction(3, 5), Fraction(1, 2), Fraction(1)):
+                expected = list(prefix_pairs({key: value for key, value in strings.items() if value}, threshold))
+                found = list(prefix_pairs_hashed(hashed, threshold))
+                self.assertEqual(found, expected, f"seed {seed} threshold {threshold}")
+                if threshold <= Fraction(17, 20):
+                    self.assertTrue(expected, "the population has near pairs at this threshold")
+        rng = random.Random(9)
+        for _ in range(200):
+            import numpy
+            left = numpy.unique(numpy.array(rng.sample(range(1000), rng.randrange(0, 60)), dtype=numpy.uint64))
+            right = numpy.unique(numpy.array(rng.sample(range(1000), rng.randrange(0, 60)), dtype=numpy.uint64))
+            from tools.global_component_duplicates import _sorted_intersection
+            self.assertEqual(_sorted_intersection(left, right), len(set(left.tolist()) & set(right.tolist())))
+
+    def test_findings_equal_the_string_pass_at_every_threshold(self):
+        for seed in (4, 5):
+            subjects, known = _population(seed)
+            for threshold in ("49/50", "17/20", "3/5", "1/2"):
+                policy = dict(self.policy, near_duplicate_threshold=threshold)
+                expected = _reference_findings(subjects, policy, known)
+                self.assertEqual(checks.duplicate_findings_from(subjects, policy, known_digests=known), expected)
+                codes = {code for rows in expected.values() for code, _detail in rows}
+                self.assertTrue({"exact_package_copy", "exact_content_copy", "same_job_as",
+                                 "exact_copy_of_existing"} <= codes, codes)
+                if threshold != "49/50":
+                    self.assertIn("near_copy", codes)
+
+    def test_the_self_test_duplicate_controls_run_through_the_hashed_pass(self):
+        fixture = controls.code_fixture(REVISION)
+        rows = controls._duplicate_controls(fixture, _context())
+        self.assertTrue(all(row["refused"] for row in rows), rows)
+        # Known wrong: a near pass that finds nothing lets the near-copy control through, so the self-test that
+        # runs before every qualification would stop the run.
+        with mock.patch("tools.global_component_duplicates.prefix_pairs_hashed", lambda documents, threshold: iter(())):
+            broken = {row["control_id"]: row["refused"] for row in controls._duplicate_controls(fixture, _context())}
+        self.assertFalse(broken["near_copy_one_word_changed"])
+        self.assertTrue(broken["exact_copy_under_new_identity"])
+
+    def test_a_run_spools_its_rows_and_finds_what_the_string_pass_finds(self):
+        from tools.component_qualification.components import GeneratedComponent
+        fixture = controls.code_fixture(REVISION)
+        copy = GeneratedComponent(fixture.identity[:-16] + "f" * 16, fixture.record_version, fixture.candidate,
+                                  fixture.package, fixture.payloads)
+        long_readme = "".join(f"Row {number} of the usage notes explains lookup case {number} for language code "
+                              f"number {number} and its greeting word.\n" for number in range(60))
+        near_base = controls._edit(fixture, "README.md", lambda text: text + long_readme)
+        near = controls._edit(near_base, "data/greetings.json", lambda text: text.replace("bonjour", "salut"))
+        components = {component.identity: component for component in
+                      (fixture, copy, near_base, near, controls.configuration_fixture(REVISION),
+                       controls.api_fixture(REVISION))}
+        rows = [{"record_id": identity, "record_version": component.record_version,
+                 "payload": dict(component.candidate)} for identity, component in components.items()]
+        policy = self.policy
+        expected = _reference_findings([(identity, component.package.package_digest,
+                                         checks.distinctive_text(component, policy), checks.job_key(component, policy))
+                                        for identity, component in components.items()], policy)
+        self.assertTrue(any(expected.values()))
+        fake_self_test = {"sha256": "0" * 64, "known_wrong": [], "known_good": []}
+        with tempfile.TemporaryDirectory() as directory, \
+                mock.patch.object(qualify, "component_from_row", lambda row, bodies: components[row["record_id"]]), \
+                mock.patch.object(qualify, "body_store", lambda root: None), \
+                mock.patch.object(qualify, "self_test", lambda context, revision: fake_self_test):
+            output = Path(directory) / "run" / "qualification.jsonl"
+            summary = qualify.qualify_rows(rows, repository=ROOT, store_root=Path(directory),
+                                           sandbox_settings=SANDBOX, work_root=Path(directory) / "work", workers=2,
+                                           known_digests={}, output=output, check_ids=("manifest",))
+            records = [json.loads(line) for line in output.read_text().splitlines()]
+            self.assertEqual(sorted(path.name for path in output.parent.iterdir()), ["qualification.jsonl"])
+        self.assertEqual([record["identity"] for record in records], sorted(components))
+        for record in records:
+            duplicate = next(check for check in record["checks"] if check["check_id"] == "duplicates")
+            self.assertEqual([(finding["code"], finding["detail"]) for finding in duplicate["findings"]],
+                             [(code, detail[:checks.DETAIL_LIMIT]) for code, detail in expected[record["identity"]]])
+            self.assertEqual([check["check_id"] for check in record["checks"]], ["manifest", "duplicates"])
+        self.assertEqual((summary["components"], summary["checked"], summary["unreadable"]), (6, 6, 0))
+        self.assertEqual(summary["qualified"] + summary["refused"], 6)
+        refused_as_copies = [record["identity"] for record in records
+                             if any(reason.startswith("duplicates:") for reason in record["reasons"])]
+        self.assertGreaterEqual(len(refused_as_copies), 2, refused_as_copies)
+
 if __name__ == "__main__":
     unittest.main()

@@ -64,6 +64,86 @@ def prefix_pairs(documents, threshold: Fraction):
             postings[token].append(key)
 
 
+#: Bytes of one shingle hash: 64 bits. A population of N distinct shingles holds a colliding pair with probability
+#: about N * N / 2 ** 65, under one in three thousand at 10 ** 8 distinct shingles, and a collision moves one
+#: pair's intersection by one shingle out of thousands.
+SHINGLE_HASH_BYTES = 8
+
+
+def shingle_hashes(text: str):
+    """The five-word shingles of a text (the same strings ``shingles`` makes) as sorted distinct 64-bit hashes.
+
+    A shingle string costs about 130 bytes in a Python set and its hash 8 bytes in an array, so a population of
+    118,106 generated API clients (3,307 shingles each on average) needs about 3.1 GB instead of 52 GB."""
+    import numpy
+    values = [int.from_bytes(hashlib.blake2b(token.encode('utf-8'), digest_size=SHINGLE_HASH_BYTES).digest(),
+                             'little') for token in shingles(text)]
+    return numpy.unique(numpy.array(values, dtype=numpy.uint64))
+
+
+def _sorted_intersection(left, right) -> int:
+    """How many values two sorted arrays of distinct values share."""
+    import numpy
+    if len(left) > len(right):
+        left, right = right, left
+    if not len(left):
+        return 0
+    positions = numpy.searchsorted(right, left)
+    positions[positions == len(right)] = len(right) - 1
+    return int(numpy.count_nonzero(right[positions] == left))
+
+
+def prefix_pairs_hashed(documents, threshold: Fraction):
+    """Yield every above-threshold pair of nonempty shingle-hash arrays, exactly as ``prefix_pairs`` does.
+
+    ``documents`` maps a key to a sorted array of distinct 64-bit shingle hashes (``shingle_hashes``). The pairs,
+    their counts and their order are those ``prefix_pairs`` yields for the shingle strings the hashes stand for
+    (barring a hash collision): documents are taken in (size, key) order and each one's candidates in key order,
+    and prefix filtering finds every pair at or above the threshold under any one global token order (the
+    smallest shared token lies in both prefixes), so ordering tokens by (frequency, hash) instead of (frequency,
+    string) changes which candidates are confirmed, never which pairs are found. Frequencies come from one sort
+    of every document's hashes, the postings hold only prefix tokens, and nothing holds a shingle string.
+    """
+    import numpy
+    if not isinstance(threshold, Fraction) or not 0 < threshold <= 1:
+        raise ValueError('explicit_fraction_threshold_required')
+    keys = [key for key, values in documents.items() if len(values)]
+    if not keys:
+        return
+    stacked = numpy.concatenate([documents[key] for key in keys])
+    stacked.sort()
+    first = numpy.empty(stacked.size, dtype=bool)
+    first[0] = True
+    numpy.not_equal(stacked[1:], stacked[:-1], out=first[1:])
+    starts = numpy.flatnonzero(first)
+    del first
+    vocabulary = stacked[starts]
+    counts = numpy.diff(numpy.append(starts, stacked.size))
+    del stacked, starts
+    order = sorted(keys, key=lambda key: (len(documents[key]), key))
+    postings = {}
+    numerator, denominator = threshold.numerator, threshold.denominator
+    for key in order:
+        own = documents[key]
+        size = len(own)
+        minimum = (size * numerator + denominator - 1) // denominator
+        prefix_length = size - minimum + 1
+        frequency = counts[numpy.searchsorted(vocabulary, own)]
+        prefix = own[numpy.lexsort((own, frequency))[:prefix_length]].tolist()
+        candidates = set()
+        for token in prefix:
+            candidates.update(other for other in postings.get(token, ()) if len(documents[other]) >= minimum)
+        for other in sorted(candidates):
+            second = documents[other]
+            intersection = _sorted_intersection(own, second)
+            union = size + len(second) - intersection
+            if intersection * denominator >= union * numerator:
+                left, right = sorted((key, other))
+                yield left, right, intersection, union
+        for token in prefix:
+            postings.setdefault(token, []).append(key)
+
+
 def write_json(path, value):
     with Path(path).open('x') as stream:
         json.dump(value, stream, indent=2, ensure_ascii=False)

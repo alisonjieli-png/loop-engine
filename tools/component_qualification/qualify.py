@@ -17,6 +17,7 @@ from __future__ import annotations
 
 from collections import Counter
 from datetime import datetime, timezone
+import gc
 import hashlib
 import json
 import multiprocessing
@@ -117,8 +118,7 @@ def _check_one(row: dict) -> dict:
                 "generator": component.generator,
                 "checks": [row for row in earlier["checks"]
                            if row["check_id"] in _WORKER["check_ids"] and row["check_id"] != "duplicates"],
-                "distinctive": checks.distinctive_text(component, context.policy),
-                "job_key": checks.job_key(component, context.policy), "reused_from": earlier["qualified_at"],
+                **_comparison(component, context.policy), "reused_from": earlier["qualified_at"],
                 "seconds": round(time.monotonic() - started, 3)}
     results = []
     selected = _WORKER.get("check_ids") or FAST_CHECKS
@@ -136,15 +136,27 @@ def _check_one(row: dict) -> dict:
             "package_digest": component.package.package_digest, "batch": component.batch, "line": component.line,
             "form": component.form, "kind": component.kind, "licence_expression": component.licence_expression,
             "declared_effects": list(component.candidate.get("declared_effects", [])),
-            "generator": component.generator, "checks": results,
-            "distinctive": checks.distinctive_text(component, context.policy),
-            "job_key": checks.job_key(component, context.policy),
+            "generator": component.generator, "checks": results, **_comparison(component, context.policy),
             "seconds": round(time.monotonic() - started, 3)}
 
 
-def _duplicates(rows, policy, known_digests) -> dict:
-    return checks.duplicate_findings_from(((row["identity"], row["package_digest"], row["distinctive"],
-                                            row["job_key"]) for row in rows), policy, known_digests=known_digests)
+def _comparison(component, policy) -> dict:
+    """What the population's duplicate pass reads of one component, made in the worker: the digest of its
+    normalized distinctive text, its shingle hashes as bytes and its job key. The text itself never reaches the
+    parent, which held every one until October 5, 2026 (about 38 KB each for a generated API client)."""
+    text_digest, tokens = checks.comparison_parts(checks.distinctive_text(component, policy))
+    return {"text_digest": text_digest, "tokens": tokens.tobytes(), "job_key": checks.job_key(component, policy)}
+
+
+def _subject(row: dict) -> tuple:
+    """The duplicate pass's subject of one checked row, its shingle hashes read back from their bytes."""
+    import numpy
+    return (row["identity"], row["package_digest"], row["text_digest"],
+            numpy.frombuffer(row["tokens"], dtype=numpy.uint64), row["job_key"])
+
+
+def _duplicates(subjects, policy, known_digests) -> dict:
+    return checks.duplicate_findings_hashed(subjects, policy, known_digests=known_digests)
 
 
 def vetting(check_rows: list, policy: dict, line: str) -> dict:
@@ -215,23 +227,88 @@ def qualify_rows(rows, *, repository: Path, store_root: Path, sandbox_settings, 
     earlier = load_reuse(reuse_paths, revision, environment_findings) if not uncommitted else {}
     reuse = {row["record_id"]: earlier[row["record_id"]] for row in rows
              if reusable(earlier.get(row["record_id"]), row, revision, check_ids=check_ids)}
-    checked, unreadable = [], []
-    pool_started = time.monotonic()
-    with multiprocessing.get_context("fork").Pool(
-            processes=max(1, workers), initializer=_init_worker,
-            initargs=(str(repository), str(store_root), sandbox_settings, str(work_root), reuse, check_ids)) as pool:
-        for number, row in enumerate(pool.imap_unordered(_check_one, rows, chunksize=4), 1):
-            (unreadable if "unreadable" in row else checked).append(row)
-            if progress and number % 500 == 0:
-                progress(number, len(rows), time.monotonic() - pool_started)
-    pool_seconds = time.monotonic() - pool_started
-    duplicates = _duplicates(checked, context.policy, known_digests)
-    stamp = _now()
-    counts, reasons, environment_refused = Counter(), Counter(), 0
     output = Path(output)
     output.parent.mkdir(parents=True, exist_ok=True)
+    # Every checked row goes to a spool file beside the output as it arrives, and the parent keeps only each row's
+    # place there and its duplicate subject (digests, job key, shingle hashes). Until October 5, 2026 the parent held
+    # every checked row with its distinctive text and then every shingle string: the 118,106-component API client
+    # line reached 35 GB in the duplicate pass and was killed with nothing written.
+    spool_path = output.with_name(f".{output.name}.checked-{os.getpid()}")
+    places, subjects, unreadable, reused = {}, [], [], 0
+    # A forked worker that collects garbage writes to every inherited object's header and so copies the pages that
+    # hold the parent's rows; frozen objects are left alone (gc.freeze, Python 3.7 and later).
+    gc.collect()
+    gc.freeze()
+    pool_started = time.monotonic()
+    try:
+        with open(spool_path, "w+b") as spool:
+            try:
+                with multiprocessing.get_context("fork").Pool(
+                        processes=max(1, workers), initializer=_init_worker,
+                        initargs=(str(repository), str(store_root), sandbox_settings, str(work_root), reuse,
+                                  check_ids)) as pool:
+                    for number, row in enumerate(pool.imap_unordered(_check_one, rows, chunksize=4), 1):
+                        if "unreadable" in row:
+                            unreadable.append(row)
+                        else:
+                            subjects.append(_subject(row))
+                            reused += "reused_from" in row
+                            data = (json.dumps({key: value for key, value in row.items()
+                                                if key not in ("tokens", "text_digest")}) + "\n").encode("utf-8")
+                            places[row["identity"]] = (spool.tell(), len(data))
+                            spool.write(data)
+                        if progress and number % 500 == 0:
+                            progress(number, len(rows), time.monotonic() - pool_started)
+            finally:
+                gc.unfreeze()
+            pool_seconds = time.monotonic() - pool_started
+            duplicates = _duplicates(subjects, context.policy, known_digests)
+            checked = len(subjects)
+            subjects.clear()
+            records = _spooled(spool, places)
+            summary_rows = _write_records(records, output, duplicates, context, revision, uncommitted, test_record,
+                                          environment_findings)
+    finally:
+        spool_path.unlink(missing_ok=True)
+    counts, reasons, environment_refused, stamp = summary_rows
+    total_seconds = time.monotonic() - started
+    summary = {
+        "record_type": RUN_RECORD, "started_at": stamp, "qualifier_revision": revision,
+        "qualifier_uncommitted_changes": uncommitted,
+        "self_test": {"sha256": test_record["sha256"], "known_wrong_controls": len(test_record["known_wrong"]),
+                      "known_good_rows": len(test_record["known_good"]), "seconds": self_test_seconds},
+        "sandbox": {"engine": sandbox_settings.engine, "limits": sandbox_settings.limits.to_dict()},
+        "workers": workers, "components": len(rows), "checked": checked, "unreadable": len(unreadable),
+        "reused": reused,
+        "refused_for_environment_reasons": environment_refused,
+        "unreadable_reasons": dict(Counter(row["unreadable"] for row in unreadable)),
+        "qualified": sum(value for key, value in counts.items() if key[3] == QUALIFIED),
+        "refused": sum(value for key, value in counts.items() if key[3] == REFUSED),
+        "by_batch": _nested(counts), "refusal_reasons": {f"{line} {reason}": count for (line, reason), count
+                                                          in reasons.most_common()},
+        "seconds": {"total": round(total_seconds, 1), "parallel_pass": round(pool_seconds, 1)},
+        "throughput": {"components_per_second": round(len(rows) / pool_seconds, 2) if pool_seconds else None,
+                       "components_per_day_at_this_rate": int(len(rows) / pool_seconds * 86400) if pool_seconds
+                       else None},
+        "records": str(output), "records_sha256": _file_sha256(output)}
+    return summary
+
+
+def _spooled(spool, places: dict):
+    """The spooled checked rows, read back one at a time in identity order."""
+    for identity in sorted(places):
+        offset, length = places[identity]
+        spool.seek(offset)
+        yield json.loads(spool.read(length))
+
+
+def _write_records(rows, output: Path, duplicates: dict, context, revision: str, uncommitted: bool, test_record: dict,
+                   environment_findings) -> tuple:
+    """Write one component_qualification/v1 record per checked row, in the order given; return the counts."""
+    stamp = _now()
+    counts, reasons, environment_refused = Counter(), Counter(), 0
     with open(output, "w", encoding="utf-8") as stream:
-        for row in sorted(checked, key=lambda item: item["identity"]):
+        for row in rows:
             found = duplicates.get(row["identity"], [])
             duplicate = checks.CheckResult("duplicates", checks.VERSION, "duplicates", checks.PUBLICATION,
                                            checks.REFUSED if found else checks.PASSED, tuple(found)).to_dict()
@@ -255,27 +332,15 @@ def qualify_rows(rows, *, repository: Path, store_root: Path, sandbox_settings, 
             environment_refused += bool(environment_codes({"checks": check_rows}, environment_findings))
             for reason in sorted(set(refused)):
                 reasons[(row["line"], reason)] += 1
-    total_seconds = time.monotonic() - started
-    summary = {
-        "record_type": RUN_RECORD, "started_at": stamp, "qualifier_revision": revision,
-        "qualifier_uncommitted_changes": uncommitted,
-        "self_test": {"sha256": test_record["sha256"], "known_wrong_controls": len(test_record["known_wrong"]),
-                      "known_good_rows": len(test_record["known_good"]), "seconds": self_test_seconds},
-        "sandbox": {"engine": sandbox_settings.engine, "limits": sandbox_settings.limits.to_dict()},
-        "workers": workers, "components": len(rows), "checked": len(checked), "unreadable": len(unreadable),
-        "reused": sum(1 for row in checked if "reused_from" in row),
-        "refused_for_environment_reasons": environment_refused,
-        "unreadable_reasons": dict(Counter(row["unreadable"] for row in unreadable)),
-        "qualified": sum(value for key, value in counts.items() if key[3] == QUALIFIED),
-        "refused": sum(value for key, value in counts.items() if key[3] == REFUSED),
-        "by_batch": _nested(counts), "refusal_reasons": {f"{line} {reason}": count for (line, reason), count
-                                                          in reasons.most_common()},
-        "seconds": {"total": round(total_seconds, 1), "parallel_pass": round(pool_seconds, 1)},
-        "throughput": {"components_per_second": round(len(rows) / pool_seconds, 2) if pool_seconds else None,
-                       "components_per_day_at_this_rate": int(len(rows) / pool_seconds * 86400) if pool_seconds
-                       else None},
-        "records": str(output), "records_sha256": hashlib.sha256(output.read_bytes()).hexdigest()}
-    return summary
+    return counts, reasons, environment_refused, stamp
+
+
+def _file_sha256(path) -> str:
+    digest = hashlib.sha256()
+    with open(path, "rb") as stream:
+        for chunk in iter(lambda: stream.read(1 << 20), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def _nested(counts: Counter) -> dict:
