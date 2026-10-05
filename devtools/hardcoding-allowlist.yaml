@@ -90,6 +90,84 @@ entries:
   rationale: "Reviewed October 4 for release62: exact JSON Schema wire keyword or type in the schema instance generator, not a Baltor runtime state or taxonomy. Preserve the standard spelling at this parser owner. Local schema-generation tests retain positive and known-wrong values; this finding-specific exception does not admit another token."
   created_on: '2026-10-04'
   expires_on: '2027-01-04'
+- finding_id: hardcoding.1aac86fe4b59b90e83e0e355
+  owner: "loop_engine.core.ontology_change.rdf_terms"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5: the W3C-published namespace IRI of the OWL vocabulary, a fixed identifier the RDF and OWL specifications define. The ontology change planner compares terms against it exactly and never dereferences it; it is no provider, endpoint or network address. The trace checker keeps its own copy on purpose, sharing no code with the engine it checks."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.4a942306822e89e58910d967
+  owner: "loop_engine.core.ontology_change.rdf_terms"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5: the W3C-published namespace IRI of the RDF vocabulary, a fixed identifier the RDF and OWL specifications define. The ontology change planner compares terms against it exactly and never dereferences it; it is no provider, endpoint or network address. The trace checker keeps its own copy on purpose, sharing no code with the engine it checks."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.b519fbc0ac973ccfde992727
+  owner: "loop_engine.core.ontology_change.rdf_terms"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5: the W3C-published namespace IRI of the RDF Schema vocabulary, a fixed identifier the RDF and OWL specifications define. The ontology change planner compares terms against it exactly and never dereferences it; it is no provider, endpoint or network address. The trace checker keeps its own copy on purpose, sharing no code with the engine it checks."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.ca1737c840f388ab53ec9354
+  owner: "loop_engine.core.ontology_change.rdf_terms"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5: the W3C-published namespace IRI of the XML Schema datatypes vocabulary, a fixed identifier the RDF and OWL specifications define. The ontology change planner compares terms against it exactly and never dereferences it; it is no provider, endpoint or network address. The trace checker keeps its own copy on purpose, sharing no code with the engine it checks."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.0a0783c7fcc86d9dc8ad5fe1
+  owner: "loop_engine.core.ontology_change.trace_checker"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5: the W3C-published namespace IRI of the OWL vocabulary, a fixed identifier the RDF and OWL specifications define. The ontology change planner compares terms against it exactly and never dereferences it; it is no provider, endpoint or network address. The trace checker keeps its own copy on purpose, sharing no code with the engine it checks."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.53edbd22f306ac188fe924ad
+  owner: "loop_engine.core.ontology_change.trace_checker"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5: the W3C-published namespace IRI of the RDF Schema vocabulary, a fixed identifier the RDF and OWL specifications define. The ontology change planner compares terms against it exactly and never dereferences it; it is no provider, endpoint or network address. The trace checker keeps its own copy on purpose, sharing no code with the engine it checks."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.6a9360d56a300cc0d2d512d8
+  owner: "loop_engine.core.ontology_change.trace_checker"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5: the W3C-published namespace IRI of the RDF vocabulary, a fixed identifier the RDF and OWL specifications define. The ontology change planner compares terms against it exactly and never dereferences it; it is no provider, endpoint or network address. The trace checker keeps its own copy on purpose, sharing no code with the engine it checks."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.2dded7c85e2f2400160e52cb
+  owner: "loop_engine.core.ontology_change.conformance"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5: the example.org namespace of the slot's original conformance fixtures; example.org is reserved for documentation by RFC 2606 and is never dereferenced."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.039b202ae6571afd2c0f92de
+  owner: "loop_engine.core.ontology_change.component:plan_change"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 5: result_invalid is a declared failure code of the ontology_change_planning slot's typed result contract in engine_slots.yaml, returned when an engine's result fails the contract; compared exactly, never runtime state."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.8f40ba88f7230f560ca2dbb7
+  owner: "loop_engine.core.ontology_change.component:plan_change"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 5: limit_exceeded is a declared failure code of the ontology_change_planning slot's typed result contract in engine_slots.yaml, returned when an ontology exceeds the closure bound; compared exactly, never runtime state."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.c22690100d167c0b3703b99c
+  owner: "loop_engine.core.ontology_change.rdf_terms:_TurtleReader.object"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 5: the full stop that ends a Turtle statement in the W3C Turtle grammar, read by the parser as syntax."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.18e0339d56718dc0f78f497e
+  owner: "loop_engine.core.ontology_change.open_ontologies_engine:sandboxed_run"
+  classification: DEPLOYMENT_CONFIGURATION
+  rationale: "Reviewed October 5: the minimal PATH given to the pinned Open Ontologies binary inside its bubblewrap sandbox, so the adapter resolves only system programs; it configures the sandboxed child process, not Baltor's service or any deployment."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.4a96e2239c4485720da70784
+  owner: "tools.supply_lines.function_extracts:_tree_effects"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 5: the keyword name of the mode parameter of Python's open(), read from an extracted function's syntax tree to decide whether the call writes a file; Python's own API vocabulary."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
 - finding_id: hardcoding.b50ca537fc38a31255b3333f
   owner: "tools.supply_lines.openapi_sources.json:specifications[263].credential_variable"
   classification: SECRET_OR_CREDENTIAL_REFERENCE
