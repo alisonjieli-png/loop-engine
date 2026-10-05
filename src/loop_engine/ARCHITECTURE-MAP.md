@@ -15,6 +15,8 @@ ARCHITECTURE MAP: 9 top-level package groups
       __init__, records, host_records, selection_records, decision_records, records_checks, selection_records_checks, slots, slot_index, slot_checks
     core.library_ingestion/  (47 modules)
       __init__, candidates, connection_rendering, duplicates, effects, engines, facet_tag_checks, facet_tags, fetch_cache, format_builtin, format_connection, format_json_schema, format_skills_ref, github_reader, https_transport, licence_checks, licences, near_duplicate_builtin, near_duplicate_datasketch, optional_engine_checks, outline_deterministic, outline_model, package_resolver, pipeline, pipeline_checks, processes, provenance, provenance_checks, quarantine, record_rules, registry_sync, render_checks, rendering_types, request_log, scan_builtin, scan_checks, scan_skillspector, selection, skill_rendering, source_checks, source_declarations, source_github, source_mcp_registry, staging_rows, step_function_checks, step_functions, topics
+    core.ontology_change/  (10 modules)
+      __init__, component, conformance, contract, engines, native_engine, open_ontologies_engine, rdf_terms, store, trace_checker
     core.practitioner_runtime/  (4 modules)
       __init__, capabilities, observations, provisioning
     core.service_runtime/  (97 modules)
