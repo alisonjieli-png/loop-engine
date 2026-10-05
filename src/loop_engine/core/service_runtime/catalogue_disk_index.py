@@ -456,6 +456,19 @@ class DiskIndex:
                 yield identity
             last = rows[-1][0]
 
+    def iter_records(self, page=512):
+        """`(identity, (position, item version, stored item record text))` of every entry in position order, read
+        `page` rows at a time, for a walk over the whole index without one query per identity."""
+        connection, last = self.connection(), -1
+        while True:
+            rows = connection.execute("SELECT position, identity, item_version, record FROM entries "
+                                      "WHERE position > ? ORDER BY position LIMIT ?", (last, page)).fetchall()
+            if not rows:
+                return
+            for position, identity, version, record in rows:
+                yield identity, (position, version, record)
+            last = rows[-1][0]
+
     def file_refs(self, digests):
         """digest -> (size, references) for the digests this index's items name."""
         wanted = list(dict.fromkeys(digests))

@@ -21,6 +21,7 @@ the returned file. Existing package API semantics are unchanged.
 """
 from __future__ import annotations
 
+from collections.abc import Mapping
 import re
 from typing import Literal, TypedDict
 
@@ -135,9 +136,11 @@ def _filters(query, goal, media_type, initiative, package, page, page_size):
 
 
 def _inputs(view, snapshot):
+    # A view's parts are dictionaries in memory or read-only mappings over a disk index (catalogue_disk_view);
+    # either answers the passive lookups below without a resolver, body or store call.
     if (not isinstance(view, CatalogueView) or not isinstance(view.catalogue, HarnessIntelligenceCatalogue)
-            or not isinstance(view.catalogue.items, dict) or not isinstance(view.packages, dict)
-            or not isinstance(view.item_versions, dict) or not isinstance(view.withdrawn, (set, frozenset))
+            or not isinstance(view.catalogue.items, Mapping) or not isinstance(view.packages, Mapping)
+            or not isinstance(view.item_versions, Mapping) or not isinstance(view.withdrawn, (set, frozenset))
             or not isinstance(snapshot, PublicGoodSnapshot) or not isinstance(snapshot.grants, tuple)
             or not isinstance(snapshot.limits, PublicGoodLimits) or not isinstance(snapshot.version, str)
             or any(not isinstance(grant, PublicGoodGrant) for grant in snapshot.grants)

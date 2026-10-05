@@ -84,7 +84,9 @@ def library_rows(view) -> "list[LibraryRow]":
     """Every approved item the view serves, in identity order, with its tier from the approval itself."""
     rows = []
     withdrawn = set(getattr(view, "withdrawn", ()) or ())
-    for identity, binding in sorted(view.approved_bindings().items()):
+    # Rows are ordered at the end rather than the bindings first, so a view that reads its items from disk in pages
+    # answers the lookups below about the item it just read; the order is the same, identities being unique.
+    for identity, binding in view.approved_bindings().items():
         item = view.catalogue.items.get(identity)
         if item is None or (identity, item.digest) in withdrawn:
             continue
@@ -98,6 +100,7 @@ def library_rows(view) -> "list[LibraryRow]":
         kind = harness_kind_of(item.kind, tuple(getattr(item, "styles", ()) or ()), (), declared)
         rows.append(LibraryRow(identity, item.purpose, item.kind, kind, item.license_name or "", int(item.size_bytes),
                                decision.library_tier, decision.approval_ref or ""))
+    rows.sort(key=lambda row: row.identity)
     return rows
 
 

@@ -493,7 +493,12 @@ class ProvisioningServer:
 
     def _offered(self, tenant: ProvisioningTenant, request: ProvisioningRequest):
         offered, withheld = [], []
-        for item in tuple(self.catalogue.items.values()):
+        items = self.catalogue.items
+        # A dictionary may change while it is walked, so it is copied first. A read-only mapping that says so (a
+        # disk view's, which reads its items in pages) is walked as it is, so each item is checked while it is
+        # still the one just read instead of after the whole library was read.
+        walk = items.values() if getattr(items, "walks_without_copy", False) is True else tuple(items.values())
+        for item in walk:
             approval = self._approved(tenant, item)
             if approval is None:
                 continue

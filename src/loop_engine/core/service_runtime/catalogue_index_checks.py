@@ -16,6 +16,11 @@ Kit
 ├── service path   the same served hits, summary, file population and served count through the provisioning
 │                  authority, for a version 2 release, an internal-attribute filter refused on both
 ├── withdrawal     an item withdrawn after the index was built is never returned and never read
+├── requests       manifest, read, list, discover, the library rows and the Public Good file projection answer
+│                  as on the in-memory view; a manifest or read parses only the record it names and a walk over
+│                  the library parses each record once a walk (controls: every grant materialized, the library copied)
+├── coordination   one build at a time under an index root, a lost index built again, and the indexes of releases
+│                  no longer kept removed while the active release's, and during a grace its predecessor's, stay
 ├── commands       catalogue-formats, publish-catalogue of a version 2 bundle and index-catalogue through the
 │                  service entry point, and a host start on the disk view
 ├── overlay        a later release served as base + delta never returns a removed or replaced record, and its
@@ -246,6 +251,145 @@ def _service_path_checks(check, root):
         check("removed_withdrawal_rule_of_the_disk_view_is_detected", "skill_012" in leaking.catalogue.items)
 
 
+def _request_path_checks(check, root):
+    """Manifest, read, list, discover, the library rows and the Public Good file projection on the disk view.
+
+    Each answers as the in-memory view does. A manifest or read parses only the record it names, and a walk over
+    the whole library parses each record once; the known-wrong controls materialize every grant for a manifest and
+    copy the library before checking it, and the kit must see both."""
+    from . import catalogue_disk_view
+    from . import provisioning as provisioning_module
+    from .catalogue_disk_view import DiskCatalogueView
+    from .catalogue_segment_checks import SegmentFixture
+    from .catalogue_serving import CatalogueSourceSettings, store_view
+    from .library_page import library_rows
+    from .provisioning import DurableProvisioningBinding
+    from .public_good_files import collection
+    case = SegmentFixture(root)
+    base = case.base
+    names = [f"skill_{index:03d}" for index in range(120)]
+    case.publish(case.lines(names, text=lambda name: f"Skill {name} about "
+                                                       + " ".join(WORDS[(len(name) * k + int(name[-3:])) % len(WORDS)]
+                                                                  for k in (1, 3, 7))))
+    (Path(root) / "index").mkdir()
+    disk_settings = CatalogueSourceSettings("store", str(Path(root) / "bodies"),
+                                            record_type="service_catalogue_source/v2",
+                                            search_engine="sqlite_disk_index", index_root=str(Path(root) / "index"))
+
+    def build(settings):
+        return store_view(base.config, settings, license_policy=base.license_policy, family_policy=base.family_policy)
+
+    def binding_of(view):
+        return DurableProvisioningBinding(base.runtime, view.catalogue, view.qualification_resolver,
+                                          view.body_reader, view=view)
+
+    def plain(answer):
+        return {key: value for key, value in answer.items() if not key.startswith("meter")}
+
+    def answers(view, label):
+        binding = binding_of(view)
+        return {"manifest": plain(binding.invoke(base.key.key, "manifest", identity="skill_042")),
+                "read": plain(binding.invoke(base.key.key, "read", identity="skill_042",
+                                             request_id=f"index-kit-read-{label}")),
+                "list": plain(binding.invoke(base.key.key, "list")),
+                "discover": plain(binding.invoke(base.key.key, "discover"))}
+    memory, disk = build(base.settings), build(disk_settings)
+    check("the_disk_view_answers_manifest_read_list_and_discover_as_the_in_memory_view",
+          isinstance(disk, DiskCatalogueView) and answers(memory, "memory") == answers(disk, "disk")
+          and len(answers(disk, "again")["list"]["items"]) == len(names))
+    check("the_disk_view_gives_the_library_page_the_same_rows", library_rows(memory) == library_rows(disk)
+          and len(library_rows(disk)) == len(names))
+    check("the_public_good_file_projection_reads_a_disk_view",
+          collection(disk, binding_of(disk).public_good.snapshot(disk))
+          == collection(memory, binding_of(memory).public_good.snapshot(memory)))
+
+    def parsed_by(operation, **fields):
+        view = build(disk_settings)  # opens the built index with an empty record cache
+        start = view.disk.records_parsed
+        binding_of(view).invoke(base.key.key, operation, **fields)
+        return view.disk.records_parsed - start
+    narrowed = parsed_by("manifest", identity="skill_042")
+    narrowed_read = parsed_by("read", identity="skill_042", request_id="index-kit-parsed-read")
+    check("a_manifest_or_read_on_the_disk_view_parses_only_the_record_it_names",
+          1 <= narrowed <= 2 and 1 <= narrowed_read <= 2)
+    with patch.object(provisioning_module, "grant_scope", lambda operation, fields, candidates: candidates):
+        everything = parsed_by("manifest", identity="skill_042")
+    check("a_manifest_that_materializes_every_grant_is_detected", everything >= len(names))
+    # A cache smaller than the library, as a large library's always is, with batches that fit in it.
+    with patch.object(catalogue_disk_view, "RECORD_CACHE", 32), patch.object(catalogue_disk_view, "BULK_BATCH", 16):
+        walked = parsed_by("list")
+        with patch.object(catalogue_disk_view.DiskMapping, "walks_without_copy", False):
+            copied = parsed_by("list")
+    # One walk materializes the account's grants and one checks each item; each parses every record once.
+    check("a_list_on_the_disk_view_parses_each_record_once_for_each_walk", walked == 2 * len(names))
+    check("a_list_that_copies_the_library_before_checking_it_is_detected", copied > 2 * len(names))
+
+
+def _build_coordination_checks(check, root):
+    """One build at a time under an index root, a lost index built again, and old indexes removed."""
+    from contextlib import nullcontext
+    import shutil
+    import time
+    from . import catalogue_disk_view
+    from .catalogue_disk_view import INDEXES_FOLDER, RELEASES_FOLDER, build_lock, ensure_release_index, prune_indexes
+    from .catalogue_segment_checks import SegmentFixture
+    from .catalogue_serving import CatalogueSourceSettings
+    case = SegmentFixture(root)
+    base = case.base
+    index_root = Path(root) / "index"
+    index_root.mkdir()
+    settings = CatalogueSourceSettings("store", str(Path(root) / "bodies"), record_type="service_catalogue_source/v2",
+                                       search_engine="sqlite_disk_index", index_root=str(index_root))
+    now = [time.time()]
+
+    def ensure(wait=True):
+        return ensure_release_index(base.config, settings, license_policy=base.license_policy,
+                                    family_policy=base.family_policy, wait=wait, clock=lambda: now[0])
+
+    def folders():
+        return sorted(path.name for path in (index_root / INDEXES_FOLDER).iterdir() if not path.name.startswith("."))
+
+    def descriptors():
+        return sorted(path.stem for path in (index_root / RELEASES_FOLDER).glob("*.json"))
+    names = [f"skill_{index:03d}" for index in range(20)]
+    case.publish(case.lines(names))
+    with build_lock(index_root):
+        waiting = refused(lambda: ensure(wait=False), "search_index_building")
+        with patch.object(catalogue_disk_view, "build_lock", lambda root, wait=True: nullcontext()):
+            unguarded = not refused(lambda: ensure(wait=False))
+    check("a_refresher_never_builds_an_index_another_process_is_building", waiting)
+    check("removed_build_lock_is_detected", unguarded)
+    releases = []
+    for number in range(4):
+        now[0] += 2 * catalogue_disk_view.SERVING_GRACE_SECONDS
+        if number:
+            case.publish(case.lines(names, text=lambda name, number=number: f"Skill {name}, edition {number}."))
+        header, descriptor, _state = ensure()
+        releases.append((header.release_id, descriptor["base"]))
+    check("indexes_of_releases_no_longer_kept_are_removed",
+          folders() == sorted(name for _release, name in releases[-2:])
+          and descriptors() == sorted(release for release, _name in releases[-2:]))
+    shutil.rmtree(index_root / INDEXES_FOLDER / releases[-1][1])
+    now[0] += 30
+    _header, rebuilt, _state = ensure()
+    check("a_release_whose_index_folder_was_lost_is_built_again",
+          rebuilt["base"] != releases[-1][1] and (index_root / INDEXES_FOLDER / rebuilt["base"] / "BUILT.json").is_file())
+    # A release built a minute after the last one: the service may still serve the release before that, so its
+    # index stays until the grace period has passed.
+    now[0] += 60
+    case.publish(case.lines(names, text=lambda name: f"Skill {name}, edition five."))
+    newest, _descriptor, _state = ensure()
+    check("the_release_the_service_may_still_serve_keeps_its_index_for_the_grace_period",
+          len(folders()) == 3 and releases[-2][1] in folders() and rebuilt["base"] in folders())
+    later = lambda: now[0] + 10 ** 6  # noqa: E731 - a clock long past every grace period
+    kept = prune_indexes(index_root, active_release=releases[-1][0], keep=1, clock=later)
+    check("the_active_release_index_is_never_removed",
+          rebuilt["base"] in folders() and rebuilt["base"] not in kept["removed_indexes"]
+          and releases[-2][1] in kept["removed_indexes"])
+    gone = prune_indexes(index_root, active_release=newest.release_id, keep=1, clock=later)
+    check("without_the_active_release_rule_its_index_is_removed", rebuilt["base"] in gone["removed_indexes"])
+
+
 def _selection_checks(check):
     from . import catalogue_index_engines
     from .catalogue_index_engines import DISK_ENGINE, IN_MEMORY_ENGINE, OBJECT_STORE_ENGINE, describe, select_engine
@@ -382,7 +526,8 @@ def run_checks(check=None):
                 "all_passed": True, "not_tested": availability()["reason"]}
     _selection_checks(check)
     from .catalogue_lance_index import availability as lance_availability
-    groups = [_edge_and_exactness_checks, _overlay_checks, _service_path_checks, _command_checks, _integrity_checks]
+    groups = [_edge_and_exactness_checks, _overlay_checks, _service_path_checks, _request_path_checks,
+              _build_coordination_checks, _command_checks, _integrity_checks]
     if lance_availability()["available"]:
         groups.append(_lance_checks)
     for group in groups:

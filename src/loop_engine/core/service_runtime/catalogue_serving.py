@@ -321,16 +321,18 @@ def image_view(catalogue, resolver, reader, *, config=None, withdrawn=frozenset(
                          state_revision=state_revision, built_at=time.time())
 
 
-def store_view(config, settings, *, license_policy, family_policy, prepare_search=True):
+def store_view(config, settings, *, license_policy, family_policy, prepare_search=True, wait_for_index=True):
     """Verify every record and body; prepare search unless a maintenance caller defers it.
 
     A host whose catalogue section selects the disk index engine is served a disk view instead
     (`catalogue_disk_view.disk_store_view`): the same questions answered from index files, not from memory.
+    `wait_for_index=False`, the refresher's choice, refuses while another process builds that index.
     """
     from .catalogue_index_engines import DISK_ENGINE
     if settings.search_engine == DISK_ENGINE:
         from .catalogue_disk_view import disk_store_view
-        return disk_store_view(config, settings, license_policy=license_policy, family_policy=family_policy)
+        return disk_store_view(config, settings, license_policy=license_policy, family_policy=family_policy,
+                               wait_for_index=wait_for_index)
     from ..practitioner_runtime.provisioning import _item
     from .catalogue_bundle import item_version_tier, validated_attributes
     from .catalogue_releases import load_release, read_pointer, read_state, verify_release_bodies, withdrawal_notes
@@ -433,7 +435,10 @@ def next_view(current, token, config, settings, *, license_policy, family_policy
     from .catalogue_releases import withdrawal_notes
     revision, release_id = token
     if settings.source == STORE_SOURCE and release_id != current.release_id:
-        return store_view(config, settings, license_policy=license_policy, family_policy=family_policy)
+        # A disk index another process is building is not built again here; the current view keeps serving and the
+        # next check opens the finished index.
+        return store_view(config, settings, license_policy=license_policy, family_policy=family_policy,
+                          wait_for_index=False)
     binding = ServiceCatalogBinding(config)
     with binding.store() as store:
         notes = withdrawal_notes(binding, store)

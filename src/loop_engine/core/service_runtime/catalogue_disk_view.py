@@ -33,18 +33,21 @@ withdrawal record first, as the in-memory view does.
 from __future__ import annotations
 
 from collections import OrderedDict
-from collections.abc import Mapping
+from collections.abc import ItemsView, Mapping, ValuesView
+from contextlib import contextmanager
 from dataclasses import dataclass, field, replace
+import fcntl
 import hashlib
 import heapq
 import json
 from pathlib import Path
+import shutil
 import threading
 import time
 
 from ..harness_intelligence import HarnessIntelligenceCatalogue
 from ..provisioning_server import RUNNABLE_EFFECT, ProvisioningItemBinding, ProvisioningQualification
-from .catalogue_disk_index import OVERLAY_FORMAT, DiskIndex, DiskSearchIndex, build_disk_index
+from .catalogue_disk_index import MARKER_FILE, OVERLAY_FORMAT, DiskIndex, DiskSearchIndex, build_disk_index
 from .catalogue_packages import FILE_BODY, CataloguePackage
 from .catalogue_serving import STORE_RESOLVER_ID, STORE_SOURCE, CatalogueView, _approved_resolver, _withdrawal_check
 from .records import ServiceRuntimeError
@@ -53,6 +56,21 @@ from .storage import ServiceCatalogBinding
 INDEXES_FOLDER, RELEASES_FOLDER = "indexes", "releases"
 #: Item records a view keeps parsed in memory, most recently used first.
 RECORD_CACHE = 4096
+#: Records a walk over the whole view reads and parses together. Each batch enters the cache, so the lookups a
+#: caller makes about the item it was just handed (its approval, its binding) are answered from memory.
+BULK_BATCH = 256
+#: One lock file for every build, overlay and clean-up under an index root, held with flock(2), so the service's
+#: refresher and an operator's `index-catalogue` never build the same index twice or remove each other's work.
+LOCK_FILE = "build.lock"
+#: Releases whose indexes are kept on the volume, newest first: the active release and the one before it, so a
+#: rollback by one release opens at once. A rollback further back builds again.
+KEPT_RELEASE_INDEXES = 2
+#: While the oldest kept release's index is younger than this, the index of the release before it is kept too:
+#: the service may still serve that release until its refresher swaps, and a request thread opening a new
+#: connection needs the files. An hour is many refresh intervals.
+SERVING_GRACE_SECONDS = 3600
+#: A partial build folder untouched this long belongs to a build that was killed; it is removed.
+STALE_PARTIAL_SECONDS = 6 * 3600
 
 
 def _refuse(code, message):
@@ -110,10 +128,22 @@ class DiskItemSource:
         self._population = population
         self._cache, self._lock = OrderedDict(), threading.Lock()
         self._size = (base.size - len(self.removed) + (delta.size if delta is not None else 0)) - len(self.left_out)
+        #: How many stored records this source has parsed, for the checks that bound a request's reads.
+        self.records_parsed = 0
 
     def with_left_out(self, more):
         """The same source with more identities left out; the index files are shared."""
         return DiskItemSource(self.base, self.delta, self.removed, self.left_out | frozenset(more), schema=self.schema)
+
+    def _remember(self, parsed):
+        """Put parsed items into the bounded cache, newest last, and count them."""
+        with self._lock:
+            self.records_parsed += len(parsed)
+            for identity, value in parsed:
+                self._cache[identity] = value
+                self._cache.move_to_end(identity)
+            while len(self._cache) > RECORD_CACHE:
+                self._cache.popitem(last=False)
 
     def lookup_many(self, identities):
         """identity -> DiskItem for the identities this source serves; others are absent."""
@@ -135,14 +165,36 @@ class DiskItemSource:
             parsed = {}
             for identity, (_position, version, record) in rows.items():
                 parsed[identity] = _disk_item(json.loads(record), version, None, None, None)
-            with self._lock:
-                for identity, value in parsed.items():
-                    self._cache[identity] = value
-                    self._cache.move_to_end(identity)
-                while len(self._cache) > RECORD_CACHE:
-                    self._cache.popitem(last=False)
+            self._remember(parsed.items())
             found.update(parsed)
         return found
+
+    def iter_items(self):
+        """`(identity, DiskItem)` for every served identity in index order, read and parsed `BULK_BATCH` at a time.
+
+        A walk over the whole library (an unnarrowed list, a discover, the public library page) reads the index's
+        records in pages instead of one query per identity, and each batch enters the cache just before it is handed
+        out, so the caller's lookups about the item in hand are answered from memory."""
+        base = ((identity, row) for identity, row in self.base.iter_records(BULK_BATCH)
+                if identity not in self.removed)
+        merged = (heapq.merge(base, self.delta.iter_records(BULK_BATCH), key=lambda pair: pair[0])
+                  if self.delta is not None else base)
+        batch = []
+        for identity, row in merged:
+            if identity in self.left_out:
+                continue
+            batch.append((identity, row))
+            if len(batch) >= BULK_BATCH:
+                yield from self._parsed(batch)
+                batch = []
+        if batch:
+            yield from self._parsed(batch)
+
+    def _parsed(self, batch):
+        parsed = [(identity, _disk_item(json.loads(record), version, None, None, None))
+                  for identity, (_position, version, record) in batch]
+        self._remember(parsed)
+        return parsed
 
     def lookup(self, identity):
         return self.lookup_many((identity,)).get(identity)
@@ -165,11 +217,40 @@ class DiskItemSource:
         return dict(self._population)
 
 
+class _BulkItems(ItemsView):
+    """`(identity, part)` pairs of a `DiskMapping`, walked through its source's paged reads."""
+
+    def __iter__(self):
+        part = self._mapping.part
+        for identity, found in self._mapping.source.iter_items():
+            yield identity, getattr(found, part)
+
+
+class _BulkValues(ValuesView):
+    """The parts of a `DiskMapping`, walked through its source's paged reads."""
+
+    def __iter__(self):
+        part = self._mapping.part
+        for _identity, found in self._mapping.source.iter_items():
+            yield getattr(found, part)
+
+
 class DiskMapping(Mapping):
-    """A read-only mapping over a `DiskItemSource`, projecting each served item to one of its parts."""
+    """A read-only mapping over a `DiskItemSource`, projecting each served item to one of its parts.
+
+    `items()` and `values()` walk the index in pages (`DiskItemSource.iter_items`); a single lookup reads one
+    record. The mapping never changes, so a caller may walk it without copying it first (`walks_without_copy`)."""
+
+    walks_without_copy = True
 
     def __init__(self, source, part):
         self.source, self.part = source, part
+
+    def items(self):
+        return _BulkItems(self)
+
+    def values(self):
+        return _BulkValues(self)
 
     def __getitem__(self, identity):
         found = self.source.lookup(identity) if isinstance(identity, str) else None
@@ -322,16 +403,99 @@ def _overlay_base(root, header, fingerprint, schema_digest):
             continue
         if (isinstance(value, dict) and value.get("record_type") == OVERLAY_FORMAT and value.get("delta") is None
                 and value.get("policy_fingerprint") == fingerprint and value.get("schema_digest") == schema_digest
-                and value.get("segments") and value.get("segmentation") == header.segmentation.to_dict()):
+                and value.get("segments") and value.get("segmentation") == header.segmentation.to_dict()
+                and _index_complete(root, value.get("base"))):
             candidates.append((value.get("built_at", 0), value))
     return max(candidates, key=lambda row: row[0])[1] if candidates else None
 
 
-def ensure_release_index(config, settings, *, license_policy, family_policy, verify_bodies=True, clock=time.time):
+def _index_complete(root, name):
+    """Whether the index folder `name` holds a finished build (its build record is written last)."""
+    return bool(name) and (Path(root) / INDEXES_FOLDER / name / MARKER_FILE).is_file()
+
+
+def _usable(root, descriptor, fingerprint):
+    """A held descriptor serves only when it was built under these host rules and its index folders are complete."""
+    return (descriptor is not None and descriptor.get("policy_fingerprint") == fingerprint
+            and _index_complete(root, descriptor.get("base"))
+            and (not descriptor.get("delta") or _index_complete(root, descriptor["delta"])))
+
+
+@contextmanager
+def build_lock(root, *, wait=True):
+    """Hold the index root's one build lock: an exclusive flock(2) on `LOCK_FILE`.
+
+    With `wait` the caller waits for another holder (an operator's `index-catalogue`, a host start); without it a
+    held lock refuses at once with `search_index_building`, so the service's refresher keeps its current view and
+    asks again at its next interval instead of building the same index a second time."""
+    path = Path(root) / LOCK_FILE
+    path.parent.mkdir(parents=True, exist_ok=True)
+    handle = open(path, "a+")
+    try:
+        try:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_EX | (0 if wait else fcntl.LOCK_NB))
+        except BlockingIOError:
+            _refuse("search_index_building", "another process is building this host's disk index; the current "
+                                             "view keeps serving")
+        try:
+            yield
+        finally:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+    finally:
+        handle.close()
+
+
+def prune_indexes(root, *, active_release, keep=KEPT_RELEASE_INDEXES, clock=time.time):
+    """Remove the index folders no kept release names, and partial folders of builds that were killed.
+
+    Kept: the descriptors of the active release and of the newest `keep` releases by build time, the next older
+    one while the oldest kept was built less than `SERVING_GRACE_SECONDS` ago, and every index folder they name.
+    Every other index folder is removed, with every descriptor that names a removed folder, and so is a partial
+    folder untouched for `STALE_PARTIAL_SECONDS`. A rollback to a release whose index was removed builds it again.
+    Call with the build lock held. Returns `{"removed_indexes": [...], "removed_descriptors": [...], "bytes": n}`."""
+    root = Path(root)
+    descriptors = []
+    for path in sorted((root / RELEASES_FOLDER).glob("*.json")):
+        try:
+            value = json.loads(path.read_text())
+        except (OSError, ValueError):
+            continue
+        if isinstance(value, dict) and value.get("record_type") == OVERLAY_FORMAT:
+            descriptors.append((value.get("built_at", 0), path, value))
+    descriptors.sort(key=lambda row: row[0], reverse=True)
+    held = keep + 1 if len(descriptors) > keep and clock() - descriptors[keep - 1][0] < SERVING_GRACE_SECONDS else keep
+    kept_paths = {path for _built, path, value in descriptors[:held]}
+    kept_paths |= {path for _built, path, value in descriptors if value.get("release_id") == active_release}
+    named = set()
+    for _built, path, value in descriptors:
+        if path in kept_paths:
+            named.update(name for name in (value.get("base"), value.get("delta")) if name)
+    removed_indexes, removed_descriptors, freed = [], [], 0
+    for _built, path, value in descriptors:
+        if path not in kept_paths and not ({value.get("base"), value.get("delta")} - {None, ""}) <= named:
+            path.unlink(missing_ok=True)
+            removed_descriptors.append(path.stem)
+    folder = root / INDEXES_FOLDER
+    for entry in sorted(folder.iterdir()) if folder.is_dir() else ():
+        if not entry.is_dir() or entry.name in named:
+            continue
+        if entry.name.startswith("."):
+            if clock() - entry.stat().st_mtime < STALE_PARTIAL_SECONDS:
+                continue
+        freed += sum(item.stat().st_size for item in entry.rglob("*") if item.is_file())
+        shutil.rmtree(entry, ignore_errors=True)
+        removed_indexes.append(entry.name)
+    return {"removed_indexes": removed_indexes, "removed_descriptors": removed_descriptors, "bytes": freed}
+
+
+def ensure_release_index(config, settings, *, license_policy, family_policy, verify_bodies=True, clock=time.time,
+                         wait=True):
     """Open the disk index of the active release, building a full index or an overlay when none exists yet.
 
     Returns `(header, descriptor, state)` for the release the pointer names. The build reads the release through
-    the same verified readers as the in-memory view and writes nothing to the service store.
+    the same verified readers as the in-memory view and writes nothing to the service store. A build holds the index
+    root's build lock (`build_lock`); `wait=False` refuses with `search_index_building` while another process holds
+    it. After a build, the indexes of releases no longer kept are removed (`prune_indexes`).
     """
     from .catalogue_packages import VolumeBodyStore, require_body_store
     from .catalogue_releases import (load_release_header, read_pointer, read_state, segment_reader,
@@ -347,37 +511,45 @@ def ensure_release_index(config, settings, *, license_policy, family_policy, ver
         if pointer is None:
             _refuse("catalogue_release_not_published", "the store source needs a published release")
         header = load_release_header(binding, store, pointer["release_id"])
+    held = _read_descriptor(root, header.release_id)
+    if _usable(root, held, fingerprint):
+        return header, held, state
+    with build_lock(root, wait=wait):
+        # Another process may have finished this index while this one waited for the lock.
         held = _read_descriptor(root, header.release_id)
-        if held is not None and held.get("policy_fingerprint") == fingerprint:
+        if _usable(root, held, fingerprint):
             return header, held, state
-        read_segment = segment_reader(binding, store)
-        withdrawn = withdrawal_keys(binding, store)
-        excluded_pairs = _excluded(binding, store, header, withdrawn, read_segment)
-        excluded = {identity for identity, _digest in excluded_pairs}
-        content = header.content_digest
-        base = _overlay_base(root, header, fingerprint, header.schema.digest)
-        descriptor = None
-        if base is not None:
-            descriptor = _build_overlay(root, binding, store, header, base, excluded_pairs, read_segment,
-                                        license_policy, family_policy, body_store, verify_bodies, fingerprint, clock)
-        if descriptor is None:
-            name = f"full-{header.release_id[:16]}-{fingerprint[:8]}-{int(clock())}"
-            count = (header.item_count if isinstance(header, SegmentedRelease) else len(header.items)) - len(excluded)
-            build_disk_index(root / INDEXES_FOLDER / name,
-                             _rows(binding, store, _pairs(binding, store, header, read_segment), header.schema,
-                                   excluded, license_policy, family_policy, body_store, verify_bodies),
-                             header.schema, count=count, release_id=header.release_id, content_digest=content,
-                             policy_fingerprint=fingerprint)
-            descriptor = {"record_type": OVERLAY_FORMAT, "release_id": header.release_id, "content_digest": content,
-                          "base": name, "delta": None, "removed": [],
-                          "excluded": sorted([identity, digest] for identity, digest in excluded_pairs),
-                          "policy_fingerprint": fingerprint, "schema_digest": header.schema.digest,
-                          "segmentation": (header.segmentation.to_dict() if isinstance(header, SegmentedRelease)
-                                           else None),
-                          "segments": ([ref.digest for ref in header.segments]
-                                       if isinstance(header, SegmentedRelease) else None),
-                          "built_at": clock()}
-    _write_descriptor(root, header.release_id, descriptor)
+        with binding.store() as store:
+            read_segment = segment_reader(binding, store)
+            withdrawn = withdrawal_keys(binding, store)
+            excluded_pairs = _excluded(binding, store, header, withdrawn, read_segment)
+            excluded = {identity for identity, _digest in excluded_pairs}
+            content = header.content_digest
+            base = _overlay_base(root, header, fingerprint, header.schema.digest)
+            descriptor = None
+            if base is not None:
+                descriptor = _build_overlay(root, binding, store, header, base, excluded_pairs, read_segment,
+                                            license_policy, family_policy, body_store, verify_bodies, fingerprint,
+                                            clock)
+            if descriptor is None:
+                name = f"full-{header.release_id[:16]}-{fingerprint[:8]}-{int(clock())}"
+                count = (header.item_count if isinstance(header, SegmentedRelease) else len(header.items)) - len(excluded)
+                build_disk_index(root / INDEXES_FOLDER / name,
+                                 _rows(binding, store, _pairs(binding, store, header, read_segment), header.schema,
+                                       excluded, license_policy, family_policy, body_store, verify_bodies),
+                                 header.schema, count=count, release_id=header.release_id, content_digest=content,
+                                 policy_fingerprint=fingerprint)
+                descriptor = {"record_type": OVERLAY_FORMAT, "release_id": header.release_id,
+                              "content_digest": content, "base": name, "delta": None, "removed": [],
+                              "excluded": sorted([identity, digest] for identity, digest in excluded_pairs),
+                              "policy_fingerprint": fingerprint, "schema_digest": header.schema.digest,
+                              "segmentation": (header.segmentation.to_dict() if isinstance(header, SegmentedRelease)
+                                               else None),
+                              "segments": ([ref.digest for ref in header.segments]
+                                           if isinstance(header, SegmentedRelease) else None),
+                              "built_at": clock()}
+        _write_descriptor(root, header.release_id, descriptor)
+        prune_indexes(root, active_release=header.release_id, clock=clock)
     return header, descriptor, state
 
 
@@ -473,12 +645,16 @@ def _population_record(value):
             "packages_without_file_manifest": value["packages_without_file_manifest"], "complete": complete}
 
 
-def disk_store_view(config, settings, *, license_policy, family_policy, verify_bodies=True):
-    """The served view of the active release over its disk index, building the index when none exists yet."""
+def disk_store_view(config, settings, *, license_policy, family_policy, verify_bodies=True, wait_for_index=True):
+    """The served view of the active release over its disk index, building the index when none exists yet.
+
+    `wait_for_index=False` (the refresher) refuses with `search_index_building` while another process holds the
+    index root's build lock, so the current view keeps serving instead of a second build starting."""
     from .catalogue_packages import VolumeBodyStore, require_body_store
     from .catalogue_releases import withdrawal_notes
     header, descriptor, state = ensure_release_index(config, settings, license_policy=license_policy,
-                                                     family_policy=family_policy, verify_bodies=verify_bodies)
+                                                     family_policy=family_policy, verify_bodies=verify_bodies,
+                                                     wait=wait_for_index)
     root = Path(settings.index_root)
     base = DiskIndex(root / INDEXES_FOLDER / descriptor["base"])
     delta = DiskIndex(root / INDEXES_FOLDER / descriptor["delta"]) if descriptor["delta"] else None

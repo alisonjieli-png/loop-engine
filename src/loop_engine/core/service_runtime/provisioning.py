@@ -26,6 +26,25 @@ from .records import ServiceCommitUnknown, ServiceRuntimeError
 from .runtime import (PROVISIONING_METADATA_SCOPE, PROVISIONING_READ_SCOPE, ServiceRuntime)
 
 _AUTOMATIC_PUBLIC_GOOD_RESERVATION = object()
+#: The operations the provisioning server decides from the one grant of the identity the request names.
+_ONE_ITEM_OPERATIONS = ("manifest", "read")
+
+
+def grant_scope(operation, fields, candidates):
+    """The identities whose grants a request needs, or None when it needs every grant of the account.
+
+    A listing narrowed to search candidates needs those candidates. A manifest or a read is decided by the one grant
+    of the identity it names (`ProvisioningServer._item` asks the policy for that grant only), so a release-following
+    account materializes that grant alone instead of one grant for every item of the release: with a disk view
+    of 100,000 items the whole set took 47 s to build for each manifest (October 5, 2026). A manifest or read
+    whose identity is not a string gets no grant; the request is refused as malformed either way. A discover and
+    an unnarrowed list answer about the whole library and need every grant."""
+    if candidates is not None:
+        return candidates
+    if operation in _ONE_ITEM_OPERATIONS:
+        identity = fields.get("identity")
+        return (identity,) if isinstance(identity, str) else ()
+    return None
 
 
 class DurableProvisioningBinding:
@@ -110,10 +129,12 @@ class DurableProvisioningBinding:
         if required not in current.scopes:
             raise ServiceRuntimeError("scope_required")
         grants, grant_guard = self.runtime.grant_snapshot(current)
+        scope = grant_scope(operation, fields, candidates)
         if not isinstance(grants, tuple):
             # A release-following account is resolved against the view this
-            # request captured, never against a later one.
-            grants = grants.materialize(view, candidates)
+            # request captured, never against a later one, and only for the
+            # identities the request needs.
+            grants = grants.materialize(view, scope)
         if any(grant.record_type != GRANT_RECORD_TYPE for grant in grants):
             raise ServiceRuntimeError("public_good_requires_exact_policy")
         grants, public_good_token = self.public_good.overlay(current, view, grants, candidates=candidates)
@@ -169,8 +190,11 @@ class DurableProvisioningBinding:
                 _grants, observed = self.runtime.grant_snapshot(latest)
                 if observed != grant_guard:
                     raise ServiceRuntimeError("disclosure_grant_changed")
-                refreshed = _grants if isinstance(_grants, tuple) else _grants.materialize(view, candidates)
-                _effective, latest_public_good = self.public_good.overlay(latest, view, refreshed, candidates=candidates)
+                # The unchanged guard proves the grants record is the one this request materialized; the Public Good
+                # token is computed from the policy snapshot, the account and its denials alone, never from the item
+                # grants, so they are not materialized a second time (for a whole-library list that was a second walk
+                # over every item).
+                _effective, latest_public_good = self.public_good.overlay(latest, view, (), candidates=candidates)
                 if latest_public_good != public_good_token:
                     raise ServiceRuntimeError("public_good_authority_changed")
                 if public_good_reservation is not None:

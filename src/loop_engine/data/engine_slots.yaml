@@ -2187,6 +2187,9 @@ slots:
       - core.service_runtime.catalogue_index_checks:the_disk_engine_ranks_exactly_as_the_in_memory_engine_on_a_fresh_build
       - core.service_runtime.catalogue_index_checks:an_engine_that_cannot_run_here_is_refused_at_start_and_never_replaced
       - core.service_runtime.catalogue_index_checks:the_disk_view_serves_the_same_hits_through_the_provisioning_authority
+      - core.service_runtime.catalogue_index_checks:the_disk_view_answers_manifest_read_list_and_discover_as_the_in_memory_view
+      - core.service_runtime.catalogue_index_checks:a_manifest_or_read_on_the_disk_view_parses_only_the_record_it_names
+      - core.service_runtime.catalogue_index_checks:a_refresher_never_builds_an_index_another_process_is_building
     planned_checks: [an_object_store_engine_passes_the_same_kit]
   - record_type: engine_slot/v1
     slot_id: catalogue_qualification_resolver
