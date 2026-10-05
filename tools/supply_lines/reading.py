@@ -28,7 +28,8 @@ from pathlib import Path
 import urllib.parse
 from urllib.parse import parse_qsl, urlsplit
 
-from loop_engine.core.library_ingestion.github_reader import GITHUB_HOST, GhCliReader, parse_included_response
+from loop_engine.core.library_ingestion.github_reader import (
+    GITHUB_HOST, GhCliReader, ReadOnlyRequestRefused, parse_included_response)
 from loop_engine.core.library_ingestion.https_transport import HTTPS_SCHEME, HttpsGetTransport
 from loop_engine.core.library_ingestion.record_rules import git_blob_identity, now_utc
 from loop_engine.core.library_ingestion.request_log import RequestBudget, RequestLog, RequestObservation
@@ -260,7 +261,10 @@ class FactReader:
 def pinned_files(reader, repository: str, branch: str, paths) -> tuple:
     """({path: pinned file}, missing paths) of many files of one repository: the branch's head commit, its tree
     (one read), and each file's bytes at that commit, proven by the tree's git blob identity."""
-    head = reader.github(f"repos/{repository}/commits/{branch}")
+    try:
+        head = reader.github(f"repos/{repository}/commits/{branch}")
+    except ReadOnlyRequestRefused as error:  # a branch name the read-only reader does not allow, such as one with /
+        raise LookupError(f"{repository}: the branch {branch[:100]} is not a readable name") from error
     if head.status != 200:
         raise LookupError(f"{repository}: the branch {branch} has no readable head commit")
     commit = json.loads(head.body)["sha"]

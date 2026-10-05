@@ -146,6 +146,17 @@ class ReadingTest(unittest.TestCase):
         self.assertEqual(reader.https.asked, [("api.apis.guru", "/v2/specs/azure.com/luis/v2.0%20preview/swagger.json", {}),
                                               ("api.apis.guru", "/v2/specs/a%20b/swagger.json", {"x": "1"})])
 
+    def test_a_branch_name_the_reader_refuses_is_an_unreadable_source(self):
+        from loop_engine.core.library_ingestion.github_reader import ReadOnlyRequestRefused
+        from supply_lines.reading import pinned_files
+
+        class Reader:
+            def github(self, path):
+                raise ReadOnlyRequestRefused(f"not an allowed read: {path}")
+
+        with self.assertRaises(LookupError):
+            pinned_files(Reader(), "owner/repo", "f0/branch", ["table.json"])
+
 
 class StoreTest(unittest.TestCase):
     def test_supplied_candidates_live_in_their_own_namespace_with_versions_and_withdrawals(self):
