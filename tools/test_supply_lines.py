@@ -1792,6 +1792,75 @@ class JavaScriptClientTest(unittest.TestCase):
                         self.assertIn("the credential reached another origin", done.stdout)
 
     @unittest.skipUnless(shutil.which("node"), "Node.js runs the JavaScript tests")
+    def test_a_module_follows_a_redirect_within_the_origin_without_the_credential(self):
+        # Within the API's origin a redirect is followed as fetch follows it (a POST after 302 becomes a GET without
+        # its body, a DELETE stays a DELETE) but without the credential's header, X-Api-Key or Authorization.
+        from supply_lines import javascript_clients as scripts
+        from supply_lines import openapi_operations as line
+        found, _refused = line.operations(SPECIFICATION, SOURCE)
+        modules = {operation.function: operation for operation in found}
+        probe = '''import { test } from "node:test";
+import assert from "node:assert/strict";
+import http from "node:http";
+import { createThing } from "./example_create_thing.mjs";
+import { deleteThing } from "./example_delete_thing.mjs";
+
+test("a redirect within the origin is followed without the credential", async () => {
+  const seen = [];
+  const server = http.createServer((request, response) => {
+    let body = "";
+    request.on("data", (chunk) => { body += chunk; });
+    request.on("end", () => {
+      seen.push([request.method, request.url, request.headers.authorization ?? null,
+                 request.headers["x-api-key"] ?? null, body]);
+      const moved = request.url.startsWith("/moved");
+      const answer = moved ? JSON.stringify({ id: "t1", name: "moved" }) : "";
+      response.writeHead(moved ? (request.method === "DELETE" ? 204 : 201) : 302, {
+        ...(moved ? { "Content-Type": "application/json" } : { Location: "/moved" + request.url }),
+        "Content-Length": String(Buffer.byteLength(answer)), Connection: "close" });
+      response.end(answer);
+    });
+  });
+  await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
+  const address = `http://127.0.0.1:${server.address().port}`;
+  const network = globalThis.fetch;
+  globalThis.fetch = (url, init) => {
+    const target = new URL(url);
+    assert.ok(target.protocol === "https:" || target.hostname === "127.0.0.1", url);
+    return network(target.protocol === "https:" ? address + target.pathname + target.search : url, init);
+  };
+  process.env.EXAMPLE_TOKEN = "test-credential";
+  try {
+    assert.deepEqual(await createThing({ body: { name: "first" } }), { id: "t1", name: "moved" });
+    assert.equal(await deleteThing({ thing_id: "t1" }), null);
+  } finally {
+    globalThis.fetch = network;
+    server.closeAllConnections?.();
+    await new Promise((resolve) => server.close(resolve));
+  }
+  assert.deepEqual(seen, [
+    ["POST", "/v1/things", "Bearer test-credential", null, '{"name":"first"}'],
+    ["GET", "/moved/v1/things", null, null, ""],
+    ["DELETE", "/v1/things/t1", null, "test-credential", ""],
+    ["DELETE", "/moved/v1/things/t1", null, null, ""]]);
+});
+'''
+        # Known wrong: a module that keeps the credential's header on the redirect sends it to /moved.
+        kept = "        headers = withoutCredential(headers);\n"
+        for label, change, passes in (("the redirect rule", lambda text: text, True),
+                                      ("the credential kept", lambda text: text.replace(kept, ""), False)):
+            with tempfile.TemporaryDirectory() as folder:
+                for function in ("create_thing", "delete_thing"):
+                    operation = modules[function]
+                    module = scripts.module_source(operation, SPEC_FACTS)
+                    self.assertIn(kept, module)
+                    (Path(folder) / f"{operation.module}.mjs").write_text(change(module), encoding="utf-8")
+                (Path(folder) / "probe.test.mjs").write_text(probe, encoding="utf-8")
+                done = subprocess.run(["node", "--test", "probe.test.mjs"], cwd=folder, capture_output=True,
+                                      text=True, timeout=300)
+            self.assertEqual(done.returncode == 0, passes, (label, done.stdout[-2500:]))
+
+    @unittest.skipUnless(shutil.which("node"), "Node.js runs the JavaScript tests")
     def test_one_broken_test_file_does_not_fail_the_rest_of_its_batch(self):
         from supply_lines import javascript_clients as scripts
         good = ('import { describe, test } from "node:test";\nimport assert from "node:assert/strict";\n'

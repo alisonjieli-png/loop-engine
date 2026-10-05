@@ -170,8 +170,8 @@ const MAXIMUM_REDIRECTS = 20;
 
 /** The headers without the credential's (fetch would keep a custom one, such as X-Api-Key, on any redirect). */
 function withoutCredential(headers) {
-  const names = !AUTH ? [] : AUTH.placement === "aws_sigv4" ? ["authorization", "x-amz-date", "x-amz-security-token"]
-    : [AUTH.name.toLowerCase()];
+  const names = !AUTH || AUTH.placement === "query" ? []
+    : AUTH.placement === "aws_sigv4" ? ["authorization", "x-amz-date", "x-amz-security-token"] : [AUTH.name.toLowerCase()];
   return Object.fromEntries(Object.entries(headers).filter(([name]) => !names.includes(name.toLowerCase())));
 }
 
