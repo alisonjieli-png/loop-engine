@@ -153,9 +153,49 @@ class SelfTestTests(unittest.TestCase):
                 controls.self_test(_context(self.work), REVISION)
 
 
+def _schema(title, specification=controls.FIXTURE_ADDRESSES["specification"], readme="# Schema\n"):
+    """A generated API component schema: no upstream file but the source's notice, like api_schemas.py writes."""
+    schema = json.dumps({"$schema": controls.FIXTURE_ADDRESSES["schema_dialect"], "title": title, "type": "object",
+                         "properties": {"name": {"type": "string"}}}, indent=1) + "\n"
+    files = {f"example_{title.lower()}.schema.json": schema.encode(), "LICENSE": controls.MIT_TEXT.encode(),
+             "UPSTREAM-NOTICE": b"Example Project\nCopyright 2026 Example\n", "README.md": readme.encode()}
+    fact = {**controls._fact(specification, b"{}"), "role": "specification"}
+    component = controls._build("json_schemas", "schema", "contract_schema", files, {}, (), {}, fact, REVISION,
+                                {"UPSTREAM-NOTICE": "upstream_verbatim"})
+    record = dict(component.candidate)
+    record["licence"] = dict(record["licence"]) | {"notices": ["UPSTREAM-NOTICE"]}
+    return component.replaced(candidate=record)
+
+
 class NewRuleTests(unittest.TestCase):
     def setUp(self):
         self.policy = _context().policy
+
+    def test_javascript_literal_lines(self):
+        text = ('const PARAMETERS = [["id", "id", "path", true, {"type": ["string"]}]];\n'
+                'export const EXAMPLE = {"a": "b; c"};\n'
+                'const a = 1; const b = 2;\n'
+                'const sent = send({"a": 1});\n')
+        self.assertEqual(checks.javascript_literal_lines(text), {1, 2})
+
+    def test_a_generated_schema_is_its_specification_and_title_not_its_notice(self):
+        first, second = _schema("Feed"), _schema("FeedItem")
+        self.assertNotEqual(checks.job_key(first, self.policy), checks.job_key(second, self.policy))
+        found = checks.duplicate_findings([first, second], self.policy)
+        later = max(first.identity, second.identity)
+        self.assertNotIn("same_job_as", [code for code, _detail in found[later]])
+        reworded = _schema("Feed", readme="# Feed\n\nThe feed object of the example API, described again.\n")
+        self.assertEqual(checks.job_key(first, self.policy), checks.job_key(reworded, self.policy))
+        found = checks.duplicate_findings([first, reworded], self.policy)
+        later = max(first.identity, reworded.identity)
+        self.assertIn("same_job_as", [code for code, _detail in found[later]])
+        other = _schema("Feed", specification="https://example.org/other.json")
+        self.assertNotEqual(checks.job_key(first, self.policy), checks.job_key(other, self.policy))
+
+    def test_upstream_bytes_without_a_fallback_name_no_job_rather_than_one_shared_job(self):
+        bare = json.loads(json.dumps(self.policy))
+        del bare["lines"]["json_schemas"]["job_key"]["otherwise"]
+        self.assertIsNone(checks.job_key(_schema("Feed"), bare))
 
     def test_literal_statement_lines(self):
         text = "def f(a, b):\n    arguments = {'a': a, 'b': b}\n    return call(arguments)\nx = 1; y = 2\n"

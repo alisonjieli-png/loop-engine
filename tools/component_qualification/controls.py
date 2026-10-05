@@ -453,6 +453,11 @@ CONTROLS = (
     Control("literal_display_is_not_minified", "safety", "code", "",
             lambda c: _edit(c, "greeting_table.py", lambda text: text + "\nTABLE = [" + ", ".join(["0"] * 600) +
                             "]\n")),
+    Control("minified_javascript", "safety", "api", "minified_or_bundled_code",
+            lambda c: _add_file(c, "get_greeting.mjs", "const a = 1; " * 110 + "\n")),
+    Control("javascript_literal_display_is_not_minified", "safety", "api", "",
+            lambda c: _add_file(c, "get_greeting.mjs", "export const PARAMETERS = [" +
+                                ", ".join(['["language", "path"]'] * 120) + "];\n")),
     Control("test_report_tampering", "safety", "code", "test_report_tampering",
             lambda c: _edit(c, "test_greeting_table.py", lambda text: text + "\nimport os\nos._exit(0)\n")),
     Control("secret_shaped_value", "secrets", "code", "secret_shaped_value",

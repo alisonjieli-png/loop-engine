@@ -134,7 +134,14 @@
     "README.md"
    ],
    "job_key": {
-    "upstream_digests": true
+    "upstream_digests": true,
+    "otherwise": {
+     "json_suffix": ".schema.json",
+     "fields": [
+      "title"
+     ],
+     "fact_role": "specification"
+    }
    }
   }
  },
@@ -181,7 +188,7 @@
   "longest_line": 1000,
   "large_file_bytes": 65536,
   "large_file_mean_line": 150,
-  "literal_statement_reason": "A Python line longer than the limit is exempt when it holds exactly one statement that only displays literal data (names, constants, and dict, list, tuple or set displays), such as a generated operation's keyword dictionary: on September 28, 2026, ten AWS operation modules carried such lines of 1,282 to 1,562 characters. Several statements on one line, the mark of minified code, are never exempt."
+  "literal_statement_reason": "A Python line longer than the limit is exempt when it holds exactly one statement that only displays literal data (names, constants, and dict, list, tuple or set displays), such as a generated operation's keyword dictionary: on September 28, 2026, ten AWS operation modules carried such lines of 1,282 to 1,562 characters. A JavaScript line is exempt when it holds exactly one constant declaration whose whole value parses as JSON, such as a generated client's parameter table or a test's example body: the September 30 run refused 7,539 API operation packages for such lines alone. Several statements on one line, the mark of minified code, are never exempt."
  },
  "code_suffixes": [
   ".py",
@@ -228,7 +235,7 @@
   "plugin_manifest"
  ],
  "effect_text_reason": "The licensed import's effect rules read words as actions a harness is told to take, which is right for instruction, skill, command and configuration files. A README, a JSON Schema or code comments of a generated client describe a remote API ('uploads a file'), whose effect the network effect covers; on September 28, 2026 those words produced 501 false effect findings (reads_files and writes_files in README.md and schema.json) on components whose syntax trees touch no local file. Python code is judged by its syntax tree.",
- "job_key_reason": "One package for one job: an API operation is its specification file and its operation (method, path and the specification's operation identifier, since a specification may define several operations on one method and path, as Box does with URL fragments and OpenAI with beta variants: 23 such packages were refused as copies on September 28, 2026 when the key held method and path only); a protocol server is its registry package; a program is its formula; a data table is its upstream file bytes. Two components with one job key are duplicates whatever their text.",
+ "job_key_reason": "One package for one job: an API operation is its specification file and its operation (method, path and the specification's operation identifier, since a specification may define several operations on one method and path, as Box does with URL fragments and OpenAI with beta variants: 23 such packages were refused as copies on September 28, 2026 when the key held method and path only); a protocol server is its registry package; a program is its formula; a data table or a copied schema is its upstream file bytes, not counting licence texts and notice files, which every package of one source shares; a schema generated from an API specification copies no upstream file, so it is its specification and its title (the September 30 run refused 8,787 of 9,142 schema packages as one job because the key held only the notice files or nothing). Two components with one job key are duplicates whatever their text.",
  "composition": {
   "targets_file": "src/loop_engine/data/library_composition.json",
   "targets_reason": "Builder e's library_composition_targets/v1 (September 27, 2026) is the authority once integrated; these shares are its copy for a checkout that does not hold it yet.",

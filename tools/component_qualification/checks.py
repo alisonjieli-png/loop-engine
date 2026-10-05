@@ -692,6 +692,26 @@ def literal_statement_lines(text: str) -> set:
     return {line for line in literal if starts.get(line, 0) == 1}
 
 
+JAVASCRIPT_CONSTANT = re.compile(r"(?:export\s+)?const\s+[A-Za-z_$][\w$]*\s*=\s*(.+);")
+
+
+def javascript_literal_lines(text: str) -> set:
+    """Lines held by exactly one constant declaration whose whole value is JSON, such as a generated client's
+    parameter table: JSON is literal data in JavaScript, and a second statement on the line makes the value
+    fail to parse as JSON, so minified code is never exempt."""
+    exempt = set()
+    for number, line in enumerate(text.splitlines(), 1):
+        match = JAVASCRIPT_CONSTANT.fullmatch(line.strip())
+        if match is None:
+            continue
+        try:
+            json.loads(match.group(1))
+        except ValueError:
+            continue
+        exempt.add(number)
+    return exempt
+
+
 TEST_TAMPERING = re.compile(r"\bos\._exit\s*\(|\bsys\.(?:stdout|stderr|__stdout__|__stderr__)\s*=|"
                             r"\bTextTestRunner\b|\bTestResult\b|\bunittest\.main\s*\(\s*exit\s*=\s*False")
 
@@ -734,7 +754,8 @@ class SafetyCheck:
                     findings.append((code, f"{path}:{text.count(chr(10), 0, match.start()) + 1}"))
             if PurePosixPath(path).suffix.lower() in policy["code_suffixes"] and not data_file:
                 lines = text.splitlines() or [""]
-                exempt = literal_statement_lines(text) if path.endswith(".py") else set()
+                exempt = (literal_statement_lines(text) if path.endswith(".py") else
+                          javascript_literal_lines(text) if path.endswith((".js", ".mjs")) else set())
                 long_lines = [(number, len(line)) for number, line in enumerate(lines, 1)
                               if len(line) > limits["longest_line"] and number not in exempt]
                 mean = len(text) / len(lines)
@@ -762,14 +783,19 @@ class SecretsCheck:
         return _result(self, findings)
 
 
+def licence_paths(record) -> set:
+    """The licence texts, upstream notice files and attribution of a candidate record: paths every package of
+    one source carries alike, which say nothing about the job the package does."""
+    licence = record.get("licence") or {}
+    notices = licence.get("notices") if isinstance(licence.get("notices"), list) else []
+    return (set(licence.get("texts") or []) | {path for path in notices if isinstance(path, str)}) | {
+        licence.get("attribution")}
+
+
 def distinctive_text(component, policy) -> str:
     """What makes a component itself: its code, schema, README and connection record, not the licence texts,
     the upstream notice files, the attribution or the tests, which every member of a line shares by construction."""
-    record = component.candidate
-    licence = record.get("licence") or {}
-    notices = licence.get("notices") if isinstance(licence.get("notices"), list) else []
-    skip = (set(licence.get("texts") or []) | {path for path in notices if isinstance(path, str)}) | {
-        licence.get("attribution")}
+    skip = licence_paths(component.candidate)
     parts = []
     for entry in component.package.files:
         if entry.path in skip or is_test_file(entry.path) or not is_text(entry):
@@ -802,45 +828,68 @@ def python_assignment(component, name: str):
 def job_key(component, policy) -> "str | None":
     """The one job a component does, by its line's declared rule; None when the line declares none.
 
-    The rule is data (the policy's job_key per line): fields of a JSON file, fields of a Python module-level
-    dictionary, or the digests of the upstream files, optionally with the address of a fact of a named role
-    (without its commit, so two revisions of one specification name one job)."""
+    The rule is data (the policy's job_key per line): fields of a JSON file (named, or the one top-level file
+    with a suffix), fields of a Python module-level dictionary, or the digests of the upstream files other than
+    licence texts and notices, optionally with the address of a fact of a named role (without its commit, so
+    two revisions of one specification name one job). A rule whose own parts find nothing names no job, or
+    uses its ``otherwise`` rule: a generated API component schema copies no upstream file, so its job is its
+    specification and the schema's title."""
     rule = policy["lines"].get(component.line, {}).get("job_key")
     if not rule:
         return None
-    parts = [component.line]
     try:
-        if "json_file" in rule:
-            value = json.loads(component.text(rule["json_file"]) or "null")
-            for dotted in rule["fields"]:
-                item = value
-                for key in dotted.split("."):
-                    item = item.get(key) if isinstance(item, dict) else None
-                parts.append(str(item))
-        elif "python_assignment" in rule:
-            found = python_assignment(component, rule["python_assignment"])
-            if not isinstance(found, dict):
-                return None
-            parts += [str(found.get(field)) for field in rule["fields"]]
-        elif rule.get("public_functions"):
-            module = main_module(component)
-            names = sorted(node.name for node in ast.parse(component.text(module) or "").body
-                           if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
-                           and not node.name.startswith("_")) if module else []
-            if not names:
-                return None
-            parts += names
-        elif rule.get("upstream_digests"):
-            parts += sorted(str(row.get("digest")) for row in component.candidate.get("files", [])
-                            if isinstance(row, dict) and row.get("origin") == "upstream_verbatim")
-        if rule.get("fact_role"):
-            facts = (component.candidate.get("provenance") or {}).get("facts") or []
-            urls = sorted(re.sub(r"/[0-9a-f]{40}/", "/", str(fact.get("url", ""))) for fact in facts
-                          if isinstance(fact, dict) and fact.get("role") == rule["fact_role"])
-            parts += urls
+        parts = _job_parts(component, rule)
     except (ValueError, SyntaxError, IndexError, TypeError):
         return None
-    return "|".join(parts)
+    return None if parts is None else "|".join([component.line] + parts)
+
+
+def _json_fields(value, fields) -> list:
+    parts = []
+    for dotted in fields:
+        item = value
+        for key in dotted.split("."):
+            item = item.get(key) if isinstance(item, dict) else None
+        parts.append(str(item))
+    return parts
+
+
+def _job_parts(component, rule) -> "list | None":
+    parts = []
+    if "json_file" in rule:
+        parts += _json_fields(json.loads(component.text(rule["json_file"]) or "null"), rule["fields"])
+    elif "json_suffix" in rule:
+        paths = sorted(path for path in component.payloads if path.endswith(rule["json_suffix"]) and "/" not in path)
+        if len(paths) != 1:
+            return None
+        parts += _json_fields(json.loads(component.text(paths[0]) or "null"), rule["fields"])
+    elif "python_assignment" in rule:
+        found = python_assignment(component, rule["python_assignment"])
+        if not isinstance(found, dict):
+            return None
+        parts += [str(found.get(field)) for field in rule["fields"]]
+    elif rule.get("public_functions"):
+        module = main_module(component)
+        names = sorted(node.name for node in ast.parse(component.text(module) or "").body
+                       if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+                       and not node.name.startswith("_")) if module else []
+        if not names:
+            return None
+        parts += names
+    elif rule.get("upstream_digests"):
+        skip = licence_paths(component.candidate)
+        digests = sorted(str(row.get("digest")) for row in component.candidate.get("files", [])
+                         if isinstance(row, dict) and row.get("origin") == "upstream_verbatim"
+                         and row.get("path") not in skip)
+        if not digests:
+            return _job_parts(component, rule["otherwise"]) if rule.get("otherwise") else None
+        parts += digests
+    if rule.get("fact_role"):
+        facts = (component.candidate.get("provenance") or {}).get("facts") or []
+        urls = sorted(re.sub(r"/[0-9a-f]{40}/", "/", str(fact.get("url", ""))) for fact in facts
+                      if isinstance(fact, dict) and fact.get("role") == rule["fact_role"])
+        parts += urls
+    return parts
 
 
 def duplicate_findings(components, policy, *, known_digests=None) -> dict:
