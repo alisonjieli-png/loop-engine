@@ -60,9 +60,14 @@ CARRY_REFUSED = "carry_refused"
 OUTCOMES = (APPROVED, REJECTED, NOT_REVIEWED, CARRY_REFUSED)
 #: Only this outcome may be written into a host manifest.
 SERVED_OUTCOME = APPROVED
-#: How an approval was reached. A reader tells a carried approval from a reviewed one here.
+#: How an approval was reached. A reader tells a carried approval from a reviewed one here, and both from an
+#: approval by deterministic qualification whose independent review continues after publication. The owner,
+#: October 5, 2026: "independent review should be an ongoing processes, not something that stops publications".
+#: That basis admits to the community tier only, names its own rule, and never counts as a completed review.
 REVIEWED_STATE, CARRIED_STATE, NO_STATE = "reviewed", "carried", "none"
-APPROVAL_STATES = (REVIEWED_STATE, CARRIED_STATE, NO_STATE)
+QUALIFIED_STATE = "qualified"
+QUALIFICATION_RULE = "deterministic_qualification_independent_review_ongoing"
+APPROVAL_STATES = (REVIEWED_STATE, CARRIED_STATE, NO_STATE, QUALIFIED_STATE)
 #: The carry record and the proof inside it, both versioned.
 CARRY_RECORD_TYPE = "starter_catalogue_approval_carry/v1"
 PROOF_RECORD_TYPE = "starter_catalogue_anchor_line_only_proof/v1"
@@ -189,6 +194,21 @@ def _judged(identity: str, row: dict, known: set, groups: "dict | None" = None) 
             f"item {identity!r} records a rejection while every reviewer approved")
 
 
+def _qualified(identity: str, row: dict) -> None:
+    """Refuse unless an approval by deterministic qualification is a community row that names its own rule.
+
+    The row's decision comes from the named deterministic participant that checked the exact bytes; no model
+    reviewer has approved the item, so the row never names the verified tier, a carry record or the rule of a
+    review."""
+    if row_tier(identity, row) != "community":
+        raise ManifestBuildError("approval_basis_inconsistent",
+            f"item {identity!r} was approved by qualification alone, which admits to the community tier only")
+    if row.get("rule_applied") != QUALIFICATION_RULE or "carry" in row:
+        raise ManifestBuildError("approval_basis_inconsistent",
+            f"item {identity!r} records a qualification approval without the rule {QUALIFICATION_RULE!r}, "
+            "or beside a carry record")
+
+
 def _carried(identity: str, row: dict) -> None:
     """Refuse unless a carried approval keeps the digest it was given for and carries its proof."""
     carry = row.get("carry")
@@ -258,12 +278,18 @@ def _review_index(folder: Path):
                     f"approved item {identity!r} does not name the digest of the bytes it covers")
             if row["approval_state"] == CARRIED_STATE:
                 _carried(identity, row)
+            elif row["approval_state"] == QUALIFIED_STATE:
+                _qualified(identity, row)
             elif row["approval_state"] != REVIEWED_STATE:
                 raise ManifestBuildError("review_record_inconsistent",
                     f"approved item {identity!r} must record whether its approval was reviewed or carried")
             elif "carry" in row:
                 raise ManifestBuildError("carry_record_inconsistent",
                     f"item {identity!r} records a reviewed approval beside a carry record")
+            if row["approval_state"] != QUALIFIED_STATE and row.get("rule_applied") == QUALIFICATION_RULE:
+                raise ManifestBuildError("approval_basis_inconsistent",
+                    f"item {identity!r} names the qualification rule beside a {row['approval_state']} approval; "
+                    "a qualification is never recorded as a completed review")
         else:
             if row["approval_ref"].strip():
                 raise ManifestBuildError("review_record_inconsistent",

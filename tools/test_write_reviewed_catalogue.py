@@ -209,6 +209,79 @@ class WriterTest(unittest.TestCase):
         with self.assertRaisesRegex(writer.WriterError, "folder_inside_repository"):
             self.write(self.review(), output=ROOT / "artifacts" / "reviewed-catalogue-check")
 
+    def unreviewed(self):
+        """A prepared catalogue no reviewer has judged."""
+        folder = self.root / "candidates"
+        folder.mkdir()
+        skill_catalogue(folder, "check_a_sum", "anthropic")
+        fixture_panel(self.root / "panel.json")
+        return folder
+
+    def qualify(self, folder, *, ledger=(), reviewer=(), tier="community", scan_record=()):
+        options = argparse.Namespace(repository=ROOT, panel=self.root / "panel.json", catalogue=folder,
+                                     ledger=list(ledger), reviewer=list(reviewer), tier=tier,
+                                     output=self.root / "qualified", recorded_at="2026-10-05", allow_fixture=False,
+                                     scan_record=list(scan_record), approval_basis=writer.QUALIFICATION_BASIS)
+        return writer.write(options)
+
+    def test_a_qualification_approval_is_community_and_never_counted_as_reviewed(self):
+        summary = self.qualify(self.unreviewed())
+        self.assertEqual((summary["approved"], summary["approval_basis"]), (1, writer.QUALIFICATION_BASIS))
+        reviewed = self.root / "qualified"
+        review = json.loads((reviewed / "reviews.json").read_text())
+        [row] = review["rows"]
+        self.assertEqual((row["outcome"], row["tier"], row["approval_state"], row["rule_applied"],
+                          row["independent_review"]),
+                         ("approved", "community", "qualified", writer.QUALIFICATION_RULE, "ongoing"))
+        self.assertEqual((review["totals"]["approved_as_reviewed"], review["totals"]["items_reviewed"],
+                          review["totals"]["approved_by_qualification"]), (0, 0, 1))
+        [participant] = review["reviewers"]
+        self.assertEqual((participant["family"], participant["model"]), ("deterministic_process", "none"))
+        self.assertEqual(row["decisions"][0]["reviewer_id"], participant["reviewer_id"])
+        schema, lines, payloads = bundle_tool.build(reviewed, accepted_licenses=("MIT",))
+        # The served approval keeps the shape every image reads: community, its reference and its exact bytes.
+        self.assertEqual(lines[0]["approval"], {"tier": "community", "approval_ref": row["approval_ref"],
+                                                "approved_digest": row["body_digest"]})
+        self.assertEqual(payloads, [SKILL])
+
+    def test_a_qualification_approval_is_never_verified_and_names_no_reviewer(self):
+        folder = self.unreviewed()
+        with self.assertRaisesRegex(writer.WriterError, "approval_basis_invalid"):
+            self.qualify(folder, tier="verified")
+        with self.assertRaisesRegex(writer.WriterError, "reviewer_set_invalid"):
+            self.qualify(folder, reviewer=["fixture.reviewer"])
+        options = argparse.Namespace(repository=ROOT, panel=self.root / "panel.json", catalogue=folder, ledger=[],
+                                     reviewer=[], tier="community", output=self.root / "reviewed",
+                                     recorded_at="2026-10-05", allow_fixture=False, scan_record=[])
+        with self.assertRaisesRegex(writer.WriterError, "reviewer_set_invalid"):
+            writer.write(options)
+
+    def test_a_rejection_in_a_given_ledger_or_a_refusing_scan_withholds_a_qualification(self):
+        folder = self.review("reject")
+        with self.assertRaisesRegex(writer.WriterError, "no_judged_items"):
+            self.qualify(folder, ledger=[str(self.root / "ledger.jsonl")])
+        digest = json.loads((folder / "items.json").read_text())["items"][0]["reference"]["digest"]
+        path = self.root / "scan.json"
+        path.write_text(json.dumps({"record_type": "package_safety_scan/v1", "packages": {digest: {
+            "identity": "check_a_sum", "refused": True, "refusals": ["skillspector_issue"], "notes": []}}}))
+        with self.assertRaisesRegex(writer.WriterError, "no_judged_items"):
+            self.qualify(folder, scan_record=[str(path)])
+
+    def test_the_release_tools_refuse_a_qualification_shown_as_a_review_or_as_verified(self):
+        """Known-wrong controls: a qualified row naming the verified tier, and a reviewed row naming the
+        qualification rule, would present a qualification as a completed independent review."""
+        self.qualify(self.unreviewed())
+        path = self.root / "qualified" / "reviews.json"
+        original = json.loads(path.read_text())
+        for change in ({"tier": "verified"}, {"approval_state": "reviewed"}, {"rule_applied": "community_tier_rule"}):
+            with self.subTest(change=change):
+                record = json.loads(json.dumps(original))
+                record["rows"][0].update(change)
+                path.write_text(json.dumps(record))
+                with self.assertRaises(Exception) as caught:
+                    bundle_tool.build(self.root / "qualified", accepted_licenses=("MIT",))
+                self.assertIn("approval_basis_inconsistent", str(caught.exception))
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -10,6 +10,8 @@
         --review REVIEW.json [--review REVIEW.json ...] --recorded-at TIME
     PYTHONPATH=src:tools python tools/qualify_generated_components.py admit --qualification RUN \\
         --review REVIEW.json --store-root STORE --decisions DECISIONS --output FOLDER --recorded-at DATE
+    PYTHONPATH=src:tools python tools/qualify_generated_components.py admit-qualified --qualification RUN \\
+        --store-root STORE --decisions LEDGER --held-versions HELD --output FOLDER --recorded-at DATE [--line LINE]
     PYTHONPATH=src:tools python tools/qualify_generated_components.py composition --bundle BUNDLE \\
         [--admitted FOLDER ...] [--output COMPOSITION.json]
 
@@ -135,6 +137,11 @@ def command_admit(options) -> dict:
     return admission.command(options, ROOT)
 
 
+def command_admit_qualified(options) -> dict:
+    from tools.component_qualification import qualified_admission
+    return qualified_admission.command(options, ROOT)
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     commands = parser.add_subparsers(dest="command", required=True)
@@ -204,6 +211,21 @@ def main(argv=None) -> int:
     admit.add_argument("--decisions", type=Path, required=True,
                        help="The decision ledger: every answered batch decision of the review must be the one it "
                             "records for that exact frame. It is read, never written.")
+    qualified = commands.add_parser(
+        "admit-qualified", help="Admit every qualified component of the generator versions that are not held, to the "
+                                "community tier with independent review ongoing (the owner, October 5, 2026).")
+    qualified.add_argument("--qualification", type=Path, required=True)
+    qualified.add_argument("--store-root", type=Path, required=True)
+    qualified.add_argument("--decisions", type=Path, required=True,
+                           help="The decision ledger, read only: recorded defect rates hold generator versions and "
+                                "rejected components are left out.")
+    qualified.add_argument("--held-versions", type=Path, required=True,
+                           help="The held-versions file the lead controls (generated_held_generator_versions/v1).")
+    qualified.add_argument("--output", type=Path, required=True)
+    qualified.add_argument("--recorded-at", required=True)
+    qualified.add_argument("--line", action="append", default=[], help="Only these supply lines.")
+    qualified.add_argument("--batch", action="append", default=[], help="Only these generator batches.")
+    qualified.add_argument("--producer-family", default="anthropic")
     mix = commands.add_parser("composition")
     mix.add_argument("--bundle", type=Path, required=True, help="The release bundle the library serves now.")
     mix.add_argument("--admitted", type=Path, action="append", default=[], help="An admission folder.")
@@ -211,7 +233,7 @@ def main(argv=None) -> int:
     options = parser.parse_args(argv)
     handler = {"self-test": command_self_test, "qualify": command_qualify, "sample-review": command_sample_review,
                "decisions-backfill": command_decisions_backfill, "admit": command_admit,
-               "composition": command_composition}[options.command]
+               "admit-qualified": command_admit_qualified, "composition": command_composition}[options.command]
     print(json.dumps(handler(options), sort_keys=True, default=str))
     return 0
 

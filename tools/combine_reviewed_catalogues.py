@@ -200,8 +200,10 @@ def combine(options) -> dict:
         "decision_rule": ("Each row retains its recorded admission rule and exact-byte evidence. Full reviews and "
                           "per-item screens retain their named decisions. Generated-batch admission retains its "
                           "per-item qualification and accepted independent sampling decision; unsampled items have "
-                          "no per-item model verdict. Execution is asserted only by the recorded checks, not by a "
-                          "tier. A written rejection withholds that item. The first catalogue retains its recorded "
+                          "no per-item model verdict. Rows approved by deterministic qualification alone (approval state "
+                          "qualified, October 5, 2026) are community rows whose independent review continues after "
+                          "publication; they carry no model verdict. Execution is asserted only by the recorded "
+                          "checks, not by a tier. A written rejection withholds that item. The first catalogue retains its recorded "
                           "reviewer-family exception; combining records creates no new review."),
         "totals": {"items_in_catalogue": len(rows), "items_reviewed": len(rows) - counted["not_reviewed"],
                    "approved": counted["approved"],
@@ -209,6 +211,8 @@ def combine(options) -> dict:
                                                and row["approval_state"] == "reviewed"),
                    "approved_by_carry": sum(1 for row in rows if row["outcome"] == "approved"
                                             and row["approval_state"] == "carried"),
+                   "approved_by_qualification": sum(1 for row in rows if row["outcome"] == "approved"
+                                                    and row["approval_state"] == "qualified"),
                    "rejected": counted["rejected"], "carry_refused": counted["carry_refused"],
                    "not_reviewed": counted["not_reviewed"]}})
     items_record = dict(base_items)

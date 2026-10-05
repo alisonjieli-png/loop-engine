@@ -163,6 +163,14 @@ def read_entry(value, *, sequence: int, previous_sha256: str) -> dict:
             decision["sample_complete"] != (decision["decided"] == decision["sampled"])):
         refuse("decision_ledger_row_invalid", f"entry {sequence}'s decision disagrees with its batch and plan")
     _read_frame(entry["frame"], entry["outcome"], size, sequence)
+    if "rejected_members" in decision:
+        # The sampled components the reviewer rejected, recorded by runs from October 5, 2026: each one is withdrawn
+        # if published and never admitted again, so their number is the decision's defective count.
+        rejected = decision["rejected_members"]
+        if type(rejected) is not list or len(rejected) != decision["defective"] or any(
+                type(row) is not list or len(row) != 3 or not all(type(part) is str and part for part in row)
+                for row in rejected) or len({row[0] for row in rejected}) != len(rejected):
+            refuse("decision_ledger_row_invalid", f"entry {sequence} lists its rejected members inexactly")
     source = _exact(entry["source"], "source", SOURCE_FIELDS)
     if source["kind"] not in (RUN_SOURCE, BACKFILL_SOURCE) or source["review_record_type"] != sampling.REVIEW_RECORD:
         refuse("decision_ledger_row_invalid", f"entry {sequence} names an unknown source")
@@ -276,6 +284,7 @@ class DecisionLedger:
         self.path, self._descriptor, self.writable = Path(path), descriptor, writable
         self.header, self.entries, self._data = None, [], b""
         self._by_frame, self._withheld_identity, self._withheld_digest, self.keys = {}, {}, {}, set()
+        self._rejected_identity, self._rejected_digest = {}, {}
         self._last_sha256 = ""
         self._load(data)
 
@@ -349,6 +358,13 @@ class DecisionLedger:
         for identity, _version, digest in entry["frame"]["members"] or ():
             self._withheld_identity.setdefault(identity, entry)
             self._withheld_digest.setdefault(digest, entry)
+        for identity, _version, digest in entry["decision"].get("rejected_members") or ():
+            self._rejected_identity.setdefault(identity, entry)
+            self._rejected_digest.setdefault(digest, entry)
+
+    def rejected(self, identity: str, package_digest: str) -> "dict | None":
+        """The entry whose reviewer rejected this component, by identity or by package digest, or None."""
+        return self._rejected_identity.get(identity) or self._rejected_digest.get(package_digest)
 
     def history_rows(self) -> list:
         """Every recorded decision as ``GeneratorHistory.from_decisions`` reads it, keyed by its generator."""

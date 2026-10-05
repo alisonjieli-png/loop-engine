@@ -24,6 +24,16 @@ The tier follows the "Library tiers" row of the decision table in AGENTS.md:
   item approves it, the licence is on the allowlist, the provenance is pinned
   and every automated check passes.
 
+With ``--approval-basis qualification`` (the owner, October 5, 2026: "independent
+review should be an ongoing processes, not something that stops publications")
+the folder needs no verdict: an item is approved for the community tier when
+its licence is on the allowlist, every deterministic pre-check passes for its
+exact package, every given scan record passes it and no given ledger holds a
+rejection of it. Its row records the approval state ``qualified`` and the rule
+``deterministic_qualification_independent_review_ongoing``, its one decision is
+the named deterministic participant's, and the release tools refuse such a row
+that names the verified tier or the rule of a review.
+
 A folder serves one tier and names one fixed set of reviewers, because the
 release tools require every named reviewer to have judged every judged row.
 An item enters the folder only when every named reviewer gave a verdict bound
@@ -84,6 +94,13 @@ REVIEW_RECORD = "starter_catalogue_independent_review/v2"
 REPORT_RECORD = "reviewed_catalogue_writer_report/v1"
 TIERS = ("verified", "community")
 VERIFIED, COMMUNITY = TIERS
+#: How a row's approval is reached: the named reviewers' verdicts, or deterministic qualification alone with
+#: independent review ongoing after publication (the owner, October 5, 2026), which admits to the community tier.
+REVIEW_BASIS, QUALIFICATION_BASIS = "review", "qualification"
+APPROVAL_BASES = (REVIEW_BASIS, QUALIFICATION_BASIS)
+QUALIFIED_STATE = "qualified"
+QUALIFICATION_RULE = "deterministic_qualification_independent_review_ongoing"
+QUALIFICATION_PARTICIPANT = "native_package_qualification/v1"
 #: The file placement the release tools give a one-file item of each kind (build_catalogue_release_bundle.py).
 KIND_PLACEMENT = {"skill": ("SKILL.md", "skill_definition"), "instruction_file": ("AGENTS.md", "instruction_file")}
 ORIGIN_LAYER = {"context": "context_intelligence", "code": "code_intelligence"}
@@ -97,6 +114,12 @@ RULES = {
                 "approves it against the written criteria. One written objection withholds approval. Tier: "
                 "Community; it becomes Verified only through the full review."),
 }
+QUALIFICATION_DECISION_RULE = (
+    "An item is approved for the community tier when its licence allows direct copying, its provenance is pinned, "
+    "every deterministic pre-check passes for its exact package and, where package safety scan records are given, "
+    "the scanner passed it, and no reviewer in the given ledgers rejected it. No model reviewer has approved it: "
+    "independent review is ongoing after publication (the owner, October 5, 2026), by a reviewer of a family that "
+    "did not produce it, and an item it rejects is withdrawn. It becomes Verified only through the full review.")
 #: Each written item carries the kinds of step it supports, the kind of file a harness picks up, its component
 #: form (component_form/v1, September 27, 2026) and the job titles, industries, levels, languages and
 #: geographies its words name, as served attributes (roadmap S-6.206, S-6.208, S-6.209). Each rules engine names
@@ -203,15 +226,28 @@ def write(options) -> dict:
         refuse("output_exists", "the reviewed catalogue folder is written once, into a new folder")
     if options.tier not in TIERS:
         refuse("tier_unknown", f"a tier is one of {list(TIERS)}")
+    basis = getattr(options, "approval_basis", REVIEW_BASIS)
+    if basis not in APPROVAL_BASES:
+        refuse("approval_basis_unknown", f"an approval basis is one of {list(APPROVAL_BASES)}")
+    qualification = basis == QUALIFICATION_BASIS
     panel = config.PanelConfiguration.from_dict(_json(options.panel))
     reviewers = [panel.installation(name) for name in options.reviewer]
     families = {reviewer.family for reviewer in reviewers}
-    if len(set(options.reviewer)) != len(options.reviewer) or len(families) != len(reviewers):
-        refuse("reviewer_set_invalid", "each named reviewer is its own family")
-    if options.tier == COMMUNITY and len(reviewers) != 1:
-        refuse("reviewer_set_invalid", "a Community folder names exactly one reviewing family")
-    if options.tier == VERIFIED and len(reviewers) < 2:
-        refuse("reviewer_set_invalid", "a Verified folder names at least two reviewing families")
+    if qualification:
+        if options.tier != COMMUNITY:
+            refuse("approval_basis_invalid", "an approval by qualification admits to the community tier only")
+        if reviewers:
+            refuse("reviewer_set_invalid", "an approval by qualification names no reviewer; its independent review "
+                                           "is ongoing after publication")
+    else:
+        if not options.ledger or not reviewers:
+            refuse("reviewer_set_invalid", "a reviewed folder names its reviewers and their ledgers")
+        if len(set(options.reviewer)) != len(options.reviewer) or len(families) != len(reviewers):
+            refuse("reviewer_set_invalid", "each named reviewer is its own family")
+        if options.tier == COMMUNITY and len(reviewers) != 1:
+            refuse("reviewer_set_invalid", "a Community folder names exactly one reviewing family")
+        if options.tier == VERIFIED and len(reviewers) < 2:
+            refuse("reviewer_set_invalid", "a Verified folder names at least two reviewing families")
     # A licensed import export is read with the imported reader and judged under the imported profile; an
     # original catalogue with the original ones. Each profile's verdicts are keyed by its own request.
     is_import = imported.is_imported_catalogue(Path(options.catalogue))
@@ -235,6 +271,23 @@ def write(options) -> dict:
             if record.get("record_type") != "package_safety_scan/v1":
                 refuse("scan_record_unsupported", "a scan record is package_safety_scan/v1")
             scans.update(record["packages"])
+    participant = None
+    if qualification:
+        # The deterministic participant names exactly what it checked, so its decision is bound to that evidence.
+        evidence = {"catalogue": str(Path(options.catalogue).resolve()),
+                    "catalogue_source_revision": catalogue.source_revision,
+                    "prechecks": {kind: sorted(engine.engine_id for engine in engines_of_kind)
+                                  for kind, engines_of_kind in sorted(checks.items())},
+                    "scan_records": [{"path": str(path), "sha256": sha256_hex(Path(path).read_bytes())}
+                                     for path in options.scan_record],
+                    "ledgers": [str(path) for path in options.ledger]}
+        digest = sha256_hex(json.dumps(evidence, sort_keys=True).encode())
+        participant = {"reviewer_id": f"{QUALIFICATION_PARTICIPANT}.{digest}",
+                       "label": "Deterministic native pre-checks and package scans of the exact package; independent "
+                                "review ongoing",
+                       "family": "deterministic_process", "model": "none", "engine_kind": "deterministic_qualification",
+                       "installation_sha256": digest, "lens": "deterministic_qualification",
+                       "produced_any_item_under_review": False, "evidence": evidence}
     selected = list(catalogue.identities())
     identities_file = getattr(options, "identities_file", None)
     if identities_file:
@@ -247,7 +300,7 @@ def write(options) -> dict:
         request = catalogue.request(identity, catalogue.producer_for(identity), criteria, instructions.sha256)
         producer = request.producer
         reference = request.item["reference"]
-        if _same_family(reviewers, producer):
+        if not qualification and _same_family(reviewers, producer):
             left_out.append({"identity": identity, "reason": f"a named reviewer is of the producer family "
                                                              f"{producer.family}"})
             continue
@@ -268,6 +321,18 @@ def write(options) -> dict:
                                                                  + ", ".join(scan["refusals"])})
                 continue
         decisions, missing, scripted = [], [], False
+        if qualification:
+            # A written objection anywhere still withholds approval: a rejection of this exact request in a given
+            # ledger leaves the item out.
+            objected = sorted({verdict["installation_id"] for other in panel.installations
+                               for _name, verdict, _call in verdicts_for(ledgers, other, request, instructions)
+                               if verdict["decision"] == "reject"})
+            if objected:
+                left_out.append({"identity": identity, "reason": "rejected by " + ", ".join(objected)})
+                continue
+            decisions.append({"reviewer_id": participant["reviewer_id"], "decision": "approve", "reason": "",
+                              "findings": [], "approved_digest": request.body_sha256, "reported_model": "none",
+                              "call_ref": "", "verdicts_on_record": 0})
         for reviewer in reviewers:
             found = verdicts_for(ledgers, reviewer, request, instructions)
             if not found:
@@ -358,9 +423,10 @@ def write(options) -> dict:
                      "body_size_bytes": form["size"], "declared_license": reference["license"],
                      "source_layer": ORIGIN_LAYER.get(spec["layer"], "context_intelligence"),
                      "decisions": decisions, "outcome": outcome,
-                     "approval_state": "none" if rejected else "reviewed",
+                     "approval_state": "none" if rejected else (QUALIFIED_STATE if qualification else "reviewed"),
                      "rule_applied": ("one_written_objection_withholds_approval" if rejected
-                                      else f"{options.tier}_tier_rule"),
+                                      else QUALIFICATION_RULE if qualification else f"{options.tier}_tier_rule"),
+                     **({"independent_review": "ongoing"} if qualification else {}),
                      "approval_ref": "" if rejected else f"reviews.json#{identity}", "tier": options.tier,
                      "producer": {"producer_identity": producer.producer_identity, "family": producer.family},
                      "reviewed_package": {"package_digest": package.package_digest,
@@ -375,19 +441,25 @@ def write(options) -> dict:
         "record_type": REVIEW_RECORD, "recorded_at": options.recorded_at, "catalogue_folder": str(output),
         "catalogue_items_file": "items.json", "catalogue_items_record_type": ITEMS_RECORD,
         "catalogue_source_revision": catalogue.source_revision, "approval_ref_prefix": "reviews.json#",
-        "tier": options.tier, "decision_rule": RULES[options.tier],
+        "tier": options.tier,
+        "decision_rule": QUALIFICATION_DECISION_RULE if qualification else RULES[options.tier],
+        **({"approval_basis": QUALIFIED_STATE} if qualification else {}),
         "what_an_approval_permits": ("An approved row may be named by a release bundle and served, labelled with "
                                      "its tier, by a host whose licence policy accepts its licence. Approval "
                                      "grants no effect, network access, spending or model authority."),
         "what_a_rejection_records": ("A rejected row stays a candidate with each objection's reason and findings. "
                                      "It is never bundled and may be repaired, which is new bytes and a new review."),
-        "reviewers": [{"reviewer_id": reviewer.installation_id, "label": f"{reviewer.model} ({reviewer.family})",
-                       "family": reviewer.family, "model": reviewer.model, "engine_kind": reviewer.engine_kind,
-                       "installation_sha256": reviewer.sha256, "lens": reviewer.lens,
-                       "produced_any_item_under_review": False} for reviewer in reviewers],
+        "reviewers": [participant] if qualification else [
+            {"reviewer_id": reviewer.installation_id, "label": f"{reviewer.model} ({reviewer.family})",
+             "family": reviewer.family, "model": reviewer.model, "engine_kind": reviewer.engine_kind,
+             "installation_sha256": reviewer.sha256, "lens": reviewer.lens,
+             "produced_any_item_under_review": False} for reviewer in reviewers],
         "ledgers": [{"name": name, "path": str(path)} for (name, _ledger, _calls), path in zip(ledgers, options.ledger)],
-        "totals": {"items_in_catalogue": len(rows), "items_reviewed": len(rows), "approved": counted["approved"],
-                   "approved_as_reviewed": counted["approved"], "approved_by_carry": 0,
+        "totals": {"items_in_catalogue": len(rows), "items_reviewed": 0 if qualification else len(rows),
+                   "approved": counted["approved"],
+                   "approved_as_reviewed": 0 if qualification else counted["approved"], "approved_by_carry": 0,
+                   **({"items_qualified": len(rows), "approved_by_qualification": counted["approved"]}
+                      if qualification else {}),
                    "rejected": counted["rejected"], "carry_refused": 0, "not_reviewed": 0},
         "rows": rows}
     items_record = {"record_type": ITEMS_RECORD, "source_revision": catalogue.source_revision,
@@ -405,7 +477,7 @@ def write(options) -> dict:
     (output / "reviews.json").write_text(json.dumps(review, indent=1, sort_keys=True) + "\n")
     (output / "attribute-schema.json").write_text(json.dumps(schema, indent=2) + "\n")
     tagged = [item["attributes"] for item in items]
-    report = {"record_type": REPORT_RECORD, "output": str(output), "tier": options.tier,
+    report = {"record_type": REPORT_RECORD, "output": str(output), "tier": options.tier, "approval_basis": basis,
               "reviewers": options.reviewer, "approved": counted["approved"], "rejected": counted["rejected"],
               "left_out": left_out,
               "harness_kinds": dict(sorted(Counter(values["harness_kind"] for values in tagged).items())),
@@ -418,7 +490,8 @@ def write(options) -> dict:
               "items_without_a_value": {facet: sum(1 for values in tagged if not values.get(facet))
                                         for facet in FACETS}}
     (output / "writer-report.json").write_text(json.dumps(report, indent=1, sort_keys=True) + "\n")
-    return {key: report[key] for key in ("output", "tier", "approved", "rejected")} | {"left_out": len(left_out)}
+    return {key: report[key] for key in ("output", "tier", "approval_basis", "approved", "rejected")} | {
+        "left_out": len(left_out)}
 
 
 def main(argv=None) -> int:
@@ -427,9 +500,16 @@ def main(argv=None) -> int:
     parser.add_argument("--panel", type=Path, default=HERE / "candidate_review/resources/panel.json",
                         help="The panel whose installations the named reviewers are.")
     parser.add_argument("--catalogue", type=Path, required=True)
-    parser.add_argument("--ledger", action="append", default=[], required=True)
-    parser.add_argument("--reviewer", action="append", default=[], required=True)
+    parser.add_argument("--ledger", action="append", default=[],
+                        help="A review ledger; required with the review basis. With the qualification basis, a "
+                             "rejection in a given ledger still leaves its item out.")
+    parser.add_argument("--reviewer", action="append", default=[],
+                        help="A named reviewer; required with the review basis, refused with the qualification one.")
     parser.add_argument("--tier", required=True, choices=TIERS)
+    parser.add_argument("--approval-basis", choices=APPROVAL_BASES, default=REVIEW_BASIS,
+                        help="review (default): the named reviewers' verdicts decide. qualification: every "
+                             "deterministic pre-check and given scan passes, no given ledger holds a rejection, tier "
+                             "community, independent review ongoing after publication (the owner, October 5, 2026).")
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--recorded-at", required=True)
     parser.add_argument("--scan-record", action="append", default=[],

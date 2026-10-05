@@ -707,3 +707,100 @@ class RecordedBackfillTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class QualifiedAdmissionTests(unittest.TestCase):
+    """admit-qualified: deterministic qualification admits, independent review ongoing (October 5, 2026)."""
+
+    def setUp(self):
+        from tools.component_qualification import qualified_admission
+        self.route = qualified_admission
+        self.folder = Path(tempfile.mkdtemp(prefix="qualified-admission-"))
+        self.addCleanup(shutil.rmtree, self.folder, True)
+        self.components = _components(4, tag="q")
+        self.generator = sampling.generator_of(self.components[0].batch)
+        self.qualification = self.folder / "qualification"
+        self.qualification.mkdir()
+        (self.qualification / "qualification.jsonl").write_text("".join(json.dumps({
+            "identity": component.identity, "outcome": "qualified", "batch": component.batch, "line": component.line,
+            "record_version": component.record_version, "package_digest": component.package.package_digest,
+            "qualifier": dict(QUALIFIER), "vetting": {"implementation_tested": "fixture"},
+            "self_test_sha256": "0" * 64, "checks": []}) + "\n" for component in self.components))
+        self.decisions = self.folder / "decisions.jsonl"
+        decisions.create(self.decisions, **CREATED)
+        self.held = self.folder / "held.json"
+        self._hold()
+
+    def _hold(self, *generators):
+        self.held.write_text(json.dumps({"record_type": self.route.HELD_RECORD, "held": [
+            {"generator": generator, "reason": "a check", "held_at": "2026-10-05", "held_by": "a check"}
+            for generator in generators]}))
+
+    def _admit(self, name="admitted"):
+        store = {component.identity: component for component in self.components}
+        return self.route.admit_qualified(self.qualification, None, self.decisions, self.held, self.folder / name,
+                                          "2026-10-05", ROOT, components=store)
+
+    def _decided(self, defective: int, rejected=()):
+        """A complete decision about another batch of the same generator, recorded in the ledger."""
+        batch = self.generator + "@" + "e" * 12
+        records = _records(batch, 1767, "e")
+        entry = _batch_entry(records, defective=defective)
+        if rejected:
+            entry["decision"]["rejected_members"] = [[component.identity, component.record_version,
+                                                      component.package.package_digest] for component in rejected]
+        _append(self.decisions, _review({batch: entry}, "q"), {batch: records})
+
+    def test_every_qualified_component_of_an_unheld_version_is_admitted_as_qualified(self):
+        from build_host_catalogue_manifest import _review_index
+        result = self._admit()
+        self.assertEqual(result["admitted"], 4)
+        output = self.folder / "admitted"
+        review = json.loads((output / "reviews.json").read_text())
+        self.assertEqual({(row["approval_state"], row["tier"], row["independent_review"]) for row in review["rows"]},
+                         {("qualified", "community", "ongoing")})
+        self.assertEqual((review["totals"]["approved_as_reviewed"], review["totals"]["approved_by_qualification"]),
+                         (0, 4))
+        self.assertEqual([reviewer["family"] for reviewer in review["reviewers"]], ["deterministic_process"])
+        # The release tools' shared reader accepts every row as an approved community row.
+        _record, index = _review_index(output)
+        self.assertEqual({row["outcome"] for row in index.values()}, {"approved"})
+        self.assertEqual(len((output / "decided.txt").read_text().splitlines()), 4)
+        # Every attribute an item carries is declared, so the bundle builder can serve the folder as written.
+        declared = {item["name"] for item in json.loads((output / "attribute-schema.json").read_text())["attributes"]}
+        items = json.loads((output / "items.json").read_text())["items"]
+        self.assertLessEqual({name for item in items for name in item["attributes"]}, declared)
+        self.assertFalse(list(self.folder.glob("admitted.partial-*")))
+
+    def test_a_version_the_held_file_names_is_left_out(self):
+        for held in (self.generator, self.generator.split("/")[0] + "/*"):
+            with self.subTest(held=held):
+                self._hold(held)
+                with self.assertRaises(self.route.QualifiedAdmissionError) as caught:
+                    self._admit("held-" + held.replace("/", "-").replace("*", "all"))
+                self.assertEqual(caught.exception.code, "nothing_admitted")
+
+    def test_a_generator_at_the_tolerance_in_the_ledger_is_held(self):
+        """Known-wrong control: without the ledger's rate, function_extracts 1.1.0 would be admitted again."""
+        self._decided(defective=21)
+        with self.assertRaises(self.route.QualifiedAdmissionError) as caught:
+            self._admit()
+        self.assertEqual(caught.exception.code, "nothing_admitted")
+        held = self.route.held_generators(decisions.DecisionLedger.open(self.decisions, for_append=False), {},
+                                          [self.generator])
+        self.assertIn("at or above the tolerance", held[self.generator])
+
+    def test_a_component_a_reviewer_rejected_is_never_admitted(self):
+        self._decided(defective=1, rejected=self.components[:1])
+        result = self._admit()
+        self.assertEqual((result["admitted"], result["left_out"]), (3, {"rejected_by_a_reviewer": 1}))
+        ledger = decisions.DecisionLedger.open(self.decisions, for_append=False)
+        self.assertIsNotNone(ledger.rejected("another-identity", self.components[0].package.package_digest))
+
+    def test_rejected_members_must_match_the_defective_count(self):
+        batch = self.generator + "@" + "e" * 12
+        records = _records(batch, 1767, "e")
+        entry = _batch_entry(records, defective=2)
+        entry["decision"]["rejected_members"] = [[self.components[0].identity, "v", "d" * 64]]
+        with self.assertRaises(decisions.DecisionLedgerError):
+            _append(self.decisions, _review({batch: entry}, "q"), {batch: records})

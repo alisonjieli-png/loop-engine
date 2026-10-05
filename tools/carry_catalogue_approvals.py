@@ -64,8 +64,9 @@ BODY_SUFFIX = ".md"
 TEMPORARY_SUFFIX = ".carry"
 #: The outcomes a row may record. Only ``approved`` may be served.
 APPROVED, REJECTED, NOT_REVIEWED, CARRY_REFUSED = "approved", "rejected", "not_reviewed", "carry_refused"
-#: How an approval was reached. A reader tells a carried approval from a reviewed one here.
-REVIEWED_STATE, CARRIED_STATE, NO_STATE = "reviewed", "carried", "none"
+#: How an approval was reached. A reader tells a carried approval from a reviewed one here. An approval by
+#: deterministic qualification (``qualified``) covers only the bytes that were qualified and is never carried.
+REVIEWED_STATE, CARRIED_STATE, NO_STATE, QUALIFIED_STATE = "reviewed", "carried", "none", "qualified"
 #: The sentence each kind of body carries, with the revision it was anchored to. The
 #: anchor tool rewrites the revision inside these sentences and nothing else. A named
 #: check requires that these are the sentences the anchor tool uses.
@@ -325,6 +326,7 @@ def _carried(row: dict, proof: AnchorLineProof, carried_at: str, reviewed_revisi
 
 def _totals(rows: list) -> dict:
     outcomes = [row["outcome"] for row in rows]
+    qualified = sum(1 for row in rows if row["outcome"] == APPROVED and row["approval_state"] == QUALIFIED_STATE)
     return {"items_in_catalogue": len(rows),
             "items_reviewed": sum(1 for row in rows if row["outcome"] != NOT_REVIEWED),
             "approved": outcomes.count(APPROVED),
@@ -332,6 +334,8 @@ def _totals(rows: list) -> dict:
                                         and row["approval_state"] == REVIEWED_STATE),
             "approved_by_carry": sum(1 for row in rows if row["outcome"] == APPROVED
                                      and row["approval_state"] == CARRIED_STATE),
+            # Named only where a record holds an approval by qualification, so earlier records keep their bytes.
+            **({"approved_by_qualification": qualified} if qualified else {}),
             "rejected": outcomes.count(REJECTED),
             "carry_refused": outcomes.count(CARRY_REFUSED),
             "not_reviewed": outcomes.count(NOT_REVIEWED)}
@@ -372,6 +376,18 @@ def carried_record(request: CarryRequest):
         current = _body(folder, row["body_path"]).read_bytes()
         digest, size = _measured(current)
         named_digest, named_size = _reviewed_measure(row)
+        if row["approval_state"] == QUALIFIED_STATE:
+            # No reviewer read these bytes, so there is no review to carry: unchanged bytes keep their qualification,
+            # changed bytes are qualified again.
+            if (digest, size) == (named_digest, named_size):
+                rows.append(deepcopy(row))
+                report.append({"identity": identity, "carried": False, "unchanged": True,
+                               "reason": "the body is the bytes that were qualified"})
+            else:
+                reason = "an approval by qualification covers only the qualified bytes; qualify the changed body"
+                rows.append(_refused(row, reason, named_digest, named_size, reviewed_revision, digest, size))
+                report.append({"identity": identity, "carried": False, "reason": reason})
+            continue
         payload = request.reviewed.read(identity)
         if payload is None:
             reason = f"the bytes this approval names are not in {request.reviewed.describe()}"

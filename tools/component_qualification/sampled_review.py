@@ -680,7 +680,12 @@ def _review(options, root: Path, ledger) -> dict:
                                    controls_approved=sum(1 for row in control_rows if row["decision"] == "approve"))
         decision.update({"decided_at": _now(), "run_id": result.run_id, "stop_reason": result.stop_reason,
                          "controls_rejected": sum(1 for row in control_rows if row["decision"] == "reject"),
-                         "controls_without_verdict": sum(1 for row in control_rows if row["decision"] is None)})
+                         "controls_without_verdict": sum(1 for row in control_rows if row["decision"] is None),
+                         # Each sampled component the reviewer rejected, exactly: the decision ledger keeps them, so
+                         # a published one is withdrawn and none is admitted again (October 5, 2026).
+                         "rejected_members": sorted([row["identity"], qualified[row["identity"]]["record_version"],
+                                                     qualified[row["identity"]]["package_digest"]]
+                                                    for row in decided if row["decision"] == "reject")})
         if not record["admissible"]:
             # The rule's arithmetic is kept as a measurement; the decision itself admits nothing.
             decision["measured_outcome"] = decision["outcome"]
