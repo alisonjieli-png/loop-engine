@@ -16,6 +16,8 @@ loop-engine service
 │                                      which accounts follow-catalogue-release --all-tenants would move
 ├── catalogue-formats                  report the bundle, release and segment versions this image reads,
 │                                      reading only the host file, so a publisher can negotiate first
+├── index-catalogue                    build the disk index of the active release before a restart, so a
+│                                      host that selects the disk engine opens its index at start
 ├── follow-catalogue-release           move named accounts, or with --all-tenants only the accounts
 │                                      already granted every served item, to grants that follow the release
 └── stop-following-catalogue-release   return one account to a fixed list of what it receives now
@@ -34,7 +36,7 @@ from .storage import ServiceCatalogBinding
 
 CATALOGUE_COMMANDS = ("publish-catalogue", "rollback-catalogue", "withdraw-catalogue-item",
                       "catalogue-status", "follow-catalogue-release", "stop-following-catalogue-release",
-                      "catalogue-formats")
+                      "catalogue-formats", "index-catalogue")
 
 
 def _refuse(code, message):
@@ -93,6 +95,30 @@ def publish_catalogue(path, bundle_folder, *, expected_bundle_digest, expected_r
     if isinstance(bundle, SegmentedBundle):
         return publish_segmented(context, bundle, expected_release=expected_release)
     return publish(context, bundle, expected_release=expected_release)
+
+
+def index_catalogue(path):
+    """Build or open the disk index of the active release, as the service would at start, and report it.
+
+    It refuses a host file whose catalogue section does not select the disk engine. It writes only under the
+    section's index root, never to the service store, and a second run opens what the first built.
+    """
+    from .catalogue_disk_view import ensure_release_index
+    from .catalogue_index_engines import DISK_ENGINE, select_engine
+    from .http_entrypoint import host_family_policy, host_license_policy
+    import time as _time
+    configuration, settings, config = _host(path, needs_bodies=True)
+    if settings.search_engine != DISK_ENGINE:
+        _refuse("invalid_request", "index-catalogue builds the disk index of a host file that selects "
+                                   "sqlite_disk_index in service_catalogue_source/v2")
+    select_engine(settings.search_engine)
+    started = _time.perf_counter()
+    header, descriptor, _state = ensure_release_index(config, settings, license_policy=host_license_policy(configuration),
+                                                      family_policy=host_family_policy(configuration))
+    return {"record_type": "catalogue_index_operation/v1", "release_id": header.release_id,
+            "content_digest": header.content_digest, "base": descriptor["base"], "delta": descriptor["delta"],
+            "removed": len(descriptor["removed"]), "excluded": len(descriptor.get("excluded", ())),
+            "seconds": round(_time.perf_counter() - started, 2)}
 
 
 def follow_all_tenants_preview(path):
@@ -160,4 +186,6 @@ def run_catalogue_command(arguments):
         from .catalogue_segments import catalogue_formats
         _host(path)
         return catalogue_formats()
+    if command == "index-catalogue":
+        return index_catalogue(path)
     _refuse("invalid_request", "not a catalogue command")

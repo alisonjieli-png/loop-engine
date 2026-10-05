@@ -16,6 +16,8 @@ Kit
 ├── service path   the same served hits, summary, file population and served count through the provisioning
 │                  authority, for a version 2 release, an internal-attribute filter refused on both
 ├── withdrawal     an item withdrawn after the index was built is never returned and never read
+├── commands       catalogue-formats, publish-catalogue of a version 2 bundle and index-catalogue through the
+│                  service entry point, and a host start on the disk view
 ├── overlay        a later release served as base + delta never returns a removed or replaced record, and its
 │                  vector pools equal a fresh build's
 ├── selection      an engine the host names is refused at start when it cannot run, never replaced
@@ -268,6 +270,71 @@ def _selection_checks(check):
                                                   search_engine=DISK_ENGINE), "unsupported_catalogue_source"))
 
 
+def _command_checks(check, root):
+    """The formats, publish and index commands through the service entry point, and a host start on the disk view."""
+    import io
+    from contextlib import redirect_stdout
+    from .catalogue_disk_view import DiskCatalogueView
+    from .catalogue_release_checks import bundle_line
+    from .catalogue_segment_checks import SegmentFixture
+    from .http_entrypoint import load_host_application, main
+    case = SegmentFixture(root)
+    base = case.base
+    image = Path(root) / "image"
+    (image / "bodies").mkdir(parents=True)
+    (image / "bodies" / "packaged.md").write_bytes(b"# Packaged item\n")
+    reference = bundle_line("packaged_item", [("SKILL.md", b"# Packaged item\n", "text/markdown",
+                                                "skill_definition")])["reference"]
+    (image / "manifest.json").write_text(json.dumps({
+        "record_type": "host_attested_intelligence_manifest/v1", "artifact_root": str(image),
+        "items": [{"reference": reference, "body_path": "bodies/packaged.md", "approval_ref": "review:packaged",
+                   "grants": []}]}))
+    (Path(root) / "index").mkdir()
+    section = {"record_type": "service_catalogue_source/v2", "source": "store",
+               "body_store_root": str(Path(root) / "bodies"), "refresh_seconds": 5,
+               "search_engine": "sqlite_disk_index", "index_root": str(Path(root) / "index")}
+    configuration = {"record_type": "service_http_host_configuration/v1",
+                     "runtime": {"database_path": base.config.database_path, "writes_authorized": True},
+                     "http": {"public_base_url": "http://127.0.0.1:8080", "allowed_hosts": ["127.0.0.1:8080"],
+                              "allow_loopback_http": True},
+                     "authentication": {}, "manifest_path": str(image / "manifest.json"), "catalogue": section}
+    host = Path(root) / "host.json"
+    host.write_text(json.dumps(configuration))
+
+    def command(*arguments, config=host):
+        printed = io.StringIO()
+        try:
+            with redirect_stdout(printed):
+                status_code = main([*arguments, "--config", str(config)])
+            return status_code, json.loads(printed.getvalue())
+        except Exception as error:  # noqa: BLE001 - a refusal is an answer here
+            return None, getattr(error, "code", str(error))
+    formats = command("catalogue-formats")
+    check("catalogue_formats_answers_through_the_service_entry_point",
+          formats[0] == 0 and "catalogue_release_bundle/v2" in formats[1]["bundle_record_types"])
+    folder = case.write(case.lines([f"skill_{index:03d}" for index in range(30)]))
+    from .catalogue_packages import sha256_hex
+    digest = sha256_hex((folder / "bundle.json").read_bytes())
+    published = command("publish-catalogue", "--bundle", str(folder), "--expected-bundle-digest", digest)
+    first = command("index-catalogue")
+    again = command("index-catalogue")
+    check("publish_catalogue_reads_a_version_2_bundle_and_index_catalogue_builds_once",
+          published[0] == 0 and published[1]["release_record_type"] == "catalogue_release/v2"
+          and first[0] == 0 and first[1]["release_id"] == published[1]["release_id"]
+          and again[1]["base"] == first[1]["base"])
+    application, _configuration = load_host_application(str(host))
+    view = application.provisioning.current_view()
+    check("a_host_that_selects_the_disk_engine_starts_on_the_disk_view",
+          isinstance(view, DiskCatalogueView) and view.release_id == published[1]["release_id"]
+          and len(view.catalogue.items) == 30)
+    plain = Path(root) / "host-v1.json"
+    plain.write_text(json.dumps({**configuration, "catalogue": {
+        "record_type": "service_catalogue_source/v1", "source": "store",
+        "body_store_root": str(Path(root) / "bodies"), "refresh_seconds": 5}}))
+    check("index_catalogue_is_refused_for_a_host_that_keeps_the_in_memory_engine",
+          command("index-catalogue", config=plain) == (None, "invalid_request"))
+
+
 def _lance_checks(check, root):
     """The engine (c) prototype on the same edge: filters exact against the baseline, the edge's shape kept."""
     from .catalogue_index_engines import CatalogueSearchIndexEngine, index_size
@@ -315,7 +382,7 @@ def run_checks(check=None):
                 "all_passed": True, "not_tested": availability()["reason"]}
     _selection_checks(check)
     from .catalogue_lance_index import availability as lance_availability
-    groups = [_edge_and_exactness_checks, _overlay_checks, _service_path_checks, _integrity_checks]
+    groups = [_edge_and_exactness_checks, _overlay_checks, _service_path_checks, _command_checks, _integrity_checks]
     if lance_availability()["available"]:
         groups.append(_lance_checks)
     for group in groups:
