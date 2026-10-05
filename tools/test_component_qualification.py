@@ -263,8 +263,12 @@ class ReuseTests(unittest.TestCase):
 
 class CheckSelectionTests(unittest.TestCase):
     def test_live_review_refuses_uncommitted_qualification_before_provider_access(self):
-        from tools.component_qualification import sampled_review
-        options = SimpleNamespace(qualification=Path("unused"), batch=[], authorize_model_calls=True)
+        from tools.component_qualification import decisions, sampled_review
+        folder = Path(tempfile.mkdtemp(prefix="uncommitted-"))
+        self.addCleanup(shutil.rmtree, folder, True)
+        decisions.create(folder / "decisions.jsonl", created_at="2026-10-05T00:00:00Z", created_by="a check")
+        options = SimpleNamespace(qualification=Path("unused"), batch=[], authorize_model_calls=True,
+                                  decisions=folder / "decisions.jsonl")
         with mock.patch.object(sampled_review, "_load_qualified", return_value={"candidate": {
                 "batch": "fixture", "qualifier": {"uncommitted_changes": True}}}), \
                 mock.patch.object(sampled_review, "_panel") as panel:

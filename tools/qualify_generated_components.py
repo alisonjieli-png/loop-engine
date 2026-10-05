@@ -4,7 +4,10 @@
     PYTHONPATH=src:tools python tools/qualify_generated_components.py qualify --store-root STORE \\
         --output-folder RUN [--line LINE] [--limit N] [--workers N] [--engine bwrap_rlimits] [--known-bundle B]
     PYTHONPATH=src:tools python tools/qualify_generated_components.py sample-review --qualification RUN \\
-        --store-root STORE --ledger LEDGER --output REVIEW.json [--authorize-model-calls --call-ceiling N]
+        --store-root STORE --ledger LEDGER --decisions DECISIONS --output REVIEW.json \\
+        [--calibrate --authorize-model-calls --call-ceiling N]
+    PYTHONPATH=src:tools python tools/qualify_generated_components.py decisions-backfill --decisions DECISIONS \\
+        --review REVIEW.json [--review REVIEW.json ...] --recorded-at TIME
     PYTHONPATH=src:tools python tools/qualify_generated_components.py admit --qualification RUN \\
         --review REVIEW.json --store-root STORE --output FOLDER --recorded-at DATE
     PYTHONPATH=src:tools python tools/qualify_generated_components.py composition --bundle BUNDLE \\
@@ -12,9 +15,11 @@
 
 Qualification is deterministic and makes no model call. The sampled review asks one calibrated reviewer
 from a family other than the producer's about a random sample of each generator batch; model calls need
---authorize-model-calls and stay within the declared ceilings, every call written to the review ledger.
-Admission writes the qualified components of accepted batches as a reviewed folder the existing combine
-and bundle tools read. See tools/component_qualification/README.md.
+--authorize-model-calls and the decision ledger, and stay within the declared ceilings, every call written
+to the review ledger. The decision ledger holds every complete batch decision: plans read each generator's
+recorded defect rate from it, a decided frame is never sampled again, and decisions-backfill records the
+decisions of earlier review records in it. Admission writes the qualified components of accepted batches as
+a reviewed folder the existing combine and bundle tools read. See tools/component_qualification/README.md.
 """
 from __future__ import annotations
 
@@ -104,6 +109,11 @@ def command_sample_review(options) -> dict:
     return sampled_review.command(options, ROOT)
 
 
+def command_decisions_backfill(options) -> dict:
+    from tools.component_qualification import decisions
+    return decisions.backfill(options.decisions, options.review, recorded_at=options.recorded_at)
+
+
 def command_composition(options) -> dict:
     from collections import Counter
     from tools.component_qualification import composition
@@ -158,7 +168,11 @@ def main(argv=None) -> int:
     review.add_argument("--store-root", type=Path, required=True)
     review.add_argument("--ledger", type=Path, required=True)
     review.add_argument("--output", type=Path, required=True)
-    review.add_argument("--history", type=Path, help="Earlier batch decisions (JSON lines), for observed rates.")
+    review.add_argument("--decisions", type=Path,
+                        help="The decision ledger (tools/component_qualification/decisions.py), required with "
+                             "--authorize-model-calls: plans read each generator's recorded defect rate from it, a "
+                             "batch whose frame it already decided is refused, and the run appends every complete "
+                             "batch decision to it. A run without model calls reads it when given.")
     review.add_argument("--reviewer", default="tactical.gemma-4-coding-abliterated")
     review.add_argument("--producer-family", default="anthropic",
                         help="The family whose model wrote the generators (they call no model themselves).")
@@ -173,6 +187,13 @@ def main(argv=None) -> int:
                         help="A written reason to ask the reviewer although it is not calibrated today; every "
                              "decision is then recorded as a measurement and admits nothing.")
     review.add_argument("--seed", help="The sample seed; a fresh random seed when omitted (recorded either way).")
+    backfill = commands.add_parser("decisions-backfill")
+    backfill.add_argument("--decisions", type=Path, required=True,
+                          help="The decision ledger: created when absent, otherwise only appended to.")
+    backfill.add_argument("--review", type=Path, action="append", required=True,
+                          help="A generated_batch_sampled_review/v2 record; repeat for each. Its qualification run "
+                               "must still hold the records that rebuild every frame it decided.")
+    backfill.add_argument("--recorded-at", required=True)
     admit = commands.add_parser("admit")
     admit.add_argument("--qualification", type=Path, required=True)
     admit.add_argument("--review", type=Path, required=True)
@@ -185,7 +206,8 @@ def main(argv=None) -> int:
     mix.add_argument("--output", type=Path)
     options = parser.parse_args(argv)
     handler = {"self-test": command_self_test, "qualify": command_qualify, "sample-review": command_sample_review,
-               "admit": command_admit, "composition": command_composition}[options.command]
+               "decisions-backfill": command_decisions_backfill, "admit": command_admit,
+               "composition": command_composition}[options.command]
     print(json.dumps(handler(options), sort_keys=True, default=str))
     return 0
 

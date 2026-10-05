@@ -42,18 +42,37 @@ HISTORY_RECORD = "generated_batch_sampling_history/v1"
 REVIEW_RECORD = "generated_batch_sampled_review/v2"
 
 
+def frame_rows(records) -> list:
+    """The exact qualified population as sorted (identity, store version, package digest) rows."""
+    rows = sorted((row["identity"], row["record_version"], row["package_digest"]) for row in records)
+    if len({row[0] for row in rows}) != len(rows):
+        raise ValueError("a review frame repeats an identity")
+    if any(not all(isinstance(value, str) and value for value in row) for row in rows):
+        raise ValueError("a review frame needs identity, store version and package digest")
+    return rows
+
+
 def frame_digest(records) -> str:
     """Bind the exact qualified identities, store versions and package bytes.
 
     Counts alone do not identify a population. Qualification timestamps and
     current checker results may change without changing the reviewed material.
     """
-    rows = sorted((row["identity"], row["record_version"], row["package_digest"]) for row in records)
-    if len({row[0] for row in rows}) != len(rows):
-        raise ValueError("a review frame repeats an identity")
-    if any(not all(isinstance(value, str) and value for value in row) for row in rows):
-        raise ValueError("a review frame needs identity, store version and package digest")
-    return hashlib.sha256(json.dumps(rows, separators=(",", ":")).encode()).hexdigest()
+    return hashlib.sha256(json.dumps(frame_rows(records), separators=(",", ":")).encode()).hexdigest()
+
+
+def generator_of(batch: str) -> str:
+    """The generator a batch came from: its supply line and generator version, at any code revision.
+
+    A batch is one supply line at one generator version and code revision, ``line/version@revision``. The
+    revision is the repository revision the supply run was made at, so it changes with every run even when the
+    generator's code does not. The observed defect rate therefore belongs to the line and version: a batch
+    written again at a later revision by the same generator inherits it, and a repaired generator declares a
+    new version and starts a new history."""
+    if type(batch) is not str or not batch:
+        raise SamplingError("a batch names its generator")
+    return batch.rsplit("@", 1)[0]
+
 
 ZERO_ACCEPTANCE = "zero_acceptance_no_history"
 OBSERVED_RATE = "acceptance_number_from_observed_rate"

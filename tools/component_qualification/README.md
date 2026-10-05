@@ -82,13 +82,15 @@ Generated component admission
 │   └── population pass: exact copies, same-job packages (a job key per line,
 │       declared in the policy data) and near copies
 ├── 2. sampled review (one model family that did not write the generators)
+│   ├── decision ledger, read first: a run that may call a model refuses
+│   │   without it, and a batch whose frame it already decided is refused
 │   ├── plan per generator batch: sample size and acceptance number from the
-│   │   batch size and the generator's observed defect rate
+│   │   batch size and the generator's defect rate recorded in the ledger
 │   ├── calibration: the frozen native controls, one at a time and in a mixed
 │   │   batch of twelve; a reviewer that approves one reviews nothing admissible
 │   ├── batch calls through the unchanged panel, native criteria and native
 │   │   reviewer instructions, with a planted known-wrong control in each call
-│   └── decision per batch by the written rule
+│   └── decision per batch by the written rule, appended to the decision ledger
 └── 3. admission folder for accepted batches, in the format the combine and
     bundle tools read; rejected samples are recorded and never bundled
 ```
@@ -123,14 +125,83 @@ Romig. With the default policy (`generated_batch_sampling_policy/v1`):
   history the plan accepts zero defects, the smallest sample that meets the
   first bound: 59 components for a batch of 5,592.
 - A generator whose observed rate is at or above the tolerance cannot be
-  sampled into acceptance.
+  sampled into acceptance: its next batch is planned for review of every
+  component, and the written rule withholds it whatever that review finds.
 - A batch is accepted when the reviewer passed its calibration, rejected
   every planted control, and the sample holds no more defective components
   than the acceptance number; a sampled component without a valid verdict
   counts as defective. Otherwise the whole batch is withheld and the generator
   flagged. A rejected sampled component is never published, even in an
-  accepted batch. Identities of a withheld batch are not sampled again; a
-  repaired generator produces new bytes and a new batch.
+  accepted batch. A decided frame is never sampled again (see the decision
+  ledger below); a repaired generator produces new bytes and a new batch.
+
+## The decision ledger
+
+The guarantee above holds for one sampled review of one population. Until
+October 5, 2026 the earlier decisions were an optional file (`--history`),
+read per batch string, and the batch string includes the code revision of
+the supply run. A batch withheld after a sampled review could therefore be
+sampled again with a fresh seed and planned as if its generator had no
+record. On September 30, 2026 the review withheld
+`function_extracts/1.1.0@8ebc4a99e5a6` with 21 of 58 sampled components
+defective; a rerun without the file planned 58 components with acceptance
+number 0 instead of the review of every component that rate requires. Each
+new sample is another chance, so a batch near the tolerance would eventually
+pass.
+
+One decision ledger ([`decisions.py`](decisions.py)) now holds every complete
+batch decision:
+
+- `sample-review --authorize-model-calls` refuses before any model call, and
+  before it reads the qualification run, when `--decisions` is not given or
+  names a file that does not read exactly: missing, empty, not a ledger, a
+  torn last line, an unknown record or field, a broken chain, or withheld
+  members that do not hash to their frame's digest. A run without model
+  calls reads the ledger when it is given one.
+- A batch whose exact frame the ledger already decided, accepted or withheld,
+  is refused, and so is a batch that holds a component of a withheld frame,
+  matched by identity or by package digest. A decided frame proceeds only
+  through a full review of every component or after its generator changes so
+  that the frame differs. This route has no full-review mode; a full review
+  would be a review of each package outside the sampled review.
+- Plans read each generator's history from the ledger. The generator is the
+  supply line and generator version (`sampling.generator_of`) at any code
+  revision, so a recorded rate reaches the next batch an unchanged generator
+  writes. A repaired generator declares a new version and starts a new
+  history.
+- An admissible run appends each decision the reviewer was asked about, in
+  one synced write, before it writes its review record, and holds the
+  ledger's exclusive lock from its first read. A batch the reviewer never saw
+  (the run stopped before the batch's first call, and none of its sampled
+  components was answered in the mixed calibration batch) stays undecided and
+  is listed under `not_asked`. A measurement or an uncalibrated run appends
+  nothing.
+- A run that can decide refuses before its first call when `--call-ceiling`
+  does not cover the calibration and every planned call. The planned calls of
+  later batches stay reserved, so an earlier batch's retries never leave a
+  later batch short of calls.
+
+Each entry carries its sequence and the SHA-256 of the line before it, the
+batch, its generator and outcome, the decision as the written rule returned
+it, the plan, the frame and the review run that decided it. The frame is the
+digest, size and qualifier revision of the exact population and, for a
+withheld batch, every member as identity, store version and package digest.
+The members of an accepted frame are not listed: they are admitted, and
+qualification given the served bundle (`--known-bundle`) refuses copies of
+served packages. A changed, removed or reordered line breaks the chain at the
+line after it; the review record of the run that appended the last line keeps
+the ledger's digest after that append.
+
+`decisions-backfill` records the decisions of earlier review records. It
+rebuilds every frame from the qualification run the review names and checks
+it against the digest the review bound before it writes anything. It skips a
+review that stopped or was not admissible, never appends a decision twice,
+and creates the ledger only when no file exists at its path.
+
+The canonical ledger belongs at
+`/home/username/baltor-library/generated-admission/decision-ledger.jsonl`,
+beside `decided-identities.txt`, which stays the qualification exclusion list
+that `qualify --exclude-identities` reads.
 
 ## Records
 
@@ -142,7 +213,8 @@ Romig. With the default policy (`generated_batch_sampling_policy/v1`):
 | `component_qualification_run/v1` | Counts by batch, refusal reasons, timings and throughput. |
 | `component_sandbox_run/v1` | One sandbox run: engine, limits, interpreter, imports and test counts. |
 | `generated_batch_sampling_policy/v1`, `generated_batch_sampling_plan/v1`, `generated_batch_sampling_decision/v1` | The rule, the plan with its operating characteristic, and the decision. |
-| `generated_batch_sampled_review/v2` | The seed, exact population digest, samples, planted controls, calibration, verdicts, decisions and admissibility of one review run. |
+| `generated_batch_sampled_review/v2` | The seed, exact population digest, samples, planted controls, calibration, verdicts, decisions and admissibility of one review run, and the decision ledger it read and appended to. |
+| `generated_batch_decision_ledger/v1`, `generated_batch_decision_entry/v1` | The decision ledger's header, and one complete batch decision with its plan, frame and deciding review, chained by digest. |
 | `generated_component_admission_report/v1` | What an admission folder holds, by line, form and harness kind. |
 | `generated_admission_composition/v1` | Counts by component family against the composition targets. |
 
@@ -162,7 +234,10 @@ PYTHONPATH=src:tools python tools/qualify_generated_components.py qualify \
   --work-root WORK --workers 10 --known-bundle BUNDLE --exclude-identities DECIDED
 PYTHONPATH=src:tools python tools/qualify_generated_components.py sample-review \
   --qualification RUN --store-root STORE --ledger LEDGER --output REVIEW.json \
-  --history HISTORY --calibrate --authorize-model-calls --call-ceiling 120
+  --decisions /home/username/baltor-library/generated-admission/decision-ledger.jsonl \
+  --calibrate --authorize-model-calls --call-ceiling 120
+PYTHONPATH=src:tools python tools/qualify_generated_components.py decisions-backfill \
+  --decisions DECISIONS --review REVIEW.json --review REVIEW.json --recorded-at TIME
 PYTHONPATH=src:tools python tools/qualify_generated_components.py admit \
   --qualification RUN --review REVIEW.json --store-root STORE --output FOLDER \
   --recorded-at DATE
@@ -172,13 +247,14 @@ PYTHONPATH=src:tools python tools/qualify_generated_components.py composition \
 
 Without `--authorize-model-calls` the review sends nothing and decides
 nothing. `--measurement-only REASON` asks an uncalibrated reviewer for
-measurement; every decision it records is withheld, and `admit` refuses it.
+measurement; every decision it records is withheld, `admit` refuses it and
+the decision ledger does not record it.
 
 ## Checks
 
 ```bash
 PYTHONPATH=src:tools python -m unittest tools.test_component_qualification \
-  tools.test_component_qualification_sampling
+  tools.test_component_qualification_sampling tools.test_component_qualification_decisions
 ```
 
 ## Existing work: adopted, adapted and rejected
@@ -206,3 +282,15 @@ PYTHONPATH=src:tools python -m unittest tools.test_component_qualification \
 - The sampled review measures defects the reviewer can see. On September 28,
   2026 the Tactical reviewer failed the native calibration (it approved three
   of four known-wrong controls), so its verdicts from that day admit nothing.
+- The decision ledger guards the reviews this tool runs. It is a local file:
+  a review given a newly created ledger reads no history, so every run must
+  name the canonical ledger. `admit` reads the review record and does not
+  check the ledger, and a review record written by code older than the ledger
+  is outside it until `decisions-backfill` records it.
+- Nothing chains the last ledger line to a later one. Its digest is kept only
+  in the review record of the run that appended it, or in the backfill's
+  report.
+- A run that stops after its first review call and before its append, for
+  example when its process is killed, records nothing in the decision ledger.
+  The review panel's own ledger keeps that run's calls and verdicts; read it
+  before the batch is sampled again.

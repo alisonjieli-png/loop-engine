@@ -2,16 +2,22 @@
 
 ```text
 Sampled review of one qualification run (hybrid: deterministic sampling, one model family's verdicts)
+├── 0. decision ledger (decisions.py), opened first: a run that may call a model refuses without it, and
+│      a batch whose exact frame it already decided, or that holds a component of a withheld frame, is
+│      refused before any component is read
 ├── 1. batches: the qualified components of each generator (supply line, version and code revision)
 ├── 2. plan: sample size and acceptance number from the batch size and the generator's observed defect
-│      rate (sampling.plan_for), and a recorded random seed
+│      rate as the decision ledger records it (sampling.plan_for), and a recorded random seed; a run that
+│      can decide refuses when its call ceiling does not cover the calibration and every planned call
 ├── 3. optional calibration: the frozen native controls, one call each; a reviewer that approves a
 │      known-wrong control, or leaves one without a verdict, reviews nothing in this run
 ├── 4. review: the sampled packages in batch calls to one installation of a family that did not write
 │      the generators, each call holding planted known-wrong controls made from unsampled members of the
 │      same batch; the unchanged review panel, native written criteria and native reviewer instructions
 │      judge them, and the panel's ledger records every dispatch, call, usage and verdict
-└── 5. decision per batch (sampling.decide): accepted, or withheld with the generator flagged
+└── 5. decision per batch (sampling.decide): accepted, or withheld with the generator flagged; an
+       admissible run appends each decision the reviewer was asked about to the decision ledger, in one
+       synced write, before it writes its own record
 ```
 
 The planted controls are ordinary defects a reader can see: tests that accept anything, an undeclared
@@ -33,7 +39,7 @@ from pathlib import Path
 import random
 import secrets as secrets_module
 
-from . import sampling
+from . import decisions, sampling
 from .components import GeneratedComponent, StoreReader
 
 SAMPLED_REVIEW_RECORD = sampling.REVIEW_RECORD
@@ -201,20 +207,24 @@ class QualificationPrecheck:
         return passed(self.kind, self.engine_id, "1")
 
 
-def _load_qualified(folder: Path) -> dict:
+def _load_qualified(folder: Path, digest=None) -> dict:
+    """The qualified records of one run by identity; ``digest`` (a hashlib object) reads the file's exact bytes."""
     qualified = {}
-    with open(Path(folder) / "qualification.jsonl", encoding="utf-8") as stream:
+    with open(Path(folder) / "qualification.jsonl", "rb") as stream:
         for line in stream:
+            if digest is not None:
+                digest.update(line)
             record = json.loads(line)
             if record["outcome"] == "qualified":
                 qualified[record["identity"]] = record
     return qualified
 
 
-def _history(path: "Path | None") -> list:
-    if path is None or not Path(path).is_file():
-        return []
-    return [json.loads(line) for line in Path(path).read_text(encoding="utf-8").splitlines() if line.strip()]
+def _calibration_calls(root: Path, criteria, instructions) -> int:
+    """The calls both calibrations may make: one per frozen native control, then one mixed batch of twelve."""
+    from tools.candidate_review.native_calibration import DEFAULT_SET, NativeCalibrationSet
+    controls = NativeCalibrationSet.load(DEFAULT_SET, root, criteria)
+    return len(tuple(controls.requests(None, None, criteria, instructions.sha256))) + 1
 
 
 def _chunks(requests, estimate, budget: int, maximum: int = MAXIMUM_BATCH) -> list:
@@ -360,12 +370,25 @@ def calibrate_mixed(root: Path, ledger: Path, reviewer: str, authorized: bool, r
 
 
 def command(options, root: Path) -> dict:
+    """One sampled review run. The decision ledger is opened before anything else is read: a run that may call a
+    model refuses without a ledger that reads exactly, and holds the ledger's lock until its decisions are
+    appended, so two runs never sample one frame at once."""
+    ledger = decisions.open_for_review(options.decisions, options.authorize_model_calls)
+    try:
+        return _review(options, root, ledger)
+    finally:
+        if ledger is not None:
+            ledger.close()
+
+
+def _review(options, root: Path, ledger) -> dict:
     from tools.candidate_review.panel import PanelRunRequest
     from tools.candidate_review.prompt import member_parts
     from tools.candidate_review.configuration import PRECHECK_KINDS
     from loop_engine.core.context_budget import estimate_tokens
     started = _now()
-    qualified = _load_qualified(options.qualification)
+    qualification_digest = hashlib.sha256()
+    qualified = _load_qualified(options.qualification, qualification_digest)
     batches = {}
     for identity, record in qualified.items():
         if not options.batch or record["batch"] in options.batch:
@@ -375,7 +398,20 @@ def command(options, root: Path) -> dict:
             for identities in batches.values() for identity in identities):
         raise ValueError("requalify selected batches with committed code before spending model calls; "
                          "admission cannot use an uncommitted qualifier")
-    history_rows = _history(options.history)
+    frames = {batch: [qualified[identity] for identity in identities] for batch, identities in batches.items()}
+    if ledger is not None:
+        refused = ledger.refusals(frames)
+        if refused:
+            undecided = sorted(set(batches) - set(refused))
+            raise decisions.DecisionLedgerError(
+                "batch_already_decided",
+                "the decision ledger settled " + "; ".join(f"{batch}: {', '.join(reasons)}"
+                                                           for batch, reasons in sorted(refused.items()))
+                + ". A decided frame is never sampled again; it proceeds through a full review of every component "
+                  "or after its generator changes so the frame differs. "
+                + (f"Undecided batches to name with --batch: {', '.join(undecided)}." if undecided
+                   else "No selected batch is undecided."))
+    history_rows = ledger.history_rows() if ledger is not None else []
     seed = options.seed or secrets_module.token_hex(16)
     rng = random.Random(f"{seed}:controls")
     policy = sampling.SamplingPolicy()
@@ -384,10 +420,14 @@ def command(options, root: Path) -> dict:
     plans, samples, calls_plan, planted, all_requests = {}, {}, {}, {}, []
     record = {"record_type": SAMPLED_REVIEW_RECORD, "started_at": started, "qualification": str(options.qualification),
               "reviewer": options.reviewer, "producer_family": options.producer_family, "seed": seed,
-              "policy": policy.to_dict(), "call_token_budget": CALL_TOKEN_BUDGET, "batches": {}}
+              "policy": policy.to_dict(), "call_token_budget": CALL_TOKEN_BUDGET, "batches": {},
+              "decision_ledger": None if ledger is None else {
+                  "path": str(ledger.path), "sha256_at_start": ledger.sha256, "entries_at_start": len(ledger.entries)}}
     configuration, criteria, instructions, _unused = _panel(root, options.ledger, False, None)
     for batch, identities in sorted(batches.items()):
-        history = sampling.GeneratorHistory.from_decisions(batch, history_rows)
+        # The observed rate belongs to the generator (line and version), so a batch written again at a later
+        # code revision by an unchanged generator plans from the defects its earlier batches showed.
+        history = sampling.GeneratorHistory.from_decisions(sampling.generator_of(batch), history_rows)
         plan = sampling.plan_for(batch, len(identities), history, policy)
         chosen = sampling.draw_sample(identities, plan.sample_size, f"{seed}:{batch}")
         components = {identity: reader.component(rows[identity]) for identity in chosen}
@@ -421,12 +461,21 @@ def command(options, root: Path) -> dict:
             batch_calls.append(members)
         plans[batch], samples[batch], calls_plan[batch] = plan, chosen, batch_calls
         record["batches"][batch] = {"plan": plan.to_dict(), "sample": chosen,
-                                    "frame_sha256": sampling.frame_digest(qualified[identity] for identity in identities),
+                                    "frame_sha256": sampling.frame_digest(frames[batch]),
                                     "calls_planned": len(batch_calls),
                                     "members_per_call": [len(members) for members in batch_calls]}
     reader.close()
     total_calls = sum(len(value) for value in calls_plan.values())
     record["calls_planned"] = total_calls
+    if options.authorize_model_calls and options.calibrate and not options.measurement_only:
+        # Every decision of this run settles its frame in the decision ledger, so a batch the ceiling could not
+        # finish would be withheld for want of calls and never sampled again. Refuse before the first call instead.
+        needed = _calibration_calls(root, criteria, instructions) + total_calls
+        if options.call_ceiling < needed:
+            raise ValueError(f"the call ceiling ({options.call_ceiling}) is below the {needed} calls this run plans "
+                             f"({needed - total_calls} calibration, then "
+                             + ", ".join(f"{batch}: {len(value)}" for batch, value in sorted(calls_plan.items()))
+                             + "); raise --call-ceiling or name fewer batches with --batch")
     calibration, used = {}, 0
     if options.calibrate and options.authorize_model_calls:
         calibration["single"] = calibrate(root, options.ledger, options.reviewer, True, options.call_ceiling)
@@ -452,11 +501,14 @@ def command(options, root: Path) -> dict:
     configuration, criteria, instructions, panel = _panel(root, options.ledger, options.authorize_model_calls,
                                                           prechecks)
     group = configuration.installation(options.reviewer).quota_group
-    results = {}
-    for batch in sorted(calls_plan):
+    results, order = {}, sorted(calls_plan)
+    for position, batch in enumerate(order):
         requests = tuple(request for members in calls_plan[batch] for request in members)
         size = max(len(members) for members in calls_plan[batch])
-        ceiling = max(0, min(options.call_ceiling - used, len(calls_plan[batch]) + 3))
+        # The planned calls of the later batches stay reserved, so retries here never leave a later batch
+        # short of the calls its plan needs.
+        reserved = sum(len(calls_plan[later]) for later in order[position + 1:])
+        ceiling = max(0, min(options.call_ceiling - used - reserved, len(calls_plan[batch]) + 3))
         result = panel.run(PanelRunRequest(
             run_id=f"sampled-review-{batch.replace('/', '-').replace('@', '-')}-"
                    f"{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}",
@@ -471,7 +523,7 @@ def command(options, root: Path) -> dict:
                                         "not write the generators answers for a random sample of each batch."))
         used += len(result.calls)
         results[batch] = result
-    decisions = []
+    batch_decisions = []
     for batch, result in sorted(results.items()):
         verdicts = {}
         for item in result.items:
@@ -505,20 +557,53 @@ def command(options, root: Path) -> dict:
             decision["outcome"] = sampling.WITHHELD
             decision["reasons"] = list(decision["reasons"]) + list(record["admissibility_reasons"])
             decision["sample_complete"] = False
-        decisions.append(decision)
+        batch_decisions.append(decision)
         record["batches"][batch].update({"verdicts": sample_rows, "controls": control_rows, "decision": decision,
                                          "totals": result.totals()})
-    record.update({"finished_at": _now(), "decisions": decisions, "calls_used": used,
+    record.update({"finished_at": _now(), "decisions": batch_decisions, "calls_used": used,
                    "ledger": str(options.ledger)})
+    if options.authorize_model_calls and record["admissible"]:
+        # The ledger first: a run that stopped between the two leaves a decided frame without a review record,
+        # which admits nothing, never a review record whose frame the ledger would let a later run sample again.
+        try:
+            record["decision_ledger"].update(_record_decisions(
+                ledger, record, options.output, frames, samples, results, calibration,
+                qualification_digest.hexdigest()))
+        except (decisions.DecisionLedgerError, OSError) as error:
+            record["admissible"] = False
+            record["admissibility_reasons"] = list(record["admissibility_reasons"]) + [
+                f"decision_ledger_not_appended: {error}"]
+            options.output.write_text(json.dumps(record, indent=1, sort_keys=True, default=str) + "\n")
+            raise
     options.output.write_text(json.dumps(record, indent=1, sort_keys=True, default=str) + "\n")
-    if options.history and options.authorize_model_calls and record["admissible"]:
-        with open(options.history, "a", encoding="utf-8") as stream:
-            for decision in decisions:
-                stream.write(json.dumps(decision, sort_keys=True) + "\n")
-    return {"calls_planned": total_calls, "calls_used": used,
+    return {"calls_planned": total_calls, "calls_used": used, "decision_ledger": record["decision_ledger"],
             "decisions": {row["batch"]: {key: row[key] for key in ("outcome", "reasons", "sampled", "defective",
                                                                    "controls_planted", "controls_approved")}
-                          for row in decisions}}
+                          for row in batch_decisions}}
+
+
+def _record_decisions(ledger, record: dict, review_path: Path, frames: dict, samples: dict, results: dict,
+                      calibration: dict, qualification_sha256: str) -> dict:
+    """Append each decision of an admissible run that the reviewer was asked about, in one synced write.
+
+    A batch the reviewer never saw (no call of its own, and none of its sampled components answered in the mixed
+    calibration batch) has a withheld outcome that says only that the run stopped before it: nothing about its
+    components was learned, so it is reported and stays undecided. Every other decision is complete whatever its
+    outcome and whatever withheld it, and settles its frame."""
+    seen = {identity for identity, verdicts in
+            ((calibration.get("mixed_batch_of_12") or {}).get("real_verdicts") or {}).items() if verdicts}
+    entries, not_asked, recorded_at = [], [], _now()
+    for decision in record["decisions"]:
+        batch = decision["batch"]
+        if not results[batch].calls and not seen & set(samples[batch]):
+            not_asked.append({"batch": batch, "panel_stop_reason": results[batch].stop_reason})
+            continue
+        entries.append(decisions.entry_for(record, batch, frames[batch], kind=decisions.RUN_SOURCE,
+                                           review_path=review_path, review_sha256=None,
+                                           qualification_sha256=qualification_sha256, recorded_at=recorded_at))
+    appended = ledger.append(entries)
+    return {"appended_sequences": appended["sequences"], "sha256_after": appended["sha256"],
+            "entries_after": appended["entries"], "not_asked": not_asked}
 
 
 def _criteria(verdict) -> list:
