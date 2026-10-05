@@ -77,6 +77,21 @@ Supply lines (each writes library_supply_candidate/v1 records)
 │   │   generated tests against a local mock that must pass before the package is kept
 │   └── beside it (javascript_clients.py) an ES module with TypeScript declarations and node:test
 │       tests repeating the Python ones, kept only when they pass
+├── api_tool_servers: one Model Context Protocol tool server per curated OpenAPI specification file
+│   ├── kind protocol_server_configuration, form mcp_server; the API line's sources, licence and refusals
+│   ├── tools: the file's operations the API operation line builds (its maximum and duplicate rules, a
+│   │   constructible example), each with a name of at most 64 characters, an input schema of the
+│   │   client's own argument checks, and annotations from the method (read-only for GET, HEAD and
+│   │   OPTIONS; destructive for DELETE, PUT and PATCH; idempotent but for POST and PATCH; open world)
+│   ├── server.py: standard library only, newline-delimited JSON-RPC 2.0 over standard input and output
+│   │   (protocol versions 2025-06-18, 2025-03-26 and 2024-11-05); the tool table is JSON data and one
+│   │   request function sends with the generated client's helpers, copied from its template; tools.json
+│   ├── test_server.py: the server started as a subprocess, every request sent to a local mock by a shim;
+│   │   every tool is called once before the package is built and the whole file must pass to keep it
+│   ├── files for Claude Code, Codex, OpenCode and Cursor that start python3 with the server and pass the
+│   │   credential variable by name, by the registry line's template
+│   └── its own line state; prose the publication checks would refuse is replaced by the tool's request,
+│       and a server above the review bound keeps shorter descriptions, then the first tools that fit
 ├── program_installs: one install recipe and typed wrapper per command-line program
 │   ├── kind code_module, form binary_install; programs in program_sources.json
 │   └── Homebrew bottles and source archive by published SHA-256, release assets by GitHub's
@@ -170,6 +185,7 @@ what it no longer supplies.
 | GitHub release asset digests (GraphQL `digest`) | Adopted: GitHub publishes a SHA-256 per asset; assets without one are left out. |
 | Manim Community's `manim_directive.py` (the documentation's own runner) | Adopted for the scene line: a scene's code is exactly what the directive executes (`from manim import *`, then the content, doctest prompts removed its way). Not adopted: its shared `globals()`, which let a later example use a name an earlier one or the directive module bound; such a scene is refused as `name_unresolved`. |
 | Manim's own renderer (`tempconfig`, `dry_run`) | Adopted as the test engine: every frame is computed at low quality and nothing is written, so a test checks the scene runs without producing video files. Rendering the documented output (`manim render -s` or a video) stays the README's command. |
+| MCP generators from OpenAPI (Stainless, openapi-mcp-generator, FastMCP's OpenAPI provider) and the official MCP Python SDK | Rejected as engines for the tool server line: each writes a server with runtime dependencies (an SDK, an HTTP client, a web framework), and Stainless is winding its generator down. The line keeps the protocol's own rules (newline-delimited JSON-RPC over standard input and output, version negotiation, tool annotations) in one standard-library module, and reuses the API operation line's operations, licence decisions and client helpers. The SDK's client is used to check the servers by hand. |
 
 ## Commands
 
@@ -193,6 +209,9 @@ PYTHONPATH=src:tools python tools/build_library_supply.py manim-scenes \
   --run-folder /home/username/baltor-library/supply/manim-scenes/DATE \
   --authorize-network-reads --authorize-store-writes \
   --manim-python /path/to/an/environment/with/manim/bin/python [--scene NAME] [--workers 3]
+PYTHONPATH=src:tools python tools/build_library_supply.py api-tool-servers \
+  --run-folder /home/username/baltor-library/supply/api-tool-servers/DATE \
+  --authorize-network-reads --authorize-store-writes --stars [--source ID]
 PYTHONPATH=src:tools python tools/build_library_supply.py report \
   --library-bundle /home/username/baltor-bundles/RELEASE --output REPORT.json [--admission-folder ADMISSION]
 ```
@@ -301,6 +320,10 @@ measured.
   pinned package, and says in its README that the server is third-party code.
 - API clients are Python only, and no specification of the first eight
   declares pagination, so no client pages through results.
+- A tool server is one process per harness; it answers up to four tool calls at
+  once, gives no structured output schema, and returns one page of each answer.
+  Its connection files start it from the project root (`tools/<key>/server.py`);
+  a harness that starts servers elsewhere needs the absolute path.
 - Program recipes cover macOS and Linux through Homebrew; no Windows recipe.
 - Scenes render only in an interpreter that has Manim. On Linux, `pip install manim` needs the Cairo and
   Pango development files, because pycairo and ManimPango publish no Linux wheels; conda-forge's pycairo

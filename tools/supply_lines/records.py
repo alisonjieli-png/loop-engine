@@ -2,10 +2,11 @@
 
 A supply line turns licensed facts (a registry entry, an API specification,
 a package formula, a data file) into packages Baltor writes itself: protocol
-server connections, API operation clients, program install recipes and data
-tables. The facts are pinned (address, retrieval time, SHA-256, revision) and
-each carries its licence evidence; the generated files carry the generator's
-identity and version. Nothing here approves anything: every package is a
+server connections, API operation clients, protocol tool servers for API
+specifications, program install recipes and data tables. The facts are
+pinned (address, retrieval time, SHA-256, revision) and each carries its
+licence evidence; the generated files carry the generator's identity and
+version. Nothing here approves anything: every package is a
 candidate until an independent review reads its exact bytes.
 
 ```text
@@ -41,9 +42,10 @@ STATE_RECORD_TYPE = "library_supply_state/v1"
 RUN_RECORD_TYPE = "library_supply_run/v1"
 
 #: The supply lines, one per kind of fact source.
-MCP_REGISTRY, OPENAPI_OPERATIONS, PROGRAM_INSTALLS, DATA_TABLES, FUNCTION_EXTRACTS, JSON_SCHEMAS, MANIM_SCENES = \
-    LINES = ("mcp_registry", "openapi_operations", "program_installs", "data_tables", "function_extracts",
-             "json_schemas", "manim_scenes")
+(MCP_REGISTRY, OPENAPI_OPERATIONS, PROGRAM_INSTALLS, DATA_TABLES, FUNCTION_EXTRACTS, JSON_SCHEMAS,
+ MANIM_SCENES, API_TOOL_SERVERS) = LINES = (
+    "mcp_registry", "openapi_operations", "program_installs", "data_tables", "function_extracts", "json_schemas",
+    "manim_scenes", "api_tool_servers")
 #: How the text of every supply package was authored, and the review profile it needs. The panel has no such
 #: profile yet (tools/candidate_review reads original and imported packages only), so an export holds these.
 AUTHORING = "generated_from_licensed_facts"
@@ -105,6 +107,16 @@ REFUSAL_REASONS = {
                    "scene_unreadable", "scene_not_defined", "name_unresolved", "needs_latex", "needs_a_file",
                    "needs_a_module", "scene_failed", "scene_timed_out", "known_wrong_control_passed",
                    "duplicate_scene", "blocked_by_static_check", "package_above_review_bound"),
+    # One server per specification file: the file's own refusals, and the operations the server leaves out, which
+    # the API operation line refuses under the same names (operations past the source's maximum are counted in one
+    # row per file).
+    API_TOOL_SERVERS: ("specification_unreadable", "specification_version_unsupported", "licence_not_on_allowlist",
+                       "licence_signals_disagree", "licence_unknown", "operation_identity_missing",
+                       "operation_body_not_json", "operation_parameters_unsupported", "security_scheme_unsupported",
+                       "example_not_constructible", "duplicate_operation", "beyond_maximum_operations",
+                       "tool_text_blocked", "tool_schema_invalid", "tools_beyond_review_bound", "no_tools",
+                       "connection_files_invalid", "blocked_by_static_check", "generated_test_failed",
+                       "package_above_review_bound"),
 }
 #: The forms each line may declare, and the harness kind it serves them as.
 LINE_FORMS = {MCP_REGISTRY: {"mcp_server": "protocol_server_configuration"},
@@ -115,7 +127,10 @@ LINE_FORMS = {MCP_REGISTRY: {"mcp_server": "protocol_server_configuration"},
               JSON_SCHEMAS: {"schema": "contract_schema"},
               # A documentation example scene is a code example (component_form/v1): a harness opens it as the
               # editable source of an animation and renders its own version.
-              MANIM_SCENES: {"code_example": "code_module"}}
+              MANIM_SCENES: {"code_example": "code_module"},
+              # A protocol server Baltor writes itself: its code and its connection files, served as the protocol
+              # server configuration a harness picks up (the only harness kind an mcp_server form may carry).
+              API_TOOL_SERVERS: {"mcp_server": "protocol_server_configuration"}}
 CANDIDATE_FIELDS = ("record_type", "record_id", "upstream_key", "line", "kind", "native_format", "component_form",
                     "name", "description", "package", "package_digest", "files", "licence", "provenance",
                     "placements", "declared_effects", "effect_evidence", "credentials", "tests", "findings",

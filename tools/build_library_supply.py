@@ -20,6 +20,7 @@ build_library_supply.py
 ├── curated-schemas  one JSON Schema of a curated repository (json_schema_sources.json), with tests
 ├── api-schemas    one JSON Schema per named object of a curated OpenAPI specification, with tests
 ├── manim-scenes   one tested animation scene per example scene of Manim Community's documentation
+├── api-tool-servers  one tested Model Context Protocol tool server per curated OpenAPI specification file
 └── report         the supply by family and form, and the projected composition
 ```
 
@@ -393,6 +394,29 @@ def manim_scenes(args) -> dict:
                   reader, facts, complete=not args.scene and not args.maximum_scenes and not unread)
 
 
+def api_tool_servers(args) -> dict:
+    from supply_lines import api_tool_servers as line
+    from supply_lines import openapi_operations
+    run_folder = _outside(args.run_folder)
+    run_folder.mkdir(parents=True, exist_ok=True)
+    revision = code_revision(args.authorize_store_writes)
+    reader = FactReader(run_folder, openapi_operations.HOSTS, maximum_requests=args.maximum_requests,
+                        pause_seconds=args.pause_seconds, maximum_bytes=128 * 1024 * 1024)
+    sources = openapi_operations.read_sources()
+    if args.source:
+        sources = [row for row in sources if row["source_id"] in args.source]
+    facts_by_repository = reader.repository_facts(sorted({row["repository"] for row in sources})) if args.stars else {}
+    built, refusals, facts, summary = line.generate(reader, sources, code_revision=revision,
+                                                    licence_text=LICENCE_FILE.read_bytes(),
+                                                    generated_on=now_utc()[:10], staging=run_folder / "staging",
+                                                    repository_facts=facts_by_repository)
+    # A run that could not read a chosen file keeps that file's earlier server instead of withdrawing it.
+    unread = any(row["reason"] == "specification_unreadable" for row in refusals)
+    return finish(args, records.API_TOOL_SERVERS, built, refusals,
+                  {"specifications": summary, "tools": sum(row.get("tools", 0) for row in summary)}, reader, facts,
+                  complete=not args.source and not unread)
+
+
 def report(args) -> dict:
     from licensed_import.composition import library_counts, load_targets
     from licensed_import.storage import ImportStore
@@ -483,6 +507,11 @@ def parser() -> argparse.ArgumentParser:
     manim_command.add_argument("--no-bubblewrap", action="store_true",
                                help="run the tests without bubblewrap (the network is still closed in Python)")
     manim_command.add_argument("--stars", action="store_true", help="read the repository's stars (GraphQL)")
+    tool_servers_command = commands.add_parser("api-tool-servers")
+    common(tool_servers_command)
+    tool_servers_command.add_argument("--source", action="append", help="only these source identities of "
+                                      "openapi_sources.json")
+    tool_servers_command.add_argument("--stars", action="store_true", help="read each repository's stars (GraphQL)")
     four = commands.add_parser("data-tables")
     common(four)
     four.add_argument("--table", action="append", help="only these table identities of data_table_sources.json")
@@ -507,7 +536,7 @@ def main(argv=None) -> int:
     {"mcp-registry": mcp_registry, "openapi": openapi, "openapi-directory": openapi_directory,
      "openapi-discovery": openapi_discovery, "programs": programs, "data-tables": data_tables,
      "functions": functions, "schemas": schemas, "curated-schemas": curated_schemas, "api-schemas": api_schemas,
-     "manim-scenes": manim_scenes, "report": report}[args.command](args)
+     "manim-scenes": manim_scenes, "api-tool-servers": api_tool_servers, "report": report}[args.command](args)
     return 0
 
 
