@@ -6,7 +6,8 @@ import (plans only; no request is sent and nothing counts as executed)
 │                          248 countries or areas x 25 themes x 3 topics x 8 templates)
 ├── public_good_bank       the 1,440-card Public Good query bank (Drive mirror v6); cards ChatGPT answered stay
 │                          recorded as that outside run's evidence, not as Baltor executions
-└── keyword_matrix         the 96,525-string country and keyword matrix, when its file is found
+└── keyword_matrix         the 96,525-string country and keyword matrix of the social-video workspace
+                           (~/social_videos/research/sdg-public-good-20261001-v01/generated-v01/queries.jsonl)
 ```
 
 Each string is normalised (NFKC, case folded, spaces collapsed) and kept once across all queues; every origin
@@ -118,9 +119,13 @@ def import_keyword_matrix(importer: Importer, path: Path) -> None:
                 row = json.loads(line)
             except ValueError:
                 row = {"query": line.strip()}
-            text = row.get("query") or row.get("q") or row.get("text") if isinstance(row, dict) else None
-            importer.add(origin, row.get("id") or number if isinstance(row, dict) else number, text,
-                         sdg=str((row or {}).get("sdg") or ""), country=str((row or {}).get("country") or (row or {}).get("m49") or ""))
+            if not isinstance(row, dict):
+                importer.counts[origin + ":unreadable_line"] += 1
+                continue
+            # The October 1 social-video matrix names its goal "goal" and its place by M49 and ISO alpha-3.
+            importer.add(origin, row.get("id") or number, row.get("query") or row.get("q") or row.get("text"),
+                         sdg=str(row.get("sdg") or row.get("goal") or ""),
+                         country=str(row.get("m49") or row.get("country") or row.get("country_iso3") or ""))
             if number % 5000 == 0:
                 importer.commit()
     importer.commit()
