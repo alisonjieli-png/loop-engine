@@ -10,6 +10,7 @@ same fusion the service uses, and is scored by mean reciprocal rank and hits wit
 2. An overlay (a base without a tenth of the items and a delta holding them) keeps its metrics within a stated
    tolerance of a fresh build, because only the corpus statistics of the lexical stage move.
 3. The known-wrong engine that scores vectors in float32 is caught by the exact comparison.
+4. The engine (c) prototype on Lance, which is not exact, stays within the same tolerance of the baseline.
 """
 from __future__ import annotations
 
@@ -99,6 +100,17 @@ class JudgedQueries(unittest.TestCase):
             fresh, overlay = _metrics(self.disk, self.judgements, mode), _metrics(self.overlay, self.judgements, mode)
             self.assertEqual(overlay["answerable"], fresh["answerable"])
             self.assertLessEqual(abs(overlay["mrr"] - fresh["mrr"]), OVERLAY_MRR_TOLERANCE, (mode, fresh, overlay))
+
+    def test_the_lance_prototype_stays_within_the_tolerance_of_the_baseline(self):
+        from loop_engine.core.service_runtime.catalogue_lance_index import (LanceSearchIndex, availability,
+                                                                            build_lance_index)
+        if not availability()["available"]:
+            self.skipTest("lancedb is not installed; the prototype is optional")
+        lance = LanceSearchIndex(build_lance_index(Path(self.temp.name) / "lance", self.entries), EMPTY_SCHEMA)
+        for mode in ("lexical", "hybrid"):
+            baseline, prototype = _metrics(self.memory, self.judgements, mode), _metrics(lance, self.judgements, mode)
+            self.assertLessEqual(abs(prototype["mrr"] - baseline["mrr"]), OVERLAY_MRR_TOLERANCE,
+                                 (mode, baseline, prototype))
 
     def test_a_float32_vector_stage_is_caught_by_the_exact_comparison(self):
         def float32_top(index, weights, pool, keep_mask, floor):

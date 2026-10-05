@@ -19,7 +19,8 @@ Kit
 ├── overlay        a later release served as base + delta never returns a removed or replaced record, and its
 │                  vector pools equal a fresh build's
 ├── selection      an engine the host names is refused at start when it cannot run, never replaced
-└── integrity      an index file changed after its build is refused when verified; an unfinished build is unread
+├── integrity      an index file changed after its build is refused when verified; an unfinished build is unread
+└── prototype      engine (c), when lancedb is installed: the edge, filters exact against the baseline
 ```
 """
 from __future__ import annotations
@@ -267,6 +268,26 @@ def _selection_checks(check):
                                                   search_engine=DISK_ENGINE), "unsupported_catalogue_source"))
 
 
+def _lance_checks(check, root):
+    """The engine (c) prototype on the same edge: filters exact against the baseline, the edge's shape kept."""
+    from .catalogue_index_engines import CatalogueSearchIndexEngine, index_size
+    from .catalogue_lance_index import LanceSearchIndex, build_lance_index
+    from .catalogue_search import ReleaseSearchIndex
+    schema, entries = _schema(), _entries(600)
+    baseline = ReleaseSearchIndex(entries, schema)
+    lance = LanceSearchIndex(build_lance_index(Path(root) / "lance", entries, schema), schema)
+    check("the_lance_prototype_speaks_the_catalogue_search_index_edge",
+          isinstance(lance, CatalogueSearchIndexEngine) and index_size(lance) == len(entries))
+    exact = True
+    for conditions in FILTERS[1:]:
+        wanted = {baseline.identities[position] for position in baseline.eligible(conditions)}
+        rows = lance.table.search().where(lance.eligible(conditions)).select(["identity"]).limit(len(entries))
+        exact = exact and wanted == {row["identity"] for row in rows.to_list()}
+    check("the_lance_prototype_filters_select_exactly_the_baseline_items", exact)
+    found = lance.rank("skill_00042", mode="lexical", pool=3)[0]["lexical"]
+    check("the_lance_prototype_finds_an_item_by_its_identity", bool(found) and found[0][0] == "skill_00042")
+
+
 def _integrity_checks(check, root):
     from .catalogue_disk_index import DiskIndex, build_disk_index
     schema = _schema()
@@ -293,7 +314,11 @@ def run_checks(check=None):
         return {"record_type": "catalogue_index_checks/v1", "tests": [], "passed": 0, "total": 0,
                 "all_passed": True, "not_tested": availability()["reason"]}
     _selection_checks(check)
-    for group in (_edge_and_exactness_checks, _overlay_checks, _service_path_checks, _integrity_checks):
+    from .catalogue_lance_index import availability as lance_availability
+    groups = [_edge_and_exactness_checks, _overlay_checks, _service_path_checks, _integrity_checks]
+    if lance_availability()["available"]:
+        groups.append(_lance_checks)
+    for group in groups:
         with tempfile.TemporaryDirectory(prefix="catalogue-index-checks-") as directory:
             try:
                 group(check, directory)

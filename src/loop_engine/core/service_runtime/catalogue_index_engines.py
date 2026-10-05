@@ -98,6 +98,11 @@ def _disk_availability():
     return availability()
 
 
+def _lance_availability():
+    from .catalogue_lance_index import availability
+    return availability()
+
+
 #: The factory table of the slot, in declared order. The planned engine is described, never selectable.
 ENGINES = {
     IN_MEMORY_ENGINE: CatalogueIndexEngine(
@@ -107,10 +112,13 @@ ENGINES = {
         DISK_ENGINE, "1.0.0", DISK_KIND, "SQLite FTS5 and float32 hash vectors in files on the volume",
         holds_items_on_disk=True, exact_with=IN_MEMORY_ENGINE, requires=("numpy", "sqlite_fts5"),
         state="candidate", availability=_disk_availability),
+    # A measured prototype (catalogue_lance_index): the search edge over a local Lance dataset. It stays planned,
+    # so no host can select it, until a recorded comparison and an item-descriptor view exist.
     OBJECT_STORE_ENGINE: CatalogueIndexEngine(
-        OBJECT_STORE_ENGINE, "0.0.0", OBJECT_STORE_KIND,
+        OBJECT_STORE_ENGINE, "0.1.0", OBJECT_STORE_KIND,
         "Columnar fragments in object storage, one dataset version for each release",
-        holds_items_on_disk=True, requires=("lancedb",), state="planned"),
+        holds_items_on_disk=True, requires=("lancedb", "pyarrow", "numpy"), state="planned",
+        availability=_lance_availability),
 }
 
 
