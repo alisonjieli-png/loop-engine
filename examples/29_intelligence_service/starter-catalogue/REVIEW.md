@@ -170,7 +170,7 @@ What happened after that, on 21 September 2026:
 - 6 items were rejected by at least one reviewer and stay candidates. They are not in the generated manifest and their bodies are not in the release image.
 - The two items with the licence `unknown` are among the six. Their rights are still unsettled, so nothing about the review changes what the loader does with them: it refuses them with `item_license_unknown` before registration.
 - The other 74 items of the 123 have no verdict in this repository. They stay candidates and nothing serves them. `reviews.json` holds a row for each of them with the outcome `not_reviewed`, so the record names every item of the catalogue and an item without a verdict is a written fact rather than an absence.
-- The reviewers read the bodies at anchor revision `381efec`. The catalogue was anchored again after that, most recently on 22 September 2026 to revision `4249eca`, revision `e2898c7`, revision `f29bddc`, revision `d893bba` and revision `9cec9d7`, and on 23 September 2026 to revision `9a483df`, revision `40fce69`, revision `565e133` and revision `390643e`, and on 24 September 2026 to revision `db18890`, and on 28 September 2026 to revision `b99d354` and then to revision `fd2fb79`, and each anchor change rewrote the trailing anchor line of every body. The review record's own `catalogue_source_revision` now names this revision and keeps the earlier one in `previous_catalogue_source_revisions`, so the record of what the reviewers read and the record of what the catalogue is anchored to state the same thing. All 43 approvals were carried by `tools/carry_catalogue_approvals.py`, which proved for each one that the only difference between the bytes the reviewers read and the body today is that line and the revision it names. None of the 43 was refused. The bytes each approval covers stay readable in this repository's own history, at the commit and folder that `reviews.json` names under `reviewed_bodies_revision` and `reviewed_bodies_folder`.
+- The reviewers read the bodies at anchor revision `381efec`. The catalogue was anchored again after that, most recently on 22 September 2026 to revision `4249eca`, revision `e2898c7`, revision `f29bddc`, revision `d893bba` and revision `9cec9d7`, and on 23 September 2026 to revision `9a483df`, revision `40fce69`, revision `565e133` and revision `390643e`, and on 24 September 2026 to revision `db18890`, and on 28 September 2026 to revision `b99d354` and then to revision `fd2fb79`, and on 5 October 2026 to revision `24dc577`, and each anchor change rewrote the trailing anchor line of every body. The review record's own `catalogue_source_revision` now names this revision and keeps the earlier one in `previous_catalogue_source_revisions`, so the record of what the reviewers read and the record of what the catalogue is anchored to state the same thing. All 43 approvals were carried by `tools/carry_catalogue_approvals.py`, which proved for each one that the only difference between the bytes the reviewers read and the body today is that line and the revision it names. None of the 43 was refused. The bytes each approval covers stay readable in this repository's own history, at the commit and folder that `reviews.json` names under `reviewed_bodies_revision` and `reviewed_bodies_folder`.
 
 - This anchor moved on 28 September 2026 to revision `b99d354` and again to `fd2fb79`. Exactly one cited file differs from the
   revision the catalogue was anchored to before: `src/loop_engine/catalog/protocol.py`, which the customer
@@ -180,6 +180,17 @@ What happened after that, on 21 September 2026:
   The bodies were therefore read again at this revision and each still holds. The 43 carried approvals
   remain carried on the same evidence as before, and the tool proved the only difference between the bytes
   the reviewers read and the body today is the anchor line and the revision it names.
+
+- This anchor moved on 5 October 2026 to revision `24dc577`. Four cited files differ from `fd2fb79`:
+  `src/loop_engine/code_nodes/duplicate_detection.py`, where an email key now exists only for a value the
+  email normaliser accepts (`5e4629f0`); `src/loop_engine/code_nodes/text_conformance_operations.py`, where
+  the DuckDB column profile now quotes the table name and refuses any other text (`1ef34027`); and
+  `src/loop_engine/catalog/protocol.py` and `src/loop_engine/core/service_runtime/http_entrypoint.py`, which
+  only `general_practice_beside_cited_source` bodies cite. The thirteen `restates_cited_source` bodies that
+  cite the first two files were read again at this revision and each still holds: the duplicate scoring body
+  already says the email key is empty text when the value is not an address, which the change makes true of
+  the code, and the profiling body's account of the DuckDB query is unchanged. The 43 approvals were carried
+  again by `tools/carry_catalogue_approvals.py` on 5 October 2026, and none was refused.
 
 Remaining steps, not done here and not authorized by this folder:
 

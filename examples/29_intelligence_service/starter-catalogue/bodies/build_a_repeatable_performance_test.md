@@ -40,4 +40,4 @@ An engineer measures before and after on a laptop, gets nine percent faster, and
 
 The steps above are ordinary engineering practice, written for this catalogue in its own words.
 
-Licence: MIT. Written for this catalogue at revision fd2fb79.
+Licence: MIT. Written for this catalogue at revision 24dc577.
