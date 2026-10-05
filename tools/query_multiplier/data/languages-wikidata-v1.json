@@ -1,0 +1,1634 @@
+{
+ "languages": [
+  {
+   "iso639_1": "aa",
+   "label": "Afar",
+   "native_labels": [
+    "Afar-af",
+    "Afaraf",
+    "Qafar",
+    "Qafar af",
+    "عفر-فى",
+    "’Afar Af"
+   ],
+   "wikidata": "Q27811"
+  },
+  {
+   "iso639_1": "ab",
+   "label": "Abkhaz",
+   "native_labels": [
+    "Аԥсуа бызшәа",
+    "Аԥсшәа"
+   ],
+   "wikidata": "Q5111"
+  },
+  {
+   "iso639_1": "ae",
+   "label": "Avestan",
+   "native_labels": [],
+   "wikidata": "Q29572"
+  },
+  {
+   "iso639_1": "af",
+   "label": "Afrikaans",
+   "native_labels": [
+    "Afrikaans"
+   ],
+   "wikidata": "Q14196"
+  },
+  {
+   "iso639_1": "ak",
+   "label": "Akan",
+   "native_labels": [
+    "Akan",
+    "akan"
+   ],
+   "wikidata": "Q28026"
+  },
+  {
+   "iso639_1": "am",
+   "label": "Amharic",
+   "native_labels": [
+    "አማርኛ"
+   ],
+   "wikidata": "Q28244"
+  },
+  {
+   "iso639_1": "an",
+   "label": "Aragonese",
+   "native_labels": [
+    "aragonés"
+   ],
+   "wikidata": "Q8765"
+  },
+  {
+   "iso639_1": "ar",
+   "label": "Arabic",
+   "native_labels": [
+    "اللُّغَة العَرَبِيّة"
+   ],
+   "wikidata": "Q13955"
+  },
+  {
+   "iso639_1": "as",
+   "label": "Assamese",
+   "native_labels": [
+    "অসমীয়া",
+    "অসমীয়া ভাষা"
+   ],
+   "wikidata": "Q29401"
+  },
+  {
+   "iso639_1": "av",
+   "label": "Avar",
+   "native_labels": [
+    "авар мацI",
+    "магIарул мацI"
+   ],
+   "wikidata": "Q29561"
+  },
+  {
+   "iso639_1": "ay",
+   "label": "Aymara",
+   "native_labels": [
+    "Aymar aru"
+   ],
+   "wikidata": "Q4627"
+  },
+  {
+   "iso639_1": "az",
+   "label": "Azerbaijani",
+   "native_labels": [
+    "Azərbaycan dili"
+   ],
+   "wikidata": "Q9292"
+  },
+  {
+   "iso639_1": "ba",
+   "label": "Bashkir",
+   "native_labels": [
+    "башҡорт теле",
+    "башҡортса"
+   ],
+   "wikidata": "Q13389"
+  },
+  {
+   "iso639_1": "be",
+   "label": "Belarusian",
+   "native_labels": [
+    "беларуская мова"
+   ],
+   "wikidata": "Q9091"
+  },
+  {
+   "iso639_1": "bg",
+   "label": "Bulgarian",
+   "native_labels": [
+    "български език"
+   ],
+   "wikidata": "Q7918"
+  },
+  {
+   "iso639_1": "bh",
+   "label": "Bihari",
+   "native_labels": [
+    "बिहारी भाषा"
+   ],
+   "wikidata": "Q135305"
+  },
+  {
+   "iso639_1": "bi",
+   "label": "Bislama",
+   "native_labels": [
+    "Bislama"
+   ],
+   "wikidata": "Q35452"
+  },
+  {
+   "iso639_1": "bm",
+   "label": "Bambara",
+   "native_labels": [
+    "Bamanankan"
+   ],
+   "wikidata": "Q33243"
+  },
+  {
+   "iso639_1": "bn",
+   "label": "Bangla",
+   "native_labels": [
+    "বাংলা"
+   ],
+   "wikidata": "Q9610"
+  },
+  {
+   "iso639_1": "bo",
+   "label": "Tibetan",
+   "native_labels": [
+    "བོད་ཡིག",
+    "བོད་སྐད"
+   ],
+   "wikidata": "Q34271"
+  },
+  {
+   "iso639_1": "br",
+   "label": "Breton",
+   "native_labels": [
+    "brezhoneg"
+   ],
+   "wikidata": "Q12107"
+  },
+  {
+   "iso639_1": "bs",
+   "label": "Bosnian",
+   "native_labels": [
+    "bosanski",
+    "bosanski jezik"
+   ],
+   "wikidata": "Q9303"
+  },
+  {
+   "iso639_1": "ca",
+   "label": "Catalan",
+   "native_labels": [
+    "català",
+    "valencià"
+   ],
+   "wikidata": "Q7026"
+  },
+  {
+   "iso639_1": "ce",
+   "label": "Chechen",
+   "native_labels": [
+    "Noxçiyn mott",
+    "Нохчийн мотт"
+   ],
+   "wikidata": "Q33350"
+  },
+  {
+   "iso639_1": "ch",
+   "label": "Chamorro",
+   "native_labels": [
+    "Chamorro",
+    "Chamorru"
+   ],
+   "wikidata": "Q33262"
+  },
+  {
+   "iso639_1": "co",
+   "label": "Corsican",
+   "native_labels": [
+    "corsu"
+   ],
+   "wikidata": "Q33111"
+  },
+  {
+   "iso639_1": "cr",
+   "label": "Cree",
+   "native_labels": [
+    "nēhiyawēwin",
+    "ᐃᔨᔨᐤ ᐊᔨᒧᐎᓐ'"
+   ],
+   "wikidata": "Q33390"
+  },
+  {
+   "iso639_1": "cs",
+   "label": "Czech",
+   "native_labels": [
+    "český jazyk",
+    "čeština"
+   ],
+   "wikidata": "Q9056"
+  },
+  {
+   "iso639_1": "cu",
+   "label": "Church Slavonic",
+   "native_labels": [
+    "Словѣньскъ",
+    "Словѣньскъ ѩꙁꙑкъ",
+    "Ⱄⰾⱁⰲⱑⱀⱐⱄⰽⱏ ⱗⰸⱏⰺⰽⱏ"
+   ],
+   "wikidata": "Q33251"
+  },
+  {
+   "iso639_1": "cv",
+   "label": "Chuvash",
+   "native_labels": [
+    "Чăваш чĕлхи"
+   ],
+   "wikidata": "Q33348"
+  },
+  {
+   "iso639_1": "cy",
+   "label": "Welsh",
+   "native_labels": [
+    "Cymraeg"
+   ],
+   "wikidata": "Q9309"
+  },
+  {
+   "iso639_1": "da",
+   "label": "Danish",
+   "native_labels": [
+    "dansk"
+   ],
+   "wikidata": "Q9035"
+  },
+  {
+   "iso639_1": "de",
+   "label": "German",
+   "native_labels": [
+    "Deutsch"
+   ],
+   "wikidata": "Q188"
+  },
+  {
+   "iso639_1": "dv",
+   "label": "Maldivian",
+   "native_labels": [
+    "ދިވެހި",
+    "ދިވެހިބަސް"
+   ],
+   "wikidata": "Q32656"
+  },
+  {
+   "iso639_1": "dz",
+   "label": "Dzongkha",
+   "native_labels": [
+    "རྫོང་ཁ་"
+   ],
+   "wikidata": "Q33081"
+  },
+  {
+   "iso639_1": "ee",
+   "label": "Ewe",
+   "native_labels": [
+    "Eʋe",
+    "Eʋegbe"
+   ],
+   "wikidata": "Q30005"
+  },
+  {
+   "iso639_1": "el",
+   "label": "Modern Greek",
+   "native_labels": [
+    "Ελληνικά",
+    "ελληνικά",
+    "νέα ελληνικά"
+   ],
+   "wikidata": "Q36510"
+  },
+  {
+   "iso639_1": "en",
+   "label": "English",
+   "native_labels": [
+    "English"
+   ],
+   "wikidata": "Q1860"
+  },
+  {
+   "iso639_1": "eo",
+   "label": "Esperanto",
+   "native_labels": [
+    "Esperanto"
+   ],
+   "wikidata": "Q143"
+  },
+  {
+   "iso639_1": "es",
+   "label": "Spanish",
+   "native_labels": [
+    "castellano",
+    "español"
+   ],
+   "wikidata": "Q1321"
+  },
+  {
+   "iso639_1": "et",
+   "label": "Estonian",
+   "native_labels": [
+    "eesti keel"
+   ],
+   "wikidata": "Q9072"
+  },
+  {
+   "iso639_1": "eu",
+   "label": "Basque",
+   "native_labels": [
+    "Euskara"
+   ],
+   "wikidata": "Q8752"
+  },
+  {
+   "iso639_1": "fa",
+   "label": "Persian",
+   "native_labels": [
+    "فارسی"
+   ],
+   "wikidata": "Q9168"
+  },
+  {
+   "iso639_1": "ff",
+   "label": "Fula",
+   "native_labels": [
+    "Fulfulde",
+    "𞤆𞤵𞤤𞤢𞤪"
+   ],
+   "wikidata": "Q33454"
+  },
+  {
+   "iso639_1": "fi",
+   "label": "Finnish",
+   "native_labels": [
+    "suomi"
+   ],
+   "wikidata": "Q1412"
+  },
+  {
+   "iso639_1": "fj",
+   "label": "Fijian",
+   "native_labels": [
+    "vosa Vakaviti"
+   ],
+   "wikidata": "Q33295"
+  },
+  {
+   "iso639_1": "fo",
+   "label": "Faroese",
+   "native_labels": [
+    "Føroyskt",
+    "Føroyskt mál",
+    "føroyskt"
+   ],
+   "wikidata": "Q25258"
+  },
+  {
+   "iso639_1": "fr",
+   "label": "French",
+   "native_labels": [
+    "français"
+   ],
+   "wikidata": "Q150"
+  },
+  {
+   "iso639_1": "fy",
+   "label": "West Frisian",
+   "native_labels": [
+    "Frysk",
+    "West-Frysk"
+   ],
+   "wikidata": "Q27175"
+  },
+  {
+   "iso639_1": "ga",
+   "label": "Irish",
+   "native_labels": [
+    "An Ghaeilge",
+    "Gaeilge"
+   ],
+   "wikidata": "Q9142"
+  },
+  {
+   "iso639_1": "gd",
+   "label": "Scottish Gaelic",
+   "native_labels": [
+    "Gàidhlig",
+    "Gàidhlig na h-Alba"
+   ],
+   "wikidata": "Q9314"
+  },
+  {
+   "iso639_1": "gl",
+   "label": "Galician",
+   "native_labels": [
+    "galego",
+    "lingua galega"
+   ],
+   "wikidata": "Q9307"
+  },
+  {
+   "iso639_1": "gn",
+   "label": "Guarani",
+   "native_labels": [
+    "Avañe'ẽ"
+   ],
+   "wikidata": "Q35876"
+  },
+  {
+   "iso639_1": "gu",
+   "label": "Gujarati",
+   "native_labels": [
+    "ગુજરાતી"
+   ],
+   "wikidata": "Q5137"
+  },
+  {
+   "iso639_1": "gv",
+   "label": "Manx",
+   "native_labels": [
+    "Gaelg"
+   ],
+   "wikidata": "Q12175"
+  },
+  {
+   "iso639_1": "ha",
+   "label": "Hausa",
+   "native_labels": [
+    "Hausa",
+    "هَوْسَ"
+   ],
+   "wikidata": "Q56475"
+  },
+  {
+   "iso639_1": "he",
+   "label": "Hebrew",
+   "native_labels": [
+    "עברית",
+    "עברית חדשה"
+   ],
+   "wikidata": "Q9288"
+  },
+  {
+   "iso639_1": "hi",
+   "label": "Hindi",
+   "native_labels": [
+    "मानक हिन्दी",
+    "हिन्दी"
+   ],
+   "wikidata": "Q1568"
+  },
+  {
+   "iso639_1": "ho",
+   "label": "Hiri Motu",
+   "native_labels": [
+    "Hiri Motu"
+   ],
+   "wikidata": "Q33617"
+  },
+  {
+   "iso639_1": "hr",
+   "label": "Croatian",
+   "native_labels": [
+    "hrvatski",
+    "hrvatski jezik"
+   ],
+   "wikidata": "Q6654"
+  },
+  {
+   "iso639_1": "ht",
+   "label": "Haitian Creole",
+   "native_labels": [
+    "Kreyòl ayisyen"
+   ],
+   "wikidata": "Q33491"
+  },
+  {
+   "iso639_1": "hu",
+   "label": "Hungarian",
+   "native_labels": [
+    "magyar",
+    "magyar nyelv"
+   ],
+   "wikidata": "Q9067"
+  },
+  {
+   "iso639_1": "hy",
+   "label": "Armenian",
+   "native_labels": [
+    "հայերեն"
+   ],
+   "wikidata": "Q8785"
+  },
+  {
+   "iso639_1": "hz",
+   "label": "Herero",
+   "native_labels": [
+    "Otjiherero",
+    "Otsiherero"
+   ],
+   "wikidata": "Q33315"
+  },
+  {
+   "iso639_1": "ia",
+   "label": "Interlingua",
+   "native_labels": [
+    "Interlingua",
+    "interlingua"
+   ],
+   "wikidata": "Q35934"
+  },
+  {
+   "iso639_1": "id",
+   "label": "Indonesian",
+   "native_labels": [
+    "Bahasa Indonesia"
+   ],
+   "wikidata": "Q9240"
+  },
+  {
+   "iso639_1": "ie",
+   "label": "Interlingue",
+   "native_labels": [
+    "Interlingue"
+   ],
+   "wikidata": "Q35850"
+  },
+  {
+   "iso639_1": "ig",
+   "label": "Igbo",
+   "native_labels": [
+    "Asụsụ Igbo",
+    "Igbo"
+   ],
+   "wikidata": "Q33578"
+  },
+  {
+   "iso639_1": "ii",
+   "label": "Nuosu",
+   "native_labels": [
+    "Nuosu",
+    "ꆈꌠꉙ"
+   ],
+   "wikidata": "Q34235"
+  },
+  {
+   "iso639_1": "ik",
+   "label": "Iñupiaq",
+   "native_labels": [
+    "Iñupiatun"
+   ],
+   "wikidata": "Q27183"
+  },
+  {
+   "iso639_1": "io",
+   "label": "Ido",
+   "native_labels": [
+    "Ido"
+   ],
+   "wikidata": "Q35224"
+  },
+  {
+   "iso639_1": "is",
+   "label": "Icelandic",
+   "native_labels": [
+    "Íslenska",
+    "íslenska"
+   ],
+   "wikidata": "Q294"
+  },
+  {
+   "iso639_1": "it",
+   "label": "Italian",
+   "native_labels": [
+    "italiano"
+   ],
+   "wikidata": "Q652"
+  },
+  {
+   "iso639_1": "iu",
+   "label": "Inuktitut",
+   "native_labels": [
+    "Inuktitut",
+    "ᐃᓄᒃᑎᑐᑦ"
+   ],
+   "wikidata": "Q29921"
+  },
+  {
+   "iso639_1": "ja",
+   "label": "Japanese",
+   "native_labels": [
+    "日本語"
+   ],
+   "wikidata": "Q5287"
+  },
+  {
+   "iso639_1": "jv",
+   "label": "Javanese",
+   "native_labels": [
+    "Basa Jawa",
+    "Jawa"
+   ],
+   "wikidata": "Q33549"
+  },
+  {
+   "iso639_1": "ka",
+   "label": "Georgian",
+   "native_labels": [
+    "ქართული",
+    "ქართული ენა"
+   ],
+   "wikidata": "Q8108"
+  },
+  {
+   "iso639_1": "kg",
+   "label": "Kongo",
+   "native_labels": [
+    "kikongo"
+   ],
+   "wikidata": "Q33702"
+  },
+  {
+   "iso639_1": "ki",
+   "label": "Gikuyu",
+   "native_labels": [
+    "Gĩgĩkũyũ",
+    "Gĩkũyũ"
+   ],
+   "wikidata": "Q33587"
+  },
+  {
+   "iso639_1": "kj",
+   "label": "Kwanyama",
+   "native_labels": [
+    "Kwanyama",
+    "Oshikwanyama",
+    "Oshiwambo"
+   ],
+   "wikidata": "Q1405077"
+  },
+  {
+   "iso639_1": "kk",
+   "label": "Kazakh",
+   "native_labels": [
+    "Qazaq tılı",
+    "қазақ тілі",
+    "қазақша",
+    "قازاق ٴتىلى"
+   ],
+   "wikidata": "Q9252"
+  },
+  {
+   "iso639_1": "kl",
+   "label": "Greenlandic",
+   "native_labels": [
+    "Kalaallisut"
+   ],
+   "wikidata": "Q25355"
+  },
+  {
+   "iso639_1": "km",
+   "label": "Khmer",
+   "native_labels": [
+    "ខ្មែរ",
+    "ភាសាខ្មែរ"
+   ],
+   "wikidata": "Q9205"
+  },
+  {
+   "iso639_1": "kn",
+   "label": "Kannada",
+   "native_labels": [
+    "ಕನ್ನಡ"
+   ],
+   "wikidata": "Q33673"
+  },
+  {
+   "iso639_1": "ko",
+   "label": "Korean",
+   "native_labels": [
+    "조선말",
+    "한국말",
+    "한국어"
+   ],
+   "wikidata": "Q9176"
+  },
+  {
+   "iso639_1": "kr",
+   "label": "Kanuri",
+   "native_labels": [
+    "kanuri"
+   ],
+   "wikidata": "Q36094"
+  },
+  {
+   "iso639_1": "ks",
+   "label": "Kashmiri",
+   "native_labels": [
+    "کٲشُر",
+    "कॉशुर",
+    "𑆑𑆳𑆯𑆶𑆫𑇀"
+   ],
+   "wikidata": "Q33552"
+  },
+  {
+   "iso639_1": "ku",
+   "label": "Kurdish language",
+   "native_labels": [
+    "Kurdî",
+    "Zimanê Kurdî",
+    "زمانی کوردی",
+    "کوردی"
+   ],
+   "wikidata": "Q36368"
+  },
+  {
+   "iso639_1": "kv",
+   "label": "Komi",
+   "native_labels": [
+    "Коми кыв"
+   ],
+   "wikidata": "Q36126"
+  },
+  {
+   "iso639_1": "kw",
+   "label": "Cornish",
+   "native_labels": [
+    "Kernewek",
+    "Kernowek",
+    "kernewek"
+   ],
+   "wikidata": "Q25289"
+  },
+  {
+   "iso639_1": "ky",
+   "label": "Kyrgyz",
+   "native_labels": [
+    "Кыргыз тили",
+    "кыргызча"
+   ],
+   "wikidata": "Q9255"
+  },
+  {
+   "iso639_1": "la",
+   "label": "Latin",
+   "native_labels": [
+    "Lingua latina"
+   ],
+   "wikidata": "Q397"
+  },
+  {
+   "iso639_1": "lb",
+   "label": "Luxembourgish",
+   "native_labels": [
+    "Lëtzebuergesch"
+   ],
+   "wikidata": "Q9051"
+  },
+  {
+   "iso639_1": "lg",
+   "label": "Luganda",
+   "native_labels": [
+    "Luganda"
+   ],
+   "wikidata": "Q33368"
+  },
+  {
+   "iso639_1": "li",
+   "label": "Limburgish",
+   "native_labels": [
+    "Limburgisj",
+    "Limburgs",
+    "Limburgsj",
+    "Limbörgs",
+    "Lèmburgs",
+    "Lèmbörgs",
+    "Plat"
+   ],
+   "wikidata": "Q102172"
+  },
+  {
+   "iso639_1": "ln",
+   "label": "Lingala",
+   "native_labels": [
+    "Lingala",
+    "Lingála",
+    "lingála"
+   ],
+   "wikidata": "Q36217"
+  },
+  {
+   "iso639_1": "lo",
+   "label": "Lao",
+   "native_labels": [
+    "ພາສາລາວ",
+    "ລາວ"
+   ],
+   "wikidata": "Q9211"
+  },
+  {
+   "iso639_1": "lt",
+   "label": "Lithuanian",
+   "native_labels": [
+    "Lietuviškai",
+    "Lietuvių kalba"
+   ],
+   "wikidata": "Q9083"
+  },
+  {
+   "iso639_1": "lu",
+   "label": "Luba-Katanga",
+   "native_labels": [
+    "Kiluba"
+   ],
+   "wikidata": "Q36157"
+  },
+  {
+   "iso639_1": "lv",
+   "label": "Latvian",
+   "native_labels": [
+    "latviešu valoda"
+   ],
+   "wikidata": "Q9078"
+  },
+  {
+   "iso639_1": "mg",
+   "label": "Malagasy",
+   "native_labels": [
+    "Fiteny malagasy"
+   ],
+   "wikidata": "Q7930"
+  },
+  {
+   "iso639_1": "mh",
+   "label": "Marshallese",
+   "native_labels": [
+    "Kajin Aelōñ Kein",
+    "Kajin M̧ajeļ",
+    "Kajin Ṃajōḷ"
+   ],
+   "wikidata": "Q36280"
+  },
+  {
+   "iso639_1": "mi",
+   "label": "Māori",
+   "native_labels": [
+    "Māori",
+    "te reo",
+    "te reo Māori"
+   ],
+   "wikidata": "Q36451"
+  },
+  {
+   "iso639_1": "mk",
+   "label": "Macedonian",
+   "native_labels": [
+    "македонски",
+    "македонски јазик"
+   ],
+   "wikidata": "Q9296"
+  },
+  {
+   "iso639_1": "ml",
+   "label": "Malayalam",
+   "native_labels": [
+    "مَلَیٰاۻَمْ",
+    "മലയാളം"
+   ],
+   "wikidata": "Q36236"
+  },
+  {
+   "iso639_1": "mn",
+   "label": "Mongolian",
+   "native_labels": [
+    "монгол хэл",
+    "ᠮᠣᠩᠭᠣᠯ ᠬᠡᠯᠡ"
+   ],
+   "wikidata": "Q9246"
+  },
+  {
+   "iso639_1": "mo",
+   "label": "Moldovan",
+   "native_labels": [
+    "Limba moldovenească",
+    "Moldovenește"
+   ],
+   "wikidata": "Q36392"
+  },
+  {
+   "iso639_1": "mr",
+   "label": "Marathi",
+   "native_labels": [
+    "मराठी"
+   ],
+   "wikidata": "Q1571"
+  },
+  {
+   "iso639_1": "ms",
+   "label": "Malay",
+   "native_labels": [
+    "Bahasa Melayu"
+   ],
+   "wikidata": "Q9237"
+  },
+  {
+   "iso639_1": "mt",
+   "label": "Maltese",
+   "native_labels": [
+    "Malti"
+   ],
+   "wikidata": "Q9166"
+  },
+  {
+   "iso639_1": "my",
+   "label": "Burmese",
+   "native_labels": [
+    "မြန်မာဘာသာ",
+    "မြန်မာဘာသာစကား"
+   ],
+   "wikidata": "Q9228"
+  },
+  {
+   "iso639_1": "na",
+   "label": "Nauruan",
+   "native_labels": [
+    "Dorerin Naoero",
+    "dorerin Naoero"
+   ],
+   "wikidata": "Q13307"
+  },
+  {
+   "iso639_1": "nb",
+   "label": "Bokmål",
+   "native_labels": [
+    "bokmål"
+   ],
+   "wikidata": "Q25167"
+  },
+  {
+   "iso639_1": "nd",
+   "label": "Northern Ndebele",
+   "native_labels": [
+    "Sindebele"
+   ],
+   "wikidata": "Q35613"
+  },
+  {
+   "iso639_1": "ne",
+   "label": "Nepali",
+   "native_labels": [
+    "नेपाली"
+   ],
+   "wikidata": "Q33823"
+  },
+  {
+   "iso639_1": "ng",
+   "label": "Ndonga",
+   "native_labels": [
+    "Ndonga"
+   ],
+   "wikidata": "Q33900"
+  },
+  {
+   "iso639_1": "nl",
+   "label": "Dutch",
+   "native_labels": [
+    "Nederlands"
+   ],
+   "wikidata": "Q7411"
+  },
+  {
+   "iso639_1": "nn",
+   "label": "Nynorsk",
+   "native_labels": [
+    "Nynorsk"
+   ],
+   "wikidata": "Q25164"
+  },
+  {
+   "iso639_1": "no",
+   "label": "Norwegian",
+   "native_labels": [
+    "norsk"
+   ],
+   "wikidata": "Q9043"
+  },
+  {
+   "iso639_1": "nr",
+   "label": "Southern Ndebele",
+   "native_labels": [
+    "IsiNdebele"
+   ],
+   "wikidata": "Q36785"
+  },
+  {
+   "iso639_1": "nv",
+   "label": "Navajo",
+   "native_labels": [
+    "Diné",
+    "Diné bizaad"
+   ],
+   "wikidata": "Q13310"
+  },
+  {
+   "iso639_1": "ny",
+   "label": "Chewa",
+   "native_labels": [
+    "Chicheŵa",
+    "Chilankhulo cha Chichewa"
+   ],
+   "wikidata": "Q33273"
+  },
+  {
+   "iso639_1": "oc",
+   "label": "Occitan",
+   "native_labels": [
+    "Occitan",
+    "lenga d'òc",
+    "occitan"
+   ],
+   "wikidata": "Q14185"
+  },
+  {
+   "iso639_1": "oj",
+   "label": "Ojibwe",
+   "native_labels": [
+    "Anishinaabemowin",
+    "ᐊᓂᐦᔑᓈᐯᒧᐎᓐ"
+   ],
+   "wikidata": "Q33875"
+  },
+  {
+   "iso639_1": "om",
+   "label": "Oromo",
+   "native_labels": [
+    "Afaan Oromoo"
+   ],
+   "wikidata": "Q33864"
+  },
+  {
+   "iso639_1": "or",
+   "label": "Odia",
+   "native_labels": [
+    "ଓଡ଼ିଆ",
+    "ଓଡ଼ିଆ ଭାଷା"
+   ],
+   "wikidata": "Q33810"
+  },
+  {
+   "iso639_1": "os",
+   "label": "Iron dialect",
+   "native_labels": [
+    "ирон диалект"
+   ],
+   "wikidata": "Q2585922"
+  },
+  {
+   "iso639_1": "pa",
+   "label": "Punjabi",
+   "native_labels": [
+    "پنجابی",
+    "ਪੰਜਾਬੀ"
+   ],
+   "wikidata": "Q58635"
+  },
+  {
+   "iso639_1": "pi",
+   "label": "Pali",
+   "native_labels": [
+    "𑀧𑀸𑀴𑀺"
+   ],
+   "wikidata": "Q36727"
+  },
+  {
+   "iso639_1": "pl",
+   "label": "Polish",
+   "native_labels": [
+    "język polski",
+    "polszczyzna"
+   ],
+   "wikidata": "Q809"
+  },
+  {
+   "iso639_1": "ps",
+   "label": "Pashto",
+   "native_labels": [
+    "پښتو",
+    "پښتو ژبه"
+   ],
+   "wikidata": "Q58680"
+  },
+  {
+   "iso639_1": "pt",
+   "label": "Portuguese",
+   "native_labels": [
+    "português"
+   ],
+   "wikidata": "Q5146"
+  },
+  {
+   "iso639_1": "qu",
+   "label": "Quechua",
+   "native_labels": [
+    "Qhichwa simi"
+   ],
+   "wikidata": "Q5218"
+  },
+  {
+   "iso639_1": "rm",
+   "label": "Romansh",
+   "native_labels": [
+    "rumantsch"
+   ],
+   "wikidata": "Q13199"
+  },
+  {
+   "iso639_1": "rn",
+   "label": "Kirundi",
+   "native_labels": [
+    "Ikirundi"
+   ],
+   "wikidata": "Q33583"
+  },
+  {
+   "iso639_1": "ro",
+   "label": "Romanian",
+   "native_labels": [
+    "limba română",
+    "românește"
+   ],
+   "wikidata": "Q7913"
+  },
+  {
+   "iso639_1": "ru",
+   "label": "Russian",
+   "native_labels": [
+    "русский язык"
+   ],
+   "wikidata": "Q7737"
+  },
+  {
+   "iso639_1": "rw",
+   "label": "Kinyarwanda",
+   "native_labels": [
+    "Ikinyarwanda",
+    "Kinyarwanda"
+   ],
+   "wikidata": "Q33573"
+  },
+  {
+   "iso639_1": "sa",
+   "label": "Sanskrit",
+   "native_labels": [
+    "संस्कृतम्",
+    "𑖭𑖽𑖭𑖿𑖎𑖴𑖝𑖦𑖿"
+   ],
+   "wikidata": "Q11059"
+  },
+  {
+   "iso639_1": "sc",
+   "label": "Sardinian",
+   "native_labels": [
+    "sardu"
+   ],
+   "wikidata": "Q33976"
+  },
+  {
+   "iso639_1": "sd",
+   "label": "Sindhi",
+   "native_labels": [
+    "سِنڌِي",
+    "सिंधी",
+    "સિંધી"
+   ],
+   "wikidata": "Q33997"
+  },
+  {
+   "iso639_1": "se",
+   "label": "Northern Sami",
+   "native_labels": [
+    "davvisámegiella",
+    "sámegiella"
+   ],
+   "wikidata": "Q33947"
+  },
+  {
+   "iso639_1": "sg",
+   "label": "Sango",
+   "native_labels": [
+    "Sango",
+    "Sängö"
+   ],
+   "wikidata": "Q33954"
+  },
+  {
+   "iso639_1": "sh",
+   "label": "Serbo-Croatian",
+   "native_labels": [
+    "hrvatskosrpski jezik",
+    "srpskohrvatski jezik",
+    "српскохрватски језик",
+    "хрватскосрпски језик"
+   ],
+   "wikidata": "Q9301"
+  },
+  {
+   "iso639_1": "si",
+   "label": "Sinhala",
+   "native_labels": [
+    "සිංහල",
+    "සිංහල භාෂාව"
+   ],
+   "wikidata": "Q13267"
+  },
+  {
+   "iso639_1": "sk",
+   "label": "Slovak",
+   "native_labels": [
+    "slovenský jazyk",
+    "slovenčina"
+   ],
+   "wikidata": "Q9058"
+  },
+  {
+   "iso639_1": "sl",
+   "label": "Slovene",
+   "native_labels": [
+    "slovenski jezik",
+    "slovenščina"
+   ],
+   "wikidata": "Q9063"
+  },
+  {
+   "iso639_1": "sm",
+   "label": "Samoan",
+   "native_labels": [
+    "Gagana Samoa",
+    "Gagana fa'a Sāmoa"
+   ],
+   "wikidata": "Q34011"
+  },
+  {
+   "iso639_1": "sn",
+   "label": "Shona",
+   "native_labels": [
+    "ChiShona",
+    "Chishona",
+    "chiShona"
+   ],
+   "wikidata": "Q34004"
+  },
+  {
+   "iso639_1": "so",
+   "label": "Somali",
+   "native_labels": [
+    "Af-Soomaali",
+    "اف صومالِ",
+    "𐒖𐒍 𐒈𐒝𐒑𐒛𐒐𐒘"
+   ],
+   "wikidata": "Q13275"
+  },
+  {
+   "iso639_1": "sq",
+   "label": "Albanian",
+   "native_labels": [
+    "Gjuha shqipe"
+   ],
+   "wikidata": "Q8748"
+  },
+  {
+   "iso639_1": "sr",
+   "label": "Serbian",
+   "native_labels": [
+    "srpski jezik",
+    "српски",
+    "српски језик"
+   ],
+   "wikidata": "Q9299"
+  },
+  {
+   "iso639_1": "ss",
+   "label": "Swazi",
+   "native_labels": [
+    "Siswati",
+    "siSwati"
+   ],
+   "wikidata": "Q34014"
+  },
+  {
+   "iso639_1": "st",
+   "label": "Sesotho",
+   "native_labels": [
+    "Sesotho",
+    "seSotho"
+   ],
+   "wikidata": "Q34340"
+  },
+  {
+   "iso639_1": "su",
+   "label": "Sundanese",
+   "native_labels": [
+    "Basa Sunda"
+   ],
+   "wikidata": "Q34002"
+  },
+  {
+   "iso639_1": "sv",
+   "label": "Swedish",
+   "native_labels": [
+    "svenska"
+   ],
+   "wikidata": "Q9027"
+  },
+  {
+   "iso639_1": "sw",
+   "label": "Swahili",
+   "native_labels": [
+    "Kiswahili",
+    "كِسْوَحِيلِ"
+   ],
+   "wikidata": "Q7838"
+  },
+  {
+   "iso639_1": "ta",
+   "label": "Tamil",
+   "native_labels": [
+    "تَمِۻْ",
+    "தமிழ்"
+   ],
+   "wikidata": "Q5885"
+  },
+  {
+   "iso639_1": "te",
+   "label": "Telugu",
+   "native_labels": [
+    "తెలుగు"
+   ],
+   "wikidata": "Q8097"
+  },
+  {
+   "iso639_1": "tg",
+   "label": "Tajik",
+   "native_labels": [
+    "забони тоҷикӣ"
+   ],
+   "wikidata": "Q9260"
+  },
+  {
+   "iso639_1": "th",
+   "label": "Thai",
+   "native_labels": [
+    "ภาษาไทย"
+   ],
+   "wikidata": "Q9217"
+  },
+  {
+   "iso639_1": "ti",
+   "label": "Tigrinya",
+   "native_labels": [
+    "ትግርኛ"
+   ],
+   "wikidata": "Q34124"
+  },
+  {
+   "iso639_1": "tk",
+   "label": "Turkmen",
+   "native_labels": [
+    "Türkmen",
+    "Türkmençe",
+    "түркменче",
+    "تۆرکمنچه"
+   ],
+   "wikidata": "Q9267"
+  },
+  {
+   "iso639_1": "tl",
+   "label": "Tagalog",
+   "native_labels": [
+    "wikang Tagalog"
+   ],
+   "wikidata": "Q34057"
+  },
+  {
+   "iso639_1": "tn",
+   "label": "Tswana",
+   "native_labels": [
+    "seTswana"
+   ],
+   "wikidata": "Q34137"
+  },
+  {
+   "iso639_1": "to",
+   "label": "Tongan",
+   "native_labels": [
+    "Faka Tonga",
+    "Lea fakatonga",
+    "lea fakatonga"
+   ],
+   "wikidata": "Q34094"
+  },
+  {
+   "iso639_1": "tr",
+   "label": "Turkish",
+   "native_labels": [
+    "Türkçe"
+   ],
+   "wikidata": "Q256"
+  },
+  {
+   "iso639_1": "ts",
+   "label": "Tsonga",
+   "native_labels": [
+    "Tsonga",
+    "Xitsonga"
+   ],
+   "wikidata": "Q34327"
+  },
+  {
+   "iso639_1": "tt",
+   "label": "Tatar",
+   "native_labels": [
+    "татар теле"
+   ],
+   "wikidata": "Q25285"
+  },
+  {
+   "iso639_1": "tw",
+   "label": "Twi",
+   "native_labels": [
+    "twi"
+   ],
+   "wikidata": "Q36850"
+  },
+  {
+   "iso639_1": "ty",
+   "label": "Tahitian",
+   "native_labels": [
+    "reo tahiti"
+   ],
+   "wikidata": "Q34128"
+  },
+  {
+   "iso639_1": "ug",
+   "label": "Uyghur",
+   "native_labels": [
+    "ئۇيغۇر",
+    "ئۇيغۇر تىلى",
+    "ئۇيغۇرچە"
+   ],
+   "wikidata": "Q13263"
+  },
+  {
+   "iso639_1": "uk",
+   "label": "Ukrainian",
+   "native_labels": [
+    "українська мова"
+   ],
+   "wikidata": "Q8798"
+  },
+  {
+   "iso639_1": "ur",
+   "label": "Urdu",
+   "native_labels": [
+    "اردو"
+   ],
+   "wikidata": "Q1617"
+  },
+  {
+   "iso639_1": "uz",
+   "label": "Uzbek",
+   "native_labels": [
+    "Oʻzbek tili",
+    "Ўзбек тили",
+    "ئۇزبېك تیلى"
+   ],
+   "wikidata": "Q9264"
+  },
+  {
+   "iso639_1": "ve",
+   "label": "Venda",
+   "native_labels": [
+    "Tshivenḓa",
+    "tshiVenḓa"
+   ],
+   "wikidata": "Q32704"
+  },
+  {
+   "iso639_1": "vi",
+   "label": "Vietnamese",
+   "native_labels": [
+    "Tiếng Việt"
+   ],
+   "wikidata": "Q9199"
+  },
+  {
+   "iso639_1": "vo",
+   "label": "Volapük",
+   "native_labels": [
+    "Volapük",
+    "Volapük nulik"
+   ],
+   "wikidata": "Q36986"
+  },
+  {
+   "iso639_1": "wa",
+   "label": "Walloon",
+   "native_labels": [
+    "walon"
+   ],
+   "wikidata": "Q34219"
+  },
+  {
+   "iso639_1": "wo",
+   "label": "Wolof",
+   "native_labels": [
+    "Wolof"
+   ],
+   "wikidata": "Q34257"
+  },
+  {
+   "iso639_1": "xh",
+   "label": "Xhosa",
+   "native_labels": [
+    "IsiXhosa",
+    "isiXhosa"
+   ],
+   "wikidata": "Q13218"
+  },
+  {
+   "iso639_1": "yi",
+   "label": "Yiddish",
+   "native_labels": [
+    "יידיש"
+   ],
+   "wikidata": "Q8641"
+  },
+  {
+   "iso639_1": "yo",
+   "label": "Yoruba",
+   "native_labels": [
+    "Yorùbá",
+    "Èdè Yorùbá"
+   ],
+   "wikidata": "Q34311"
+  },
+  {
+   "iso639_1": "za",
+   "label": "Zhuang",
+   "native_labels": [
+    "Vahcuengh"
+   ],
+   "wikidata": "Q13216"
+  },
+  {
+   "iso639_1": "zh",
+   "label": "Chinese",
+   "native_labels": [
+    "中文",
+    "汉语",
+    "漢語"
+   ],
+   "wikidata": "Q7850"
+  },
+  {
+   "iso639_1": "zu",
+   "label": "Zulu",
+   "native_labels": [
+    "isiZulu"
+   ],
+   "wikidata": "Q10179"
+  }
+ ],
+ "licence": "CC0-1.0",
+ "record_type": "research_reference_languages/v1",
+ "scope": "ISO 639-1 codes with English and native labels as search terms; not a translation service.",
+ "sources": {
+  "languages": {
+   "endpoint": "https://query.wikidata.org/sparql",
+   "licence": "CC0-1.0",
+   "licence_evidence": "https://www.wikidata.org/wiki/Wikidata:Licensing (structured data in the main namespace: CC0-1.0)",
+   "query": "SELECT ?lang ?code ?en (GROUP_CONCAT(DISTINCT ?nat; separator=\"|\") AS ?natives) WHERE { ?lang wdt:P218 ?code . ?lang rdfs:label ?en FILTER(LANG(?en) = \"en\") OPTIONAL { ?lang wdt:P1705 ?nat } } GROUP BY ?lang ?code ?en ORDER BY ?code",
+   "response_bytes": 74794,
+   "response_sha256": "0eca406b64c8e07db2cc45a76f7de451bff45b918fb9558f94d03a79ec39a29c",
+   "retrieved_at": "2026-10-05T16:33:05Z"
+  }
+ }
+}

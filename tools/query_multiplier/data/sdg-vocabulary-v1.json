@@ -1,0 +1,924 @@
+{
+ "record_type": "research_sdg_vocabulary/v1",
+ "version": "2026-10-05",
+ "licence": "MIT",
+ "scope": "Baltor's own short search phrases, keyed by the goal and target numbers of the global indicator framework (UN General Assembly resolution A/RES/71/313). The phrases are search terms written for this planner, not the official target text, not a complete statement of any target and not an endorsement.",
+ "reference": "https://unstats.un.org/sdgs/indicators/indicators-list/",
+ "goals": [
+  {
+   "id": "1",
+   "phrase": "poverty"
+  },
+  {
+   "id": "2",
+   "phrase": "food security"
+  },
+  {
+   "id": "3",
+   "phrase": "public health"
+  },
+  {
+   "id": "4",
+   "phrase": "education access"
+  },
+  {
+   "id": "5",
+   "phrase": "gender equality"
+  },
+  {
+   "id": "6",
+   "phrase": "water and sanitation"
+  },
+  {
+   "id": "7",
+   "phrase": "clean energy"
+  },
+  {
+   "id": "8",
+   "phrase": "decent work"
+  },
+  {
+   "id": "9",
+   "phrase": "infrastructure and innovation"
+  },
+  {
+   "id": "10",
+   "phrase": "reduced inequalities"
+  },
+  {
+   "id": "11",
+   "phrase": "sustainable cities"
+  },
+  {
+   "id": "12",
+   "phrase": "responsible consumption"
+  },
+  {
+   "id": "13",
+   "phrase": "climate action"
+  },
+  {
+   "id": "14",
+   "phrase": "ocean conservation"
+  },
+  {
+   "id": "15",
+   "phrase": "terrestrial biodiversity"
+  },
+  {
+   "id": "16",
+   "phrase": "justice and institutions"
+  },
+  {
+   "id": "17",
+   "phrase": "sustainable development partnerships"
+  }
+ ],
+ "targets": [
+  {
+   "id": "1.1",
+   "goal": "1",
+   "phrase": "extreme poverty"
+  },
+  {
+   "id": "1.2",
+   "goal": "1",
+   "phrase": "multidimensional poverty"
+  },
+  {
+   "id": "1.3",
+   "goal": "1",
+   "phrase": "social protection"
+  },
+  {
+   "id": "1.4",
+   "goal": "1",
+   "phrase": "land tenure security"
+  },
+  {
+   "id": "1.5",
+   "goal": "1",
+   "phrase": "disaster resilience"
+  },
+  {
+   "id": "1.a",
+   "goal": "1",
+   "phrase": "poverty reduction programmes"
+  },
+  {
+   "id": "1.b",
+   "goal": "1",
+   "phrase": "pro-poor policy"
+  },
+  {
+   "id": "2.1",
+   "goal": "2",
+   "phrase": "hunger"
+  },
+  {
+   "id": "2.2",
+   "goal": "2",
+   "phrase": "malnutrition"
+  },
+  {
+   "id": "2.3",
+   "goal": "2",
+   "phrase": "smallholder farmers"
+  },
+  {
+   "id": "2.4",
+   "goal": "2",
+   "phrase": "sustainable agriculture"
+  },
+  {
+   "id": "2.5",
+   "goal": "2",
+   "phrase": "plant genetic resources"
+  },
+  {
+   "id": "2.a",
+   "goal": "2",
+   "phrase": "agricultural research"
+  },
+  {
+   "id": "2.b",
+   "goal": "2",
+   "phrase": "agricultural trade"
+  },
+  {
+   "id": "2.c",
+   "goal": "2",
+   "phrase": "food price volatility"
+  },
+  {
+   "id": "3.1",
+   "goal": "3",
+   "phrase": "maternal mortality"
+  },
+  {
+   "id": "3.2",
+   "goal": "3",
+   "phrase": "child mortality"
+  },
+  {
+   "id": "3.3",
+   "goal": "3",
+   "phrase": "infectious disease surveillance"
+  },
+  {
+   "id": "3.4",
+   "goal": "3",
+   "phrase": "noncommunicable diseases"
+  },
+  {
+   "id": "3.5",
+   "goal": "3",
+   "phrase": "substance abuse treatment"
+  },
+  {
+   "id": "3.6",
+   "goal": "3",
+   "phrase": "road safety"
+  },
+  {
+   "id": "3.7",
+   "goal": "3",
+   "phrase": "reproductive health"
+  },
+  {
+   "id": "3.8",
+   "goal": "3",
+   "phrase": "universal health coverage"
+  },
+  {
+   "id": "3.9",
+   "goal": "3",
+   "phrase": "environmental health"
+  },
+  {
+   "id": "3.a",
+   "goal": "3",
+   "phrase": "tobacco control"
+  },
+  {
+   "id": "3.b",
+   "goal": "3",
+   "phrase": "vaccine access"
+  },
+  {
+   "id": "3.c",
+   "goal": "3",
+   "phrase": "health workforce"
+  },
+  {
+   "id": "3.d",
+   "goal": "3",
+   "phrase": "health emergency preparedness"
+  },
+  {
+   "id": "4.1",
+   "goal": "4",
+   "phrase": "school completion"
+  },
+  {
+   "id": "4.2",
+   "goal": "4",
+   "phrase": "early childhood education"
+  },
+  {
+   "id": "4.3",
+   "goal": "4",
+   "phrase": "vocational training"
+  },
+  {
+   "id": "4.4",
+   "goal": "4",
+   "phrase": "digital skills"
+  },
+  {
+   "id": "4.5",
+   "goal": "4",
+   "phrase": "inclusive education"
+  },
+  {
+   "id": "4.6",
+   "goal": "4",
+   "phrase": "adult literacy"
+  },
+  {
+   "id": "4.7",
+   "goal": "4",
+   "phrase": "education for sustainable development"
+  },
+  {
+   "id": "4.a",
+   "goal": "4",
+   "phrase": "school facilities"
+  },
+  {
+   "id": "4.b",
+   "goal": "4",
+   "phrase": "scholarships"
+  },
+  {
+   "id": "4.c",
+   "goal": "4",
+   "phrase": "teacher training"
+  },
+  {
+   "id": "5.1",
+   "goal": "5",
+   "phrase": "gender discrimination"
+  },
+  {
+   "id": "5.2",
+   "goal": "5",
+   "phrase": "violence against women"
+  },
+  {
+   "id": "5.3",
+   "goal": "5",
+   "phrase": "child marriage"
+  },
+  {
+   "id": "5.4",
+   "goal": "5",
+   "phrase": "unpaid care work"
+  },
+  {
+   "id": "5.5",
+   "goal": "5",
+   "phrase": "women in leadership"
+  },
+  {
+   "id": "5.6",
+   "goal": "5",
+   "phrase": "reproductive rights"
+  },
+  {
+   "id": "5.a",
+   "goal": "5",
+   "phrase": "women land rights"
+  },
+  {
+   "id": "5.b",
+   "goal": "5",
+   "phrase": "women ict access"
+  },
+  {
+   "id": "5.c",
+   "goal": "5",
+   "phrase": "gender budgeting"
+  },
+  {
+   "id": "6.1",
+   "goal": "6",
+   "phrase": "drinking water"
+  },
+  {
+   "id": "6.2",
+   "goal": "6",
+   "phrase": "sanitation and hygiene"
+  },
+  {
+   "id": "6.3",
+   "goal": "6",
+   "phrase": "water quality"
+  },
+  {
+   "id": "6.4",
+   "goal": "6",
+   "phrase": "water use efficiency"
+  },
+  {
+   "id": "6.5",
+   "goal": "6",
+   "phrase": "water resources management"
+  },
+  {
+   "id": "6.6",
+   "goal": "6",
+   "phrase": "wetland ecosystems"
+  },
+  {
+   "id": "6.a",
+   "goal": "6",
+   "phrase": "water harvesting"
+  },
+  {
+   "id": "6.b",
+   "goal": "6",
+   "phrase": "community water management"
+  },
+  {
+   "id": "7.1",
+   "goal": "7",
+   "phrase": "energy access"
+  },
+  {
+   "id": "7.2",
+   "goal": "7",
+   "phrase": "renewable energy"
+  },
+  {
+   "id": "7.3",
+   "goal": "7",
+   "phrase": "energy efficiency"
+  },
+  {
+   "id": "7.a",
+   "goal": "7",
+   "phrase": "clean energy research"
+  },
+  {
+   "id": "7.b",
+   "goal": "7",
+   "phrase": "energy infrastructure"
+  },
+  {
+   "id": "8.1",
+   "goal": "8",
+   "phrase": "gdp growth"
+  },
+  {
+   "id": "8.2",
+   "goal": "8",
+   "phrase": "labour productivity"
+  },
+  {
+   "id": "8.3",
+   "goal": "8",
+   "phrase": "micro enterprises"
+  },
+  {
+   "id": "8.4",
+   "goal": "8",
+   "phrase": "material footprint"
+  },
+  {
+   "id": "8.5",
+   "goal": "8",
+   "phrase": "equal pay"
+  },
+  {
+   "id": "8.6",
+   "goal": "8",
+   "phrase": "youth employment"
+  },
+  {
+   "id": "8.7",
+   "goal": "8",
+   "phrase": "child labour"
+  },
+  {
+   "id": "8.8",
+   "goal": "8",
+   "phrase": "occupational safety"
+  },
+  {
+   "id": "8.9",
+   "goal": "8",
+   "phrase": "sustainable tourism"
+  },
+  {
+   "id": "8.10",
+   "goal": "8",
+   "phrase": "financial inclusion"
+  },
+  {
+   "id": "8.a",
+   "goal": "8",
+   "phrase": "aid for trade"
+  },
+  {
+   "id": "8.b",
+   "goal": "8",
+   "phrase": "youth employment strategy"
+  },
+  {
+   "id": "9.1",
+   "goal": "9",
+   "phrase": "resilient infrastructure"
+  },
+  {
+   "id": "9.2",
+   "goal": "9",
+   "phrase": "manufacturing employment"
+  },
+  {
+   "id": "9.3",
+   "goal": "9",
+   "phrase": "sme finance"
+  },
+  {
+   "id": "9.4",
+   "goal": "9",
+   "phrase": "industrial emissions"
+  },
+  {
+   "id": "9.5",
+   "goal": "9",
+   "phrase": "research and development"
+  },
+  {
+   "id": "9.a",
+   "goal": "9",
+   "phrase": "infrastructure financing"
+  },
+  {
+   "id": "9.b",
+   "goal": "9",
+   "phrase": "domestic technology development"
+  },
+  {
+   "id": "9.c",
+   "goal": "9",
+   "phrase": "broadband access"
+  },
+  {
+   "id": "10.1",
+   "goal": "10",
+   "phrase": "income inequality"
+  },
+  {
+   "id": "10.2",
+   "goal": "10",
+   "phrase": "social inclusion"
+  },
+  {
+   "id": "10.3",
+   "goal": "10",
+   "phrase": "anti-discrimination law"
+  },
+  {
+   "id": "10.4",
+   "goal": "10",
+   "phrase": "labour share of income"
+  },
+  {
+   "id": "10.5",
+   "goal": "10",
+   "phrase": "financial regulation"
+  },
+  {
+   "id": "10.6",
+   "goal": "10",
+   "phrase": "global governance representation"
+  },
+  {
+   "id": "10.7",
+   "goal": "10",
+   "phrase": "migrant workers"
+  },
+  {
+   "id": "10.a",
+   "goal": "10",
+   "phrase": "trade preferences"
+  },
+  {
+   "id": "10.b",
+   "goal": "10",
+   "phrase": "development finance"
+  },
+  {
+   "id": "10.c",
+   "goal": "10",
+   "phrase": "remittance costs"
+  },
+  {
+   "id": "11.1",
+   "goal": "11",
+   "phrase": "affordable housing"
+  },
+  {
+   "id": "11.2",
+   "goal": "11",
+   "phrase": "public transport"
+  },
+  {
+   "id": "11.3",
+   "goal": "11",
+   "phrase": "urban planning"
+  },
+  {
+   "id": "11.4",
+   "goal": "11",
+   "phrase": "cultural heritage"
+  },
+  {
+   "id": "11.5",
+   "goal": "11",
+   "phrase": "disaster losses"
+  },
+  {
+   "id": "11.6",
+   "goal": "11",
+   "phrase": "urban air quality"
+  },
+  {
+   "id": "11.7",
+   "goal": "11",
+   "phrase": "public green spaces"
+  },
+  {
+   "id": "11.a",
+   "goal": "11",
+   "phrase": "regional development planning"
+  },
+  {
+   "id": "11.b",
+   "goal": "11",
+   "phrase": "disaster risk reduction"
+  },
+  {
+   "id": "11.c",
+   "goal": "11",
+   "phrase": "sustainable buildings"
+  },
+  {
+   "id": "12.1",
+   "goal": "12",
+   "phrase": "sustainable consumption"
+  },
+  {
+   "id": "12.2",
+   "goal": "12",
+   "phrase": "material consumption"
+  },
+  {
+   "id": "12.3",
+   "goal": "12",
+   "phrase": "food waste"
+  },
+  {
+   "id": "12.4",
+   "goal": "12",
+   "phrase": "hazardous chemicals"
+  },
+  {
+   "id": "12.5",
+   "goal": "12",
+   "phrase": "recycling"
+  },
+  {
+   "id": "12.6",
+   "goal": "12",
+   "phrase": "sustainability reporting"
+  },
+  {
+   "id": "12.7",
+   "goal": "12",
+   "phrase": "sustainable procurement"
+  },
+  {
+   "id": "12.8",
+   "goal": "12",
+   "phrase": "consumer awareness"
+  },
+  {
+   "id": "12.a",
+   "goal": "12",
+   "phrase": "scientific capacity"
+  },
+  {
+   "id": "12.b",
+   "goal": "12",
+   "phrase": "tourism impact monitoring"
+  },
+  {
+   "id": "12.c",
+   "goal": "12",
+   "phrase": "fossil fuel subsidies"
+  },
+  {
+   "id": "13.1",
+   "goal": "13",
+   "phrase": "climate resilience"
+  },
+  {
+   "id": "13.2",
+   "goal": "13",
+   "phrase": "greenhouse gas emissions"
+  },
+  {
+   "id": "13.3",
+   "goal": "13",
+   "phrase": "climate education"
+  },
+  {
+   "id": "13.a",
+   "goal": "13",
+   "phrase": "climate finance"
+  },
+  {
+   "id": "13.b",
+   "goal": "13",
+   "phrase": "climate planning capacity"
+  },
+  {
+   "id": "14.1",
+   "goal": "14",
+   "phrase": "marine pollution"
+  },
+  {
+   "id": "14.2",
+   "goal": "14",
+   "phrase": "marine ecosystems"
+  },
+  {
+   "id": "14.3",
+   "goal": "14",
+   "phrase": "ocean acidification"
+  },
+  {
+   "id": "14.4",
+   "goal": "14",
+   "phrase": "overfishing"
+  },
+  {
+   "id": "14.5",
+   "goal": "14",
+   "phrase": "marine protected areas"
+  },
+  {
+   "id": "14.6",
+   "goal": "14",
+   "phrase": "fisheries subsidies"
+  },
+  {
+   "id": "14.7",
+   "goal": "14",
+   "phrase": "sustainable fisheries"
+  },
+  {
+   "id": "14.a",
+   "goal": "14",
+   "phrase": "marine research"
+  },
+  {
+   "id": "14.b",
+   "goal": "14",
+   "phrase": "small-scale fisheries"
+  },
+  {
+   "id": "14.c",
+   "goal": "14",
+   "phrase": "law of the sea"
+  },
+  {
+   "id": "15.1",
+   "goal": "15",
+   "phrase": "ecosystem conservation"
+  },
+  {
+   "id": "15.2",
+   "goal": "15",
+   "phrase": "sustainable forest management"
+  },
+  {
+   "id": "15.3",
+   "goal": "15",
+   "phrase": "land degradation"
+  },
+  {
+   "id": "15.4",
+   "goal": "15",
+   "phrase": "mountain ecosystems"
+  },
+  {
+   "id": "15.5",
+   "goal": "15",
+   "phrase": "biodiversity loss"
+  },
+  {
+   "id": "15.6",
+   "goal": "15",
+   "phrase": "benefit sharing"
+  },
+  {
+   "id": "15.7",
+   "goal": "15",
+   "phrase": "wildlife trafficking"
+  },
+  {
+   "id": "15.8",
+   "goal": "15",
+   "phrase": "invasive species"
+  },
+  {
+   "id": "15.9",
+   "goal": "15",
+   "phrase": "natural capital accounting"
+  },
+  {
+   "id": "15.a",
+   "goal": "15",
+   "phrase": "biodiversity finance"
+  },
+  {
+   "id": "15.b",
+   "goal": "15",
+   "phrase": "forest finance"
+  },
+  {
+   "id": "15.c",
+   "goal": "15",
+   "phrase": "poaching"
+  },
+  {
+   "id": "16.1",
+   "goal": "16",
+   "phrase": "homicide"
+  },
+  {
+   "id": "16.2",
+   "goal": "16",
+   "phrase": "child abuse"
+  },
+  {
+   "id": "16.3",
+   "goal": "16",
+   "phrase": "access to justice"
+  },
+  {
+   "id": "16.4",
+   "goal": "16",
+   "phrase": "illicit financial flows"
+  },
+  {
+   "id": "16.5",
+   "goal": "16",
+   "phrase": "corruption"
+  },
+  {
+   "id": "16.6",
+   "goal": "16",
+   "phrase": "government transparency"
+  },
+  {
+   "id": "16.7",
+   "goal": "16",
+   "phrase": "participatory decision making"
+  },
+  {
+   "id": "16.8",
+   "goal": "16",
+   "phrase": "global governance participation"
+  },
+  {
+   "id": "16.9",
+   "goal": "16",
+   "phrase": "birth registration"
+  },
+  {
+   "id": "16.10",
+   "goal": "16",
+   "phrase": "access to information"
+  },
+  {
+   "id": "16.a",
+   "goal": "16",
+   "phrase": "human rights institutions"
+  },
+  {
+   "id": "16.b",
+   "goal": "16",
+   "phrase": "non-discriminatory laws"
+  },
+  {
+   "id": "17.1",
+   "goal": "17",
+   "phrase": "tax revenue"
+  },
+  {
+   "id": "17.2",
+   "goal": "17",
+   "phrase": "official development assistance"
+  },
+  {
+   "id": "17.3",
+   "goal": "17",
+   "phrase": "foreign direct investment"
+  },
+  {
+   "id": "17.4",
+   "goal": "17",
+   "phrase": "debt sustainability"
+  },
+  {
+   "id": "17.5",
+   "goal": "17",
+   "phrase": "investment promotion"
+  },
+  {
+   "id": "17.6",
+   "goal": "17",
+   "phrase": "technology cooperation"
+  },
+  {
+   "id": "17.7",
+   "goal": "17",
+   "phrase": "technology transfer"
+  },
+  {
+   "id": "17.8",
+   "goal": "17",
+   "phrase": "internet use"
+  },
+  {
+   "id": "17.9",
+   "goal": "17",
+   "phrase": "capacity building"
+  },
+  {
+   "id": "17.10",
+   "goal": "17",
+   "phrase": "multilateral trading system"
+  },
+  {
+   "id": "17.11",
+   "goal": "17",
+   "phrase": "developing country exports"
+  },
+  {
+   "id": "17.12",
+   "goal": "17",
+   "phrase": "duty-free market access"
+  },
+  {
+   "id": "17.13",
+   "goal": "17",
+   "phrase": "macroeconomic stability"
+  },
+  {
+   "id": "17.14",
+   "goal": "17",
+   "phrase": "policy coherence"
+  },
+  {
+   "id": "17.15",
+   "goal": "17",
+   "phrase": "policy space"
+  },
+  {
+   "id": "17.16",
+   "goal": "17",
+   "phrase": "global partnership"
+  },
+  {
+   "id": "17.17",
+   "goal": "17",
+   "phrase": "public-private partnerships"
+  },
+  {
+   "id": "17.18",
+   "goal": "17",
+   "phrase": "statistical capacity"
+  },
+  {
+   "id": "17.19",
+   "goal": "17",
+   "phrase": "census"
+  }
+ ]
+}

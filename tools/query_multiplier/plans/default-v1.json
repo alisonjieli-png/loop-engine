@@ -1,0 +1,761 @@
+{
+ "record_type": "research_query_plan/v1",
+ "version": "2026-10-05.1",
+ "engine": "factorized_multiplier",
+ "library": "tools/query_multiplier/data/dimensions-v1.json",
+ "imported_plans_weight": 2,
+ "note": "Products are declared products of dimensions bound to one executor. Weights share an executor's requests between its products; null shares say how often a dimension is omitted (a null geography is the global baseline).",
+ "products": [
+  {
+   "id": "gh_repo_harness",
+   "executor": "github_repositories",
+   "weight": 4,
+   "dimensions": [
+    {
+     "dimension": "harness_kind"
+    },
+    {
+     "dimension": "licence",
+     "null_share": 0
+    },
+    {
+     "dimension": "programming_language",
+     "null_share": 60
+    },
+    {
+     "dimension": "time_window",
+     "null_share": 60
+    }
+   ]
+  },
+  {
+   "id": "gh_repo_algorithm",
+   "executor": "github_repositories",
+   "weight": 4,
+   "dimensions": [
+    {
+     "dimension": "algorithm"
+    },
+    {
+     "dimension": "licence",
+     "null_share": 0
+    },
+    {
+     "dimension": "programming_language",
+     "null_share": 35
+    },
+    {
+     "dimension": "github_stars",
+     "null_share": 60
+    }
+   ]
+  },
+  {
+   "id": "gh_repo_creative",
+   "executor": "github_repositories",
+   "weight": 4,
+   "dimensions": [
+    {
+     "dimension": "creative_domain"
+    },
+    {
+     "dimension": "licence",
+     "null_share": 0
+    },
+    {
+     "dimension": "programming_language",
+     "null_share": 50
+    },
+    {
+     "dimension": "time_window",
+     "null_share": 70
+    }
+   ]
+  },
+  {
+   "id": "gh_repo_format",
+   "executor": "github_repositories",
+   "weight": 3,
+   "dimensions": [
+    {
+     "dimension": "file_format"
+    },
+    {
+     "dimension": "licence",
+     "null_share": 0
+    },
+    {
+     "dimension": "programming_language",
+     "null_share": 50
+    },
+    {
+     "dimension": "github_match",
+     "null_share": 60
+    }
+   ]
+  },
+  {
+   "id": "gh_repo_sdg",
+   "executor": "github_repositories",
+   "weight": 3,
+   "dimensions": [
+    {
+     "dimension": "sdg_target"
+    },
+    {
+     "dimension": "licence",
+     "null_share": 0
+    },
+    {
+     "dimension": "geography",
+     "null_share": 55
+    },
+    {
+     "dimension": "programming_language",
+     "null_share": 70
+    }
+   ]
+  },
+  {
+   "id": "gh_repo_task",
+   "executor": "github_repositories",
+   "weight": 2,
+   "dimensions": [
+    {
+     "dimension": "onet_task"
+    },
+    {
+     "dimension": "licence",
+     "null_share": 0
+    },
+    {
+     "dimension": "programming_language",
+     "null_share": 70
+    }
+   ]
+  },
+  {
+   "id": "gh_repo_occupation",
+   "executor": "github_repositories",
+   "weight": 1,
+   "dimensions": [
+    {
+     "dimension": "onet_occupation"
+    },
+    {
+     "dimension": "licence",
+     "null_share": 0
+    },
+    {
+     "dimension": "programming_language",
+     "null_share": 60
+    }
+   ]
+  },
+  {
+   "id": "gh_repo_industry",
+   "executor": "github_repositories",
+   "weight": 1,
+   "dimensions": [
+    {
+     "dimension": "industry"
+    },
+    {
+     "dimension": "licence",
+     "null_share": 0
+    },
+    {
+     "dimension": "geography",
+     "null_share": 60
+    },
+    {
+     "dimension": "time_window",
+     "null_share": 60
+    }
+   ]
+  },
+  {
+   "id": "gh_repo_step",
+   "executor": "github_repositories",
+   "weight": 1,
+   "dimensions": [
+    {
+     "dimension": "step_function"
+    },
+    {
+     "dimension": "licence",
+     "null_share": 0
+    },
+    {
+     "dimension": "programming_language",
+     "null_share": 40
+    },
+    {
+     "dimension": "time_window",
+     "null_share": 50
+    }
+   ],
+   "params": {
+    "time_field": "created"
+   }
+  },
+  {
+   "id": "gh_repo_language_docs",
+   "executor": "github_repositories",
+   "weight": 1,
+   "dimensions": [
+    {
+     "dimension": "natural_language_endonym"
+    },
+    {
+     "dimension": "algorithm",
+     "null_share": 40
+    },
+    {
+     "dimension": "licence",
+     "null_share": 0
+    }
+   ]
+  },
+  {
+   "id": "gh_code_format",
+   "executor": "github_code",
+   "weight": 4,
+   "dimensions": [
+    {
+     "dimension": "file_format"
+    },
+    {
+     "dimension": "sdg_target",
+     "null_share": 75
+    },
+    {
+     "dimension": "github_code_size",
+     "null_share": 50
+    }
+   ]
+  },
+  {
+   "id": "gh_code_format_algorithm",
+   "executor": "github_code",
+   "weight": 2,
+   "dimensions": [
+    {
+     "dimension": "file_format"
+    },
+    {
+     "dimension": "algorithm",
+     "null_share": 50
+    }
+   ]
+  },
+  {
+   "id": "gh_code_harness_creative",
+   "executor": "github_code",
+   "weight": 2,
+   "dimensions": [
+    {
+     "dimension": "file_format",
+     "null_share": 0,
+     "where": {
+      "attribute": "family",
+      "in": [
+       "harness",
+       "workflow"
+      ]
+     }
+    },
+    {
+     "dimension": "creative_domain",
+     "null_share": 50
+    }
+   ]
+  },
+  {
+   "id": "hf_model_task",
+   "executor": "huggingface_models",
+   "weight": 3,
+   "dimensions": [
+    {
+     "dimension": "hf_model_task"
+    },
+    {
+     "dimension": "licence",
+     "null_share": 0
+    },
+    {
+     "dimension": "hf_model_library",
+     "null_share": 50
+    },
+    {
+     "dimension": "natural_language",
+     "null_share": 75
+    }
+   ]
+  },
+  {
+   "id": "hf_model_topic",
+   "executor": "huggingface_models",
+   "weight": 1,
+   "dimensions": [
+    {
+     "dimension": "creative_domain"
+    },
+    {
+     "dimension": "licence",
+     "null_share": 30
+    },
+    {
+     "dimension": "hf_model_task",
+     "null_share": 60
+    }
+   ]
+  },
+  {
+   "id": "hf_model_algorithm",
+   "executor": "huggingface_models",
+   "weight": 1,
+   "dimensions": [
+    {
+     "dimension": "algorithm"
+    },
+    {
+     "dimension": "licence",
+     "null_share": 40
+    }
+   ]
+  },
+  {
+   "id": "hf_dataset_sdg",
+   "executor": "huggingface_datasets",
+   "weight": 2,
+   "dimensions": [
+    {
+     "dimension": "sdg_target"
+    },
+    {
+     "dimension": "licence",
+     "null_share": 30
+    },
+    {
+     "dimension": "hf_dataset_modality",
+     "null_share": 60
+    }
+   ]
+  },
+  {
+   "id": "hf_dataset_language",
+   "executor": "huggingface_datasets",
+   "weight": 3,
+   "dimensions": [
+    {
+     "dimension": "natural_language"
+    },
+    {
+     "dimension": "licence",
+     "null_share": 0
+    },
+    {
+     "dimension": "hf_dataset_task",
+     "null_share": 40
+    },
+    {
+     "dimension": "hf_dataset_modality",
+     "null_share": 60
+    }
+   ]
+  },
+  {
+   "id": "hf_dataset_task",
+   "executor": "huggingface_datasets",
+   "weight": 2,
+   "dimensions": [
+    {
+     "dimension": "hf_dataset_task"
+    },
+    {
+     "dimension": "licence",
+     "null_share": 0
+    },
+    {
+     "dimension": "file_format",
+     "null_share": 50
+    }
+   ]
+  },
+  {
+   "id": "hf_dataset_industry",
+   "executor": "huggingface_datasets",
+   "weight": 1,
+   "dimensions": [
+    {
+     "dimension": "industry"
+    },
+    {
+     "dimension": "licence",
+     "null_share": 40
+    }
+   ]
+  },
+  {
+   "id": "hf_dataset_occupation",
+   "executor": "huggingface_datasets",
+   "weight": 1,
+   "dimensions": [
+    {
+     "dimension": "onet_occupation"
+    },
+    {
+     "dimension": "licence",
+     "null_share": 50
+    }
+   ]
+  },
+  {
+   "id": "oa_sdg_filters",
+   "executor": "openalex_works",
+   "weight": 5,
+   "dimensions": [
+    {
+     "dimension": "sdg_goal"
+    },
+    {
+     "dimension": "openalex_type",
+     "null_share": 30
+    },
+    {
+     "dimension": "licence",
+     "null_share": 0
+    },
+    {
+     "dimension": "geography",
+     "null_share": 50
+    },
+    {
+     "dimension": "time_window",
+     "null_share": 50
+    },
+    {
+     "dimension": "natural_language",
+     "null_share": 80
+    }
+   ]
+  },
+  {
+   "id": "oa_target_search",
+   "executor": "openalex_works",
+   "weight": 1,
+   "dimensions": [
+    {
+     "dimension": "sdg_target"
+    },
+    {
+     "dimension": "openalex_type",
+     "null_share": 0,
+     "where": {
+      "ids": [
+       "type:dataset"
+      ]
+     }
+    },
+    {
+     "dimension": "licence",
+     "null_share": 0
+    }
+   ]
+  },
+  {
+   "id": "ov_image_creative",
+   "executor": "openverse_images",
+   "weight": 2,
+   "dimensions": [
+    {
+     "dimension": "creative_domain"
+    },
+    {
+     "dimension": "licence",
+     "null_share": 0
+    },
+    {
+     "dimension": "openverse_image_category",
+     "null_share": 50
+    }
+   ]
+  },
+  {
+   "id": "ov_image_sdg",
+   "executor": "openverse_images",
+   "weight": 1,
+   "dimensions": [
+    {
+     "dimension": "sdg_target"
+    },
+    {
+     "dimension": "licence",
+     "null_share": 0
+    }
+   ]
+  },
+  {
+   "id": "ov_audio_creative",
+   "executor": "openverse_audio",
+   "weight": 1,
+   "dimensions": [
+    {
+     "dimension": "creative_domain"
+    },
+    {
+     "dimension": "licence",
+     "null_share": 0
+    },
+    {
+     "dimension": "openverse_audio_category",
+     "null_share": 40
+    }
+   ]
+  },
+  {
+   "id": "gbif_sdg_nature",
+   "executor": "gbif_datasets",
+   "weight": 2,
+   "dimensions": [
+    {
+     "dimension": "sdg_target",
+     "null_share": 0,
+     "where": {
+      "attribute": "goal",
+      "in": [
+       "2",
+       "6",
+       "11",
+       "13",
+       "14",
+       "15"
+      ]
+     }
+    },
+    {
+     "dimension": "licence",
+     "null_share": 0
+    },
+    {
+     "dimension": "gbif_dataset_type",
+     "null_share": 40
+    },
+    {
+     "dimension": "geography",
+     "null_share": 60
+    }
+   ]
+  },
+  {
+   "id": "gbif_country",
+   "executor": "gbif_datasets",
+   "weight": 1,
+   "dimensions": [
+    {
+     "dimension": "geography"
+    },
+    {
+     "dimension": "licence",
+     "null_share": 0
+    },
+    {
+     "dimension": "gbif_dataset_type",
+     "null_share": 0
+    }
+   ]
+  },
+  {
+   "id": "eu_sdg_format",
+   "executor": "data_europa_datasets",
+   "weight": 3,
+   "dimensions": [
+    {
+     "dimension": "sdg_target"
+    },
+    {
+     "dimension": "file_format",
+     "null_share": 30
+    },
+    {
+     "dimension": "europa_theme",
+     "null_share": 60
+    },
+    {
+     "dimension": "geography",
+     "null_share": 60
+    }
+   ]
+  },
+  {
+   "id": "eu_industry_format",
+   "executor": "data_europa_datasets",
+   "weight": 1,
+   "dimensions": [
+    {
+     "dimension": "industry"
+    },
+    {
+     "dimension": "file_format",
+     "null_share": 30
+    },
+    {
+     "dimension": "geography",
+     "null_share": 60
+    }
+   ]
+  },
+  {
+   "id": "datagov_sdg",
+   "executor": "datagov_datasets",
+   "weight": 1,
+   "dimensions": [
+    {
+     "dimension": "sdg_target"
+    }
+   ]
+  },
+  {
+   "id": "arxiv_algorithm",
+   "executor": "arxiv",
+   "weight": 2,
+   "dimensions": [
+    {
+     "dimension": "algorithm"
+    },
+    {
+     "dimension": "arxiv_category",
+     "null_share": 40
+    },
+    {
+     "dimension": "time_window",
+     "null_share": 60
+    }
+   ]
+  },
+  {
+   "id": "arxiv_creative",
+   "executor": "arxiv",
+   "weight": 1,
+   "dimensions": [
+    {
+     "dimension": "creative_domain"
+    },
+    {
+     "dimension": "arxiv_category",
+     "null_share": 40
+    }
+   ]
+  },
+  {
+   "id": "arxiv_sdg",
+   "executor": "arxiv",
+   "weight": 1,
+   "dimensions": [
+    {
+     "dimension": "sdg_target"
+    },
+    {
+     "dimension": "arxiv_category",
+     "null_share": 60
+    }
+   ]
+  },
+  {
+   "id": "npm_format",
+   "executor": "npm_search",
+   "weight": 2,
+   "dimensions": [
+    {
+     "dimension": "file_format"
+    },
+    {
+     "dimension": "algorithm",
+     "null_share": 80
+    }
+   ]
+  },
+  {
+   "id": "npm_algorithm",
+   "executor": "npm_search",
+   "weight": 2,
+   "dimensions": [
+    {
+     "dimension": "algorithm"
+    }
+   ]
+  },
+  {
+   "id": "npm_creative",
+   "executor": "npm_search",
+   "weight": 1,
+   "dimensions": [
+    {
+     "dimension": "creative_domain"
+    }
+   ]
+  },
+  {
+   "id": "npm_harness",
+   "executor": "npm_search",
+   "weight": 1,
+   "dimensions": [
+    {
+     "dimension": "harness_kind"
+    }
+   ]
+  },
+  {
+   "id": "web_sdg_data",
+   "executor": "ollama_web_search",
+   "weight": 2,
+   "dimensions": [
+    {
+     "dimension": "sdg_target"
+    },
+    {
+     "dimension": "geography",
+     "null_share": 40
+    },
+    {
+     "dimension": "file_format",
+     "null_share": 50,
+     "where": {
+      "attribute": "family",
+      "in": [
+       "table",
+       "geo",
+       "schema",
+       "api"
+      ]
+     }
+    },
+    {
+     "dimension": "natural_language_endonym",
+     "null_share": 85
+    }
+   ],
+   "params": {
+    "suffix": "open licence"
+   }
+  },
+  {
+   "id": "web_harness_creative",
+   "executor": "ollama_web_search",
+   "weight": 1,
+   "dimensions": [
+    {
+     "dimension": "harness_kind"
+    },
+    {
+     "dimension": "creative_domain",
+     "null_share": 30
+    }
+   ],
+   "params": {
+    "suffix": "open source"
+   }
+  }
+ ]
+}

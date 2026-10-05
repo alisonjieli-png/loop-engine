@@ -1,0 +1,1975 @@
+{
+ "countries_or_areas": [
+  {
+   "iso2": "AC",
+   "iso3": "ASC",
+   "label": "Ascension",
+   "m49": null,
+   "wikidata": "Q31890709"
+  },
+  {
+   "iso2": "AD",
+   "iso3": "AND",
+   "label": "Andorra",
+   "m49": "020",
+   "wikidata": "Q228"
+  },
+  {
+   "iso2": "AE",
+   "iso3": "ARE",
+   "label": "United Arab Emirates",
+   "m49": "784",
+   "wikidata": "Q878"
+  },
+  {
+   "iso2": "AF",
+   "iso3": "AFG",
+   "label": "Afghanistan",
+   "m49": "004",
+   "wikidata": "Q889"
+  },
+  {
+   "iso2": "AG",
+   "iso3": "ATG",
+   "label": "Antigua and Barbuda",
+   "m49": "028",
+   "wikidata": "Q781"
+  },
+  {
+   "iso2": "AI",
+   "iso3": "AIA",
+   "label": "Anguilla",
+   "m49": "660",
+   "wikidata": "Q25228"
+  },
+  {
+   "iso2": "AL",
+   "iso3": "ALB",
+   "label": "Albania",
+   "m49": "008",
+   "wikidata": "Q222"
+  },
+  {
+   "iso2": "AM",
+   "iso3": "ARM",
+   "label": "Armenia",
+   "m49": "051",
+   "wikidata": "Q399"
+  },
+  {
+   "iso2": "AO",
+   "iso3": "AGO",
+   "label": "Angola",
+   "m49": "024",
+   "wikidata": "Q916"
+  },
+  {
+   "iso2": "AQ",
+   "iso3": "ATA",
+   "label": "Antarctica",
+   "m49": "010",
+   "wikidata": "Q51"
+  },
+  {
+   "iso2": "AR",
+   "iso3": "ARG",
+   "label": "Argentina",
+   "m49": "032",
+   "wikidata": "Q414"
+  },
+  {
+   "iso2": "AS",
+   "iso3": "ASM",
+   "label": "American Samoa",
+   "m49": "016",
+   "wikidata": "Q16641"
+  },
+  {
+   "iso2": "AT",
+   "iso3": "AUT",
+   "label": "Austria",
+   "m49": "040",
+   "wikidata": "Q40"
+  },
+  {
+   "iso2": "AU",
+   "iso3": "AUS",
+   "label": "Australia",
+   "m49": "036",
+   "wikidata": "Q408"
+  },
+  {
+   "iso2": "AW",
+   "iso3": "ABW",
+   "label": "Aruba",
+   "m49": "533",
+   "wikidata": "Q21203"
+  },
+  {
+   "iso2": "AX",
+   "iso3": "ALA",
+   "label": "Åland",
+   "m49": "248",
+   "wikidata": "Q5689"
+  },
+  {
+   "iso2": "AZ",
+   "iso3": "AZE",
+   "label": "Azerbaijan",
+   "m49": "031",
+   "wikidata": "Q227"
+  },
+  {
+   "iso2": "BA",
+   "iso3": "BIH",
+   "label": "Bosnia and Herzegovina",
+   "m49": "070",
+   "wikidata": "Q225"
+  },
+  {
+   "iso2": "BB",
+   "iso3": "BRB",
+   "label": "Barbados",
+   "m49": "052",
+   "wikidata": "Q244"
+  },
+  {
+   "iso2": "BD",
+   "iso3": "BGD",
+   "label": "Bangladesh",
+   "m49": "050",
+   "wikidata": "Q902"
+  },
+  {
+   "iso2": "BE",
+   "iso3": "BEL",
+   "label": "Belgium",
+   "m49": "056",
+   "wikidata": "Q31"
+  },
+  {
+   "iso2": "BF",
+   "iso3": "BFA",
+   "label": "Burkina Faso",
+   "m49": "854",
+   "wikidata": "Q965"
+  },
+  {
+   "iso2": "BG",
+   "iso3": "BGR",
+   "label": "Bulgaria",
+   "m49": "100",
+   "wikidata": "Q219"
+  },
+  {
+   "iso2": "BH",
+   "iso3": "BHR",
+   "label": "Bahrain",
+   "m49": "048",
+   "wikidata": "Q398"
+  },
+  {
+   "iso2": "BI",
+   "iso3": "BDI",
+   "label": "Burundi",
+   "m49": "108",
+   "wikidata": "Q967"
+  },
+  {
+   "iso2": "BJ",
+   "iso3": "BEN",
+   "label": "Benin",
+   "m49": "204",
+   "wikidata": "Q962"
+  },
+  {
+   "iso2": "BL",
+   "iso3": "BLM",
+   "label": "Saint Barthélemy",
+   "m49": "652",
+   "wikidata": "Q25362"
+  },
+  {
+   "iso2": "BM",
+   "iso3": "BMU",
+   "label": "Bermuda",
+   "m49": "060",
+   "wikidata": "Q23635"
+  },
+  {
+   "iso2": "BN",
+   "iso3": "BRN",
+   "label": "Brunei",
+   "m49": "096",
+   "wikidata": "Q921"
+  },
+  {
+   "iso2": "BO",
+   "iso3": "BOL",
+   "label": "Bolivia",
+   "m49": "068",
+   "wikidata": "Q750"
+  },
+  {
+   "iso2": "BQ",
+   "iso3": "BES",
+   "label": "Caribbean Netherlands",
+   "m49": null,
+   "wikidata": "Q27561"
+  },
+  {
+   "iso2": "BR",
+   "iso3": "BRA",
+   "label": "Brazil",
+   "m49": "076",
+   "wikidata": "Q155"
+  },
+  {
+   "iso2": "BS",
+   "iso3": "BHS",
+   "label": "The Bahamas",
+   "m49": "044",
+   "wikidata": "Q778"
+  },
+  {
+   "iso2": "BT",
+   "iso3": "BTN",
+   "label": "Bhutan",
+   "m49": "064",
+   "wikidata": "Q917"
+  },
+  {
+   "iso2": "BV",
+   "iso3": "BVT",
+   "label": "Bouvet Island",
+   "m49": "074",
+   "wikidata": "Q23408"
+  },
+  {
+   "iso2": "BW",
+   "iso3": "BWA",
+   "label": "Botswana",
+   "m49": "072",
+   "wikidata": "Q963"
+  },
+  {
+   "iso2": "BY",
+   "iso3": "BLR",
+   "label": "Belarus",
+   "m49": "112",
+   "wikidata": "Q184"
+  },
+  {
+   "iso2": "BZ",
+   "iso3": "BLZ",
+   "label": "Belize",
+   "m49": "084",
+   "wikidata": "Q242"
+  },
+  {
+   "iso2": "CA",
+   "iso3": "CAN",
+   "label": "Canada",
+   "m49": "124",
+   "wikidata": "Q16"
+  },
+  {
+   "iso2": "CC",
+   "iso3": "CCK",
+   "label": "Cocos (Keeling) Islands",
+   "m49": "166",
+   "wikidata": "Q36004"
+  },
+  {
+   "iso2": "CD",
+   "iso3": "COD",
+   "label": "Democratic Republic of the Congo",
+   "m49": "180",
+   "wikidata": "Q974"
+  },
+  {
+   "iso2": "CF",
+   "iso3": "CAF",
+   "label": "Central African Republic",
+   "m49": "140",
+   "wikidata": "Q929"
+  },
+  {
+   "iso2": "CG",
+   "iso3": "COG",
+   "label": "Republic of the Congo",
+   "m49": "178",
+   "wikidata": "Q971"
+  },
+  {
+   "iso2": "CH",
+   "iso3": "CHE",
+   "label": "Switzerland",
+   "m49": "756",
+   "wikidata": "Q39"
+  },
+  {
+   "iso2": "CI",
+   "iso3": "CIV",
+   "label": "Ivory Coast",
+   "m49": "384",
+   "wikidata": "Q1008"
+  },
+  {
+   "iso2": "CK",
+   "iso3": "COK",
+   "label": "Cook Islands",
+   "m49": "184",
+   "wikidata": "Q26988"
+  },
+  {
+   "iso2": "CL",
+   "iso3": "CHL",
+   "label": "Chile",
+   "m49": "152",
+   "wikidata": "Q298"
+  },
+  {
+   "iso2": "CM",
+   "iso3": "CMR",
+   "label": "Cameroon",
+   "m49": "120",
+   "wikidata": "Q1009"
+  },
+  {
+   "iso2": "CN",
+   "iso3": "CHN",
+   "label": "People's Republic of China",
+   "m49": "156",
+   "wikidata": "Q148"
+  },
+  {
+   "iso2": "CO",
+   "iso3": "COL",
+   "label": "Colombia",
+   "m49": "170",
+   "wikidata": "Q739"
+  },
+  {
+   "iso2": "CQ",
+   "iso3": "CRQ",
+   "label": "Sark",
+   "m49": "680",
+   "wikidata": "Q3405693"
+  },
+  {
+   "iso2": "CR",
+   "iso3": "CRI",
+   "label": "Costa Rica",
+   "m49": "188",
+   "wikidata": "Q800"
+  },
+  {
+   "iso2": "CU",
+   "iso3": "CUB",
+   "label": "Cuba",
+   "m49": "192",
+   "wikidata": "Q241"
+  },
+  {
+   "iso2": "CV",
+   "iso3": "CPV",
+   "label": "Cape Verde",
+   "m49": "132",
+   "wikidata": "Q1011"
+  },
+  {
+   "iso2": "CW",
+   "iso3": "CUW",
+   "label": "Curaçao",
+   "m49": "531",
+   "wikidata": "Q25279"
+  },
+  {
+   "iso2": "CX",
+   "iso3": "CXR",
+   "label": "Christmas Island",
+   "m49": "162",
+   "wikidata": "Q31063"
+  },
+  {
+   "iso2": "CY",
+   "iso3": "CYP",
+   "label": "Cyprus",
+   "m49": "196",
+   "wikidata": "Q229"
+  },
+  {
+   "iso2": "CZ",
+   "iso3": "CZE",
+   "label": "Czech Republic",
+   "m49": "203",
+   "wikidata": "Q213"
+  },
+  {
+   "iso2": "DE",
+   "iso3": "DEU",
+   "label": "Germany",
+   "m49": "276",
+   "wikidata": "Q183"
+  },
+  {
+   "iso2": "DJ",
+   "iso3": "DJI",
+   "label": "Djibouti",
+   "m49": "262",
+   "wikidata": "Q977"
+  },
+  {
+   "iso2": "DK",
+   "iso3": "DNK",
+   "label": "Denmark",
+   "m49": "208",
+   "wikidata": "Q35"
+  },
+  {
+   "iso2": "DM",
+   "iso3": "DMA",
+   "label": "Dominica",
+   "m49": "212",
+   "wikidata": "Q784"
+  },
+  {
+   "iso2": "DO",
+   "iso3": "DOM",
+   "label": "Dominican Republic",
+   "m49": "214",
+   "wikidata": "Q786"
+  },
+  {
+   "iso2": "DZ",
+   "iso3": "DZA",
+   "label": "Algeria",
+   "m49": "012",
+   "wikidata": "Q262"
+  },
+  {
+   "iso2": "EC",
+   "iso3": "ECU",
+   "label": "Ecuador",
+   "m49": "218",
+   "wikidata": "Q736"
+  },
+  {
+   "iso2": "EE",
+   "iso3": "EST",
+   "label": "Estonia",
+   "m49": "233",
+   "wikidata": "Q191"
+  },
+  {
+   "iso2": "EG",
+   "iso3": "EGY",
+   "label": "Egypt",
+   "m49": "818",
+   "wikidata": "Q79"
+  },
+  {
+   "iso2": "EH",
+   "iso3": "ESH",
+   "label": "Western Sahara",
+   "m49": "732",
+   "wikidata": "Q6250"
+  },
+  {
+   "iso2": "ER",
+   "iso3": "ERI",
+   "label": "Eritrea",
+   "m49": "232",
+   "wikidata": "Q986"
+  },
+  {
+   "iso2": "ES",
+   "iso3": "ESP",
+   "label": "Spain",
+   "m49": "724",
+   "wikidata": "Q29"
+  },
+  {
+   "iso2": "ET",
+   "iso3": "ETH",
+   "label": "Ethiopia",
+   "m49": "231",
+   "wikidata": "Q115"
+  },
+  {
+   "iso2": "FI",
+   "iso3": "FIN",
+   "label": "Finland",
+   "m49": "246",
+   "wikidata": "Q33"
+  },
+  {
+   "iso2": "FJ",
+   "iso3": "FJI",
+   "label": "Fiji",
+   "m49": "242",
+   "wikidata": "Q712"
+  },
+  {
+   "iso2": "FK",
+   "iso3": "FLK",
+   "label": "Falkland Islands",
+   "m49": "238",
+   "wikidata": "Q9648"
+  },
+  {
+   "iso2": "FM",
+   "iso3": "FSM",
+   "label": "Federated States of Micronesia",
+   "m49": "583",
+   "wikidata": "Q702"
+  },
+  {
+   "iso2": "FO",
+   "iso3": "FRO",
+   "label": "Faroe Islands",
+   "m49": "234",
+   "wikidata": "Q4628"
+  },
+  {
+   "iso2": "FR",
+   "iso3": "FRA",
+   "label": "France",
+   "m49": "250",
+   "wikidata": "Q142"
+  },
+  {
+   "iso2": "GA",
+   "iso3": "GAB",
+   "label": "Gabon",
+   "m49": "266",
+   "wikidata": "Q1000"
+  },
+  {
+   "iso2": "GB",
+   "iso3": "GBR",
+   "label": "United Kingdom",
+   "m49": "826",
+   "wikidata": "Q145"
+  },
+  {
+   "iso2": "GD",
+   "iso3": "GRD",
+   "label": "Grenada",
+   "m49": "308",
+   "wikidata": "Q769"
+  },
+  {
+   "iso2": "GE",
+   "iso3": "GEO",
+   "label": "Georgia",
+   "m49": "268",
+   "wikidata": "Q230"
+  },
+  {
+   "iso2": "GF",
+   "iso3": "GUF",
+   "label": "French Guiana",
+   "m49": "254",
+   "wikidata": "Q3769"
+  },
+  {
+   "iso2": "GG",
+   "iso3": "GGY",
+   "label": "Guernsey",
+   "m49": "831",
+   "wikidata": "Q25230"
+  },
+  {
+   "iso2": "GH",
+   "iso3": "GHA",
+   "label": "Ghana",
+   "m49": "288",
+   "wikidata": "Q117"
+  },
+  {
+   "iso2": "GI",
+   "iso3": "GIB",
+   "label": "Gibraltar",
+   "m49": "292",
+   "wikidata": "Q1410"
+  },
+  {
+   "iso2": "GL",
+   "iso3": "GRL",
+   "label": "Greenland",
+   "m49": "304",
+   "wikidata": "Q223"
+  },
+  {
+   "iso2": "GM",
+   "iso3": "GMB",
+   "label": "The Gambia",
+   "m49": "270",
+   "wikidata": "Q1005"
+  },
+  {
+   "iso2": "GN",
+   "iso3": "GIN",
+   "label": "Guinea",
+   "m49": "324",
+   "wikidata": "Q1006"
+  },
+  {
+   "iso2": "GP",
+   "iso3": "GLP",
+   "label": "Guadeloupe",
+   "m49": "312",
+   "wikidata": "Q17012"
+  },
+  {
+   "iso2": "GQ",
+   "iso3": "GNQ",
+   "label": "Equatorial Guinea",
+   "m49": "226",
+   "wikidata": "Q983"
+  },
+  {
+   "iso2": "GR",
+   "iso3": "GRC",
+   "label": "Greece",
+   "m49": "300",
+   "wikidata": "Q41"
+  },
+  {
+   "iso2": "GS",
+   "iso3": "SGS",
+   "label": "South Georgia and the South Sandwich Islands",
+   "m49": "239",
+   "wikidata": "Q35086"
+  },
+  {
+   "iso2": "GT",
+   "iso3": "GTM",
+   "label": "Guatemala",
+   "m49": "320",
+   "wikidata": "Q774"
+  },
+  {
+   "iso2": "GU",
+   "iso3": "GUM",
+   "label": "Guam",
+   "m49": "316",
+   "wikidata": "Q16635"
+  },
+  {
+   "iso2": "GW",
+   "iso3": "GNB",
+   "label": "Guinea-Bissau",
+   "m49": "624",
+   "wikidata": "Q1007"
+  },
+  {
+   "iso2": "GY",
+   "iso3": "GUY",
+   "label": "Guyana",
+   "m49": "328",
+   "wikidata": "Q734"
+  },
+  {
+   "iso2": "HK",
+   "iso3": "HKG",
+   "label": "Hong Kong",
+   "m49": "344",
+   "wikidata": "Q8646"
+  },
+  {
+   "iso2": "HM",
+   "iso3": "HMD",
+   "label": "Heard Island and McDonald Islands",
+   "m49": "334",
+   "wikidata": "Q131198"
+  },
+  {
+   "iso2": "HN",
+   "iso3": "HND",
+   "label": "Honduras",
+   "m49": "340",
+   "wikidata": "Q783"
+  },
+  {
+   "iso2": "HR",
+   "iso3": "HRV",
+   "label": "Croatia",
+   "m49": "191",
+   "wikidata": "Q224"
+  },
+  {
+   "iso2": "HT",
+   "iso3": "HTI",
+   "label": "Haiti",
+   "m49": "332",
+   "wikidata": "Q790"
+  },
+  {
+   "iso2": "HU",
+   "iso3": "HUN",
+   "label": "Hungary",
+   "m49": "348",
+   "wikidata": "Q28"
+  },
+  {
+   "iso2": "ID",
+   "iso3": "IDN",
+   "label": "Indonesia",
+   "m49": "360",
+   "wikidata": "Q252"
+  },
+  {
+   "iso2": "IE",
+   "iso3": "IRL",
+   "label": "Ireland",
+   "m49": "372",
+   "wikidata": "Q27"
+  },
+  {
+   "iso2": "IL",
+   "iso3": "ISR",
+   "label": "Israel",
+   "m49": "376",
+   "wikidata": "Q801"
+  },
+  {
+   "iso2": "IM",
+   "iso3": "IMN",
+   "label": "Isle of Man",
+   "m49": "833",
+   "wikidata": "Q9676"
+  },
+  {
+   "iso2": "IN",
+   "iso3": "IND",
+   "label": "India",
+   "m49": "356",
+   "wikidata": "Q668"
+  },
+  {
+   "iso2": "IO",
+   "iso3": "IOT",
+   "label": "British Indian Ocean Territory",
+   "m49": "086",
+   "wikidata": "Q43448"
+  },
+  {
+   "iso2": "IQ",
+   "iso3": "IRQ",
+   "label": "Iraq",
+   "m49": "368",
+   "wikidata": "Q796"
+  },
+  {
+   "iso2": "IR",
+   "iso3": "IRN",
+   "label": "Iran",
+   "m49": "364",
+   "wikidata": "Q794"
+  },
+  {
+   "iso2": "IS",
+   "iso3": "ISL",
+   "label": "Iceland",
+   "m49": "352",
+   "wikidata": "Q189"
+  },
+  {
+   "iso2": "IT",
+   "iso3": "ITA",
+   "label": "Italy",
+   "m49": "380",
+   "wikidata": "Q38"
+  },
+  {
+   "iso2": "JE",
+   "iso3": "JEY",
+   "label": "Jersey",
+   "m49": "832",
+   "wikidata": "Q785"
+  },
+  {
+   "iso2": "JM",
+   "iso3": "JAM",
+   "label": "Jamaica",
+   "m49": "388",
+   "wikidata": "Q766"
+  },
+  {
+   "iso2": "JO",
+   "iso3": "JOR",
+   "label": "Jordan",
+   "m49": "400",
+   "wikidata": "Q810"
+  },
+  {
+   "iso2": "JP",
+   "iso3": "JPN",
+   "label": "Japan",
+   "m49": "392",
+   "wikidata": "Q17"
+  },
+  {
+   "iso2": "KE",
+   "iso3": "KEN",
+   "label": "Kenya",
+   "m49": "404",
+   "wikidata": "Q114"
+  },
+  {
+   "iso2": "KG",
+   "iso3": "KGZ",
+   "label": "Kyrgyzstan",
+   "m49": "417",
+   "wikidata": "Q813"
+  },
+  {
+   "iso2": "KH",
+   "iso3": "KHM",
+   "label": "Cambodia",
+   "m49": "116",
+   "wikidata": "Q424"
+  },
+  {
+   "iso2": "KI",
+   "iso3": "KIR",
+   "label": "Kiribati",
+   "m49": "296",
+   "wikidata": "Q710"
+  },
+  {
+   "iso2": "KM",
+   "iso3": "COM",
+   "label": "Comoros",
+   "m49": "174",
+   "wikidata": "Q970"
+  },
+  {
+   "iso2": "KN",
+   "iso3": "KNA",
+   "label": "Saint Kitts and Nevis",
+   "m49": "659",
+   "wikidata": "Q763"
+  },
+  {
+   "iso2": "KP",
+   "iso3": "PRK",
+   "label": "North Korea",
+   "m49": "408",
+   "wikidata": "Q423"
+  },
+  {
+   "iso2": "KR",
+   "iso3": "KOR",
+   "label": "South Korea",
+   "m49": "410",
+   "wikidata": "Q884"
+  },
+  {
+   "iso2": "KW",
+   "iso3": "KWT",
+   "label": "Kuwait",
+   "m49": "414",
+   "wikidata": "Q817"
+  },
+  {
+   "iso2": "KY",
+   "iso3": "CYM",
+   "label": "Cayman Islands",
+   "m49": "136",
+   "wikidata": "Q5785"
+  },
+  {
+   "iso2": "KZ",
+   "iso3": "KAZ",
+   "label": "Kazakhstan",
+   "m49": "398",
+   "wikidata": "Q232"
+  },
+  {
+   "iso2": "LA",
+   "iso3": "LAO",
+   "label": "Laos",
+   "m49": "418",
+   "wikidata": "Q819"
+  },
+  {
+   "iso2": "LB",
+   "iso3": "LBN",
+   "label": "Lebanon",
+   "m49": "422",
+   "wikidata": "Q822"
+  },
+  {
+   "iso2": "LC",
+   "iso3": "LCA",
+   "label": "Saint Lucia",
+   "m49": "662",
+   "wikidata": "Q760"
+  },
+  {
+   "iso2": "LI",
+   "iso3": "LIE",
+   "label": "Liechtenstein",
+   "m49": "438",
+   "wikidata": "Q347"
+  },
+  {
+   "iso2": "LK",
+   "iso3": "LKA",
+   "label": "Sri Lanka",
+   "m49": "144",
+   "wikidata": "Q854"
+  },
+  {
+   "iso2": "LR",
+   "iso3": "LBR",
+   "label": "Liberia",
+   "m49": "430",
+   "wikidata": "Q1014"
+  },
+  {
+   "iso2": "LS",
+   "iso3": "LSO",
+   "label": "Lesotho",
+   "m49": "426",
+   "wikidata": "Q1013"
+  },
+  {
+   "iso2": "LT",
+   "iso3": "LTU",
+   "label": "Lithuania",
+   "m49": "440",
+   "wikidata": "Q37"
+  },
+  {
+   "iso2": "LU",
+   "iso3": "LUX",
+   "label": "Luxembourg",
+   "m49": "442",
+   "wikidata": "Q32"
+  },
+  {
+   "iso2": "LV",
+   "iso3": "LVA",
+   "label": "Latvia",
+   "m49": "428",
+   "wikidata": "Q211"
+  },
+  {
+   "iso2": "LY",
+   "iso3": "LBY",
+   "label": "Libya",
+   "m49": "434",
+   "wikidata": "Q1016"
+  },
+  {
+   "iso2": "MA",
+   "iso3": "MAR",
+   "label": "Morocco",
+   "m49": "504",
+   "wikidata": "Q1028"
+  },
+  {
+   "iso2": "MC",
+   "iso3": "MCO",
+   "label": "Monaco",
+   "m49": "492",
+   "wikidata": "Q235"
+  },
+  {
+   "iso2": "MD",
+   "iso3": "MDA",
+   "label": "Moldova",
+   "m49": "498",
+   "wikidata": "Q217"
+  },
+  {
+   "iso2": "ME",
+   "iso3": "MNE",
+   "label": "Montenegro",
+   "m49": "499",
+   "wikidata": "Q236"
+  },
+  {
+   "iso2": "MF",
+   "iso3": "MAF",
+   "label": "Saint-Martin",
+   "m49": "663",
+   "wikidata": "Q126125"
+  },
+  {
+   "iso2": "MG",
+   "iso3": "MDG",
+   "label": "Madagascar",
+   "m49": "450",
+   "wikidata": "Q1019"
+  },
+  {
+   "iso2": "MH",
+   "iso3": "MHL",
+   "label": "Marshall Islands",
+   "m49": "584",
+   "wikidata": "Q709"
+  },
+  {
+   "iso2": "MK",
+   "iso3": "MKD",
+   "label": "North Macedonia",
+   "m49": "807",
+   "wikidata": "Q221"
+  },
+  {
+   "iso2": "ML",
+   "iso3": "MLI",
+   "label": "Mali",
+   "m49": "466",
+   "wikidata": "Q912"
+  },
+  {
+   "iso2": "MM",
+   "iso3": "MMR",
+   "label": "Myanmar",
+   "m49": "104",
+   "wikidata": "Q836"
+  },
+  {
+   "iso2": "MN",
+   "iso3": "MNG",
+   "label": "Mongolia",
+   "m49": "496",
+   "wikidata": "Q711"
+  },
+  {
+   "iso2": "MO",
+   "iso3": "MAC",
+   "label": "Macau",
+   "m49": "446",
+   "wikidata": "Q14773"
+  },
+  {
+   "iso2": "MP",
+   "iso3": "MNP",
+   "label": "Northern Mariana Islands",
+   "m49": "580",
+   "wikidata": "Q16644"
+  },
+  {
+   "iso2": "MQ",
+   "iso3": "MTQ",
+   "label": "Martinique",
+   "m49": "474",
+   "wikidata": "Q17054"
+  },
+  {
+   "iso2": "MR",
+   "iso3": "MRT",
+   "label": "Mauritania",
+   "m49": "478",
+   "wikidata": "Q1025"
+  },
+  {
+   "iso2": "MS",
+   "iso3": "MSR",
+   "label": "Montserrat",
+   "m49": "500",
+   "wikidata": "Q13353"
+  },
+  {
+   "iso2": "MT",
+   "iso3": "MLT",
+   "label": "Malta",
+   "m49": "470",
+   "wikidata": "Q233"
+  },
+  {
+   "iso2": "MU",
+   "iso3": "MUS",
+   "label": "Mauritius",
+   "m49": "480",
+   "wikidata": "Q1027"
+  },
+  {
+   "iso2": "MV",
+   "iso3": "MDV",
+   "label": "Maldives",
+   "m49": "462",
+   "wikidata": "Q826"
+  },
+  {
+   "iso2": "MW",
+   "iso3": "MWI",
+   "label": "Malawi",
+   "m49": "454",
+   "wikidata": "Q1020"
+  },
+  {
+   "iso2": "MX",
+   "iso3": "MEX",
+   "label": "Mexico",
+   "m49": "484",
+   "wikidata": "Q96"
+  },
+  {
+   "iso2": "MY",
+   "iso3": "MYS",
+   "label": "Malaysia",
+   "m49": "458",
+   "wikidata": "Q833"
+  },
+  {
+   "iso2": "MZ",
+   "iso3": "MOZ",
+   "label": "Mozambique",
+   "m49": "508",
+   "wikidata": "Q1029"
+  },
+  {
+   "iso2": "NA",
+   "iso3": "NAM",
+   "label": "Namibia",
+   "m49": "516",
+   "wikidata": "Q1030"
+  },
+  {
+   "iso2": "NC",
+   "iso3": "NCL",
+   "label": "New Caledonia",
+   "m49": "540",
+   "wikidata": "Q33788"
+  },
+  {
+   "iso2": "NE",
+   "iso3": "NER",
+   "label": "Niger",
+   "m49": "562",
+   "wikidata": "Q1032"
+  },
+  {
+   "iso2": "NF",
+   "iso3": "NFK",
+   "label": "Norfolk Island",
+   "m49": "574",
+   "wikidata": "Q31057"
+  },
+  {
+   "iso2": "NG",
+   "iso3": "NGA",
+   "label": "Nigeria",
+   "m49": "566",
+   "wikidata": "Q1033"
+  },
+  {
+   "iso2": "NI",
+   "iso3": "NIC",
+   "label": "Nicaragua",
+   "m49": "558",
+   "wikidata": "Q811"
+  },
+  {
+   "iso2": "NL",
+   "iso3": "NLD",
+   "label": "Kingdom of the Netherlands",
+   "m49": null,
+   "wikidata": "Q29999"
+  },
+  {
+   "iso2": "NO",
+   "iso3": "NOR",
+   "label": "Norway",
+   "m49": "578",
+   "wikidata": "Q20"
+  },
+  {
+   "iso2": "NP",
+   "iso3": "NPL",
+   "label": "Nepal",
+   "m49": "524",
+   "wikidata": "Q837"
+  },
+  {
+   "iso2": "NR",
+   "iso3": "NRU",
+   "label": "Nauru",
+   "m49": "520",
+   "wikidata": "Q697"
+  },
+  {
+   "iso2": "NU",
+   "iso3": "NIU",
+   "label": "Niue",
+   "m49": "570",
+   "wikidata": "Q34020"
+  },
+  {
+   "iso2": "NZ",
+   "iso3": "NZL",
+   "label": "New Zealand",
+   "m49": "554",
+   "wikidata": "Q664"
+  },
+  {
+   "iso2": "OM",
+   "iso3": "OMN",
+   "label": "Oman",
+   "m49": "512",
+   "wikidata": "Q842"
+  },
+  {
+   "iso2": "PA",
+   "iso3": "PAN",
+   "label": "Panama",
+   "m49": "591",
+   "wikidata": "Q804"
+  },
+  {
+   "iso2": "PE",
+   "iso3": "PER",
+   "label": "Peru",
+   "m49": "604",
+   "wikidata": "Q419"
+  },
+  {
+   "iso2": "PF",
+   "iso3": "PYF",
+   "label": "French Polynesia",
+   "m49": "258",
+   "wikidata": "Q30971"
+  },
+  {
+   "iso2": "PG",
+   "iso3": "PNG",
+   "label": "Papua New Guinea",
+   "m49": "598",
+   "wikidata": "Q691"
+  },
+  {
+   "iso2": "PH",
+   "iso3": "PHL",
+   "label": "Philippines",
+   "m49": "608",
+   "wikidata": "Q928"
+  },
+  {
+   "iso2": "PK",
+   "iso3": "PAK",
+   "label": "Pakistan",
+   "m49": "586",
+   "wikidata": "Q843"
+  },
+  {
+   "iso2": "PL",
+   "iso3": "POL",
+   "label": "Poland",
+   "m49": "616",
+   "wikidata": "Q36"
+  },
+  {
+   "iso2": "PM",
+   "iso3": "SPM",
+   "label": "Saint Pierre and Miquelon",
+   "m49": "666",
+   "wikidata": "Q34617"
+  },
+  {
+   "iso2": "PN",
+   "iso3": "PCN",
+   "label": "Pitcairn Islands",
+   "m49": "612",
+   "wikidata": "Q35672"
+  },
+  {
+   "iso2": "PR",
+   "iso3": "PRI",
+   "label": "Puerto Rico",
+   "m49": "630",
+   "wikidata": "Q1183"
+  },
+  {
+   "iso2": "PS",
+   "iso3": "PSE",
+   "label": "Palestine",
+   "m49": null,
+   "wikidata": "Q219060"
+  },
+  {
+   "iso2": "PT",
+   "iso3": "PRT",
+   "label": "Portugal",
+   "m49": "620",
+   "wikidata": "Q45"
+  },
+  {
+   "iso2": "PW",
+   "iso3": "PLW",
+   "label": "Palau",
+   "m49": "585",
+   "wikidata": "Q695"
+  },
+  {
+   "iso2": "PY",
+   "iso3": "PRY",
+   "label": "Paraguay",
+   "m49": "600",
+   "wikidata": "Q733"
+  },
+  {
+   "iso2": "QA",
+   "iso3": "QAT",
+   "label": "Qatar",
+   "m49": "634",
+   "wikidata": "Q846"
+  },
+  {
+   "iso2": "RE",
+   "iso3": "REU",
+   "label": "Réunion",
+   "m49": "638",
+   "wikidata": "Q17070"
+  },
+  {
+   "iso2": "RO",
+   "iso3": "ROU",
+   "label": "Romania",
+   "m49": "642",
+   "wikidata": "Q218"
+  },
+  {
+   "iso2": "RS",
+   "iso3": "SRB",
+   "label": "Serbia",
+   "m49": "688",
+   "wikidata": "Q403"
+  },
+  {
+   "iso2": "RU",
+   "iso3": "RUS",
+   "label": "Russia",
+   "m49": "643",
+   "wikidata": "Q159"
+  },
+  {
+   "iso2": "RW",
+   "iso3": "RWA",
+   "label": "Rwanda",
+   "m49": "646",
+   "wikidata": "Q1037"
+  },
+  {
+   "iso2": "SA",
+   "iso3": "SAU",
+   "label": "Saudi Arabia",
+   "m49": "682",
+   "wikidata": "Q851"
+  },
+  {
+   "iso2": "SB",
+   "iso3": "SLB",
+   "label": "Solomon Islands",
+   "m49": "090",
+   "wikidata": "Q685"
+  },
+  {
+   "iso2": "SC",
+   "iso3": "SYC",
+   "label": "Seychelles",
+   "m49": "690",
+   "wikidata": "Q1042"
+  },
+  {
+   "iso2": "SD",
+   "iso3": "SDN",
+   "label": "Sudan",
+   "m49": "729",
+   "wikidata": "Q1049"
+  },
+  {
+   "iso2": "SE",
+   "iso3": "SWE",
+   "label": "Sweden",
+   "m49": "752",
+   "wikidata": "Q34"
+  },
+  {
+   "iso2": "SG",
+   "iso3": "SGP",
+   "label": "Singapore",
+   "m49": "702",
+   "wikidata": "Q334"
+  },
+  {
+   "iso2": "SH",
+   "iso3": "SHN",
+   "label": "Saint Helena, Ascension and Tristan da Cunha",
+   "m49": "654",
+   "wikidata": "Q192184"
+  },
+  {
+   "iso2": "SI",
+   "iso3": "SVN",
+   "label": "Slovenia",
+   "m49": "705",
+   "wikidata": "Q215"
+  },
+  {
+   "iso2": "SJ",
+   "iso3": "SJM",
+   "label": "Svalbard and Jan Mayen",
+   "m49": "744",
+   "wikidata": "Q842829"
+  },
+  {
+   "iso2": "SK",
+   "iso3": "SVK",
+   "label": "Slovakia",
+   "m49": "703",
+   "wikidata": "Q214"
+  },
+  {
+   "iso2": "SL",
+   "iso3": "SLE",
+   "label": "Sierra Leone",
+   "m49": "694",
+   "wikidata": "Q1044"
+  },
+  {
+   "iso2": "SM",
+   "iso3": "SMR",
+   "label": "San Marino",
+   "m49": "674",
+   "wikidata": "Q238"
+  },
+  {
+   "iso2": "SN",
+   "iso3": "SEN",
+   "label": "Senegal",
+   "m49": "686",
+   "wikidata": "Q1041"
+  },
+  {
+   "iso2": "SO",
+   "iso3": "SOM",
+   "label": "Somalia",
+   "m49": "706",
+   "wikidata": "Q1045"
+  },
+  {
+   "iso2": "SR",
+   "iso3": "SUR",
+   "label": "Suriname",
+   "m49": "740",
+   "wikidata": "Q730"
+  },
+  {
+   "iso2": "SS",
+   "iso3": "SSD",
+   "label": "South Sudan",
+   "m49": "728",
+   "wikidata": "Q958"
+  },
+  {
+   "iso2": "ST",
+   "iso3": "STP",
+   "label": "São Tomé and Príncipe",
+   "m49": "678",
+   "wikidata": "Q1039"
+  },
+  {
+   "iso2": "SV",
+   "iso3": "SLV",
+   "label": "El Salvador",
+   "m49": "222",
+   "wikidata": "Q792"
+  },
+  {
+   "iso2": "SX",
+   "iso3": "SXM",
+   "label": "Sint Maarten",
+   "m49": "534",
+   "wikidata": "Q26273"
+  },
+  {
+   "iso2": "SY",
+   "iso3": "SYR",
+   "label": "Syria",
+   "m49": "760",
+   "wikidata": "Q858"
+  },
+  {
+   "iso2": "SZ",
+   "iso3": "SWZ",
+   "label": "Eswatini",
+   "m49": "748",
+   "wikidata": "Q1050"
+  },
+  {
+   "iso2": "TC",
+   "iso3": "TCA",
+   "label": "Turks and Caicos Islands",
+   "m49": "796",
+   "wikidata": "Q18221"
+  },
+  {
+   "iso2": "TD",
+   "iso3": "TCD",
+   "label": "Chad",
+   "m49": "148",
+   "wikidata": "Q657"
+  },
+  {
+   "iso2": "TF",
+   "iso3": "ATF",
+   "label": "French Southern and Antarctic Lands",
+   "m49": "260",
+   "wikidata": "Q129003"
+  },
+  {
+   "iso2": "TG",
+   "iso3": "TGO",
+   "label": "Togo",
+   "m49": "768",
+   "wikidata": "Q945"
+  },
+  {
+   "iso2": "TH",
+   "iso3": "THA",
+   "label": "Thailand",
+   "m49": "764",
+   "wikidata": "Q869"
+  },
+  {
+   "iso2": "TJ",
+   "iso3": "TJK",
+   "label": "Tajikistan",
+   "m49": "762",
+   "wikidata": "Q863"
+  },
+  {
+   "iso2": "TK",
+   "iso3": "TKL",
+   "label": "Tokelau",
+   "m49": "772",
+   "wikidata": "Q36823"
+  },
+  {
+   "iso2": "TL",
+   "iso3": "TLS",
+   "label": "Timor-Leste",
+   "m49": "626",
+   "wikidata": "Q574"
+  },
+  {
+   "iso2": "TM",
+   "iso3": "TKM",
+   "label": "Turkmenistan",
+   "m49": "795",
+   "wikidata": "Q874"
+  },
+  {
+   "iso2": "TN",
+   "iso3": "TUN",
+   "label": "Tunisia",
+   "m49": "788",
+   "wikidata": "Q948"
+  },
+  {
+   "iso2": "TO",
+   "iso3": "TON",
+   "label": "Tonga",
+   "m49": "776",
+   "wikidata": "Q678"
+  },
+  {
+   "iso2": "TR",
+   "iso3": "TUR",
+   "label": "Turkey",
+   "m49": "792",
+   "wikidata": "Q43"
+  },
+  {
+   "iso2": "TT",
+   "iso3": "TTO",
+   "label": "Trinidad and Tobago",
+   "m49": "780",
+   "wikidata": "Q754"
+  },
+  {
+   "iso2": "TV",
+   "iso3": "TUV",
+   "label": "Tuvalu",
+   "m49": "798",
+   "wikidata": "Q672"
+  },
+  {
+   "iso2": "TW",
+   "iso3": "TWN",
+   "label": "Taiwan",
+   "m49": null,
+   "wikidata": "Q865"
+  },
+  {
+   "iso2": "TZ",
+   "iso3": "TZA",
+   "label": "Tanzania",
+   "m49": "834",
+   "wikidata": "Q924"
+  },
+  {
+   "iso2": "UA",
+   "iso3": "UKR",
+   "label": "Ukraine",
+   "m49": "804",
+   "wikidata": "Q212"
+  },
+  {
+   "iso2": "UG",
+   "iso3": "UGA",
+   "label": "Uganda",
+   "m49": "800",
+   "wikidata": "Q1036"
+  },
+  {
+   "iso2": "UM",
+   "iso3": "UMI",
+   "label": "United States Minor Outlying Islands",
+   "m49": "581",
+   "wikidata": "Q16645"
+  },
+  {
+   "iso2": "US",
+   "iso3": "USA",
+   "label": "United States",
+   "m49": "840",
+   "wikidata": "Q30"
+  },
+  {
+   "iso2": "UY",
+   "iso3": "URY",
+   "label": "Uruguay",
+   "m49": "858",
+   "wikidata": "Q77"
+  },
+  {
+   "iso2": "UZ",
+   "iso3": "UZB",
+   "label": "Uzbekistan",
+   "m49": "860",
+   "wikidata": "Q265"
+  },
+  {
+   "iso2": "VA",
+   "iso3": "VAT",
+   "label": "Vatican City",
+   "m49": "336",
+   "wikidata": "Q237"
+  },
+  {
+   "iso2": "VC",
+   "iso3": "VCT",
+   "label": "Saint Vincent and the Grenadines",
+   "m49": "670",
+   "wikidata": "Q757"
+  },
+  {
+   "iso2": "VE",
+   "iso3": "VEN",
+   "label": "Venezuela",
+   "m49": "862",
+   "wikidata": "Q717"
+  },
+  {
+   "iso2": "VG",
+   "iso3": "VGB",
+   "label": "British Virgin Islands",
+   "m49": "092",
+   "wikidata": "Q25305"
+  },
+  {
+   "iso2": "VI",
+   "iso3": "VIR",
+   "label": "United States Virgin Islands",
+   "m49": "850",
+   "wikidata": "Q11703"
+  },
+  {
+   "iso2": "VN",
+   "iso3": "VNM",
+   "label": "Vietnam",
+   "m49": "704",
+   "wikidata": "Q881"
+  },
+  {
+   "iso2": "VU",
+   "iso3": "VUT",
+   "label": "Vanuatu",
+   "m49": "548",
+   "wikidata": "Q686"
+  },
+  {
+   "iso2": "WF",
+   "iso3": "WLF",
+   "label": "Wallis and Futuna",
+   "m49": "876",
+   "wikidata": "Q35555"
+  },
+  {
+   "iso2": "WS",
+   "iso3": "WSM",
+   "label": "Samoa",
+   "m49": "882",
+   "wikidata": "Q683"
+  },
+  {
+   "iso2": "XK",
+   "iso3": "XKS",
+   "label": "Kosovo",
+   "m49": null,
+   "wikidata": "Q1246"
+  },
+  {
+   "iso2": "YE",
+   "iso3": "YEM",
+   "label": "Yemen",
+   "m49": "887",
+   "wikidata": "Q805"
+  },
+  {
+   "iso2": "YT",
+   "iso3": "MYT",
+   "label": "Mayotte",
+   "m49": "175",
+   "wikidata": "Q17063"
+  },
+  {
+   "iso2": "ZA",
+   "iso3": "ZAF",
+   "label": "South Africa",
+   "m49": "710",
+   "wikidata": "Q258"
+  },
+  {
+   "iso2": "ZM",
+   "iso3": "ZMB",
+   "label": "Zambia",
+   "m49": "894",
+   "wikidata": "Q953"
+  },
+  {
+   "iso2": "ZW",
+   "iso3": "ZWE",
+   "label": "Zimbabwe",
+   "m49": "716",
+   "wikidata": "Q954"
+  }
+ ],
+ "excluded_regions": [
+  {
+   "label": "world",
+   "m49": "001",
+   "reason": "the null value already means no geography"
+  },
+  {
+   "label": "Johnston Atoll",
+   "m49": "396",
+   "reason": "former atoll, no current population"
+  },
+  {
+   "label": "Midway Atoll",
+   "m49": "488",
+   "reason": "former atoll, no current population"
+  },
+  {
+   "label": "Netherlands",
+   "m49": "528",
+   "reason": "a country whose M49 code sits on a second Wikidata item; the country row covers it"
+  }
+ ],
+ "licence": "CC0-1.0",
+ "record_type": "research_reference_geography/v1",
+ "regions": [
+  {
+   "label": "Africa",
+   "m49": "002",
+   "wikidata": "Q15"
+  },
+  {
+   "label": "North America",
+   "m49": "003",
+   "wikidata": "Q49"
+  },
+  {
+   "label": "South America",
+   "m49": "005",
+   "wikidata": "Q18"
+  },
+  {
+   "label": "Oceania",
+   "m49": "009",
+   "wikidata": "Q55643"
+  },
+  {
+   "label": "West Africa",
+   "m49": "011",
+   "wikidata": "Q4412"
+  },
+  {
+   "label": "Central America",
+   "m49": "013",
+   "wikidata": "Q27611"
+  },
+  {
+   "label": "East Africa",
+   "m49": "014",
+   "wikidata": "Q27407"
+  },
+  {
+   "label": "North Africa",
+   "m49": "015",
+   "wikidata": "Q27381"
+  },
+  {
+   "label": "Central Africa",
+   "m49": "017",
+   "wikidata": "Q27433"
+  },
+  {
+   "label": "Southern Africa",
+   "m49": "018",
+   "wikidata": "Q27394"
+  },
+  {
+   "label": "Americas",
+   "m49": "019",
+   "wikidata": "Q828"
+  },
+  {
+   "label": "Northern America",
+   "m49": "021",
+   "wikidata": "Q2017699"
+  },
+  {
+   "label": "Caribbean",
+   "m49": "029",
+   "wikidata": "Q664609"
+  },
+  {
+   "label": "East Asia",
+   "m49": "030",
+   "wikidata": "Q27231"
+  },
+  {
+   "label": "South Asia",
+   "m49": "034",
+   "wikidata": "Q771405"
+  },
+  {
+   "label": "Southeast Asia",
+   "m49": "035",
+   "wikidata": "Q11708"
+  },
+  {
+   "label": "Southern Europe",
+   "m49": "039",
+   "wikidata": "Q27449"
+  },
+  {
+   "label": "Australasia",
+   "m49": "053",
+   "wikidata": "Q45256"
+  },
+  {
+   "label": "Melanesia",
+   "m49": "054",
+   "wikidata": "Q37394"
+  },
+  {
+   "label": "Micronesia",
+   "m49": "057",
+   "wikidata": "Q3359409"
+  },
+  {
+   "label": "Polynesia",
+   "m49": "061",
+   "wikidata": "Q35942"
+  },
+  {
+   "label": "South-Central Asia",
+   "m49": "062",
+   "wikidata": "Q123531620"
+  },
+  {
+   "label": "Asia",
+   "m49": "142",
+   "wikidata": "Q48"
+  },
+  {
+   "label": "Central Asia",
+   "m49": "143",
+   "wikidata": "Q27275"
+  },
+  {
+   "label": "West Asia",
+   "m49": "145",
+   "wikidata": "Q27293"
+  },
+  {
+   "label": "Europe",
+   "m49": "150",
+   "wikidata": "Q46"
+  },
+  {
+   "label": "Eastern Europe",
+   "m49": "151",
+   "wikidata": "Q27468"
+  },
+  {
+   "label": "Northern Europe",
+   "m49": "154",
+   "wikidata": "Q27479"
+  },
+  {
+   "label": "Western Europe",
+   "m49": "155",
+   "wikidata": "Q27496"
+  },
+  {
+   "label": "sub-Saharan Africa",
+   "m49": "202",
+   "wikidata": "Q132959"
+  },
+  {
+   "label": "Latin America and the Caribbean",
+   "m49": "419",
+   "wikidata": "Q72829598"
+  },
+  {
+   "label": "Channel Islands",
+   "m49": "830",
+   "wikidata": "Q42314"
+  }
+ ],
+ "scope": "Search terms with codes; a country or area name is not a jurisdiction or sovereignty claim, and this list is not certified complete.",
+ "sources": {
+  "countries_or_areas": {
+   "endpoint": "https://query.wikidata.org/sparql",
+   "licence": "CC0-1.0",
+   "licence_evidence": "https://www.wikidata.org/wiki/Wikidata:Licensing (structured data in the main namespace: CC0-1.0)",
+   "query": "SELECT ?item ?iso2 ?iso3 ?m49 ?label WHERE { ?item wdt:P297 ?iso2 . FILTER NOT EXISTS { ?item wdt:P576 ?end } OPTIONAL { ?item wdt:P298 ?iso3 } OPTIONAL { ?item wdt:P2082 ?m49 } ?item rdfs:label ?label FILTER(LANG(?label) = \"en\") } ORDER BY ?iso2",
+   "response_bytes": 117150,
+   "response_sha256": "3e46af6cfc10f3454556748b5c373e15eff33732bf1f94a50ac477557bf47de4",
+   "retrieved_at": "2026-10-05T16:32:59Z"
+  },
+  "regions": {
+   "endpoint": "https://query.wikidata.org/sparql",
+   "licence": "CC0-1.0",
+   "licence_evidence": "https://www.wikidata.org/wiki/Wikidata:Licensing (structured data in the main namespace: CC0-1.0)",
+   "query": "SELECT ?item ?m49 ?label WHERE { ?item wdt:P2082 ?m49 . FILTER NOT EXISTS { ?item wdt:P297 ?iso2 } ?item rdfs:label ?label FILTER(LANG(?label) = \"en\") } ORDER BY ?m49",
+   "response_bytes": 11186,
+   "response_sha256": "eb5ec14ef9c3171e4e236fa3f876d35369437a09c87a10eb3410ce65f6804102",
+   "retrieved_at": "2026-10-05T16:33:02Z"
+  }
+ }
+}

@@ -1,0 +1,4484 @@
+{
+ "record_type": "research_dimension_library/v1",
+ "version": "2026-10-05.1",
+ "dimensions": [
+  {
+   "id": "sdg_goal",
+   "title": "Sustainable Development Goals",
+   "kind": "topic",
+   "null_share": 0,
+   "source": {
+    "title": "SDG goal numbers with Baltor search phrases",
+    "licence": "MIT",
+    "reference": "UN A/RES/71/313 goal numbering",
+    "note": "Phrases are Baltor's own; numbering is the official framework's."
+   },
+   "values_from": {
+    "loader": "sdg_goals",
+    "path": "tools/query_multiplier/data/sdg-vocabulary-v1.json",
+    "sha256": "17f5f5f38c93559e827e40632d04732295e4bd50955b6157b096a9ec2221131e"
+   }
+  },
+  {
+   "id": "sdg_target",
+   "title": "SDG targets",
+   "kind": "topic",
+   "null_share": 0,
+   "source": {
+    "title": "SDG target numbers with Baltor search phrases",
+    "licence": "MIT",
+    "reference": "UN A/RES/71/313 target numbering",
+    "note": "169 targets; phrases are Baltor's own, not the official target text."
+   },
+   "values_from": {
+    "loader": "sdg_targets",
+    "path": "tools/query_multiplier/data/sdg-vocabulary-v1.json",
+    "sha256": "17f5f5f38c93559e827e40632d04732295e4bd50955b6157b096a9ec2221131e"
+   }
+  },
+  {
+   "id": "onet_occupation",
+   "title": "O*NET occupations",
+   "kind": "topic",
+   "null_share": 0,
+   "source": {
+    "title": "O*NET 31.0 Database, Occupation Data",
+    "licence": "CC-BY-4.0",
+    "url": "https://www.onetcenter.org/database.html",
+    "note": "O*NET 31.0 Database by the U.S. Department of Labor, Employment and Training Administration (USDOL/ETA), CC BY 4.0. USDOL/ETA has not approved, endorsed or tested this use."
+   },
+   "values_from": {
+    "loader": "onet_occupations",
+    "path": "<onet>/Occupation Data.txt",
+    "sha256": "63e6029d3d30ff5c7cf39b5304a733b77a409e01c65ae7095fe92f6d18d74a66"
+   }
+  },
+  {
+   "id": "onet_task",
+   "title": "O*NET task phrases",
+   "kind": "topic",
+   "null_share": 0,
+   "source": {
+    "title": "O*NET 31.0 Database, Task Statements",
+    "licence": "CC-BY-4.0",
+    "url": "https://www.onetcenter.org/database.html",
+    "note": "Three distinctive words of each task statement (rarest across all statements), in sentence order; a phrase two tasks share is kept once. CC BY 4.0, USDOL/ETA; not approved, endorsed or tested by USDOL/ETA."
+   },
+   "values_from": {
+    "loader": "onet_tasks",
+    "path": "<onet>/Task Statements.txt",
+    "sha256": "aee1788c7ce2ebf19c1700bc4a1d7aa69a59965736d56a521945256df3f68d08"
+   }
+  },
+  {
+   "id": "industry",
+   "title": "Industries",
+   "kind": "topic",
+   "null_share": 0,
+   "source": {
+    "title": "Baltor library facet vocabulary, industries",
+    "licence": "MIT",
+    "note": "The declared industry list of the library_facet_tagging slot."
+   },
+   "values_from": {
+    "loader": "library_facet_industries",
+    "path": "src/loop_engine/data/library_facets.yaml",
+    "sha256": "08758a3d07abfc4cf673fc34dab7a58bf7246ae2950770b2ec0afce5ae2d6d3a"
+   }
+  },
+  {
+   "id": "harness_kind",
+   "title": "Harness kinds of the catalogue",
+   "kind": "topic",
+   "null_share": 0,
+   "source": {
+    "title": "Catalogue HARNESS_KINDS with search phrases",
+    "licence": "MIT",
+    "note": "The loader reads the tuple from source and refuses a phrase table out of sync with it."
+   },
+   "values_from": {
+    "loader": "catalogue_tuple",
+    "path": "src/loop_engine/core/service_runtime/catalogue_attributes.py",
+    "name": "HARNESS_KINDS",
+    "phrases": {
+     "skill": "agent skill",
+     "instruction_file": "agents.md instructions",
+     "rules": "cursor rules",
+     "subagent": "claude code subagent",
+     "command": "slash command",
+     "hook": "claude code hooks",
+     "plugin_manifest": "claude code plugin",
+     "marketplace": "plugin marketplace",
+     "protocol_server_configuration": "mcp server",
+     "harness_settings": "agent harness settings",
+     "contract_schema": "contract schema",
+     "code_module": "reusable module",
+     "reference_image": "reference image",
+     "mask": "segmentation mask",
+     "pose_layout": "pose keypoints",
+     "three_d_model": "3d model asset",
+     "cad_model": "cad model",
+     "template": "project template"
+    }
+   }
+  },
+  {
+   "id": "step_function",
+   "title": "Step functions of the catalogue",
+   "kind": "topic",
+   "null_share": 0,
+   "source": {
+    "title": "Catalogue STEP_FUNCTIONS with search phrases",
+    "licence": "MIT"
+   },
+   "values_from": {
+    "loader": "catalogue_tuple",
+    "path": "src/loop_engine/core/library_ingestion/step_functions.py",
+    "name": "STEP_FUNCTIONS",
+    "phrases": {
+     "acting": "automation script",
+     "analysis": "data analysis",
+     "building": "build tool",
+     "operating": "operations runbook",
+     "planning": "task planning",
+     "reasoning": "reasoning engine",
+     "research": "literature review",
+     "reviewing": "code review",
+     "verification": "test harness",
+     "writing": "writing assistant"
+    }
+   }
+  },
+  {
+   "id": "creative_domain",
+   "title": "Creative domains",
+   "kind": "topic",
+   "null_share": 0,
+   "source": {
+    "title": "Baltor creative production vocabulary",
+    "licence": "MIT",
+    "note": "From the north star's creative focus: motion, graphics, parametric visuals, 3D scenes, audio and playable experiences."
+   },
+   "values": [
+    {
+     "id": "cd:motion_graphics",
+     "text": "motion graphics"
+    },
+    {
+     "id": "cd:procedural_generation",
+     "text": "procedural generation"
+    },
+    {
+     "id": "cd:shader",
+     "text": "shader"
+    },
+    {
+     "id": "cd:3d_modeling",
+     "text": "3d modeling"
+    },
+    {
+     "id": "cd:rigging",
+     "text": "character rigging"
+    },
+    {
+     "id": "cd:animation",
+     "text": "animation"
+    },
+    {
+     "id": "cd:game_engine",
+     "text": "game engine"
+    },
+    {
+     "id": "cd:level_design",
+     "text": "level design"
+    },
+    {
+     "id": "cd:sound_design",
+     "text": "sound design"
+    },
+    {
+     "id": "cd:music_generation",
+     "text": "music generation"
+    },
+    {
+     "id": "cd:synthesizer",
+     "text": "synthesizer"
+    },
+    {
+     "id": "cd:generative_art",
+     "text": "generative art"
+    },
+    {
+     "id": "cd:typography",
+     "text": "typography"
+    },
+    {
+     "id": "cd:data_visualization",
+     "text": "data visualization"
+    },
+    {
+     "id": "cd:infographic",
+     "text": "infographic"
+    },
+    {
+     "id": "cd:video_editing",
+     "text": "video editing"
+    },
+    {
+     "id": "cd:color_grading",
+     "text": "color grading"
+    },
+    {
+     "id": "cd:compositing",
+     "text": "compositing"
+    },
+    {
+     "id": "cd:storyboard",
+     "text": "storyboard"
+    },
+    {
+     "id": "cd:character_design",
+     "text": "character design"
+    },
+    {
+     "id": "cd:tilemap",
+     "text": "tilemap"
+    },
+    {
+     "id": "cd:sprite_sheet",
+     "text": "sprite sheet"
+    },
+    {
+     "id": "cd:particle_system",
+     "text": "particle system"
+    },
+    {
+     "id": "cd:ray_tracing",
+     "text": "ray tracing"
+    },
+    {
+     "id": "cd:path_tracing",
+     "text": "path tracing"
+    },
+    {
+     "id": "cd:photogrammetry",
+     "text": "photogrammetry"
+    },
+    {
+     "id": "cd:point_cloud",
+     "text": "point cloud"
+    },
+    {
+     "id": "cd:parametric_design",
+     "text": "parametric design"
+    },
+    {
+     "id": "cd:cad",
+     "text": "cad modeling"
+    },
+    {
+     "id": "cd:font_design",
+     "text": "font design"
+    },
+    {
+     "id": "cd:icon_set",
+     "text": "icon set"
+    },
+    {
+     "id": "cd:ui_kit",
+     "text": "ui kit"
+    },
+    {
+     "id": "cd:design_tokens",
+     "text": "design tokens"
+    },
+    {
+     "id": "cd:interactive_fiction",
+     "text": "interactive fiction"
+    },
+    {
+     "id": "cd:educational_game",
+     "text": "educational game"
+    },
+    {
+     "id": "cd:audio_plugin",
+     "text": "audio plugin"
+    },
+    {
+     "id": "cd:midi_sequencer",
+     "text": "midi sequencer"
+    },
+    {
+     "id": "cd:live_coding",
+     "text": "live coding"
+    },
+    {
+     "id": "cd:creative_coding",
+     "text": "creative coding"
+    },
+    {
+     "id": "cd:p5js",
+     "text": "p5.js sketch"
+    },
+    {
+     "id": "cd:threejs",
+     "text": "three.js scene"
+    },
+    {
+     "id": "cd:blender_addon",
+     "text": "blender addon"
+    },
+    {
+     "id": "cd:godot_plugin",
+     "text": "godot plugin"
+    },
+    {
+     "id": "cd:unity_package",
+     "text": "unity package"
+    },
+    {
+     "id": "cd:texture_synthesis",
+     "text": "texture synthesis"
+    },
+    {
+     "id": "cd:terrain_generation",
+     "text": "terrain generation"
+    },
+    {
+     "id": "cd:pixel_art",
+     "text": "pixel art"
+    },
+    {
+     "id": "cd:vector_graphics",
+     "text": "vector graphics"
+    },
+    {
+     "id": "cd:map_rendering",
+     "text": "map rendering"
+    },
+    {
+     "id": "cd:camera_animation",
+     "text": "camera animation"
+    },
+    {
+     "id": "cd:subtitle",
+     "text": "subtitles"
+    },
+    {
+     "id": "cd:text_to_speech",
+     "text": "text to speech"
+    },
+    {
+     "id": "cd:podcast_production",
+     "text": "podcast production"
+    },
+    {
+     "id": "cd:comic",
+     "text": "comic layout"
+    },
+    {
+     "id": "cd:slide_deck",
+     "text": "slide deck generator"
+    },
+    {
+     "id": "cd:lottie",
+     "text": "lottie animation"
+    },
+    {
+     "id": "cd:svg_animation",
+     "text": "svg animation"
+    },
+    {
+     "id": "cd:webgl",
+     "text": "webgl"
+    },
+    {
+     "id": "cd:webgpu",
+     "text": "webgpu"
+    },
+    {
+     "id": "cd:voxel",
+     "text": "voxel"
+    },
+    {
+     "id": "cd:mesh_processing",
+     "text": "mesh processing"
+    },
+    {
+     "id": "cd:uv_unwrapping",
+     "text": "uv unwrapping"
+    },
+    {
+     "id": "cd:inverse_kinematics",
+     "text": "inverse kinematics"
+    },
+    {
+     "id": "cd:physics_simulation",
+     "text": "physics simulation"
+    },
+    {
+     "id": "cd:cloth_simulation",
+     "text": "cloth simulation"
+    },
+    {
+     "id": "cd:fluid_simulation",
+     "text": "fluid simulation"
+    }
+   ]
+  },
+  {
+   "id": "algorithm",
+   "title": "Algorithms and data structures",
+   "kind": "topic",
+   "null_share": 0,
+   "source": {
+    "title": "Baltor algorithm and data structure vocabulary",
+    "licence": "MIT",
+    "note": "Common names of methods; names are not taken from any one reference work."
+   },
+   "values": [
+    {
+     "id": "alg:sorting_algorithm",
+     "text": "sorting algorithm"
+    },
+    {
+     "id": "alg:shortest_path",
+     "text": "shortest path"
+    },
+    {
+     "id": "alg:dijkstra",
+     "text": "dijkstra"
+    },
+    {
+     "id": "alg:a_star_search",
+     "text": "a star search"
+    },
+    {
+     "id": "alg:union_find",
+     "text": "union find"
+    },
+    {
+     "id": "alg:segment_tree",
+     "text": "segment tree"
+    },
+    {
+     "id": "alg:b_tree",
+     "text": "b tree"
+    },
+    {
+     "id": "alg:trie",
+     "text": "trie"
+    },
+    {
+     "id": "alg:bloom_filter",
+     "text": "bloom filter"
+    },
+    {
+     "id": "alg:hyperloglog",
+     "text": "hyperloglog"
+    },
+    {
+     "id": "alg:consistent_hashing",
+     "text": "consistent hashing"
+    },
+    {
+     "id": "alg:rate_limiter",
+     "text": "rate limiter"
+    },
+    {
+     "id": "alg:raft_consensus",
+     "text": "raft consensus"
+    },
+    {
+     "id": "alg:crdt",
+     "text": "crdt"
+    },
+    {
+     "id": "alg:diff_algorithm",
+     "text": "diff algorithm"
+    },
+    {
+     "id": "alg:levenshtein_distance",
+     "text": "levenshtein distance"
+    },
+    {
+     "id": "alg:bm25",
+     "text": "bm25"
+    },
+    {
+     "id": "alg:tf_idf",
+     "text": "tf-idf"
+    },
+    {
+     "id": "alg:minhash",
+     "text": "minhash"
+    },
+    {
+     "id": "alg:simhash",
+     "text": "simhash"
+    },
+    {
+     "id": "alg:kd_tree",
+     "text": "kd tree"
+    },
+    {
+     "id": "alg:r_tree",
+     "text": "r tree"
+    },
+    {
+     "id": "alg:quadtree",
+     "text": "quadtree"
+    },
+    {
+     "id": "alg:octree",
+     "text": "octree"
+    },
+    {
+     "id": "alg:delaunay_triangulation",
+     "text": "delaunay triangulation"
+    },
+    {
+     "id": "alg:voronoi_diagram",
+     "text": "voronoi diagram"
+    },
+    {
+     "id": "alg:convex_hull",
+     "text": "convex hull"
+    },
+    {
+     "id": "alg:marching_cubes",
+     "text": "marching cubes"
+    },
+    {
+     "id": "alg:perlin_noise",
+     "text": "perlin noise"
+    },
+    {
+     "id": "alg:simplex_noise",
+     "text": "simplex noise"
+    },
+    {
+     "id": "alg:wave_function_collapse",
+     "text": "wave function collapse"
+    },
+    {
+     "id": "alg:l_system",
+     "text": "l-system"
+    },
+    {
+     "id": "alg:kalman_filter",
+     "text": "kalman filter"
+    },
+    {
+     "id": "alg:fast_fourier_transform",
+     "text": "fast fourier transform"
+    },
+    {
+     "id": "alg:dynamic_time_warping",
+     "text": "dynamic time warping"
+    },
+    {
+     "id": "alg:viterbi_algorithm",
+     "text": "viterbi algorithm"
+    },
+    {
+     "id": "alg:hidden_markov_model",
+     "text": "hidden markov model"
+    },
+    {
+     "id": "alg:k_means_clustering",
+     "text": "k-means clustering"
+    },
+    {
+     "id": "alg:dbscan",
+     "text": "dbscan"
+    },
+    {
+     "id": "alg:principal_component_analysis",
+     "text": "principal component analysis"
+    },
+    {
+     "id": "alg:linear_programming",
+     "text": "linear programming"
+    },
+    {
+     "id": "alg:simplex_method",
+     "text": "simplex method"
+    },
+    {
+     "id": "alg:constraint_solver",
+     "text": "constraint solver"
+    },
+    {
+     "id": "alg:sat_solver",
+     "text": "sat solver"
+    },
+    {
+     "id": "alg:smt_solver",
+     "text": "smt solver"
+    },
+    {
+     "id": "alg:regular_expression_engine",
+     "text": "regular expression engine"
+    },
+    {
+     "id": "alg:parser_combinator",
+     "text": "parser combinator"
+    },
+    {
+     "id": "alg:pratt_parser",
+     "text": "pratt parser"
+    },
+    {
+     "id": "alg:lru_cache",
+     "text": "lru cache"
+    },
+    {
+     "id": "alg:skip_list",
+     "text": "skip list"
+    },
+    {
+     "id": "alg:ring_buffer",
+     "text": "ring buffer"
+    },
+    {
+     "id": "alg:topological_sort",
+     "text": "topological sort"
+    },
+    {
+     "id": "alg:max_flow",
+     "text": "max flow"
+    },
+    {
+     "id": "alg:bipartite_matching",
+     "text": "bipartite matching"
+    },
+    {
+     "id": "alg:hungarian_algorithm",
+     "text": "hungarian algorithm"
+    },
+    {
+     "id": "alg:job_scheduling",
+     "text": "job scheduling"
+    },
+    {
+     "id": "alg:bin_packing",
+     "text": "bin packing"
+    },
+    {
+     "id": "alg:knapsack",
+     "text": "knapsack"
+    },
+    {
+     "id": "alg:travelling_salesman",
+     "text": "travelling salesman"
+    },
+    {
+     "id": "alg:vehicle_routing",
+     "text": "vehicle routing"
+    },
+    {
+     "id": "alg:spatial_index",
+     "text": "spatial index"
+    },
+    {
+     "id": "alg:geohash",
+     "text": "geohash"
+    },
+    {
+     "id": "alg:h3_hexagonal_index",
+     "text": "h3 hexagonal index"
+    },
+    {
+     "id": "alg:map_projection",
+     "text": "map projection"
+    },
+    {
+     "id": "alg:spline_interpolation",
+     "text": "spline interpolation"
+    },
+    {
+     "id": "alg:bezier_curve",
+     "text": "bezier curve"
+    },
+    {
+     "id": "alg:polygon_clipping",
+     "text": "polygon clipping"
+    },
+    {
+     "id": "alg:line_simplification",
+     "text": "line simplification"
+    },
+    {
+     "id": "alg:point_in_polygon",
+     "text": "point in polygon"
+    },
+    {
+     "id": "alg:graph_coloring",
+     "text": "graph coloring"
+    },
+    {
+     "id": "alg:minimum_spanning_tree",
+     "text": "minimum spanning tree"
+    },
+    {
+     "id": "alg:strongly_connected_components",
+     "text": "strongly connected components"
+    },
+    {
+     "id": "alg:pagerank",
+     "text": "pagerank"
+    },
+    {
+     "id": "alg:community_detection",
+     "text": "community detection"
+    },
+    {
+     "id": "alg:graph_layout",
+     "text": "graph layout"
+    },
+    {
+     "id": "alg:force_directed_layout",
+     "text": "force directed layout"
+    },
+    {
+     "id": "alg:suffix_array",
+     "text": "suffix array"
+    },
+    {
+     "id": "alg:rope_data_structure",
+     "text": "rope data structure"
+    },
+    {
+     "id": "alg:piece_table",
+     "text": "piece table"
+    },
+    {
+     "id": "alg:merkle_tree",
+     "text": "merkle tree"
+    },
+    {
+     "id": "alg:hash_table",
+     "text": "hash table"
+    },
+    {
+     "id": "alg:priority_queue",
+     "text": "priority queue"
+    },
+    {
+     "id": "alg:fenwick_tree",
+     "text": "fenwick tree"
+    },
+    {
+     "id": "alg:interval_tree",
+     "text": "interval tree"
+    },
+    {
+     "id": "alg:disjoint_set",
+     "text": "disjoint set"
+    },
+    {
+     "id": "alg:beam_search",
+     "text": "beam search"
+    },
+    {
+     "id": "alg:monte_carlo_tree_search",
+     "text": "monte carlo tree search"
+    },
+    {
+     "id": "alg:minimax",
+     "text": "minimax"
+    },
+    {
+     "id": "alg:genetic_algorithm",
+     "text": "genetic algorithm"
+    },
+    {
+     "id": "alg:simulated_annealing",
+     "text": "simulated annealing"
+    },
+    {
+     "id": "alg:particle_swarm_optimization",
+     "text": "particle swarm optimization"
+    },
+    {
+     "id": "alg:gradient_descent",
+     "text": "gradient descent"
+    },
+    {
+     "id": "alg:newton_method",
+     "text": "newton method"
+    },
+    {
+     "id": "alg:conjugate_gradient",
+     "text": "conjugate gradient"
+    },
+    {
+     "id": "alg:sparse_matrix",
+     "text": "sparse matrix"
+    },
+    {
+     "id": "alg:matrix_factorization",
+     "text": "matrix factorization"
+    },
+    {
+     "id": "alg:singular_value_decomposition",
+     "text": "singular value decomposition"
+    },
+    {
+     "id": "alg:eigenvalue_solver",
+     "text": "eigenvalue solver"
+    },
+    {
+     "id": "alg:numerical_integration",
+     "text": "numerical integration"
+    },
+    {
+     "id": "alg:ode_solver",
+     "text": "ode solver"
+    },
+    {
+     "id": "alg:finite_element_method",
+     "text": "finite element method"
+    },
+    {
+     "id": "alg:finite_difference",
+     "text": "finite difference"
+    },
+    {
+     "id": "alg:spectral_method",
+     "text": "spectral method"
+    },
+    {
+     "id": "alg:image_segmentation",
+     "text": "image segmentation"
+    },
+    {
+     "id": "alg:edge_detection",
+     "text": "edge detection"
+    },
+    {
+     "id": "alg:optical_flow",
+     "text": "optical flow"
+    },
+    {
+     "id": "alg:feature_matching",
+     "text": "feature matching"
+    },
+    {
+     "id": "alg:homography",
+     "text": "homography"
+    },
+    {
+     "id": "alg:camera_calibration",
+     "text": "camera calibration"
+    },
+    {
+     "id": "alg:structure_from_motion",
+     "text": "structure from motion"
+    },
+    {
+     "id": "alg:slam",
+     "text": "slam"
+    },
+    {
+     "id": "alg:iterative_closest_point",
+     "text": "iterative closest point"
+    },
+    {
+     "id": "alg:mesh_simplification",
+     "text": "mesh simplification"
+    },
+    {
+     "id": "alg:subdivision_surface",
+     "text": "subdivision surface"
+    },
+    {
+     "id": "alg:signed_distance_field",
+     "text": "signed distance field"
+    },
+    {
+     "id": "alg:bounding_volume_hierarchy",
+     "text": "bounding volume hierarchy"
+    },
+    {
+     "id": "alg:collision_detection",
+     "text": "collision detection"
+    },
+    {
+     "id": "alg:rigid_body_dynamics",
+     "text": "rigid body dynamics"
+    },
+    {
+     "id": "alg:verlet_integration",
+     "text": "verlet integration"
+    },
+    {
+     "id": "alg:boids",
+     "text": "boids"
+    },
+    {
+     "id": "alg:cellular_automata",
+     "text": "cellular automata"
+    },
+    {
+     "id": "alg:reservoir_sampling",
+     "text": "reservoir sampling"
+    },
+    {
+     "id": "alg:count_min_sketch",
+     "text": "count-min sketch"
+    },
+    {
+     "id": "alg:t_digest",
+     "text": "t-digest"
+    },
+    {
+     "id": "alg:exponential_smoothing",
+     "text": "exponential smoothing"
+    },
+    {
+     "id": "alg:arima",
+     "text": "arima"
+    },
+    {
+     "id": "alg:anomaly_detection",
+     "text": "anomaly detection"
+    },
+    {
+     "id": "alg:change_point_detection",
+     "text": "change point detection"
+    },
+    {
+     "id": "alg:time_series_forecasting",
+     "text": "time series forecasting"
+    },
+    {
+     "id": "alg:entity_resolution",
+     "text": "entity resolution"
+    },
+    {
+     "id": "alg:record_linkage",
+     "text": "record linkage"
+    },
+    {
+     "id": "alg:deduplication",
+     "text": "deduplication"
+    },
+    {
+     "id": "alg:fuzzy_matching",
+     "text": "fuzzy matching"
+    },
+    {
+     "id": "alg:phonetic_matching",
+     "text": "phonetic matching"
+    },
+    {
+     "id": "alg:tokenizer",
+     "text": "tokenizer"
+    },
+    {
+     "id": "alg:byte_pair_encoding",
+     "text": "byte pair encoding"
+    },
+    {
+     "id": "alg:stemming",
+     "text": "stemming"
+    },
+    {
+     "id": "alg:named_entity_recognition",
+     "text": "named entity recognition"
+    },
+    {
+     "id": "alg:text_classification",
+     "text": "text classification"
+    },
+    {
+     "id": "alg:sentiment_analysis",
+     "text": "sentiment analysis"
+    },
+    {
+     "id": "alg:topic_modeling",
+     "text": "topic modeling"
+    },
+    {
+     "id": "alg:word_embeddings",
+     "text": "word embeddings"
+    },
+    {
+     "id": "alg:vector_search",
+     "text": "vector search"
+    },
+    {
+     "id": "alg:approximate_nearest_neighbor",
+     "text": "approximate nearest neighbor"
+    },
+    {
+     "id": "alg:hnsw",
+     "text": "hnsw"
+    },
+    {
+     "id": "alg:product_quantization",
+     "text": "product quantization"
+    },
+    {
+     "id": "alg:learning_to_rank",
+     "text": "learning to rank"
+    },
+    {
+     "id": "alg:collaborative_filtering",
+     "text": "collaborative filtering"
+    },
+    {
+     "id": "alg:matrix_profile",
+     "text": "matrix profile"
+    },
+    {
+     "id": "alg:compression_algorithm",
+     "text": "compression algorithm"
+    },
+    {
+     "id": "alg:huffman_coding",
+     "text": "huffman coding"
+    },
+    {
+     "id": "alg:lz77",
+     "text": "lz77"
+    },
+    {
+     "id": "alg:run_length_encoding",
+     "text": "run length encoding"
+    },
+    {
+     "id": "alg:delta_encoding",
+     "text": "delta encoding"
+    },
+    {
+     "id": "alg:checksum",
+     "text": "checksum"
+    },
+    {
+     "id": "alg:cyclic_redundancy_check",
+     "text": "cyclic redundancy check"
+    },
+    {
+     "id": "alg:cryptographic_hash",
+     "text": "cryptographic hash"
+    },
+    {
+     "id": "alg:public_key_cryptography",
+     "text": "public key cryptography"
+    },
+    {
+     "id": "alg:secret_sharing",
+     "text": "secret sharing"
+    },
+    {
+     "id": "alg:differential_privacy",
+     "text": "differential privacy"
+    },
+    {
+     "id": "alg:homomorphic_encryption",
+     "text": "homomorphic encryption"
+    },
+    {
+     "id": "alg:zero_knowledge_proof",
+     "text": "zero knowledge proof"
+    },
+    {
+     "id": "alg:error_correcting_code",
+     "text": "error correcting code"
+    },
+    {
+     "id": "alg:reed_solomon",
+     "text": "reed solomon"
+    },
+    {
+     "id": "alg:load_balancing",
+     "text": "load balancing"
+    },
+    {
+     "id": "alg:backpressure",
+     "text": "backpressure"
+    },
+    {
+     "id": "alg:circuit_breaker",
+     "text": "circuit breaker"
+    },
+    {
+     "id": "alg:exponential_backoff",
+     "text": "exponential backoff"
+    },
+    {
+     "id": "alg:leader_election",
+     "text": "leader election"
+    },
+    {
+     "id": "alg:distributed_lock",
+     "text": "distributed lock"
+    },
+    {
+     "id": "alg:vector_clock",
+     "text": "vector clock"
+    },
+    {
+     "id": "alg:gossip_protocol",
+     "text": "gossip protocol"
+    },
+    {
+     "id": "alg:two_phase_commit",
+     "text": "two phase commit"
+    },
+    {
+     "id": "alg:saga_pattern",
+     "text": "saga pattern"
+    },
+    {
+     "id": "alg:event_sourcing",
+     "text": "event sourcing"
+    },
+    {
+     "id": "alg:state_machine",
+     "text": "state machine"
+    },
+    {
+     "id": "alg:behavior_tree",
+     "text": "behavior tree"
+    },
+    {
+     "id": "alg:finite_automaton",
+     "text": "finite automaton"
+    },
+    {
+     "id": "alg:rete_algorithm",
+     "text": "rete algorithm"
+    },
+    {
+     "id": "alg:datalog",
+     "text": "datalog"
+    },
+    {
+     "id": "alg:unification",
+     "text": "unification"
+    },
+    {
+     "id": "alg:type_inference",
+     "text": "type inference"
+    },
+    {
+     "id": "alg:garbage_collection",
+     "text": "garbage collection"
+    },
+    {
+     "id": "alg:register_allocation",
+     "text": "register allocation"
+    },
+    {
+     "id": "alg:jit_compiler",
+     "text": "jit compiler"
+    },
+    {
+     "id": "alg:bytecode_interpreter",
+     "text": "bytecode interpreter"
+    },
+    {
+     "id": "alg:static_analysis",
+     "text": "static analysis"
+    },
+    {
+     "id": "alg:abstract_interpretation",
+     "text": "abstract interpretation"
+    },
+    {
+     "id": "alg:symbolic_execution",
+     "text": "symbolic execution"
+    },
+    {
+     "id": "alg:fuzzing",
+     "text": "fuzzing"
+    },
+    {
+     "id": "alg:property_based_testing",
+     "text": "property based testing"
+    },
+    {
+     "id": "alg:mutation_testing",
+     "text": "mutation testing"
+    },
+    {
+     "id": "alg:calendar_scheduling",
+     "text": "calendar scheduling"
+    },
+    {
+     "id": "alg:timezone_conversion",
+     "text": "timezone conversion"
+    },
+    {
+     "id": "alg:unit_conversion",
+     "text": "unit conversion"
+    },
+    {
+     "id": "alg:currency_rounding",
+     "text": "currency rounding"
+    },
+    {
+     "id": "alg:address_parsing",
+     "text": "address parsing"
+    },
+    {
+     "id": "alg:date_parsing",
+     "text": "date parsing"
+    },
+    {
+     "id": "alg:csv_parsing",
+     "text": "csv parsing"
+    },
+    {
+     "id": "alg:json_diff",
+     "text": "json diff"
+    },
+    {
+     "id": "alg:json_patch",
+     "text": "json patch"
+    },
+    {
+     "id": "alg:schema_validation",
+     "text": "schema validation"
+    },
+    {
+     "id": "alg:data_validation",
+     "text": "data validation"
+    }
+   ]
+  },
+  {
+   "id": "file_format",
+   "title": "File types and formats",
+   "kind": "format",
+   "null_share": 0,
+   "source": {
+    "title": "Baltor file format vocabulary with per-source renderings",
+    "licence": "MIT",
+    "note": "code = GitHub code search terms and qualifiers; europa = data.europa.eu format facet id; hf = Hugging Face format tag; openverse = Openverse extension filter; npm = npm keyword."
+   },
+   "values": [
+    {
+     "id": "openapi_yaml",
+     "text": "openapi",
+     "weight": 3,
+     "attributes": {
+      "family": "api",
+      "code": "openapi filename:openapi.yaml",
+      "npm": "openapi",
+      "europa": "",
+      "hf": ""
+     }
+    },
+    {
+     "id": "openapi_json",
+     "text": "openapi specification",
+     "weight": 2,
+     "attributes": {
+      "family": "api",
+      "code": "openapi filename:openapi.json",
+      "npm": "openapi-spec"
+     }
+    },
+    {
+     "id": "swagger_json",
+     "text": "swagger",
+     "weight": 2,
+     "attributes": {
+      "family": "api",
+      "code": "swagger filename:swagger.json",
+      "npm": "swagger"
+     }
+    },
+    {
+     "id": "asyncapi",
+     "text": "asyncapi",
+     "attributes": {
+      "family": "api",
+      "code": "asyncapi filename:asyncapi.yaml",
+      "npm": "asyncapi"
+     }
+    },
+    {
+     "id": "graphql_schema",
+     "text": "graphql schema",
+     "attributes": {
+      "family": "api",
+      "code": "type Query extension:graphql",
+      "npm": "graphql-schema"
+     }
+    },
+    {
+     "id": "protobuf",
+     "text": "protocol buffers",
+     "attributes": {
+      "family": "api",
+      "code": "proto3 extension:proto",
+      "npm": "protobuf"
+     }
+    },
+    {
+     "id": "json_schema",
+     "text": "json schema",
+     "weight": 3,
+     "attributes": {
+      "family": "schema",
+      "code": "json-schema.org extension:json",
+      "npm": "json-schema",
+      "europa": "JSON"
+     }
+    },
+    {
+     "id": "avro_schema",
+     "text": "avro schema",
+     "attributes": {
+      "family": "schema",
+      "code": "record extension:avsc",
+      "npm": "avro"
+     }
+    },
+    {
+     "id": "xml_schema",
+     "text": "xml schema",
+     "attributes": {
+      "family": "schema",
+      "code": "schema extension:xsd",
+      "europa": "XML"
+     }
+    },
+    {
+     "id": "datapackage",
+     "text": "data package",
+     "weight": 2,
+     "attributes": {
+      "family": "schema",
+      "code": "resources filename:datapackage.json",
+      "npm": "datapackage"
+     }
+    },
+    {
+     "id": "croissant",
+     "text": "croissant metadata",
+     "attributes": {
+      "family": "schema",
+      "code": "croissant extension:json",
+      "hf": "croissant"
+     }
+    },
+    {
+     "id": "stac",
+     "text": "stac catalog",
+     "attributes": {
+      "family": "geo",
+      "code": "stac_version extension:json",
+      "npm": "stac"
+     }
+    },
+    {
+     "id": "csv",
+     "text": "csv",
+     "weight": 3,
+     "attributes": {
+      "family": "table",
+      "code": "extension:csv",
+      "europa": "CSV",
+      "hf": "csv",
+      "npm": "csv"
+     }
+    },
+    {
+     "id": "tsv",
+     "text": "tsv",
+     "attributes": {
+      "family": "table",
+      "code": "extension:tsv",
+      "europa": "TSV",
+      "npm": "tsv"
+     }
+    },
+    {
+     "id": "parquet",
+     "text": "parquet",
+     "weight": 2,
+     "attributes": {
+      "family": "table",
+      "code": "extension:parquet",
+      "europa": "PARQUET",
+      "hf": "parquet",
+      "npm": "parquet"
+     }
+    },
+    {
+     "id": "xlsx",
+     "text": "spreadsheet",
+     "attributes": {
+      "family": "table",
+      "code": "extension:xlsx",
+      "europa": "XLSX",
+      "npm": "xlsx"
+     }
+    },
+    {
+     "id": "sqlite",
+     "text": "sqlite",
+     "attributes": {
+      "family": "table",
+      "code": "extension:sqlite",
+      "europa": "",
+      "npm": "sqlite"
+     }
+    },
+    {
+     "id": "jsonl",
+     "text": "json lines",
+     "attributes": {
+      "family": "table",
+      "code": "extension:jsonl",
+      "europa": "JSON",
+      "hf": "json"
+     }
+    },
+    {
+     "id": "geojson",
+     "text": "geojson",
+     "weight": 2,
+     "attributes": {
+      "family": "geo",
+      "code": "FeatureCollection extension:geojson",
+      "europa": "GEOJSON",
+      "npm": "geojson"
+     }
+    },
+    {
+     "id": "shapefile",
+     "text": "shapefile",
+     "attributes": {
+      "family": "geo",
+      "code": "extension:shp",
+      "europa": "SHP",
+      "npm": "shapefile"
+     }
+    },
+    {
+     "id": "kml",
+     "text": "kml",
+     "attributes": {
+      "family": "geo",
+      "code": "Placemark extension:kml",
+      "europa": "KML",
+      "npm": "kml"
+     }
+    },
+    {
+     "id": "gpx",
+     "text": "gpx",
+     "attributes": {
+      "family": "geo",
+      "code": "trkpt extension:gpx",
+      "npm": "gpx"
+     }
+    },
+    {
+     "id": "netcdf",
+     "text": "netcdf",
+     "attributes": {
+      "family": "science",
+      "code": "extension:nc",
+      "europa": "NETCDF",
+      "npm": "netcdf"
+     }
+    },
+    {
+     "id": "hdf5",
+     "text": "hdf5",
+     "attributes": {
+      "family": "science",
+      "code": "extension:h5",
+      "europa": "HDF",
+      "npm": "hdf5"
+     }
+    },
+    {
+     "id": "geotiff",
+     "text": "geotiff",
+     "attributes": {
+      "family": "geo",
+      "code": "extension:tif",
+      "europa": "GEOTIFF",
+      "npm": "geotiff"
+     }
+    },
+    {
+     "id": "gtfs",
+     "text": "gtfs",
+     "weight": 2,
+     "attributes": {
+      "family": "table",
+      "code": "stop_id filename:stops.txt",
+      "europa": "GTFS",
+      "npm": "gtfs"
+     }
+    },
+    {
+     "id": "ipynb",
+     "text": "jupyter notebook",
+     "weight": 2,
+     "attributes": {
+      "family": "notebook",
+      "code": "extension:ipynb",
+      "npm": "jupyter"
+     }
+    },
+    {
+     "id": "glb",
+     "text": "glb model",
+     "attributes": {
+      "family": "3d",
+      "code": "extension:glb",
+      "npm": "glb"
+     }
+    },
+    {
+     "id": "gltf",
+     "text": "gltf",
+     "weight": 2,
+     "attributes": {
+      "family": "3d",
+      "code": "asset extension:gltf",
+      "npm": "gltf"
+     }
+    },
+    {
+     "id": "blend",
+     "text": "blender file",
+     "attributes": {
+      "family": "3d",
+      "code": "extension:blend",
+      "npm": "blender"
+     }
+    },
+    {
+     "id": "obj",
+     "text": "obj mesh",
+     "attributes": {
+      "family": "3d",
+      "code": "extension:obj",
+      "npm": "obj-loader"
+     }
+    },
+    {
+     "id": "stl",
+     "text": "stl mesh",
+     "attributes": {
+      "family": "3d",
+      "code": "extension:stl",
+      "npm": "stl"
+     }
+    },
+    {
+     "id": "fbx",
+     "text": "fbx",
+     "attributes": {
+      "family": "3d",
+      "code": "extension:fbx",
+      "npm": "fbx"
+     }
+    },
+    {
+     "id": "usd",
+     "text": "usd scene",
+     "attributes": {
+      "family": "3d",
+      "code": "extension:usda",
+      "npm": "usd"
+     }
+    },
+    {
+     "id": "step_cad",
+     "text": "step cad",
+     "attributes": {
+      "family": "cad",
+      "code": "ISO-10303-21 extension:step",
+      "npm": "step-file"
+     }
+    },
+    {
+     "id": "dxf",
+     "text": "dxf drawing",
+     "attributes": {
+      "family": "cad",
+      "code": "SECTION extension:dxf",
+      "npm": "dxf"
+     }
+    },
+    {
+     "id": "svg",
+     "text": "svg",
+     "weight": 2,
+     "attributes": {
+      "family": "image",
+      "code": "svg extension:svg",
+      "openverse": "svg",
+      "npm": "svg"
+     }
+    },
+    {
+     "id": "png",
+     "text": "png image",
+     "attributes": {
+      "family": "image",
+      "openverse": "png"
+     }
+    },
+    {
+     "id": "jpg",
+     "text": "jpeg image",
+     "attributes": {
+      "family": "image",
+      "openverse": "jpg"
+     }
+    },
+    {
+     "id": "midi",
+     "text": "midi",
+     "weight": 2,
+     "attributes": {
+      "family": "audio",
+      "code": "extension:mid",
+      "npm": "midi"
+     }
+    },
+    {
+     "id": "musicxml",
+     "text": "musicxml",
+     "attributes": {
+      "family": "audio",
+      "code": "score-partwise extension:musicxml",
+      "npm": "musicxml"
+     }
+    },
+    {
+     "id": "abc_notation",
+     "text": "abc notation",
+     "attributes": {
+      "family": "audio",
+      "code": "extension:abc",
+      "npm": "abcjs"
+     }
+    },
+    {
+     "id": "wav",
+     "text": "wav audio",
+     "attributes": {
+      "family": "audio",
+      "openverse": "wav",
+      "npm": "wav"
+     }
+    },
+    {
+     "id": "mp3",
+     "text": "mp3 audio",
+     "attributes": {
+      "family": "audio",
+      "openverse": "mp3"
+     }
+    },
+    {
+     "id": "flac",
+     "text": "flac audio",
+     "attributes": {
+      "family": "audio",
+      "openverse": "flac"
+     }
+    },
+    {
+     "id": "ogg",
+     "text": "ogg audio",
+     "attributes": {
+      "family": "audio",
+      "openverse": "ogg"
+     }
+    },
+    {
+     "id": "yaml_config",
+     "text": "yaml configuration",
+     "attributes": {
+      "family": "config",
+      "code": "extension:yaml",
+      "europa": "YAML"
+     }
+    },
+    {
+     "id": "toml",
+     "text": "toml",
+     "attributes": {
+      "family": "config",
+      "code": "extension:toml",
+      "npm": "toml"
+     }
+    },
+    {
+     "id": "dockerfile",
+     "text": "dockerfile",
+     "attributes": {
+      "family": "config",
+      "code": "FROM filename:Dockerfile",
+      "npm": "dockerfile"
+     }
+    },
+    {
+     "id": "github_workflow",
+     "text": "github actions workflow",
+     "weight": 2,
+     "attributes": {
+      "family": "workflow",
+      "code": "runs-on path:.github/workflows extension:yml",
+      "npm": "github-action"
+     }
+    },
+    {
+     "id": "terraform",
+     "text": "terraform module",
+     "attributes": {
+      "family": "config",
+      "code": "resource extension:tf",
+      "npm": "terraform"
+     }
+    },
+    {
+     "id": "helm_chart",
+     "text": "helm chart",
+     "attributes": {
+      "family": "config",
+      "code": "apiVersion filename:Chart.yaml",
+      "npm": "helm"
+     }
+    },
+    {
+     "id": "ansible",
+     "text": "ansible playbook",
+     "attributes": {
+      "family": "config",
+      "code": "hosts tasks path:playbooks extension:yml",
+      "npm": "ansible"
+     }
+    },
+    {
+     "id": "n8n_workflow",
+     "text": "n8n workflow",
+     "weight": 2,
+     "attributes": {
+      "family": "workflow",
+      "code": "connections nodes n8n extension:json",
+      "npm": "n8n-nodes"
+     }
+    },
+    {
+     "id": "comfyui_workflow",
+     "text": "comfyui workflow",
+     "attributes": {
+      "family": "workflow",
+      "code": "class_type comfyui extension:json",
+      "npm": "comfyui"
+     }
+    },
+    {
+     "id": "node_red",
+     "text": "node-red flow",
+     "attributes": {
+      "family": "workflow",
+      "code": "node-red wires extension:json",
+      "npm": "node-red"
+     }
+    },
+    {
+     "id": "bpmn",
+     "text": "bpmn",
+     "attributes": {
+      "family": "workflow",
+      "code": "bpmn:process extension:bpmn",
+      "npm": "bpmn"
+     }
+    },
+    {
+     "id": "dmn",
+     "text": "dmn decision table",
+     "attributes": {
+      "family": "workflow",
+      "code": "decisionTable extension:dmn",
+      "npm": "dmn"
+     }
+    },
+    {
+     "id": "skill_md",
+     "text": "skill.md",
+     "weight": 3,
+     "attributes": {
+      "family": "harness",
+      "code": "description filename:SKILL.md",
+      "npm": "claude-skill"
+     }
+    },
+    {
+     "id": "agents_md",
+     "text": "agents.md",
+     "weight": 2,
+     "attributes": {
+      "family": "harness",
+      "code": "filename:AGENTS.md",
+      "npm": "agents-md"
+     }
+    },
+    {
+     "id": "claude_md",
+     "text": "claude.md",
+     "weight": 2,
+     "attributes": {
+      "family": "harness",
+      "code": "filename:CLAUDE.md",
+      "npm": "claude-code"
+     }
+    },
+    {
+     "id": "cursor_rules",
+     "text": "cursor rules",
+     "weight": 2,
+     "attributes": {
+      "family": "harness",
+      "code": "extension:mdc path:.cursor/rules",
+      "npm": "cursor-rules"
+     }
+    },
+    {
+     "id": "mcp_config",
+     "text": "mcp server",
+     "weight": 3,
+     "attributes": {
+      "family": "harness",
+      "code": "mcpServers filename:mcp.json",
+      "npm": "mcp-server"
+     }
+    },
+    {
+     "id": "plugin_manifest",
+     "text": "claude plugin",
+     "attributes": {
+      "family": "harness",
+      "code": "name filename:plugin.json path:.claude-plugin",
+      "npm": "claude-plugin"
+     }
+    },
+    {
+     "id": "jsonld",
+     "text": "json-ld",
+     "attributes": {
+      "family": "linked_data",
+      "code": "@context extension:jsonld",
+      "europa": "JSON_LD",
+      "npm": "jsonld"
+     }
+    },
+    {
+     "id": "turtle",
+     "text": "rdf turtle",
+     "attributes": {
+      "family": "linked_data",
+      "code": "@prefix extension:ttl",
+      "europa": "RDF_TURTLE",
+      "npm": "rdf"
+     }
+    },
+    {
+     "id": "owl",
+     "text": "owl ontology",
+     "attributes": {
+      "family": "linked_data",
+      "code": "owl:Ontology extension:owl",
+      "europa": "OWL",
+      "npm": "owl"
+     }
+    },
+    {
+     "id": "skos",
+     "text": "skos vocabulary",
+     "attributes": {
+      "family": "linked_data",
+      "code": "skos:Concept extension:ttl",
+      "europa": "SKOS_XML"
+     }
+    },
+    {
+     "id": "bibtex",
+     "text": "bibtex",
+     "attributes": {
+      "family": "document",
+      "code": "@article extension:bib",
+      "npm": "bibtex"
+     }
+    },
+    {
+     "id": "csl",
+     "text": "citation style",
+     "attributes": {
+      "family": "document",
+      "code": "citation-style-language extension:csl",
+      "npm": "citeproc"
+     }
+    },
+    {
+     "id": "sql",
+     "text": "sql schema",
+     "attributes": {
+      "family": "code",
+      "code": "CREATE TABLE extension:sql",
+      "npm": "sql"
+     }
+    },
+    {
+     "id": "glsl",
+     "text": "glsl shader",
+     "attributes": {
+      "family": "code",
+      "code": "gl_FragColor extension:frag",
+      "npm": "glsl"
+     }
+    },
+    {
+     "id": "wgsl",
+     "text": "wgsl shader",
+     "attributes": {
+      "family": "code",
+      "code": "fn extension:wgsl",
+      "npm": "wgsl"
+     }
+    },
+    {
+     "id": "fhir",
+     "text": "fhir resource",
+     "attributes": {
+      "family": "schema",
+      "code": "resourceType extension:json fhir",
+      "npm": "fhir"
+     }
+    },
+    {
+     "id": "cyclonedx",
+     "text": "cyclonedx sbom",
+     "attributes": {
+      "family": "schema",
+      "code": "bomFormat CycloneDX extension:json",
+      "npm": "cyclonedx"
+     }
+    },
+    {
+     "id": "lottie_json",
+     "text": "lottie json",
+     "attributes": {
+      "family": "image",
+      "code": "layers assets lottie extension:json",
+      "npm": "lottie"
+     }
+    },
+    {
+     "id": "ttf_font",
+     "text": "truetype font",
+     "attributes": {
+      "family": "font",
+      "code": "extension:ttf",
+      "npm": "font"
+     }
+    },
+    {
+     "id": "pdf",
+     "text": "pdf report",
+     "attributes": {
+      "family": "document",
+      "europa": "PDF",
+      "code": "extension:pdf"
+     }
+    },
+    {
+     "id": "markdown_doc",
+     "text": "markdown guide",
+     "attributes": {
+      "family": "document",
+      "code": "extension:md",
+      "npm": "markdown"
+     }
+    }
+   ]
+  },
+  {
+   "id": "programming_language",
+   "title": "Programming languages",
+   "kind": "programming_language",
+   "null_share": 0,
+   "source": {
+    "title": "Programming language names as GitHub's linguist spells them",
+    "licence": "MIT",
+    "note": "The github attribute is the language: qualifier value."
+   },
+   "values": [
+    {
+     "id": "pl:python",
+     "text": "Python",
+     "weight": 6,
+     "attributes": {
+      "github": "Python"
+     }
+    },
+    {
+     "id": "pl:javascript",
+     "text": "JavaScript",
+     "weight": 5,
+     "attributes": {
+      "github": "JavaScript"
+     }
+    },
+    {
+     "id": "pl:typescript",
+     "text": "TypeScript",
+     "weight": 5,
+     "attributes": {
+      "github": "TypeScript"
+     }
+    },
+    {
+     "id": "pl:java",
+     "text": "Java",
+     "weight": 3,
+     "attributes": {
+      "github": "Java"
+     }
+    },
+    {
+     "id": "pl:csharp",
+     "text": "C#",
+     "weight": 2,
+     "attributes": {
+      "github": "C#"
+     }
+    },
+    {
+     "id": "pl:cpp",
+     "text": "C++",
+     "weight": 3,
+     "attributes": {
+      "github": "C++"
+     }
+    },
+    {
+     "id": "pl:c",
+     "text": "C language",
+     "weight": 2,
+     "attributes": {
+      "github": "C"
+     }
+    },
+    {
+     "id": "pl:go",
+     "text": "Go",
+     "weight": 3,
+     "attributes": {
+      "github": "Go"
+     }
+    },
+    {
+     "id": "pl:rust",
+     "text": "Rust",
+     "weight": 3,
+     "attributes": {
+      "github": "Rust"
+     }
+    },
+    {
+     "id": "pl:ruby",
+     "text": "Ruby",
+     "weight": 2,
+     "attributes": {
+      "github": "Ruby"
+     }
+    },
+    {
+     "id": "pl:php",
+     "text": "PHP",
+     "weight": 2,
+     "attributes": {
+      "github": "PHP"
+     }
+    },
+    {
+     "id": "pl:swift",
+     "text": "Swift",
+     "weight": 2,
+     "attributes": {
+      "github": "Swift"
+     }
+    },
+    {
+     "id": "pl:kotlin",
+     "text": "Kotlin",
+     "weight": 2,
+     "attributes": {
+      "github": "Kotlin"
+     }
+    },
+    {
+     "id": "pl:scala",
+     "text": "Scala",
+     "attributes": {
+      "github": "Scala"
+     }
+    },
+    {
+     "id": "pl:r",
+     "text": "R language",
+     "weight": 2,
+     "attributes": {
+      "github": "R"
+     }
+    },
+    {
+     "id": "pl:julia",
+     "text": "Julia",
+     "weight": 2,
+     "attributes": {
+      "github": "Julia"
+     }
+    },
+    {
+     "id": "pl:matlab",
+     "text": "MATLAB",
+     "attributes": {
+      "github": "MATLAB"
+     }
+    },
+    {
+     "id": "pl:lua",
+     "text": "Lua",
+     "weight": 2,
+     "attributes": {
+      "github": "Lua"
+     }
+    },
+    {
+     "id": "pl:perl",
+     "text": "Perl",
+     "attributes": {
+      "github": "Perl"
+     }
+    },
+    {
+     "id": "pl:haskell",
+     "text": "Haskell",
+     "attributes": {
+      "github": "Haskell"
+     }
+    },
+    {
+     "id": "pl:elixir",
+     "text": "Elixir",
+     "attributes": {
+      "github": "Elixir"
+     }
+    },
+    {
+     "id": "pl:erlang",
+     "text": "Erlang",
+     "attributes": {
+      "github": "Erlang"
+     }
+    },
+    {
+     "id": "pl:clojure",
+     "text": "Clojure",
+     "attributes": {
+      "github": "Clojure"
+     }
+    },
+    {
+     "id": "pl:fsharp",
+     "text": "F#",
+     "attributes": {
+      "github": "F#"
+     }
+    },
+    {
+     "id": "pl:ocaml",
+     "text": "OCaml",
+     "attributes": {
+      "github": "OCaml"
+     }
+    },
+    {
+     "id": "pl:dart",
+     "text": "Dart",
+     "weight": 2,
+     "attributes": {
+      "github": "Dart"
+     }
+    },
+    {
+     "id": "pl:shell",
+     "text": "Shell",
+     "weight": 2,
+     "attributes": {
+      "github": "Shell"
+     }
+    },
+    {
+     "id": "pl:powershell",
+     "text": "PowerShell",
+     "attributes": {
+      "github": "PowerShell"
+     }
+    },
+    {
+     "id": "pl:jupyter_notebook",
+     "text": "Jupyter Notebook",
+     "weight": 3,
+     "attributes": {
+      "github": "Jupyter Notebook"
+     }
+    },
+    {
+     "id": "pl:html",
+     "text": "HTML",
+     "weight": 2,
+     "attributes": {
+      "github": "HTML"
+     }
+    },
+    {
+     "id": "pl:css",
+     "text": "CSS",
+     "attributes": {
+      "github": "CSS"
+     }
+    },
+    {
+     "id": "pl:vue",
+     "text": "Vue",
+     "attributes": {
+      "github": "Vue"
+     }
+    },
+    {
+     "id": "pl:svelte",
+     "text": "Svelte",
+     "attributes": {
+      "github": "Svelte"
+     }
+    },
+    {
+     "id": "pl:zig",
+     "text": "Zig",
+     "attributes": {
+      "github": "Zig"
+     }
+    },
+    {
+     "id": "pl:nim",
+     "text": "Nim",
+     "attributes": {
+      "github": "Nim"
+     }
+    },
+    {
+     "id": "pl:crystal",
+     "text": "Crystal",
+     "attributes": {
+      "github": "Crystal"
+     }
+    },
+    {
+     "id": "pl:fortran",
+     "text": "Fortran",
+     "attributes": {
+      "github": "Fortran"
+     }
+    },
+    {
+     "id": "pl:cobol",
+     "text": "COBOL",
+     "attributes": {
+      "github": "COBOL"
+     }
+    },
+    {
+     "id": "pl:ada",
+     "text": "Ada",
+     "attributes": {
+      "github": "Ada"
+     }
+    },
+    {
+     "id": "pl:groovy",
+     "text": "Groovy",
+     "attributes": {
+      "github": "Groovy"
+     }
+    },
+    {
+     "id": "pl:elm",
+     "text": "Elm",
+     "attributes": {
+      "github": "Elm"
+     }
+    },
+    {
+     "id": "pl:purescript",
+     "text": "PureScript",
+     "attributes": {
+      "github": "PureScript"
+     }
+    },
+    {
+     "id": "pl:solidity",
+     "text": "Solidity",
+     "attributes": {
+      "github": "Solidity"
+     }
+    },
+    {
+     "id": "pl:verilog",
+     "text": "Verilog",
+     "attributes": {
+      "github": "Verilog"
+     }
+    },
+    {
+     "id": "pl:vhdl",
+     "text": "VHDL",
+     "attributes": {
+      "github": "VHDL"
+     }
+    },
+    {
+     "id": "pl:systemverilog",
+     "text": "SystemVerilog",
+     "attributes": {
+      "github": "SystemVerilog"
+     }
+    },
+    {
+     "id": "pl:glsl",
+     "text": "GLSL",
+     "weight": 2,
+     "attributes": {
+      "github": "GLSL"
+     }
+    },
+    {
+     "id": "pl:hlsl",
+     "text": "HLSL",
+     "attributes": {
+      "github": "HLSL"
+     }
+    },
+    {
+     "id": "pl:gdscript",
+     "text": "GDScript",
+     "weight": 2,
+     "attributes": {
+      "github": "GDScript"
+     }
+    },
+    {
+     "id": "pl:assembly",
+     "text": "Assembly",
+     "attributes": {
+      "github": "Assembly"
+     }
+    },
+    {
+     "id": "pl:webassembly",
+     "text": "WebAssembly",
+     "attributes": {
+      "github": "WebAssembly"
+     }
+    },
+    {
+     "id": "pl:prolog",
+     "text": "Prolog",
+     "attributes": {
+      "github": "Prolog"
+     }
+    },
+    {
+     "id": "pl:racket",
+     "text": "Racket",
+     "attributes": {
+      "github": "Racket"
+     }
+    },
+    {
+     "id": "pl:scheme",
+     "text": "Scheme",
+     "attributes": {
+      "github": "Scheme"
+     }
+    },
+    {
+     "id": "pl:common_lisp",
+     "text": "Common Lisp",
+     "attributes": {
+      "github": "Common Lisp"
+     }
+    },
+    {
+     "id": "pl:emacs_lisp",
+     "text": "Emacs Lisp",
+     "attributes": {
+      "github": "Emacs Lisp"
+     }
+    },
+    {
+     "id": "pl:vim_script",
+     "text": "Vim Script",
+     "attributes": {
+      "github": "Vim Script"
+     }
+    },
+    {
+     "id": "pl:nix",
+     "text": "Nix",
+     "attributes": {
+      "github": "Nix"
+     }
+    },
+    {
+     "id": "pl:dockerfile",
+     "text": "Dockerfile",
+     "attributes": {
+      "github": "Dockerfile"
+     }
+    },
+    {
+     "id": "pl:hcl",
+     "text": "HCL",
+     "attributes": {
+      "github": "HCL"
+     }
+    },
+    {
+     "id": "pl:starlark",
+     "text": "Starlark",
+     "attributes": {
+      "github": "Starlark"
+     }
+    },
+    {
+     "id": "pl:makefile",
+     "text": "Makefile",
+     "attributes": {
+      "github": "Makefile"
+     }
+    },
+    {
+     "id": "pl:cmake",
+     "text": "CMake",
+     "attributes": {
+      "github": "CMake"
+     }
+    },
+    {
+     "id": "pl:tex",
+     "text": "TeX",
+     "attributes": {
+      "github": "TeX"
+     }
+    },
+    {
+     "id": "pl:mathematica",
+     "text": "Mathematica",
+     "attributes": {
+      "github": "Mathematica"
+     }
+    },
+    {
+     "id": "pl:stata",
+     "text": "Stata",
+     "attributes": {
+      "github": "Stata"
+     }
+    },
+    {
+     "id": "pl:sas",
+     "text": "SAS",
+     "attributes": {
+      "github": "SAS"
+     }
+    },
+    {
+     "id": "pl:processing",
+     "text": "Processing",
+     "attributes": {
+      "github": "Processing"
+     }
+    },
+    {
+     "id": "pl:objective-c",
+     "text": "Objective-C",
+     "attributes": {
+      "github": "Objective-C"
+     }
+    },
+    {
+     "id": "pl:visual_basic_net",
+     "text": "Visual Basic .NET",
+     "attributes": {
+      "github": "Visual Basic .NET"
+     }
+    },
+    {
+     "id": "pl:apex",
+     "text": "Apex",
+     "attributes": {
+      "github": "Apex"
+     }
+    },
+    {
+     "id": "pl:smalltalk",
+     "text": "Smalltalk",
+     "attributes": {
+      "github": "Smalltalk"
+     }
+    },
+    {
+     "id": "pl:raku",
+     "text": "Raku",
+     "attributes": {
+      "github": "Raku"
+     }
+    },
+    {
+     "id": "pl:tcl",
+     "text": "Tcl",
+     "attributes": {
+      "github": "Tcl"
+     }
+    },
+    {
+     "id": "pl:d",
+     "text": "D language",
+     "attributes": {
+      "github": "D"
+     }
+    },
+    {
+     "id": "pl:lean",
+     "text": "Lean",
+     "attributes": {
+      "github": "Lean"
+     }
+    },
+    {
+     "id": "pl:coq",
+     "text": "Coq",
+     "attributes": {
+      "github": "Coq"
+     }
+    },
+    {
+     "id": "pl:agda",
+     "text": "Agda",
+     "attributes": {
+      "github": "Agda"
+     }
+    },
+    {
+     "id": "pl:idris",
+     "text": "Idris",
+     "attributes": {
+      "github": "Idris"
+     }
+    },
+    {
+     "id": "pl:gleam",
+     "text": "Gleam",
+     "attributes": {
+      "github": "Gleam"
+     }
+    },
+    {
+     "id": "pl:mojo",
+     "text": "Mojo",
+     "attributes": {
+      "github": "Mojo"
+     }
+    },
+    {
+     "id": "pl:odin",
+     "text": "Odin",
+     "attributes": {
+      "github": "Odin"
+     }
+    },
+    {
+     "id": "pl:cython",
+     "text": "Cython",
+     "attributes": {
+      "github": "Cython"
+     }
+    },
+    {
+     "id": "pl:jsonnet",
+     "text": "Jsonnet",
+     "attributes": {
+      "github": "Jsonnet"
+     }
+    },
+    {
+     "id": "pl:open_policy_agent",
+     "text": "Open Policy Agent",
+     "attributes": {
+      "github": "Open Policy Agent"
+     }
+    },
+    {
+     "id": "pl:cue",
+     "text": "CUE",
+     "attributes": {
+      "github": "CUE"
+     }
+    },
+    {
+     "id": "pl:plpgsql",
+     "text": "PLpgSQL",
+     "attributes": {
+      "github": "PLpgSQL"
+     }
+    },
+    {
+     "id": "pl:tsql",
+     "text": "TSQL",
+     "attributes": {
+      "github": "TSQL"
+     }
+    },
+    {
+     "id": "pl:hack",
+     "text": "Hack",
+     "attributes": {
+      "github": "Hack"
+     }
+    },
+    {
+     "id": "pl:pascal",
+     "text": "Pascal",
+     "attributes": {
+      "github": "Pascal"
+     }
+    },
+    {
+     "id": "pl:haxe",
+     "text": "Haxe",
+     "attributes": {
+      "github": "Haxe"
+     }
+    },
+    {
+     "id": "pl:qsharp",
+     "text": "Q#",
+     "attributes": {
+      "github": "Q#"
+     }
+    },
+    {
+     "id": "pl:rescript",
+     "text": "ReScript",
+     "attributes": {
+      "github": "ReScript"
+     }
+    },
+    {
+     "id": "pl:reason",
+     "text": "Reason",
+     "attributes": {
+      "github": "Reason"
+     }
+    },
+    {
+     "id": "pl:standard_ml",
+     "text": "Standard ML",
+     "attributes": {
+      "github": "Standard ML"
+     }
+    },
+    {
+     "id": "pl:chapel",
+     "text": "Chapel",
+     "attributes": {
+      "github": "Chapel"
+     }
+    },
+    {
+     "id": "pl:pony",
+     "text": "Pony",
+     "attributes": {
+      "github": "Pony"
+     }
+    },
+    {
+     "id": "pl:awk",
+     "text": "Awk",
+     "attributes": {
+      "github": "Awk"
+     }
+    },
+    {
+     "id": "pl:bicep",
+     "text": "Bicep",
+     "attributes": {
+      "github": "Bicep"
+     }
+    },
+    {
+     "id": "pl:jinja",
+     "text": "Jinja",
+     "attributes": {
+      "github": "Jinja"
+     }
+    },
+    {
+     "id": "pl:liquid",
+     "text": "Liquid",
+     "attributes": {
+      "github": "Liquid"
+     }
+    },
+    {
+     "id": "pl:handlebars",
+     "text": "Handlebars",
+     "attributes": {
+      "github": "Handlebars"
+     }
+    },
+    {
+     "id": "pl:mdx",
+     "text": "MDX",
+     "attributes": {
+      "github": "MDX"
+     }
+    },
+    {
+     "id": "pl:astro",
+     "text": "Astro",
+     "attributes": {
+      "github": "Astro"
+     }
+    },
+    {
+     "id": "pl:typst",
+     "text": "Typst",
+     "attributes": {
+      "github": "Typst"
+     }
+    }
+   ]
+  },
+  {
+   "id": "natural_language",
+   "title": "Natural languages (ISO 639-1, English labels)",
+   "kind": "natural_language",
+   "null_share": 0,
+   "source": {
+    "title": "Wikidata ISO 639-1 items",
+    "licence": "CC0-1.0",
+    "url": "https://query.wikidata.org/",
+    "note": "tools/query_multiplier/data/languages-wikidata-v1.json records the query and the response digest."
+   },
+   "values_from": {
+    "loader": "wikidata_languages",
+    "path": "tools/query_multiplier/data/languages-wikidata-v1.json",
+    "sha256": "49d56a4cea1477ad99796760ed018e68a813bfe3bf38b4e49800329156759ccf"
+   }
+  },
+  {
+   "id": "natural_language_endonym",
+   "title": "Natural languages by their own names",
+   "kind": "natural_language",
+   "null_share": 0,
+   "source": {
+    "title": "Wikidata native labels (P1705) of ISO 639-1 items",
+    "licence": "CC0-1.0",
+    "url": "https://query.wikidata.org/",
+    "note": "Answers the planner review's finding that language facets were English labels only."
+   },
+   "values_from": {
+    "loader": "wikidata_language_endonyms",
+    "path": "tools/query_multiplier/data/languages-wikidata-v1.json",
+    "sha256": "49d56a4cea1477ad99796760ed018e68a813bfe3bf38b4e49800329156759ccf"
+   }
+  },
+  {
+   "id": "geography",
+   "title": "Geographies: UN M49 regions and ISO 3166-1 countries or areas",
+   "kind": "geography",
+   "null_share": 0,
+   "source": {
+    "title": "Wikidata M49 (P2082) and ISO 3166-1 (P297, P298) items",
+    "licence": "CC0-1.0",
+    "url": "https://query.wikidata.org/",
+    "note": "Names are search terms, not jurisdiction or sovereignty claims. The null value is the global baseline."
+   },
+   "values_from": {
+    "loader": "wikidata_geography",
+    "path": "tools/query_multiplier/data/geography-wikidata-v1.json",
+    "sha256": "4a1a8398ce8640e1609d16d10370d13522269a8da0360c3b583f410328854593",
+    "overrides": {
+     "NL": "Netherlands",
+     "US": "United States",
+     "GB": "United Kingdom"
+    }
+   }
+  },
+  {
+   "id": "time_window",
+   "title": "Time windows by quarter",
+   "kind": "time_window",
+   "null_share": 0,
+   "source": {
+    "title": "Calendar quarters",
+    "licence": "MIT",
+    "note": "Rendered as pushed: or created: ranges on GitHub, publication dates on OpenAlex and submission dates on arXiv."
+   },
+   "values_from": {
+    "loader": "quarters",
+    "first": "2008q1",
+    "last": "2026q4"
+   }
+  },
+  {
+   "id": "licence",
+   "title": "Licences on the owner's allowlist",
+   "kind": "licence",
+   "null_share": 0,
+   "source": {
+    "title": "The owner's allowlist (tools/supply_lines/records.py ALLOWED_LICENCES)",
+    "licence": "MIT",
+    "note": "Each executor renders only the licences it can filter by; the reported licence of a result is a lead, and every line decides the licence again."
+   },
+   "values": [
+    {
+     "id": "spdx:MIT",
+     "text": "mit",
+     "weight": 6,
+     "attributes": {
+      "spdx": "MIT",
+      "github": "mit",
+      "hf": "mit",
+      "npm": "MIT"
+     }
+    },
+    {
+     "id": "spdx:Apache-2.0",
+     "text": "apache 2.0",
+     "weight": 4,
+     "attributes": {
+      "spdx": "Apache-2.0",
+      "github": "apache-2.0",
+      "hf": "apache-2.0"
+     }
+    },
+    {
+     "id": "spdx:BSD-2-Clause",
+     "text": "bsd 2-clause",
+     "attributes": {
+      "spdx": "BSD-2-Clause",
+      "github": "bsd-2-clause",
+      "hf": "bsd-2-clause"
+     }
+    },
+    {
+     "id": "spdx:BSD-3-Clause",
+     "text": "bsd 3-clause",
+     "weight": 2,
+     "attributes": {
+      "spdx": "BSD-3-Clause",
+      "github": "bsd-3-clause",
+      "hf": "bsd-3-clause"
+     }
+    },
+    {
+     "id": "spdx:ISC",
+     "text": "isc licence",
+     "attributes": {
+      "spdx": "ISC",
+      "github": "isc",
+      "hf": "isc"
+     }
+    },
+    {
+     "id": "spdx:0BSD",
+     "text": "zero-clause bsd",
+     "attributes": {
+      "spdx": "0BSD",
+      "github": "0bsd",
+      "hf": "0bsd"
+     }
+    },
+    {
+     "id": "spdx:CC0-1.0",
+     "text": "cc0",
+     "weight": 2,
+     "attributes": {
+      "spdx": "CC0-1.0",
+      "github": "cc0-1.0",
+      "hf": "cc0-1.0",
+      "openverse": "cc0",
+      "gbif": "CC0_1_0",
+      "openalex": "cc0"
+     }
+    },
+    {
+     "id": "spdx:CC-BY-4.0",
+     "text": "cc by 4.0",
+     "weight": 2,
+     "attributes": {
+      "spdx": "CC-BY-4.0",
+      "github": "cc-by-4.0",
+      "hf": "cc-by-4.0",
+      "openverse": "by",
+      "gbif": "CC_BY_4_0",
+      "openalex": "cc-by"
+     }
+    },
+    {
+     "id": "spdx:Unlicense",
+     "text": "unlicense",
+     "attributes": {
+      "spdx": "Unlicense",
+      "github": "unlicense",
+      "hf": "unlicense"
+     }
+    }
+   ]
+  },
+  {
+   "id": "source_type",
+   "title": "Source types (executors)",
+   "kind": "source_type",
+   "null_share": 0,
+   "source": {
+    "title": "The research_query_executor engines",
+    "licence": "MIT"
+   },
+   "values": [
+    {
+     "id": "src:github_repositories",
+     "text": "github repository search",
+     "attributes": {
+      "host": "api.github.com",
+      "access": "gh_api"
+     }
+    },
+    {
+     "id": "src:github_code",
+     "text": "github code search",
+     "attributes": {
+      "host": "api.github.com",
+      "access": "gh_api"
+     }
+    },
+    {
+     "id": "src:huggingface_models",
+     "text": "hugging face models",
+     "attributes": {
+      "host": "huggingface.co",
+      "access": "https_get"
+     }
+    },
+    {
+     "id": "src:huggingface_datasets",
+     "text": "hugging face datasets",
+     "attributes": {
+      "host": "huggingface.co",
+      "access": "https_get"
+     }
+    },
+    {
+     "id": "src:openalex_works",
+     "text": "openalex works",
+     "attributes": {
+      "host": "api.openalex.org",
+      "access": "https_get"
+     }
+    },
+    {
+     "id": "src:openverse_images",
+     "text": "openverse images",
+     "attributes": {
+      "host": "api.openverse.org",
+      "access": "https_get"
+     }
+    },
+    {
+     "id": "src:openverse_audio",
+     "text": "openverse audio",
+     "attributes": {
+      "host": "api.openverse.org",
+      "access": "https_get"
+     }
+    },
+    {
+     "id": "src:gbif_datasets",
+     "text": "gbif datasets",
+     "attributes": {
+      "host": "api.gbif.org",
+      "access": "https_get"
+     }
+    },
+    {
+     "id": "src:data_europa_datasets",
+     "text": "data.europa.eu datasets",
+     "attributes": {
+      "host": "data.europa.eu",
+      "access": "https_get"
+     }
+    },
+    {
+     "id": "src:datagov_datasets",
+     "text": "data.gov catalog",
+     "attributes": {
+      "host": "api.gsa.gov",
+      "access": "https_get"
+     }
+    },
+    {
+     "id": "src:arxiv",
+     "text": "arxiv",
+     "attributes": {
+      "host": "export.arxiv.org",
+      "access": "https_get"
+     }
+    },
+    {
+     "id": "src:npm_search",
+     "text": "npm registry search",
+     "attributes": {
+      "host": "registry.npmjs.org",
+      "access": "https_get"
+     }
+    },
+    {
+     "id": "src:pypi_search",
+     "text": "pypi search",
+     "attributes": {
+      "host": "pypi.org",
+      "access": "unsupported"
+     }
+    },
+    {
+     "id": "src:ollama_web_search",
+     "text": "ollama web search",
+     "attributes": {
+      "host": "ollama.com",
+      "access": "https_post_key"
+     }
+    }
+   ]
+  },
+  {
+   "id": "github_stars",
+   "title": "GitHub star bands",
+   "kind": "qualifier",
+   "null_share": 0,
+   "source": {
+    "title": "Baltor query multiplier qualifier vocabulary",
+    "licence": "MIT",
+    "note": "Values are the source's own documented filter values."
+   },
+   "values": [
+    {
+     "id": "stars:10",
+     "text": "popular ten",
+     "attributes": {
+      "github": "stars:>=10"
+     }
+    },
+    {
+     "id": "stars:100",
+     "text": "popular hundred",
+     "attributes": {
+      "github": "stars:>=100"
+     }
+    },
+    {
+     "id": "stars:1000",
+     "text": "popular thousand",
+     "attributes": {
+      "github": "stars:>=1000"
+     }
+    }
+   ]
+  },
+  {
+   "id": "github_match",
+   "title": "GitHub match fields",
+   "kind": "qualifier",
+   "null_share": 0,
+   "source": {
+    "title": "Baltor query multiplier qualifier vocabulary",
+    "licence": "MIT",
+    "note": "Values are the source's own documented filter values."
+   },
+   "values": [
+    {
+     "id": "in:name",
+     "text": "in name",
+     "attributes": {
+      "github": "in:name"
+     }
+    },
+    {
+     "id": "in:description",
+     "text": "in description",
+     "attributes": {
+      "github": "in:description"
+     }
+    },
+    {
+     "id": "in:readme",
+     "text": "in readme",
+     "attributes": {
+      "github": "in:readme"
+     }
+    },
+    {
+     "id": "in:topics",
+     "text": "in topics",
+     "attributes": {
+      "github": "in:topics"
+     }
+    }
+   ]
+  },
+  {
+   "id": "github_code_size",
+   "title": "GitHub code file sizes",
+   "kind": "qualifier",
+   "null_share": 0,
+   "source": {
+    "title": "Baltor query multiplier qualifier vocabulary",
+    "licence": "MIT",
+    "note": "Values are the source's own documented filter values."
+   },
+   "values": [
+    {
+     "id": "size:small",
+     "text": "small file",
+     "attributes": {
+      "github": "size:<10000"
+     }
+    },
+    {
+     "id": "size:medium",
+     "text": "medium file",
+     "attributes": {
+      "github": "size:10000..100000"
+     }
+    }
+   ]
+  },
+  {
+   "id": "openalex_type",
+   "title": "OpenAlex work types",
+   "kind": "qualifier",
+   "null_share": 0,
+   "source": {
+    "title": "Baltor query multiplier qualifier vocabulary",
+    "licence": "MIT",
+    "note": "Values are the source's own documented filter values."
+   },
+   "values": [
+    {
+     "id": "type:dataset",
+     "text": "dataset",
+     "weight": 3,
+     "attributes": {
+      "openalex": "dataset"
+     }
+    },
+    {
+     "id": "type:article",
+     "text": "article",
+     "attributes": {
+      "openalex": "article"
+     }
+    },
+    {
+     "id": "type:preprint",
+     "text": "preprint",
+     "attributes": {
+      "openalex": "preprint"
+     }
+    },
+    {
+     "id": "type:report",
+     "text": "report",
+     "attributes": {
+      "openalex": "report"
+     }
+    },
+    {
+     "id": "type:standard",
+     "text": "standard",
+     "attributes": {
+      "openalex": "standard"
+     }
+    },
+    {
+     "id": "type:book",
+     "text": "book",
+     "attributes": {
+      "openalex": "book"
+     }
+    }
+   ]
+  },
+  {
+   "id": "hf_model_task",
+   "title": "Hugging Face model pipeline tags",
+   "kind": "qualifier",
+   "null_share": 0,
+   "source": {
+    "title": "Baltor query multiplier qualifier vocabulary",
+    "licence": "MIT",
+    "note": "Values are the source's own documented filter values."
+   },
+   "values": [
+    {
+     "id": "task:text-classification",
+     "text": "text classification",
+     "attributes": {
+      "hf": "text-classification"
+     }
+    },
+    {
+     "id": "task:token-classification",
+     "text": "token classification",
+     "attributes": {
+      "hf": "token-classification"
+     }
+    },
+    {
+     "id": "task:translation",
+     "text": "translation",
+     "attributes": {
+      "hf": "translation"
+     }
+    },
+    {
+     "id": "task:summarization",
+     "text": "summarization",
+     "attributes": {
+      "hf": "summarization"
+     }
+    },
+    {
+     "id": "task:question-answering",
+     "text": "question answering",
+     "attributes": {
+      "hf": "question-answering"
+     }
+    },
+    {
+     "id": "task:text-generation",
+     "text": "text generation",
+     "attributes": {
+      "hf": "text-generation"
+     }
+    },
+    {
+     "id": "task:feature-extraction",
+     "text": "feature extraction",
+     "attributes": {
+      "hf": "feature-extraction"
+     }
+    },
+    {
+     "id": "task:sentence-similarity",
+     "text": "sentence similarity",
+     "attributes": {
+      "hf": "sentence-similarity"
+     }
+    },
+    {
+     "id": "task:zero-shot-classification",
+     "text": "zero shot classification",
+     "attributes": {
+      "hf": "zero-shot-classification"
+     }
+    },
+    {
+     "id": "task:fill-mask",
+     "text": "fill mask",
+     "attributes": {
+      "hf": "fill-mask"
+     }
+    },
+    {
+     "id": "task:image-classification",
+     "text": "image classification",
+     "attributes": {
+      "hf": "image-classification"
+     }
+    },
+    {
+     "id": "task:object-detection",
+     "text": "object detection",
+     "attributes": {
+      "hf": "object-detection"
+     }
+    },
+    {
+     "id": "task:image-segmentation",
+     "text": "image segmentation",
+     "attributes": {
+      "hf": "image-segmentation"
+     }
+    },
+    {
+     "id": "task:depth-estimation",
+     "text": "depth estimation",
+     "attributes": {
+      "hf": "depth-estimation"
+     }
+    },
+    {
+     "id": "task:image-to-text",
+     "text": "image to text",
+     "attributes": {
+      "hf": "image-to-text"
+     }
+    },
+    {
+     "id": "task:text-to-image",
+     "text": "text to image",
+     "attributes": {
+      "hf": "text-to-image"
+     }
+    },
+    {
+     "id": "task:image-to-image",
+     "text": "image to image",
+     "attributes": {
+      "hf": "image-to-image"
+     }
+    },
+    {
+     "id": "task:text-to-video",
+     "text": "text to video",
+     "attributes": {
+      "hf": "text-to-video"
+     }
+    },
+    {
+     "id": "task:automatic-speech-recognition",
+     "text": "automatic speech recognition",
+     "attributes": {
+      "hf": "automatic-speech-recognition"
+     }
+    },
+    {
+     "id": "task:text-to-speech",
+     "text": "text to speech",
+     "attributes": {
+      "hf": "text-to-speech"
+     }
+    },
+    {
+     "id": "task:audio-classification",
+     "text": "audio classification",
+     "attributes": {
+      "hf": "audio-classification"
+     }
+    },
+    {
+     "id": "task:audio-to-audio",
+     "text": "audio to audio",
+     "attributes": {
+      "hf": "audio-to-audio"
+     }
+    },
+    {
+     "id": "task:tabular-classification",
+     "text": "tabular classification",
+     "attributes": {
+      "hf": "tabular-classification"
+     }
+    },
+    {
+     "id": "task:tabular-regression",
+     "text": "tabular regression",
+     "attributes": {
+      "hf": "tabular-regression"
+     }
+    },
+    {
+     "id": "task:time-series-forecasting",
+     "text": "time series forecasting",
+     "attributes": {
+      "hf": "time-series-forecasting"
+     }
+    },
+    {
+     "id": "task:reinforcement-learning",
+     "text": "reinforcement learning",
+     "attributes": {
+      "hf": "reinforcement-learning"
+     }
+    },
+    {
+     "id": "task:robotics",
+     "text": "robotics",
+     "attributes": {
+      "hf": "robotics"
+     }
+    },
+    {
+     "id": "task:graph-ml",
+     "text": "graph ml",
+     "attributes": {
+      "hf": "graph-ml"
+     }
+    },
+    {
+     "id": "task:table-question-answering",
+     "text": "table question answering",
+     "attributes": {
+      "hf": "table-question-answering"
+     }
+    },
+    {
+     "id": "task:visual-question-answering",
+     "text": "visual question answering",
+     "attributes": {
+      "hf": "visual-question-answering"
+     }
+    },
+    {
+     "id": "task:document-question-answering",
+     "text": "document question answering",
+     "attributes": {
+      "hf": "document-question-answering"
+     }
+    },
+    {
+     "id": "task:image-feature-extraction",
+     "text": "image feature extraction",
+     "attributes": {
+      "hf": "image-feature-extraction"
+     }
+    },
+    {
+     "id": "task:mask-generation",
+     "text": "mask generation",
+     "attributes": {
+      "hf": "mask-generation"
+     }
+    },
+    {
+     "id": "task:keypoint-detection",
+     "text": "keypoint detection",
+     "attributes": {
+      "hf": "keypoint-detection"
+     }
+    },
+    {
+     "id": "task:video-classification",
+     "text": "video classification",
+     "attributes": {
+      "hf": "video-classification"
+     }
+    },
+    {
+     "id": "task:text-to-3d",
+     "text": "text to 3d",
+     "attributes": {
+      "hf": "text-to-3d"
+     }
+    },
+    {
+     "id": "task:image-to-3d",
+     "text": "image to 3d",
+     "attributes": {
+      "hf": "image-to-3d"
+     }
+    }
+   ]
+  },
+  {
+   "id": "hf_model_library",
+   "title": "Hugging Face model libraries",
+   "kind": "qualifier",
+   "null_share": 0,
+   "source": {
+    "title": "Baltor query multiplier qualifier vocabulary",
+    "licence": "MIT",
+    "note": "Values are the source's own documented filter values."
+   },
+   "values": [
+    {
+     "id": "lib:transformers",
+     "text": "transformers library",
+     "attributes": {
+      "hf": "transformers"
+     }
+    },
+    {
+     "id": "lib:diffusers",
+     "text": "diffusers library",
+     "attributes": {
+      "hf": "diffusers"
+     }
+    },
+    {
+     "id": "lib:sentence-transformers",
+     "text": "sentence-transformers library",
+     "attributes": {
+      "hf": "sentence-transformers"
+     }
+    },
+    {
+     "id": "lib:timm",
+     "text": "timm library",
+     "attributes": {
+      "hf": "timm"
+     }
+    },
+    {
+     "id": "lib:gguf",
+     "text": "gguf library",
+     "attributes": {
+      "hf": "gguf"
+     }
+    },
+    {
+     "id": "lib:onnx",
+     "text": "onnx library",
+     "attributes": {
+      "hf": "onnx"
+     }
+    },
+    {
+     "id": "lib:peft",
+     "text": "peft library",
+     "attributes": {
+      "hf": "peft"
+     }
+    },
+    {
+     "id": "lib:scikit-learn",
+     "text": "scikit-learn library",
+     "attributes": {
+      "hf": "scikit-learn"
+     }
+    },
+    {
+     "id": "lib:spacy",
+     "text": "spacy library",
+     "attributes": {
+      "hf": "spacy"
+     }
+    },
+    {
+     "id": "lib:keras",
+     "text": "keras library",
+     "attributes": {
+      "hf": "keras"
+     }
+    },
+    {
+     "id": "lib:pytorch",
+     "text": "pytorch library",
+     "attributes": {
+      "hf": "pytorch"
+     }
+    },
+    {
+     "id": "lib:tensorflow",
+     "text": "tensorflow library",
+     "attributes": {
+      "hf": "tensorflow"
+     }
+    },
+    {
+     "id": "lib:jax",
+     "text": "jax library",
+     "attributes": {
+      "hf": "jax"
+     }
+    },
+    {
+     "id": "lib:mlx",
+     "text": "mlx library",
+     "attributes": {
+      "hf": "mlx"
+     }
+    },
+    {
+     "id": "lib:openvino",
+     "text": "openvino library",
+     "attributes": {
+      "hf": "openvino"
+     }
+    },
+    {
+     "id": "lib:coreml",
+     "text": "coreml library",
+     "attributes": {
+      "hf": "coreml"
+     }
+    },
+    {
+     "id": "lib:safetensors",
+     "text": "safetensors library",
+     "attributes": {
+      "hf": "safetensors"
+     }
+    },
+    {
+     "id": "lib:ultralytics",
+     "text": "ultralytics library",
+     "attributes": {
+      "hf": "ultralytics"
+     }
+    },
+    {
+     "id": "lib:stable-baselines3",
+     "text": "stable-baselines3 library",
+     "attributes": {
+      "hf": "stable-baselines3"
+     }
+    },
+    {
+     "id": "lib:fasttext",
+     "text": "fasttext library",
+     "attributes": {
+      "hf": "fasttext"
+     }
+    },
+    {
+     "id": "lib:flair",
+     "text": "flair library",
+     "attributes": {
+      "hf": "flair"
+     }
+    },
+    {
+     "id": "lib:setfit",
+     "text": "setfit library",
+     "attributes": {
+      "hf": "setfit"
+     }
+    }
+   ]
+  },
+  {
+   "id": "hf_dataset_task",
+   "title": "Hugging Face dataset task categories",
+   "kind": "qualifier",
+   "null_share": 0,
+   "source": {
+    "title": "Baltor query multiplier qualifier vocabulary",
+    "licence": "MIT",
+    "note": "Values are the source's own documented filter values."
+   },
+   "values": [
+    {
+     "id": "dtask:text-classification",
+     "text": "text classification data",
+     "attributes": {
+      "hf": "text-classification"
+     }
+    },
+    {
+     "id": "dtask:token-classification",
+     "text": "token classification data",
+     "attributes": {
+      "hf": "token-classification"
+     }
+    },
+    {
+     "id": "dtask:translation",
+     "text": "translation data",
+     "attributes": {
+      "hf": "translation"
+     }
+    },
+    {
+     "id": "dtask:summarization",
+     "text": "summarization data",
+     "attributes": {
+      "hf": "summarization"
+     }
+    },
+    {
+     "id": "dtask:question-answering",
+     "text": "question answering data",
+     "attributes": {
+      "hf": "question-answering"
+     }
+    },
+    {
+     "id": "dtask:text-generation",
+     "text": "text generation data",
+     "attributes": {
+      "hf": "text-generation"
+     }
+    },
+    {
+     "id": "dtask:image-classification",
+     "text": "image classification data",
+     "attributes": {
+      "hf": "image-classification"
+     }
+    },
+    {
+     "id": "dtask:object-detection",
+     "text": "object detection data",
+     "attributes": {
+      "hf": "object-detection"
+     }
+    },
+    {
+     "id": "dtask:image-segmentation",
+     "text": "image segmentation data",
+     "attributes": {
+      "hf": "image-segmentation"
+     }
+    },
+    {
+     "id": "dtask:automatic-speech-recognition",
+     "text": "automatic speech recognition data",
+     "attributes": {
+      "hf": "automatic-speech-recognition"
+     }
+    },
+    {
+     "id": "dtask:text-to-speech",
+     "text": "text to speech data",
+     "attributes": {
+      "hf": "text-to-speech"
+     }
+    },
+    {
+     "id": "dtask:audio-classification",
+     "text": "audio classification data",
+     "attributes": {
+      "hf": "audio-classification"
+     }
+    },
+    {
+     "id": "dtask:tabular-classification",
+     "text": "tabular classification data",
+     "attributes": {
+      "hf": "tabular-classification"
+     }
+    },
+    {
+     "id": "dtask:tabular-regression",
+     "text": "tabular regression data",
+     "attributes": {
+      "hf": "tabular-regression"
+     }
+    },
+    {
+     "id": "dtask:time-series-forecasting",
+     "text": "time series forecasting data",
+     "attributes": {
+      "hf": "time-series-forecasting"
+     }
+    },
+    {
+     "id": "dtask:table-question-answering",
+     "text": "table question answering data",
+     "attributes": {
+      "hf": "table-question-answering"
+     }
+    },
+    {
+     "id": "dtask:visual-question-answering",
+     "text": "visual question answering data",
+     "attributes": {
+      "hf": "visual-question-answering"
+     }
+    },
+    {
+     "id": "dtask:feature-extraction",
+     "text": "feature extraction data",
+     "attributes": {
+      "hf": "feature-extraction"
+     }
+    },
+    {
+     "id": "dtask:sentence-similarity",
+     "text": "sentence similarity data",
+     "attributes": {
+      "hf": "sentence-similarity"
+     }
+    },
+    {
+     "id": "dtask:zero-shot-classification",
+     "text": "zero shot classification data",
+     "attributes": {
+      "hf": "zero-shot-classification"
+     }
+    },
+    {
+     "id": "dtask:graph-ml",
+     "text": "graph ml data",
+     "attributes": {
+      "hf": "graph-ml"
+     }
+    },
+    {
+     "id": "dtask:robotics",
+     "text": "robotics data",
+     "attributes": {
+      "hf": "robotics"
+     }
+    }
+   ]
+  },
+  {
+   "id": "hf_dataset_modality",
+   "title": "Hugging Face dataset modalities",
+   "kind": "qualifier",
+   "null_share": 0,
+   "source": {
+    "title": "Baltor query multiplier qualifier vocabulary",
+    "licence": "MIT",
+    "note": "Values are the source's own documented filter values."
+   },
+   "values": [
+    {
+     "id": "modality:tabular",
+     "text": "tabular modality",
+     "attributes": {
+      "hf": "tabular"
+     }
+    },
+    {
+     "id": "modality:text",
+     "text": "text modality",
+     "attributes": {
+      "hf": "text"
+     }
+    },
+    {
+     "id": "modality:image",
+     "text": "image modality",
+     "attributes": {
+      "hf": "image"
+     }
+    },
+    {
+     "id": "modality:audio",
+     "text": "audio modality",
+     "attributes": {
+      "hf": "audio"
+     }
+    },
+    {
+     "id": "modality:video",
+     "text": "video modality",
+     "attributes": {
+      "hf": "video"
+     }
+    },
+    {
+     "id": "modality:geospatial",
+     "text": "geospatial modality",
+     "attributes": {
+      "hf": "geospatial"
+     }
+    },
+    {
+     "id": "modality:timeseries",
+     "text": "timeseries modality",
+     "attributes": {
+      "hf": "timeseries"
+     }
+    },
+    {
+     "id": "modality:3d",
+     "text": "3d modality",
+     "attributes": {
+      "hf": "3d"
+     }
+    },
+    {
+     "id": "modality:document",
+     "text": "document modality",
+     "attributes": {
+      "hf": "document"
+     }
+    }
+   ]
+  },
+  {
+   "id": "openverse_image_category",
+   "title": "Openverse image categories",
+   "kind": "qualifier",
+   "null_share": 0,
+   "source": {
+    "title": "Baltor query multiplier qualifier vocabulary",
+    "licence": "MIT",
+    "note": "Values are the source's own documented filter values."
+   },
+   "values": [
+    {
+     "id": "ovi:photograph",
+     "text": "photograph",
+     "attributes": {
+      "openverse": "photograph"
+     }
+    },
+    {
+     "id": "ovi:illustration",
+     "text": "illustration",
+     "attributes": {
+      "openverse": "illustration"
+     }
+    },
+    {
+     "id": "ovi:digitized_artwork",
+     "text": "digitized artwork",
+     "attributes": {
+      "openverse": "digitized_artwork"
+     }
+    }
+   ]
+  },
+  {
+   "id": "openverse_audio_category",
+   "title": "Openverse audio categories",
+   "kind": "qualifier",
+   "null_share": 0,
+   "source": {
+    "title": "Baltor query multiplier qualifier vocabulary",
+    "licence": "MIT",
+    "note": "Values are the source's own documented filter values."
+   },
+   "values": [
+    {
+     "id": "ova:music",
+     "text": "music audio",
+     "attributes": {
+      "openverse": "music"
+     }
+    },
+    {
+     "id": "ova:sound_effect",
+     "text": "sound effect audio",
+     "attributes": {
+      "openverse": "sound_effect"
+     }
+    },
+    {
+     "id": "ova:podcast",
+     "text": "podcast audio",
+     "attributes": {
+      "openverse": "podcast"
+     }
+    },
+    {
+     "id": "ova:audiobook",
+     "text": "audiobook audio",
+     "attributes": {
+      "openverse": "audiobook"
+     }
+    },
+    {
+     "id": "ova:news",
+     "text": "news audio",
+     "attributes": {
+      "openverse": "news"
+     }
+    },
+    {
+     "id": "ova:pronunciation",
+     "text": "pronunciation audio",
+     "attributes": {
+      "openverse": "pronunciation"
+     }
+    }
+   ]
+  },
+  {
+   "id": "gbif_dataset_type",
+   "title": "GBIF dataset types",
+   "kind": "qualifier",
+   "null_share": 0,
+   "source": {
+    "title": "Baltor query multiplier qualifier vocabulary",
+    "licence": "MIT",
+    "note": "Values are the source's own documented filter values."
+   },
+   "values": [
+    {
+     "id": "gbif:OCCURRENCE",
+     "text": "occurrence dataset",
+     "attributes": {
+      "gbif": "OCCURRENCE"
+     }
+    },
+    {
+     "id": "gbif:CHECKLIST",
+     "text": "checklist dataset",
+     "attributes": {
+      "gbif": "CHECKLIST"
+     }
+    },
+    {
+     "id": "gbif:SAMPLING_EVENT",
+     "text": "sampling event dataset",
+     "attributes": {
+      "gbif": "SAMPLING_EVENT"
+     }
+    },
+    {
+     "id": "gbif:METADATA",
+     "text": "metadata dataset",
+     "attributes": {
+      "gbif": "METADATA"
+     }
+    }
+   ]
+  },
+  {
+   "id": "europa_theme",
+   "title": "data.europa.eu data themes",
+   "kind": "qualifier",
+   "null_share": 0,
+   "source": {
+    "title": "Baltor query multiplier qualifier vocabulary",
+    "licence": "MIT",
+    "note": "Values are the source's own documented filter values."
+   },
+   "values": [
+    {
+     "id": "theme:AGRI",
+     "text": "agriculture fisheries forestry food",
+     "attributes": {
+      "europa": "AGRI"
+     }
+    },
+    {
+     "id": "theme:ECON",
+     "text": "economy and finance",
+     "attributes": {
+      "europa": "ECON"
+     }
+    },
+    {
+     "id": "theme:EDUC",
+     "text": "education culture and sport",
+     "attributes": {
+      "europa": "EDUC"
+     }
+    },
+    {
+     "id": "theme:ENER",
+     "text": "energy theme",
+     "attributes": {
+      "europa": "ENER"
+     }
+    },
+    {
+     "id": "theme:ENVI",
+     "text": "environment theme",
+     "attributes": {
+      "europa": "ENVI"
+     }
+    },
+    {
+     "id": "theme:GOVE",
+     "text": "government and public sector",
+     "attributes": {
+      "europa": "GOVE"
+     }
+    },
+    {
+     "id": "theme:HEAL",
+     "text": "health theme",
+     "attributes": {
+      "europa": "HEAL"
+     }
+    },
+    {
+     "id": "theme:INTR",
+     "text": "international issues",
+     "attributes": {
+      "europa": "INTR"
+     }
+    },
+    {
+     "id": "theme:JUST",
+     "text": "justice legal system public safety",
+     "attributes": {
+      "europa": "JUST"
+     }
+    },
+    {
+     "id": "theme:REGI",
+     "text": "regions and cities",
+     "attributes": {
+      "europa": "REGI"
+     }
+    },
+    {
+     "id": "theme:SOCI",
+     "text": "population and society",
+     "attributes": {
+      "europa": "SOCI"
+     }
+    },
+    {
+     "id": "theme:TECH",
+     "text": "science and technology",
+     "attributes": {
+      "europa": "TECH"
+     }
+    },
+    {
+     "id": "theme:TRAN",
+     "text": "transport theme",
+     "attributes": {
+      "europa": "TRAN"
+     }
+    }
+   ]
+  },
+  {
+   "id": "arxiv_category",
+   "title": "arXiv categories",
+   "kind": "qualifier",
+   "null_share": 0,
+   "source": {
+    "title": "Baltor query multiplier qualifier vocabulary",
+    "licence": "MIT",
+    "note": "Values are the source's own documented filter values."
+   },
+   "values": [
+    {
+     "id": "cat:cs.LG",
+     "text": "cs.LG",
+     "attributes": {
+      "arxiv": "cs.LG"
+     }
+    },
+    {
+     "id": "cat:cs.CL",
+     "text": "cs.CL",
+     "attributes": {
+      "arxiv": "cs.CL"
+     }
+    },
+    {
+     "id": "cat:cs.CV",
+     "text": "cs.CV",
+     "attributes": {
+      "arxiv": "cs.CV"
+     }
+    },
+    {
+     "id": "cat:cs.AI",
+     "text": "cs.AI",
+     "attributes": {
+      "arxiv": "cs.AI"
+     }
+    },
+    {
+     "id": "cat:cs.SE",
+     "text": "cs.SE",
+     "attributes": {
+      "arxiv": "cs.SE"
+     }
+    },
+    {
+     "id": "cat:cs.DB",
+     "text": "cs.DB",
+     "attributes": {
+      "arxiv": "cs.DB"
+     }
+    },
+    {
+     "id": "cat:cs.DS",
+     "text": "cs.DS",
+     "attributes": {
+      "arxiv": "cs.DS"
+     }
+    },
+    {
+     "id": "cat:cs.GR",
+     "text": "cs.GR",
+     "attributes": {
+      "arxiv": "cs.GR"
+     }
+    },
+    {
+     "id": "cat:cs.HC",
+     "text": "cs.HC",
+     "attributes": {
+      "arxiv": "cs.HC"
+     }
+    },
+    {
+     "id": "cat:cs.IR",
+     "text": "cs.IR",
+     "attributes": {
+      "arxiv": "cs.IR"
+     }
+    },
+    {
+     "id": "cat:cs.RO",
+     "text": "cs.RO",
+     "attributes": {
+      "arxiv": "cs.RO"
+     }
+    },
+    {
+     "id": "cat:cs.CY",
+     "text": "cs.CY",
+     "attributes": {
+      "arxiv": "cs.CY"
+     }
+    },
+    {
+     "id": "cat:cs.SD",
+     "text": "cs.SD",
+     "attributes": {
+      "arxiv": "cs.SD"
+     }
+    },
+    {
+     "id": "cat:cs.MM",
+     "text": "cs.MM",
+     "attributes": {
+      "arxiv": "cs.MM"
+     }
+    },
+    {
+     "id": "cat:cs.NE",
+     "text": "cs.NE",
+     "attributes": {
+      "arxiv": "cs.NE"
+     }
+    },
+    {
+     "id": "cat:cs.PL",
+     "text": "cs.PL",
+     "attributes": {
+      "arxiv": "cs.PL"
+     }
+    },
+    {
+     "id": "cat:cs.CR",
+     "text": "cs.CR",
+     "attributes": {
+      "arxiv": "cs.CR"
+     }
+    },
+    {
+     "id": "cat:cs.DC",
+     "text": "cs.DC",
+     "attributes": {
+      "arxiv": "cs.DC"
+     }
+    },
+    {
+     "id": "cat:cs.NI",
+     "text": "cs.NI",
+     "attributes": {
+      "arxiv": "cs.NI"
+     }
+    },
+    {
+     "id": "cat:cs.MA",
+     "text": "cs.MA",
+     "attributes": {
+      "arxiv": "cs.MA"
+     }
+    },
+    {
+     "id": "cat:cs.CE",
+     "text": "cs.CE",
+     "attributes": {
+      "arxiv": "cs.CE"
+     }
+    },
+    {
+     "id": "cat:cs.CG",
+     "text": "cs.CG",
+     "attributes": {
+      "arxiv": "cs.CG"
+     }
+    },
+    {
+     "id": "cat:cs.DL",
+     "text": "cs.DL",
+     "attributes": {
+      "arxiv": "cs.DL"
+     }
+    },
+    {
+     "id": "cat:cs.SI",
+     "text": "cs.SI",
+     "attributes": {
+      "arxiv": "cs.SI"
+     }
+    },
+    {
+     "id": "cat:stat.ML",
+     "text": "stat.ML",
+     "attributes": {
+      "arxiv": "stat.ML"
+     }
+    },
+    {
+     "id": "cat:stat.AP",
+     "text": "stat.AP",
+     "attributes": {
+      "arxiv": "stat.AP"
+     }
+    },
+    {
+     "id": "cat:eess.AS",
+     "text": "eess.AS",
+     "attributes": {
+      "arxiv": "eess.AS"
+     }
+    },
+    {
+     "id": "cat:eess.IV",
+     "text": "eess.IV",
+     "attributes": {
+      "arxiv": "eess.IV"
+     }
+    },
+    {
+     "id": "cat:eess.SP",
+     "text": "eess.SP",
+     "attributes": {
+      "arxiv": "eess.SP"
+     }
+    },
+    {
+     "id": "cat:q-bio.QM",
+     "text": "q-bio.QM",
+     "attributes": {
+      "arxiv": "q-bio.QM"
+     }
+    },
+    {
+     "id": "cat:physics.ao-ph",
+     "text": "physics.ao-ph",
+     "attributes": {
+      "arxiv": "physics.ao-ph"
+     }
+    },
+    {
+     "id": "cat:physics.soc-ph",
+     "text": "physics.soc-ph",
+     "attributes": {
+      "arxiv": "physics.soc-ph"
+     }
+    },
+    {
+     "id": "cat:econ.EM",
+     "text": "econ.EM",
+     "attributes": {
+      "arxiv": "econ.EM"
+     }
+    },
+    {
+     "id": "cat:math.OC",
+     "text": "math.OC",
+     "attributes": {
+      "arxiv": "math.OC"
+     }
+    },
+    {
+     "id": "cat:q-fin.CP",
+     "text": "q-fin.CP",
+     "attributes": {
+      "arxiv": "q-fin.CP"
+     }
+    },
+    {
+     "id": "cat:astro-ph.IM",
+     "text": "astro-ph.IM",
+     "attributes": {
+      "arxiv": "astro-ph.IM"
+     }
+    }
+   ]
+  }
+ ],
+ "rules": [
+  {
+   "id": "media_formats_never_meet_public_policy_topics",
+   "if": {
+    "dimension": "file_format",
+    "attribute": "family",
+    "in": [
+     "3d",
+     "audio",
+     "image",
+     "font",
+     "cad"
+    ]
+   },
+   "require_null": [
+    "sdg_goal",
+    "sdg_target",
+    "onet_task",
+    "onet_occupation",
+    "industry"
+   ],
+   "reason": "A media or CAD file type joined to a policy or occupation phrase finds almost nothing and spends a rate-limited request; those topics meet data, schema and API formats instead."
+  },
+  {
+   "id": "one_language_wording_per_query",
+   "if": {
+    "dimension": "natural_language_endonym",
+    "attribute": "*",
+    "in": [
+     "*"
+    ]
+   },
+   "require_null": [
+    "natural_language"
+   ],
+   "reason": "A query names a language once, by its own name or by its English name, never both."
+  },
+  {
+   "id": "harness_formats_skip_geography",
+   "if": {
+    "dimension": "file_format",
+    "attribute": "family",
+    "in": [
+     "harness"
+    ]
+   },
+   "require_null": [
+    "geography"
+   ],
+   "reason": "Harness instruction files are rarely about a place; a country word excludes most of them."
+  }
+ ],
+ "provenance": [
+  "Owner direction of October 5, 2026: a long string multiplication of topics, times, geographies and languages.",
+  "Started from the reviewed research query planner of October 1 (commit bc29e8e1): its normalisation, sensitive-term screen and plan binding are reused.",
+  "Dimension sources and licences are recorded per dimension; tables outside the repository are named by a declared data root and pinned by SHA-256."
+ ]
+}

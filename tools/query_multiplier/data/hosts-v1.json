@@ -1,0 +1,91 @@
+{
+ "record_type": "research_query_host_policy/v1",
+ "version": "2026-10-05",
+ "rule": "A request goes only to the one host its executor declares. A host listed here is refused before any request, whatever an executor declares; a match covers the domain and every subdomain. Each entry keeps the reason it is excluded.",
+ "forbidden": [
+  {
+   "domain": "google.com",
+   "reason": "Google's Terms of Service do not allow automated queries of Google Search, and no Programmable Search Engine key is configured; Google Scholar forbids automated access in its robots policy."
+  },
+  {
+   "domain": "bing.com",
+   "reason": "Microsoft's Services Agreement forbids scraping Bing results, and the Bing Search APIs were retired in August 2025."
+  },
+  {
+   "domain": "duckduckgo.com",
+   "reason": "DuckDuckGo does not allow automated querying of its result pages and offers no general web search API."
+  },
+  {
+   "domain": "search.yahoo.com",
+   "reason": "Yahoo's terms forbid automated querying of its search results."
+  },
+  {
+   "domain": "yandex.com",
+   "reason": "Yandex's terms forbid automated querying of its search results without its paid API agreement."
+  },
+  {
+   "domain": "yandex.ru",
+   "reason": "Yandex's terms forbid automated querying of its search results without its paid API agreement."
+  },
+  {
+   "domain": "baidu.com",
+   "reason": "Baidu's terms forbid automated querying of its search results."
+  },
+  {
+   "domain": "openrouter.ai",
+   "reason": "OpenRouter's terms forbid reading it by script; the knowledge radar's source contracts already name it as never read."
+  },
+  {
+   "domain": "artificialanalysis.ai",
+   "reason": "Artificial Analysis forbids reading it by script; the knowledge radar's source contracts already name it as never read."
+  },
+  {
+   "domain": "reddit.com",
+   "reason": "Reddit's Data API terms require approval for commercial automated access; the radar's separate RapidAPI route is the only one used."
+  },
+  {
+   "domain": "linkedin.com",
+   "reason": "LinkedIn's User Agreement forbids scraping."
+  },
+  {
+   "domain": "x.com",
+   "reason": "X's terms forbid crawling or scraping without its written consent or API agreement."
+  },
+  {
+   "domain": "twitter.com",
+   "reason": "X's terms forbid crawling or scraping without its written consent or API agreement."
+  },
+  {
+   "domain": "facebook.com",
+   "reason": "Meta's terms forbid automated data collection without permission."
+  },
+  {
+   "domain": "instagram.com",
+   "reason": "Meta's terms forbid automated data collection without permission."
+  },
+  {
+   "domain": "stackoverflow.com",
+   "reason": "Stack Exchange content is read through its API, not its pages; no Stack Exchange engine is installed."
+  },
+  {
+   "domain": "sci-hub.se",
+   "reason": "Distributes copyrighted papers without permission."
+  },
+  {
+   "domain": "libgen.is",
+   "reason": "Distributes copyrighted books without permission."
+  }
+ ],
+ "retired": [
+  {
+   "domain": "catalog.data.gov",
+   "reason": "data.gov retired its CKAN interface; package_search answers 404, so datagov_datasets reads api.gsa.gov/technology/datagov/v4 instead."
+  }
+ ],
+ "unsupported_search": [
+  {
+   "domain": "pypi.org",
+   "reason": "PyPI has no search interface; its JSON API reads one named project and its HTML search page is not an automated interface."
+  }
+ ]
+}
