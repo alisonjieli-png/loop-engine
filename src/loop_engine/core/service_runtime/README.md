@@ -1468,10 +1468,14 @@ This section describes the source in this repository. A deployment serves it
 only after a release that includes it. The design, the prior art and the
 decision record are in
 [the catalogue release design record](../../../../docs/architecture/CATALOGUE-RELEASES-AND-HOT-SWAP-2026-09-22.md).
+Segmented releases, the search index slot and its disk engine, and the
+measurements behind them are in
+[the catalogue at scale design](../../../../docs/architecture/CATALOGUE-AT-SCALE-2026-10-05.md).
 
 A host can add, change and withdraw harness intelligence items while the
 service runs. The host file's `catalogue` section, record
-`service_catalogue_source/v1`, chooses the source:
+`service_catalogue_source/v1` or `service_catalogue_source/v2`, chooses the
+source; version 2 also names the search index engine and its index folder:
 
 ```text
 Catalogue source
@@ -1485,8 +1489,20 @@ Catalogue source
               "new_accounts_follow_release": false}
 ```
 
+```json
+"catalogue": {"record_type": "service_catalogue_source/v2", "source": "store",
+              "body_store_root": "/data/catalogue-bodies", "refresh_seconds": 60,
+              "new_accounts_follow_release": false,
+              "search_engine": "sqlite_disk_index", "index_root": "/data/catalogue-index"}
+```
+
 `refresh_seconds` is a whole number from 5 to 3600. `body_store_root` is an
-existing absolute folder on the volume, never inside the image. With
+existing absolute folder on the volume, never inside the image.
+`search_engine` is `in_memory_view_index`, the default and the only engine a
+version 1 section can name, or `sqlite_disk_index`, which needs the store
+source, an `index_root` and the `catalogue-index` extra (numpy, which the
+service image installs); an engine that cannot run on the host is refused at
+start and never replaced. With
 `new_accounts_follow_release` true, a new account follows the active release
 instead of copying `starter_identities` once, so the host file names no
 starter identities.
@@ -1498,8 +1514,13 @@ Catalogue modules
 ├── catalogue_schema.py     the attribute schema catalogue_attribute_schema/v1
 ├── catalogue_bundle.py     the release bundle an operator publishes, read with the manifest rules
 ├── catalogue_releases.py   releases, the pointer, withdrawals, the state marker, publish and rollback
+├── catalogue_segments.py   segments, release version 2, bundle version 2 and the formats an image reads
+├── catalogue_segment_publish.py  the version 2 publish: only what the store lacks is read and written
 ├── catalogue_grants.py     grants that follow the active release, service_grants/v2
 ├── catalogue_search.py     one reusable index for each view, and the authorized search over it
+├── catalogue_index_engines.py  the catalogue_search_index slot: its edge, engines and host selection
+├── catalogue_disk_index.py the disk engine: FTS5, memory-mapped hash vectors and filter lists in files
+├── catalogue_disk_view.py  a served view whose index and item descriptors are read from disk on demand
 ├── catalogue_serving.py    the served view, the refresher and the start gate
 └── catalogue_commands.py   the operator commands
 ```
@@ -1556,16 +1577,46 @@ first, so a withdrawal is refused at once with `item_withdrawn` even on a view
 built before it. An item left out of the view answers `item_unavailable`, the
 answer the service gives for any item a caller may not see.
 
+**Segmented releases.** `publish-catalogue` also reads a
+`catalogue_release_bundle/v2` bundle: a header, the release's ordered segment
+list and any subset of segments, item lines and bodies by digest. The release
+it writes, `catalogue_release/v2`, names ordered `catalogue_segment/v1`
+records instead of every item, and the publish reads and writes only the
+segments, item versions and bodies the store does not hold. The content
+digest is the version 1 digest of the same membership.
+`loop-engine service catalogue-formats` prints the versions an image reads,
+from the host file alone, so a publisher chooses a version both sides read
+before it uploads anything.
+
+**The disk index.** With `sqlite_disk_index`, a release is served from an
+index under `index_root`: `indexes/<name>/` holds one immutable index and
+`releases/<release_id>.json` names the index, or the base index and the small
+delta index, that serves the release. `loop-engine service index-catalogue
+--config HOST` builds or opens the active release's index in its own process,
+so a host start or a swap only opens it. One flock(2) lock on
+`index_root/build.lock` lets one build run at a time; the refresher does not
+wait for it, so while an operator's build runs the current view keeps serving
+and the next check opens the finished index. After a build, the indexes of
+releases no longer kept are removed: the active release's, the newest two, and
+the one before them while the newer one is under an hour old. A manifest or a
+read materializes only the grant of the identity it names, and a walk over the
+whole library (an unnarrowed list, a discover, the library page) reads the
+index in pages, so a disk view's memory does not grow with the library; those
+walks still take time in proportion to it.
+
 **The state marker.** The first catalogue write creates `catalogue_state/v1`
-with state version 1. An image refuses to start on a state version it does not
+with state version 1; a release with a community item raises it to 2 and the
+first version 2 release to 3. An image refuses to start on a state version it does not
 list, and refuses to start when the store holds catalogue state and the host
 file has no `catalogue` section. Every catalogue command needs that section, and
 an image that predates this change refuses a host file that has it. The rule for
 an image rollback follows: the rollback target must understand the current
 catalogue state version, which `loop-engine service catalogue-status` prints.
 
-The checks are `catalogue_release_checks.py`, in the folded self-test, and
-`catalogue_serving_checks.py`, on loopback inside `http_checks.self_test()`.
+The checks are `catalogue_release_checks.py`, `catalogue_segment_checks.py`
+and `catalogue_index_checks.py` (the search index slot's conformance kit), in
+the folded self-test, and `catalogue_serving_checks.py`, on loopback inside
+`http_checks.self_test()`.
 Each known-wrong case has a removed-guard control, listed in the design record.
 
 **Limits, measured locally.** On one workstation a synthetic 10,000-item release
