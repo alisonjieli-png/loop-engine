@@ -76,6 +76,21 @@ class LibraryTierContractTests(unittest.TestCase):
                     "and one independent review by a model family that did not produce it.")
         self.assertEqual(len(findings(previous)), len(required))
 
+    def test_community_meaning_places_the_sampled_review_after_publication(self):
+        # The owner, October 5, 2026: "independent review should be an ongoing processes, not something that stops
+        # publications". The row "Independent review after publication" of the decision table records it.
+        meaning = catalogue_tiers.TIER_MEANINGS["community"]
+        required = ("published first", "continues after publication", "withdraws what it rejects")
+        findings = lambda text: [phrase for phrase in required if phrase not in text]
+        self.assertEqual(findings(meaning), [])
+        self.assertIn("| Independent review after publication |", DECISIONS.read_text(encoding="utf-8"))
+        # Known wrong: the meaning before October 5, 2026, which put the sampled review before admission.
+        previous = ("Admitted under its recorded qualification rule. Standard screening uses an independent per-item "
+                    "review; generated batches use per-item automated checks and independent sampled review by a "
+                    "model family that did not produce the generator. In that route, not every item receives a "
+                    "model review.")
+        self.assertEqual(len(findings(previous)), len(required))
+
     def test_the_meaning_of_verified_states_the_first_catalogue_exception(self):
         record = json.loads(FIRST_CATALOGUE_REVIEW.read_text(encoding="utf-8"))
         producer = json.loads(FIRST_CATALOGUE_PANEL.read_text(encoding="utf-8"))["producers"]["default_producer"]["family"]

@@ -11,7 +11,8 @@ Library tier of an approved item   label       admission
 ├── verified                       Verified    independent reviewers of at least two model families
 │                                              that did not produce it; every automated check passes
 └── community                      Community   recorded per-item screening, or deterministic
-                                               per-item qualification plus independent batch sampling;
+                                               per-item qualification plus independent batch sampling,
+                                               which since October 5, 2026 runs after publication;
                                                execution is not implied by the label
 ```
 
@@ -20,6 +21,9 @@ categories. They remain in the versioned wire contract. The September 29
 generated-batch rule permits sampled review and optional execution checks;
 the legend must not describe that evidence as a model review or test run of
 every item. Per-item evidence, not the tier alone, states what actually ran.
+On October 5, 2026 the owner made independent review an ongoing process that
+never stops publication, so the legend must not place the sampled review
+before admission either.
 
 The reviewed catalogue names the tier of each approval, and the tier travels
 with the approval through the bundle, the item version record, the served view
@@ -65,8 +69,9 @@ TIER_MEANINGS = {
                     "reviewers that did not write them, and those reviews do not show two other model families. They "
                     "are reviewed again by two other model families as soon as those reviewers are available."),
     COMMUNITY_TIER: ("Admitted under its recorded qualification rule. Standard screening uses an independent "
-                     "per-item review; generated batches use per-item automated checks and independent sampled "
-                     "review by a model family that did not produce the generator. In that route, not every item "
+                     "per-item review; items admitted on per-item automated checks alone, such as generated batches, "
+                     "are published first, and an independent sampled review by a model family that did not produce "
+                     "them continues after publication and withdraws what it rejects. In that route, not every item "
                      "receives a model review. The recorded evidence states which checks ran. Approval does not "
                      "imply installation or execution, compatibility with every harness, or improved task results.")}
 #: Existing wire settings include this admission class by default and may narrow it.
