@@ -6999,21 +6999,530 @@
   ],
   "moj_opg_search_service": [
    16
+  ],
+  "camara_carrier_billing_check_out": [
+   9
+  ],
+  "camara_webrtc": [
+   9
+  ],
+  "camara_blockchain_public_address": [
+   9
+  ],
+  "camara_traffic_influence": [
+   9
+  ],
+  "camara_in_home_device_management": [
+   9
+  ],
+  "camara_sponsored_data": [
+   9
+  ],
+  "tmf620_product_catalog": [
+   9
+  ],
+  "tmf641_service_order": [
+   9
+  ],
+  "tmf622_product_order": [
+   9
+  ],
+  "tmf637_product_inventory": [
+   9
+  ],
+  "tmf629_customer_management": [
+   9
+  ],
+  "tmf621_trouble_ticket": [
+   9
+  ],
+  "tmf639_resource_inventory": [
+   9
+  ],
+  "tmf633_service_catalog": [
+   9
+  ],
+  "tmf672_user_roles_permissions": [
+   9
+  ],
+  "tmf720_digital_identity": [
+   9
+  ],
+  "tmf679_product_offering_qualification": [
+   9
+  ],
+  "tmf688_event": [
+   9
+  ],
+  "tmf640_activation_configuration": [
+   9
+  ],
+  "tmf673_geographic_address": [
+   9
+  ],
+  "tmf681_communication": [
+   9
+  ],
+  "tmf666_account_management": [
+   9
+  ],
+  "tmf635_usage_management": [
+   9
+  ],
+  "tmf638_service_inventory": [
+   9
+  ],
+  "tmf701_process_flow": [
+   9
+  ],
+  "tmf654_prepay_balance_management": [
+   9
+  ],
+  "tmf652_resource_order_management": [
+   9
+  ],
+  "tmf670_payment_methods": [
+   9
+  ],
+  "tmf663_shopping_cart": [
+   9
+  ],
+  "tmf658_loyalty_management": [
+   9
+  ],
+  "tmf671_promotion": [
+   9
+  ],
+  "tmf657_service_quality_management": [
+   9
+  ],
+  "tmf669_party_role": [
+   9
+  ],
+  "tmf678_customer_bill": [
+   9
+  ],
+  "tmf646_appointment_management": [
+   9
+  ],
+  "tmf921_intent": [
+   9
+  ],
+  "tmf642_alarm_management": [
+   9
+  ],
+  "tmf644_privacy": [
+   9
+  ],
+  "tmf685_resource_pool": [
+   9
+  ],
+  "tmf648_quote_management": [
+   9
+  ],
+  "tmf675_geographic_location": [
+   9
+  ],
+  "tmf632_party_management": [
+   9
+  ],
+  "tmf680_recommendation": [
+   9
+  ],
+  "tmf668_partnership_type": [
+   9
+  ],
+  "tmf651_agreement_management": [
+   9
+  ],
+  "tmf645_service_qualification": [
+   9
+  ],
+  "tmf676_payment_management": [
+   9
+  ],
+  "tmf931_open_gateway_onboarding": [
+   9
+  ],
+  "tmf735_cdr_transaction_management": [
+   9
+  ],
+  "tmf914_iot_service_component_suite": [
+   9
+  ],
+  "tmf628_performance": [
+   9
+  ],
+  "tmf910_self_care_component_suite": [
+   9
+  ],
+  "tmf703_entity_inventory": [
+   9
+  ],
+  "tmf908_iot_agent_and_device": [
+   9
+  ],
+  "tmf656_service_problem_management": [
+   9
+  ],
+  "tmf662_entity_catalog": [
+   9
+  ],
+  "tmf655_change_management": [
+   9
+  ],
+  "tmf674_geographic_site": [
+   9
+  ],
+  "tmf677_usage_consumption": [
+   9
+  ],
+  "tmf684_shipment_tracking": [
+   9
+  ],
+  "tmf717_customer360_management": [
+   9
+  ],
+  "tmf767_product_usage_catalog": [
+   9
+  ],
+  "tmf649_performance_thresholding": [
+   9
+  ],
+  "tmf936_operate_product_catalog": [
+   9
+  ],
+  "tmf771_resource_usage": [
+   9
+  ],
+  "tmf760_product_configuration": [
+   9
+  ],
+  "tmf738_revenue_sharing_model": [
+   9
+  ],
+  "tmf737_revenue_sharing_report": [
+   9
+  ],
+  "tmf736_revenue_sharing_algorithm": [
+   9
+  ],
+  "tmf730_software_and_compute_management": [
+   9
+  ],
+  "tmf724_incident_management": [
+   9
+  ],
+  "tmf716_resource_reservation": [
+   9
+  ],
+  "tmf702_resource_activation_management": [
+   9
+  ],
+  "tmf697_work_order": [
+   9
+  ],
+  "tmf700_shipping_order": [
+   9
+  ],
+  "tmf687_stock_management": [
+   9
+  ],
+  "tmf915_ai_management_suite": [
+   9
+  ],
+  "tmf696_risk_management": [
+   9
+  ],
+  "tmf664_resource_function_activation": [
+   9
+  ],
+  "tmf909_naas_component_suite": [
+   9
+  ],
+  "tmf699_sales": [
+   9
+  ],
+  "tmf683_party_interaction": [
+   9
+  ],
+  "mef_sonata": [
+   9
+  ],
+  "mef_legato": [
+   9
+  ],
+  "mef_presto": [
+   9
+  ],
+  "tmf634_resource_catalog": [
+   9
+  ],
+  "absmach_atom": [
+   9
+  ],
+  "absmach_fluxmq": [
+   9
+  ],
+  "api_video": [
+   9
+  ],
+  "balena": [
+   9
+  ],
+  "coinbase_staking": [
+   8,
+   9
+  ],
+  "basyx_studio": [
+   9
+  ],
+  "emqx_neuron": [
+   9
+  ],
+  "fiware_vcverifier": [
+   9,
+   11
+  ],
+  "fiware_contract_management": [
+   9,
+   11
+  ],
+  "fiware_trusted_issuers_list": [
+   9,
+   11
+  ],
+  "hivemq_edge": [
+   9
+  ],
+  "hivemq_broker": [
+   9
+  ],
+  "hyperledger_fabric": [
+   8,
+   9
+  ],
+  "juniper_paragon_insights": [
+   9
+  ],
+  "juniper_nita_webapp": [
+   9
+  ],
+  "lfedge_home_orchestration": [
+   9
+  ],
+  "mercadopago": [
+   1,
+   8,
+   9
+  ],
+  "nokia_network_as_code": [
+   9
+  ],
+  "onap_so": [
+   9
+  ],
+  "oran_dmaapmediatorproducer": [
+   9
+  ],
+  "oran_rappcatalogue": [
+   9
+  ],
+  "oran_rappmanager": [
+   9
+  ],
+  "oran_pti_o2": [
+   9
+  ],
+  "podcastindex": [
+   9
+  ],
+  "shipengine": [
+   8,
+   9
+  ],
+  "tomtom_openlr": [
+   9,
+   11
+  ],
+  "yapily": [
+   1,
+   8,
+   9
+  ],
+  "dcsa": [
+   8,
+   9
+  ],
+  "amazon_sp_api_selling": [
+   8,
+   9
+  ],
+  "amazon_sp_api_fulfillment": [
+   8,
+   9
+  ],
+  "abrasel_open_delivery": [
+   8,
+   9
+  ],
+  "nfe_io": [
+   8,
+   9
+  ],
+  "finnhub": [
+   8,
+   9
+  ],
+  "firefly_fabconnect": [
+   8,
+   9
+  ],
+  "rgb_lightning_node": [
+   8,
+   9
+  ],
+  "cyphernode": [
+   8,
+   9
+  ],
+  "blockscout": [
+   8,
+   9
+  ],
+  "deepbook": [
+   8,
+   9
+  ],
+  "extended_exchange": [
+   8,
+   9
+  ],
+  "ccxt_rest": [
+   8,
+   9
+  ],
+  "realestatecore": [
+   9,
+   11
+  ],
+  "ocpp_cs": [
+   7,
+   11
+  ],
+  "apds_parking": [
+   9,
+   11
+  ],
+  "open_insurance_opin": [
+   1,
+   8
+  ],
+  "europace_vorgaenge": [
+   8,
+   9
+  ],
+  "europace_antraege": [
+   8,
+   9
+  ],
+  "europace_passende_vorschlaege": [
+   8,
+   9
+  ],
+  "onebusaway_vehicle_positions": [
+   9,
+   11
+  ],
+  "onebusaway_sidecar": [
+   9,
+   11
+  ],
+  "onebusaway_sdk_config": [
+   9,
+   11
+  ],
+  "bang_olufsen_mozart": [
+   9
+  ],
+  "esp8266_milight_hub": [
+   9
+  ],
+  "knowgo_vehicle_simulator": [
+   9,
+   11
+  ],
+  "sdv_fleet_management": [
+   9,
+   11
+  ],
+  "openevse_emulator": [
+   7,
+   11
+  ],
+  "mlab_locate": [
+   9
+  ],
+  "koel": [
+   9
+  ],
+  "eures_job_search": [
+   8
+  ],
+  "ups": [
+   8,
+   9
+  ],
+  "tractusx_industry_core_hub": [
+   9,
+   12
+  ],
+  "tractusx_portal_backend": [
+   9,
+   12
+  ],
+  "tractusx_bpdm": [
+   9,
+   12
+  ],
+  "tractusx_identityhub": [
+   9,
+   12
+  ],
+  "tractusx_ssi_credential_issuer": [
+   9,
+   12
+  ],
+  "kucoin": [
+   8,
+   9
+  ],
+  "bian_accounts_lending": [
+   8,
+   9
+  ],
+  "bian_payments_cards": [
+   8,
+   9
+  ],
+  "bian_party_customer": [
+   8,
+   9
   ]
  },
  "sources_per_goal": {
-  "1": 71,
+  "1": 74,
   "2": 171,
   "3": 197,
   "4": 180,
   "5": 53,
   "6": 64,
-  "7": 120,
-  "8": 113,
-  "9": 691,
+  "7": 122,
+  "8": 141,
+  "9": 841,
   "10": 90,
-  "11": 118,
-  "12": 166,
+  "11": 131,
+  "12": 171,
   "13": 243,
   "14": 97,
   "15": 139,
