@@ -139,6 +139,18 @@ class RecordsTest(unittest.TestCase):
         self.assertEqual(caught.exception.code, "licence_files_missing")
 
 
+    def test_a_file_may_declare_the_media_type_the_shared_table_does_not_know(self):
+        script = PackageFile("load.gd", b"extends Node3D\n", "other", media_type="text/x-gdscript")
+        payload, _bodies = build(_package(files=[script, PackageFile(LICENCE_NAME, LICENCE, "other",
+                                                                     records.LICENCE_TEXT)]))
+        types = {entry["path"]: entry["media_type"] for entry in payload["package"]["files"]}
+        self.assertEqual((types["load.gd"], types["LICENSE"]), ("text/x-gdscript", "text/plain"))
+        # Known wrong: without the declaration the shared table calls the script binary.
+        payload, _bodies = build(_package(files=[PackageFile("load.gd", b"extends Node3D\n", "other"),
+                                                 PackageFile(LICENCE_NAME, LICENCE, "other", records.LICENCE_TEXT)]))
+        self.assertEqual({entry["path"]: entry["media_type"] for entry in payload["package"]["files"]}["load.gd"],
+                         "application/octet-stream")
+
 class ReadingTest(unittest.TestCase):
     def test_a_listed_address_with_a_space_is_encoded_before_it_is_sent(self):
         from supply_lines.reading import FactReader
@@ -194,6 +206,40 @@ class ReadingTest(unittest.TestCase):
 
         with self.assertRaises(LookupError):
             pinned_files(Reader(), "owner/repo", "f0/branch", ["table.json"])
+
+
+    def test_a_streamed_digest_keeps_no_bytes_and_follows_only_declared_redirects(self):
+        import urllib.error
+        from supply_lines.reading import FactReader, _DeclaredRedirects
+
+        class _Answer(io.BytesIO):
+            status = 200
+
+            def geturl(self):
+                return "https://cdn.example.org/file.zip"
+
+        with tempfile.TemporaryDirectory() as folder:
+            reader = FactReader(folder, ("example.org", "cdn.example.org"), github=False, sleep=lambda _s: None)
+            opened = []
+            reader._open = lambda request, timeout: opened.append(request.full_url) or _Answer(b"pinned bytes")
+            first = reader.digest("https://example.org/get?file=x.zip", published={"size": 12},
+                                  inspect=lambda path: path.read_bytes().decode())
+            self.assertEqual((first.ok, first.sha256, first.size_bytes, first.inspected, first.final_url),
+                             (True, _digest(b"pinned bytes"), 12, "pinned bytes", "https://cdn.example.org/file.zip"))
+            again = reader.digest("https://example.org/get?file=x.zip", published={"size": 12},
+                                  inspect=lambda path: path.read_bytes().decode())
+            self.assertTrue(again.cached)
+            self.assertEqual(len(opened), 1)
+            self.assertEqual(list(Path(folder, "downloads").iterdir()), [])
+            large = reader.digest("https://example.org/other", maximum_bytes=4)
+            self.assertEqual((large.ok, large.error), (False, "response_too_large"))
+            with self.assertRaises(ValueError):
+                reader.digest("https://undeclared.example.com/file")
+            handler = _DeclaredRedirects(("example.org",))
+            with self.assertRaises(urllib.error.HTTPError):
+                handler.redirect_request(None, None, 302, "Found", {}, "https://elsewhere.example.com/file")
+            with self.assertRaises(urllib.error.HTTPError):
+                handler.redirect_request(None, None, 302, "Found", {}, "http://example.org/file")
 
 
 class StoreTest(unittest.TestCase):

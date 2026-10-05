@@ -87,6 +87,9 @@ class PackageFile:
     origin: str = GENERATED
     upstream: "dict | None" = None  # {"url": ..., "sha256": ...} for a verbatim copy
     notice: bool = False  # an upstream repository's notice file (see notice_files)
+    #: The declared media type when the shared table (licensed_import.harness_kinds.media_type) does not know the
+    #: suffix: a Godot scene or script is UTF-8 text, which the table would call application/octet-stream.
+    media_type: "str | None" = None
 
 
 @dataclass
@@ -133,8 +136,8 @@ def attribution_text(package: SupplyPackage, rows) -> bytes:
     return "\n".join(lines).encode("utf-8")
 
 
-def _entry(path: str, data: bytes, role: str) -> CataloguePackageFile:
-    return CataloguePackageFile(path, bytes_digest(data), len(data), media_type(path), role)
+def _entry(path: str, data: bytes, role: str, declared: "str | None" = None) -> CataloguePackageFile:
+    return CataloguePackageFile(path, bytes_digest(data), len(data), declared or media_type(path), role)
 
 
 def build(package: SupplyPackage, *, check: bool = True) -> tuple:
@@ -155,7 +158,7 @@ def build(package: SupplyPackage, *, check: bool = True) -> tuple:
             sum(len(row.data) for row in files) > MAXIMUM_REVIEW_PACKAGE_BYTES:
         raise SupplyRecordError("package_above_review_bound", package.name)
     try:
-        entries = [_entry(row.path, row.data, row.role) for row in files]
+        entries = [_entry(row.path, row.data, row.role, row.media_type) for row in files]
     except ServiceRuntimeError as error:
         # A file path the catalogue package refuses (a segment outside letters, digits and ._@+-) refuses the
         # package by name instead of stopping the run.

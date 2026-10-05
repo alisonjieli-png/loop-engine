@@ -8,6 +8,9 @@ FactReader (one run folder)
 │   commit, a file at a commit)
 ├── github GraphQL: one fixed template here (repository facts with the latest release and each
 │   asset's published digest), never a mutation, admitted by its own budget and logged
+├── digest: a download streamed through SHA-256 and MD5 and never kept (bounded bytes, at most
+│   MAXIMUM_REDIRECTS redirects, each to a declared HTTPS host), for a file a package pins but
+│   does not carry; only its digest, size and final address are cached
 ├── pace: at least a fixed pause between two network requests (a modest rate)
 └── cache: every answer kept under the run folder by the digest of its address, so a stopped
     run starts again without reading anything twice
@@ -25,7 +28,9 @@ import re
 import time
 from dataclasses import dataclass
 from pathlib import Path
+import urllib.error
 import urllib.parse
+import urllib.request
 from urllib.parse import parse_qsl, urlsplit
 
 from loop_engine.core.library_ingestion.github_reader import (
@@ -78,6 +83,55 @@ class Fetched:
     cached: bool
 
 
+#: The redirects one streamed download may follow, each to a declared HTTPS host: ambientCG's download address
+#: answers with a redirect to its content delivery network.
+MAXIMUM_REDIRECTS = 5
+DIGEST_CHUNK_BYTES = 1024 * 1024
+DIGEST_USER_AGENT = "loop-engine library-supply (read-only; digests pinned downloads)"
+
+
+@dataclass(frozen=True)
+class Digested:
+    """What a streamed download was: its SHA-256, MD5 and size, and where the bytes came from after redirects.
+
+    The bytes themselves are never kept. ``inspected`` is what the caller's inspection of the downloaded file
+    returned before the file was removed (a zip archive's member list), cached with the digest."""
+
+    url: str
+    final_url: "str | None"
+    status: "int | None"
+    sha256: "str | None"
+    md5: "str | None"
+    size_bytes: "int | None"
+    retrieved_at: str
+    cached: bool
+    inspected: object = None
+    error: str = ""
+
+    @property
+    def ok(self) -> bool:
+        return self.status == 200 and not self.error and self.sha256 is not None
+
+
+class _DeclaredRedirects(urllib.request.HTTPRedirectHandler):
+    """Follow a redirect only to an HTTPS address on a declared host, at most MAXIMUM_REDIRECTS times."""
+
+    max_redirections = MAXIMUM_REDIRECTS
+
+    def __init__(self, hosts) -> None:
+        super().__init__()
+        self.hosts = frozenset(hosts)
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        parts = urlsplit(newurl)
+        if parts.scheme != HTTPS_SCHEME or parts.hostname not in self.hosts:
+            if fp is not None:
+                fp.close()
+            raise urllib.error.HTTPError(newurl, code, f"a redirect to an undeclared address ({parts.hostname})",
+                                         headers, None)
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+
 def split_repository(repository: str) -> tuple:
     owner, _, name = str(repository).partition("/")
     if not _OWNER.match(owner) or not _NAME.match(name) or name in (".", ".."):
@@ -106,10 +160,14 @@ class FactReader:
 
     def __init__(self, run_folder, hosts, *, maximum_requests: int = 5000, pause_seconds: float = 0.25,
                  maximum_bytes: int = 64 * 1024 * 1024, github: bool = True, sleep=time.sleep,
-                 clock=time.monotonic) -> None:
+                 clock=time.monotonic, digest_cache=None) -> None:
         self.folder = Path(run_folder)
         self.cache = self.folder / "cache"
         self.cache.mkdir(parents=True, exist_ok=True)
+        # Digests of pinned downloads may live in a folder shared by several runs: a file is downloaded again only
+        # when its publisher's size or checksum changes, since the download is the expensive read.
+        self.digest_cache = Path(digest_cache) if digest_cache else self.cache
+        self.digest_log = self.folder / "requests-digest.jsonl"
         self.https = HttpsGetTransport(hosts, RequestBudget(maximum_requests, 1800.0),
                                        RequestLog(self.folder / "requests-https.jsonl"), timeout_seconds=90.0,
                                        maximum_bytes=maximum_bytes)
@@ -252,10 +310,91 @@ class FactReader:
         return {"repository": repository, "commit": commit, "path": path, "blob": blob, "url": url,
                 "bytes": raw.body, "sha256": raw.sha256, "retrieved_at": raw.retrieved_at}
 
+    # -- streamed digests -------------------------------------------------------------------------------------------
+    def _open(self, request, timeout: float):
+        """Open one streamed download; the redirect handler admits only declared HTTPS hosts."""
+        return urllib.request.build_opener(_DeclaredRedirects(self.https.hosts)).open(request, timeout=timeout)
+
+    def digest(self, url: str, *, published: "dict | None" = None, maximum_bytes: int = 256 * 1024 * 1024,
+               inspect=None, use_cache: bool = True) -> Digested:
+        """Stream one download through SHA-256 and MD5 without keeping it, and cache what it was.
+
+        ``published`` (the publisher's size and checksum) is part of the cache key, so a file its publisher changed
+        is read again. ``inspect(path)`` reads the downloaded file before it is removed and returns JSON-ready data
+        that is cached with the digest (a zip archive's member list). Only HTTPS addresses on declared hosts are
+        read, and at most ``maximum_bytes``. ``use_cache=False`` reads again when what ``inspect`` wrote from an
+        earlier read is gone."""
+        key = "digest:" + json.dumps([url, published or {}, bool(inspect)], sort_keys=True)
+        digest_key = hashlib.sha256(key.encode("utf-8")).hexdigest()
+        meta_path = self.digest_cache / digest_key[:2] / f"{digest_key}.digest.json"
+        if use_cache and meta_path.is_file():
+            meta = json.loads(meta_path.read_text(encoding="utf-8"))
+            self.cache_hits += 1
+            return Digested(meta["url"], meta["final_url"], meta["status"], meta["sha256"], meta["md5"],
+                            meta["size_bytes"], meta["retrieved_at"], True, meta.get("inspected"))
+        parts = urlsplit(url)
+        if parts.scheme != HTTPS_SCHEME or parts.hostname not in self.https.hosts:
+            raise ValueError(f"not an HTTPS address on a declared host: {url[:120]}")
+        self._pace()
+        self.https.budget.admit()
+        started, clock = now_utc(), time.monotonic()
+        temporary = self.folder / "downloads" / f"{digest_key}.partial"
+        temporary.parent.mkdir(parents=True, exist_ok=True)
+        status = final = sha256 = md5 = size = inspected = None
+        error = ""
+        request = urllib.request.Request(urllib.parse.urlunsplit((parts.scheme, parts.netloc, urllib.parse.quote(
+            parts.path or "/", safe=PATH_SAFE), parts.query, "")), method="GET",
+            headers={"User-Agent": DIGEST_USER_AGENT, "Accept": "*/*"})
+        try:
+            with self._open(request, 120.0) as answer:
+                status, final = answer.status, answer.geturl()
+                hashes, count = (hashlib.sha256(), hashlib.md5(usedforsecurity=False)), 0
+                with open(temporary, "wb") as stream:
+                    while True:
+                        chunk = answer.read(DIGEST_CHUNK_BYTES)
+                        if not chunk:
+                            break
+                        count += len(chunk)
+                        if count > maximum_bytes:
+                            error = "response_too_large"
+                            break
+                        for value in hashes:
+                            value.update(chunk)
+                        stream.write(chunk)
+            if not error and status == 200:
+                sha256, md5, size = hashes[0].hexdigest(), hashes[1].hexdigest(), count
+                if inspect is not None:
+                    inspected = inspect(temporary)
+        except urllib.error.HTTPError as failure:
+            failure.close()
+            status, error = failure.code, f"http_error {failure.code} {failure.msg}"[:200]
+        except (urllib.error.URLError, OSError, ValueError) as failure:
+            error = type(failure).__name__
+        finally:
+            temporary.unlink(missing_ok=True)
+        retrieved = now_utc()
+        row = {"url": url[:512], "final_url": (final or "")[:512], "status": status, "sha256": sha256,
+               "size_bytes": size, "started_at": started, "elapsed_ms": round((time.monotonic() - clock) * 1000, 1),
+               "error": error}
+        with self.digest_log.open("a", encoding="utf-8") as log:
+            log.write(json.dumps(row, sort_keys=True) + "\n")
+        result = Digested(url, final, status, sha256, md5, size, retrieved, False, inspected, error)
+        if result.ok:
+            meta_path.parent.mkdir(parents=True, exist_ok=True)
+            meta_path.write_text(json.dumps({"url": url, "final_url": final, "status": status, "sha256": sha256,
+                                             "md5": md5, "size_bytes": size, "retrieved_at": retrieved,
+                                             "inspected": inspected}, sort_keys=True), encoding="utf-8")
+        return result
+
     def requests(self) -> dict:
+        digests = []
+        if self.digest_log.is_file():
+            digests = [json.loads(line) for line in self.digest_log.read_text(encoding="utf-8").splitlines() if line]
         return {"network_requests": self.network_requests, "cache_hits": self.cache_hits,
                 "https": self.https.log.summary(), "github_rest": self.rest.log.summary() if self.rest else None,
-                "github_graphql": self.graphql_log.summary()}
+                "github_graphql": self.graphql_log.summary(),
+                "digests": {"downloads": len(digests), "bytes": sum(row.get("size_bytes") or 0 for row in digests),
+                            "failed": sum(1 for row in digests if row.get("error") or row.get("status") != 200)}}
 
 
 def pinned_files(reader, repository: str, branch: str, paths) -> tuple:
