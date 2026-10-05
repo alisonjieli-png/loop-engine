@@ -168,6 +168,12 @@ PARSE_ERROR, INVALID_REQUEST, METHOD_NOT_FOUND, INVALID_PARAMS, INTERNAL_ERROR =
 FORM_MEDIA_TYPE = "application/x-www-form-urlencoded"
 #: The placement of an AWS Signature Version 4 credential: it is never sent as it is; it signs each request.
 SIGNED = "aws_sigv4"
+#: The HTTP methods behind each behaviour annotation: a tool's annotations follow from its method alone.
+READ_METHODS, DESTRUCTIVE_METHODS = ("GET", "HEAD", "OPTIONS"), ("DELETE", "PUT", "PATCH")
+IDEMPOTENT_METHODS = ("GET", "HEAD", "OPTIONS", "PUT", "DELETE")
+#: What a call record leaves out when it holds nothing there (the table stays small enough to review).
+CALL_DEFAULTS = {"reserved": [], "fixed_query": [], "fixed_headers": [], "body": None, "errors": {}, "auth": None,
+                 "auth_optional": False, "address": 0}
 #: The negotiated version, the tool calls in flight and those of them the client cancelled (by JSON of the id).
 STATE = {"version": PROTOCOL_VERSIONS[0], "running": set(), "cancelled": set()}
 _OUTPUT, _CANCELLING = threading.Lock(), threading.Lock()
@@ -207,6 +213,7 @@ def _root(call):
 def _request(call, arguments):
     """Send one call with the generated client's rules and return (status, content type, answer) of a documented
     success; raise ApiError for another status, and PermissionError or ValueError before anything is sent."""
+    call = {**CALL_DEFAULTS, **call}
     path, query = call["path"], [tuple(item) for item in call["fixed_query"]]
     headers = {"Accept": "application/json", "User-Agent": USER_AGENT, **dict(call["fixed_headers"])}
     for name, wire, location in call["parameters"]:
@@ -329,6 +336,12 @@ def call_tool(name, arguments):
     return _result(_shown(status, content_type, answer))
 
 
+def _annotations(method):
+    """The behaviour hints of the Model Context Protocol, from the HTTP method alone."""
+    return {"readOnlyHint": method in READ_METHODS, "destructiveHint": method in DESTRUCTIVE_METHODS,
+            "idempotentHint": method in IDEMPOTENT_METHODS, "openWorldHint": True}
+
+
 def list_tools(version):
     """The tools as the negotiated protocol version describes them: a title from 2025-06-18, the behaviour
     annotations from 2025-03-26 (where the title sits among them), neither in 2024-11-05."""
@@ -340,9 +353,9 @@ def list_tools(version):
             entry["title"] = tool["title"]
         entry["description"], entry["inputSchema"] = tool["description"], tool["inputSchema"]
         if age == 0:
-            entry["annotations"] = dict(tool["annotations"])
+            entry["annotations"] = _annotations(tool["call"]["method"])
         elif age == 1:
-            entry["annotations"] = {"title": tool["title"], **tool["annotations"]}
+            entry["annotations"] = {"title": tool["title"], **_annotations(tool["call"]["method"])}
         listed.append(entry)
     return listed
 

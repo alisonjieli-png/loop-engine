@@ -3226,8 +3226,9 @@ class ApiToolServersTest(unittest.TestCase):
         tools = json.loads(self.files["tools.json"])["tools"]
         self.assertEqual([tool["annotations"] for tool in tools],
                          [line.annotations(row["call"]["method"]) for row in self.table["tools"]])
-        self.assertEqual(tools, [{key: row[key] for key in ("name", "title", "description", "inputSchema",
-                                                            "annotations")} for row in self.table["tools"]])
+        self.assertEqual(tools, [line.listed(row) for row in self.table["tools"]])
+        # The table holds each tool's method once; its annotations follow from it in the server and in tools.json.
+        self.assertFalse(any("annotations" in row for row in self.table["tools"]))
 
     def test_tool_names_are_unique_short_and_safe(self):
         from supply_lines import api_tool_servers as line
@@ -3262,6 +3263,13 @@ class ApiToolServersTest(unittest.TestCase):
         functions = {node.name for node in ast.parse(self.server).body if isinstance(node, ast.FunctionDef)}
         self.assertFalse(functions & set(tools))
         self.assertIn("_request", functions)
+        # A call record leaves out what it holds nothing in, and the server fills in the same defaults.
+        from supply_lines import api_tool_servers as line
+        self.assertNotIn("reserved", get["call"])
+        module = _load_module(self.folder / "server.py", "_tool_server_defaults")
+        self.assertEqual(module.CALL_DEFAULTS, line.CALL_DEFAULTS)
+        self.assertEqual((module.READ_METHODS, module.DESTRUCTIVE_METHODS, module.IDEMPOTENT_METHODS),
+                         (line.READ_METHODS, line.DESTRUCTIVE_METHODS, line.IDEMPOTENT_METHODS))
 
     def test_every_input_schema_is_json_schema_and_accepts_the_calls_the_tests_make(self):
         import jsonschema
@@ -3530,6 +3538,9 @@ class ApiToolServersTest(unittest.TestCase):
         table = _json_constant(_package_files(payload, bodies)["server.py"].decode(), "TABLE")
         self.assertEqual([tool["name"] for tool in table["tools"]], ["create_thing", "search_things", "get_thing"])
         self.assertEqual(summary[0]["detail_level"], len(line.DETAIL_LEVELS) - 1)
+        # At the last level of detail an argument keeps its name and type but no description.
+        self.assertFalse(any("description" in schema for tool in table["tools"]
+                             for schema in tool["inputSchema"]["properties"].values()))
         self.assertEqual(sorted(row["subject"] for row in refused if row["reason"] == "tools_beyond_review_bound"),
                          ["example openapi.json DELETE /things/{thing_id}",
                           "example openapi.json PUT /things/{thing_id}#rename"])

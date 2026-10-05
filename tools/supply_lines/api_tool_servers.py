@@ -27,6 +27,7 @@ request itself would be refused is left out.
 from __future__ import annotations
 
 import base64
+import functools
 import hashlib
 import importlib.util
 import itertools
@@ -78,8 +79,13 @@ TOOL_NAME = re.compile(r"[a-zA-Z0-9_-]{1,64}")
 MAXIMUM_TOOL_NAME = 64
 READ_METHODS, DESTRUCTIVE_METHODS = ("GET", "HEAD", "OPTIONS"), ("DELETE", "PUT", "PATCH")
 IDEMPOTENT_METHODS = ("GET", "HEAD", "OPTIONS", "PUT", "DELETE")
-#: A tool's prose at each level of detail, in JSON-escaped characters: (its description, an argument's).
+#: A tool's prose at each level of detail, in JSON-escaped characters: (its description, an argument's); at the
+#: last level an argument has no description (its name and type remain) and the body none either.
 DETAIL_LEVELS = ((600, 200), (240, 80), (120, 0))
+#: What a call record leaves out when it holds nothing there; the server's runtime fills the same defaults in
+#: (tool_server_template.SERVER_RUNTIME, CALL_DEFAULTS).
+CALL_DEFAULTS = {"reserved": [], "fixed_query": [], "fixed_headers": [], "body": None, "errors": {}, "auth": None,
+                 "auth_optional": False, "address": 0}
 MAXIMUM_TITLE, MAXIMUM_MEANING, MAXIMUM_HINT = 120, 160, 120
 #: The longest escaped string a tool may hold beside its prose (an enumeration value, a path): a longer one would
 #: make a line the qualification reads as minified code, so the tool is refused instead.
@@ -142,9 +148,23 @@ def fit(text: str, limit: int) -> str:
 _SCREEN: dict = {}
 
 
-def screen(text: str) -> list:
+#: Texts up to this length are screened once and remembered: a server's error meanings and addresses repeat across
+#: its tools and its size attempts. A tool's whole text is screened once and not kept.
+REMEMBERED_SCREEN = 1000
+
+
+def screen(text: str) -> tuple:
     """The rules the qualification's publication checks would refuse this text by: the review panel's safety rules
     and secret shapes, a control or format character, and the licensed import's blocking static rules."""
+    return _screen_remembered(text) if len(text) <= REMEMBERED_SCREEN else _screen(text)
+
+
+@functools.lru_cache(maxsize=1 << 14)
+def _screen_remembered(text: str) -> tuple:
+    return _screen(text)
+
+
+def _screen(text: str) -> tuple:
     if not _SCREEN:
         from candidate_review.prechecks.safety_rules import RULES
         panel = json.loads(PANEL.read_text(encoding="utf-8"))
@@ -158,7 +178,7 @@ def screen(text: str) -> list:
         found.add("control_or_format_character")
     scanned = packaging.static_checks().scan({"tool": [("tool.json", text.encode("utf-8"))]})["tool"]
     found.update(blocking_rules(scanned))
-    return sorted(found)
+    return tuple(sorted(found))
 
 
 # -- one tool ------------------------------------------------------------------------------------------------------
@@ -273,7 +293,7 @@ def prose(planned: Planned, level: int) -> tuple:
     for parameter in operation.parameters:
         base = f"{parameter.location} parameter {parameter.wire}"
         extra = "" if planned.bare else clean_text(parameter.description)
-        arguments[parameter.python] = fit(f"{base}: {extra}", argument_limit) if (
+        arguments[parameter.python] = "" if not argument_limit else fit(f"{base}: {extra}", argument_limit) if (
             extra and escaped_length(base) + 12 < argument_limit) else base
     return title, fit(text, max(limit, MAXIMUM_TITLE)), arguments
 
@@ -282,16 +302,19 @@ def tool_entry(planned: Planned, level: int, tables: Tables) -> dict:
     """One tool of the server's table: its MCP definition and how it is called."""
     operation = planned.operation
     title, description, argument_text = prose(planned, level)
+    described = bool(DETAIL_LEVELS[level][1])
     properties, required = {}, []
     for parameter in operation.parameters:
-        properties[parameter.python] = {"description": argument_text[parameter.python], **parameter.check}
+        text = argument_text[parameter.python]
+        properties[parameter.python] = {**({"description": text} if text else {}), **parameter.check}
         if parameter.required:
             required.append(parameter.python)
     body = None
     if operation.body_schema is not None:
         form = operation.body_media == FORM_MEDIA_TYPE
-        properties["body"] = {"description": "The form fields of the request body, sent URL-encoded" if form else
-                              f"The JSON request body, sent as {operation.body_media}", **(operation.body_check or {})}
+        text = "The form fields of the request body, sent URL-encoded" if form else \
+            f"The JSON request body, sent as {operation.body_media}"
+        properties["body"] = {**({"description": text} if described else {}), **(operation.body_check or {})}
         if operation.body_required:
             required.append("body")
         body = {"media": operation.body_media,
@@ -308,14 +331,21 @@ def tool_entry(planned: Planned, level: int, tables: Tables) -> dict:
             "errors": {str(code): tables.meaning(text) for code, text in sorted(operation.errors.items())},
             "auth": tables.auth(operation.auth), "auth_optional": operation.auth_optional,
             "address": tables.address(operation)}
+    # The annotations follow from the method, which the server reads from the call: the table holds them once.
     return {"name": planned.name, "title": title, "description": description, "inputSchema": schema,
-            "annotations": annotations(operation.method), "call": call}
+            "call": {key: value for key, value in call.items() if key not in CALL_DEFAULTS
+                     or value != CALL_DEFAULTS[key]}}
+
+
+def call_of(entry: dict) -> dict:
+    """A table entry's call record with the defaults it leaves out filled in, as the server reads it."""
+    return {**CALL_DEFAULTS, **entry["call"]}
 
 
 def listed(entry: dict) -> dict:
     """A tool as tools/list describes it at protocol version 2025-06-18, and as tools.json holds it."""
     return {"name": entry["name"], "title": entry["title"], "description": entry["description"],
-            "inputSchema": entry["inputSchema"], "annotations": entry["annotations"]}
+            "inputSchema": entry["inputSchema"], "annotations": annotations(entry["call"]["method"])}
 
 
 def _strings(value):
@@ -350,7 +380,7 @@ def schema_problems(entry: dict) -> list:
 def screened_text(entry: dict, tables: Tables) -> str:
     """Everything of one tool the files will show: its table entry, the shared rows it uses, and its prose as a
     README shows it."""
-    call = entry["call"]
+    call = call_of(entry)
     used = [tables.addresses[call["address"]], tables.auths[call["auth"]] if call["auth"] is not None else None,
             [tables.meanings[index] for index in call["errors"].values()]]
     return "\n".join([template.render_json([entry, used]), entry["title"], entry["description"]])
@@ -458,12 +488,12 @@ def test_data(plans, entries, tables: Tables, key: str, base_url_variable: str) 
     passed, named = credential_variables(plans)
     pairs = list(zip(plans, entries))
     unaddressed = next(((planned, entry) for planned, entry in pairs
-                        if not (tables.addresses[entry["call"]["address"]]["base_url"]
-                                or tables.addresses[entry["call"]["address"]]["template"])), None)
+                        if not (tables.addresses[call_of(entry)["address"]]["base_url"]
+                                or tables.addresses[call_of(entry)["address"]]["template"])), None)
     root = SELF_HOSTED_TEST_ROOT if unaddressed else None
 
     def request(planned, entry, arguments):
-        return expected_request(planned.operation, arguments, tables.addresses[entry["call"]["address"]], root)
+        return expected_request(planned.operation, arguments, tables.addresses[call_of(entry)["address"]], root)
 
     calls = []
     for planned, entry in pairs:
@@ -521,7 +551,7 @@ def test_data(plans, entries, tables: Tables, key: str, base_url_variable: str) 
         if _refuses(operation.body_check, without):
             body_without = without
     status = min(operation.errors) if operation.errors else 500
-    index = entry["call"]["errors"].get(str(status))
+    index = call_of(entry)["errors"].get(str(status))
     wrong = {"tool": planned.name, "arguments": planned.minimal, "method": operation.method,
              "required": required[0].python if required else ("body" if "body" in planned.minimal else None),
              "typed": typed, "wrong_value": wrong_value, "body_without": body_without, "error_status": status,
@@ -651,7 +681,7 @@ def readme(facts: ServerFacts, entries: list, tables: Tables, tests_described: s
                       f"sends it as each operation declares, in {' or '.join(places)}. It is never written to a file. "
                       "Each connection file passes the variable on by name, so set it in the environment the "
                       "harness starts from.")
-        optional = sum(1 for entry in entries if entry["call"]["auth"] is not None and entry["call"]["auth_optional"])
+        optional = sum(1 for entry in entries if call_of(entry)["auth"] is not None and call_of(entry)["auth_optional"])
         if optional:
             credential += f" {optional} of the tools also work without it."
     else:
