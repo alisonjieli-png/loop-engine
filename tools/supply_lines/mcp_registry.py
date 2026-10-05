@@ -85,7 +85,10 @@ def _has_package(server: dict) -> bool:
 
 
 class _SupplyRegistrySource(McpOfficialRegistrySource):
-    """The registry engine, reading the upstream licence only for entries this line can package."""
+    """The registry engine, reading the upstream licence only for entries this line can package. It counts the
+    packageable entries whose licence went unread because the run's lookup allowance was spent."""
+
+    unchecked = 0
 
     def _link_evidence(self, server: dict) -> "dict | None":
         if not _has_package(server):
@@ -93,7 +96,10 @@ class _SupplyRegistrySource(McpOfficialRegistrySource):
                     "decision": "link_only", "reason": "upstream_licence_not_checked",
                     "detector": "GitHub licence interface for the upstream code repository",
                     "repository_licence": None, "governing_file": None, "file_level_notices": []}
-        return super()._link_evidence(server)
+        evidence = super()._link_evidence(server)
+        if evidence is not None and evidence["reason"] == "upstream_licence_not_checked":
+            self.unchecked += 1
+        return evidence
 
 
 def read_registry(reader, quarantine_folder: Path, *, maximum_entries: int, maximum_lookups: int) -> tuple:
@@ -116,7 +122,9 @@ def read_registry(reader, quarantine_folder: Path, *, maximum_entries: int, maxi
     refusals = [refusal(MCP_REGISTRY, row["reason"] if row["reason"] in REFUSAL_REASONS[MCP_REGISTRY]
                         else "entry_unreadable", (row.get("source_ref") or {}).get("repository", ""), row["detail"])
                 for row in batch["refusals"]]
-    return found, refusals, batch["complete"], quarantine
+    # A pass that left licences unread for want of lookups has not decided those entries: it is not complete, so
+    # the store keeps what an earlier pass decided instead of withdrawing it.
+    return found, refusals, batch["complete"] and not engine.unchecked, quarantine
 
 
 def package_metadata(reader, package: dict) -> dict:

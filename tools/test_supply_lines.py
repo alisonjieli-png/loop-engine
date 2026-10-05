@@ -146,6 +146,18 @@ class ReadingTest(unittest.TestCase):
         self.assertEqual(reader.https.asked, [("api.apis.guru", "/v2/specs/azure.com/luis/v2.0%20preview/swagger.json", {}),
                                               ("api.apis.guru", "/v2/specs/a%20b/swagger.json", {"x": "1"})])
 
+    def test_a_packageable_entry_left_unread_by_the_lookup_allowance_is_counted(self):
+        from supply_lines.mcp_registry import _SupplyRegistrySource
+
+        server = {"repository": {"url": "https://github.com/owner/server"},
+                  "packages": [{"registryType": "npm", "transport": {"type": "stdio"}}]}
+        spent = _SupplyRegistrySource(None, None, github_reader=object(), maximum_upstream_lookups=0)
+        self.assertEqual(spent._link_evidence(server)["reason"], "upstream_licence_not_checked")
+        self.assertEqual(spent.unchecked, 1)
+        remote = _SupplyRegistrySource(None, None, github_reader=object(), maximum_upstream_lookups=0)
+        remote._link_evidence({**server, "packages": []})
+        self.assertEqual(remote.unchecked, 0)
+
     def test_a_branch_name_the_reader_refuses_is_an_unreadable_source(self):
         from loop_engine.core.library_ingestion.github_reader import ReadOnlyRequestRefused
         from supply_lines.reading import pinned_files
