@@ -1,7 +1,7 @@
 """Pin a reviewed revision and install the multiplier's systemd user timer; enabling it is a separate flag.
 
 ```text
-install_schedule.py --revision <commit> [--minutes 40] [--on-calendar '*-*-* *:07:00'] [--enable]
+install_schedule.py --revision <commit> [--minutes 20] [--on-calendar '*-*-* *:07:00'] [--enable]
 ├── ~/baltor-scheduled/query-multiplier-<commit12>/   src and tools of that commit (git archive), read-only,
 │                                                      REVISION holds the full commit (the radar's schedule
 │                                                      pins ~/baltor-scheduled/radar-<commit> the same way)
@@ -10,7 +10,8 @@ install_schedule.py --revision <commit> [--minutes 40] [--on-calendar '*-*-* *:0
 │       MemorySwapMax=256M, CPUQuota=50%, Nice=10, idle I/O; TimeoutStartSec above the pass length;
 │       ExecStopPost records systemd's own verdict (a timeout or the memory cap) beside the status file
 └── ~/.config/systemd/user/baltor-query-multiplier.timer
-        OnCalendar (hourly by default), Persistent, RandomizedDelaySec=120
+        OnCalendar (hourly by default), Persistent, RandomizedDelaySec=120; 20-minute passes, so about
+        two gigabytes of compressed evidence a day at the measured 35 KB a response
 ```
 
 Without --enable nothing is started: the operator runs one complete manual pass of the pinned checkout first
@@ -93,7 +94,7 @@ def pin(revision: str) -> Path:
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--revision", default="HEAD")
-    parser.add_argument("--minutes", type=int, default=40)
+    parser.add_argument("--minutes", type=int, default=20)
     parser.add_argument("--on-calendar", default="*-*-* *:07:00")
     parser.add_argument("--root", default=str(Path.home() / "baltor-library" / "query-runs"))
     parser.add_argument("--enable", action="store_true", help="enable and start the timer (after one complete manual pass)")

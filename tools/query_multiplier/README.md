@@ -280,9 +280,14 @@ commit's `src` and `tools` under `~/baltor-scheduled/query-multiplier-<commit12>
 (read-only; the radar's schedule pins `~/baltor-scheduled/radar-<commit>` the same
 way) and writes the user units `baltor-query-multiplier.service` (oneshot,
 `MemoryMax=4G`, `CPUQuota=50%`, idle I/O, running `scheduled-run.sh` of the pinned
-checkout) and `baltor-query-multiplier.timer` (hourly at minute 7, 40-minute
+checkout) and `baltor-query-multiplier.timer` (hourly at minute 7, 20-minute
 passes). Add `--enable` only after one complete manual pass of that pinned
-checkout. The pass's live status is `<root>/state/status.json`; `ExecStopPost`
+checkout. Why 20 minutes: a stored response averaged about 35 KB compressed on
+the first pass, so continuous probing would add five to six gigabytes of evidence
+a day on a disk with under 200 GB free; 20 minutes an hour keeps it near two, and
+every pass stops before the evidence disk falls under 40 GiB free
+(`--minimum-free-gib`). Longer passes wait for an evidence offload or retention
+decision. The pass's live status is `<root>/state/status.json`; `ExecStopPost`
 writes systemd's own verdict to `<root>/state/last-unit-result.json` and appends
 it to `unit-history.jsonl`, so a pass killed by a timeout or the memory cap still
 leaves a record.

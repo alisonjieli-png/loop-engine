@@ -19,7 +19,7 @@ if [ "${1:-}" = "--finish" ]; then
   printf '%s\n' "$line" >> "$root/state/unit-history.jsonl"
   exit 0
 fi
-minutes="${QUERY_MULTIPLIER_MINUTES:-40}"
+minutes="${QUERY_MULTIPLIER_MINUTES:-20}"
 python="${QUERY_MULTIPLIER_PYTHON:-$HOME/loop-engine/.venv/bin/python}"
 if [ -z "${OLLAMA_API_KEY:-}" ] && [ -f "$HOME/.bashrc" ]; then
   # The owner's existing Ollama key is exported in ~/.bashrc, which returns early for shells that are not

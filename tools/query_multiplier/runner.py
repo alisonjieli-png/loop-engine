@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import json
 import random
+import shutil
 import signal
 import threading
 import time
@@ -39,6 +40,9 @@ SEARCH_RESERVE = {"github_repositories": ("search", 6), "github_code": ("code_se
 FOLLOW_UNIQUE_SHARE = 0.5
 #: Every tenth pick of a lane looks for an executed query whose refresh period has passed.
 REFRESH_EVERY = 10
+#: A pass stops before the disk holding its evidence falls under this much free space: a response that cannot be
+#: stored executes nothing, and this machine has filled its disk before (September 27, 2026).
+MINIMUM_FREE_BYTES = 40 * 1024 ** 3
 
 
 class ProductStream:
@@ -157,6 +161,8 @@ class Lane:
     # -------------------------------------------------------------- waiting
     def wait_reason(self):
         run, executor = self.run, self.executor
+        if shutil.disk_usage(run.ledger.root).free < run.minimum_free_bytes:
+            return "disk_space_low"
         if executor.daily_ceiling is not None:
             requests, cost = run.ledger.usage(executor.executor_id)
             spent = cost if executor.cost_unit != "request" else requests
@@ -185,7 +191,7 @@ class Lane:
             reason = self.wait_reason()
             if reason:
                 self.stats["waits:" + reason] += 1
-                if reason == "daily_ceiling_reached":
+                if reason in ("daily_ceiling_reached", "disk_space_low"):
                     self.done_reason = reason
                     return
                 run.stop.wait(20 if reason.startswith("github") else 60)
@@ -511,8 +517,9 @@ def learned_weights(ledger: Ledger, streams) -> dict:
 class Run:
     def __init__(self, *, library, products, executors, transport, ledger: Ledger, minutes: float,
                  only=None, imported_weight: int = 0, run_id: "str | None" = None, resolve_licences: bool = True,
-                 learn: bool = True):
+                 learn: bool = True, minimum_free_bytes: int = MINIMUM_FREE_BYTES):
         self.library, self.executors, self.transport, self.ledger = library, executors, transport, ledger
+        self.minimum_free_bytes = minimum_free_bytes
         self.run_id = run_id or datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ") + "-" + uuid4().hex[:6]
         self.started = stamp()
         self.deadline = time.time() + minutes * 60

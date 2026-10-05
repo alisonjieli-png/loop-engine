@@ -412,6 +412,29 @@ class ExecutionTests(Temporary):
         self.assertEqual(ledger.query_state("q1")[0], "planned")
 
 
+class DiskGuardTests(Temporary):
+    def lane(self, minimum_free_bytes):
+        library = small_library()
+        executors = registry()
+        [built] = read_plan(plan(product("repos", "github_repositories", [("sdg_target", None)])), library, executors)
+        transport = FakeTransport(repo_rows("a/b"))
+        run = Run(library=library, products=[built], executors=executors, transport=transport, ledger=self.ledger(),
+                  minutes=1, resolve_licences=False, minimum_free_bytes=minimum_free_bytes)
+        run.gate = {"core": {"remaining": 5000}, "search": {"remaining": 30}, "code_search": {"remaining": 10}}
+        run.gate_read = 10 ** 12  # no allowance read in a unit test
+        return run, run.lanes[0], transport
+
+    def test_a_pass_stops_before_the_evidence_disk_runs_out(self):
+        run, lane, transport = self.lane(10 ** 18)  # more free space than any disk has
+        lane.loop()
+        self.assertEqual(lane.done_reason, "disk_space_low")
+        self.assertEqual(transport.sent, [])
+
+    def test_known_wrong_with_room_on_the_disk_the_lane_sends(self):
+        run, lane, transport = self.lane(0)
+        self.assertEqual(lane.wait_reason(), "")
+
+
 class LaneRefusalTests(Temporary):
     class Opener:
         def __init__(self):

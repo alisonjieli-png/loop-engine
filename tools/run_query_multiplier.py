@@ -84,7 +84,8 @@ def command_run(options) -> dict:
     transport = Transport(load_policy())
     run = Run(library=library, products=products, executors=executors, transport=transport, ledger=ledger,
               minutes=options.minutes, only=set(options.only) if options.only else None,
-              imported_weight=plan.get("imported_plans_weight", 0) if not options.no_imported else 0)
+              imported_weight=plan.get("imported_plans_weight", 0) if not options.no_imported else 0,
+              minimum_free_bytes=int(options.minimum_free_gib * 1024 ** 3))
     started = time.time()
     final = run.execute()
     summary = report(ledger, executors, run_id=run.run_id, products=products)
@@ -154,6 +155,8 @@ def main(argv=None) -> int:
     run.add_argument("--minutes", type=float, default=30.0)
     run.add_argument("--only", action="append", help="executor id; repeat to select several")
     run.add_argument("--no-imported", action="store_true")
+    run.add_argument("--minimum-free-gib", type=float, default=40.0,
+                     help="stop before the evidence disk has less free space than this")
     run.add_argument("--authorize-network-reads", action="store_true")
     run.add_argument("--authorize-local-writes", action="store_true")
     imported = sub.choices["import"]
