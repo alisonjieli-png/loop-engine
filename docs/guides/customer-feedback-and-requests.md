@@ -224,9 +224,12 @@ An uncertain outcome needs inspection or the exact same request, not a new
 identity and an automatic retry.
 
 `GET /api/v1/admin/work?id=...` reads one complete report. Without `id`, use
-`day` in UTC and optional `task_id` to list up to one hundred matching reports.
-The result's `complete` flag identifies truncation. Narrow the task/day when
-needed. The first profile permits sixteen files, 64 KiB per file and 256 KiB
+`day` in UTC and optional `task_id` to list matching reports, newest first,
+one hundred to a page. Ask for `page` 2, 3 and so on while `has_next` is true;
+`matches` counts the reports listed across all pages. A listing reads at most
+1,000 matching reports, the query bound of the stored contract, and `complete`
+is false when it reaches that bound or names an unreadable report. The first
+profile permits sixteen files, 64 KiB per file and 256 KiB
 of file content per submission. Private HTTP request and response limits are
 separately configurable, defaulting to 512 KiB and one MiB. Ordinary HTTP and
 MCP retain their existing limits; an encoded request must fit its transport.

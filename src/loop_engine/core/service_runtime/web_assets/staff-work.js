@@ -2,14 +2,15 @@
 window.BaltorStaffWork = (() => {
   function create({request, element, current}) {
     const $ = id => document.getElementById(id), endpoint = "/api/v1/admin/work";
-    let epoch = 0, sequence = 0, tasks = [], pending = null, saving = false;
+    let epoch = 0, sequence = 0, tasks = [], pending = null, saving = false, shown = null;
     const status = text => { $("dot-work-status").textContent = text; };
     const permitted = () => current().connected && current().allowed;
     function reset() {
-      epoch++; sequence++; tasks = []; pending = null; saving = false;
+      epoch++; sequence++; tasks = []; pending = null; saving = false; shown = null;
       $("dot-work").hidden = true; $("dot-work-form").reset();
       $("dot-work-task").replaceChildren(); $("dot-work-list").replaceChildren();
       $("dot-work-detail").replaceChildren(); $("dot-work-list-note").textContent = "";
+      $("dot-work-newer").hidden = true; $("dot-work-older").hidden = true;
       $("dot-work-submit").disabled = true; status("");
     }
     async function briefs(mine) {
@@ -28,25 +29,33 @@ window.BaltorStaffWork = (() => {
       }
       $("dot-work-submit").disabled = false;
     }
-    async function list() {
+    // Refresh lists page 1 of the day and filter typed; Older and Newer page
+    // the listing on screen, never a day or filter typed after it.
+    async function list(page = 1, of = null) {
       const mine = epoch, call = ++sequence;
       if (!permitted()) return;
-      $("dot-work-list").replaceChildren();
-      const query = new URLSearchParams({day:$("dot-work-day").value});
-      if ($("dot-work-filter").value.trim()) query.set("task_id", $("dot-work-filter").value.trim());
+      $("dot-work-list").replaceChildren(); $("dot-work-list-note").textContent = "";
+      $("dot-work-newer").hidden = true; $("dot-work-older").hidden = true;
+      const filter = of || {day:$("dot-work-day").value, task_id:$("dot-work-filter").value.trim()};
+      const query = new URLSearchParams({day:filter.day, page:String(page)});
+      if (filter.task_id) query.set("task_id", filter.task_id);
       const result = await request(endpoint + "?" + query);
       if (mine !== epoch || call !== sequence || !permitted()) return;
-      if (result.record_type !== "service_staff_work_result/v1" || !Array.isArray(result.items)) throw Error("The saved reports could not be read.");
+      if (result.record_type !== "service_staff_work_result/v1" || !Array.isArray(result.items) || result.page !== page
+          || !Number.isInteger(result.matches) || !Number.isInteger(result.limit)) throw Error("The saved reports could not be read.");
+      shown = {...filter, page};
       for (const row of result.items) {
         const item = element("article", "", "admin-row"), button = element("button", row.title, "quiet");
         button.type = "button"; button.addEventListener("click", () => detail(row.id).catch(showError));
         item.append(button, element("p", row.kind.replaceAll("_", " ") + " · " + row.task_id + " · " + row.file_count + " files", "caption"));
         $("dot-work-list").append(item);
       }
-      if (!result.items.length) $("dot-work-list").append(element("p", "No report for this day and task.", "caption"));
-      const unreadable = Array.isArray(result.unreadable) ? result.unreadable.length : 0;
-      $("dot-work-list-note").textContent = unreadable ? unreadable + " saved report(s) could not be read and are left out."
-        : result.complete ? "All matching reports are shown." : "First 100 matches shown. Narrow the task filter to see a smaller set.";
+      if (!result.items.length) $("dot-work-list").append(element("p", result.matches ? "No reports on this page." : "No report for this day and task.", "caption"));
+      const first = (page - 1) * result.limit, unreadable = Array.isArray(result.unreadable) ? result.unreadable.length : 0;
+      $("dot-work-list-note").textContent = ((result.items.length ? "Reports " + (first + 1) + " to " + (first + result.items.length) + " of " + result.matches + ", newest first." : "")
+        + (unreadable ? " " + unreadable + " saved report(s) could not be read and are left out." : "")
+        + (!result.complete && !unreadable ? " Some matching reports may not be listed. Narrow the task filter to see a smaller set." : "")).trim();
+      $("dot-work-newer").hidden = page <= 1; $("dot-work-older").hidden = result.has_next !== true;
     }
     async function detail(id) {
       const mine = epoch, call = ++sequence;
@@ -98,6 +107,8 @@ window.BaltorStaffWork = (() => {
       catch (error) { if (mine === epoch) showError(error); }
     }
     $("dot-work-refresh").addEventListener("click", () => list().catch(showError));
+    $("dot-work-older").addEventListener("click", () => shown && list(shown.page + 1, shown).catch(showError));
+    $("dot-work-newer").addEventListener("click", () => shown && list(Math.max(1, shown.page - 1), shown).catch(showError));
     $("dot-work-new").addEventListener("click", () => {
       if (saving) return;
       pending = null; $("dot-work-reply").value = ""; $("dot-work-message").value = "";

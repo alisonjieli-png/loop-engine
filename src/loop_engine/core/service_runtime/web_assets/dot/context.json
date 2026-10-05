@@ -1,8 +1,8 @@
 {
   "record_type": "baltor_dot_brief/v1",
   "title": "Dot working context",
-  "updated_at": "2026-10-05T01:02:00Z",
-  "review_after": "2026-10-08T01:02:00Z",
+  "updated_at": "2026-10-05T15:04:00Z",
+  "review_after": "2026-10-08T15:04:00Z",
   "summary": "Pick up useful research, reproduce customer problems and prepare reusable components for Baltor. Prioritize complete customer tasks, free Public Good materials and editable creative work.",
   "sections": [
     {"title": "Start each visit here", "items": [
@@ -33,7 +33,7 @@
       "The work log also exposes GET/POST /api/v1/admin/work and the staff_work_read and staff_work_submit MCP tools to existing superadmin browser or operator authority. Ordinary OAuth delegation does not inherit staff permission. Use your available browser route rather than transferring session credentials into a prompt.",
       "A submission binds request_id, brief, brief_revision, task_id, kind, title, message, links, files and reply_to. HTTP writes also name record_type service_staff_work_request/v1. Take brief_revision from the JSON brief's ETag. Reuse the exact request identity and content after an uncertain outcome; inspect the saved record before starting a different request.",
       "Current file limits are 16 UTF-8 files, 64 KiB each and 256 KiB total. The private HTTP route has separately configured transport limits; MCP retains the ordinary protocol envelope limits. Split larger work into useful bounded submissions and keep large native/binary artifacts in an authorized location with a source link. Credentials and unrelated personal data do not belong in reports.",
-      "List reports by UTC day and optional task_id; the response says whether the first 100 matches are complete. Use the returned exact report ID to read attachments and their hashes. A saved report, peer test, review comment and independently admitted library component are different states."
+      "List reports by UTC day and optional task_id, newest first, one hundred to a page; ask for page 2, 3 and so on while has_next is true. complete is false when a listing reaches its bound of 1,000 matching reports or names a report it could not read. Use the returned exact report ID to read attachments and their hashes. A saved report, peer test, review comment and independently admitted library component are different states."
     ]},
     {"title": "Return a useful handoff", "items": [
       "Deliver source-linked findings, runnable files where authorized, exact versions, expected and actual results, first failures and recovery steps. Include the output location and hashes of files actually saved.",

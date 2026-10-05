@@ -82,7 +82,8 @@ def request_schema():
 
 def read_schema():
     return {"type": "object", "additionalProperties": False,
-            "properties": {key: {"type": "string"} for key in ("id", "day", "task_id")}}
+            "properties": {**{key: {"type": "string"} for key in ("id", "day", "task_id")},
+                           "page": {"type": "string", "pattern": "^[1-9][0-9]{0,4}$"}}}
 
 
 def _fields(value):
@@ -252,7 +253,7 @@ def submit(runtime, authorize, actor, fields):
 
 
 def read(runtime, authorize, fields):
-    if not isinstance(fields, dict) or set(fields) - {"id", "day", "task_id"}:
+    if not isinstance(fields, dict) or set(fields) - {"id", "day", "task_id", "page"}:
         raise ServiceRuntimeError("invalid_request")
     services = _services(runtime, authorize)
     if "id" in fields:
@@ -269,12 +270,21 @@ def read(runtime, authorize, fields):
             raise ValueError()
     except ValueError:
         raise ServiceRuntimeError("invalid_work_day") from None
+    page = fields.get("page", "1")
+    if not isinstance(page, str) or not re.fullmatch(r"[1-9][0-9]{0,4}", page):
+        raise ServiceRuntimeError("invalid_work_page")
+    page = int(page)
     filters = {"day": day}
     if "task_id" in fields:
         filters["task_id"] = identifier(fields["task_id"], "task identity")
-    records = services[0].execute(RecordOperationRequest("query", filters_json=canonical_json(filters), limit=LIST_LIMIT+1)).records
+    # The store returns rows in no promised order and the head row holds no
+    # time, so every matching report up to the stored contract's query bound
+    # is read and sorted by submission before a page is cut. Past that bound
+    # the store decides which rows are left out, so complete is then false.
+    query = services[0]
+    records = query.execute(RecordOperationRequest("query", filters_json=canonical_json(filters))).records
     items, unreadable = [], []
-    for row in records[:LIST_LIMIT]:
+    for row in records:
         # One report no current contract can read is named, not fatal: the
         # rest of the day stays listed and the listing says it is incomplete.
         try:
@@ -289,6 +299,8 @@ def read(runtime, authorize, fields):
                       **{k: doc[k] for k in ("title", "task_id", "brief", "kind", "day", "submitted_at", "reply_to")},
                       "file_count": len(doc["files"])})
     items.sort(key=lambda item: (item["submitted_at"], item["id"]), reverse=True)
-    return {"record_type": RESULT_VERSION, "day": day, "items": items, "unreadable": sorted(unreadable),
-            "complete": len(records) <= LIST_LIMIT and not unreadable, "limit": LIST_LIMIT,
-            "promotes_intelligence": False}
+    start = (page - 1) * LIST_LIMIT
+    return {"record_type": RESULT_VERSION, "day": day, "items": items[start:start + LIST_LIMIT], "page": page,
+            "has_next": start + LIST_LIMIT < len(items), "matches": len(items), "unreadable": sorted(unreadable),
+            "complete": len(records) < query.policy.maximum_query_results and not unreadable,
+            "limit": LIST_LIMIT, "promotes_intelligence": False}

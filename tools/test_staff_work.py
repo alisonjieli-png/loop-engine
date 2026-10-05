@@ -5,6 +5,7 @@ from hashlib import sha256
 from pathlib import Path
 import asyncio
 import json
+import subprocess
 import tempfile
 import unittest
 from unittest import mock
@@ -16,6 +17,55 @@ from loop_engine.core.service_runtime.feedback_checks import prepared
 from loop_engine.core.service_runtime.http_test_fixtures import running_http
 from loop_engine.core.service_runtime.protocol_checks import _protocol_client
 from loop_engine.core.service_runtime.records import ServiceCommitUnknown, ServiceRuntimeError
+
+ROOT = Path(__file__).resolve().parents[1]
+PAGING = r'''
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+const code=fs.readFileSync('src/loop_engine/core/service_runtime/web_assets/staff-work.js','utf8');
+const nodes={},paths=[],answers=[];
+const $=id=>nodes[id]??={hidden:false,disabled:false,value:'',textContent:'',children:[],listeners:{},
+ replaceChildren(...parts){this.children=parts;},append(...parts){this.children.push(...parts);},
+ addEventListener(type,listener){this.listeners[type]=listener;},reset(){},focus(){}};
+const context=vm.createContext({window:{},document:{getElementById:$},URLSearchParams});
+vm.runInContext(code,context);
+context.window.BaltorStaffWork.create({request:async path=>{paths.push(path);return answers.shift();},
+ element:(tag,text)=>({tag,text,append(){},addEventListener(){}}),current:()=>({connected:true,allowed:true})});
+const result=(page,count,more,extra={})=>({record_type:'service_staff_work_result/v1',page,limit:2,matches:5,has_next:more,
+ complete:true,unreadable:[],items:Array.from({length:count},(_,i)=>({id:'staff-work:'+page+i,title:'t',kind:'research',
+ task_id:'x',file_count:0})),...extra});
+const click=async id=>{await $(id).listeners.click();},note=()=>$('dot-work-list-note').textContent;
+(async()=>{
+ $('dot-work-day').value='2026-10-05';
+ answers.push(result(1,2,true));await click('dot-work-refresh');
+ assert.match(paths.at(-1),/page=1/);assert.equal(note(),'Reports 1 to 2 of 5, newest first.');
+ assert.equal($('dot-work-newer').hidden,true);assert.equal($('dot-work-older').hidden,false);
+ $('dot-work-day').value='2026-10-04';
+ answers.push(result(2,2,true));await click('dot-work-older');
+ assert.match(paths.at(-1),/day=2026-10-05&page=2/);assert.equal(note(),'Reports 3 to 4 of 5, newest first.');
+ assert.equal($('dot-work-newer').hidden,false);
+ answers.push(result(3,1,false));await click('dot-work-older');
+ assert.equal($('dot-work-older').hidden,true);assert.equal(note(),'Reports 5 to 5 of 5, newest first.');
+ answers.push(result(2,2,true));await click('dot-work-newer');assert.match(paths.at(-1),/page=2/);
+ answers.push(result(1,1,false,{matches:1,complete:false}));await click('dot-work-refresh');
+ assert.match(paths.at(-1),/day=2026-10-04&page=1/);assert.match(note(),/may not be listed/);
+ answers.push(result(1,1,false,{matches:1,complete:false,unreadable:['staff-work:bad']}));await click('dot-work-refresh');
+ assert.match(note(),/1 saved report\(s\) could not be read/);
+ answers.push(result(2,0,false));await click('dot-work-refresh');
+ assert.equal($('dot-work-status').textContent,'The saved reports could not be read.');
+ assert.equal(note(),'');assert.equal($('dot-work-older').hidden,true);assert.equal($('dot-work-newer').hidden,true);
+ console.log('staff work paging controls passed');
+})().catch(error=>{console.error(error);process.exitCode=1;});
+'''
+
+
+class StaffWorkBrowserPaging(unittest.TestCase):
+    def test_actual_renderer_pages_and_states_completeness(self):
+        # Known-wrong control: the earlier renderer had no page controls and
+        # called a first page "All matching reports are shown". Older pages
+        # the listing on screen even after the day input changes.
+        result = subprocess.run(['node', '-e', PAGING], cwd=ROOT, text=True, capture_output=True, timeout=30)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn('staff work paging controls passed', result.stdout)
 
 
 class StaffWork(unittest.TestCase):
@@ -230,6 +280,31 @@ class StaffWork(unittest.TestCase):
         self.assertEqual([row['id'] for row in self.get().json()['result']['items']],[first])
         self.assertTrue(self.post().json()['result']['repeated'])
         self.assertEqual(self.post(self.fields(request_id='reply',kind='review',reply_to=first)).status_code,200)
+
+    def test_listing_pages_newest_first_past_one_page(self):
+        # Known-wrong control: the listing kept the first stored rows (the
+        # oldest), sorted only those and had no way to reach the rest.
+        with mock.patch.object(staff_work,'LIST_LIMIT',4):
+            for number in range(9):
+                self.post(self.fields(request_id=f'r-{number}',title=f'report {number}',links=[],files=[]))
+            pages=[self.get({'task_id':'customer-journeys'}).json()['result']]
+            self.assertEqual([row['title'] for row in pages[0]['items']],['report 8','report 7','report 6','report 5'])
+            pages+=[self.get({'task_id':'customer-journeys','page':page}).json()['result'] for page in ('2','3')]
+        self.assertEqual([[row['title'][-1] for row in page['items']] for page in pages],
+                         [['8','7','6','5'],['4','3','2','1'],['0']])
+        self.assertEqual([(page['page'],page['has_next'],page['matches'],page['complete']) for page in pages],
+                         [(1,True,9,True),(2,True,9,True),(3,False,9,True)])
+        for wrong in ('0','-1','x','1.5','',' 1','123456'):
+            with self.subTest(page=wrong):self.assertEqual(self.get({'page':wrong}).status_code,400)
+        self.assertEqual(self.get({'id':pages[0]['items'][0]['id'],'page':'1'}).status_code,400)
+
+    def test_listing_states_when_the_stored_query_bound_is_reached(self):
+        bounded=(('staff_work/v2',staff_work._SHAPE,5),staff_work.CONTRACTS[1])
+        with mock.patch.object(staff_work,'CONTRACTS',bounded):
+            for number in range(5):
+                self.post(self.fields(request_id=f'r-{number}',links=[],files=[]))
+                listing=self.get().json()['result']
+                self.assertEqual((listing['matches'],listing['complete']),(number+1,number<4))
 
     def test_unreadable_report_is_named_without_failing_the_listing(self):
         good=self.post().json()['result']['id']
