@@ -189,8 +189,13 @@ def _check_module():
     return module
 
 
+_ANSI = re.compile(r"\x1b\[[0-9;]*m")
+
+
 def godot_import(godot: str, folder: Path, timeout: float = 300.0) -> str:
-    """'passed' when Godot imports the whole project headless without a script error; the reason otherwise."""
+    """'passed' when Godot imports the whole project headless with exit status 0 and no script error (other engine
+    error lines are counted in the note, since a headless editor reports missing display features); the reason
+    otherwise."""
     home = folder.parent / "godot-home"
     home.mkdir(exist_ok=True)
     try:
@@ -198,11 +203,12 @@ def godot_import(godot: str, folder: Path, timeout: float = 300.0) -> str:
                               timeout=timeout, check=False, env={"HOME": str(home), "PATH": "/usr/bin:/bin"})
     except subprocess.TimeoutExpired:
         return f"failed: no answer within {timeout:.0f} s"
-    output = done.stdout + done.stderr
-    errors = [line.strip() for line in output.splitlines() if "SCRIPT ERROR" in line or "Parse Error" in line]
-    if done.returncode != 0 or errors:
-        return f"failed: exit {done.returncode}; {errors[0] if errors else output.strip()[-200:]}"[:300]
-    return "passed"
+    lines = [_ANSI.sub("", line).strip() for line in (done.stdout + done.stderr).splitlines()]
+    scripts = [line for line in lines if "SCRIPT ERROR" in line or "Parse Error" in line]
+    if done.returncode != 0 or scripts:
+        return f"failed: exit {done.returncode}; {scripts[0] if scripts else ' '.join(lines[-3:])}"[:300]
+    engine = [line for line in lines if line.startswith("ERROR:")]
+    return ("passed" + (f": {len(engine)} engine error lines, the first {engine[0][:160]!r}" if engine else ""))[:300]
 
 
 def project_readme(manifest: dict, notices, attribution) -> str:

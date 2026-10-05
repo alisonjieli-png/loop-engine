@@ -4854,6 +4854,25 @@ class CreativeAssetsTest(unittest.TestCase):
         self.assertEqual(cc["licence"]["notices"], ["project/icon.LICENSE.md"])
         self.assertIn("LICENSE-CC0-1.0.txt", cc["licence"]["texts"])
 
+    def test_a_headless_import_fails_on_a_script_error_and_notes_other_engine_errors(self):
+        import shlex
+        from supply_lines import godot_demos as demos
+        with tempfile.TemporaryDirectory() as folder:
+            fake, project = Path(folder) / "godot", Path(folder) / "project"
+            project.mkdir()
+
+            def answer(text, status):
+                fake.write_text(f"#!/bin/sh\nprintf '%s' {shlex.quote(text)}\nexit {status}\n", encoding="utf-8")
+                fake.chmod(0o755)
+                return demos.godot_import(str(fake), project, timeout=30)
+
+            self.assertEqual(answer("Importing done\n", 0), "passed")
+            self.assertTrue(answer("\x1b[91mERROR: no rendering device\x1b[0m\n", 0)
+                            .startswith("passed: 1 engine error lines, the first 'ERROR: no rendering device'"))
+            # Known wrong: a script that does not parse, or a failing exit, fails the import whatever else it says.
+            self.assertTrue(answer("SCRIPT ERROR: Parse Error: Unexpected Indent\n", 0).startswith("failed: exit 0"))
+            self.assertTrue(answer("", 3).startswith("failed: exit 3"))
+
     def test_the_shipped_tests_pass_and_fail_a_fetcher_that_skips_its_checks(self):
         from supply_lines import creative_assets as line
         reader = _polyhaven_fixture()
