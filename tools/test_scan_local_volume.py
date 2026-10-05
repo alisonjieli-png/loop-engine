@@ -303,12 +303,36 @@ class HarnessKindTest(unittest.TestCase):
                            "a/server.pem": "key_material", "a/vault.kdbx": "key_material",
                            "a/client_secret_123.json": "credential_file", "a/.git-credentials": "credential_file",
                            "m/a.eml": "private_message", "m/people.vcf": "private_message",
-                           "a/my_password_list.txt": "credential_file"}.items():
+                           "a/my_password_list.txt": "credential_file", "a/ollama_key": "credential_file",
+                           "a/github-token.txt": "credential_file", "a/keys.json": "credential_file"}.items():
             with self.subTest(path=path):
                 self.assertEqual(scanner.excluded_class(path)[0], kind)
-        for ordinary in ("a/settings.json", "a/config.toml", "a/environment.yml", "a/keyboard.py", "a/tokenizer.py"):
+        for ordinary in ("a/settings.json", "a/config.toml", "a/environment.yml", "a/keyboard.py", "a/tokenizer.py",
+                         "a/key_value_lines.py", "a/keyboard.json", "a/tokenizer.json", "a/turkey.md"):
             with self.subTest(ordinary=ordinary):
                 self.assertEqual(scanner.excluded_class(ordinary), ("", ""))
+
+
+class HolderTest(unittest.TestCase):
+    MIT_SELF = ("MIT License\n\nCopyright (c) 2026 Behaviour Lab contributors\n\nPermission is hereby granted. The "
+                "above copyright notice and this permission notice shall be included in all copies. IN NO EVENT SHALL "
+                "THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM.\n")
+
+    def test_licence_prose_names_no_holder(self):
+        self.assertEqual(scanner._holders(self.MIT_SELF), ["Behaviour Lab contributors"])
+        # Known-wrong for the old pattern: each of these prose lines used to be read as a holder.
+        self.assertEqual(scanner._holders("IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE"), [])
+        self.assertEqual(scanner._holders("The above copyright notice and this permission notice"), [])
+        self.assertEqual(scanner._holders("Copyright 2021 Another Author"), ["Another Author"])
+        self.assertEqual(scanner._holders(MIT), ["Somebody Else"])
+
+    def test_a_licence_in_the_projects_own_name_is_no_contrary_signal(self):
+        project = {"provenance_issues": [], "remote_owners": [], "copyright_holders": [], "name": "behaviour-lab",
+                   "licence_holders": scanner._holders(self.MIT_SELF)}
+        self.assertEqual(scanner._classify(project, set(), {"amarel"}), scanner.OWNER_DECLARED)
+        # Known-wrong: the same licence in a project of another name still names someone else.
+        self.assertEqual(scanner._classify({**project, "name": "other-tool"}, set(), {"amarel"}),
+                         scanner.THIRD_PARTY_LICENCE)
 
 
 if __name__ == "__main__":

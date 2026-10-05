@@ -101,8 +101,16 @@ SOURCE_SUFFIXES = frozenset(suffix for suffix, language in LANGUAGES.items()
                                                 "markdown", "text"))
 LICENCE_NAMES = ("LICENSE", "LICENSE.md", "LICENSE.txt", "LICENCE", "LICENCE.md", "LICENCE.txt", "COPYING",
                  "COPYING.md", "NOTICE", "NOTICE.md")
-COPYRIGHT = re.compile(r"copyright\s*(?:\(c\)|©)?\s*(?:\d{4}(?:\s*[-,]\s*\d{4})?)?\s*(?:by\s+)?([^\n]{2,80})",
-                       re.IGNORECASE)
+#: A copyright line names a holder after a (c) or © mark or a year. Without one of them the word is licence prose
+#: ("THE COPYRIGHT HOLDERS BE LIABLE", "the above copyright notice"), which every MIT licence contains: read as a
+#: holder, it classed every MIT-licensed project as someone else's (found on October 5, 2026).
+COPYRIGHT = re.compile(r"copyright\s*(?:(?:\(c\)|©)\s*(?:\d{4}(?:\s*[-,]\s*\d{4})?)?|\d{4}(?:\s*[-,]\s*\d{4})?)"
+                       r"\s*(?:by\s+)?([^\n]{2,80})", re.IGNORECASE)
+#: Words that start licence prose, never a holder's name.
+_NOT_A_HOLDER = re.compile(r"^(?:holders?|owners?|notice|and/or|and|or|the above|license|licence|laws|in all|"
+                           r"of the|info|information|year|yyyy|<|\[|\{)", re.IGNORECASE)
+#: A project may license itself in its own name ("Ollama Loop Behavior Lab contributors").
+_SELF_NAMED_SUFFIX = re.compile(r"\s*(?:contributors|authors|developers|team|maintainers|project)\s*$", re.IGNORECASE)
 REMOTE_URL = re.compile(r"^\s*url\s*=\s*(\S+)", re.MULTILINE)
 GITHUB_OWNER = re.compile(r"github\.com[:/]([^/\s]+)/")
 #: Provenance classes, from the strongest third-party signal down.
@@ -134,6 +142,9 @@ _KEY_SUFFIXES = (".pem", ".key", ".p12", ".pfx", ".jks", ".keystore", ".ppk", ".
 _PRIVATE_MESSAGE_SUFFIXES = (".eml", ".mbox", ".msf", ".pst", ".ost", ".msg", ".vcf")
 _SECRET_WORDS = re.compile(r"(?:credential|secret|passw(?:or)?d|apikey|api[_-]key|access[_-]?token|"
                            r"refresh[_-]?token|auth[_-]?token|private[_-]?key)")
+#: key, keys, token, tokens or pat as a whole word of a data or text file's name (ollama_key, github-token.txt).
+#: Code files are left alone: key_value_lines.py is a program, not a key.
+_SECRET_TOKEN = re.compile(r"(?:^|[_.\- ])(?:key|keys|token|tokens|pat)(?:$|[_.\- ])")
 
 
 def excluded_class(relative: str) -> tuple:
@@ -157,6 +168,8 @@ def excluded_class(relative: str) -> tuple:
         return "private_message", "mail, message or contact files are the owner's private correspondence"
     if _SECRET_WORDS.search(name):
         return "credential_file", "the file name says it holds a credential"
+    if suffix not in SOURCE_SUFFIXES and _SECRET_TOKEN.search(os.path.splitext(name)[0] if suffix else name):
+        return "credential_file", "the file name says it holds a key, token or secret"
     return "", ""
 
 
@@ -284,9 +297,16 @@ def _holders(text: str) -> list:
     found = []
     for match in COPYRIGHT.finditer(text):
         holder = match.group(1).strip().strip(".,;:'\"<>()[]")
-        if holder and holder.lower() not in ("all rights reserved",):
+        if holder and holder.lower() not in ("all rights reserved",) and not _NOT_A_HOLDER.match(holder):
             found.append(holder[:80])
     return found[:5]
+
+
+def _self_named(holder: str, project_name: str) -> bool:
+    """True when a holder only names the project itself, optionally followed by contributors or authors."""
+    simple = lambda text: re.sub(r"[^a-z0-9]+", "", text.lower())  # noqa: E731
+    name = simple(_SELF_NAMED_SUFFIX.sub("", holder))
+    return bool(name) and name == simple(project_name)
 
 
 def _classify(project: dict, owner_accounts: set, owner_names: set) -> str:
@@ -296,7 +316,8 @@ def _classify(project: dict, owner_accounts: set, owner_names: set) -> str:
     if owners - owner_accounts:
         return THIRD_PARTY_REMOTE
     holders = [holder for holder in project["licence_holders"] + project["copyright_holders"]
-               if not any(name and name in holder.lower() for name in owner_names)]
+               if not any(name and name in holder.lower() for name in owner_names)
+               and not _self_named(holder, project.get("name", ""))]
     if project["licence_holders"] and holders and any(h in project["licence_holders"] for h in holders):
         return THIRD_PARTY_LICENCE
     if holders and any(h in project["copyright_holders"] for h in holders):
