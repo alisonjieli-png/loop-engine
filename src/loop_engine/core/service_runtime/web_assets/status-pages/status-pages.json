@@ -1056,7 +1056,7 @@
    },
    {
     "label": "Community",
-    "meaning": "Admitted under its recorded qualification rule. Standard screening uses an independent per-item review; generated batches use per-item automated checks and independent sampled review by a model family that did not produce the generator. In that route, not every item receives a model review. The recorded evidence states which checks ran. Approval does not imply installation or execution, compatibility with every harness, or improved task results."
+    "meaning": "Admitted under its recorded qualification rule. Standard screening uses an independent per-item review; items admitted on per-item automated checks alone, such as generated batches, are published first, and an independent sampled review by a model family that did not produce them continues after publication and withdraws what it rejects. In that route, not every item receives a model review. The recorded evidence states which checks ran. Approval does not imply installation or execution, compatibility with every harness, or improved task results."
    }
   ],
   "attributes": [
@@ -1694,11 +1694,11 @@
   ]
  },
  "todo": {
-  "steps": 268,
+  "steps": 269,
   "live": 4,
   "checked": 35,
-  "open": 229,
-  "listed": 197,
+  "open": 230,
+  "listed": 198,
   "groups": [
    {
     "title": "Ship the September 22 review: one main line, live checks and launch readiness",
@@ -2278,6 +2278,11 @@
    {
     "title": "Other open work",
     "steps": [
+     {
+      "step": "S-6.217",
+      "title": "Library candidates from the owner's Dot direction: review and persona packs, rubrics, briefs, templates and worked examples, one per distinct job",
+      "status": "In progress"
+     },
      {
       "step": "S-6.186",
       "title": "Design partners and one weekly number: outside developers and teams through a finished task of their own, counted without tracking people",

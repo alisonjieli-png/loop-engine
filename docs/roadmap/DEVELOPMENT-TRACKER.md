@@ -3,13 +3,13 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:077c776a9c283e030fe7942643c9b7a374063651b04017657f1d2b6d5e0c076d`.
+Source fingerprint: `sha256:0e3e92bba3f661aacc95f06d789a9d2c518bc67c28eb8c486399928b391d6d17`.
 
 ## Where things stand
 
 | Lane | Steps |
 |---|---:|
-| Being built now | 67 |
+| Being built now | 68 |
 | Can start next | 15 |
 | Waiting on earlier work | 133 |
 | Blocked | 3 |
@@ -46,6 +46,7 @@ Source fingerprint: `sha256:077c776a9c283e030fe7942643c9b7a374063651b04017657f1d
 | S-6.215 | One million served harness component files: deterministic supply lines, test-based admission with a sampled independent review, a serving engine with delta releases, and full-package delivery | building | S-6.40, S-6.213 |
 | S-6.81 | Source scouts: search tools for skills, plugins, protocol servers and harness files | building | S-6.40, S-6.76 |
 | S-6.216 | Account-required Public Good collection, header-linked browsing and 1,000 useful components across all SDGs | building | S-6.40, S-6.81, S-6.199 |
+| S-6.217 | Library candidates from the owner's Dot direction: review and persona packs, rubrics, briefs, templates and worked examples, one per distinct job | building | S-6.215, S-6.216 |
 | S-6.63 | An independent review panel of several model families | building | S-6.45 |
 | S-6.119 | Community and Verified library tiers from the review panel, written as reviewed catalogue folders for release | building | S-6.63, S-6.40 |
 | S-6.62 | Catalogue releases and library settings with good defaults | building | S-6.40 |

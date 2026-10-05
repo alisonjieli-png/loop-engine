@@ -3,7 +3,7 @@
   "blocked": 3,
   "done": 49,
   "next": 15,
-  "now": 67,
+  "now": 68,
   "waiting": 133
  },
  "lanes": {
@@ -1361,6 +1361,23 @@
      "S-6.40",
      "S-6.81",
      "S-6.199"
+    ]
+   },
+   {
+    "acceptance": "A harness finds a review pack, rubric, brief or worked example drawn from the owner's Dot direction in the live library, and each one traces back to an exact owner or Dot statement.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.215",
+     "S-6.216"
+    ],
+    "id": "S-6.217",
+    "next_local_work": "Build the review question packs, persona packs and rubrics first, from the ledger and the twelve-domain review bank; then templates, briefs and guides. Harvest Dot's delivered functions through the existing tool-harvesting line. Ask the owner for a ChatGPT export to cover the weeks before September 30.",
+    "phase": 6,
+    "status": "building",
+    "title": "Library candidates from the owner's Dot direction: review and persona packs, rubrics, briefs, templates and worked examples, one per distinct job",
+    "waiting_on": [
+     "S-6.215",
+     "S-6.216"
     ]
    },
    {
@@ -5408,5 +5425,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:077c776a9c283e030fe7942643c9b7a374063651b04017657f1d2b6d5e0c076d"
+ "source_fingerprint": "sha256:0e3e92bba3f661aacc95f06d789a9d2c518bc67c28eb8c486399928b391d6d17"
 }
