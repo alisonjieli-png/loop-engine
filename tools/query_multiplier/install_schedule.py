@@ -2,11 +2,13 @@
 
 ```text
 install_schedule.py --revision <commit> [--minutes 40] [--on-calendar '*-*-* *:07:00'] [--enable]
-├── ~/baltor-scheduled/query-multiplier/<commit12>/   src and tools of that commit (git archive), read-only,
-│                                                      REVISION holds the full commit
+├── ~/baltor-scheduled/query-multiplier-<commit12>/   src and tools of that commit (git archive), read-only,
+│                                                      REVISION holds the full commit (the radar's schedule
+│                                                      pins ~/baltor-scheduled/radar-<commit> the same way)
 ├── ~/.config/systemd/user/baltor-query-multiplier.service
 │       oneshot; runs tools/query_multiplier/scheduled-run.sh of the pinned checkout; MemoryMax=4G,
-│       MemorySwapMax=256M, CPUQuota=50%, Nice=10, idle I/O; TimeoutStartSec above the pass length
+│       MemorySwapMax=256M, CPUQuota=50%, Nice=10, idle I/O; TimeoutStartSec above the pass length;
+│       ExecStopPost records systemd's own verdict (a timeout or the memory cap) beside the status file
 └── ~/.config/systemd/user/baltor-query-multiplier.timer
         OnCalendar (hourly by default), Persistent, RandomizedDelaySec=120
 ```
@@ -28,7 +30,7 @@ from pathlib import Path
 
 REPOSITORY = Path(__file__).resolve().parents[2]
 UNIT = "baltor-query-multiplier"
-PINNED = Path.home() / "baltor-scheduled" / "query-multiplier"
+PINNED = Path.home() / "baltor-scheduled"
 SYSTEMD = Path.home() / ".config" / "systemd" / "user"
 
 SERVICE = """[Unit]
@@ -44,6 +46,7 @@ Environment=QUERY_MULTIPLIER_ROOT={root}
 Environment=QUERY_MULTIPLIER_MINUTES={minutes}
 ExecStartPre=/usr/bin/mkdir -p {home}/.le-ci-tmp/tmp/querymult
 ExecStart=/bin/bash {checkout}/tools/query_multiplier/scheduled-run.sh
+ExecStopPost=/bin/bash {checkout}/tools/query_multiplier/scheduled-run.sh --finish
 Nice=10
 IOSchedulingClass=idle
 CPUQuota=50%
@@ -72,7 +75,7 @@ WantedBy=timers.target
 def pin(revision: str) -> Path:
     full = subprocess.run(["git", "-C", str(REPOSITORY), "rev-parse", "--verify", revision + "^{commit}"],
                           capture_output=True, text=True, check=True).stdout.strip()
-    checkout = PINNED / full[:12]
+    checkout = PINNED / ("query-multiplier-" + full[:12])
     if not checkout.exists():
         checkout.mkdir(parents=True)
         archive = subprocess.run(["git", "-C", str(REPOSITORY), "archive", full, "src", "tools"], capture_output=True, check=True).stdout

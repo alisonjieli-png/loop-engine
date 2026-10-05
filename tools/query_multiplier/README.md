@@ -159,7 +159,7 @@ query.
 | `datagov_datasets` | api.gsa.gov | the v4 catalogue with the documented `DEMO_KEY` (catalog.data.gov's CKAN interface answers 404) | 40 a day |
 | `arxiv` | export.arxiv.org | `all:"phrase"`, `cat:`, `submittedDate:` | 3.5 s |
 | `npm_search` | registry.npmjs.org | text and `keywords:` | 3 s |
-| `ollama_web_search` | ollama.com | `POST /api/web_search` with the owner's existing key from the environment, 10 results | 300 a day, declared within the existing subscription |
+| `ollama_web_search` | ollama.com | `POST /api/web_search` with the owner's existing key from the environment, 10 results (endpoint and fields checked against docs.ollama.com on October 5; no published quota, so the ceiling is Baltor's own) | 300 a day, declared within the existing subscription |
 | `pypi_search` | pypi.org | none: PyPI has no search interface | unavailable, with that reason |
 
 [`data/hosts-v1.json`](data/hosts-v1.json) refuses 18 hosts before any request,
@@ -172,9 +172,12 @@ through `gh`, which holds the login; the Ollama key is read from the environment
 at send time and never enters a request record, a stored response, the ledger or
 a report.
 
-A 429, or a 403 with no allowance left, holds the lane until the provider's reset;
-another 401 or 403 holds it for six hours. Follow-up pages are fetched only for a
-query whose first page was at least half new. A GraphQL lane reads, fifty
+A 429, or a 403 with no allowance left, holds the lane until the provider's reset.
+A GitHub 403 with allowance left (its secondary rate limit) holds the lane for its
+retry-after, or ten minutes; another source's 401 or 403 holds it for six hours.
+A refusal before sending (a missing key, a refused host) stops the lane and leaves
+its cursor in place, so no query is spent unsent. Follow-up pages are fetched only
+for a query whose first page was at least half new. A GraphQL lane reads, fifty
 repositories at a time, the licence GitHub detects for repositories that code
 search and web search name without one.
 
@@ -233,12 +236,18 @@ at the pinned commit when it generates.
 
 `run_query_multiplier.py import` brings earlier research queues in as plans,
 never as executions: the October 1 SDG discovery queue
-(`planned-searches-final.jsonl`, 148,800 searches) and the 1,440-card Public Good
+(`planned-searches-final.jsonl`, 148,800 searches), the 1,440-card Public Good
 query bank (Drive mirror v6; its eight cards answered by the outside ChatGPT run
-are kept as that run's evidence, not as Baltor executions). Strings are
-normalised, kept once across queues with every origin, screened like every query,
-and rotated round-robin over their SDG and country keys. The web search engine
-executes them as one more product, within its daily ceiling.
+are kept as that run's evidence, not as Baltor executions) and the 96,525-string
+country and keyword matrix of the social-video workspace
+(`~/social_videos/research/sdg-public-good-20261001-v01/generated-v01/queries.jsonl`).
+Strings are normalised, kept once across queues with every origin, screened like
+every query, and rotated round-robin over their SDG and country keys. On October 5
+the three queues gave 246,757 distinct strings over 4,643 keys, with no normalised
+duplicate between them. These are web-search strings (`site:` and `filetype:`
+operators), so only the web search engine executes them, as one more product within
+its daily ceiling of 300: at that rate the queues take about 820 days, and they
+stay plans until a larger web search allowance exists.
 
 ## Commands
 
@@ -258,12 +267,16 @@ its current requests; `<root>/state/pause` makes scheduled passes exit at once.
 ## Schedule
 
 `python tools/query_multiplier/install_schedule.py --revision <commit>` pins that
-commit's `src` and `tools` under `~/baltor-scheduled/query-multiplier/<commit12>/`
-(read-only) and writes the user units `baltor-query-multiplier.service` (oneshot,
+commit's `src` and `tools` under `~/baltor-scheduled/query-multiplier-<commit12>/`
+(read-only; the radar's schedule pins `~/baltor-scheduled/radar-<commit>` the same
+way) and writes the user units `baltor-query-multiplier.service` (oneshot,
 `MemoryMax=4G`, `CPUQuota=50%`, idle I/O, running `scheduled-run.sh` of the pinned
 checkout) and `baltor-query-multiplier.timer` (hourly at minute 7, 40-minute
 passes). Add `--enable` only after one complete manual pass of that pinned
-checkout. The pass's live status is `<root>/state/status.json`.
+checkout. The pass's live status is `<root>/state/status.json`; `ExecStopPost`
+writes systemd's own verdict to `<root>/state/last-unit-result.json` and appends
+it to `unit-history.jsonl`, so a pass killed by a timeout or the memory cap still
+leaves a record.
 
 ## The October 1 review, finding by finding
 

@@ -8,6 +8,17 @@
 set -euo pipefail
 here="$(cd "$(dirname "$0")/../.." && pwd)"
 root="${QUERY_MULTIPLIER_ROOT:-$HOME/baltor-library/query-runs}"
+if [ "${1:-}" = "--finish" ]; then
+  # ExecStopPost: systemd's own verdict, which a pass cannot write itself when a timeout or the memory cap
+  # killed it. One record in state/last-unit-result.json and one line appended to state/unit-history.jsonl.
+  mkdir -p "$root/state"
+  revision="$(cat "$here/REVISION" 2>/dev/null || echo unknown)"
+  line="$(printf '{"record_type": "research_query_unit_result/v1", "finished_at": "%s", "service_result": "%s", "exit_code": "%s", "exit_status": "%s", "revision": "%s"}' \
+    "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "${SERVICE_RESULT:-unknown}" "${EXIT_CODE:-unknown}" "${EXIT_STATUS:-unknown}" "$revision")"
+  printf '%s\n' "$line" > "$root/state/last-unit-result.json"
+  printf '%s\n' "$line" >> "$root/state/unit-history.jsonl"
+  exit 0
+fi
 minutes="${QUERY_MULTIPLIER_MINUTES:-40}"
 python="${QUERY_MULTIPLIER_PYTHON:-$HOME/loop-engine/.venv/bin/python}"
 if [ -z "${OLLAMA_API_KEY:-}" ] && [ -f "$HOME/.bashrc" ]; then
