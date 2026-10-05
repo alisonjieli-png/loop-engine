@@ -19,6 +19,7 @@ build_library_supply.py
 ├── schemas        one SchemaStore JSON Schema with a validator and its own examples as tests
 ├── curated-schemas  one JSON Schema of a curated repository (json_schema_sources.json), with tests
 ├── api-schemas    one JSON Schema per named object of a curated OpenAPI specification, with tests
+├── manim-scenes   one tested animation scene per example scene of Manim Community's documentation
 └── report         the supply by family and form, and the projected composition
 ```
 
@@ -361,6 +362,37 @@ def api_schemas(args) -> dict:
                   complete=not args.source and not unread, scope=line.STATE_SCOPE)
 
 
+def manim_scenes(args) -> dict:
+    from supply_lines import manim_scenes as line
+    run_folder = _outside(args.run_folder)
+    run_folder.mkdir(parents=True, exist_ok=True)
+    revision = code_revision(args.authorize_store_writes)
+    # The scenes render in the interpreter that has Manim (a private environment, never the repository's); the
+    # test runs in bubblewrap with the network closed when the machine has it.
+    try:
+        namespace = line.read_namespace(args.manim_python)
+    except (RuntimeError, OSError, subprocess.TimeoutExpired) as error:
+        raise SystemExit(f"the --manim-python interpreter cannot render: {str(error)[:300]}")
+    cache = run_folder / "render-cache"
+    cache.mkdir(exist_ok=True)
+    runtime = line.Runtime(args.manim_python, namespace, cache, bwrap=None if args.no_bubblewrap else
+                           shutil.which("bwrap"), seconds=args.scene_seconds or line.TEST_SECONDS)
+    reader = FactReader(run_folder, line.HOSTS, maximum_requests=args.maximum_requests,
+                        pause_seconds=args.pause_seconds)
+    facts_by_repository = reader.repository_facts([line.REPOSITORY]) if args.stars else {}
+    built, refusals, facts, summary = line.generate(
+        reader, runtime=runtime, code_revision=revision, licence_text=LICENCE_FILE.read_bytes(),
+        generated_on=now_utc()[:10], staging=run_folder / "staging", repository_facts=facts_by_repository,
+        only=args.scene, maximum=args.maximum_scenes, workers=args.workers, tag=args.tag or line.RELEASE_TAG)
+    (run_folder / "scenes.json").write_text(json.dumps(summary, indent=1, sort_keys=True) + "\n", encoding="utf-8")
+    unread = any(row["reason"] == "source_unreadable" for row in refusals)
+    return finish(args, records.MANIM_SCENES, built, refusals,
+                  {"release": {key: summary.get(key) for key in ("repository", "tag", "commit", "licence")},
+                   "renderer": summary["renderer"], "sandbox": summary["sandbox"],
+                   "directives": summary.get("directives")},
+                  reader, facts, complete=not args.scene and not args.maximum_scenes and not unread)
+
+
 def report(args) -> dict:
     from licensed_import.composition import library_counts, load_targets
     from licensed_import.storage import ImportStore
@@ -439,6 +471,18 @@ def parser() -> argparse.ArgumentParser:
     common(api_schemas_command)
     api_schemas_command.add_argument("--source", action="append", help="only these source identities of "
                                      "openapi_sources.json")
+    manim_command = commands.add_parser("manim-scenes")
+    common(manim_command)
+    manim_command.add_argument("--manim-python", required=True,
+                               help="an interpreter that imports Manim Community (a private environment)")
+    manim_command.add_argument("--tag", help="another release tag of ManimCommunity/manim than the pinned one")
+    manim_command.add_argument("--scene", action="append", help="only these scene names")
+    manim_command.add_argument("--maximum-scenes", type=int, default=0)
+    manim_command.add_argument("--workers", type=int, default=3, help="scene tests run at once")
+    manim_command.add_argument("--scene-seconds", type=float, help="the most seconds one test runs")
+    manim_command.add_argument("--no-bubblewrap", action="store_true",
+                               help="run the tests without bubblewrap (the network is still closed in Python)")
+    manim_command.add_argument("--stars", action="store_true", help="read the repository's stars (GraphQL)")
     four = commands.add_parser("data-tables")
     common(four)
     four.add_argument("--table", action="append", help="only these table identities of data_table_sources.json")
@@ -463,7 +507,7 @@ def main(argv=None) -> int:
     {"mcp-registry": mcp_registry, "openapi": openapi, "openapi-directory": openapi_directory,
      "openapi-discovery": openapi_discovery, "programs": programs, "data-tables": data_tables,
      "functions": functions, "schemas": schemas, "curated-schemas": curated_schemas, "api-schemas": api_schemas,
-     "report": report}[args.command](args)
+     "manim-scenes": manim_scenes, "report": report}[args.command](args)
     return 0
 
 

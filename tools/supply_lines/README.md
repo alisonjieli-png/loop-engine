@@ -107,6 +107,16 @@ Supply lines (each writes library_supply_candidate/v1 records)
     │   a reference to a sibling file or another address refuses it by name; its own line state
     └── API component mode (api_schemas.py): every named object of a curated OpenAPI specification,
         with the specification's example, generated instances and known-wrong values
+└── manim_scenes: one tested animation scene per example scene of Manim Community's documentation
+    ├── kind code_module, form code_example; ManimCommunity/manim at a pinned release tag (MIT, both
+    │   licence files carried), read as one archive at the tag's commit, every file proven by blob identity
+    ├── every `.. manim::` directive outside literal blocks, in the library's docstrings and pages: the
+    │   scene's code as the documentation's directive runs it, one package per scene (never per quality
+    │   or output format), the same code at two locations kept once
+    ├── LaTeX scenes refused by name while no LaTeX is installed; a name nothing binds, a missing file or
+    │   module, a failure or a timeout refused by name
+    └── a test that renders every frame at low quality with nothing written, run in bubblewrap with the
+        network closed by an interpreter that has Manim; the scene's construct raising must fail it
 ```
 
 Beside the lines, `verbatim_code_sources.json` and
@@ -158,6 +168,8 @@ what it no longer supplies.
 | OpenAPI generators (openapi-generator, openapi-python-client) | Rejected as engines here: they write whole client libraries with runtime dependencies, not one self-contained function per operation that a reviewer reads in one file. The line keeps the standard's own rules (local references, security schemes, servers). |
 | Homebrew formula JSON and analytics (formulae.brew.sh) | Adopted as facts: versions, licences, bottles and source archives with their SHA-256, install counts. homebrew-core's BSD-2-Clause text travels with each recipe. |
 | GitHub release asset digests (GraphQL `digest`) | Adopted: GitHub publishes a SHA-256 per asset; assets without one are left out. |
+| Manim Community's `manim_directive.py` (the documentation's own runner) | Adopted for the scene line: a scene's code is exactly what the directive executes (`from manim import *`, then the content, doctest prompts removed its way). Not adopted: its shared `globals()`, which let a later example use a name an earlier one or the directive module bound; such a scene is refused as `name_unresolved`. |
+| Manim's own renderer (`tempconfig`, `dry_run`) | Adopted as the test engine: every frame is computed at low quality and nothing is written, so a test checks the scene runs without producing video files. Rendering the documented output (`manim render -s` or a video) stays the README's command. |
 
 ## Commands
 
@@ -177,6 +189,10 @@ PYTHONPATH=src:tools python tools/build_library_supply.py data-tables \
 PYTHONPATH=src:tools python tools/build_library_supply.py curated-schemas \
   --run-folder /home/username/baltor-library/supply/json-schemas/DATE \
   --authorize-network-reads --authorize-store-writes [--source ID]
+PYTHONPATH=src:tools python tools/build_library_supply.py manim-scenes \
+  --run-folder /home/username/baltor-library/supply/manim-scenes/DATE \
+  --authorize-network-reads --authorize-store-writes \
+  --manim-python /path/to/an/environment/with/manim/bin/python [--scene NAME] [--workers 3]
 PYTHONPATH=src:tools python tools/build_library_supply.py report \
   --library-bundle /home/username/baltor-bundles/RELEASE --output REPORT.json [--admission-folder ADMISSION]
 ```
@@ -286,4 +302,11 @@ measured.
 - API clients are Python only, and no specification of the first eight
   declares pagination, so no client pages through results.
 - Program recipes cover macOS and Linux through Homebrew; no Windows recipe.
+- Scenes render only in an interpreter that has Manim. On Linux, `pip install manim` needs the Cairo and
+  Pango development files, because pycairo and ManimPango publish no Linux wheels; conda-forge's pycairo
+  and manimpango builds with `pip install manim` on top work without them (PyAV's wheel brings FFmpeg).
+  The component qualification sandbox runs `/usr/bin/python3` with no Manim, so these candidates fail its
+  sandbox until it has a declared Manim runtime.
+- Scenes that typeset with LaTeX (`MathTex`, `Tex` and the classes built on them) are refused while no
+  LaTeX is installed; Typst scenes need the `typst` extra (`manim[typst]`), which their requirements name.
 - Nothing here was loaded by a harness.

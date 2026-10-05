@@ -2632,5 +2632,399 @@ class SupplyReportTest(unittest.TestCase):
         self.assertEqual(gaps["25000"]["skills"]["approved_needed"], 0)
 
 
+
+#: A stand-in for Manim Community, installed into a throwaway virtual environment: a scene renders by running its
+#: construct method, a LaTeX class fails the way Manim does when no LaTeX is installed, and the namespace probe of
+#: the line reads it like the real package.
+MANIM_STUB = {
+    "manim/__init__.py": '''"""A stand-in for Manim Community for the supply line's offline tests."""
+import contextlib
+import types
+
+__version__ = "0.0.0+test"
+
+
+class Mobject:
+    def __init__(self, *arguments, **options):
+        self.arguments = arguments
+
+
+class Animation:
+    def __init__(self, *mobjects, **options):
+        self.mobjects = mobjects
+
+
+class Circle(Mobject):
+    pass
+
+
+class Square(Mobject):
+    pass
+
+
+class Create(Animation):
+    pass
+
+
+class Scene:
+    def __init__(self):
+        self.mobjects = []
+        self.renderer = types.SimpleNamespace(num_plays=0)
+
+    def add(self, *mobjects):
+        self.mobjects.extend(mobjects)
+
+    def play(self, *animations):
+        self.renderer.num_plays += 1
+
+    def wait(self, *arguments):
+        pass
+
+    def render(self):
+        self.construct()
+
+
+BLUE = "#58C4DD"
+
+
+@contextlib.contextmanager
+def tempconfig(settings):
+    yield settings
+
+
+from .mobject.text.tex_mobject import MathTex, SingleStringMathTex  # noqa: E402
+''',
+    "manim/mobject/__init__.py": "",
+    "manim/mobject/text/__init__.py": "",
+    "manim/mobject/text/tex_mobject.py": '''class SingleStringMathTex:
+    def __init__(self, *arguments, **options):
+        raise FileNotFoundError(2, "No such file or directory", "latex")
+
+
+class MathTex(SingleStringMathTex):
+    pass
+''',
+}
+
+MANIM_PAGE = """Example Gallery
+===============
+
+Basic Concepts
+--------------
+
+.. manim:: GoodCircle
+    :save_last_frame:
+    :ref_classes: Circle
+
+    class GoodCircle(Scene):
+        def construct(self):
+            circle = Circle()  # the documentation's own comment
+            self.play(Create(circle))
+            self.add(circle)
+
+.. manim:: NeedsTex
+
+    class NeedsTex(Scene):
+        def construct(self):
+            self.add(MathTex("x^2"))
+
+How the directive looks::
+
+    .. manim:: LiteralExample
+
+        class LiteralExample(Scene):
+            pass
+
+.. code-block:: rst
+
+    .. manim:: CodeBlockExample
+
+        class CodeBlockExample(Scene):
+            pass
+
+.. manim:: BrokenConstruct
+
+    class BrokenConstruct(Scene):
+        def construct(self):
+            self.add(Circle())
+            raise ValueError("this example is broken")
+
+.. manim:: EmptyScene
+
+    class EmptyScene(Scene):
+        def construct(self):
+            pass
+
+.. manim:: NeverConstructs
+
+    class NeverConstructs(Scene):
+        def construct(self):
+            self.add(Circle())
+
+        def render(self):
+            self.mobjects.append(Circle())
+
+.. manim:: UsesUnknown
+
+    class UsesUnknown(Scene):
+        def construct(self):
+            self.add(Hexagon())
+"""
+
+MANIM_MODULE = '''"""Shapes."""
+
+
+class Circle:
+    """A round shape.
+
+    Examples
+    --------
+    .. manim:: GoodCircle
+
+        class GoodCircle(Scene):
+            def construct(self):
+                circle = Circle()
+                self.play(Create(circle))
+                self.add(circle)
+
+    .. manim:: SquareExample
+
+        >>> class SquareExample(Scene):
+        ...     def construct(self):
+        ...         self.add(Square(), Circle())
+    """
+
+    def grow(self):
+        """Grow it.
+
+        .. manim:: GrowExample
+
+            class GrowExample(Scene):
+                def construct(self):
+                    self.add(Circle())
+
+        .. manim:: GrowExample
+
+            class GrowExample(Scene):
+                def construct(self):
+                    self.play(Create(Square()))
+        """
+'''
+
+
+class ManimScenesTest(unittest.TestCase):
+    """The manim_scenes line, offline: directives read from pages and docstrings outside literal blocks, the
+    scene's code as the documentation runs it, a test that renders it (against a stand-in Manim) and a known-wrong
+    control, refusals by name, packages, and one job key for the same scene at two release tags."""
+
+    COMMIT = "c" * 40
+    TAG = "v0.21.0"
+
+    @classmethod
+    def setUpClass(cls):
+        import subprocess
+        from supply_lines import manim_scenes as line
+        cls.line = line
+        cls.folder = Path(tempfile.mkdtemp(prefix="manim-scenes-test-"))
+        environment = cls.folder / "environment"
+        subprocess.run([sys.executable, "-m", "venv", "--without-pip", str(environment)], check=True,
+                       capture_output=True)
+        cls.python = str(environment / "bin" / "python")
+        site = subprocess.run([cls.python, "-c", "import sysconfig; print(sysconfig.get_paths()['purelib'])"],
+                              check=True, capture_output=True, text=True).stdout.strip()
+        for path, text in MANIM_STUB.items():
+            target = Path(site) / path
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(text, encoding="utf-8")
+        cls.namespace = line.read_namespace(cls.python)
+        cache = cls.folder / "cache"
+        cache.mkdir()
+        cls.runtime = line.Runtime(cls.python, cls.namespace, cache, bwrap=None, seconds=60)
+
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(cls.folder, ignore_errors=True)
+
+    def _archive(self, files: dict, commit: str) -> bytes:
+        import io
+        import tarfile
+        buffer = io.BytesIO()
+        with tarfile.open(fileobj=buffer, mode="w:gz", format=tarfile.PAX_FORMAT,
+                          pax_headers={"comment": commit}) as bundle:
+            for path, data in files.items():
+                member = tarfile.TarInfo(f"manim-{commit[:7]}/{path}")
+                member.size = len(data)
+                bundle.addfile(member, io.BytesIO(data))
+        return buffer.getvalue()
+
+    def _reader(self, files: dict, *, archive_commit: "str | None" = None):
+        from loop_engine.core.library_ingestion.record_rules import git_blob_identity
+        commit, tag, line = self.COMMIT, self.TAG, self.line
+        archive = self._archive(files, archive_commit or commit)
+        tree = {"tree": [{"path": path, "type": "blob", "sha": git_blob_identity(data)}
+                         for path, data in files.items()], "truncated": False}
+
+        class Reader:
+            def github(self, path):
+                if path == f"repos/{line.REPOSITORY}/commits/{tag}":
+                    return _Answer(200, json.dumps({"sha": commit}).encode())
+                if path == f"repos/{line.REPOSITORY}/git/trees/{commit}?recursive=1":
+                    return _Answer(200, json.dumps(tree).encode())
+                return _Answer(404, b"{}")
+
+            def get(self, url, cache_errors=False):
+                expected = f"https://{line.ARCHIVE_HOST}/{line.REPOSITORY}/tar.gz/{commit}"
+                return _Answer(200, archive) if url == expected else _Answer(404, b"")
+
+            def licence_text(self, repository, at):
+                return "LICENSE", LICENCE, "MIT"
+
+        return Reader()
+
+    def _files(self) -> dict:
+        return {"LICENSE": LICENCE, "LICENSE.community": LICENCE, "docs/source/examples.rst": MANIM_PAGE.encode(),
+                "manim/mobject/shapes.py": MANIM_MODULE.encode(), "README.md": b"# manim\n"}
+
+    def _generate(self, files: dict, **options):
+        with tempfile.TemporaryDirectory() as staging:
+            return self.line.generate(self._reader(files, archive_commit=options.pop("archive_commit", None)),
+                                      runtime=self.runtime, code_revision="a" * 40, licence_text=LICENCE,
+                                      generated_on="2026-10-05", staging=Path(staging), **options)
+
+    def test_directives_are_read_outside_literal_blocks_with_their_options_and_location(self):
+        line = self.line
+        page = line.page_blocks("docs/source/examples.rst", MANIM_PAGE)
+        self.assertEqual([block.scene for block in page], ["GoodCircle", "NeedsTex", "BrokenConstruct", "EmptyScene",
+                                                            "NeverConstructs", "UsesUnknown"])
+        first = page[0]
+        self.assertEqual((first.kind, first.documented_at, first.section, first.first_line),
+                         ("page", "docs/source/examples.rst", "Basic Concepts", 7))
+        self.assertEqual(first.options, {"save_last_frame": True, "ref_classes": ["Circle"]})
+        self.assertEqual(first.content[0], "class GoodCircle(Scene):")
+        self.assertEqual(MANIM_PAGE.split("\n")[first.last_line - 1].strip(), "self.add(circle)")
+        module = line.number_repeats(line.docstring_blocks("manim/mobject/shapes.py", MANIM_MODULE))
+        self.assertEqual([(block.documented_at, block.scene, block.ordinal) for block in module],
+                         [("manim.mobject.shapes.Circle", "GoodCircle", 1),
+                          ("manim.mobject.shapes.Circle", "SquareExample", 1),
+                          ("manim.mobject.shapes.Circle.grow", "GrowExample", 1),
+                          ("manim.mobject.shapes.Circle.grow", "GrowExample", 2)])
+        self.assertEqual(module[0].summary, "A round shape.")
+        for block in module:
+            self.assertEqual(MANIM_MODULE.split("\n")[block.first_line - 1].strip(), f".. manim:: {block.scene}")
+        # A doctest block becomes the lines the directive runs: prompts removed, outputs left out.
+        self.assertEqual(line.user_code(module[1].content), ["class SquareExample(Scene):",
+                                                             "    def construct(self):",
+                                                             "        self.add(Square(), Circle())"])
+        source = line.scene_source(first, {"repository": line.REPOSITORY, "tag": self.TAG, "commit": self.COMMIT})
+        self.assertIn("from manim import *\n\nclass GoodCircle(Scene):\n", source)
+        self.assertIn("circle = Circle()  # the documentation's own comment", source)
+        self.assertEqual(source.split("\n")[3], "from manim import *")  # three header lines, then the import
+
+    def test_static_checks_and_failure_output_refuse_by_name(self):
+        line = self.line
+        namespace = self.namespace
+        self.assertEqual(namespace.latex, frozenset({"MathTex", "SingleStringMathTex"}))
+
+        def block(scene, code):
+            return line.Block("docs/source/x.rst", "docs/source/x.rst", "page", scene, {}, code.split("\n"), 1, 2)
+
+        cases = {"scene_unreadable": block("Broken", "class Broken(Scene)\n    pass"),
+                 "scene_not_defined": block("Named", "class Other(Scene):\n    pass"),
+                 "name_unresolved": block("Uses", "class Uses(Scene):\n    def construct(self):\n"
+                                                  "        self.add(Hexagon())")}
+        for reason, value in cases.items():
+            with self.assertRaises(line.SceneRefused) as refused:
+                line.read_scene(value, namespace)
+            self.assertEqual(refused.exception.reason, reason)
+        facts = line.read_scene(block("Tex", "class Tex(Scene):\n    def construct(self):\n"
+                                             "        self.play(Create(MathTex('x')))"), namespace)
+        self.assertEqual((facts.latex, facts.plays, facts.uses["animation"]), (["MathTex"], 1, ["Create"]))
+        run = line.TestRun
+        observed = {
+            "needs_latex": run(False, 1.0, False, "FileNotFoundError: [Errno 2] No such file or directory: 'latex'"),
+            "needs_a_module": run(False, 1.0, False, "ModuleNotFoundError: No module named 'requests'"),
+            "needs_a_file": run(False, 1.0, False, "OSError: From: here, could not find click.wav at either"),
+            "name_unresolved": run(False, 1.0, False, "NameError: name 'Any' is not defined"),
+            "scene_timed_out": run(False, 240.0, True, ""),
+            "scene_failed": run(False, 1.0, False, "ValueError: this example is broken")}
+        for reason, value in observed.items():
+            self.assertEqual(line.failure_reason(value)[0], reason)
+
+    def test_generate_keeps_the_scenes_that_render_and_refuses_the_rest_by_name(self):
+        built, refused, facts, summary = self._generate(self._files(), workers=2)
+        reasons = {row["subject"].rsplit(" ", 1)[-1]: row["reason"] for row in refused}
+        self.assertEqual(reasons, {"NeedsTex": "needs_latex", "BrokenConstruct": "scene_failed",
+                                   "EmptyScene": "scene_failed", "NeverConstructs": "known_wrong_control_passed",
+                                   "UsesUnknown": "name_unresolved", "GoodCircle": "duplicate_scene"})
+        self.assertIn("this example is broken", next(row["detail"] for row in refused
+                                                    if row["subject"].endswith("BrokenConstruct")))
+        self.assertEqual(sorted(f"{payload['repository']['documented_at']} {payload['repository']['scene']} "
+                                f"{payload['repository']['occurrence']}" for payload, _bodies in built),
+                         ["docs/source/examples.rst GoodCircle 1", "manim.mobject.shapes.Circle SquareExample 1",
+                          "manim.mobject.shapes.Circle.grow GrowExample 1",
+                          "manim.mobject.shapes.Circle.grow GrowExample 2"])
+        payload, bodies = next((payload, bodies) for payload, bodies in built
+                               if payload["repository"]["scene"] == "GoodCircle")
+        self.assertEqual(read_supply_candidate(payload), payload)
+        files = {entry["path"]: bodies[entry["digest"]] for entry in payload["package"]["files"]}
+        self.assertEqual(sorted(files), ["ATTRIBUTION.md", "LICENSE", "README.md", "UPSTREAM-LICENSE",
+                                         "UPSTREAM-LICENSE-COMMUNITY", "requirements.txt", "scene.json",
+                                         "scene_good_circle.py", "test_scene_good_circle.py"])
+        self.assertEqual((payload["component_form"]["form"], payload["kind"], payload["licence"]["spdx_expression"]),
+                         ("code_example", "code_module", "MIT"))
+        self.assertIn(b"    def construct(self):\n        circle = Circle()  # the documentation's own comment\n",
+                      files["scene_good_circle.py"])
+        record = json.loads(files["scene.json"])
+        self.assertEqual((record["documented_at"], record["scene"], record["occurrence"],
+                          record["directive"]["output"], record["render"]["documented"]),
+                         ("docs/source/examples.rst", "GoodCircle", 1, "last_frame",
+                          "manim render -s -ql scene_good_circle.py GoodCircle"))
+        self.assertEqual(files["requirements.txt"], b"manim==0.0.0+test\n")
+        self.assertIn(b"Example Gallery", files["README.md"])
+        self.assertIn("writes_fs", payload["declared_effects"])
+        self.assertEqual(len(facts), 2)  # the page and the module that hold a kept scene, kept by digest
+        self.assertEqual(summary["kept"], 4)
+        # The two scenes of one name at one location keep their occurrence and get names that tell them apart.
+        names = sorted(payload["name"] for payload, _bodies in built if payload["repository"]["scene"] == "GrowExample")
+        self.assertEqual(names, ["manim-grow-example-grow", "manim-grow-example-grow-2"])
+
+    def test_the_generated_test_fails_a_scene_whose_construct_raises(self):
+        # KNOWN_WRONG: the package's own test must fail when the scene's construct method raises.
+        line = self.line
+        built, _refused, _facts, _summary = self._generate(self._files(), only=["GoodCircle"])
+        payload, bodies = built[0]
+        with tempfile.TemporaryDirectory() as folder:
+            folder = Path(folder)
+            for entry in payload["package"]["files"]:
+                (folder / entry["path"]).write_bytes(bodies[entry["digest"]])
+            self.assertTrue(line.run_test(self.runtime, folder, "test_scene_good_circle").passed)
+            scene = (folder / "scene_good_circle.py").read_text(encoding="utf-8")
+            (folder / "scene_good_circle.py").write_text(line.mutant_text(scene, "GoodCircle"), encoding="utf-8")
+            broken = line.run_test(self.runtime, folder, "test_scene_good_circle")
+        self.assertFalse(broken.passed)
+        self.assertIn("known-wrong control", broken.output)
+
+    def test_an_archive_of_another_commit_is_refused(self):
+        with self.assertRaises(LookupError):
+            self.line.read_release(self._reader(self._files(), archive_commit="e" * 40))
+        built, refused, _facts, _summary = self._generate(self._files(), archive_commit="e" * 40)
+        self.assertEqual((built, [row["reason"] for row in refused]), ([], ["source_unreadable"]))
+
+    def test_the_sandbox_hides_home_folders_and_closes_the_network(self):
+        line = self.line
+        runtime = line.Runtime("/home/someone/env/bin/python", line.Namespace(
+            "0.21.0", "3.12.0", ("/home/someone/env",), {}, {}, {}, frozenset(), frozenset()),
+            Path("/home/someone/cache"), bwrap="/usr/bin/bwrap")
+        argv = runtime.argv(Path("/home/someone/run/scene"), "test_scene_x")
+        self.assertEqual(argv[0], "/usr/bin/bwrap")
+        self.assertIn("--unshare-net", argv)
+        self.assertIn("--clearenv", argv)
+        self.assertEqual(argv[argv.index("--tmpfs", argv.index("/proc")) + 1], "/home")
+        self.assertLess(argv.index("/home"), argv.index("/home/someone/env"))
+        self.assertEqual(argv[-6:-2], ["-E", "-s", "-B", "-c"])
+        self.assertIn("socket.socket.connect", argv[-2])
+        self.assertEqual(argv[-1], "test_scene_x")
+
+
 if __name__ == "__main__":
     unittest.main()

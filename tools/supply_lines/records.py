@@ -41,8 +41,9 @@ STATE_RECORD_TYPE = "library_supply_state/v1"
 RUN_RECORD_TYPE = "library_supply_run/v1"
 
 #: The supply lines, one per kind of fact source.
-MCP_REGISTRY, OPENAPI_OPERATIONS, PROGRAM_INSTALLS, DATA_TABLES, FUNCTION_EXTRACTS, JSON_SCHEMAS = LINES = (
-    "mcp_registry", "openapi_operations", "program_installs", "data_tables", "function_extracts", "json_schemas")
+MCP_REGISTRY, OPENAPI_OPERATIONS, PROGRAM_INSTALLS, DATA_TABLES, FUNCTION_EXTRACTS, JSON_SCHEMAS, MANIM_SCENES = \
+    LINES = ("mcp_registry", "openapi_operations", "program_installs", "data_tables", "function_extracts",
+             "json_schemas", "manim_scenes")
 #: How the text of every supply package was authored, and the review profile it needs. The panel has no such
 #: profile yet (tools/candidate_review reads original and imported packages only), so an export holds these.
 AUTHORING = "generated_from_licensed_facts"
@@ -100,6 +101,10 @@ REFUSAL_REASONS = {
                    "needs_a_sibling_schema", "valid_example_rejected", "blocked_by_static_check",
                    "generated_test_failed", "package_above_review_bound", "duplicate_schema",
                    "not_an_object_schema"),
+    MANIM_SCENES: ("source_unreadable", "licence_not_on_allowlist", "licence_signals_disagree", "licence_unknown",
+                   "scene_unreadable", "scene_not_defined", "name_unresolved", "needs_latex", "needs_a_file",
+                   "needs_a_module", "scene_failed", "scene_timed_out", "known_wrong_control_passed",
+                   "duplicate_scene", "blocked_by_static_check", "package_above_review_bound"),
 }
 #: The forms each line may declare, and the harness kind it serves them as.
 LINE_FORMS = {MCP_REGISTRY: {"mcp_server": "protocol_server_configuration"},
@@ -107,7 +112,10 @@ LINE_FORMS = {MCP_REGISTRY: {"mcp_server": "protocol_server_configuration"},
               PROGRAM_INSTALLS: {"binary_install": "code_module", "program": "code_module"},
               DATA_TABLES: {"data_table": "code_module"},
               FUNCTION_EXTRACTS: {"function": "code_module"},
-              JSON_SCHEMAS: {"schema": "contract_schema"}}
+              JSON_SCHEMAS: {"schema": "contract_schema"},
+              # A documentation example scene is a code example (component_form/v1): a harness opens it as the
+              # editable source of an animation and renders its own version.
+              MANIM_SCENES: {"code_example": "code_module"}}
 CANDIDATE_FIELDS = ("record_type", "record_id", "upstream_key", "line", "kind", "native_format", "component_form",
                     "name", "description", "package", "package_digest", "files", "licence", "provenance",
                     "placements", "declared_effects", "effect_evidence", "credentials", "tests", "findings",
