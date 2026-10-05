@@ -12,10 +12,12 @@ nothing, hashes nothing, and generates nothing.
 
 ```text
 Inventory of one volume (outside the repository: it names private paths)
-├── files-NNN.jsonl       one row per file: path, size, extension, modified time
+├── files-NNN.jsonl       one row per file: path, size, extension, modified time, and its
+│                         harness kind (harness_kind/v1) when the path names one
 ├── projects.jsonl        one row per project root: markers, languages, size, git remotes,
 │                         licence holders, copyright lines, and its provenance class
-├── summary.json          counts by extension, language, provenance class and top folder
+├── excluded.jsonl        what was left out and why, by folder and class, never a file's contents
+├── summary.json          counts by extension, language, harness kind, provenance class and top folder
 └── progress.json         rewritten every few thousand files while the walk runs
 ```
 
@@ -25,6 +27,17 @@ whose licence file names another holder, or whose files carry another
 copyright line is classed as third-party material and stays inspiration only,
 as the licence rule requires. Vendored dependencies, virtual environments,
 caches and system folders are skipped by name.
+
+The owner asked on October 5, 2026 to "look at all of the files on this PC,
+and look for harness components", which takes the walk into home folders and
+old system disks. Three rules keep that walk private. Secret stores (SSH and
+GnuPG folders, key rings, password stores, browser and mail profiles) are
+never entered. A file whose name says it holds or may hold a credential, or a
+private message, is never opened or listed by name: excluded.jsonl counts it
+by folder and class. A folder the operator names with --exclude-path (personal
+identity, legal or business-operations material) is not walked, and its reason
+is recorded. A harness kind is nominated from the path alone; content decides
+later, in the step that reads and hashes the nominated files.
 
     PYTHONPATH=src python tools/scan_local_volume.py --volume /run/media/username/Expansion \\
         --output ~/baltor-library/volumes/expansion/inventory-1 --owner-account alisonjieli-png
@@ -44,6 +57,8 @@ from urllib.parse import urlsplit, urlunsplit
 RECORD_TYPE = "local_volume_inventory/v1"
 FILE_RECORD_TYPE = "local_volume_file/v1"
 PROJECT_RECORD_TYPE = "local_volume_project/v1"
+EXCLUDED_RECORD_TYPE = "local_volume_exclusion/v1"
+HARNESS_KIND_VOCABULARY = "harness_kind/v1"
 #: Folders never walked: vendored dependencies, environments, caches, system and recycle folders, and
 #: the git object store (its config is read for remotes, nothing else).
 SKIPPED_FOLDERS = frozenset({
@@ -53,6 +68,12 @@ SKIPPED_FOLDERS = frozenset({
     "FOUND.000", "$WinREAgent", "Windows", "Program Files", "Program Files (x86)", "ProgramData", "AppData",
     ".conda", "conda", "anaconda3", "miniconda3", ".npm", ".yarn", ".pnpm-store", "bower_components",
     "Library", ".Spotlight-V100", ".fseventsd", "lost+found", ".git"})
+#: Secret stores and private profiles, never entered: key material, password and key rings, and the browser and
+#: mail profiles that hold cookies, saved logins and messages. Each one skipped is counted in excluded.jsonl.
+SECRET_FOLDERS = frozenset({
+    ".ssh", ".gnupg", ".password-store", "keyrings", ".pki", ".mozilla", ".thunderbird", ".waterfox", ".floorp",
+    ".moonchild productions", "google-chrome", "chromium", "BraveSoftware", "vivaldi", "opera", "Thunderbird",
+    "Mozilla", ".aws", ".azure", ".kube", ".docker", "gcloud", ".gcloud", ".putty", ".vnc", ".anydesk"})
 SKIPPED_SUFFIXES = (".tar", ".tar.gz", ".tgz", ".zip", ".7z", ".rar", ".iso", ".img", ".vhd", ".vhdx", ".vmdk",
                     ".dmg", ".pkg", ".exe", ".msi", ".dll", ".so", ".dylib", ".bin", ".safetensors", ".ckpt",
                     ".pt", ".pth", ".onnx", ".gguf", ".npz", ".npy", ".parquet", ".sqlite", ".db")
@@ -93,6 +114,127 @@ PROVENANCE_UNRESOLVED = "provenance_unresolved"
 PROGRESS_EVERY = 5000
 SAMPLE_SOURCE_FILES = 40
 HEAD_BYTES = 4096
+
+#: File names that hold or may hold a credential. Such a file is never opened, hashed or listed by name.
+_CREDENTIAL_NAMES = frozenset({
+    "credentials", "credentials.json", "credentials.yml", "credentials.yaml", ".git-credentials", ".netrc",
+    "_netrc", ".pgpass", ".pypirc", ".npmrc", ".yarnrc", ".dockercfg", "kubeconfig", "rclone.conf", ".s3cfg", ".boto",
+    "kaggle.json", "token.json", "tokens.json", "token.pickle", ".credentials.json", "auth.json", "client_secret.json",
+    "client_secrets.json", "service_account.json", "service-account.json", "hosts.yml", ".htpasswd", "wp-config.php",
+    ".claude.json", "settings.local.json", "id_rsa", "id_dsa", "id_ecdsa", "id_ed25519", "known_hosts",
+    "authorized_keys", "cookies", "cookies.sqlite", "cookies.txt", "login data", "web data", "key4.db", "key3.db",
+    "logins.json", "cert9.db", "signons.sqlite", ".bash_history", ".zsh_history", ".python_history", ".psql_history",
+    ".mysql_history", ".lesshst", ".viminfo", ".xauthority", ".iceauthority", "history.jsonl"})
+#: Model-harness configuration that routinely carries API keys or tokens in its environment blocks.
+_HARNESS_SECRET_CONFIGS = frozenset({
+    ".mcp.json", "mcp.json", "mcp_config.json", "mcp_servers.json", "claude_desktop_config.json"})
+_KEY_SUFFIXES = (".pem", ".key", ".p12", ".pfx", ".jks", ".keystore", ".ppk", ".kdbx", ".kdb", ".keychain",
+                 ".keyring", ".gpg", ".pgp", ".asc", ".ovpn", ".token", ".secret", ".cookies")
+_PRIVATE_MESSAGE_SUFFIXES = (".eml", ".mbox", ".msf", ".pst", ".ost", ".msg", ".vcf")
+_SECRET_WORDS = re.compile(r"(?:credential|secret|passw(?:or)?d|apikey|api[_-]key|access[_-]?token|"
+                           r"refresh[_-]?token|auth[_-]?token|private[_-]?key)")
+
+
+def excluded_class(relative: str) -> tuple:
+    """(class, reason) for a file never opened or listed by name, or ("", "") for an ordinary file.
+
+    The name decides, never the contents, so a file is left out before a single byte of it is read."""
+    parts = relative.replace("\\", "/").split("/")
+    name = parts[-1].lower()
+    lowered = [part.lower() for part in parts[:-1]]
+    suffix = os.path.splitext(name)[1]
+    if name == ".env" or name.startswith(".env.") or name.endswith(".env") or name.startswith(".envrc"):
+        return "dotenv", "an environment file holds or may hold credentials"
+    if name in _HARNESS_SECRET_CONFIGS or ((".codex" in lowered or ".claude" in lowered or ".copilot" in lowered)
+                                           and name in ("config.toml", "settings.json", "auth.json")):
+        return "harness_settings", "a harness or protocol-server configuration may carry keys in its environment"
+    if name in _CREDENTIAL_NAMES or name.startswith(("id_rsa", "id_dsa", "id_ecdsa", "id_ed25519")):
+        return "credential_file", "the file name is a known credential, history or browser-store name"
+    if suffix in _KEY_SUFFIXES:
+        return "key_material", "the extension is key, certificate, token or password-store material"
+    if suffix in _PRIVATE_MESSAGE_SUFFIXES:
+        return "private_message", "mail, message or contact files are the owner's private correspondence"
+    if _SECRET_WORDS.search(name):
+        return "credential_file", "the file name says it holds a credential"
+    return "", ""
+
+
+_TEXT_SUFFIXES = frozenset({".md", ".txt", ".yaml", ".yml", ".json", ".j2", ".jinja", ".jinja2", ".tmpl", ".toml",
+                            ".prompt", ".prompty", ".mdc", ""})
+_CREATIVE_KINDS = (
+    ((".blend",), "blender"), ((".tscn", ".tres", ".gd", ".gdshader", ".godot"), "godot"),
+    ((".glsl", ".frag", ".vert", ".wgsl", ".hlsl", ".shader", ".comp", ".fsh", ".vsh"), "shader"),
+    ((".gltf", ".glb", ".obj", ".fbx", ".stl", ".usd", ".usda", ".usdz", ".ply", ".dae", ".3mf"), "three_d_model"),
+    ((".svg",), "svg"), ((".wav", ".mp3", ".flac", ".ogg", ".m4a", ".aif", ".aiff", ".opus"), "audio"),
+    ((".mid", ".midi"), "midi"), ((".prproj", ".aep", ".drp", ".kdenlive", ".mlt", ".otio", ".veg"), "video_project"),
+    ((".psd", ".kra", ".xcf", ".ora"), "image_project"), ((".cube", ".3dl"), "colour_lut"),
+    ((".pde",), "processing_sketch"), ((".ipynb",), "notebook"),
+    ((".csv", ".tsv", ".jsonl", ".ndjson", ".parquet", ".arrow", ".feather"), "data_table"))
+
+
+def harness_kind(relative: str) -> str:
+    """The harness kind a file's path nominates (vocabulary harness_kind/v1), or "" when it names none.
+
+    A coding or agent harness picks these files up as they are: skills, agent and command definitions, hooks,
+    instruction and rule files, plugin manifests, prompt templates, workflows, tool definitions, schemas, API
+    descriptions, fixtures, notebooks, data tables and creative assets. Code files are counted by project, not here."""
+    parts = relative.replace("\\", "/").split("/")
+    name = parts[-1].lower()
+    folders = [part.lower() for part in parts[:-1]]
+    parent = folders[-1] if folders else ""
+    suffix = os.path.splitext(name)[1]
+    if ".ipynb_checkpoints" in folders:
+        return ""
+    if name == "skill.md":
+        return "skill"
+    if name in ("plugin.json", "marketplace.json") and parent in (".claude-plugin", ".codex-plugin"):
+        return "plugin" if name == "plugin.json" else "marketplace"
+    if name in ("gemini-extension.json", "opencode.json", "opencode.jsonc"):
+        return "plugin"
+    if name in ("agents.md", "claude.md", "gemini.md", "copilot-instructions.md", "agent.md") \
+            or name.endswith(".instructions.md"):
+        return "instructions"
+    if name in (".cursorrules", ".windsurfrules", ".clinerules", ".roorules") or suffix == ".mdc" \
+            or any(part in (".clinerules", ".roo", ".windsurf") for part in folders) \
+            or (parent == "rules" and (".cursor" in folders or ".kiro" in folders)) or parent == "steering":
+        return "rules"
+    if name.endswith((".agent.md", ".chatmode.md")) or (parent in ("agents", "agent") and suffix in (".md", ".toml")
+                                                        and any(part.startswith(".") for part in folders)):
+        return "agent"
+    if name.endswith(".prompt.md") or (parent in ("commands", "command", "prompts")
+                                       and suffix in (".md", ".toml")
+                                       and any(part in (".claude", ".opencode", ".cursor", ".gemini", ".codex",
+                                                        ".github", ".qwen") for part in folders)):
+        return "command"
+    if name == "hooks.json" or (parent == "hooks" and ".claude" in folders):
+        return "hook"
+    if parent == "workflows" and len(folders) > 1 and folders[-2] == ".github" and suffix in (".yml", ".yaml"):
+        return "ci_workflow"
+    if name in ("action.yml", "action.yaml"):
+        return "ci_workflow"
+    if name.endswith((".workflow.json", "_workflow.json", "-workflow.json")) or (
+            "workflow" in name and suffix == ".json") or (parent == "workflows" and suffix == ".json"):
+        return "workflow"
+    stem = os.path.splitext(name)[0]
+    if suffix in (".json", ".yaml", ".yml") and (stem in ("openapi", "swagger") or stem.startswith(("openapi",
+                                                                                                    "swagger"))):
+        return "openapi"
+    if name.endswith(".schema.json") or (suffix == ".json" and (stem == "schema" or parent in ("schemas", "schema"))):
+        return "json_schema"
+    if name in ("tools.json", "tool.json", "functions.json", "tool-definitions.jsonl", "tool_definitions.json",
+                "tool-definitions.json") or name.endswith(".tool.json"):
+        return "tool_definition"
+    if suffix in (".prompt", ".prompty") or (suffix in _TEXT_SUFFIXES and (
+            "prompt" in stem or any(part in ("prompts", "prompt_templates", "prompt-templates") for part in folders))):
+        return "prompt_template"
+    if any(part in ("fixtures", "__fixtures__", "testdata", "test_data", "golden", "goldens") for part in folders):
+        return "test_fixture"
+    if name == "project.godot":
+        return "godot"
+    for suffixes, kind in _CREATIVE_KINDS:
+        if suffix in suffixes:
+            return kind
+    return ""
 
 
 def _read_head(path: str, size: int = HEAD_BYTES, *, redact: bool = True) -> str:
@@ -164,20 +306,36 @@ def _classify(project: dict, owner_accounts: set, owner_names: set) -> str:
 
 
 class Inventory:
-    def __init__(self, volume: Path, output: Path, owner_accounts, owner_names, shard_rows=200_000):
+    def __init__(self, volume: Path, output: Path, owner_accounts, owner_names, shard_rows=200_000,
+                 excluded_paths=None, skipped_names=()):
         self.volume, self.output = volume, output
         self.owner_accounts = {account.lower() for account in owner_accounts}
         self.owner_names = {name.lower() for name in owner_names if name}
         self.shard_rows = shard_rows
+        #: Relative folder -> reason, for the folders the operator excluded (personal or business material).
+        self.excluded_paths = dict(excluded_paths or {})
+        self.skipped_names = SKIPPED_FOLDERS | frozenset(skipped_names)
         self.files = 0
         self.bytes = 0
         self.shard, self.shard_index, self.shard_count = None, 0, 0
         self.extensions, self.languages, self.top_folders = Counter(), Counter(), Counter()
+        self.harness_kinds = Counter()
         self.skipped_folders, self.errors = Counter(), 0
+        #: (relative folder, class) -> [reason, files, bytes]; folders left out whole carry files None.
+        self.exclusions = {}
         self.projects = []
         self._stats_store = {}
         self.started = time.time()
         self.projects_stream = open(output / "projects.jsonl", "w", encoding="utf-8")
+
+    def exclude(self, folder: str, kind: str, reason: str, size: "int | None" = None):
+        """Count one left-out file (or record one left-out folder) without its name or its contents."""
+        row = self.exclusions.setdefault((os.path.relpath(folder, self.volume), kind), [reason, 0, 0])
+        if size is None:
+            row[1] = None
+        elif row[1] is not None:
+            row[1] += 1
+            row[2] += size
 
     def _open_shard(self):
         if self.shard:
@@ -190,8 +348,13 @@ class Inventory:
         if self.shard is None or self.shard_count >= self.shard_rows:
             self._open_shard()
         suffix = os.path.splitext(path)[1].lower()
-        row = {"record_type": FILE_RECORD_TYPE, "path": os.path.relpath(path, self.volume), "size_bytes": entry_stat.st_size,
+        relative = os.path.relpath(path, self.volume)
+        row = {"record_type": FILE_RECORD_TYPE, "path": relative, "size_bytes": entry_stat.st_size,
                "extension": suffix, "language": LANGUAGES.get(suffix, ""), "modified_at": int(entry_stat.st_mtime)}
+        kind = harness_kind(relative)
+        if kind:
+            row["harness_kind"] = kind
+            self.harness_kinds[kind] += 1
         self.shard.write(json.dumps(row, ensure_ascii=False) + "\n")
         self.shard_count += 1
         self.files += 1
@@ -258,7 +421,15 @@ class Inventory:
                 if entry.is_symlink():
                     continue
                 if entry.is_dir(follow_symlinks=False):
-                    if name in SKIPPED_FOLDERS:
+                    if name in SECRET_FOLDERS:
+                        self.exclude(entry.path, "secret_store",
+                                     "key, password, browser or mail profile folders are never entered")
+                        continue
+                    reason = self.excluded_paths.get(os.path.relpath(entry.path, self.volume))
+                    if reason:
+                        self.exclude(entry.path, "operator_excluded", reason)
+                        continue
+                    if name in self.skipped_names:
                         self.skipped_folders[name] += 1
                         continue
                     self.walk(entry.path, top, current, depth + 1)
@@ -266,6 +437,11 @@ class Inventory:
                 entry_stat = entry.stat(follow_symlinks=False)
             except OSError:
                 self.errors += 1
+                continue
+            kind, reason = excluded_class(os.path.relpath(entry.path, self.volume))
+            if kind:
+                # Left out before any byte is read: no file row, no copyright sample, no name in the inventory.
+                self.exclude(folder, kind, reason, entry_stat.st_size)
                 continue
             self.file_row(entry.path, entry_stat, top)
             if current is not None:
@@ -307,6 +483,13 @@ class Inventory:
         if self.shard:
             self.shard.close()
         self.projects_stream.close()
+        excluded_by_class = Counter()
+        with open(self.output / "excluded.jsonl", "w", encoding="utf-8") as stream:
+            for (folder, kind), (reason, files, size) in sorted(self.exclusions.items()):
+                excluded_by_class[kind] += 1 if files is None else files
+                stream.write(json.dumps({"record_type": EXCLUDED_RECORD_TYPE, "folder": folder, "class": kind,
+                                         "reason": reason, "files": files, "bytes": None if files is None else size},
+                                        ensure_ascii=False) + "\n")
         classes = Counter(row["provenance_class"] for row in self.projects)
         summary = {"record_type": RECORD_TYPE, "volume": str(self.volume), "output": str(self.output),
                    "started_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(self.started)),
@@ -317,6 +500,9 @@ class Inventory:
                        name: sum(row["source_files"] for row in self.projects if row["provenance_class"] == name)
                        for name in classes},
                    "extensions": dict(self.extensions.most_common(60)), "languages": dict(self.languages.most_common()),
+                   "harness_kind_vocabulary": HARNESS_KIND_VOCABULARY,
+                   "harness_kinds": dict(self.harness_kinds.most_common()),
+                   "excluded_by_class": dict(excluded_by_class.most_common()),
                    "top_folders": dict(self.top_folders.most_common()),
                    "skipped_folders": dict(self.skipped_folders.most_common(40)),
                    "provenance_basis": ("The owner declared on September 26, 2026 that everything on the volume was "
@@ -335,6 +521,10 @@ def main(argv=None) -> int:
     parser.add_argument("--root", action="append", help="a top-level folder to walk (default: every one not skipped)")
     parser.add_argument("--owner-account", action="append", default=[], help="a git host account the owner holds")
     parser.add_argument("--owner-name", action="append", default=[], help="a name the owner's copyright lines use")
+    parser.add_argument("--exclude-path", action="append", default=[], metavar="FOLDER=REASON",
+                        help="a folder, relative to the volume, that is not walked, with the reason recorded")
+    parser.add_argument("--skip-folder", action="append", default=[], metavar="NAME",
+                        help="a folder name skipped wherever it appears, like the built-in vendored names")
     args = parser.parse_args(argv)
     volume, output = Path(args.volume).resolve(), Path(args.output).resolve()
     repository = Path(__file__).resolve().parents[1]
@@ -351,14 +541,34 @@ def main(argv=None) -> int:
                          or not (volume / root).resolve().is_relative_to(volume) for root in args.root):
         print("a selected root must stay within the named volume", file=sys.stderr)
         return 2
+    excluded_paths = {}
+    for value in args.exclude_path:
+        folder, _sep, reason = value.partition("=")
+        relative = Path(folder.strip().rstrip("/"))
+        if not reason.strip() or not folder.strip() or relative.is_absolute() or ".." in relative.parts:
+            print("--exclude-path takes FOLDER=REASON, with FOLDER relative to the volume", file=sys.stderr)
+            return 2
+        excluded_paths[relative.as_posix()] = reason.strip()
     output.mkdir(parents=True, exist_ok=False, mode=0o700)
+    skipped = SKIPPED_FOLDERS | frozenset(args.skip_folder)
     roots = [str(volume / root) for root in args.root] if args.root else [
         entry.path for entry in os.scandir(volume) if entry.is_dir(follow_symlinks=False)
-        and entry.name not in SKIPPED_FOLDERS and not entry.name.startswith(".")]
-    inventory = Inventory(volume, output, args.owner_account, args.owner_name)
+        and entry.name not in skipped and entry.name not in SECRET_FOLDERS and not entry.name.startswith(".")]
+    inventory = Inventory(volume, output, args.owner_account, args.owner_name, excluded_paths=excluded_paths,
+                          skipped_names=args.skip_folder)
+    for root in list(roots):
+        reason = excluded_paths.get(os.path.relpath(root, volume))
+        if os.path.basename(root.rstrip("/")) in SECRET_FOLDERS:
+            # A secret store named as a root is still never entered.
+            inventory.exclude(root, "secret_store", "key, password, browser or mail profile folders are never entered")
+            roots.remove(root)
+        elif reason:
+            inventory.exclude(root, "operator_excluded", reason)
+            roots.remove(root)
     summary = inventory.run(roots)
     print(json.dumps({key: summary[key] for key in ("files", "bytes", "projects", "projects_by_provenance_class",
-                                                     "seconds", "errors")}, indent=1))
+                                                     "harness_kinds", "excluded_by_class", "seconds", "errors")},
+                     indent=1))
     return 0
 
 
