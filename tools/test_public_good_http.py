@@ -525,7 +525,10 @@ class PublicGoodHttp(unittest.TestCase):
         self.stack.callback(release.set)
         self.stack.enter_context(mock.patch.object(self.app._workers, 'submit', submit))
         self.binding.body_reader = reader
-        self.app.configuration = replace(self.app.configuration, request_timeout_seconds=0.2)
+        # The deadline covers the whole worker, so the stages before the body read count against it. It must expire
+        # while the reader is held, not before the worker reaches it: at 0.2 s it expired first once on October 5,
+        # 2026, in a CI shard run on a machine at load average 28. The reader is held for up to 5 seconds.
+        self.app.configuration = replace(self.app.configuration, request_timeout_seconds=1.0)
         return entered, release, attempts, futures
 
     def assert_late_worker_finished_without_delivery(self, entered, release, futures, label):
