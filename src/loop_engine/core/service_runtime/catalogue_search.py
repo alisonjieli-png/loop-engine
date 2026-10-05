@@ -113,11 +113,21 @@ def index_for_items(items):
     return ReleaseSearchIndex(tuple(IndexEntry(item.identity, entry_text(item), {}) for item in items), EMPTY_SCHEMA)
 
 
+#: Catalogue search draws a top-n answer from `candidate_pool_multiplier` times n ranked candidates and then
+#: puts verified items first. With the shared default of 2, a verified item ranked 21st never reaches a top
+#: ten, and every catalogue release that adds documents shifts the lexical weights. On October 5, 2026 the
+#: judged queries in examples/30_search_quality found 55 of 119 expected items in the top ten at 2x over the
+#: live 30,757 items and 52 after 8,953 additions; at 10x they found 71 and 71, and 70 over 92,923 items. 20x
+#: and 50x found more of this judged set but put weakly matching verified items ahead of strong community
+#: matches on queries nobody judged, so 10x is the catalogue default until a larger judged set says otherwise.
+CATALOGUE_RANKING_POLICY = RetrievalRankingPolicy(candidate_pool_multiplier=10)
+
+
 class ReleaseSearchIndex:
     """Full text, hash vectors and filter tables for one view, built once and read by every request."""
 
     def __init__(self, entries, schema=EMPTY_SCHEMA, policy=None):
-        self.policy = policy if policy is not None else RetrievalRankingPolicy()
+        self.policy = policy if policy is not None else CATALOGUE_RANKING_POLICY
         self.schema = schema
         entries = tuple(entries)
         self.identities = tuple(entry.identity for entry in entries)
