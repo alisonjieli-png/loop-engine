@@ -255,6 +255,17 @@ withholds TheAlgorithms/Python: the row keeps its curated modules and states
 the measured reason, and the line refuses it as `source_withheld` without
 reading it.
 
+keon/algorithms, the largest other collection of teaching implementations
+(434 of the 2,795 packages 1.2.0 writes from the cached sources), was never
+sampled. Of 24 of its functions drawn at random, read by hand and run against
+references, 2 break their own documented contract (`pacific_atlantic` fails
+on every matrix that is not square; `longest_increasing_subsequence_optimized`
+is wrong for negative numbers), so its row is withheld too: the first 1.2.0
+batch is sampled with acceptance number 0, and this rate alone would make a
+clean sample unlikely. The smaller teaching collections (aima-python,
+simplestatistics, al-go-rithms, about 90 packages) stay; their rate is not
+measured.
+
 ## Limits
 
 - The daily licensed-import export has no review profile for generated

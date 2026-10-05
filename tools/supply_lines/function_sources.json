@@ -2151,6 +2151,7 @@
    "branch": "main",
    "package_root": "algorithms",
    "vendor": "keon_algorithms",
+   "withheld": "October 5, 2026: of 24 functions drawn at random from the 434 generator 1.2.0 writes from this repository at commit bd1d152, read by hand and run against references, 2 break their own documented contract: pacific_atlantic raises IndexError for every matrix that is not square, and longest_increasing_subsequence_optimized answers 2 for [-3, -1, 2], whose longest increasing subsequence has 3. About 8 percent, above the 5 percent tolerance a sampled batch is held to, and the first 1.2.0 batch is sampled with acceptance number 0. Restore the row when the line checks each function beyond its own examples, or when a sampled review measures this repository below the tolerance.",
    "maximum_functions": 546,
    "modules": [
     "algorithms/__init__.py",
