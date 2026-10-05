@@ -269,7 +269,8 @@ def authorized_hits(view, fields, authorize):
     eligible = index.eligible(conditions) if conditions else None
     top_n, mode = fields.get("top_n", 10), fields.get("mode", LEXICAL_MODE)
     pool = max(1, top_n * index.policy.candidate_pool_multiplier)
-    total = max(1, len(index.identities))
+    from .catalogue_index_engines import index_size
+    total = max(1, index_size(index))
     while True:
         pools, exhausted = index.rank(fields["query"], mode=mode, pool=pool, eligible=eligible)
         candidates = tuple(dict.fromkeys(identity for rows in pools.values() for identity, _score in rows))

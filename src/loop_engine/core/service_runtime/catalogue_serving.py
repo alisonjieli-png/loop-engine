@@ -1,7 +1,9 @@
 """The catalogue a running service serves, and how it changes without a redeploy.
 
 The host chooses the catalogue source in the `catalogue` section of its host
-file, record `service_catalogue_source/v1`:
+file, record `service_catalogue_source/v1`, or `service_catalogue_source/v2`,
+which also names the search index engine (`catalogue_index_engines`) and the
+folder that engine keeps its index files in:
 
 ```text
 Catalogue source
@@ -39,6 +41,9 @@ from .records import ServiceRuntimeError
 from .storage import ServiceCatalogBinding
 
 SOURCE_SETTINGS_VERSION = "service_catalogue_source/v1"
+#: Version 2 adds the search index engine and its index folder; version 1 keeps the in-memory baseline.
+SOURCE_SETTINGS_VERSION_2 = "service_catalogue_source/v2"
+SOURCE_SETTINGS_VERSIONS = (SOURCE_SETTINGS_VERSION, SOURCE_SETTINGS_VERSION_2)
 SOURCES = ("image", "store")
 IMAGE_SOURCE, STORE_SOURCE = SOURCES
 #: A view built directly in code, as local fixtures build one, rather than by a host source.
@@ -61,10 +66,23 @@ class CatalogueSourceSettings:
     refresh_seconds: int = DEFAULT_REFRESH_SECONDS
     new_accounts_follow_release: bool = False
     record_type: str = SOURCE_SETTINGS_VERSION
+    search_engine: str = "in_memory_view_index"
+    index_root: str = ""
 
     def __post_init__(self):
-        if self.record_type != SOURCE_SETTINGS_VERSION:
-            _refuse("unsupported_catalogue_source", f"this release reads {SOURCE_SETTINGS_VERSION} only")
+        from .catalogue_index_engines import DEFAULT_ENGINE, DISK_ENGINE, ENGINES
+        if self.record_type not in SOURCE_SETTINGS_VERSIONS:
+            _refuse("unsupported_catalogue_source", f"this release reads {SOURCE_SETTINGS_VERSIONS} only")
+        if self.record_type == SOURCE_SETTINGS_VERSION and (self.search_engine != DEFAULT_ENGINE or self.index_root):
+            _refuse("unsupported_catalogue_source", f"{SOURCE_SETTINGS_VERSION} names no search engine; "
+                                                    f"use {SOURCE_SETTINGS_VERSION_2}")
+        if not isinstance(self.search_engine, str) or self.search_engine not in ENGINES:
+            _refuse("unsupported_catalogue_source", f"the search engine is one of {tuple(ENGINES)}")
+        if not isinstance(self.index_root, str) or (self.index_root and not self.index_root.startswith("/")):
+            _refuse("unsupported_catalogue_source", "the index root is an absolute folder")
+        if self.search_engine == DISK_ENGINE and (self.source != STORE_SOURCE or not self.index_root):
+            _refuse("unsupported_catalogue_source", "the disk index engine serves the store source and names its "
+                                                    "index root")
         if self.source not in SOURCES:
             _refuse("unsupported_catalogue_source", f"the catalogue source is one of {SOURCES}")
         if (type(self.refresh_seconds) is not int
@@ -85,6 +103,8 @@ def catalogue_settings(configuration):
         return None
     value = configuration["catalogue"]
     allowed = {"record_type", "source", "body_store_root", "refresh_seconds", "new_accounts_follow_release"}
+    if isinstance(value, dict) and value.get("record_type") == SOURCE_SETTINGS_VERSION_2:
+        allowed = allowed | {"search_engine", "index_root"}
     if not isinstance(value, dict) or "record_type" not in value or set(value) - allowed:
         _refuse("unsupported_catalogue_source", "the catalogue section names its record version and known fields only")
     return CatalogueSourceSettings(**value)
@@ -203,6 +223,11 @@ class CatalogueView:
                 self._lazy["file_population"] = result
             return dict(result)
 
+    def served_package_count(self):
+        """How many approved items this view serves; a disk view answers without reading them."""
+        return sum(1 for identity, binding in self.approved_bindings().items()
+                   if (identity, binding.body_digest) not in self.withdrawn)
+
     def shown_attributes(self, identity):
         return self.schema.shown_values(self.attributes.get(identity, {}))
 
@@ -297,7 +322,15 @@ def image_view(catalogue, resolver, reader, *, config=None, withdrawn=frozenset(
 
 
 def store_view(config, settings, *, license_policy, family_policy, prepare_search=True):
-    """Verify every record and body; prepare search unless a maintenance caller defers it."""
+    """Verify every record and body; prepare search unless a maintenance caller defers it.
+
+    A host whose catalogue section selects the disk index engine is served a disk view instead
+    (`catalogue_disk_view.disk_store_view`): the same questions answered from index files, not from memory.
+    """
+    from .catalogue_index_engines import DISK_ENGINE
+    if settings.search_engine == DISK_ENGINE:
+        from .catalogue_disk_view import disk_store_view
+        return disk_store_view(config, settings, license_policy=license_policy, family_policy=family_policy)
     from ..practitioner_runtime.provisioning import _item
     from .catalogue_bundle import item_version_tier, validated_attributes
     from .catalogue_releases import load_release, read_pointer, read_state, verify_release_bodies, withdrawal_notes
@@ -473,6 +506,10 @@ def load_catalogue_view(configuration, config, *, license_policy, family_policy,
         _refuse("invalid_catalogue_load_profile", "search preparation is an explicit Boolean")
     settings = catalogue_settings(configuration)
     state = catalogue_state_gate(config, settings)
+    if settings is not None:
+        # The engine the host names must run here; it is refused at start, never replaced by another engine.
+        from .catalogue_index_engines import select_engine
+        select_engine(settings.search_engine)
     if settings is not None and settings.source == STORE_SOURCE:
         return store_view(config, settings, license_policy=license_policy, family_policy=family_policy,
                           prepare_search=prepare_search), settings

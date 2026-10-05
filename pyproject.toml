@@ -52,6 +52,11 @@ integrations = [
     "opentelemetry-sdk>=1.41",
     "tomli>=2; python_version < '3.11'",
 ]
+# The disk index engine of the catalogue search index slot (core/service_runtime/catalogue_disk_index.py).
+# A host that selects it installs this beside `serving`; without it that engine is refused at start.
+catalogue-index = [
+    "numpy>=2,<3",
+]
 serving = [
     "mcp==2.2.0",
     "starlette==1.6.0",

@@ -97,6 +97,7 @@ def self_test() -> dict:
         "core.service_runtime.catalogue_release_checks",
         "core.service_runtime.catalogue_report_checks",
         "core.service_runtime.catalogue_segment_checks",
+        "core.service_runtime.catalogue_index_checks",
     ]
     import importlib as _importlib
     import importlib.util as _importlib_util
@@ -122,6 +123,8 @@ def self_test() -> dict:
         "core.decisions.jev": ("httpx",),
         "core.decisions.system_one": ("httpx",),
         "code_nodes.decision_tools": ("mcp", "anyio"),
+        # The disk index engine of the catalogue search index slot needs numpy.
+        "core.service_runtime.catalogue_index_checks": ("numpy",),
     }
 
     def _fold(name, run):

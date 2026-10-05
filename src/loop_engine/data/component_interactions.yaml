@@ -1307,3 +1307,24 @@ interactions:
     verification: restored_digest_recomputed_before_the_pointer_moves
     run_history: append_only_store_journal
     implementation_state: candidate
+  - interaction_id: core.interaction.catalogue.search_index_rank
+    producer_kind: runtime_definition
+    consumer_kind: adapter
+    operation: rank_release_index_candidates
+    request_contract: catalogue_search_index_query/v1
+    result_contract: catalogue_search_index_pools/v1
+    relationship: starting
+    delivery: synchronous_exactly_once_per_request
+    scheduling: serial
+    retry: none_one_declared_engine
+    timeout: request_deadline
+    cancellation: inherited_request_cancellation
+    compatibility: exact_engine_and_index_format
+    context_handoff: query_filters_and_pool_only
+    authority_transfer: none
+    privacy: body_free_references_only
+    failure: typed_service_refusal
+    repair: none_refuse_before_dispatch
+    verification: exact_pools_against_the_baseline_engine
+    run_history: request_loop_and_bindings_report
+    implementation_state: candidate

@@ -2128,6 +2128,67 @@ slots:
       - core.service_runtime.http_checks:selected_digest_mismatch_refuses_before_body_read_and_metering
     planned_checks: [body_store_engine_switch_serves_identical_digests]
   - record_type: engine_slot/v1
+    slot_id: catalogue_search_index
+    slot_version: 1.0.0
+    title: Catalogue search index
+    function: >-
+      Hold one catalogue release's search index and answer its filters and
+      candidate pools for served search, in process memory or in files on the
+      volume. The search request, the authorization, the fusion and the result
+      stay fixed; the engine changes only where the index lives.
+    design_table: roadmap_addition
+    inventory_records: [C11]
+    roadmap_steps: [S-6.203]
+    implementation_state: candidate
+    work_boundaries: [remote intelligence metadata search]
+    planned_work_boundaries: []
+    release_reason: ""
+    release_edge: ""
+    interactions: [core.interaction.catalogue.search_index_rank]
+    unavailable_result: {form: typed_refusal, value: search_engine_unavailable, answer_exists: true}
+    conformance_suite: core.service_runtime.catalogue_index_checks
+    component_folder: src/loop_engine/core/service_runtime
+    folder_move_package: ""
+    nested_under: []
+    nesting_scope_rule: not_nested
+    nesting_scope_reason: ""
+    joined_with: []
+    engine_protocol: core.service_runtime.catalogue_index_engines.CatalogueSearchIndexEngine
+    engine_protocol_version: catalogue_search_index/v1
+    engine_kinds: [in_memory_index, disk_index, object_store_index]
+    engine_kind_groups: {}
+    native_registry: core.service_runtime.catalogue_index_engines.ENGINES
+    native_declaration: core.service_runtime.catalogue_index_engines.CatalogueIndexEngine
+    requirement_comparison: core.service_runtime.catalogue_index_engines.select_engine
+    descriptor_projection: core.service_runtime.catalogue_index_engines.describe
+    factory_table: core.service_runtime.catalogue_index_engines
+    planned_symbols: []
+    selection_mode: one_of
+    dispatch_key: ""
+    derived_from: ""
+    fallback_ceiling: none
+    failure_kinds: [engine_unavailable, capability_requirement_unsatisfied,
+                    engine_changed_after_selection, policy_refused]
+    ranking_objectives: []
+    evidence_minimum_floor: null
+    scope_fields: [operation_contract, catalogue_scope]
+    bindings:
+      - {context: hosted_service, selection_phase: host_start,
+         binding_site: service_application_attribute, host_must_bind: false}
+    declaration_source: >-
+      The catalogue section of the host file: service_catalogue_source/v2
+      names search_engine and index_root; a version 1 section keeps the
+      in-memory engine. An engine that cannot run on the host is refused at
+      start and never replaced by another.
+    retired_engines: []
+    known_direct_construction_sites:
+      - {path: core/service_runtime/catalogue_serving.py, constructs: ReleaseSearchIndex}
+    existing_checks:
+      - core.service_runtime.catalogue_index_checks:the_disk_engine_ranks_exactly_as_the_in_memory_engine_on_a_fresh_build
+      - core.service_runtime.catalogue_index_checks:an_engine_that_cannot_run_here_is_refused_at_start_and_never_replaced
+      - core.service_runtime.catalogue_index_checks:the_disk_view_serves_the_same_hits_through_the_provisioning_authority
+    planned_checks: [an_object_store_engine_passes_the_same_kit]
+  - record_type: engine_slot/v1
     slot_id: catalogue_qualification_resolver
     slot_version: 1.0.0
     title: Catalogue qualification resolver

@@ -944,6 +944,9 @@ class ServiceHttpApplication:
             return None
         try:
             view = provisioning.current_view()
+            counter = getattr(view, "served_package_count", None)
+            if callable(counter):
+                return counter()
             return sum(1 for identity, binding in view.approved_bindings().items()
                        if (identity, binding.body_digest) not in view.withdrawn)
         except Exception:
