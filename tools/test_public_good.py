@@ -379,6 +379,37 @@ class PublicGoodTests(unittest.TestCase):
         self.assertEqual(host["requests"], 50)
         self.assertEqual(sum(window["requests"] for window in windows), 50)
 
+    def test_a_limits_change_applies_to_the_current_window_and_keeps_what_it_spent(self):
+        """Known wrong (October 5 review, e): a current window whose stored limits differed from the policy refused
+        every request until it ended, so raising an allowance locked out every account, even one that had never
+        downloaded (retry_after 2,600 seconds here; the review saw 82,800 after a raise on a 24-hour window)."""
+        def wait(principal, request_id):
+            try:
+                self.service.reserve(principal, self.view, "public.fixture",
+                    expected_digest=self.grant.binding.body_digest, request_id=request_id, response_bytes=1)
+            except pg.PublicGoodLimitError as error:
+                return error.retry_after_seconds
+            return 0
+        other = self.account("never-downloaded")
+        self.assertEqual(wait(self.principal, "first"), 0)
+        self.configure(limits=pg.PublicGoodLimits(requests_per_window=120))
+        self.assertEqual((wait(self.principal, "after-raise"), wait(other, "other-first")), (0, 0))
+        self.configure(limits=pg.PublicGoodLimits(requests_per_window=2))
+        self.assertEqual((wait(self.principal, "after-cut"), wait(other, "other-after-cut")), (2600, 0))
+        with self.runtime._catalog.store() as store:
+            window = self.runtime._catalog.read(store, pg.WINDOW_KIND, self.principal.tenant_id)["payload"]
+            host = self.runtime._catalog.read(store, pg.HOST_WINDOW_KIND, "all_accounts")["payload"]
+        self.assertEqual((window["start"], window["end"], window["requests"], host["requests"]), (0, 3600, 2, 4))
+        self.assertEqual(window["policy_limits"], asdict(pg.PublicGoodLimits(requests_per_window=120)))
+        self.grant, self.now[0] = replace(self.grant, expires_at=10**9), 86400 + 1000
+        self.configure(limits=pg.PublicGoodLimits(requests_per_window=120, window_seconds=86400))
+        self.assertEqual(wait(other, "day-one"), 0)
+        self.configure(limits=pg.PublicGoodLimits(requests_per_window=240, window_seconds=86400))
+        self.assertEqual(wait(other, "day-two"), 0)
+        # A new window length starts with the next window; the change never resets what the current window spent.
+        self.configure(limits=pg.PublicGoodLimits(requests_per_window=1, window_seconds=3600))
+        self.assertEqual((wait(other, "after-shortening"), wait(self.principal, "next-hour")), (172800 - 87400, 0))
+
     def test_shared_host_ceiling_limits_different_accounts_atomically(self):
         self.configure(limits=pg.PublicGoodLimits(host_requests_per_window=1))
         self.runtime.ensure_subject_tenant(SubjectTenantRegistration("https://identity.example", "second-account", "customer"))

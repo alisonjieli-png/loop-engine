@@ -326,8 +326,10 @@ class PublicGoodAccess:
             value = {"record_type": WINDOW_VERSION, "tenant_id": tenant, "start": start, "end": start + limits.window_seconds,
                      "policy_limits": asdict(limits), "requests": 0, "bytes_reserved": 0, "reservations": {}}
         elif value["policy_limits"] != asdict(limits):
-            # A policy change must not reset a current window's spent allowance.
-            raise PublicGoodLimitError(value["end"] - now)
+            # A limits change applies to the current window at once and does not reset it: what the window has spent
+            # stays spent and is judged by the new limits, so a raise helps every account now and a cut refuses only
+            # an account already past it, until the window ends. A new window length starts with the next window.
+            value = {**value, "policy_limits": asdict(limits)}
         return row, value
 
     def reserve(self, principal, view, identity, *, expected_digest, request_id, response_bytes):
