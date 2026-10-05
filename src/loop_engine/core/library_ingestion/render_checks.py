@@ -7,13 +7,15 @@ breaks the specification is refused by the built-in rules; a connection
 file never carries a secret value, only a reference to one; a plain HTTP
 endpoint, a credential-shaped value and required arguments without a value
 are refused by name; no author text from a registry entry reaches a
-rendered file; and each harness file keeps its documented shape.
+rendered file; each harness file keeps its documented shape; and a server
+Baltor writes itself is started by its own command with variable
+references, an unusable key or a secret-shaped argument refused by name.
 """
 from __future__ import annotations
 
 import json
 
-from .connection_rendering import render_connection
+from .connection_rendering import render_connection, stdio_connection_files
 from .format_builtin import AgentSkillsBuiltinRules
 from .format_connection import ConnectionFileRules
 from .provenance_checks import fixture_provenance, fixture_registry_provenance
@@ -218,6 +220,23 @@ def self_test() -> dict:
           and pinned.document["server"]["package"]["version"] == "sha256:" + "ab" * 32
           and (floating, untagged) == ("package_type_not_rendered", "package_type_not_rendered"),
           (tagged.document["server"]["package"], floating, untagged))
+
+    # A server Baltor writes itself runs a file placed in the project: the same template writes its harness files.
+    local = {row["harness"]: row["text"] for row in stdio_connection_files(
+        "example-tools", "python3", ["tools/example-tools/server.py"],
+        [{"name": "EXAMPLE_API_KEY", "required": True, "secret": True}])}
+    local_claude = json.loads(local["claude_code"])["mcpServers"]["example-tools"]
+    unusable = _refused(lambda: stdio_connection_files("Example Tools", "python3", ["server.py"], []))
+    secret_argument = _refused(lambda: stdio_connection_files("example-tools", "python3", [fake_key], []))
+    check("a_local_server_is_started_by_its_own_command_and_an_unusable_one_refused_by_name",
+          [local_claude["command"], *local_claude["args"]] == ["python3", "tools/example-tools/server.py"]
+          and local_claude["env"] == {"EXAMPLE_API_KEY": "${EXAMPLE_API_KEY}"}
+          and 'env_vars = ["EXAMPLE_API_KEY"]' in local["codex"]
+          and ConnectionFileRules().validate_package({
+              "key": "example-tools", "inputs": [{"name": "EXAMPLE_API_KEY", "secret": True}],
+              "files": [{"harness": harness, "text": text} for harness, text in local.items()]}) == []
+          and (unusable, secret_argument) == ("server_name_unusable", "credential_shaped_value_in_entry"),
+          (unusable, secret_argument))
 
     passed = sum(item["passed"] for item in tests)
     return {"record_type": "library_render_test/v1", "tests": tests, "passed": passed,

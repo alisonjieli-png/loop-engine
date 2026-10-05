@@ -235,6 +235,29 @@ def _harness_files(key: str, plan: dict):
     return rendered, skipped
 
 
+def stdio_connection_files(key: str, command: str, args, inputs) -> list:
+    """The three harness files that start one local server with a command, by the same template as a registry
+    entry's package.
+
+    For a server Baltor writes itself (the API tool server supply line): its command runs a file placed in the
+    project, not a published package. Each input names an environment variable the harness passes on, as a
+    reference in each harness's own syntax and never as a value; an unusable name or a secret-shaped argument
+    is refused by name."""
+    rows = []
+    for row in inputs:
+        if not _ENV_NAME.match(str(row.get("name") or "")):
+            raise RenderRefused("required_arguments_not_rendered", "an environment variable has no usable name")
+        rows.append({"name": row["name"], "kind": "environment_variable", "required": bool(row.get("required")),
+                     "secret": bool(row.get("secret"))})
+    if config_key(key) != key:
+        raise RenderRefused("server_name_unusable", "the key is not a harness-safe key")
+    arguments = [str(argument) for argument in args]
+    if any(credential_shaped(argument) for argument in [command, *arguments]):
+        raise RenderRefused("credential_shaped_value_in_entry", "an argument looks like a secret")
+    files, _skipped = _harness_files(key, {"transport": STDIO, "command": command, "args": arguments, "inputs": rows})
+    return files
+
+
 def _description(name: str, version: str, plan: dict) -> str:
     if plan["transport"] == STDIO:
         package = plan["package"]
