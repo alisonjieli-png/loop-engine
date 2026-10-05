@@ -73,7 +73,8 @@ SKIPPED_FOLDERS = frozenset({
 SECRET_FOLDERS = frozenset({
     ".ssh", ".gnupg", ".password-store", "keyrings", ".pki", ".mozilla", ".thunderbird", ".waterfox", ".floorp",
     ".moonchild productions", "google-chrome", "chromium", "BraveSoftware", "vivaldi", "opera", "Thunderbird",
-    "Mozilla", ".aws", ".azure", ".kube", ".docker", "gcloud", ".gcloud", ".putty", ".vnc", ".anydesk"})
+    "Mozilla", ".aws", ".azure", ".kube", ".docker", "gcloud", ".gcloud", ".putty", ".vnc", ".anydesk",
+    "chrome-profile", "chrome_profile", "browser-profile", "browser_profile", "User Data", "user-data-dir"})
 SKIPPED_SUFFIXES = (".tar", ".tar.gz", ".tgz", ".zip", ".7z", ".rar", ".iso", ".img", ".vhd", ".vhdx", ".vmdk",
                     ".dmg", ".pkg", ".exe", ".msi", ".dll", ".so", ".dylib", ".bin", ".safetensors", ".ckpt",
                     ".pt", ".pth", ".onnx", ".gguf", ".npz", ".npy", ".parquet", ".sqlite", ".db")

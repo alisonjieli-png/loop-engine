@@ -181,6 +181,8 @@ def private_volume(root: Path) -> None:
     _write(root, ".ssh/id_ed25519", SECRET_MARKER)
     _write(root, ".ssh/config", "Host build-server\n")  # an ordinary name inside a secret store
     _write(root, "mail/inbox/2026-10-01.eml", "Subject: " + SECRET_MARKER + "\n")
+    # A browser profile an automation project kept beside its code (sessions and local storage, ordinary names).
+    _write(root, "work/agent-kit/data/chrome-profile/Default/Local State", '{"session": "' + SECRET_MARKER + '"}')
     _write(root, "PERSONAL/Identity/passport.pdf", SECRET_MARKER)
 
 
@@ -230,6 +232,8 @@ class PrivateWalkTest(unittest.TestCase):
         self.assertEqual(by_class[("work/agent-kit/config", "credential_file")]["files"], 1)
         self.assertEqual(by_class[("mail/inbox", "private_message")]["files"], 1)
         self.assertIsNone(by_class[(".ssh", "secret_store")]["files"], "a secret store is not entered or counted")
+        self.assertIsNone(by_class[("work/agent-kit/data/chrome-profile", "secret_store")]["files"])
+        self.assertFalse(any("chrome-profile" in path for path in paths), "a browser profile is never walked")
         self.assertEqual(by_class[("PERSONAL/Identity", "operator_excluded")]["reason"], "personal identity documents")
         self.assertIsNone(by_class[("PERSONAL/Identity", "operator_excluded")]["files"], "not walked, not counted")
         projects = [json.loads(line) for line in (self.output / "projects.jsonl").read_text().splitlines()]
