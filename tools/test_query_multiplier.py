@@ -660,5 +660,141 @@ class ImportTests(Temporary):
         self.assertEqual(sum(v for k, v in importer.counts.items() if k.endswith("refused_by_screen")), 1)
 
 
+class ParserTests(unittest.TestCase):
+    """Each engine's parse on a canned answer: identities, licences as reported, and nothing private kept."""
+
+    def test_every_source_parses_its_own_answer_into_candidates(self):
+        from query_multiplier.executors import (Arxiv, DataEuropaDatasets, DataGovDatasets, GbifDatasets,
+                                                HuggingFaceDatasets, NpmSearch, OllamaWebSearch, OpenAlexWorks,
+                                                OpenverseImages)
+        cases = [
+            (HuggingFaceDatasets(), json.dumps([{"id": "org/set", "tags": ["license:cc-by-4.0"], "private": False}]),
+             "hf-dataset:org/set", "cc-by-4.0"),
+            (OpenAlexWorks(), json.dumps({"meta": {"count": 1}, "results": [{"id": "https://openalex.org/W1", "doi": "https://doi.org/10.1/X",
+                                                                         "type": "dataset", "best_oa_location": {"license": "cc0"}}]}),
+             "doi:10.1/x", "cc0"),
+            (OpenverseImages(), json.dumps({"result_count": 1, "results": [{"id": "abc", "license": "by", "license_version": "2.0",
+                                                                           "foreign_landing_url": "https://example.org/p"}]}),
+             "openverse:abc", "CC-BY-2.0"),
+            (GbifDatasets(), json.dumps({"count": 1, "results": [{"key": "k1", "license": "http://creativecommons.org/publicdomain/zero/1.0/legalcode"}]}),
+             "gbif-dataset:k1", "CC0-1.0"),
+            (DataEuropaDatasets(), json.dumps({"result": {"count": 1, "results": [{"id": "d1", "title": {"en": "T"},
+                "distributions": [{"license": {"resource": "https://creativecommons.org/licenses/by/4.0/"}, "format": {"id": "CSV"},
+                                   "download_url": ["https://example.org/a.csv"]}]}]}}),
+             "europa:d1", "https://creativecommons.org/licenses/by/4.0/"),
+            (DataGovDatasets(), json.dumps({"results": [{"identifier": "id-1", "dcat": {"title": "T", "landingPage": ["a", "b"],
+                                                                                         "license": "http://www.usa.gov/publicdomain/label/1.0/"}}]}),
+             "datagov:id-1", "http://www.usa.gov/publicdomain/label/1.0/"),
+            (NpmSearch(), json.dumps({"total": 1, "objects": [{"package": {"name": "pkg", "license": "MIT",
+                "maintainers": [{"email": "someone@example.org"}], "links": {"repository": "https://github.com/o/r"}}}]}),
+             "npm:pkg", "MIT"),
+            (OllamaWebSearch(), json.dumps({"results": [{"title": "T", "url": "https://arxiv.org/abs/2401.01234v2", "content": "x"}]}),
+             "doi:10.48550/arxiv.2401.01234", None),
+        ]
+        for executor, body, key, licence in cases:
+            parsed = executor.parse(200, body.encode())
+            self.assertEqual(parsed.status, "ok", executor.executor_id)
+            self.assertEqual(parsed.items[0]["key"], key, executor.executor_id)
+            self.assertEqual(parsed.items[0]["licence_reported"], licence, executor.executor_id)
+            self.assertNotIn("someone@example.org", json.dumps(parsed.items))
+        atom = (b'<feed xmlns="http://www.w3.org/2005/Atom" xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" '
+                b'xmlns:arxiv="http://arxiv.org/schemas/atom"><opensearch:totalResults>1</opensearch:totalResults>'
+                b'<entry><id>http://arxiv.org/abs/2512.01465v2</id><title>T</title></entry></feed>')
+        parsed = Arxiv().parse(200, atom)
+        self.assertEqual((parsed.items[0]["key"], parsed.total_count), ("doi:10.48550/arxiv.2512.01465", 1))
+
+    def test_known_wrong_a_failed_or_malformed_answer_executes_nothing(self):
+        from query_multiplier.executors import HuggingFaceModels, NpmSearch
+        self.assertEqual(NpmSearch().parse(200, b"<html>not json</html>").status, "failed")
+        self.assertEqual(NpmSearch().parse(503, b"{}").status, "failed")
+        self.assertEqual(HuggingFaceModels().parse(200, b"[]").status, "empty")
+
+
+class LicenceLaneTests(Temporary):
+    def test_graphql_names_are_validated_before_any_process(self):
+        from query_multiplier.transport import licence_query
+        self.assertIn('repository(owner: "octo", name: "repo.js")', licence_query(["octo/repo.js"]))
+        for bad in (['octo/repo") { x }'], ["-bad/name"], [], ["a/b"] * 51):
+            with self.assertRaises(RequestRefused):
+                licence_query(bad)
+
+    def test_the_licence_lane_records_a_detected_licence_on_every_file_of_the_repository(self):
+        from loop_engine.core.library_ingestion.processes import CommandResult
+        from query_multiplier.runner import LicenceLane
+        ledger = self.ledger()
+        for key in ("github-file:octo/repo/api/openapi.yaml", "github-file:octo/repo/data/x.csv", "github-file:other/private/a.json"):
+            with ledger.lock:
+                ledger.db.execute("insert into candidates(key, url, kind, title, licence_reported, licence_field, licence_lead, "
+                                  "allowlisted, licence_basis, route, first_query_id, first_executor, first_seen_at, first_day, origins, payload) "
+                                  "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,1,?)",
+                                  (key, "u", "file", "t", None, "none", None, 0, "not_reported", "code_file_pool", "q", "github_code",
+                                   "2026-10-05T00:00:00Z", "2026-10-05", "{}"))
+                ledger.db.commit()
+        answer = json.dumps({"data": {"r0": {"nameWithOwner": "octo/repo", "isPrivate": False, "isArchived": False,
+                                             "licenseInfo": {"spdxId": "MIT"}},
+                                      "r1": {"nameWithOwner": "other/private", "isPrivate": True, "licenseInfo": {"spdxId": "MIT"}}}})
+        runner = lambda *a, **k: CommandResult(0, ("HTTP/2.0 200 OK\ncontent-type: application/json\n\n" + answer).encode(), "", 1.0, False, False)
+        run = Run(library=small_library(), products=[], executors=registry(), ledger=ledger, minutes=1,
+                  transport=Transport(load_policy(), runner=runner), resolve_licences=False)
+        lane = LicenceLane(run)
+        self.assertEqual(sorted(lane.pending()), ["octo/repo", "other/private"])
+        lane.resolve(sorted(lane.pending()))
+        rows = dict(ledger.rows("select key, allowlisted from candidates"))
+        self.assertEqual(rows["github-file:octo/repo/api/openapi.yaml"], 1)
+        self.assertEqual(rows["github-file:octo/repo/data/x.csv"], 1)
+        # Known-wrong case in the same answer: a private repository's licence is never applied.
+        self.assertEqual(rows["github-file:other/private/a.json"], 0)
+        self.assertEqual(lane.pending(), [])
+        self.assertEqual(ledger.scalar("select count(*) from attempts where state='folded'"), 1)
+
+
+class ReportTests(Temporary):
+    def test_the_report_keeps_counts_apart_and_compares_null_with_values(self):
+        from query_multiplier.report import report
+        ledger = self.ledger()
+        library = small_library()
+        executors = registry()
+        [built] = read_plan(plan(product("repos", "github_repositories", [("sdg_target", None), ("licence", 0), ("geography", 50)])),
+                            library, executors)
+        transport = FakeTransport(repo_rows("a/one", "a/two"))
+        run = Run(library=library, products=[built], executors=executors, transport=transport, ledger=ledger, minutes=1,
+                  resolve_licences=False)
+        lane, stream = run.lanes[0], run.lanes[0].streams[0]
+        for index in range(6):
+            transport.body = repo_rows(f"a/{index}", "a/shared")
+            lane.attempt(stream.next(), stream)
+        value = report(ledger, executors, bucket=2)
+        lane_report = value["lanes"]["github_repositories"]
+        self.assertEqual((lane_report["requests_sent"], lane_report["queries_executed"], lane_report["raw_results"]), (6, 6, 12))
+        self.assertEqual(lane_report["new_unique_candidates"], 7)
+        self.assertEqual(value["candidates"]["distinct"], 7)
+        self.assertEqual(value["candidates"]["found_by_more_than_one_query"], 1)
+        presence = value["yields"]["by_dimension_presence"]["geography"]
+        self.assertEqual(sum(side["executions"] for side in presence.values()), 6)
+        self.assertIsNotNone(value["projection"]["new_unique_per_day_upper"])
+
+
+class ProposalTests(Temporary):
+    def test_files_of_one_repository_become_one_row_with_every_path(self):
+        from query_multiplier.routing import proposals
+        ledger = self.ledger()
+        for path in ("a/openapi.yaml", "b/openapi.json"):
+            item = {"key": "github-file:o/r/" + path, "kind": "file", "title": "o/r/" + path,
+                    "extra": {"repository": "o/r", "path": path, "commit": "c" * 40}}
+            line, row = route(item)
+            with ledger.lock:
+                ledger.db.execute("insert into candidates(key, url, kind, title, licence_reported, licence_field, licence_lead, "
+                                  "allowlisted, licence_basis, route, first_query_id, first_executor, first_seen_at, first_day, origins, payload) "
+                                  "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,1,?)",
+                                  (item["key"], "u", "file", "t", "MIT", "f", "MIT", 1, "spdx_identifier", line, "q", "github_code",
+                                   "2026-10-05T00:00:00Z", "2026-10-05", json.dumps({"proposal": row})))
+                ledger.db.commit()
+        value = proposals(ledger)
+        rows = value["lines"]["openapi_sources"]
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(sorted(rows[0]["paths"]), ["a/openapi.yaml", "b/openapi.json"])
+        self.assertEqual(len(rows[0]["evidence"]), 2)
+
+
 if __name__ == "__main__":
     unittest.main()

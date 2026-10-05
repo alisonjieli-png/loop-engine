@@ -611,7 +611,9 @@ class GbifDatasets(Executor):
         if dimension.id in ("licence", "gbif_dataset_type"):
             return bool(value.attributes.get("gbif"))
         if dimension.id == "geography":
-            return bool(value.attributes.get("iso2"))
+            # GBIF answers 400 for a reserved code such as AC (Ascension); a country or area with an M49 code is
+            # one GBIF knows.
+            return bool(value.attributes.get("iso2")) and bool(value.attributes.get("m49"))
         return True
 
     def render(self, assignment, params, *, page=1):
