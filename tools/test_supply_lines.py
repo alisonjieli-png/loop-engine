@@ -3298,6 +3298,8 @@ class ApiToolServersTest(unittest.TestCase):
             request(14, "tools/call", {"name": "get_thing", "arguments": {}}),
             request(15, "tools/call", {"name": "get_thing", "arguments": {"thing_id": "t1", "colour": "red"}}),
             request(16, "initialize", {}), {"jsonrpc": "2.0", "method": "no/such/notification"},
+            # A cancellation of a call that is not in flight must not silence a later call with its id.
+            {"jsonrpc": "2.0", "method": "notifications/cancelled", "params": {"requestId": 17}},
             request(17, "tools/call", {"name": "get_thing", "arguments": {"thing_id": "t1"}}),
             [request(18, "ping"), notification, request(19, "no/such/method")]])
         self.assertEqual(status, 0)

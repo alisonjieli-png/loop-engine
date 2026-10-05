@@ -168,7 +168,8 @@ PARSE_ERROR, INVALID_REQUEST, METHOD_NOT_FOUND, INVALID_PARAMS, INTERNAL_ERROR =
 FORM_MEDIA_TYPE = "application/x-www-form-urlencoded"
 #: The placement of an AWS Signature Version 4 credential: it is never sent as it is; it signs each request.
 SIGNED = "aws_sigv4"
-STATE = {"version": PROTOCOL_VERSIONS[0], "cancelled": set()}
+#: The negotiated version, the tool calls in flight and those of them the client cancelled (by JSON of the id).
+STATE = {"version": PROTOCOL_VERSIONS[0], "running": set(), "cancelled": set()}
 _OUTPUT, _CANCELLING = threading.Lock(), threading.Lock()
 
 
@@ -384,8 +385,10 @@ def handle(message):
         return _failure(identity, INVALID_REQUEST, "Invalid Request: params must be an object or an array")
     if not named:
         if method == "notifications/cancelled" and isinstance(params, dict):
+            key = json.dumps(params.get("requestId"))
             with _CANCELLING:
-                STATE["cancelled"].add(json.dumps(params.get("requestId")))
+                if key in STATE["running"]:  # a call already answered, or never made, is not remembered
+                    STATE["cancelled"].add(key)
         return None  # a notification is never answered
     try:
         if isinstance(params, list):
@@ -430,12 +433,13 @@ def _write(message):
 
 def _serve_call(message, slots):
     """Answer one tools/call on its own thread, unless the client cancelled it meanwhile."""
+    key = json.dumps(message.get("id"))
     try:
         answer = handle(message)
-        key = json.dumps(message.get("id"))
         with _CANCELLING:
             cancelled = key in STATE["cancelled"]
             STATE["cancelled"].discard(key)
+            STATE["running"].discard(key)
         if answer is not None and not cancelled:
             _write(answer)
     finally:
@@ -464,6 +468,8 @@ def main():
                     _write(answers)
             elif isinstance(message, dict) and message.get("method") == "tools/call" and "id" in message:
                 slots.acquire()
+                with _CANCELLING:
+                    STATE["running"].add(json.dumps(message.get("id")))
                 worker = threading.Thread(target=_serve_call, args=(message, slots), daemon=True)
                 worker.start()
                 workers = [thread for thread in workers if thread.is_alive()] + [worker]
@@ -827,6 +833,8 @@ class ServerTest(unittest.TestCase):
         self.mock.answer = _answer(status, kind)
         session = self.session()
         session.initialize()
+        # A cancellation of a call that is not in flight is not remembered against a later call with its id.
+        session.send({"jsonrpc": "2.0", "method": "notifications/cancelled", "params": {"requestId": "first"}})
         for identity in ("first", "second"):
             session.send({"jsonrpc": "2.0", "id": identity, "method": "tools/call",
                           "params": {"name": name, "arguments": arguments}})
@@ -927,6 +935,8 @@ if __name__ == "__main__":
 
 #: The marker in TEST_BODY that the schema check replaces, so the tests and the line check schemas alike.
 SCHEMA_MARKER = "# SCHEMA PROBLEMS\n"
+#: The schema check's source, read once at import: a file edited during a long run never changes what is copied.
+SCHEMA_PROBLEMS_SOURCE = inspect.getsource(_schema_problems)
 
 
 def test_source(data: dict) -> str:
@@ -935,7 +945,7 @@ def test_source(data: dict) -> str:
         raise ValueError("the test body holds the schema marker once")
     keywords = f"SCHEMA_KEYWORDS = {SCHEMA_KEYWORDS!r}\nSCHEMA_TYPES = {SCHEMA_TYPES!r}\n"
     return (TEST_HEAD + keywords + json_constant("DATA", data)
-            + TEST_BODY.replace(SCHEMA_MARKER, inspect.getsource(_schema_problems)))
+            + TEST_BODY.replace(SCHEMA_MARKER, SCHEMA_PROBLEMS_SOURCE))
 
 
 __all__ = ["SCHEMA_KEYWORDS", "SCHEMA_TYPES", "client_helpers", "json_constant", "render_json", "server_source",
