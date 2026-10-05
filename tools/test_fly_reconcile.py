@@ -143,11 +143,18 @@ class FlyReconcileTests(unittest.TestCase):
             return remote.start(self.record, source)
 
     def wait_local(self, directory):
+        """The operation's report once its fixture supervisor has finished: result saved and lock let go.
+
+        The supervisor saves its result before it releases the operation lock, so status can already report the
+        outcome while the lock is held for a moment longer. A start or reconcile in that moment is refused with
+        BlockingIOError, the parallel-start refusal, which on October 5, 2026 failed one run in five of the
+        idempotent-start check on a machine under load. The checks that follow look at the finished operation."""
         deadline = time.monotonic() + 8
         while time.monotonic() < deadline:
             with patch.object(remote, "ROOT", directory):
                 report = remote.status(self.record)
-            if report["state"] != "pending":
+                released = not remote.running()
+            if report["state"] != "pending" and released:
                 return report
             time.sleep(0.02)
         self.fail("fixture supervisor did not finish")
