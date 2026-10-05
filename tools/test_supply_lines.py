@@ -1750,6 +1750,48 @@ class JavaScriptClientTest(unittest.TestCase):
             self.assertFalse(any(entry["path"].endswith(".mjs") for entry in payload["package"]["files"]))
 
     @unittest.skipUnless(shutil.which("node"), "Node.js runs the JavaScript tests")
+    def test_a_module_that_follows_a_redirect_to_another_origin_fails_its_generated_tests(self):
+        # Known wrong: the modules up to generator 1.7.0 let fetch follow every redirect itself, which drops
+        # Authorization on the way to another origin but keeps a custom credential header such as X-Api-Key. The
+        # redirect test must fail them (for X-Api-Key because the credential reached the second server), and the
+        # rest of each file must still pass.
+        import re
+        import urllib.parse
+        from supply_lines import javascript_clients as scripts
+        from supply_lines import openapi_operations as line
+        following = ('async function send(request, timeout) {\n'
+                     '  const answer = await fetch(request.url, { method: request.method, headers: request.headers,\n'
+                     '                                            body: request.body, signal: AbortSignal.timeout(timeout * 1000) });\n'
+                     '  return { status: answer.status, contentType: answer.headers.get("content-type") || "",\n'
+                     '           body: new Uint8Array(await answer.arrayBuffer()) };\n'
+                     '}\n\n')
+        start, end = scripts.RUNTIME.index("const REDIRECT_STATUSES"), scripts.RUNTIME.index("function decode(")
+        found, _refused = line.operations(SPECIFICATION, SOURCE)
+        chosen = [operation for operation in found if operation.function in ("get_thing", "delete_thing")]
+        with tempfile.TemporaryDirectory() as folder:
+            for operation in chosen:
+                call, example = line._example_arguments(operation), line._response_example(operation)
+                expected = urllib.parse.urlsplit(operation.base_url).path.rstrip("/") + operation.path.replace(
+                    "{thing_id}", urllib.parse.quote(str(call["thing_id"]), safe=""))
+                tests, _count = scripts.test_source(operation, call, example, expected)
+                module = scripts.module_source(operation, SPEC_FACTS)
+                self.assertIn(scripts.RUNTIME, module)
+                (Path(folder) / f"{operation.module}.test.mjs").write_text(tests, encoding="utf-8")
+                for label, text in (("redirect rule", module), ("fetch's own following", module.replace(
+                        scripts.RUNTIME, scripts.RUNTIME[:start] + following + scripts.RUNTIME[end:]))):
+                    (Path(folder) / f"{operation.module}.mjs").write_text(text, encoding="utf-8")
+                    done = subprocess.run(["node", "--test", "--test-reporter=tap", f"{operation.module}.test.mjs"],
+                                          cwd=folder, capture_output=True, text=True, timeout=300)
+                    failed = re.findall(r"(?m)^\s*not ok \d+ - (known wrong: .*?|the .*?)(?: #.*)?$", done.stdout)
+                    if label == "redirect rule":
+                        self.assertEqual((done.returncode, failed), (0, []), done.stdout[-1500:])
+                        continue
+                    self.assertEqual(failed, ["known wrong: a redirect to another origin is refused and carries no "
+                                              "credential"], done.stdout[-1500:])
+                    if operation.auth["name"] == "X-Api-Key":
+                        self.assertIn("the credential reached another origin", done.stdout)
+
+    @unittest.skipUnless(shutil.which("node"), "Node.js runs the JavaScript tests")
     def test_one_broken_test_file_does_not_fail_the_rest_of_its_batch(self):
         from supply_lines import javascript_clients as scripts
         good = ('import { describe, test } from "node:test";\nimport assert from "node:assert/strict";\n'

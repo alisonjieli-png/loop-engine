@@ -3,11 +3,16 @@
 ```text
 one API operation package
 ├── <module>.py and test_<module>.py        the Python client and its offline tests (unittest)
-├── <module>.mjs                             the same operation as an ES module for Node.js 18 or later
+├── <module>.mjs                             the same operation as an ES module for Node.js 18 or later; it
+│                                            follows a redirect itself (redirect "manual"), within the API's
+│                                            origin only and without the credential, and rejects one to another
+│                                            origin (fetch's own following keeps a custom credential header)
 ├── <module>.d.ts                            its TypeScript declarations (arguments, options, ApiError)
 └── <module>.test.mjs                        its offline tests (node --test): the same example call, the same
                                              expected path, form pairs and answer, and the same known-wrong
-                                             calls, with fetch closed so no test reaches the network
+                                             calls, with fetch closed so no test reaches the network; the
+                                             redirect test alone reaches two local servers on the loopback
+                                             interface
 ```
 
 The JavaScript module and its tests are kept only when its tests pass; a
@@ -159,11 +164,56 @@ function region() {
   return process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || REGION_DEFAULT;
 }
 
+const REDIRECT_STATUSES = [301, 302, 303, 307, 308];
+/** The most redirects one call follows within the API's origin, as many as fetch itself follows. */
+const MAXIMUM_REDIRECTS = 20;
+
+/** The headers without the credential's (fetch would keep a custom one, such as X-Api-Key, on any redirect). */
+function withoutCredential(headers) {
+  const names = !AUTH ? [] : AUTH.placement === "aws_sigv4" ? ["authorization", "x-amz-date", "x-amz-security-token"]
+    : [AUTH.name.toLowerCase()];
+  return Object.fromEntries(Object.entries(headers).filter(([name]) => !names.includes(name.toLowerCase())));
+}
+
+/**
+ * Send the request and return its answer, error answers included. A redirect is followed only within the
+ * request's origin (scheme, host and port), as fetch follows it but without the credential; a redirect to another
+ * origin rejects with ApiError before anything is sent there.
+ */
 async function send(request, timeout) {
-  const answer = await fetch(request.url, { method: request.method, headers: request.headers,
-                                            body: request.body, signal: AbortSignal.timeout(timeout * 1000) });
-  return { status: answer.status, contentType: answer.headers.get("content-type") || "",
-           body: new Uint8Array(await answer.arrayBuffer()) };
+  const signal = AbortSignal.timeout(timeout * 1000);
+  let { url, method, headers, body } = request;
+  for (let redirects = 0; ; redirects += 1) {
+    const answer = await fetch(url, { method, headers, body, redirect: "manual", signal });
+    const location = REDIRECT_STATUSES.includes(answer.status) ? answer.headers.get("location") : null;
+    if (location !== null) {
+      let target = null;
+      try {
+        target = new URL(location, url);
+      } catch {
+        target = null;
+      }
+      if (target === null || target.origin !== new URL(url).origin) {
+        await answer.body?.cancel();
+        const named = target ? target.origin : "an invalid address";
+        throw new ApiError(answer.status, "redirect to another origin refused: " + named, null);
+      }
+      if (redirects < MAXIMUM_REDIRECTS) {
+        await answer.body?.cancel();
+        if (((answer.status === 301 || answer.status === 302) && method === "POST") ||
+            (answer.status === 303 && method !== "GET" && method !== "HEAD")) {
+          method = "GET";
+          body = null;
+          headers = Object.fromEntries(Object.entries(headers).filter(([name]) => name.toLowerCase() !== "content-type"));
+        }
+        headers = withoutCredential(headers);
+        url = target.href;
+        continue;
+      }
+    }
+    return { status: answer.status, contentType: answer.headers.get("content-type") || "",
+             body: new Uint8Array(await answer.arrayBuffer()) };
+  }
 }
 
 function decode(contentType, payload) {
@@ -395,6 +445,27 @@ def declaration_source(operation) -> str:
     return "\n".join(lines)
 
 
+#: The local HTTP server of every test file's redirect test: on its own port of the loopback interface, it records
+#: each request and answers 302 to its location (with the request's own path and query) when it has one, else 200.
+REDIRECT_SERVER = r'''function listen(location) {
+  const requests = [];
+  const server = http.createServer((request, response) => {
+    request.resume();
+    request.on("end", () => {
+      requests.push({ url: request.url, headers: request.headers });
+      response.writeHead(location ? 302 : 200, { ...(location ? { Location: location + request.url } : {}),
+                                               "Content-Length": "0", Connection: "close" });
+      response.end();
+    });
+  });
+  return new Promise((resolve) => server.listen(0, "127.0.0.1", () => resolve({
+    requests, address: `http://127.0.0.1:${server.address().port}`,
+    close: () => new Promise((done) => { server.closeAllConnections?.(); server.close(done); }) })));
+}
+
+'''
+
+
 def test_source(operation, call: dict, example, expected_path: str) -> tuple:
     """(the node:test file of one operation, the number of tests it holds)."""
     name = function_name(operation.function)
@@ -493,6 +564,40 @@ def test_source(operation, call: dict, example, expected_path: str) -> tuple:
               f"  await assert.rejects(client.{name}(CALL, {{ transport, baseUrl: \"http://example.com\" }}), RangeError);",
               "  assert.deepEqual(transport.requests, []);", "});"]
     count += 1
+    # The API's address leads to a local server that answers 302 to a second one on another port: the call must
+    # reject with the redirect's ApiError, and no credential may reach the second server (fetch's own redirect
+    # following drops Authorization but keeps a custom header such as X-Api-Key, and a query).
+    tests += ["", 'test("known wrong: a redirect to another origin is refused and carries no credential", async () => {',
+              "  const second = await listen(null);",
+              "  const first = await listen(second.address);",
+              "  globalThis.fetch = (url, init) => {  // the API's address leads to the first server, nothing else leaves",
+              "    const address = new URL(url);",
+              "    if (address.protocol === \"https:\") url = first.address + address.pathname + address.search;",
+              "    else if (address.hostname !== \"127.0.0.1\") throw new Error(\"the network is closed\");",
+              "    return NETWORK_FETCH(url, init);",
+              "  };",
+              "  let refused = null;",
+              "  try {",
+              f"    await client.{name}(CALL);",
+              "  } catch (error) {",
+              "    refused = error;",
+              "  } finally {",
+              "    globalThis.fetch = closedFetch;",
+              "    await Promise.all([first.close(), second.close()]);",
+              "  }",
+              "  assert.equal(first.requests.length, 1);",
+              "  for (const sent of second.requests) {",
+              "    const text = [sent.url, ...Object.values(sent.headers)].join(\" \");",
+              "    const leaked = CREDENTIAL_FORMS.filter((form) => text.includes(form));",
+              "    assert.deepEqual(leaked, [], \"the credential reached another origin\");",
+              "  }",
+              "  assert.deepEqual(second.requests, []);",
+              "  assert.ok(refused instanceof client.ApiError, \"a redirect to another origin was followed\");",
+              "  assert.equal(refused.status, 302);",
+              "  assert.ok(refused.message.includes(\"redirect to another origin refused: \" + second.address),",
+              "            refused.message);",
+              "});"]
+    count += 1
     if auth and auth["placement"] == SIGV4_PLACEMENT:
         tests += ["", "test(\"the signature matches the AWS test vector\", () => {",
                   '  const headers = client.signatureHeaders("GET", "https://example.amazonaws.com/", {}, "", "AKIDEXAMPLE",',
@@ -507,15 +612,24 @@ def test_source(operation, call: dict, example, expected_path: str) -> tuple:
                  *([f"const EXPECTED_FORM = {js([list(pair) for pair in form_pairs(call['body'], operation.body_encoding)])};"]
                    if form and "body" in call else []),
                  *([f"const ROOT = {js(SELF_HOSTED_TEST_ROOT)};"] if self_hosted else []),
-                 f"const VARIABLES = {js(variables)};"]
+                 f"const VARIABLES = {js(variables)};",
+                 "/** The test credential as it travels: as it is set, and inside Basic credentials. */",
+                 'const CREDENTIAL_FORMS = ["test-credential", btoa("test-credential")];']
     source = ("// Offline tests of " + name + ": a local stand-in for the API answers with the specification's example,\n"
-              "// and known-wrong calls must reject and send nothing. fetch is closed, so no test reaches the network.\n"
+              "// and known-wrong calls must reject and send nothing. fetch is closed, so no test reaches the network;\n"
+              "// the redirect test alone reaches its two local servers on the loopback interface.\n"
               'import { describe, test, beforeEach, afterEach } from "node:test";\n'
               'import assert from "node:assert/strict";\n'
+              'import http from "node:http";\n'
               f'import * as client from "./{operation.module}{JAVASCRIPT_SUFFIX}";\n\n'
-              'globalThis.fetch = async () => { throw new Error("the network is closed while generated tests run"); };\n\n'
+              "// The real fetch, kept on the closed one: test files that share one process each close it again.\n"
+              "const NETWORK_FETCH = globalThis.fetch.network ?? globalThis.fetch;\n"
+              'const closedFetch = async () => { throw new Error("the network is closed while generated tests run"); };\n'
+              "closedFetch.network = NETWORK_FETCH;\n"
+              "globalThis.fetch = closedFetch;\n\n"
               + "\n".join(constants) + "\n"
               "const saved = {};\n\n"
+              + REDIRECT_SERVER +
               f"function mock(status = {operation.success_statuses[0]}, payload = null, contentType = {js(content_type)}) {{\n"
               "  const requests = [];\n"
               "  const transport = async (request, timeout) => {\n"
