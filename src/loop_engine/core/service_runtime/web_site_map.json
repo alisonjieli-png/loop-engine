@@ -18,8 +18,8 @@
       "title": "Dot working context",
       "description": "Prioritized research and acceptance tasks with dated, public-safe handoff instructions.",
       "group": "Company",
-      "linked_from": [],
-      "unlinked_reason": "Owner-requested unlisted working brief for an authorized Dot; public content, without a navigation entry.",
+      "linked_from": ["page"],
+      "unlinked_reason": "",
       "scroll_budget": "long",
       "price_in_first_screen": false,
       "indexed": false

@@ -34,6 +34,12 @@ class DotPageTests(unittest.TestCase):
             for group in site.footer_groups:
                 self.assertNotIn(address, [row.href for row in group.links])
 
+    def test_context_is_reachable_from_admin_without_public_navigation(self):
+        site = load_site_map()
+        self.assertEqual(site.page("/dot-context").linked_from, ("page",))
+        self.assertEqual(site.page("/dot-context").unlinked_reason, "")
+        self.assertIn(b'href="/dot-context"', web_pages.read_packaged_asset("index.html"))
+
     def test_html_escapes_editorial_text_and_attributes(self):
         record = deepcopy(pages.load_record("context"))
         record["title"] = '<script>alert("test")</script>'

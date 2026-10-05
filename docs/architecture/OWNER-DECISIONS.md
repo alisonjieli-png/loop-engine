@@ -112,6 +112,14 @@ current retention. The first work-log interface uses existing administrator
 authority; the general notice does not widen an individual account's scopes,
 publish private submissions or make a planned integration operational.
 
+On October 4 the owner reaffirmed permission to implement and deploy this
+general policy, including sending, receiving and reading files and other
+inputs to improve the service. Engineering may adjust operational defaults
+and remove unnecessary workflow restrictions within that purpose. This does
+not turn customer content into public material, grant one account access to
+another, or make untested behavior a verified result. No additional approval
+is needed for the already described private work-log release.
+
 The table preserves the owner's dated decisions and rationales. Current clarifications above supersede older engineering descriptions of universal per-package execution checks, older counts and earlier creative priorities. Currency is established by current code and release records, not a quoted date.
 
 ### Decisions that stand until the owner changes them

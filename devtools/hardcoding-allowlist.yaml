@@ -1,5 +1,203 @@
 schema: hardcoding_allowlist/v1
 entries:
+- finding_id: hardcoding.35bd5888ea82b0e3a86211a0
+  owner: "tools.supply_lines.json_schemas"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 4 for release62: exact example.org URI in FORMAT_VALUES is inert synthetic format-example content, not a requested endpoint or provider selection. The generator checks examples locally and does not fetch this value. No source or file-wide exemption."
+  created_on: '2026-10-04'
+  expires_on: '2027-01-04'
+- finding_id: hardcoding.9bc95f9090bbbd5eaaa6efa5
+  owner: "tools.supply_lines.json_schemas"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 4 for release62: exact example.org URI in FORMAT_VALUES is inert synthetic format-example content, not a requested endpoint or provider selection. The generator checks examples locally and does not fetch this value. No source or file-wide exemption."
+  created_on: '2026-10-04'
+  expires_on: '2027-01-04'
+- finding_id: hardcoding.c9f9d6360da8642243c38546
+  owner: "tools.supply_lines.json_schemas"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 4 for release62: exact example.org URI in FORMAT_VALUES is inert synthetic format-example content, not a requested endpoint or provider selection. The generator checks examples locally and does not fetch this value. No source or file-wide exemption."
+  created_on: '2026-10-04'
+  expires_on: '2027-01-04'
+- finding_id: hardcoding.e7e982a2ec60dffa6e18dfc8
+  owner: "tools.supply_lines.json_schemas"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 4 for release62: exact example.org URI in FORMAT_VALUES is inert synthetic format-example content, not a requested endpoint or provider selection. The generator checks examples locally and does not fetch this value. No source or file-wide exemption."
+  created_on: '2026-10-04'
+  expires_on: '2027-01-04'
+- finding_id: hardcoding.0b0ac2b7aa8585226eb628c7
+  owner: "tools.supply_lines.json_schemas:minimal_instance"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 4 for release62: exact JSON Schema wire keyword or type in the schema instance generator, not a Baltor runtime state or taxonomy. Preserve the standard spelling at this parser owner. Local schema-generation tests retain positive and known-wrong values; this finding-specific exception does not admit another token."
+  created_on: '2026-10-04'
+  expires_on: '2027-01-04'
+- finding_id: hardcoding.11813635d1cd8c0d6c7c7bca
+  owner: "tools.supply_lines.json_schemas:minimal_instance"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 4 for release62: exact JSON Schema wire keyword or type in the schema instance generator, not a Baltor runtime state or taxonomy. Preserve the standard spelling at this parser owner. Local schema-generation tests retain positive and known-wrong values; this finding-specific exception does not admit another token."
+  created_on: '2026-10-04'
+  expires_on: '2027-01-04'
+- finding_id: hardcoding.28b8bc3cff6ca1805da23640
+  owner: "tools.supply_lines.json_schemas:minimal_instance"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 4 for release62: exact JSON Schema wire keyword or type in the schema instance generator, not a Baltor runtime state or taxonomy. Preserve the standard spelling at this parser owner. Local schema-generation tests retain positive and known-wrong values; this finding-specific exception does not admit another token."
+  created_on: '2026-10-04'
+  expires_on: '2027-01-04'
+- finding_id: hardcoding.4a23c15eea238e7d7dd75264
+  owner: "tools.supply_lines.json_schemas:minimal_instance"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 4 for release62: exact JSON Schema wire keyword or type in the schema instance generator, not a Baltor runtime state or taxonomy. Preserve the standard spelling at this parser owner. Local schema-generation tests retain positive and known-wrong values; this finding-specific exception does not admit another token."
+  created_on: '2026-10-04'
+  expires_on: '2027-01-04'
+- finding_id: hardcoding.562180c1a49caf99fb14abc0
+  owner: "tools.supply_lines.json_schemas:minimal_instance"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 4 for release62: exact JSON Schema wire keyword or type in the schema instance generator, not a Baltor runtime state or taxonomy. Preserve the standard spelling at this parser owner. Local schema-generation tests retain positive and known-wrong values; this finding-specific exception does not admit another token."
+  created_on: '2026-10-04'
+  expires_on: '2027-01-04'
+- finding_id: hardcoding.9b3c45e758c160ddf4361f43
+  owner: "tools.supply_lines.json_schemas:minimal_instance"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 4 for release62: exact JSON Schema wire keyword or type in the schema instance generator, not a Baltor runtime state or taxonomy. Preserve the standard spelling at this parser owner. Local schema-generation tests retain positive and known-wrong values; this finding-specific exception does not admit another token."
+  created_on: '2026-10-04'
+  expires_on: '2027-01-04'
+- finding_id: hardcoding.a3719a005ea2a910cb804e1c
+  owner: "tools.supply_lines.json_schemas:minimal_instance"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 4 for release62: exact JSON Schema wire keyword or type in the schema instance generator, not a Baltor runtime state or taxonomy. Preserve the standard spelling at this parser owner. Local schema-generation tests retain positive and known-wrong values; this finding-specific exception does not admit another token."
+  created_on: '2026-10-04'
+  expires_on: '2027-01-04'
+- finding_id: hardcoding.a756496d32e6409dc0b4c5df
+  owner: "tools.supply_lines.json_schemas:minimal_instance"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 4 for release62: exact JSON Schema wire keyword or type in the schema instance generator, not a Baltor runtime state or taxonomy. Preserve the standard spelling at this parser owner. Local schema-generation tests retain positive and known-wrong values; this finding-specific exception does not admit another token."
+  created_on: '2026-10-04'
+  expires_on: '2027-01-04'
+- finding_id: hardcoding.b8c6312e467cb20bc65cf618
+  owner: "tools.supply_lines.json_schemas:minimal_instance"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 4 for release62: exact JSON Schema wire keyword or type in the schema instance generator, not a Baltor runtime state or taxonomy. Preserve the standard spelling at this parser owner. Local schema-generation tests retain positive and known-wrong values; this finding-specific exception does not admit another token."
+  created_on: '2026-10-04'
+  expires_on: '2027-01-04'
+- finding_id: hardcoding.c86ab4640ad383c5c81dffeb
+  owner: "tools.supply_lines.json_schemas:minimal_instance"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 4 for release62: exact JSON Schema wire keyword or type in the schema instance generator, not a Baltor runtime state or taxonomy. Preserve the standard spelling at this parser owner. Local schema-generation tests retain positive and known-wrong values; this finding-specific exception does not admit another token."
+  created_on: '2026-10-04'
+  expires_on: '2027-01-04'
+- finding_id: hardcoding.ed2257a2e104b4729cd92507
+  owner: "tools.supply_lines.json_schemas:minimal_instance"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 4 for release62: exact JSON Schema wire keyword or type in the schema instance generator, not a Baltor runtime state or taxonomy. Preserve the standard spelling at this parser owner. Local schema-generation tests retain positive and known-wrong values; this finding-specific exception does not admit another token."
+  created_on: '2026-10-04'
+  expires_on: '2027-01-04'
+- finding_id: hardcoding.ea84b7b6d2322b91538086a0
+  owner: "tools.supply_lines.openapi_sources.json:specifications[103].credential_variable"
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  rationale: "Reviewed October 4 for release62: this exact source entry declares a public environment-variable name, never a credential value. The source reader validates its identifier syntax; generated request code reads it only when the caller executes an authorized request, with credential references and effects declared in package metadata. Discovery and generation do not load or transmit the credential. Independent supply-code review confirmed this boundary; no other source name or secret-shaped value is exempt."
+  created_on: '2026-10-04'
+  expires_on: '2027-01-04'
+- finding_id: hardcoding.6135770176b2cbb82d9ecf79
+  owner: "tools.supply_lines.openapi_sources.json:specifications[119].credential_variable"
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  rationale: "Reviewed October 4 for release62: this exact source entry declares a public environment-variable name, never a credential value. The source reader validates its identifier syntax; generated request code reads it only when the caller executes an authorized request, with credential references and effects declared in package metadata. Discovery and generation do not load or transmit the credential. Independent supply-code review confirmed this boundary; no other source name or secret-shaped value is exempt."
+  created_on: '2026-10-04'
+  expires_on: '2027-01-04'
+- finding_id: hardcoding.ca913968929028258bcc420a
+  owner: "tools.supply_lines.openapi_sources.json:specifications[120].credential_variable"
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  rationale: "Reviewed October 4 for release62: this exact source entry declares a public environment-variable name, never a credential value. The source reader validates its identifier syntax; generated request code reads it only when the caller executes an authorized request, with credential references and effects declared in package metadata. Discovery and generation do not load or transmit the credential. Independent supply-code review confirmed this boundary; no other source name or secret-shaped value is exempt."
+  created_on: '2026-10-04'
+  expires_on: '2027-01-04'
+- finding_id: hardcoding.14f019d6e157fefe2d2a538c
+  owner: "tools.supply_lines.openapi_sources.json:specifications[124].credential_variable"
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  rationale: "Reviewed October 4 for release62: this exact source entry declares a public environment-variable name, never a credential value. The source reader validates its identifier syntax; generated request code reads it only when the caller executes an authorized request, with credential references and effects declared in package metadata. Discovery and generation do not load or transmit the credential. Independent supply-code review confirmed this boundary; no other source name or secret-shaped value is exempt."
+  created_on: '2026-10-04'
+  expires_on: '2027-01-04'
+- finding_id: hardcoding.c6813f36dc368279c4ab693a
+  owner: "tools.supply_lines.openapi_sources.json:specifications[128].credential_variable"
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  rationale: "Reviewed October 4 for release62: this exact source entry declares a public environment-variable name, never a credential value. The source reader validates its identifier syntax; generated request code reads it only when the caller executes an authorized request, with credential references and effects declared in package metadata. Discovery and generation do not load or transmit the credential. Independent supply-code review confirmed this boundary; no other source name or secret-shaped value is exempt."
+  created_on: '2026-10-04'
+  expires_on: '2027-01-04'
+- finding_id: hardcoding.0b6d66839ad3d05a046ca9f5
+  owner: "tools.supply_lines.openapi_sources.json:specifications[134].credential_variable"
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  rationale: "Reviewed October 4 for release62: this exact source entry declares a public environment-variable name, never a credential value. The source reader validates its identifier syntax; generated request code reads it only when the caller executes an authorized request, with credential references and effects declared in package metadata. Discovery and generation do not load or transmit the credential. Independent supply-code review confirmed this boundary; no other source name or secret-shaped value is exempt."
+  created_on: '2026-10-04'
+  expires_on: '2027-01-04'
+- finding_id: hardcoding.8007b336fb0de2465e0a8a8c
+  owner: "tools.supply_lines.openapi_sources.json:specifications[140].credential_variable"
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  rationale: "Reviewed October 4 for release62: this exact source entry declares a public environment-variable name, never a credential value. The source reader validates its identifier syntax; generated request code reads it only when the caller executes an authorized request, with credential references and effects declared in package metadata. Discovery and generation do not load or transmit the credential. Independent supply-code review confirmed this boundary; no other source name or secret-shaped value is exempt."
+  created_on: '2026-10-04'
+  expires_on: '2027-01-04'
+- finding_id: hardcoding.3d9d33b80bcf4c3e7620c4f2
+  owner: "tools.supply_lines.openapi_sources.json:specifications[141].credential_variable"
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  rationale: "Reviewed October 4 for release62: this exact source entry declares a public environment-variable name, never a credential value. The source reader validates its identifier syntax; generated request code reads it only when the caller executes an authorized request, with credential references and effects declared in package metadata. Discovery and generation do not load or transmit the credential. Independent supply-code review confirmed this boundary; no other source name or secret-shaped value is exempt."
+  created_on: '2026-10-04'
+  expires_on: '2027-01-04'
+- finding_id: hardcoding.7d33fbf28103b6d50eba5eea
+  owner: "tools.supply_lines.openapi_sources.json:specifications[144].credential_variable"
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  rationale: "Reviewed October 4 for release62: this exact source entry declares a public environment-variable name, never a credential value. The source reader validates its identifier syntax; generated request code reads it only when the caller executes an authorized request, with credential references and effects declared in package metadata. Discovery and generation do not load or transmit the credential. Independent supply-code review confirmed this boundary; no other source name or secret-shaped value is exempt."
+  created_on: '2026-10-04'
+  expires_on: '2027-01-04'
+- finding_id: hardcoding.7540bd224c4a47013f3f188d
+  owner: "tools.supply_lines.openapi_sources.json:specifications[188].credential_variable"
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  rationale: "Reviewed October 4 for release62: this exact source entry declares a public environment-variable name, never a credential value. The source reader validates its identifier syntax; generated request code reads it only when the caller executes an authorized request, with credential references and effects declared in package metadata. Discovery and generation do not load or transmit the credential. Independent supply-code review confirmed this boundary; no other source name or secret-shaped value is exempt."
+  created_on: '2026-10-04'
+  expires_on: '2027-01-04'
+- finding_id: hardcoding.aa55d0abb53281512cdca0aa
+  owner: "tools.supply_lines.openapi_sources.json:specifications[189].credential_variable"
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  rationale: "Reviewed October 4 for release62: this exact source entry declares a public environment-variable name, never a credential value. The source reader validates its identifier syntax; generated request code reads it only when the caller executes an authorized request, with credential references and effects declared in package metadata. Discovery and generation do not load or transmit the credential. Independent supply-code review confirmed this boundary; no other source name or secret-shaped value is exempt."
+  created_on: '2026-10-04'
+  expires_on: '2027-01-04'
+- finding_id: hardcoding.aac8018d0a15170e6c1b3099
+  owner: "tools.supply_lines.openapi_sources.json:specifications[190].credential_variable"
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  rationale: "Reviewed October 4 for release62: this exact source entry declares a public environment-variable name, never a credential value. The source reader validates its identifier syntax; generated request code reads it only when the caller executes an authorized request, with credential references and effects declared in package metadata. Discovery and generation do not load or transmit the credential. Independent supply-code review confirmed this boundary; no other source name or secret-shaped value is exempt."
+  created_on: '2026-10-04'
+  expires_on: '2027-01-04'
+- finding_id: hardcoding.7b767c02084a17e01231ce64
+  owner: "tools.supply_lines.openapi_sources.json:specifications[221].credential_variable"
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  rationale: "Reviewed October 4 for release62: this exact source entry declares a public environment-variable name, never a credential value. The source reader validates its identifier syntax; generated request code reads it only when the caller executes an authorized request, with credential references and effects declared in package metadata. Discovery and generation do not load or transmit the credential. Independent supply-code review confirmed this boundary; no other source name or secret-shaped value is exempt."
+  created_on: '2026-10-04'
+  expires_on: '2027-01-04'
+- finding_id: hardcoding.7908b2906825af8f222bff1d
+  owner: "tools.supply_lines.openapi_sources.json:specifications[61].credential_variable"
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  rationale: "Reviewed October 4 for release62: this exact source entry declares a public environment-variable name, never a credential value. The source reader validates its identifier syntax; generated request code reads it only when the caller executes an authorized request, with credential references and effects declared in package metadata. Discovery and generation do not load or transmit the credential. Independent supply-code review confirmed this boundary; no other source name or secret-shaped value is exempt."
+  created_on: '2026-10-04'
+  expires_on: '2027-01-04'
+- finding_id: hardcoding.38e1261018921ac6792d6d8a
+  owner: "tools.supply_lines.openapi_sources.json:specifications[67].credential_variable"
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  rationale: "Reviewed October 4 for release62: this exact source entry declares a public environment-variable name, never a credential value. The source reader validates its identifier syntax; generated request code reads it only when the caller executes an authorized request, with credential references and effects declared in package metadata. Discovery and generation do not load or transmit the credential. Independent supply-code review confirmed this boundary; no other source name or secret-shaped value is exempt."
+  created_on: '2026-10-04'
+  expires_on: '2027-01-04'
+- finding_id: hardcoding.c2011bb5ab0b8dfc464cea5a
+  owner: "tools.supply_lines.openapi_sources.json:specifications[80].credential_variable"
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  rationale: "Reviewed October 4 for release62: this exact source entry declares a public environment-variable name, never a credential value. The source reader validates its identifier syntax; generated request code reads it only when the caller executes an authorized request, with credential references and effects declared in package metadata. Discovery and generation do not load or transmit the credential. Independent supply-code review confirmed this boundary; no other source name or secret-shaped value is exempt."
+  created_on: '2026-10-04'
+  expires_on: '2027-01-04'
+- finding_id: hardcoding.7a05cd70fa70a63aa66821fd
+  owner: "tools.supply_lines.openapi_sources.json:specifications[83].credential_variable"
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  rationale: "Reviewed October 4 for release62: this exact source entry declares a public environment-variable name, never a credential value. The source reader validates its identifier syntax; generated request code reads it only when the caller executes an authorized request, with credential references and effects declared in package metadata. Discovery and generation do not load or transmit the credential. Independent supply-code review confirmed this boundary; no other source name or secret-shaped value is exempt."
+  created_on: '2026-10-04'
+  expires_on: '2027-01-04'
+- finding_id: hardcoding.48411de90af740e466ea5c7d
+  owner: "tools.supply_lines.openapi_sources.json:specifications[98].credential_variable"
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  rationale: "Reviewed October 4 for release62: this exact source entry declares a public environment-variable name, never a credential value. The source reader validates its identifier syntax; generated request code reads it only when the caller executes an authorized request, with credential references and effects declared in package metadata. Discovery and generation do not load or transmit the credential. Independent supply-code review confirmed this boundary; no other source name or secret-shaped value is exempt."
+  created_on: '2026-10-04'
+  expires_on: '2027-01-04'
 - finding_id: hardcoding.346b4725a769a49cba4da073
   owner: loop_engine.core.service_runtime.web_assets.dot.context.json:links[1].url
   classification: STRATEGY_OR_PROVIDER_BINDING
