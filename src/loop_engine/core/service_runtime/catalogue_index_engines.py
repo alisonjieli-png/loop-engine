@@ -12,8 +12,9 @@ catalogue_search_index slot (edge catalogue_search_index/v1, one engine per host
 ├── sqlite_disk_index      engine (b): the same FTS5 table and hash vectors in files on the volume,
 │                          with item descriptors read from the index on demand (catalogue_disk_index,
 │                          catalogue_disk_view); needs numpy
-└── lance_object_store_index  engine (c), planned: columnar fragments in object storage whose versions
-                           map to releases (docs/architecture/CATALOGUE-AT-SCALE-2026-10-05.md)
+└── lance_object_store_index  engine (c), a measured prototype (catalogue_lance_index) the slot keeps planned:
+                           columnar fragments in object storage whose versions map to releases
+                           (docs/architecture/CATALOGUE-AT-SCALE-2026-10-05.md)
 ```
 
 Every engine answers the same edge and passes the same conformance kit
@@ -45,6 +46,10 @@ IN_MEMORY_KIND, DISK_KIND, OBJECT_STORE_KIND = ENGINE_KINDS
 IN_MEMORY_ENGINE, DISK_ENGINE, OBJECT_STORE_ENGINE = (
     "in_memory_view_index", "sqlite_disk_index", "lance_object_store_index")
 DEFAULT_ENGINE = IN_MEMORY_ENGINE
+#: An engine's state, in the slot registry's own words (core/engines/slots.IMPLEMENTATION_STATES): a candidate can
+#: be selected by a host; a planned engine is described and never selected.
+ENGINE_STATES = ("candidate", "planned")
+CANDIDATE_STATE, PLANNED_STATE = ENGINE_STATES
 
 
 def _refuse(code, message):
@@ -76,12 +81,13 @@ class CatalogueIndexEngine:
     holds_items_on_disk: bool
     exact_with: str = ""
     requires: tuple = ()
-    state: str = "candidate"
+    state: str = CANDIDATE_STATE
     availability: object = field(default=None, repr=False, compare=False)
 
     def available(self):
         if self.availability is None:
-            return {"available": self.state != "planned", "reason": "" if self.state != "planned" else "planned"}
+            planned = self.state == PLANNED_STATE
+            return {"available": not planned, "reason": PLANNED_STATE if planned else ""}
         return self.availability()
 
     def descriptor(self):
@@ -107,17 +113,17 @@ def _lance_availability():
 ENGINES = {
     IN_MEMORY_ENGINE: CatalogueIndexEngine(
         IN_MEMORY_ENGINE, "1.0.0", IN_MEMORY_KIND, "SQLite FTS5 and float32 hash vectors in process memory",
-        holds_items_on_disk=False, state="candidate"),
+        holds_items_on_disk=False, state=CANDIDATE_STATE),
     DISK_ENGINE: CatalogueIndexEngine(
         DISK_ENGINE, "1.0.0", DISK_KIND, "SQLite FTS5 and float32 hash vectors in files on the volume",
         holds_items_on_disk=True, exact_with=IN_MEMORY_ENGINE, requires=("numpy", "sqlite_fts5"),
-        state="candidate", availability=_disk_availability),
+        state=CANDIDATE_STATE, availability=_disk_availability),
     # A measured prototype (catalogue_lance_index): the search edge over a local Lance dataset. It stays planned,
     # so no host can select it, until a recorded comparison and an item-descriptor view exist.
     OBJECT_STORE_ENGINE: CatalogueIndexEngine(
         OBJECT_STORE_ENGINE, "0.1.0", OBJECT_STORE_KIND,
         "Columnar fragments in object storage, one dataset version for each release",
-        holds_items_on_disk=True, requires=("lancedb", "pyarrow", "numpy"), state="planned",
+        holds_items_on_disk=True, requires=("lancedb", "pyarrow", "numpy"), state=PLANNED_STATE,
         availability=_lance_availability),
 }
 
@@ -130,9 +136,10 @@ def describe():
 def select_engine(engine_id):
     """The engine a host named, or a typed refusal before any request; never another engine in its place."""
     engine = ENGINES.get(engine_id)
-    if engine is None or engine.state == "planned":
+    if engine is None or engine.state == PLANNED_STATE:
+        offered = sorted(key for key, value in ENGINES.items() if value.state != PLANNED_STATE)
         _refuse("search_engine_unavailable", f"the host names a search engine this image does not offer: "
-                                             f"{engine_id!r}; it offers {sorted(k for k, v in ENGINES.items() if v.state != 'planned')}")
+                                             f"{engine_id!r}; it offers {offered}")
     state = engine.available()
     if not state.get("available"):
         _refuse("search_engine_unavailable", f"{engine_id} cannot run on this host: {state.get('reason')}")

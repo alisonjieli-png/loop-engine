@@ -63,6 +63,10 @@ ENGINE_VERSION = "1.0.0"
 INDEX_FORMAT = "catalogue_disk_index/v1"
 OVERLAY_FORMAT = "catalogue_disk_index_overlay/v1"
 DATABASE_FILE, VECTOR_FILE, MARKER_FILE = "index.sqlite", "vectors.f32", "BUILT.json"
+#: The two kinds of filter file: an inverted list per keyword, choice or list attribute, and a sorted value list
+#: per number or date attribute. Each names its files `<kind>-<attribute>-*.npy` and its build record entry.
+FILTER_FILE_KINDS = ("keyword", "range")
+KEYWORD_FILTER, RANGE_FILTER = FILTER_FILE_KINDS
 #: Positions scored together in one vector chunk; bounds the float64 work arrays to a few megabytes.
 VECTOR_CHUNK = 262_144
 #: Rows inserted into the full-text table in one statement batch while building.
@@ -316,10 +320,10 @@ def build_disk_index(folder, entries, schema=EMPTY_SCHEMA, *, count=None, releas
             order = numpy.argsort(codes_array, kind="stable")
             codes_array, positions = codes_array[order], positions[order]
             offsets = numpy.searchsorted(codes_array, numpy.arange(len(keyword_codes[name]) + 1), side="left")
-            numpy.save(partial / f"keyword-{name}-offsets.npy", offsets.astype(numpy.int64))
-            numpy.save(partial / f"keyword-{name}-positions.npy", positions.astype(numpy.int64))
+            numpy.save(partial / f"{KEYWORD_FILTER}-{name}-offsets.npy", offsets.astype(numpy.int64))
+            numpy.save(partial / f"{KEYWORD_FILTER}-{name}-positions.npy", positions.astype(numpy.int64))
             del codes_array, positions, order
-            filter_files[f"keyword-{name}"] = {"values": {str(value): code
+            filter_files[f"{KEYWORD_FILTER}-{name}"] = {"values": {str(value): code
                                                           for value, code in keyword_codes[name].items()},
                                                "type": kinds[name]}
         for name, (held_values, held_positions) in range_values.items():
@@ -328,9 +332,9 @@ def build_disk_index(folder, entries, schema=EMPTY_SCHEMA, *, count=None, releas
                          else numpy.zeros(0, numpy.int64))
             # The same order as sorting (value, position) pairs: by value, ties in position order.
             order = numpy.argsort(values, kind="stable")
-            numpy.save(partial / f"range-{name}-values.npy", values[order])
-            numpy.save(partial / f"range-{name}-positions.npy", positions[order])
-            filter_files[f"range-{name}"] = {"type": kinds[name]}
+            numpy.save(partial / f"{RANGE_FILTER}-{name}-values.npy", values[order])
+            numpy.save(partial / f"{RANGE_FILTER}-{name}-positions.npy", positions[order])
+            filter_files[f"{RANGE_FILTER}-{name}"] = {"type": kinds[name]}
         total_tokens = _total_tokens(connection)
         connection.execute("CREATE UNIQUE INDEX entries_identity ON entries(identity)")
         distinct, distinct_bytes = connection.execute("SELECT count(*), coalesce(sum(size), 0) FROM files").fetchone()
@@ -399,15 +403,17 @@ class DiskIndex:
         self._keyword, self._range = {}, {}
         for key, value in marker["filters"].items():
             kind, name = key.split("-", 1)
-            if kind == "keyword":
+            if kind == KEYWORD_FILTER:
                 self._keyword[name] = (value["values"],
-                                       numpy.load(self.folder / f"keyword-{name}-offsets.npy", mmap_mode="r"),
-                                       numpy.load(self.folder / f"keyword-{name}-positions.npy", mmap_mode="r"),
+                                       numpy.load(self.folder / f"{KEYWORD_FILTER}-{name}-offsets.npy", mmap_mode="r"),
+                                       numpy.load(self.folder / f"{KEYWORD_FILTER}-{name}-positions.npy", mmap_mode="r"),
                                        value["type"])
-            else:
-                self._range[name] = (numpy.load(self.folder / f"range-{name}-values.npy", mmap_mode="r"),
-                                     numpy.load(self.folder / f"range-{name}-positions.npy", mmap_mode="r"),
+            elif kind == RANGE_FILTER:
+                self._range[name] = (numpy.load(self.folder / f"{RANGE_FILTER}-{name}-values.npy", mmap_mode="r"),
+                                     numpy.load(self.folder / f"{RANGE_FILTER}-{name}-positions.npy", mmap_mode="r"),
                                      value["type"])
+            else:
+                _refuse("search_index_unavailable", f"the disk index names an unknown filter kind {kind!r}")
 
     def connection(self):
         held = getattr(self._local, "connection", None)
