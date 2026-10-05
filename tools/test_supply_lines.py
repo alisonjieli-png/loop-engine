@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import ast
 import copy
+import io
 import math
 import os
 import shutil
@@ -19,10 +20,13 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import zipfile
 from pathlib import Path
+from types import SimpleNamespace
+from unittest import mock
 
 HERE = Path(__file__).resolve().parent
-sys.path[:0] = [str(HERE), str(HERE.parent / "src")]
+sys.path[:0] = [str(HERE), str(HERE.parent / "src"), str(HERE.parent)]
 
 from loop_engine.catalog.query import IntelligenceQuery  # noqa: E402
 from loop_engine.core.library_ingestion.provenance import (  # noqa: E402
@@ -30,7 +34,7 @@ from loop_engine.core.library_ingestion.provenance import (  # noqa: E402
 from loop_engine.core.library_ingestion.record_rules import canonical_json  # noqa: E402
 
 from licensed_import.storage import NAMESPACE, SUPPLY_NAMESPACE  # noqa: E402
-from supply_lines import mcp_registry, records  # noqa: E402
+from supply_lines import mcp_registry, packaging, records  # noqa: E402
 from supply_lines.packaging import LICENCE_NAME, PackageFile, SupplyPackage, build  # noqa: E402
 from supply_lines.records import SupplyRecordError, licence_allowed, read_supply_candidate  # noqa: E402
 
@@ -1222,6 +1226,378 @@ class DataTableLineTest(unittest.TestCase):
                 self.assertNotEqual(broken, loader)
                 (target / "status_codes_table.py").write_text(broken, encoding="utf-8")
                 self.assertFalse(run_tests(target, "status_codes_table")[0])
+
+
+CC_BY = "https://creativecommons.org/licenses/by/4.0/legalcode.txt"
+#: A stand-in for the Creative Commons legal code: the tests replace the licence matcher with one that knows it.
+CC_BY_TEXT = b"Attribution 4.0 International\n\n(a test stand-in for the Creative Commons legal code)\n"
+ONET_NOTICE = (b"O*NET 31.0 Database\r\nAugust 2026 Release\r\n\r\nThe content of the O*NET 31.0 Database is licensed "
+               b"under a Creative Commons Attribution 4.0 International License.\r\n")
+ONET_PAGE = (b"<html><body><p>Except as noted below, the content of the O*NET&nbsp;31.0 Database is licensed under a "
+             b"<a href='https://creativecommons.org/licenses/by/4.0/'>Creative Commons Attribution 4.0 International "
+             b"License <span>external site</span></a>.</p></body></html>")
+
+
+def _matched(text):
+    return SimpleNamespace(spdx="CC-BY-4.0" if text.startswith("Attribution 4.0 International") else None,
+                           similarity=1.0)
+
+
+class _Fetched:
+    def __init__(self, status, body, retrieved_at):
+        self.status, self.body, self.retrieved_at, self.sha256 = status, body, retrieved_at, _digest(body)
+
+
+class _PublisherReader:
+    def __init__(self, answers, retrieved_at="2026-10-05T00:00:00Z"):
+        self.answers, self.retrieved_at, self.asked = answers, retrieved_at, []
+
+    def get(self, url, cache_errors=False):
+        self.asked.append(url)
+        status, body = self.answers.get(url, (404, b"{}"))
+        return _Fetched(status, body, self.retrieved_at)
+
+
+def _zip(members: dict) -> bytes:
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as archive:
+        for name, data in members.items():
+            archive.writestr(name, data)
+    return buffer.getvalue()
+
+
+def _wdi_csv(series, rows, name="Life expectancy at birth, total (years)"):
+    """A table as the World Bank's download writes it: a mark, two title lines, a header and rows that all end
+    with the delimiter, and Windows line ends."""
+    lines = ['"Data Source","World Development Indicators",', "", '"Last Updated Date","2026-07-13",', "",
+             '"Country Name","Country Code","Indicator Name","Indicator Code","2023","2024",']
+    lines += [f'"{country}","{code}","{name}","{series}","{first}","{second}",' for country, code, first, second in rows]
+    return ("﻿" + "\r\n".join(lines) + "\r\n").encode("utf-8")
+
+
+def _wdi_metadata(series, licence="CC BY-4.0", topic="Health: Mortality",
+                  name="Life expectancy at birth, total (years)"):
+    fields = {"IndicatorName": name, "License_Type": licence,
+              "License_URL": "https://datacatalog.worldbank.org/int/public-licenses#cc-by", "Topic": topic,
+              "Unitofmeasure": "Years", "Source": "World Population Prospects, United Nations (UN)",
+              "Longdefinition": "The years a newborn infant would live if mortality stayed as it is."}
+    if licence is None:
+        del fields["License_Type"]
+    return json.dumps({"page": 1, "pages": 1, "per_page": "5000", "total": len(fields), "source": [
+        {"id": "2", "name": "World Development Indicators", "concept": [{"id": "Series", "variable": [
+            {"id": series, "metatype": [{"id": key, "value": value} for key, value in fields.items()]}]}]}]}).encode()
+
+
+LIFE = [("Aruba", "ABW", "76.2", ""), ("Afghanistan", "AFG", "66.0", "66.5"), ("World", "WLD", "73.3", "73.5")]
+
+
+def _wdi_answers(series_rows):
+    """Answers at the real World Bank addresses for (series, licence, topic, table bytes) rows."""
+    from supply_lines import publisher_tables
+    collection = publisher_tables.read_sources()["collections"]["world_bank_wdi"]
+    catalogue = [{"page": 1, "pages": 1, "per_page": "2000", "total": len(series_rows)},
+                 [{"id": series, "name": series} for series, *_rest in series_rows]]
+    answers = {collection["catalogue"]: (200, json.dumps(catalogue).encode()), CC_BY: (200, CC_BY_TEXT)}
+    for series, licence, topic, data in series_rows:
+        answers[collection["metadata_address"].format(series=series)] = (200, _wdi_metadata(series, licence, topic))
+        answers[collection["data_address"].format(series=series)] = (200, _zip({
+            f"API_{series}_DS2_en_csv_v2_461.csv": data,
+            f"Metadata_Country_API_{series}_DS2_en_csv_v2_461.csv": b'"Country Code","Region",\r\n'}))
+    return answers
+
+
+def _onet_answers(tables, notice=ONET_NOTICE, page=ONET_PAGE):
+    from supply_lines import publisher_tables
+    collection = publisher_tables.read_sources()["collections"]["onet_database"]
+    members = {"db_31_0_text/Read Me.txt": notice, **{f"db_31_0_text/{name}.txt": data for name, data in tables.items()}}
+    return {collection["data_address"]: (200, _zip(members)), collection["licence"]["evidence_address"]: (200, page),
+            CC_BY: (200, CC_BY_TEXT)}
+
+
+class PublisherTableLineTest(unittest.TestCase):
+    def _generate(self, answers, collection="world_bank_wdi", only=(), retrieved_at="2026-10-05T00:00:00Z"):
+        from supply_lines import publisher_tables as line
+        reader = _PublisherReader(answers, retrieved_at)
+        with tempfile.TemporaryDirectory() as staging, mock.patch.object(line, "match_licence", _matched):
+            built, refused, facts, summary = line.generate(reader, collection, code_revision="a" * 40,
+                                                           licence_text=LICENCE, generated_on="2026-10-05",
+                                                           staging=Path(staging), only=only)
+        return built, refused, facts, summary, reader
+
+    @staticmethod
+    def _files(payload, bodies):
+        return {entry["path"]: bodies[entry["digest"]] for entry in payload["package"]["files"]}
+
+    def test_a_series_becomes_one_table_of_the_publishers_exact_bytes_with_its_facts(self):
+        from supply_lines import publisher_tables as line
+        data = _wdi_csv("SP.DYN.LE00.IN", LIFE)
+        answers = _wdi_answers([("SP.DYN.LE00.IN", "CC BY-4.0", "Health: Mortality", data)])
+        built, refused, facts, _summary, reader = self._generate(answers)
+        self.assertEqual(refused, [])
+        [(payload, bodies)] = built
+        read_supply_candidate(payload)
+        collection = line.read_sources()["collections"]["world_bank_wdi"]
+        address = collection["data_address"].format(series="SP.DYN.LE00.IN")
+        metadata = collection["metadata_address"].format(series="SP.DYN.LE00.IN")
+        self.assertEqual((payload["line"], payload["kind"], payload["component_form"]["form"]),
+                         (records.PUBLISHER_TABLES, "code_module", "data_table"))
+        files = self._files(payload, bodies)
+        # The data file is the archive member byte for byte; the series metadata travels beside it.
+        self.assertEqual(files["data/SP.DYN.LE00.IN.csv"], data)
+        self.assertEqual(files["data/SP.DYN.LE00.IN.metadata.json"], _wdi_metadata("SP.DYN.LE00.IN"))
+        row = next(row for row in payload["files"] if row["path"] == "data/SP.DYN.LE00.IN.csv")
+        archive = answers[address][1]
+        self.assertEqual((row["origin"], row["upstream"]["url"], row["upstream"]["sha256"],
+                          row["upstream"]["archive_sha256"], row["upstream"]["archive_member"]),
+                         (records.UPSTREAM_VERBATIM, address, _digest(data), _digest(archive),
+                          "API_SP.DYN.LE00.IN_DS2_en_csv_v2_461.csv"))
+        # The fact is the retrieved bytes' SHA-256 and retrieval time; the licence evidence is the series' metadata.
+        by_role = {fact["role"]: fact for fact in payload["provenance"]["facts"]}
+        self.assertEqual((by_role["data_source"]["url"], by_role["data_source"]["sha256"],
+                          by_role["data_source"]["retrieved_at"]), (address, _digest(archive), "2026-10-05T00:00:00Z"))
+        self.assertEqual((by_role["licence_evidence"]["url"], by_role["licence_evidence"]["licence"]["spdx_expression"]),
+                         (metadata, "CC-BY-4.0"))
+        self.assertEqual(by_role["licence_text"]["url"], CC_BY)
+        self.assertEqual(payload["licence"]["spdx_expression"], "CC-BY-4.0 AND MIT")
+        self.assertEqual(files["UPSTREAM-LICENSE"], CC_BY_TEXT)
+        self.assertEqual((payload["provenance"]["origin"], payload["provenance"]["origin_host"]),
+                         ("world_bank_api", "api.worldbank.org"))
+        self.assertIn(_digest(archive), facts)
+        # The goals are in the candidate as PublicGoodGrant takes them, with the rule that gave them.
+        self.assertEqual((payload["repository"]["sdg_goals"], payload["repository"]["sdg_rule"]),
+                         ([3], "topic:Health: Mortality"))
+        schema = json.loads(files["schema.json"])
+        self.assertEqual((schema["x-baltor-table"]["publisher"], schema["x-baltor-table"]["series"],
+                          schema["x-baltor-table"]["rows"]), ("The World Bank", "SP.DYN.LE00.IN", 3))
+        readme = files["README.md"].decode()
+        for text in ("`SP.DYN.LE00.IN`", "| Unit | Years |", "\"CC BY-4.0\"", "3 (Good health and well-being)",
+                     "The World Bank: World Development Indicators", "| Last Updated Date | 2026-07-13 |",
+                     "observed years 2023 to 2024"):
+            self.assertIn(text, readme)
+        self.assertEqual(payload["tests"]["tests_run"], 5)
+        self.assertTrue(all(url.startswith(("https://api.worldbank.org/", CC_BY)) for url in reader.asked))
+
+    def test_a_series_whose_own_metadata_names_another_licence_is_refused_with_the_value_it_found(self):
+        from supply_lines import publisher_tables as line
+        data = _wdi_csv("SP.DYN.LE00.IN", LIFE)
+        sipri = "SIPRI terms and conditions: SIPRI data may not be used for commercial purposes."
+        answers = _wdi_answers([("SP.DYN.LE00.IN", "CC BY-4.0", "Health: Mortality", data),
+                                ("GD_WBL_OVL_LAW", "CC BY 3.0 IGO", "Gender: Public life & decision making", data),
+                                ("MS.MIL.XPND.GD.ZS", sipri, "Public Sector: Defense & arms trade", data),
+                                ("SP.POP.TOTL", None, "Health: Population: Structure", data)])
+        built, refused, _facts, summary, reader = self._generate(answers)
+        self.assertEqual([payload["repository"]["series"] for payload, _bodies in built], ["SP.DYN.LE00.IN"])
+        reasons = {row["subject"]: (row["reason"], row["detail"]) for row in refused}
+        self.assertEqual({subject: reason for subject, (reason, _detail) in reasons.items()},
+                         {"GD_WBL_OVL_LAW": "licence_not_on_allowlist", "MS.MIL.XPND.GD.ZS": "licence_not_on_allowlist",
+                          "SP.POP.TOTL": "licence_unknown"})
+        self.assertIn("'CC BY 3.0 IGO'", reasons["GD_WBL_OVL_LAW"][1])
+        self.assertIn("SIPRI terms", reasons["MS.MIL.XPND.GD.ZS"][1])
+        # A refused series' data is never read.
+        collection = line.read_sources()["collections"]["world_bank_wdi"]
+        self.assertNotIn(collection["data_address"].format(series="GD_WBL_OVL_LAW"), reader.asked)
+        decisions = {row["value"]: row["decision"] for row in summary["licence_decisions"]}
+        self.assertEqual(decisions["CC BY 3.0 IGO"], "licence_not_on_allowlist")
+        # Only the exact mapped value passes: a lookalike is refused, whatever licence it seems to name.
+        rule = collection["licence"]
+        for value in ("CC BY 4.0", "cc by-4.0", "CC BY-4.0 with additional terms", "CC0"):
+            self.assertEqual(line.series_licence({"License_Type": value}, rule)[:2],
+                             (None, "licence_not_on_allowlist"), value)
+        self.assertEqual(line.series_licence({"License_Type": "CC BY-4.0"}, rule)[:2], ("CC-BY-4.0", "agreed"))
+
+    def test_a_declaration_maps_values_only_to_allowlisted_licences_on_declared_hosts(self):
+        from supply_lines import publisher_tables as line
+        record = json.loads(line.SOURCES_FILE.read_text(encoding="utf-8"))
+        self.assertEqual(sorted(line.read_sources()["collections"]), ["onet_database", "world_bank_wdi"])
+        wrong = []
+        bad = copy.deepcopy(record)
+        bad["collections"]["world_bank_wdi"]["licence"]["values"]["CC BY 3.0 IGO"] = "CC-BY-3.0-IGO"
+        wrong.append(bad)
+        bad = copy.deepcopy(record)
+        bad["collections"]["world_bank_wdi"]["data_address"] = "https://example.org/v2/{series}.zip"
+        wrong.append(bad)
+        bad = copy.deepcopy(record)
+        bad["collections"]["onet_database"]["licence"]["statement"] = ""
+        wrong.append(bad)
+        bad = copy.deepcopy(record)
+        bad["licence_texts"]["CC-BY-3.0-IGO"] = {
+            "legal_code": "https://creativecommons.org/licenses/by/3.0/igo/legalcode.txt",
+            "deed": "https://creativecommons.org/licenses/by/3.0/igo/"}
+        wrong.append(bad)
+        bad = copy.deepcopy(record)
+        bad["collections"]["onet_database"]["tables"].append(bad["collections"]["onet_database"]["tables"][0])
+        wrong.append(bad)
+        with tempfile.TemporaryDirectory() as folder:
+            for number, value in enumerate(wrong):
+                path = Path(folder) / f"sources-{number}.json"
+                path.write_text(json.dumps(value), encoding="utf-8")
+                with self.assertRaises(ValueError, msg=number):
+                    line.read_sources(path)
+
+    def test_a_release_needs_its_licence_on_the_publishers_page_and_in_its_own_notice(self):
+        tables = {"Occupation Data": b"O*NET-SOC Code\tTitle\tDescription\r\n11-1011.00\tChief Executives\tLead.\r\n"
+                                     b"15-1252.00\tSoftware Developers\tBuild software.\r\n",
+                  "Scales Reference": b"Scale ID\tScale Name\tMinimum\tMaximum\r\nIM\tImportance\t1\t5\r\n"}
+        built, refused, _facts, summary, _reader = self._generate(_onet_answers(tables), "onet_database",
+                                                                   only=("occupation_data", "scales_reference"))
+        self.assertEqual((len(built), refused), (2, []))
+        self.assertEqual(summary["release"], "O*NET 31.0 Database, August 2026 Release")
+        payload, bodies = next((payload, bodies) for payload, bodies in built
+                               if payload["repository"]["table_id"] == "onet_occupation_data")
+        files = self._files(payload, bodies)
+        self.assertEqual(files["data/occupation_data.txt"], tables["Occupation Data"])
+        readme = files["README.md"].decode()
+        self.assertIn("Used under the CC BY 4.0 license. O*NET® is a trademark of USDOL/ETA.", readme)
+        self.assertIn("# Occupation Data, O*NET 31.0 Database", readme)
+        self.assertEqual(payload["repository"]["sdg_goals"], [4, 8])
+        by_role = {fact["role"]: fact for fact in payload["provenance"]["facts"]}
+        self.assertEqual(by_role["licence_evidence"]["url"], "https://www.onetcenter.org/license_db.html")
+        # Known wrong: the page no longer states the licence, or the release's own notice does not, refuses every
+        # table of the release by name.
+        for answers in (_onet_answers(tables, page=b"<p>All rights reserved.</p>"),
+                        _onet_answers(tables, notice=b"O*NET 31.0 Database\r\nAugust 2026 Release\r\n")):
+            built, refused, _facts, _summary, _reader = self._generate(answers, "onet_database",
+                                                                        only=("occupation_data", "scales_reference"))
+            self.assertEqual(built, [])
+            self.assertEqual({row["reason"] for row in refused}, {"licence_evidence_missing"})
+            self.assertEqual(len(refused), 2)
+
+    def test_the_size_rule_cuts_at_record_ends_and_refuses_what_a_package_cannot_hold(self):
+        from supply_lines import publisher_tables as line
+        from supply_lines.data_tables import TableRefused
+        data = ('"name","note"\r\n' + "".join(f'"row {number}","a note\r\nthat spans two lines {number}"\r\n'
+                                               for number in range(40))).encode()
+        parts = line.split_at_record_ends(data, ",", bound=200)
+        self.assertGreater(len(parts), 5)
+        self.assertEqual(b"".join(parts), data)
+        self.assertTrue(all(len(part) <= 200 for part in parts))
+        # Every cut is a record end of the shape's own reader, never the line break inside a quoted value.
+        ends = set(line.record_ends(data, ","))
+        cuts = [sum(len(part) for part in parts[:index]) for index in range(1, len(parts))]
+        self.assertTrue(set(cuts) <= ends)
+        self.assertTrue(any(data[cut - 2:cut] == b"\r\n" and cut not in ends
+                            for cut in range(2, len(data)) if data[cut - 2:cut] == b"\r\n"))
+        self.assertEqual(line.split_at_record_ends(data, ",", bound=len(data)), [data])
+        with self.assertRaises(TableRefused) as caught:
+            line.split_at_record_ends(data, ",", bound=20)
+        self.assertEqual(caught.exception.reason, "table_above_review_bound")
+        self.assertEqual(line.part_names("SP.POP.TOTL.csv", 2),
+                         ["SP.POP.TOTL-part-1-of-2.csv", "SP.POP.TOTL-part-2-of-2.csv"])
+        # A table above the file bound is kept in parts that join to the exact bytes; one above what a package
+        # holds is refused by name, never sampled.
+        rows = [(f"Economy {number}", f"E{number:04d}", "1" * 60, "2" * 60) for number in range(1800)]
+        large = _wdi_csv("SP.POP.TOTL", rows, name="Population, total")
+        self.assertGreater(len(large), packaging.MAXIMUM_REVIEW_FILE_BYTES)
+        built, refused, *_rest = self._generate(_wdi_answers([("SP.POP.TOTL", "CC BY-4.0", "Health", large)]))
+        self.assertEqual(refused, [])
+        [(payload, bodies)] = built
+        files = self._files(payload, bodies)
+        data_parts = sorted(path for path in files if path.startswith("data/SP.POP.TOTL-part-"))
+        self.assertEqual(len(data_parts), payload["repository"]["parts"])
+        self.assertGreater(len(data_parts), 1)
+        self.assertEqual(b"".join(files[path] for path in data_parts), large)
+        self.assertTrue(all(len(files[path]) <= packaging.MAXIMUM_REVIEW_FILE_BYTES for path in data_parts))
+        huge = b"Scale ID\tScale Name\r\n" + b"".join(b"S%07d\t%s\r\n" % (number, b"x" * 80) for number in range(26000))
+        self.assertGreater(len(huge), packaging.MAXIMUM_REVIEW_PACKAGE_BYTES)
+        built, refused, *_rest = self._generate(_onet_answers({"Scales Reference": huge}), "onet_database",
+                                                only=("scales_reference",))
+        self.assertEqual((built, [row["reason"] for row in refused]), ([], ["table_above_review_bound"]))
+
+    def test_the_loader_joins_its_parts_and_refuses_changed_bytes(self):
+        from supply_lines.openapi_operations import run_tests
+        rows = [(f"Economy {number}", f"E{number:04d}", "1" * 60, "2" * 60) for number in range(1800)]
+        large = _wdi_csv("SP.POP.TOTL", rows, name="Population, total")
+        built, refused, *_rest = self._generate(_wdi_answers([("SP.POP.TOTL", "CC BY-4.0", "Health", large)]))
+        [(payload, bodies)] = built
+        with tempfile.TemporaryDirectory() as folder:
+            target = Path(folder) / "package"
+            for path, data in self._files(payload, bodies).items():
+                (target / path).parent.mkdir(parents=True, exist_ok=True)
+                (target / path).write_bytes(data)
+            module = "wdi_sp_pop_totl_table"
+            self.assertTrue(run_tests(target, module)[0])
+            sys.path.insert(0, str(target))
+            try:
+                import importlib
+                table = importlib.import_module(module)
+                self.assertEqual(len(table.rows()), 1800)
+                self.assertEqual(table.lookup("E0007")["Country Name"], "Economy 7")
+                # Known wrong: one changed byte in a later part is refused before any row is read.
+                last = target / "data" / sorted(table.DATA_PARTS)[-1]
+                last.write_bytes(last.read_bytes().replace(b"Economy 1799", b"Economy 1798"))
+                table._CACHE.clear()
+                with self.assertRaises(ValueError):
+                    table.rows()
+            finally:
+                sys.path.remove(str(target))
+                sys.modules.pop(module, None)
+            # Known wrong: a loader without its digest check fails its own tests.
+            loader = (target / f"{module}.py").read_text(encoding="utf-8")
+            broken = loader.replace("if hashlib.sha256(data).hexdigest() != DATA_SHA256:", "if False:")
+            self.assertNotEqual(broken, loader)
+            (target / f"{module}.py").write_text(broken, encoding="utf-8")
+            self.assertFalse(run_tests(target, module)[0])
+
+    def test_two_series_are_two_jobs_and_one_series_retrieved_twice_is_one(self):
+        from component_qualification import checks
+        from component_qualification.components import _component
+        policy = json.loads(checks.POLICY_PATH.read_text(encoding="utf-8"))
+        revised = [("Aruba", "ABW", "76.3", "76.4")] + LIFE[1:]
+
+        def component(series, rows, retrieved_at):
+            built, _refused, *_rest = self._generate(
+                _wdi_answers([(series, "CC BY-4.0", "Health: Mortality", _wdi_csv(series, rows))]),
+                retrieved_at=retrieved_at)
+            [(payload, bodies)] = built
+            return _component(payload["record_id"], "", payload, lambda entry: bodies[entry.digest])
+
+        first = component("SP.DYN.LE00.IN", LIFE, "2026-10-05T00:00:00Z")
+        other = component("SP.DYN.LE00.FE.IN", LIFE, "2026-10-05T00:00:00Z")
+        again = component("SP.DYN.LE00.IN", revised, "2026-11-05T00:00:00Z")
+        self.assertNotEqual(first.package.package_digest, again.package.package_digest)
+        self.assertEqual(checks.job_key(first, policy), "publisher_tables|The World Bank|SP.DYN.LE00.IN")
+        self.assertNotEqual(checks.job_key(first, policy), checks.job_key(other, policy))
+        self.assertEqual(checks.job_key(first, policy), checks.job_key(again, policy))
+        found = checks.duplicate_findings([first, again, other], policy)
+        later = max(first.identity, again.identity)
+        self.assertIn("same_job_as", [code for code, _detail in found[later]])
+        self.assertEqual(found[other.identity], [])
+        # Known wrong: the GitHub tables' rule (the upstream bytes) would call one series retrieved twice two jobs.
+        by_bytes = copy.deepcopy(policy)
+        by_bytes["lines"][records.PUBLISHER_TABLES]["job_key"] = {"upstream_digests": True}
+        self.assertNotEqual(checks.job_key(first, by_bytes), checks.job_key(again, by_bytes))
+
+    def test_sdg_goals_follow_the_rules_as_data_and_are_what_a_grant_takes(self):
+        from loop_engine.core.provisioning_server import ProvisioningItemBinding
+        from loop_engine.core.service_runtime.public_good import PublicGoodGrant
+        from supply_lines import publisher_tables as line
+        rules = line.read_sdg_rules(line.SOURCES_FILE.with_name("wdi_sdg_goals.json"))
+        self.assertEqual(line.sdg_goals("SH.H2O.SMDW.ZS", "Health: Disease prevention", rules)["goals"], [6])
+        self.assertEqual(line.sdg_goals("SP.DYN.LE00.IN", "Health: Mortality", rules)["rule"], "topic:Health: Mortality")
+        # The longest prefix decides: NV.MNF.TECH.ZS.UN is manufacturing (9) under a national accounts topic (8).
+        self.assertEqual(line.sdg_goals("NV.MNF.TECH.ZS.UN", "Economic Policy & Debt: National accounts: Shares of "
+                                                             "GDP & other", rules)["goals"], [9])
+        self.assertEqual(line.sdg_goals("XX.NEW.SERIES", "A topic nobody mapped", rules),
+                         {"goals": [], "rule": "none", "reason": "no rule names the code or the topic "
+                                                                "'A topic nobody mapped'"})
+        named = {goal for rule in rules["code_prefixes"] + list(rules["topics"].values()) for goal in rule["goals"]}
+        self.assertEqual(named, set(range(1, 18)))
+        bad = copy.deepcopy(rules)
+        bad["topics"]["Health: Mortality"]["goals"] = [3, 3]
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "rules.json"
+            path.write_text(json.dumps(bad), encoding="utf-8")
+            with self.assertRaises(ValueError):
+                line.read_sdg_rules(path)
+        binding = ProvisioningItemBinding("library.supply.publisher_tables.x", "code_intelligence", "supply:x",
+                                          "a" * 64, "b" * 64)
+        for goals in ([3], [1, 11, 13], [4, 8]):
+            grant = PublicGoodGrant(binding, "a" * 64, "review", "rights", tuple(goals), "reference data", 1)
+            self.assertEqual(list(grant.sdg_goals), goals)
+        proposal = line.sdg_map([({"repository": {"table_id": "wdi_sp_dyn_le00_in", "sdg_goals": [3]}}, {})],
+                                "2026-10-05")
+        self.assertEqual((proposal["record_type"], proposal["sources"], proposal["sources_per_goal"]["3"]),
+                         ("sdg_supply_source_map/v1", {"wdi_sp_dyn_le00_in": [3]}, 1))
 
 
 SWAGGER2 = {

@@ -41,11 +41,12 @@ REFUSAL_RECORD_TYPE = "library_supply_refusal/v1"
 STATE_RECORD_TYPE = "library_supply_state/v1"
 RUN_RECORD_TYPE = "library_supply_run/v1"
 
-#: The supply lines, one per kind of fact source.
+#: The supply lines, one per kind of fact source. publisher_tables reads an official publisher's own HTTPS address
+#: (a statistical series, a database release), where data_tables reads a GitHub file.
 (MCP_REGISTRY, OPENAPI_OPERATIONS, PROGRAM_INSTALLS, DATA_TABLES, FUNCTION_EXTRACTS, JSON_SCHEMAS,
- MANIM_SCENES, API_TOOL_SERVERS) = LINES = (
+ MANIM_SCENES, API_TOOL_SERVERS, PUBLISHER_TABLES) = LINES = (
     "mcp_registry", "openapi_operations", "program_installs", "data_tables", "function_extracts", "json_schemas",
-    "manim_scenes", "api_tool_servers")
+    "manim_scenes", "api_tool_servers", "publisher_tables")
 #: How the text of every supply package was authored, and the review profile it needs. The panel has no such
 #: profile yet (tools/candidate_review reads original and imported packages only), so an export holds these.
 AUTHORING = "generated_from_licensed_facts"
@@ -55,12 +56,16 @@ GENERATED, UPSTREAM_VERBATIM, LICENCE_TEXT, ATTRIBUTION = FILE_ORIGINS = (
     "generated", "upstream_verbatim", "licence_text", "attribution")
 #: Where the facts came from; each names the host the facts were read from.
 ORIGINS = {"mcp_official_registry": "registry.modelcontextprotocol.io", "github_repository": "github.com",
-           "homebrew_formulae": "formulae.brew.sh", "apis_guru_directory": "api.apis.guru"}
+           "homebrew_formulae": "formulae.brew.sh", "apis_guru_directory": "api.apis.guru",
+           "world_bank_api": "api.worldbank.org", "onet_resource_center": "www.onetcenter.org"}
 #: What one fact source is to the package. A notice file is an upstream repository's NOTICE, carried verbatim
 #: under that repository's licence (Apache-2.0 section 4(d)); it is neither a licence text nor a fact the
 #: generator read to write code.
 FACT_ROLES = ("registry_entry", "package_metadata", "specification", "formula", "release", "licence_text",
-              "data_source", "repository_facts", "analytics", "notice_file")
+              "data_source", "repository_facts", "analytics", "notice_file", "licence_evidence")
+#: A publisher's own record or page that states the licence of the exact collection or series a package copies
+#: (a series' metadata, a database's licence page); it is read to decide the licence and is never a licence text.
+LICENCE_EVIDENCE = "licence_evidence"
 NOTICE_FILE = "notice_file"
 #: The owner's allowlist of September 24, 2026 (tools/licensed_import/records.py ALLOWED_LICENCES).
 ALLOWED_LICENCES = ("MIT", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause", "ISC", "0BSD", "CC0-1.0", "CC-BY-4.0",
@@ -117,6 +122,10 @@ REFUSAL_REASONS = {
                        "tool_text_blocked", "tool_schema_invalid", "tools_beyond_review_bound", "no_tools",
                        "connection_files_invalid", "blocked_by_static_check", "generated_test_failed",
                        "package_above_review_bound"),
+    PUBLISHER_TABLES: ("source_unreadable", "archive_member_missing", "licence_not_on_allowlist", "licence_unknown",
+                       "licence_evidence_missing", "table_empty", "row_violates_schema", "no_observations",
+                       "table_above_review_bound", "blocked_by_static_check", "generated_test_failed",
+                       "package_above_review_bound", "duplicate_table"),
 }
 #: The forms each line may declare, and the harness kind it serves them as.
 LINE_FORMS = {MCP_REGISTRY: {"mcp_server": "protocol_server_configuration"},
@@ -130,7 +139,8 @@ LINE_FORMS = {MCP_REGISTRY: {"mcp_server": "protocol_server_configuration"},
               MANIM_SCENES: {"code_example": "code_module"},
               # A protocol server Baltor writes itself: its code and its connection files, served as the protocol
               # server configuration a harness picks up (the only harness kind an mcp_server form may carry).
-              API_TOOL_SERVERS: {"mcp_server": "protocol_server_configuration"}}
+              API_TOOL_SERVERS: {"mcp_server": "protocol_server_configuration"},
+              PUBLISHER_TABLES: {"data_table": "code_module"}}
 CANDIDATE_FIELDS = ("record_type", "record_id", "upstream_key", "line", "kind", "native_format", "component_form",
                     "name", "description", "package", "package_digest", "files", "licence", "provenance",
                     "placements", "declared_effects", "effect_evidence", "credentials", "tests", "findings",
@@ -211,7 +221,8 @@ def record_id(line: str, key: str, package_digest: str) -> str:
 
 #: The state scopes of a line. A line written by two modes keeps one state per mode, so a complete run of one
 #: mode never withdraws what the other supplies (the curated and the directory mode of the API line).
-STATE_SCOPES = ("", "apis_guru_directory", "google_discovery", "api_components", "curated_schemas")
+STATE_SCOPES = ("", "apis_guru_directory", "google_discovery", "api_components", "curated_schemas",
+                "world_bank_wdi", "onet_database")
 
 
 def state_record_id(line: str, scope: str = "") -> str:

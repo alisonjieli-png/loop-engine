@@ -15,6 +15,9 @@ build_library_supply.py
 ├── openapi-discovery  the same for every Google API discovery document of Google's Apache-2.0 client
 ├── programs       one install recipe with a typed wrapper per command-line program
 ├── data-tables    one reference data table with its schema, loader and tests
+├── publisher-tables  one data table per series or table of an official publisher's own address
+│                  (World Development Indicators, the O*NET 31.0 Database), its licence decided per
+│                  series or release from the publisher's own statement, with proposed SDG goals
 ├── functions      one documented function of a permissively licensed library, with the code it needs
 ├── schemas        one SchemaStore JSON Schema with a validator and its own examples as tests
 ├── curated-schemas  one JSON Schema of a curated repository (json_schema_sources.json), with tests
@@ -290,6 +293,31 @@ def data_tables(args) -> dict:
                   complete=not args.table)
 
 
+def publisher_tables(args) -> dict:
+    from supply_lines import publisher_tables as line
+    run_folder = _outside(args.run_folder)
+    run_folder.mkdir(parents=True, exist_ok=True)
+    revision = code_revision(args.authorize_store_writes)
+    sources = line.read_sources()
+    # GitHub is not read: every fact is the publisher's own address or the licence steward's.
+    reader = FactReader(run_folder, line.hosts(sources, args.collection), maximum_requests=args.maximum_requests,
+                        pause_seconds=args.pause_seconds, maximum_bytes=64 * 1024 * 1024, github=False)
+    built, refusals, facts, summary = line.generate(
+        reader, args.collection, sources=sources, code_revision=revision, licence_text=LICENCE_FILE.read_bytes(),
+        generated_on=now_utc()[:10], staging=run_folder / "staging", only=tuple(args.series or ()),
+        maximum=args.maximum_series)
+    proposal = line.sdg_map(built, now_utc()[:10])
+    (run_folder / "sdg-goals.json").write_text(json.dumps(proposal, indent=1) + "\n", encoding="utf-8")
+    # A run limited to some series, stopped early or unable to read one series is not complete: it withdraws
+    # nothing it did not read again.
+    unread = any(row["reason"] in line.UNREAD_REASONS for row in refusals) or bool(summary.get("stopped"))
+    return finish(args, records.PUBLISHER_TABLES, built, refusals,
+                  {"collection": args.collection, "summary": summary, "payload_files": line.payload_counts(built),
+                   "sdg_goals": {key: proposal[key] for key in ("sources_per_goal", "without_goal")}},
+                  reader, facts, complete=not args.series and not args.maximum_series and not unread,
+                  scope=args.collection)
+
+
 def functions(args) -> dict:
     from supply_lines import function_extracts as line
     run_folder = _outside(args.run_folder)
@@ -515,6 +543,17 @@ def parser() -> argparse.ArgumentParser:
     four = commands.add_parser("data-tables")
     common(four)
     four.add_argument("--table", action="append", help="only these table identities of data_table_sources.json")
+    publisher = commands.add_parser("publisher-tables")
+    common(publisher)
+    from supply_lines.publisher_tables import SOURCES_FILE
+    publisher.add_argument("--collection", required=True,
+                           choices=sorted(json.loads(SOURCES_FILE.read_text(encoding="utf-8"))["collections"]),
+                           help="a collection of publisher_table_sources.json")
+    publisher.add_argument("--series", action="append", help="only these series codes (World Development "
+                           "Indicators) or table identities (O*NET) of the collection")
+    publisher.add_argument("--maximum-series", type=int, default=0, help="at most this many series, catalogue order")
+    # The World Bank and the O*NET Resource Center publish no numeric request rate: one request a second, serial.
+    publisher.set_defaults(pause_seconds=1.0)
     five = commands.add_parser("report")
     five.add_argument("--store-root", default="/home/username/baltor-library/import-store")
     five.add_argument("--library-bundle", required=True, help="the served release bundle folder; a candidate whose "
@@ -535,6 +574,7 @@ def main(argv=None) -> int:
     args.started_at, args.started_clock = now_utc(), time.monotonic()
     {"mcp-registry": mcp_registry, "openapi": openapi, "openapi-directory": openapi_directory,
      "openapi-discovery": openapi_discovery, "programs": programs, "data-tables": data_tables,
+     "publisher-tables": publisher_tables,
      "functions": functions, "schemas": schemas, "curated-schemas": curated_schemas, "api-schemas": api_schemas,
      "manim-scenes": manim_scenes, "api-tool-servers": api_tool_servers, "report": report}[args.command](args)
     return 0
