@@ -5,6 +5,14 @@ Unchanged rows retain their bytes and item versions; only declared changes are
 allowed. The result is a full metadata snapshot with delta-only blobs, plus a
 private operator proof that is not uploaded as catalogue material. This tool is
 ordinary operator orchestration, not a runtime, registry or access-grant owner.
+
+`--bundle-format catalogue_release_bundle/v2` writes the result as a segmented
+bundle (catalogue_segments.py): every segment and every item line of the
+release, content-addressed, and only the new bodies. The local folder stays a
+complete base for the next reconciliation; the publish tool uploads only the
+segments, item lines and bodies the live release does not already hold. The
+proof (catalogue_reconciliation_proof/v2) then predicts the version 2 release
+the service will publish. A base may be a version 1 or a version 2 bundle.
 """
 from __future__ import annotations
 
@@ -17,15 +25,22 @@ import re
 from types import SimpleNamespace
 
 from loop_engine.core.service_runtime.catalogue_bundle import (
-    canonical_bytes, read_bundle, strict_json, validated_attributes, write_bundle,
+    BUNDLE_RECORD_TYPE, canonical_bytes, read_bundle, strict_json, validated_attributes, write_bundle,
 )
 from loop_engine.core.service_runtime.catalogue_packages import VolumeBodyStore
 from loop_engine.core.service_runtime.catalogue_releases import _changes, content_digest, release_digest
+from loop_engine.core.service_runtime.catalogue_segments import (
+    RELEASE_V2_RECORD_TYPE, SEGMENTED_BUNDLE_RECORD_TYPE, Segmentation, bounded_changes, bundle_record_type,
+    read_segmented_bundle, segment_entries, write_segmented_bundle,
+)
 from loop_engine.core.service_runtime.http_entrypoint import HostFamilyPolicy, HostLicensePolicy
 from loop_engine.core.service_runtime.records import ServiceRuntimeError
 
 REQUEST_VERSION = 'catalogue_reconciliation_request/v1'
 PROOF_VERSION = 'catalogue_reconciliation_proof/v1'
+#: A proof that predicts a version 2 (segmented) release.
+PROOF_VERSION_2 = 'catalogue_reconciliation_proof/v2'
+BUNDLE_FORMATS = (BUNDLE_RECORD_TYPE, SEGMENTED_BUNDLE_RECORD_TYPE)
 RESULT_VERSION = 'catalogue_reconciliation_result/v1'
 PROOF_FILE = 'reconciliation.json'
 MAX_CONTROL_BYTES = 32 * 1024 * 1024
@@ -125,12 +140,78 @@ class Changes:
                 'withdrawals': [{'identity':identity,'expected_version':version,'note':note} for identity,version,note in self.withdrawals]}
 
 
+@dataclass(frozen=True)
+class SegmentedSource:
+    """A version 2 bundle read whole for the operator tools: every segment and item line it carries.
+
+    It answers what a version 1 `CatalogueBundle` answers here (folder, digest, schema, notes, change notes,
+    withdrawals, validated items in identity order and the bundle's blobs), so composition is one code path.
+    A version 2 bundle written by this tool carries every segment and item line, so it is a complete base.
+    """
+    bundle: object
+    items: tuple
+
+    folder = property(lambda self: self.bundle.folder)
+    digest = property(lambda self: self.bundle.digest)
+    schema = property(lambda self: self.bundle.schema)
+    notes = property(lambda self: self.bundle.notes)
+    change_notes = property(lambda self: self.bundle.change_notes)
+    withdrawals = property(lambda self: self.bundle.withdrawals)
+    segmentation = property(lambda self: self.bundle.segmentation)
+    segments = property(lambda self: self.bundle.segments)
+
+    def blobs(self):
+        return self.bundle.blobs()
+
+
+def _segmented_source(folder, accepted_licenses):
+    bundle = read_segmented_bundle(Path(folder), license_policy=HostLicensePolicy(tuple(accepted_licenses)),
+                                   family_policy=HostFamilyPolicy())
+    items, previous = [], None
+    for ref in bundle.segments:
+        document = bundle.carried_segment(ref.digest)
+        if document is None:
+            raise ValueError('a version 2 base carries every segment of its release; use the full local bundle')
+        for identity, version in segment_entries(document, ref.digest):
+            entry = bundle.carried_item(version)
+            if entry is None or entry.identity != identity:
+                raise ValueError('a version 2 base carries every item line of its release; use the full local bundle')
+            if previous is not None and identity <= previous:
+                raise ValueError('segments overlap or are out of identity order')
+            previous = identity
+            items.append(entry)
+    source = SegmentedSource(bundle, tuple(items))
+    if (len(items) != bundle.release_items
+            or content_digest(bundle.schema.digest, tuple((item.identity, item.version) for item in items))
+            != bundle.content_digest):
+        raise ValueError('the version 2 bundle differs from the item count and content its header states')
+    return source
+
+
 def load_bundle(folder, accepted_licenses):
+    """A version 1 bundle, or a complete version 2 bundle, by the record version its header names."""
+    if bundle_record_type(Path(folder)) == SEGMENTED_BUNDLE_RECORD_TYPE:
+        return _segmented_source(folder, accepted_licenses)
     return read_bundle(Path(folder), license_policy=HostLicensePolicy(tuple(accepted_licenses)),
                        family_policy=HostFamilyPolicy(), verify_blobs=False)
 
 
+def _item_path(folder, version):
+    return Path(folder) / 'items' / 'sha256' / version[:2] / version
+
+
 def bundle_rows(bundle):
+    if isinstance(bundle, SegmentedSource):
+        rows = {}
+        for item in bundle.items:
+            raw = _item_path(bundle.folder, item.version).read_bytes()
+            value = strict_json(raw[:-1], 'reconciliation_item_invalid')
+            if canonical_bytes(value) + b'\n' != raw:
+                raise ValueError('baseline/update rows must be canonical to preserve their exact bytes')
+            rows[item.identity] = value
+        if hashlib.sha256((bundle.folder/'bundle.json').read_bytes()).hexdigest() != bundle.digest:
+            raise ValueError('bundle header changed after validation')
+        return rows
     rows = {}
     with (bundle.folder/'items.jsonl').open('rb') as stream:
         for line in stream:
@@ -271,7 +352,8 @@ def _payload(file, stores):
 
 
 def verify_files(bundle, extra_roots=()):
-    stores = (bundle.blobs(), *(VolumeBodyStore(str(Path(root))) for root in extra_roots))
+    stores = tuple(store for store in (bundle.blobs(), *(VolumeBodyStore(str(Path(root))) for root in extra_roots))
+                   if store is not None)
     files = {}
     for item in bundle.items:
         for file in item.package.files:
@@ -283,10 +365,34 @@ def verify_files(bundle, extra_roots=()):
     return files
 
 
+def _segmented_release(base, candidate, changes, changed):
+    """The version 2 release the service publishes for `candidate` while `base` is active, or the base itself."""
+    if (isinstance(base, SegmentedSource) and not changes.withdrawals
+            and [ref.digest for ref in base.segments] == [ref.digest for ref in candidate.segments]
+            and base.schema.digest == candidate.schema.digest):
+        return changes.base_release
+    counts = bounded_changes(changed['added'], changed['changed'], changed['withdrawn'])
+    return release_digest({
+        'record_type': RELEASE_V2_RECORD_TYPE, 'schema_digest': candidate.schema.digest,
+        'segmentation': candidate.segmentation.to_dict(), 'segments': [ref.to_list() for ref in candidate.segments],
+        'items': len(candidate.items), 'content_digest': bundle_content(candidate), 'based_on': changes.base_release,
+        'changes': counts, 'notes': candidate.notes})
+
+
 def proof_for(base, candidate, changes):
     result = validate_result(base, candidate, changes)
     changed = _changes(SimpleNamespace(items=tuple((item.identity,item.version) for item in base.items)),
                        candidate, {identity for identity,_,_ in changes.withdrawals})
+    if isinstance(candidate, SegmentedSource):
+        release = _segmented_release(base, candidate, changes, changed)
+        return {'record_type':PROOF_VERSION_2, 'changes':changes.to_dict(),
+                'base_content_digest':bundle_content(base), 'bundle_digest':candidate.digest,
+                'result_release':release, 'result_release_record_type':RELEASE_V2_RECORD_TYPE,
+                'result_content_digest':bundle_content(candidate),
+                'unchanged_items':len(base.items)-len(changes.replacements)-len(changes.withdrawals),
+                'additions':{identity:result.versions[identity] for identity in changes.additions},
+                'replacements':{identity:result.versions[identity] for identity,_ in changes.replacements},
+                'body_mode':'segmented_full_metadata_delta_objects'}
     release = changes.base_release if bundle_content(base) == bundle_content(candidate) and not changes.withdrawals else release_digest({
         'record_type':'catalogue_release/v1', 'schema_digest':candidate.schema.digest,
         'items':[[item.identity,item.version] for item in candidate.items], 'based_on':changes.base_release,
@@ -301,9 +407,16 @@ def proof_for(base, candidate, changes):
 
 
 def check_proof(base, candidate, proof):
-    _shape(proof, ('record_type','changes','base_content_digest','bundle_digest','result_release','result_content_digest','unchanged_items','additions','replacements','body_mode'))
-    if proof['record_type'] != PROOF_VERSION:
+    if isinstance(proof, dict) and proof.get('record_type') == PROOF_VERSION_2:
+        _shape(proof, ('record_type','changes','base_content_digest','bundle_digest','result_release',
+                       'result_release_record_type','result_content_digest','unchanged_items','additions',
+                       'replacements','body_mode'))
+    else:
+        _shape(proof, ('record_type','changes','base_content_digest','bundle_digest','result_release','result_content_digest','unchanged_items','additions','replacements','body_mode'))
+    if proof['record_type'] not in (PROOF_VERSION, PROOF_VERSION_2):
         raise ValueError('unsupported reconciliation proof version')
+    if (proof['record_type'] == PROOF_VERSION_2) != isinstance(candidate, SegmentedSource):
+        raise ValueError('the proof version does not match the bundle version')
     if type(proof['unchanged_items']) is not int or proof['unchanged_items'] < 0:
         raise ValueError('proof counts are nonnegative integers, never booleans')
     changes = Changes.from_dict(proof['changes'])
@@ -312,7 +425,8 @@ def check_proof(base, candidate, proof):
     return changes
 
 
-def write_reconciled(base, updates, changes, output, observed, *, extra_roots=(), notes=''):
+def write_reconciled(base, updates, changes, output, observed, *, extra_roots=(), notes='',
+                     bundle_format=BUNDLE_RECORD_TYPE, segment_target=None):
     require_live_base(base, changes, observed)
     result = compose(base, updates, changes)
     output = Path(output)
@@ -332,8 +446,20 @@ def write_reconciled(base, updates, changes, output, observed, *, extra_roots=()
     # Change notes belong to one release, not to unchanged item versions.
     # Withdrawal reasons already live in the explicit withdrawal rows. Do not
     # replay historical notes or duplicate them beyond the header's item bound.
-    write_bundle(output, schema=base.schema, lines=result.rows.values(), payloads=payloads,
-                 notes=notes, withdrawals=result.withdrawals)
+    if bundle_format not in BUNDLE_FORMATS:
+        raise ValueError(f'the bundle format is one of {BUNDLE_FORMATS}')
+    if bundle_format == SEGMENTED_BUNDLE_RECORD_TYPE:
+        # Every segment and item line is written, so the folder is a complete base for the next run; the publish
+        # tool uploads only what the live release lacks. The segmentation follows the base's when it has one.
+        segmentation = (Segmentation(segment_target) if segment_target else
+                        base.segmentation if isinstance(base, SegmentedSource) else Segmentation())
+        write_segmented_bundle(output, schema=base.schema, items=[(row, result.versions[identity])
+                                                                   for identity, row in result.rows.items()],
+                               payloads=payloads, segmentation=segmentation, notes=notes,
+                               withdrawals=result.withdrawals)
+    else:
+        write_bundle(output, schema=base.schema, lines=result.rows.values(), payloads=payloads,
+                     notes=notes, withdrawals=result.withdrawals)
     accepted = tuple(sorted({item.item.license_name for item in base.items} | {item.item.license_name for update in updates for item in update.items}))
     candidate = load_bundle(output, accepted)
     proof = proof_for(base, candidate, changes)
@@ -343,7 +469,7 @@ def write_reconciled(base, updates, changes, output, observed, *, extra_roots=()
     return {'record_type':RESULT_VERSION, 'state':'written', 'base_release':changes.base_release, 'bundle_digest':candidate.digest,
             'reconciliation_digest':hashlib.sha256(raw).hexdigest(), 'items':len(candidate.items),
             'new_blob_count':len(new_files), 'new_blob_bytes':sum(len(payload) for payload in payloads),
-            'body_mode':'full_metadata_snapshot_delta_blobs', 'base_bodies_verified':len(held)}
+            'body_mode':proof['body_mode'], 'bundle_format':bundle_format, 'base_bodies_verified':len(held)}
 
 
 def main(argv=None):
@@ -356,6 +482,9 @@ def main(argv=None):
     parser.add_argument('--accept-license', action='append', default=[])
     parser.add_argument('--notes', default='')
     parser.add_argument('--write', action='store_true')
+    parser.add_argument('--bundle-format', choices=BUNDLE_FORMATS, default=BUNDLE_RECORD_TYPE,
+                        help='version 2 writes a segmented bundle; negotiate it with the service first')
+    parser.add_argument('--segment-target', type=int, help='version 2: mean items per segment (a power of two)')
     options = parser.parse_args(argv)
     try:
         _, value = read_control(options.changes)
@@ -369,7 +498,8 @@ def main(argv=None):
         composed = compose(base, updates, changes)
         if options.write:
             result = write_reconciled(base, updates, changes, options.output, observed,
-                                      extra_roots=options.body_root, notes=options.notes)
+                                      extra_roots=options.body_root, notes=options.notes,
+                                      bundle_format=options.bundle_format, segment_target=options.segment_target)
         else:
             result = {'record_type':RESULT_VERSION, 'state':'checked_metadata_only_no_write',
                       'base_release':changes.base_release, 'items':len(composed.rows)}

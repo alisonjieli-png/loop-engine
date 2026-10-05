@@ -26,6 +26,14 @@ Usage: publish_catalogue_delta.py NAME BUNDLE_FOLDER BUNDLE_DIGEST
 Every command is reached through tools/fly_operator.py, the same operator credential path the rest of the
 release uses. No secret is read here and no address is taken from the environment.
 
+A version 2 (segmented) bundle is published the same way after one more step:
+the tool asks the Machine which bundle versions its image reads
+(`loop-engine service catalogue-formats`) and refuses before any upload when
+the image does not read version 2; an image that predates that command reads
+version 1 only. It then uploads, beside the missing bodies, only the segments
+and item lines the live release does not hold, and the release's segment list
+in place of `items.jsonl`.
+
 Existing releases require an exact full baseline and the reconciliation proof
 from reconcile_catalogue_bundle.py. A delta-only baseline needs explicit local
 body roots for its missing files. Bootstrap and deliberate rollback remain the
@@ -157,16 +165,55 @@ def group_batches(missing: list[str], sizes: dict[str, int]) -> list[list[str]]:
     return grouped
 
 
+def blob_path(digest: str) -> str:
+    return f"blobs/sha256/{digest[:2]}/{digest}"
+
+
 def stage_batch(bundle: Path, group: list[str], workdir: Path) -> Path:
-    """A directory holding this batch's blobs at the relative paths the bundle reader expects."""
+    """A directory holding this batch's objects at the relative paths the bundle reader expects.
+
+    A group names blob digests, or relative paths of a version 2 bundle's segments and item lines."""
     stage = workdir / "batch"
     if stage.exists():
         shutil.rmtree(stage)
-    for digest in group:
-        target = stage / "blobs" / "sha256" / digest[:2] / digest
+    for name in group:
+        relative = name if "/" in name else blob_path(name)
+        target = stage / relative
         target.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(bundle / "blobs" / "sha256" / digest[:2] / digest, target)
+        shutil.copyfile(bundle / relative, target)
     return stage
+
+
+FORMATS_COMMAND = "loop-engine service catalogue-formats --config /data/host.json"
+
+
+def remote_formats():
+    """The catalogue formats record the Machine's image states, or None when the image predates the command.
+
+    The command only reads the host file. A refusal, an exit status other than zero or an answer that is not one
+    JSON object is read as an image that reads version 1 only, so a version 2 bundle is refused before upload."""
+    try:
+        value = json.loads(machine_exec(f"{AS_SERVICE} {FORMATS_COMMAND}", as_service=True, timeout=120))
+    except (RuntimeError, ValueError):
+        return None
+    return value if isinstance(value, dict) else None
+
+
+def segmented_uploads(base, candidate) -> list[str]:
+    """The relative paths of the segments and item lines a version 2 candidate adds to the live base release.
+
+    The base is the live release (require_live_base checked its identity and content), so the service holds every
+    item version it lists and, when it is a version 2 bundle, every segment it lists. Anything the service turns
+    out to lack is refused by the service before activation, never served incomplete."""
+    from reconcile_catalogue_bundle import SegmentedSource
+    if not isinstance(candidate, SegmentedSource):
+        return []
+    held_segments = {ref.digest for ref in base.segments} if isinstance(base, SegmentedSource) else set()
+    held_versions = {item.version for item in base.items}
+    return ([f"segments/sha256/{ref.digest[:2]}/{ref.digest}" for ref in candidate.segments
+             if ref.digest not in held_segments]
+            + sorted(f"items/sha256/{item.version[:2]}/{item.version}" for item in candidate.items
+                     if item.version not in held_versions))
 
 
 def extract_archive(archive: str, digest: str, destination: str) -> None:
@@ -192,7 +239,7 @@ def extract_archive(archive: str, digest: str, destination: str) -> None:
     raise RuntimeError("archive extraction outcome is uncertain; inspect its status before retrying")
 
 
-def upload_missing(bundle: Path, missing: list[str], remote: str) -> None:
+def upload_missing(bundle: Path, missing: list[str], remote: str, extra_paths=()) -> None:
     """Put the missing blobs into the remote release folder, then prove every one arrived whole.
 
     Each put carries a checksum-verified archive of blobs at their relative paths. Extraction is detached
@@ -201,19 +248,21 @@ def upload_missing(bundle: Path, missing: list[str], remote: str) -> None:
     and compared: a put that was cut short is a failure here, not a body that fails a customer's
     download later.
     """
-    if not missing:
+    extra_paths = list(extra_paths)
+    if not missing and not extra_paths:
         return
     sizes = {path.name: path.stat().st_size
              for path in (bundle / "blobs" / "sha256").glob("*/*") if path.is_file()}
-    groups = group_batches(missing, sizes)
+    sizes.update({relative: (bundle / relative).stat().st_size for relative in extra_paths})
+    groups = group_batches(list(missing) + extra_paths, sizes)
     workdir = Path(tempfile.mkdtemp(prefix="catalogue-delta-"))
     try:
         for number, group in enumerate(groups, 1):
             stage = stage_batch(bundle, group, workdir)
             archive = workdir / f"batch-{number}.tar"
             with tarfile.open(archive, "w") as stream:
-                for digest in group:
-                    relative = f"blobs/sha256/{digest[:2]}/{digest}"
+                for name in group:
+                    relative = name if "/" in name else blob_path(name)
                     stream.add(stage / relative, arcname=relative, recursive=False)
             remote_archive = f"{REMOTE_ROOT}/{remote}/batch-{number}.tar"
             fly("ssh", "sftp", "put", str(archive), remote_archive,
@@ -227,6 +276,19 @@ def upload_missing(bundle: Path, missing: list[str], remote: str) -> None:
     absent = absent_blobs(remote, missing)
     if absent:
         raise RuntimeError(f"{len(absent)} blobs did not arrive, so nothing was published: {absent[:5]}")
+    if extra_paths:
+        landed = machine_exec(
+            f"find {REMOTE_ROOT}/{remote}/segments {REMOTE_ROOT}/{remote}/items -type f -printf '%P\\n' 2>/dev/null; true")
+        roots = {"segments": "segments/", "items": "items/"}
+        present = set()
+        for line in landed.splitlines():
+            line = line.strip()
+            for prefix in roots.values():
+                present.add(prefix + line)
+        absent = [relative for relative in extra_paths if relative not in present]
+        if absent:
+            raise RuntimeError(f"{len(absent)} segments or item lines did not arrive, so nothing was published: "
+                               f"{absent[:5]}")
 
 
 def _names_digest(names) -> str:
@@ -323,7 +385,8 @@ def publication_inputs(bundle, digest, base_bundle, base_release, reconciliation
     if changes.base_release != base_release:
         raise ValueError("publication and build name different base releases")
     held = verify_files(base, body_roots)
-    verify_files(candidate, (base.folder / "blobs", *body_roots))
+    roots = tuple(root for root in (base.folder / "blobs", *body_roots) if Path(root).is_dir())
+    verify_files(candidate, roots)
     return base, changes, proof, set(held)
 
 
@@ -335,10 +398,16 @@ def publish(name: str, bundle: Path, digest: str, *, base_bundle: Path | None = 
         raise ValueError("a release name must be one safe path segment")
     if not re.fullmatch(r"[0-9a-f]{64}", digest) or hashlib.sha256((bundle / "bundle.json").read_bytes()).hexdigest() != digest:
         raise ValueError("the expected bundle digest must match the local header before upload")
-    from reconcile_catalogue_bundle import require_live_base
+    from reconcile_catalogue_bundle import load_bundle, require_live_base
+    from loop_engine.core.service_runtime.catalogue_segments import bundle_record_type, negotiate_bundle_format
     base, changes, proof, present = publication_inputs(bundle, digest, base_bundle, base_release,
         reconciliation_digest, body_roots, accepted_licenses)
     require_live_base(base, changes, active_catalogue())
+    # The service must read this bundle's version; this read changes nothing on the Machine.
+    record_type = bundle_record_type(bundle)
+    negotiate_bundle_format(remote_formats(), preference=(record_type,))
+    candidate = load_bundle(bundle, accepted_licenses)
+    extra_paths = segmented_uploads(base, candidate)
     remote = f"delta-{name}-{uuid.uuid4().hex[:12]}"
     result_path = f"{REMOTE_ROOT}/{remote}/publish-result.json"
     kept_receipt = f"{REMOTE_ROOT}/{remote}.publish.json"
@@ -355,11 +424,16 @@ def publish(name: str, bundle: Path, digest: str, *, base_bundle: Path | None = 
             "bundle_bytes": total_bytes, "upload_bytes": missing_bytes,
             "share_of_full_upload": round(missing_bytes / total_bytes, 4) if total_bytes else None,
             "batches": len(group_batches(missing, sizes)), "base_release": base_release,
-            "reconciliation_digest": reconciliation_digest}
+            "reconciliation_digest": reconciliation_digest, "bundle_record_type": record_type,
+            "segments_and_item_lines": len(extra_paths)}
     print(json.dumps(plan, indent=2), flush=True)
     # A declared withdrawal-only/no-op snapshot can have no new local blobs.
-    upload_missing(bundle, missing, remote)
-    for filename in ("bundle.json", "items.jsonl"):
+    if extra_paths:
+        upload_missing(bundle, missing, remote, extra_paths)
+    else:
+        upload_missing(bundle, missing, remote)
+    listing = "release-segments.jsonl" if extra_paths or (bundle / "release-segments.jsonl").exists() else "items.jsonl"
+    for filename in ("bundle.json", listing):
         fly("ssh", "sftp", "put", str(bundle / filename), f"{REMOTE_ROOT}/{remote}/{filename}",
             "--machine", MACHINE, "--app", APP, timeout=EXEC_TIMEOUT)
     # Payloads are readable; only the receipt's containing directory needs service ownership.
@@ -423,15 +497,19 @@ def main() -> int:
                         help="report the delta and write nothing")
     arguments = parser.parse_args()
     bundle = arguments.bundle_folder
-    for required in ("bundle.json", "items.jsonl", "blobs"):
+    segmented = (bundle / "release-segments.jsonl").exists()
+    for required in (("bundle.json", "release-segments.jsonl") if segmented else ("bundle.json", "items.jsonl", "blobs")):
         if not (bundle / required).exists():
             print(f"the bundle folder has no {required}", file=sys.stderr)
             return 2
     if arguments.dry_run:
         try:
+            from reconcile_catalogue_bundle import load_bundle
+            licences = tuple(arguments.accept_license) or ("MIT",)
             _base, _changes, _proof, present = publication_inputs(bundle, arguments.bundle_digest,
                 arguments.base_bundle, arguments.base_release, arguments.reconciliation_digest,
-                tuple(arguments.body_root), tuple(arguments.accept_license) or ("MIT",))
+                tuple(arguments.body_root), licences)
+            extra_paths = segmented_uploads(_base, load_bundle(bundle, licences))
         except (OSError, ValueError, RuntimeError) as error:
             print(f"the delta plan refused: {error}", file=sys.stderr)
             return 1
@@ -442,6 +520,8 @@ def main() -> int:
         total = sum(sizes.values())
         print(json.dumps({"local_blobs": len(local), "already_present": len(local) - len(missing),
                           "uploading": len(missing), "bundle_bytes": total,
+                          "segments_and_item_lines": len(extra_paths),
+                          "segments_and_item_line_bytes": sum((bundle / path).stat().st_size for path in extra_paths),
                           "upload_bytes": sum(sizes[value] for value in missing),
                           "share_of_full_upload": round(sum(sizes[v] for v in missing) / total, 4) if total else None,
                           "batches": len(group_batches(missing, sizes))}, indent=2))
