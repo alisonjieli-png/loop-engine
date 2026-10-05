@@ -86,7 +86,8 @@ def _has_package(server: dict) -> bool:
 
 class _SupplyRegistrySource(McpOfficialRegistrySource):
     """The registry engine, reading the upstream licence only for entries this line can package. It counts the
-    packageable entries whose licence went unread because the run's lookup allowance was spent."""
+    packageable entries whose licence went unread: the run's lookup allowance was spent, or GitHub answered with
+    a status that decides nothing (a rate limit or a server error)."""
 
     unchecked = 0
 
@@ -97,7 +98,8 @@ class _SupplyRegistrySource(McpOfficialRegistrySource):
                     "detector": "GitHub licence interface for the upstream code repository",
                     "repository_licence": None, "governing_file": None, "file_level_notices": []}
         evidence = super()._link_evidence(server)
-        if evidence is not None and evidence["reason"] == "upstream_licence_not_checked":
+        if evidence is not None and (evidence["reason"] == "upstream_licence_not_checked"
+                                     or evidence["reason"].startswith("upstream_licence_status_")):
             self.unchecked += 1
         return evidence
 

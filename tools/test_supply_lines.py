@@ -154,6 +154,15 @@ class ReadingTest(unittest.TestCase):
         spent = _SupplyRegistrySource(None, None, github_reader=object(), maximum_upstream_lookups=0)
         self.assertEqual(spent._link_evidence(server)["reason"], "upstream_licence_not_checked")
         self.assertEqual(spent.unchecked, 1)
+        class Limited:
+            def get(self, path):
+                class Answer:
+                    status = 403
+                return Answer()
+
+        limited = _SupplyRegistrySource(None, None, github_reader=Limited(), maximum_upstream_lookups=10)
+        self.assertEqual(limited._link_evidence(server)["reason"], "upstream_licence_status_403")
+        self.assertEqual(limited.unchecked, 1)
         remote = _SupplyRegistrySource(None, None, github_reader=object(), maximum_upstream_lookups=0)
         remote._link_evidence({**server, "packages": []})
         self.assertEqual(remote.unchecked, 0)
