@@ -5888,25 +5888,467 @@
   "grib2_parameters_land_surface_thermodynamic_properties": [
    13,
    15
+  ],
+  "algolia": [
+   9
+  ],
+  "lancedb": [
+   9
+  ],
+  "opencost": [
+   9,
+   12
+  ],
+  "chaos_mesh": [
+   9
+  ],
+  "kubevirt_cdi": [
+   9
+  ],
+  "dragonfly": [
+   9
+  ],
+  "shiori": [
+   4,
+   9
+  ],
+  "stackstorm": [
+   9
+  ],
+  "flowable": [
+   9
+  ],
+  "cacti": [
+   8,
+   9
+  ],
+  "infinity_emb": [
+   9
+  ],
+  "konnect": [
+   9
+  ],
+  "equinix": [
+   9
+  ],
+  "akamai": [
+   9,
+   16
+  ],
+  "workos": [
+   9,
+   16
+  ],
+  "kinde": [
+   9,
+   16
+  ],
+  "coinbase_cdp": [
+   8,
+   9
+  ],
+  "massive": [
+   8,
+   9
+  ],
+  "clickhouse_cloud": [
+   9
+  ],
+  "supabase_services": [
+   9
+  ],
+  "prometheus": [
+   9
+  ],
+  "twilio_extended": [
+   9,
+   17
+  ],
+  "sendgrid_extended": [
+   9,
+   17
+  ],
+  "winget_restsource": [
+   9
+  ],
+  "backstage_core_plugins": [
+   9
+  ],
+  "backstage_todo": [
+   9
+  ],
+  "artifacthub": [
+   9
+  ],
+  "devfile_registry": [
+   9
+  ],
+  "konveyor_hub": [
+   9
+  ],
+  "move2kube": [
+   9
+  ],
+  "litmus_auth": [
+   9
+  ],
+  "velaux": [
+   9
+  ],
+  "determined_launcher": [
+   9
+  ],
+  "vald": [
+   9
+  ],
+  "cortex_cpp": [
+   9
+  ],
+  "steel_browser": [
+   9
+  ],
+  "invokeai": [
+   9
+  ],
+  "sigstore_tsa": [
+   9,
+   16
+  ],
+  "rekor_v2": [
+   9,
+   16
+  ],
+  "memos": [
+   4,
+   9
+  ],
+  "mediamtx": [
+   9,
+   11
+  ],
+  "go2rtc": [
+   9,
+   11
+  ],
+  "casaos": [
+   9,
+   11
+  ],
+  "casaos_app_management": [
+   9,
+   11
+  ],
+  "casaos_user_service": [
+   9,
+   11
+  ],
+  "casaos_local_storage": [
+   9,
+   11
+  ],
+  "casaos_gateway": [
+   9,
+   11
+  ],
+  "casaos_message_bus": [
+   9,
+   11
+  ],
+  "koyeb": [
+   9
+  ],
+  "elastic_cloud": [
+   9
+  ],
+  "confluent_cloud": [
+   9
+  ],
+  "recurly": [
+   8,
+   9
+  ],
+  "algorand_indexer": [
+   8,
+   9
+  ],
+  "hiero_mirror_node": [
+   8,
+   9
+  ],
+  "umbraco_management": [
+   9
+  ],
+  "nakama": [
+   9
+  ],
+  "agones": [
+   9
+  ],
+  "open_match": [
+   9
+  ],
+  "redhat_sources": [
+   9,
+   16
+  ],
+  "redhat_content_sources": [
+   9
+  ],
+  "redhat_chrome_service": [
+   9
+  ],
+  "assisted_installer": [
+   9
+  ],
+  "trustify": [
+   9,
+   16
+  ],
+  "trustify_da": [
+   9,
+   16
+  ],
+  "openmeter_v3": [
+   8,
+   9
+  ],
+  "autumn": [
+   8,
+   9
+  ],
+  "cf_service_broker": [
+   9
+  ],
+  "up_bank": [
+   8,
+   9
+  ],
+  "transparency_exchange": [
+   9,
+   12,
+   16
+  ],
+  "modern_treasury": [
+   8,
+   9
+  ],
+  "pinterest": [
+   8,
+   9
+  ],
+  "turbopuffer": [
+   9
+  ],
+  "dedalus": [
+   9
+  ],
+  "deeptable": [
+   9
+  ],
+  "sumup": [
+   8,
+   9
+  ],
+  "ctrlx": [
+   9,
+   12
+  ],
+  "palantir_apollo": [
+   9
+  ],
+  "ngrok": [
+   9
+  ],
+  "rapyd": [
+   8,
+   9
+  ],
+  "ripple_payments_direct": [
+   8,
+   9
+  ],
+  "didww": [
+   9,
+   17
+  ],
+  "didww_verification": [
+   9,
+   17
+  ],
+  "zeplin": [
+   9,
+   17
+  ],
+  "authlete": [
+   9,
+   16
+  ],
+  "fermyon_cloud": [
+   9
+  ],
+  "unikraft_cloud": [
+   9
+  ],
+  "cloudglue": [
+   9
+  ],
+  "trellix_sandbox": [
+   9,
+   16
+  ],
+  "uos_hub": [
+   9,
+   12
+  ],
+  "dataforseo": [
+   8,
+   9
+  ],
+  "juniper_mist": [
+   9,
+   16
+  ],
+  "open_mpic": [
+   9,
+   16
+  ],
+  "vmware_vcf": [
+   9
+  ],
+  "vmware_nsx": [
+   9
+  ],
+  "coingecko": [
+   8,
+   9
+  ],
+  "webflow": [
+   8,
+   9
+  ],
+  "ip2location_io": [
+   9
+  ],
+  "cloudbeds": [
+   8,
+   9
+  ],
+  "pachca": [
+   9,
+   17
+  ],
+  "braintrust": [
+   9
+  ],
+  "melissa": [
+   9
+  ],
+  "mx_platform": [
+   8,
+   9
+  ],
+  "ampersand": [
+   9
+  ],
+  "dwolla": [
+   8,
+   9
+  ],
+  "pandadoc": [
+   8,
+   9
+  ],
+  "nokia_eda": [
+   9
+  ],
+  "messagebird": [
+   9,
+   17
+  ],
+  "domino_rest": [
+   9
+  ],
+  "playfab": [
+   9
+  ],
+  "gdpr_subject_rights": [
+   16
+  ],
+  "sinch_rcs": [
+   9,
+   17
+  ],
+  "vultr": [
+   9
+  ],
+  "warpgate": [
+   9,
+   16
+  ],
+  "wg_portal": [
+   9,
+   16
+  ],
+  "clearlydefined": [
+   9,
+   12,
+   16
+  ],
+  "langsmith": [
+   9
+  ],
+  "firecracker": [
+   9
+  ],
+  "datarhei_core": [
+   9,
+   11
+  ],
+  "edgex_device_sdk": [
+   9,
+   11
+  ],
+  "edgex_app_functions": [
+   9,
+   11
+  ],
+  "kubernetes_dashboard": [
+   9
+  ],
+  "dapr": [
+   9
+  ],
+  "ocis": [
+   9
+  ],
+  "azure_marketplace_saas": [
+   9
+  ],
+  "seerr": [
+   9,
+   17
+  ],
+  "electric": [
+   9
   ]
  },
  "sources_per_goal": {
   "1": 64,
   "2": 167,
   "3": 150,
-  "4": 158,
+  "4": 160,
   "5": 53,
   "6": 64,
   "7": 117,
-  "8": 79,
-  "9": 519,
+  "8": 100,
+  "9": 644,
   "10": 88,
-  "11": 89,
-  "12": 160,
+  "11": 100,
+  "12": 165,
   "13": 236,
   "14": 97,
   "15": 129,
-  "16": 207,
-  "17": 246
+  "16": 224,
+  "17": 255
  }
 }
