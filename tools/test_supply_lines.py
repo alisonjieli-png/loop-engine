@@ -3004,6 +3004,40 @@ class ManimScenesTest(unittest.TestCase):
         self.assertFalse(broken.passed)
         self.assertIn("known-wrong control", broken.output)
 
+    def test_the_same_scene_at_two_tags_is_one_job(self):
+        from component_qualification import checks, components
+        from supply_lines.licences import decide
+        line = self.line
+        policy = json.loads((HERE / "component_qualification" / "resources" / "qualification-policy.json")
+                            .read_text(encoding="utf-8"))
+        blocks = line.number_repeats(line.docstring_blocks("manim/mobject/shapes.py", MANIM_MODULE))
+
+        def job(block, tag, commit):
+            release = line.Release(line.REPOSITORY, tag, commit, {
+                "url": f"https://{line.ARCHIVE_HOST}/{line.REPOSITORY}/tar.gz/{commit}", "sha256": "d" * 64,
+                "size_bytes": 10, "retrieved_at": "2026-10-05T00:00:00Z"},
+                {"LICENSE": LICENCE, "LICENSE.community": LICENCE, block.path: MANIM_MODULE.encode()})
+            facts = line.read_scene(block, self.namespace)
+            item = line.Verified(block, facts, line.module_for(block.scene),
+                                 line.scene_source(block, release.as_header()))
+            payload, bodies = line.build_package(item, "manim-test", release, decide(line.REPOSITORY, commit, (
+                "LICENSE", LICENCE, "MIT")), None, {}, GENERATOR, LICENCE, "2026-10-05", self.namespace, {})
+            with tempfile.TemporaryDirectory() as folder:
+                for entry in payload["package"]["files"]:
+                    (Path(folder) / entry["path"]).write_bytes(bodies[entry["digest"]])
+                (Path(folder) / "candidate.json").write_text(json.dumps(payload), encoding="utf-8")
+                component = components.from_folder(folder)
+            return checks.job_key(component, policy), payload["package_digest"]
+
+        older, older_digest = job(blocks[1], "v0.20.1", "1" * 40)
+        newer, newer_digest = job(blocks[1], "v0.21.0", "2" * 40)
+        self.assertEqual(older, "manim_scenes|manim.mobject.shapes.Circle|SquareExample|1")
+        self.assertEqual(older, newer)
+        self.assertNotEqual(older_digest, newer_digest)
+        first, _digest = job(blocks[2], "v0.21.0", "2" * 40)
+        second, _digest = job(blocks[3], "v0.21.0", "2" * 40)
+        self.assertEqual(len({older, first, second}), 3)
+
     def test_an_archive_of_another_commit_is_refused(self):
         with self.assertRaises(LookupError):
             self.line.read_release(self._reader(self._files(), archive_commit="e" * 40))

@@ -143,6 +143,30 @@
      "fact_role": "specification"
     }
    }
+  },
+  "manim_scenes": {
+   "kinds": [
+    "code_module"
+   ],
+   "forms": [
+    "code_example"
+   ],
+   "shape": "code",
+   "required_files": [
+    "LICENSE",
+    "ATTRIBUTION.md",
+    "README.md",
+    "scene.json",
+    "requirements.txt"
+   ],
+   "job_key": {
+    "json_file": "scene.json",
+    "fields": [
+     "documented_at",
+     "scene",
+     "occurrence"
+    ]
+   }
   }
  },
  "record_types": {
@@ -235,7 +259,7 @@
   "plugin_manifest"
  ],
  "effect_text_reason": "The licensed import's effect rules read words as actions a harness is told to take, which is right for instruction, skill, command and configuration files. A README, a JSON Schema or code comments of a generated client describe a remote API ('uploads a file'), whose effect the network effect covers; on September 28, 2026 those words produced 501 false effect findings (reads_files and writes_files in README.md and schema.json) on components whose syntax trees touch no local file. Python code is judged by its syntax tree.",
- "job_key_reason": "One package for one job: an API operation is its specification file and its operation (method, path and the specification's operation identifier, since a specification may define several operations on one method and path, as Box does with URL fragments and OpenAI with beta variants: 23 such packages were refused as copies on September 28, 2026 when the key held method and path only); a protocol server is its registry package; a program is its formula; a data table or a copied schema is its upstream file bytes, not counting licence texts and notice files, which every package of one source shares; a schema generated from an API specification copies no upstream file, so it is its specification and its title (the September 30 run refused 8,787 of 9,142 schema packages as one job because the key held only the notice files or nothing). Two components with one job key are duplicates whatever their text.",
+ "job_key_reason": "One package for one job: an API operation is its specification file and its operation (method, path and the specification's operation identifier, since a specification may define several operations on one method and path, as Box does with URL fragments and OpenAI with beta variants: 23 such packages were refused as copies on September 28, 2026 when the key held method and path only); a protocol server is its registry package; a program is its formula; a data table or a copied schema is its upstream file bytes, not counting licence texts and notice files, which every package of one source shares; a schema generated from an API specification copies no upstream file, so it is its specification and its title (the September 30 run refused 8,787 of 9,142 schema packages as one job because the key held only the notice files or nothing). An animation scene is where its documentation shows it (the documented module, class or page) and its scene name, with its occurrence when one location shows two scenes of one name (Arrow's docstring shows two different ArrowExample scenes in Manim Community v0.21.0), and never the release tag, so the same scene read at two releases is one job. Two components with one job key are duplicates whatever their text.",
  "composition": {
   "targets_file": "src/loop_engine/data/library_composition.json",
   "targets_reason": "Builder e's library_composition_targets/v1 (September 27, 2026) is the authority once integrated; these shares are its copy for a checkout that does not hold it yet.",
