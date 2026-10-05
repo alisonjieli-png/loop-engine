@@ -131,7 +131,9 @@ class EnvelopeTests(unittest.TestCase):
         cases = ((first_case_request(base_digest=graph_digest(())), "base_digest_mismatch"),
                  ({**first_case_request(), "profile": "owl-dl"}, "profile_unsupported"),
                  ({**first_case_request(), "change": {"added": [], "removed": []}}, "change_invalid"),
-                 ({**first_case_request(), "extra": 1}, "request_invalid"))
+                 ({**first_case_request(), "extra": 1}, "request_invalid"),
+                 ({**first_case_request(), "limits": {"max_listed": 10, "max_closure_triples": 3}},
+                  "limit_exceeded"))
         with patch("loop_engine.core.ontology_change.native_engine.NativeRuleEngine.plan") as engine:
             for request, code in cases:
                 outcome = plan_change(request, native_host())

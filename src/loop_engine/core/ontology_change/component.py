@@ -38,8 +38,9 @@ from ..engines.selection_records import DECLARED_ORDER_ENGINE_REF
 from ..engines.slots import load_engine_slot_catalog
 from . import engines as table
 from .contract import (
-    CONSERVATIVE, NOT_CONSERVATIVE, PLAN_FIELDS, PLAN_RECORD_TYPE, REQUEST_RECORD_TYPE, RULE_TABLES, SLOT_ID,
-    EngineFailure, OntologyChangeRefused, PlanningInput, PlanRequest, plan_digest, triples_list)
+    CLOSURE_CEILING, CONSERVATIVE, NOT_CONSERVATIVE, PLAN_FIELDS, PLAN_RECORD_TYPE, REQUEST_RECORD_TYPE,
+    RULE_TABLES, SLOT_ID, EngineFailure, OntologyChangeRefused, PlanningInput, PlanRequest, plan_digest,
+    triples_list)
 from .rdf_terms import VOCABULARY_NAMESPACES, RdfSyntaxError, graph_digest, is_iri, parse_graph, user_terms, writable
 from .trace_checker import check_trace
 
@@ -92,9 +93,12 @@ def read_request(request) -> tuple:
     plan_request = PlanRequest.from_dict(request)
     try:
         base = parse_graph(plan_request.ontology_text, plan_request.ontology_format,
-                           maximum_triples=plan_request.maximum_closure)
+                           maximum_triples=CLOSURE_CEILING)
     except RdfSyntaxError as error:
         raise OntologyChangeRefused("unsupported_syntax", str(error)) from None
+    if len(base) > plan_request.maximum_closure:
+        raise OntologyChangeRefused("limit_exceeded", f"the ontology holds {len(base)} triples, more than the "
+                                                      f"closure bound {plan_request.maximum_closure}")
     found = graph_digest(base)
     if found != plan_request.base_digest:
         raise OntologyChangeRefused("base_digest_mismatch",
