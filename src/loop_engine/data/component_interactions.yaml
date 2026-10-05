@@ -1328,3 +1328,45 @@ interactions:
     verification: exact_pools_against_the_baseline_engine
     run_history: request_loop_and_bindings_report
     implementation_state: candidate
+  - interaction_id: core.interaction.research.plan_queries
+    producer_kind: runtime_definition
+    consumer_kind: adapter
+    operation: plan_research_queries
+    request_contract: research_query_plan/v1
+    result_contract: research_query/v1
+    relationship: spawned_by
+    delivery: lazy_stream_from_a_bound_cursor
+    scheduling: weighted_round_robin_over_declared_products
+    retry: none_the_planner_is_deterministic
+    timeout: none_no_call_leaves_the_process
+    cancellation: inherited_run_cancellation
+    compatibility: exact_library_product_and_implementation_digests
+    context_handoff: dimension_values_and_cursor_only
+    authority_transfer: none_a_planned_query_grants_nothing
+    privacy: public_vocabulary_screened_for_sensitive_markers
+    failure: typed_engine_failure_kind
+    repair: a_changed_product_starts_its_own_cursor_and_the_ledger_prevents_repeats
+    verification: incompatible_combination_and_coprime_and_resume_after_kill_controls
+    run_history: cursor_and_query_records_in_the_private_run_ledger
+    implementation_state: candidate
+  - interaction_id: core.interaction.research.execute_query
+    producer_kind: runtime_definition
+    consumer_kind: adapter
+    operation: execute_research_query
+    request_contract: research_query/v1
+    result_contract: research_query_evidence/v1
+    relationship: spawned_by
+    delivery: one_request_per_query_page_after_a_recorded_intent
+    scheduling: one_lane_per_executor_within_its_source_limits
+    retry: none_a_stored_response_is_folded_again_never_reread
+    timeout: per_request_bound
+    cancellation: inherited_run_cancellation
+    compatibility: exact_engine_descriptor_and_edge_version
+    context_handoff: rendered_request_without_credential
+    authority_transfer: network_read_grant_of_the_run_only
+    privacy: raw_responses_private_and_keys_never_stored
+    failure: typed_engine_failure_kind
+    repair: hold_on_rate_limit_or_refusal_until_reset
+    verification: forbidden_host_and_unstored_response_controls
+    run_history: attempt_records_and_compressed_raw_responses
+    implementation_state: candidate

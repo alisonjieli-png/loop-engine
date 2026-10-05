@@ -3142,3 +3142,148 @@ slots:
       - core.ontology_change.conformance:selection_follows_the_declared_order_and_recorded_evidence
       - core.ontology_change.conformance:a_failed_engine_falls_back_to_the_next_declared_engine
     planned_checks: [a_loop_owns_every_plan_and_apply_it_requests]
+  # The research query multiplier (October 5, 2026; roadmap S-6.214): a declared
+  # product of search dimensions planned as probes and executed against each
+  # source's own query language. The reference engines run today from
+  # tools/query_multiplier and tools/knowledge_radar; the component folder below
+  # is their planned home, so both slots are planned.
+  - record_type: engine_slot/v1
+    slot_id: research_query_planner
+    slot_version: 1.0.0
+    title: Research query planner
+    function: >-
+      Turn a declared product of search dimensions (topics, formats, languages,
+      geographies, time windows, licences and source qualifiers) into a lazy,
+      resumable stream of distinct queries that covers every slice of the
+      product early, skips incompatible combinations, keeps null values and
+      never repeats an executed query inside its refresh period. A query is a
+      probe, never a package.
+    design_table: roadmap_addition
+    inventory_records: []
+    roadmap_steps: [S-6.214]
+    implementation_state: planned
+    work_boundaries: []
+    planned_work_boundaries:
+      - {boundary: research query planning, added_by: S-6.214}
+    release_reason: ""
+    release_edge: ""
+    interactions: [core.interaction.research.plan_queries]
+    unavailable_result: {form: empty_result_with_reason, value: no_eligible_engine,
+                         answer_exists: false}
+    conformance_suite: ""
+    component_folder: src/loop_engine/core/research_queries
+    folder_move_package: ""
+    nested_under: []
+    nesting_scope_rule: not_nested
+    nesting_scope_reason: ""
+    joined_with: []
+    engine_protocol: core.research_queries.protocol.ResearchQueryPlanner
+    engine_protocol_version: research_query_planner/v1
+    engine_kinds: [factorized_multiplier, matrix_pages, queue_import]
+    engine_kind_groups: {}
+    native_registry: core.research_queries.engines
+    native_declaration: core.research_queries.protocol.ResearchQueryPlanDeclaration
+    requirement_comparison: ""
+    descriptor_projection: core.research_queries.engines.describe_planner
+    factory_table: core.research_queries.engines
+    planned_symbols: [core.research_queries.protocol.ResearchQueryPlanner,
+                      core.research_queries.protocol.ResearchQueryPlanDeclaration,
+                      core.research_queries.engines,
+                      core.research_queries.engines.describe_planner]
+    selection_mode: one_of
+    dispatch_key: ""
+    derived_from: ""
+    fallback_ceiling: none
+    failure_kinds: [engine_unavailable, engine_reported_failure, output_validation_failed,
+                    engine_changed_after_selection, policy_refused]
+    ranking_objectives: []
+    evidence_minimum_floor: null
+    scope_fields: [operation_contract]
+    bindings:
+      - {context: engine_side, selection_phase: loop_start,
+         binding_site: runtime_context_internal_binding, host_must_bind: false}
+    declaration_source: >-
+      The engine field of research_query_plan/v1. Reference engines today:
+      factorized_multiplier in tools/query_multiplier/planner.py (pairwise
+      coprime residues, so no combination repeats before the product is spent
+      and every value of every dimension comes round once per its length),
+      matrix_pages in tools/knowledge_radar/query_matrix.py (the October 1
+      planner) and queue_import in tools/query_multiplier/importers.py.
+    retired_engines: []
+    known_direct_construction_sites: []
+    existing_checks: []
+    planned_checks: [an_incompatible_combination_is_skipped,
+                     no_combination_repeats_before_the_product_is_spent,
+                     the_cursor_resumes_after_a_kill,
+                     an_executed_query_is_not_repeated_inside_its_refresh_period]
+  - record_type: engine_slot/v1
+    slot_id: research_query_executor
+    slot_version: 1.0.0
+    title: Research query executor
+    function: >-
+      Send one planned query to one source in that source's own query language
+      (its qualifiers and filters), within the source's limits and the run's
+      network grant, store the raw response as evidence before anything
+      counts, and normalise result rows into candidates with the licence
+      exactly as the source reports it. A reported licence is a lead, never a
+      licence decision.
+    design_table: roadmap_addition
+    inventory_records: []
+    roadmap_steps: [S-6.214]
+    implementation_state: planned
+    work_boundaries: []
+    planned_work_boundaries:
+      - {boundary: research query execution, added_by: S-6.214}
+    release_reason: ""
+    release_edge: ""
+    interactions: [core.interaction.research.execute_query]
+    unavailable_result: {form: empty_result_with_reason, value: no_eligible_engine,
+                         answer_exists: false}
+    conformance_suite: ""
+    component_folder: src/loop_engine/core/research_queries
+    folder_move_package: ""
+    nested_under: []
+    nesting_scope_rule: not_nested
+    nesting_scope_reason: ""
+    joined_with: []
+    engine_protocol: core.research_queries.protocol.ResearchQueryExecutor
+    engine_protocol_version: research_query_executor/v1
+    engine_kinds: [repository_search, catalogue_api, package_registry_search, web_search_service]
+    engine_kind_groups: {}
+    native_registry: core.research_queries.executors
+    native_declaration: core.research_queries.protocol.ResearchQueryExecutorDeclaration
+    requirement_comparison: ""
+    descriptor_projection: core.research_queries.executors.describe_executor
+    factory_table: core.research_queries.executors
+    planned_symbols: [core.research_queries.protocol.ResearchQueryExecutor,
+                      core.research_queries.protocol.ResearchQueryExecutorDeclaration,
+                      core.research_queries.executors,
+                      core.research_queries.executors.describe_executor]
+    selection_mode: set_of
+    dispatch_key: source_kind
+    derived_from: ""
+    fallback_ceiling: before_dispatch_only
+    failure_kinds: [engine_unavailable, capability_requirement_unsatisfied, engine_reported_failure,
+                    output_validation_failed, engine_changed_after_selection, policy_refused]
+    ranking_objectives: []
+    evidence_minimum_floor: null
+    scope_fields: [source_kind]
+    bindings:
+      - {context: engine_side, selection_phase: loop_start,
+         binding_site: runtime_context_internal_binding, host_must_bind: false}
+    declaration_source: >-
+      The executor named by each product of the plan; network authority comes
+      from the run's grant and every host but the executor's one declared host
+      is refused, as are the hosts tools/query_multiplier/data/hosts-v1.json
+      excludes with their reasons. Reference engines today in
+      tools/query_multiplier/executors.py: GitHub repository and code search
+      through gh, the Hugging Face Hub, OpenAlex, Openverse, GBIF,
+      data.europa.eu, data.gov, arXiv, npm and Ollama's web search; PyPI is
+      registered unavailable because it has no search interface.
+    retired_engines: []
+    known_direct_construction_sites: []
+    existing_checks: []
+    planned_checks: [a_forbidden_host_is_refused_before_any_request,
+                     a_query_without_a_stored_response_does_not_count_as_executed,
+                     the_same_item_found_by_two_queries_is_one_candidate,
+                     a_web_search_key_is_sent_but_never_stored]
