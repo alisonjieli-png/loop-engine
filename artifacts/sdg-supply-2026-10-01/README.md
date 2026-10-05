@@ -26,16 +26,29 @@ namespace.
 | 3 | openapi_operations | 107 | 7,994 | 1,083 |
 | 3 | json_schemas (API components) | same 107 | 7,607 | 5,697 |
 | 2b | data_tables | 874 tables (thin SDGs, fixture banks) | 874 | 0 |
+| 4 | openapi_operations | 185 public sector, health, science, energy | 21,908 | 2,993 |
+| 4 | json_schemas (API components) | same 185 | 17,856 | 15,176 |
+| 4 | mcp_registry | registry refresh | 2,917 | 36,520 |
+| 5C | openapi_operations | 154 telecom, industrial, mobility, finance, logistics | 5,170 | 771 |
+| 5C | json_schemas (API components) | same 154 | 8,184 | 12,303 |
+| 5D | openapi_operations | 288 broad sweep | 21,165 | 1,834 |
+| 5D | json_schemas (API components) | same 288 | 15,913 | 8,390 |
 
-Measured afterwards from the store, over records whose provenance names the
-generating revisions: **31,059 candidate packages and 184,087 distinct file
-bodies** that no other supply candidate holds. Of those, 151,937 are
-generated code, tests, schemas and READMEs, 905 are upstream files copied
-byte for byte, and 31,245 are attribution and licence files. The north star
-does not count the last group as useful files. The later 874-table batch
-(revisions `fa346712` and `eafa4fe8`) added 874 packages and 5,366 new bodies
-by the run's own store report, for about 31,933 packages and 189,453 bodies. None of this is a served
-count; the catalogue's served-file measure is unchanged until review.
+Measured from the store on October 5, over `candidate` records whose
+provenance names one of the generating revisions listed below:
+**125,046 candidate packages** (62,946 openapi_operations, 56,474
+json_schemas, 2,917 mcp_registry, 1,414 data_tables, 1,295
+function_extracts) holding **628,800 distinct task-bearing file bodies, of
+which 627,782 no earlier supply candidate holds**. 626,965 of them are
+generated code, tests, schemas and READMEs and the rest are upstream files
+copied byte for byte. Attribution and licence files are excluded, as the
+north star does not count them. Earlier rows superseded by a later run are
+not counted. None of this is a served count; the catalogue's served-file
+measure is unchanged until review.
+
+The rounds' generating revisions are `c625853a`, `872379b1`, `01fe31fd`,
+`7d786592`, `0f36a2ba`, `9d38d128`, `eafa4fe8`, `ccb269c8`, `0e5ecb50`,
+`5f94ab71` and `3ff8d79d`.
 
 The packages name the original revisions `c625853a`, `872379b1`, `01fe31fd`,
 `7d786592`, `0f36a2ba` and `9d38d128`. They were cherry-picked onto `main` as
@@ -51,15 +64,23 @@ commits as a git bundle and the revision map.
   `TypeError`. It now names no required fields.
 - Specifications declaring `CC BY 4.0`, `Apache2` or `MIT license` are read
   as those allowlisted licences.
+- A branch name the read-only reader refuses, such as one containing `/`,
+  stopped a whole run. It is now an unreadable source.
+- The October 4 registry refresh ran out of its 4,000 licence lookups,
+  still reported the registry complete and withdrew 5,176 candidates.
+  `b99e5cd3` and `05091539` now count unread and rate-limited licence
+  lookups as undecided, so such a pass withdraws nothing. A restoration pass
+  with a larger lookup allowance is running; its candidates are not in the
+  counts above.
 - New curated mode for JSON Schemas outside SchemaStore, such as STAC, GBFS,
   Frictionless, Open SDG and the DPG nominee schema, with instances built
   from a schema's own keywords when it has no examples.
 
 ## SDG coverage and the next step
 
-[`sdg-source-map.json`](sdg-source-map.json) proposes SDG goals for 1,638
+[`sdg-source-map.json`](sdg-source-map.json) proposes SDG goals for 2,391
 sources. It feeds reviewers attaching `PublicGoodGrant` goals after
-independent approval, and grants nothing by itself. SDG 5, 10, 14, 6 and 4
+independent approval, and grants nothing by itself. SDG 5, 6, 1, 10 and 14
 have the fewest sources and remain the thinnest goals.
 
 Licence refusals that need an owner policy call, not code: OCDS core,
