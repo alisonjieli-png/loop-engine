@@ -1637,10 +1637,20 @@ class PublisherTableLineTest(unittest.TestCase):
                   "site-footer-only": {"goals": [11], "origins": cc_by, "statement": False},
                   "account-at-financial-institution": {"goals": [8], "origins": [("World Bank", "CC BY 4.0")],
                                                        "columns": ["fx_own_totl_zs"]},
-                  "unknown-origin-licence": {"goals": [14], "origins": [("Somebody", "")]}}
+                  "unknown-origin-licence": {"goals": [14], "origins": [("Somebody", "")]},
+                  "share-of-children-achieving-minimum-proficiency-in-reading-and-math-by-education-level": {
+                      "goals": [4], "origins": cc_by}}
         built, refused, _facts, summary, reader = self._generate(_owid_answers(charts), "our_world_in_data")
-        self.assertEqual([payload["repository"]["series"] for payload, _bodies in built], ["co-emissions-per-capita"])
-        payload, bodies = built[0]
+        long_slug = "share-of-children-achieving-minimum-proficiency-in-reading-and-math-by-education-level"
+        self.assertEqual(sorted(payload["repository"]["series"] for payload, _bodies in built),
+                         ["co-emissions-per-capita", long_slug])
+        # A slug longer than 60 characters keeps its name as the series and gets a short one for its files.
+        short = next(payload for payload, _bodies in built if payload["repository"]["series"] == long_slug)
+        self.assertEqual(short["repository"]["table_id"], "owid_share_of_children_achieving_minimum_proficiency_in_"
+                                                          + hashlib.sha256(long_slug.encode()).hexdigest()[:8])
+        self.assertTrue(all(len(segment) <= 100 for entry in short["files"] for segment in entry["path"].split("/")))
+        payload, bodies = next((payload, bodies) for payload, bodies in built
+                               if payload["repository"]["series"] == "co-emissions-per-capita")
         # The goals are the publisher's own: the SDG Tracker pages that list the chart.
         self.assertEqual((payload["repository"]["sdg_goals"], payload["repository"]["sdg_rule"]),
                          ([7, 13], "owid_sdg_tracker:7,13"))
@@ -1660,7 +1670,7 @@ class PublisherTableLineTest(unittest.TestCase):
         self.assertEqual(reasons["unknown-origin-licence"][0], "licence_unknown")
         # A refused chart's data is never read.
         self.assertFalse([url for url in reader.asked if "maternal-mortality.csv" in url])
-        self.assertEqual(summary["charts_listed"], 6)
+        self.assertEqual(summary["charts_listed"], 7)
 
     def test_sdg_goals_follow_the_rules_as_data_and_are_what_a_grant_takes(self):
         from loop_engine.core.provisioning_server import ProvisioningItemBinding

@@ -3,17 +3,22 @@
 ```text
 One collection (declared in publisher_table_sources.json)
 ├── rows: every series of the publisher's catalogue (World Development Indicators, read through the World
-│   Bank's API), or the tables the declaration names (the O*NET 31.0 Database text release)
+│   Bank's API), the tables the declaration names (the O*NET 31.0 Database text release), or the charts the
+│   publisher's own SDG Tracker pages list (Our World in Data)
 ├── facts: the exact bytes at the publisher's HTTPS address on a declared host, their SHA-256 and the
 │   retrieval time; an archive member the declaration names; the package's data file is those bytes
 ├── licence, bound to the exact series or release, with its evidence address
 │   ├── series_metadata: the series' own licence field (the World Bank's License_Type), read per series;
 │   │   only a value the declaration maps to an allowlisted identifier passes, any other value refuses the
 │   │   series by name with the value it found
-│   └── collection_statement: the publisher's licence page and the release's own Read Me must both state
-│       the declared licence for this release, or every table of it is refused
-├── SDG goals by a rule that is data: wdi_sdg_goals.json (the longest code prefix, else the series' topic)
-│   or the collection's declared goals, each with its reason; a proposal for reviewers, nothing granted
+│   ├── collection_statement: the publisher's licence page and the release's own Read Me must both state
+│   │   the declared licence for this release, or every table of it is refused
+│   └── every_origin: the chart's own page states the publisher's licence for its own work, and every origin
+│       of every indicator in the chart states an allowlisted licence in the indicator's own metadata
+├── one canonical file: a chart that only republishes series of a collection it is covered_by is refused
+├── SDG goals by a rule that is data: wdi_sdg_goals.json (the longest code prefix, else the series' topic),
+│   the collection's declared goals, or the publisher's own SDG pages, each with its reason; a proposal for
+│   reviewers, nothing granted; held sources (held in the declaration) are never read
 ├── size: a data file above the review panel's file bound is kept as consecutive parts cut at record ends,
 │   each within the bound, that join to the exact bytes; a table whose package would exceed the package
 │   bound is refused by name (never sampled, never split across packages)
@@ -134,7 +139,7 @@ def _collection_problems(collection: dict, texts: dict) -> list:
             problems.append("an every-origin rule maps exact origin licence names to allowlisted licences with texts, "
                             "and names the publisher's own licence and the statement of it on each chart page")
     else:
-        problems.append(f"licence rule {licence.get('rule')!r}")
+        problems.append(f"licence rule {licence.get('rule')!r} is not one of {', '.join(LICENCE_RULES)}")
     for address in addresses:
         if not address or not is_https(address) or _host(address) not in hosts:
             problems.append(f"{str(address)[:80]} is not an HTTPS address on a declared host")
@@ -415,6 +420,19 @@ def _table_id(collection: dict, name: str) -> str:
     return f"{collection['table_prefix']}_{re.sub(r'[^a-z0-9]+', '_', name.lower()).strip('_')}"
 
 
+#: The longest series name a table identifier or a file name takes whole.
+MAXIMUM_NAME_CHARACTERS = 60
+
+
+def short_name(name: str) -> str:
+    """A series name as identifiers and file names take it: whole up to 60 characters, else its first 51 and the
+    first 8 hexadecimal digits of its SHA-256, so the module, its test and its data files stay within the
+    catalogue package's 100 characters a path segment. The series itself keeps its full name."""
+    if len(name) <= MAXIMUM_NAME_CHARACTERS:
+        return name
+    return f"{name[:51].rstrip('-_.')}-{hashlib.sha256(name.encode('utf-8')).hexdigest()[:8]}"
+
+
 def world_bank_rows(reader, collection_id: str, collection: dict, rules: dict, only=(), maximum: int = 0,
                     deeds: "dict | None" = None) -> tuple:
     """(rows, refusals, summary) of a World Bank series catalogue: each series whose own metadata states a licence
@@ -614,7 +632,8 @@ def owid_rows(reader, collection_id: str, collection: dict, only=(), maximum: in
     deed = (deeds or {}).get(licence["spdx"], "")
     failures, stopped = 0, None
     for number, slug in enumerate(order):
-        table_id = _table_id(collection, slug)
+        name = short_name(slug)
+        table_id = _table_id(collection, name)
         if not _IDENTIFIER.match(table_id):
             refused.append(refusal(PUBLISHER_TABLES, "source_unreadable", slug, "not a chart name"))
             continue
@@ -678,11 +697,11 @@ def owid_rows(reader, collection_id: str, collection: dict, only=(), maximum: in
         rows.append({
             "collection_id": collection_id, "table_id": table_id, "title": title, "series": slug, "path": slug,
             "address": collection["data_address"].format(series=slug), "member": None,
-            "file_name": collection["file_name"].format(series=slug), "key_field": None,
+            "file_name": collection["file_name"].format(series=name), "key_field": None,
             "licence": {"spdx": licence["spdx"], "value": ", ".join(sorted(spdx_found)), "address": deed,
                         "basis": "every_origin_licence_and_the_chart_page_statement", "evidence": page,
                         "evidence_url": collection["chart_page"].format(series=slug), "more_evidence": evidence},
-            "extra_files": [{"path": "data/" + collection["metadata_file_name"].format(series=slug),
+            "extra_files": [{"path": "data/" + collection["metadata_file_name"].format(series=name),
                              "answer": metadata, "url": collection["metadata_address"].format(series=slug)}]
                            + [{"path": f"data/indicator-{identifier}.metadata.json", "answer": answer,
                                "url": address} for identifier, (address, answer) in zip(identifiers, evidence)],
