@@ -1593,16 +1593,18 @@ index under `index_root`: `indexes/<name>/` holds one immutable index and
 `releases/<release_id>.json` names the index, or the base index and the small
 delta index, that serves the release. `loop-engine service index-catalogue
 --config HOST` builds or opens the active release's index in its own process,
-so a host start or a swap only opens it. One flock(2) lock on
-`index_root/build.lock` lets one build run at a time; the refresher does not
-wait for it, so while an operator's build runs the current view keeps serving
-and the next check opens the finished index. After a build, the indexes of
-releases no longer kept are removed: the active release's, the newest two, and
-the one before them while the newer one is under an hour old. A manifest or a
-read materializes only the grant of the identity it names, and a walk over the
-whole library (an unnarrowed list, a discover, the library page) reads the
-index in pages, so a disk view's memory does not grow with the library; those
-walks still take time in proportion to it.
+so a host start only opens it; after a publish, the refresher builds the new
+release's index in the background and swaps when it is complete. One flock(2)
+lock on `index_root/build.lock` lets one build run at a time; the refresher
+does not wait for it, so while an operator's build runs the current view keeps
+serving and the next check opens the finished index. After a build, the
+indexes of releases no longer kept are removed: the active release's, the
+newest two, and the one before them while the newer one is under an hour old.
+A manifest or a read materializes only the grant of the identity it names, and
+a walk over the whole library (an unnarrowed list, a discover, the library
+page) reads the index in pages, so the memory a disk view holds does not grow
+with the library; those walks still take time, and their answers memory, in
+proportion to it.
 
 **The state marker.** The first catalogue write creates `catalogue_state/v1`
 with state version 1; a release with a community item raises it to 2 and the
