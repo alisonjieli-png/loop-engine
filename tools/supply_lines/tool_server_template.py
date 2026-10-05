@@ -6,16 +6,18 @@ server.py (one per specification file; Python 3.10 or later, standard library on
 ├── TABLE: JSON data parsed at import (addresses, credentials, error meanings and the tools, each tool with
 │   its MCP definition and how it is called); tools.json holds the same tools without the call details
 ├── the helpers of the generated API client's template, copied verbatim from openapi_operations at
-│   generation time (_is, _check, _text, _send, _decode, _deep, _signature_headers; _form_pairs and _region
-│   with their per-operation constant made a parameter)
+│   generation time (_is, _check, _text, _RedirectRefused, _origin, _SameOriginRedirects, _send, _decode, _deep,
+│   _signature_headers; _form_pairs and _region with their per-operation constant made a parameter): a
+│   credential is an unredirected header, and a redirect to another origin is a tool error
 └── SERVER_RUNTIME, the same for every server: one request function with the client's rules, tools/call,
     tools/list by protocol version, initialize with version negotiation, ping, JSON-RPC errors, a line loop
     over standard input and output with tool calls on a few threads, logging to standard error only
 
 test_server.py (one per server, the same code around one DATA table)
-├── a shim that runs server.py with every HTTP request sent to a local mock, the address in a header
+├── a shim that runs server.py with every HTTPS request sent to a local mock, the address in a header
 ├── a mock HTTP server on the loopback interface, and a session that drives the server over its pipes
 └── the protocol, the tool list, every tool's request, one read and one body in detail, known-wrong calls
+    (among them a redirect from the mock to a second mock on another port, refused with no credential sent)
 ```
 
 Every byte of the code is here or in the client's template; the line (api_tool_servers.py) writes only data.
@@ -31,9 +33,11 @@ import json
 SCHEMA_KEYWORDS = ("type", "properties", "required", "items", "anyOf", "enum", "format", "minimum", "description",
                    "additionalProperties")
 SCHEMA_TYPES = ("object", "array", "string", "number", "integer", "boolean", "null")
-#: The client template's helpers the server copies unchanged, by the template constant that holds them.
-VERBATIM_HELPERS = (("RUNTIME", ("_is", "_check", "_text", "_send", "_decode")), ("FORM_ENCODER", ("_deep",)),
-                    ("SIGNER", ("_signature_headers",)))
+#: The client template's helpers the server copies unchanged, by the template constant that holds them: among them
+#: _send with its redirect rule (within the request's origin only, never with the credential).
+VERBATIM_HELPERS = (("RUNTIME", ("_is", "_check", "_text", "_RedirectRefused", "_origin", "_SameOriginRedirects",
+                                 "_send", "_decode")),
+                    ("FORM_ENCODER", ("_deep",)), ("SIGNER", ("_signature_headers",)))
 #: Helpers whose per-operation constant becomes a parameter, with each exact replacement made.
 ADAPTED_HELPERS = (("FORM_ENCODER", "_form_pairs", (("def _form_pairs(body):", "def _form_pairs(body, encoding):"),
                                                     ("BODY_ENCODING.get(name", "encoding.get(name"))),
@@ -42,8 +46,10 @@ ADAPTED_HELPERS = (("FORM_ENCODER", "_form_pairs", (("def _form_pairs(body):", "
 
 
 def _functions(text: str) -> dict:
+    """The source of each top-level function and class of a template, by name."""
     tree = ast.parse(text)
-    return {node.name: ast.get_source_segment(text, node) for node in tree.body if isinstance(node, ast.FunctionDef)}
+    return {node.name: ast.get_source_segment(text, node) for node in tree.body
+            if isinstance(node, (ast.FunctionDef, ast.ClassDef))}
 
 
 def client_helpers() -> str:
@@ -212,10 +218,12 @@ def _root(call):
 
 def _request(call, arguments):
     """Send one call with the generated client's rules and return (status, content type, answer) of a documented
-    success; raise ApiError for another status, and PermissionError or ValueError before anything is sent."""
+    success; raise ApiError for another status or a redirect to another origin, and PermissionError or ValueError
+    before anything is sent."""
     call = {**CALL_DEFAULTS, **call}
     path, query = call["path"], [tuple(item) for item in call["fixed_query"]]
     headers = {"Accept": "application/json", "User-Agent": USER_AGENT, **dict(call["fixed_headers"])}
+    secret = {}  # the credential's headers: unredirected, so no redirect carries them anywhere
     for name, wire, location in call["parameters"]:
         value = arguments.get(name)
         if value is None:
@@ -236,9 +244,9 @@ def _request(call, arguments):
             if auth["placement"] == "query":
                 query.append((auth["name"], credential))
             elif auth["placement"] == "basic":
-                headers[auth["name"]] = auth["prefix"] + base64.b64encode(credential.encode("utf-8")).decode("ascii")
+                secret[auth["name"]] = auth["prefix"] + base64.b64encode(credential.encode("utf-8")).decode("ascii")
             else:
-                headers[auth["name"]] = auth["prefix"] + credential
+                secret[auth["name"]] = auth["prefix"] + credential
         elif not call["auth_optional"]:
             raise PermissionError(f"set the environment variable {auth['variable']} to call {call['operation_id']}")
     data, body = None, arguments.get("body")
@@ -254,12 +262,18 @@ def _request(call, arguments):
         if not access_key or not secret_key:
             raise PermissionError(f"set {auth['variable']} and {auth['secret_variable']} to call "
                                   f"{call['operation_id']}")
-        headers.update(_signature_headers(call["method"], url, headers, data, access_key, secret_key,
-                                          os.environ.get(auth["token_variable"], ""),
-                                          _region(ADDRESSES[call["address"]]["region"]), auth["service"],
-                                          time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())))
+        secret.update(_signature_headers(call["method"], url, headers, data, access_key, secret_key,
+                                         os.environ.get(auth["token_variable"], ""),
+                                         _region(ADDRESSES[call["address"]]["region"]), auth["service"],
+                                         time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())))
     request = urllib.request.Request(url, data=data, method=call["method"], headers=headers)
-    status, content_type, payload = _send(request, TIMEOUT_SECONDS)
+    for name, value in secret.items():
+        request.remove_header(name.capitalize())  # a header parameter of the same name gives way, as it always did
+        request.add_unredirected_header(name, value)
+    try:
+        status, content_type, payload = _send(request, TIMEOUT_SECONDS)
+    except _RedirectRefused as refused:
+        raise ApiError(call, refused.status, str(refused), None) from None
     _log(f"{call['method']} {call['path']} answered {status}")
     try:
         answer = _decode(content_type, payload)
@@ -521,6 +535,7 @@ server chose in a header, so nothing leaves the machine; the mock records each r
 """
 from __future__ import annotations
 
+import base64
 import http.server
 import json
 import os
@@ -538,26 +553,36 @@ SERVER = os.path.join(HERE, "server.py")
 
 TEST_BODY = r'''
 (SERVER_NAME, BASE_URL_VARIABLE, USER_AGENT, VARIABLES, CLEARED, ROOT, ANSWER, METHODS, CALLS, READ, WRITE, WRONG,
- CREDENTIALED, UNADDRESSED) = (DATA[key] for key in (
+ CREDENTIALED, UNADDRESSED, REDIRECTED) = (DATA[key] for key in (
     "server_name", "base_url_variable", "user_agent", "variables", "cleared", "root", "answer", "methods", "calls",
-    "read", "write", "wrong", "credentialed", "unaddressed"))
+    "read", "write", "wrong", "credentialed", "unaddressed", "redirected"))
 VERSIONS = ("2025-06-18", "2025-03-26", "2024-11-05")
+#: The test credential as it travels: as it is set, and inside Basic credentials.
+CREDENTIAL_FORMS = ("test-credential", base64.b64encode(b"test-credential").decode("ascii"))
 NAME = re.compile(r"[a-zA-Z0-9_-]{1,64}")
 READ_METHODS, DESTRUCTIVE_METHODS = ("GET", "HEAD", "OPTIONS"), ("DELETE", "PUT", "PATCH")
 IDEMPOTENT_METHODS = ("GET", "HEAD", "OPTIONS", "PUT", "DELETE")
-#: Runs in the server's process before server.py: every request goes to the local mock instead, with the address
-#: the server chose in a header, so a test sees that address and nothing leaves the machine.
+#: Runs in the server's process before server.py: every HTTPS request goes to the local mock instead, with the
+#: address the server chose in a header, so a test sees that address. The server's own opener sends it, redirect
+#: rule and all, through no proxy; a plain HTTP request may reach the loopback interface only (a redirect test's
+#: second mock), so nothing leaves the machine.
 SHIM = "\n".join([
     "import os, runpy, sys, urllib.parse, urllib.request",
     "_mock = os.environ['TEST_MOCK_ADDRESS']",
-    "_opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))",
-    "def _redirect(request, timeout=None, **options):",
+    "urllib.request.getproxies = lambda: {}",
+    "_open = urllib.request.OpenerDirector.open",
+    "def _to_the_mock(opener, request, *arguments, **options):",
+    "    if isinstance(request, str):",
+    "        request = urllib.request.Request(request)",
     "    original = request.full_url",
     "    parts = urllib.parse.urlsplit(original)",
-    "    request.full_url = _mock + parts.path + ('?' + parts.query if parts.query else '')",
-    "    request.add_header('X-original-url', original)",
-    "    return _opener.open(request, timeout=timeout)",
-    "urllib.request.urlopen = _redirect",
+    "    if parts.scheme == 'https':",
+    "        request.full_url = _mock + parts.path + ('?' + parts.query if parts.query else '')",
+    "        request.add_header('X-original-url', original)",
+    "    elif parts.hostname != '127.0.0.1':",
+    "        raise OSError('the network is closed while generated tests run')",
+    "    return _open(opener, request, *arguments, **options)",
+    "urllib.request.OpenerDirector.open = _to_the_mock",
     "sys.argv = sys.argv[1:]",
     "runpy.run_path(sys.argv[0], run_name='__main__')"])
 
@@ -583,6 +608,8 @@ class _Handler(http.server.BaseHTTPRequestHandler):
         if self.command == "HEAD" or status in (204, 304):
             payload = b""
         self.send_response(status)
+        if self.server.location:  # a redirect to the location, with the request's own path and query
+            self.send_header("Location", self.server.location + self.path)
         if content_type:
             self.send_header("Content-Type", content_type)
         self.send_header("Content-Length", str(len(payload)))
@@ -603,7 +630,7 @@ class _Mock(http.server.ThreadingHTTPServer):
 
     def __init__(self):
         super().__init__(("127.0.0.1", 0), _Handler)
-        self.requests, self.answer = [], _answer(200, "json")
+        self.requests, self.answer, self.location = [], _answer(200, "json"), None
         threading.Thread(target=self.serve_forever, kwargs={"poll_interval": 0.02}, daemon=True).start()
 
     @property
@@ -930,6 +957,25 @@ class ServerTest(unittest.TestCase):
         self.assertTrue(result["isError"], result)
         self.assertIn("HTTPS", result["content"][0]["text"])
         self.assertEqual(self.mock.requests, [])
+
+    def test_known_wrong_a_redirect_to_another_origin_is_refused_and_carries_no_credential(self):
+        # The API's mock answers 302 to a second mock on another port: the call must be a tool error that names the
+        # refused origin, and no credential may reach the second mock (a server that follows sends it there).
+        second = _Mock()
+        self.addCleanup(second.stop)
+        self.mock.answer, self.mock.location = (302, "", b""), second.address
+        name, arguments = REDIRECTED
+        session = self.session()
+        session.initialize()
+        result = session.call(name, arguments)["result"]
+        self.assertEqual(len(self.mock.requests), 1)
+        for sent in second.requests:
+            leaked = [form for form in CREDENTIAL_FORMS if form in " ".join([sent["path"], *sent["headers"].values()])]
+            self.assertFalse(leaked, "the credential reached another origin")
+        self.assertEqual(second.requests, [])
+        self.assertTrue(result["isError"], result)
+        self.assertIn("answered 302: redirect to another origin refused: " + second.address,
+                      result["content"][0]["text"])
 
     @unittest.skipIf(UNADDRESSED is None, "the specification names the API's address")
     def test_known_wrong_without_an_address_nothing_is_sent(self):

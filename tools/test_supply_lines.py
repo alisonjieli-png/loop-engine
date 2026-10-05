@@ -851,18 +851,153 @@ class OpenApiLineTest(unittest.TestCase):
     def test_the_network_is_closed_while_generated_tests_run(self):
         from supply_lines import openapi_operations as line
         import urllib.request
-        before = urllib.request.urlopen
+        before, opened = urllib.request.urlopen, urllib.request.OpenerDirector.open
+        public = "https://example.com"
+        probe = ("import http.server, threading, unittest, urllib.error, urllib.request\n\n"
+                 "class Quiet(http.server.BaseHTTPRequestHandler):\n"
+                 "    def log_message(self, *arguments):\n"
+                 "        pass\n\n"
+                 "class T(unittest.TestCase):\n"
+                 "    def test_open(self):\n"
+                 f"        urllib.request.urlopen({public!r})\n\n"
+                 "    def test_an_opener_of_its_own(self):\n"
+                 "        with self.assertRaisesRegex(RuntimeError, 'network is closed'):\n"
+                 f"            urllib.request.build_opener().open({public!r})\n\n"
+                 "    def test_the_loopback_interface(self):\n"
+                 "        server = http.server.HTTPServer(('127.0.0.1', 0), Quiet)\n"
+                 "        threading.Thread(target=server.handle_request, daemon=True).start()\n"
+                 "        with self.assertRaises(urllib.error.HTTPError) as answered:  # no handler: 501\n"
+                 "            urllib.request.urlopen('http://127.0.0.1:%d/' % server.server_address[1], timeout=10)\n"
+                 "        server.server_close()\n"
+                 "        self.assertEqual(answered.exception.code, 501)\n")
         with tempfile.TemporaryDirectory() as folder:
             target = Path(folder) / "example_probe"
             target.mkdir()
             (target / "example_probe.py").write_text("", encoding="utf-8")
-            (target / "test_example_probe.py").write_text(
-                "import unittest, urllib.request\n\nclass T(unittest.TestCase):\n    def test_open(self):\n"
-                "        urllib.request.urlopen('https://example.com')\n", encoding="utf-8")
+            (target / "test_example_probe.py").write_text(probe, encoding="utf-8")
             passed, count, output = line.run_tests(target, "example_probe")
-        self.assertEqual((passed, count), (False, 1))
-        self.assertIn("network is closed", output)
+        # urlopen and a client's own opener are both refused a public host; the loopback interface, where a
+        # redirect test's servers listen, answers. Only test_open fails, by the guard's refusal.
+        self.assertEqual((passed, count), (False, 3))
+        self.assertIn(", in test_open\n", output)
+        self.assertIn("RuntimeError: the network is closed while generated tests run", output)
+        self.assertIn("FAILED (errors=1)", output)
         self.assertIs(urllib.request.urlopen, before)
+        self.assertIs(urllib.request.OpenerDirector.open, opened)
+
+    def test_a_client_that_follows_a_redirect_to_another_origin_fails_its_generated_tests(self):
+        # Known wrong: the clients up to generator 1.7.0 put the credential among the headers urllib copies to a
+        # redirect's target and sent with urlopen's own redirect handler, which follows to any host. Each generated
+        # test file must fail them in its redirect test, a read or POST (which urllib follows) because the
+        # credential reached the second server, and the rest of the file must still pass.
+        from supply_lines import openapi_operations as line
+        found, _refused = line.operations(SPECIFICATION, SOURCE)
+        followed = (('secret[AUTH["name"]] = ', 'headers[AUTH["name"]] = '),
+                    ("urllib.request.build_opener(_SameOriginRedirects).open(request, timeout=timeout)",
+                     "urllib.request.urlopen(request, timeout=timeout)"))
+        redirect_test = r"test_known_wrong_a_redirect_to_another_origin_is_refused_and_carries_no_credential"
+        with tempfile.TemporaryDirectory() as folder:
+            for operation in found:
+                target = Path(folder) / operation.module
+                target.mkdir()
+                tests = line.test_source(operation, line._example_arguments(operation), line._response_example(operation))
+                self.assertIn(redirect_test, tests)
+                (target / f"test_{operation.module}.py").write_text(tests, encoding="utf-8")
+                client = line.client_source(operation, SPEC_FACTS)
+                (target / f"{operation.module}.py").write_text(client, encoding="utf-8")
+                self.assertTrue(line.run_tests(target, operation.module)[0], operation.module)
+                for new, old in followed:
+                    self.assertIn(new, client)
+                    client = client.replace(new, old)
+                (target / f"{operation.module}.py").write_text(client, encoding="utf-8")
+                done = subprocess.run([sys.executable, "-B", "-m", "unittest", "-v", f"test_{operation.module}"],
+                                      cwd=target, capture_output=True, text=True, timeout=120)
+                self.assertRegex(done.stderr, rf"(?m)^{redirect_test} \(.*\) \.\.\. FAIL$", operation.module)
+                if operation.method in ("GET", "POST"):
+                    self.assertIn("the credential reached another origin", done.stderr, operation.module)
+                else:  # urllib does not follow a PUT or DELETE, which then ends without the redirect's refusal
+                    self.assertIn("redirect to another origin refused", done.stderr, operation.module)
+                # Beside it, only the first test fails: it finds the credential among the redirected headers.
+                self.assertIn("FAILED (failures=2)", done.stderr, operation.module)
+                self.assertRegex(done.stderr, r"(?m)^test_the_request_follows_the_specification \(.*\) \.\.\. FAIL$")
+
+    def test_a_header_parameter_named_like_the_credential_gives_way_to_it(self):
+        from supply_lines import openapi_operations as line
+        spec = {"openapi": "3.0.0", "info": {"title": "Keys", "version": "1"},
+                "servers": [{"url": "https://api.keys.example"}],
+                "components": {"securitySchemes": {"key": {"type": "apiKey", "in": "header", "name": "X-Api-Key"}}},
+                "security": [{"key": []}],
+                "paths": {"/items": {"get": {"operationId": "listItems", "parameters": [
+                    {"name": "x-api-key", "in": "header", "required": True, "schema": {"type": "string"}}],
+                    "responses": {"200": {"description": "ok"}}}}}}
+        [operation], _refused = line.operations(spec, SOURCE)
+        client = line.client_source(operation, SPEC_FACTS)
+        with tempfile.TemporaryDirectory() as folder:
+            target = Path(folder) / operation.module
+            target.mkdir()
+            (target / f"test_{operation.module}.py").write_text(
+                line.test_source(operation, line._example_arguments(operation), line._response_example(operation)),
+                encoding="utf-8")
+            (target / f"{operation.module}.py").write_text(client, encoding="utf-8")
+            passed, _count, output = line.run_tests(target, operation.module)
+            self.assertTrue(passed, output)
+            # Known wrong: kept among the headers a redirect copies, the parameter would shadow the credential.
+            kept = "        request.remove_header(name.capitalize())  # a header parameter of the same name gives way, " \
+                   "as it always did\n"
+            self.assertIn(kept, client)
+            (target / f"{operation.module}.py").write_text(client.replace(kept, ""), encoding="utf-8")
+            self.assertFalse(line.run_tests(target, operation.module)[0])
+
+    def test_a_redirect_within_the_origin_is_followed_without_the_credential(self):
+        import http.server
+        import threading
+        from unittest import mock
+        from supply_lines import openapi_operations as line
+        found, _refused = line.operations(SPECIFICATION, SOURCE)
+        get = next(operation for operation in found if operation.function == "get_thing")
+        seen = []
+
+        class Moved(http.server.BaseHTTPRequestHandler):
+            def do_GET(self):
+                seen.append((self.path, self.headers.get("Authorization")))
+                moved = self.path == "/moved"
+                body = b'{"id": "t1", "name": "moved"}' if moved else b""
+                self.send_response(200 if moved else 302)
+                if not moved:
+                    self.send_header("Location", "/moved")  # the same origin
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+
+            def log_message(self, *arguments):
+                """Quiet."""
+
+        server = http.server.HTTPServer(("127.0.0.1", 0), Moved)
+        threading.Thread(target=server.serve_forever, kwargs={"poll_interval": 0.01}, daemon=True).start()
+        self.addCleanup(server.server_close)
+        self.addCleanup(server.shutdown)
+        address = "http://127.0.0.1:%d" % server.server_address[1]
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / f"{get.module}.py"
+            path.write_text(line.client_source(get, SPEC_FACTS), encoding="utf-8")
+            client = _load_module(path, "_same_origin_client")
+
+        def local(request, timeout):
+            import urllib.parse
+            request.full_url = address + urllib.parse.urlsplit(request.full_url).path
+            return client._send(request, timeout)
+
+        with mock.patch.dict(os.environ, {"EXAMPLE_TOKEN": "test-credential"}), \
+                mock.patch("urllib.request.getproxies", return_value={}):
+            answer = client.get_thing(thing_id="t1", transport=local)
+        self.assertEqual(answer, {"id": "t1", "name": "moved"})
+        self.assertEqual(seen, [("/v1/things/t1", "Bearer test-credential"), ("/moved", None)])
+        # An origin is the scheme, the host and the port, the scheme's default port filled in.
+        self.assertEqual(client._origin("https://API.example.com/v1"), client._origin("https://api.example.com:443/x"))
+        for other in ("http://api.example.com/v1", "https://api.example.com:8443/v1", "https://other.example.com/v1"):
+            self.assertNotEqual(client._origin(other), client._origin("https://api.example.com/v1"), other)
+        self.assertIsNone(client._origin("https://api.example.com:99999/"))
 
 
 FORMULA = {"name": "sample", "desc": "Sample tool", "license": "MIT", "homepage": "https://example.org",
@@ -3377,6 +3512,28 @@ class ApiToolServersTest(unittest.TestCase):
                 _write_files(folder, {**self.files, "server.py": text.encode()})
                 passed, _count, _output = line.run_generated_tests(Path(folder))
             self.assertFalse(passed, label)
+
+    def test_a_server_that_follows_a_redirect_to_another_origin_fails_its_generated_tests(self):
+        # The redirect test calls the first tool that sends a credential, a read first.
+        self.assertEqual(self.data["redirected"], ["get_thing", {"thing_id": "example"}])
+        # Known wrong: the servers of generator 1.0.0 put the credential among the headers urllib copies to a
+        # redirect's target and sent with urlopen's own redirect handler. Their redirect test must fail, because the
+        # credential reached the second mock, and every other test of the file must still pass.
+        followed = self.server
+        for new, old in (('secret[auth["name"]] = auth["prefix"] + credential',
+                          'headers[auth["name"]] = auth["prefix"] + credential'),
+                         ("urllib.request.build_opener(_SameOriginRedirects).open(request, timeout=timeout)",
+                          "urllib.request.urlopen(request, timeout=timeout)")):
+            self.assertIn(new, followed)
+            followed = followed.replace(new, old)
+        with tempfile.TemporaryDirectory() as folder:
+            _write_files(folder, {**self.files, "server.py": followed.encode()})
+            done = subprocess.run([sys.executable, "-E", "-s", "-B", "-m", "unittest", "-v", "test_server"], cwd=folder,
+                                  capture_output=True, text=True, timeout=600, stdin=subprocess.DEVNULL)
+        self.assertRegex(done.stderr, r"(?m)^test_known_wrong_a_redirect_to_another_origin_is_refused_and_carries_no_"
+                                      r"credential \(.*\) \.\.\. FAIL$")
+        self.assertIn("the credential reached another origin", done.stderr)
+        self.assertRegex(done.stderr, r"FAILED \(failures=1(?:, skipped=\d+)?\)")
 
     def test_the_connection_files_start_the_server_with_python3_and_name_the_credential(self):
         from loop_engine.core.library_ingestion.connection_rendering import stdio_connection_files

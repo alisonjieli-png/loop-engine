@@ -198,7 +198,7 @@ def generate(reader, *, code_revision: str, licence_text: bytes, generated_on: s
         chosen = [row for row in chosen if row[1] in set(only)]
     if maximum_apis:
         chosen = chosen[:maximum_apis]
-    generator = {"identity": "tools/supply_lines/google_discovery.py", "version": "1.1.0", "code_revision": code_revision}
+    generator = {"identity": "tools/supply_lines/google_discovery.py", "version": "1.2.0", "code_revision": code_revision}
     built, refused, facts, summary, supplied = [], [], {}, Counter(), {}
     summary["documents_listed"], summary["documents_chosen"] = len(blobs), len(chosen)
     for path, name, version in chosen:

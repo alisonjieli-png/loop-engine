@@ -221,7 +221,7 @@ def generate(reader, *, code_revision: str, licence_text: bytes, generated_on: s
     texts = LicenceTexts(reader)
     origins, decisions, built, refused, summary, aws_cache = {}, [], [], [], Counter(), {}
     covered, supplied, notices = curated_coverage(read_sources()), {}, {}
-    generator = {"identity": "tools/supply_lines/openapi_directory.py", "version": "1.2.0",
+    generator = {"identity": "tools/supply_lines/openapi_directory.py", "version": "1.3.0",
                  "code_revision": code_revision}
     names = selected(directory, only, excluded)
     if maximum_apis:

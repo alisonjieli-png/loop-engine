@@ -64,7 +64,9 @@ from .records import (
     API_TOOL_SERVERS, BLOCKED_BY_STATIC_CHECK, GENERATED_CODE_LICENCE, GENERATED_TEST_FAILED, LICENCE_TEXT,
     PACKAGE_ABOVE_REVIEW_BOUND, SupplyRecordError, fact_source, provenance, refusal, upstream_key)
 
-GENERATOR_VERSION = "1.0.0"
+#: 1.1.0 (October 5, 2026): the credential is an unredirected header and a redirect to another origin is a tool error;
+#: every server of 1.0.0 sent its credential header to any host a redirect named.
+GENERATOR_VERSION = "1.1.0"
 NATIVE_FORMAT = "mcp_stdio_server_python"
 KIND, FORM = "protocol_server_configuration", "mcp_server"
 SERVER_FILE, TEST_FILE, TOOLS_FILE, README_FILE = "server.py", "test_server.py", "tools.json", "README.md"
@@ -558,12 +560,17 @@ def test_data(plans, entries, tables: Tables, key: str, base_url_variable: str) 
              "meaning": tables.meanings[index] if index is not None else "not a documented success"}
     credentialed = next(([planned.name, planned.minimal, planned.operation.auth["variable"]]
                          for planned in plans if planned.operation.auth and not planned.operation.auth_optional), None)
+    # The redirect test's tool: the first that sends a credential, a read before any other method, so a server that
+    # followed the redirect (urllib follows a read's every redirect) would carry the credential to the second mock.
+    redirected = min(plans, key=lambda planned: (planned.operation.auth is None,
+                                                 planned.operation.method not in READ_METHODS))
     cleared = list(dict.fromkeys(named + [base_url_variable, "AWS_REGION", "AWS_DEFAULT_REGION"]))
     return {"server_name": key, "base_url_variable": base_url_variable, "user_agent": USER_AGENT,
             "variables": passed, "cleared": cleared, "root": root, "answer": ANSWER,
             "methods": [[planned.name, planned.operation.method] for planned in plans], "calls": calls, "read": read,
             "write": write, "wrong": wrong, "credentialed": credentialed,
-            "unaddressed": [unaddressed[0].name, unaddressed[0].minimal] if unaddressed else None}
+            "unaddressed": [unaddressed[0].name, unaddressed[0].minimal] if unaddressed else None,
+            "redirected": [redirected.name, redirected.minimal]}
 
 
 # -- the files of one server ---------------------------------------------------------------------------------------
@@ -723,7 +730,9 @@ def readme(facts: ServerFacts, entries: list, tables: Tables, tests_described: s
         "effects": "\n".join(_wrap(item, "  ") for item in (
             f"- The harness starts `{SERVER_FILE}` with `{COMMAND}` as a local process (it spawns a process).",
             "- Each tool call checks its arguments first and sends nothing when they break the specification; "
-            "otherwise it sends one HTTPS request to the API and returns its answer (it uses the network).",
+            "otherwise it sends one HTTPS request to the API and returns its answer (it uses the network). A "
+            "redirect is followed only within the API's origin and never with the credential; a redirect to another "
+            "origin is refused.",
             ("- It reads the credential variables named above from its environment (it reads a secret). It "
              if facts.named else "- It reads no credential. It ") + "writes no file, and it logs to standard error "
             "only.")),
@@ -778,8 +787,9 @@ TESTS_DESCRIBED = ("`test_server.py` starts the server as a subprocess and speak
                    "one call of every tool against a local mock HTTP server (method, address and query), a read and "
                    "a body in detail, two calls at once, and known-wrong calls (unknown arguments, a missing or "
                    "mistyped argument, an unknown tool or method, malformed messages, an error status, a missing "
-                   "credential or address, an address that is not HTTPS). A shim sends every request to the mock, "
-                   "so nothing leaves the machine.")
+                   "credential or address, an address that is not HTTPS, and a redirect to a second mock on another "
+                   "port, which must be refused with no credential reaching it). A shim sends every request to the "
+                   "mock, so nothing leaves the machine.")
 
 
 def render(facts: ServerFacts, plans: list, level: int) -> tuple:

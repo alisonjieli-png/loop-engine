@@ -9,16 +9,21 @@ One specification (declared in openapi_sources.json)
     ├── <vendor>_<operation>.py: one function with keyword arguments for the path, query and header
     │   parameters and the JSON body; it checks types, enumerations and required fields before any
     │   request, reads the credential from a named environment variable, sends one HTTPS request
-    │   and raises ApiError with the documented meaning for any status outside the successes
+    │   and raises ApiError with the documented meaning for any status outside the successes; the
+    │   credential is an unredirected header, and a redirect to another origin is refused
+    │   (urllib itself would copy every header but the content ones to any host)
     ├── test_<vendor>_<operation>.py: a local mock built from the specification's examples (or a
     │   minimal value built from the schema), and known-wrong calls: a missing required argument,
-    │   a wrong type, an error status, a missing credential; each must send nothing or raise
+    │   a wrong type, an error status, a missing credential; each must send nothing or raise; and
+    │   a redirect from a local server to a second one on another port, which must be refused
+    │   with no credential reaching the second
     ├── schema.json: the operation's input and output schemas, local references resolved
     └── README.md, LICENSE (the generated code, MIT), UPSTREAM-LICENSE, ATTRIBUTION.md
 ```
 
 The generated tests run in this process before a package is stored, with the
-network closed; a package whose own tests fail is refused. Operations that
+network closed but for the loopback interface, where the redirect test's two
+servers listen; a package whose own tests fail is refused. Operations that
 need a body other than JSON, a cookie, an object in the query string, a
 reference into another file or a server that is not HTTPS are refused by name.
 """
@@ -54,7 +59,9 @@ from .records import (
     PACKAGE_ABOVE_REVIEW_BOUND, REFUSAL_REASONS, SupplyRecordError, fact_source, licence_allowed, provenance, refusal,
     upstream_key)
 
-GENERATOR_VERSION = "1.7.0"
+#: 1.8.0 (October 5, 2026): the credential is an unredirected header and a redirect to another origin is refused;
+#: every client up to 1.7.0 sent its credential header to any host a redirect named.
+GENERATOR_VERSION = "1.8.0"
 #: The text of a second allowlisted licence a specification declares beside its repository's licence.
 SPECIFICATION_LICENCE_NAME = "SPECIFICATION-LICENSE"
 DECLARED_TEXT_BASIS = "specification_info_license_declaration_text_from_choosealicense_at_the_pinned_commit"
@@ -899,10 +906,44 @@ def _region():
     return os.environ.get("AWS_REGION") or os.environ.get("AWS_DEFAULT_REGION") or REGION_DEFAULT
 
 
-def _send(request, timeout):
-    """Send the request over HTTPS and return (status, content type, bytes), error answers included."""
+class _RedirectRefused(Exception):
+    """A redirect to another origin than the request's: its status, and the origin it named."""
+
+    def __init__(self, status, target):
+        super().__init__("redirect to another origin refused: " + target)
+        self.status = status
+
+
+def _origin(address):
+    """(scheme, host, port) of an address, the scheme's default port filled in; None for a port that is no number."""
+    parts = urllib.parse.urlsplit(address)
     try:
-        with urllib.request.urlopen(request, timeout=timeout) as answer:
+        port = parts.port
+    except ValueError:
+        return None
+    return parts.scheme.lower(), parts.hostname, port or {"http": 80, "https": 443}.get(parts.scheme.lower())
+
+
+class _SameOriginRedirects(urllib.request.HTTPRedirectHandler):
+    """Follows a redirect only within the request's origin (scheme, host and port), and never with the credential,
+    which is an unredirected header. A redirect to another origin is refused before anything is sent there,
+    whatever the request's method or the redirect's status."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        if _origin(newurl) != _origin(req.full_url):
+            fp.close()
+            target = urllib.parse.urlsplit(newurl)
+            raise _RedirectRefused(code, target.scheme + "://" + target.netloc.rpartition("@")[2])
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+    http_error_308 = urllib.request.HTTPRedirectHandler.http_error_302  # Python 3.10 has none for 308
+
+
+def _send(request, timeout):
+    """Send the request over HTTPS and return (status, content type, bytes), error answers included. A redirect is
+    followed within the request's origin only; one to another origin raises _RedirectRefused."""
+    try:
+        with urllib.request.build_opener(_SameOriginRedirects).open(request, timeout=timeout) as answer:
             return answer.status, answer.headers.get("Content-Type", ""), answer.read()
     except urllib.error.HTTPError as error:
         return error.code, (error.headers.get("Content-Type", "") if error.headers else ""), error.read()
@@ -921,6 +962,7 @@ def _decode(content_type, payload):
 def _call(arguments, body, base_url, timeout, transport):
     path, query = OPERATION["path"], list(FIXED_QUERY)
     headers = {"Accept": "application/json", "User-Agent": USER_AGENT, **dict(FIXED_HEADERS)}
+    secret = {}  # the credential's headers: unredirected, so no redirect carries them anywhere
     for python_name, wire_name, location, _required, _schema in PARAMETERS:
         value = arguments[python_name]
         if value is None:
@@ -944,7 +986,13 @@ def _call(arguments, body, base_url, timeout, transport):
     url = root + path + ("?" + urllib.parse.urlencode(query) if query else "")
 # SIGN
     request = urllib.request.Request(url, data=data, method=OPERATION["method"], headers=headers)
-    status, content_type, payload = (transport or _send)(request, timeout)
+    for name, value in secret.items():
+        request.remove_header(name.capitalize())  # a header parameter of the same name gives way, as it always did
+        request.add_unredirected_header(name, value)
+    try:
+        status, content_type, payload = (transport or _send)(request, timeout)
+    except _RedirectRefused as refused:
+        raise ApiError(refused.status, str(refused), None) from None
     try:
         answer = _decode(content_type, payload)
     except (ValueError, UnicodeDecodeError):
@@ -955,9 +1003,11 @@ def _call(arguments, body, base_url, timeout, transport):
 '''
 
 
+#: Where _call puts the credential: a header goes into its unredirected headers (secret), never into headers, so a
+#: redirect never carries it; a query credential travels in the address, and a redirect to another origin is refused.
 AUTH_PLACEMENTS = {
-    "header": '        headers[AUTH["name"]] = AUTH["prefix"] + credential\n',
-    "basic": ('        headers[AUTH["name"]] = AUTH["prefix"] + '
+    "header": '        secret[AUTH["name"]] = AUTH["prefix"] + credential\n',
+    "basic": ('        secret[AUTH["name"]] = AUTH["prefix"] + '
               'base64.b64encode(credential.encode("utf-8")).decode("ascii")\n'),
     "query": '        query.append((AUTH["name"], credential))\n'}
 AUTH_BLOCK = ('    credential = os.environ.get(AUTH["variable"], "")\n'
@@ -1000,14 +1050,15 @@ def _signature_headers(method, url, headers, payload, access_key, secret_key, to
         added["X-Amz-Security-Token"] = token
     return added
 '''
-#: The lines of _call that sign the request, for an operation whose security scheme is AWS Signature Version 4.
+#: The lines of _call that sign the request, for an operation whose security scheme is AWS Signature Version 4. The
+#: signature's headers (the access key in Authorization, the session token) are unredirected, like any credential.
 SIGN_BLOCK = ('    access_key, secret_key = os.environ.get(AUTH["variable"], ""), os.environ.get(AUTH["secret_variable"], "")\n'
               '    if not access_key or not secret_key:\n'
               '        raise PermissionError("set " + AUTH["variable"] + " and " + AUTH["secret_variable"] + " to call "\n'
               '                              + OPERATION["operation_id"])\n'
-              '    headers.update(_signature_headers(OPERATION["method"], url, headers, data, access_key, secret_key,\n'
-              '                                      os.environ.get(AUTH["token_variable"], ""), _region(),\n'
-              '                                      AUTH["service"], time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())))\n')
+              '    secret.update(_signature_headers(OPERATION["method"], url, headers, data, access_key, secret_key,\n'
+              '                                     os.environ.get(AUTH["token_variable"], ""), _region(),\n'
+              '                                     AUTH["service"], time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())))\n')
 
 
 #: The form encoder written into a client whose request body is URL-encoded form fields; generated tests hold its
@@ -1233,6 +1284,47 @@ def _breaks(schema: "dict | None", value) -> bool:
     return False
 
 
+#: The local HTTP servers of every generated test file's redirect test.
+REDIRECT_SERVERS = '''
+
+
+class _Recorder(http.server.BaseHTTPRequestHandler):
+    def _answer(self):
+        self.rfile.read(int(self.headers.get("Content-Length") or 0))
+        self.server.requests.append((self.path, [value for _name, value in self.headers.items()]))
+        self.send_response(302 if self.server.location else 200)
+        if self.server.location:
+            self.send_header("Location", self.server.location + self.path)
+        self.send_header("Content-Length", "0")
+        self.end_headers()
+
+    do_GET = do_HEAD = do_POST = do_PUT = do_PATCH = do_DELETE = do_OPTIONS = _answer
+
+    def log_message(self, *arguments):
+        """Quiet: each request is recorded instead."""
+
+
+class _Server(http.server.HTTPServer):
+    """A local HTTP server on its own port of the loopback interface: it records each request and answers 302 to
+    its location (with the request's own path and query) when it has one, else 200."""
+
+    def __init__(self, location=None):
+        super().__init__(("127.0.0.1", 0), _Recorder)
+        self.location, self.requests = location, []
+        threading.Thread(target=self.serve_forever, kwargs={"poll_interval": 0.005}, daemon=True).start()
+
+    @property
+    def address(self):
+        return "http://127.0.0.1:%d" % self.server_address[1]
+
+    def stop(self):
+        self.shutdown()
+        self.server_close()
+
+
+'''
+
+
 def test_source(operation: Operation, call: dict, example) -> str:
     # The server address may carry a path of its own (https://api.example.com/v1): it precedes the operation's.
     expected_path = urllib.parse.urlsplit(operation.base_url).path.rstrip("/") + operation.path
@@ -1264,22 +1356,26 @@ def test_source(operation: Operation, call: dict, example) -> str:
     if any(parameter.reserved for parameter in operation.parameters):
         tests[-1] += '''
         self.assertEqual(address.path, EXPECTED_PATH)'''
+    # A credential header is unredirected: get_header reads it, and it is not among the headers a redirect copies.
     if auth and auth["placement"] == "header":
         tests[-1] += f'''
-        self.assertEqual(request.headers.get({auth["name"].capitalize()!r}), {auth["prefix"] + "test-credential"!r})'''
+        self.assertEqual(request.get_header({auth["name"].capitalize()!r}), {auth["prefix"] + "test-credential"!r})
+        self.assertNotIn({auth["name"].capitalize()!r}, request.headers)'''
     elif auth and auth["placement"] == "basic":
         encoded = auth["prefix"] + base64.b64encode(b"test-credential").decode("ascii")
         tests[-1] += f'''
-        self.assertEqual(request.headers.get("Authorization"), {encoded!r})'''
+        self.assertEqual(request.get_header("Authorization"), {encoded!r})
+        self.assertNotIn("Authorization", request.headers)'''
     elif auth and auth["placement"] == "query":
         tests[-1] += f'''
         self.assertIn(({auth["name"]!r}, "test-credential"), urllib.parse.parse_qsl(address.query))'''
     elif auth and auth["placement"] == SIGV4_PLACEMENT:
         tests[-1] += f'''
-        authorization = request.headers.get("Authorization")
+        authorization = request.get_header("Authorization")
         self.assertTrue(authorization.startswith("AWS4-HMAC-SHA256 Credential=test-credential/"), authorization)
         self.assertIn("/{auth["service"]}/aws4_request, SignedHeaders=", authorization)
-        self.assertRegex(request.headers.get("X-amz-date"), "^[0-9]{{8}}T[0-9]{{6}}Z$")'''
+        self.assertRegex(request.get_header("X-amz-date"), "^[0-9]{{8}}T[0-9]{{6}}Z$")
+        self.assertNotIn("Authorization", request.headers)'''
     for name, value in operation.fixed_headers:
         tests[-1] += f'''
         self.assertEqual(request.headers.get({name.capitalize()!r}), {value!r})'''
@@ -1362,6 +1458,35 @@ def test_source(operation: Operation, call: dict, example) -> str:
         with self.assertRaises(ValueError):
             client.{operation.function}(**CALL, base_url="http://example.com", transport=mock)
         self.assertEqual(mock.requests, [])''')
+    # The API's mock answers 302 to a second local server on another port: the call must end in the redirect's
+    # ApiError, and no credential may reach the second server (a client that follows sends it there).
+    tests.append(f'''
+    def test_known_wrong_a_redirect_to_another_origin_is_refused_and_carries_no_credential(self):
+        self.addCleanup(setattr, urllib.request, "getproxies", urllib.request.getproxies)
+        urllib.request.getproxies = lambda: {{}}  # no proxy between the client and the two local servers
+        second = _Server()
+        first = _Server(location=second.address)
+        self.addCleanup(second.stop)
+        self.addCleanup(first.stop)
+
+        def to_the_first_server(request, timeout):
+            address = urllib.parse.urlsplit(request.full_url)
+            request.full_url = first.address + address.path + ("?" + address.query if address.query else "")
+            return client._send(request, timeout)
+
+        refused = None
+        try:
+            client.{operation.function}(**CALL, transport=to_the_first_server)
+        except client.ApiError as error:
+            refused = error
+        self.assertEqual(len(first.requests), 1)
+        for target, values in second.requests:
+            leaked = [form for form in CREDENTIAL_FORMS if form in " ".join([target, *values])]
+            self.assertFalse(leaked, "the credential reached another origin")
+        self.assertEqual(second.requests, [])
+        self.assertIsNotNone(refused, "a redirect to another origin was followed")
+        self.assertEqual(refused.status, 302)
+        self.assertIn("redirect to another origin refused: " + second.address, str(refused))''')
     variables = ([auth["variable"]] + ([auth["secret_variable"]] if auth.get("secret_variable") else [])) if auth else []
     if auth and auth["placement"] == SIGV4_PLACEMENT:
         tests.append('''
@@ -1375,15 +1500,19 @@ def test_source(operation: Operation, call: dict, example) -> str:
                          "Signature=5fa00fa31553b73ebf1942676e86291e8372ff2a2260956d9b8aae1d763fbf31")''')
     class_name = "".join(part.capitalize() for part in operation.function.split("_") if part)[:60] + "Test"
     return (f'"""Offline tests of {operation.function}.\n\nA local mock of the API answers with the specification\'s '
-            'example, and known-wrong calls\nmust send nothing or raise.\n"""\n'
-            "from __future__ import annotations\n\nimport json\nimport os\nimport sys\nimport unittest\n"
-            "import urllib.parse\n\nsys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))\n"
+            'example, and known-wrong calls\nmust send nothing or raise. Two local servers on the loopback '
+            'interface test a redirect.\n"""\n'
+            "from __future__ import annotations\n\nimport base64\nimport http.server\nimport json\nimport os\n"
+            "import sys\nimport threading\nimport unittest\n"
+            "import urllib.parse\nimport urllib.request\n\nsys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))\n"
             f"import {operation.module} as client  # noqa: E402\n\n"
             f"CALL = {literal(call)}\nEXAMPLE = {literal(example)}\nEXPECTED_PATH = {expected_path!r}\n"
             + (f"EXPECTED_FORM = {literal(form_pairs(call['body'], operation.body_encoding))}\n"
                if form and "body" in call else "")
             + (f"ROOT = {SELF_HOSTED_TEST_ROOT!r}\n" if self_hosted else "")
-            + f"VARIABLES = {variables!r}\n\n\n"
+            + f"VARIABLES = {variables!r}\n"
+            "#: The test credential as it travels: as it is set, and inside Basic credentials.\n"
+            'CREDENTIAL_FORMS = ("test-credential", base64.b64encode(b"test-credential").decode("ascii"))\n\n\n'
             "class _Mock:\n"
             '    """A local stand-in for the API: it records each request and answers with the example."""\n\n'
             f"    def __init__(self, status={operation.success_statuses[0]}, payload=None, content_type={content_type!r}):\n"
@@ -1392,7 +1521,8 @@ def test_source(operation: Operation, call: dict, example) -> str:
             "        self.requests = []\n\n"
             "    def __call__(self, request, timeout):\n"
             "        self.requests.append(request)\n"
-            "        return self.status, self.content_type, self.payload\n\n\n"
+            "        return self.status, self.content_type, self.payload\n"
+            + REDIRECT_SERVERS +
             f"class {class_name}(unittest.TestCase):\n"
             "    def setUp(self):\n"
             "        self.saved = {name: os.environ.get(name) for name in VARIABLES + [client.BASE_URL_VARIABLE]}\n"
@@ -1476,6 +1606,8 @@ def readme_source(operation: Operation, spec: dict, schema_bytes: int) -> str:
   documented successes ({', '.join(str(code) for code in operation.success_statuses)}).
 - Refuses an address that is not HTTPS. The specification defines no pagination for this operation,
   so the client returns one page as the API answers it.
+- Never sends the credential along a redirect: it follows a redirect within the API's origin
+  without it, and refuses one to another origin with `ApiError` before anything is sent there.
 
 `schema.json` holds the input and output schemas ({schema_bytes} bytes), with the specification's
 local references resolved. `test_{operation.module}.py` runs offline against a local mock:
@@ -1487,18 +1619,26 @@ python -m unittest test_{operation.module}
 
 
 # -- running the generated tests -----------------------------------------------------------------------------------
+#: The one host a generated test reaches while it runs here: the loopback interface, where its own servers listen.
+LOOPBACK_HOST = "127.0.0.1"
+
+
 def run_tests(folder: Path, module: str) -> tuple:
-    """(passed, tests run, tail of the output) of one package's generated tests, in this process, network closed."""
+    """(passed, tests run, tail of the output) of one package's generated tests, in this process, the network closed
+    but for the loopback interface: every urllib opener (urlopen's and a client's own) reaches nothing else."""
     saved_path, saved_modules = list(sys.path), set(sys.modules)
-    saved_open, saved_bytecode = urllib.request.urlopen, sys.dont_write_bytecode
+    saved_open, saved_bytecode = urllib.request.OpenerDirector.open, sys.dont_write_bytecode
     # No compiled copy is written or reused: a rewritten file of the same size within the same second would
     # otherwise load its earlier compiled copy.
     sys.dont_write_bytecode = True
 
-    def closed(*_arguments, **_options):
-        raise RuntimeError("the network is closed while generated tests run")
+    def loopback_only(opener, request, *arguments, **options):
+        address = request if isinstance(request, str) else request.full_url
+        if urllib.parse.urlsplit(address).hostname != LOOPBACK_HOST:
+            raise RuntimeError("the network is closed while generated tests run")
+        return saved_open(opener, request, *arguments, **options)
 
-    urllib.request.urlopen = closed
+    urllib.request.OpenerDirector.open = loopback_only
     stream = io.StringIO()
     try:
         name = f"test_{module}"
@@ -1511,7 +1651,7 @@ def run_tests(folder: Path, module: str) -> tuple:
     except Exception as error:  # noqa: BLE001 - a package whose tests cannot even load is refused, never stored
         return False, 0, f"{type(error).__name__}: {error}"[:800]
     finally:
-        urllib.request.urlopen = saved_open
+        urllib.request.OpenerDirector.open = saved_open
         sys.dont_write_bytecode = saved_bytecode
         sys.path[:] = saved_path
         for name in set(sys.modules) - saved_modules:
