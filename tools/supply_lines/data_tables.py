@@ -92,21 +92,31 @@ def json_type(value) -> str:
     return "object"
 
 
-def text_rows(text: str, delimiter: str, key_field: str) -> list:
+def text_rows(text: str, delimiter: str, key_field: str, *, skip_rows: int = 0,
+              trailing_delimiter: bool = False) -> list:
     """The records of a delimited text table: a header row of distinct names, then rows of the same width; keyed by
-    the row number when the key field is the row number."""
+    the row number when the key field is the row number.
+
+    ``skip_rows`` reader rows before the header are passed over (a blank line is one); with ``trailing_delimiter``
+    every line ends with the delimiter, so its last value must be empty and is dropped."""
     try:
-        return _text_rows(text, delimiter, key_field)
+        return _text_rows(text, delimiter, key_field, skip_rows, trailing_delimiter)
     except csv.Error as error:
         raise TableRefused("source_unreadable", f"not a delimited text table: {error}"[:200]) from None
 
 
-def _text_rows(text: str, delimiter: str, key_field: str) -> list:
+def _text_rows(text: str, delimiter: str, key_field: str, skip_rows: int = 0, trailing_delimiter: bool = False) -> list:
     reader = csv.reader(io.StringIO(text, newline=""), delimiter=delimiter)
     try:
+        for _skipped in range(skip_rows):
+            next(reader)
         header = next(reader)
     except StopIteration:
         raise TableRefused("table_empty", "the file holds no header") from None
+    if trailing_delimiter:
+        if not header or header[-1]:
+            raise TableRefused("row_violates_schema", "the header does not end with the declared delimiter")
+        header = header[:-1]
     if not header or len(set(header)) != len(header) or any(not name for name in header) or ROW_NUMBER_FIELD in header \
             and key_field == ROW_NUMBER_FIELD:
         raise TableRefused("row_violates_schema", "the header names are not distinct, nonempty field names")
@@ -114,6 +124,10 @@ def _text_rows(text: str, delimiter: str, key_field: str) -> list:
     for number, values in enumerate(reader, 1):
         if not values:
             continue
+        if trailing_delimiter:
+            if values[-1]:
+                raise TableRefused("row_violates_schema", f"row {number} does not end with the declared delimiter")
+            values = values[:-1]
         if len(values) != len(header):
             raise TableRefused("row_violates_schema", f"row {number} has {len(values)} values, not {len(header)}")
         record = dict(zip(header, values))
@@ -121,10 +135,14 @@ def _text_rows(text: str, delimiter: str, key_field: str) -> list:
     return table
 
 
-def table_rows(document, shape: str, key_field: str, value_field: "str | None") -> list:
+def table_rows(document, shape: str, key_field: str, value_field: "str | None", *, skip_rows: int = 0,
+               trailing_delimiter: bool = False) -> list:
     """The rows the declared shape holds, or refuse a document of another shape or with colliding keys."""
     if shape in TEXT_SHAPES:
-        table = text_rows(document, TEXT_SHAPES[shape], key_field)
+        table = text_rows(document, TEXT_SHAPES[shape], key_field, skip_rows=skip_rows,
+                          trailing_delimiter=trailing_delimiter)
+    elif skip_rows or trailing_delimiter:
+        raise TableRefused("row_violates_schema", "lines before the header and a trailing delimiter are text options")
     elif shape == "records":
         if not isinstance(document, list) or not all(isinstance(row, dict) for row in document):
             raise TableRefused("row_violates_schema", "the file is not a list of objects")
@@ -155,6 +173,18 @@ def table_rows(document, shape: str, key_field: str, value_field: "str | None") 
     return table
 
 
+def table_schema(title: str, fields: dict, required: list, key_field: str, count: int, shape: str, data_file: str,
+                 data_sha256: str, **described) -> dict:
+    """schema.json of one table: the JSON Schema of one row, and under x-baltor-table the key, the row count, the
+    shape and the data file with its digest, then whatever else the line describes (a publisher's series, the
+    parts of a file kept in parts)."""
+    return {"$schema": JSON_SCHEMA_DIALECT, "title": title, "type": "object",
+            "properties": {name: {"type": kinds if len(kinds) > 1 else kinds[0]} for name, kinds in fields.items()},
+            "required": required, "additionalProperties": False,
+            "x-baltor-table": {"key_field": key_field, "rows": count, "shape": shape, "data_file": data_file,
+                               "data_sha256": data_sha256, **described}}
+
+
 def infer_schema(table: list) -> tuple:
     """(fields with their JSON types, required fields), in the order fields first appear."""
     fields, counts = {}, Counter()
@@ -169,13 +199,18 @@ def infer_schema(table: list) -> tuple:
     return {name: sorted(kinds) for name, kinds in fields.items()}, required
 
 
-LOADER = '''"""{title}: a typed reference table of {count} rows.
+#: The loader's docstring for a GitHub file; publisher_tables.py writes its own above the same body.
+LOADER_HEADER = '''"""{title}: a typed reference table of {count} rows.
 
 Loaded from data/{file_name}, a byte-for-byte copy of {repository}
 at commit {commit} ({path}), licensed {licence}.
 Baltor generated this loader, schema.json and the tests; see README.md.
 """
-from __future__ import annotations
+'''
+#: The loader every table shares. ``data_parts`` and ``read_more`` are empty for a file kept whole (so a GitHub
+#: table's loader is the same text as before parts existed); a file kept in parts below the review bound names the
+#: parts that follow DATA_FILE and joins them before the digest check (see loader_values).
+LOADER_BODY = '''from __future__ import annotations
 
 import csv
 import hashlib
@@ -185,7 +220,7 @@ from pathlib import Path
 
 DATA_FILE = Path(__file__).resolve().parent / "data" / {file_name!r}
 DATA_SHA256 = {sha256!r}
-KEY_FIELD = {key_field!r}
+{data_parts}KEY_FIELD = {key_field!r}
 {value_line}#: Each field and the JSON types its values take; a field outside this map is refused.
 FIELDS = {fields}
 REQUIRED = {required}
@@ -222,7 +257,7 @@ def check_row(row):
 def rows():
     """Every row in the upstream order, each checked; the data file must be the recorded bytes."""
     if "rows" not in _CACHE:
-        data = DATA_FILE.read_bytes()
+        data = DATA_FILE.read_bytes(){read_more}
         if hashlib.sha256(data).hexdigest() != DATA_SHA256:
             raise ValueError(f"{{DATA_FILE.name}} is not the recorded file (SHA-256 {{DATA_SHA256}})")
         {shape_line}
@@ -242,8 +277,26 @@ def lookup(key):
         raise KeyError(key)
     return found[key]
 '''
+LOADER = LOADER_HEADER + LOADER_BODY
+#: The text of the parts slot: the parts that follow DATA_FILE, read from the package's own data folder, so the
+#: changed-file test (which moves DATA_FILE) still sees every other part unchanged.
+_PARTS_LINES = ('#: The data file is kept in {count} consecutive parts, each below the review bound and cut at a record\n'
+                '#: end: DATA_FILE is the first and these follow it in order; joined, they are the exact recorded bytes.\n'
+                'DATA_PARTS = {names}\n')
+_READ_MORE = ' + b"".join((Path(__file__).resolve().parent / "data" / name).read_bytes() for name in DATA_PARTS)'
 
-_JSON_DOCUMENT = "document = json.loads(data.decode(\"utf-8\"))\n        "
+
+def parts_slots(part_names) -> dict:
+    """The loader's ``data_parts`` and ``read_more`` values: empty for a file kept whole, else the parts after the
+    first (DATA_FILE) and the join that rebuilds the recorded bytes before their digest is checked."""
+    following = tuple(part_names)[1:]
+    if not following:
+        return {"data_parts": "", "read_more": ""}
+    return {"data_parts": _PARTS_LINES.format(count=len(following) + 1, names=repr(following)),
+            "read_more": _READ_MORE}
+
+
+_JSON_DOCUMENT ="document = json.loads(data.decode(\"utf-8\"))\n        "
 _TEXT_TABLE = ("reader = csv.reader(io.StringIO(data.decode(\"utf-8-sig\"), newline=\"\"), delimiter={delimiter!r})\n"
                "        header = next(reader)\n"
                "        records = [dict(zip(header, values)) for values in reader if values]\n"
@@ -258,6 +311,26 @@ for _shape, _delimiter in TEXT_SHAPES.items():
     SHAPE_LINES[_shape] = _TEXT_TABLE.format(delimiter=_delimiter, rows="records")
     SHAPE_LINES[_shape + ":row"] = _TEXT_TABLE.format(
         delimiter=_delimiter, rows="[{KEY_FIELD: number, **record} for number, record in enumerate(records, 1)]")
+#: A delimited table with lines before its header (a publisher's title and date lines, which a blank line also
+#: counts as) and a delimiter that ends every line (one empty last value, dropped): the generated tables of the
+#: World Bank's downloads have both.
+_TEXT_TABLE_WITH_OPTIONS = (
+    "reader = csv.reader(io.StringIO(data.decode(\"utf-8-sig\"), newline=\"\"), delimiter={delimiter!r})\n"
+    "        for _skipped in range({skip_rows}):\n"
+    "            next(reader)\n"
+    "        header = next(reader){cut}\n"
+    "        records = [dict(zip(header, values{cut})) for values in reader if values]\n"
+    "        table = {rows}")
+
+
+def text_shape_line(shape: str, by_row_number: bool, skip_rows: int = 0, trailing_delimiter: bool = False) -> str:
+    """The loader's reading line of a delimited text table; the plain shapes keep their earlier text exactly."""
+    if not skip_rows and not trailing_delimiter:
+        return SHAPE_LINES[shape + (":row" if by_row_number else "")]
+    rows = ("[{KEY_FIELD: number, **record} for number, record in enumerate(records, 1)]" if by_row_number
+            else "records")
+    return _TEXT_TABLE_WITH_OPTIONS.format(delimiter=TEXT_SHAPES[shape], skip_rows=int(skip_rows),
+                                           cut="[:-1]" if trailing_delimiter else "", rows=rows)
 
 TESTS = '''"""Offline tests of the {table_id} table.
 
@@ -443,17 +516,15 @@ def _package(row, pinned, licence, generator, licence_text, generated_on, stagin
                            key_field=row["key_field"], value_line=value_line, fields=literal(fields, 0),
                            required=literal(required),
                            shape_line=SHAPE_LINES[row["shape"] + (":row" if row["shape"] in TEXT_SHAPES and
-                                                                  row["key_field"] == ROW_NUMBER_FIELD else "")])
+                                                                  row["key_field"] == ROW_NUMBER_FIELD else "")],
+                           **parts_slots(()))
     key_kinds = fields[row["key_field"]]
     class_name = "".join(part.capitalize() for part in row["table_id"].split("_")) + "TableTest"
     tests = TESTS.format(table_id=row["table_id"], module=module, class_name=class_name,
                          first_key=table[0][row["key_field"]], missing_key=_missing_key(table, row["key_field"], key_kinds),
                          wrong_key=_wrong_key(key_kinds))
-    schema = {"$schema": JSON_SCHEMA_DIALECT, "title": row["title"], "type": "object",
-              "properties": {name: {"type": kinds if len(kinds) > 1 else kinds[0]} for name, kinds in fields.items()},
-              "required": required, "additionalProperties": False,
-              "x-baltor-table": {"key_field": row["key_field"], "rows": len(table), "shape": row["shape"],
-                                 "data_file": f"data/{file_name}", "data_sha256": pinned["sha256"]}}
+    schema = table_schema(row["title"], fields, required, row["key_field"], len(table), row["shape"],
+                          f"data/{file_name}", pinned["sha256"])
     schema_text = json.dumps(schema, indent=1, ensure_ascii=False) + "\n"
     folder = staging / module
     (folder / "data").mkdir(parents=True, exist_ok=True)

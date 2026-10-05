@@ -1138,7 +1138,7 @@ class DataTableLineTest(unittest.TestCase):
         loader = line.LOADER.format(title="Teams", count=len(table), file_name="teams.csv", repository="example/data",
                                     commit="c" * 40, path="teams.csv", licence="CC-BY-4.0", sha256=_digest(data),
                                     key_field="row", value_line="", fields=literal(fields), required=literal(required),
-                                    shape_line=line.SHAPE_LINES["csv_records:row"])
+                                    shape_line=line.SHAPE_LINES["csv_records:row"], **line.parts_slots(()))
         tests = line.TESTS.format(table_id="teams", module="teams_table", class_name="TeamsTest", first_key=1,
                                   missing_key=-987654321, wrong_key="not a key of this table")
         with tempfile.TemporaryDirectory() as folder:
@@ -1149,6 +1149,49 @@ class DataTableLineTest(unittest.TestCase):
             (target / "test_teams_table.py").write_text(tests, encoding="utf-8")
             passed, _count, output = run_tests(target, "teams_table")
         self.assertTrue(passed, output)
+
+    def test_title_lines_a_trailing_delimiter_and_parts_read_one_table_and_the_plain_text_is_unchanged(self):
+        from supply_lines import data_tables as line
+        from supply_lines.openapi_operations import literal, run_tests
+        text = ('"Data Source","Example",\r\n\r\n"Last Updated Date","2026-07-13",\r\n\r\n'
+                '"Country Name","Country Code","2024",\r\n"Aruba","ABW","1",\r\n"Chad","TCD","",\r\n')
+        table = line.table_rows(text, "csv_records", "Country Code", None, skip_rows=4, trailing_delimiter=True)
+        self.assertEqual(table, [{"Country Name": "Aruba", "Country Code": "ABW", "2024": "1"},
+                                 {"Country Name": "Chad", "Country Code": "TCD", "2024": ""}])
+        # Known wrong: a row whose last value is not empty would lose data, so it is refused; the options are text
+        # options only.
+        for wrong in (text.replace('"TCD","",', '"TCD","","9"'), text.replace('"2024",\r\n"Aruba"', '"2024"\r\n"Aruba"')):
+            with self.assertRaises(line.TableRefused):
+                line.table_rows(wrong, "csv_records", "Country Code", None, skip_rows=4, trailing_delimiter=True)
+        with self.assertRaises(line.TableRefused):
+            line.table_rows([{"a": 1}], "records", "a", None, skip_rows=1)
+        # Without options a loader reads exactly as before, and a file kept whole names no parts.
+        self.assertEqual(line.text_shape_line("csv_records", True), line.SHAPE_LINES["csv_records:row"])
+        self.assertEqual(line.parts_slots(["teams.csv"]), {"data_parts": "", "read_more": ""})
+        data = text.encode()
+        cut = data.index(b'"Chad"')
+        fields, required = line.infer_schema(table)
+        slots = line.parts_slots(["countries-part-1-of-2.csv", "countries-part-2-of-2.csv"])
+        loader = line.LOADER.format(title="Countries", count=2, file_name="countries-part-1-of-2.csv",
+                                    repository="example/data", commit="c" * 40, path="countries.csv",
+                                    licence="CC-BY-4.0", sha256=_digest(data), key_field="Country Code",
+                                    value_line="", fields=literal(fields), required=literal(required),
+                                    shape_line=line.text_shape_line("csv_records", False, 4, True), **slots)
+        tests = line.TESTS.format(table_id="countries", module="countries_table", class_name="CountriesTest",
+                                  first_key="ABW", missing_key="__not_a_key_of_this_table__", wrong_key=12345)
+        with tempfile.TemporaryDirectory() as folder:
+            target = Path(folder) / "countries_table"
+            (target / "data").mkdir(parents=True)
+            (target / "data" / "countries-part-1-of-2.csv").write_bytes(data[:cut])
+            (target / "data" / "countries-part-2-of-2.csv").write_bytes(data[cut:])
+            (target / "countries_table.py").write_text(loader, encoding="utf-8")
+            (target / "test_countries_table.py").write_text(tests, encoding="utf-8")
+            passed, count, output = run_tests(target, "countries_table")
+            self.assertTrue(passed, output)
+            self.assertEqual(count, 5)
+            # Known wrong: the second part changed is refused like a changed whole file.
+            (target / "data" / "countries-part-2-of-2.csv").write_bytes(data[cut:].replace(b"TCD", b"TCE"))
+            self.assertFalse(run_tests(target, "countries_table")[0])
 
     def test_the_generated_loader_passes_its_tests_and_one_without_its_checks_fails_them(self):
         from supply_lines import data_tables as line
@@ -1161,7 +1204,7 @@ class DataTableLineTest(unittest.TestCase):
                                     repository="example/statuses", commit="c" * 40, path="codes.json", licence="MIT",
                                     sha256=_digest(data), key_field="code", value_line="VALUE_FIELD = 'message'\n",
                                     fields=literal(fields), required=literal(required),
-                                    shape_line=line.SHAPE_LINES["mapping"])
+                                    shape_line=line.SHAPE_LINES["mapping"], **line.parts_slots(()))
         tests = line.TESTS.format(table_id="status_codes", module="status_codes_table", class_name="StatusTest",
                                   first_key="100", missing_key="999", wrong_key=12345)
         with tempfile.TemporaryDirectory() as folder:
