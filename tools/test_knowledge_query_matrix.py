@@ -473,6 +473,72 @@ class ManagedQueryTests(unittest.TestCase):
         self.assertEqual(calls.call_count, 0)
         self.assertEqual(result["execution"]["held_sources"], ["github_search"])
 
+    def interrupt_on(self, record_type, **match):
+        original_put = CommunityStore.put
+
+        def interrupted(store, identity, kind, source_id, state, data, **kwargs):
+            if data.get("record_type") == record_type and all(data.get(key) == value for key, value in match.items()):
+                raise KeyboardInterrupt()
+            return original_put(store, identity, kind, source_id, state, data, **kwargs)
+        return mock.patch.object(CommunityStore, "put", interrupted)
+
+    def test_orphan_intent_is_closed_and_its_query_dispatched_once(self):
+        # Crash after the attempt intent was saved and before its dispatch hold: no request left.
+        with self.interrupt_on("knowledge_radar_query_dispatch_hold/v1", held=True), self.assertRaises(KeyboardInterrupt):
+            self.run_reads([github_result()])
+        store = CommunityStore(self.state)
+        orphans = [row for row in store.query(kind="run", state="recorded")
+                   if row["document"]["data"].get("status") == "intent_recorded_no_dispatch"]
+        self.assertEqual(len(orphans), 1)
+        query_id = orphans[0]["document"]["data"]["query_id"]
+        result, calls, _ = self.run_reads([github_result(), github_result(), github_result()])
+        self.assertEqual(result["reconciled"]["orphan_intents_closed"], 1)
+        closed = store.get(orphans[0]["identity"])
+        self.assertEqual((closed["document"]["state"], closed["document"]["data"]["status"]), ("failed", "abandoned_before_dispatch"))
+        dispatched = [attempt["query_id"] for attempt in result["execution"]["attempts"]]
+        self.assertEqual(dispatched.count(query_id), 1)
+        self.assertEqual(calls.call_count, 3)
+
+    def test_known_wrong_without_reconciliation_the_orphan_intent_stays_open(self):
+        with self.interrupt_on("knowledge_radar_query_dispatch_hold/v1", held=True), self.assertRaises(KeyboardInterrupt):
+            self.run_reads([github_result()])
+        with mock.patch("knowledge_radar.query_runs.reconcile_interrupted", return_value={}):
+            self.run_reads([github_result(), github_result(), github_result()])
+        store = CommunityStore(self.state)
+        self.assertEqual(len([row for row in store.query(kind="run", state="recorded")
+                              if row["document"]["data"].get("status") == "intent_recorded_no_dispatch"]), 1)
+
+    def test_saved_result_is_folded_after_a_crash_without_a_second_read(self):
+        # Crash after the completed attempt was saved and before its origin, work row and hold were written.
+        with self.interrupt_on("knowledge_radar_query_origin/v1"), self.assertRaises(KeyboardInterrupt):
+            self.run_reads([github_result(items=[ITEM])])
+        store = CommunityStore(self.state)
+        unresolved = [row for row in store.query(kind="source", state="recorded")
+                      if row["document"]["data"].get("outcome") == "reserved_unknown_outcome"]
+        self.assertEqual(len(unresolved), 1)
+        result, calls, _ = self.run_reads([github_result(), github_result()])
+        self.assertEqual(result["reconciled"]["saved_results_folded"], 1)
+        self.assertEqual(calls.call_count, 2)  # only the two other queued queries; the saved read is not repeated
+        work = store.get(unresolved[0]["identity"])
+        self.assertEqual((work["document"]["state"], work["document"]["data"]["outcome"]), ("complete", "ok"))
+        origins = [row for row in store.query(kind="source", state="needs_research")
+                   if row["document"]["data"].get("record_type") == "knowledge_radar_query_origin/v1"]
+        self.assertEqual(len(origins), 1)
+        hold = store.get("community.query.dispatch_hold." + work["document"]["data"]["query"]["query_id"])
+        self.assertIs(hold["document"]["data"]["held"], False)
+
+    def test_known_wrong_without_reconciliation_the_saved_result_stays_unfolded_and_held(self):
+        with self.interrupt_on("knowledge_radar_query_origin/v1"), self.assertRaises(KeyboardInterrupt):
+            self.run_reads([github_result(items=[ITEM])])
+        with mock.patch("knowledge_radar.query_runs.reconcile_interrupted", return_value={}):
+            self.run_reads([github_result(), github_result()])
+        store = CommunityStore(self.state)
+        unresolved = [row for row in store.query(kind="source", state="recorded")
+                      if row["document"]["data"].get("outcome") == "reserved_unknown_outcome"]
+        self.assertEqual(len(unresolved), 1)
+        self.assertEqual([row for row in store.query(kind="source", state="needs_research")
+                          if row["document"]["data"].get("record_type") == "knowledge_radar_query_origin/v1"], [])
+
     def test_unsupported_sources_stay_deferred_without_request(self):
         self.matrix = read_matrix(small(engine=""), CONTRACTS)
         result, calls, _ = self.run_reads([])

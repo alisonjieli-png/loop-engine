@@ -158,6 +158,72 @@ def unresolved_holds(store):
     return queries, sources, incomplete
 
 
+def reconcile_interrupted(store, *, now=None):
+    """Close the two recovery gaps the October 1 review left to an operator, without any request.
+
+    An attempt still at `intent_recorded_no_dispatch` proves that no request left: the attempt is advanced to
+    `reserved_unknown_outcome` before the request is sent. Such an orphan is closed as
+    `abandoned_before_dispatch`, any dispatch hold naming it is released and its work returns to the queue, so it
+    is dispatched at most once later and never mistaken for a held read. A completed attempt whose origins, work
+    row and dispatch hold were not yet written (a crash after the result was saved) is folded from the saved
+    result; the read is not repeated. Each window reads at most 1,000 records and reports when it may be capped.
+    """
+    now = now or clock()
+    counts = {"orphan_intents_closed": 0, "saved_results_folded": 0, "windows_may_be_incomplete": False}
+    intents = store.query(kind="run", state="recorded", limit=1000)
+    counts["windows_may_be_incomplete"] |= len(intents) == 1000
+    for row in intents:
+        data = row["document"]["data"]
+        if data.get("record_type") != ATTEMPT or data.get("status") != "intent_recorded_no_dispatch":
+            continue
+        attempt_id, engine = row["identity"], row["document"]["source_id"]
+        store.put(attempt_id, "run", engine, "failed", {**data, "status": "abandoned_before_dispatch",
+                                                         "reconciled_at": now}, expected=row)
+        hold_id = "community.query.dispatch_hold." + str(data.get("query_id"))
+        hold = store.get(hold_id)
+        if hold and hold["document"]["data"].get("attempt_id") == attempt_id and hold["document"]["data"].get("held") is True:
+            store.put(hold_id, "source", engine, "complete", {**hold["document"]["data"], "held": False,
+                                                              "status": "abandoned_before_dispatch"}, expected=hold)
+        work_id = query_identity(str(data.get("work_id")))
+        work = store.get(work_id)
+        if work and work["document"]["data"].get("record_type") == WORK and work["document"]["data"].get("attempt_id") in (None, attempt_id) \
+                and work["document"]["data"].get("outcome") in ("planned", "reserved_unknown_outcome"):
+            store.put(work_id, "source", "query_planner", "queued",
+                      {**work["document"]["data"], "attempt_id": None, "outcome": "planned"}, expected=work)
+        counts["orphan_intents_closed"] += 1
+    works = store.query(kind="source", state="recorded", limit=1000)
+    counts["windows_may_be_incomplete"] |= len(works) == 1000
+    for row in works:
+        data = row["document"]["data"]
+        if data.get("record_type") != WORK or data.get("outcome") != "reserved_unknown_outcome" or not data.get("attempt_id"):
+            continue
+        attempt = store.get(data["attempt_id"])
+        if attempt is None or attempt["document"]["state"] not in ("complete", "failed"):
+            continue
+        result = attempt["document"]["data"]
+        if result.get("status") not in ("ok", "partial", "failed", "gone"):
+            continue
+        engine = attempt["document"]["source_id"]
+        for observation in result.get("observations") or []:
+            origin_id = "community.query.origin." + digest(observation["origin"])
+            if store.get(origin_id) is None:
+                store.put(origin_id, "source", engine, "needs_research",
+                          {"record_type": "knowledge_radar_query_origin/v1", "observation": observation,
+                           "first_attempt": data["attempt_id"], "gates": dict(GATES)})
+        failed = result["status"] in ("failed", "gone")
+        store.put(row["identity"], "source", "query_planner", "failed" if failed else "complete",
+                  {**data, "outcome": result["status"]}, expected=row)
+        hold_id = "community.query.dispatch_hold." + str(result.get("query_id"))
+        hold = store.get(hold_id)
+        if hold and hold["document"]["data"].get("attempt_id") == data["attempt_id"]:
+            unknown = bool(result.get("request_outcome_unknown"))
+            store.put(hold_id, "source", engine, "failed" if unknown else "complete",
+                      {**hold["document"]["data"], "held": unknown,
+                       "status": "reserved_unknown_outcome" if unknown else result["status"]}, expected=hold)
+        counts["saved_results_folded"] += 1
+    return counts
+
+
 def execute_queued(store, matrix, repository, network, *, maximum_queries=5, per_source=5, now=None, engines=None):
     """Dispatch only supported bindings, through canonical Loop + radar transports.
 
@@ -341,6 +407,7 @@ def tick(matrix, repository, state, *, writes_allowed=False, network_allowed=Fal
     descriptor = os.open(store.root / "scan.lock", os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW, 0o600)
     with os.fdopen(descriptor, "r+") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        reconciled = reconcile_interrupted(store, now=now)
         planned, totals = plan_into_store(store, matrix, limit=page_size, scan_limit=scan_limit)
         execution = None
         if execute:
@@ -354,5 +421,5 @@ def tick(matrix, repository, state, *, writes_allowed=False, network_allowed=Fal
             if network.budget.maximum_requests > maximum_requests or network.budget.used:
                 raise ValueError("query_network_budget_binding")
             execution = execute_queued(store, matrix, repository, network, maximum_queries=maximum_queries, per_source=per_source, now=now)
-        return {"record_type": RESULT, "preview": False, "page": planned,
+        return {"record_type": RESULT, "preview": False, "page": planned, "reconciled": reconciled,
                 "plan_totals": totals, "execution": execution, "loop_events": len(store.ledger.events)}
