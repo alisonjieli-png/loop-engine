@@ -125,10 +125,13 @@ def address_key(text: str) -> str:
 
 
 def email_key(text: str) -> str:
-    """The normalized address, or empty text when the value is not an address."""
+    """The normalized address, or empty text when the value is not one well-formed address."""
     result = email_normalize(str(text))
-    output = result["output"].strip().casefold()
-    return output if "@" in output else ""
+    # A refused value comes back as its original text, so an "@" in it proves
+    # nothing; the refusal reasons are read the way field_recovery reads them.
+    if "multiple_values_or_spaces" in result["reasons"] or "invalid_email_shape" in result["reasons"]:
+        return ""
+    return result["output"].strip().casefold()
 
 
 def phone_key(text: str) -> str:
