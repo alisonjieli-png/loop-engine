@@ -343,8 +343,18 @@ def _request_path_checks(check, root):
     check("a_list_that_copies_the_library_before_checking_it_is_detected", copied > 2 * len(names))
 
 
-#: What the loopback HTTP group needs, as core.service_runtime.http_checks does; without them it is not run.
-HTTP_MODULES = ("httpx", "starlette", "uvicorn", "mcp")
+def _serving_packages_installed():
+    """Whether the loopback HTTP group can run: it needs what core.service_runtime.http_checks needs.
+
+    The HTTP client itself is imported only by catalogue_serving_checks, one of the modules the conformance gates
+    allow to open network connections; mcp, imported here, depends on that client, so it is installed with it."""
+    try:
+        import mcp  # noqa: F401
+        import starlette  # noqa: F401
+        import uvicorn  # noqa: F401
+    except ImportError:
+        return False
+    return True
 
 
 def _http_checks(check, root):
@@ -601,8 +611,7 @@ def run_checks(check=None):
     from .catalogue_lance_index import availability as lance_availability
     groups = [_edge_and_exactness_checks, _overlay_checks, _service_path_checks, _request_path_checks,
               _build_coordination_checks, _command_checks, _integrity_checks]
-    import importlib.util
-    if all(importlib.util.find_spec(name) is not None for name in HTTP_MODULES):
+    if _serving_packages_installed():
         groups.append(_http_checks)
     if lance_availability()["available"]:
         groups.append(_lance_checks)
