@@ -44,7 +44,9 @@ window.BaltorStaffWork = (() => {
         $("dot-work-list").append(item);
       }
       if (!result.items.length) $("dot-work-list").append(element("p", "No report for this day and task.", "caption"));
-      $("dot-work-list-note").textContent = result.complete ? "All matching reports are shown." : "First 100 matches shown. Narrow the task filter to see a smaller set.";
+      const unreadable = Array.isArray(result.unreadable) ? result.unreadable.length : 0;
+      $("dot-work-list-note").textContent = unreadable ? unreadable + " saved report(s) could not be read and are left out."
+        : result.complete ? "All matching reports are shown." : "First 100 matches shown. Narrow the task filter to see a smaller set.";
     }
     async function detail(id) {
       const mine = epoch, call = ++sequence;

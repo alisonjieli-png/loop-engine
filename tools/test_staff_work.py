@@ -196,6 +196,55 @@ class StaffWork(unittest.TestCase):
         self.assertEqual(answer.status_code,200,answer.text)
         self.assertEqual(self.get({'id':answer.json()['result']['id']}).status_code,200)
 
+    def test_request_limit_changes_keep_stored_reports_readable(self):
+        # Known-wrong control: when the stored policy embedded these limits,
+        # each change below made the earlier report, its day and its replay fail.
+        receipt=self.post().json()['result']
+        for name,value in (('MAX_FILES',32),('MAX_FILE_BYTES',131072),('MAX_MESSAGE',32000),
+                           ('KINDS',staff_work.KINDS+('fix',)),('LIST_LIMIT',200)):
+            with self.subTest(name=name),mock.patch.object(staff_work,name,value):
+                self.assertEqual(self.get({'id':receipt['id']}).status_code,200)
+                listing=self.get().json()['result']
+                self.assertEqual([row['id'] for row in listing['items']],[receipt['id']])
+                self.assertTrue(listing['complete'])
+                self.assertTrue(self.post().json()['result']['repeated'])
+        with mock.patch.object(staff_work,'KINDS',staff_work.KINDS+('fix',)):
+            self.assertEqual(self.post(self.fields(request_id='new-kind',kind='fix')).status_code,200)
+
+    def test_stored_contracts_are_frozen(self):
+        # Release 62 stored live reports under staff_work/v1 in this default namespace.
+        self.assertEqual(self.fixture.runtime.config.namespace,'hosted-service')
+        policies={contract[0]:staff_work._service(self.fixture.runtime,lambda store:(),contract).policy
+                  for contract in staff_work.CONTRACTS}
+        self.assertEqual({name:policy.digest for name,policy in policies.items()},
+            {'staff_work/v2':'9b3ef715f10470c41309e659f0a1cab4bfbdb8ccbb1d2adde11e1f486a8933c8',
+             'staff_work/v1':'97242a432c7621aefaf704476b032c0f181748f8b7fea3faf75baf7b2f59ec57'})
+
+    def test_reports_stored_under_the_first_contract_stay_readable(self):
+        with mock.patch.object(staff_work,'CONTRACTS',staff_work.CONTRACTS[1:]):
+            first=self.post().json()['result']['id']
+        with self.fixture.runtime._catalog.store() as store:
+            self.assertEqual(store.get(first)['payload']['policy_digest'],
+                             '97242a432c7621aefaf704476b032c0f181748f8b7fea3faf75baf7b2f59ec57')
+        self.assertEqual(self.get({'id':first}).json()['result']['document']['title'],'Synthetic report')
+        self.assertEqual([row['id'] for row in self.get().json()['result']['items']],[first])
+        self.assertTrue(self.post().json()['result']['repeated'])
+        self.assertEqual(self.post(self.fields(request_id='reply',kind='review',reply_to=first)).status_code,200)
+
+    def test_unreadable_report_is_named_without_failing_the_listing(self):
+        good=self.post().json()['result']['id']
+        foreign=self.post(self.fields(request_id='foreign')).json()['result']['id']
+        damaged=self.post(self.fields(request_id='damaged')).json()['result']['id']
+        with self.fixture.runtime._catalog.store(write=True) as store:
+            head=store.get(foreign);head['payload']['policy_digest']='0'*64;store.put(head)
+            body=store.get(damaged)['payload']['revision_ref']['digest']
+        for path in (self.root/'domain'/'staff-work-revisions').rglob(body):path.unlink()
+        listing=self.get().json()['result']
+        self.assertEqual([row['id'] for row in listing['items']],[good])
+        self.assertEqual(listing['unreadable'],sorted([foreign,damaged]))
+        self.assertFalse(listing['complete'])
+        self.assertEqual(self.get({'id':foreign}).json()['error']['code'],'work_record_unavailable')
+
 
 if __name__ == '__main__':
     unittest.main()

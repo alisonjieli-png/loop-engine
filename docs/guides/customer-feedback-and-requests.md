@@ -231,6 +231,14 @@ of file content per submission. Private HTTP request and response limits are
 separately configurable, defaulting to 512 KiB and one MiB. Ordinary HTTP and
 MCP retain their existing limits; an encoded request must fit its transport.
 
+These request limits and the list of report kinds are checked when a report
+arrives and are not part of the stored contract. Each saved report stays bound
+to the exact frozen contract it was written under: `staff_work/v1` for reports
+saved by release 62, `staff_work/v2` afterwards. Changing a limit or adding a
+kind therefore leaves every earlier report readable, listable and replayable.
+A listing names any report that no current contract can read in `unreadable`
+and sets `complete` to false, instead of failing the whole day.
+
 The MCP tools `staff_work_read` and `staff_work_submit` accept the same read
 or write fields without the HTTP `record_type`. Both require the existing
 superadmin browser or operator authority. Ordinary customer OAuth does not

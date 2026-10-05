@@ -13,8 +13,8 @@ import re
 
 from ...catalog.protocol import CatalogRecordPrecondition, StoreError
 from ..record_operations import RecordOperationService, RecordOperationServices, RecordStorageBinding
-from ..record_operations_records import (RecordOperationPolicy, RecordOperationRequest, RecordScope,
-                                        canonical_json, parse_json)
+from ..record_operations_records import (RecordOperationError, RecordOperationPolicy, RecordOperationRequest,
+                                        RecordScope, canonical_json, parse_json)
 from ..runtime_observer import RuntimeObservationServices
 from ...loop.effect_approval import ApprovalDecision, ApprovalRequest, EffectApprovalService
 from . import dot_pages
@@ -25,11 +25,34 @@ PATH = "/api/v1/admin/work"
 REQUEST_VERSION, RESULT_VERSION = "service_staff_work_request/v1", "service_staff_work_result/v1"
 DOCUMENT_VERSION = "service_staff_work_document/v1"
 PREFIX = "staff-work:"
+# Request limits. They are checked at the request boundary and never enter a
+# stored contract below, so changing one leaves every stored report readable.
 KINDS = ("research", "test_result", "component", "review", "blocker")
 MAX_FILES, MAX_FILE_BYTES, MAX_TOTAL_BYTES, MAX_MESSAGE = 16, 65536, 262144, 16000
 LIST_LIMIT = 100
 FIELDS = frozenset({"request_id", "brief", "brief_revision", "task_id", "kind", "title", "message", "links", "files", "reply_to"})
 SHA = re.compile(r"[0-9a-f]{64}\Z")
+
+# Stored contracts, newest first; new reports use the first. A stored head
+# binds the exact policy digest of its contract, so each one is frozen here and
+# pinned by tools/test_staff_work.py: editing one would strand its reports.
+_STRING, _STORED = {"type": "string"}, ("actor", "brief", "brief_revision", "day", "files", "kind", "links",
+    "message", "record_type", "reply_to", "request_digest", "request_id", "submitted_at", "task_id", "title")
+_FILE = {"type": "object", "additionalProperties": False, "required": ["name", "content", "bytes", "sha256"],
+         "properties": {"name": _STRING, "content": _STRING, "bytes": {"type": "integer", "minimum": 0},
+                        "sha256": _STRING}}
+_SHAPE = {**{key: _STRING for key in _STORED}, "record_type": {"const": "service_staff_work_document/v1"},
+          "submitted_at": {"type": "number"}, "brief_revision": {**_STRING, "pattern": "^[a-f0-9]{64}$"},
+          "links": {"type": "array", "items": _STRING}, "files": {"type": "array", "items": _FILE}}
+# staff_work/v1 (release 62) also embedded that day's request limits.
+_FIRST = {**_SHAPE, "brief": {"enum": ["context", "feedback"]},
+          "kind": {"enum": ["research", "test_result", "component", "review", "blocker"]},
+          "request_id": {**_STRING, "maxLength": 128}, "task_id": {**_STRING, "maxLength": 128},
+          "title": {**_STRING, "minLength": 1, "maxLength": 160},
+          "message": {**_STRING, "minLength": 1, "maxLength": 16000}, "reply_to": {**_STRING, "maxLength": 80},
+          "links": {"type": "array", "maxItems": 10, "items": {**_STRING, "maxLength": 2048}},
+          "files": {"type": "array", "maxItems": 16, "items": _FILE}}
+CONTRACTS = (("staff_work/v2", _SHAPE, 1000), ("staff_work/v1", _FIRST, 101))
 
 
 def _text(value, limit, *, empty=False):
@@ -153,37 +176,43 @@ class _AuthorizedCatalog:
         self.context.__exit__(None, None, None)
 
 
-def _service(runtime, authorize, *, before_write=None):
+def _service(runtime, authorize, contract, *, before_write=None):
     # Paths and scope come from the installed host, never submitted fields.
     database = Path(runtime.config.database_path).absolute()
     binding = RecordStorageBinding(str(database), str(database.parent / "staff-work-revisions"),
         lambda write: _AuthorizedCatalog(runtime._catalog, authorize, write, before_write))
-    schema = {"type": "object", "additionalProperties": False,
-              "required": sorted(FIELDS | {"record_type", "actor", "submitted_at", "day", "request_digest"}),
-              "properties": {**request_schema()["properties"],
-                  "record_type": {"const": DOCUMENT_VERSION}, "actor": {"type": "string"},
-                  "submitted_at": {"type": "number"}, "day": {"type": "string"},
-                  "request_digest": {"type": "string"}}}
-    schema["properties"]["files"] = {"type": "array", "maxItems": MAX_FILES, "items": {
-        "type": "object", "additionalProperties": False, "required": ["name", "content", "bytes", "sha256"],
-        "properties": {"name": {"type": "string"}, "content": {"type": "string"},
-                       "bytes": {"type": "integer", "minimum": 0}, "sha256": {"type": "string"}}}}
-    policy = RecordOperationPolicy("staff_work/v1", RecordScope(runtime.config.namespace,
+    policy_id, properties, results = contract
+    schema = {"type": "object", "additionalProperties": False, "required": list(_STORED), "properties": properties}
+    policy = RecordOperationPolicy(policy_id, RecordScope(runtime.config.namespace,
         "staff_work", "user_feedback_intelligence", "intelligence_record", PREFIX), canonical_json(schema),
         allowed_operations=("create", "get", "query"), indexed_fields=("day", "task_id", "kind", "reply_to"),
         # Reserve room for server-owned metadata beyond the bounded wire body.
-        maximum_document_bytes=1048576, maximum_query_results=LIST_LIMIT+1)
+        maximum_document_bytes=1048576, maximum_query_results=results)
     observations = RuntimeObservationServices()
     approvals = EffectApprovalService(runtime=observations)
     return RecordOperationService(policy, RecordOperationServices(binding, observations, approvals))
 
 
+def _services(runtime, authorize, **options):
+    return tuple(_service(runtime, authorize, contract, **options) for contract in CONTRACTS)
+
+
+def _get(services, record_id):
+    """One report, read under whichever stored contract wrote it."""
+    for service in services:
+        value = service.execute(RecordOperationRequest("get", record_id, materialize=True)).to_dict()
+        if value["status"] != "unmanaged":
+            break
+    return value
+
+
 def submit(runtime, authorize, actor, fields):
     fields = _fields(fields)
-    service = _service(runtime, authorize, before_write=lambda: _brief(fields))
+    services = _services(runtime, authorize, before_write=lambda: _brief(fields))
+    service = services[0]
     record_id = PREFIX + digest([runtime.config.namespace, actor, fields["request_id"]])
     content = digest(fields)
-    held = service.execute(RecordOperationRequest("get", record_id, materialize=True)).to_dict()
+    held = _get(services, record_id)
     if held["status"] == "found":
         if held["document"]["request_digest"] != content:
             raise ServiceRuntimeError("work_request_identity_conflict")
@@ -193,7 +222,7 @@ def submit(runtime, authorize, actor, fields):
         raise ServiceRuntimeError("work_record_unavailable")
     _brief(fields)
     if fields["reply_to"]:
-        parent = service.execute(RecordOperationRequest("get", fields["reply_to"], materialize=True)).to_dict()
+        parent = _get(services, fields["reply_to"])
         if (parent["status"] != "found" or parent["document"]["task_id"] != fields["task_id"]
                 or parent["document"]["brief"] != fields["brief"]):
             raise ServiceRuntimeError("work_reply_target_invalid")
@@ -225,11 +254,11 @@ def submit(runtime, authorize, actor, fields):
 def read(runtime, authorize, fields):
     if not isinstance(fields, dict) or set(fields) - {"id", "day", "task_id"}:
         raise ServiceRuntimeError("invalid_request")
-    service = _service(runtime, authorize)
+    services = _services(runtime, authorize)
     if "id" in fields:
         if set(fields) != {"id"} or not isinstance(fields["id"], str) or not fields["id"].startswith(PREFIX) or not SHA.fullmatch(fields["id"][len(PREFIX):]):
             raise ServiceRuntimeError("invalid_work_reference")
-        value = service.execute(RecordOperationRequest("get", fields["id"], materialize=True)).to_dict()
+        value = _get(services, fields["id"])
         if value["status"] != "found":
             raise ServiceRuntimeError("work_record_unavailable")
         return {"record_type": RESULT_VERSION, "id": fields["id"], "document": value["document"],
@@ -243,16 +272,23 @@ def read(runtime, authorize, fields):
     filters = {"day": day}
     if "task_id" in fields:
         filters["task_id"] = identifier(fields["task_id"], "task identity")
-    records = service.execute(RecordOperationRequest("query", filters_json=canonical_json(filters), limit=LIST_LIMIT+1)).records
-    items = []
+    records = services[0].execute(RecordOperationRequest("query", filters_json=canonical_json(filters), limit=LIST_LIMIT+1)).records
+    items, unreadable = [], []
     for row in records[:LIST_LIMIT]:
-        value = service.execute(RecordOperationRequest("get", row["record_id"], materialize=True)).to_dict()
+        # One report no current contract can read is named, not fatal: the
+        # rest of the day stays listed and the listing says it is incomplete.
+        try:
+            value = _get(services, row["record_id"])
+        except RecordOperationError:
+            value = {"status": "invalid"}
         if value["status"] != "found":
-            raise ServiceRuntimeError("work_record_unavailable")
+            unreadable.append(row["record_id"])
+            continue
         doc = value["document"]
         items.append({"id": row["record_id"], "record_version": row["record_version"],
                       **{k: doc[k] for k in ("title", "task_id", "brief", "kind", "day", "submitted_at", "reply_to")},
                       "file_count": len(doc["files"])})
     items.sort(key=lambda item: (item["submitted_at"], item["id"]), reverse=True)
-    return {"record_type": RESULT_VERSION, "day": day, "items": items,
-            "complete": len(records) <= LIST_LIMIT, "limit": LIST_LIMIT, "promotes_intelligence": False}
+    return {"record_type": RESULT_VERSION, "day": day, "items": items, "unreadable": sorted(unreadable),
+            "complete": len(records) <= LIST_LIMIT and not unreadable, "limit": LIST_LIMIT,
+            "promotes_intelligence": False}
