@@ -861,5 +861,33 @@ class HashedDuplicatePassTests(unittest.TestCase):
                              if any(reason.startswith("duplicates:") for reason in record["reasons"])]
         self.assertGreaterEqual(len(refused_as_copies), 2, refused_as_copies)
 
+
+class StoreReaderTests(unittest.TestCase):
+    def test_rows_keep_only_the_named_lines_while_streaming(self):
+        from tools.component_qualification.components import CANDIDATE_RECORD, StoreReader
+        streamed = [{"record_id": f"library.supply.{line}.{number:024x}.{number:016x}", "record_version": "v",
+                     "payload": {"record_type": CANDIDATE_RECORD, "line": line}}
+                    for number, line in enumerate(("json_schemas", "data_tables", "openapi_operations",
+                                                   "data_tables"))]
+        streamed.append({"record_id": "library.supply.data_tables.other", "record_version": "v",
+                         "payload": {"record_type": "library_supply_state/v1", "line": "data_tables"}})
+        kept = []
+
+        class Records:
+            def stream(self, query):
+                for row in streamed:
+                    yield row
+
+            def query(self, query):
+                # Known wrong: the list of every supply candidate held 7.25 GB at 200,142 of them.
+                raise AssertionError("rows() must not read every supply candidate into one list")
+
+        reader = StoreReader.__new__(StoreReader)
+        reader.store = SimpleNamespace(records=Records())
+        kept = reader.rows(lines=("data_tables",))
+        self.assertEqual([row["record_id"] for row in kept], sorted(row["record_id"] for row in streamed[1::2][:2]))
+        self.assertEqual(len(reader.rows()), 4)
+        self.assertEqual(len(reader.rows(lines=("data_tables",), limit=1)), 1)
+
 if __name__ == "__main__":
     unittest.main()

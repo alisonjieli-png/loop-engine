@@ -150,11 +150,17 @@ class StoreReader:
         self.store = ImportStore(root, writes_authorized=False)
 
     def rows(self, *, lines=(), limit: "int | None" = None) -> list:
-        """One consistent snapshot of the current supply candidates, in record order."""
+        """One consistent snapshot of the current supply candidates of the named lines (all when none is named),
+        in record order.
+
+        The query is streamed and each row is kept only when its line is named: a line is a field of the payload,
+        which the store cannot select by, and reading every supply candidate into one list first held 7.25 GB at
+        200,142 candidates, so on October 5, 2026 a 6 GB capped run of the 2,508-table data_tables line was killed
+        before it wrote anything."""
         from loop_engine.catalog.query import IntelligenceQuery
-        rows = self.store.records.query(IntelligenceQuery(namespaces=(SUPPLY_NAMESPACE,),
-                                                          lifecycle=(CANDIDATE_LIFECYCLE,)))
-        rows = [row for row in rows if row.get("payload", {}).get("record_type") == CANDIDATE_RECORD
+        rows = [row for row in self.store.records.stream(IntelligenceQuery(namespaces=(SUPPLY_NAMESPACE,),
+                                                                             lifecycle=(CANDIDATE_LIFECYCLE,)))
+                if row.get("payload", {}).get("record_type") == CANDIDATE_RECORD
                 and (not lines or row["payload"].get("line") in lines)]
         rows.sort(key=lambda row: row["record_id"])
         return rows[:limit] if limit is not None else rows
