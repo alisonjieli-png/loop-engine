@@ -371,7 +371,8 @@ def report(args) -> dict:
     store = ImportStore(Path(args.store_root), writes_authorized=False)
     try:
         result = build_report(store, targets, library, review_batches=Path(args.review_batches),
-                              daily=Path(args.daily), slot=args.slot, ceiling=args.per_repository)
+                              daily=Path(args.daily), slot=args.slot, ceiling=args.per_repository,
+                              served_bundle=Path(args.library_bundle), admission_folders=args.admission_folder or ())
     finally:
         store.close()
     result["written_at"] = now_utc()
@@ -443,7 +444,10 @@ def parser() -> argparse.ArgumentParser:
     four.add_argument("--table", action="append", help="only these table identities of data_table_sources.json")
     five = commands.add_parser("report")
     five.add_argument("--store-root", default="/home/username/baltor-library/import-store")
-    five.add_argument("--library-bundle", required=True, help="the served release bundle folder")
+    five.add_argument("--library-bundle", required=True, help="the served release bundle folder; a candidate whose "
+                      "package it serves is not counted as supply")
+    five.add_argument("--admission-folder", action="append",
+                      help="an admission folder (its reviews.json) whose approved packages are not counted as supply")
     five.add_argument("--review-batches", default="/home/username/baltor-library/review-batches")
     five.add_argument("--daily", default="/home/username/baltor-library/daily")
     five.add_argument("--slot", type=int, default=2000)

@@ -173,7 +173,7 @@ PYTHONPATH=src:tools python tools/build_library_supply.py curated-schemas \
   --run-folder /home/username/baltor-library/supply/json-schemas/DATE \
   --authorize-network-reads --authorize-store-writes [--source ID]
 PYTHONPATH=src:tools python tools/build_library_supply.py report \
-  --library-bundle /home/username/baltor-bundles/RELEASE --output REPORT.json
+  --library-bundle /home/username/baltor-bundles/RELEASE --output REPORT.json [--admission-folder ADMISSION]
 ```
 
 Run folders hold every fetched fact and stay outside the repository. A run
@@ -186,7 +186,11 @@ inspection. A run limited to some sources (`--source`, `--formula`,
 The report counts the served library and the import store's supply by
 composition family and form, and projects the composition mix slot by slot
 with the export's per-repository ceiling; see
-`docs/research/LIBRARY-SUPPLY-LINES-2026-09-27.md` for the first report.
+`docs/research/LIBRARY-SUPPLY-LINES-2026-09-27.md` for the first report. A
+candidate whose exact package the bundle serves, or an approved row of an
+admission folder given with `--admission-folder` names, is counted as
+`already_served` or `already_admitted` and not as supply, although the store
+keeps it a candidate.
 
 ## Checks
 

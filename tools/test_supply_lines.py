@@ -2201,6 +2201,25 @@ class VerbatimCodeSourcesTest(unittest.TestCase):
 
 
 class SupplyReportTest(unittest.TestCase):
+    def test_the_report_leaves_out_candidates_already_served_or_admitted(self):
+        # Known wrong: the 3,910 program installs admitted and served on September 29, 2026 stayed candidates in
+        # the store, and the report counted them as generated supply again beside the served library.
+        import build_library_supply as builder
+        from test_library_composition import _served_bundle, _supply_store
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            served, _first_waiting, _second_waiting = _supply_store(root, ("get_thing", "list_things", "put_thing"))
+            for name in ("batches", "daily"):
+                (root / name).mkdir()
+            argv = ["report", "--store-root", str(root / "store"), "--library-bundle",
+                    str(_served_bundle(root, [served])), "--review-batches", str(root / "batches"),
+                    "--daily", str(root / "daily"), "--output", str(root / "report.json")]
+            result = builder.report(builder.parser().parse_args(argv))
+        generated = result["supply"]["generated"]
+        self.assertEqual(generated["total"], 2)
+        self.assertEqual((generated["already_served"], generated["already_admitted"]), (1, 0))
+        self.assertEqual(result["left_review_records"], {"served_bundle": "bundle", "admission_folders": []})
+
     def test_the_projection_stops_when_supply_ends_and_keeps_skills_under_their_cap(self):
         from licensed_import.composition import load_targets
         from supply_lines.report import needs, project

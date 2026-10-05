@@ -64,7 +64,7 @@ from pathlib import Path
 from loop_engine.core.harness_intelligence import HarnessIntelligenceItem
 from loop_engine.core.intelligence_tagging import TagSet
 from loop_engine.core.library_ingestion.record_rules import canonical_digest, now_utc
-from loop_engine.core.service_runtime.catalogue_packages import EXECUTABLE_ROLES, CataloguePackage
+from loop_engine.core.service_runtime.catalogue_packages import EXECUTABLE_ROLES, FILE_BODY, CataloguePackage
 
 from .checks import blocking_rules
 from .composition import (
@@ -414,6 +414,61 @@ def exported_record_ids(folders) -> set:
             for spec in json.loads(path.read_text(encoding="utf-8"))["specifications"]:
                 found.add(spec["provenance"]["store_record_id"])
     return found
+
+
+#: The review record of an admission folder (tools/component_qualification/admission.py writes it).
+ADMISSION_REVIEW_RECORD = "starter_catalogue_independent_review/v2"
+SERVED, ADMITTED = "served", "admitted"
+
+
+def served_digest(payload: dict) -> str:
+    """The digest a release bundle names for a candidate's package, as CataloguePackage.served_digest gives it."""
+    package = payload["package"]
+    return package["files"][0]["digest"] if package.get("body_form") == FILE_BODY else payload["package_digest"]
+
+
+def served_or_admitted(*, bundles=(), admissions=()) -> dict:
+    """The digests of packages that left review: served by a release bundle or approved in an admission folder.
+
+    The import store keeps a package `candidate` after it is admitted and served (the 3,910 generated program
+    installs admitted and served on September 29, 2026 stayed candidates), so these records, not the store's
+    lifecycle, show that a candidate no longer waits for review. A served bundle is read the way qualification
+    reads one (tools/qualify_generated_components.py): the reference digest of each item. An admission folder's
+    approved rows count; a rejected row stays a candidate that waits."""
+    found = {SERVED: set(), ADMITTED: set()}
+    for bundle in bundles:
+        path = Path(bundle)
+        with (path / "items.jsonl" if path.is_dir() else path).open(encoding="utf-8") as stream:
+            for line in stream:
+                digest = (json.loads(line).get("reference") or {}).get("digest") if line.strip() else None
+                if digest:
+                    found[SERVED].add(digest)
+    for folder in admissions:
+        record = json.loads((Path(folder) / "reviews.json").read_text(encoding="utf-8"))
+        if record.get("record_type") != ADMISSION_REVIEW_RECORD:
+            raise ValueError(f"{folder}: reviews.json is not a {ADMISSION_REVIEW_RECORD} record")
+        found[ADMITTED].update(row["body_digest"] for row in record["rows"] if row.get("outcome") == "approved")
+    return found
+
+
+def left_review(payload: dict, known: dict) -> "str | None":
+    """served or admitted when one of those records names the candidate's exact package, otherwise None."""
+    digest = served_digest(payload)
+    return next((state for state in (SERVED, ADMITTED) if digest in known.get(state, ())), None)
+
+
+def leave_out(payloads, *, exported=frozenset(), known: "dict | None" = None) -> tuple:
+    """(the candidates still waiting, counts): packages already exported, served or admitted are left out."""
+    waiting, counts = [], Counter({SERVED: 0, ADMITTED: 0})
+    for payload in payloads:
+        if payload["record_id"] in exported:
+            continue
+        state = left_review(payload, known or {})
+        if state:
+            counts[state] += 1
+            continue
+        waiting.append(payload)
+    return waiting, counts
 
 
 def _reference(identity: str, payload: dict, package: CataloguePackage) -> dict:

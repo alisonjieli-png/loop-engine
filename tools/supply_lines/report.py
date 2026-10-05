@@ -5,7 +5,9 @@ Supply report (library_supply_report/v1)
 ├── library: the served release's packages per family and form (a release bundle's items.jsonl)
 ├── supply, from the import store
 │   ├── imported (library.import): candidates not yet handed to review that the imported profile can read
-│   └── generated (library.supply): the supply lines' candidates, held until a review profile reads them
+│   ├── generated (library.supply): the supply lines' candidates, held until a review profile reads them
+│   └── both leave out a package the served bundle serves or an admission folder approved: it stays
+│       `candidate` in the store but has left review (left_review_records names the records read)
 ├── approval: the share of exported packages the daily reviews approved (their counts.json records)
 ├── projection: slot after slot of the composition mix (supply-aware shares, no refill), each slot's
 │   kept packages approved at that share, until the library passes each milestone or the supply ends
@@ -26,7 +28,8 @@ from collections import Counter
 from pathlib import Path
 
 from licensed_import.composition import CompositionTargets, largest_remainder, payload_form, slot_quotas
-from licensed_import.review_export import exported_record_ids, reviewable
+from licensed_import.review_export import (
+    ADMITTED, SERVED, exported_record_ids, left_review, reviewable, served_or_admitted)
 
 REPORT_RECORD_TYPE = "library_supply_report/v1"
 
@@ -45,17 +48,24 @@ def approval_share(daily_folder: Path) -> dict:
             "approved": approved, "slots": days}
 
 
-def store_supply(store, targets: CompositionTargets, exported: set) -> dict:
-    """Candidates per family and form: imported and reviewable, and generated (held)."""
+def store_supply(store, targets: CompositionTargets, exported: set, known: "dict | None" = None) -> dict:
+    """Candidates per family and form: imported and reviewable, and generated (held).
+
+    ``known`` holds the served and admitted package digests (review_export.served_or_admitted); a candidate it
+    names is counted as already served or admitted, not as supply."""
     from loop_engine.catalog.query import IntelligenceQuery
     from licensed_import.storage import NAMESPACE, SUPPLY_NAMESPACE
     result = {}
     for label, namespace in (("imported", NAMESPACE), ("generated", SUPPLY_NAMESPACE)):
-        forms, lines, not_reviewable = Counter(), Counter(), Counter()
+        forms, lines, not_reviewable, left = Counter(), Counter(), Counter(), Counter({SERVED: 0, ADMITTED: 0})
         repositories = {}
         for row in store.records.query(IntelligenceQuery(namespaces=(namespace,), lifecycle=("candidate",))):
             payload = row["payload"]
             if payload.get("record_id") in exported:
+                continue
+            state = left_review(payload, known or {})
+            if state:
+                left[state] += 1
                 continue
             if label == "imported":
                 reason = reviewable(payload)
@@ -73,6 +83,7 @@ def store_supply(store, targets: CompositionTargets, exported: set) -> dict:
         for form, count in forms.items():
             families[targets.family_of(form)] += count
         result[label] = {"total": sum(forms.values()), "families": dict(families), "forms": dict(forms),
+                         "already_served": left[SERVED], "already_admitted": left[ADMITTED],
                          "repositories_per_family": {name: len(rows) for name, rows in repositories.items()},
                          **({"lines": dict(lines)} if label == "generated" else {}),
                          **({"not_reviewable": dict(not_reviewable)} if label == "imported" else {})}
@@ -146,10 +157,12 @@ def needs(targets: CompositionTargets, library: dict, supply: dict, approval: fl
 
 
 def build_report(store, targets: CompositionTargets, library: dict, *, review_batches: Path, daily: Path,
-                 slot: int = 2000, ceiling: int = 15) -> dict:
+                 slot: int = 2000, ceiling: int = 15, served_bundle: "Path | None" = None,
+                 admission_folders=()) -> dict:
     earlier = [folder for folder in sorted(Path(review_batches).glob("*")) if (folder / "export-report.json").is_file()]
     exported = exported_record_ids(earlier)
-    supply = store_supply(store, targets, exported)
+    known = served_or_admitted(bundles=(served_bundle,) if served_bundle else (), admissions=admission_folders)
+    supply = store_supply(store, targets, exported, known)
     imported_pools = supply["imported"].pop("_repositories")
     generated_pools = supply["generated"].pop("_repositories")
     combined_pools = {name: Counter(imported_pools.get(name, {})) + Counter(generated_pools.get(name, {}))
@@ -161,6 +174,9 @@ def build_report(store, targets: CompositionTargets, library: dict, *, review_ba
     return {"record_type": REPORT_RECORD_TYPE, "targets_digest": targets.digest, "goal": targets.goal,
             "milestones": list(targets.milestones), "library": library,
             "exported_to_review_already": len(exported), "supply": supply, "approval": approval,
+            # A served bundle of None means served packages could not be left out of the supply.
+            "left_review_records": {"served_bundle": Path(served_bundle).name if served_bundle else None,
+                                    "admission_folders": sorted(Path(folder).name for folder in admission_folders)},
             "projection": {"imported_only": project(targets, library["families"], supply["imported"]["families"],
                                                     share, slot=slot, repositories=imported_pools, ceiling=ceiling),
                            "with_generated": project(targets, library["families"], dict(combined), share, slot=slot,
@@ -181,4 +197,6 @@ def build_report(store, targets: CompositionTargets, library: dict, *, review_ba
                 "projections named without_ceiling drop that rule.",
                 "Every family is approved at the same share, the mean of the daily slots so far.",
                 "No new supply arrives; the imported supply is what the import store holds today.",
+                "A candidate the served bundle serves or an admission folder approved is not supply, although the "
+                "store keeps it a candidate.",
                 "with_generated assumes a review profile for the supply lines' packages exists."]}

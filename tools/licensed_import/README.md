@@ -291,6 +291,16 @@ because admission does not change a stored candidate's lifecycle. The export
 report records the quotas, the supply, the selected and kept counts and the
 unfilled quota per family under `selection.composition`.
 
+The store keeps a package a candidate after it is admitted and served: the
+3,910 generated program installs served since September 29, 2026 stayed
+candidates. A candidate whose exact package the `--library-bundle` bundle
+serves, or an approved row of an admission folder given with
+`--admission-folder` names, is therefore left out before selection, neither
+held nor exported again, and counted as `selection.already_served` or
+`selection.already_admitted`. `selection.left_review_records` names the
+records read; without a bundle its `served_bundle` is null and nothing served
+could be left out.
+
 ## Checks
 
 ```bash

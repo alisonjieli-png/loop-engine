@@ -271,6 +271,89 @@ class CompositionMixTest(unittest.TestCase):
         self.assertEqual(review_export.DEFAULT_KIND_MIX, "composition")
 
 
+def _supply_store(root: Path, names, *, same_bytes=()) -> list:
+    """Generated candidates of the API line in an import store under root/store, as a supply line writes them.
+
+    Each name gets its own code, except the names in same_bytes, which copy the first name's files exactly."""
+    from supply_lines import records
+    from supply_lines.packaging import LICENCE_NAME, PackageFile, build
+    from supply_lines.store import SupplyStore
+    from test_supply_lines import LICENCE, _package
+
+    def files(name):
+        code = f"def {names[0] if name in same_bytes else name}():\n    return 1\n".encode()
+        return [PackageFile("operation.py", code, "executable_tool"),
+                PackageFile(LICENCE_NAME, LICENCE, "other", records.LICENCE_TEXT)]
+    built = [build(_package(identity=f"example:{name}", name=name, files=files(name),
+                            key=records.upstream_key(records.OPENAPI_OPERATIONS, f"example:{name}")))
+             for name in names]
+    writer = SupplyStore(root / "store", writes_authorized=True)
+    try:
+        writer.write(records.OPENAPI_OPERATIONS, built, complete=True)
+    finally:
+        writer.close()
+    return [row[0] for row in built]
+
+
+def _served_bundle(root: Path, payloads) -> Path:
+    """A release bundle folder whose items.jsonl serves these packages, shaped as the bundle builder writes it."""
+    (root / "bundle").mkdir()
+    (root / "bundle" / "items.jsonl").write_text("".join(json.dumps(
+        {"reference": {"identity": payload["record_id"], "kind": "tool", "styles": [],
+                       "digest": payload["package_digest"]},
+         "attributes": {"harness_kind": "code_module", "component_form": "api_operation"},
+         "package": {"files": [{"role": "executable_tool"}]}}) + "\n" for payload in payloads), encoding="utf-8")
+    return root / "bundle"
+
+
+class HeldForReviewTest(unittest.TestCase):
+    """A generated package stays `candidate` in the import store after it is admitted and served.
+
+    The review of October 5, 2026 found the 3,910 program installs admitted and served on September 29 still
+    counted as held for a review profile: the export subtracted only packages of earlier export folders."""
+
+    def _export(self, root: Path, *extra) -> dict:
+        import import_licensed_harness_files as command
+        argv = ["export-review", "--run-folder", str(root / "run"), "--store-root", str(root / "store"),
+                "--output", str(root / "export"), "--code-revision", "a" * 40, "--target", "10", "--limit", "12",
+                *extra]
+        return command.export_review(command.parser().parse_args(argv))["selection"]
+
+    def test_a_package_the_served_bundle_names_is_not_held_for_review(self):
+        # Known wrong: the export counted the served package as held, five instead of three. A candidate holding
+        # the served bytes under another identity has left review too, the rule qualification applies when it
+        # refuses a copy of a served component.
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            served, *_rest = _supply_store(root, ("get_thing", "copy_thing", "list_things", "put_thing", "drop_thing"),
+                                           same_bytes=("copy_thing",))
+            selection = self._export(root, "--library-bundle", str(_served_bundle(root, [served])))
+        self.assertEqual(selection["composition"]["held_for_review_profile"], {"executable_code": 3})
+        self.assertEqual((selection["already_served"], selection["already_admitted"]), (2, 0))
+        self.assertEqual(selection["left_review_records"], {"served_bundle": "bundle", "admission_folders": []})
+
+    def test_an_approved_admission_row_leaves_review_and_a_rejected_one_stays_held(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            admitted, rejected, _waiting = _supply_store(root, ("get_thing", "list_things", "put_thing"))
+            (root / "admission").mkdir()
+            (root / "admission" / "reviews.json").write_text(json.dumps(
+                {"record_type": review_export.ADMISSION_REVIEW_RECORD,
+                 "rows": [{"identity": admitted["record_id"], "body_digest": admitted["package_digest"],
+                           "outcome": "approved"},
+                          {"identity": rejected["record_id"], "body_digest": rejected["package_digest"],
+                           "outcome": "rejected"}]}), encoding="utf-8")
+            selection = self._export(root, "--admission-folder", str(root / "admission"))
+            (root / "other").mkdir()
+            (root / "other" / "reviews.json").write_text(json.dumps({"record_type": "something_else/v1", "rows": []}))
+            with self.assertRaises(SystemExit):
+                self._export(root, "--admission-folder", str(root / "other"))
+        self.assertEqual(selection["composition"]["held_for_review_profile"], {"executable_code": 2})
+        self.assertEqual((selection["already_served"], selection["already_admitted"]), (0, 1))
+        # No bundle was given, so the export says that served packages could not be left out.
+        self.assertEqual(selection["left_review_records"], {"served_bundle": None, "admission_folders": ["admission"]})
+
+
 class LibraryCountsTest(unittest.TestCase):
     def test_a_bundle_is_counted_by_form_and_family(self):
         rows = [

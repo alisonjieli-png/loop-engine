@@ -256,7 +256,14 @@ def export_review(args) -> dict:
             IntelligenceQuery(namespaces=namespaces, lifecycle=("candidate",)))]
         earlier = review_export.exported_record_ids(args.exclude_export or ())
         stored = len(payloads)
-        payloads = [payload for payload in payloads if payload["record_id"] not in earlier]
+        # A package stays `candidate` in the store after it is admitted and served, so the served bundle and the
+        # admission folders, not the lifecycle, say it no longer waits: it is neither held nor exported again.
+        try:
+            known = review_export.served_or_admitted(
+                bundles=(args.library_bundle,) if args.library_bundle else (), admissions=args.admission_folder or ())
+        except (OSError, ValueError, KeyError, TypeError) as error:
+            raise SystemExit(f"export-review: the served bundle or an admission folder: {error}") from None
+        payloads, left = review_export.leave_out(payloads, exported=earlier, known=known)
         sizes = {entry["digest"]: entry["size_bytes"] for payload in payloads for entry in payload["package"]["files"]}
         reader = lambda digest: store.bodies.read(digest, sizes[digest])  # noqa: E731
         first_source = {}
@@ -294,6 +301,11 @@ def export_review(args) -> dict:
                                 "families": library["families"]} if library else None)
         summary = {"stored_candidates": stored, "already_exported": len(earlier),
                    "earlier_exports": sorted(Path(folder).name for folder in args.exclude_export or ()),
+                   "already_served": left[review_export.SERVED], "already_admitted": left[review_export.ADMITTED],
+                   # A served bundle of None means served packages could not be left out of this export.
+                   "left_review_records": {
+                       "served_bundle": Path(args.library_bundle).name if args.library_bundle else None,
+                       "admission_folders": sorted(Path(folder).name for folder in args.admission_folder or ())},
                    "limit": args.limit, "target": args.target,
                    "per_repository": args.per_repository, "selected": len(chosen),
                    "kind_mix": args.kind_mix,
@@ -373,7 +385,10 @@ def parser() -> argparse.ArgumentParser:
                            "library_composition.json)")
     four.add_argument("--library-bundle",
                       help="a release bundle folder (or its items.jsonl) whose served counts make the shares "
-                           "supply-aware: each family draws by its remaining need to the goal")
+                           "supply-aware: each family draws by its remaining need to the goal; a candidate whose "
+                           "package it serves is neither held nor exported again")
+    four.add_argument("--admission-folder", action="append",
+                      help="an admission folder (its reviews.json) whose approved packages have left review")
     four.add_argument("--kind-share", action="append", metavar="KIND=FRACTION",
                       help="a share of the balanced mix to change, for example hook=0.10")
     four.add_argument("--work-folder", default="")
