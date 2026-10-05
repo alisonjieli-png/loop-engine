@@ -36,7 +36,7 @@ import time
 from ..provisioning_server import (COMMUNITY_TIER, LIBRARY_TIERS, QUALIFICATION_APPROVED, VERIFIED_TIER,
                                    ProvisioningItemBinding, ProvisioningQualification)
 from .account_policy import STAFF_ROLES
-from .catalogue_releases import (POINTER_KIND, POINTER_LOGICAL, POINTER_RECORD_TYPE, RELEASE_KIND, RELEASE_RECORD_TYPE,
+from .catalogue_releases import (POINTER_KIND, POINTER_LOGICAL, POINTER_RECORD_TYPE, RELEASE_KIND,
                                  STATE_KIND, STATE_LOGICAL, WITHDRAWAL_KIND, WITHDRAWAL_RECORD_TYPE, _marker_row,
                                  _payload, read_state)
 from .records import ServiceRuntimeError
@@ -122,10 +122,11 @@ def active_item_version(binding, store, identity):
     _row, pointer = _payload(binding, store, POINTER_KIND, POINTER_LOGICAL, POINTER_RECORD_TYPE)
     if pointer is None:
         return ""
-    _release_row, document = _payload(binding, store, RELEASE_KIND, pointer["release_id"], RELEASE_RECORD_TYPE)
-    if document is None:
+    from .catalogue_releases import load_release_header, segment_reader
+    if binding.read(store, RELEASE_KIND, pointer["release_id"]) is None:
         return ""
-    return dict(document["items"]).get(identity, "")
+    header = load_release_header(binding, store, pointer["release_id"])
+    return header.version_of(identity, segment_reader(binding, store)) or ""
 
 
 def downloaded(binding, store, tenant_id, identity, body_digest):

@@ -98,11 +98,11 @@ def load_selection(binding, settings, grants, *, expected_release, license_polic
         _require(state_row is not None and pointer is not None and pointer["release_id"] == expected_release,
                  "public_good_release_changed")
         header = releases.load_release_header(binding, store, expected_release)
-        membership = dict(header.items)
+        read_segment = releases.segment_reader(binding, store)
         catalogue, packages, versions, approvals, selected = HarnessIntelligenceCatalogue(), {}, {}, {}, []
         for grant in grants:
             identity, version = grant.binding.identity, grant.item_version
-            _require(membership.get(identity) == version, "public_good_grant_not_current")
+            _require(header.version_of(identity, read_segment) == version, "public_good_grant_not_current")
             payload = releases.load_item_version(binding, store, identity, version)
             try:
                 tier = item_version_tier(payload)
@@ -128,7 +128,7 @@ def load_selection(binding, settings, grants, *, expected_release, license_polic
     releases.verify_release_bodies(SelectedBodyVerification(tuple(selected)), body_store)
     selection = PublicGoodPolicySelection(catalogue, _approved_resolver("public_good_policy_selection/v1", approvals),
         packages, versions, expected_release, header.content_digest, state["revision"], state_row["record_version"],
-        pointer_row["record_version"], len(membership), header.schema)
+        pointer_row["record_version"], header.item_count, header.schema)
     assert_current(binding, selection)
     return selection
 

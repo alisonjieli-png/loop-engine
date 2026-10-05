@@ -517,10 +517,12 @@ def _gate_checks(check, root):
     with fixture() as case:
         case.publish([case.line("gated", "# Gated\n")])
         binding = case.context.binding
+        # The first state version this image does not list; version 3 became readable with segmented releases.
+        unknown = max(catalogue_releases.SUPPORTED_CATALOGUE_STATE_VERSIONS) + 1
         with binding.store(write=True) as store:
             state_row, state = catalogue_releases.read_state(binding, store)
             future = binding.record(catalogue_releases.STATE_KIND, catalogue_releases.STATE_LOGICAL,
-                                    {**state, "state_version": 3, "revision": state["revision"] + 1})
+                                    {**state, "state_version": unknown, "revision": state["revision"] + 1})
             # A later release withdraws the item through a record kind this
             # release has never heard of, and raises the state version with it.
             blocked = binding.record("service_catalogue_block", "gated",
@@ -536,10 +538,12 @@ def _gate_checks(check, root):
         def ignoring_image_serves_withdrawn():
             # A later state version can carry a withdrawal kind this image never
             # reads. An image that ignored the marker would serve the item.
-            with patch.object(catalogue_releases, "SUPPORTED_CATALOGUE_STATE_VERSIONS", (1, 2, 3)):
+            with patch.object(catalogue_releases, "SUPPORTED_CATALOGUE_STATE_VERSIONS",
+                              catalogue_releases.SUPPORTED_CATALOGUE_STATE_VERSIONS + (unknown,)):
                 return "gated" in case.listed(case.binding())
         check("an_image_that_ignores_the_marker_serves_a_withdrawn_item", ignoring_image_serves_withdrawn())
-        with patch.object(catalogue_releases, "SUPPORTED_CATALOGUE_STATE_VERSIONS", (1, 2, 3)):
+        with patch.object(catalogue_releases, "SUPPORTED_CATALOGUE_STATE_VERSIONS",
+                          catalogue_releases.SUPPORTED_CATALOGUE_STATE_VERSIONS + (unknown,)):
             check("removed_state_version_gate_is_detected", not start_refused())
     with fixture() as case:
         case.publish([case.line("gated", "# Gated\n")])

@@ -39,7 +39,7 @@ HOST_CONFIGURATION_VERSION = "service_http_host_configuration/v1"
 SERVICE_COMMANDS = ("serve", "configure", "apply-grants", "issue-key", "smoke", "failures",
                     "apply-billing-policy", "remove-expired", "mark-accounts",
                     "publish-catalogue", "rollback-catalogue", "withdraw-catalogue-item", "catalogue-status",
-                    "follow-catalogue-release", "stop-following-catalogue-release")
+                    "follow-catalogue-release", "stop-following-catalogue-release", "catalogue-formats")
 LOOPBACK_BINDINGS = ("127.0.0.1", "::1", "localhost")
 MANIFEST_VERSION = "host_attested_intelligence_manifest/v1"
 ENVIRONMENT_REFERENCE_PREFIX = "env:"

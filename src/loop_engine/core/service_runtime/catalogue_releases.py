@@ -13,7 +13,9 @@ Catalogue state in the service store
 ├── catalogue_attribute_schema/v1   one record for each schema digest
 ├── catalogue_item_version/v1       one immutable record for each verified item version digest
 ├── catalogue_item_version/v2       the same for a community item version, naming its library tier
-├── catalogue_release/v1            one record for each release digest
+├── catalogue_release/v1            one record for each release digest, naming every item version
+├── catalogue_release/v2            one record for each release digest, naming ordered segments
+├── catalogue_segment/v1            one immutable record for each segment digest (catalogue_segments.py)
 ├── catalogue_release_pointer/v1    the active release, moved only under an expected-version guard
 └── catalogue_withdrawal/v1         one durable record for each withdrawn identity and body digest
 ```
@@ -28,6 +30,8 @@ The marker's state version is 1 until a release names a community item
 version. That publish writes state version 2, and no later write lowers it, so
 an image that cannot tell a community item from a verified one refuses to
 start against the store instead of serving the community item as reviewed.
+The first version 2 release writes state version 3 for the same reason: an
+image that cannot read a segmented release refuses to start against it.
 """
 from __future__ import annotations
 
@@ -37,6 +41,8 @@ import time
 from .catalogue_bundle import ITEM_VERSION_RECORD_TYPES, canonical_bytes, note
 from .catalogue_packages import CataloguePackage, exact_digest, sha256_hex
 from .catalogue_schema import CatalogueAttributeSchema
+from .catalogue_segments import (RELEASE_V2_RECORD_TYPE, SEGMENTED_STATE_VERSION, SegmentedRelease,
+                                 release_v2_header, segment_reader)
 from .records import ServiceRuntimeError, identifier
 from .storage import ServiceCatalogBinding
 
@@ -45,6 +51,8 @@ STATE_KIND, SCHEMA_KIND, ITEM_KIND, RELEASE_KIND, POINTER_KIND, WITHDRAWAL_KIND 
     "service_catalogue_release", "service_catalogue_pointer", "service_catalogue_withdrawal")
 STATE_RECORD_TYPE = "catalogue_state/v1"
 RELEASE_RECORD_TYPE = "catalogue_release/v1"
+#: The release versions this image reads: every item version in one record, or ordered segments.
+RELEASE_RECORD_TYPES = (RELEASE_RECORD_TYPE, RELEASE_V2_RECORD_TYPE)
 POINTER_RECORD_TYPE = "catalogue_release_pointer/v1"
 WITHDRAWAL_RECORD_TYPE = "catalogue_withdrawal/v1"
 STATUS_RECORD_TYPE = "service_catalogue_status/v1"
@@ -56,7 +64,7 @@ CATALOGUE_STATE_VERSION = 1
 #: Written by the first publish of a release that names a community item
 #: version, and never lowered afterwards.
 COMMUNITY_STATE_VERSION = 2
-SUPPORTED_CATALOGUE_STATE_VERSIONS = (1, 2)
+SUPPORTED_CATALOGUE_STATE_VERSIONS = (1, 2, SEGMENTED_STATE_VERSION)
 STATE_LOGICAL, POINTER_LOGICAL = "catalogue", "active"
 #: Immutable records are written in batches of this size before the release is
 #: committed, so a large first release does not hold one enormous batch.
@@ -108,6 +116,14 @@ class ReleaseHeader:
     @property
     def content_digest(self):
         return content_digest(self.schema.digest, self.items)
+
+    @property
+    def item_count(self):
+        return len(self.document["items"])
+
+    def version_of(self, identity, _read_segment=None):
+        """The item version this release lists for `identity`, or None."""
+        return dict(self.items).get(identity)
 
 
 def _payload(binding, store, kind, logical, record_type):
@@ -178,8 +194,10 @@ def load_release_header(binding, store, release_id):
 
     Both full serving and scoped operator validation use this reader. Returning
     a header does not assert that any of its item records or bodies were read.
+    A version 2 release returns a `SegmentedRelease`, whose segments are read
+    and verified only when its pairs are read.
     """
-    _row, document = _payload(binding, store, RELEASE_KIND, release_id, RELEASE_RECORD_TYPE)
+    _row, document = _payload(binding, store, RELEASE_KIND, release_id, RELEASE_RECORD_TYPES)
     if document is None:
         _refuse("catalogue_release_not_found", "the store holds no release with that identity")
     try:
@@ -197,6 +215,8 @@ def load_release_header(binding, store, release_id):
     schema = CatalogueAttributeSchema.from_dict(schema_payload)
     if schema.digest != schema_digest:
         _refuse("catalogue_release_digest_mismatch", "the schema record differs from its digest")
+    if document.get("record_type") == RELEASE_V2_RECORD_TYPE:
+        return release_v2_header(document, release_id, schema)
     items, identities = document.get("items"), set()
     if not isinstance(items, list):
         _refuse("catalogue_release_digest_mismatch", "release membership is an exact list")
@@ -225,11 +245,18 @@ def load_item_version(binding, store, identity, version):
 
 
 def load_release(binding, store, release_id):
-    """Read one release and every record it names, verifying each digest."""
+    """Read one release and every record it names, verifying each digest; a version 2 release reads its segments."""
     header = load_release_header(binding, store, release_id)
-    versions = tuple((version, load_item_version(binding, store, identity, version))
-                     for identity, version in header.items)
+    pairs = (header.entries(segment_reader(binding, store)) if isinstance(header, SegmentedRelease)
+             else header.items)
+    versions = tuple((version, load_item_version(binding, store, identity, version)) for identity, version in pairs)
     return LoadedRelease(release_id, header.document, header.schema, versions)
+
+
+def load_any_release(binding, store, release_id):
+    """A version 1 release read whole, or a version 2 release header whose segments are read on demand."""
+    header = load_release_header(binding, store, release_id)
+    return header if isinstance(header, SegmentedRelease) else load_release(binding, store, release_id)
 
 
 def _marker_row(binding, previous, clock, *, state_version=CATALOGUE_STATE_VERSION):
@@ -452,8 +479,9 @@ def withdraw(context, *, identity, note_text, item_version=None, all_versions=Fa
                     chosen[sha256_hex(canonical_bytes(payload))] = payload
         else:
             if item_version is None:
-                active = load_release(binding, store, pointer["release_id"]) if pointer is not None else None
-                item_version = dict(active.items).get(identity) if active is not None else None
+                active = load_release_header(binding, store, pointer["release_id"]) if pointer is not None else None
+                item_version = (active.version_of(identity, segment_reader(binding, store))
+                                if active is not None else None)
             _item_row, payload = (_payload(binding, store, ITEM_KIND, item_version, ITEM_VERSION_RECORD_TYPES)
                                   if item_version else (None, None))
             if payload is not None and payload["reference"]["identity"] != identity:
@@ -489,20 +517,37 @@ def status(context):
         _row, state = read_state(binding, store)
         _pointer_row, pointer = read_pointer(binding, store)
         releases = sorted(({"release_id": row["payload"].get("release_id"),
+                            "record_type": row["payload"].get("record_type"),
                             "published_at": row["payload"].get("published_at"),
                             "based_on": row["payload"].get("based_on"),
-                            "items": len(row["payload"].get("items", ())),
-                            "changes": {key: len(value) for key, value in row["payload"].get("changes", {}).items()}}
+                            "items": _release_size(row["payload"]),
+                            "changes": _change_counts(row["payload"])}
                            for row in binding.rows_all(store, RELEASE_KIND)),
                           key=lambda row: (row["published_at"] or 0, row["release_id"] or ""))
         withdrawals = len(withdrawal_keys(binding, store))
+    from .catalogue_segments import catalogue_formats
     return {"record_type": STATUS_RECORD_TYPE, "catalogue_state_version": state["state_version"] if state else None,
             "revision": state["revision"] if state else 0,
             "supported_catalogue_state_versions": list(SUPPORTED_CATALOGUE_STATE_VERSIONS),
+            "formats": catalogue_formats(),
             "active_release_id": pointer["release_id"] if pointer else None,
             "pointer_sequence": pointer["sequence"] if pointer else 0, "releases": releases,
             "durable_withdrawals": withdrawals,
             "rollback_rule": "an image that does not list the catalogue state version above refuses to start"}
+
+
+def _release_size(payload):
+    """The item count of a stored release of either version."""
+    items = payload.get("items", ())
+    return items if type(items) is int else len(items)
+
+
+def _change_counts(payload):
+    """The change counts of a stored release: a version 2 release states them, a version 1 release lists every row."""
+    changes = payload.get("changes", {})
+    if isinstance(changes.get("counts"), dict):
+        return dict(changes["counts"])
+    return {key: len(value) for key, value in changes.items() if isinstance(value, list)}
 
 
 @dataclass(frozen=True)

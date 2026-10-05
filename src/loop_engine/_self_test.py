@@ -96,6 +96,7 @@ def self_test() -> dict:
         "core.provider_failure_classes", "loop.effect_approval", "loop.loop_profile_ontology",
         "core.service_runtime.catalogue_release_checks",
         "core.service_runtime.catalogue_report_checks",
+        "core.service_runtime.catalogue_segment_checks",
     ]
     import importlib as _importlib
     import importlib.util as _importlib_util

@@ -153,6 +153,17 @@ def release_changes(view) -> dict:
             for key in ("added", "changed", "withdrawn")}
 
 
+def release_change_counts(view) -> dict:
+    """How many items the served release added, changed and withdrew. A version 2 release states its counts and
+    keeps a bounded number of rows; a version 1 release lists every row."""
+    value = getattr(view, "changes", None) or {}
+    counts = value.get("counts") if isinstance(value, dict) else None
+    rows = release_changes(view)
+    if isinstance(counts, dict):
+        return {key: counts[key] if type(counts.get(key)) is int else len(rows[key]) for key in rows}
+    return {key: len(value) for key, value in rows.items()}
+
+
 def _items(count: int) -> str:
     return "no items" if count == 0 else "1 item" if count == 1 else f"{count:,} items"
 
@@ -238,7 +249,7 @@ def _withdrawn_list(heading: str, rows) -> str:
 
 
 def _release_band(view, rows) -> str:
-    changes = release_changes(view)
+    changes, counts = release_changes(view), release_change_counts(view)
     summary = view.summary() if hasattr(view, "summary") else {}
     release = str(summary.get("release_id") or "")
     built = summary.get("built_at")
@@ -253,12 +264,12 @@ def _release_band(view, rows) -> str:
         head.append('<p class="md-reading">A catalogue release changes the library without a new version of the service, '
                     "and every later release honours a withdrawal.</p>")
     lines = []
-    if any(changes.values()):
-        stats = "".join(f'<div><dt>{name}</dt><dd>{len(changes[key]):,}</dd></div>'
+    if any(counts.values()):
+        stats = "".join(f'<div><dt>{name}</dt><dd>{counts[key]:,}</dd></div>'
                         for key, name in (("added", "Added"), ("changed", "Changed"), ("withdrawn", "Withdrawn")))
         lines.append(f'<dl class="lib-stats">{stats}</dl>')
-        lines.append(f'<p class="md-reading">This release added {_items(len(changes["added"]))} and changed '
-                     f'{_items(len(changes["changed"]))}.</p>')
+        lines.append(f'<p class="md-reading">This release added {_items(counts["added"])} and changed '
+                     f'{_items(counts["changed"])}.</p>')
     if changes["withdrawn"]:
         lines.append(_withdrawn_list("Withdrawn in this release", changes["withdrawn"]))
     else:

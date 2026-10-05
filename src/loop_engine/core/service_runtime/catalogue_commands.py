@@ -14,6 +14,8 @@ loop-engine service
 ├── withdraw-catalogue-item            record a durable withdrawal that every release and rollback honours
 ├── catalogue-status                   report the state version, the active release, every release and
 │                                      which accounts follow-catalogue-release --all-tenants would move
+├── catalogue-formats                  report the bundle, release and segment versions this image reads,
+│                                      reading only the host file, so a publisher can negotiate first
 ├── follow-catalogue-release           move named accounts, or with --all-tenants only the accounts
 │                                      already granted every served item, to grants that follow the release
 └── stop-following-catalogue-release   return one account to a fixed list of what it receives now
@@ -31,7 +33,8 @@ from .records import ServiceRuntimeConfig, ServiceRuntimeError
 from .storage import ServiceCatalogBinding
 
 CATALOGUE_COMMANDS = ("publish-catalogue", "rollback-catalogue", "withdraw-catalogue-item",
-                      "catalogue-status", "follow-catalogue-release", "stop-following-catalogue-release")
+                      "catalogue-status", "follow-catalogue-release", "stop-following-catalogue-release",
+                      "catalogue-formats")
 
 
 def _refuse(code, message):
@@ -78,13 +81,17 @@ def served_view(path):
 
 
 def publish_catalogue(path, bundle_folder, *, expected_bundle_digest, expected_release=None):
-    from .catalogue_bundle import read_bundle
+    """Publish a version 1 or version 2 bundle; a header of any other version is refused before anything is written."""
     from .catalogue_releases import publish
+    from .catalogue_segment_publish import publish_segmented
+    from .catalogue_segments import SegmentedBundle, read_any_bundle
     context, _config, license_policy, family_policy = operator_context(path, needs_bodies=True)
-    bundle = read_bundle(Path(bundle_folder), license_policy=license_policy, family_policy=family_policy,
-                         verify_blobs=False)
+    bundle = read_any_bundle(Path(bundle_folder), license_policy=license_policy, family_policy=family_policy,
+                             verify_blobs=False)
     if bundle.digest != expected_bundle_digest:
         _refuse("bundle_digest_mismatch", "the bundle header differs from the digest its builder printed")
+    if isinstance(bundle, SegmentedBundle):
+        return publish_segmented(context, bundle, expected_release=expected_release)
     return publish(context, bundle, expected_release=expected_release)
 
 
@@ -149,4 +156,8 @@ def run_catalogue_command(arguments):
         return {**status(context), "follow_all_tenants_preview": follow_all_tenants_preview(path)}
     if command in ("follow-catalogue-release", "stop-following-catalogue-release"):
         return _grant_command(command, arguments)
+    if command == "catalogue-formats":
+        from .catalogue_segments import catalogue_formats
+        _host(path)
+        return catalogue_formats()
     _refuse("invalid_request", "not a catalogue command")
