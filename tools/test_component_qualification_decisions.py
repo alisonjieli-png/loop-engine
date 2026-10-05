@@ -261,6 +261,33 @@ class GeneratorHistoryTests(unittest.TestCase):
         plan = self._plan("function_extracts/1.2.0@c625853a0000", 1295, self.rows)
         self.assertEqual(plan.mode, sampling.ZERO_ACCEPTANCE)
 
+    def test_unanswered_components_are_unknown_in_the_history_not_defective(self):
+        """Known wrong: a history that took the batch's counted defects. A batch of 381 whose 52 sampled components
+        went unanswered, as on September 30, 2026, is withheld, because the rule counts each as defective for that
+        batch; a history that kept those 52 would flag the generator and plan its next batch for review of every
+        component. The history counts only complete samples, so the next batch keeps the plan with no history."""
+        unanswered = _batch_entry(_records("data_tables/1.2.0@8ebc4a99e5a6", 381, "u"), decided=0)
+        self.assertEqual((unanswered["decision"]["outcome"], unanswered["decision"]["defective"],
+                          unanswered["decision"]["counted_defective"]), (sampling.WITHHELD, 0, 52))
+        partial_records = _records("data_tables/1.2.0@aaaaaaaaaaaa", 381, "p")
+        partial = _batch_entry(partial_records, decided=30, defective=1)
+        self.assertEqual(partial["decision"]["counted_defective"], 23)
+        # The decisions as the review records hold them, every field included.
+        whole = [dict(value["decision"], generator="data_tables/1.2.0") for value in (unanswered, partial)]
+        plan = self._plan("data_tables/1.2.0@c625853a0000", 1295, whole)
+        self.assertEqual((plan.mode, plan.history.sampled, plan.history.defective), (sampling.ZERO_ACCEPTANCE, 0, 0))
+        # Through the ledger: the partly answered decision settles its frame and still adds nothing to the rate.
+        folder = Path(tempfile.mkdtemp(prefix="decision-history-partial-"))
+        self.addCleanup(shutil.rmtree, folder, True)
+        decisions.create(folder / "decisions.jsonl", **CREATED)
+        _append(folder / "decisions.jsonl", _review({partial_records[0]["batch"]: partial}, "q"),
+                {partial_records[0]["batch"]: partial_records})
+        rows = decisions.DecisionLedger.open(folder / "decisions.jsonl", for_append=False).history_rows()
+        self.assertEqual(self._plan("data_tables/1.2.0@c625853a0000", 1295, rows).history.sampled, 0)
+        mixed = [dict(row, sample_complete=True, defective=row["counted_defective"]) for row in whole]
+        self.assertEqual(self._plan("data_tables/1.2.0@c625853a0000", 1295, mixed).mode,
+                         sampling.GENERATOR_ABOVE_TOLERANCE)  # what mixing them would have done
+
     def test_a_sample_without_verdicts_adds_no_rate(self):
         plan = self._plan("data_tables/1.1.0@c625853a0000", 400, self.rows)
         self.assertEqual((plan.mode, plan.history.batches), (sampling.ZERO_ACCEPTANCE, 0))
@@ -285,17 +312,23 @@ def _components(count: int, revision: str = GENERATOR_REVISION, tag: str = "a") 
 
 class ScriptedPanel:
     """The review panel's place in a run. It approves the listed identities and rejects every other package, the
-    planted controls among them, and records each run it is asked to make; with ``answers`` false it makes no call,
-    as when the provider is unavailable."""
+    planted controls among them, and records each run it is asked to make. With ``answers`` false it makes no call,
+    as when the provider is unavailable; with ``refused`` it makes its calls and every one is refused unanswered,
+    as the gateway refused the September 30, 2026 data table calls for the context window."""
 
-    def __init__(self, approve=(), answers: bool = True) -> None:
-        self.approve, self.answers, self.runs = set(approve), answers, []
+    def __init__(self, approve=(), answers: bool = True, refused: bool = False) -> None:
+        self.approve, self.answers, self.refused, self.runs = set(approve), answers, refused, []
 
     def run(self, request):
         self.runs.append(request)
         if not self.answers:
             return SimpleNamespace(run_id=request.run_id, items=[], calls=[], stop_reason="completed",
                                    totals=lambda: {"calls": 0})
+        if self.refused:
+            calls = [{"outcome": "context_window_exceeded"} for _group in request.batch_groups.get(REVIEWER, ((),))]
+            items = [SimpleNamespace(identity=member.identity, verdicts=[]) for member in request.requests]
+            return SimpleNamespace(run_id=request.run_id, items=items, calls=calls, stop_reason="completed",
+                                   totals=lambda: {"calls": len(calls)})
         items = []
         for sequence, member in enumerate(request.requests, 1):
             decision = "approve" if member.identity in self.approve else "reject"
@@ -431,17 +464,23 @@ class ReviewRunTests(unittest.TestCase):
         self.assertIsNone(entry["frame"]["members"])
         self.assertEqual(self._refused(self._options(seed="a-fresh-seed-0123456789")), "batch_already_decided")
 
-    def test_a_batch_the_reviewer_never_saw_stays_undecided(self):
-        with self._offline(ScriptedPanel(answers=False)):
-            result = sampled_review.command(self._options(), ROOT)
-        self.assertEqual(result["decisions"][self.batch]["outcome"], sampling.WITHHELD)
-        self.assertEqual(result["decision_ledger"]["appended_sequences"], [])
-        self.assertEqual([row["batch"] for row in result["decision_ledger"]["not_asked"]], [self.batch])
-        self.assertEqual(self._entries(), [])
+    def test_a_batch_without_a_valid_verdict_stays_undecided(self):
+        """No call made, or every call refused unanswered: the batch is withheld by the written rule, which counts
+        an unanswered component as defective, but nothing about its components was learned, so the ledger records
+        nothing and the frame may be sampled again."""
+        for label, panel in (("no call", ScriptedPanel(answers=False)), ("refused calls", ScriptedPanel(refused=True))):
+            with self.subTest(label), self._offline(panel):
+                result = sampled_review.command(self._options(), ROOT)
+                self.assertEqual(result["decisions"][self.batch]["outcome"], sampling.WITHHELD)
+                self.assertEqual(result["decisions"][self.batch]["defective"], 0)
+                self.assertEqual(result["decision_ledger"]["appended_sequences"], [])
+                self.assertEqual([row["batch"] for row in result["decision_ledger"]["unanswered"]], [self.batch])
+                self.assertEqual(self._entries(), [])
         panel = ScriptedPanel(approve=[component.identity for component in self.components])
         with self._offline(panel):
             again = sampled_review.command(self._options(seed="a-fresh-seed-0123456789"), ROOT)
         self.assertEqual(again["decisions"][self.batch]["outcome"], sampling.ACCEPTED)
+        self.assertEqual(len(self._entries()), 1)
 
     def test_a_ceiling_that_cannot_finish_the_plan_refuses_before_any_model_call(self):
         panel = ScriptedPanel(approve=[component.identity for component in self.components])
@@ -541,6 +580,25 @@ class BackfillTests(unittest.TestCase):
         self.assertEqual(caught.exception.code, "review_version_unsupported")
         self.assertFalse(self.path.exists())
 
+    def test_backfill_leaves_a_decision_without_a_valid_verdict_undecided(self):
+        unanswered = _batch_entry(self.withheld, decided=0)
+        unanswered["sample"] = [row["identity"] for row in self.withheld[:unanswered["plan"]["sample_size"]]]
+        partial = _batch_entry(self.accepted, decided=3, defective=1)
+        review = _review({self.withheld[0]["batch"]: unanswered, self.accepted[0]["batch"]: partial},
+                         self.qualification)
+        result = decisions.backfill(self.path, [self._write("unanswered.json", review)],
+                                    recorded_at="2026-10-05T12:00:00Z")
+        self.assertEqual([row["batch"] for row in result["appended"]], [self.accepted[0]["batch"]])
+        self.assertEqual([(row["batch"], row["reason"]) for row in result["skipped"]],
+                         [(self.withheld[0]["batch"], decisions.UNANSWERED_REASON)])
+        # A verdict given in the mixed calibration batch is a valid verdict on the batch's component.
+        calibrated = _review({self.withheld[0]["batch"]: unanswered}, self.qualification,
+                             seed="calibrated-seed-0123456789")
+        calibrated["calibration"] = {"mixed_batch_of_12": {"real_verdicts": {unanswered["sample"][0]: ["approve"]}}}
+        again = decisions.backfill(self.path, [self._write("calibrated.json", calibrated)],
+                                   recorded_at="2026-10-05T12:00:00Z")
+        self.assertEqual([row["batch"] for row in again["appended"]], [self.withheld[0]["batch"]])
+
     def test_backfill_never_writes_into_a_file_that_is_not_a_ledger(self):
         decided = self.folder / "decided-identities.txt"
         decided.write_bytes(b"")
@@ -556,10 +614,11 @@ class RecordedBackfillTests(unittest.TestCase):
     def setUp(self):
         self.ledger = decisions.DecisionLedger.open(BACKFILL, for_append=False)
 
-    def test_it_holds_the_four_decisions_of_september_29_and_30(self):
+    def test_it_holds_the_three_answered_decisions_of_september_29_and_30(self):
+        """The September 30 data_tables/1.1.0@8ebc4a99e5a6 decision is not here: the gateway refused all three of its
+        calls before they reached the model, so none of its 52 sampled tables had a verdict."""
         self.assertEqual([(entry["batch"], entry["outcome"], entry["frame"]["size"]) for entry in self.ledger.entries],
                          [("program_installs/1.0.0@3e497b809fd8", sampling.ACCEPTED, 3910),
-                          ("data_tables/1.1.0@8ebc4a99e5a6", sampling.WITHHELD, 381),
                           ("function_extracts/1.1.0@8ebc4a99e5a6", sampling.WITHHELD, 1767),
                           ("program_installs/1.0.0@8ebc4a99e5a6", sampling.WITHHELD, 189)])
         self.assertEqual({entry["source"]["review_sha256"] for entry in self.ledger.entries},
@@ -578,8 +637,7 @@ class RecordedBackfillTests(unittest.TestCase):
         generators = self.ledger.summary()["generators"]
         self.assertEqual({name: (row["sampled"], row["defective"], row["at_or_above_tolerance"])
                           for name, row in generators.items()},
-                         {"data_tables/1.1.0": (0, 0, False), "function_extracts/1.1.0": (58, 21, True),
-                          "program_installs/1.0.0": (106, 6, True)})
+                         {"function_extracts/1.1.0": (58, 21, True), "program_installs/1.0.0": (106, 6, True)})
         history = sampling.GeneratorHistory.from_decisions("function_extracts/1.1.0", self.ledger.history_rows())
         plan = sampling.plan_for("function_extracts/1.1.0@c625853a0000", 1295, history, POLICY)
         self.assertEqual((plan.mode, plan.sample_size), (sampling.GENERATOR_ABOVE_TOLERANCE, 1295))

@@ -32,13 +32,17 @@ without it:
 - it holds the ledger's exclusive lock from that check until its decisions are appended in one synced write,
   so two runs never sample one frame at once.
 
-A complete decision is one an admissible review made about a batch its reviewer was asked about: the reviewer
-passed both calibrations in the same run, the run was not a measurement, and the written rule decided the
-batch, whatever its outcome and whatever withheld it. A batch the run stopped before (no call of its own, and
-none of its sampled components answered in the mixed calibration batch) learned nothing about its components
-and stays undecided. A decided frame proceeds only through a full review of every component or after the
-generator changes so the frame differs; the sampled review never samples it again. Nothing here calls a model
-or reads the import store, and the only file it writes is the ledger it is given.
+A complete decision is one an admissible review made about a batch on which its reviewer gave at least one valid
+verdict (approve or reject) on a sampled component, in the batch's own calls or in the mixed calibration batch: the
+reviewer passed both calibrations in the same run, the run was not a measurement, and the written rule decided the
+batch, whatever its outcome and whatever withheld it. A sampled component without a valid verdict is unknown. The
+written rule counts it as defective for its own batch's outcome; a batch on which every sampled component is
+unknown (its calls were never made, failed, or were refused before they reached the model) learned nothing about
+its components, so it stays undecided and its frame may be sampled again. A generator's history counts only
+complete samples, every component of which has a valid verdict, so an unknown component never counts as a defect
+there. A decided frame proceeds only through a full review of every component or after the generator changes so
+the frame differs; the sampled review never samples it again. Nothing here calls a model or reads the import
+store, and the only file it writes is the ledger it is given.
 """
 from __future__ import annotations
 
@@ -196,6 +200,33 @@ def _read_frame(value, outcome: str, size: int, sequence: int) -> dict:
 def _members_digest(members) -> str:
     """The frame digest of member rows, exactly as ``sampling.frame_digest`` computes it from records."""
     return _sha256(json.dumps(members, separators=(",", ":")).encode())
+
+
+VALID_VERDICTS = ("approve", "reject")
+UNANSWERED_REASON = ("no valid verdict on any sampled component: an unanswered component is unknown, so the decision "
+                     "neither settles the frame nor adds to the generator's history")
+
+
+def calibration_verdicts_of(review: dict) -> dict:
+    """Identity to the decisions a review's mixed calibration batch gave its real sampled components."""
+    mixed = (review.get("calibration") or {}).get("mixed_batch_of_12") or {}
+    verdicts = mixed.get("real_verdicts")
+    return verdicts if isinstance(verdicts, dict) else {}
+
+
+def answered(decision: dict, sample, calibration_verdicts) -> bool:
+    """Whether the reviewer gave a valid verdict on at least one sampled component of the batch: in the batch's own
+    calls (the decision's ``decided`` count) or in the mixed calibration batch (``calibration_verdicts``, identity to
+    the decisions given there).
+
+    A sampled component without a valid verdict is unknown, not defective. The written rule counts it as defective
+    for its own batch's outcome, which only makes that decision stricter; but a decision on which every sampled
+    component is unknown learned nothing about the frame, so it neither settles the frame nor adds to the
+    generator's history, and a later sample of the same frame is a first sample, not another chance."""
+    if type(decision.get("decided")) is int and decision["decided"] > 0:
+        return True
+    return any(verdict in VALID_VERDICTS for identity in sample
+               for verdict in (calibration_verdicts or {}).get(identity) or ())
 
 
 def decision_key(entry: dict) -> tuple:
@@ -470,6 +501,7 @@ def backfill(ledger_path, reviews, *, recorded_at: str, created_by: str = BACKFI
         decided = {batch for batch, entry in review["batches"].items()
                    if (entry.get("decision") or {}).get("outcome") in OUTCOMES}
         frames, qualification_sha256 = _frames(Path(review["qualification"]) / "qualification.jsonl", decided)
+        calibration_verdicts = calibration_verdicts_of(review)
         for batch, entry in sorted(review["batches"].items()):
             if batch not in decided:
                 skipped.append({"review": str(review_path), "batch": batch, "reason": "no batch decision"
@@ -477,6 +509,8 @@ def backfill(ledger_path, reviews, *, recorded_at: str, created_by: str = BACKFI
             elif review.get("admissible") is not True:
                 skipped.append({"review": str(review_path), "batch": batch, "reason": "not a complete decision: "
                                 + "; ".join(review.get("admissibility_reasons") or ["the review is not admissible"])})
+            elif not answered(entry["decision"], entry.get("sample") or (), calibration_verdicts):
+                skipped.append({"review": str(review_path), "batch": batch, "reason": UNANSWERED_REASON})
             else:
                 candidates.append(entry_for(review, batch, frames[batch], kind=BACKFILL_SOURCE,
                                             review_path=review_path, review_sha256=_sha256(data),

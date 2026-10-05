@@ -18,8 +18,8 @@ Sampled review of one qualification run (hybrid: deterministic sampling, one mod
 │      same batch; the unchanged review panel, native written criteria and native reviewer instructions
 │      judge them, and the panel's ledger records every dispatch, call, usage and verdict
 └── 5. decision per batch (sampling.decide): accepted, or withheld with the generator flagged; an
-       admissible run appends each decision the reviewer was asked about to the decision ledger, in one
-       synced write, before it writes its own record
+       admissible run appends each decision on which the reviewer gave a valid verdict to the decision
+       ledger, in one synced write, before it writes its own record
 ```
 
 The planted controls are ordinary defects a reader can see: tests that accept anything, an undeclared
@@ -642,26 +642,27 @@ def _review(options, root: Path, ledger) -> dict:
 
 def _record_decisions(ledger, record: dict, review_path: Path, frames: dict, samples: dict, results: dict,
                       calibration: dict, qualification_sha256: str) -> dict:
-    """Append each decision of an admissible run that the reviewer was asked about, in one synced write.
+    """Append, in one synced write, each decision of an admissible run on which the reviewer gave at least one valid
+    verdict on a sampled component (decisions.answered).
 
-    A batch the reviewer never saw (no call of its own, and none of its sampled components answered in the mixed
-    calibration batch) has a withheld outcome that says only that the run stopped before it: nothing about its
-    components was learned, so it is reported and stays undecided. Every other decision is complete whatever its
-    outcome and whatever withheld it, and settles its frame."""
-    seen = {identity for identity, verdicts in
-            ((calibration.get("mixed_batch_of_12") or {}).get("real_verdicts") or {}).items() if verdicts}
-    entries, not_asked, recorded_at = [], [], _now()
+    A batch whose sampled components all lack a valid verdict, because its calls were never made, failed or were
+    refused by the gateway before they reached the model, has a withheld outcome that says nothing about its
+    components: it is reported under ``unanswered`` and stays undecided. Every other decision is complete whatever
+    its outcome and whatever withheld it, and settles its frame."""
+    real_verdicts = (calibration.get("mixed_batch_of_12") or {}).get("real_verdicts") or {}
+    entries, unanswered, recorded_at = [], [], _now()
     for decision in record["decisions"]:
         batch = decision["batch"]
-        if not results[batch].calls and not seen & set(samples[batch]):
-            not_asked.append({"batch": batch, "panel_stop_reason": results[batch].stop_reason})
+        if not decisions.answered(decision, samples[batch], real_verdicts):
+            unanswered.append({"batch": batch, "calls": len(results[batch].calls),
+                               "panel_stop_reason": results[batch].stop_reason})
             continue
         entries.append(decisions.entry_for(record, batch, frames[batch], kind=decisions.RUN_SOURCE,
                                            review_path=review_path, review_sha256=None,
                                            qualification_sha256=qualification_sha256, recorded_at=recorded_at))
     appended = ledger.append(entries)
     return {"appended_sequences": appended["sequences"], "sha256_after": appended["sha256"],
-            "entries_after": appended["entries"], "not_asked": not_asked}
+            "entries_after": appended["entries"], "unanswered": unanswered}
 
 
 def _criteria(verdict) -> list:

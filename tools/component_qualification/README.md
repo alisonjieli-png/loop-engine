@@ -212,13 +212,22 @@ batch decision:
   revision, so a recorded rate reaches the next batch an unchanged generator
   writes. A repaired generator declares a new version and starts a new
   history.
-- An admissible run appends each decision the reviewer was asked about, in
-  one synced write, before it writes its review record, and holds the
-  ledger's exclusive lock from its first read. A batch the reviewer never saw
-  (the run stopped before the batch's first call, and none of its sampled
-  components was answered in the mixed calibration batch) stays undecided and
-  is listed under `not_asked`. A measurement or an uncalibrated run appends
-  nothing.
+- An admissible run appends, in one synced write before it writes its review
+  record, each decision on which the reviewer gave a valid verdict (approve
+  or reject) on at least one sampled component, in the batch's own calls or
+  in the mixed calibration batch, and holds the ledger's exclusive lock from
+  its first read. A sampled component without a valid verdict is unknown, not
+  defective: the written rule still counts it as defective for its own
+  batch's outcome, which only makes that decision stricter, but a batch on
+  which every sampled component is unknown (its calls were never made,
+  failed, or were refused by the gateway before they reached the model)
+  learned nothing about its components. It stays undecided and is listed
+  under `unanswered`, and its frame may be sampled again. A measurement or an
+  uncalibrated run appends nothing.
+- A generator's history counts only complete samples, in which every sampled
+  component has a valid verdict (`sampling.GeneratorHistory.from_decisions`),
+  and only their rejections as defects. An unknown component therefore never
+  enters the defect rate that plans the generator's later batches.
 - A run that can decide refuses before its first call when `--call-ceiling`
   does not cover the calibration and every planned call. The planned calls of
   later batches stay reserved, so an earlier batch's retries never leave a
@@ -246,22 +255,28 @@ The canonical ledger belongs at
 beside `decided-identities.txt`, which stays the qualification exclusion list
 that `qualify --exclude-identities` reads. The backfill of October 5, 2026 is
 [`fixtures/decision-ledger-backfill-2026-10-05.jsonl`](fixtures/decision-ledger-backfill-2026-10-05.jsonl).
-It records 4 decisions from the review records of September 29 and 30, 2026:
+It records the 3 answered decisions of the review records of September 29
+and 30, 2026:
 
 | Batch | Frame | Outcome | Sample |
 |---|---|---|---|
 | `program_installs/1.0.0@3e497b809fd8` | 3,910 | accepted | 0 of 58 defective |
-| `data_tables/1.1.0@8ebc4a99e5a6` | 381 | withheld | 0 of 52 decided: its 3 calls exceeded the reviewer's context window |
 | `function_extracts/1.1.0@8ebc4a99e5a6` | 1,767 | withheld | 21 of 58 defective |
 | `program_installs/1.0.0@8ebc4a99e5a6` | 189 | withheld | 6 of 48 defective |
 
-The stopped review of September 30, 2026 at 15:26 decided nothing, so its two
-batches stay undecided. The recorded rates of `function_extracts/1.1.0`
-(21 of 58) and `program_installs/1.0.0` (6 of 106) are at or above the 5
-percent tolerance, so neither generator version can be sampled into
-acceptance again; each needs a repaired generator with a new version.
-`data_tables/1.1.0` has no decided sample, so it has no recorded rate, and
-its withheld frame is still refused.
+The recorded rates of `function_extracts/1.1.0` (21 of 58) and
+`program_installs/1.0.0` (6 of 106) are at or above the 5 percent tolerance,
+so neither generator version can be sampled into acceptance again; each needs
+a repaired generator with a new version. The stopped review of September 30,
+2026 at 15:26 decided nothing, so its two batches stay undecided. The
+September 30 review also withheld `data_tables/1.1.0@8ebc4a99e5a6` (frame
+381) with 0 of 52 sampled tables decided: the gateway refused all three of
+its calls for the context window before they reached the model. With no
+valid verdict, that decision is not recorded, `data_tables/1.1.0` has no
+recorded rate, and its frame may be sampled again. The 1,675 data tables
+qualified on October 5, 2026 (`qualification-06c61876-data_tables`: 511 at
+`872379b1fdb4`, 784 at `eafa4fe83785` and 380 of the withheld frame at
+`8ebc4a99e5a6`) all plan the zero-acceptance sample of 55 or 56.
 
 ## Records
 
