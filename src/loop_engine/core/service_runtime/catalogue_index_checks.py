@@ -303,6 +303,15 @@ def _request_path_checks(check, root):
     check("the_public_good_file_projection_reads_a_disk_view",
           collection(disk, binding_of(disk).public_good.snapshot(disk))
           == collection(memory, binding_of(memory).public_good.snapshot(memory)))
+    # A served view parses a package on its first use; one that names other bytes than its item is refused then.
+    _position, stored_version, stored = disk.disk.base.records(["skill_042"])["skill_042"]
+    record = json.loads(stored)
+    altered = json.loads(stored)
+    altered["package"]["files"][0]["digest"] = "0" * 64
+    check("a_stored_package_that_disagrees_with_its_item_is_refused_on_first_use",
+          catalogue_disk_view._disk_item(record, stored_version, None, None, None).package.files
+          and refused(lambda: catalogue_disk_view._disk_item(altered, stored_version, None, None, None).package,
+                      "catalogue_release_digest_mismatch"))
 
     def parsed_by(operation, **fields):
         view = build(disk_settings)  # opens the built index with an empty record cache

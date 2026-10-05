@@ -86,35 +86,52 @@ def policy_fingerprint(license_policy, family_policy):
     return hashlib.sha256(json.dumps(value, sort_keys=True).encode()).hexdigest()
 
 
-@dataclass(frozen=True)
 class DiskItem:
-    """Everything a view answers about one served item, parsed once from its stored record."""
+    """Everything a view answers about one served item, parsed from its stored record.
 
-    item: object
-    package: CataloguePackage
-    attributes: dict
-    binding: ProvisioningItemBinding
-    approval: ProvisioningQualification
-    version: str
+    The package is parsed on first use: a walk over the whole library (a list, a discover, the library page) asks
+    for items, bindings and approvals only, and building every package was a third of each record's parse. The
+    package's agreement with the item's digest and size is checked when it is first built; an index build checks
+    it for every item before the record is stored."""
+
+    __slots__ = ("item", "attributes", "binding", "approval", "version", "_package_record", "_package")
+
+    def __init__(self, item, attributes, binding, approval, version, package_record, package=None):
+        self.item, self.attributes, self.binding, self.approval = item, attributes, binding, approval
+        self.version, self._package_record, self._package = version, package_record, package
+
+    @property
+    def package(self):
+        package = self._package
+        if package is None:
+            package = CataloguePackage.from_dict(self._package_record)
+            if self.item.digest != package.served_digest or self.item.size_bytes != package.served_size:
+                _refuse("catalogue_release_digest_mismatch", "an item reference names other bytes than its package")
+            self._package = package
+        return package
 
 
 def _disk_item(record, version, schema, license_policy, family_policy):
-    """Apply the in-memory view's rules to one stored item record and return what the view serves of it."""
+    """Apply the in-memory view's rules to one stored item record and return what the view serves of it.
+
+    With the host policies (an index build) every rule is applied now, the package included; without them (a
+    served view reading its own index) the package waits for its first use."""
     from ..practitioner_runtime.provisioning import _item
     from .catalogue_bundle import item_version_tier, validated_attributes
     item = _item(record["reference"])
-    package = CataloguePackage.from_dict(record["package"])
+    package = None
     if license_policy is not None:
         refused = family_policy.refusal(item.family) or license_policy.refusal(item.license_name)
         if refused:
             _refuse(refused, "the host family or licence policy refuses an item of the active release")
-    if item.digest != package.served_digest or item.size_bytes != package.served_size:
-        _refuse("catalogue_release_digest_mismatch", "an item reference names other bytes than its package")
+        package = CataloguePackage.from_dict(record["package"])
+        if item.digest != package.served_digest or item.size_bytes != package.served_size:
+            _refuse("catalogue_release_digest_mismatch", "an item reference names other bytes than its package")
     tier = item_version_tier(record)
     values = validated_attributes(schema, record["attributes"]) if schema is not None else record["attributes"]
     exact = ProvisioningItemBinding.from_item(item)
     approval = ProvisioningQualification(exact, "approved", "host_attested", record["approval_ref"], tier)
-    return DiskItem(item, package, values, exact, approval, version)
+    return DiskItem(item, values, exact, approval, version, record["package"], package)
 
 
 class DiskItemSource:

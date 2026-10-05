@@ -41,6 +41,7 @@ pays for the body.
 from __future__ import annotations
 
 import hashlib
+import re
 from dataclasses import dataclass, field
 
 from .facets import EFFECTS
@@ -87,6 +88,8 @@ AVAILABILITY = ("remote", "cached", "mounted", "installed", "connected")
 CODE_SOURCE_LAYER = "code_intelligence"
 #: A digest is 64 hexadecimal characters.
 DIGEST_LENGTH = 64
+#: A digest is exactly DIGEST_LENGTH lowercase hexadecimal characters, matched whole in one compiled step.
+_LOWER_HEX_DIGEST = re.compile(r"[0-9a-f]{%d}" % DIGEST_LENGTH)
 #: Why an item is not offered. Declared once, because both the list and the
 #: single item path must give the same answer to the same question.
 WITHHELD_ANOTHER_KIND = "another kind"
@@ -156,8 +159,7 @@ class HarnessIntelligenceItem:
                 f"item {self.identity!r} declares family {self.family!r} but its source "
                 f"layer {self.source_layer!r} serves {family!r}; the two axes must agree")
         object.__setattr__(self, "family", family)
-        if len(self.digest) != DIGEST_LENGTH or not all(
-                character in "0123456789abcdef" for character in self.digest):
+        if _LOWER_HEX_DIGEST.fullmatch(self.digest) is None:
             raise HarnessIntelligenceError(
                 f"item {self.identity!r} carries no digest; the formats these travel in "
                 "carry none of their own, so this catalogue computes and keeps one")

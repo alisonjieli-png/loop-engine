@@ -44,6 +44,7 @@ from __future__ import annotations
 import hashlib
 import hmac
 import json
+import re
 import threading
 import time
 from dataclasses import asdict, dataclass, field
@@ -136,9 +137,13 @@ def _name(value: str, label: str) -> None:
         raise ProvisioningError(f"{label} requires a nonempty string")
 
 
+#: Exactly 64 lowercase hexadecimal characters, matched whole. One compiled match per digest instead of a Python step
+#: for each character: a disk-backed catalogue checks two digests for each item each time it walks the library.
+_LOWER_SHA256 = re.compile(r"[0-9a-f]{64}")
+
+
 def _digest(value: str) -> None:
-    if (not isinstance(value, str) or len(value) != 64
-            or any(character not in "0123456789abcdef" for character in value)):
+    if not isinstance(value, str) or _LOWER_SHA256.fullmatch(value) is None:
         raise ProvisioningError("an exact lowercase SHA-256 digest is required")
 
 
