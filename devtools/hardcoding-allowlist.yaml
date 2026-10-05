@@ -90,6 +90,12 @@ entries:
   rationale: "Reviewed October 4 for release62: exact JSON Schema wire keyword or type in the schema instance generator, not a Baltor runtime state or taxonomy. Preserve the standard spelling at this parser owner. Local schema-generation tests retain positive and known-wrong values; this finding-specific exception does not admit another token."
   created_on: '2026-10-04'
   expires_on: '2027-01-04'
+- finding_id: hardcoding.b50ca537fc38a31255b3333f
+  owner: "tools.supply_lines.openapi_sources.json:specifications[263].credential_variable"
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  rationale: "Reviewed October 5: the sendgrid_extended source entry (twilio/sendgrid-oai, added October 4) declares the public environment-variable name SENDGRID_API_KEY, the same name the sendgrid entry declares, never a credential value. The source reader validates its identifier syntax; generated request code reads it only when the caller executes an authorized request, with credential references and effects declared in package metadata. Discovery and generation do not load or transmit the credential. No other source name or secret-shaped value is exempt."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
 - finding_id: hardcoding.ea84b7b6d2322b91538086a0
   owner: "tools.supply_lines.openapi_sources.json:specifications[103].credential_variable"
   classification: SECRET_OR_CREDENTIAL_REFERENCE
