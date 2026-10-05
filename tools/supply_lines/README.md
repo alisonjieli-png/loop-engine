@@ -172,32 +172,74 @@ Supply lines (each writes library_supply_candidate/v1 records)
 │   ├── effects read from the syntax tree of the code and of its docstring examples, never from words
 │   └── its docstring examples run as doctests in the qualification sandbox, and the same function raising
 │       NotImplementedError under its own docstring must fail them in a fresh sandbox
-└── json_schemas: one JSON Schema with schema_check.py (a small validator) and tests
-    ├── kind contract_schema, form schema
-    ├── SchemaStore mode (json_schemas.py): the latest version of each schema family with the
-    │   repository's own valid and invalid examples beside it
-    ├── curated mode (json_schemas.py, generate_curated): each schema json_schema_sources.json declares
-    │   (open standards: STAC extensions, GBFS, Frictionless, World Bank, NASA CMR and others), copied byte
-    │   for byte with the repository's own examples, or else generated instances and known-wrong values;
-    │   a reference to a sibling file or another address refuses it by name; its own line state
-    └── API component mode (api_schemas.py): every named object of a curated OpenAPI specification,
-        with the specification's example, generated instances and known-wrong values
-└── manim_scenes: one tested animation scene per example scene of Manim Community's documentation
-    ├── kind code_module, form code_example; ManimCommunity/manim at a pinned release tag (MIT, both
-    │   licence files carried), read as one archive at the tag's commit, every file proven by blob identity
-    ├── every `.. manim::` directive outside literal blocks, in the library's docstrings and pages: the
-    │   scene's code as the documentation's directive runs it, one package per scene (never per quality
-    │   or output format), the same code at two locations kept once
-    ├── LaTeX scenes refused by name while no LaTeX is installed; a name nothing binds, a missing file or
-    │   module, a failure or a timeout refused by name
-    └── a test that renders every frame at low quality with nothing written, run in bubblewrap with the
-        network closed by an interpreter that has Manim; the scene's construct raising must fail it
+├── json_schemas: one JSON Schema with schema_check.py (a small validator) and tests
+│   ├── kind contract_schema, form schema
+│   ├── SchemaStore mode (json_schemas.py): the latest version of each schema family with the
+│   │   repository's own valid and invalid examples beside it
+│   ├── curated mode (json_schemas.py, generate_curated): each schema json_schema_sources.json declares
+│   │   (open standards: STAC extensions, GBFS, Frictionless, World Bank, NASA CMR and others), copied byte
+│   │   for byte with the repository's own examples, or else generated instances and known-wrong values;
+│   │   a reference to a sibling file or another address refuses it by name; its own line state
+│   └── API component mode (api_schemas.py): every named object of a curated OpenAPI specification,
+│       with the specification's example, generated instances and known-wrong values
+├── manim_scenes: one tested animation scene per example scene of Manim Community's documentation
+│   ├── kind code_module, form code_example; ManimCommunity/manim at a pinned release tag (MIT, both
+│   │   licence files carried), read as one archive at the tag's commit, every file proven by blob identity
+│   ├── every `.. manim::` directive outside literal blocks, in the library's docstrings and pages: the
+│   │   scene's code as the documentation's directive runs it, one package per scene (never per quality
+│   │   or output format), the same code at two locations kept once
+│   ├── LaTeX scenes refused by name while no LaTeX is installed; a name nothing binds, a missing file or
+│   │   module, a failure or a timeout refused by name
+│   └── a test that renders every frame at low quality with nothing written, run in bubblewrap with the
+│       network closed by an interpreter that has Manim; the scene's construct raising must fail it
+└── creative_assets: one pinned CC0 asset recipe or editable Godot project per asset or project
+    ├── kinds and forms reference_image (an HDRI, a texture set, a material), three_d_model (a model)
+    │   and template (an editable project); one line state per source (polyhaven, ambientcg,
+    │   godot_demo_projects)
+    ├── terms: each source's licence statement and API terms pinned by digest and checked on every run
+    │   for the clauses the line relies on; a statement that no longer holds them holds the whole source
+    │   (terms_not_confirmed)
+    ├── assets (creative_assets.py): Poly Haven's API and ambientCG's API v3; resolutions and formats
+    │   are variants in creative.json, each file pinned by its address, size and SHA-256, which the
+    │   generator learns by streaming the file once (FactReader.digest) and keeps nothing; the
+    │   publisher's size and MD5 are checked; 1k and 2k by default
+    ├── projects (godot_demos.py): each project of godotengine/godot-demo-projects at its head commit,
+    │   read from one archive and proven file by file by git blob identity; text copied byte for byte,
+    │   media pinned; per-project licence notices decided; every res:// reference present or pinned;
+    │   a headless Godot import when Godot 4 is installed (else recorded as skipped)
+    └── the same creative_fetch.py, blender_load.py, godot_load.gd, godot_project_check.py and tests
+        in every package (creative_files/), run offline against a loopback server and a recording bpy
 ```
 
 Beside the lines, `verbatim_code_sources.json` and
 `verbatim_code_sources_2.json` declare MIT code repositories for the licensed
 import itself (`--sources`): those modules are byte-for-byte copies in
 `library.import`, which the imported review profile reads today.
+
+## What the creative sources' terms permit
+
+The creative line tells a customer's harness where to download an exact file;
+it re-hosts no asset. Before every run it reads each source's terms through its
+own reader, pins them by digest as `terms_of_use` facts, and refuses the whole
+source (`terms_not_confirmed`) when a clause below is gone. Read on October 5,
+2026:
+
+- Poly Haven's API terms (`Poly-Haven/Public-API`, ToS.md): the API is free for
+  any purpose including commercial use (2.1); users may obtain its data and
+  assets and build on that data in their own products (2.2); calls carry a unique
+  user agent (2.4); live use of the API must make clear to users that the content
+  comes from Poly Haven, without implying endorsement (2.5). Its licence page:
+  all assets are CC0. Its site terms forbid scraping the website and protect
+  renders and copy, so the line reads only the API, copies no description and
+  carries no preview, and every package names Poly Haven and disclaims
+  affiliation.
+- ambientCG: the licence page states that all assets, the downloadable files
+  and the preview renders, are provided under CC0 1.0; the API page describes
+  the API as the way to search and download assets using code. No published
+  term restricts a catalogue that points at exact files.
+- godotengine/godot-demo-projects: MIT, decided from GitHub's licence interface
+  and LICENSE.md at the pinned commit. A project whose own notices name another
+  licence is decided by that notice (see the lines tree).
 
 ## One package
 
@@ -247,6 +289,11 @@ what it no longer supplies.
 | Manim's own renderer (`tempconfig`, `dry_run`) | Adopted as the test engine: every frame is computed at low quality and nothing is written, so a test checks the scene runs without producing video files. Rendering the documented output (`manim render -s` or a video) stays the README's command. |
 | MCP generators from OpenAPI (Stainless, openapi-mcp-generator, FastMCP's OpenAPI provider) and the official MCP Python SDK | Rejected as engines for the tool server line: each writes a server with runtime dependencies (an SDK, an HTTP client, a web framework), and Stainless is winding its generator down. The line keeps the protocol's own rules (newline-delimited JSON-RPC over standard input and output, version negotiation, tool annotations) in one standard-library module, and reuses the API operation line's operations, licence decisions and client helpers. The SDK's client is used to check the servers by hand. |
 | Redirect handling of CPython's urllib.request, requests, urllib3 and fetch (Node's undici) | Adapted for the API clients and tool servers (October 5, 2026): urllib's own unredirected headers carry the credential, and a subclass of its redirect handler refuses another origin, as the repository's own tools already refuse redirects (core/custom_endpoint.py, the knowledge radar's check_service_status). Rejected as they stand: urllib copies every header but Content-Length and Content-Type to any host; on a change of host requests strips Authorization (and rebuilds cookies), urllib3 Authorization, Cookie and Proxy-Authorization, and fetch Authorization and Cookie, so a custom credential header such as X-Api-Key, and a query credential, travel on with each of them. |
+| Poly Haven's public API and its terms (`Poly-Haven/Public-API` ToS.md) | Adopted as the source of asset facts: names, types, categories, tags, authors, dimensions and each file's address, size and MD5. The terms allow any use including commercial and building on the data, and ask for a unique user agent and a visible credit; the site's terms forbid scraping and protect renders and copy, so only the API is read and no description or preview is copied. |
+| ambientCG's API v3 and its licence page | Adopted for materials, HDRIs and models: download addresses and sizes. Each archive is digested once and its members recorded with their SHA-256, so the fetcher unpacks exactly those files. |
+| ahujasid/blender-mcp | Rejected as an engine: it downloads Poly Haven assets live without pinning, so a scene cannot be rebuilt from the same bytes. Its idea of an HDRI on the world and a texture on a material is kept in blender_load.py. |
+| godotengine/godot-demo-projects | Adopted as the source of editable projects (MIT). Per-asset notices decide each project; one archive of the commit replaces thousands of single-file reads. |
+| three.js loaders (HDRLoader, EXRLoader, GLTFLoader, MTLLoader and OBJLoader, TextureLoader) | Adopted in the README snippets, which `node --check` parses; HDRLoader is RGBELoader before r180. |
 
 ## Commands
 
@@ -288,6 +335,10 @@ PYTHONPATH=src:tools python tools/build_library_supply.py manim-scenes \
 PYTHONPATH=src:tools python tools/build_library_supply.py api-tool-servers \
   --run-folder /home/username/baltor-library/supply/api-tool-servers/DATE \
   --authorize-network-reads --authorize-store-writes --stars [--source ID]
+PYTHONPATH=src:tools python tools/build_library_supply.py creative-assets \
+  --run-folder /home/username/baltor-library/supply/creative-assets/DATE \
+  --authorize-network-reads --authorize-store-writes [--source polyhaven|ambientcg|godot_demo_projects] \
+  [--asset ID] [--maximum-assets N] [--resolution 4k] [--digest-cache FOLDER] [--godot PATH]
 PYTHONPATH=src:tools python tools/build_library_supply.py report \
   --library-bundle /home/username/baltor-bundles/RELEASE --output REPORT.json [--admission-folder ADMISSION]
 ```
@@ -452,6 +503,24 @@ measured.
   sandbox until it has a declared Manim runtime.
 - Scenes that typeset with LaTeX (`MathTex`, `Tex` and the classes built on them) are refused while no
   LaTeX is installed; Typst scenes need the `typst` extra (`manim[typst]`), which their requirements name.
+- Creative recipes pin 1k and 2k files unless `--resolution` adds 4k or 8k, because
+  each pinned byte is downloaded once by the generator to learn its SHA-256. They
+  carry no preview image: qualification reads a binary file as unverified, and
+  Poly Haven's terms protect its renders.
+- A creative package's own tests check blender_load.py against a recording
+  stand-in for bpy and godot_load.gd by its structure (Godot's parser runs only
+  where Godot 4 is installed). On October 5, 2026 both loaders were also run on
+  fixture files of every asset type in Blender 4.5.3 and Godot 4.7.2 outside the
+  packages; no package test runs Blender.
+- creative_fetch.py was exercised against a loopback server; the dry runs read the
+  origins only through the generator's own streamed downloads.
+- The reference forms need an asset_role attribute when they are served
+  (catalogue_attributes.asset_role_problems); creative.json and the record's
+  repository field carry it, but admission does not yet copy it into the served
+  attributes.
+- A Godot project's headless import runs only with Godot 4 on the path or named
+  by `--godot`; otherwise it is recorded as skipped.
+- BOSL2's parametric OpenSCAD modules are not supplied yet.
 - Nothing here was loaded by a harness.
 
 ### Publisher tables, measured in the October 5, 2026 dry runs
