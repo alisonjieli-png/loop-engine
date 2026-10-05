@@ -104,6 +104,9 @@ class CatalogueView:
     packages: dict = field(default_factory=dict, repr=False)
     attributes: dict = field(default_factory=dict, repr=False)
     bindings: dict = field(default_factory=dict, repr=False)
+    #: The (identity, body digest) of every item version this view's catalogue lists and leaves out because it was
+    #: durably withdrawn. A withdrawal of a version the catalogue no longer lists is not one of them, so the summary's
+    #: `withdrawn_left_out` plus its `items` is the listed population.
     withdrawn: frozenset = frozenset()
     withdrawal_check: object = field(default=None, repr=False)
     body_store: object = field(default=None, repr=False)
@@ -242,9 +245,11 @@ class CatalogueView:
         """A new view with every durably withdrawn item left out; the index is shared, not rebuilt."""
         keep = {identity: item for identity, item in self.catalogue.items.items()
                 if (identity, item.digest) not in withdrawn}
+        left_out = frozenset((identity, item.digest) for identity, item in self.catalogue.items.items()
+                             if identity not in keep)
         return replace(self, catalogue=HarnessIntelligenceCatalogue(keep),
                        bindings={identity: value for identity, value in self.bindings.items() if identity in keep},
-                       withdrawn=frozenset(withdrawn), state_revision=state_revision, built_at=time.time(),
+                       withdrawn=self.withdrawn | left_out, state_revision=state_revision, built_at=time.time(),
                        withdrawal_notes={**self.withdrawal_notes, **{key: value for key, value in (notes or {}).items()
                                                                      if key in withdrawn}},
                        index=self.search_index(), _lazy={})
@@ -275,6 +280,7 @@ def image_view(catalogue, resolver, reader, *, config=None, withdrawn=frozenset(
     from .catalogue_search import index_for_items
     check = _withdrawal_check(config) if config is not None else None
     keep = {identity: item for identity, item in catalogue.items.items() if (identity, item.digest) not in withdrawn}
+    left_out = frozenset((identity, item.digest) for identity, item in catalogue.items.items() if identity not in keep)
 
     def guarded_reader(item):
         if check is not None:
@@ -284,7 +290,7 @@ def image_view(catalogue, resolver, reader, *, config=None, withdrawn=frozenset(
     def build_index():
         return index_for_items(tuple(sorted(keep.values(), key=lambda item: item.identity)))
     return CatalogueView(HarnessIntelligenceCatalogue(dict(keep)), resolver, guarded_reader, source="image",
-                         bindings=bindings, withdrawn=frozenset(withdrawn), withdrawal_check=check,
+                         bindings=bindings, withdrawn=left_out, withdrawal_check=check,
                          index=build_index() if prepare_search else None,
                          _lazy={} if prepare_search else {"index_builder": build_index},
                          state_revision=state_revision, built_at=time.time())
@@ -310,6 +316,7 @@ def store_view(config, settings, *, license_policy, family_policy, prepare_searc
     # can be installed; a changed byte keeps the previous view serving.
     verify_release_bodies(release, body_store, withdrawn=withdrawn)
     catalogue, approvals, packages, attributes, bindings, entries = HarnessIntelligenceCatalogue(), {}, {}, {}, {}, []
+    left_out = set()
     for _version, payload in release.versions:
         item = _item(payload["reference"])
         package = CataloguePackage.from_dict(payload["package"])
@@ -319,6 +326,7 @@ def store_view(config, settings, *, license_policy, family_policy, prepare_searc
         if item.digest != package.served_digest or item.size_bytes != package.served_size:
             _refuse("catalogue_release_digest_mismatch", "an item reference names other bytes than its package")
         if (item.identity, package.served_digest) in withdrawn:
+            left_out.add((item.identity, package.served_digest))
             continue
         tier = item_version_tier(payload)
         values = validated_attributes(release.schema, payload["attributes"])
@@ -345,7 +353,7 @@ def store_view(config, settings, *, license_policy, family_policy, prepare_searc
     return CatalogueView(catalogue, _approved_resolver(STORE_RESOLVER_ID, approvals), reader, source=STORE_SOURCE,
                          release_id=release.release_id, content_digest=content_digest(release.schema.digest, release.items),
                          schema=release.schema, packages=packages, attributes=attributes, bindings=bindings,
-                         withdrawn=frozenset(key for key in withdrawn if key[0] in dict(release.items)),
+                         withdrawn=frozenset(left_out),
                          withdrawal_check=check, body_store=body_store,
                          index=build_index() if prepare_search else None,
                          _lazy={} if prepare_search else {"index_builder": build_index},

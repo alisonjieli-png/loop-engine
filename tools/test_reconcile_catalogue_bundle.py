@@ -177,6 +177,64 @@ class PreservationChecks(unittest.TestCase):
         self.assertEqual(case.view().item_versions['old'],self.base.items[0].version)
         self.assertEqual(set(case.view().catalogue.items),{'old','new'})
 
+    def replaced(self, name):
+        """A real local service whose live x@v1 was withdrawn and replaced by x@v2 through this tool."""
+        from loop_engine.core.service_runtime.catalogue_release_checks import Fixture
+        from loop_engine.core.service_runtime.catalogue_releases import publish,withdraw
+        case=Fixture(self.root/name)
+        base=bundle(self.root/(name+'-base'),[line('keep','keep bytes'),line('x','v1 bytes')],['keep bytes','v1 bytes'])
+        first=publish(case.context,base)
+        withdraw(case.context,identity='x',note_text='Synthetic: v1 had a defect')
+        old=next(item.version for item in base.items if item.identity=='x')
+        fix=bundle(self.root/(name+'-fix'),[line('x','v2 bytes')],['v2 bytes'])
+        changes=reconcile.Changes.from_dict({**request(base,replacements=({'identity':'x','expected_version':old},)).to_dict(),
+                                             'base_release':first['release_id']})
+        reconcile.write_reconciled(base,(fix,),changes,self.root/(name+'-r2'),case.view().summary())
+        held=reconcile.load_bundle(self.root/(name+'-r2'),('MIT',))
+        second=publish(case.context,held,expected_release=first['release_id'])
+        return case,base,held,second['release_id']
+
+    def test_a_replaced_withdrawn_version_does_not_lock_the_next_delta(self):
+        # Known wrong until October 5, 2026: the live summary counted the withdrawal of x@v1, which the release no
+        # longer lists, so items + withdrawn_left_out exceeded the release and every later delta was refused.
+        from loop_engine.core.service_runtime.catalogue_releases import publish
+        case,base,held,release=self.replaced('replaced')
+        observed=case.view().summary()
+        self.assertEqual((observed['items'],observed['withdrawn_left_out']),(2,0))
+        third=bundle(self.root/'replaced-add',[line('third','third bytes')],['third bytes'])
+        changes=reconcile.Changes.from_dict({**request(held,additions=('third',)).to_dict(),'base_release':release})
+        reconcile.write_reconciled(held,(third,),changes,self.root/'replaced-r3',observed,extra_roots=(base.folder/'blobs',))
+        result=publish(case.context,reconcile.load_bundle(self.root/'replaced-r3',('MIT',)),expected_release=release)
+        self.assertEqual((result['state'],result['items']),('published',3))
+
+    def test_withdrawing_every_version_leaves_out_only_the_listed_one(self):
+        # `withdraw --all-versions` after one replacement names x@v1 and x@v2. Only x@v2 is listed, so every view
+        # (rebuilt, refreshed in place, or built from an image) leaves one out and the release dropping x can be prepared.
+        from loop_engine.core.service_runtime.catalogue_releases import publish,withdraw,withdrawal_keys
+        from loop_engine.core.service_runtime.catalogue_serving import image_view,next_view,state_token
+        case,base,held,release=self.replaced('every-version')
+        before=case.view()
+        self.assertEqual(len(withdraw(case.context,identity='x',note_text='Synthetic: every version',
+                                      all_versions=True)['withdrawn_versions']),1)
+        with case.context.binding.store() as store:
+            keys=withdrawal_keys(case.context.binding,store)
+        self.assertEqual(len(keys),2)
+        views={'rebuilt':case.view(),'image':image_view(before.catalogue,before.qualification_resolver,
+                                                        before.body_reader,withdrawn=keys,prepare_search=False),
+               'refreshed':next_view(before,state_token(case.config),case.config,case.settings,
+                                     license_policy=case.license_policy,family_policy=case.family_policy)}
+        for name,view in views.items():
+            with self.subTest(view=name):
+                self.assertEqual((view.summary()['items'],view.summary()['withdrawn_left_out']),(1,1))
+        listed=next(item.version for item in held.items if item.identity=='x')
+        changes=reconcile.Changes.from_dict({**request(held,withdrawals=({'identity':'x','expected_version':listed,
+                                             'note':'Synthetic: remove the withdrawn item'},)).to_dict(),'base_release':release})
+        reconcile.write_reconciled(held,(),changes,self.root/'every-version-r3',views['refreshed'].summary(),
+                                   extra_roots=(base.folder/'blobs',))
+        result=publish(case.context,reconcile.load_bundle(self.root/'every-version-r3',('MIT',)),expected_release=release)
+        self.assertEqual((result['state'],result['items']),('published',1))
+        self.assertEqual((case.view().summary()['items'],case.view().summary()['withdrawn_left_out']),(1,0))
+
     def test_real_local_service_rejects_a_concurrent_base_before_activation(self):
         from loop_engine.core.service_runtime.catalogue_release_checks import Fixture
         from loop_engine.core.service_runtime.catalogue_releases import publish
