@@ -37,7 +37,7 @@ from build_host_catalogue_manifest import (
 )
 from loop_engine.core.practitioner_runtime.provisioning import _item
 from loop_engine.core.service_runtime.catalogue_bundle import (
-    BUNDLE_ITEM_RECORD_TYPE, read_bundle, validated_attributes, write_bundle,
+    BUNDLE_ITEM_RECORD_TYPE, item_line, read_bundle, validated_attributes, write_bundle,
 )
 from loop_engine.core.service_runtime.catalogue_packages import (
     FILE_BODY, PACKAGE_BODY, CataloguePackage, CataloguePackageFile, sha256_hex,
@@ -161,12 +161,15 @@ def build(folder, *, accepted_licenses, schema_path=None, include=(), batch="sta
             raise ManifestBuildError("body_changed_after_review",
                                      f"item {identity!r} serves other bytes than its reviewers approved")
         exact = replace(item, digest=package.served_digest, size_bytes=package.served_size)
-        lines.append({"record_type": BUNDLE_ITEM_RECORD_TYPE, "reference": exact.reference(),
-                      "package": package.to_dict(),
-                      # The review record approved these bytes under the tier its row names.
-                      "approval": {"tier": row_tier(identity, review), "approval_ref": review["approval_ref"],
-                                   "approved_digest": review["body_digest"]},
-                      "attributes": validated_attributes(schema, _attributes(row, review, recorded_at, batch, schema))})
+        line = {"record_type": BUNDLE_ITEM_RECORD_TYPE, "reference": exact.reference(),
+                "package": package.to_dict(),
+                # The review record approved these bytes under the tier its row names.
+                "approval": {"tier": row_tier(identity, review), "approval_ref": review["approval_ref"],
+                             "approved_digest": review["body_digest"]},
+                "attributes": validated_attributes(schema, _attributes(row, review, recorded_at, batch, schema))}
+        # A package whose file list outgrows one bundle line is refused here by name, even when nothing is written.
+        item_line(line)
+        lines.append(line)
         payloads.extend(files)
     if not lines:
         raise ManifestBuildError("no_approved_items", "no item is approved, so there is nothing to bundle")

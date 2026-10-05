@@ -304,6 +304,22 @@ def read_bundle(folder, *, license_policy, family_policy, verify_blobs=True):
     return bundle
 
 
+def item_line(value):
+    """The bytes one item takes in `items.jsonl`, refused by identity when `read_bundle` would refuse them.
+
+    A complete package has no file-count cap, but its file list travels on its
+    item's line. Every writer measures each line here before it writes, so one
+    oversized package is refused by name instead of making the whole bundle
+    unreadable. `read_bundle` keeps its own bound for a bundle written elsewhere.
+    """
+    rendered = canonical_bytes(value) + b"\n"
+    if len(rendered) > MAXIMUM_ITEM_LINE_BYTES + 1:
+        _refuse("bundle_item_line_too_large",
+                f"item {value['reference']['identity'][:128]!r} needs a {len(rendered) - 1}-byte line; "
+                f"one bundle line holds at most {MAXIMUM_ITEM_LINE_BYTES} bytes")
+    return rendered
+
+
 def bundle_payloads(blobs, entry):
     """Yield the verified bytes of every file of one bundle item that the bundle carries, in path order.
 
@@ -337,13 +353,13 @@ def write_bundle(folder, *, schema, lines, payloads, notes="", change_notes=None
     root = Path(folder)
     if not root.is_absolute() or root.exists():
         _refuse("bundle_folder_invalid", "a new bundle is written into a new absolute folder")
+    # Every line is measured before the folder exists, so a refused line leaves no partial bundle.
+    rendered = b"".join(item_line(line) for line in sorted(lines, key=lambda line: line["reference"]["identity"]))
     (root / BLOBS_FOLDER).mkdir(parents=True)
     blobs = ExactFlushVolumeBodyStore(str((root / BLOBS_FOLDER).resolve()), writes_authorized=True)
     for payload in payloads:
         blobs.put(payload, durable=False)
     blobs.sync()
-    rendered = b"".join(canonical_bytes(line) + b"\n"
-                        for line in sorted(lines, key=lambda line: line["reference"]["identity"]))
     (root / ITEMS_FILE).write_bytes(rendered)
     header = {"record_type": BUNDLE_RECORD_TYPE, "items": len(lines), "items_bytes": len(rendered),
               "items_digest": sha256_hex(rendered), "schema": schema.to_dict(), "notes": notes,

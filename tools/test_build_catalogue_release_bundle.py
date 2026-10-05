@@ -124,6 +124,73 @@ class StarterBundleTest(unittest.TestCase):
                 tool.build(folder, accepted_licenses=("MIT",), include=(identity,))
             self.assertEqual(held.exception.code, "package_files_required")
 
+    def test_an_oversized_package_line_is_refused_by_name_before_a_bundle_is_written(self):
+        # A complete package has no file-count cap (tools/test_package_resource_limits.py), but its file list travels on
+        # one bundle line. Known wrong until October 5, 2026: no writer measured that line, so one package of about 400
+        # files made read_bundle refuse every item of its bundle. 100 files fit; 600 do not.
+        from loop_engine.core.service_runtime.records import ServiceRuntimeError
+        identity, other = _approved()[:2]
+        with tempfile.TemporaryDirectory(prefix="bundle-line-") as directory:
+            folder = _copy(directory)
+            (folder / "bodies" / "references").mkdir()
+
+            def repackage(count):
+                names = [f"references/r{index:05d}.md" for index in range(count)]
+                for name in names:
+                    (folder / "bodies" / name).write_bytes(name.encode() + b"\n")
+
+                def files(value):
+                    for row in value["items"]:
+                        if row["reference"]["identity"] == identity:
+                            row["package_files"] = [{"source": row["body_path"], "path": "SKILL.md",
+                                                     "media_type": "text/markdown", "role": "skill_definition"}] + [
+                                {"source": "bodies/" + name, "path": name, "media_type": "text/markdown",
+                                 "role": "skill_reference"} for name in names]
+                _rewrite(folder, "items.json", files)
+                row = next(row for row in json.loads((folder / "items.json").read_text("utf-8"))["items"]
+                           if row["reference"]["identity"] == identity)
+                package, _payloads = tool._package(folder, row, "skill")
+
+                def reviewed(value):
+                    for entry in value["rows"]:
+                        if entry["identity"] == identity:
+                            entry.pop("carry", None)
+                            entry.update(approval_state="reviewed", body_digest=package.served_digest,
+                                         body_size_bytes=package.served_size)
+                _rewrite(folder, "reviews.json", reviewed)
+
+            repackage(100)
+            _schema, lines, _payloads = tool.build(folder, accepted_licenses=("MIT",), include=(identity, other))
+            fitting = next(line for line in lines if line["reference"]["identity"] == identity)
+            self.assertEqual(len(fitting["package"]["files"]), 101)
+            repackage(600)
+            with self.assertRaises(ServiceRuntimeError) as held:
+                tool.build(folder, accepted_licenses=("MIT",), include=(identity, other))
+            self.assertEqual(held.exception.code, "bundle_item_line_too_large")
+            self.assertIn(identity, str(held.exception))
+            output = Path(directory).resolve() / "bundle"
+            self.assertEqual(tool.main(["--catalogue", str(folder), "--output", str(output), "--include", identity,
+                                        "--include", other, "--write"]), 2)
+            self.assertFalse(output.exists())
+            # Every other writer goes through write_bundle, which measures each line before the folder exists.
+            schema, small, payloads = tool.build(CATALOGUE, accepted_licenses=("MIT",), include=(other,))
+            oversized = {**fitting, "package": {**fitting["package"], "files": fitting["package"]["files"] * 6}}
+            with self.assertRaises(ServiceRuntimeError) as held:
+                write_bundle(output, schema=schema, lines=[*small, oversized], payloads=payloads)
+            self.assertEqual(held.exception.code, "bundle_item_line_too_large")
+            self.assertFalse(output.exists())
+            # read_bundle keeps its own bound for a bundle that something else wrote.
+            write_bundle(output, schema=schema, lines=small, payloads=payloads)
+            rendered = b"".join(json.dumps(line, sort_keys=True, separators=(",", ":")).encode() + b"\n"
+                                for line in sorted([*small, oversized], key=lambda line: line["reference"]["identity"]))
+            (output / "items.jsonl").write_bytes(rendered)
+            header = json.loads((output / "bundle.json").read_text("utf-8"))
+            header.update(items=2, items_bytes=len(rendered), items_digest=sha256_hex(rendered))
+            (output / "bundle.json").write_text(json.dumps(header), encoding="utf-8")
+            with self.assertRaises(ServiceRuntimeError) as held:
+                read_bundle(output, license_policy=DEFAULT_LICENSE_POLICY, family_policy=DEFAULT_FAMILY_POLICY)
+            self.assertEqual(held.exception.code, "bundle_item_line_invalid")
+
     def test_a_bundle_inside_this_repository_is_refused(self):
         code = tool.main(["--catalogue", str(CATALOGUE), "--output", str(HERE.parent / "bundle-here"), "--write"])
         self.assertEqual(code, 2)
