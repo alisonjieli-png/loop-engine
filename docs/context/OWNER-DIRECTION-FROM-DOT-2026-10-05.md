@@ -105,7 +105,7 @@ record.
 | Data table | The 78 dimension sets (style atlas, palettes, film lengths, world kinds, scale levels, content formats, production routes, gestures, review criteria, keyword dimensions, discovery matrix, geography and time layers, entity and relationship types, SDG lanes and tasks) | about 45 | Original vocabularies; United States federal data verified per file; CC BY 4.0 where licensed; non-allowlisted sources as links only | Parallel library builder and the knowledge radar |
 | Function | Callables Dot already wrote: small text and search functions, catalogue helpers, offset conversion, content grouping, coverage and quality checks, guards, confidence scoring, geography and vocabulary adapters, the combination engine and multipart transfer | about 45 | Original code written for the owner; a licence recorded per package before admission | Drive tool harvester and the small-function lane of S-6.215 |
 | Process tool | Ten-minute search cycles, per-item research steps, coverage rotation, supervisor reviews, reference-to-brief mapping, source-to-package and capability-to-host pipelines, checkpointed renders, frozen adversarial test sets | about 25 | Original | Parallel library builder with the harvester |
-| Template | Package card, opportunity record, research contract, entity, claim and reconciliation records, work receipt, layered video project, episode and lesson templates, per-asset brief, known-issues guide, pilot kit, rights checklist | about 22 | Original | Parallel library builder |
+| Template | Package card, opportunity record, research contract, entity, claim and reconciliation records, work record, layered video project, episode and lesson templates, per-asset brief, known-issues guide, pilot kit, rights checklist | about 22 | Original | Parallel library builder |
 | Brief | World briefs, game designs, film and series concepts and product briefs | about 60 | Original; reference images inspire and are never assets | Parallel library builder and the creative supply line |
 | Guide | Lessons on render budgets, production routes, honest counts, entity-data traps, discovery routes, headless game limits, transfer limits, series design and plugin rules | about 25 | Original | Parallel library builder |
 | Decision record | The standing directions above and Dot's engineering decisions | about 45 | Owner direction | This record and the parallel library builder |
@@ -131,8 +131,8 @@ decoded, mechanically checked, semantically reviewed and visually sampled.
 The criteria, protocols, statuses, grades, coverage measures and persona axes
 generalize to any film, render, package or report. Gameplay and data-identity
 criteria generalize with light editing. Example profiles, inventory routing
-and the receipts for named films and games are project-specific and stay out
-of the library. A third record, an evidence-and-learning ledger with 13
+and the work records for named films and games are project-specific and stay
+out of the library. A third record, an evidence-and-learning ledger with 13
 lessons and 2,162 items still to review, exists only in Dot's own storage.
 
 ## Engineering direction
