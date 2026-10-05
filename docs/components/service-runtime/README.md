@@ -278,13 +278,21 @@ The Fly release workflow runs grant and billing confirmation through
 the volume and starts a detached supervisor; short status reads wait for its
 result. The operation identity binds the source revision, workflow run and
 one of the two container-qualified commands. The supervisor keeps an exclusive
-lock, runs the command as the service user, and stops its process group after
-600 seconds. The controller waits at most 660 seconds. A lost reply never
-triggers a second start. A timeout or interrupted operation keeps an uncertain
-record and blocks later operations until an operator reconciles the outcome.
-The existing command-output, billing-capability and readiness gates still
-decide release success. `tools/test_fly_reconcile.py` exercises detached
-execution, concurrency, lost replies, wrong bindings and timeout controls.
+lock, which its command also holds, runs the command as the service user, and
+stops its process group after 600 seconds. The controller waits at most 660
+seconds. A lost reply never triggers a second start. A timeout or interrupted
+operation keeps an uncertain record and blocks later operations until an
+operator reconciles the outcome. A status read answers pending only while the
+lock is held, so the operation of a killed supervisor becomes uncertain once
+its command ends. After checking the effect, the operator runs the same
+`tools/fly_reconcile.py` call with `--reconcile`. That call runs nothing: it
+records the closure beside the operation's other records, and the next
+workflow run may start. A temporary file left by an interrupted save never
+blocks a later save. The existing command-output, billing-capability and
+readiness gates still decide release success. `tools/test_fly_reconcile.py`
+exercises detached execution, concurrency, lost replies, wrong bindings,
+timeout controls, a killed supervisor, leftover temporary files and the
+reconcile call.
 
 The service stores two billing policies from the host file: the entitlement
 policy, which says which prices grant paid access, and the session policy,

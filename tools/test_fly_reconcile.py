@@ -1,10 +1,12 @@
 """Deployment supervision under lost replies, concurrency and failed commands."""
 import copy
-from contextlib import redirect_stderr
+from contextlib import redirect_stderr, redirect_stdout
 import io
 import json
 import os
 from pathlib import Path
+import shlex
+import signal
 import subprocess
 import sys
 import tempfile
@@ -86,6 +88,27 @@ class FlyReconcileTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "invalid_operation_success"):
             controller.reconcile("fixture-app", "123456789abc", self.record, call=call)
 
+    def test_operator_reconcile_sends_one_reconcile_call_and_checks_the_closure(self):
+        closure = {"binding": self.record, "state": "uncertain", "exit_code": None, "reason": "interrupted_without_result",
+                   "reconciliation": {"binding": self.record, "reason": "interrupted_without_result", "reconciled_at": 1}}
+        result = subprocess.CompletedProcess([], 0, json.dumps({"stdout": json.dumps(closure)}), "")
+        arguments = ["fly_reconcile.py", "--app", "fixture-app", "--machine", "123456789abc", "--operation", "apply-grants",
+                     "--command", shlex.join(remote.COMMANDS["apply-grants"]), "--revision", "a" * 40, "--run-id", "123",
+                     "--timeout", "660", "--reconcile"]
+        printed = io.StringIO()
+        with patch.object(controller.subprocess, "run", return_value=result) as run, patch.object(sys, "argv", arguments), \
+                redirect_stdout(printed), redirect_stderr(io.StringIO()):
+            self.assertEqual(controller.main(), 0)
+        run.assert_called_once()
+        self.assertEqual(shlex.split(run.call_args.args[0][4])[-4:], ["reconcile", "apply-grants", "a" * 40, "123"])
+        self.assertEqual(json.loads(printed.getvalue()), closure)
+        def lost(*args):
+            raise subprocess.TimeoutExpired("fake", 40)
+        for call, error in ((lost, "outcome_unknown"), (lambda *args: {**closure, "state": "failed"}, "invalid_reconciliation"),
+                            (lambda *args: {**closure, "reconciliation": None}, "invalid_reconciliation")):
+            with self.subTest(error=error), redirect_stderr(io.StringIO()), self.assertRaisesRegex(RuntimeError, error):
+                controller.close("fixture-app", "123456789abc", self.record, call=call)
+
     def start_local(self, directory, command, limit=5):
         """Run the actual detached supervisor with a local, model-free fixture."""
         source = Path(remote.__file__).read_text().replace(
@@ -124,6 +147,8 @@ class FlyReconcileTests(unittest.TestCase):
             self.assertEqual(report["stdout"], "{}\n")
             with patch.object(remote, "ROOT", directory):
                 self.assertEqual(remote.start(self.record, "unused source"), report)
+                with self.assertRaisesRegex(ValueError, "operation_not_uncertain"):
+                    remote.reconcile(self.record)
             self.assertEqual(output.read_text(), "once\n")
 
     def test_timeout_is_uncertain_and_cannot_start_a_different_operation(self):
@@ -136,6 +161,13 @@ class FlyReconcileTests(unittest.TestCase):
             different = remote.binding("apply-grants", "b" * 40, "124")
             with patch.object(remote, "ROOT", directory), self.assertRaisesRegex(ValueError, "requires_reconciliation"):
                 remote.start(different, "unused source")
+            # The operator closes it after checking its effect; only then may the next operation start.
+            third = remote.binding("apply-grants", "c" * 40, "125")
+            with patch.object(remote, "ROOT", directory), patch.object(remote.subprocess, "Popen") as process:
+                closed = remote.reconcile(self.record)
+                self.assertEqual(closed["reconciliation"]["reason"], "deadline_requires_reconciliation")
+                self.assertEqual(remote.start(third, "unused source")["state"], "pending")
+                process.assert_called_once()
             # Removing the uncertain-state guard would admit another effect.
             with patch.object(remote, "ROOT", directory), patch.object(remote, "status", return_value={"state": "failed"}), \
                     patch.object(remote.subprocess, "Popen") as process:
@@ -154,6 +186,84 @@ class FlyReconcileTests(unittest.TestCase):
             with patch.object(remote, "ROOT", directory), patch.object(remote, "OUTPUT_LIMIT", 5), \
                     self.assertRaisesRegex(ValueError, "too_large"):
                 remote.status(self.record)
+
+    def test_a_killed_supervisor_is_pending_while_its_command_runs_then_uncertain_and_reconcilable(self):
+        # Known wrong until October 5, 2026: a supervisor killed before its result left the operation pending for ever,
+        # and the protocol had no call that could close it, so every later deployment operation was refused.
+        with tempfile.TemporaryDirectory() as temporary:
+            directory, started, release = (Path(temporary) / name for name in ("operations", "started", "release"))
+            command = [sys.executable, "-c", "\n".join((
+                "import pathlib, time", "pathlib.Path(" + repr(str(started)) + ").touch()", "for _ in range(1000):",
+                "    if pathlib.Path(" + repr(str(release)) + ").exists(): break", "    time.sleep(.02)"))]
+            self.start_local(directory, command, limit=30)
+            try:
+                deadline = time.monotonic() + 8
+                while not started.exists() and time.monotonic() < deadline:
+                    time.sleep(.02)
+                self.assertTrue(started.exists())
+                os.kill(self.children[0].pid, signal.SIGKILL)
+                self.children[0].wait(timeout=8)
+                with patch.object(remote, "ROOT", directory):
+                    # The command still holds the lock, so nothing may close the operation while it runs.
+                    self.assertEqual(remote.status(self.record)["state"], "pending")
+                    with self.assertRaises(BlockingIOError):
+                        remote.reconcile(self.record)
+            finally:
+                release.touch()
+            report = self.wait_local(directory)
+            self.assertEqual((report["state"], report["reason"]), ("uncertain", "interrupted_without_result"))
+            different = remote.binding("apply-grants", "b" * 40, "124")
+            with patch.object(remote, "ROOT", directory):
+                with self.assertRaisesRegex(ValueError, "requires_reconciliation"):
+                    remote.start(different, "unused source")
+                # An interrupted earlier reconcile left its temporary file; it must not stop this one.
+                (remote.directory_for(self.record) / "reconciliation.pending").write_text("{")
+                closed = remote.reconcile(self.record)
+                self.assertEqual(closed["reconciliation"]["binding"], self.record)
+                self.assertEqual(remote.reconcile(self.record), closed)
+                self.assertEqual(remote.start(self.record, "unused source"), closed)
+                with patch.object(remote.subprocess, "Popen") as process:
+                    self.assertEqual(remote.start(different, "unused source")["state"], "pending")
+                    process.assert_called_once()
+
+    def test_a_leftover_active_pending_never_stops_a_start(self):
+        # Known wrong until October 5, 2026: save created its temporary file exclusively, so an active.pending left by an
+        # interrupted save raised FileExistsError after the reservation was written; no worker ran and status answered
+        # pending for ever.
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary) / "operations"
+            directory.mkdir(mode=0o700)
+            (directory / "active.pending").write_text("{")
+            self.assertEqual(self.start_local(directory, [sys.executable, "-c", "print('{}')"])["state"], "pending")
+            self.assertEqual(json.loads((directory / "active.json").read_text()), self.record)
+            self.assertEqual(self.wait_local(directory)["state"], "succeeded")
+            self.assertEqual(list(directory.rglob("*.pending")), [])
+
+    def test_a_leftover_result_pending_never_hides_a_finished_command(self):
+        # Known wrong until October 5, 2026: the supervisor's final save raised FileExistsError, so an operation whose
+        # command had finished answered pending for ever. The fixture command leaves the temporary file itself.
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary) / "operations"
+            leftover = directory / "-".join(("a" * 40, "123", "apply-grants")) / "result.pending"
+            command = [sys.executable, "-c", "import pathlib; pathlib.Path(" + repr(str(leftover)) + ").write_text('{'); print('{}')"]
+            self.start_local(directory, command)
+            report = self.wait_local(directory)
+            self.assertEqual((report["state"], report["exit_code"], report["stdout"]), ("succeeded", 0, "{}\n"))
+            self.assertFalse(leftover.exists())
+
+    def test_a_start_interrupted_before_its_reservation_launched_nothing_and_may_finish(self):
+        # Known wrong until October 5, 2026: the folder such a start leaves made every status, start and reconcile call for
+        # its binding raise FileNotFoundError. The worker starts only after the reservation is published.
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary) / "operations"
+            operation = directory / "-".join(("a" * 40, "123", "apply-grants"))
+            operation.mkdir(parents=True, mode=0o700)
+            (operation / "reservation.pending").write_text("{")
+            with patch.object(remote, "ROOT", directory):
+                self.assertEqual(remote.status(self.record)["state"], "absent")
+            self.assertEqual(self.start_local(directory, [sys.executable, "-c", "print('{}')"])["state"], "pending")
+            self.assertEqual(self.wait_local(directory)["state"], "succeeded")
+            self.assertEqual(json.loads((operation / "reservation.json").read_text()), self.record)
 
 
 if __name__ == "__main__":

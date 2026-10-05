@@ -2,7 +2,9 @@
 
 A failed start transport is an unknown outcome, never permission to dispatch
 again. Only status reads are retried. The existing workflow checks the exact
-command output and service readiness after this helper succeeds.
+command output and service readiness after this helper succeeds. With
+--reconcile, an operator who has checked the effect of an uncertain operation
+sends one reconcile call for its binding instead; that call runs nothing.
 """
 import argparse
 import json
@@ -62,6 +64,18 @@ def reconcile(app, machine, record, *, call=invoke, clock=time.monotonic, sleep=
     raise RuntimeError("operation_deadline_requires_reconciliation")
 
 
+def close(app, machine, record, *, call=invoke):
+    """Send one reconcile call; it runs nothing, so a lost reply is answered by sending it again."""
+    try:
+        report = call(app, machine, "reconcile", record)
+    except (KeyError, subprocess.TimeoutExpired):
+        raise RuntimeError("machines_api_outcome_unknown")
+    if report.get("state") != "uncertain" or not isinstance(report.get("reconciliation"), dict):
+        raise RuntimeError("invalid_reconciliation")
+    print("Operation closed without a known outcome; the next operation may start.", file=sys.stderr)
+    return report
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--app", required=True)
@@ -71,6 +85,8 @@ def main():
     parser.add_argument("--timeout", type=int, choices=(660,), required=True)
     parser.add_argument("--revision", required=True)
     parser.add_argument("--run-id", required=True)
+    parser.add_argument("--reconcile", action="store_true",
+                        help="Close this uncertain operation after checking its effect; runs no command")
     options = parser.parse_args()
     if not re.fullmatch(r"[a-z0-9][a-z0-9-]{0,62}", options.app) or not re.fullmatch(r"[0-9a-f]{8,32}", options.machine):
         parser.error("an exact app and Machine identity are required")
@@ -78,7 +94,10 @@ def main():
     if shlex.split(options.command) != remote.COMMANDS[options.operation]:
         parser.error("operation must match the container-qualified command")
     try:
-        print(json.dumps(reconcile(options.app, options.machine, record)))
+        if options.reconcile:
+            print(json.dumps(close(options.app, options.machine, record)))
+        else:
+            print(json.dumps(reconcile(options.app, options.machine, record)))
     except (RuntimeError, ValueError) as error:
         print(str(error), file=sys.stderr)
         return 1
