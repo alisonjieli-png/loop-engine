@@ -9,7 +9,7 @@ revision and licence, with a Baltor-native engine beside it or a recorded
 reason why none is needed, and the record says what was found and why it was
 adopted, adapted or rejected. The [roadmap](../roadmap/roadmap.yaml) remains
 the task authority. Nothing here publishes, approves or qualifies material,
-and no binary or container of the project was downloaded or run.
+and in the first pass no binary or container of the project was downloaded or run (the later section ran the pinned binary in a sandbox).
 
 Every fact names its source and was observed on October 5, 2026 unless another
 time is given. "Read in code" means read in the source at the pinned commit,
@@ -23,7 +23,7 @@ marked `OO:` are relative to
 |---|---|---|
 | Library supply through the programs line | Rejected for now; no row added | The line's own dry run refused it as `not_a_command_line_program` ("formula answered 404"): Homebrew has no `open-ontologies` formula. Licence and release digests pass. |
 | Library supply through the protocol server line | Rejected; nothing to produce | The official registry does not list it, and its declared package is a container image, which the line refuses as `no_npm_or_pypi_package`. |
-| Engine slot | No slot added | None of the 51 slots fits and no Baltor caller reasons over RDF or OWL. The slot it would need is sketched in step 3. |
+| Engine slot | First pass: no slot added. Superseded the same day: slot `ontology_change_planning` added with both engines (see [learn, recreate and improve](#later-on-october-5-learn-recreate-and-improve)) | None of the 51 slots fit and no caller needed one; the owner's later direction asks for the adapter and a native engine beside it. |
 | Ideas for Baltor's catalogue change path | Adapt a consequence report and an additions-only verdict; an independent proof checker is optional; reject its apply and rollback semantics | Baltor already binds the base and refuses undeclared change; what it lacks is a list of the downstream consequences of a change before publish. |
 | Its ontologies as library material | Rejected for now | The IES ontologies are `licence_unknown` to the lines' own licence code and no line reads Turtle; the case-study ontologies are CC-BY-4.0 files inside an MIT repository; the pizza reference carries no licence. |
 
@@ -255,7 +255,9 @@ of section 11 of the
 ("Add a slot only when none fits", LE-SLOT-001) and this task's rule (no slot
 without a caller) give the same answer.
 
-Decision: no slot now. A step that needs one would get this slot:
+Decision (first pass): no slot now. Superseded later the same day, when the slot below was built
+under the name `ontology_change_planning` (see
+[learn, recreate and improve](#later-on-october-5-learn-recreate-and-improve)). The sketch:
 
 ```text
 knowledge_graph_reasoning (sketch only, not catalogued)
@@ -368,11 +370,151 @@ knowledge_graph_reasoning (sketch only, not catalogued)
 | `OO:benchmark/reference/pizza-reference.owl` | No licence or rights statement in the file | Rejected: no licence is bound to the bytes |
 | The 33 standard ontologies of `onto_marketplace` (`OO:src/marketplace.rs`) | Fetched at run time from each publisher; the marketplace records no licence for a standard | Not material from this repository: each needs its own publisher's evidence |
 
+## Later on October 5: learn, recreate and improve
+
+The owner's direction later the same day: "We can learn more from, recreate,
+ideate, fork, and improve upon all ideas that I have added." For Open
+Ontologies that means going past the evaluation under rule 6: the project
+enters as an engine adapter pinned to its revision and licence, with a
+Baltor-native engine beside it that passes the same conformance kit, both
+selectable at run time. That direction supersedes the first pass's "no slot
+without a caller" decision; everything else above stands.
+
+### What the paper says
+
+Source: arXiv:2605.09184v1, "Open Ontologies: Tool-Augmented Ontology
+Engineering with Stable Matching Alignment", Fabio Rovai (The Tesseract
+Academy, London), submitted 2026-05-09, licence CC BY 4.0 on the abstract
+page, 10 pages, 6 tables (`https://arxiv.org/abs/2605.09184`, the HTML at
+`https://arxiv.org/html/2605.09184` and the PDF, read on 2026-10-05 by a
+delegated reader that ran no code; numbers below are as the paper reports
+them). The paper declares that Claude drafted manuscript text, tables and the
+structure of two sections; Claude is also the model inside the system it
+evaluates.
+
+- Thesis: tools give a model access to an ontology that reading its raw syntax
+  does not, and in alignment "the assignment constraint matters more than the
+  similarity function".
+- Method: a Rust binary (about 17,400 lines then) exposing tools over MCP;
+  OWL-RL forward chaining, a partial SHIQ tableaux, SHACL and pattern packs;
+  a lifecycle of plan ("diff with blast-radius scoring", never defined), apply,
+  monitor and drift in one paragraph, with an append-only lineage. Alignment
+  scores class pairs on six weighted signals and keeps one-to-one matches by
+  confidence above 0.80.
+- Evaluation, single runs by the author: OAEI Anatomy F1 0.832 (P 0.963,
+  R 0.733) against baselines copied from elsewhere (AML 0.936); without the
+  one-to-one matching the paper's own ablation gives F1 0.728, so the matching
+  adds about 0.10, not the whole rise from 0.182 the text credits it with;
+  OntoAxiom F1 0.717 with tools against 0.431 from names and 0.323 from the raw
+  file; OWL-RL materialisation 14 to 15 ms against HermiT 112 to 24,490 ms on
+  LUBM, on different profiles.
+- Limits the paper states: no independent OAEI evaluation, an ablation on
+  Anatomy only, one model, one developer, OWL-RL incomplete for OWL-DL. The
+  reader also found the same configuration reported as F1 0.832, 0.834 and
+  0.831, and no repeated runs.
+
+The paper does not describe conservativity, derivation certificates or the
+Lean checkers. Those arrived in the repository after it (releases v1.x to
+v2.0.1), and they are the part worth taking.
+
+### What the code at v2.0.1 does, read and run
+
+Source: the release commit `d118719043905132d314611dcee9f0cac5f87868`, read
+in a sparse copy on 2026-10-05; the pinned Linux binary and `oo-cert` were
+downloaded from the release, their SHA-256 matched GitHub's published digests
+(`7a54594a...`, `68223b4d...`), and both ran in bubblewrap with every
+namespace unshared, a read-only system and one writable folder.
+
+- Rule table (`src/reason.rs`, `RULES_EVALUATED` from line 281 and
+  `BUILTIN_RULES` from line 1138): profile `rdfs` evaluates rdfs2, rdfs3, rdfs5,
+  rdfs7, rdfs9 and rdfs11; `owl-rl` adds eleven: prp-trp, prp-symp, prp-inv1,
+  prp-inv2, eq-sym, scm-eqc1, scm-eqp1, scm-dom1, scm-dom2, scm-rng1 and
+  scm-rng2; `owl-rl-ext` adds twelve more, among them the list rules. A
+  conclusion with a literal subject or a non-IRI predicate is never emitted
+  (line 3403 and `writable_triple`).
+- Plan: `plan` runs conservativity by default in v2.0.1 (its help text:
+  "ON by default since #196"). The block (`format: oo-conservativity/1`)
+  lists closure(base and extension) minus closure(base) over the base's names,
+  each row with its rule and the premises the base lacked. Run here on an
+  original family fixture, adding `hasParent rdfs:domain Person` gave three
+  rows: two `rdfs2` retypings and the asserted triple itself. It reports no
+  lost consequences, and a removal is described only by shape.
+- Certificates: `reason --certificate DIR` writes `asserted.tsv`,
+  `derivations.tsv` (one line per derived triple: rule, conclusion, premises in
+  the rule's order), `asserted.sha256` and `scope.tsv`. `oo-cert` re-derives
+  each line by pattern; run here it printed `"ok":true` with theorem
+  `OOCert.certificate_sound` on the genuine file and exit 1 with
+  `"first_rejected":1,"rule":"rdfs2"` on a copy with one forged conclusion.
+  The premise order is the table in `lean/OOCert/Rules.lean`.
+- Measured: `oo-cert` aborts under a 2 GiB address-space limit on a 16-core
+  machine ("failed to create thread") and runs from 4 GiB; the engine binary
+  ran every kit case under 2 GiB.
+
+### Adopted, adapted and rejected
+
+| Idea | Decision | Reason |
+|---|---|---|
+| The seventeen fixed-arity rules with W3C names and the Lean checker's premise order | Adopted | Both engines compute the same closures, and either engine's traces can be checked by either checker |
+| The two-file certificate (`asserted.tsv`, `derivations.tsv`) | Adopted as an export | The native engine's traces were handed to the release's `oo-cert`, which accepted them |
+| Never emit a conclusion RDF cannot write | Adopted | The same rule keeps both closures equal |
+| Conservativity over the base's names, with a verdict word that names its rule table | Adopted | It is the semantic part of a plan; the word never claims description-logic conservativity |
+| One recorded derivation per derived triple | Adapted | The native engine records the least by rule order and premises, so plans repeat byte for byte; the binary's choice may differ between runs |
+| Plan identity, apply and rollback | Adapted | The plan binds the base and proposed digests; apply is a compare-and-swap that needs an approval naming the plan digest; locks are checked by assertion and by entailment; rollback restores only the state it replaced |
+| Lost consequences | Added | Open Ontologies reports additions only; the plan here also lists closure(base) minus closure(proposed), each with a trace against the old graph |
+| An independent checker before a plan exists | Added | Every listed consequence's trace passes `trace_checker.py`, which shares no code with either engine; Lean stays an optional third check |
+| `force`, advisory locks, `auto_rollback`, dismissal-based suppression | Rejected | As in step 4: each lets a change through without a recorded decision |
+| A model writing the ontology in a tool loop (the paper's thesis) | Rejected for this slot | The slot plans changes a caller gives it; the evaluation is single-run self-evaluation |
+| Weighted alignment with one-to-one matching | Not adopted now | Measured gain is about 0.10 F1 on one track by the author; a candidate idea for mapping old to new versions in `library_near_duplicate`, to be measured first |
+| Tableaux and the outside provers | Rejected for this slot | Oracles in the project's own words; the slot's claims rest on the rule table and the checkers |
+
+### What was built
+
+Code in `src/loop_engine/core/ontology_change/` (commits `8f6131b7` and
+`98944fd0` in the worktree, before the lead's rebase); the component README
+holds the tree. In short: the edge `ontology_change_request/v1` to
+`ontology_change_plan/v1` with `ontology_change_failure/v1`; the engines
+`baltor_native_rules` (standard library) and `open_ontologies_cli` (v2.0.1,
+pinned by commit and asset digest, sandboxed); selection through the shared
+`engine_selection_policy/v1` and `engine_selection_decision/v1`, with a
+passing conformance report for the exact descriptor digest as an eligibility
+gate; a store with compare-and-swap apply, enforced locks, approval and checked
+rollback; the slot record `ontology_change_planning` (planned, no registered
+boundary yet).
+
+Conformance kit (ten original fixtures under `example.org`, twelve runs; the
+first is the post's domain example; ten known-wrong controls), run on
+2026-10-05:
+
+| Engine | Cases | Controls | Lean cross-check (`oo-cert` v2.0.1) |
+|---|---|---|---|
+| `baltor_native_rules@1.0.0` | 12 of 12 | 10 of 10 | genuine trace accepted, theorem `OOCert.certificate_sound`; forged step refused, exit 1 |
+| `open_ontologies_cli@2.0.1` | 12 of 12 | 10 of 10 | the same |
+
+Writing the library packages from the component found one defect, fixed in
+`98944fd0`: an ontology larger than the closure bound was refused as a syntax
+error; it is now `limit_exceeded` before any engine runs.
+
+### Library candidates
+
+Three native packages, producer family anthropic, prepared in
+`/home/username/baltor-private/ontology-components-20261005-lNGNRH` (private;
+`HANDOFF.txt` there): `baltor_rdfs_owl_rl_closure`,
+`baltor_ontology_change_consequences` and `baltor_derivation_trace_checker`,
+kind skill, standard-library Python, each with schemas, examples, tests and
+provenance. The repository's `tools/prepare_harness_candidates.py` accepted
+them at revision `98944fd0`; the existing native prechecks passed 18 of 18
+with no model call; their 16 tests and 6 schema validations pass; the
+consequence tool gave the component's answer on all twelve kit runs. They are
+candidates only: loading in each harness and independent review by another
+producer family remain.
+
 ## Limits
 
-- No binary or container of Open Ontologies was downloaded or run. The
-  901-consequence example and every behaviour described from code are as read,
-  not reproduced.
+- First pass: no binary was run, so the 901-consequence example and the
+  behaviour described from code were read, not reproduced. The later section
+  ran the pinned v2.0.1 binary and its `oo-cert` checker in bubblewrap and
+  reproduced the domain example's behaviour on an original fixture; the
+  901 figure itself (the project's own fixture) was not rerun.
 - The provenance attestation was read from GitHub's interface and not verified
   cryptographically.
 - The Rust dependency tree was not audited crate by crate.
