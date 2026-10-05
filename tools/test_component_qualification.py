@@ -12,7 +12,7 @@ import tempfile as _tempfile
 import unittest
 from unittest import mock
 
-from tools.component_qualification import admission, checks, controls, qualify, sampled_review, sampling
+from tools.component_qualification import admission, checks, controls, decisions, qualify, sampled_review, sampling
 from tools.component_qualification.sandbox import SandboxSettings, parse_unittest
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -409,25 +409,40 @@ class AdmissionTests(unittest.TestCase):
                                          "record_version": component.record_version,
                                          "batch": component.batch, "package_digest": component.package.package_digest,
                                          "vetting": {"implementation_tested": "fixture"},
-                                         "qualifier": {"code_revision": REVISION, "uncommitted_changes": False},
+                                         "qualifier": {"tool": "tools/component_qualification", "version": "1.0.0",
+                                                       "code_revision": REVISION, "uncommitted_changes": False},
                                          "self_test_sha256": "0" * 64,
                                          "checks": []}) + "\n")
         self.qualification = qualification
+        self.ledger = self.folder / "decisions.jsonl"
+        decisions.create(self.ledger, created_at="2026-10-05T00:00:00Z", created_by="a check")
 
     def tearDown(self):
         shutil.rmtree(self.folder, ignore_errors=True)
 
-    def _review(self, admissible=True, code_decision="approve"):
-        decision = {"outcome": "accepted", "reasons": [], "sampled": 1, "acceptance_number": 0, "defective": 0,
-                    "controls_planted": 1, "controls_rejected": 1}
-        qualified = [json.loads(line) for line in (self.qualification / "qualification.jsonl").read_text().splitlines()]
-        review = {"record_type": sampling.REVIEW_RECORD,
+    def _qualified(self):
+        return [json.loads(line) for line in (self.qualification / "qualification.jsonl").read_text().splitlines()]
+
+    def _accepted(self, component, run):
+        """The plan and accepted decision of a one-component batch, as a review run writes them."""
+        plan = sampling.plan_for(component.batch, 1, sampling.GeneratorHistory(sampling.generator_of(component.batch)))
+        decision = sampling.decide(plan, defective=0, decided=1, controls_planted=1, controls_approved=0)
+        decision.update({"decided_at": "2026-09-28T00:00:00Z", "run_id": run, "stop_reason": "completed",
+                         "controls_rejected": 1, "controls_without_verdict": 0})
+        return plan.to_dict(), decision
+
+    def _review(self, admissible=True, code_decision="approve", record=True, seed="admission-seed-0123456789"):
+        """A review that accepted the code batch and left the configuration batch unanswered; an admissible review's
+        answered decisions are recorded in the ledger, as its run records them."""
+        plan, decision = self._accepted(self.code, "run")
+        review = {"record_type": sampling.REVIEW_RECORD, "seed": seed, "started_at": "2026-09-28T00:00:00Z",
+                  "qualification": str(self.qualification),
                   "reviewer": "tactical.gemma-4-coding-abliterated", "producer_family": "anthropic",
                   "policy": sampling.SamplingPolicy().to_dict(), "admissible": admissible,
                   "admissibility_reasons": [] if admissible else ["reviewer_not_calibrated_today"], "ledger": "l",
                   "batches": {
-                      self.code.batch: {"plan": {"batch_size": 1}, "decision": decision,
-                                        "frame_sha256": sampling.frame_digest(row for row in qualified
+                      self.code.batch: {"plan": plan, "decision": decision,
+                                        "frame_sha256": sampling.frame_digest(row for row in self._qualified()
                                                                                if row["batch"] == self.code.batch),
                                         "sample": [self.code.identity],
                                         "verdicts": [{"identity": self.code.identity, "decision": code_decision,
@@ -436,14 +451,39 @@ class AdmissionTests(unittest.TestCase):
                                                       "body_sha256": self.code.package.package_digest}]},
                       self.configuration.batch: {"plan": {"batch_size": 1}, "verdicts": [],
                                                  "decision": {"outcome": "withheld", "reasons": ["x"]}}}}
-        path = self.folder / f"review-{admissible}-{code_decision}.json"
+        path = self.folder / f"review-{admissible}-{code_decision}-{seed}.json"
         path.write_text(json.dumps(review))
+        if record and admissible:
+            self._record(review)
         return path
+
+    def _record(self, review):
+        entries = [decisions.entry_for(review, batch, [row for row in self._qualified() if row["batch"] == batch],
+                                       kind=decisions.RUN_SOURCE, review_path="review.json", review_sha256=None,
+                                       qualification_sha256="d" * 64, recorded_at="2026-10-05T00:00:00Z")
+                   for batch, entry in sorted(review["batches"].items())
+                   if decisions.answered(entry.get("decision") or {}, entry.get("sample") or (), {})]
+        with decisions.DecisionLedger.open(self.ledger, for_append=True) as ledger:
+            ledger.append(entries)
 
     def _admit(self, review, name="out"):
         components = {self.code.identity: self.code, self.configuration.identity: self.configuration}
         return admission.admit(self.qualification, review, None, self.folder / name, "2026-09-28", ROOT,
-                               components=components)
+                               decisions_path=self.ledger, components=components)
+
+    def _refused(self, review, name) -> str:
+        with self.assertRaises(decisions.DecisionLedgerError) as caught:
+            self._admit(review, name)
+        self.assertFalse((self.folder / name).exists())
+        return caught.exception.code
+
+    def _rewrite_qualification(self, change):
+        path = self.qualification / "qualification.jsonl"
+        rows = self._qualified()
+        for row in rows:
+            if row["identity"] == self.code.identity:
+                change(row)
+        path.write_text("".join(json.dumps(row) + "\n" for row in rows))
 
     def test_accepted_batch_is_written_and_read_by_the_manifest_builder(self):
         from tools.build_host_catalogue_manifest import _review_index
@@ -456,6 +496,9 @@ class AdmissionTests(unittest.TestCase):
         self.assertEqual({decision["reviewer_id"] for decision in row["decisions"]},
                          {admission._admission_reviewer_id(_record["admission_basis"]),
                           "tactical.gemma-4-coding-abliterated"})
+        basis = _record["admission_basis"]["decision_ledger"]
+        self.assertEqual(basis["sequences"], {self.code.batch: 1})
+        self.assertEqual(basis["sha256"], decisions.DecisionLedger.open(self.ledger, for_append=False).sha256)
 
     def test_a_rejected_sample_is_never_approved(self):
         from tools.build_host_catalogue_manifest import _review_index
@@ -472,18 +515,19 @@ class AdmissionTests(unittest.TestCase):
         first_review = self._review()
         self._admit(first_review, "first")
         second = json.loads(first_review.read_text())
+        second["seed"] = "second-seed-0123456789"
         second["batches"][self.code.batch]["decision"] = {"outcome": "withheld", "reasons": ["not selected"]}
-        qualified = [json.loads(line) for line in (self.qualification / "qualification.jsonl").read_text().splitlines()]
+        plan, decision = self._accepted(self.configuration, "second")
         second["batches"][self.configuration.batch] = {
-            "plan": {"batch_size": 1},
-            "frame_sha256": sampling.frame_digest(row for row in qualified if row["batch"] == self.configuration.batch),
-            "decision": {"outcome": "accepted", "reasons": [], "sampled": 1, "acceptance_number": 0,
-                         "defective": 0, "controls_planted": 1, "controls_rejected": 1},
+            "plan": plan, "decision": decision,
+            "frame_sha256": sampling.frame_digest(row for row in self._qualified()
+                                                  if row["batch"] == self.configuration.batch),
             "sample": [self.configuration.identity],
             "verdicts": [{"identity": self.configuration.identity, "decision": "approve", "criteria": [],
                           "reason": "", "call_ref": "second#1", "body_sha256": self.configuration.package.package_digest}]}
         second_review = self.folder / "second-review.json"
         second_review.write_text(json.dumps(second))
+        self._record(second)
         self._admit(second_review, "second")
         combined = self.folder / "combined"
         combine.combine(Namespace(base=self.folder / "first", base_group="first", add=[self.folder / "second"],
@@ -501,13 +545,10 @@ class AdmissionTests(unittest.TestCase):
         self.assertEqual(len(record["reviewers"]), 3)
 
     def test_an_uncommitted_qualifier_admits_nothing(self):
-        path = self.qualification / "qualification.jsonl"
-        rows = [json.loads(line) for line in path.read_text().splitlines()]
-        for row in rows:
-            row["qualifier"]["uncommitted_changes"] = True
-        path.write_text("".join(json.dumps(row) + "\n" for row in rows))
-        with self.assertRaises(ValueError):
-            self._admit(self._review(), "uncommitted")
+        review = self._review()
+        self._rewrite_qualification(lambda row: row["qualifier"].update({"uncommitted_changes": True}))
+        with self.assertRaisesRegex(ValueError, "not committed"):
+            self._admit(review, "uncommitted")
 
     def test_a_review_that_is_not_admissible_admits_nothing(self):
         with self.assertRaises(ValueError):
@@ -516,9 +557,7 @@ class AdmissionTests(unittest.TestCase):
 
     def test_same_population_size_cannot_substitute_different_reviewed_bytes(self):
         review = self._review()
-        document = json.loads(review.read_text())
-        document["batches"][self.code.batch]["frame_sha256"] = "0" * 64
-        review.write_text(json.dumps(document))
+        self._rewrite_qualification(lambda row: row.update({"package_digest": "0" * 64}))
         with self.assertRaisesRegex(ValueError, "exact qualified population"):
             self._admit(review, "changed_frame")
         self.assertFalse((self.folder / "changed_frame").exists())
@@ -532,12 +571,7 @@ class AdmissionTests(unittest.TestCase):
             self._admit(review, "changed_verdict")
 
     def test_changed_store_metadata_is_not_hidden_by_unchanged_package_bytes(self):
-        path = self.qualification / "qualification.jsonl"
-        rows = [json.loads(line) for line in path.read_text().splitlines()]
-        for row in rows:
-            if row["identity"] == self.code.identity:
-                row["record_version"] = "different-metadata-version"
-        path.write_text("".join(json.dumps(row) + "\n" for row in rows))
+        self._rewrite_qualification(lambda row: row.update({"record_version": "different-metadata-version"}))
         with self.assertRaisesRegex(ValueError, "stored metadata differs"):
             self._admit(self._review(), "changed_metadata")
 
@@ -549,6 +583,54 @@ class AdmissionTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "exact population binding"):
             self._admit(review, "legacy")
 
+    def test_admission_refuses_a_review_the_ledger_does_not_hold(self):
+        """Known wrong: a review whose decisions were never recorded, such as one written by code older than the
+        ledger, or a re-sample the ledger would have refused."""
+        self.assertEqual(self._refused(self._review(record=False), "unrecorded"), "decision_not_in_ledger")
+
+    def test_admission_refuses_a_decision_other_than_the_recorded_one(self):
+        review = self._review()
+        document = json.loads(review.read_text())
+        document["batches"][self.code.batch]["decision"]["decided_at"] = "2026-09-29T00:00:00Z"
+        review.write_text(json.dumps(document))
+        self.assertEqual(self._refused(review, "changed_decision"), "decision_differs_from_ledger")
+        other = self._review(record=False, seed="another-seed-0123456789")
+        self.assertEqual(self._refused(other, "other_review"), "decision_differs_from_ledger")
+
+    def test_admission_refuses_a_frame_the_ledger_decided_twice(self):
+        review = self._review()
+        withheld = json.loads(review.read_text())
+        withheld["seed"] = "earlier-seed-0123456789"
+        withheld["batches"][self.code.batch]["decision"] = dict(
+            withheld["batches"][self.code.batch]["decision"], outcome="withheld", reasons=["x"], defective=1)
+        self._record(withheld)
+        self.assertEqual(self._refused(review, "twice"), "frame_decided_more_than_once")
+
+    def test_admission_refuses_an_accepted_frame_holding_a_withheld_component(self):
+        code_row = next(row for row in self._qualified() if row["identity"] == self.code.identity)
+        other_batch = "data_tables/1.0.0@ffffffffffff"
+        members = [dict(code_row, batch=other_batch),
+                   dict(code_row, identity="library.supply.data_tables.other", package_digest="e" * 64,
+                        batch=other_batch)]
+        plan = sampling.plan_for(other_batch, 2, sampling.GeneratorHistory(sampling.generator_of(other_batch)))
+        decision = sampling.decide(plan, defective=1, decided=plan.sample_size, controls_planted=1,
+                                   controls_approved=0)
+        decision.update({"decided_at": "2026-09-27T00:00:00Z", "run_id": "earlier", "stop_reason": "completed"})
+        earlier = {"record_type": sampling.REVIEW_RECORD, "seed": "earlier-seed-0123456789",
+                   "started_at": "2026-09-27T00:00:00Z", "qualification": "q", "reviewer": "r",
+                   "producer_family": "anthropic", "batches": {other_batch: {
+                       "plan": plan.to_dict(), "decision": decision, "frame_sha256": sampling.frame_digest(members)}}}
+        entry = decisions.entry_for(earlier, other_batch, members, kind=decisions.RUN_SOURCE, review_path="earlier",
+                                    review_sha256=None, qualification_sha256="d" * 64, recorded_at="2026-10-05")
+        with decisions.DecisionLedger.open(self.ledger, for_append=True) as ledger:
+            ledger.append([entry])
+        self.assertEqual(self._refused(self._review(), "holds_withheld"), "accepted_frame_holds_withheld_components")
+
+    def test_admission_needs_a_ledger_that_reads_exactly(self):
+        review = self._review(record=False)
+        self.ledger = self.folder / "absent.jsonl"
+        self.assertEqual(self._refused(review, "no_ledger"), "decision_ledger_missing")
+
     def test_frame_identity_includes_store_version_and_digest_not_order(self):
         original = [{"identity": "a", "record_version": "v1", "package_digest": "a" * 64},
                     {"identity": "b", "record_version": "v1", "package_digest": "b" * 64}]
@@ -557,7 +639,6 @@ class AdmissionTests(unittest.TestCase):
             [original[0], {**original[1], "identity": "c"}]))
         self.assertNotEqual(sampling.frame_digest(original), sampling.frame_digest(
             [original[0], {**original[1], "record_version": "v2"}]))
-
 
 if __name__ == "__main__":
     unittest.main()

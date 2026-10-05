@@ -375,6 +375,21 @@ class DecisionLedger:
                                "decided_at": entry["decision"]["decided_at"]} for entry in self.entries],
                 "generators": generators}
 
+    def entries_for_frame(self, frame_sha256: str) -> list:
+        """Every recorded decision of one exact frame, in recorded order."""
+        return list(self._by_frame.get(frame_sha256, []))
+
+    def withheld_holding(self, records, *, besides=()) -> dict:
+        """Ledger sequence to (entry, identities) for each withheld frame, other than the sequences ``besides``,
+        that holds a component of ``records``, matched by identity or by package digest."""
+        shared = {}
+        for record in records:
+            for entry in (self._withheld_identity.get(record["identity"]),
+                          self._withheld_digest.get(record["package_digest"])):
+                if entry is not None and entry["sequence"] not in besides:
+                    shared.setdefault(entry["sequence"], (entry, set()))[1].add(record["identity"])
+        return shared
+
     def refusals(self, frames: dict) -> dict:
         """Batch to the reasons it may not be sampled: its exact frame was decided, or it holds a component of
         a withheld frame. ``frames`` maps each batch to its qualification records."""
@@ -384,12 +399,7 @@ class DecisionLedger:
             for entry in exact:
                 reasons.append(f"its exact frame was {entry['outcome']} on {entry['decision']['decided_at']} "
                                f"(ledger entry {entry['sequence']})")
-            shared, settled = {}, {entry["sequence"] for entry in exact}
-            for record in records:
-                for entry in (self._withheld_identity.get(record["identity"]),
-                              self._withheld_digest.get(record["package_digest"])):
-                    if entry is not None and entry["sequence"] not in settled:
-                        shared.setdefault(entry["sequence"], (entry, set()))[1].add(record["identity"])
+            shared = self.withheld_holding(records, besides={entry["sequence"] for entry in exact})
             for _sequence, (entry, identities) in sorted(shared.items()):
                 reasons.append(f"{len(identities)} of its components were in the frame of {entry['batch']} "
                                f"withheld on {entry['decision']['decided_at']} (ledger entry {entry['sequence']})")
@@ -422,6 +432,45 @@ class DecisionLedger:
             self._index(row)
         return {"sequences": [row["sequence"] for row in written], "sha256": self.sha256,
                 "entries": len(self.entries)}
+
+
+def check_admission(ledger: DecisionLedger, review: dict, review_sha256: str, accepted_frames: dict) -> dict:
+    """Batch to its ledger sequence, for every decision of a review its reviewer answered; or refuse.
+
+    Admission writes only what the ledger holds. Each decision on which the reviewer gave a valid verdict
+    (``answered``) must be the ledger's one recorded decision for that exact frame, equal field for field, made by
+    this review (seed, start, reviewer and producer family, and, for a backfilled entry, these exact review bytes).
+    A frame the ledger holds twice is refused, and so is an accepted frame that holds a component of a frame the
+    ledger withheld. ``accepted_frames`` maps each accepted batch to its qualification records. An unanswered
+    decision is withheld and admits nothing, so the ledger need not hold it."""
+    verdicts, matched = calibration_verdicts_of(review), {}
+    for batch, entry in sorted(review["batches"].items()):
+        decision = entry.get("decision") or {}
+        if decision.get("outcome") not in OUTCOMES or not answered(decision, entry.get("sample") or (), verdicts):
+            continue
+        recorded = ledger.entries_for_frame(entry.get("frame_sha256"))
+        if not recorded:
+            refuse("decision_not_in_ledger", f"{batch}: the decision ledger records no decision for this exact frame, "
+                                             "so this review's decision was never recorded")
+        if len(recorded) > 1:
+            refuse("frame_decided_more_than_once", f"{batch}: the ledger records {len(recorded)} decisions for this "
+                                                   f"frame (entries {[row['sequence'] for row in recorded]})")
+        row, source = recorded[0], recorded[0]["source"]
+        if (row["batch"] != batch or row["decision"] != decision
+                or (source["seed"], source["started_at"], source["reviewer"], source["producer_family"]) != (
+                    review.get("seed"), review.get("started_at"), review.get("reviewer"), review.get("producer_family"))
+                or source["review_sha256"] not in (None, review_sha256)):
+            refuse("decision_differs_from_ledger", f"{batch}: the review's decision is not the one ledger entry "
+                                                   f"{row['sequence']} records for this frame")
+        if decision["outcome"] == sampling.ACCEPTED:
+            held = ledger.withheld_holding(accepted_frames[batch], besides={row["sequence"]})
+            if held:
+                refuse("accepted_frame_holds_withheld_components",
+                       f"{batch}: " + "; ".join(f"{len(identities)} of its components were in the frame of "
+                                               f"{other['batch']} withheld (ledger entry {sequence})"
+                                               for sequence, (other, identities) in sorted(held.items())))
+        matched[batch] = row["sequence"]
+    return matched
 
 
 def open_for_review(path, authorized: bool) -> "DecisionLedger | None":

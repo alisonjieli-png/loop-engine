@@ -15,7 +15,10 @@ Admission folder (the format tools/write_reviewed_catalogue.py writes; read by c
 Rules: a component is admitted only when its qualification record says qualified for the exact package
 digest, its batch decision says accepted, and (when sampled) its reviewer approved it. A sampled component
 the reviewer rejected is written as rejected with the reviewer's reason and is never bundled. A withheld
-batch writes nothing but its line in the report. Nothing here calls a model or grants an effect.
+batch writes nothing but its line in the report. Before anything is written, every answered batch decision of
+the review must be the decision ledger's one recorded decision for its exact frame, and no accepted frame may
+hold a component of a frame the ledger withheld (decisions.check_admission); reviews.json names the ledger's
+digest and the entries it matched. Nothing here calls a model, writes the ledger or grants an effect.
 """
 from __future__ import annotations
 
@@ -94,8 +97,11 @@ def _reviewer_entries(root: Path, reviewer: str, basis: dict) -> list:
 
 
 def admit(qualification_folder: Path, review_path: Path, store_root: "Path | None", output: Path, recorded_at: str,
-          root: Path, *, components: "dict | None" = None) -> dict:
-    """Write the admission folder. ``components`` (identity to component) replaces the store for checks."""
+          root: Path, *, decisions_path: Path, components: "dict | None" = None) -> dict:
+    """Write the admission folder. ``components`` (identity to component) replaces the store for checks.
+
+    The review's decisions must be the ones the decision ledger at ``decisions_path`` records for those exact
+    frames (decisions.check_admission); the ledger is read, never written, and checked before anything is."""
     from tools.write_reviewed_catalogue import (FACET_ATTRIBUTES, HARNESS_KIND_ATTRIBUTE, STEP_FUNCTIONS_ATTRIBUTE,
                                                 TIER_ATTRIBUTE, declare, item_attributes)
     from tools.candidate_review.native import NativeReviewFile
@@ -104,21 +110,30 @@ def admit(qualification_folder: Path, review_path: Path, store_root: "Path | Non
         for line in stream:
             record = json.loads(line)
             qualification[record["identity"]] = record
-    review = json.loads(Path(review_path).read_text(encoding="utf-8"))
-    from . import sampling
+    review_bytes = Path(review_path).read_bytes()
+    review = json.loads(review_bytes.decode("utf-8"))
+    from . import decisions, sampling
     if review.get("record_type") != sampling.REVIEW_RECORD:
         raise ValueError("sampled review v2 with an exact population binding is required; rerun legacy review")
     if review.get("admissible") is not True:
         raise ValueError("the sampled review is not admissible: " + "; ".join(review.get("admissibility_reasons")
                                                                               or ["no admissibility record"]))
+    ledger = decisions.DecisionLedger.open(decisions_path, for_append=False)
+    accepted_frames = {batch: [record for record in qualification.values()
+                               if record["batch"] == batch and record["outcome"] == "qualified"]
+                       for batch, entry in review["batches"].items()
+                       if (entry.get("decision") or {}).get("outcome") == "accepted"}
+    sequences = decisions.check_admission(ledger, review, hashlib.sha256(review_bytes).hexdigest(), accepted_frames)
     output = Path(output)
     if output.exists():
         raise FileExistsError(f"{output} exists; an admission folder is written once")
     basis = {"qualification_run": str(qualification_folder),
              "qualification_sha256": hashlib.sha256((Path(qualification_folder) / "qualification.jsonl")
                                                     .read_bytes()).hexdigest(),
-             "sampled_review": str(review_path), "sampled_review_sha256": hashlib.sha256(
-                 Path(review_path).read_bytes()).hexdigest(), "sampling_policy": review["policy"]}
+             "sampled_review": str(review_path), "sampled_review_sha256": hashlib.sha256(review_bytes).hexdigest(),
+             "sampling_policy": review["policy"],
+             "decision_ledger": {"path": str(ledger.path), "sha256": ledger.sha256, "entries": len(ledger.entries),
+                                 "sequences": sequences}}
     reader = StoreReader(store_root) if components is None else None
     rows_by_id = {row["record_id"]: row for row in reader.rows()} if reader is not None else {}
 
@@ -285,4 +300,4 @@ def _revision(root: Path) -> str:
 
 def command(options, root: Path) -> dict:
     return admit(options.qualification, options.review, options.store_root, options.output, options.recorded_at,
-                 root)
+                 root, decisions_path=options.decisions)

@@ -9,7 +9,7 @@
     PYTHONPATH=src:tools python tools/qualify_generated_components.py decisions-backfill --decisions DECISIONS \\
         --review REVIEW.json [--review REVIEW.json ...] --recorded-at TIME
     PYTHONPATH=src:tools python tools/qualify_generated_components.py admit --qualification RUN \\
-        --review REVIEW.json --store-root STORE --output FOLDER --recorded-at DATE
+        --review REVIEW.json --store-root STORE --decisions DECISIONS --output FOLDER --recorded-at DATE
     PYTHONPATH=src:tools python tools/qualify_generated_components.py composition --bundle BUNDLE \\
         [--admitted FOLDER ...] [--output COMPOSITION.json]
 
@@ -19,7 +19,8 @@ from a family other than the producer's about a random sample of each generator 
 to the review ledger. The decision ledger holds every complete batch decision: plans read each generator's
 recorded defect rate from it, a decided frame is never sampled again, and decisions-backfill records the
 decisions of earlier review records in it. Admission writes the qualified components of accepted batches as
-a reviewed folder the existing combine and bundle tools read. See tools/component_qualification/README.md.
+a reviewed folder the existing combine and bundle tools read, only for decisions the ledger records. See
+tools/component_qualification/README.md.
 """
 from __future__ import annotations
 
@@ -200,6 +201,9 @@ def main(argv=None) -> int:
     admit.add_argument("--store-root", type=Path, required=True)
     admit.add_argument("--output", type=Path, required=True)
     admit.add_argument("--recorded-at", required=True)
+    admit.add_argument("--decisions", type=Path, required=True,
+                       help="The decision ledger: every answered batch decision of the review must be the one it "
+                            "records for that exact frame. It is read, never written.")
     mix = commands.add_parser("composition")
     mix.add_argument("--bundle", type=Path, required=True, help="The release bundle the library serves now.")
     mix.add_argument("--admitted", type=Path, action="append", default=[], help="An admission folder.")

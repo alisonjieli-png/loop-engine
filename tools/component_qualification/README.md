@@ -92,7 +92,8 @@ Generated component admission
 │   │   reviewer instructions, with a planted known-wrong control in each call
 │   └── decision per batch by the written rule, appended to the decision ledger
 └── 3. admission folder for accepted batches, in the format the combine and
-    bundle tools read; rejected samples are recorded and never bundled
+    bundle tools read, only for decisions the decision ledger records;
+    rejected samples are recorded and never bundled
 ```
 
 The default fast route runs static checks and population deduplication.
@@ -232,6 +233,16 @@ batch decision:
   does not cover the calibration and every planned call. The planned calls of
   later batches stay reserved, so an earlier batch's retries never leave a
   later batch short of calls.
+- `admit --decisions` reads the ledger, never writes it, and refuses before
+  it writes anything unless every answered batch decision of the review is
+  the ledger's one recorded decision for that exact frame, equal field for
+  field and made by this review (same seed, start, reviewer and producer
+  family, and for a backfilled entry the same review bytes): a review the
+  ledger does not hold, a decision other than the recorded one, a frame the
+  ledger holds twice, and an accepted frame that holds a component of a frame
+  the ledger withheld are each refused. `reviews.json` names the ledger's
+  digest and the entries admission matched. An unanswered decision is
+  withheld and admits nothing, so the ledger need not hold it.
 
 Each entry carries its sequence and the SHA-256 of the line before it, the
 batch, its generator and outcome, the decision as the written rule returned
@@ -315,6 +326,7 @@ PYTHONPATH=src:tools python tools/qualify_generated_components.py decisions-back
   --decisions DECISIONS --review REVIEW.json --review REVIEW.json --recorded-at TIME
 PYTHONPATH=src:tools python tools/qualify_generated_components.py admit \
   --qualification RUN --review REVIEW.json --store-root STORE --output FOLDER \
+  --decisions /home/username/baltor-library/generated-admission/decision-ledger.jsonl \
   --recorded-at DATE
 PYTHONPATH=src:tools python tools/qualify_generated_components.py composition \
   --bundle BUNDLE --admitted FOLDER
@@ -368,9 +380,9 @@ PYTHONPATH=src:tools python -m unittest tools.test_component_qualification \
   leaves a declared binary file alone.
 - The decision ledger guards the reviews this tool runs. It is a local file:
   a review given a newly created ledger reads no history, so every run must
-  name the canonical ledger. `admit` reads the review record and does not
-  check the ledger, and a review record written by code older than the ledger
-  is outside it until `decisions-backfill` records it.
+  name the canonical ledger, and `admit` must be given the same one. A review
+  record written by code older than the ledger admits nothing until
+  `decisions-backfill` records its decisions.
 - Nothing chains the last ledger line to a later one. Its digest is kept only
   in the review record of the run that appended it, or in the backfill's
   report.
