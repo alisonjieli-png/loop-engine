@@ -220,7 +220,12 @@ class OAuthAuthorizationProvider:
 
     def _commit(self, store, records, guards, *, new_records=0, new_clients=0):
         records, guards = list(records), list(guards)
-        if new_records:
+        if not new_records:
+            return self.catalog.commit(store, records, guards)
+        # Every write that adds records changes the one counter row. The writes of this process take turns from
+        # reading it to the commit, so concurrent authorizations and refreshes wait for one another instead of
+        # refusing one another; the counter's version guard still refuses a write of another process.
+        with self.catalog.serialized(LIMITS):
             prior, value = self._read(store, LIMITS, self.policy_id)
             value = value or {"records": 0, "clients": 0}
             if any(type(value[key]) is not int or value[key] < 0 for key in ("records", "clients")):
@@ -231,7 +236,7 @@ class OAuthAuthorizationProvider:
             counter = self._record(LIMITS, self.policy_id, {"records": count, "clients": clients})
             records.append(counter)
             guards.append(self.catalog.guard(prior, counter["record_id"]))
-        return self.catalog.commit(store, records, guards)
+            return self.catalog.commit(store, records, guards)
 
     def _client(self, store, client_id):
         if not isinstance(client_id, str) or not CLIENT_PATTERN.fullmatch(client_id):

@@ -28,7 +28,8 @@ from loop_engine.core.service_runtime import account_origin
 from loop_engine.core.service_runtime.browser_identity import VerifiedIdentity
 from loop_engine.core.service_runtime.http_auth import AuthenticatedHttpRequest, BROWSER_IDENTITY_AUTHENTICATION
 from loop_engine.core.service_runtime.oauth_authorization import (
-    ACCESS, CODE, GRANT, OPENAI_CALLBACK_PREFIX, OAuthAuthorizationPolicy, OAuthAuthorizationProvider,
+    ACCESS, CLIENT, CODE, GRANT, LIMITS, OPENAI_CALLBACK_PREFIX, REFRESH, REQUEST, OAuthAuthorizationPolicy,
+    OAuthAuthorizationProvider,
 )
 from loop_engine.core.service_runtime.records import (
     DEFAULT_SCOPES, ServiceCommitUnknown, ServiceRuntimeConfig, ServiceRuntimeError, SubjectBindingRequest, TenantRegistration,
@@ -316,6 +317,64 @@ class OAuthAuthorizationTests(unittest.IsolatedAsyncioTestCase):
         self.assertIsNone(await self.provider.load_refresh_token(self.client, tokens.refresh_token))
         self.assertIsNotNone(await self.provider.load_refresh_token(self.client, refreshed.refresh_token))
         self.assertIsNotNone(await self.provider.load_access_token(refreshed.access_token))
+
+    def params(self):
+        return AuthorizationParams(state="synthetic-state", scopes=list(DEFAULT_SCOPES), code_challenge=self.challenge,
+            redirect_uri=self.callback, redirect_uri_provided_explicitly=True, resource=self.policy.resource_url)
+
+    def counter(self):
+        with self.runtime._catalog.store() as store:
+            return self.provider._read(store, LIMITS, self.provider.policy_id)[1]
+
+    def stored(self):
+        return {kind: len(self.rows(kind)) for kind in (CLIENT, REQUEST, CODE, GRANT, ACCESS, REFRESH)}
+
+    def staged(self, other):
+        """Patch the commit so that the first write to commit first runs `other` on another thread (joined for 0.5 s)."""
+        state = {"victim": None, "thread": None}
+        original = ServiceCatalogBinding.commit
+        def commit(binding, *args, **kwargs):
+            if state["victim"] is None:
+                state["victim"], state["thread"] = threading.current_thread(), threading.Thread(target=other)
+                state["thread"].start()
+                state["thread"].join(timeout=0.5)
+            return original(binding, *args, **kwargs)
+        return mock.patch.object(ServiceCatalogBinding, "commit", commit), state
+
+    async def test_an_oauth_write_waits_for_another_clients_write_instead_of_refusing(self):
+        """Known wrong (October 5 review, c): every OAuth write that adds records read the one counter row outside any
+        lock and committed under its version guard with no retry, so a write that another write overtook answered 409
+        concurrent_update: 186 of 200 concurrent authorizations and 29 of 32 refreshes of different grants."""
+        tokens = await self.issue()
+        loaded = await self.provider.load_refresh_token(self.client, tokens.refresh_token)
+        for name, write in (("authorization", lambda: self.provider.authorize(self.client, self.params())),
+                            ("refresh", lambda: self.provider.exchange_refresh_token(self.client, loaded, list(DEFAULT_SCOPES)))):
+            with self.subTest(write=name):
+                outcomes = []
+                def other_authorization():
+                    try:
+                        asyncio.run(self.provider.authorize(self.client, self.params()))
+                        outcomes.append("authorized")
+                    except ServiceRuntimeError as error:
+                        outcomes.append(error.code)
+                patched, state = self.staged(other_authorization)
+                with patched:
+                    await write()
+                    await asyncio.to_thread(state["thread"].join, 10)
+                self.assertEqual(outcomes, ["authorized"])
+        self.assertEqual(self.counter()["records"], sum(self.stored().values()))
+
+    async def test_concurrent_authorizations_and_refreshes_of_different_grants_all_succeed(self):
+        from concurrent.futures import ThreadPoolExecutor
+        issued = [await self.issue() for _ in range(16)]
+        asyncio.get_running_loop().set_default_executor(ThreadPoolExecutor(16))
+        async def refresh(tokens):
+            loaded = await self.provider.load_refresh_token(self.client, tokens.refresh_token)
+            return await self.provider.exchange_refresh_token(self.client, loaded, list(DEFAULT_SCOPES))
+        outcomes = await asyncio.gather(*(self.provider.authorize(self.client, self.params()) for _ in range(64)),
+                                        *(refresh(tokens) for tokens in issued), return_exceptions=True)
+        self.assertEqual([type(value).__name__ for value in outcomes if isinstance(value, BaseException)], [])
+        self.assertEqual(self.counter()["records"], sum(self.stored().values()))
 
     async def test_read_contention_is_not_invalid_token(self):
         tokens = await self.issue()
