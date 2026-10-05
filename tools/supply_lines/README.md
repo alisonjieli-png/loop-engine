@@ -74,7 +74,9 @@ Supply lines (each writes library_supply_candidate/v1 records)
 │   ├── discovery mode (google_discovery.py): Google's discovery documents from its Apache-2.0 client
 │   │   repository, one version per API, resource names ({+name}) sent with their slashes
 │   ├── a stdlib client with argument checks, the credential by variable name, ApiError, and
-│   │   generated tests against a local mock that must pass before the package is kept
+│   │   generated tests against a local mock that must pass before the package is kept; the
+│   │   credential never follows a redirect, and a redirect to another origin is refused (tested
+│   │   in every package with two local servers on different ports)
 │   └── beside it (javascript_clients.py) an ES module with TypeScript declarations and node:test
 │       tests repeating the Python ones, kept only when they pass
 ├── api_tool_servers: one Model Context Protocol tool server per curated OpenAPI specification file
@@ -87,7 +89,8 @@ Supply lines (each writes library_supply_candidate/v1 records)
 │   │   (protocol versions 2025-06-18, 2025-03-26 and 2024-11-05); the tool table is JSON data and one
 │   │   request function sends with the generated client's helpers, copied from its template; tools.json
 │   ├── test_server.py: the server started as a subprocess, every request sent to a local mock by a shim;
-│   │   every tool is called once before the package is built and the whole file must pass to keep it
+│   │   every tool is called once before the package is built and the whole file must pass to keep it,
+│   │   a redirect from the mock to a second mock on another port among its known-wrong cases
 │   ├── files for Claude Code, Codex, OpenCode and Cursor that start python3 with the server and pass the
 │   │   credential variable by name, by the registry line's template
 │   └── its own line state; prose the publication checks would refuse is replaced by the tool's request,
@@ -186,6 +189,7 @@ what it no longer supplies.
 | Manim Community's `manim_directive.py` (the documentation's own runner) | Adopted for the scene line: a scene's code is exactly what the directive executes (`from manim import *`, then the content, doctest prompts removed its way). Not adopted: its shared `globals()`, which let a later example use a name an earlier one or the directive module bound; such a scene is refused as `name_unresolved`. |
 | Manim's own renderer (`tempconfig`, `dry_run`) | Adopted as the test engine: every frame is computed at low quality and nothing is written, so a test checks the scene runs without producing video files. Rendering the documented output (`manim render -s` or a video) stays the README's command. |
 | MCP generators from OpenAPI (Stainless, openapi-mcp-generator, FastMCP's OpenAPI provider) and the official MCP Python SDK | Rejected as engines for the tool server line: each writes a server with runtime dependencies (an SDK, an HTTP client, a web framework), and Stainless is winding its generator down. The line keeps the protocol's own rules (newline-delimited JSON-RPC over standard input and output, version negotiation, tool annotations) in one standard-library module, and reuses the API operation line's operations, licence decisions and client helpers. The SDK's client is used to check the servers by hand. |
+| Redirect handling of CPython's urllib.request, requests, urllib3 and fetch (Node's undici) | Adapted for the API clients and tool servers (October 5, 2026): urllib's own unredirected headers carry the credential, and a subclass of its redirect handler refuses another origin, as the repository's own tools already refuse redirects (core/custom_endpoint.py, the knowledge radar's check_service_status). Rejected as they stand: urllib copies every header but Content-Length and Content-Type to any host; on a change of host requests strips Authorization (and rebuilds cookies), urllib3 Authorization, Cookie and Proxy-Authorization, and fetch Authorization and Cookie, so a custom credential header such as X-Api-Key, and a query credential, travel on with each of them. |
 
 ## Commands
 
@@ -320,6 +324,26 @@ measured.
   pinned package, and says in its README that the server is third-party code.
 - API clients are Python only, and no specification of the first eight
   declares pagination, so no client pages through results.
+- Redirects, a defect found on October 5, 2026: urllib copies every request
+  header but Content-Length and Content-Type to whatever host a redirect
+  names, so every API client up to generator 1.7.0 (directory mode 1.2.0,
+  discovery mode 1.1.0) and every tool server of 1.0.0 sent its credential
+  header to any host a hostile or compromised API redirected to. Their
+  JavaScript modules let fetch follow, which drops Authorization on the way to
+  another origin but keeps a custom header such as X-Api-Key and a query
+  credential. From API operations 1.8.0 (directory 1.3.0, discovery 1.2.0)
+  and tool servers 1.1.0 the credential is an unredirected header (in
+  JavaScript, dropped before a redirect is followed), a redirect is followed
+  only within the API's origin (scheme, host and port), and one to another
+  origin ends in `ApiError` naming that origin (a tool error in a server)
+  before anything is sent there. Every generated test file proves it with
+  two local servers on different ports, so the generated tests now reach the
+  loopback interface; nothing else (`run_tests` closes every other host to
+  urllib, the server tests' shim likewise, and the JavaScript tests close
+  fetch but for that test). Packages stored by the earlier versions are
+  superseded when the lines run again. Remaining limit: an API that
+  redirects within its origin to an address that needs the credential gets
+  that request without it and answers with its own refusal.
 - A tool server is one process per harness; it answers up to four tool calls at
   once, gives no structured output schema, and returns one page of each answer.
   Its connection files start it from the project root (`tools/<key>/server.py`);
