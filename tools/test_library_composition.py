@@ -22,6 +22,7 @@ sys.path[:0] = [str(HERE), str(HERE.parent / "src")]
 
 from licensed_import import composition, review_export  # noqa: E402
 from licensed_import.discovery import SOURCE_PRIORITY  # noqa: E402
+from licensed_import.records import IMPORTED_VERBATIM  # noqa: E402
 from loop_engine.core.service_runtime.catalogue_attributes import (  # noqa: E402
     COMPONENT_FORM_KINDS, COMPONENT_FORMS, FORM_DECLARED, component_form_record)
 
@@ -31,7 +32,7 @@ DERIVED = {"skill", "skill_with_scripts", "mcp_server", "plugin", "marketplace",
            "instructions", "rules", "schema", "settings", "library_module"}
 
 
-def _payload(form, number, *, repository=None, authoring=None):
+def _payload(form, number, *, repository=None, authoring=IMPORTED_VERBATIM):
     kind = COMPONENT_FORM_KINDS[form][0]
     files = [{"path": "README.md", "digest": "a" * 64, "size_bytes": 10, "media_type": "text/markdown",
               "role": "other"}]
@@ -45,8 +46,7 @@ def _payload(form, number, *, repository=None, authoring=None):
                "repository": {"stars": 0}, "sources": ["test"], "findings": []}
     if form not in DERIVED:
         payload["component_form"] = component_form_record(form, kind, FORM_DECLARED)
-    if authoring:
-        payload["authoring"] = authoring
+    payload["authoring"] = authoring
     return payload
 
 

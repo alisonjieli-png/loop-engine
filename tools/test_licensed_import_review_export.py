@@ -19,9 +19,9 @@ HERE = Path(__file__).resolve().parent
 sys.path[:0] = [str(HERE), str(HERE.parent / "src")]
 
 from candidate_review import native  # noqa: E402
-from licensed_import import review_export  # noqa: E402
+from licensed_import import composition, review_export  # noqa: E402
 from licensed_import.discovery import SOURCE_PRIORITY  # noqa: E402
-from licensed_import.records import HOOK, PLUGIN_MANIFEST, SKILL  # noqa: E402
+from licensed_import.records import HOOK, IMPORTED_VERBATIM, PLUGIN_MANIFEST, SKILL  # noqa: E402
 
 KINDS = tuple(review_export.DEFAULT_KIND_SHARES)
 
@@ -31,7 +31,8 @@ def _payload(kind, number, *, code=False, stars=0, repository=None):
     if code:
         files.append({"path": "scripts/run.py", "digest": "b" * 64, "size_bytes": 10, "media_type": "text/x-python",
                       "role": "skill_script"})
-    return {"kind": kind, "name": f"{kind}-{number}", "record_id": f"{kind}.{number}",
+    # An imported candidate records how it was authored, as licensed_import/packaging.py writes it.
+    return {"kind": kind, "name": f"{kind}-{number}", "record_id": f"{kind}.{number}", "authoring": IMPORTED_VERBATIM,
             "package": {"body_form": "package", "files": files},
             "provenance": {"repository": repository or f"owner/{kind}-{number}", "path": f"{kind}/{number}"},
             "repository": {"stars": stars}}
@@ -144,6 +145,29 @@ class KindMixTest(unittest.TestCase):
         self.assertEqual(review_export.reviewable(image), "a_file_is_not_reviewable_text")
         self.assertEqual(review_export.mix_key(shell), review_export.SKILL_WITH_SCRIPTS)
         self.assertEqual(review_export.mix_key(image), SKILL)
+
+    def test_a_package_that_records_no_authoring_is_never_exported(self):
+        # Known wrong: a missing authoring read as imported verbatim, so the package was exported under the
+        # imported profile as though it were a verbatim copy (the review of October 5, 2026).
+        for authoring in ("missing", None, "", 7):
+            payload = _payload(SKILL, 1)
+            if authoring == "missing":
+                del payload["authoring"]
+            else:
+                payload["authoring"] = authoring
+            with self.subTest(authoring=authoring):
+                for mix in (review_export.BALANCED, review_export.RANKED):
+                    chosen, skipped = review_export.select([payload], {}, SOURCE_PRIORITY, limit=5, per_repository=5,
+                                                           kind_mix=mix)
+                    self.assertEqual(chosen, [])
+                    self.assertEqual(dict(skipped), {review_export.AUTHORING_NOT_RECORDED: 1})
+                plan = {}
+                chosen, _skipped = review_export.select([payload], {}, SOURCE_PRIORITY, limit=5, per_repository=5,
+                                                        kind_mix=review_export.COMPOSITION,
+                                                        targets=composition.load_targets(), target=5, plan=plan)
+                # Not exported, and not counted as waiting for a review profile either.
+                self.assertEqual((chosen, plan["held_for_review_profile"]), ([], {}))
+        self.assertIsNone(review_export.reviewable(_payload(SKILL, 2)))
 
 
 if __name__ == "__main__":

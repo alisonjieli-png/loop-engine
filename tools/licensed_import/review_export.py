@@ -102,6 +102,10 @@ DEFAULT_KIND_MIX = COMPOSITION
 #: profile of its own and is held, counted by family, instead of breaking the whole export's review.
 REVIEWABLE_AUTHORING = (IMPORTED_VERBATIM,)
 AWAITING_REVIEW_PROFILE = "awaiting_review_profile"
+#: A candidate that records no authoring cannot be shown to be a verbatim copy, so it is never exported under the
+#: imported profile, and it is counted under this reason rather than as waiting for a review profile. Until October
+#: 5, 2026 a missing field read as imported verbatim.
+AUTHORING_NOT_RECORDED = "authoring_not_recorded"
 #: A skill whose package holds a script is its own share, so code enters the library at a steady rate.
 SKILL_WITH_SCRIPTS = "skill_with_scripts"
 #: The balanced mix of one export, as shares of the limit (the default until September 27, 2026, kept as an
@@ -134,7 +138,10 @@ def identity_for(payload: dict) -> str:
 
 def reviewable(payload: dict) -> "str | None":
     """None when the panel can read every file of the package, or the reason it cannot."""
-    if payload.get("authoring", IMPORTED_VERBATIM) not in REVIEWABLE_AUTHORING:
+    authoring = payload.get("authoring")
+    if not isinstance(authoring, str) or not authoring:
+        return AUTHORING_NOT_RECORDED
+    if authoring not in REVIEWABLE_AUTHORING:
         return AWAITING_REVIEW_PROFILE
     files = payload["package"]["files"]
     if any(entry["media_type"] not in TEXT_MEDIA for entry in files):
