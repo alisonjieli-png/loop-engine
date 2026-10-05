@@ -389,13 +389,16 @@ def _pinned_launchers(component, policy) -> list:
 
 
 def _pinned_downloads(component, policy) -> list:
-    text = component.text("install.json")
+    """Every address a download manifest names is pinned: install.json, or the file the line declares as its
+    download_manifest (the creative line's creative.json)."""
+    name = policy["lines"].get(component.line, {}).get("download_manifest", "install.json")
+    text = component.text(name)
     if text is None:
         return []
     try:
         recipe = json.loads(text)
     except ValueError:
-        return [("install_recipe_invalid", "install.json is not JSON")]
+        return [("install_recipe_invalid", f"{name} is not JSON")]
     findings = []
 
     def walk(value, where):

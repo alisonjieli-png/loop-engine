@@ -228,6 +228,34 @@
      "x-baltor-table.series"
     ]
    }
+  },
+  "creative_assets": {
+   "kinds": [
+    "reference_image",
+    "three_d_model",
+    "template"
+   ],
+   "forms": [
+    "reference_image",
+    "three_d_model",
+    "template"
+   ],
+   "shape": "code",
+   "required_files": [
+    "LICENSE",
+    "ATTRIBUTION.md",
+    "README.md",
+    "creative.json",
+    "creative_fetch.py"
+   ],
+   "download_manifest": "creative.json",
+   "job_key": {
+    "json_file": "creative.json",
+    "fields": [
+     "job.source",
+     "job.identity"
+    ]
+   }
   }
  },
  "record_types": {
@@ -297,9 +325,10 @@
  "metadata_fact_roles": [
   "registry_entry",
   "package_metadata",
-  "repository_facts"
+  "repository_facts",
+  "terms_of_use"
  ],
- "metadata_fact_reason": "A registry entry, package metadata or repository facts record is read for names, versions, package identifiers and counts only; no text of it is copied into the package (the MCP line's link mode, basis link_only_facts_no_text_copied; the program line's GitHub repository facts). Such a fact may carry NOASSERTION when none of its bytes is a package file and at least one governing fact (licence text, specification, data, formula) carries an accepted licence.",
+ "metadata_fact_reason": "A registry entry, package metadata or repository facts record is read for names, versions, package identifiers and counts only; no text of it is copied into the package (the MCP line's link mode, basis link_only_facts_no_text_copied; the program line's GitHub repository facts). Such a fact may carry NOASSERTION when none of its bytes is a package file and at least one governing fact (licence text, specification, data, formula) carries an accepted licence. Terms of use (an API's terms of service, a site's licence page) are read for the clauses that permit the read and state the assets' licence, pinned by digest so a reviewer can read them again; they grant no licence to any byte and none of their text is copied, so they carry NOASSERTION like the other metadata (the creative line's Poly Haven and ambientCG terms, October 5, 2026).",
  "governing_fact_roles": [
   "licence_text",
   "specification",
@@ -320,7 +349,7 @@
   "plugin_manifest"
  ],
  "effect_text_reason": "The licensed import's effect rules read words as actions a harness is told to take, which is right for instruction, skill, command and configuration files. A README, a JSON Schema or code comments of a generated client describe a remote API ('uploads a file'), whose effect the network effect covers; on September 28, 2026 those words produced 501 false effect findings (reads_files and writes_files in README.md and schema.json) on components whose syntax trees touch no local file. Python code is judged by its syntax tree.",
- "job_key_reason": "One package for one job: an API operation is its specification file and its operation (method, path and the specification's operation identifier, since a specification may define several operations on one method and path, as Box does with URL fragments and OpenAI with beta variants: 23 such packages were refused as copies on September 28, 2026 when the key held method and path only); a protocol server is its registry package; a program is its formula; a data table or a copied schema is its upstream file bytes, not counting licence texts and notice files, which every package of one source shares; a schema generated from an API specification copies no upstream file, so it is its specification and its title (the September 30 run refused 8,787 of 9,142 schema packages as one job because the key held only the notice files or nothing). An animation scene is where its documentation shows it (the documented module, class or page) and its scene name, with its occurrence when one location shows two scenes of one name (Arrow's docstring shows two different ArrowExample scenes in Manim Community v0.21.0), and never the release tag, so the same scene read at two releases is one job. A publisher's table is its publisher and its series (schema.json x-baltor-table), never its bytes, its archive member's name or its retrieval time: a World Bank series retrieved twice, its values revised in between, is one job, and two series are two (publisher_tables, October 5, 2026). Two components with one job key are duplicates whatever their text. An API tool server is its specification file: the repository and path its server module declares, and the specification's address without its commit, so two revisions of one file are one job and two files are two, whatever tools each holds.",
+ "job_key_reason": "One package for one job: an API operation is its specification file and its operation (method, path and the specification's operation identifier, since a specification may define several operations on one method and path, as Box does with URL fragments and OpenAI with beta variants: 23 such packages were refused as copies on September 28, 2026 when the key held method and path only); a protocol server is its registry package; a program is its formula; a data table or a copied schema is its upstream file bytes, not counting licence texts and notice files, which every package of one source shares; a schema generated from an API specification copies no upstream file, so it is its specification and its title (the September 30 run refused 8,787 of 9,142 schema packages as one job because the key held only the notice files or nothing). An animation scene is where its documentation shows it (the documented module, class or page) and its scene name, with its occurrence when one location shows two scenes of one name (Arrow's docstring shows two different ArrowExample scenes in Manim Community v0.21.0), and never the release tag, so the same scene read at two releases is one job. A publisher's table is its publisher and its series (schema.json x-baltor-table), never its bytes, its archive member's name or its retrieval time: a World Bank series retrieved twice, its values revised in between, is one job, and two series are two (publisher_tables, October 5, 2026). Two components with one job key are duplicates whatever their text. An API tool server is its specification file: the repository and path its server module declares, and the specification's address without its commit, so two revisions of one file are one job and two files are two, whatever tools each holds. A creative asset recipe or editable project is its source and its asset or project identity (job.source and job.identity of creative.json), never its commit, resolution or format: the resolutions and formats of one asset are variants inside one package, so two packages pinning other resolutions of one asset, or one demo project at two commits, are one job.",
  "composition": {
   "targets_file": "src/loop_engine/data/library_composition.json",
   "targets_reason": "Builder e's library_composition_targets/v1 (September 27, 2026) is the authority once integrated; these shares are its copy for a checkout that does not hold it yet.",
@@ -444,7 +473,7 @@
   "http",
   "ftp"
  ],
- "download_reason": "A download is pinned by its SHA-256; the digest guarantees the bytes whatever the transport, as Homebrew itself accepts for source archives. Measured on September 28, 2026: the figlet recipe's source archive is served over ftp with its SHA-256 and was refused while the rule required https.",
+ "download_reason": "A download is pinned by its SHA-256; the digest guarantees the bytes whatever the transport, as Homebrew itself accepts for source archives. Measured on September 28, 2026: the figlet recipe's source archive is served over ftp with its SHA-256 and was refused while the rule required https. A line that pins downloads in another file names it as its download_manifest (the creative line's creative.json); every address there is checked the same way.",
  "address_schemes": [
   "https"
  ],

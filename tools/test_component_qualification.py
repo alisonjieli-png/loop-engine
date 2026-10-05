@@ -268,6 +268,50 @@ class NewRuleTests(unittest.TestCase):
         self.assertIsNone(checks.mutant(controls.configuration_fixture(REVISION), self.policy))
 
 
+def _creative(identity, resolutions, *, source="polyhaven", sha256="a" * 64):
+    """A creative asset recipe as the creative line writes it: its job and its pinned variants in creative.json."""
+    variants = [{"id": f"gltf-{resolution}", "resolution": resolution, "main": f"{identity}_{resolution}.gltf",
+                 "total_bytes": 10, "files": [{"path": f"{identity}_{resolution}.gltf", "role": "model",
+                                               "url": f"https://dl.example.org/{identity}_{resolution}.gltf",
+                                               "size_bytes": 10, "sha256": sha256}]} for resolution in resolutions]
+    manifest = {"record_type": "creative_asset_manifest/v1", "job": {"source": source, "identity": identity},
+                "asset": {"type": "model", "name": identity}, "hosts": ["dl.example.org"],
+                "default_variant": variants[0]["id"], "variants": variants}
+    files = {"creative.json": json.dumps(manifest, indent=1).encode(), "LICENSE": controls.MIT_TEXT.encode(),
+             "creative_fetch.py": b"def fetch(variant):\n    return variant\n",
+             "README.md": f"# {identity}\n\nA pinned recipe at {', '.join(resolutions)}.\n".encode()}
+    fact = {**controls._fact(f"https://dl.example.org/{identity}.json", identity.encode()), "role": "data_source"}
+    return controls._build("creative_assets", "three_d_model", "three_d_model", files, {}, (), {}, fact, REVISION, {})
+
+
+class CreativeLineTests(unittest.TestCase):
+    def setUp(self):
+        self.policy = _context().policy
+
+    def test_two_resolutions_of_one_asset_are_one_job(self):
+        small, large = _creative("apple", ["1k"]), _creative("apple", ["2k", "4k"])
+        self.assertNotEqual(small.package.package_digest, large.package.package_digest)
+        self.assertEqual(checks.job_key(small, self.policy), checks.job_key(large, self.policy))
+        self.assertEqual(checks.job_key(small, self.policy), "creative_assets|polyhaven|apple")
+        found = checks.duplicate_findings([small, large], self.policy)
+        later = max(small.identity, large.identity)
+        self.assertIn("same_job_as", [code for code, _detail in found[later]])
+        # Known wrong: another asset, or the same name at another source, is another job.
+        self.assertNotEqual(checks.job_key(small, self.policy), checks.job_key(_creative("pear", ["1k"]), self.policy))
+        self.assertNotEqual(checks.job_key(small, self.policy),
+                            checks.job_key(_creative("apple", ["1k"], source="ambientcg"), self.policy))
+
+    def test_every_address_of_the_download_manifest_is_pinned(self):
+        context = _context()
+        context.duplicates = {}
+        licence = next(check for check in checks.CHECKS if check.check_id == "licence_provenance")
+        codes = [code for code, _detail in licence.run(_creative("apple", ["1k"]), context).findings]
+        self.assertNotIn("download_not_pinned", codes)
+        codes = [code for code, _detail in licence.run(_creative("apple", ["1k"], sha256="not a digest"),
+                                                       context).findings]
+        self.assertIn("download_not_pinned", codes)
+
+
 class ReuseTests(unittest.TestCase):
     def _record(self, **changes):
         record = {"identity": "a", "record_version": "v1", "package_digest": "d" * 64, "qualified_at": "2026-09-28T01:00:00Z",
