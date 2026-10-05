@@ -57,6 +57,20 @@ class CodeEffectTests(unittest.TestCase):
     def test_environment_read_of_an_undeclared_name_is_not_a_secret(self):
         self.assertEqual(checks.code_effects("import os\nHOME = os.environ.get('HOME')\n", {"API_TOKEN"}), {})
 
+    def test_an_opener_built_by_urllib_sends_a_request_and_reads_no_file(self):
+        # A generated API client sends through urllib.request.build_opener(handler).open(request): the network.
+        for text in ("import urllib.request\n\ndef send(request):\n"
+                     "    return urllib.request.build_opener().open(request, timeout=5)\n",
+                     "from urllib.request import build_opener\nbuild_opener().open('https://example.com')\n",
+                     "import urllib.request as web\nweb.build_opener().open('https://example.com')\n"):
+            self.assertEqual(set(checks.code_effects(text, set())), {"network"}, text)
+        # Known wrong: any other open() is still a file read, an opener kept in a variable among them (the rule
+        # follows no variable, so it declares more, never less).
+        for text in ("from pathlib import Path\nPath('x').open().read()\n", "def f(stream):\n    return stream.open()\n",
+                     "import urllib.request\nopener = urllib.request.build_opener()\nopener.open('https://x')\n",
+                     "import urllib.request\nurllib.request.Request('https://x').open()\n"):
+            self.assertIn("reads_fs", checks.code_effects(text, set()), text)
+
 
 class UnittestOutputTests(unittest.TestCase):
     def test_parse(self):

@@ -559,6 +559,17 @@ def _dotted(node) -> str:
     return ""
 
 
+def _opener_request(node, aliases) -> bool:
+    """True for urllib.request.build_opener(...).open(...) written in one expression: the opener's open sends a
+    request (the network, which the module's import of urllib.request already shows) and reads no file. An
+    opener kept in a variable first is not followed, so its open still counts as a file read."""
+    receiver = node.func.value if isinstance(node.func, ast.Attribute) else None
+    if not isinstance(receiver, ast.Call):
+        return False
+    head, _, rest = _dotted(receiver.func).partition(".")
+    return (f"{aliases.get(head, head)}.{rest}" if rest else aliases.get(head, head)) == "urllib.request.build_opener"
+
+
 def code_effects(text: str, credentials) -> dict:
     """Effects a Python module's syntax tree shows, each with the first line that shows it."""
     tree = ast.parse(text)
@@ -605,7 +616,8 @@ def code_effects(text: str, credentials) -> dict:
                 note("reads_fs", node)
         if resolved in ("open", "io.open", "builtins.open") or (isinstance(node.func, ast.Attribute)
                                                                 and node.func.attr == "open" and resolved != "os.open"
-                                                                and head not in ("webbrowser",)):
+                                                                and head not in ("webbrowser",)
+                                                                and not _opener_request(node, aliases)):
             mode = node.args[1] if len(node.args) > 1 else next((keyword.value for keyword in node.keywords
                                                                  if keyword.arg == OPEN_MODE_KEYWORD), None)
             mode_text = mode.value if isinstance(mode, ast.Constant) and isinstance(mode.value, str) else "r"
