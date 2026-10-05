@@ -3,6 +3,7 @@ Python library, copied with exactly the code it needs.
 
 ```text
 function_sources.json: repository, branch, package folder, the modules to read
+├── withheld: a declared source not read, with the measured reason (refused as source_withheld)
 ├── licence: the repository's, where GitHub's licence interface and the text agree at the pinned commit
 ├── each module read at that commit by its git blob identity
 ├── each top-level function whose docstring holds examples (>>> lines)
@@ -101,6 +102,8 @@ NO_EXAMPLES, CLOSURE_UNRESOLVED, NEEDS_A_DEPENDENCY, CLOSURE_TOO_LARGE, CLOSURE_
 #:   code from these files under the repository's licence: the 12 conversions, 3 rdflib and 2 NLTK functions.
 NOT_A_REUSABLE_JOB, NO_DESCRIPTION, MODULE_LICENCE_DIFFERS = (
     "not_a_reusable_job", "no_description", "module_licence_differs")
+#: A declared source whose row says withheld (the measured reason): nothing of it is read or packaged.
+SOURCE_WITHHELD = "source_withheld"
 
 
 class ExtractRefused(ValueError):
@@ -117,6 +120,8 @@ def read_sources(path: Path = SOURCES_FILE) -> list:
     for row in record["sources"]:
         if not re.fullmatch(r"[a-z][a-z0-9_]{0,30}", row["vendor"]) or not row.get("modules"):
             raise ValueError(f"{row.get('source_id')}: a vendor is a lower-case word and a source names modules")
+        if "withheld" in row and not (isinstance(row["withheld"], str) and row["withheld"].strip()):
+            raise ValueError(f"{row.get('source_id')}: withheld is the measured reason a source is not read")
         rows.append(row)
     return rows
 
@@ -813,6 +818,10 @@ def generate(reader, sources, *, code_revision: str, licence_text: bytes, genera
                  "code_revision": code_revision}
     for source in sources:
         repository = source["repository"]
+        if source.get("withheld"):
+            # Declared and not read: the row keeps its curated modules, and its reason says what was measured.
+            refused.append(refusal(FUNCTION_EXTRACTS, SOURCE_WITHHELD, repository, source["withheld"]))
+            continue
         try:
             pinned, missing = pinned_files(reader, repository, source["branch"], source["modules"])
         except LookupError as error:

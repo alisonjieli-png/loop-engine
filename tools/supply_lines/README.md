@@ -87,7 +87,8 @@ Supply lines (each writes library_supply_candidate/v1 records)
 │   └── the upstream file byte for byte, its licence text beside it, a loader that refuses a
 │       changed file or a row that breaks the schema
 ├── function_extracts: one documented function of a permissive library with exactly the code it needs
-│   ├── kind code_module, form function; libraries in function_sources.json; generator 1.2.0
+│   ├── kind code_module, form function; libraries in function_sources.json; generator 1.2.0; a
+│   │   library row that says withheld, with the measured reason, is declared and not read
 │   ├── the function and its closure copied whole statement by statement across the package's own
 │   │   modules, names only annotations read among them; standard library imports written as imports;
 │   │   any other dependency refuses it
@@ -240,6 +241,19 @@ sources of the September 28 and October 1 runs (read offline on October 5:
 - New named refusals: `not_a_reusable_job` (11 of 1.1.0's packages),
   `no_description` (232) and `module_licence_differs` (17), with their
   measured rules beside the constants in `function_extracts.py`.
+
+A dry run of 1.2.0 on October 5, 2026 over the three libraries the defective
+samples came from (TheAlgorithms/Python at `35ccb2c`, pydash, NLTK) wrote
+1,349 packages where 1.1.0 writes 1,599 from the same commits. Of the 21
+defective samples, 3 are fixed (`predecessor`, `is_json`, `update_header`),
+8 are refused by the new rules, the 2 wrongly rejected are written as before,
+and 8 are still defective: each is TheAlgorithms' own code. Of the 51 sampled
+TheAlgorithms packages, 1.2.0 still writes 42, and 8 of those are these
+defects, 19 percent against the 5 percent tolerance. No generator rule can
+see a wrong algorithm that passes its own examples, so `function_sources.json`
+withholds TheAlgorithms/Python: the row keeps its curated modules and states
+the measured reason, and the line refuses it as `source_withheld` without
+reading it.
 
 ## Limits
 

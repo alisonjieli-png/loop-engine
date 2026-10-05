@@ -870,6 +870,7 @@
    "branch": "master",
    "package_root": "thealgorithms",
    "vendor": "thealgorithms",
+   "withheld": "October 5, 2026: the sampled review of September 30, 2026 found 18 of 51 sampled packages defective, 10 in this repository's own code, where no generator rule can see it (run to check: perfect_cube is wrong for 97 of the first 100 cubes, rank_of_matrix for 340 of 3,000 random matrices, and is_valid_email_address accepts a domain that ends in a hyphen). Generator 1.2.0 still writes 42 of the 51 at commit 35ccb2c, 8 of them among those 10: 19 percent, against the 5 percent tolerance a sampled batch is held to. Restore the row when the line checks each function beyond its own examples.",
    "maximum_functions": 8000,
    "modules": [
     "audio_filters/butterworth_filter.py",

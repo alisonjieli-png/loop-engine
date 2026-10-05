@@ -94,7 +94,7 @@ REFUSAL_REASONS = {
                         "closure_name_conflict", "examples_failed", "examples_do_not_exercise_the_function",
                         "duplicate_function", "blocked_by_static_check", "generated_test_failed",
                         "package_above_review_bound", "not_a_reusable_job", "no_description",
-                        "module_licence_differs"),
+                        "module_licence_differs", "source_withheld"),
     JSON_SCHEMAS: ("source_unreadable", "licence_not_on_allowlist", "licence_signals_disagree", "licence_unknown",
                    "schema_unreadable", "older_version_of_a_listed_schema", "needs_an_outside_reference",
                    "needs_a_sibling_schema", "valid_example_rejected", "blocked_by_static_check",

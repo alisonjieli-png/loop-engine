@@ -278,16 +278,20 @@ and 30, 2026:
 The recorded rates of `function_extracts/1.1.0` (21 of 58) and
 `program_installs/1.0.0` (6 of 106) are at or above the 5 percent tolerance,
 so neither generator version can be sampled into acceptance again; each needs
-a repaired generator with a new version. The stopped review of September 30,
-2026 at 15:26 decided nothing, so its two batches stay undecided. The
-September 30 review also withheld `data_tables/1.1.0@8ebc4a99e5a6` (frame
-381) with 0 of 52 sampled tables decided: the gateway refused all three of
-its calls for the context window before they reached the model. With no
-valid verdict, that decision is not recorded, `data_tables/1.1.0` has no
-recorded rate, and its frame may be sampled again. The 1,675 data tables
-qualified on October 5, 2026 (`qualification-06c61876-data_tables`: 511 at
-`872379b1fdb4`, 784 at `eafa4fe83785` and 380 of the withheld frame at
-`8ebc4a99e5a6`) all plan the zero-acceptance sample of 55 or 56.
+a repaired generator with a new version. `function_extracts/1.2.0` is that
+repair for the function line: the classification of the 21 defects and what
+changed are in the
+[supply lines README](../supply_lines/README.md#generator-120-of-function_extracts).
+The stopped review of September 30, 2026 at 15:26 decided nothing, so its two
+batches stay undecided. The September 30 review also withheld
+`data_tables/1.1.0@8ebc4a99e5a6` (frame 381) with 0 of 52 sampled tables
+decided: the gateway refused all three of its calls for the context window
+before they reached the model. With no valid verdict, that decision is not
+recorded, `data_tables/1.1.0` has no recorded rate, and its frame may be
+sampled again. The 1,675 data tables qualified on October 5, 2026
+(`qualification-06c61876-data_tables`: 511 at `872379b1fdb4`, 784 at
+`eafa4fe83785` and 380 of the withheld frame at `8ebc4a99e5a6`) all plan the
+zero-acceptance sample of 55 or 56.
 
 ## Records
 

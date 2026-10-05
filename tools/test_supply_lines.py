@@ -2208,6 +2208,32 @@ def header(project):
                          {"tidy": "module_licence_differs", "c2k": "module_licence_differs"})
         self.assertEqual(sorted(packages), ["header", "kelvin_of"])
 
+    def test_a_withheld_source_is_refused_by_name_before_anything_is_read(self):
+        from supply_lines import function_extracts as line
+
+        class Reader:
+            def __getattr__(self, name):
+                raise AssertionError(f"a withheld source was read: {name}")
+
+        source = {"source_id": "lib", "title": "lib", "repository": "example/lib", "branch": "main",
+                  "package_root": "lib", "vendor": "lib", "modules": ["lib/core.py"], "withheld": "the measured reason"}
+        with tempfile.TemporaryDirectory() as staging:
+            built, refused, _facts, summary = line.generate(Reader(), [source], code_revision="a" * 40,
+                                                            licence_text=LICENCE, generated_on="2026-10-05",
+                                                            staging=Path(staging))
+        self.assertEqual((built, summary, [(row["reason"], row["subject"], row["detail"]) for row in refused]),
+                         ([], [], [("source_withheld", "example/lib", "the measured reason")]))
+        # TheAlgorithms/Python stays declared with its curated modules and is not read: the September 30 review
+        # found its own code wrong where no generator rule can see it.
+        algorithms = next(row for row in line.read_sources() if row["source_id"] == "thealgorithms")
+        self.assertIn("September 30, 2026", algorithms["withheld"])
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "sources.json"
+            path.write_text(json.dumps({"record_type": line.SOURCES_RECORD_TYPE, "sources": [{**source,
+                                                                                            "withheld": " "}]}))
+            with self.assertRaises(ValueError):
+                line.read_sources(path)
+
 
 class SchemaCheckTest(unittest.TestCase):
     def test_the_validator_accepts_and_refuses_by_each_keyword(self):
