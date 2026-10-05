@@ -21,6 +21,9 @@ Kit
 │                  the library parses each record once a walk (controls: every grant materialized, the library copied)
 ├── coordination   one build at a time under an index root, a lost index built again, and the indexes of releases
 │                  no longer kept removed while the active release's, and during a grace its predecessor's, stay
+├── http           the loopback serving checks over a real socket with the host on the disk engine (when the
+│                  serving packages are installed): search, filters, downloads by path, a hot swap, a request
+│                  that finishes on the view it started with
 ├── commands       catalogue-formats, publish-catalogue of a version 2 bundle and index-catalogue through the
 │                  service entry point, a host start on the disk view, and a swap that renders the new view's
 │                  library page before installing it
@@ -303,6 +306,11 @@ def _request_path_checks(check, root):
     check("the_public_good_file_projection_reads_a_disk_view",
           collection(disk, binding_of(disk).public_good.snapshot(disk))
           == collection(memory, binding_of(memory).public_good.snapshot(memory)))
+    entries = disk.package_of("skill_042").files
+    check("the_disk_view_delivers_the_same_package_files",
+          [data for data, _entry in disk.read_package_entries("skill_042", entries)]
+          == [data for data, _entry in memory.read_package_entries("skill_042", memory.package_of("skill_042").files)]
+          and len(entries) >= 1)
     # A served view parses a package on its first use; one that names other bytes than its item is refused then.
     _position, stored_version, stored = disk.disk.base.records(["skill_042"])["skill_042"]
     record = json.loads(stored)
@@ -333,6 +341,42 @@ def _request_path_checks(check, root):
     # One walk materializes the account's grants and one checks each item; each parses every record once.
     check("a_list_on_the_disk_view_parses_each_record_once_for_each_walk", walked == 2 * len(names))
     check("a_list_that_copies_the_library_before_checking_it_is_detected", copied > 2 * len(names))
+
+
+#: What the loopback HTTP group needs, as core.service_runtime.http_checks does; without them it is not run.
+HTTP_MODULES = ("httpx", "starlette", "uvicorn", "mcp")
+
+
+def _http_checks(check, root):
+    """catalogue_serving_checks' loopback HTTP checks again, with the fixture's host on the disk engine: search,
+    filters, downloads by path with digests and one charge, a release swapped in while the service runs, and a
+    request finishing on the view it started with, over a real socket."""
+    from . import catalogue_serving_checks
+    from .catalogue_release_checks import Fixture
+    from .catalogue_serving import CatalogueSourceSettings
+    original = Fixture.__init__
+
+    def on_the_disk_engine(self, folder):
+        original(self, folder)
+        index_root = Path(folder) / "index"
+        index_root.mkdir(exist_ok=True)
+        self.settings = CatalogueSourceSettings("store", str(self.root / "bodies"),
+                                                record_type="service_catalogue_source/v2",
+                                                search_engine="sqlite_disk_index", index_root=str(index_root))
+    engines = []
+
+    def named(name, passed):
+        check(f"{name}_on_the_disk_engine", passed)
+    with patch.object(Fixture, "__init__", on_the_disk_engine):
+        original_view = Fixture.view
+
+        def view(self):
+            served = original_view(self)
+            engines.append(type(served).__name__)
+            return served
+        with patch.object(Fixture, "view", view):
+            catalogue_serving_checks._serving_checks(named, root)
+    check("the_http_checks_ran_on_disk_views", bool(engines) and set(engines) == {"DiskCatalogueView"})
 
 
 def _build_coordination_checks(check, root):
@@ -557,6 +601,9 @@ def run_checks(check=None):
     from .catalogue_lance_index import availability as lance_availability
     groups = [_edge_and_exactness_checks, _overlay_checks, _service_path_checks, _request_path_checks,
               _build_coordination_checks, _command_checks, _integrity_checks]
+    import importlib.util
+    if all(importlib.util.find_spec(name) is not None for name in HTTP_MODULES):
+        groups.append(_http_checks)
     if lance_availability()["available"]:
         groups.append(_lance_checks)
     for group in groups:
