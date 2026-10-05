@@ -17,9 +17,10 @@ batch ceiling. Each has a known-wrong control that puts the old behaviour back a
 """
 from __future__ import annotations
 
+from contextlib import redirect_stdout
 import hashlib
 import json
-from io import BytesIO
+from io import BytesIO, StringIO
 import tempfile
 import unittest
 from pathlib import Path
@@ -43,12 +44,6 @@ def _bundle(folder: Path, digests: dict[str, int]) -> Path:
 
 class DeltaArithmetic(unittest.TestCase):
     """Which blobs a release adds, and how they are grouped into puts."""
-
-    def test_a_blob_the_volume_holds_is_not_uploaded_again(self):
-        held = {"a" * 64, "b" * 64}
-        local = ["a" * 64, "b" * 64, "c" * 64]
-        missing = [value for value in local if value not in held]
-        self.assertEqual(missing, ["c" * 64])
 
     def test_a_put_carries_at_most_the_batch_ceiling(self):
         sizes = {f"{index:064x}": 100 for index in range(10)}
@@ -209,6 +204,25 @@ class DeltaPublishOrder(unittest.TestCase):
         self.assertIn('--expected-bundle-digest '+self.digest,command)
         self.assertIn('--expected-release '+'a'*64,command)
         self.assertTrue(any('rm -r' in command for command in self.commands))
+
+    def test_a_blob_the_base_holds_is_not_uploaded_again_and_one_it_lacks_is(self):
+        # A reconciled bundle writes only the bodies its base lacks, so the candidate here also keeps a copy of the base's
+        # 'held' body, as a bundle written with every payload would. The publish and the dry run's plan must both send
+        # 'new' alone. Until October 5, 2026 this check filtered a list written inside the test and called no tool code.
+        held=hashlib.sha256(b'held').hexdigest()
+        source=next(self.base.folder.glob('blobs/sha256/*/'+held))
+        kept=self.output/source.relative_to(self.base.folder)
+        kept.parent.mkdir(parents=True,exist_ok=True)
+        kept.write_bytes(source.read_bytes())
+        answer,upload=self.simulate()
+        self.assertEqual(upload.call_args.args[1],[hashlib.sha256(b'new').hexdigest()])
+        argv=['publish_catalogue_delta.py','slot',str(self.output),self.digest,'--base-bundle',str(self.base.folder),
+              '--base-release','a'*64,'--reconciliation-digest',self.plan['reconciliation_digest'],'--dry-run']
+        printed=StringIO()
+        with mock.patch('sys.argv',argv),redirect_stdout(printed):
+            self.assertEqual(delta.main(),0)
+        for plan in (answer,json.loads(printed.getvalue())):
+            self.assertEqual((plan['local_blobs'],plan['already_present'],plan['uploading'],plan['upload_bytes']),(2,1,1,3))
 
     def test_a_stale_base_refuses_before_any_remote_effect(self):
         with mock.patch.object(delta,'active_catalogue',return_value={**self.before,'release_id':'b'*64}), \
