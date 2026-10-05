@@ -127,6 +127,50 @@
     ["work_styles_to_work_activities", "Work Styles to Work Activities", "db_31_0_text/Work Styles to Work Activities.txt", null, "Which work activities each work style relates to."],
     ["work_styles_to_work_context", "Work Styles to Work Context", "db_31_0_text/Work Styles to Work Context.txt", null, "Which work context elements each work style relates to."]
    ]
+  },
+  "our_world_in_data": {
+   "publisher": "Our World in Data (Global Change Data Lab)",
+   "title": "Our World in Data SDG Tracker",
+   "origin": "our_world_in_data",
+   "repository": "owid/sdg-tracker",
+   "hosts": ["ourworldindata.org", "api.ourworldindata.org"],
+   "mode": "owid_charts",
+   "table_prefix": "owid",
+   "covered_by": ["world_bank_wdi"],
+   "goal_pages": {
+    "1": "https://ourworldindata.org/sdgs/no-poverty",
+    "2": "https://ourworldindata.org/sdgs/zero-hunger",
+    "3": "https://ourworldindata.org/sdgs/good-health-wellbeing",
+    "4": "https://ourworldindata.org/sdgs/quality-education",
+    "5": "https://ourworldindata.org/sdgs/gender-equality",
+    "6": "https://ourworldindata.org/sdgs/clean-water-sanitation",
+    "7": "https://ourworldindata.org/sdgs/affordable-clean-energy",
+    "8": "https://ourworldindata.org/sdgs/economic-growth",
+    "9": "https://ourworldindata.org/sdgs/industry-innovation-infrastructure",
+    "10": "https://ourworldindata.org/sdgs/reduced-inequalities",
+    "11": "https://ourworldindata.org/sdgs/sustainable-cities",
+    "12": "https://ourworldindata.org/sdgs/responsible-consumption-production",
+    "13": "https://ourworldindata.org/sdgs/climate-action",
+    "14": "https://ourworldindata.org/sdgs/life-below-water",
+    "15": "https://ourworldindata.org/sdgs/life-on-land",
+    "16": "https://ourworldindata.org/sdgs/peace-justice-institutions",
+    "17": "https://ourworldindata.org/sdgs/global-partnerships"
+   },
+   "chart_page": "https://ourworldindata.org/grapher/{series}",
+   "metadata_address": "https://ourworldindata.org/grapher/{series}.metadata.json?v=1&csvType=full&useColumnShortNames=true",
+   "data_address": "https://ourworldindata.org/grapher/{series}.csv?v=1&csvType=full&useColumnShortNames=true",
+   "indicator_address": "https://api.ourworldindata.org/v1/indicators/{indicator}.metadata.json",
+   "file_name": "{series}.csv",
+   "metadata_file_name": "{series}.metadata.json",
+   "licence": {
+    "rule": "every_origin",
+    "spdx": "CC-BY-4.0",
+    "values": {"CC BY 4.0": "CC-BY-4.0"},
+    "statement": "All data, visualizations, and code produced by Our World in Data are completely open access under the Creative Commons BY license",
+    "reason": "Our World in Data licenses its own work CC BY 4.0, which each chart page states with a link to the CC BY 4.0 deed, and says that third-party data stays under each provider's own licence. Each indicator's metadata names every origin with that origin's licence; a chart passes only when every origin of every indicator in it states CC BY 4.0 exactly and the publisher does not mark the indicator non-redistributable. Any other licence (CC BY 3.0 IGO, CC BY-NC-SA, OGL, a copyright notice, CC0 until its text travels) refuses the chart with the names found."
+   },
+   "shape": "csv_records",
+   "attribution": "Our World in Data: {name} ({series}). Data source: {source}. Our World in Data's own work is licensed under the Creative Commons Attribution 4.0 International License ({licence_address}), and each origin's data under that origin's own licence, CC BY 4.0 for every origin of this chart as its indicator metadata states."
   }
  }
 }

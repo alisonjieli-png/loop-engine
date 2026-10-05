@@ -57,7 +57,8 @@ GENERATED, UPSTREAM_VERBATIM, LICENCE_TEXT, ATTRIBUTION = FILE_ORIGINS = (
 #: Where the facts came from; each names the host the facts were read from.
 ORIGINS = {"mcp_official_registry": "registry.modelcontextprotocol.io", "github_repository": "github.com",
            "homebrew_formulae": "formulae.brew.sh", "apis_guru_directory": "api.apis.guru",
-           "world_bank_api": "api.worldbank.org", "onet_resource_center": "www.onetcenter.org"}
+           "world_bank_api": "api.worldbank.org", "onet_resource_center": "www.onetcenter.org",
+           "our_world_in_data": "ourworldindata.org"}
 #: What one fact source is to the package. A notice file is an upstream repository's NOTICE, carried verbatim
 #: under that repository's licence (Apache-2.0 section 4(d)); it is neither a licence text nor a fact the
 #: generator read to write code.
@@ -222,7 +223,7 @@ def record_id(line: str, key: str, package_digest: str) -> str:
 #: The state scopes of a line. A line written by two modes keeps one state per mode, so a complete run of one
 #: mode never withdraws what the other supplies (the curated and the directory mode of the API line).
 STATE_SCOPES = ("", "apis_guru_directory", "google_discovery", "api_components", "curated_schemas",
-                "world_bank_wdi", "onet_database")
+                "world_bank_wdi", "onet_database", "our_world_in_data")
 
 
 def state_record_id(line: str, scope: str = "") -> str:

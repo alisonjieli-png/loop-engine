@@ -1315,6 +1315,44 @@ def _onet_answers(tables, notice=ONET_NOTICE, page=ONET_PAGE):
             CC_BY: (200, CC_BY_TEXT)}
 
 
+OWID_STATEMENT = (b"<p>All data, visualizations, and code produced by Our World in Data are completely open access under "
+                  b"the <a href='https://creativecommons.org/licenses/by/4.0/'>Creative Commons BY license</a>.</p>")
+
+
+def _owid_answers(charts):
+    """Answers at the real Our World in Data addresses for {slug: {goals, origins, columns, ...}} charts, and the
+    World Development Indicators catalogue the collection defers to."""
+    from supply_lines import publisher_tables
+    sources = publisher_tables.read_sources()
+    collection = sources["collections"]["our_world_in_data"]
+    wdi = sources["collections"]["world_bank_wdi"]
+    catalogue = [{"page": 1, "pages": 1, "per_page": "2000", "total": 1}, [{"id": "FX.OWN.TOTL.ZS", "name": "x"}]]
+    answers = {wdi["catalogue"]: (200, json.dumps(catalogue).encode()), CC_BY: (200, CC_BY_TEXT)}
+    for goal, address in collection["goal_pages"].items():
+        links = "".join(f'<a href="/grapher/{slug}">{slug}</a>' for slug, chart in charts.items()
+                        if int(goal) in chart["goals"])
+        answers[address] = (200, f"<html><body>{links}</body></html>".encode())
+    for number, (slug, chart) in enumerate(charts.items()):
+        page = OWID_STATEMENT if chart.get("statement", True) else b"<p>Our charts are licensed under CC BY.</p>"
+        answers[collection["chart_page"].format(series=slug)] = (200, b"<html><body>" + page + b"</body></html>")
+        columns = {name: {"owidVariableId": 1000 * number + index, "titleShort": slug, "unit": "%",
+                          "timespan": "2020-2021", "citationShort": "Example (2026)", "citationLong": "Example (2026).",
+                          "descriptionShort": "A share."} for index, name in enumerate(chart.get("columns", ["value"]))}
+        answers[collection["metadata_address"].format(series=slug)] = (200, json.dumps(
+            {"chart": {"title": slug.replace("-", " ")}, "columns": columns}).encode())
+        for column in columns.values():
+            indicator = {"nonRedistributable": chart.get("non_redistributable", False),
+                         "origins": [{"producer": producer, "license": {"name": licence, "url": "https://x.org/"}}
+                                     for producer, licence in chart["origins"]]}
+            answers[collection["indicator_address"].format(indicator=column["owidVariableId"])] = (
+                200, json.dumps(indicator).encode())
+        header = "entity,code,year," + ",".join(chart.get("columns", ["value"]))
+        rows = [f"Chad,TCD,{year}," + ",".join("1.5" for _name in chart.get("columns", ["value"]))
+                for year in (2020, 2021)]
+        answers[collection["data_address"].format(series=slug)] = (200, ("\n".join([header] + rows) + "\n").encode())
+    return answers
+
+
 class PublisherTableLineTest(unittest.TestCase):
     def _generate(self, answers, collection="world_bank_wdi", only=(), retrieved_at="2026-10-05T00:00:00Z"):
         from supply_lines import publisher_tables as line
@@ -1413,7 +1451,8 @@ class PublisherTableLineTest(unittest.TestCase):
     def test_a_declaration_maps_values_only_to_allowlisted_licences_on_declared_hosts(self):
         from supply_lines import publisher_tables as line
         record = json.loads(line.SOURCES_FILE.read_text(encoding="utf-8"))
-        self.assertEqual(sorted(line.read_sources()["collections"]), ["onet_database", "world_bank_wdi"])
+        self.assertEqual(sorted(line.read_sources()["collections"]), ["onet_database", "our_world_in_data",
+                                                                       "world_bank_wdi"])
         wrong = []
         bad = copy.deepcopy(record)
         bad["collections"]["world_bank_wdi"]["licence"]["values"]["CC BY 3.0 IGO"] = "CC-BY-3.0-IGO"
@@ -1431,6 +1470,15 @@ class PublisherTableLineTest(unittest.TestCase):
         wrong.append(bad)
         bad = copy.deepcopy(record)
         bad["collections"]["onet_database"]["tables"].append(bad["collections"]["onet_database"]["tables"][0])
+        wrong.append(bad)
+        bad = copy.deepcopy(record)
+        bad["collections"]["our_world_in_data"]["covered_by"] = ["onet_database"]
+        wrong.append(bad)
+        bad = copy.deepcopy(record)
+        del bad["collections"]["our_world_in_data"]["goal_pages"]["17"]
+        wrong.append(bad)
+        bad = copy.deepcopy(record)
+        bad["collections"]["our_world_in_data"]["licence"]["values"]["CC BY-NC-SA 3.0 IGO"] = "CC-BY-NC-SA-3.0-IGO"
         wrong.append(bad)
         with tempfile.TemporaryDirectory() as folder:
             for number, value in enumerate(wrong):
@@ -1571,6 +1619,40 @@ class PublisherTableLineTest(unittest.TestCase):
         by_bytes = copy.deepcopy(policy)
         by_bytes["lines"][records.PUBLISHER_TABLES]["job_key"] = {"upstream_digests": True}
         self.assertNotEqual(checks.job_key(first, by_bytes), checks.job_key(again, by_bytes))
+
+    def test_a_chart_is_kept_only_when_every_origin_states_an_allowlisted_licence(self):
+        cc_by = [("Global Carbon Project", "CC BY 4.0"), ("Various sources", "CC BY 4.0")]
+        charts = {"co-emissions-per-capita": {"goals": [13, 7], "origins": cc_by},
+                  "maternal-mortality": {"goals": [3], "origins": [("WHO", "CC BY 4.0"),
+                                                                 ("United Nations", "\u00a9 2026 United Nations")]},
+                  "household-air-pollution": {"goals": [3], "origins": cc_by, "non_redistributable": True},
+                  "site-footer-only": {"goals": [11], "origins": cc_by, "statement": False},
+                  "account-at-financial-institution": {"goals": [8], "origins": [("World Bank", "CC BY 4.0")],
+                                                       "columns": ["fx_own_totl_zs"]},
+                  "unknown-origin-licence": {"goals": [14], "origins": [("Somebody", "")]}}
+        built, refused, _facts, summary, reader = self._generate(_owid_answers(charts), "our_world_in_data")
+        self.assertEqual([payload["repository"]["series"] for payload, _bodies in built], ["co-emissions-per-capita"])
+        payload, bodies = built[0]
+        # The goals are the publisher's own: the SDG Tracker pages that list the chart.
+        self.assertEqual((payload["repository"]["sdg_goals"], payload["repository"]["sdg_rule"]),
+                         ([7, 13], "owid_sdg_tracker:7,13"))
+        roles = sorted(fact["role"] for fact in payload["provenance"]["facts"])
+        self.assertEqual(roles, ["data_source", "licence_evidence", "licence_evidence", "licence_text"])
+        files = self._files(payload, bodies)
+        self.assertIn("data/indicator-0.metadata.json", files)
+        self.assertIn("Our World in Data: co emissions per capita", files["README.md"].decode())
+        reasons = {row["subject"]: (row["reason"], row["detail"]) for row in refused}
+        self.assertEqual(reasons["maternal-mortality"][0], "licence_not_on_allowlist")
+        self.assertIn("United Nations: \u00a9 2026 United Nations", reasons["maternal-mortality"][1])
+        self.assertEqual(reasons["household-air-pollution"],
+                         ("licence_not_on_allowlist", "the publisher marks the indicator non-redistributable"))
+        self.assertEqual(reasons["site-footer-only"][0], "licence_evidence_missing")
+        self.assertEqual(reasons["account-at-financial-institution"][0], "duplicate_table")
+        self.assertIn("world_bank_wdi:FX.OWN.TOTL.ZS", reasons["account-at-financial-institution"][1])
+        self.assertEqual(reasons["unknown-origin-licence"][0], "licence_unknown")
+        # A refused chart's data is never read.
+        self.assertFalse([url for url in reader.asked if "maternal-mortality.csv" in url])
+        self.assertEqual(summary["charts_listed"], 6)
 
     def test_sdg_goals_follow_the_rules_as_data_and_are_what_a_grant_takes(self):
         from loop_engine.core.provisioning_server import ProvisioningItemBinding

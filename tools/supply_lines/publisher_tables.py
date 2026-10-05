@@ -69,8 +69,9 @@ SDG_RULES_RECORD_TYPE = "library_supply_sdg_goal_rules/v1"
 #: The record type of a run's SDG proposal, the one artifacts/sdg-supply-2026-10-01/sdg-source-map.json uses.
 SDG_MAP_RECORD_TYPE = "sdg_supply_source_map/v1"
 NATIVE_FORMAT = "reference_data_table"
-WORLD_BANK_SERIES, DECLARED_TABLES = MODES = ("world_bank_series", "declared_tables")
-SERIES_METADATA, COLLECTION_STATEMENT = LICENCE_RULES = ("series_metadata", "collection_statement")
+WORLD_BANK_SERIES, DECLARED_TABLES, OWID_CHARTS = MODES = ("world_bank_series", "declared_tables", "owid_charts")
+SERIES_METADATA, COLLECTION_STATEMENT, EVERY_ORIGIN = LICENCE_RULES = (
+    "series_metadata", "collection_statement", "every_origin")
 #: The largest archive member read; a declared table is far smaller, and this bounds a damaged archive.
 MAXIMUM_MEMBER_BYTES = 128 * 1024 * 1024
 #: Room a package keeps for its generated files (loader, schema, tests, README, attribution) when the line
@@ -80,7 +81,9 @@ GENERATED_ROOM_BYTES = 96 * 1024
 MAXIMUM_FAILURES_IN_A_ROW = 5
 #: The reasons that say the publisher could not be read, which make a run incomplete (it withdraws nothing).
 UNREAD_REASONS = ("source_unreadable", "licence_evidence_missing")
-_IDENTIFIER = re.compile(r"[a-z][a-z0-9_]{1,60}\Z")
+#: A table identifier: it names the module (<id>_table.py) and its test (test_<id>_table.py), whose file names stay
+#: within the catalogue package's 100 characters a path segment.
+_IDENTIFIER = re.compile(r"[a-z][a-z0-9_]{1,79}\Z")
 _SERIES = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}\Z")
 _UTF8_MARK = b"\xef\xbb\xbf"
 #: Cells of a README table hold one line without the column separator.
@@ -104,6 +107,13 @@ def _collection_problems(collection: dict, texts: dict) -> list:
     addresses = [collection.get("data_address")]
     if collection.get("mode") == WORLD_BANK_SERIES:
         addresses += [collection.get("catalogue"), collection.get("metadata_address")]
+    if collection.get("mode") == OWID_CHARTS:
+        pages = collection.get("goal_pages") or {}
+        if sorted(pages, key=lambda goal: int(goal) if str(goal).isdigit() else 0) != [str(goal) for goal in
+                                                                                   range(1, 18)]:
+            problems.append("goal_pages names one page for each of the 17 goals")
+        addresses += list(pages.values()) + [collection.get(name) for name in
+                                             ("chart_page", "metadata_address", "indicator_address")]
     licence = collection.get("licence") or {}
     if licence.get("rule") == COLLECTION_STATEMENT:
         addresses.append(licence.get("evidence_address"))
@@ -115,6 +125,12 @@ def _collection_problems(collection: dict, texts: dict) -> list:
         values = licence.get("values") or {}
         if not licence.get("field") or not values or any(spdx not in texts for spdx in values.values()):
             problems.append("a series rule names its field and maps exact values to allowlisted licences with texts")
+    elif licence.get("rule") == EVERY_ORIGIN:
+        values = licence.get("values") or {}
+        if not values or any(spdx not in texts for spdx in values.values()) or licence.get("spdx") not in texts \
+                or not licence.get("statement"):
+            problems.append("an every-origin rule maps exact origin licence names to allowlisted licences with texts, "
+                            "and names the publisher's own licence and the statement of it on each chart page")
     else:
         problems.append(f"licence rule {licence.get('rule')!r}")
     for address in addresses:
@@ -122,7 +138,11 @@ def _collection_problems(collection: dict, texts: dict) -> list:
             problems.append(f"{str(address)[:80]} is not an HTTPS address on a declared host")
     if collection.get("shape") not in TEXT_SHAPES:
         problems.append("the shape is a delimited text table")
-    if collection.get("mode") == DECLARED_TABLES:
+    if collection.get("mode") == OWID_CHARTS:
+        missing = [name for name in ("file_name", "metadata_file_name") if not collection.get(name)]
+        if missing:
+            problems.append(f"a chart collection names {', '.join(missing)}")
+    elif collection.get("mode") == DECLARED_TABLES:
         seen = set()
         for row in collection.get("tables") or [None]:
             if not isinstance(row, list) or len(row) != 5 or not _IDENTIFIER.match(str(row[0])) or row[0] in seen:
@@ -139,6 +159,8 @@ def _collection_problems(collection: dict, texts: dict) -> list:
             problems.append(f"a series catalogue names {', '.join(missing)}")
     if not collection.get("attribution") or not collection.get("publisher") or not collection.get("title"):
         problems.append("a collection names its publisher, title and attribution")
+    if not isinstance(collection.get("covered_by", []), list):
+        problems.append("covered_by lists collections")
     return problems
 
 
@@ -155,15 +177,32 @@ def read_sources(path: Path = SOURCES_FILE) -> dict:
         raise ValueError("sdg_goal_names names the 17 goals")
     for collection_id, collection in record["collections"].items():
         problems = _collection_problems(collection, texts) if _IDENTIFIER.match(collection_id) else ["its name"]
+        problems += [f"covered_by {name!r} is not a declared series catalogue" for name in
+                     collection.get("covered_by", []) if not isinstance(record["collections"].get(name), dict)
+                     or record["collections"][name].get("mode") != WORLD_BANK_SERIES]
         if problems:
             raise ValueError(f"publisher_table_sources.json: {collection_id}: {'; '.join(problems)}")
     return record
 
 
 def hosts(sources: dict, collection_id: str) -> tuple:
-    """Every host a run of one collection reads: the collection's own and the licence texts' stewards."""
-    return tuple(sorted(set(sources["collections"][collection_id]["hosts"])
+    """Every host a run of one collection reads: the collection's own, the licence texts' stewards and the catalogue
+    host of a collection whose series it defers to (covered_by)."""
+    collection = sources["collections"][collection_id]
+    covering = [sources["collections"][name] for name in collection.get("covered_by", [])]
+    return tuple(sorted(set(collection["hosts"]) | {_host(other["catalogue"]) for other in covering}
                         | {_host(text["legal_code"]) for text in sources["licence_texts"].values()}))
+
+
+def covering_codes(reader, sources: dict, collection: dict) -> dict:
+    """Normalized series code (lower case, dots as underscores) to the covering collection's own code, of every
+    collection this one defers to: a chart that only republishes such series has its canonical file there."""
+    codes = {}
+    for name in collection.get("covered_by", []):
+        for entry in _catalogue(reader, sources["collections"][name]["catalogue"]):
+            code = str(entry.get("id") or "")
+            codes[re.sub(r"[^a-z0-9]+", "_", code.lower())] = f"{name}:{code}"
+    return codes
 
 
 def _goals_valid(goals) -> bool:
@@ -499,6 +538,164 @@ def declared_rows(reader, collection_id: str, collection: dict, only=()) -> tupl
                       "archive_sha256": archive.sha256, "archive_bytes": len(archive.body)}
 
 
+def owid_charts(reader, collection: dict) -> tuple:
+    """(chart slug to the goals whose SDG Tracker page lists it, refusals) from the publisher's own goal pages."""
+    charts, refused = {}, []
+    for goal, address in sorted(collection["goal_pages"].items(), key=lambda item: int(item[0])):
+        answer = reader.get(address)
+        if answer.status != 200:
+            refused.append(refusal(PUBLISHER_TABLES, "source_unreadable", f"goal {goal} page",
+                                   f"{address} answered {answer.status}"))
+            continue
+        for slug in dict.fromkeys(re.findall(r'/grapher/([a-z0-9][a-z0-9-]{0,120})(?=["?#/])',
+                                             answer.body.decode("utf-8", "replace"))):
+            charts.setdefault(slug, []).append(int(goal))
+    return charts, refused
+
+
+def _round_robin(charts: dict) -> list:
+    """Chart slugs taking each goal's next chart in turn, so a limited run still reaches every goal."""
+    by_goal = {}
+    for slug, goals in sorted(charts.items()):
+        by_goal.setdefault(goals[0], []).append(slug)
+    order, queues = [], [list(by_goal[goal]) for goal in sorted(by_goal)]
+    while any(queues):
+        for queue in queues:
+            if queue:
+                order.append(queue.pop(0))
+    return order
+
+
+def origin_licences(indicator: dict, rule: dict) -> tuple:
+    """(allowlisted identifiers, refusal or None) of one indicator's origins, each by its own stated licence."""
+    if indicator.get("nonRedistributable"):
+        return set(), ("licence_not_on_allowlist", "the publisher marks the indicator non-redistributable")
+    origins = indicator.get("origins") or []
+    if not origins:
+        return set(), ("licence_unknown", "the indicator names no origin")
+    found, refused = set(), []
+    for origin in origins:
+        name = str(((origin.get("license") or {}).get("name")) or "").strip()
+        spdx = rule["values"].get(name)
+        if spdx is None or spdx not in ALLOWED_LICENCES:
+            refused.append(f"{str(origin.get('producer') or '?')[:60]}: {name or 'no licence'}")
+        else:
+            found.add(spdx)
+    if refused:
+        reason = "licence_unknown" if all(item.endswith(": no licence") for item in refused) else \
+            "licence_not_on_allowlist"
+        return set(), (reason, "; ".join(refused))
+    return found, None
+
+
+def owid_rows(reader, collection_id: str, collection: dict, only=(), maximum: int = 0,
+              deeds: "dict | None" = None, covered: "dict | None" = None) -> tuple:
+    """(rows, refusals, summary) of the charts the publisher's SDG Tracker pages list: each chart whose own page
+    states the publisher's licence and whose every indicator's every origin states an allowlisted licence."""
+    charts, refused = owid_charts(reader, collection)
+    order = _round_robin(charts)
+    if only:
+        order = [slug for slug in order if slug in set(only)]
+    if maximum:
+        order = order[:maximum]
+    licence, rows, decisions = collection["licence"], [], Counter()
+    deed = (deeds or {}).get(licence["spdx"], "")
+    failures, stopped = 0, None
+    for number, slug in enumerate(order):
+        table_id = _table_id(collection, slug)
+        if not _IDENTIFIER.match(table_id):
+            refused.append(refusal(PUBLISHER_TABLES, "source_unreadable", slug, "not a chart name"))
+            continue
+        try:
+            page = reader.get(collection["chart_page"].format(series=slug))
+            metadata = reader.get(collection["metadata_address"].format(series=slug))
+        except (RequestCeilingReached, PauseExceedsBound) as error:
+            stopped = {"reason": type(error).__name__, "charts_left": len(order) - number}
+            break
+        if page.status != 200 or metadata.status != 200:
+            failures += 1
+            refused.append(refusal(PUBLISHER_TABLES, "source_unreadable", slug,
+                                   f"chart page {page.status}, metadata {metadata.status}"))
+            if failures >= MAXIMUM_FAILURES_IN_A_ROW:
+                stopped = {"reason": "failed_answers_in_a_row", "charts_left": len(order) - number - 1}
+                break
+            continue
+        failures = 0
+        if not states(page.body, licence["statement"]) or not deed or deed.encode() not in page.body:
+            refused.append(refusal(PUBLISHER_TABLES, "licence_evidence_missing", slug,
+                                   "the chart page does not state the publisher's own licence with its deed"))
+            continue
+        try:
+            columns = json.loads(metadata.body).get("columns") or {}
+            identifiers = [int(column["owidVariableId"]) for column in columns.values()]
+        except (ValueError, TypeError, KeyError, AttributeError):
+            identifiers = []
+        if not identifiers:
+            refused.append(refusal(PUBLISHER_TABLES, "source_unreadable", slug, "the chart metadata names no indicator"))
+            continue
+        republished = [covered[name] for name in columns if name in (covered or {})]
+        if republished and len(republished) == len(columns):
+            decisions["duplicate_table"] += 1
+            refused.append(refusal(PUBLISHER_TABLES, "duplicate_table", slug,
+                                   f"every column republishes a series whose canonical file is {', '.join(republished)}"))
+            continue
+        evidence, spdx_found, problem = [], set(), None
+        for identifier in identifiers:
+            address = collection["indicator_address"].format(indicator=identifier)
+            answer = reader.get(address)
+            if answer.status != 200:
+                problem = ("source_unreadable", f"{address} answered {answer.status}")
+                break
+            try:
+                found, problem = origin_licences(json.loads(answer.body), licence)
+            except (ValueError, AttributeError):
+                found, problem = set(), ("source_unreadable", f"{address} is not an indicator record")
+            if problem:
+                break
+            spdx_found |= found
+            evidence.append((address, answer))
+        if problem:
+            decisions[problem[0]] += 1
+            refused.append(refusal(PUBLISHER_TABLES, problem[0], slug, problem[1]))
+            continue
+        decisions["agreed"] += 1
+        column = next(iter(columns.values()))
+        title = str((json.loads(metadata.body).get("chart") or {}).get("title") or column.get("titleShort") or slug)
+        goals = sorted(set(charts[slug]))
+        pages = [collection["goal_pages"][str(goal)] for goal in goals]
+        rows.append({
+            "collection_id": collection_id, "table_id": table_id, "title": title, "series": slug, "path": slug,
+            "address": collection["data_address"].format(series=slug), "member": None,
+            "file_name": collection["file_name"].format(series=slug), "key_field": None,
+            "licence": {"spdx": licence["spdx"], "value": ", ".join(sorted(spdx_found)), "address": deed,
+                        "basis": "every_origin_licence_and_the_chart_page_statement", "evidence": page,
+                        "evidence_url": collection["chart_page"].format(series=slug), "more_evidence": evidence},
+            "extra_files": [{"path": "data/" + collection["metadata_file_name"].format(series=slug),
+                             "answer": metadata, "url": collection["metadata_address"].format(series=slug)}]
+                           + [{"path": f"data/indicator-{identifier}.metadata.json", "answer": answer,
+                               "url": address} for identifier, (address, answer) in zip(identifiers, evidence)],
+            "sdg": {"goals": goals, "rule": "owid_sdg_tracker:" + ",".join(str(goal) for goal in goals),
+                    "reason": "Our World in Data lists the chart on its SDG Tracker page for "
+                              + ("goal " if len(goals) == 1 else "goals ") + ", ".join(map(str, goals))
+                              + " (" + ", ".join(pages) + ")."},
+            "about": [("Chart", f"{title} (`{slug}`)"), ("Unit", column.get("unit") or ""),
+                      ("Time span", column.get("timespan") or ""),
+                      ("Source", column.get("citationShort") or ""),
+                      ("Last updated", column.get("lastUpdated") or ""), ("Next update", column.get("nextUpdate") or "")],
+            "licence_line": (f"CC BY 4.0: the chart page states the publisher's own licence ({deed}), and "
+                             "every origin of every indicator states CC BY 4.0 in the indicator's own metadata"),
+            "definition": [("Description", column.get("descriptionShort"))],
+            "lead": f"Our World in Data's chart `{slug}` as one table: one row per entity and year.",
+            "attribution": collection["attribution"].format(
+                name=title, series=slug, source=" ".join(str(column.get("citationLong") or "").split()) or "not named",
+                licence_address=deed),
+        })
+    summary = {"charts_listed": len(charts), "charts_considered": len(order),
+               "licence_decisions": [{"decision": decision, "charts": count}
+                                     for decision, count in decisions.most_common()], "stopped": stopped}
+    return rows, refused, summary
+
+
 # -- one package ------------------------------------------------------------------------------------------------------
 PUBLISHER_LOADER_HEADER = '''"""{title}: a typed reference table of {count} rows.
 
@@ -564,8 +761,8 @@ def readme(row: dict, *, collection: dict, table: list, fields: dict, required: 
                     "SHA-256 above.")
     else:
         layout = f"`data/{names[0]}` is the published file byte for byte."
-    extras = "".join(f" `{extra['path']}` is the publisher's metadata of the series, byte for byte."
-                     for extra in row["extra_files"])
+    extras = ("" if not row["extra_files"] else " The publisher's own metadata travels beside it, byte for byte: "
+              + ", ".join(f"`{extra['path']}`" for extra in row["extra_files"]) + ".")
     first = table[0][row["key_field"] or "row"]
     return f"""# {row.get('heading') or row['title']}
 
@@ -711,7 +908,10 @@ def table_package(row: dict, *, collection: dict, texts: dict, generator: dict, 
     facts = [fact_source(row["address"], fetched.retrieved_at, fetched.sha256, len(fetched.body), "data_source",
                          spdx=spdx, basis=row["licence"]["basis"], evidence_sha256=evidence.sha256),
              fact_source(row["licence"]["evidence_url"], evidence.retrieved_at, evidence.sha256, len(evidence.body),
-                         LICENCE_EVIDENCE, spdx=spdx, basis=row["licence"]["basis"]),
+                         LICENCE_EVIDENCE, spdx=spdx, basis=row["licence"]["basis"])]
+    facts += [fact_source(address, answer.retrieved_at, answer.sha256, len(answer.body), LICENCE_EVIDENCE, spdx=spdx,
+                          basis=row["licence"]["basis"]) for address, answer in row["licence"].get("more_evidence", [])]
+    facts += [
              fact_source(licence_url, licence_answer.retrieved_at, licence_answer.sha256, len(licence_answer.body),
                          "licence_text", spdx=spdx, basis="legal_code_from_the_licence_steward")]
     name = f"{row['table_id'].replace('_', '-')}-table"
@@ -756,6 +956,19 @@ def generate(reader, collection_id: str, *, code_revision: str, licence_text: by
         except (LookupError, ValueError, TypeError) as error:
             rows, summary = [], {"catalogue_entries": 0, "stopped": {"reason": "catalogue_unreadable"}}
             refused = [refusal(PUBLISHER_TABLES, "source_unreadable", collection["catalogue"], str(error)[:200])]
+    elif collection["mode"] == OWID_CHARTS:
+        try:
+            covered = covering_codes(reader, sources, collection)
+        except (LookupError, ValueError, TypeError):
+            covered = None
+        if covered is None:
+            rows, summary = [], {"charts_listed": 0, "stopped": {"reason": "covering_catalogue_unreadable"}}
+            refused = [refusal(PUBLISHER_TABLES, "source_unreadable", ",".join(collection["covered_by"]),
+                               "the catalogue of a covering collection could not be read")]
+        else:
+            rows, refused, summary = owid_rows(reader, collection_id, collection, only, maximum,
+                                               {spdx: text["deed"] for spdx, text in sources["licence_texts"].items()},
+                                               covered)
     else:
         rows, refused, summary = declared_rows(reader, collection_id, collection, only)
     built, facts, kept_goals, failures = [], {}, Counter(), 0
@@ -792,7 +1005,8 @@ def generate(reader, collection_id: str, *, code_revision: str, licence_text: by
             continue
         built.append((payload, bodies))
         kept_goals.update(row["sdg"]["goals"] or ["none"])
-        for answer in [row["archive"], row["licence"]["evidence"]] + [extra["answer"] for extra in row["extra_files"]]:
+        for answer in ([row["archive"], row["licence"]["evidence"]] + [extra["answer"] for extra in row["extra_files"]]
+                       + [answer for _address, answer in row["licence"].get("more_evidence", [])]):
             facts[answer.sha256] = answer.body
     summary["kept_per_goal"] = {str(goal): kept_goals[goal] for goal in sorted(kept_goals, key=str)}
     return built, refused, facts, summary
