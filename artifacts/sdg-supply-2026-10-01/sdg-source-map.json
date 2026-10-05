@@ -8429,25 +8429,2535 @@
   ],
   "fame": [
    9
+  ],
+  "sdg1_intl_poverty_line_headcount_eca": [
+   1,
+   10
+  ],
+  "sdg1_working_poverty_by_sex_age_eca": [
+   1,
+   5,
+   8
+  ],
+  "sdg1_poverty_headcount_three_lines_eca": [
+   1
+  ],
+  "sdg1_national_poverty_line_headcount_eca": [
+   1
+  ],
+  "sdg1_multidimensional_poverty_rate_eca": [
+   1
+  ],
+  "sdg1_social_protection_any_benefit_eca": [
+   1,
+   10
+  ],
+  "sdg1_child_family_benefit_coverage_eca": [
+   1,
+   10
+  ],
+  "sdg1_disability_benefit_coverage_eca": [
+   1,
+   10
+  ],
+  "sdg1_maternity_benefit_coverage_eca": [
+   1,
+   5
+  ],
+  "sdg1_old_age_pension_coverage_eca": [
+   1,
+   10
+  ],
+  "sdg1_unemployment_benefit_coverage_eca": [
+   1,
+   8
+  ],
+  "sdg1_social_assistance_vulnerable_eca": [
+   1,
+   10
+  ],
+  "sdg1_basic_drinking_water_services_eca": [
+   1,
+   6
+  ],
+  "sdg1_basic_sanitation_services_eca": [
+   1,
+   6
+  ],
+  "sdg1_people_affected_by_disasters_eca": [
+   1,
+   11,
+   13
+  ],
+  "sdg1_disaster_deaths_missing_rate_eca": [
+   1,
+   11,
+   13
+  ],
+  "sdg1_disaster_destroyed_dwellings_eca": [
+   1,
+   11
+  ],
+  "sdg1_disaster_livelihoods_disrupted_eca": [
+   1,
+   8,
+   13
+  ],
+  "sdg1_disaster_economic_loss_gdp_eca": [
+   1,
+   11,
+   13
+  ],
+  "sdg1_disaster_agriculture_loss_eca": [
+   1,
+   2,
+   13
+  ],
+  "sdg1_disaster_infrastructure_loss_eca": [
+   1,
+   9,
+   11
+  ],
+  "sdg1_national_drr_strategy_score_eca": [
+   1,
+   11,
+   13
+  ],
+  "sdg1_local_drr_strategy_share_eca": [
+   1,
+   11,
+   13
+  ],
+  "sdg1_oda_poverty_grants_recipients_eca": [
+   1,
+   17
+  ],
+  "sdg5_gender_equality_legal_frameworks_eca": [
+   5,
+   16
+  ],
+  "sdg5_intimate_partner_violence_eca": [
+   5,
+   16
+  ],
+  "sdg5_child_marriage_women_20_24_eca": [
+   5
+  ],
+  "sdg5_unpaid_domestic_care_time_eca": [
+   5,
+   8
+  ],
+  "sdg5_women_parliament_seats_eca": [
+   5,
+   16
+  ],
+  "sdg5_women_local_government_seats_eca": [
+   5,
+   16
+  ],
+  "sdg5_women_managerial_positions_eca": [
+   5,
+   8
+  ],
+  "sdg5_women_senior_middle_management_eca": [
+   5,
+   8
+  ],
+  "sdg5_reproductive_health_laws_score_eca": [
+   3,
+   5
+  ],
+  "sdg5_mobile_phone_ownership_by_sex_eca": [
+   5,
+   9
+  ],
+  "sdg6_safely_managed_drinking_water_eca": [
+   6
+  ],
+  "sdg6_safely_managed_sanitation_eca": [
+   6
+  ],
+  "sdg6_open_defecation_eca": [
+   3,
+   6
+  ],
+  "sdg6_basic_handwashing_facilities_eca": [
+   3,
+   6
+  ],
+  "sdg6_wastewater_safely_treated_eca": [
+   6
+  ],
+  "sdg6_groundwater_good_quality_eca": [
+   6
+  ],
+  "sdg6_water_use_efficiency_eca": [
+   6,
+   8
+  ],
+  "sdg6_water_stress_level_eca": [
+   6
+  ],
+  "sdg6_iwrm_implementation_degree_eca": [
+   6
+  ],
+  "sdg6_transboundary_water_cooperation_eca": [
+   6,
+   17
+  ],
+  "sdg6_permanent_surface_water_area_eca": [
+   6,
+   15
+  ],
+  "sdg6_seasonal_surface_water_area_eca": [
+   6,
+   15
+  ],
+  "sdg6_lake_turbidity_eca": [
+   6
+  ],
+  "sdg6_lake_trophic_state_eca": [
+   6
+  ],
+  "sdg6_mangrove_area_eca": [
+   6,
+   14,
+   15
+  ],
+  "sdg6_wetlands_area_eca": [
+   6,
+   15
+  ],
+  "sdg6_oda_water_sanitation_eca": [
+   6,
+   17
+  ],
+  "sdg6_rural_water_user_participation_eca": [
+   6,
+   16
+  ],
+  "sdg6_water_resources_user_participation_eca": [
+   6,
+   16
+  ],
+  "sdg10_bottom40_income_growth_eca": [
+   1,
+   10
+  ],
+  "sdg10_below_half_median_income_eca": [
+   1,
+   10
+  ],
+  "sdg10_felt_discrimination_by_grounds_eca": [
+   5,
+   10,
+   16
+  ],
+  "sdg10_labour_share_of_gdp_eca": [
+   8,
+   10
+  ],
+  "sdg10_fiscal_redistribution_gini_eca": [
+   1,
+   10
+  ],
+  "sdg10_nonperforming_loans_ratio_eca": [
+   8,
+   10
+  ],
+  "sdg10_bank_tier1_capital_ratio_eca": [
+   8,
+   10
+  ],
+  "sdg10_bank_liquid_assets_ratio_eca": [
+   8,
+   10
+  ],
+  "sdg10_voting_rights_international_orgs_eca": [
+   10,
+   16,
+   17
+  ],
+  "sdg10_migration_policy_domains_eca": [
+   10
+  ],
+  "sdg10_migrant_deaths_disappearances_eca": [
+   10,
+   16
+  ],
+  "sdg10_refugees_by_origin_rate_eca": [
+   10,
+   16
+  ],
+  "sdg10_zero_tariff_import_lines_eca": [
+   10,
+   17
+  ],
+  "sdg10_development_assistance_recipients_eca": [
+   10,
+   17
+  ],
+  "sdg10_remittance_cost_corridors_eca": [
+   10,
+   17
+  ],
+  "sdg10_remittance_cost_receiving_eca": [
+   10,
+   17
+  ],
+  "sdg14_beach_litter_density_eca": [
+   12,
+   14
+  ],
+  "sdg14_beach_litter_land_sources_eca": [
+   12,
+   14
+  ],
+  "sdg14_ocean_litter_land_sources_eca": [
+   12,
+   14
+  ],
+  "sdg14_coastal_chlorophyll_anomaly_eca": [
+   14
+  ],
+  "sdg14_marine_acidity_ph_eca": [
+   13,
+   14
+  ],
+  "sdg14_fish_stocks_sustainable_eca": [
+   14
+  ],
+  "sdg14_marine_kba_protection_eca": [
+   14,
+   15
+  ],
+  "sdg14_iuu_fishing_instruments_eca": [
+   14,
+   16
+  ],
+  "sdg14_sustainable_fisheries_gdp_eca": [
+   8,
+   14
+  ],
+  "sdg14_ocean_science_budget_share_eca": [
+   9,
+   14
+  ],
+  "sdg14_small_scale_fisheries_access_eca": [
+   1,
+   14
+  ],
+  "sdg14_unclos_implementation_score_eca": [
+   14,
+   16
+  ],
+  "sdg2_undernourishment_prevalence_eca": [
+   2
+  ],
+  "sdg2_severe_food_insecurity_eca": [
+   1,
+   2
+  ],
+  "sdg2_child_stunting_eca": [
+   2,
+   3
+  ],
+  "sdg2_child_overweight_eca": [
+   2,
+   3
+  ],
+  "sdg2_anaemia_women_15_49_eca": [
+   2,
+   3,
+   5
+  ],
+  "sdg2_food_producer_productivity_eca": [
+   2,
+   8
+  ],
+  "sdg2_food_producer_income_eca": [
+   1,
+   2
+  ],
+  "sdg2_local_livestock_breeds_eca": [
+   2,
+   15
+  ],
+  "sdg2_plant_genetic_accessions_eca": [
+   2,
+   15
+  ],
+  "sdg2_local_breeds_at_risk_eca": [
+   2,
+   15
+  ],
+  "sdg2_agriculture_orientation_index_eca": [
+   2
+  ],
+  "sdg2_official_flows_agriculture_eca": [
+   2,
+   17
+  ],
+  "sdg2_food_price_anomalies_eca": [
+   2
+  ],
+  "sdg7_electricity_access_eca": [
+   1,
+   7
+  ],
+  "sdg7_clean_cooking_fuels_eca": [
+   3,
+   5,
+   7
+  ],
+  "sdg7_renewable_energy_share_eca": [
+   7,
+   13
+  ],
+  "sdg7_energy_intensity_eca": [
+   7,
+   13
+  ],
+  "sdg7_clean_energy_financial_flows_eca": [
+   7,
+   17
+  ],
+  "sdg7_renewable_capacity_per_capita_eca": [
+   7,
+   9
+  ],
+  "sdg15_forest_area_share_eca": [
+   15
+  ],
+  "sdg15_freshwater_kba_protection_eca": [
+   6,
+   15
+  ],
+  "sdg15_terrestrial_kba_protection_eca": [
+   15
+  ],
+  "sdg15_forest_management_plans_eca": [
+   15
+  ],
+  "sdg15_certified_forest_area_eca": [
+   12,
+   15
+  ],
+  "sdg15_forest_biomass_per_hectare_eca": [
+   13,
+   15
+  ],
+  "sdg15_degraded_land_share_eca": [
+   2,
+   15
+  ],
+  "sdg15_mountain_kba_protection_eca": [
+   15
+  ],
+  "sdg15_degraded_mountain_land_eca": [
+   15
+  ],
+  "sdg15_red_list_index_eca": [
+   14,
+   15
+  ],
+  "sdg15_invasive_species_legislation_eca": [
+   15
+  ],
+  "sdg15_oda_biodiversity_recipients_eca": [
+   15,
+   17
+  ],
+  "sdg11_urban_slum_population_eca": [
+   1,
+   11
+  ],
+  "sdg11_public_transport_access_eca": [
+   11
+  ],
+  "sdg11_land_consumption_ratio_eca": [
+   11,
+   15
+  ],
+  "sdg11_heritage_spending_per_capita_eca": [
+   11
+  ],
+  "sdg11_municipal_waste_collection_eca": [
+   11,
+   12
+  ],
+  "sdg11_urban_pm25_levels_eca": [
+   3,
+   11
+  ],
+  "sdg11_urban_open_public_space_eca": [
+   11
+  ],
+  "sdg11_disaster_basic_service_disruptions_eca": [
+   11,
+   13
+  ],
+  "sdg11_disaster_damaged_schools_eca": [
+   4,
+   11,
+   13
+  ],
+  "sdg11_disaster_damaged_health_facilities_eca": [
+   3,
+   11,
+   13
+  ],
+  "sdg16_homicide_rate_by_sex_eca": [
+   5,
+   16
+  ],
+  "sdg16_physical_violence_victims_eca": [
+   16
+  ],
+  "sdg16_sexual_violence_victims_eca": [
+   5,
+   16
+  ],
+  "sdg16_feel_safe_walking_alone_eca": [
+   5,
+   11,
+   16
+  ],
+  "sdg16_trafficking_victims_detected_eca": [
+   5,
+   8,
+   16
+  ],
+  "sdg16_trafficking_sexual_exploitation_eca": [
+   5,
+   16
+  ],
+  "sdg16_sexual_assault_reporting_rate_eca": [
+   5,
+   16
+  ],
+  "sdg16_physical_assault_reporting_rate_eca": [
+   16
+  ],
+  "sdg16_unsentenced_detainees_eca": [
+   16
+  ],
+  "sdg16_bribery_prevalence_eca": [
+   16
+  ],
+  "sdg16_firm_bribery_incidence_eca": [
+   8,
+   16
+  ],
+  "sdg16_budget_execution_rate_eca": [
+   16
+  ],
+  "sdg16_judiciary_representation_ratio_eca": [
+   5,
+   10,
+   16
+  ],
+  "sdg16_female_parliamentarians_ratio_eca": [
+   5,
+   16
+  ],
+  "sdg16_youth_in_parliament_eca": [
+   10,
+   16
+  ],
+  "sdg16_public_service_representation_eca": [
+   5,
+   10,
+   16
+  ],
+  "sdg16_birth_registration_under5_eca": [
+   10,
+   16
+  ],
+  "sdg3_maternal_mortality_ratio_eca": [
+   3,
+   5
+  ],
+  "sdg3_skilled_birth_attendance_eca": [
+   3,
+   5
+  ],
+  "sdg3_neonatal_mortality_eca": [
+   3
+  ],
+  "sdg3_tuberculosis_incidence_eca": [
+   3
+  ],
+  "sdg3_suicide_mortality_eca": [
+   3
+  ],
+  "sdg3_road_traffic_deaths_eca": [
+   3,
+   11
+  ],
+  "sdg3_family_planning_demand_satisfied_eca": [
+   3,
+   5
+  ],
+  "sdg3_adolescent_birth_rate_eca": [
+   3,
+   5
+  ],
+  "sdg3_uhc_service_coverage_eca": [
+   3
+  ],
+  "sdg3_catastrophic_health_spending_eca": [
+   1,
+   3
+  ],
+  "sdg3_air_pollution_mortality_eca": [
+   3,
+   11
+  ],
+  "sdg3_unsafe_wash_mortality_eca": [
+   3,
+   6
+  ],
+  "sdg3_vaccine_coverage_eca": [
+   3
+  ],
+  "sdg3_health_workers_by_sex_eca": [
+   3,
+   5
+  ],
+  "sdg4_minimum_proficiency_reading_maths_eca": [
+   4
+  ],
+  "sdg4_pre_primary_participation_eca": [
+   4
+  ],
+  "sdg4_proficiency_gender_parity_eca": [
+   4,
+   5
+  ],
+  "sdg4_proficiency_wealth_parity_eca": [
+   1,
+   4,
+   10
+  ],
+  "sdg4_proficiency_rural_urban_parity_eca": [
+   4,
+   10
+  ],
+  "sdg4_pre_primary_gender_parity_eca": [
+   4,
+   5
+  ],
+  "sdg4_completion_wealth_parity_eca": [
+   1,
+   4,
+   10
+  ],
+  "sdg4_schools_basic_drinking_water_eca": [
+   4,
+   6
+  ],
+  "sdg4_schools_single_sex_sanitation_eca": [
+   4,
+   5,
+   6
+  ],
+  "sdg4_schools_handwashing_eca": [
+   4,
+   6
+  ],
+  "sdg4_schools_disability_adapted_eca": [
+   4,
+   10
+  ],
+  "sdg4_schools_electricity_eca": [
+   4,
+   7
+  ],
+  "sdg4_qualified_teachers_eca": [
+   4
+  ],
+  "sdg4_adult_literacy_numeracy_eca": [
+   4
+  ],
+  "sdg4_global_citizenship_education_eca": [
+   4,
+   13
+  ],
+  "owd_malawi_artesian_well_sites": [
+   6
+  ],
+  "owd_ghana_odf_community_sanitation": [
+   3,
+   6
+  ],
+  "owd_ghana_district_population_by_sex": [
+   5,
+   11
+  ],
+  "owd_malawi_borehole_pumping_tests": [
+   6
+  ],
+  "owd_karonga_borehole_functionality": [
+   6
+  ],
+  "owd_malawi_borehole_lab_chemistry": [
+   3,
+   6
+  ],
+  "owd_breathable_pit_latrine_tests": [
+   6
+  ],
+  "owd_malawi_cholera_weekly_district": [
+   3,
+   6
+  ],
+  "owd_dowa_household_latrine_survey": [
+   6
+  ],
+  "owd_dowa_odf_verification_survey": [
+   3,
+   6
+  ],
+  "owd_malawi_borehole_drilling_records": [
+   6
+  ],
+  "owd_mulanje_flood_chlorination": [
+   6,
+   11
+  ],
+  "owd_faecal_sludge_emptying_demand": [
+   6,
+   11
+  ],
+  "owd_kwale_groundwater_chemistry": [
+   6
+  ],
+  "owd_malawi_groundwater_monitoring_infrastructure": [
+   6
+  ],
+  "owd_chiradzulu_handpump_verification": [
+   6
+  ],
+  "owd_ghana_borehole_hydrogeology": [
+   6
+  ],
+  "owd_kalai_wash_jmp_household_survey": [
+   5,
+   6
+  ],
+  "owd_malawi_flood_water_point_assessment": [
+   6,
+   11,
+   13
+  ],
+  "owd_malawi_groundwater_levels": [
+   6
+  ],
+  "owd_nchalo_community_water_survey": [
+   1,
+   6
+  ],
+  "owd_peru_rural_water_systems": [
+   6
+  ],
+  "owd_mulanje_post_flood_water_quality": [
+   3,
+   6
+  ],
+  "owd_rainwater_harvesting_household_survey": [
+   6,
+   13
+  ],
+  "owd_abidjan_household_sanitation": [
+   6,
+   11
+  ],
+  "owd_kampala_household_solid_waste": [
+   6,
+   11,
+   12
+  ],
+  "owd_malawi_childcare_centre_wash": [
+   4,
+   6
+  ],
+  "owd_uganda_borehole_repairs": [
+   6
+  ],
+  "owd_piracema_school_wash": [
+   4,
+   6
+  ],
+  "owd_malawi_water_consumer_survey": [
+   1,
+   6
+  ],
+  "owd_accra_household_water_costs": [
+   1,
+   6,
+   11
+  ],
+  "owd_accra_water_points": [
+   6,
+   11
+  ],
+  "one_africa_climate_disaster_affected": [
+   1,
+   11,
+   13
+  ],
+  "one_electricity_clean_cooking_access": [
+   1,
+   5,
+   7
+  ],
+  "one_critical_minerals_production_share": [
+   7,
+   12
+  ],
+  "one_nd_gain_vulnerability_readiness": [
+   1,
+   10,
+   13
+  ],
+  "one_renewable_vs_fossil_electricity_share": [
+   7,
+   13
+  ],
+  "owid_co2_dataset_codebook": [
+   7,
+   13
+  ],
+  "owid_energy_dataset_codebook": [
+   7,
+   13
+  ],
+  "one_ipc_food_insecurity_phases": [
+   1,
+   2
+  ],
+  "one_household_food_expenditure_share": [
+   1,
+   2,
+   10
+  ],
+  "one_food_commodity_prices_monthly": [
+   2
+  ],
+  "one_food_export_restrictions_by_crisis": [
+   2,
+   17
+  ],
+  "one_child_stunting_vs_gdp_per_capita": [
+   1,
+   2,
+   3
+  ],
+  "one_fao_food_price_index_monthly": [
+   2
+  ],
+  "one_world_labour_force_participation_by_sex": [
+   5,
+   8
+  ],
+  "one_imf_debt_distress_risk": [
+   1,
+   17
+  ],
+  "one_leading_causes_of_death_by_income_group": [
+   3,
+   10
+  ],
+  "one_fossil_fuel_subsidies_by_country": [
+   7,
+   12,
+   13
+  ],
+  "one_climate_finance_commitments_by_provider": [
+   13,
+   17
+  ],
+  "one_child_mortality_vs_gdp_per_capita": [
+   1,
+   3
+  ],
+  "one_us_health_aid_vs_government_health_spending": [
+   3,
+   17
+  ],
+  "oecd_dac_health_sector_purpose_codes": [
+   3,
+   17
+  ],
+  "one_health_oda_by_recipient_income_group": [
+   3,
+   10,
+   17
+  ],
+  "unaids_hiv_testing_pregnant_women": [
+   3,
+   5
+  ],
+  "one_ukraine_refugee_in_donor_cost_estimates": [
+   10,
+   17
+  ],
+  "one_in_donor_refugee_costs_share_of_oda": [
+   10,
+   17
+  ],
+  "world_bank_ida_blend_country_list": [
+   1,
+   17
+  ],
+  "pip_missing_welfare_data_country_years": [
+   1,
+   17
+  ],
+  "fishmip_fish_biomass_change_by_country": [
+   2,
+   13,
+   14
+  ],
+  "marine_regions_eez_key_area": [
+   14
+  ],
+  "gfw_ship_co2_by_vessel_class": [
+   13,
+   14
+  ],
+  "gfw_ship_emissions_all_pollutants_by_year": [
+   3,
+   13,
+   14
+  ],
+  "gfw_fleet_growth_by_vessel_class": [
+   13,
+   14
+  ],
+  "gfw_ship_co2_by_flag_state": [
+   13,
+   14
+  ],
+  "emission_control_area_fuel_sox": [
+   3,
+   13,
+   14
+  ],
+  "fisheries_subsidies_by_country_type": [
+   2,
+   14,
+   17
+  ],
+  "fisheries_employment_fte_by_country": [
+   8,
+   14
+  ],
+  "small_scale_fisheries_subsidy_share": [
+   1,
+   10,
+   14
+  ],
+  "wto_territories_sovereign_status": [
+   16,
+   17
+  ],
+  "wto_fisheries_sdt_criteria": [
+   10,
+   14,
+   17
+  ],
+  "small_island_developing_states_eez": [
+   14,
+   17
+  ],
+  "csiro_global_mean_sea_level_reconstruction": [
+   13,
+   14
+  ],
+  "csiro_satellite_altimetry_sea_level": [
+   13,
+   14
+  ],
+  "reference_glaciers_cumulative_mass_balance": [
+   6,
+   13
+  ],
+  "eu_public_bodies_register": [
+   16
+  ],
+  "us_natural_hazard_fatalities_damage": [
+   1,
+   11,
+   13
+  ],
+  "us_county_unemployment_participation": [
+   8,
+   10
+  ],
+  "us_county_food_desert_poverty_snap": [
+   1,
+   2,
+   10
+  ],
+  "us_county_healthcare_desert_uninsured": [
+   1,
+   3,
+   10
+  ],
+  "us_state_food_access_risk_ranking": [
+   1,
+   2,
+   10
+  ],
+  "alaska_permanent_fund_dividend_amounts": [
+   1,
+   10
+  ],
+  "uk_national_insurance_thresholds_history": [
+   1,
+   8,
+   10
+  ],
+  "gleditsch_ward_maddison_country_converter": [
+   16,
+   17
+  ],
+  "us_state_crime_and_incarceration": [
+   16
+  ],
+  "pudding_jeans_pocket_measurements_by_gender": [
+   5,
+   12
+  ],
+  "pudding_school_dress_code_length_rules": [
+   4,
+   5
+  ],
+  "pudding_foundation_shade_ranges": [
+   10,
+   12
+  ],
+  "pudding_vogue_cover_model_skin_tone": [
+   5,
+   10
+  ],
+  "pudding_us_city_abortion_clinic_travel": [
+   3,
+   5,
+   10
+  ],
+  "ng_sdg1_national_poverty_by_state": [
+   1,
+   10
+  ],
+  "ng_sdg1_multidimensional_poverty_by_state": [
+   1,
+   10
+  ],
+  "ng_sdg1_social_protection_coverage": [
+   1,
+   10
+  ],
+  "ng_sdg1_basic_services_access_by_state": [
+   1,
+   6,
+   7
+  ],
+  "ng_sdg1_land_tenure_security": [
+   1,
+   2,
+   5
+  ],
+  "ng_sdg1_disaster_affected_by_state": [
+   1,
+   11,
+   13
+  ],
+  "ng_sdg5_intimate_partner_violence": [
+   5,
+   16
+  ],
+  "ng_sdg5_female_genital_mutilation": [
+   3,
+   5
+  ],
+  "ng_sdg5_reproductive_decision_making": [
+   3,
+   5
+  ],
+  "ng_sdg5_agricultural_land_ownership_by_sex": [
+   1,
+   2,
+   5
+  ],
+  "ng_sdg5_mobile_phone_ownership_by_sex": [
+   5,
+   9,
+   10
+  ],
+  "ng_sdg6_safely_managed_water_by_state": [
+   1,
+   6
+  ],
+  "ng_sdg6_sanitation_handwashing_by_state": [
+   3,
+   6
+  ],
+  "ng_sdg6_community_water_management": [
+   6,
+   16
+  ],
+  "ng_sdg10_felt_discrimination": [
+   5,
+   10,
+   16
+  ],
+  "ng_sdg2_food_insecurity_fies": [
+   1,
+   2
+  ],
+  "ng_sdg2_child_stunting_by_state": [
+   2,
+   3
+  ],
+  "ng_sdg2_anaemia_women_by_state": [
+   2,
+   3,
+   5
+  ],
+  "ng_sdg3_skilled_birth_attendance": [
+   3,
+   5
+  ],
+  "ng_sdg3_under5_mortality_by_state": [
+   3,
+   10
+  ],
+  "ng_sdg3_road_traffic_deaths_by_state": [
+   3,
+   11
+  ],
+  "ng_sdg3_family_planning_modern_methods": [
+   3,
+   5
+  ],
+  "ng_sdg3_adolescent_birth_rate_by_state": [
+   3,
+   5
+  ],
+  "ng_sdg3_essential_health_services_coverage": [
+   3,
+   10
+  ],
+  "ng_sdg3_tobacco_use": [
+   3
+  ],
+  "ng_sdg3_vaccination_coverage_by_state": [
+   3
+  ],
+  "ng_sdg3_health_worker_density_by_state": [
+   3,
+   5
+  ],
+  "ng_sdg4_school_completion_by_state": [
+   4,
+   5,
+   10
+  ],
+  "ng_sdg4_early_childhood_development": [
+   4
+  ],
+  "ng_sdg4_never_attended_school": [
+   4,
+   5,
+   10
+  ],
+  "ng_sdg4_child_literacy_numeracy": [
+   4
+  ],
+  "ng_sdg4_school_basic_services": [
+   4,
+   6,
+   7
+  ],
+  "ng_sdg7_electricity_access_by_state": [
+   1,
+   7
+  ],
+  "ng_sdg7_clean_cooking_fuels": [
+   3,
+   5,
+   7
+  ],
+  "ng_sdg11_physical_sexual_harassment": [
+   5,
+   11,
+   16
+  ],
+  "ng_sdg16_feel_safe_walking_alone": [
+   5,
+   11,
+   16
+  ],
+  "ng_sdg16_violent_child_discipline": [
+   4,
+   16
+  ],
+  "ng_sdg16_bribery_prevalence_by_state": [
+   16
+  ],
+  "ng_sdg16_birth_registration_by_state": [
+   10,
+   16
+  ],
+  "jm_sdg5_women_in_parliament_local_government": [
+   5,
+   16
+  ],
+  "jm_sdg10_labour_share_gdp_by_income": [
+   8,
+   10
+  ],
+  "jm_sdg10_remittance_inflows_costs": [
+   10,
+   17
+  ],
+  "jm_sdg14_coastal_cleanup_waste_types": [
+   12,
+   14
+  ],
+  "jm_sdg14_monitored_marine_areas": [
+   14
+  ],
+  "jm_sdg11_housing_tenure_by_area": [
+   1,
+   11
+  ],
+  "jm_sdg11_named_disaster_events_impact": [
+   1,
+   11,
+   13
+  ],
+  "jm_sdg15_species_conservation_status": [
+   14,
+   15
+  ],
+  "jm_sdg16_homicide_victims_by_region_sex": [
+   5,
+   16
+  ],
+  "jm_sdg7_primary_energy_supply_by_source": [
+   7,
+   13
+  ],
+  "ca_sdg5_sexual_violence_by_identity": [
+   5,
+   10,
+   16
+  ],
+  "uk_council_climate_scorecard_scores_2022": [
+   11,
+   13
+  ],
+  "uk_council_climate_emergency_declarations": [
+   11,
+   13,
+   16
+  ],
+  "uk_citizens_assemblies_register": [
+   13,
+   16
+  ],
+  "uk_council_political_control": [
+   16
+  ],
+  "ifrc_country_equity_vulnerability_profile": [
+   1,
+   3,
+   10
+  ],
+  "ifrc_covid_vaccine_acceptance_by_country": [
+   3
+  ],
+  "cfpb_small_business_lending_data_points_2025": [
+   5,
+   8,
+   10
+  ],
+  "cfpb_small_business_lending_validations_2025": [
+   8,
+   10
+  ],
+  "hmda_lar_fields_2018": [
+   10,
+   11
+  ],
+  "hmda_modified_lar_code_sheet_2018": [
+   5,
+   10,
+   11
+  ],
+  "us_national_lakes_assessment_2022_percentiles": [
+   6,
+   15
+  ],
+  "us_state_aggregated_ecoregions": [
+   6,
+   15
+  ],
+  "western_us_snowpack_percentile_maximums": [
+   6,
+   13
+  ],
+  "attains_expert_query_parameter_crosswalk": [
+   6
+  ],
+  "pfas_clearance_by_species_route": [
+   3,
+   6
+  ],
+  "commercial_cooking_emission_factors": [
+   3,
+   11
+  ],
+  "world_port_index_ports": [
+   9,
+   14
+  ],
+  "gfw_refrigerated_cargo_vessels": [
+   14
+  ],
+  "nodc_sea_area_names": [
+   14
+  ],
+  "marine_rocky_intertidal_monitoring_sites": [
+   14
+  ],
+  "national_marine_sanctuary_intertidal_species": [
+   14,
+   15
+  ],
+  "sbc_kelp_forest_fish_density": [
+   14
+  ],
+  "obis_species_observation_counts": [
+   14,
+   15
+  ],
+  "beach_combers_seabird_mammal_species": [
+   14,
+   15
+  ],
+  "asfis_tuna_species_extended_codes": [
+   14
+  ],
+  "undp_country_territory_groups": [
+   1,
+   10,
+   17
+  ],
+  "colombia_subnational_human_development": [
+   1,
+   4,
+   10
+  ],
+  "ccamlr_geospatial_reference_areas": [
+   14
+  ],
+  "shrimp_trawl_bycatch_by_gear_season": [
+   14
+  ],
+  "hakai_seagrass_monitoring_sites": [
+   14
+  ],
+  "artificial_reef_fish_effect_sizes": [
+   14
+  ],
+  "fao_forage_fish_species": [
+   2,
+   14
+  ],
+  "seafood_sustainability_mercury_guide": [
+   3,
+   12,
+   14
+  ],
+  "arms_mbon_observatory_units": [
+   14,
+   15
+  ],
+  "nodc_taxonomic_species_codes": [
+   14,
+   15
+  ],
+  "fishing_gear_bycatch_destruction_class": [
+   14
+  ],
+  "calcofi_species_worms_itis_ids": [
+   14,
+   15
+  ],
+  "ices_stock_information_database_2023": [
+   14
+  ],
+  "ices_fisheries_pressure_impact_risk_nea": [
+   14
+  ],
+  "ices_aquaculture_pressure_impact_risk_nea": [
+   14
+  ],
+  "sdsn_sdg_keywords": [
+   17
+  ],
+  "elsevier_sdg_keywords": [
+   17
+  ],
+  "cmu_sdg_keywords_top250": [
+   17
+  ],
+  "lgbt_rights_public_support_index": [
+   5,
+   10,
+   16
+  ],
+  "same_sex_marriage_civil_union_laws": [
+   5,
+   10,
+   16
+  ],
+  "uk_charity_classification_ukcat": [
+   16,
+   17
+  ],
+  "icnptso_nonprofit_classification": [
+   16,
+   17
+  ],
+  "uk_ministerial_posts": [
+   16
+  ],
+  "germany_wellbeing_indicators": [
+   1,
+   3,
+   10
+  ],
+  "political_science_dataset_catalog": [
+   16
+  ],
+  "ifg_uk_government_ministers": [
+   5,
+   16
+  ],
+  "ca_sdg1_low_income_by_group_and_region": [
+   1,
+   10
+  ],
+  "ca_sdg1_social_protection_by_province": [
+   1,
+   10
+  ],
+  "ca_sdg1_basic_services_by_province": [
+   1,
+   6,
+   7
+  ],
+  "ca_sdg1_secure_tenure_by_metro_area": [
+   1,
+   5,
+   11
+  ],
+  "ca_sdg1_disaster_casualties_by_type": [
+   1,
+   11,
+   13
+  ],
+  "ca_sdg1_disaster_economic_loss_by_type": [
+   1,
+   11,
+   13
+  ],
+  "ca_sdg10_income_growth_bottom40_by_province": [
+   1,
+   10
+  ],
+  "ca_sdg10_below_half_median_income_by_region": [
+   1,
+   10
+  ],
+  "ca_sdg10_labour_share_gdp_by_province": [
+   8,
+   10
+  ],
+  "ca_sdg10_refugees_by_country_of_origin": [
+   10,
+   16
+  ],
+  "ca_sdg10_remittance_costs_by_amount_region": [
+   10,
+   17
+  ],
+  "ca_sdg14_fish_stocks_sustainable_by_group": [
+   14
+  ],
+  "ca_sdg5_partner_violence_by_type": [
+   5,
+   16
+  ],
+  "ca_sdg5_unpaid_work_time_by_gender_region": [
+   5,
+   8
+  ],
+  "ca_sdg5_women_elected_officials_by_province": [
+   5,
+   16
+  ],
+  "ca_sdg5_women_in_management_by_occupation": [
+   5,
+   8
+  ],
+  "ca_sdg5_farm_operators_by_sex_tenure": [
+   1,
+   2,
+   5
+  ],
+  "ca_sdg5_households_with_cellphones": [
+   5,
+   9
+  ],
+  "ca_sdg6_wastewater_treatment_levels": [
+   6
+  ],
+  "ca_sdg6_river_water_quality_by_land_use": [
+   6,
+   15
+  ],
+  "ca_sdg6_iwrm_by_component": [
+   6,
+   16
+  ],
+  "mx_sdg1_poverty_190_by_state": [
+   1
+  ],
+  "mx_sdg1_tenure_documentation_by_state": [
+   1,
+   5,
+   11
+  ],
+  "mx_sdg1_poverty_by_population_group": [
+   1,
+   10
+  ],
+  "mx_sdg1_infant_vaccination_by_state": [
+   1,
+   3
+  ],
+  "mx_sdg1_old_age_pension_adequacy_by_state": [
+   1,
+   10
+  ],
+  "mx_sdg1_lack_of_social_security_by_state": [
+   1,
+   8
+  ],
+  "mx_sdg10_below_half_median_income_by_state": [
+   1,
+   10
+  ],
+  "mx_sdg10_felt_discrimination_by_motive": [
+   5,
+   10,
+   16
+  ],
+  "mx_sdg10_gini_with_transfers_by_state": [
+   10
+  ],
+  "mx_sdg10_income_growth_by_decile_state": [
+   1,
+   10
+  ],
+  "mx_sdg10_bottom_top_income_ratio_by_state": [
+   1,
+   10
+  ],
+  "mx_sdg5_partner_violence_by_state": [
+   5,
+   16
+  ],
+  "mx_sdg5_non_partner_sexual_violence_by_state": [
+   5,
+   11,
+   16
+  ],
+  "mx_sdg5_child_marriage_by_state": [
+   5
+  ],
+  "mx_sdg5_unpaid_work_time_by_state_sex": [
+   5,
+   8
+  ],
+  "mx_sdg5_women_municipal_presidents": [
+   5,
+   16
+  ],
+  "mx_sdg5_women_in_municipal_councils": [
+   5,
+   16
+  ],
+  "mx_sdg5_women_in_state_congresses": [
+   5,
+   16
+  ],
+  "mx_sdg5_women_managers_by_state_municipality": [
+   5,
+   8
+  ],
+  "mx_sdg5_reproductive_decisions_by_state": [
+   3,
+   5
+  ],
+  "mx_sdg5_agricultural_land_rights_by_state": [
+   1,
+   2,
+   5
+  ],
+  "mx_sdg5_mobile_phone_users_by_sex": [
+   5,
+   9
+  ],
+  "mx_sdg5_labour_income_ratio_by_schooling": [
+   5,
+   8,
+   10
+  ],
+  "mx_sdg5_housework_time_gap_by_age": [
+   5
+  ],
+  "mx_sdg5_real_labour_income_by_sex_state": [
+   5,
+   8,
+   10
+  ],
+  "mx_sdg5_women_agrarian_certificates": [
+   1,
+   2,
+   5
+  ],
+  "mx_sdg5_violence_help_seeking_by_state": [
+   5,
+   16
+  ],
+  "mx_sdg6_piped_water_sanitation_by_state": [
+   1,
+   6
+  ],
+  "ua_sdg10_gini_by_region_residence": [
+   10
+  ],
+  "ua_sdg10_wage_decile_ratio_by_region_sex": [
+   5,
+   8,
+   10
+  ],
+  "ua_sdg14_marine_polluted_discharges": [
+   6,
+   14
+  ],
+  "ua_sdg5_violence_victim_support_by_region": [
+   5,
+   16
+  ],
+  "ua_sdg5_adolescent_birth_rate_by_region": [
+   3,
+   5
+  ],
+  "ua_sdg5_preschool_under_two_by_region": [
+   4,
+   5
+  ],
+  "ua_sdg5_men_birth_assistance_by_region": [
+   1,
+   5
+  ],
+  "ua_sdg5_women_council_deputies_by_level": [
+   5,
+   16
+  ],
+  "ua_sdg5_women_managed_legal_entities": [
+   5,
+   8
+  ],
+  "ua_sdg5_women_individual_entrepreneurs": [
+   5,
+   8
+  ],
+  "ua_sdg6_drinking_water_failed_samples": [
+   3,
+   6
+  ],
+  "ua_sdg6_worn_out_water_networks": [
+   6,
+   9
+  ],
+  "ua_sdg6_polluted_discharges_by_basin": [
+   6,
+   14
+  ],
+  "md_sdg1_intl_poverty_by_group": [
+   1,
+   8
+  ],
+  "md_sdg1_absolute_poverty_by_group": [
+   1,
+   10
+  ],
+  "md_sdg1_multidimensional_poverty_by_group": [
+   1
+  ],
+  "md_sdg1_social_aid_vulnerable_persons": [
+   1,
+   10
+  ],
+  "md_sdg1_poorest_quintile_assistance": [
+   1,
+   10
+  ],
+  "md_sdg1_basic_services_by_group": [
+   1,
+   6,
+   7
+  ],
+  "md_sdg1_disaster_missing_by_district": [
+   1,
+   11,
+   13
+  ],
+  "md_sdg10_discrimination_cases_established": [
+   5,
+   10,
+   16
+  ],
+  "md_sdg10_felt_discrimination_by_criterion": [
+   10,
+   16
+  ],
+  "md_sdg5_partner_violence_by_group": [
+   5,
+   16
+  ],
+  "md_sdg5_non_partner_sexual_violence": [
+   5,
+   16
+  ],
+  "md_sdg5_child_marriage_by_group": [
+   5
+  ],
+  "md_sdg5_unpaid_work_time_by_group": [
+   5,
+   8
+  ],
+  "md_sdg5_reproductive_decisions_by_group": [
+   3,
+   5
+  ],
+  "md_sdg5_mobile_phone_ownership_by_group": [
+   5,
+   9
+  ],
+  "md_sdg6_safe_water_by_region_quintile": [
+   1,
+   6
+  ],
+  "md_sdg6_sewerage_access_by_region": [
+   1,
+   6
+  ],
+  "md_sdg6_wastewater_treated_by_district": [
+   6
+  ],
+  "tt_us_union_membership_by_group": [
+   5,
+   8,
+   10
+  ],
+  "tt_us_union_wage_premium_by_group": [
+   8,
+   10
+  ],
+  "tt_flint_lead_samples_virginia_tech": [
+   3,
+   6
+  ],
+  "tt_pride_event_corporate_sponsors": [
+   10,
+   16
+  ],
+  "tt_pride_sponsor_donations_by_politician": [
+   10,
+   16
+  ],
+  "pip_national_poverty_headcount_by_country": [
+   1
+  ],
+  "pip_multidimensional_poverty_overlaps": [
+   1,
+   4,
+   6
+  ],
+  "pip_prosperity_gap_by_region": [
+   1,
+   10
+  ],
+  "minimum_wage_elasticity_studies": [
+   1,
+   8,
+   10
+  ],
+  "minimum_wage_elasticity_estimates": [
+   1,
+   8,
+   10
+  ],
+  "uk_government_api_catalogue": [
+   9,
+   16,
+   17
+  ],
+  "mpa_coverage_by_fao_fishing_area": [
+   14
+  ],
+  "fish_stock_fishing_pressure_ffmsy": [
+   14
+  ],
+  "marine_bycatch_rebuilding_requirements": [
+   14,
+   15
+  ],
+  "galapagos_mangrove_fish_species_traits": [
+   14,
+   15
+  ],
+  "marine_megavertebrate_species_iucn": [
+   14,
+   15
+  ],
+  "marine_megavertebrate_migration_sites": [
+   14,
+   15
+  ],
+  "india_district_household_latrines": [
+   3,
+   6
+  ],
+  "india_district_clean_cooking_fuel": [
+   3,
+   5,
+   7
+  ],
+  "india_district_household_electricity": [
+   1,
+   7
+  ],
+  "india_district_wealth_groups": [
+   1,
+   10
+  ],
+  "india_district_consumer_durables": [
+   1,
+   12
+  ],
+  "india_district_vehicle_ownership": [
+   9,
+   11
+  ],
+  "coral_calcification_acidification_warming": [
+   13,
+   14
+  ],
+  "ghana_drinking_water_service_by_district": [
+   1,
+   6
+  ],
+  "ghana_toilet_service_by_district": [
+   1,
+   6
+  ],
+  "ghana_toilet_facility_by_district": [
+   3,
+   6
+  ],
+  "ghana_solid_waste_disposal_by_district": [
+   6,
+   11,
+   12
+  ],
+  "tech_company_gender_diversity": [
+   5,
+   8,
+   10
+  ],
+  "irish_gender_pay_gap_reporting_companies": [
+   5,
+   8
+  ],
+  "marthas_vineyard_coastal_nutrients": [
+   14
+  ],
+  "coastal_city_sea_level_projections_2100": [
+   11,
+   13,
+   14
+  ],
+  "california_drinking_water_contaminants": [
+   3,
+   6
+  ],
+  "ocean_vessel_co2_emissions_by_basin": [
+   13,
+   14
+  ],
+  "vessel_co2_emissions_by_registry_class": [
+   13,
+   14
+  ],
+  "ca_sdg11_core_housing_need_by_tenure": [
+   1,
+   11
+  ],
+  "ca_sdg11_land_consumption_by_metro_area": [
+   11,
+   15
+  ],
+  "ca_sdg11_heritage_spending_by_province": [
+   11
+  ],
+  "ca_sdg11_waste_disposal_by_source_province": [
+   11,
+   12
+  ],
+  "ca_sdg11_fine_particulate_by_region": [
+   3,
+   11
+  ],
+  "ca_sdg16_homicide_by_indigenous_identity": [
+   5,
+   10,
+   16
+  ],
+  "ca_sdg16_childhood_abuse_by_group": [
+   5,
+   10,
+   16
+  ],
+  "ca_sdg3_hospital_births_by_province": [
+   3
+  ],
+  "ca_sdg3_under5_mortality_by_province": [
+   3
+  ],
+  "ca_sdg3_suicide_mortality_by_province": [
+   3
+  ],
+  "ca_sdg3_alcohol_per_capita_by_province": [
+   3
+  ],
+  "ca_sdg3_vaccine_coverage_by_province": [
+   3
+  ],
+  "ca_sdg3_health_worker_density_by_province": [
+   3,
+   5
+  ],
+  "ca_sdg4_graduation_rates_by_province": [
+   4
+  ],
+  "ca_sdg4_education_participation_by_province": [
+   4
+  ],
+  "ca_sdg4_literacy_numeracy_by_province": [
+   4
+  ],
+  "ca_sdg7_clean_electricity_by_province": [
+   7,
+   13
+  ],
+  "ca_sdg7_energy_intensity_by_province": [
+   7
+  ],
+  "mx_sdg2_child_stunting_by_state": [
+   2,
+   3
+  ],
+  "mx_sdg2_child_malnutrition_by_state": [
+   2,
+   3
+  ],
+  "mx_sdg3_maternal_mortality_by_state": [
+   3,
+   5
+  ],
+  "mx_sdg3_under5_mortality_by_state": [
+   3
+  ],
+  "mx_sdg3_tuberculosis_incidence_by_state": [
+   3
+  ],
+  "mx_sdg3_adolescent_fertility_by_state": [
+   3,
+   5
+  ],
+  "mx_sdg3_unsafe_wash_mortality_by_state": [
+   3,
+   6
+  ],
+  "mx_sdg3_health_worker_density_by_state": [
+   3
+  ],
+  "mx_sdg4_completion_rates_by_state": [
+   4
+  ],
+  "mx_sdg4_pre_primary_participation_by_state": [
+   4,
+   5
+  ],
+  "mx_sdg4_ict_skills_by_state_city": [
+   4,
+   9
+  ],
+  "mx_sdg4_schools_with_piped_water": [
+   4,
+   6
+  ],
+  "mx_sdg4_schools_with_separate_toilets": [
+   4,
+   5,
+   6
+  ],
+  "mx_sdg4_school_violence_against_women": [
+   4,
+   5,
+   16
+  ],
+  "mx_sdg11_public_transport_access_by_state": [
+   11
+  ],
+  "mx_sdg11_land_consumption_by_state": [
+   11,
+   15
+  ],
+  "mx_sdg11_public_open_space_by_state": [
+   11
+  ],
+  "mx_sdg16_physical_violence_by_state": [
+   16
+  ],
+  "mx_sdg16_feeling_safe_at_night_by_state": [
+   5,
+   11,
+   16
+  ],
+  "mx_sdg16_prison_occupancy_by_state": [
+   16
+  ],
+  "mx_sdg16_bribery_prevalence_by_state": [
+   16
+  ],
+  "mx_sdg16_judiciary_positions_by_state": [
+   5,
+   10,
+   16
+  ],
+  "mx_sdg16_birth_registration_by_state": [
+   16
+  ],
+  "mx_sdg16_crime_prevalence_by_state": [
+   16
+  ],
+  "mx_sdg16_business_crime_by_state": [
+   8,
+   16
+  ],
+  "mx_sdg16_trust_in_federal_government": [
+   16
+  ],
+  "ua_sdg2_fish_consumption_by_region": [
+   2,
+   14
+  ],
+  "ua_sdg2_agrochemical_certification_by_region": [
+   2,
+   15
+  ],
+  "ua_sdg3_cerebrovascular_deaths_men_by_region": [
+   3
+  ],
+  "ua_sdg4_school_attendance_by_age_region": [
+   4,
+   5
+  ],
+  "ua_sdg4_school_internet_access_by_region": [
+   4,
+   9
+  ],
+  "ua_sdg7_smart_grid_communities_by_region": [
+   7,
+   9
+  ],
+  "ua_sdg7_utility_payment_hardship_by_region": [
+   1,
+   7
+  ],
+  "ua_sdg7_household_utility_spending_share": [
+   1,
+   7,
+   11
+  ],
+  "ua_sdg11_emergency_preparedness_awareness": [
+   11,
+   13
+  ],
+  "ua_sdg15_nature_reserve_fund_by_region": [
+   15
+  ],
+  "ua_sdg15_soil_humus_by_zone_region": [
+   2,
+   15
+  ],
+  "ua_sdg15_seized_wildlife_by_region": [
+   15,
+   16
+  ],
+  "ua_sdg16_suspected_mine_contamination_area": [
+   11,
+   16
+  ],
+  "ua_sdg16_internally_displaced_in_shelters": [
+   10,
+   11,
+   16
+  ],
+  "ua_sdg16_seized_ammunition_by_type_region": [
+   16
+  ],
+  "md_sdg11_infrastructure_disaster_losses": [
+   11,
+   13
+  ],
+  "md_sdg15_land_improvement_by_district": [
+   2,
+   15
+  ],
+  "md_sdg16_legal_aid_beneficiaries": [
+   10,
+   16
+  ],
+  "md_sdg2_anaemia_women_by_region": [
+   2,
+   3,
+   5
+  ],
+  "md_sdg3_maternal_mortality_by_district": [
+   3,
+   5
+  ],
+  "iom_missing_migrants_deaths_by_cause": [
+   10,
+   16
+  ],
+  "north_east_atlantic_fish_species_traits": [
+   14,
+   15
+  ],
+  "seafloor_trawling_pressure_thresholds": [
+   14
+  ],
+  "pacific_pelagic_species_size_parameters": [
+   14
+  ],
+  "california_extreme_heat_excess_deaths": [
+   3,
+   11,
+   13
+  ],
+  "ng_sdg16_homicide_rate_by_state": [
+   16
+  ],
+  "ng_sdg16_violence_against_women_by_state": [
+   5,
+   16
+  ],
+  "ng_sdg16_violence_help_seeking_sources": [
+   5,
+   16
+  ],
+  "ng_sdg16_household_decision_making": [
+   5,
+   16
+  ],
+  "ng_sdg16_human_trafficking_victims": [
+   5,
+   8,
+   16
+  ],
+  "ng_sdg17_internet_use_by_group": [
+   5,
+   9,
+   10,
+   17
+  ],
+  "ng_sdg2_agricultural_labour_productivity": [
+   2,
+   8
+  ],
+  "ng_sdg3_neonatal_mortality_by_group": [
+   3,
+   10
+  ],
+  "ng_sdg3_hepatitis_b_by_group": [
+   3
+  ],
+  "ng_sdg3_large_health_spending_by_state": [
+   1,
+   3
+  ],
+  "ng_sdg3_essential_medicines_by_facility": [
+   3
+  ],
+  "ng_sdg4_pre_primary_learning_by_group": [
+   4,
+   10
+  ],
+  "ng_sdg4_never_attended_school_by_group": [
+   4,
+   5,
+   10
+  ],
+  "ng_sdg4_qualified_teachers_by_level": [
+   4,
+   5
+  ],
+  "ng_sdg5_non_partner_sexual_violence": [
+   5,
+   16
+  ],
+  "ng_sdg8_account_ownership_by_group": [
+   1,
+   5,
+   8
+  ],
+  "ng_sdg8_unemployment_by_quarter": [
+   8
+  ],
+  "ng_sdg8_youth_neet_by_state": [
+   4,
+   8
+  ],
+  "ng_sdg8_child_labour_by_state": [
+   8,
+   16
+  ],
+  "ng_sdg9_distance_to_market_health_facility": [
+   1,
+   3,
+   9
+  ],
+  "jm_sdg1_poverty_by_region_age": [
+   1,
+   10
+  ],
+  "jm_sdg1_social_protection_by_benefit": [
+   1,
+   10
+  ],
+  "jm_sdg11_land_consumption_by_parish": [
+   11,
+   15
+  ],
+  "jm_sdg11_municipal_waste_by_region": [
+   11,
+   12
+  ],
+  "jm_sdg11_air_pollutant_emissions": [
+   3,
+   11
+  ],
+  "jm_sdg7_electricity_generation_by_plant": [
+   7,
+   12
+  ],
+  "jm_sdg12_e_waste_by_category": [
+   12
+  ],
+  "jm_sdg12_waste_composition_by_agency": [
+   11,
+   12
+  ],
+  "jm_sdg13_disaster_shelters_by_parish": [
+   11,
+   13
+  ],
+  "jm_sdg15_forest_land_cover": [
+   15
+  ],
+  "jm_sdg15_mountain_green_cover": [
+   15
+  ],
+  "jm_sdg16_child_discipline_by_group": [
+   4,
+   16
+  ],
+  "jm_sdg2_undernourishment_by_region": [
+   1,
+   2
+  ],
+  "jm_sdg2_food_insecurity_by_region": [
+   1,
+   2
+  ],
+  "jm_sdg2_child_stunting_by_region": [
+   2,
+   3
+  ],
+  "jm_sdg2_child_wasting_overweight": [
+   2,
+   3
+  ],
+  "jm_sdg3_suicide_rate_by_parish": [
+   3
+  ],
+  "jm_sdg3_vaccination_coverage_by_antigen": [
+   3
+  ],
+  "jm_sdg3_health_workers_by_type": [
+   3
+  ],
+  "jm_sdg4_national_test_results": [
+   4
+  ],
+  "jm_sdg4_early_childhood_development": [
+   4
+  ],
+  "jm_sdg4_attendance_parity_ratios": [
+   4,
+   5,
+   10
+  ],
+  "jm_sdg4_school_basic_infrastructure": [
+   4,
+   6
+  ],
+  "jm_sdg5_partner_violence_by_form": [
+   5,
+   16
+  ],
+  "jm_sdg5_sexual_violence_by_form": [
+   5,
+   16
+  ],
+  "jm_sdg5_child_marriage_by_region": [
+   5
+  ],
+  "jm_sdg5_women_managers_quarterly": [
+   5,
+   8
+  ],
+  "jm_sdg6_safe_drinking_water_by_wealth": [
+   1,
+   6
+  ],
+  "jm_sdg6_sanitation_by_toilet_type": [
+   1,
+   6
+  ],
+  "jm_sdg6_river_basin_water_quality": [
+   6
+  ],
+  "jm_sdg7_electricity_access_by_region": [
+   7
+  ],
+  "jm_sdg7_clean_cooking_fuel_by_region": [
+   3,
+   7
+  ],
+  "jm_sdg7_renewable_capacity_by_technology": [
+   7,
+   13
+  ],
+  "jm_sdg8_informal_employment_quarterly": [
+   8
+  ],
+  "jm_sdg8_unemployment_by_age_quarterly": [
+   8
+  ],
+  "jm_sdg8_child_labour_by_group": [
+   8,
+   16
+  ],
+  "jm_sdg16_feeling_safe_by_time_of_day": [
+   5,
+   16
+  ],
+  "jm_sdg16_crime_reporting_by_type": [
+   16
+  ],
+  "bhi_benthic_habitat_condition": [
+   14,
+   15
+  ],
+  "bhi_pelagic_habitat_condition": [
+   14
+  ],
+  "bhi_waterbird_status_by_feeding_group": [
+   14,
+   15
+  ],
+  "bhi_coastal_fish_status": [
+   14
+  ],
+  "bhi_seal_population_status": [
+   14,
+   15
+  ],
+  "bhi_surface_salinity_pressure": [
+   13,
+   14
+  ],
+  "bhi_sea_surface_temperature_pressure": [
+   13,
+   14
+  ],
+  "bhi_dioxin_concentrations": [
+   3,
+   12,
+   14
+  ],
+  "bhi_pcb_concentrations": [
+   3,
+   12,
+   14
+  ],
+  "bhi_pfos_concentrations": [
+   3,
+   12,
+   14
+  ],
+  "bhi_oxygen_debt_by_basin": [
+   6,
+   14
+  ],
+  "bhi_secchi_depth_observations": [
+   6,
+   14
+  ],
+  "helcom_eutrophication_targets": [
+   6,
+   14
+  ],
+  "bhi_cod_herring_stock_biomass_bbmsy": [
+   14
+  ],
+  "bhi_cod_herring_fishing_pressure_ffmsy": [
+   14
+  ],
+  "bhi_cod_herring_landings_by_region": [
+   2,
+   14
+  ],
+  "bhi_blue_economy_growth_by_sector": [
+   8,
+   14
+  ],
+  "bhi_blue_economy_gva_by_sector": [
+   8,
+   14
+  ],
+  "bhi_coastal_regional_employment": [
+   8,
+   14
+  ],
+  "bhi_mariculture_production": [
+   2,
+   14
+  ],
+  "bhi_mariculture_nutrient_discharge": [
+   6,
+   14
+  ],
+  "bhi_nitrogen_load_pressure": [
+   6,
+   14
+  ],
+  "bhi_phosphorus_load_pressure": [
+   6,
+   14
+  ],
+  "bhi_iconic_species_red_list": [
+   14,
+   15
+  ],
+  "bhi_coastal_tourism_gva": [
+   8,
+   14
+  ],
+  "bhi_tourist_accommodation_density": [
+   8,
+   11,
+   14
+  ],
+  "us_organ_transplant_rates_by_race_state": [
+   3,
+   10
+  ],
+  "us_county_flood_risk_properties": [
+   11,
+   13
+  ],
+  "us_same_sex_couple_index_by_zip": [
+   10,
+   11
+  ],
+  "us_diaspora_communities_reasons": [
+   10
+  ],
+  "fiction_gendered_body_adjectives": [
+   5
+  ],
+  "us_party_platforms_women_mentions": [
+   5,
+   16
+  ],
+  "fredi_marine_fisheries_climate_impacts": [
+   13,
+   14
+  ],
+  "fredi_water_quality_climate_impacts": [
+   6,
+   13
+  ],
+  "fredi_inland_flooding_climate_impacts": [
+   6,
+   11,
+   13
   ]
  },
  "sources_per_goal": {
-  "1": 74,
-  "2": 171,
-  "3": 205,
-  "4": 190,
-  "5": 53,
-  "6": 64,
-  "7": 122,
-  "8": 156,
-  "9": 1129,
-  "10": 90,
-  "11": 136,
-  "12": 171,
-  "13": 243,
-  "14": 97,
-  "15": 139,
-  "16": 336,
-  "17": 282
+  "1": 198,
+  "2": 219,
+  "3": 310,
+  "4": 238,
+  "5": 193,
+  "6": 168,
+  "7": 153,
+  "8": 213,
+  "9": 1146,
+  "10": 208,
+  "11": 210,
+  "12": 193,
+  "13": 303,
+  "14": 195,
+  "15": 189,
+  "16": 442,
+  "17": 318
  }
 }
