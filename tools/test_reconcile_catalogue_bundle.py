@@ -235,6 +235,30 @@ class PreservationChecks(unittest.TestCase):
         self.assertEqual((result['state'],result['items']),('published',1))
         self.assertEqual((case.view().summary()['items'],case.view().summary()['withdrawn_left_out']),(1,0))
 
+    def test_a_live_row_the_service_withdrew_is_refused_before_any_write(self):
+        # Known wrong until October 5, 2026: an additions-only reconciliation kept the withdrawn x, every local gate
+        # passed, and the service refused only after the upload with catalogue_release_lists_withdrawn_item.
+        from loop_engine.core.service_runtime.catalogue_release_checks import Fixture
+        from loop_engine.core.service_runtime.catalogue_releases import publish,withdraw
+        case=Fixture(self.root/'withdrawn-service')
+        base=bundle(self.root/'withdrawn-live',[line('keep','keep bytes'),line('x','x bytes')],['keep bytes','x bytes'])
+        first=publish(case.context,base)
+        withdraw(case.context,identity='x',note_text='Synthetic withdrawal')
+        observed=case.view().summary()
+        kept=reconcile.Changes.from_dict({**request(base,additions=('new',)).to_dict(),'base_release':first['release_id']})
+        with self.assertRaisesRegex(ValueError,'durably withdrawn'):
+            reconcile.write_reconciled(base,(self.add,),kept,self.root/'withdrawn-kept',observed)
+        self.assertFalse((self.root/'withdrawn-kept').exists())
+        version=next(item.version for item in base.items if item.identity=='x')
+        declared=reconcile.Changes.from_dict({**request(base,additions=('new',),withdrawals=({'identity':'x',
+            'expected_version':version,'note':'Synthetic: withdrawn at the service'},)).to_dict(),
+            'base_release':first['release_id']})
+        reconcile.write_reconciled(base,(self.add,),declared,self.root/'withdrawn-declared',observed)
+        result=publish(case.context,reconcile.load_bundle(self.root/'withdrawn-declared',('MIT',)),
+                       expected_release=first['release_id'])
+        self.assertEqual(result['state'],'published')
+        self.assertEqual(set(case.view().catalogue.items),{'keep','new'})
+
     def test_real_local_service_rejects_a_concurrent_base_before_activation(self):
         from loop_engine.core.service_runtime.catalogue_release_checks import Fixture
         from loop_engine.core.service_runtime.catalogue_releases import publish

@@ -225,6 +225,14 @@ class DeltaPublishOrder(unittest.TestCase):
                 delta.publish('slot',self.output,self.digest,**self.kwargs)
             remote.assert_not_called()
 
+    def test_a_withdrawn_live_row_this_proof_keeps_refuses_before_any_remote_effect(self):
+        # The live view leaves out 'old' after a durable withdrawal; this additions-only proof still lists it, which the
+        # service refuses. Every remote function is mocked, so the old code's upload never reaches a Machine.
+        withdrawn={**self.before,'items':0,'withdrawn_left_out':1}
+        with self.assertRaisesRegex(ValueError,'durably withdrawn'):
+            self.simulate([withdrawn,withdrawn,self.after])
+        self.assertEqual(self.commands,[])
+
     def test_concurrent_pointer_move_after_upload_refuses_server_publish(self):
         with self.assertRaisesRegex(ValueError,'live baseline'):
             self.simulate([self.before,{**self.before,'release_id':'c'*64}])

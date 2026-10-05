@@ -154,7 +154,14 @@ def bundle_content(bundle):
 
 
 def require_live_base(base, changes, observed):
-    """Bind a complete release inventory to the public, versioned live observation."""
+    """Bind a complete release inventory to the public, versioned live observation.
+
+    The live view leaves out every listed row a durable withdrawal names, and
+    the service refuses a release that lists one again. The public count names
+    no identity, so declarations that withdraw or replace fewer rows than the
+    view leaves out provably keep one and are refused here, before any write or
+    upload; the service still checks the exact rows.
+    """
     if not isinstance(changes, Changes) or base.digest != changes.base_bundle_digest:
         raise ValueError('baseline header differs from the declaration')
     if (not isinstance(observed, dict) or observed.get('record_type') != 'service_catalogue_view/v1'
@@ -165,6 +172,10 @@ def require_live_base(base, changes, observed):
             or observed['items'] < 0 or observed['withdrawn_left_out'] < 0
             or observed['items'] + observed['withdrawn_left_out'] != len(base.items)):
         raise ValueError('live baseline release/content/schema/population differs; stop and reconcile')
+    left_out, declared = observed['withdrawn_left_out'], len(changes.replacements) + len(changes.withdrawals)
+    if left_out > declared:
+        raise ValueError(f'the live view leaves out {left_out} durably withdrawn rows but the declarations '
+                         f'withdraw or replace {declared}; declare a withdrawal or replacement for each')
 
 
 @dataclass(frozen=True)

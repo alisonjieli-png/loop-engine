@@ -518,7 +518,11 @@ The October 1 handoff records the incident that led to that fence.
    `expected_version`, `note`). Every update identity must be declared exactly
    once. Undeclared collisions, omissions, stale versions and batch-only
    retagging refuse. Overlapping operations and schema migrations are not
-   inferred. Durable withdrawals remain authoritative at the service.
+   inferred. Durable withdrawals remain authoritative at the service. A live
+   row that a durable withdrawal leaves out must be declared as a withdrawal
+   or a replacement: the reconciler and the publisher refuse before any write
+   or upload while the health record's `withdrawn_left_out` is larger than the
+   number of declared withdrawals and replacements.
 4. Run the reconciler outside the repository, repeating `--accept-license` for
    the host's accepted labels and `--body-root` for explicit baseline sources:
 
