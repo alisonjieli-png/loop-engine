@@ -285,11 +285,9 @@ packages, so this export never exports them. They are admitted by their own
 route instead: deterministic qualification, one calibrated sampled review by a
 model family that did not write the generators, and Community admission, with
 every batch decision in a decision ledger
-([`tools/component_qualification`](../component_qualification/README.md)). The
-held count still includes generated packages that route already admitted,
-because admission does not change a stored candidate's lifecycle. The export
-report records the quotas, the supply, the selected and kept counts and the
-unfilled quota per family under `selection.composition`.
+([`tools/component_qualification`](../component_qualification/README.md)).
+The export report records the quotas, the supply, the selected and kept counts
+and the unfilled quota per family under `selection.composition`.
 
 The store keeps a package a candidate after it is admitted and served: the
 3,910 generated program installs served since September 29, 2026 stayed

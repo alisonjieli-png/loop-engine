@@ -209,8 +209,9 @@ PYTHONPATH=src:tools python -m unittest tools.test_supply_lines
   every batch decision ([component qualification](../component_qualification/README.md),
   command `tools/qualify_generated_components.py`). That route admitted 3,910
   `program_installs` packages on September 29, 2026, served since app release
-  51. Admission does not change a stored candidate's lifecycle, so the held
-  count still includes packages that are already admitted and served.
+  51. Admission does not change a stored candidate's lifecycle; the export and
+  the report leave out a candidate whose exact package the served bundle or an
+  approved row of an admission folder names, as described above.
 - A protocol server's own effects are not declared by its registry entry.
   The package declares that the harness starts a process and downloads the
   pinned package, and says in its README that the server is third-party code.
