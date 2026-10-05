@@ -242,6 +242,15 @@ general practice cited, among their reasons, the criterion for the other kind.
 None rested on it alone, and correcting the request changed no decision on a
 real item; the comparison of the two attempts is in the pilot evidence folder.
 
+A native package prompt holds every file of the package exactly, except a file
+its request marks with an excerpt (`ReviewExcerpt`). That file is labelled
+`EXCERPT, NOT THE WHOLE FILE`, with the rule that cut it and a statement of
+what it shows and leaves out, while the request still carries the complete
+bytes that bind the package. Only the sampled review of generated components
+sets an excerpt, for a large data file (rule `data_file_excerpt/v1` in
+[`tools/component_qualification/excerpts.py`](../component_qualification/excerpts.py));
+every other prompt is unchanged.
+
 The prompt digest names both parts of the prompt, and the ledger reuses a
 verdict only for the same installation, the same exact request and the same
 exact prompt. A changed prompt is a new review, and the ledger keeps both.

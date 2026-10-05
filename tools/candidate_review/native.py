@@ -91,9 +91,25 @@ def json_document(data: bytes):
 
 
 @dataclass(frozen=True)
+class ReviewExcerpt:
+    """What a reviewer reads in place of a large file: the rule that cut it, a statement of what it shows and
+    leaves out, and the excerpt itself. The request still carries the complete payload, which binds the file."""
+
+    rule: str
+    statement: str
+    text: str
+
+    def __post_init__(self):
+        if any(type(value) is not str or not value.strip() for value in (self.rule, self.statement, self.text)):
+            refuse("native_excerpt_invalid", "an excerpt names its rule, states what it shows and holds text")
+
+
+@dataclass(frozen=True)
 class NativeReviewFile:
     entry: object
     payload: bytes
+    #: When set, the prompt shows this excerpt, labelled as one, instead of the whole text.
+    excerpt: "ReviewExcerpt | None" = None
 
     @property
     def text(self):

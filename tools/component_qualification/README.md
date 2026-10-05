@@ -111,6 +111,49 @@ each verdict's body digest. Equal batch counts do not establish the same
 population. Version 1 review records cannot admit material through this path;
 rerun review rather than retroactively attaching a population claim.
 
+## What the reviewer is sent
+
+Each sampled package reaches the reviewer through the native package prompt:
+its file tree with every size and digest, the written criteria, the item
+declaration and every file in full, with one exception. A text file under a
+data folder of the qualification policy (`data/`) that is larger than 16 KiB
+is shown as an excerpt by the rule `data_file_excerpt/v1`
+([`excerpts.py`](excerpts.py)):
+
+- delimited text (`.csv`, `.tsv`): the header record, then the first 20 and
+  the last 20 data records, each as the file's own lines;
+- JSON: an array's first 20 and last 20 elements, or an object's first 20
+  and last 20 members in file order, each as compact JSON on a line of its
+  own;
+- any other text: the first 20 and the last 20 lines;
+- a shown record, element or line longer than 400 characters is cut there
+  and says how many characters it leaves out, so an excerpt holds at most
+  19,120 characters whatever the file's size.
+
+The prompt labels the file `EXCERPT, NOT THE WHOLE FILE`, names the rule and
+states the file's media type, size and SHA-256, its row count, its field
+inventory (the header's columns, or every JSON field with each type it
+takes), which rows are shown and how many are not. The request still carries
+every byte, so the package binding and every digest are unchanged.
+Qualification parsed the whole file and ran its safety rules and secret
+patterns over it, and the supply line ran the package's own tests, which
+check every row against its `schema.json`, before it stored the package. The
+reviewer does not see the rows left out. Of the 1,870 data files of the
+September 28 and October 1, 2026 data table runs, 578 are excerpted and
+1,127 are sent whole; the longest excerpt is 18,535 characters.
+
+Calls are filled within the reviewer's context window. The room for a call's
+sampled members is the window less the answer allowance, the batch
+instructions, the request's own sentences and 20,000 tokens for each planted
+control; a control larger than that is not planted, and another member is
+tried. Before any model call the run builds every planned call exactly as the
+panel will and refuses when one does not fit, because the model gateway
+refuses such a call before it reaches the provider. For `ollama.kimi-k2.6`
+the room is 122,039 tokens of its 131,072-token window. The fixed
+150,000-token budget that planned the September 30, 2026 data table calls
+exceeded it, and the gateway refused all three calls unanswered. A reviewer
+that declares no window keeps the fixed budget.
+
 ## The acceptance rule
 
 The plan is a lot tolerance percent defective plan in the style of Dodge and
@@ -271,7 +314,8 @@ the decision ledger does not record it.
 
 ```bash
 PYTHONPATH=src:tools python -m unittest tools.test_component_qualification \
-  tools.test_component_qualification_sampling tools.test_component_qualification_decisions
+  tools.test_component_qualification_sampling tools.test_component_qualification_decisions \
+  tools.test_component_qualification_excerpts
 ```
 
 ## Existing work: adopted, adapted and rejected
@@ -281,7 +325,7 @@ PYTHONPATH=src:tools python -m unittest tools.test_component_qualification \
 | Library ingestion `sandbox_argv` (bubblewrap, no network) | Adapted: the same engine with home, runtime and removable folders hidden, the package mounted at a neutral path, and resource limits. |
 | Licensed import `StaticChecks`, `package_effects` | Adopted for safety scanning and for instruction and configuration effects; not for README or schema words, which describe a remote API. |
 | Review panel prechecks: safety rules, secret patterns | Adopted unchanged. |
-| Review panel, native criteria and instructions, ledger | Adopted unchanged for the sampled review; the pre-check edge is served by the qualification record. |
+| Review panel, native criteria and instructions, ledger | Adopted for the sampled review; the pre-check edge is served by the qualification record. The native prompt gained one optional part, a review file's labelled excerpt (`ReviewExcerpt`), which only this route sets, so every other prompt is unchanged. |
 | `tools/global_component_duplicates.py` prefix filtering | Adopted for near copies with exact Jaccard confirmation. |
 | ANSI/ASQ Z1.4 and ISO 2859 switching tables | Rejected as tables: they index by lot size classes and inspection levels. The exact hypergeometric and binomial computation gives the same guarantees for any batch size and states them directly. |
 | Dodge and Romig LTPD plans | Adopted as the method: consumer's risk at the tolerance defect rate, producer's risk at the process average. |
@@ -299,6 +343,14 @@ PYTHONPATH=src:tools python -m unittest tools.test_component_qualification \
 - The sampled review measures defects the reviewer can see. On September 28,
   2026 the Tactical reviewer failed the native calibration (it approved three
   of four known-wrong controls), so its verdicts from that day admit nothing.
+- An excerpted data file is judged by the reviewer on the rows it shows. A
+  defect only in the rows left out is caught by qualification and the
+  package's own tests or not at all; qualification does not look for hidden
+  or control characters in a data file.
+- A `.tsv` data file is declared `application/octet-stream` by its suffix, so
+  qualification refuses its package as `binary_file_unverified`: 165 of the
+  1,872 data table candidates qualified on October 5, 2026. The excerpt rule
+  leaves a declared binary file alone.
 - The decision ledger guards the reviews this tool runs. It is a local file:
   a review given a newly created ledger reads no history, so every run must
   name the canonical ledger. `admit` reads the review record and does not

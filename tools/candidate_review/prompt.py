@@ -159,7 +159,12 @@ def _native_parts(request) -> list:
     for source in request.cited_sources:
         parts.append(f"Cited source {source.path} at {source.revision}:\n" + _block("SOURCE", source.sha256, source.text))
     for file in request.files:
-        if file.text is None:
+        excerpt = getattr(file, "excerpt", None)
+        if excerpt is not None:
+            # Not the exact file: the statement says which rule cut it and what it shows and leaves out.
+            parts.append(f"EXCERPT, NOT THE WHOLE FILE: {file.entry.path} ({excerpt.rule}). {excerpt.statement}\n"
+                         + _block("EXCERPT", file.entry.digest, excerpt.text))
+        elif file.text is None:
             parts.append(f"BINARY FILE NOT TEXT-REVIEWED: {file.entry.path}; digest {file.entry.digest}. "
                          "Do not approve without separate declared binary verification.")
         else:

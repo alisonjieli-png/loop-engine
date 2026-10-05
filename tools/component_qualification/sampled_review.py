@@ -7,8 +7,10 @@ Sampled review of one qualification run (hybrid: deterministic sampling, one mod
 │      refused before any component is read
 ├── 1. batches: the qualified components of each generator (supply line, version and code revision)
 ├── 2. plan: sample size and acceptance number from the batch size and the generator's observed defect
-│      rate as the decision ledger records it (sampling.plan_for), and a recorded random seed; a run that
-│      can decide refuses when its call ceiling does not cover the calibration and every planned call
+│      rate as the decision ledger records it (sampling.plan_for), and a recorded random seed; calls are
+│      filled within the reviewer's context window, a large data file is shown as a bounded excerpt
+│      (excerpts.py), and a run refuses before any model call when a planned call does not fit the window
+│      or its call ceiling does not cover the calibration and every planned call
 ├── 3. optional calibration: the frozen native controls, one call each; a reviewer that approves a
 │      known-wrong control, or leaves one without a verdict, reviews nothing in this run
 ├── 4. review: the sampled packages in batch calls to one installation of a family that did not write
@@ -47,6 +49,12 @@ QUALIFICATION_ENGINE = "component_qualification_record"
 CONTROL_ENGINE = "planted_reviewer_control"
 MAXIMUM_BATCH = 12
 CALL_TOKEN_BUDGET = 150_000
+#: The estimated input tokens room is kept for each planted control in a call; a control larger than this is not
+#: planted, and another unsampled member is tried in its place.
+CONTROL_RESERVE_TOKENS = 20_000
+#: Estimated tokens of the batch prompt around each candidate (its fence markers and its line in the answer order),
+#: and of the request's opening and closing sentences.
+MEMBER_FRAMING_TOKENS, CALL_FRAMING_TOKENS = 64, 128
 PRODUCER_METHOD = "library_supply_generator"
 
 #: The planted control kinds, each named once, with the native criterion its defect violates.
@@ -149,10 +157,15 @@ def _neutral_identity(component: GeneratedComponent, rng: random.Random, package
     return f"library.supply.{line}.{rng.getrandbits(96):024x}.{package_digest[:16]}"
 
 
-def review_request(component: GeneratedComponent, criteria, instructions_sha256: str, producer_family: str):
-    """The native package review request for one generated component; its bytes are exactly the package's."""
+def review_request(component: GeneratedComponent, criteria, instructions_sha256: str, producer_family: str,
+                   data_folders=None):
+    """The native package review request for one generated component; its bytes are exactly the package's.
+
+    A large data file is shown to the reviewer as an excerpt (excerpts.py, rule data_file_excerpt/v1); the request
+    still carries its complete bytes, so the package binding and every digest are unchanged."""
     from tools.candidate_review.configuration import Producer
     from tools.candidate_review.native import NativePackageReviewRequest, NativeReviewFile
+    from .excerpts import excerpt_for
     package = component.package
     record = component.candidate
     provenance = record.get("provenance") or {}
@@ -170,7 +183,9 @@ def review_request(component: GeneratedComponent, criteria, instructions_sha256:
                           "generator": generator,
                           "fact_sources": [{key: fact.get(key) for key in ("role", "url", "sha256", "licence")}
                                            for fact in provenance.get("facts", []) if isinstance(fact, dict)]}}
-    files = tuple(NativeReviewFile(entry, component.payloads[entry.path]) for entry in package.files)
+    files = tuple(NativeReviewFile(entry, component.payloads[entry.path],
+                                   excerpt_for(entry, component.payloads[entry.path], data_folders))
+                  for entry in package.files)
     producer = Producer(f"{PRODUCER_METHOD}:{generator.get('identity', '?')}@{generator.get('version', '?')}",
                         producer_family)
     specification = {"id": component.identity, "authoring": record.get("authoring"), "line": component.line,
@@ -225,6 +240,26 @@ def _calibration_calls(root: Path, criteria, instructions) -> int:
     from tools.candidate_review.native_calibration import DEFAULT_SET, NativeCalibrationSet
     controls = NativeCalibrationSet.load(DEFAULT_SET, root, criteria)
     return len(tuple(controls.requests(None, None, criteria, instructions.sha256))) + 1
+
+
+def _call_limits(configuration, installation, instructions) -> tuple:
+    """(input tokens a call's sampled members may fill, the reviewer's context window, its answer allowance).
+
+    The model gateway refuses a call before it reaches the provider when the call's estimated input plus its answer
+    allowance exceeds the reviewer's declared context window. A fixed budget above that window (150,000 tokens
+    against 131,072 for ollama.kimi-k2.6) let the September 30, 2026 data table calls be planned and then refused
+    unanswered, so the members' room is the window less the allowance, the batch instructions, the request's own
+    sentences and the room kept for each planted control. A reviewer that declares no window keeps the fixed
+    budget; window and allowance are then None."""
+    from tools.candidate_review.prompt import batch_system
+    from loop_engine.core.context_budget import estimate_tokens
+    settings = dict(installation.settings)
+    window = settings.get("maximum_context_tokens")
+    if type(window) is not int or window <= 0:
+        return CALL_TOKEN_BUDGET, None, None
+    allowance = settings.get("output_allocation_tokens") or configuration.policy.output_allocation_tokens
+    system = estimate_tokens(batch_system(installation, instructions))
+    return min(CALL_TOKEN_BUDGET, window - allowance - system - CALL_FRAMING_TOKENS), window, allowance
 
 
 def _chunks(requests, estimate, budget: int, maximum: int = MAXIMUM_BATCH) -> list:
@@ -383,7 +418,8 @@ def command(options, root: Path) -> dict:
 
 def _review(options, root: Path, ledger) -> dict:
     from tools.candidate_review.panel import PanelRunRequest
-    from tools.candidate_review.prompt import member_parts
+    from tools.candidate_review.prompt import build_batch_prompt, member_parts
+    from . import excerpts
     from tools.candidate_review.configuration import PRECHECK_KINDS
     from loop_engine.core.context_budget import estimate_tokens
     started = _now()
@@ -424,6 +460,12 @@ def _review(options, root: Path, ledger) -> dict:
               "decision_ledger": None if ledger is None else {
                   "path": str(ledger.path), "sha256_at_start": ledger.sha256, "entries_at_start": len(ledger.entries)}}
     configuration, criteria, instructions, _unused = _panel(root, options.ledger, False, None)
+    installation = configuration.installation(options.reviewer)
+    room, window, allowance = _call_limits(configuration, installation, instructions)
+    data_folders = excerpts.policy_data_folders()
+    record["call_limits"] = {"members_input_tokens": room, "context_window_tokens": window,
+                             "answer_allowance_tokens": allowance, "control_reserve_tokens": CONTROL_RESERVE_TOKENS,
+                             "excerpt_rule": excerpts.RULE, "excerpt_threshold_bytes": excerpts.THRESHOLD_BYTES}
     for batch, identities in sorted(batches.items()):
         # The observed rate belongs to the generator (line and version), so a batch written again at a later
         # code revision by an unchanged generator plans from the defects its earlier batches showed.
@@ -431,13 +473,13 @@ def _review(options, root: Path, ledger) -> dict:
         plan = sampling.plan_for(batch, len(identities), history, policy)
         chosen = sampling.draw_sample(identities, plan.sample_size, f"{seed}:{batch}")
         components = {identity: reader.component(rows[identity]) for identity in chosen}
-        requests = [review_request(components[identity], criteria, instructions.sha256, options.producer_family)
-                    for identity in chosen]
+        requests = [review_request(components[identity], criteria, instructions.sha256, options.producer_family,
+                                   data_folders) for identity in chosen]
         unsampled = sorted(set(identities) - set(chosen)) or sorted(identities)
-        estimate = lambda request: estimate_tokens(member_parts(request))  # noqa: E731
+        estimate = lambda request: estimate_tokens(member_parts(request)) + MEMBER_FRAMING_TOKENS  # noqa: E731
         if not 1 <= options.controls_per_call < MAXIMUM_BATCH:
             raise ValueError("each call holds at least one planted control and at least one sampled component")
-        calls = _chunks(requests, estimate, CALL_TOKEN_BUDGET - 20_000 * options.controls_per_call,
+        calls = _chunks(requests, estimate, room - CONTROL_RESERVE_TOKENS * options.controls_per_call,
                         MAXIMUM_BATCH - options.controls_per_call)
         batch_calls, kinds = [], [kind for kind in CONTROL_KINDS]
         rng.shuffle(kinds)
@@ -451,22 +493,38 @@ def _review(options, root: Path, ledger) -> dict:
                     if probe is None:
                         continue
                     control = plant(base, kind, _neutral_identity(base, rng, probe.package.package_digest))
+                    control_request = review_request(control, criteria, instructions.sha256,
+                                                     options.producer_family, data_folders)
+                    if estimate(control_request) > CONTROL_RESERVE_TOKENS:
+                        continue  # the call keeps room for a control this size only; try another member
                     planted[control.identity] = {"kind": kind, "criterion": CONTROL_KINDS[kind][0], "batch": batch,
                                                  "base_identity": base.identity,
                                                  "package_digest": control.package.package_digest,
                                                  "expected_decision": "reject"}
-                    members.insert(rng.randrange(len(members) + 1),
-                                   review_request(control, criteria, instructions.sha256, options.producer_family))
+                    members.insert(rng.randrange(len(members) + 1), control_request)
                     break
             batch_calls.append(members)
         plans[batch], samples[batch], calls_plan[batch] = plan, chosen, batch_calls
         record["batches"][batch] = {"plan": plan.to_dict(), "sample": chosen,
                                     "frame_sha256": sampling.frame_digest(frames[batch]),
                                     "calls_planned": len(batch_calls),
-                                    "members_per_call": [len(members) for members in batch_calls]}
+                                    "members_per_call": [len(members) for members in batch_calls],
+                                    # Each planned call's input exactly as the panel will build and the gateway
+                                    # will estimate it.
+                                    "call_input_tokens": [build_batch_prompt(members, installation,
+                                                                             instructions).estimated_input_tokens
+                                                          for members in batch_calls]}
     reader.close()
     total_calls = sum(len(value) for value in calls_plan.values())
     record["calls_planned"] = total_calls
+    if window is not None:
+        over = [f"{batch} call {number}: {tokens:,} input tokens" for batch, entry in sorted(record["batches"].items())
+                for number, tokens in enumerate(entry["call_input_tokens"], 1) if tokens + allowance > window]
+        record["calls_over_context_window"] = over
+        if over and options.authorize_model_calls:
+            raise ValueError(f"planned calls that do not fit {options.reviewer}'s context window of {window:,} tokens "
+                             f"with its {allowance:,}-token answer allowance, which the gateway would refuse "
+                             "unanswered: " + "; ".join(over))
     if options.authorize_model_calls and options.calibrate and not options.measurement_only:
         # Every decision of this run settles its frame in the decision ledger, so a batch the ceiling could not
         # finish would be withheld for want of calls and never sampled again. Refuse before the first call instead.
