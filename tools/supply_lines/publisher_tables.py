@@ -363,7 +363,8 @@ def _table_id(collection: dict, name: str) -> str:
     return f"{collection['table_prefix']}_{re.sub(r'[^a-z0-9]+', '_', name.lower()).strip('_')}"
 
 
-def world_bank_rows(reader, collection_id: str, collection: dict, rules: dict, only=(), maximum: int = 0) -> tuple:
+def world_bank_rows(reader, collection_id: str, collection: dict, rules: dict, only=(), maximum: int = 0,
+                    deeds: "dict | None" = None) -> tuple:
     """(rows, refusals, summary) of a World Bank series catalogue: each series whose own metadata states a licence
     the declaration allows, with its metadata, its SDG goals and the facts the README names."""
     rows, refused, decisions = [], [], Counter()
@@ -439,7 +440,7 @@ def world_bank_rows(reader, collection_id: str, collection: dict, rules: dict, o
                      "by `Country Code`, and one column per year."),
             "attribution": collection["attribution"].format(
                 name=name, series=series, source=" ".join(str(fields.get("Source") or "").split()) or "not named",
-                licence_address=licence_address or "https://creativecommons.org/licenses/by/4.0/"),
+                licence_address=licence_address or (deeds or {}).get(spdx, "")),
         })
     summary = {"catalogue_entries": len(entries), "licence_decisions": [
         {"decision": decision, "value": value, "series": count} for (decision, value), count in decisions.most_common()],
@@ -747,7 +748,9 @@ def generate(reader, collection_id: str, *, code_revision: str, licence_text: by
     texts = licence_texts(reader, sources)
     if collection["mode"] == WORLD_BANK_SERIES:
         try:
-            rows, refused, summary = world_bank_rows(reader, collection_id, collection, rules, only, maximum)
+            rows, refused, summary = world_bank_rows(reader, collection_id, collection, rules, only, maximum,
+                                                     {spdx: text["deed"] for spdx, text in
+                                                      sources["licence_texts"].items()})
         except (LookupError, ValueError, TypeError) as error:
             rows, summary = [], {"catalogue_entries": 0, "stopped": {"reason": "catalogue_unreadable"}}
             refused = [refusal(PUBLISHER_TABLES, "source_unreadable", collection["catalogue"], str(error)[:200])]
