@@ -27,6 +27,8 @@ from unittest import mock
 from tools.component_qualification import controls, decisions, sampled_review, sampling
 
 ROOT = Path(__file__).resolve().parents[1]
+#: The backfill of October 5, 2026 from the review records of September 29 and 30 (see the component's README).
+BACKFILL = ROOT / "tools/component_qualification/fixtures/decision-ledger-backfill-2026-10-05.jsonl"
 GENERATOR_REVISION = "a" * 40
 QUALIFIER = {"tool": "tools/component_qualification", "version": "1.0.0", "code_revision": "c" * 40,
              "uncommitted_changes": False}
@@ -546,6 +548,41 @@ class BackfillTests(unittest.TestCase):
             decisions.backfill(decided, self._reviews()[:1], recorded_at="2026-10-05T12:00:00Z")
         self.assertEqual(caught.exception.code, "decision_ledger_not_a_ledger")
         self.assertEqual(decided.read_bytes(), b"")
+
+
+class RecordedBackfillTests(unittest.TestCase):
+    """The ledger backfilled on October 5, 2026 from the review records that decided generated batches."""
+
+    def setUp(self):
+        self.ledger = decisions.DecisionLedger.open(BACKFILL, for_append=False)
+
+    def test_it_holds_the_four_decisions_of_september_29_and_30(self):
+        self.assertEqual([(entry["batch"], entry["outcome"], entry["frame"]["size"]) for entry in self.ledger.entries],
+                         [("program_installs/1.0.0@3e497b809fd8", sampling.ACCEPTED, 3910),
+                          ("data_tables/1.1.0@8ebc4a99e5a6", sampling.WITHHELD, 381),
+                          ("function_extracts/1.1.0@8ebc4a99e5a6", sampling.WITHHELD, 1767),
+                          ("program_installs/1.0.0@8ebc4a99e5a6", sampling.WITHHELD, 189)])
+        self.assertEqual({entry["source"]["review_sha256"] for entry in self.ledger.entries},
+                         {"26c14c3cc869a043625c95f8666572af1acb6f0f41a030cd5532b62c7b8724a2",
+                          "cb9af93b2a73a67ec0f88419f00a15d39590cfeb1cd38071cd64650adfb1c22f"})
+        self.assertEqual({entry["source"]["kind"] for entry in self.ledger.entries}, {decisions.BACKFILL_SOURCE})
+
+    def test_each_withheld_frame_is_refused_when_qualified_again(self):
+        for entry in self.ledger.entries[1:]:
+            records = [{"identity": identity, "record_version": version, "package_digest": digest}
+                       for identity, version, digest in entry["frame"]["members"]]
+            refused = self.ledger.refusals({entry["batch"]: records})
+            self.assertIn("its exact frame was withheld", refused[entry["batch"]][0], entry["batch"])
+
+    def test_the_recorded_rates_hold_back_both_generators_above_the_tolerance(self):
+        generators = self.ledger.summary()["generators"]
+        self.assertEqual({name: (row["sampled"], row["defective"], row["at_or_above_tolerance"])
+                          for name, row in generators.items()},
+                         {"data_tables/1.1.0": (0, 0, False), "function_extracts/1.1.0": (58, 21, True),
+                          "program_installs/1.0.0": (106, 6, True)})
+        history = sampling.GeneratorHistory.from_decisions("function_extracts/1.1.0", self.ledger.history_rows())
+        plan = sampling.plan_for("function_extracts/1.1.0@c625853a0000", 1295, history, POLICY)
+        self.assertEqual((plan.mode, plan.sample_size), (sampling.GENERATOR_ABOVE_TOLERANCE, 1295))
 
 
 if __name__ == "__main__":

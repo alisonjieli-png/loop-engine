@@ -201,7 +201,24 @@ and creates the ledger only when no file exists at its path.
 The canonical ledger belongs at
 `/home/username/baltor-library/generated-admission/decision-ledger.jsonl`,
 beside `decided-identities.txt`, which stays the qualification exclusion list
-that `qualify --exclude-identities` reads.
+that `qualify --exclude-identities` reads. The backfill of October 5, 2026 is
+[`fixtures/decision-ledger-backfill-2026-10-05.jsonl`](fixtures/decision-ledger-backfill-2026-10-05.jsonl).
+It records 4 decisions from the review records of September 29 and 30, 2026:
+
+| Batch | Frame | Outcome | Sample |
+|---|---|---|---|
+| `program_installs/1.0.0@3e497b809fd8` | 3,910 | accepted | 0 of 58 defective |
+| `data_tables/1.1.0@8ebc4a99e5a6` | 381 | withheld | 0 of 52 decided: its 3 calls exceeded the reviewer's context window |
+| `function_extracts/1.1.0@8ebc4a99e5a6` | 1,767 | withheld | 21 of 58 defective |
+| `program_installs/1.0.0@8ebc4a99e5a6` | 189 | withheld | 6 of 48 defective |
+
+The stopped review of September 30, 2026 at 15:26 decided nothing, so its two
+batches stay undecided. The recorded rates of `function_extracts/1.1.0`
+(21 of 58) and `program_installs/1.0.0` (6 of 106) are at or above the 5
+percent tolerance, so neither generator version can be sampled into
+acceptance again; each needs a repaired generator with a new version.
+`data_tables/1.1.0` has no decided sample, so it has no recorded rate, and
+its withheld frame is still refused.
 
 ## Records
 
