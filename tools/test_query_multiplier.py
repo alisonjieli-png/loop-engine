@@ -412,6 +412,55 @@ class ExecutionTests(Temporary):
         self.assertEqual(ledger.query_state("q1")[0], "planned")
 
 
+class LaneRefusalTests(Temporary):
+    class Opener:
+        def __init__(self):
+            self.calls = 0
+
+        def open(self, request, timeout):
+            self.calls += 1
+
+            class Response:
+                status = 200
+                headers = {}
+
+                def read(self, size):
+                    return json.dumps({"results": [{"title": "t", "url": "https://example.org/x"}]}).encode()
+
+                def __enter__(self):
+                    return self
+
+                def __exit__(self, *args):
+                    return False
+            return Response()
+
+    def lane(self, environment):
+        library = small_library()
+        executors = registry()
+        [built] = read_plan(plan(product("web", "ollama_web_search", [("sdg_target", None), ("geography", 40)])), library, executors)
+        ledger = self.ledger()
+        opener = self.Opener()
+        run = Run(library=library, products=[built], executors=executors, ledger=ledger, minutes=1, resolve_licences=False,
+                  transport=Transport(load_policy(), opener=opener, environment=environment))
+        return run, run.lanes[0], ledger, opener
+
+    def test_a_lane_refused_before_sending_stops_without_spending_its_cursor(self):
+        run, lane, ledger, opener = self.lane({})
+        lane.loop()
+        self.assertEqual(lane.done_reason, "refused:key_not_in_environment")
+        self.assertEqual(opener.calls, 0)
+        self.assertIsNone(ledger.scalar("select next_k from cursors"))
+        self.assertEqual(ledger.scalar("select count(*) from queries"), 0)
+
+    def test_known_wrong_with_the_key_the_same_lane_sends_and_advances(self):
+        run, lane, ledger, opener = self.lane({"OLLAMA_API_KEY": "k" * 32})
+        stream = lane.streams[0]
+        query = stream.next()
+        lane.attempt(query, stream)
+        self.assertEqual(opener.calls, 1)
+        self.assertGreater(ledger.scalar("select next_k from cursors"), 0)
+
+
 class ClockedLedger:
     def __init__(self, start):
         self.now = start

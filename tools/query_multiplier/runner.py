@@ -194,6 +194,8 @@ class Lane:
                 continue
             try:
                 self.attempt(query, stream)
+                if self.done_reason.startswith("refused:"):
+                    return
             except Exception as error:  # one bad response never ends the lane; too many do
                 self.stats["attempt_errors"] += 1
                 self.errors.append(type(error).__name__ + ": " + str(error)[:200])
@@ -209,10 +211,11 @@ class Lane:
         try:
             run.transport.check(executor, query.request)
         except RequestRefused as refusal:
+            # Every refusal the transport makes before sending is about the lane (an unavailable engine, a
+            # missing key, a refused host), not this query: the lane stops and its cursor stays where it was,
+            # so no query is spent unsent.
             self.refusals[refusal.code] += 1
-            if stream is not None:
-                stream.save()
-            self.next_allowed = time.time() + 1
+            self.done_reason = "refused:" + refusal.code
             return
         ledger.plan(query)
         attempt_id = ledger.intent(query, run.run_id, executor.cost(query.request))
@@ -292,7 +295,14 @@ class Lane:
                 datetime.now(timezone.utc) + timedelta(seconds=int(retry) if retry and retry.isdigit() else 300))
             run.ledger.set_hold(executor.executor_id, "rate_limited_" + str(status), until + timedelta(seconds=5), attempt_id)
             self.stats["rate_limited"] += 1
-        elif status in (401, 403) and executor.access != "gh_api":
+        elif status in (401, 403) and executor.access == "gh_api":
+            # GitHub's secondary rate limit answers 403 with a retry-after and allowance left; anything else
+            # may be an access change. Either way the lane waits instead of repeating the request pattern.
+            retry = headers.get("retry-after")
+            seconds = int(retry) + 5 if retry and retry.isdigit() else 600
+            run.ledger.set_hold(executor.executor_id, "github_refused_" + str(status),
+                                datetime.now(timezone.utc) + timedelta(seconds=seconds), attempt_id)
+        elif status in (401, 403):
             run.ledger.set_hold(executor.executor_id, "access_refused_" + str(status),
                                 datetime.now(timezone.utc) + timedelta(hours=6), attempt_id)
         sustained = headers.get("x-ratelimit-available-anon_sustained")
