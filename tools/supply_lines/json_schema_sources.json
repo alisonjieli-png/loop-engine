@@ -357,6 +357,702 @@
      "name": "config"
     }
    ]
+  },
+  {
+   "source_id": "sunspec_models",
+   "title": "SunSpec Information Models (distributed energy resources)",
+   "repository": "sunspec/models",
+   "branch": "master",
+   "vendor": "sunspec",
+   "schemas": [
+    {
+     "path": "json/schema.json",
+     "name": "model",
+     "valid_examples_glob": "json/model_*.json"
+    }
+   ]
+  },
+  {
+   "source_id": "ga4gh_beacon_v2",
+   "title": "GA4GH Beacon v2 default model (dereferenced entry schemas)",
+   "repository": "ga4gh-beacon/beacon-v2",
+   "branch": "main",
+   "vendor": "beacon_v2",
+   "schemas": [
+    {
+     "path": "bin/deref_schemas/analyses/defaultSchema.json",
+     "name": "analyses",
+     "valid_examples_glob": "models/json/beacon-v2-default-model/analyses/examples/*.json"
+    },
+    {
+     "path": "bin/deref_schemas/biosamples/defaultSchema.json",
+     "name": "biosamples",
+     "valid_examples_glob": "models/json/beacon-v2-default-model/biosamples/examples/*.json"
+    },
+    {
+     "path": "bin/deref_schemas/cohorts/defaultSchema.json",
+     "name": "cohorts",
+     "valid_examples_glob": "models/json/beacon-v2-default-model/cohorts/examples/*.json"
+    },
+    {
+     "path": "bin/deref_schemas/datasets/defaultSchema.json",
+     "name": "datasets",
+     "valid_examples_glob": "models/json/beacon-v2-default-model/datasets/examples/*.json"
+    },
+    {
+     "path": "bin/deref_schemas/individuals/defaultSchema.json",
+     "name": "individuals",
+     "valid_examples_glob": "models/json/beacon-v2-default-model/individuals/examples/*.json"
+    },
+    {
+     "path": "bin/deref_schemas/runs/defaultSchema.json",
+     "name": "runs",
+     "valid_examples_glob": "models/json/beacon-v2-default-model/runs/examples/*.json"
+    },
+    {
+     "path": "framework/json/responses/ga4gh-service-info-1-0-0-schema.json",
+     "name": "service-info"
+    }
+   ]
+  },
+  {
+   "source_id": "cityjson_extensions",
+   "title": "CityJSON 2.0 Extension schema",
+   "repository": "cityjson/specs",
+   "branch": "main",
+   "vendor": "cityjson",
+   "schemas": [
+    {
+     "path": "extensions/20/extension.schema.json",
+     "name": "extension",
+     "valid_examples_glob": "extensions/20/*.ext.json"
+    }
+   ]
+  },
+  {
+   "source_id": "mobilitydata_gofs",
+   "title": "General On-demand Feed Specification (GOFS)",
+   "repository": "MobilityData/gofs",
+   "branch": "main",
+   "vendor": "gofs",
+   "schemas": [
+    {
+     "path": "schema/gofs.json"
+    },
+    {
+     "path": "schema/booking_rules.json"
+    },
+    {
+     "path": "schema/calendars.json"
+    },
+    {
+     "path": "schema/operating_rules.json"
+    },
+    {
+     "path": "schema/service_brands.json"
+    },
+    {
+     "path": "schema/system_information.json"
+    },
+    {
+     "path": "schema/vehicle_types.json"
+    },
+    {
+     "path": "schema/zones.json"
+    }
+   ]
+  },
+  {
+   "source_id": "openeo_processes",
+   "title": "openEO process test-case document schema",
+   "repository": "Open-EO/openeo-processes",
+   "branch": "master",
+   "vendor": "openeo_processes",
+   "schemas": [
+    {
+     "path": "tests/schema/schema.json",
+     "name": "process-tests"
+    }
+   ]
+  },
+  {
+   "source_id": "ogc_jsonfg",
+   "title": "OGC Features and Geometries JSON (JSON-FG)",
+   "repository": "opengeospatial/ogc-feat-geo-json",
+   "branch": "main",
+   "vendor": "jsonfg",
+   "schemas": [
+    {
+     "path": "core/schemas/feature.min.json",
+     "name": "feature",
+     "valid_examples_glob": "core/examples/*.json"
+    },
+    {
+     "path": "core/schemas/featurecollection.min.json",
+     "name": "featurecollection",
+     "valid_examples_glob": "core/examples/*.json"
+    }
+   ]
+  },
+  {
+   "source_id": "cyclonedx_shared_schemas",
+   "title": "CycloneDX shared schemas (SPDX licence identifiers, JSON Signature Format, cryptography definitions)",
+   "repository": "CycloneDX/specification",
+   "branch": "master",
+   "vendor": "cyclonedx",
+   "schemas": [
+    {
+     "path": "schema/spdx.schema.json",
+     "name": "spdx-licence-ids"
+    },
+    {
+     "path": "schema/jsf-0.82.schema.json",
+     "name": "jsf"
+    },
+    {
+     "path": "schema/cryptography-defs.schema.json",
+     "name": "cryptography-defs"
+    }
+   ]
+  },
+  {
+   "source_id": "odcs",
+   "title": "Open Data Contract Standard (Bitol, Linux Foundation AI and Data)",
+   "repository": "bitol-io/open-data-contract-standard",
+   "branch": "main",
+   "vendor": "odcs",
+   "schemas": [
+    {
+     "path": "schema/odcs-json-schema-v3.2.0.json",
+     "name": "data-contract"
+    }
+   ]
+  },
+  {
+   "source_id": "openlineage",
+   "title": "OpenLineage run, job and dataset event schema",
+   "repository": "OpenLineage/OpenLineage",
+   "branch": "main",
+   "vendor": "openlineage",
+   "schemas": [
+    {
+     "path": "spec/OpenLineage.json",
+     "name": "event",
+     "valid_examples": [
+      "spec/tests/example_full_event.json"
+     ]
+    }
+   ]
+  },
+  {
+   "source_id": "dif_presentation_exchange",
+   "title": "DIF Presentation Exchange 2.0 submission requirements",
+   "repository": "decentralized-identity/presentation-exchange",
+   "branch": "main",
+   "vendor": "dif_pe",
+   "schemas": [
+    {
+     "path": "schemas/v2.0.0/submission-requirement.json",
+     "name": "submission-requirement"
+    },
+    {
+     "path": "schemas/v2.0.0/submission-requirements.json",
+     "name": "submission-requirements"
+    }
+   ]
+  },
+  {
+   "source_id": "dif_credential_manifest",
+   "title": "DIF Credential Manifest application and response",
+   "repository": "decentralized-identity/credential-manifest",
+   "branch": "main",
+   "vendor": "dif_cm",
+   "schemas": [
+    {
+     "path": "spec/v1.0.0/schemas/credential-application.json",
+     "name": "credential-application"
+    },
+    {
+     "path": "spec/v1.0.0/schemas/credential-response.json",
+     "name": "credential-response"
+    }
+   ]
+  },
+  {
+   "source_id": "dif_trust_establishment",
+   "title": "DIF Trust Establishment document",
+   "repository": "decentralized-identity/trust-establishment",
+   "branch": "main",
+   "vendor": "dif_te",
+   "schemas": [
+    {
+     "path": "versions/v1/schemas/schema.json",
+     "name": "trust-establishment"
+    }
+   ]
+  },
+  {
+   "source_id": "hca_metadata_schema",
+   "title": "Human Cell Atlas metadata schema (core, biomaterial, process, project and system modules)",
+   "repository": "HumanCellAtlas/metadata-schema",
+   "branch": "master",
+   "vendor": "hca",
+   "schemas": [
+    {
+     "path": "json_schema/core/process/process_core.json",
+     "name": "process-core"
+    },
+    {
+     "path": "json_schema/core/project/project_core.json",
+     "name": "project-core"
+    },
+    {
+     "path": "json_schema/core/protocol/protocol_core.json",
+     "name": "protocol-core"
+    },
+    {
+     "path": "json_schema/module/biomaterial/blood_test.json",
+     "name": "blood-test"
+    },
+    {
+     "path": "json_schema/module/biomaterial/collection_institute.json",
+     "name": "collection-institute"
+    },
+    {
+     "path": "json_schema/module/biomaterial/death.json",
+     "name": "death"
+    },
+    {
+     "path": "json_schema/module/biomaterial/disease_profile.json",
+     "name": "disease-profile"
+    },
+    {
+     "path": "json_schema/module/biomaterial/familial_relationship.json",
+     "name": "familial-relationship"
+    },
+    {
+     "path": "json_schema/module/biomaterial/growth_conditions.json",
+     "name": "growth-conditions"
+    },
+    {
+     "path": "json_schema/module/biomaterial/lifestyle.json",
+     "name": "lifestyle"
+    },
+    {
+     "path": "json_schema/module/biomaterial/medical_tests.json",
+     "name": "medical-tests"
+    },
+    {
+     "path": "json_schema/module/biomaterial/reproductive_history.json",
+     "name": "reproductive-history"
+    },
+    {
+     "path": "json_schema/module/biomaterial/residence.json",
+     "name": "residence"
+    },
+    {
+     "path": "json_schema/module/biomaterial/state_of_specimen.json",
+     "name": "state-of-specimen"
+    },
+    {
+     "path": "json_schema/module/project/funder.json",
+     "name": "funder"
+    },
+    {
+     "path": "json_schema/module/project/publication.json",
+     "name": "publication"
+    },
+    {
+     "path": "json_schema/module/project/hca_bionetwork.json",
+     "name": "hca-bionetwork"
+    },
+    {
+     "path": "json_schema/module/process/purchased_reagents.json",
+     "name": "purchased-reagents"
+    },
+    {
+     "path": "json_schema/module/process/sequencing/10x.json",
+     "name": "10x"
+    },
+    {
+     "path": "json_schema/module/process/sequencing/barcode.json",
+     "name": "barcode"
+    },
+    {
+     "path": "json_schema/module/process/sequencing/insdc_experiment.json",
+     "name": "insdc-experiment"
+    },
+    {
+     "path": "json_schema/module/process/sequencing/plate_based_sequencing.json",
+     "name": "plate-based-sequencing"
+    },
+    {
+     "path": "json_schema/module/protocol/channel.json",
+     "name": "channel"
+    },
+    {
+     "path": "json_schema/module/protocol/matrix.json",
+     "name": "matrix"
+    },
+    {
+     "path": "json_schema/system/file_descriptor.json",
+     "name": "file-descriptor"
+    },
+    {
+     "path": "json_schema/system/license.json",
+     "name": "license"
+    },
+    {
+     "path": "json_schema/system/provenance.json",
+     "name": "provenance"
+    }
+   ]
+  },
+  {
+   "source_id": "openmhealth_schemas",
+   "title": "Open mHealth (IEEE 1752) shared value schemas",
+   "repository": "openmhealth/schemas",
+   "branch": "main",
+   "vendor": "omh",
+   "schemas": [
+    {
+     "path": "schema/omh/activity-name-1.0.json",
+     "name": "activity-name",
+     "valid_examples_glob": "test-data/omh/activity-name/1.0/shouldPass/*.json",
+     "invalid_examples_glob": "test-data/omh/activity-name/1.0/shouldFail/*.json"
+    },
+    {
+     "path": "schema/omh/blood-specimen-type-1.0.json",
+     "name": "blood-specimen-type",
+     "valid_examples_glob": "test-data/omh/blood-specimen-type/1.0/shouldPass/*.json",
+     "invalid_examples_glob": "test-data/omh/blood-specimen-type/1.0/shouldFail/*.json"
+    },
+    {
+     "path": "schema/omh/body-location-1.1.json",
+     "name": "body-location",
+     "valid_examples_glob": "test-data/omh/body-location/1.1/shouldPass/*.json",
+     "invalid_examples_glob": "test-data/omh/body-location/1.1/shouldFail/*.json"
+    },
+    {
+     "path": "schema/omh/body-posture-1.0.json",
+     "name": "body-posture",
+     "valid_examples_glob": "test-data/omh/body-posture/1.0/shouldPass/*.json",
+     "invalid_examples_glob": "test-data/omh/body-posture/1.0/shouldFail/*.json"
+    },
+    {
+     "path": "schema/omh/date-time-1.0.json",
+     "name": "date-time",
+     "valid_examples_glob": "test-data/omh/date-time/1.0/shouldPass/*.json",
+     "invalid_examples_glob": "test-data/omh/date-time/1.0/shouldFail/*.json"
+    },
+    {
+     "path": "schema/omh/day-of-week-1.0.json",
+     "name": "day-of-week",
+     "valid_examples_glob": "test-data/omh/day-of-week/1.0/shouldPass/*.json",
+     "invalid_examples_glob": "test-data/omh/day-of-week/1.0/shouldFail/*.json"
+    },
+    {
+     "path": "schema/omh/descriptive-statistic-1.2.json",
+     "name": "descriptive-statistic",
+     "valid_examples_glob": "test-data/omh/descriptive-statistic/1.2/shouldPass/*.json",
+     "invalid_examples_glob": "test-data/omh/descriptive-statistic/1.2/shouldFail/*.json"
+    },
+    {
+     "path": "schema/omh/descriptive-statistic-denominator-1.1.json",
+     "name": "descriptive-statistic-denominator",
+     "valid_examples_glob": "test-data/omh/descriptive-statistic-denominator/1.1/shouldPass/*.json",
+     "invalid_examples_glob": "test-data/omh/descriptive-statistic-denominator/1.1/shouldFail/*.json"
+    },
+    {
+     "path": "schema/omh/full-date-1.0.json",
+     "name": "full-date",
+     "valid_examples_glob": "test-data/omh/full-date/1.0/shouldPass/*.json",
+     "invalid_examples_glob": "test-data/omh/full-date/1.0/shouldFail/*.json"
+    },
+    {
+     "path": "schema/omh/intervention-administration-route-2.0.json",
+     "name": "intervention-administration-route",
+     "valid_examples_glob": "test-data/omh/intervention-administration-route/2.0/shouldPass/*.json",
+     "invalid_examples_glob": "test-data/omh/intervention-administration-route/2.0/shouldFail/*.json"
+    },
+    {
+     "path": "schema/omh/local-time-1.0.json",
+     "name": "local-time",
+     "valid_examples_glob": "test-data/omh/local-time/1.0/shouldPass/*.json",
+     "invalid_examples_glob": "test-data/omh/local-time/1.0/shouldFail/*.json"
+    },
+    {
+     "path": "schema/omh/medication-dose-unit-1.0.json",
+     "name": "medication-dose-unit",
+     "valid_examples_glob": "test-data/omh/medication-dose-unit/1.0/shouldPass/*.json",
+     "invalid_examples_glob": "test-data/omh/medication-dose-unit/1.0/shouldFail/*.json"
+    },
+    {
+     "path": "schema/omh/part-of-day-1.0.json",
+     "name": "part-of-day",
+     "valid_examples_glob": "test-data/omh/part-of-day/1.0/shouldPass/*.json",
+     "invalid_examples_glob": "test-data/omh/part-of-day/1.0/shouldFail/*.json"
+    },
+    {
+     "path": "schema/omh/position-during-measurement-1.0.json",
+     "name": "position-during-measurement",
+     "valid_examples_glob": "test-data/omh/position-during-measurement/1.0/shouldPass/*.json",
+     "invalid_examples_glob": "test-data/omh/position-during-measurement/1.0/shouldFail/*.json"
+    },
+    {
+     "path": "schema/omh/schema-id-1.1.json",
+     "name": "schema-id",
+     "valid_examples_glob": "test-data/omh/schema-id/1.1/shouldPass/*.json",
+     "invalid_examples_glob": "test-data/omh/schema-id/1.1/shouldFail/*.json"
+    },
+    {
+     "path": "schema/omh/specimen-source-2.1.json",
+     "name": "specimen-source",
+     "valid_examples_glob": "test-data/omh/specimen-source/2.1/shouldPass/*.json",
+     "invalid_examples_glob": "test-data/omh/specimen-source/2.1/shouldFail/*.json"
+    },
+    {
+     "path": "schema/omh/temporal-relationship-to-meal-1.2.json",
+     "name": "temporal-relationship-to-meal",
+     "valid_examples_glob": "test-data/omh/temporal-relationship-to-meal/1.2/shouldPass/*.json",
+     "invalid_examples_glob": "test-data/omh/temporal-relationship-to-meal/1.2/shouldFail/*.json"
+    },
+    {
+     "path": "schema/omh/temporal-relationship-to-physical-activity-1.0.json",
+     "name": "temporal-relationship-to-physical-activity",
+     "valid_examples_glob": "test-data/omh/temporal-relationship-to-physical-activity/1.0/shouldPass/*.json",
+     "invalid_examples_glob": "test-data/omh/temporal-relationship-to-physical-activity/1.0/shouldFail/*.json"
+    },
+    {
+     "path": "schema/omh/temporal-relationship-to-sleep-1.0.json",
+     "name": "temporal-relationship-to-sleep",
+     "valid_examples_glob": "test-data/omh/temporal-relationship-to-sleep/1.0/shouldPass/*.json",
+     "invalid_examples_glob": "test-data/omh/temporal-relationship-to-sleep/1.0/shouldFail/*.json"
+    },
+    {
+     "path": "schema/omh/unit-value-1.0.json",
+     "name": "unit-value",
+     "valid_examples_glob": "test-data/omh/unit-value/1.0/shouldPass/*.json",
+     "invalid_examples_glob": "test-data/omh/unit-value/1.0/shouldFail/*.json"
+    },
+    {
+     "path": "schema/omh/unit-value-range-1.0.json",
+     "name": "unit-value-range",
+     "valid_examples_glob": "test-data/omh/unit-value-range/1.0/shouldPass/*.json",
+     "invalid_examples_glob": "test-data/omh/unit-value-range/1.0/shouldFail/*.json"
+    }
+   ]
+  },
+  {
+   "source_id": "dissco_opends",
+   "title": "DiSSCo openDS digital specimen and media data model",
+   "repository": "DiSSCo/openDS",
+   "branch": "master",
+   "vendor": "dissco",
+   "schemas": [
+    {
+     "path": "data-model/fdo-profile/digital-specimen/1.0.0/schema/digital-specimen.json",
+     "name": "digital-specimen-fdo",
+     "valid_examples_glob": "data-model/fdo-profile/digital-specimen/1.0.0/examples/*.json"
+    },
+    {
+     "path": "data-model/fdo-profile/digital-specimen/1.0.0/schema/digital-specimen-request-attributes.json",
+     "name": "digital-specimen-request",
+     "valid_examples_glob": "data-model/fdo-profile/digital-specimen/1.0.0/examples/*.json"
+    },
+    {
+     "path": "data-model/fdo-profile/digital-media/1.0.0/schema/digital-media.json",
+     "name": "digital-media-fdo",
+     "valid_examples_glob": "data-model/fdo-profile/digital-media/1.0.0/examples/*.json"
+    },
+    {
+     "path": "data-model/fdo-profile/digital-media/1.0.0/schema/digital-media-request-attributes.json",
+     "name": "digital-media-request",
+     "valid_examples_glob": "data-model/fdo-profile/digital-media/1.0.0/examples/*.json"
+    },
+    {
+     "path": "data-model/fdo-profile/annotation/1.0.0/schema/annotation.json",
+     "name": "annotation-fdo",
+     "valid_examples_glob": "data-model/fdo-profile/annotation/1.0.0/examples/*.json"
+    },
+    {
+     "path": "data-model/fdo-profile/organisation/0.1.0/schema/organisation.json",
+     "name": "organisation-fdo",
+     "valid_examples_glob": "data-model/fdo-profile/organisation/0.1.0/examples/*.json"
+    },
+    {
+     "path": "data-model/fdo-profile/source-system/1.0.0/schema/source-system-fdo-profile.json",
+     "name": "source-system-fdo",
+     "valid_examples_glob": "data-model/fdo-profile/source-system/1.0.0/examples/*.json"
+    },
+    {
+     "path": "data-model/fdo-profile/virtual-collection/0.1.0/schema/virtual-collection-fdo-profile.json",
+     "name": "virtual-collection-fdo",
+     "valid_examples_glob": "data-model/fdo-profile/virtual-collection/0.1.0/examples/*.json"
+    },
+    {
+     "path": "data-model/fdo-type/digital-specimen/0.4.0/schema/taxon-identification.json",
+     "name": "taxon-identification"
+    },
+    {
+     "path": "data-model/fdo-type/digital-specimen/0.4.0/schema/geological-context.json",
+     "name": "geological-context"
+    },
+    {
+     "path": "data-model/fdo-type/annotation/0.4.0/schema/annotation-body.json",
+     "name": "annotation-body"
+    },
+    {
+     "path": "data-model/fdo-type/annotation/0.4.0/schema/annotation-target.json",
+     "name": "annotation-target"
+    },
+    {
+     "path": "data-model/fdo-type/shared-model/0.4.0/schema/identifier.json",
+     "name": "identifier"
+    }
+   ]
+  },
+  {
+   "source_id": "cadt_climate_action_data",
+   "title": "Climate Action Data Trust (CADT) data model for carbon projects and units",
+   "repository": "Chia-Network/cadt",
+   "branch": "develop",
+   "vendor": "cadt",
+   "schemas": [
+    {
+     "path": "docs/cadtrust-schema-v2.0.2.json",
+     "name": "cadt-v2"
+    }
+   ]
+  },
+  {
+   "source_id": "datacontract_specification",
+   "title": "Data Contract Specification",
+   "repository": "datacontract/datacontract-specification",
+   "branch": "main",
+   "vendor": "datacontract",
+   "schemas": [
+    {
+     "path": "versions/1.2.1/datacontract.schema.json",
+     "name": "datacontract"
+    },
+    {
+     "path": "versions/1.2.1/definition.schema.json",
+     "name": "definition"
+    }
+   ]
+  },
+  {
+   "source_id": "stac_core_fragments",
+   "title": "STAC core common metadata fragments (SpatioTemporal Asset Catalog item specification)",
+   "repository": "radiantearth/stac-spec",
+   "branch": "master",
+   "vendor": "stac_core",
+   "schemas": [
+    {
+     "path": "item-spec/json-schema/basics.json",
+     "name": "basics"
+    },
+    {
+     "path": "item-spec/json-schema/data-values.json",
+     "name": "data-values"
+    },
+    {
+     "path": "item-spec/json-schema/datetime.json",
+     "name": "datetime"
+    },
+    {
+     "path": "item-spec/json-schema/instrument.json",
+     "name": "instrument"
+    },
+    {
+     "path": "item-spec/json-schema/licensing.json",
+     "name": "licensing"
+    },
+    {
+     "path": "item-spec/json-schema/provider.json",
+     "name": "provider"
+    }
+   ]
+  },
+  {
+   "source_id": "odps",
+   "title": "Open Data Product Standard (Bitol, Linux Foundation AI and Data)",
+   "repository": "bitol-io/open-data-product-standard",
+   "branch": "main",
+   "vendor": "odps",
+   "schemas": [
+    {
+     "path": "schema/odps-json-schema-v1.1.0.json",
+     "name": "data-product"
+    }
+   ]
+  },
+  {
+   "source_id": "gleif_vlei",
+   "title": "GLEIF verifiable Legal Entity Identifier (vLEI) credential schemas (ACDC)",
+   "repository": "WebOfTrust/vLEI",
+   "branch": "main",
+   "vendor": "vlei",
+   "schemas": [
+    {
+     "path": "schema/acdc/legal-entity-vLEI-credential.json",
+     "name": "legal-entity"
+    },
+    {
+     "path": "schema/acdc/qualified-vLEI-issuer-vLEI-credential.json",
+     "name": "qualified-issuer"
+    },
+    {
+     "path": "schema/acdc/legal-entity-official-organizational-role-vLEI-credential.json",
+     "name": "official-organizational-role"
+    },
+    {
+     "path": "schema/acdc/legal-entity-engagement-context-role-vLEI-credential.json",
+     "name": "engagement-context-role"
+    },
+    {
+     "path": "schema/acdc/oor-authorization-vlei-credential.json",
+     "name": "oor-authorization"
+    },
+    {
+     "path": "schema/acdc/ecr-authorization-vlei-credential.json",
+     "name": "ecr-authorization"
+    },
+    {
+     "path": "schema/acdc/verifiable-ixbrl-report-attestation.json",
+     "name": "ixbrl-report-attestation"
+    }
+   ]
+  },
+  {
+   "source_id": "ogc_tile_matrix_set",
+   "title": "OGC Two Dimensional Tile Matrix Set and Tile Set Metadata 2.0 (self-contained parts, PROJJSON)",
+   "repository": "opengeospatial/2D-Tile-Matrix-Set",
+   "branch": "master",
+   "vendor": "ogc_tms",
+   "schemas": [
+    {
+     "path": "schemas/tms/2.0/json/projJSON.json",
+     "name": "projjson"
+    },
+    {
+     "path": "schemas/tms/2.0/json/link.json",
+     "name": "link"
+    },
+    {
+     "path": "schemas/tms/2.0/json/tileMatrixLimits.json",
+     "name": "tile-matrix-limits"
+    },
+    {
+     "path": "schemas/tms/2.0/json/variableMatrixWidth.json",
+     "name": "variable-matrix-width"
+    },
+    {
+     "path": "schemas/tms/2.0/json/propertiesSchema.json",
+     "name": "properties-schema"
+    }
+   ]
   }
  ]
 }

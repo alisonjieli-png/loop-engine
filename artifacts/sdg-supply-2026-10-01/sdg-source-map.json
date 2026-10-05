@@ -10939,25 +10939,677 @@
    6,
    11,
    13
+  ],
+  "cdc_dibbs_query_connector": [
+   3
+  ],
+  "govstack_identity": [
+   16
+  ],
+  "govstack_information_mediator": [
+   16,
+   17
+  ],
+  "govstack_scheduler": [
+   16
+  ],
+  "govstack_wallet": [
+   1,
+   16
+  ],
+  "nhs_hometest_supplier": [
+   3
+  ],
+  "sunbird_discussions_middleware": [
+   4
+  ],
+  "beckn_mobility_bap": [
+   11
+  ],
+  "beckn_policy_admin": [
+   11
+  ],
+  "compas_scl_data_service": [
+   7
+  ],
+  "dimagi_open_chat_studio": [
+   3,
+   4
+  ],
+  "digit_citizen_complaints": [
+   11,
+   16
+  ],
+  "digit_ifix": [
+   16,
+   17
+  ],
+  "ga4gh_trs": [
+   3
+  ],
+  "globaldothealth_list": [
+   3
+  ],
+  "gsma_mobile_money_api": [
+   1,
+   5,
+   10
+  ],
+  "brapi": [
+   2,
+   15
+  ],
+  "pm4ml_experience_api": [
+   1,
+   10
+  ],
+  "pm4ml_management_api": [
+   1,
+   10
+  ],
+  "sunbird_org_docs": [
+   4
+  ],
+  "smart_cumulus_aggregator": [
+   3
+  ],
+  "smart_cumulus_app": [
+   3
+  ],
+  "argovis_api": [
+   13,
+   14
+  ],
+  "helsinki_haravajarjestelma": [
+   11,
+   15
+  ],
+  "helsinki_helerm": [
+   16
+  ],
+  "helsinki_hitas": [
+   1,
+   10,
+   11
+  ],
+  "helsinki_parkkihubi": [
+   11
+  ],
+  "eoepca_resource_health": [
+   13,
+   17
+  ],
+  "ifrc_whatnow": [
+   3,
+   11,
+   13
+  ],
+  "tdei_workspaces_backend": [
+   10,
+   11
+  ],
+  "epa_cip_service": [
+   6,
+   15
+  ],
+  "epa_streamcat": [
+   6,
+   15
+  ],
+  "epa_clean_school_bus": [
+   3,
+   11,
+   13
+  ],
+  "gc_notify_api": [
+   16
+  ],
+  "japan_abr_geocoder": [
+   11,
+   16,
+   17
+  ],
+  "one_login_account_components": [
+   16
+  ],
+  "one_login_ipv_core_back": [
+   16
+  ],
+  "one_login_cri_address": [
+   16
+  ],
+  "one_login_cri_check_hmrc": [
+   16
+  ],
+  "one_login_cri_driving_licence": [
+   16
+  ],
+  "one_login_cri_kbv": [
+   16
+  ],
+  "one_login_cri_uk_passport": [
+   16
+  ],
+  "one_login_id_check_async": [
+   16
+  ],
+  "one_login_wallet_credential_issuer": [
+   16
+  ],
+  "hmcts_darts": [
+   16
+  ],
+  "hmcts_idam_api_spec": [
+   16
+  ],
+  "hmcts_opal_fines": [
+   16
+  ],
+  "hmcts_opal_maintenance": [
+   16
+  ],
+  "hmcts_pre_recorded_evidence": [
+   16
+  ],
+  "hmcts_hearing_results_validator": [
+   16
+  ],
+  "hmcts_ai_rag": [
+   16
+  ],
+  "hmcts_marketplace_onboarding": [
+   16
+  ],
+  "hmcts_cnp_api_docs": [
+   16
+  ],
+  "nav_dinesykmeldte": [
+   3,
+   8
+  ],
+  "nav_dagpenger_behandling": [
+   1,
+   8,
+   10
+  ],
+  "nav_dagpenger_datadeling": [
+   1,
+   8
+  ],
+  "nav_dagpenger_soknad": [
+   1,
+   8
+  ],
+  "nav_fritakagp": [
+   3,
+   8
+  ],
+  "nav_grunn_og_hjelpestonad": [
+   1,
+   10
+  ],
+  "nav_mulighetsrommet": [
+   4,
+   8,
+   10
+  ],
+  "nav_narmesteleder": [
+   3,
+   8
+  ],
+  "nav_arbeidssoekerregisteret_ekstern": [
+   1,
+   8
+  ],
+  "nav_arbeidssoekerregisteret_intern": [
+   1,
+   8
+  ],
+  "nav_pensjonsbrev": [
+   1,
+   10
+  ],
+  "nav_soknadsarkiverer": [
+   1,
+   16
+  ],
+  "nav_soknadsmottaker": [
+   1,
+   16
+  ],
+  "nav_sokos_oppdrag": [
+   1,
+   16
+  ],
+  "nav_sokos_os_ekstern": [
+   1,
+   16
+  ],
+  "nav_sokos_skattekort": [
+   16,
+   17
+  ],
+  "nav_sosialhjelp_soknad": [
+   1,
+   10
+  ],
+  "nav_oppfolgingsplan": [
+   3,
+   8
+  ],
+  "nav_syfohelsenettproxy": [
+   3
+  ],
+  "nav_syfosmregister": [
+   3,
+   8
+  ],
+  "nav_smtss": [
+   3
+  ],
+  "nav_tilbakemeldingsmottak": [
+   16
+  ],
+  "nav_crm_henvendelse": [
+   16
+  ],
+  "wri_open_timber_portal": [
+   15,
+   16
+  ],
+  "wri_forest_watcher_contextual_layers": [
+   13,
+   15
+  ],
+  "wri_forest_watcher_exports": [
+   13,
+   15
+  ],
+  "wri_forest_watcher_forms": [
+   13,
+   15
+  ],
+  "wri_forest_watcher_teams": [
+   13,
+   15
+  ],
+  "dfe_apply_teacher_training": [
+   4
+  ],
+  "dfe_publish_teacher_training": [
+   4
+  ],
+  "dfe_teacher_training_entitlement": [
+   4
+  ],
+  "esfa_tlevels_find_provider": [
+   4,
+   8
+  ],
+  "fsa_register_food_business": [
+   2,
+   3
+  ],
+  "fr_prelevements_eau": [
+   6
+  ],
+  "uk_esos": [
+   7,
+   13
+  ],
+  "uk_epb_register": [
+   7,
+   11,
+   13
+  ],
+  "uk_epb_data_warehouse": [
+   7,
+   11,
+   13
+  ],
+  "uk_epb_auth_server": [
+   7,
+   11
+  ],
+  "fr_api_geo": [
+   11,
+   17
+  ],
+  "fr_api_tabular": [
+   17
+  ],
+  "fr_api_entreprise": [
+   8,
+   16
+  ],
+  "fr_cadastre_bundler": [
+   1,
+   11
+  ],
+  "nasa_gesdisc_meditor": [
+   13,
+   17
+  ],
+  "moj_community_support": [
+   10,
+   16
+  ],
+  "moj_support_additional_needs": [
+   4,
+   10,
+   16
+  ],
+  "moj_curious_education": [
+   4,
+   16
+  ],
+  "laa_caab_assessment": [
+   10,
+   16
+  ],
+  "laa_soa_gateway": [
+   10,
+   16
+  ],
+  "laa_equinity_historical": [
+   16
+  ],
+  "laa_data_user": [
+   16
+  ],
+  "laa_record_controlled_work": [
+   10,
+   16
+  ],
+  "italia_ansc": [
+   16
+  ],
+  "italia_university_enrolments": [
+   4
+  ],
+  "abdm_uhi_core": [
+   3
+  ],
+  "vizzuality_fora": [
+   2,
+   15
+  ],
+  "vizzuality_landgriffon": [
+   12,
+   13,
+   15
+  ],
+  "vizzuality_trase": [
+   12,
+   13,
+   15
+  ],
+  "eudi_relying_party_registration": [
+   16
+  ],
+  "worldbank_metadata_editor": [
+   17
+  ],
+  "tomp_api": [
+   11
+  ],
+  "egramsabha": [
+   1,
+   11,
+   16
+  ],
+  "wade_water_data_exchange": [
+   6
+  ],
+  "global_mangrove_watch": [
+   13,
+   14,
+   15
+  ],
+  "neotoma_paleoecology": [
+   13,
+   15
+  ],
+  "cape_town_service_alerts": [
+   6,
+   7,
+   11
+  ],
+  "open_waters_aiscast": [
+   14
+  ],
+  "oslo_okdata_metadata": [
+   11,
+   17
+  ],
+  "eurecat_pathothreat": [
+   3,
+   6
+  ],
+  "opendata_guru_repository": [
+   17
+  ],
+  "psu_scholarsphere": [
+   4,
+   9
+  ],
+  "climate_mind": [
+   4,
+   13
+  ],
+  "rda_madmp_api": [
+   9,
+   17
+  ],
+  "papinet_api": [
+   12,
+   15
+  ],
+  "health_nz_composition": [
+   3
+  ],
+  "mint_ensemble_manager": [
+   2,
+   6,
+   13
+  ],
+  "sunbird_rc_g2p_mapper": [
+   1,
+   10
+  ],
+  "jhub_ardalink": [
+   1,
+   2,
+   13
+  ],
+  "pnnl_ira_home_energy_rebates": [
+   1,
+   7,
+   13
+  ],
+  "fiware_quantumleap": [
+   11
+  ],
+  "digivine_warehouse": [
+   2,
+   12
+  ],
+  "occapi_course_catalogue": [
+   4
+  ],
+  "open_residency": [
+   1,
+   10,
+   16
+  ],
+  "pharmaccess_momcare": [
+   3,
+   5
+  ],
+  "nava_oscer_medicaid": [
+   1,
+   3,
+   10
+  ],
+  "imperial_optimise_ms": [
+   3
+  ],
+  "tum_prompt": [
+   4
+  ],
+  "sri_lanka_moe": [
+   4
+  ],
+  "gematik_epa_xds_document": [
+   3
+  ],
+  "cafe_variome_terminology": [
+   3
+  ],
+  "mospi_esankhyiki": [
+   1,
+   4,
+   5,
+   6,
+   10,
+   17
+  ],
+  "civicos": [
+   16
+  ],
+  "disaster_alert_china": [
+   11,
+   13
+  ],
+  "malipopay": [
+   1,
+   8,
+   10
+  ],
+  "mobidatalab_enrichment": [
+   11
+  ],
+  "otp_middleware": [
+   11
+  ],
+  "tum_artemis": [
+   4
+  ],
+  "skedgo_tripgo": [
+   11
+  ],
+  "iitp_disability_statistics": [
+   10,
+   11
+  ],
+  "element84_swoop": [
+   13,
+   15
+  ],
+  "ssb_microdata_datastore": [
+   17
+  ],
+  "einnsyn_public_records": [
+   16
+  ],
+  "estonia_tara_login": [
+   16
+  ],
+  "finland_avoindata": [
+   16,
+   17
+  ],
+  "digg_sdg_authorization": [
+   16,
+   17
+  ],
+  "sunspec_models": [
+   7
+  ],
+  "ga4gh_beacon_v2": [
+   3
+  ],
+  "cityjson_extensions": [
+   11
+  ],
+  "mobilitydata_gofs": [
+   11
+  ],
+  "openeo_processes": [
+   13,
+   15
+  ],
+  "ogc_jsonfg": [
+   11
+  ],
+  "cyclonedx_shared_schemas": [
+   9,
+   16
+  ],
+  "odcs": [
+   17
+  ],
+  "openlineage": [
+   17
+  ],
+  "dif_presentation_exchange": [
+   16
+  ],
+  "dif_credential_manifest": [
+   16
+  ],
+  "dif_trust_establishment": [
+   16
+  ],
+  "hca_metadata_schema": [
+   3
+  ],
+  "openmhealth_schemas": [
+   3
+  ],
+  "dissco_opends": [
+   15
+  ],
+  "cadt_climate_action_data": [
+   13
+  ],
+  "datacontract_specification": [
+   17
+  ],
+  "stac_core_fragments": [
+   11,
+   13,
+   15
+  ],
+  "odps": [
+   17
+  ],
+  "gleif_vlei": [
+   16,
+   17
+  ],
+  "ogc_tile_matrix_set": [
+   11,
+   13
   ]
  },
  "sources_per_goal": {
-  "1": 198,
-  "2": 219,
-  "3": 310,
-  "4": 238,
-  "5": 193,
-  "6": 168,
-  "7": 153,
-  "8": 213,
-  "9": 1146,
-  "10": 208,
-  "11": 210,
-  "12": 193,
-  "13": 303,
-  "14": 195,
-  "15": 189,
-  "16": 442,
-  "17": 318
+  "1": 224,
+  "2": 225,
+  "3": 338,
+  "4": 256,
+  "5": 196,
+  "6": 176,
+  "7": 161,
+  "8": 227,
+  "9": 1149,
+  "10": 229,
+  "11": 240,
+  "12": 197,
+  "13": 329,
+  "14": 198,
+  "15": 208,
+  "16": 500,
+  "17": 339
  }
 }
