@@ -72,8 +72,8 @@ def pinned_file_problem(path, expected_sha256: str) -> str:
     """Why a configured binary cannot be used, or the empty text when it can."""
     if platform.system() != "Linux" or platform.machine() not in ("x86_64", "AMD64"):
         return f"the pinned asset is for Linux x86_64, not {platform.system()} {platform.machine()}"
-    if not os.path.isfile(BWRAP):
-        return f"{BWRAP} is not installed, and the binary never runs without its sandbox"
+    # The binary's identity is checked before the sandbox, so a host without bubblewrap still names a
+    # missing or changed binary; either problem alone keeps the engine unavailable.
     if not path or type(path) is not str or not os.path.isabs(path):
         return "no absolute binary path is configured (installation setting binary_path)"
     if not os.path.isfile(path):
@@ -81,6 +81,8 @@ def pinned_file_problem(path, expected_sha256: str) -> str:
     found = file_sha256(path)
     if found != expected_sha256:
         return f"the file's SHA-256 is {found}, not the pinned {expected_sha256}"
+    if not os.path.isfile(BWRAP):
+        return f"{BWRAP} is not installed, and the binary never runs without its sandbox"
     return ""
 
 

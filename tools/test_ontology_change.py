@@ -209,7 +209,10 @@ class StoreAndKitTests(unittest.TestCase):
 
 class AdapterAndSlotTests(unittest.TestCase):
     def test_known_wrong_a_missing_or_changed_binary_is_unavailable_and_starts_nothing(self):
-        with tempfile.NamedTemporaryFile() as fake, patch("subprocess.run") as run:
+        # Without bubblewrap too, as on a CI runner: the binary's own problem is still the one reported.
+        from loop_engine.core.ontology_change import open_ontologies_engine as adapter
+        with tempfile.NamedTemporaryFile() as fake, patch("subprocess.run") as run, \
+                patch.object(adapter, "BWRAP", "/nonexistent/bwrap"):
             for settings, expected in (({}, "binary_path"), ({"binary_path": fake.name}, "not the pinned")):
                 engine = engines.create_engine(engines.ADAPTER_ENGINE_ID, settings)
                 available, reason = engine.availability()
@@ -217,6 +220,19 @@ class AdapterAndSlotTests(unittest.TestCase):
                 self.assertIn(expected, reason)
                 with self.assertRaises(EngineFailure):
                     engine.plan(None)
+            run.assert_not_called()
+
+    def test_known_wrong_the_pinned_binary_without_its_sandbox_is_unavailable_and_starts_nothing(self):
+        from loop_engine.core.ontology_change import open_ontologies_engine as adapter
+        with tempfile.NamedTemporaryFile() as pinned, patch("subprocess.run") as run, \
+                patch.object(adapter, "BWRAP", "/nonexistent/bwrap"), \
+                patch.object(adapter, "file_sha256", return_value=adapter.BINARY_SHA256):
+            engine = engines.create_engine(engines.ADAPTER_ENGINE_ID, {"binary_path": pinned.name})
+            available, reason = engine.availability()
+            self.assertFalse(available)
+            self.assertIn("never runs without its sandbox", reason)
+            with self.assertRaises(EngineFailure):
+                engine.plan(None)
             run.assert_not_called()
 
     def test_descriptors_bind_the_engine_source_and_the_pinned_digest(self):
