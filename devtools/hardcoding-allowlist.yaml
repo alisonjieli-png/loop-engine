@@ -12516,6 +12516,96 @@ entries:
   classification: STRATEGY_OR_PROVIDER_BINDING
   created_on: '2026-09-27'
   expires_on: '2027-09-27'
+- finding_id: hardcoding.5265bd173e5b36b37a064cb6
+  owner: tools.supply_lines.publisher_table_sources.json:collections.onet_database.data_address
+  rationale: "The exact address of the O*NET 31.0 Database text release that the publisher_tables line declares as its source (the release's official file), and the line records its retrieved bytes' SHA-256 and retrieval time as the package's fact. It is read only through the fact reader, which refuses any host the collection does not declare, and only with --authorize-network-reads. Added with the publisher_tables line on October 5, 2026."
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  created_on: '2026-10-05'
+  expires_on: '2027-10-05'
+- finding_id: hardcoding.b29604af6d8f8687d78c67f0
+  owner: tools.supply_lines.publisher_table_sources.json:collections.onet_database.licence.evidence_address
+  rationale: "The O*NET Resource Center's licence page for the O*NET 31.0 Database, the evidence address the publisher_tables line binds the release's CC BY 4.0 licence to: the page must state the declared sentence, beside the release's own Read Me, or every table is refused. Read only through the fact reader's declared hosts with --authorize-network-reads. Added with the publisher_tables line on October 5, 2026."
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  created_on: '2026-10-05'
+  expires_on: '2027-10-05'
+- finding_id: hardcoding.f897227cfbc3aa272419bd0a
+  owner: tools.supply_lines.publisher_table_sources.json:collections.world_bank_wdi.catalogue
+  rationale: "The World Bank API address of the World Development Indicators series catalogue (source 2) that the publisher_tables line reads to list the series it decides one by one. Read only through the fact reader's declared hosts with --authorize-network-reads; it selects no provider at run time beyond the declared collection. Added with the publisher_tables line on October 5, 2026."
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  created_on: '2026-10-05'
+  expires_on: '2027-10-05'
+- finding_id: hardcoding.b3e3d1ca5652728e920d5dbd
+  owner: tools.supply_lines.publisher_table_sources.json:collections.world_bank_wdi.data_address
+  rationale: "The World Bank's download address of one World Development Indicators series (all economies and years in one CSV archive), the exact address on a declared host each publisher_tables package names as its data fact with the retrieved bytes' SHA-256 and retrieval time. Read only through the fact reader with --authorize-network-reads. Added with the publisher_tables line on October 5, 2026."
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  created_on: '2026-10-05'
+  expires_on: '2027-10-05'
+- finding_id: hardcoding.52731e39d79d7b062ccb682b
+  owner: tools.supply_lines.publisher_table_sources.json:collections.world_bank_wdi.metadata_address
+  rationale: "The World Bank API address of one series' own metadata, whose License_Type decides that series' licence in the publisher_tables line (only CC BY-4.0 passes) and which travels in the package as the licence evidence. Read only through the fact reader with --authorize-network-reads. Added with the publisher_tables line on October 5, 2026."
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  created_on: '2026-10-05'
+  expires_on: '2027-10-05'
+- finding_id: hardcoding.0379ba33abed2ea2d14cb619
+  owner: tools.supply_lines.publisher_table_sources.json:licence_texts.CC-BY-4.0.deed
+  rationale: "The Creative Commons deed of CC BY 4.0, which a publisher table's README links in its attribution as the licence requires. It is written into READMEs as text and never fetched. Added with the publisher_tables line on October 5, 2026."
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  created_on: '2026-10-05'
+  expires_on: '2027-10-05'
+- finding_id: hardcoding.442f059424ef2345b5c4186b
+  owner: tools.supply_lines.publisher_table_sources.json:licence_texts.CC-BY-4.0.legal_code
+  rationale: 'The plain-text legal code of CC BY 4.0 at creativecommons.org, which the publisher_tables line reads once per run, checks with the licence matcher and carries as UPSTREAM-LICENSE in every package. Read only through the fact reader with --authorize-network-reads. Added with the publisher_tables line on October 5, 2026.'
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  created_on: '2026-10-05'
+  expires_on: '2027-10-05'
+- finding_id: hardcoding.7c24004306d179d40a19c021
+  owner: tools.supply_lines.publisher_table_sources.json:collections.our_world_in_data.chart_page
+  rationale: "The address template of an Our World in Data chart page, which the publisher_tables line reads to bind OWID's own CC BY 4.0 licence to the exact chart (the page must state it and link the deed). Read only through the fact reader's declared hosts with --authorize-network-reads. Added with the Our World in Data collection of the publisher_tables line on October 5, 2026."
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  created_on: '2026-10-05'
+  expires_on: '2027-10-05'
+- finding_id: hardcoding.7c93f94868265042129bcd09
+  owner: tools.supply_lines.publisher_table_sources.json:collections.our_world_in_data.data_address
+  rationale: "The address template of an Our World in Data chart's CSV, the exact bytes each publisher_tables package copies and names as its data fact with their SHA-256 and retrieval time. Read only through the fact reader's declared hosts with --authorize-network-reads. Added with the Our World in Data collection of the publisher_tables line on October 5, 2026."
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  created_on: '2026-10-05'
+  expires_on: '2027-10-05'
+- finding_id: hardcoding.01a0c7194951a30fb918ef4e
+  owner: tools.supply_lines.publisher_table_sources.json:collections.our_world_in_data.goal_page
+  rationale: "The address template of Our World in Data's SDG Tracker page of one goal, which lists the charts the publisher_tables line considers and gives each its goals (the publisher's own mapping). Read only through the fact reader's declared hosts with --authorize-network-reads. Added with the Our World in Data collection of the publisher_tables line on October 5, 2026."
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  created_on: '2026-10-05'
+  expires_on: '2027-10-05'
+- finding_id: hardcoding.1db8c38813dfed787c3fff19
+  owner: tools.supply_lines.publisher_table_sources.json:collections.our_world_in_data.indicator_address
+  rationale: "The address template of one Our World in Data indicator's full metadata, whose origins and their licences decide whether a chart passes (every origin must state CC BY 4.0) and which travels in the package as licence evidence. Read only through the fact reader's declared hosts with --authorize-network-reads. Added with the Our World in Data collection of the publisher_tables line on October 5, 2026."
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  created_on: '2026-10-05'
+  expires_on: '2027-10-05'
+- finding_id: hardcoding.387d1bafad3a340763c8bbd7
+  owner: tools.supply_lines.publisher_table_sources.json:collections.our_world_in_data.metadata_address
+  rationale: "The address template of an Our World in Data chart's metadata, which names the chart's indicators and travels in the package beside the data. Read only through the fact reader's declared hosts with --authorize-network-reads. Added with the Our World in Data collection of the publisher_tables line on October 5, 2026."
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  created_on: '2026-10-05'
+  expires_on: '2027-10-05'
+- finding_id: hardcoding.f132649270dedddc4563cdcb
+  owner: tools.supply_lines.publisher_table_sources.json:held.faostat.address
+  rationale: "The FAOSTAT bulk download manifest, recorded with its SHA-256 as the evidence why FAOSTAT is a held source (no licence named per dataset). The line never reads a held source; the address records what it would read once a licence decision changes. Added with the publisher_tables line's held sources on October 5, 2026."
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  created_on: '2026-10-05'
+  expires_on: '2027-10-05'
+- finding_id: hardcoding.6003d5fd6aab266ee52c71b8
+  owner: tools.supply_lines.publisher_table_sources.json:held.un_sdg_global_database.address
+  rationale: "The UN SDG Global Database series address, recorded as a held source because UNdata's terms are not a licence on the owner's allowlist. The line never reads a held source; the address records what it would read once a licence decision changes. Added with the publisher_tables line's held sources on October 5, 2026."
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  created_on: '2026-10-05'
+  expires_on: '2027-10-05'
+- finding_id: hardcoding.2e45dbc99a436fc86a62cf33
+  owner: tools.supply_lines.publisher_table_sources.json:held.un_sdg_global_database.terms
+  rationale: "UNdata's terms of use, recorded with their SHA-256 as the evidence why the UN SDG Global Database is a held source. The line never reads a held source; the address records what it would read once a licence decision changes. Added with the publisher_tables line's held sources on October 5, 2026."
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  created_on: '2026-10-05'
+  expires_on: '2027-10-05'
 excluded_paths:
 - path: src/loop_engine/core/service_runtime/web_assets/creative-arena/arena.js
   owner: examples.32_creative_arena
