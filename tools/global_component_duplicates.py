@@ -93,7 +93,51 @@ def _sorted_intersection(left, right) -> int:
     return int(numpy.count_nonzero(right[positions] == left))
 
 
-def prefix_pairs_hashed(documents, threshold: Fraction):
+def token_frequencies(arrays, *, scratch=None, chunk: int = 1 << 24):
+    """The sorted distinct values of every array and how many arrays hold each one.
+
+    Each array holds distinct values, so counting values over their concatenation counts the arrays that hold
+    them. With ``scratch`` (a folder) the concatenation is a file-backed array sorted in place there and read in
+    chunks, so the only anonymous memory is the distinct values and their counts; the file is removed afterwards.
+    Without it the concatenation is one array in memory, twice the size of every array together while it sorts."""
+    import numpy
+    import os
+    import tempfile
+    arrays = [values for values in arrays if len(values)]
+    total = sum(len(values) for values in arrays)
+    if not total:
+        return numpy.empty(0, dtype=numpy.uint64), numpy.empty(0, dtype=numpy.int64)
+    path = None
+    if scratch is None:
+        stacked = numpy.concatenate(arrays)
+    else:
+        handle, path = tempfile.mkstemp(prefix='.token-frequencies-', dir=str(scratch))
+        os.close(handle)
+        stacked = numpy.memmap(path, dtype=numpy.uint64, mode='w+', shape=(total,))
+        position = 0
+        for values in arrays:
+            stacked[position:position + len(values)] = values
+            position += len(values)
+    try:
+        stacked.sort()
+        starts = []
+        for begin in range(0, total, chunk):
+            part = stacked[begin:begin + chunk]
+            first = numpy.empty(len(part), dtype=bool)
+            first[0] = begin == 0 or part[0] != stacked[begin - 1]
+            numpy.not_equal(part[1:], part[:-1], out=first[1:])
+            starts.append(numpy.flatnonzero(first) + begin)
+        starts = numpy.concatenate(starts)
+        vocabulary = numpy.array(stacked[starts])
+        counts = numpy.diff(numpy.append(starts, total))
+    finally:
+        del stacked
+        if path is not None:
+            os.unlink(path)
+    return vocabulary, counts
+
+
+def prefix_pairs_hashed(documents, threshold: Fraction, *, scratch=None):
     """Yield every above-threshold pair of nonempty shingle-hash arrays, exactly as ``prefix_pairs`` does.
 
     ``documents`` maps a key to a sorted array of distinct 64-bit shingle hashes (``shingle_hashes``). The pairs,
@@ -102,7 +146,8 @@ def prefix_pairs_hashed(documents, threshold: Fraction):
     and prefix filtering finds every pair at or above the threshold under any one global token order (the
     smallest shared token lies in both prefixes), so ordering tokens by (frequency, hash) instead of (frequency,
     string) changes which candidates are confirmed, never which pairs are found. Frequencies come from one sort
-    of every document's hashes, the postings hold only prefix tokens, and nothing holds a shingle string.
+    of every document's hashes (``token_frequencies``, file-backed in ``scratch`` when given), the postings hold
+    only prefix tokens, and nothing holds a shingle string.
     """
     import numpy
     if not isinstance(threshold, Fraction) or not 0 < threshold <= 1:
@@ -110,16 +155,7 @@ def prefix_pairs_hashed(documents, threshold: Fraction):
     keys = [key for key, values in documents.items() if len(values)]
     if not keys:
         return
-    stacked = numpy.concatenate([documents[key] for key in keys])
-    stacked.sort()
-    first = numpy.empty(stacked.size, dtype=bool)
-    first[0] = True
-    numpy.not_equal(stacked[1:], stacked[:-1], out=first[1:])
-    starts = numpy.flatnonzero(first)
-    del first
-    vocabulary = stacked[starts]
-    counts = numpy.diff(numpy.append(starts, stacked.size))
-    del stacked, starts
+    vocabulary, counts = token_frequencies([documents[key] for key in keys], scratch=scratch)
     order = sorted(keys, key=lambda key: (len(documents[key]), key))
     postings = {}
     numerator, denominator = threshold.numerator, threshold.denominator

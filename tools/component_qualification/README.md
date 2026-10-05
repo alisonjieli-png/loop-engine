@@ -80,9 +80,11 @@ Generated component admission
 │   │       in bubblewrap with no network, hidden home and runtime folders,
 │   │       and CPU, memory, file size, open file and time limits
 │   └── population pass: exact copies, same-job packages (a job key per line,
-│       declared in the policy data) and near copies; each worker sends the
-│       parent a digest of the component's normalized text and its shingles as
-│       sorted 64-bit hashes, and the parent spools every checked row to disk
+│       declared in the policy data) and near copies; each worker reads its row
+│       by key and sends the parent a digest of the component's normalized text
+│       and its shingles as sorted 64-bit hashes; the parent spools every checked
+│       row and the hashes to files beside the output, counts token frequencies
+│       in a file-backed sort, and removes those files when the records are written
 ├── 2. sampled review (one model family that did not write the generators)
 │   ├── decision ledger, read first: a run that may call a model refuses
 │   │   without it, and a batch whose frame it already decided is refused

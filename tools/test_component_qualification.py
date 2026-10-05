@@ -795,6 +795,31 @@ class HashedDuplicatePassTests(unittest.TestCase):
             from tools.global_component_duplicates import _sorted_intersection
             self.assertEqual(_sorted_intersection(left, right), len(set(left.tolist()) & set(right.tolist())))
 
+    def test_file_backed_frequencies_and_pairs_equal_the_in_memory_ones(self):
+        import numpy
+        import random
+        from fractions import Fraction
+        from tools.global_component_duplicates import prefix_pairs_hashed, shingle_hashes, token_frequencies
+        rng = random.Random(21)
+        arrays = [numpy.unique(numpy.array(rng.sample(range(5000), rng.randrange(0, 300)), dtype=numpy.uint64))
+                  for _ in range(120)]
+        flat = numpy.concatenate([values for values in arrays if len(values)])
+        expected_vocabulary, expected_counts = numpy.unique(flat, return_counts=True)
+        with tempfile.TemporaryDirectory() as directory:
+            for scratch, chunk in ((None, 1 << 24), (directory, 1 << 24), (directory, 7), (None, 1)):
+                vocabulary, counts = token_frequencies(arrays, scratch=scratch, chunk=chunk)
+                self.assertEqual(vocabulary.tolist(), expected_vocabulary.tolist())
+                self.assertEqual(counts.tolist(), expected_counts.tolist())
+            self.assertEqual(os.listdir(directory), [])
+            subjects, _known = _population(6)
+            hashed = {identity: shingle_hashes(text) for identity, _digest, text, _key in subjects}
+            for threshold in (Fraction(49, 50), Fraction(3, 5)):
+                self.assertEqual(list(prefix_pairs_hashed(hashed, threshold, scratch=directory)),
+                                 list(prefix_pairs_hashed(hashed, threshold)))
+            self.assertEqual(os.listdir(directory), [])
+        empty_vocabulary, empty_counts = token_frequencies([numpy.empty(0, dtype=numpy.uint64)])
+        self.assertEqual((len(empty_vocabulary), len(empty_counts)), (0, 0))
+
     def test_findings_equal_the_string_pass_at_every_threshold(self):
         for seed in (4, 5):
             subjects, known = _population(seed)
@@ -814,7 +839,8 @@ class HashedDuplicatePassTests(unittest.TestCase):
         self.assertTrue(all(row["refused"] for row in rows), rows)
         # Known wrong: a near pass that finds nothing lets the near-copy control through, so the self-test that
         # runs before every qualification would stop the run.
-        with mock.patch("tools.global_component_duplicates.prefix_pairs_hashed", lambda documents, threshold: iter(())):
+        with mock.patch("tools.global_component_duplicates.prefix_pairs_hashed",
+                        lambda documents, threshold, scratch=None: iter(())):
             broken = {row["control_id"]: row["refused"] for row in controls._duplicate_controls(fixture, _context())}
         self.assertFalse(broken["near_copy_one_word_changed"])
         self.assertTrue(broken["exact_copy_under_new_identity"])
@@ -911,6 +937,31 @@ class StoreReaderTests(unittest.TestCase):
                                                  "check_ids": ("manifest",)}):
                 answer = qualify._check_one({**listed, "record_version": "v1"})
         self.assertEqual((answer["unreadable"], answer["line"]), ("store_changed", "data_tables"))
+
+    def test_a_worker_waits_for_a_store_another_job_holds(self):
+        from loop_engine.catalog.protocol import StoreBusy
+        from tools.component_qualification.components import ComponentReadError
+        stored = {"record_id": "library.supply.data_tables." + "c" * 24 + "." + "d" * 16, "record_version": "v1",
+                  "payload": {"line": "data_tables"}}
+        listed = {"record_id": stored["record_id"], "record_version": "v1", "line": "data_tables",
+                  "package_digest": "d" * 64}
+        answers = [StoreBusy("locked"), StoreBusy("locked"), stored]
+
+        def row(identity):
+            answer = answers.pop(0)
+            if isinstance(answer, Exception):
+                raise answer
+            return answer
+
+        with mock.patch.dict(qualify._WORKER, {"reader": SimpleNamespace(row=row), "store_root": None}), \
+                mock.patch.object(qualify, "STORE_READ_PAUSE_SECONDS", 0.0):
+            self.assertIs(qualify._full_row(listed), stored)
+            # Known wrong: a store that stays locked ends in an unreadable component, not a crashed run.
+            with mock.patch.object(qualify, "STORE_READ_ATTEMPTS", 2):
+                answers[:] = [StoreBusy("locked"), StoreBusy("locked")]
+                with self.assertRaises(ComponentReadError) as caught:
+                    qualify._full_row(listed)
+        self.assertEqual(caught.exception.code, "store_busy")
 
 if __name__ == "__main__":
     unittest.main()

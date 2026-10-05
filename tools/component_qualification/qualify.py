@@ -68,16 +68,31 @@ def _init_worker(repository, store_root, sandbox_settings, work_root, reuse, che
     _WORKER["check_ids"] = tuple(check_ids) if check_ids else FAST_CHECKS
 
 
+#: How often a worker tries to read a listed row while another job holds the store's lock (each try waits the
+#: store's own five-second busy timeout first), and the pause between tries: about ten minutes in all.
+STORE_READ_ATTEMPTS, STORE_READ_PAUSE_SECONDS = 40, 10.0
+
+
 def _full_row(row: dict) -> dict:
     """The full store row of a listed row (``StoreReader.listing``), read by its key in this worker; a row that
     already holds its payload is used as it is. A row whose stored version changed since the listing is refused
     as unreadable rather than checked at another version."""
     if "payload" in row or "record_id" not in row:
         return row
-    if _WORKER.get("reader") is None:
-        from .components import StoreReader
-        _WORKER["reader"] = StoreReader(_WORKER["store_root"])
-    full = _WORKER["reader"].row(row["record_id"])
+    from loop_engine.catalog.protocol import StoreBusy
+    for attempt in range(STORE_READ_ATTEMPTS):
+        try:
+            if _WORKER.get("reader") is None:
+                from .components import StoreReader
+                _WORKER["reader"] = StoreReader(_WORKER["store_root"])
+            full = _WORKER["reader"].row(row["record_id"])
+            break
+        except StoreBusy:
+            # A supply line's store write holds the database's lock while it commits; a read waits and tries again
+            # rather than ending the whole run, and a read that never gets through is refused as unreadable.
+            if attempt == STORE_READ_ATTEMPTS - 1:
+                raise ComponentReadError("store_busy", f"{row['record_id']}: the store stayed locked") from None
+            time.sleep(STORE_READ_PAUSE_SECONDS)
     if full["record_version"] != row["record_version"]:
         raise ComponentReadError("store_changed", f"{row['record_id']} changed after the run listed it")
     return full
@@ -166,15 +181,39 @@ def _comparison(component, policy) -> dict:
     return {"text_digest": text_digest, "tokens": tokens.tobytes(), "job_key": checks.job_key(component, policy)}
 
 
-def _subject(row: dict) -> tuple:
-    """The duplicate pass's subject of one checked row, its shingle hashes read back from their bytes."""
-    import numpy
-    return (row["identity"], row["package_digest"], row["text_digest"],
-            numpy.frombuffer(row["tokens"], dtype=numpy.uint64), row["job_key"])
+class _TokenSpool:
+    """Every checked row's shingle hashes, appended to one file beside the output and read back as views of one
+    file-backed array, so the duplicate pass's largest input lives in the page cache, which the kernel can
+    reclaim, rather than in the parent's own memory (about 3.1 GB at 118,106 API clients)."""
+
+    def __init__(self, path: Path):
+        self.path, self.places, self.count = path, [], 0
+        self.stream = open(path, "wb")
+
+    def add(self, row: dict) -> None:
+        raw = row.pop("tokens")
+        length = len(raw) // 8
+        self.places.append((row["identity"], row["package_digest"], row.pop("text_digest"), row["job_key"],
+                            self.count, length))
+        self.stream.write(raw)
+        self.count += length
+
+    def subjects(self) -> list:
+        import numpy
+        self.stream.close()
+        tokens = (numpy.memmap(self.path, dtype=numpy.uint64, mode="r", shape=(self.count,)) if self.count
+                  else numpy.empty(0, dtype=numpy.uint64))
+        return [(identity, digest, text_digest, tokens[start:start + length], key)
+                for identity, digest, text_digest, key, start, length in self.places]
+
+    def close(self) -> None:
+        if not self.stream.closed:
+            self.stream.close()
+        self.path.unlink(missing_ok=True)
 
 
-def _duplicates(subjects, policy, known_digests) -> dict:
-    return checks.duplicate_findings_hashed(subjects, policy, known_digests=known_digests)
+def _duplicates(subjects, policy, known_digests, scratch=None) -> dict:
+    return checks.duplicate_findings_hashed(subjects, policy, known_digests=known_digests, scratch=scratch)
 
 
 def vetting(check_rows: list, policy: dict, line: str) -> dict:
@@ -252,7 +291,8 @@ def qualify_rows(rows, *, repository: Path, store_root: Path, sandbox_settings, 
     # every checked row with its distinctive text and then every shingle string: the 118,106-component API client
     # line reached 35 GB in the duplicate pass and was killed with nothing written.
     spool_path = output.with_name(f".{output.name}.checked-{os.getpid()}")
-    places, subjects, unreadable, reused = {}, [], [], 0
+    tokens = _TokenSpool(output.with_name(f".{output.name}.tokens-{os.getpid()}"))
+    places, unreadable, reused = {}, [], 0
     # A forked worker that collects garbage writes to every inherited object's header and so copies the pages that
     # hold the parent's rows; frozen objects are left alone (gc.freeze, Python 3.7 and later).
     gc.collect()
@@ -269,10 +309,9 @@ def qualify_rows(rows, *, repository: Path, store_root: Path, sandbox_settings, 
                         if "unreadable" in row:
                             unreadable.append(row)
                         else:
-                            subjects.append(_subject(row))
+                            tokens.add(row)
                             reused += "reused_from" in row
-                            data = (json.dumps({key: value for key, value in row.items()
-                                                if key not in ("tokens", "text_digest")}) + "\n").encode("utf-8")
+                            data = (json.dumps(row) + "\n").encode("utf-8")
                             places[row["identity"]] = (spool.tell(), len(data))
                             spool.write(data)
                         if progress and number % 500 == 0:
@@ -280,14 +319,16 @@ def qualify_rows(rows, *, repository: Path, store_root: Path, sandbox_settings, 
             finally:
                 gc.unfreeze()
             pool_seconds = time.monotonic() - pool_started
-            duplicates = _duplicates(subjects, context.policy, known_digests)
+            subjects = tokens.subjects()
+            duplicates = _duplicates(subjects, context.policy, known_digests, scratch=output.parent)
             checked = len(subjects)
-            subjects.clear()
+            del subjects
             records = _spooled(spool, places)
             summary_rows = _write_records(records, output, duplicates, context, revision, uncommitted, test_record,
                                           environment_findings)
     finally:
         spool_path.unlink(missing_ok=True)
+        tokens.close()
     counts, reasons, environment_refused, stamp = summary_rows
     total_seconds = time.monotonic() - started
     summary = {

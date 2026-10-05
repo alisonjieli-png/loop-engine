@@ -929,7 +929,7 @@ def duplicate_findings_from(subjects, policy, *, known_digests=None) -> dict:
                                      known_digests=known_digests)
 
 
-def duplicate_findings_hashed(subjects, policy, *, known_digests=None) -> dict:
+def duplicate_findings_hashed(subjects, policy, *, known_digests=None, scratch=None) -> dict:
     """Identity to duplicate findings, from (identity, package digest, normalized text digest, shingle hashes,
     job key) subjects, the text's parts as ``comparison_parts`` makes them.
 
@@ -965,7 +965,7 @@ def duplicate_findings_hashed(subjects, policy, *, known_digests=None) -> dict:
     numerator, denominator = policy["near_duplicate_threshold"].split("/")
     threshold = Fraction(int(numerator), int(denominator))
     for left, right, intersection, union in prefix_pairs_hashed(
-            {key: value for key, value in documents.items() if len(value)}, threshold):
+            {key: value for key, value in documents.items() if len(value)}, threshold, scratch=scratch):
         first, second = sorted((left, right))
         if not findings[second]:
             findings[second].append(("near_copy", f"{first} at {intersection / union:.3f}"))
