@@ -988,8 +988,8 @@ def _tests_sentence(module: str, total: int, own: int, tests: int) -> str:
     per docstring (1.1.0 said "runs the 1 examples of the docstrings (4 test runs)" when the function's one example
     sat beside the examples of three helpers)."""
     if total == own:
-        return (f"runs the function's {own} docstring example{'s' if own != 1 else ''} as doctests, offline "
-                f"({tests} test{'s' if tests != 1 else ''}).")
+        return (f"runs the function's {own} docstring example{'s' if own != 1 else ''} as "
+                f"{'doctests' if own != 1 else 'a doctest'}, offline ({tests} test{'s' if tests != 1 else ''}).")
     return (f"runs all {total} docstring examples of `{module}.py` as doctests, offline, one test per docstring "
             f"({tests} tests); {own} of them {'are' if own != 1 else 'is'} the function's own.")
 
