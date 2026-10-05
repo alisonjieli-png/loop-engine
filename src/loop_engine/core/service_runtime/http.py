@@ -959,6 +959,16 @@ class ServiceHttpApplication:
         except Exception:
             return None
 
+    def warm_catalogue_pages(self, view):
+        """Render the public library page of a view the refresher is about to install, off the request path.
+
+        The page walks every item the view serves; for a large library read from disk that takes seconds, which
+        the first visitor after a swap would otherwise wait for. A failure only leaves the page to its first request."""
+        try:
+            library_page.warm(view, self.configuration.display_name)
+        except Exception:  # noqa: BLE001 - warming is an optimization; the page still renders on its first request
+            pass
+
     def capabilities(self):
         from importlib.metadata import version
         session_options = self.billing_sessions.options() if self.billing_sessions is not None else {}

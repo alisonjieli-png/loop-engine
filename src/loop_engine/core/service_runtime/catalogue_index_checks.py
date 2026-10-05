@@ -22,7 +22,8 @@ Kit
 ├── coordination   one build at a time under an index root, a lost index built again, and the indexes of releases
 │                  no longer kept removed while the active release's, and during a grace its predecessor's, stay
 ├── commands       catalogue-formats, publish-catalogue of a version 2 bundle and index-catalogue through the
-│                  service entry point, and a host start on the disk view
+│                  service entry point, a host start on the disk view, and a swap that renders the new view's
+│                  library page before installing it
 ├── overlay        a later release served as base + delta never returns a removed or replaced record, and its
 │                  vector pools equal a fresh build's
 ├── selection      an engine the host names is refused at start when it cannot run, never replaced
@@ -471,6 +472,25 @@ def _command_checks(check, root):
     check("a_host_that_selects_the_disk_engine_starts_on_the_disk_view",
           isinstance(view, DiskCatalogueView) and view.release_id == published[1]["release_id"]
           and len(view.catalogue.items) == 30)
+    from . import library_page
+    from .catalogue_serving import catalogue_settings, refresher_for
+    from .http_entrypoint import host_family_policy, host_license_policy
+    case.publish(case.lines([f"skill_{index:03d}" for index in range(31)]))
+    refresher = refresher_for(application, catalogue_settings(configuration),
+                              license_policy=host_license_policy(configuration),
+                              family_policy=host_family_policy(configuration))
+    swapped = refresher.check_once()
+    current = application.provisioning.current_view()
+    check("a_swap_renders_the_library_page_of_the_new_view_before_installing_it",
+          swapped.get("changed") is True and len(current.catalogue.items) == 31
+          and (library_page._view_key(current), application.configuration.display_name) in library_page._PAGES)
+    case.publish(case.lines([f"skill_{index:03d}" for index in range(32)]))
+    with patch.object(application, "warm_catalogue_pages", None):
+        refresher.check_once()
+    later = application.provisioning.current_view()
+    check("removed_page_warming_is_detected",
+          len(later.catalogue.items) == 32
+          and (library_page._view_key(later), application.configuration.display_name) not in library_page._PAGES)
     plain = Path(root) / "host-v1.json"
     plain.write_text(json.dumps({**configuration, "catalogue": {
         "record_type": "service_catalogue_source/v1", "source": "store",

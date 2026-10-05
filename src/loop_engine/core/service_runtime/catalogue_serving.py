@@ -532,10 +532,17 @@ def load_catalogue_view(configuration, config, *, license_policy, family_policy,
 def refresher_for(application, settings, *, license_policy, family_policy):
     """The refresher of one application, reading the same store and writing failures to its journal."""
     config = application.runtime.config
+
+    def build(current, token):
+        view = next_view(current, token, config, settings, license_policy=license_policy, family_policy=family_policy)
+        # Pages rendered from the whole library are rendered here, off the request path, before the view is
+        # installed; the application ignores a failure, and the page then renders on its first request.
+        warm = getattr(application, "warm_catalogue_pages", None)
+        if callable(warm):
+            warm(view)
+        return view
     refresher = CatalogueRefresher(
-        application.provisioning,
-        build=lambda current, token: next_view(current, token, config, settings,
-                                               license_policy=license_policy, family_policy=family_policy),
+        application.provisioning, build=build,
         probe=lambda: state_token(config), journal=application.failure_journal,
         interval_seconds=settings.refresh_seconds)
     return refresher

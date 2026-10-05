@@ -28,12 +28,12 @@ service.css, scoped to this view.
 """
 from __future__ import annotations
 
-from collections import Counter
+from collections import Counter, OrderedDict
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from functools import lru_cache
 from html import escape
 import re
+import threading
 
 from ..provisioning_server import LIBRARY_TIERS, QUALIFICATION_APPROVED, VERIFIED_TIER
 from .catalogue_attributes import HARNESS_KINDS, harness_kind_label, harness_kind_of
@@ -368,23 +368,47 @@ def library_page(view, site_map, display_name: str) -> str:
                                               structured, "library-title"))
 
 
-@lru_cache(maxsize=8)
-def _framed(key, view_holder, display_name):
-    from .web_site_map import load_site_map
-    return library_page(view_holder.view, load_site_map(), display_name).encode("utf-8")
+#: Pages kept, one for each recently served catalogue and display name.
+PAGES_KEPT = 8
+_PAGES, _PAGES_LOCK, _RENDERING = OrderedDict(), threading.Lock(), {}
 
 
-class _ViewHolder:
-    """Carries a view into the cache without making the view part of the cache key."""
+def _view_key(view):
+    summary = view.summary() if hasattr(view, "summary") else {}
+    return (summary.get("release_id"), summary.get("content_digest"), summary.get("catalogue_state_revision"),
+            summary.get("built_at"), summary.get("items"))
 
-    def __init__(self, view):
-        self.view = view
 
-    def __hash__(self):
-        return 0
+def _framed(key, view, display_name):
+    """The framed page of one served catalogue, rendered once however many requests ask for it at the same time.
 
-    def __eq__(self, other):
-        return isinstance(other, _ViewHolder)
+    Rendering walks every item the view serves, which takes seconds for a large library read from disk, so a second
+    request for a page being rendered waits for that render instead of starting its own; a request for a page that
+    is already rendered never waits for another page's render."""
+    cache_key = (key, display_name)
+    with _PAGES_LOCK:
+        held = _PAGES.get(cache_key)
+        if held is not None:
+            _PAGES.move_to_end(cache_key)
+            return held
+        lock = _RENDERING.setdefault(cache_key, threading.Lock())
+    with lock:
+        with _PAGES_LOCK:
+            held = _PAGES.get(cache_key)
+        if held is None:
+            from .web_site_map import load_site_map
+            held = library_page(view, load_site_map(), display_name).encode("utf-8")
+            with _PAGES_LOCK:
+                _PAGES[cache_key] = held
+                while len(_PAGES) > PAGES_KEPT:
+                    _PAGES.popitem(last=False)
+                _RENDERING.pop(cache_key, None)
+    return held
+
+
+def warm(view, display_name: str) -> None:
+    """Render the page of a view before it is served, so its first visitor does not wait for the render."""
+    _framed(_view_key(view), view, display_name)
 
 
 def rendered(view, path: str, method: str, display_name: str, host: "str | None" = None):
@@ -395,10 +419,7 @@ def rendered(view, path: str, method: str, display_name: str, host: "str | None"
     from . import web_pages
     if method not in ("GET", "HEAD") or not handles(path):
         return None
-    summary = view.summary() if hasattr(view, "summary") else {}
-    key = (summary.get("release_id"), summary.get("content_digest"), summary.get("catalogue_state_revision"),
-           summary.get("built_at"), summary.get("items"))
-    body = _framed(key, _ViewHolder(view), display_name)
+    body = _framed(_view_key(view), view, display_name)
     head = web_pages.page_head(web_pages.packaged_site_map(), path, host, display_name)
     if head is not None:
         body = web_pages.with_page_head(body, head)

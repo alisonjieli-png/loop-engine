@@ -362,5 +362,52 @@ class AccountRequiredSampleTests(unittest.TestCase):
         self.assertEqual(before[2], original)
 
 
+class RenderOnceTests(unittest.TestCase):
+    """A page is rendered once for each served catalogue, however many requests ask at the same time, and the
+    refresher can render it before the catalogue is served (library_page.warm)."""
+
+    def setUp(self):
+        library_page._PAGES.clear()
+        self.addCleanup(library_page._PAGES.clear)
+
+    def concurrent_renders(self, render):
+        import threading
+        import time as clock
+        calls = []
+
+        def slow(view, site_map, display_name):
+            calls.append(display_name)
+            clock.sleep(0.2)
+            return "<main>page</main>"
+        view = fixture_view()
+        with mock.patch.object(library_page, "library_page", slow):
+            threads = [threading.Thread(target=render, args=(view,)) for _ in range(5)]
+            for thread in threads:
+                thread.start()
+            for thread in threads:
+                thread.join()
+        return len(calls)
+
+    def test_concurrent_requests_for_one_page_render_it_once(self):
+        self.assertEqual(self.concurrent_renders(
+            lambda view: library_page._framed(library_page._view_key(view), view, "Baltor")), 1)
+
+    def test_known_wrong_a_plain_memo_renders_once_for_each_concurrent_request(self):
+        from functools import lru_cache
+
+        @lru_cache(maxsize=8)
+        def memo(key, display_name, holder=None):
+            return library_page.library_page(None, None, display_name)
+        self.assertGreater(self.concurrent_renders(lambda view: memo(library_page._view_key(view), "Baltor")), 1)
+
+    def test_a_warmed_page_is_served_without_rendering_again(self):
+        view = fixture_view()
+        library_page.warm(view, "Baltor")
+        with mock.patch.object(library_page, "library_page", side_effect=AssertionError("rendered on request")):
+            body, media_type = library_page.rendered(view, library_page.ADDRESS, "GET", "Baltor")
+        self.assertIn(b"lib-total", body)
+        self.assertTrue(media_type.startswith("text/html"))
+
+
 if __name__ == "__main__":
     unittest.main()
