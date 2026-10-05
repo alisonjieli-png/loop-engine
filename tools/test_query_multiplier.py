@@ -520,6 +520,41 @@ class RefreshLaneTests(Temporary):
         self.assertEqual(len(transport.sent), 1)
 
 
+class LearnedWeightTests(Temporary):
+    def seed(self, ledger, product_id, executions, new_unique):
+        with ledger.lock:
+            for index in range(executions):
+                ledger.db.execute("insert into queries(query_id, executor_id, product_id, k, page, parent_query_id, origin, "
+                                  "assignment, request, planned_at, state, executions, new_unique, sequence) "
+                                  "values(?,?,?,?,1,'','product','{}','{}','t','executed',1,?,?)",
+                                  (f"{product_id}-{index}", "github_repositories", product_id, index, new_unique, index))
+            ledger.db.commit()
+
+    def runs(self, ledger):
+        library = small_library()
+        executors = registry()
+        products = read_plan(plan(product("rich", "github_repositories", [("sdg_target", None)]),
+                                  product("poor", "github_repositories", [("creative_domain", None)]),
+                                  product("new", "github_repositories", [("geography", None)])), library, executors)
+        return Run(library=library, products=products, executors=executors, transport=FakeTransport(b""), ledger=ledger,
+                   minutes=1, resolve_licences=False)
+
+    def test_products_share_requests_by_measured_yield_with_a_floor(self):
+        ledger = self.ledger()
+        self.seed(ledger, "rich", 30, 40)
+        self.seed(ledger, "poor", 30, 0)
+        self.seed(ledger, "new", 5, 90)  # too few executions to judge
+        learned = self.runs(ledger).learned["github_repositories"]
+        self.assertGreater(learned["rich"]["weight"], learned["rich"]["prior"])
+        self.assertEqual(learned["poor"]["weight"], 1)  # never out of the rotation
+        self.assertEqual(learned["new"]["weight"], learned["new"]["prior"])
+
+    def test_known_wrong_without_measurements_every_product_keeps_its_prior(self):
+        ledger = self.ledger()
+        learned = self.runs(ledger).learned["github_repositories"]
+        self.assertTrue(all(row["weight"] == row["prior"] for row in learned.values()))
+
+
 CHILD = textwrap.dedent("""
     import os, signal, sys
     sys.path[:0] = [{src!r}, {tools!r}, {root!r}]

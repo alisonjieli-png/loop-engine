@@ -143,6 +143,13 @@ again and counted as a refresh. Every tenth pick of a lane also looks for an
 executed query whose period has passed, most productive first, and sends the
 same request again, so a productive probe keeps surfacing a source's new items.
 
+Product weights in a plan are priors. At the start of each pass every product's
+weight is scaled by its measured yield in the ledger: its mean new distinct
+candidates per executed query over its lane's mean, bounded to between a quarter
+and four times, never below one share, and only once it has twenty executions
+(`runner.learned_weights`; the weights used are in the pass status). Low yield
+lowers a product's priority; nothing leaves the rotation.
+
 Query identity is the SHA-256 of the executor and its exact rendered request, so
 the same request reached from two products, two plans or an imported queue is one
 query.
@@ -300,7 +307,9 @@ leaves a record.
   demonstration key, 40 requests a day.
 - Some products combine values that rarely meet (a niche licence with a niche
   language); their empty results are measured and lower the measured yield, not
-  the plan's correctness. Weights move requests toward common licences and
-  languages; a learning allocation over measured yield is not built yet.
+  the plan's correctness. Value weights move requests toward common licences and
+  languages, and learned product weights toward productive products; value-level
+  learning (which dimension values yield) is measured in the report but not yet
+  fed back automatically.
 - Shared allowances (GitHub search, OpenAlex and Openverse anonymous budgets)
   are also used by other agents; the lanes wait or hold instead of exceeding them.

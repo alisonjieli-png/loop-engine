@@ -49,6 +49,7 @@ class ProductStream:
         self.cursor = ledger.cursor(product.id, product.digest)
         self.exhausted = False
         self.current = 0  # smooth weighted round-robin credit
+        self.weight = product.weight  # the declared prior; learned_weights may scale it by measured yield
 
     def next(self, *, scan_limit: int = 4000):
         for _ in range(scan_limit):
@@ -86,6 +87,7 @@ class ImportedStream:
                                                      "follow_pages": 0})()
         self.exhausted = False
         self.current = 0
+        self.weight = weight
         self.pending = None
 
     def next(self, *, scan_limit: int = 50):
@@ -135,9 +137,9 @@ class Lane:
         live = [stream for stream in self.streams if not stream.exhausted]
         if not live:
             return None, None
-        total = sum(stream.product.weight for stream in live)
+        total = sum(stream.weight for stream in live)
         for stream in live:
-            stream.current += stream.product.weight
+            stream.current += stream.weight
         best = max(live, key=lambda stream: stream.current)
         best.current -= total
         query = best.next()
@@ -473,9 +475,43 @@ class LicenceLane:
         self.stats["repositories_resolved"] += found
 
 
+LEARN_MINIMUM_EXECUTIONS = 20
+LEARN_FACTOR_BOUNDS = (0.25, 4.0)
+
+
+def learned_weights(ledger: Ledger, streams) -> dict:
+    """Scale each product's declared weight by its measured yield, with a floor of one.
+
+    A product's factor is its mean new distinct candidates per executed query over the lane's mean, from every
+    earlier pass in the ledger, bounded to [0.25, 4]. A product with fewer than twenty executions keeps its prior,
+    so a new product is explored before it is judged; no product falls below one share, so none leaves the
+    rotation (low yield lowers priority; nothing is deleted).
+    """
+    measured = {}
+    for stream in streams:
+        product_id = getattr(stream.product, "id", None)
+        row = ledger.rows("select count(*), avg(new_unique) from queries where product_id=? and state='executed' "
+                          "and origin='product'", (product_id,))
+        count, mean = row[0] if row else (0, None)
+        measured[product_id] = (count or 0, mean or 0.0)
+    known = [mean for count, mean in measured.values() if count >= LEARN_MINIMUM_EXECUTIONS]
+    lane_mean = sum(known) / len(known) if known else 0.0
+    out = {}
+    for stream in streams:
+        product_id = getattr(stream.product, "id", None)
+        count, mean = measured[product_id]
+        prior = stream.weight
+        if count >= LEARN_MINIMUM_EXECUTIONS and lane_mean > 0:
+            factor = min(max(mean / lane_mean, LEARN_FACTOR_BOUNDS[0]), LEARN_FACTOR_BOUNDS[1])
+            stream.weight = max(1, round(prior * factor))
+        out[product_id] = {"prior": prior, "weight": stream.weight, "executions": count, "mean_new_unique": round(mean, 2)}
+    return out
+
+
 class Run:
     def __init__(self, *, library, products, executors, transport, ledger: Ledger, minutes: float,
-                 only=None, imported_weight: int = 0, run_id: "str | None" = None, resolve_licences: bool = True):
+                 only=None, imported_weight: int = 0, run_id: "str | None" = None, resolve_licences: bool = True,
+                 learn: bool = True):
         self.library, self.executors, self.transport, self.ledger = library, executors, transport, ledger
         self.run_id = run_id or datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ") + "-" + uuid4().hex[:6]
         self.started = stamp()
@@ -494,6 +530,7 @@ class Run:
                 by_executor[product.executor_id].append(ProductStream(product, library, executor, ledger))
         if imported_weight and "ollama_web_search" in by_executor:
             by_executor["ollama_web_search"].append(ImportedStream(executors["ollama_web_search"], ledger, imported_weight))
+        self.learned = {name: learned_weights(ledger, streams) for name, streams in by_executor.items()} if learn else {}
         self.lanes = [Lane(self, executors[name], streams) for name, streams in sorted(by_executor.items())]
         if resolve_licences and any(name.startswith("github") or name == "ollama_web_search" for name in by_executor):
             self.lanes.append(LicenceLane(self))
@@ -571,7 +608,7 @@ class Run:
                                                 "done": lane.done_reason, "errors": lane.errors[-5:]}
         return {"record_type": "research_query_run_status/v1", "run_id": self.run_id, "state": state,
                 "started_at": self.started, "updated_at": stamp(), "deadline": stamp(datetime.fromtimestamp(self.deadline, timezone.utc)),
-                "lanes": lanes}
+                "lanes": lanes, "learned_weights": self.learned}
 
     def execute(self) -> dict:
         reconciliation = self.reconcile()
