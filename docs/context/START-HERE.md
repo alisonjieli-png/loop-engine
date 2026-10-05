@@ -21,6 +21,8 @@ two defects that were found and fixed after the first claims of correctness.
 
 ## Current context route
 
+Read the [owner direction from Dot](OWNER-DIRECTION-FROM-DOT-2026-10-05.md) for the standing directions and library plan drawn from the owner's Dot conversations of September 30 to October 5.
+
 Read the [release 62 handoff](SESSION-HANDOFF-2026-10-04-RELEASE62.md) first for
 the October 4 live privacy/work-log release, private micro-component reports,
 launch-readiness assessment, session-renewal gap and exact verification scope.
