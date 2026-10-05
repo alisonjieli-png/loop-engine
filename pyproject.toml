@@ -53,9 +53,10 @@ integrations = [
     "tomli>=2; python_version < '3.11'",
 ]
 # The disk index engine of the catalogue search index slot (core/service_runtime/catalogue_disk_index.py).
-# A host that selects it installs this beside `serving`; without it that engine is refused at start.
+# The service image installs it beside `serving` (Dockerfile.service), pinned like `serving`; without it that
+# engine is refused at start. 2.2.6 is the version the engine's checks ran on, with wheels for Python 3.10-3.13.
 catalogue-index = [
-    "numpy>=2,<3",
+    "numpy==2.2.6",
 ]
 serving = [
     "mcp==2.2.0",

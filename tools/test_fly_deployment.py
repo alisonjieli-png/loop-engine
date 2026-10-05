@@ -840,7 +840,9 @@ class FlyDeploymentTests(unittest.TestCase):
         self.assertEqual(profile["http_service"]["checks"][0]["path"], "/api/v1/health")
         dockerfile = (ROOT / "Dockerfile.service").read_text()
         self.assertIn("USER 65534:65534", dockerfile)
-        self.assertIn("'.[serving]'", dockerfile)
+        # The service image carries the disk index engine's numpy, so a host file alone can select that engine.
+        self.assertIn("'.[serving,catalogue-index]'", dockerfile)
+        self.assertIn("'loop-engine[serving,catalogue-index]'", dockerfile)
         self.assertIn('"service", "serve"', dockerfile)
         self.assertIn('"--behind-trusted-tls-proxy"', dockerfile)
 
