@@ -1328,10 +1328,10 @@ def _owid_answers(charts):
     wdi = sources["collections"]["world_bank_wdi"]
     catalogue = [{"page": 1, "pages": 1, "per_page": "2000", "total": 1}, [{"id": "FX.OWN.TOTL.ZS", "name": "x"}]]
     answers = {wdi["catalogue"]: (200, json.dumps(catalogue).encode()), CC_BY: (200, CC_BY_TEXT)}
-    for goal, address in collection["goal_pages"].items():
+    for goal, page in collection["goal_pages"].items():
         links = "".join(f'<a href="/grapher/{slug}">{slug}</a>' for slug, chart in charts.items()
                         if int(goal) in chart["goals"])
-        answers[address] = (200, f"<html><body>{links}</body></html>".encode())
+        answers[collection["goal_page"].format(page=page)] = (200, f"<html><body>{links}</body></html>".encode())
     for number, (slug, chart) in enumerate(charts.items()):
         page = OWID_STATEMENT if chart.get("statement", True) else b"<p>Our charts are licensed under CC BY.</p>"
         answers[collection["chart_page"].format(series=slug)] = (200, b"<html><body>" + page + b"</body></html>")

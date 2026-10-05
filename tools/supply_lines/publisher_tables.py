@@ -91,7 +91,7 @@ _CELL = str.maketrans({"|": "/", "\n": " ", "\r": " "})
 
 
 def _host(address: str) -> str:
-    return urlsplit(str(address).replace("{series}", "x")).hostname or ""
+    return urlsplit(str(address).replace("{series}", "x").replace("{page}", "x")).hostname or ""
 
 
 def _collection_problems(collection: dict, texts: dict) -> list:
@@ -112,8 +112,10 @@ def _collection_problems(collection: dict, texts: dict) -> list:
         if sorted(pages, key=lambda goal: int(goal) if str(goal).isdigit() else 0) != [str(goal) for goal in
                                                                                    range(1, 18)]:
             problems.append("goal_pages names one page for each of the 17 goals")
-        addresses += list(pages.values()) + [collection.get(name) for name in
-                                             ("chart_page", "metadata_address", "indicator_address")]
+        if any(not re.fullmatch(r"[a-z0-9][a-z0-9-]{0,80}", str(page)) for page in pages.values()):
+            problems.append("a goal page is named by its slug")
+        addresses += [collection.get(name) for name in ("goal_page", "chart_page", "metadata_address",
+                                                        "indicator_address")]
     licence = collection.get("licence") or {}
     if licence.get("rule") == COLLECTION_STATEMENT:
         addresses.append(licence.get("evidence_address"))
@@ -541,7 +543,8 @@ def declared_rows(reader, collection_id: str, collection: dict, only=()) -> tupl
 def owid_charts(reader, collection: dict) -> tuple:
     """(chart slug to the goals whose SDG Tracker page lists it, refusals) from the publisher's own goal pages."""
     charts, refused = {}, []
-    for goal, address in sorted(collection["goal_pages"].items(), key=lambda item: int(item[0])):
+    for goal, page in sorted(collection["goal_pages"].items(), key=lambda item: int(item[0])):
+        address = collection["goal_page"].format(page=page)
         answer = reader.get(address)
         if answer.status != 200:
             refused.append(refusal(PUBLISHER_TABLES, "source_unreadable", f"goal {goal} page",
@@ -662,7 +665,7 @@ def owid_rows(reader, collection_id: str, collection: dict, only=(), maximum: in
         column = next(iter(columns.values()))
         title = str((json.loads(metadata.body).get("chart") or {}).get("title") or column.get("titleShort") or slug)
         goals = sorted(set(charts[slug]))
-        pages = [collection["goal_pages"][str(goal)] for goal in goals]
+        pages = [collection["goal_page"].format(page=collection["goal_pages"][str(goal)]) for goal in goals]
         rows.append({
             "collection_id": collection_id, "table_id": table_id, "title": title, "series": slug, "path": slug,
             "address": collection["data_address"].format(series=slug), "member": None,
