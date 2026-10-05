@@ -3004,3 +3004,77 @@ slots:
     planned_checks: [a_gateway_lists_only_the_tools_the_step_may_use,
                      a_tool_token_is_never_forwarded_to_another_server,
                      a_tool_effect_is_never_replayed_after_an_uncertain_reply]
+  # Roadmap addition (S-6.75): the first outside project adopted as an engine adapter with a
+  # Baltor-native engine beside it, from the owner's direction of October 5, 2026. Prior art:
+  # docs/research/OPEN-ONTOLOGIES-PRIOR-ART-2026-10-05.md.
+  - record_type: engine_slot/v1
+    slot_id: ontology_change_planning
+    slot_version: 1.0.0
+    title: Ontology change planning
+    function: >-
+      Plan a change to an ontology before it is applied: the new and lost
+      entailed triples under a named rule table, each with a derivation an
+      independent checker accepts, bound to the digest of the base state. A
+      plan changes nothing; apply is a compare-and-swap that needs an approval
+      naming the plan, and every applied change records its checked rollback.
+    design_table: roadmap_addition
+    inventory_records: []
+    roadmap_steps: [S-6.75, S-6.30]
+    implementation_state: planned
+    work_boundaries: []
+    planned_work_boundaries:
+      - {boundary: ontology change planning, added_by: S-6.75}
+    release_reason: ""
+    release_edge: ""
+    interactions: [core.interaction.ontology.plan_change, core.interaction.ontology.apply_change,
+                   core.interaction.ontology.rollback_change]
+    unavailable_result: {form: error_code, value: no_eligible_engine, answer_exists: true}
+    conformance_suite: core.ontology_change.conformance
+    component_folder: src/loop_engine/core/ontology_change
+    folder_move_package: ""
+    nested_under: []
+    nesting_scope_rule: not_nested
+    nesting_scope_reason: ""
+    joined_with: []
+    engine_protocol: core.ontology_change.contract.OntologyChangeEngine
+    engine_protocol_version: ontology_change_engine/v1
+    engine_kinds: [rule_closure_engine, sandboxed_binary_adapter]
+    engine_kind_groups: {}
+    native_registry: core.ontology_change.engines.ENGINE_FACTORIES
+    native_declaration: core.ontology_change.engines.DECLARED_ENGINES
+    requirement_comparison: core.ontology_change.engines.unmet_requirements
+    descriptor_projection: core.ontology_change.engines.describe_engine
+    factory_table: core.ontology_change.engines
+    planned_symbols: []
+    selection_mode: one_of
+    dispatch_key: ""
+    derived_from: ""
+    fallback_ceiling: after_failure_without_effects
+    failure_kinds: [engine_unavailable, capability_requirement_unsatisfied, engine_reported_failure,
+                    output_validation_failed, engine_changed_after_selection, policy_refused]
+    ranking_objectives: []
+    evidence_minimum_floor: null
+    scope_fields: [operation_contract, output_contract, execution_settings]
+    bindings:
+      - {context: engine_side, selection_phase: per_attempt,
+         binding_site: runtime_context_internal_binding, host_must_bind: false}
+    declaration_source: >-
+      The factory table's DECLARED_ORDER as engine_selection_policy/v1: the
+      Baltor-native rule engine first, the Open Ontologies v2.0.1 adapter
+      (pinned by commit d1187190 and its asset's SHA-256) as the declared
+      fallback. A host reorders, pins or excludes through its own policy. With
+      evidence required, an engine is eligible only with a passing conformance
+      report for its exact descriptor digest; evidence never ranks.
+    retired_engines: []
+    known_direct_construction_sites: []
+    existing_checks:
+      - core.ontology_change.conformance:a_stale_base_digest_is_refused_before_any_engine_runs
+      - core.ontology_change.conformance:every_listed_consequence_carries_a_trace_the_independent_checker_accepts
+      - core.ontology_change.conformance:a_forged_derivation_trace_is_refused
+      - core.ontology_change.conformance:a_locked_term_is_refused_at_apply
+      - core.ontology_change.conformance:apply_is_compare_and_swap_on_the_base_digest
+      - core.ontology_change.conformance:apply_requires_an_approval_naming_the_plan
+      - core.ontology_change.conformance:rollback_restores_only_the_state_it_replaced
+      - core.ontology_change.conformance:selection_follows_the_declared_order_and_recorded_evidence
+      - core.ontology_change.conformance:a_failed_engine_falls_back_to_the_next_declared_engine
+    planned_checks: [a_loop_owns_every_plan_and_apply_it_requests]

@@ -92,6 +92,10 @@ MODULE_MAP = {
         "slots", "slot_index", "slot_checks",
     ),
     "core.step_execution": ("__init__",),
+    "core.ontology_change": (
+        "__init__", "component", "conformance", "contract", "engines", "native_engine",
+        "open_ontologies_engine", "rdf_terms", "store", "trace_checker",
+    ),
     "ontology": (
         "artifacts", "catalog", "folders", "loop_definition_record",
         "loop_node", "node", "ontology_checks", "records",

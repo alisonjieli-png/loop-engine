@@ -37,6 +37,12 @@ folders:
     forbidden_component_kinds: [new_runtime, provider]
     public_boundary: owning_typed_capability_observation_and_provisioning_modules
     dependency_direction: helpers_depend_on_passive_records_and_validation_never_the_run_services_facade
+  - path: src/loop_engine/core/ontology_change
+    semantic_owner: ontology_change_plans_their_engines_and_the_approved_apply_of_one_graph
+    allowed_component_kinds: [adapter, result, policy, verification_contract]
+    forbidden_component_kinds: [new_runtime, intelligence_layer]
+    public_boundary: ontology_change_request_plan_apply_and_rollback_records
+    dependency_direction: engines_depend_on_the_ontology_change_edge_never_reverse
   - path: src/loop_engine/core/library_ingestion
     semantic_owner: outside_harness_material_with_provenance_as_review_only_candidates
     allowed_component_kinds: [adapter, provider, policy, result, artifact]

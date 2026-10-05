@@ -1244,3 +1244,66 @@ interactions:
     verification: known_wrong_material_left_untagged_and_the_body_phrase_script_shared_phrase_and_word_mutants
     run_history: tags_name_their_engine_and_evidence_in_the_reviewed_folder
     implementation_state: candidate
+  - interaction_id: core.interaction.ontology.plan_change
+    producer_kind: runtime_definition
+    consumer_kind: adapter
+    operation: plan_an_ontology_change
+    request_contract: ontology_change_request/v1
+    result_contract: ontology_change_plan/v1
+    relationship: spawned_by
+    delivery: one_engine_then_the_next_declared_engine_after_a_named_failure
+    scheduling: serial
+    retry: declared_fallback_after_failure_without_effects
+    timeout: engine_execution_settings_wall_time
+    cancellation: inherited_run_cancellation
+    compatibility: exact_engine_descriptor_and_edge_version
+    context_handoff: both_graphs_as_canonical_triples_and_the_rule_profile_only
+    authority_transfer: none_a_plan_changes_nothing
+    privacy: the_ontology_stays_on_the_machine_and_the_adapter_runs_without_network
+    failure: typed_ontology_change_failure
+    repair: declared_fallback_then_the_typed_failure
+    verification: independent_trace_checker_on_every_listed_consequence
+    run_history: selection_decisions_and_the_plan_digest
+    implementation_state: candidate
+  - interaction_id: core.interaction.ontology.apply_change
+    producer_kind: runtime_definition
+    consumer_kind: adapter
+    operation: apply_an_approved_ontology_change
+    request_contract: ontology_change_apply_request/v1
+    result_contract: ontology_change_apply_result/v1
+    relationship: spawned_by
+    delivery: compare_and_swap_on_the_base_digest
+    scheduling: serial_under_the_store_lock
+    retry: none_plan_again_after_a_stale_base
+    timeout: local_deterministic
+    cancellation: before_the_pointer_moves_only
+    compatibility: exact_plan_digest_and_edge_version
+    context_handoff: the_plan_and_one_approval_reference
+    authority_transfer: approval_reference_naming_the_plan_digest
+    privacy: the_store_folder_only
+    failure: typed_ontology_change_failure
+    repair: rollback_record_restores_the_replaced_state
+    verification: proposed_digest_recomputed_before_the_pointer_moves
+    run_history: append_only_store_journal
+    implementation_state: candidate
+  - interaction_id: core.interaction.ontology.rollback_change
+    producer_kind: runtime_definition
+    consumer_kind: adapter
+    operation: roll_back_an_applied_ontology_change
+    request_contract: ontology_change_rollback_request/v1
+    result_contract: ontology_change_rollback_result/v1
+    relationship: spawned_by
+    delivery: compare_and_swap_on_the_replaced_digest
+    scheduling: serial_under_the_store_lock
+    retry: none_a_stale_rollback_is_refused
+    timeout: local_deterministic
+    cancellation: before_the_pointer_moves_only
+    compatibility: exact_rollback_record_and_edge_version
+    context_handoff: the_rollback_record_and_one_approval_reference
+    authority_transfer: approval_reference_naming_the_applied_plan_digest
+    privacy: the_store_folder_only
+    failure: typed_ontology_change_failure
+    repair: plan_again_from_the_current_state
+    verification: restored_digest_recomputed_before_the_pointer_moves
+    run_history: append_only_store_journal
+    implementation_state: candidate
