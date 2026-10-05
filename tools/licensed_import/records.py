@@ -59,6 +59,12 @@ KIND_LAYERS = {SKILL: CONTEXT_LAYER, INSTRUCTION_FILE: CONTEXT_LAYER, RULES: CON
                SUBAGENT: CONTEXT_LAYER, COMMAND: CONTEXT_LAYER, HOOK: CODE_LAYER, PLUGIN_MANIFEST: CODE_LAYER,
                MARKETPLACE: CODE_LAYER, PROTOCOL_SERVER: CODE_LAYER, CONTRACT_SCHEMA: CODE_LAYER,
                CODE_MODULE: CODE_LAYER, SETTINGS: CODE_LAYER}
+#: The reference artifact kinds of the served vocabulary (catalogue_attributes.HARNESS_KINDS, September 29, 2026):
+#: a harness places and interprets them. The licensed import copies none of them, but a supply line writes them
+#: (tools/supply_lines/creative_assets.py: an HDRI, a model, an editable project, each with the code that fetches
+#: and loads it), so the store files them beside the code a harness runs.
+REFERENCE_ARTIFACT_KINDS = ("reference_image", "mask", "pose_layout", "three_d_model", "cad_model", "template")
+KIND_LAYERS.update({kind: CODE_LAYER for kind in REFERENCE_ARTIFACT_KINDS})
 
 #: What a file inside a package came from.
 UPSTREAM_FILE, LICENCE_TEXT, ATTRIBUTION_FILE = "upstream", "licence_text", "attribution"

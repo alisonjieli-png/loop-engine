@@ -24,6 +24,8 @@ build_library_supply.py
 ├── api-schemas    one JSON Schema per named object of a curated OpenAPI specification, with tests
 ├── manim-scenes   one tested animation scene per example scene of Manim Community's documentation
 ├── api-tool-servers  one tested Model Context Protocol tool server per curated OpenAPI specification file
+├── creative-assets  one pinned CC0 asset recipe (Poly Haven, ambientCG) or editable Godot demo project per
+│                    asset or project, with a verifying fetcher, loaders and offline tests
 └── report         the supply by family and form, and the projected composition
 ```
 
@@ -446,6 +448,72 @@ def api_tool_servers(args) -> dict:
                   complete=not args.source and not unread)
 
 
+def payload_counts(built) -> dict:
+    """Placements, distinct payload files and their bytes: a file shared by several packages counts once."""
+    digests = {}
+    placements = 0
+    for payload, _bodies in built:
+        for entry in payload["package"]["files"]:
+            digests[entry["digest"]] = entry["size_bytes"]
+            placements += 1
+    return {"package_files": placements, "distinct_payload_files": len(digests),
+            "distinct_payload_bytes": sum(digests.values())}
+
+
+def creative_assets(args) -> dict:
+    from supply_lines import creative_assets as line
+    from supply_lines import godot_demos
+    from supply_lines.reading import RAW_HOST
+    run_folder = _outside(args.run_folder)
+    run_folder.mkdir(parents=True, exist_ok=True)
+    revision = code_revision(args.authorize_store_writes)
+    sources = list(dict.fromkeys(args.source or line.SOURCES))
+    hosts = set(line.LICENCE_HOSTS)
+    if line.POLYHAVEN in sources:
+        hosts |= set(line.POLYHAVEN_HOSTS) | {RAW_HOST}
+    if line.AMBIENTCG in sources:
+        hosts |= set(line.AMBIENTCG_HOSTS)
+    if line.GODOT_DEMO_PROJECTS in sources:
+        hosts |= set(godot_demos.HOSTS)
+    reader = FactReader(run_folder, sorted(hosts), maximum_requests=args.maximum_requests,
+                        pause_seconds=args.pause_seconds, digest_cache=args.digest_cache)
+    resolutions = tuple(dict.fromkeys(args.resolution or line.DEFAULT_RESOLUTIONS))
+    godot = args.godot or shutil.which("godot") or shutil.which("godot4")
+    only = tuple(args.asset or ())
+    common = {"code_revision": revision, "licence_text": LICENCE_FILE.read_bytes(), "generated_on": now_utc()[:10]}
+    reports, every = {}, []
+    for source in sources:
+        staging = run_folder / "staging" / source
+        if source == line.POLYHAVEN:
+            built, refusals, facts, summary = line.generate_polyhaven(
+                reader, staging=staging, resolutions=resolutions, only=only, maximum_assets=args.maximum_assets,
+                **common)
+        elif source == line.AMBIENTCG:
+            built, refusals, facts, summary = line.generate_ambientcg(
+                reader, staging=staging, resolutions=resolutions, only=only, maximum_assets=args.maximum_assets,
+                **common)
+        else:
+            built, refusals, facts, summary = godot_demos.generate(
+                reader, staging=staging, archive_folder=run_folder / "archives", only=only,
+                maximum_projects=args.maximum_assets, godot=godot, **common)
+        held = any(row["subject"] in (source, line.POLYHAVEN, line.AMBIENTCG, godot_demos.REPOSITORY)
+                   for row in refusals)
+        args.run_folder = str(run_folder / source)
+        Path(args.run_folder).mkdir(parents=True, exist_ok=True)
+        reports[source] = finish(args, records.CREATIVE_ASSETS, built, refusals,
+                                 {"source": source, "resolutions": list(resolutions), "summary": summary,
+                                  **payload_counts(built)},
+                                 reader, facts, complete=not only and not args.maximum_assets and not held,
+                                 scope=source)
+        every += built
+    args.run_folder = str(run_folder)
+    totals = {"candidates": len(every), **payload_counts(every),
+              "refused": sum(report["refused"] for report in reports.values())}
+    (run_folder / "totals.json").write_text(json.dumps(totals, indent=1, sort_keys=True) + "\n", encoding="utf-8")
+    print(json.dumps({"totals": totals}, indent=1))
+    return reports
+
+
 def report(args) -> dict:
     from licensed_import.composition import library_counts, load_targets
     from licensed_import.storage import ImportStore
@@ -618,6 +686,19 @@ def parser() -> argparse.ArgumentParser:
     tool_servers_command.add_argument("--source", action="append", help="only these source identities of "
                                       "openapi_sources.json")
     tool_servers_command.add_argument("--stars", action="store_true", help="read each repository's stars (GraphQL)")
+    creative = commands.add_parser("creative-assets")
+    common(creative)
+    creative.add_argument("--source", action="append", choices=("polyhaven", "ambientcg", "godot_demo_projects"),
+                          help="only these sources (default: all three, each with its own line state)")
+    creative.add_argument("--asset", action="append", help="only these asset ids or demo project paths")
+    creative.add_argument("--maximum-assets", type=int, default=0,
+                          help="at most this many assets or projects per source (0: all)")
+    creative.add_argument("--resolution", action="append", choices=("1k", "2k", "4k", "8k"),
+                          help="the resolutions an asset recipe pins (default 1k and 2k); each pinned byte is "
+                               "downloaded once by the generator to learn its SHA-256")
+    creative.add_argument("--digest-cache", help="a folder of pinned-file digests shared by several runs")
+    creative.add_argument("--godot", help="a Godot 4 executable for the headless project import (default: "
+                                          "godot or godot4 on the path; skipped when there is none)")
     four = commands.add_parser("data-tables")
     common(four)
     four.add_argument("--table", action="append", help="only these table identities of data_table_sources.json")
@@ -715,7 +796,8 @@ def main(argv=None) -> int:
      "constraint-cases": constraint_cases,
      "constraint-campaign": constraint_campaign,
      "case-exclusions": case_exclusions,
-     "manim-scenes": manim_scenes, "api-tool-servers": api_tool_servers, "report": report}[args.command](args)
+     "manim-scenes": manim_scenes, "api-tool-servers": api_tool_servers,
+     "creative-assets": creative_assets, "report": report}[args.command](args)
     return 0
 
 

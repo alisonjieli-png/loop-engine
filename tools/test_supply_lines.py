@@ -20,6 +20,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import urllib.parse
 import zipfile
 from pathlib import Path
 from types import SimpleNamespace
@@ -4522,6 +4523,394 @@ class ApiToolServersTest(unittest.TestCase):
                          {name: checks.PASSED for name in checks.CHECK_IDS},
                          {name: result.findings for name, result in results.items() if result.findings})
         self.assertIn("api_tool_servers|example/api|openapi.json|", checks.job_key(component, context.policy))
+
+
+# -- the creative line --------------------------------------------------------------------------------------------
+TEMPLATES = {row["spdx"]: row for row in json.loads((
+    HERE.parent / "src/loop_engine/core/library_ingestion/licence_templates.json").read_text(encoding="utf-8"))[
+    "templates"]}
+#: A text the library's licence matcher reads as CC0 1.0: the words of its own CC0 template.
+CC0_TEXT = " ".join(TEMPLATES["CC0-1.0"]["words"]).encode()
+PH_LICENCE_PAGE = (b"<h1>Asset License</h1><p>All assets (<a>HDRIs</a>, textures and 3D models) on this site are "
+                   b"original.</p><p>Our assets are all licensed as\n<a>CC0</a>.</p><p><b>You can use our assets "
+                   b"for any purpose</b>, including commercial work. <b>You can redistribute them</b>.</p>")
+PH_TERMS = (b"# Poly Haven API Terms of Service\nWhile our 3D assets themselves are published under the CC0 license, "
+            b"access is covered by these terms. 2.1. The API is free for any purpose, including commercial use. "
+            b"2.2. Users may build on that data in their own software. 2.4. Calls must carry a unique user-agent.\n")
+ACG_LICENCE_PAGE = (b"<p>All ambientCG assets are provided under the <a>Creative Commons CC0 1.0 Universal License</a>."
+                    b"</p><p>This applies to the downloadable asset files and the material preview renders.</p>")
+ACG_API_PAGE = (b"<p>This section covers the ambientCG API which you can use to search and download assets using "
+                b"code.</p>")
+
+
+class _Fetched:
+    def __init__(self, url, status, body):
+        self.url, self.status, self.body = url, status, body
+        self.sha256, self.retrieved_at, self.cached = _digest(body), "2026-10-05T00:00:00Z", False
+
+
+class _CreativeReader:
+    """Fixture answers: pages by address, downloads by address (digested the way FactReader.digest does), the
+    pinned terms file, GitHub reads and a repository licence."""
+
+    def __init__(self, pages=None, downloads=None, *, pinned=None, github=None, licence=None):
+        self.pages, self.downloads = dict(pages or {}), dict(downloads or {})
+        self.pinned, self.github_answers, self.licence = pinned, dict(github or {}), licence
+        self.asked, self.digested = [], []
+
+    def get(self, url, cache_errors=False):
+        self.asked.append(url)
+        if url in self.pages:
+            return _Fetched(url, 200, self.pages[url])
+        if url == "https://creativecommons.org/publicdomain/zero/1.0/legalcode.txt":
+            return _Fetched(url, 200, CC0_TEXT)
+        return _Fetched(url, 404, b"")
+
+    def digest(self, url, *, published=None, maximum_bytes=0, inspect=None, use_cache=True):
+        from supply_lines.reading import Digested
+        self.digested.append(url)
+        data = self.downloads.get(url)
+        if data is None:
+            return Digested(url, None, 404, None, None, None, "2026-10-05T00:00:00Z", False, None, "http_error 404")
+        inspected = None
+        if inspect is not None:
+            with tempfile.TemporaryDirectory() as folder:
+                path = Path(folder) / "download.partial"
+                path.write_bytes(data)
+                inspected = inspect(path)
+        return Digested(url, url, 200, _digest(data), hashlib.md5(data).hexdigest(), len(data),
+                        "2026-10-05T00:00:00Z", False, inspected)
+
+    def pinned_file(self, repository, branch, path):
+        if self.pinned is None:
+            raise LookupError("no such file")
+        return {"repository": repository, "commit": "d" * 40, "path": path, "bytes": self.pinned,
+                "sha256": _digest(self.pinned), "retrieved_at": "2026-10-05T00:00:00Z", "url": "https://example.org"}
+
+    def github(self, path):
+        return _Fetched("https://api.github.com/" + path, 200 if path in self.github_answers else 404,
+                        self.github_answers.get(path, b"{}"))
+
+    def licence_text(self, repository, commit):
+        return self.licence
+
+
+def _ph_file(path, data):
+    return {"url": f"https://dl.polyhaven.org/file/ph-assets/{path}", "size": len(data),
+            "md5": hashlib.md5(data).hexdigest()}
+
+
+def _polyhaven_fixture(*, licence_page=PH_LICENCE_PAGE, wrong_md5=False):
+    """Two assets of Poly Haven's API (a model and an HDRI), one of a type the line does not supply, and the bytes
+    of every file they offer."""
+    downloads = {}
+
+    def offer(path, data):
+        entry = _ph_file(path, data)
+        downloads[entry["url"]] = data
+        return entry
+
+    def gltf_files(res):
+        return {"apple.bin": offer("Models/gltf/8k/apple/apple.bin", b"\x00\x01binary"),
+                f"textures/apple_diff_{res}.jpg": offer(f"Models/jpg/{res}/apple/apple_diff_{res}.jpg",
+                                                        b"\xff\xd8jpeg " + res.encode())}
+
+    gltf = {res: {"gltf": {**offer(f"Models/gltf/{res}/apple/apple_{res}.gltf", b'{"asset": {"version": "2.0"}}'
+                                   + res.encode()), "include": gltf_files(res)}}
+            for res in ("1k", "2k", "4k")}
+    normal = offer("Models/exr/1k/apple/apple_nor_gl_1k.exr", b"\x76\x2f\x31\x01 exr")
+    blend = {"1k": {"blend": {**offer("Models/blend/1k/apple/apple_1k.blend", b"BLENDER-v400 apple"),
+                              "include": {"textures/apple_nor_gl_1k.exr": normal}}}}
+    hdri = {res: {fmt: offer(f"HDRIs/{fmt}/{res}/sky_{res}.{fmt}", f"#?RADIANCE {res} {fmt}".encode())
+                  for fmt in ("hdr", "exr")} for res in ("1k", "2k", "8k")}
+    if wrong_md5:
+        gltf["1k"]["gltf"]["include"]["apple.bin"]["md5"] = "0" * 32
+    api = "https://api.polyhaven.com/"
+    pages = {"https://polyhaven.com/license": licence_page,
+             api + "assets": json.dumps({"apple": {"type": 2, "download_count": 9, "name": "Apple"},
+                                         "sky": {"type": 0, "download_count": 5, "name": "Sky"},
+                                         "odd": {"type": 7, "download_count": 1}}).encode(),
+             api + "info/apple": json.dumps({"name": "Apple", "type": 2, "tags": ["fruit", " red "],
+                                             "authors": {"A. Author": "All"}, "dimensions": [90.0, 95.5, 80.25],
+                                             "polycount": 1200, "files_hash": "f" * 40, "category": "Food/Fruit",
+                                             "description": "Prose the line never copies."}).encode(),
+             api + "files/apple": json.dumps({"gltf": gltf, "blend": blend}).encode(),
+             api + "info/sky": json.dumps({"name": "Sky", "type": 0, "tags": ["sky"], "authors": {"B": "Photo"},
+                                           "files_hash": "e" * 40}).encode(),
+             api + "files/sky": json.dumps({"hdri": hdri, "tonemapped": _ph_file("x.jpg", b"x")}).encode()}
+    return _CreativeReader(pages, downloads, pinned=PH_TERMS)
+
+
+def _creative_generate(reader, function, **options):
+    with tempfile.TemporaryDirectory() as folder:
+        return function(reader, code_revision="a" * 40, licence_text=LICENCE, generated_on="2026-10-05",
+                        staging=Path(folder), **options)
+
+
+class CreativeAssetsTest(unittest.TestCase):
+    def test_one_package_per_asset_holds_every_resolution_and_format_as_variants(self):
+        from supply_lines import creative_assets as line
+        files = json.loads(_polyhaven_fixture().pages["https://api.polyhaven.com/files/apple"])
+        candidates = {identifier: (file_format, resolution, [(path, role) for path, _entry, role in parts])
+                      for identifier, file_format, resolution, parts in line.polyhaven_candidates("model", files,
+                                                                                                  ("1k", "2k"))}
+        self.assertEqual(sorted(candidates), ["blend-1k", "gltf-1k", "gltf-2k"])
+        # A model's main file is the model whatever its format; maps keep their role by name.
+        self.assertEqual(candidates["blend-1k"][2], [("apple_1k.blend", "model"),
+                                                     ("textures/apple_nor_gl_1k.exr", "normal_gl")])
+        self.assertEqual(dict(candidates["gltf-1k"][2])["apple.bin"], "gltf_buffer")
+        self.assertEqual(line.polyhaven_role("x_blend.blend", "texture"), "blend")
+        self.assertEqual(line.polyhaven_role("x_1k.gltf", "texture"), "scene")
+        self.assertEqual(line.round_robin({"a": [1, 2, 3], "b": [4]}, 3), [1, 4, 2])
+        self.assertEqual(line.ambientcg_wanted("model", ("1k",)), ["LQ-1K-JPG", "SQ-1K-JPG"])
+
+    def test_generate_polyhaven_pins_every_file_and_refuses_by_name(self):
+        from supply_lines import creative_assets as line
+        reader = _polyhaven_fixture()
+        built, refused, facts, summary = _creative_generate(reader, line.generate_polyhaven)
+        self.assertEqual([(row["reason"], row["subject"]) for row in refused], [("asset_type_not_supplied", "odd")])
+        payloads = {payload["name"]: (payload, bodies) for payload, bodies in built}
+        self.assertEqual(sorted(payloads), ["polyhaven-apple-model", "polyhaven-sky-hdri"])
+        apple, bodies = payloads["polyhaven-apple-model"]
+        self.assertEqual((apple["kind"], apple["component_form"]["form"], apple["licence"]["spdx_expression"]),
+                         ("three_d_model", "three_d_model", "MIT AND CC0-1.0"))
+        files = {entry["path"]: bodies[entry["digest"]] for entry in apple["package"]["files"]}
+        self.assertEqual(files["creative_fetch.py"], line.shipped("creative_fetch.py"))
+        self.assertEqual(files["UPSTREAM-LICENSE"], CC0_TEXT)
+        manifest = json.loads(files["creative.json"])
+        self.assertEqual(manifest["job"], {"source": "polyhaven", "identity": "apple"})
+        self.assertEqual([variant["id"] for variant in manifest["variants"]], ["gltf-1k", "gltf-2k", "blend-1k"])
+        self.assertEqual(manifest["default_variant"], "gltf-2k")
+        for variant in manifest["variants"]:
+            for row in variant["files"]:
+                self.assertEqual(row["sha256"], _digest(reader.downloads[row["url"]]), row["url"])
+        # Nothing above the chosen resolutions is downloaded (a model's buffer is shared by every resolution), and
+        # every pinned address is read once.
+        self.assertFalse(any(res in url.rsplit("/", 1)[-1] for url in reader.digested for res in ("4k", "8k")))
+        self.assertEqual(len(reader.digested), len(set(reader.digested)))
+        self.assertNotIn(b"Prose the line never copies", files["creative.json"] + files["README.md"])
+        self.assertIn(b"Poly Haven also publishes 4k", files["README.md"])
+        roles = {fact["role"] for fact in apple["provenance"]["facts"]}
+        self.assertEqual(roles, {"registry_entry", "terms_of_use", "licence_text", "data_source"})
+        self.assertTrue(apple["tests"]["result"] == "passed" and apple["tests"]["tests_run"] > 10)
+        sky = json.loads({entry["path"]: payloads["polyhaven-sky-hdri"][1][entry["digest"]]
+                          for entry in payloads["polyhaven-sky-hdri"][0]["package"]["files"]}["creative.json"])
+        self.assertEqual((sky["asset"]["type"], sky["default_variant"]), ("hdri", "hdr-2k"))
+        self.assertEqual(payloads["polyhaven-sky-hdri"][0]["kind"], "reference_image")
+
+    def test_known_wrong_changed_bytes_or_terms_refuse_by_name(self):
+        from supply_lines import creative_assets as line
+        built, refused, _facts, _summary = _creative_generate(_polyhaven_fixture(wrong_md5=True),
+                                                              line.generate_polyhaven, only=("apple",))
+        self.assertEqual((built, [row["reason"] for row in refused]), ([], ["published_checksum_mismatch"]))
+        page = PH_LICENCE_PAGE.replace(b"licensed as\n<a>CC0</a>", b"licensed as <a>CC BY</a>")
+        built, refused, facts, _summary = _creative_generate(_polyhaven_fixture(licence_page=page),
+                                                             line.generate_polyhaven)
+        self.assertEqual((built, facts, [(row["reason"], row["subject"]) for row in refused]),
+                         ([], {}, [("terms_not_confirmed", "polyhaven")]))
+        reader = _polyhaven_fixture()
+        reader.pinned = PH_TERMS.replace(b"including commercial use", b"for personal use")
+        built, refused, _facts, _summary = _creative_generate(reader, line.generate_polyhaven)
+        self.assertEqual([row["reason"] for row in refused], ["terms_not_confirmed"])
+        self.assertEqual(reader.digested, [])
+
+    def test_ambientcg_pins_archives_with_their_members_and_drops_an_unsafe_one(self):
+        import io
+        import zipfile
+        from supply_lines import creative_assets as line
+
+        def archive(members):
+            stream = io.BytesIO()
+            with zipfile.ZipFile(stream, "w") as opened:
+                for name, data in members.items():
+                    opened.writestr(name, data)
+            return stream.getvalue()
+
+        good = archive({"Bricks_1K-JPG_Color.jpg": b"colour", "Bricks_1K-JPG_NormalGL.jpg": b"normal",
+                        "Bricks_1K-JPG.blend": b"BLENDER", "Bricks.png": b"preview"})
+        bad = archive({"../escape.jpg": b"outside"})
+        listing = "https://ambientcg.com/api/v3/assets?"
+        downloads = {"https://ambientcg.com/get?file=Bricks_1K-JPG.zip": good,
+                     "https://ambientcg.com/get?file=Odd_1K-JPG.zip": bad}
+
+        def record(identity):
+            address = f"https://ambientcg.com/get?file={identity}_1K-JPG.zip"
+            offered = [{"attributes": "1K-JPG", "extension": "zip", "url": address, "size": len(downloads[address])},
+                       {"attributes": "8K-PNG", "extension": "zip", "url": "https://ambientcg.com/get?file=x.zip",
+                        "size": 1}]
+            return json.dumps({"assets": [{"id": identity, "type": "material", "title": identity.title(),
+                                           "tags": ["brick"], "dimensions": {"width": 50, "height": 50, "depth": 0},
+                                           "downloads": offered}]}).encode()
+        pages = {"https://docs.ambientcg.com/license/": ACG_LICENCE_PAGE,
+                 "https://docs.ambientcg.com/api/": ACG_API_PAGE,
+                 line.ambientcg_asset_address("Bricks"): record("Bricks"),
+                 line.ambientcg_asset_address("Odd"): record("Odd")}
+        for api_type in ("material", "hdri", "3d-model"):
+            rows = [{"id": "Bricks"}, {"id": "Odd"}] if api_type == "material" else []
+            address = listing + urllib.parse.urlencode({"type": api_type, "sort": "popular", "limit": 500, "offset": 0,
+                                                         "include": "type"})
+            pages[address] = json.dumps({"totalResults": len(rows), "assets": rows}).encode()
+        reader = _CreativeReader(pages, downloads)
+        built, refused, _facts, summary = _creative_generate(reader, line.generate_ambientcg, resolutions=("1k",))
+        self.assertEqual([(row["reason"], row["subject"]) for row in refused], [("no_variant_pinned", "Odd")])
+        self.assertEqual(summary["variant_counts"], {"variant_archive_unsafe": 1})
+        [(payload, bodies)] = built
+        manifest = json.loads({entry["path"]: bodies[entry["digest"]] for entry in payload["package"]["files"]}
+                              ["creative.json"])
+        [variant] = manifest["variants"]
+        [archive_row] = variant["files"]
+        self.assertTrue(archive_row["unpack"])
+        self.assertEqual({member["path"]: member["role"] for member in archive_row["members"]},
+                         {"Bricks.png": "preview", "Bricks_1K-JPG.blend": "blend", "Bricks_1K-JPG_Color.jpg": "diffuse",
+                          "Bricks_1K-JPG_NormalGL.jpg": "normal_gl"})
+        self.assertEqual(manifest["asset"]["dimensions_mm"], [500.0, 500.0, 0.0])
+        self.assertEqual(payload["kind"], "reference_image")
+
+    def test_notices_decide_a_project_licence_by_name(self):
+        from supply_lines import godot_demos as demos
+        allowed = {"t.LICENSE.md": "# License for `t.png`\n\nLicensed under CC0 1.0 Universal.\n",
+                   "lamp/license.txt": "* license type:\tCC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+                   "fonts/LICENSE.DroidSans.txt": "Licensed under the Apache License, Version 2.0 (the \"License\")",
+                   "README.md": "# Demo\n\n## Licenses\n\nGBot character Copyright 2020, MIT License.\n"}
+        expected = {"t.LICENSE.md": ("CC0-1.0",), "lamp/license.txt": ("CC-BY-4.0",),
+                    "fonts/LICENSE.DroidSans.txt": ("Apache-2.0",), "README.md": ("MIT",)}
+        for path, text in allowed.items():
+            self.assertEqual(demos.notice_decision(path, text), (expected[path], None, ""), path)
+        refused = {"fonts/LICENSE.txt": ("This Font Software is licensed under the SIL Open Font License, Version 1.1.",
+                                         "asset_licence_not_on_allowlist"),
+                   "paint.LICENSE.md": ("Licensed under CC BY 3.0 Unported.", "asset_licence_not_on_allowlist"),
+                   "arrow.LICENSE.md": ("Licensed under CC BY-SA 3.0 Unported.", "asset_licence_not_on_allowlist"),
+                   "robot/readme.txt": ("- Creative Commons License CC-BY:", "asset_licence_unclear"),
+                   "art/credits.txt": ("Art by a friend, thank you!", "asset_licence_unclear"),
+                   "README.md": ("# Demo\n\n## License\n\nAsk the author before reusing the music.\n",
+                                 "asset_licence_unclear")}
+        for path, (text, reason) in refused.items():
+            self.assertEqual(demos.notice_decision(path, text)[1], reason, path)
+        # A README that only mentions licences in passing is no notice: it adds what it names and refuses nothing.
+        self.assertEqual(demos.notice_decision("README.md", "Add your account as a license tester."), ((), None, ""))
+        self.assertTrue(demos.copyable("player.gd", b"extends Node\n"))
+        self.assertFalse(demos.copyable("icon.png", b"\x89PNG\x00"))
+        self.assertFalse(demos.copyable("Super Mountain Dusk/a.txt", b"text"))
+        self.assertFalse(demos.copyable("icon.svg", b"<svg/>"))
+
+    def test_godot_projects_copy_text_pin_media_and_refuse_by_name(self):
+        import io
+        import tarfile
+        from loop_engine.core.library_ingestion.record_rules import git_blob_identity
+        from supply_lines import godot_demos as demos
+        commit = "c" * 40
+        project = (b'config_version=5\n\n[application]\n\nconfig/name="Fixture"\nrun/main_scene="res://main.tscn"\n'
+                   b'config/features=PackedStringArray("4.7")\nconfig/icon="res://icon.png"\n')
+        scene = (b'[gd_scene load_steps=3 format=3]\n\n[ext_resource type="Script" path="res://player.gd" id="1"]\n'
+                 b'[ext_resource type="Texture2D" path="res://icon.png" id="2"]\n\n[node name="Main" type="Node2D"]\n'
+                 b'script = ExtResource("1")\n')
+        files = {"demo/ok/project.godot": project, "demo/ok/main.tscn": scene,
+                 "demo/ok/player.gd": b"extends Node2D\n\nfunc _ready() -> void:\n\tpass\n",
+                 "demo/ok/icon.png": b"\x89PNG\r\n\x1a\n\x00\x00binary",
+                 "demo/cc/project.godot": project, "demo/cc/main.tscn": scene,
+                 "demo/cc/player.gd": b"extends Node2D\n", "demo/cc/icon.png": b"\x89PNG\x00cc",
+                 "demo/cc/icon.LICENSE.md": b"# License for `icon.png`\n\nLicensed under CC0 1.0 Universal.\n",
+                 "demo/ofl/project.godot": project.replace(b"res://main.tscn", b"res://player.gd"),
+                 "demo/ofl/player.gd": b"extends Node\n", "demo/ofl/icon.png": b"\x89PNG\x00",
+                 "demo/ofl/fonts/LICENSE.txt": b"This Font Software is licensed under the SIL Open Font License.\n",
+                 "demo/broken/project.godot": project, "demo/broken/main.tscn": scene,
+                 "demo/broken/icon.png": b"\x89PNG\x00broken"}
+        tree = [{"path": path, "type": "blob", "sha": git_blob_identity(data), "size": len(data)}
+                for path, data in sorted(files.items())]
+        stream = io.BytesIO()
+        with tarfile.open(fileobj=stream, mode="w:gz") as archive:
+            for path, data in sorted(files.items()):
+                member = tarfile.TarInfo(f"godot-demo-projects-{commit}/{path}")
+                member.size = len(data)
+                archive.addfile(member, io.BytesIO(data))
+        repository = demos.REPOSITORY
+        reader = _CreativeReader(
+            downloads={f"https://codeload.github.com/{repository}/tar.gz/{commit}": stream.getvalue()},
+            github={f"repos/{repository}/commits/master": json.dumps({"sha": commit}).encode(),
+                    f"repos/{repository}/git/trees/{commit}?recursive=1": json.dumps({"tree": tree}).encode()},
+            licence=("LICENSE.md", LICENCE, "MIT"))
+        with tempfile.TemporaryDirectory() as folder:
+            built, refused, _facts, summary = demos.generate(
+                reader, code_revision="a" * 40, licence_text=LICENCE, generated_on="2026-10-05",
+                staging=Path(folder) / "staging", archive_folder=Path(folder) / "archives")
+        self.assertEqual(sorted((row["subject"], row["reason"]) for row in refused),
+                         [("demo/broken", "project_reference_missing"), ("demo/ofl", "asset_licence_not_on_allowlist")])
+        self.assertEqual(summary["chosen"], 4)
+        packages = {payload["name"]: (payload, bodies) for payload, bodies in built}
+        self.assertEqual(sorted(packages), ["godot-demo-demo-cc", "godot-demo-demo-ok"])
+        payload, bodies = packages["godot-demo-demo-ok"]
+        self.assertEqual((payload["kind"], payload["licence"]["spdx_expression"]), ("template", "MIT"))
+        paths = {entry["path"]: entry for entry in payload["package"]["files"]}
+        self.assertIn("project/player.gd", paths)
+        self.assertEqual(paths["project/player.gd"]["media_type"], "text/x-gdscript")
+        self.assertNotIn("project/icon.png", paths)
+        manifest = json.loads(bodies[paths["creative.json"]["digest"]])
+        [media] = manifest["variants"][0]["files"]
+        self.assertEqual((media["path"], media["sha256"]), ("project/icon.png", _digest(files["demo/ok/icon.png"])))
+        self.assertEqual(media["url"], f"https://raw.githubusercontent.com/{repository}/{commit}/demo/ok/icon.png")
+        self.assertEqual(manifest["asset"]["project"]["main_scene"], "res://main.tscn")
+        cc = packages["godot-demo-demo-cc"][0]
+        self.assertEqual(cc["licence"]["spdx_expression"], "MIT AND CC0-1.0")
+        self.assertEqual(cc["licence"]["notices"], ["project/icon.LICENSE.md"])
+        self.assertIn("LICENSE-CC0-1.0.txt", cc["licence"]["texts"])
+
+    def test_the_shipped_tests_pass_and_fail_a_fetcher_that_skips_its_checks(self):
+        from supply_lines import creative_assets as line
+        reader = _polyhaven_fixture()
+        built, _refused, _facts, _summary = _creative_generate(reader, line.generate_polyhaven, only=("apple",))
+        [(payload, bodies)] = built
+        with tempfile.TemporaryDirectory() as folder:
+            for entry in payload["package"]["files"]:
+                target = Path(folder) / entry["path"]
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes(bodies[entry["digest"]])
+            modules = ("test_creative_fetch", "test_creative_loaders")
+            self.assertTrue(line.run_package_tests(Path(folder), modules)[0])
+            source = (Path(folder) / "creative_fetch.py").read_text(encoding="utf-8")
+            loader = (Path(folder) / "blender_load.py").read_text(encoding="utf-8")
+            # Known wrong: each implementation below loses one guard the package's own tests must notice.
+            for name, original, broken in (
+                    ("creative_fetch.py", source,
+                     source.replace("        if found != sha256:\n", "        if False:\n")),
+                    ("creative_fetch.py", source, source.replace(
+                        "def placement(folder, relative: str) -> Path:\n",
+                        "def placement(folder, relative: str) -> Path:\n    return Path(folder) / str(relative)\n")),
+                    ("creative_fetch.py", source, source.replace(
+                        "def check_address(url: str, hosts=(), *, allow_loopback: bool = False) -> str:\n",
+                        "def check_address(url: str, hosts=(), *, allow_loopback: bool = False) -> str:\n"
+                        "    return str(url)\n")),
+                    ("blender_load.py", loader, loader.replace("    if missing:\n", "    if False:\n"))):
+                self.assertNotEqual(broken, original)
+                (Path(folder) / name).write_text(broken, encoding="utf-8")
+                self.assertFalse(line.run_package_tests(Path(folder), modules)[0], broken[:0] or name)
+                (Path(folder) / name).write_text(original, encoding="utf-8")
+
+    def test_generated_tests_reach_only_the_loopback_address(self):
+        from supply_lines import creative_assets as line
+        with tempfile.TemporaryDirectory() as folder:
+            (Path(folder) / "test_reach.py").write_text(
+                "import socket, unittest\n\nclass T(unittest.TestCase):\n    def test_reach(self):\n"
+                "        socket.create_connection(('192.0.2.1', 80), timeout=1)\n", encoding="utf-8")
+            passed, count, _skipped, output = line.run_package_tests(Path(folder), ("test_reach",))
+        self.assertEqual((passed, count), (False, 1))
+        self.assertIn("loopback only", output)
+
+    def test_a_creative_candidate_is_stored_in_its_source_scope(self):
+        from supply_lines import creative_assets as line
+        from supply_lines.store import SupplyStore
+        built, _refused, _facts, _summary = _creative_generate(_polyhaven_fixture(), line.generate_polyhaven,
+                                                               only=("apple",))
+        with tempfile.TemporaryDirectory() as folder:
+            writer = SupplyStore(folder, writes_authorized=True)
+            try:
+                result = writer.write(records.CREATIVE_ASSETS, built, complete=False, scope="polyhaven")
+                self.assertEqual((result["written"], result["scope"]), (1, "polyhaven"))
+                stored = writer.store.get(built[0][0]["record_id"])
+                self.assertEqual((stored["intelligence_layer"], stored["attributes"]["kind"]),
+                                 ("code", "three_d_model"))
+            finally:
+                writer.close()
+
 
 if __name__ == "__main__":
     unittest.main()

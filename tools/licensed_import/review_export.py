@@ -71,7 +71,7 @@ from .composition import (
     CompositionError, CompositionTargets, bound_caps, largest_remainder, payload_form, slot_shares)
 from .records import (
     CODE_MODULE, COMMAND, CONTRACT_SCHEMA, HOOK, INSTRUCTION_FILE, MARKETPLACE, PLUGIN_MANIFEST, PROTOCOL_SERVER,
-    IMPORTED_VERBATIM, RULES, SETTINGS, SKILL, SUBAGENT, refusal)
+    IMPORTED_VERBATIM, REFERENCE_ARTIFACT_KINDS, RULES, SETTINGS, SKILL, SUBAGENT, refusal)
 from loop_engine.core.service_runtime.catalogue_attributes import ComponentFormError
 
 ITEMS_RECORD_TYPE = "starter_catalogue_candidate_items/v3"
@@ -126,7 +126,10 @@ DEFAULT_KIND_SHARES = {SKILL: 0.30, SKILL_WITH_SCRIPTS: 0.10, SUBAGENT: 0.12, CO
 REFERENCE_KINDS = {SKILL: "skill", INSTRUCTION_FILE: "instruction_file", RULES: "instruction_file",
                    SUBAGENT: "instruction_file", COMMAND: "instruction_file", HOOK: "tool", PLUGIN_MANIFEST: "tool",
                    MARKETPLACE: "tool", PROTOCOL_SERVER: "tool", CONTRACT_SCHEMA: "tool", CODE_MODULE: "tool",
-                   SETTINGS: "tool"}
+                   SETTINGS: "tool",
+                   # A reference artifact a supply line packages with the code that fetches and loads it (a pinned
+                   # HDRI, a model, an editable project) is served as a tool, like the other packages a harness runs.
+                   **{kind: "tool" for kind in REFERENCE_ARTIFACT_KINDS}}
 _IDENTITY = re.compile(r"[^a-z0-9]+")
 
 

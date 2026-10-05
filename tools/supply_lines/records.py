@@ -44,9 +44,9 @@ RUN_RECORD_TYPE = "library_supply_run/v1"
 #: The supply lines, one per kind of fact source. publisher_tables reads an official publisher's own HTTPS address
 #: (a statistical series, a database release), where data_tables reads a GitHub file.
 (MCP_REGISTRY, OPENAPI_OPERATIONS, PROGRAM_INSTALLS, DATA_TABLES, FUNCTION_EXTRACTS, JSON_SCHEMAS,
- MANIM_SCENES, API_TOOL_SERVERS, PUBLISHER_TABLES) = LINES = (
+ MANIM_SCENES, API_TOOL_SERVERS, PUBLISHER_TABLES, CREATIVE_ASSETS) = LINES = (
     "mcp_registry", "openapi_operations", "program_installs", "data_tables", "function_extracts", "json_schemas",
-    "manim_scenes", "api_tool_servers", "publisher_tables")
+    "manim_scenes", "api_tool_servers", "publisher_tables", "creative_assets")
 #: How the text of every supply package was authored, and the review profile it needs. The panel has no such
 #: profile yet (tools/candidate_review reads original and imported packages only), so an export holds these.
 AUTHORING = "generated_from_licensed_facts"
@@ -58,16 +58,20 @@ GENERATED, UPSTREAM_VERBATIM, LICENCE_TEXT, ATTRIBUTION = FILE_ORIGINS = (
 ORIGINS = {"mcp_official_registry": "registry.modelcontextprotocol.io", "github_repository": "github.com",
            "homebrew_formulae": "formulae.brew.sh", "apis_guru_directory": "api.apis.guru",
            "world_bank_api": "api.worldbank.org", "onet_resource_center": "www.onetcenter.org",
-           "our_world_in_data": "ourworldindata.org"}
+           "our_world_in_data": "ourworldindata.org",
+           "poly_haven_api": "api.polyhaven.com", "ambientcg_api": "ambientcg.com"}
 #: What one fact source is to the package. A notice file is an upstream repository's NOTICE, carried verbatim
 #: under that repository's licence (Apache-2.0 section 4(d)); it is neither a licence text nor a fact the
-#: generator read to write code.
+#: generator read to write code. Terms of use are the published terms under which facts were read (an API's terms
+#: of service, a site's licence page): pinned by digest so a reviewer can read what permitted the read, granting
+#: no licence to any byte.
 FACT_ROLES = ("registry_entry", "package_metadata", "specification", "formula", "release", "licence_text",
-              "data_source", "repository_facts", "analytics", "notice_file", "licence_evidence")
+              "data_source", "repository_facts", "analytics", "notice_file", "licence_evidence", "terms_of_use")
 #: A publisher's own record or page that states the licence of the exact collection or series a package copies
 #: (a series' metadata, a database's licence page); it is read to decide the licence and is never a licence text.
 LICENCE_EVIDENCE = "licence_evidence"
 NOTICE_FILE = "notice_file"
+TERMS_OF_USE = "terms_of_use"
 #: The owner's allowlist of September 24, 2026 (tools/licensed_import/records.py ALLOWED_LICENCES).
 ALLOWED_LICENCES = ("MIT", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause", "ISC", "0BSD", "CC0-1.0", "CC-BY-4.0",
                     "Unlicense")
@@ -127,6 +131,15 @@ REFUSAL_REASONS = {
                        "licence_evidence_missing", "table_empty", "row_violates_schema", "no_observations",
                        "table_above_review_bound", "blocked_by_static_check", "generated_test_failed",
                        "package_above_review_bound", "duplicate_table"),
+    CREATIVE_ASSETS: ("source_unreadable", "terms_unreadable", "terms_not_confirmed", "asset_unreadable",
+                      "asset_type_not_supplied",
+                      "no_variant_pinned", "published_checksum_mismatch", "licence_not_on_allowlist",
+                      "licence_signals_disagree", "licence_unknown", "asset_licence_not_on_allowlist",
+                      "asset_licence_unclear", "project_unreadable", "project_file_unreadable",
+                      "project_reference_missing", "project_above_the_pin_bound", "project_import_failed",
+                      "package_path_invalid",
+                      "blocked_by_static_check", "generated_test_failed", "package_above_review_bound",
+                      "duplicate_asset"),
 }
 #: The forms each line may declare, and the harness kind it serves them as.
 LINE_FORMS = {MCP_REGISTRY: {"mcp_server": "protocol_server_configuration"},
@@ -141,7 +154,12 @@ LINE_FORMS = {MCP_REGISTRY: {"mcp_server": "protocol_server_configuration"},
               # A protocol server Baltor writes itself: its code and its connection files, served as the protocol
               # server configuration a harness picks up (the only harness kind an mcp_server form may carry).
               API_TOOL_SERVERS: {"mcp_server": "protocol_server_configuration"},
-              PUBLISHER_TABLES: {"data_table": "code_module"}}
+              PUBLISHER_TABLES: {"data_table": "code_module"},
+              # A creative package is served as the artifact a harness obtains and interprets (component_form/v1's
+              # reference forms): an HDRI or a texture set is an image fed to a renderer, a model a 3D model and a
+              # demo project an editable template; the pinned recipe and its loaders are how the bytes arrive.
+              CREATIVE_ASSETS: {"reference_image": "reference_image", "three_d_model": "three_d_model",
+                                "template": "template"}}
 CANDIDATE_FIELDS = ("record_type", "record_id", "upstream_key", "line", "kind", "native_format", "component_form",
                     "name", "description", "package", "package_digest", "files", "licence", "provenance",
                     "placements", "declared_effects", "effect_evidence", "credentials", "tests", "findings",
@@ -226,7 +244,10 @@ OPERATION_CONTRACT_SCOPE = "operation_contracts"
 OPERATION_CONSTRAINT_CASE_SCOPE = "operation_constraint_cases"
 STATE_SCOPES = ("", "apis_guru_directory", "google_discovery", "api_components", "curated_schemas",
                 "world_bank_wdi", "onet_database", "our_world_in_data",
-                OPERATION_CONTRACT_SCOPE, OPERATION_CONSTRAINT_CASE_SCOPE)
+                OPERATION_CONTRACT_SCOPE, OPERATION_CONSTRAINT_CASE_SCOPE,
+                # The creative line keeps one state per source, so a complete run of one source never withdraws
+                # another's packages.
+                "polyhaven", "ambientcg", "godot_demo_projects")
 
 
 def state_record_id(line: str, scope: str = "") -> str:
