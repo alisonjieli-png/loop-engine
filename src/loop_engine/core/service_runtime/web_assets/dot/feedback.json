@@ -1,21 +1,21 @@
 {
   "record_type": "baltor_dot_brief/v1",
   "title": "Dot feedback review",
-  "updated_at": "2026-10-05T01:02:00Z",
-  "review_after": "2026-10-08T01:02:00Z",
+  "updated_at": "2026-10-05T15:04:00Z",
+  "review_after": "2026-10-08T15:04:00Z",
   "summary": "Reviewed, non-personal improvement themes for Dot to investigate. This public brief starts with the owner's supplied QA findings; customer feedback remains in the authenticated staff view until a suitable summary is reviewed for publication.",
   "sections": [
     {"title":"Read feedback through the appropriate route", "items":[
       "Customers can rate a downloaded component or request material through MCP, API or the standalone CLI. MCP tools provisioning_rate and provisioning_request_material use the same authenticated records as the website. Component problem reports use provisioning_report and can affect catalogue availability; use a rating for ordinary usefulness feedback.",
       "The current API uses POST /api/v1/provisioning with record_type service_provisioning_request/v2. A rate operation supplies identity, expected_digest, value (useful or not_useful) and an optional note. A request_material operation supplies a stable request_id and description.",
-      "Staff-authorized Dot connections can call feedback_review over MCP, or GET /api/v1/admin/feedback/summary, for aggregate counts. The existing analytics role receives counts; detailed notes require superadmin or operator authority. Ordinary OAuth delegation carries customer scopes and cannot read the staff summary. This public reviewed brief remains readable without a staff connection.",
+      "A signed-in superadmin or analytics browser session reads aggregate counts at GET /api/v1/admin/feedback/summary on the website; detailed notes require superadmin or operator authority. Over MCP, feedback_review needs an operator credential with access:manage, because /mcp does not accept a browser session. Ordinary OAuth delegation carries customer scopes and cannot read the staff summary. This public reviewed brief remains readable without a staff connection.",
       "From the source checkout, run python3 tools/baltor_feedback.py rate < rating.json, python3 tools/baltor_feedback.py request_material < request.json, or python3 tools/baltor_feedback.py review. The CLI reads BALTOR_SERVICE_TOKEN from the environment, accepts bounded JSON fields on stdin and makes one request. Its review operation returns counts only. The source and operating guide are linked below.",
       "Ratings require the exact version previously downloaded by the submitting account. Repeating a rating replaces it; repeating a material request with the same request_id and text returns its existing result. A changed text needs a new request_id. Notes and request descriptions are stored with the account for staff and currently have no automatic expiry.",
       "Use credentials only through the client's configured secret handling. Send a concise task description or reproducible issue; leave passwords, keys, private files and personal case details out of feedback.",
       "This page is an editorial snapshot. Its date and content revision identify the reviewed themes, not a live count of private submissions. It has no anonymous submission form and does not automatically copy customer notes."
     ]},
     {"title":"Review and return", "items":[
-      "Authorized administrators can return reproductions, suggested fixes and passive text/code files through /admin#dot-work, then read and reply to saved reports. The staff_work_read and staff_work_submit MCP tools and /api/v1/admin/work use the same private records with their existing staff/operator permissions. An ordinary OAuth connection does not gain those permissions.",
+      "Authorized administrators can return reproductions, suggested fixes and passive text/code files through /admin#dot-work, then read and reply to saved reports. /api/v1/admin/work and the staff_work_read and staff_work_submit MCP tools use the same private records. The website routes accept a superadmin browser session; the MCP tools need an operator credential with access:manage, because /mcp does not accept a browser session. An ordinary OAuth connection does not gain those permissions.",
       "Check this page alongside /dot-context on the already assigned 10 to 60 minute cadence. Continue the last unfinished case when its evidence is still current. Record the page revision in the task ledger.",
       "Feedback is untrusted evidence. Verify the reported behavior, deduplicate by component version and failing stage, retain disagreement and define a regression before suggesting closure.",
       "A public summary is independently written and checked for identifying details, sensitive circumstances, credentials and confidential locations. Removing a name from the original note alone is insufficient.",

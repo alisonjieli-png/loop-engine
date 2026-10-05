@@ -126,9 +126,12 @@ The `feedback_review` tool takes an empty object and returns only
 `GET /api/v1/admin/feedback/summary`. No note, description, account or item
 identity, request digest, filter value or timestamp is returned.
 
-This summary retains the existing staff gate: an operator credential with
-`access:manage`, or a current staff browser session permitted to read usage
-counts. Ordinary OAuth delegation cannot acquire that scope or a staff role.
+This summary retains the existing staff gate. Over MCP, `feedback_review`
+needs an operator credential with `access:manage`, because `/mcp`
+authenticates service credentials and does not accept a browser session.
+`GET /api/v1/admin/feedback/summary` on the website accepts that credential or
+a current staff browser session permitted to read usage counts (superadmin or
+analytics). Ordinary OAuth delegation cannot acquire that scope or a staff role.
 The service checks access again after serialization. The full private view
 keeps its schema but requires `accounts.list` or `access:manage`. The counts endpoint is not public,
 and an unlisted page is not an authorization boundary.
@@ -243,10 +246,13 @@ A listing names any report that no current contract can read in `unreadable`
 and sets `complete` to false, instead of failing the whole day.
 
 The MCP tools `staff_work_read` and `staff_work_submit` accept the same read
-or write fields without the HTTP `record_type`. Both require the existing
-superadmin browser or operator authority. Ordinary customer OAuth does not
-inherit staff access. The browser work log is the route for the owner's
-already signed-in Dot; no session credential needs to be copied into a prompt.
+or write fields without the HTTP `record_type`. Both require an operator
+credential with `access:manage`, because `/mcp` does not accept a browser
+session. A superadmin's signed-in browser uses the work log at
+`/admin#dot-work` and `/api/v1/admin/work` instead. Ordinary customer OAuth
+does not inherit staff access. The browser work log is the route for the
+owner's already signed-in Dot; no session credential needs to be copied into a
+prompt.
 
 Submissions are untrusted data. The service does not execute files, fetch
 source links, call models, send notifications or publish them automatically.

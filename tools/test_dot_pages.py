@@ -88,6 +88,22 @@ class DotPageTests(unittest.TestCase):
         self.assertIn("scheduling happens in your existing task system", text)
         self.assertTrue(all(row["status"] != "complete" for row in record["tasks"]))
 
+    def test_staff_tool_access_names_what_mcp_authenticates(self):
+        # Known-wrong control: the briefs offered staff browser sessions and the
+        # analytics role the staff MCP tools, but /mcp accepts no browser
+        # session, so only an operator credential with access:manage works.
+        tools = ("feedback_review", "staff_work_read", "staff_work_submit")
+        named = 0
+        for name in pages.ADDRESSES.values():
+            for section in pages.load_record(name)["sections"]:
+                for item in section["items"]:
+                    if any(tool in item for tool in tools):
+                        named += 1
+                        with self.subTest(brief=name, item=item[:60]):
+                            self.assertIn("operator credential with access:manage", item)
+                            self.assertIn("/mcp does not accept a browser session", item)
+        self.assertEqual(named, 3)
+
 
 class DotPageHttpTests(unittest.TestCase):
     def setUp(self):

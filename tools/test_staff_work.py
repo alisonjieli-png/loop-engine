@@ -229,6 +229,21 @@ class StaffWork(unittest.TestCase):
                 self.assertTrue((await client.call_tool('staff_work_read',{})).is_error)
         asyncio.run(run())
 
+    def test_staff_tool_descriptions_name_the_mcp_credential_that_works(self):
+        # Known-wrong control: the descriptions offered a superadmin or staff
+        # browser session over MCP. /mcp authenticates service credentials only;
+        # test_oauth_http pins that a browser session is refused there
+        # (browser_session_is_not_an_mcp_access_token).
+        async def listed():
+            async with _protocol_client(self.base,self.fixture,'2026-07-28',tenant='operator') as client:
+                return {tool.name:tool.description for tool in (await client.list_tools()).tools}
+        tools=asyncio.run(listed())
+        for name in ('feedback_review','staff_work_read','staff_work_submit'):
+            with self.subTest(tool=name):
+                self.assertIn('Over MCP this requires an operator credential with access:manage',tools[name])
+                self.assertIn('/mcp does not accept a browser session',tools[name])
+                self.assertNotRegex(tools[name],r'browser session or|browser or operator|eligible staff browser session')
+
     def test_host_limits_are_validated(self):
         for field in ('maximum_staff_work_request_bytes','maximum_staff_work_response_bytes'):
             for value in (0,True,1.5,1048577):
