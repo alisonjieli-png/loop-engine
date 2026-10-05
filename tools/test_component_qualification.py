@@ -167,9 +167,43 @@ def _schema(title, specification=controls.FIXTURE_ADDRESSES["specification"], re
     return component.replaced(candidate=record)
 
 
+def _tool_server(repository, path, commit, tools=("get_thing",)):
+    """A generated API tool server: its module declares the specification it was written from, and the
+    specification's fact source names the file at one commit, as api_tool_servers.py writes them."""
+    module = (f'"""Tools of {repository}."""\nSPECIFICATION = {{"repository": "{repository}", "path": "{path}", '
+              f'"commit": "{commit}"}}\nTOOLS = {list(tools)!r}\n\n\ndef main():\n    return TOOLS\n')
+    files = {"server.py": module.encode(), "LICENSE": controls.MIT_TEXT.encode(),
+             "README.md": f"# Tools of {repository}\n\nFrom `{path}` of `{repository}`.\n".encode()}
+    address = f"https://raw.githubusercontent.com/{repository}/{commit}/{path}"
+    fact = {**controls._fact(address, module.encode()), "role": "specification"}
+    return controls._build("api_tool_servers", "mcp_server", "protocol_server_configuration", files, {}, (), {}, fact,
+                           REVISION, {})
+
+
 class NewRuleTests(unittest.TestCase):
     def setUp(self):
         self.policy = _context().policy
+
+    def test_two_tool_servers_of_different_specifications_are_different_jobs(self):
+        first = _tool_server("example/api", "openapi.json", "c" * 40)
+        key = checks.job_key(first, self.policy)
+        self.assertEqual(key, "api_tool_servers|example/api|openapi.json|"
+                              "https://raw.githubusercontent.com/example/api/openapi.json")
+        other_file = _tool_server("example/api", "admin/openapi.json", "c" * 40)
+        other_repository = _tool_server("example/other", "openapi.json", "c" * 40)
+        self.assertEqual(len({key, checks.job_key(other_file, self.policy),
+                              checks.job_key(other_repository, self.policy)}), 3)
+        found = checks.duplicate_findings([first, other_file, other_repository], self.policy)
+        self.assertNotIn("same_job_as", [code for rows in found.values() for code, _detail in rows])
+        # Two revisions of one file are one job, whatever tools each revision holds: the address leaves out its commit.
+        newer = _tool_server("example/api", "openapi.json", "d" * 40, tools=("get_thing", "list_things"))
+        self.assertEqual(checks.job_key(newer, self.policy), key)
+        found = checks.duplicate_findings([first, newer], self.policy)
+        self.assertIn("same_job_as", [code for code, _detail in found[max(first.identity, newer.identity)]])
+        # Known wrong: a key of the repository alone makes two files of one repository one job.
+        bare = json.loads(json.dumps(self.policy))
+        bare["lines"]["api_tool_servers"]["job_key"] = {"python_assignment": "SPECIFICATION", "fields": ["repository"]}
+        self.assertEqual(checks.job_key(first, bare), checks.job_key(other_file, bare))
 
     def test_javascript_literal_lines(self):
         text = ('const PARAMETERS = [["id", "id", "path", true, {"type": ["string"]}]];\n'
