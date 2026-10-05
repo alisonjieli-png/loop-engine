@@ -6,8 +6,12 @@ publish tool's remote calls are mocked, as in test_publish_catalogue_delta.py. T
 1. a reconciled version 2 bundle's proof names exactly the release the service publishes, from a version 1 base
    and then from a version 2 base, and the second carries only the segments and item lines the first lacks;
 2. the publish tool asks the Machine which bundle versions it reads and refuses a version 2 bundle, before any
-   remote effect, when the image predates that question; with version 2 offered it uploads only new objects;
-3. a segment list changed after the proof was written is refused by the proof check.
+   remote effect, when the image predates that question or offers version 1 only; with version 2 offered it
+   uploads only new objects;
+3. the reverse pairing: a publisher that writes version 1 only, against a service whose live release is version 2,
+   is refused before any remote effect, and the version 1 bundle reader an image that predates version 2 runs in
+   publish-catalogue refuses a version 2 bundle before any write;
+4. a segment list changed after the proof was written is refused by the proof check.
 """
 from contextlib import ExitStack
 import json
@@ -153,6 +157,41 @@ class SegmentedPublishNegotiation(unittest.TestCase):
             self.simulate(None)
         self.assertEqual(getattr(caught.exception, "code", None), "catalogue_format_unsupported")
         self.assertEqual([command for command in self.commands if "catalogue-formats" not in command], [])
+
+    def test_an_image_that_offers_version_1_only_is_refused_before_any_remote_effect(self):
+        only_version_1 = {**catalogue_formats(), "bundle_record_types": ["catalogue_release_bundle/v1"]}
+        with self.assertRaises(Exception) as caught:
+            self.simulate(only_version_1)
+        self.assertEqual(getattr(caught.exception, "code", None), "catalogue_format_unsupported")
+        self.assertEqual([command for command in self.commands if "catalogue-formats" not in command], [])
+
+    def test_a_version_1_publisher_against_a_live_version_2_release_is_refused_before_any_remote_effect(self):
+        """The version 1 path of this tool is the whole of the publisher on main that writes version 1 only (this
+        tool adds one read-only formats question, after this check). Once the live release is a version 2 release,
+        a version 1 base names another release, even with the same content digest, and is refused before the first
+        remote command; reconciling from the live release needs the version 2 reader."""
+        root = Path(self.temp.name)
+        update = bundle(root / "update-v1", [line("new", "new")], ["new"])
+        changes = changes_for(self.base, "a" * 64, additions=("new",))
+        plan = reconcile.write_reconciled(self.base, (update,), changes, root / "output-v1", self.before)
+        live_version_2 = {**self.before, "release_id": "b" * 64}
+        self.assertEqual(live_version_2["content_digest"], reconcile.bundle_content(self.base))
+        with ExitStack() as stack:
+            remote = stack.enter_context(mock.patch.object(delta, "machine_exec", side_effect=AssertionError))
+            transport = stack.enter_context(mock.patch.object(delta, "fly", side_effect=AssertionError))
+            stack.enter_context(mock.patch.object(delta, "active_catalogue", return_value=live_version_2))
+            with self.assertRaises(ValueError) as caught:
+                delta.publish("slot", root / "output-v1", plan["bundle_digest"], base_bundle=self.base.folder,
+                              base_release="a" * 64, reconciliation_digest=plan["reconciliation_digest"])
+        self.assertIn("live baseline", str(caught.exception))
+        self.assertEqual((remote.call_count, transport.call_count), (0, 0))
+
+    def test_the_version_1_reader_refuses_a_version_2_bundle_before_any_write(self):
+        """What an image that predates version 2 runs in publish-catalogue: its bundle reader, unchanged here, refuses
+        the header, so the store is never opened for writing even when a publisher skipped the negotiation."""
+        with self.assertRaises(Exception) as caught:
+            read_bundle(self.output, **POLICIES)
+        self.assertEqual(getattr(caught.exception, "code", None), "bundle_header_invalid")
 
     def test_with_version_2_offered_only_new_objects_and_the_segment_list_are_sent(self):
         answer, upload, transport = self.simulate(catalogue_formats())
