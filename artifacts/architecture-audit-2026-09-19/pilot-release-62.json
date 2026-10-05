@@ -1,0 +1,120 @@
+{
+  "record_type": "pilot_release_record/v1",
+  "release": 62,
+  "app": "baltor-pilot",
+  "source_revision": "75e3cabde6b4f25f4a7f015312f7aead7eafd009",
+  "image": "registry.fly.io/baltor-pilot@sha256:e95ee07238da5abe51d3a53ae4b1092d522b972da4924a34dc0a7dda8cc3ab3c",
+  "rollback_release": 61,
+  "rollback_image": "registry.fly.io/baltor-pilot@sha256:d0c0cd63de09440f041889cd351bd486ba2442f3c520599a3fa51c15eb987ead",
+  "owner_local_date": "2026-10-04",
+  "deployed_at": "2026-10-05T01:27:30Z",
+  "deployed_at_basis": "Exact-image publish/deploy workflow step completedAt",
+  "ci_run": 37250819264,
+  "ci_conclusion": "success",
+  "deploy_run": 37251239136,
+  "deploy_workflow_conclusion": "success",
+  "deploy_workflow_completed_at": "2026-10-05T01:28:57Z",
+  "deployment_gate_after": false,
+  "changes": [
+    "General owner-approved privacy notice for voluntary submissions, uploads, research, feedback and authorized data exchange.",
+    "Private administrator work log over existing managed records: reports, passive UTF-8 files, exact checksums, immutable history, replies and replay-safe submission.",
+    "Browser /admin#dot-work, GET/POST /api/v1/admin/work, staff_work_read and staff_work_submit MCP tools with current-account authorization.",
+    "Refreshed public Dot briefs, small-function task and historical evidence labels; corrected site-map reachability while preserving noindex and navigation exclusion.",
+    "Current main supply inventories and daily directory data retained; 33 exact audited schema/fixture/credential-name literals registered without broad exclusions."
+  ],
+  "local_checks": {
+    "work_log_dot_site_map_tests": 63,
+    "context_documentation_tests": 67,
+    "supply_tests": 64,
+    "final_dot_tests": 8,
+    "website_assertions": 959,
+    "website_assertions_total": 959,
+    "website_known_wrong_controls": 197,
+    "new_blocking_audit_findings": 0,
+    "independent_original_and_mutated_audit_controls": 66,
+    "private_upload_verifier_controls": 15,
+    "deployment_log_controls": 14,
+    "deployment_step_set_controls": 4
+  },
+  "catalogue": {
+    "release_id": "9ed0fcd7a70ed541411ec564949c8ab2e74336f847c10388f8bdde023ce9855d",
+    "packages": 30751,
+    "file_placements": 130631,
+    "distinct_files": 96120,
+    "changed_by_this_application_release": false
+  },
+  "public_good_policy": {
+    "version": "548011d4931e48c085aea26b6394dcad",
+    "packages": 412,
+    "distinct_useful_files": 1011,
+    "authentication_required": true,
+    "subscription_required": false
+  },
+  "actual_owner_dot_connection_verified": false,
+  "live_oauth_customer_check": "not_rerun_this_release; release60 evidence retained separately",
+  "limits": [
+    "No full product, all-harness or all-SDG acceptance claim.",
+    "No new scheduler, direct database connection, model call, credential or unreviewed library publication.",
+    "Ordinary customer OAuth does not inherit browser staff authority.",
+    "The first upload profile accepts UTF-8 text/code only; 16 files, 64KiB each, 256KiB total, subject to transport limits.",
+    "Reports currently have no automatic expiry; listing returns at most 100 matches by UTC day/task with completeness flag.",
+    "Cold startup, sustained large-response concurrency, chart publication, output confinement and fresh ordinary-customer native tasks retain separate checks.",
+    "Browser identity restoration uses the saved access token without automatic provider refresh; the owner's continuous Dot administration and renewal flow remain untested. No live token lifetime is inferred from source defaults."
+  ],
+  "private_evidence_root": "/home/username/baltor-private/release62-dot-20261001-AYlypd",
+  "public_good_dot_checks": {
+    "passed": 60,
+    "total": 60,
+    "complete_useful_file_pagination": 1011
+  },
+  "private_component_upload": {
+    "reports_verified": 12,
+    "attachment_placements_verified": 108,
+    "distinct_file_digests": 86,
+    "requests": 37,
+    "exact_readback_and_replay": true,
+    "catalogue_publication": false,
+    "model_calls": 0,
+    "new_credentials": false
+  },
+  "private_browser_checks": {
+    "first_attempt": {
+      "passed": 14,
+      "total": 15,
+      "failure": "Probe omitted opening the mobile menu before clicking sign-out; original result retained."
+    },
+    "read_only_followup": {
+      "passed": 17,
+      "total": 17,
+      "additional_report_writes": 0
+    },
+    "synthetic_reports_created": 2,
+    "attachment_bytes_preserved": true,
+    "desktop_mobile_reconnect_and_clear": true,
+    "actual_owner_dot_session": false
+  },
+  "hostnames_checked": 10,
+  "hostnames_passed": 10,
+  "service_checks_passed": 2118,
+  "service_checks_total": 2118,
+  "dot_route_checks": {
+    "passed": 50,
+    "total": 50
+  },
+  "live_image_observation": {
+    "record_type": "live_release_image_observation/v1",
+    "observed_at": "2026-10-05 01:29:51 UTC",
+    "release": 62,
+    "machine": "83733ea7779068",
+    "image": "registry.fly.io/baltor-pilot@sha256:e95ee07238da5abe51d3a53ae4b1092d522b972da4924a34dc0a7dda8cc3ab3c",
+    "state": "started",
+    "expected_source_revision": "75e3cabde6b4f25f4a7f015312f7aead7eafd009",
+    "provider_checks": [
+      {
+        "name": "servicecheck-00-http-8080",
+        "status": "passing"
+      }
+    ],
+    "secret_or_configuration_change": false
+  }
+}

@@ -5,6 +5,19 @@
   "releases": [
    {
     "kind": "service",
+    "number": 62,
+    "at": "2026-10-05T01:27:30Z",
+    "lines": [
+     "General owner-approved privacy notice for voluntary submissions, uploads, research, feedback and authorized data exchange.",
+     "Private administrator work log over existing managed records: reports, passive UTF-8 files, exact checksums, immutable history, replies and replay-safe submission.",
+     "Refreshed public Dot briefs, small-function task and historical evidence labels; corrected site-map reachability while preserving noindex and navigation exclusion.",
+     "Current main supply inventories and daily directory data retained; 33 exact audited schema/fixture/credential-name literals registered without broad exclusions."
+    ],
+    "seen_after_release": "",
+    "not_shown": 1
+   },
+   {
+    "kind": "service",
     "number": 61,
     "at": "2026-10-01T16:09:13Z",
     "lines": [

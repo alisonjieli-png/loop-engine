@@ -23,9 +23,24 @@ The subsequent release-61 observations below qualify specified published
 repairs. Production remains the release named by the
 [current deployment](../architecture/MVP-CLIENT-SERVER.md#current-deployment).
 
+## Release 62 fresh observations
+
+Later evidence is in the [release 62 notes](../../artifacts/release-62-2026-10-04/README.md)
+and [October 4 handoff](../context/SESSION-HANDOFF-2026-10-04-RELEASE62.md).
+The broader privacy notice and private Dot reports/files/replies are now live.
+All ten hosts pass 2,118 browser assertions and fifty Dot/access/readiness
+checks. Twelve private candidate reports passed exact attachment readback and
+replay; a browser created and reopened a report/reply pair. Its initial
+mobile-menu probe error and passing read-only follow-up remain separate.
+This does not close ordinary-account native task acceptance, the owner's
+actual Dot connection or continuous administration. Browser identity refresh
+is not automatic; qualify renewal before claiming unattended operation.
+The historical approval and implementation gaps below retain their original
+dates and are superseded only to the extent these later checks establish.
+
 ## Release 61 fresh observations
 
-Source `117d43fc` is deployed. All six published client 0.4.1 files and their
+Release 61 deployed source `117d43fc`. All six published client 0.4.1 files and their
 checksum list match the source package. The stock downloaded copy passes
 fifty supplied tests, ten independent filesystem probes and fifteen controlled
 TLS/CONNECT proxy tests without an adapter. Homepage selection passes all

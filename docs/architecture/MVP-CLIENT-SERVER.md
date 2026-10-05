@@ -47,7 +47,24 @@ from the newest release record, follow the release record and correct this
 section. Update this section in the same change that records a new release.
 It describes a private pilot. It does not describe a qualified paid service.
 
-The latest image deployment is Fly release 61, completed on October 1, 2026
+The latest image deployment is Fly release 62, completed on October 4, 2026
+in the owner's time zone (October 5 UTC), from
+`75e3cabde6b4f25f4a7f015312f7aead7eafd009`, image
+`sha256:e95ee07238da5abe51d3a53ae4b1092d522b972da4924a34dc0a7dda8cc3ab3c`.
+CI `37250819264` and deployment `37251239136` passed. The running image matches
+and the gate is off. The [record](../../artifacts/architecture-audit-2026-09-19/pilot-release-62.json)
+and [notes](../../artifacts/release-62-2026-10-04/README.md) describe the broader
+privacy notice, private Dot reports/files/replies and refreshed public briefs.
+All ten hosts pass 2,118 browser assertions and fifty Dot/access/readiness
+checks; Public Good/Dot passes sixty. Twelve private component reports passed
+exact readback and replay. The first signed-in browser probe had fourteen
+passes and a mobile-menu test-driver timeout; its read-only continuation
+passed seventeen checks. The owner's actual Dot session and continuous
+renewal remain untested. No catalogue, credential or host configuration
+changed. Counts remain 30,751 packages and 96,120 distinct files.
+Release 61 is the rollback image.
+
+The preceding image deployment was Fly release 61, completed on October 1, 2026
 from `117d43fcab110471df983599a55911ec43252881`, image
 `sha256:d0c0cd63de09440f041889cd351bd486ba2442f3c520599a3fa51c15eb987ead`.
 CI `36888149782` and deployment `36889262009` passed; the gate is off.

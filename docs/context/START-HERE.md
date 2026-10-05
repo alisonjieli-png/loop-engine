@@ -21,6 +21,11 @@ two defects that were found and fixed after the first claims of correctness.
 
 ## Current context route
 
+Read the [release 62 handoff](SESSION-HANDOFF-2026-10-04-RELEASE62.md) first for
+the October 4 live privacy/work-log release, private micro-component reports,
+launch-readiness assessment, session-renewal gap and exact verification scope.
+Concurrent main additions after its source revision are not its deployed image.
+
 Read the [release 61 handoff](SESSION-HANDOFF-2026-10-01-RELEASE61.md) for the
 live Dot context/feedback pages, staff access boundaries, stock-client repairs,
 the configuration-permission incident and recovery, and small-component work.
