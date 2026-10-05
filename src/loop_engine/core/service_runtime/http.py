@@ -999,6 +999,7 @@ class ServiceHttpApplication:
                     "refresh_supported":self.oauth_http is not None,
                     "discovery":self.configuration.public_base_url + oauth_http.METADATA_PATH if self.oauth_http else None,
                     "requests_per_minute_per_process":oauth_http.OAUTH_REQUESTS_PER_WINDOW,
+                    "token_requests_per_minute_per_process":oauth_http.OAUTH_TOKEN_REQUESTS_PER_WINDOW,
                     "registrations_per_minute_per_process":oauth_http.OAUTH_REGISTRATIONS_PER_WINDOW},
                 "operation_scopes": {"metadata_and_search": "provisioning:metadata",
                                      "body_and_download": "provisioning:read", "usage": "usage:read",

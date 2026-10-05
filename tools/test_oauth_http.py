@@ -345,6 +345,60 @@ class HttpOAuthIntegration(unittest.TestCase):
         self.assertEqual(self.fixture.runtime.usage_for(principal)['records'], 0)
 
 
+class OAuthRequestBudgets(unittest.TestCase):
+    """Per-process OAuth request budgets, checked before any body is read. Synthetic addresses, no network."""
+
+    def setUp(self):
+        from loop_engine.core.service_runtime import oauth_http
+        from loop_engine.core.service_runtime.records import ServiceRuntimeConfig
+        from loop_engine.core.service_runtime.runtime import ServiceRuntime
+        folder = tempfile.TemporaryDirectory(prefix='oauth-budgets-')
+        self.addCleanup(folder.cleanup)
+        runtime = ServiceRuntime(ServiceRuntimeConfig(str(Path(folder.name) / 'state.sqlite'), writes_authorized=True))
+        policy = OAuthAuthorizationPolicy('https://baltor.example.test', 'https://baltor.example.test/mcp',
+            'https://identity.example.test/auth/v1', 'https://baltor.example.test/oauth/consent', native_loopback_paths=('/callback',))
+        self.oauth = oauth_http
+        self.http = oauth_http.OAuthHttp(OAuthAuthorizationProvider(runtime, policy))
+
+    def spend(self, path, addresses, each, start=1000.0):
+        """Send `each` requests from every address within the first second; return how many were refused."""
+        return sum(bool(self.http.permit(path, address, now=start + index * 0.001))
+                   for address in addresses for index in range(each))
+
+    def test_registration_and_authorization_traffic_cannot_spend_the_refresh_budget(self):
+        """Known wrong (October 5 review, d): every OAuth route spent one 120-a-minute process bucket, so four
+        addresses sending 30 authorizations each, or anonymous registrations, made a fresh address's token refresh
+        wait 50 seconds; with no address source, 120 requests from anyone did the same."""
+        abusive = ['198.51.100.%d' % n for n in range(1, 5)]
+        self.assertEqual(self.spend(self.oauth.REGISTER_PATH, ['198.51.100.9'], 10), 0)
+        self.assertEqual(self.spend(self.oauth.AUTHORIZE_PATH, abusive, 30), 10, 'registration and authorization share one budget')
+        self.assertEqual(self.http.permit(self.oauth.AUTHORIZE_PATH, '203.0.113.7', now=1010.0), 50,
+                         'the authorization routes keep their own ceiling')
+        self.assertEqual(self.http.permit(self.oauth.TOKEN_PATH, '203.0.113.9', now=1010.0), 0)
+        unsourced = self.oauth.OAuthHttp(self.http.provider)
+        self.http = unsourced
+        self.assertEqual(self.spend(self.oauth.AUTHORIZE_PATH, [''], self.oauth.OAUTH_AUTHORIZATION_REQUESTS_PER_WINDOW), 0)
+        self.assertEqual((unsourced.permit(self.oauth.TOKEN_PATH, '', now=1013.0),
+                          unsourced.permit(self.oauth.REVOKE_PATH, '', now=1013.0)), (0, 47))
+
+    def test_token_registration_address_and_process_ceilings_still_hold(self):
+        budgets = self.oauth
+        self.assertEqual(budgets.OAUTH_REQUESTS_PER_WINDOW,
+                         budgets.OAUTH_TOKEN_REQUESTS_PER_WINDOW + budgets.OAUTH_AUTHORIZATION_REQUESTS_PER_WINDOW)
+        senders = ['198.51.100.%d' % n for n in range(1, 9)]
+        self.assertEqual(self.spend(budgets.TOKEN_PATH, senders, 30), 240 - budgets.OAUTH_TOKEN_REQUESTS_PER_WINDOW)
+        self.assertEqual(self.spend(budgets.AUTHORIZE_PATH, ['198.51.100.%d' % n for n in range(11, 19)], 30),
+                         240 - budgets.OAUTH_AUTHORIZATION_REQUESTS_PER_WINDOW)
+        self.assertEqual(self.spend(budgets.METADATA_PATH, [''], 500), 0, 'discovery spends no budget')
+        fresh = budgets.OAuthHttp(self.http.provider)
+        self.http = fresh
+        self.assertEqual(self.spend(budgets.REGISTER_PATH, ['198.51.100.%d' % n for n in range(20, 31)], 1),
+                         11 - budgets.OAUTH_REGISTRATIONS_PER_WINDOW)
+        self.assertEqual(self.spend(budgets.TOKEN_PATH, ['192.0.2.1'], 31), 31 - budgets.OAUTH_ADDRESS_REQUESTS_PER_WINDOW)
+        self.assertEqual(fresh.permit(budgets.AUTHORIZE_PATH, '192.0.2.1', now=1001.0), 59, 'an address has one budget')
+        self.assertEqual(fresh.permit(budgets.TOKEN_PATH, '192.0.2.1', now=1060.5), 0, 'the window moves on')
+
+
 class OAuthImportBoundary(unittest.TestCase):
     def test_sdk_error_adapter_preserves_type_fields_and_python_tracebacks(self):
         from contextlib import contextmanager

@@ -40,7 +40,12 @@ OAUTH_ROUTES = {METADATA_PATH:("GET",), AUTHORIZE_PATH:("GET", "POST"), TOKEN_PA
 CREDENTIAL_ROUTES = (AUTHORIZE_PATH, TOKEN_PATH, REGISTER_PATH, REVOKE_PATH, CONSENT_API_PATH)
 MAXIMUM_OAUTH_REQUEST_BYTES = 16_384
 OAUTH_WINDOW_SECONDS = 60
-OAUTH_REQUESTS_PER_WINDOW, OAUTH_ADDRESS_REQUESTS_PER_WINDOW = 120, 30
+#: In each process and window, the token route (code exchange and refresh) and the other credential routes
+#: (authorization, registration, revocation) spend separate budgets, so registration or authorization traffic can never
+#: spend what the refresh of an existing grant needs. Their sum is the process ceiling for every OAuth route.
+OAUTH_TOKEN_REQUESTS_PER_WINDOW, OAUTH_AUTHORIZATION_REQUESTS_PER_WINDOW = 120, 120
+OAUTH_REQUESTS_PER_WINDOW = OAUTH_TOKEN_REQUESTS_PER_WINDOW + OAUTH_AUTHORIZATION_REQUESTS_PER_WINDOW
+OAUTH_ADDRESS_REQUESTS_PER_WINDOW = 30
 OAUTH_REGISTRATIONS_PER_WINDOW, OAUTH_TRACKED_ADDRESSES = 10, 4096
 OAUTH_ERRORS = frozenset(("invalid_request", "invalid_client", "invalid_grant", "unauthorized_client", "invalid_scope",
     "invalid_target", "unsupported_grant_type", "unsupported_response_type", "access_denied", "server_error",
@@ -118,7 +123,8 @@ class OAuthHttp:
         if path == METADATA_PATH:
             return 0
         moment = time.monotonic() if now is None else now
-        selected = [("all", OAUTH_REQUESTS_PER_WINDOW)]
+        selected = [("token", OAUTH_TOKEN_REQUESTS_PER_WINDOW) if path == TOKEN_PATH
+                    else ("authorization", OAUTH_AUTHORIZATION_REQUESTS_PER_WINDOW)]
         if path == REGISTER_PATH:
             selected.append(("registrations", OAUTH_REGISTRATIONS_PER_WINDOW))
         if address:
@@ -132,7 +138,8 @@ class OAuthHttp:
                 held = self._attempts.get(key, [])
                 if len(held) >= limit:
                     return max(1, math.ceil(held[0] + OAUTH_WINDOW_SECONDS - moment))
-            if len(self._attempts) + sum(key not in self._attempts for key, _ in selected) > OAUTH_TRACKED_ADDRESSES + 2:
+            # Beyond the tracked addresses, the three process buckets: token, authorization and registrations.
+            if len(self._attempts) + sum(key not in self._attempts for key, _ in selected) > OAUTH_TRACKED_ADDRESSES + 3:
                 return OAUTH_WINDOW_SECONDS
             for key, _ in selected:
                 self._attempts.setdefault(key, []).append(moment)
