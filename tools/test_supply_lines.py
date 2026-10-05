@@ -1292,7 +1292,8 @@ LIFE = [("Aruba", "ABW", "76.2", ""), ("Afghanistan", "AFG", "66.0", "66.5"), ("
 
 
 def _wdi_answers(series_rows):
-    """Answers at the real World Bank addresses for (series, licence, topic, table bytes) rows."""
+    """Answers at the real World Bank addresses for (series, licence, topic, table bytes) rows; a member name
+    holds the code in upper case when the code has a lower-case letter, as the World Bank writes it."""
     from supply_lines import publisher_tables
     collection = publisher_tables.read_sources()["collections"]["world_bank_wdi"]
     catalogue = [{"page": 1, "pages": 1, "per_page": "2000", "total": len(series_rows)},
@@ -1301,7 +1302,7 @@ def _wdi_answers(series_rows):
     for series, licence, topic, data in series_rows:
         answers[collection["metadata_address"].format(series=series)] = (200, _wdi_metadata(series, licence, topic))
         answers[collection["data_address"].format(series=series)] = (200, _zip({
-            f"API_{series}_DS2_en_csv_v2_461.csv": data,
+            f"API_{series.upper()}_DS2_en_csv_v2_461.csv": data,
             f"Metadata_Country_API_{series}_DS2_en_csv_v2_461.csv": b'"Country Code","Region",\r\n'}))
     return answers
 
@@ -1382,11 +1383,15 @@ class PublisherTableLineTest(unittest.TestCase):
         data = _wdi_csv("SP.DYN.LE00.IN", LIFE)
         sipri = "SIPRI terms and conditions: SIPRI data may not be used for commercial purposes."
         answers = _wdi_answers([("SP.DYN.LE00.IN", "CC BY-4.0", "Health: Mortality", data),
+                                ("per_allsp.cov_pop_tot", "CC BY-4.0", "Social Protection & Labor: Performance", data),
                                 ("GD_WBL_OVL_LAW", "CC BY 3.0 IGO", "Gender: Public life & decision making", data),
                                 ("MS.MIL.XPND.GD.ZS", sipri, "Public Sector: Defense & arms trade", data),
                                 ("SP.POP.TOTL", None, "Health: Population: Structure", data)])
         built, refused, _facts, summary, reader = self._generate(answers)
-        self.assertEqual([payload["repository"]["series"] for payload, _bodies in built], ["SP.DYN.LE00.IN"])
+        # A lower-case code whose archive member the World Bank names in upper case is found all the same.
+        self.assertEqual([payload["repository"]["series"] for payload, _bodies in built],
+                         ["SP.DYN.LE00.IN", "per_allsp.cov_pop_tot"])
+        self.assertEqual(built[1][0]["repository"]["sdg_goals"], [1, 10])
         reasons = {row["subject"]: (row["reason"], row["detail"]) for row in refused}
         self.assertEqual({subject: reason for subject, (reason, _detail) in reasons.items()},
                          {"GD_WBL_OVL_LAW": "licence_not_on_allowlist", "MS.MIL.XPND.GD.ZS": "licence_not_on_allowlist",

@@ -231,11 +231,13 @@ def world_bank_metadata(document, series: str) -> "dict | None":
 
 
 def archive_member(body: bytes, pattern: str) -> tuple:
-    """(name, bytes) of the one member of a ZIP archive whose name matches the pattern (shell wildcards)."""
+    """(name, bytes) of the one member of a ZIP archive whose name matches the pattern (shell wildcards), compared
+    without regard to case: the World Bank writes some series codes in upper case in its member names
+    (API_PER_ALLSP.COV_POP_TOT_... for per_allsp.cov_pop_tot). More than one match refuses, as none does."""
     try:
         archive = zipfile.ZipFile(io.BytesIO(body))
         found = [info for info in archive.infolist()
-                 if not info.is_dir() and fnmatch.fnmatchcase(info.filename, pattern)]
+                 if not info.is_dir() and fnmatch.fnmatchcase(info.filename.casefold(), pattern.casefold())]
     except (zipfile.BadZipFile, ValueError) as error:
         raise TableRefused("source_unreadable", f"not a ZIP archive: {type(error).__name__}") from None
     if len(found) != 1:
