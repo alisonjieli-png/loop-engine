@@ -200,7 +200,7 @@ def run_checks() -> dict:
     validate = text_conformance_validate_endpoint(rows=[{"name": "ACME INC"}])
     check("the_validate_endpoint_profiles_proposes_and_emits_duckdb_sql_without_changing_data",
           validate["profiles"]["name"]["counts"]["all_upper"] == 1
-          and validate["proposals"] and "FROM rows" in validate["duckdb_sql"]["name"])
+          and validate["proposals"] and 'FROM "rows"' in validate["duckdb_sql"]["name"])
     from ..core.capability_directory import default_directory
     directory = default_directory(surfaces=(text_conformance_surface(),))
     served = directory.call("text_conformance", "run", rows=[{"name": "ACME CORPORATION"}],

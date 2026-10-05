@@ -40,6 +40,7 @@ _QUOTE_MAP = {"‘": "'", "’": "'", "‚": "'", "“": '"',
               "”": '"', "„": '"', "′": "'", "″": '"'}
 _EMAIL = re.compile(r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$")
 _HOST_LABEL = re.compile(r"^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$")
+_TABLE_NAME_PART = re.compile(r"[A-Za-z_][A-Za-z0-9_]*")
 _VOWELS = set("aeiouy")
 
 
@@ -624,7 +625,17 @@ def profile_column(values, catalogs: dict | None = None, *, top_patterns: int = 
 
 
 def duckdb_profile_sql(table: str, column: str) -> str:
-    """The same counts as ``profile_column`` as one DuckDB query over a table."""
+    """The same counts as ``profile_column`` as one DuckDB query over a table.
+
+    ``table`` is a plain table name, or one qualified as schema.table or
+    catalog.schema.table. Each part is quoted; any other text is refused
+    rather than placed in the query. ``column`` is quoted with its double
+    quotes doubled.
+    """
+    parts = table.split(".") if isinstance(table, str) else []
+    if not 1 <= len(parts) <= 3 or not all(_TABLE_NAME_PART.fullmatch(part) for part in parts):
+        raise ValueError(f"{table!r} is not a plain or qualified table name")
+    source = ".".join('"' + part + '"' for part in parts)
     quoted = '"' + column.replace('"', '""') + '"'
     return (
         f"SELECT count(*) AS total, "
@@ -632,7 +643,7 @@ def duckdb_profile_sql(table: str, column: str) -> str:
         f"sum(CASE WHEN regexp_matches({quoted}, '[A-Za-z]') AND {quoted} = lower({quoted}) THEN 1 ELSE 0 END) AS all_lower, "
         f"sum(CASE WHEN {quoted} <> trim({quoted}) OR {quoted} LIKE '%  %' THEN 1 ELSE 0 END) AS whitespace_issue, "
         f"sum(CASE WHEN regexp_matches({quoted}, '[^\\x00-\\x7F]') THEN 1 ELSE 0 END) AS non_ascii "
-        f"FROM {table}")
+        f"FROM {source}")
 
 
 def summarize(corrections, rules) -> dict:
