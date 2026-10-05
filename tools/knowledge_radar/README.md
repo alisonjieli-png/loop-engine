@@ -122,9 +122,11 @@ an arbitrary phrase is confidential; the operator remains responsible for
 the terms authorized for external search.
 
 An attempt intent is recorded before the dispatch hold. An orphaned intent
-alone means no request was dispatched. Once the hold is reserved, interruption
-leaves `reserved_unknown_outcome` until an operator reconciles the request
-log. Query holds use query identity, and source access/rate holds use source
+alone means no request was dispatched: the next writing tick closes it as
+`abandoned_before_dispatch`, releases any hold that names it and requeues its
+work (`reconcile_interrupted`). Once the attempt itself is advanced to
+`reserved_unknown_outcome`, interruption during the read leaves it held until
+an operator reconciles the request log. Query holds use query identity, and source access/rate holds use source
 identity; changing a parser or implementation version cannot clear them.
 Earlier unresolved records keep their holds. Reconciliation reads at most
 1,000 records in each of four state/kind windows and stops dispatch if a
@@ -132,8 +134,9 @@ window might be incomplete. The queued lookup has its own 1,000-record cap.
 The planner does not claim an exhaustive census from a capped window.
 
 A saved attempt result can survive an interrupted origin fold. The read is
-not repeated; an operator must reconcile the missing fold and hold. This
-command does not perform that reconciliation automatically. Saved failed
+not repeated: the next writing tick folds the saved observations, completes
+the work row and releases the dispatch hold unless the request outcome itself
+is unknown. Saved failed
 attempts with access/rate refusals also hold the source, even if the process
 stopped before writing its source-hold record. Reconciliation must preserve
 the failed response and rationale in a new managed revision, mark the
@@ -154,6 +157,14 @@ reference or connection recipe is proposed. Query output alone cannot do so.
 Offline checks: `PYTHONPATH=src:tools python -m unittest
 tools.test_knowledge_query_matrix tools.test_harness_idea_matrix
 tools.test_knowledge_radar tools.test_community_watch`.
+
+These bounded pages through the managed store suit a few queries a tick. The
+high-volume path, which multiplies a versioned dimension library into millions
+of queries and runs them against GitHub, the Hugging Face Hub, OpenAlex,
+Openverse, GBIF, data portals, arXiv, npm and web search within each source's
+limits, is the query multiplier: [`tools/query_multiplier`](../query_multiplier/README.md).
+Its planner keeps this module's normalisation, sensitive-term screen and
+public-result rule.
 
 ## Bounded community watch
 

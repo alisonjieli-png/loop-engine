@@ -122,7 +122,8 @@ def command_report(options) -> dict:
     executors = registry()
     if options.with_plan:
         _, executors, products, _ = _load(options)
-    out = report(ledger, executors, run_id=options.run_id, products=products, bucket=options.bucket)
+    out = report(ledger, executors, run_id=options.run_id, products=products, bucket=options.bucket,
+                 duty_hours=options.duty_hours)
     ledger.close()
     return out
 
@@ -152,6 +153,7 @@ def main(argv=None) -> int:
     reporting.add_argument("--run-id")
     reporting.add_argument("--bucket", type=int, default=25)
     reporting.add_argument("--with-plan", action="store_true")
+    reporting.add_argument("--duty-hours", type=float, default=16.0, help="scheduled probing hours a day (hourly 40-minute passes: 16)")
     options = parser.parse_args(argv)
     try:
         result = {"plan": command_plan, "run": command_run, "import": command_import, "report": command_report}[options.command](options)
