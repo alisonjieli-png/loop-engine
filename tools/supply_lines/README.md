@@ -196,8 +196,17 @@ PYTHONPATH=src:tools python -m unittest tools.test_supply_lines
 
 ## Limits
 
-- No review profile for generated packages exists yet, so the export holds
-  these candidates and counts them as `held_for_review_profile`.
+- The daily licensed-import export has no review profile for generated
+  packages, so it holds these candidates and counts them as
+  `held_for_review_profile`. Generated packages reach the library by their
+  own route: deterministic qualification of every package, one calibrated
+  sampled review by a model family that did not write the generators,
+  Community admission of accepted batches, and a decision ledger that records
+  every batch decision ([component qualification](../component_qualification/README.md),
+  command `tools/qualify_generated_components.py`). That route admitted 3,910
+  `program_installs` packages on September 29, 2026, served since app release
+  51. Admission does not change a stored candidate's lifecycle, so the held
+  count still includes packages that are already admitted and served.
 - A protocol server's own effects are not declared by its registry entry.
   The package declares that the harness starts a process and downloads the
   pinned package, and says in its README that the server is third-party code.

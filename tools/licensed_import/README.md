@@ -281,9 +281,15 @@ draws by its remaining need to the goal, so the library reaches the target mix
 at 100,000. The candidates of the supply lines (namespace `library.supply`,
 written from licensed facts rather than copied) are read and counted by family
 as `held_for_review_profile`. The imported review profile reads only copied
-packages, so none of those candidates is exported until a review profile for
-them exists. The export report records the quotas, the supply, the selected and
-kept counts and the unfilled quota per family under `selection.composition`.
+packages, so this export never exports them. They are admitted by their own
+route instead: deterministic qualification, one calibrated sampled review by a
+model family that did not write the generators, and Community admission, with
+every batch decision in a decision ledger
+([`tools/component_qualification`](../component_qualification/README.md)). The
+held count still includes generated packages that route already admitted,
+because admission does not change a stored candidate's lifecycle. The export
+report records the quotas, the supply, the selected and kept counts and the
+unfilled quota per family under `selection.composition`.
 
 ## Checks
 
