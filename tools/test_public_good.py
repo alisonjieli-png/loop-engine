@@ -4,9 +4,11 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict, replace
 from pathlib import Path
 from tempfile import TemporaryDirectory
+import threading
 import unittest
 from unittest.mock import patch
 
+from loop_engine.catalog.stores.sqlite_store import SQLiteRecordStore
 from loop_engine.core.harness_intelligence import HarnessIntelligenceCatalogue, HarnessIntelligenceDraft, item_from_body
 from loop_engine.core.provisioning_server import ProvisioningError, ProvisioningGrant, ProvisioningItemBinding, ProvisioningQualification, ProvisioningQualificationResolver
 from loop_engine.core.service_runtime.catalogue_serving import CatalogueView
@@ -268,6 +270,41 @@ class PublicGoodTests(unittest.TestCase):
         with patch.object(type(self.service.catalog), "commit", side_effect=ServiceCommitUnknown) as commit:
             self.assertEqual(self.code(lambda: self.service.reserve(self.principal, self.view, "public.fixture", expected_digest=self.grant.binding.body_digest, request_id="unknown", response_bytes=100)), "commit_unknown")
             self.assertEqual(commit.call_count, 1)
+
+    def test_a_committed_reservation_is_not_reported_unknown_while_another_account_reserves(self):
+        """Known wrong (October 5 review, N1): another account's reservation committed the shared host window
+        between this reservation's commit and its read-back, and the spent allowance answered commit_unknown."""
+        self.runtime.ensure_subject_tenant(SubjectTenantRegistration("https://identity.example", "second-account", "customer"))
+        second = self.runtime.authenticate_subject("https://identity.example", "second-account")
+        main, state, outcomes = threading.current_thread(), {"armed": False, "other": None}, []
+        def other_reservation():
+            try:
+                outcomes.append(self.service.reserve(second, self.view, "public.fixture",
+                    expected_digest=self.grant.binding.body_digest, request_id="other", response_bytes=1))
+            except ServiceRuntimeError as error:
+                outcomes.append(error.code)
+        real_apply, real_get = SQLiteRecordStore.apply_batch, SQLiteRecordStore.get
+        def apply_batch(store, batch):
+            acknowledgment = real_apply(store, batch)
+            state["armed"] = threading.current_thread() is main and state["other"] is None
+            return acknowledgment
+        def get(store, identity, version=None):
+            if state["armed"] and threading.current_thread() is main:
+                state["armed"], state["other"] = False, threading.Thread(target=other_reservation)
+                state["other"].start()
+                state["other"].join(timeout=0.5)
+            return real_get(store, identity, version)
+        with patch.object(SQLiteRecordStore, "apply_batch", apply_batch), patch.object(SQLiteRecordStore, "get", get):
+            mine = self.service.reserve(self.principal, self.view, "public.fixture",
+                expected_digest=self.grant.binding.body_digest, request_id="mine", response_bytes=1)
+            state["other"].join(timeout=10)
+        self.assertIsInstance(mine, pg.PublicGoodReservation)
+        self.assertEqual([type(value) for value in outcomes], [pg.PublicGoodReservation])
+        with self.runtime._catalog.store() as store:
+            host = self.runtime._catalog.read(store, pg.HOST_WINDOW_KIND, "all_accounts")["payload"]
+            window = self.runtime._catalog.read(store, pg.WINDOW_KIND, self.principal.tenant_id)["payload"]
+        self.assertEqual((host["requests"], window["requests"]), (2, 1))
+        self.assertEqual(list(window["reservations"]), [mine.reservation_id])
 
     def test_shared_host_ceiling_limits_different_accounts_atomically(self):
         self.configure(limits=pg.PublicGoodLimits(host_requests_per_window=1))

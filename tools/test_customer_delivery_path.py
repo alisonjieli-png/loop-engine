@@ -49,7 +49,7 @@ from loop_engine.core.service_runtime.http_test_fixtures import HttpDomainFixtur
 from loop_engine.core.service_runtime.storage import ServiceCatalogBinding
 from loop_engine.core.service_runtime import storage as service_storage
 from loop_engine.core.service_runtime import access as service_access
-from loop_engine.core.service_runtime.records import (ServiceCommitUnknown, ServiceRuntimeError,
+from loop_engine.core.service_runtime.records import (ServiceCommitUnknown, ServiceRuntimeConfig, ServiceRuntimeError,
                                                      TenantKeyIssue, TenantRegistration)
 from loop_engine.core.service_runtime.catalogue_grants import follow_active_release
 from loop_engine.core.provisioning_server import ProvisioningMeterRequest
@@ -692,6 +692,47 @@ class ReadContentionAndOneShotEffects(unittest.TestCase):
                     self.assertRaises(ServiceCommitUnknown):
                 binding.commit(store, (row,), (binding.guard(None, row["record_id"]),))
             self.assertEqual(store.apply_batch.call_count, 1)
+
+    def test_a_commit_is_read_back_before_another_write_of_this_process_changes_its_record(self):
+        """The write queue is held through the read-back, so a busy record cannot turn a committed batch unknown.
+
+        Known wrong (October 5 review, N1): the queue was given back before the read-back, so another commit to the
+        same record in between, such as the shared Public Good window or the OAuth counter, made the read-back differ
+        from the written row, and a committed write answered commit_unknown."""
+        with tempfile.TemporaryDirectory() as folder:
+            binding = ServiceCatalogBinding(ServiceRuntimeConfig(str(Path(folder) / "records.db"), writes_authorized=True))
+            def write(value):
+                with binding.store(write=True) as store:
+                    previous = binding.read(store, "test", "busy")
+                    row = binding.record("test", "busy", {"record_type": "test/v1", "value": value})
+                    binding.commit(store, (row,), (binding.guard(previous, row["record_id"]),))
+            write(0)
+            main, state, outcomes = threading.current_thread(), {"armed": False, "other": None}, []
+            def other_write():
+                try:
+                    write(2)
+                    outcomes.append("committed")
+                except ServiceRuntimeError as error:
+                    outcomes.append(error.code)
+            real_apply, real_get = sqlite_store.SQLiteRecordStore.apply_batch, sqlite_store.SQLiteRecordStore.get
+            def apply_batch(store, batch):
+                acknowledgment = real_apply(store, batch)
+                state["armed"] = threading.current_thread() is main and state["other"] is None
+                return acknowledgment
+            def get(store, identity, version=None):
+                if state["armed"] and threading.current_thread() is main:
+                    # The read-back of the committed batch: another write of this process to the record arrives now.
+                    state["armed"], state["other"] = False, threading.Thread(target=other_write)
+                    state["other"].start()
+                    state["other"].join(timeout=0.5)
+                return real_get(store, identity, version)
+            with mock.patch.object(sqlite_store.SQLiteRecordStore, "apply_batch", apply_batch), \
+                    mock.patch.object(sqlite_store.SQLiteRecordStore, "get", get):
+                write(1)
+                state["other"].join(timeout=10)
+            self.assertEqual(outcomes, ["committed"])
+            with binding.store() as store:
+                self.assertEqual(binding.read(store, "test", "busy")["payload"]["value"], 2)
 
 
 

@@ -39,7 +39,7 @@ _WRITE_QUEUES, _WRITE_QUEUES_GUARD = {}, threading.Lock()
 
 
 def write_queue(database_path):
-    """The one lock the writes of this process to one store take in turn.
+    """The one lock the writes of this process to one store take in turn, each from its batch to its read-back.
 
     It is re-entrant, so a write made from inside another write's store call on the same thread, as a check that
     stages a race does, passes instead of waiting on itself."""
@@ -155,39 +155,43 @@ class ServiceCatalogBinding:
         queue = write_queue(self.config.database_path)
         if not queue.acquire(timeout=WRITE_QUEUE_SECONDS):
             raise ServiceRuntimeError(STORE_BUSY_CODE, "other writes held the store; nothing was written; retry")
+        # The queue is held until the batch is read back, not only while it is applied. Given back earlier, another
+        # write of this process to a record of this batch, such as a shared window or counter, could land in between,
+        # and the read-back of a committed batch would then answer commit_unknown.
         try:
-            acknowledgment = store.apply_batch(request)
-        except PreconditionFailed:
-            raise ServiceRuntimeError("concurrent_update", "state changed; retry the same operation identity") from None
-        except StoreBusy:
-            raise ServiceRuntimeError(STORE_BUSY_CODE, "the store stayed locked; nothing was written; retry") from None
-        except Exception:
-            raise ServiceCommitUnknown() from None
+            try:
+                acknowledgment = store.apply_batch(request)
+            except PreconditionFailed:
+                raise ServiceRuntimeError("concurrent_update", "state changed; retry the same operation identity") from None
+            except StoreBusy:
+                raise ServiceRuntimeError(STORE_BUSY_CODE, "the store stayed locked; nothing was written; retry") from None
+            except Exception:
+                raise ServiceCommitUnknown() from None
+            if (not isinstance(acknowledgment, CatalogBatchAcknowledgment)
+                    or acknowledgment.record_type != BATCH_ACKNOWLEDGMENT_VERSION
+                    or acknowledgment.batch_digest != request.digest or acknowledgment.committed is not True
+                    or not _confirmed(store, request)):
+                raise ServiceCommitUnknown()
         finally:
             queue.release()
-        if (not isinstance(acknowledgment, CatalogBatchAcknowledgment)
-                or acknowledgment.record_type != BATCH_ACKNOWLEDGMENT_VERSION
-                or acknowledgment.batch_digest != request.digest or acknowledgment.committed is not True):
-            raise ServiceCommitUnknown()
-        removed_versions = {guard.record_id: guard.record_version for guard in request.preconditions}
-        deadline = time.monotonic() + COMMIT_CONFIRMATION_SECONDS
-        while True:
-            try:
-                confirmed = (all(store.get(row["record_id"]) == row for row in request.records)
-                             and all(_no_longer_held(store.get(identity), removed_versions[identity])
-                                     for identity in request.removals))
-                break
-            except StoreBusy:
-                if time.monotonic() + COMMIT_CONFIRMATION_RETRY_SECONDS >= deadline:
-                    confirmed = False
-                    break
-                time.sleep(COMMIT_CONFIRMATION_RETRY_SECONDS)
-            except Exception:
-                confirmed = False
-                break
-        if not confirmed:
-            raise ServiceCommitUnknown()
         return acknowledgment
+
+
+def _confirmed(store, request):
+    """Read every write and removal of an acknowledged batch back; a busy read is retried within the window."""
+    removed_versions = {guard.record_id: guard.record_version for guard in request.preconditions}
+    deadline = time.monotonic() + COMMIT_CONFIRMATION_SECONDS
+    while True:
+        try:
+            return (all(store.get(row["record_id"]) == row for row in request.records)
+                    and all(_no_longer_held(store.get(identity), removed_versions[identity])
+                            for identity in request.removals))
+        except StoreBusy:
+            if time.monotonic() + COMMIT_CONFIRMATION_RETRY_SECONDS >= deadline:
+                return False
+            time.sleep(COMMIT_CONFIRMATION_RETRY_SECONDS)
+        except Exception:
+            return False
 
 
 def _no_longer_held(row, removed_version):

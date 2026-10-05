@@ -8,6 +8,7 @@ import hashlib
 import json
 from pathlib import Path
 import tempfile
+import threading
 import time
 import unittest
 from unittest import mock
@@ -281,6 +282,40 @@ class OAuthAuthorizationTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(len(self.rows(GRANT)), 1)
         with self.assertRaises(TokenError):
             await self.provider.exchange_authorization_code(self.client, code)
+
+    async def test_a_committed_refresh_is_delivered_while_another_authorization_commits(self):
+        """Known wrong (October 5 review, N1): an authorization that committed the shared counter between a refresh's
+        commit and its read-back made the refresh answer commit_unknown after the old token pair had rotated away."""
+        tokens = await self.issue()
+        loaded = await self.provider.load_refresh_token(self.client, tokens.refresh_token)
+        params = AuthorizationParams(state="synthetic-state", scopes=list(DEFAULT_SCOPES), code_challenge=self.challenge,
+            redirect_uri=self.callback, redirect_uri_provided_explicitly=True, resource=self.policy.resource_url)
+        state, outcomes = {"victim": None, "armed": False, "other": None}, []
+        def other_authorization():
+            try:
+                asyncio.run(self.provider.authorize(self.client, params))
+                outcomes.append("authorized")
+            except ServiceRuntimeError as error:
+                outcomes.append(error.code)
+        real_apply, real_get = SQLiteRecordStore.apply_batch, SQLiteRecordStore.get
+        def apply_batch(store, batch):
+            acknowledgment = real_apply(store, batch)
+            if state["other"] is None and state["victim"] in (None, threading.current_thread()):
+                state["victim"], state["armed"] = threading.current_thread(), True
+            return acknowledgment
+        def get(store, identity, version=None):
+            if state["armed"] and threading.current_thread() is state["victim"]:
+                state["armed"], state["other"] = False, threading.Thread(target=other_authorization)
+                state["other"].start()
+                state["other"].join(timeout=0.5)
+            return real_get(store, identity, version)
+        with mock.patch.object(SQLiteRecordStore, "apply_batch", apply_batch), mock.patch.object(SQLiteRecordStore, "get", get):
+            refreshed = await self.provider.exchange_refresh_token(self.client, loaded, list(DEFAULT_SCOPES))
+            await asyncio.to_thread(state["other"].join, 10)
+        self.assertEqual(outcomes, ["authorized"])
+        self.assertIsNone(await self.provider.load_refresh_token(self.client, tokens.refresh_token))
+        self.assertIsNotNone(await self.provider.load_refresh_token(self.client, refreshed.refresh_token))
+        self.assertIsNotNone(await self.provider.load_access_token(refreshed.access_token))
 
     async def test_read_contention_is_not_invalid_token(self):
         tokens = await self.issue()
