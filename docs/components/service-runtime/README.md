@@ -576,7 +576,13 @@ Daily/additive operator tooling uses `tools/reconcile_catalogue_bundle.py`
 before `tools/publish_catalogue_delta.py`: unchanged canonical rows and exact
 versions are retained, additions/replacements/withdrawals are declared, and
 the same observed base is bound through build, pre-upload and server-side
-compare-and-swap.
+compare-and-swap. Before reconciling, `tools/plan_catalogue_change.py` writes a
+private consequence report of the declared change from local files only: the
+items, file placements, Public Good grants pinned to exact versions, judged
+search queries and effect-held items it adds, replaces or removes, ranked and
+matched by the service's own search index and grant rule. Its verdict passes
+only when no judged query loses an expected item from its first ten and no
+grant pins a replaced or withdrawn version.
 The private proof adds no admission or access authority. A delta-only baseline
 uses explicit read-only blob roots; the output remains a full metadata snapshot
 with delta blobs, not a claimed full-body archive. The runbook's preservation

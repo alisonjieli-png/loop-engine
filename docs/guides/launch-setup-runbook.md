@@ -523,7 +523,32 @@ The October 1 handoff records the incident that led to that fence.
    or a replacement: the reconciler and the publisher refuse before any write
    or upload while the health record's `withdrawn_left_out` is larger than the
    number of declared withdrawals and replacements.
-4. Run the reconciler outside the repository, repeating `--accept-license` for
+4. Write the consequence report of the change before reconciling it. It reads
+   the same bundles and request, the Public Good policy file the host applied
+   last and the judged search queries of
+   `examples/30_search_quality/relevance-judgements.json`. It reads no live
+   service and no body:
+
+   ```bash
+   PYTHONPATH=src:tools python tools/plan_catalogue_change.py \
+     --base-bundle /absolute/current-bundle \
+     --update-bundle /absolute/reviewed-additions-bundle \
+     --changes /absolute/reconciliation-request.json \
+     --public-good-policy /absolute/public-good-policy.json \
+     --accept-license MIT --consequences /absolute/consequences.json
+   ```
+
+   The private report lists every item, file placement, Public Good grant,
+   judged search query and effect-held item that the change adds, replaces or
+   removes. An additions-only release continues only with the verdict
+   `conservative_over_judged_queries` and exit status 0: no judged query loses
+   an expected item from its first ten, and no grant pins a version the change
+   replaces or withdraws. Any other verdict names the failing rows. A
+   replacement or withdrawal continues only after each row has its own review,
+   and a grant it orphans needs a new policy file that names the new version.
+   Pass `--no-public-good-policy` only for a host that holds no policy. The
+   report is evidence like `reconciliation.json`; never upload it as material.
+5. Run the reconciler outside the repository, repeating `--accept-license` for
    the host's accepted labels and `--body-root` for explicit baseline sources:
 
    ```bash
@@ -541,7 +566,7 @@ The October 1 handoff records the incident that led to that fence.
    new blobs. Its private `reconciliation.json` binds the declarations, baseline,
    new header, and predicted release/content digests. Save the printed
    `bundle_digest` and `reconciliation_digest`; never upload the proof as material.
-5. First run the local-only delta dry-run, then the same command without
+6. First run the local-only delta dry-run, then the same command without
    `--dry-run` only under the coordinating operator's publication authority:
 
    ```bash
@@ -566,14 +591,18 @@ fields remain, with baseline/proof/content bindings added. Bootstrap and guarded
 rollback are separate service operations, not a fallback around preservation.
 An intentional replacement changes its exact item version and therefore needs
 separate review of any exact-version access grant; this tool never widens access.
+The consequence report of step 4 lists the Public Good grants that need it.
 
 Before rearming the private daily wrapper: pin it to reviewed committed code;
 replace its combine/bundle/publish stages with the additions-only sequence above;
+stop before reconciling on any consequence verdict other than
+`conservative_over_judged_queries`, keeping the report for review;
 retain pending exports, independent reviews and failed-run journals; prove the
 current whole baseline unchanged in a local rehearsal; and pass the missing-row,
 retagging, stale/concurrent-base and false-success controls. Keep the legacy
 unconditional publisher retired. The current tests are
-`tools/test_reconcile_catalogue_bundle.py` and `tools/test_publish_catalogue_delta.py`.
+`tools/test_reconcile_catalogue_bundle.py`, `tools/test_plan_catalogue_change.py`
+and `tools/test_publish_catalogue_delta.py`.
 The repair itself changes no cron entry, process or production state.
 
 To roll back a release, read the active and earlier release identities with
