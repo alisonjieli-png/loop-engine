@@ -165,6 +165,22 @@ class StoreReader:
         rows.sort(key=lambda row: row["record_id"])
         return rows[:limit] if limit is not None else rows
 
+    def listing(self, *, lines=()) -> list:
+        """The current supply candidates of the named lines (all when none is named) as small rows, in record order:
+        record id, record version, line and package digest. A qualification run's parent holds these and its
+        workers read each full row by its key (``row``), so the parent never holds the payloads: 118,106 of them
+        took about 4.3 GB on October 5, 2026, and every forked worker could copy those pages."""
+        from loop_engine.catalog.query import IntelligenceQuery
+        rows = []
+        for row in self.store.records.stream(IntelligenceQuery(namespaces=(SUPPLY_NAMESPACE,),
+                                                               lifecycle=(CANDIDATE_LIFECYCLE,))):
+            payload = row.get("payload", {})
+            if payload.get("record_type") == CANDIDATE_RECORD and (not lines or payload.get("line") in lines):
+                rows.append({"record_id": row["record_id"], "record_version": row["record_version"],
+                             "line": payload.get("line", ""), "package_digest": payload.get("package_digest")})
+        rows.sort(key=lambda row: row["record_id"])
+        return rows
+
     def row(self, identity: str) -> dict:
         """The current supply candidate one identity names, read by its key with the checks ``rows`` applies.
 

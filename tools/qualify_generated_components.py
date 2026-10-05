@@ -84,7 +84,7 @@ def command_self_test(options) -> dict:
 def command_qualify(options) -> dict:
     reader = StoreReader(options.store_root)
     try:
-        rows = reader.rows(lines=tuple(options.line))
+        rows = reader.listing(lines=tuple(options.line))
     finally:
         reader.close()
     decided = set()

@@ -62,8 +62,25 @@ def _init_worker(repository, store_root, sandbox_settings, work_root, reuse, che
     _WORKER["context"] = checks.QualificationContext.load(Path(repository), sandbox_settings=sandbox_settings,
                                                           work_root=work_root)
     _WORKER["bodies"] = body_store(store_root)
+    _WORKER["store_root"] = store_root
+    _WORKER["reader"] = None
     _WORKER["reuse"] = reuse or {}
     _WORKER["check_ids"] = tuple(check_ids) if check_ids else FAST_CHECKS
+
+
+def _full_row(row: dict) -> dict:
+    """The full store row of a listed row (``StoreReader.listing``), read by its key in this worker; a row that
+    already holds its payload is used as it is. A row whose stored version changed since the listing is refused
+    as unreadable rather than checked at another version."""
+    if "payload" in row or "record_id" not in row:
+        return row
+    if _WORKER.get("reader") is None:
+        from .components import StoreReader
+        _WORKER["reader"] = StoreReader(_WORKER["store_root"])
+    full = _WORKER["reader"].row(row["record_id"])
+    if full["record_version"] != row["record_version"]:
+        raise ComponentReadError("store_changed", f"{row['record_id']} changed after the run listed it")
+    return full
 
 
 def reusable(record: "dict | None", row: dict, revision: str, *, check_ids=None) -> bool:
@@ -82,7 +99,8 @@ def reusable(record: "dict | None", row: dict, revision: str, *, check_ids=None)
                 if isinstance(item, dict) and item.get("status") in
                 (checks.PASSED, checks.REFUSED, checks.NOT_APPLICABLE)}
     return (record.get("record_version") == row["record_version"]
-            and record.get("package_digest") == row.get("payload", {}).get("package_digest")
+            and record.get("package_digest") == (row.get("package_digest")
+                                                 or row.get("payload", {}).get("package_digest"))
             and record.get("qualifier", {}).get("code_revision") == revision
             and record.get("qualifier", {}).get("uncommitted_changes") is False
             and required <= recorded)
@@ -104,10 +122,10 @@ def _check_one(row: dict) -> dict:
     """Every per-component check for one store row; the duplicate pass comes later in the parent."""
     context, started = _WORKER["context"], time.monotonic()
     try:
-        component = component_from_row(row, _WORKER["bodies"])
+        component = component_from_row(_full_row(row), _WORKER["bodies"])
     except ComponentReadError as error:
         return {"identity": row["record_id"], "unreadable": error.code, "seconds": 0.0,
-                "line": row.get("payload", {}).get("line", "")}
+                "line": row.get("line") or row.get("payload", {}).get("line", "")}
     earlier = _WORKER["reuse"].get(component.identity)
     if earlier is not None:
         return {"identity": component.identity, "record_version": component.record_version,

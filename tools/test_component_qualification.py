@@ -888,6 +888,29 @@ class StoreReaderTests(unittest.TestCase):
         self.assertEqual([row["record_id"] for row in kept], sorted(row["record_id"] for row in streamed[1::2][:2]))
         self.assertEqual(len(reader.rows()), 4)
         self.assertEqual(len(reader.rows(lines=("data_tables",), limit=1)), 1)
+        listed = reader.listing(lines=("data_tables",))
+        self.assertEqual([row["record_id"] for row in listed], [row["record_id"] for row in kept])
+        self.assertEqual({key for row in listed for key in row}, {"record_id", "record_version", "line",
+                                                                  "package_digest"})
+
+    def test_a_worker_reads_a_listed_row_by_its_key_at_the_listed_version(self):
+        from tools.component_qualification.components import ComponentReadError
+        stored = {"record_id": "library.supply.data_tables." + "a" * 24 + "." + "b" * 16, "record_version": "v2",
+                  "payload": {"line": "data_tables", "package_digest": "b" * 64}}
+        reader = SimpleNamespace(row=lambda identity: stored if identity == stored["record_id"] else None)
+        listed = {"record_id": stored["record_id"], "record_version": "v2", "line": "data_tables",
+                  "package_digest": "b" * 64}
+        with mock.patch.dict(qualify._WORKER, {"reader": reader, "store_root": None}, clear=False):
+            self.assertIs(qualify._full_row(listed), stored)
+            self.assertIs(qualify._full_row(stored), stored)
+            # Known wrong: a row the store changed after the listing is never checked at its new version.
+            with self.assertRaises(ComponentReadError) as caught:
+                qualify._full_row({**listed, "record_version": "v1"})
+            self.assertEqual(caught.exception.code, "store_changed")
+            with mock.patch.dict(qualify._WORKER, {"context": _context(), "bodies": None, "reuse": {},
+                                                 "check_ids": ("manifest",)}):
+                answer = qualify._check_one({**listed, "record_version": "v1"})
+        self.assertEqual((answer["unreadable"], answer["line"]), ("store_changed", "data_tables"))
 
 if __name__ == "__main__":
     unittest.main()
