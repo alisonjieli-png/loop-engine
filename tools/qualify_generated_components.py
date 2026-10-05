@@ -12,6 +12,7 @@
         --review REVIEW.json --store-root STORE --decisions DECISIONS --output FOLDER --recorded-at DATE
     PYTHONPATH=src:tools python tools/qualify_generated_components.py admit-qualified --qualification RUN \\
         --store-root STORE --decisions LEDGER --held-versions HELD --output FOLDER --recorded-at DATE [--line LINE]
+    PYTHONPATH=src:tools python tools/qualify_generated_components.py audit --config AUDIT.json
     PYTHONPATH=src:tools python tools/qualify_generated_components.py composition --bundle BUNDLE \\
         [--admitted FOLDER ...] [--output COMPOSITION.json]
 
@@ -142,6 +143,11 @@ def command_admit_qualified(options) -> dict:
     return qualified_admission.command(options, ROOT)
 
 
+def command_audit(options) -> dict:
+    from tools.component_qualification import audit
+    return audit.command(options, ROOT)
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     commands = parser.add_subparsers(dest="command", required=True)
@@ -226,6 +232,10 @@ def main(argv=None) -> int:
     qualified.add_argument("--line", action="append", default=[], help="Only these supply lines.")
     qualified.add_argument("--batch", action="append", default=[], help="Only these generator batches.")
     qualified.add_argument("--producer-family", default="anthropic")
+    audit = commands.add_parser(
+        "audit", help="The ongoing independent audit of published generator batches: one scheduled run within the "
+                      "daily call ceiling (tools/component_qualification/audit.py).")
+    audit.add_argument("--config", type=Path, required=True, help="A generated_audit_configuration/v1 file.")
     mix = commands.add_parser("composition")
     mix.add_argument("--bundle", type=Path, required=True, help="The release bundle the library serves now.")
     mix.add_argument("--admitted", type=Path, action="append", default=[], help="An admission folder.")
@@ -233,7 +243,8 @@ def main(argv=None) -> int:
     options = parser.parse_args(argv)
     handler = {"self-test": command_self_test, "qualify": command_qualify, "sample-review": command_sample_review,
                "decisions-backfill": command_decisions_backfill, "admit": command_admit,
-               "admit-qualified": command_admit_qualified, "composition": command_composition}[options.command]
+               "admit-qualified": command_admit_qualified, "audit": command_audit,
+               "composition": command_composition}[options.command]
     print(json.dumps(handler(options), sort_keys=True, default=str))
     return 0
 

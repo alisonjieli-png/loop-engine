@@ -804,3 +804,99 @@ class QualifiedAdmissionTests(unittest.TestCase):
         entry["decision"]["rejected_members"] = [[self.components[0].identity, "v", "d" * 64]]
         with self.assertRaises(decisions.DecisionLedgerError):
             _append(self.decisions, _review({batch: entry}, "q"), {batch: records})
+
+
+class AuditTests(unittest.TestCase):
+    """The ongoing audit: published batches sampled after publication, withdrawals written, versions held."""
+
+    def setUp(self):
+        from tools.component_qualification import audit, qualified_admission
+        self.audit, self.route = audit, qualified_admission
+        self.folder = Path(tempfile.mkdtemp(prefix="generated-audit-"))
+        self.addCleanup(shutil.rmtree, self.folder, True)
+        self.components = _components(4, tag="u")
+        self.batch = self.components[0].batch
+        self.generator = sampling.generator_of(self.batch)
+        self.qualification = self.folder / "qualification"
+        self.qualification.mkdir()
+        (self.qualification / "qualification.jsonl").write_text("".join(json.dumps({
+            "identity": component.identity, "outcome": "qualified", "batch": component.batch, "line": component.line,
+            "record_version": component.record_version, "package_digest": component.package.package_digest,
+            "qualifier": dict(QUALIFIER), "vetting": {"implementation_tested": "fixture"},
+            "self_test_sha256": "0" * 64, "checks": []}) + "\n" for component in self.components))
+        self.decisions = self.folder / "decisions.jsonl"
+        decisions.create(self.decisions, **CREATED)
+        self.held = self.folder / "held.json"
+        self.held.write_text(json.dumps({"record_type": self.route.HELD_RECORD, "held": []}))
+        store = {component.identity: component for component in self.components}
+        self.admitted = self.folder / "admitted"
+        self.route.admit_qualified(self.qualification, None, self.decisions, self.held, self.admitted, "2026-10-05",
+                                   ROOT, components=store)
+        self.config = self.folder / "audit.json"
+        self.config.write_text(json.dumps({
+            "record_type": self.audit.CONFIG_RECORD, "reviewer": REVIEWER, "producer_family": "anthropic",
+            "daily_call_ceiling": 60, "admission_folders": [str(self.admitted)],
+            "decision_ledger": str(self.decisions), "held_versions": str(self.held), "store_root": "unused",
+            "state": str(self.folder / "state"), "host_config": "/data/host.json"}))
+        self.calls = []
+
+    def _review(self, rejected=1, admissible=True, calls=2):
+        """The sampled review's place: a plan pass, then a decided run that records its calls and verdicts."""
+        def review(options, root):
+            self.calls.append(options)
+            if not options.authorize_model_calls:
+                Path(options.output).write_text(json.dumps({"batches": {
+                    batch: {"calls_planned": calls} for batch in options.batch}, "calls_that_do_not_fit": []}))
+                return {}
+            with open(options.ledger, "a") as stream:
+                for number in range(6 + calls):
+                    stream.write(json.dumps({"record_type": "candidate_review_batch_call/v1", "sequence": number},
+                                            separators=(",", ":")) + "\n")
+            verdicts = [{"identity": component.identity, "decision": "reject" if index < rejected else "approve",
+                         "reason": "the schema check accepts an empty document" if index < rejected else "",
+                         "criteria": ["contracts_and_checks"] if index < rejected else [],
+                         "call_ref": f"run#{index}", "body_sha256": component.package.package_digest}
+                        for index, component in enumerate(self.components)]
+            Path(options.output).write_text(json.dumps({"reviewer": REVIEWER, "admissible": admissible,
+                                                        "batches": {self.batch: {"verdicts": verdicts}}}))
+            return {"calls_used": 6 + calls}
+        return review
+
+    def test_a_rejected_component_gets_a_ready_withdrawal_request(self):
+        result = self.audit.run(self.config, review=self._review(rejected=1))
+        self.assertEqual(result["withdrawal_requests"], 1)
+        [request_path] = (self.folder / "state" / "withdrawals").glob("*.json")
+        request = json.loads(request_path.read_text())
+        self.assertEqual(request["identity"], self.components[0].identity)
+        self.assertTrue(request["command"].startswith(
+            "loop-engine service withdraw-catalogue-item --config /data/host.json --identity "))
+        self.assertIn("the schema check accepts an empty document", request["command"])
+        self.assertFalse(request["executed"])
+        self.assertEqual([options.authorize_model_calls for options in self.calls], [False, True])
+        self.assertEqual(self.calls[1].call_ceiling, 6 + 2 + self.audit.RETRY_SLACK)
+        status = json.loads((self.folder / "state" / "status.json").read_text())
+        self.assertEqual(status["calls_spent_today_after"], 8)
+
+    def test_a_spent_daily_ceiling_leaves_the_batch_waiting(self):
+        runs = self.folder / "state" / "runs" / (datetime_now_day() + "T000000Z-earlier")
+        runs.mkdir(parents=True)
+        (runs / "panel-ledger.jsonl").write_text("".join(json.dumps(
+            {"record_type": "candidate_review_batch_call/v1", "sequence": number}, separators=(",", ":")) + "\n"
+            for number in range(58)))
+        result = self.audit.run(self.config, review=self._review())
+        self.assertEqual(self.calls, [])
+        self.assertIn(self.batch, result["waiting"])
+
+    def test_a_generator_at_the_tolerance_is_held_after_the_audit(self):
+        other = self.generator + "@" + "e" * 12
+        records = _records(other, 1767, "e")
+        _append(self.decisions, _review({other: _batch_entry(records, defective=21)}, "q"), {other: records})
+        self.audit.run(self.config, review=self._review(rejected=0))
+        held = self.route.read_held(self.held)
+        self.assertIn(self.generator, held)
+        self.assertIn("at or above the tolerance", held[self.generator]["reason"])
+
+
+def datetime_now_day() -> str:
+    from datetime import datetime, timezone
+    return datetime.now(timezone.utc).strftime("%Y-%m-%d")
