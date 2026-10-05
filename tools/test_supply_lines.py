@@ -4854,7 +4854,7 @@ class CreativeAssetsTest(unittest.TestCase):
         self.assertEqual(cc["licence"]["notices"], ["project/icon.LICENSE.md"])
         self.assertIn("LICENSE-CC0-1.0.txt", cc["licence"]["texts"])
 
-    def test_a_headless_import_fails_on_a_script_error_and_notes_other_engine_errors(self):
+    def test_a_headless_import_fails_on_a_parse_error_and_notes_what_the_environment_lacks(self):
         import shlex
         from supply_lines import godot_demos as demos
         with tempfile.TemporaryDirectory() as folder:
@@ -4868,10 +4868,20 @@ class CreativeAssetsTest(unittest.TestCase):
 
             self.assertEqual(answer("Importing done\n", 0), "passed")
             self.assertTrue(answer("\x1b[91mERROR: no rendering device\x1b[0m\n", 0)
-                            .startswith("passed: 1 engine error lines, the first 'ERROR: no rendering device'"))
-            # Known wrong: a script that does not parse, or a failing exit, fails the import whatever else it says.
+                            .startswith("passed: 1 error lines from the headless editor, the first 'ERROR: no rendering"))
+            # An editor tool script that fails at run time for want of a RenderingDevice is the environment's lack.
+            self.assertTrue(answer("SCRIPT ERROR: Cannot call method 'shader_create_from_spirv' on a null value.\n",
+                                   0).startswith("passed: 1 error lines"))
+            # Known wrong: a script or scene that does not parse, or a failing exit, fails whatever else it says.
             self.assertTrue(answer("SCRIPT ERROR: Parse Error: Unexpected Indent\n", 0).startswith("failed: exit 0"))
+            self.assertTrue(answer("ERROR: Parse Error: File unrecognized. [Resource file res://main.tscn:21]\n", 0)
+                            .startswith("failed: exit 0"))
             self.assertTrue(answer("", 3).startswith("failed: exit 3"))
+            # A C# project is not imported by a Godot build without .NET: the stand-in is never started.
+            (project / "Main.cs").write_text("public partial class Main {}\n", encoding="utf-8")
+            fake.unlink()
+            self.assertEqual(demos.godot_import(str(fake), project, timeout=30),
+                             "skipped: a C# project needs the Godot .NET build")
 
     def test_the_shipped_tests_pass_and_fail_a_fetcher_that_skips_its_checks(self):
         from supply_lines import creative_assets as line

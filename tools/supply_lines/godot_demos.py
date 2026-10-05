@@ -193,9 +193,13 @@ _ANSI = re.compile(r"\x1b\[[0-9;]*m")
 
 
 def godot_import(godot: str, folder: Path, timeout: float = 300.0) -> str:
-    """'passed' when Godot imports the whole project headless with exit status 0 and no script error (other engine
-    error lines are counted in the note, since a headless editor reports missing display features); the reason
-    otherwise."""
+    """'passed' when Godot imports the whole project headless with exit status 0 and no parse error; the reason
+    otherwise. A script or resource that does not parse fails the import. Other error lines are counted in the
+    note, because a headless editor reports what its environment lacks (no display, no RenderingDevice for an
+    editor tool script that runs a compute shader) while the project itself is sound. A C# project is skipped
+    unless the executable is a Godot .NET build, which alone can read C# scripts."""
+    if any(folder.rglob("*.cs")) and not any(mark in Path(godot).name.lower() for mark in ("mono", "dotnet")):
+        return "skipped: a C# project needs the Godot .NET build"
     home = folder.parent / "godot-home"
     home.mkdir(exist_ok=True)
     try:
@@ -204,11 +208,12 @@ def godot_import(godot: str, folder: Path, timeout: float = 300.0) -> str:
     except subprocess.TimeoutExpired:
         return f"failed: no answer within {timeout:.0f} s"
     lines = [_ANSI.sub("", line).strip() for line in (done.stdout + done.stderr).splitlines()]
-    scripts = [line for line in lines if "SCRIPT ERROR" in line or "Parse Error" in line]
-    if done.returncode != 0 or scripts:
-        return f"failed: exit {done.returncode}; {scripts[0] if scripts else ' '.join(lines[-3:])}"[:300]
-    engine = [line for line in lines if line.startswith("ERROR:")]
-    return ("passed" + (f": {len(engine)} engine error lines, the first {engine[0][:160]!r}" if engine else ""))[:300]
+    unparsed = [line for line in lines if "Parse Error" in line]
+    if done.returncode != 0 or unparsed:
+        return f"failed: exit {done.returncode}; {unparsed[0] if unparsed else ' '.join(lines[-3:])}"[:300]
+    errors = [line for line in lines if line.startswith(("ERROR:", "SCRIPT ERROR:"))]
+    return ("passed" + (f": {len(errors)} error lines from the headless editor, the first {errors[0][:160]!r}"
+                        if errors else ""))[:300]
 
 
 def project_readme(manifest: dict, notices, attribution) -> str:
