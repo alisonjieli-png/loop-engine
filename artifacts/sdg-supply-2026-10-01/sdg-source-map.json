@@ -7508,25 +7508,946 @@
   "bian_party_customer": [
    8,
    9
+  ],
+  "fusion": [
+   9
+  ],
+  "peekaping": [
+   9
+  ],
+  "engineercms": [
+   9
+  ],
+  "openaios_platform": [
+   9
+  ],
+  "covid_data_model": [
+   3,
+   9
+  ],
+  "aegra": [
+   9
+  ],
+  "wexflow": [
+   9
+  ],
+  "aeternity": [
+   8,
+   9
+  ],
+  "agentlabs": [
+   9
+  ],
+  "agentregistry": [
+   9
+  ],
+  "agi_agent_protocol": [
+   9
+  ],
+  "dorar_hadith": [
+   3,
+   9
+  ],
+  "ra_aid": [
+   9
+  ],
+  "moonshot": [
+   9
+  ],
+  "kargo": [
+   9
+  ],
+  "ai_real_estate_assistant": [
+   9
+  ],
+  "alfa_leetcode": [
+   4,
+   9
+  ],
+  "pouch": [
+   9
+  ],
+  "cloddsbot": [
+   9
+  ],
+  "airavata": [
+   9
+  ],
+  "coinapi": [
+   8,
+   9
+  ],
+  "apideck": [
+   9
+  ],
+  "restai": [
+   9
+  ],
+  "docsgpt": [
+   9
+  ],
+  "xiadown": [
+   9
+  ],
+  "artalk": [
+   9
+  ],
+  "accweb": [
+   9
+  ],
+  "oxicloud": [
+   9
+  ],
+  "authorizer": [
+   9,
+   16
+  ],
+  "authula": [
+   9,
+   16
+  ],
+  "threat_designer": [
+   9,
+   16
+  ],
+  "bcms": [
+   9
+  ],
+  "aisoc": [
+   9,
+   16
+  ],
+  "bcg": [
+   9
+  ],
+  "goldpinger": [
+   9
+  ],
+  "mediatracker": [
+   9
+  ],
+  "bucketeer": [
+   9
+  ],
+  "mission_control": [
+   9
+  ],
+  "kpack": [
+   9
+  ],
+  "ai_platform_engineering": [
+   9
+  ],
+  "terraboard": [
+   9
+  ],
+  "merlin": [
+   9
+  ],
+  "cardano_wallet": [
+   8,
+   9
+  ],
+  "serviceradar": [
+   9
+  ],
+  "casnode": [
+   9
+  ],
+  "cayley": [
+   9
+  ],
+  "upstat": [
+   9
+  ],
+  "chef_automate": [
+   9
+  ],
+  "godnslog": [
+   9,
+   16
+  ],
+  "churchcrm": [
+   9
+  ],
+  "clickvisual": [
+   9
+  ],
+  "beetle": [
+   9
+  ],
+  "garm": [
+   9
+  ],
+  "apo": [
+   9
+  ],
+  "paperless_ai": [
+   9
+  ],
+  "cnpmcore": [
+   9
+  ],
+  "podman_desktop_extension_ai_lab": [
+   9
+  ],
+  "csml_engine": [
+   9
+  ],
+  "flowctl": [
+   9
+  ],
+  "heimdall": [
+   9
+  ],
+  "clahub": [
+   9
+  ],
+  "fabric": [
+   9
+  ],
+  "datajunction_dj": [
+   9
+  ],
+  "dcspark_carp": [
+   8,
+   9
+  ],
+  "agent_swarm": [
+   9
+  ],
+  "dns_collector": [
+   9
+  ],
+  "duragraph": [
+   9
+  ],
+  "e2b_dashboard": [
+   9
+  ],
+  "gomodel": [
+   9
+  ],
+  "dolarapi_com": [
+   8,
+   9
+  ],
+  "mistral_rs": [
+   9
+  ],
+  "everos": [
+   9
+  ],
+  "qbitrr": [
+   9
+  ],
+  "ferriskey": [
+   9
+  ],
+  "fluxninja_aperture": [
+   9
+  ],
+  "fnproject_fn": [
+   9
+  ],
+  "gate_computer": [
+   9
+  ],
+  "blobtoolkit": [
+   3,
+   9
+  ],
+  "lycet": [
+   9
+  ],
+  "gobii_platform": [
+   9
+  ],
+  "grimoire": [
+   9
+  ],
+  "sec_gemini": [
+   9,
+   16
+  ],
+  "google_maps_scraper": [
+   9
+  ],
+  "grafeas": [
+   9,
+   16
+  ],
+  "output_ai": [
+   9
+  ],
+  "filebrowser": [
+   9
+  ],
+  "hackatime": [
+   4,
+   9
+  ],
+  "harnessrouter": [
+   9
+  ],
+  "harvester": [
+   9
+  ],
+  "kangal": [
+   9
+  ],
+  "archery": [
+   9
+  ],
+  "hookdeck_cli": [
+   9
+  ],
+  "outpost": [
+   9
+  ],
+  "ckman": [
+   9
+  ],
+  "html2rss_web": [
+   9
+  ],
+  "singularity": [
+   9
+  ],
+  "dataset_viewer": [
+   4,
+   9
+  ],
+  "hwameistor": [
+   9
+  ],
+  "ratus": [
+   9
+  ],
+  "flamingo_commerce": [
+   9
+  ],
+  "phenopixel": [
+   3,
+   9
+  ],
+  "misub": [
+   9
+  ],
+  "inference_gateway": [
+   9
+  ],
+  "kapacitor": [
+   9
+  ],
+  "scrumlr_io": [
+   4,
+   9
+  ],
+  "insforge": [
+   3,
+   9
+  ],
+  "persome": [
+   9
+  ],
+  "ironfunctions": [
+   9
+  ],
+  "osmedeus": [
+   9
+  ],
+  "voicebox": [
+   9
+  ],
+  "jans_config_fido2": [
+   9,
+   16
+  ],
+  "javinizer_go": [
+   9
+  ],
+  "jentic_one": [
+   9
+  ],
+  "polaris_agents": [
+   9
+  ],
+  "camofox_browser": [
+   9
+  ],
+  "mmm_remote_control": [
+   9
+  ],
+  "awesome_claude": [
+   9
+  ],
+  "appsensor": [
+   9,
+   16
+  ],
+  "jupyter_scheduler": [
+   9
+  ],
+  "kcli": [
+   9
+  ],
+  "openserp": [
+   9
+  ],
+  "kernel_images": [
+   9
+  ],
+  "go_fast_cdn": [
+   9
+  ],
+  "altmount": [
+   9
+  ],
+  "klavis": [
+   9
+  ],
+  "korrel8r": [
+   9
+  ],
+  "kraken_ci": [
+   9
+  ],
+  "comanda": [
+   9
+  ],
+  "kubeclipper": [
+   9
+  ],
+  "kubecube": [
+   9
+  ],
+  "kubegems": [
+   9
+  ],
+  "kuberhealthy": [
+   3,
+   9
+  ],
+  "ks_devops": [
+   9
+  ],
+  "kubeeye": [
+   9
+  ],
+  "karpor": [
+   9
+  ],
+  "kusion": [
+   9
+  ],
+  "agentenv": [
+   9
+  ],
+  "aiproxy": [
+   9
+  ],
+  "ade_cli": [
+   9
+  ],
+  "langbot": [
+   9,
+   16
+  ],
+  "langchain_agent_protocol": [
+   9
+  ],
+  "dify_service": [
+   9
+  ],
+  "langwatch": [
+   9
+  ],
+  "rustdesk": [
+   9
+  ],
+  "gpud": [
+   9
+  ],
+  "lightningrag": [
+   9
+  ],
+  "jaison_core": [
+   9
+  ],
+  "lindb": [
+   9
+  ],
+  "networking_toolbox": [
+   9
+  ],
+  "livetennisapi": [
+   9
+  ],
+  "lucidlayer": [
+   9
+  ],
+  "ainee": [
+   9
+  ],
+  "neko_rooms": [
+   9
+  ],
+  "magichourhq": [
+   9
+  ],
+  "izanami": [
+   9,
+   16
+  ],
+  "mailscript_cli": [
+   9
+  ],
+  "boruta": [
+   9,
+   16
+  ],
+  "marmot": [
+   9
+  ],
+  "bifrost": [
+   9
+  ],
+  "openmed": [
+   9
+  ],
+  "memmachine": [
+   9
+  ],
+  "acontext": [
+   9
+  ],
+  "memobase": [
+   9
+  ],
+  "color_name": [
+   9
+  ],
+  "metaculus": [
+   4,
+   9
+  ],
+  "agent_governance_toolkit": [
+   9
+  ],
+  "microsoft_ccf": [
+   9
+  ],
+  "kernel_memory": [
+   9
+  ],
+  "microsoft_sico": [
+   9
+  ],
+  "moredoc": [
+   9
+  ],
+  "modelrush_developer_tools": [
+   9
+  ],
+  "wa_akg": [
+   9
+  ],
+  "mmgis": [
+   9
+  ],
+  "api_umbrella": [
+   9
+  ],
+  "macgamingdb": [
+   9
+  ],
+  "prom_analytics_proxy": [
+   9
+  ],
+  "nimtable": [
+   9
+  ],
+  "nixiesearch": [
+   9
+  ],
+  "kubemanage": [
+   9
+  ],
+  "notifo": [
+   9
+  ],
+  "nullboiler": [
+   9,
+   11
+  ],
+  "nvidia_rag_blueprint": [
+   9
+  ],
+  "powercontext": [
+   9
+  ],
+  "omnigent": [
+   9
+  ],
+  "omnicoreagent": [
+   9
+  ],
+  "onepanel": [
+   9
+  ],
+  "quantdinger": [
+   8,
+   9
+  ],
+  "openchoreo": [
+   9
+  ],
+  "openml": [
+   4,
+   9
+  ],
+  "openpipe": [
+   9
+  ],
+  "openvan_camp_public": [
+   9,
+   11
+  ],
+  "infrahub": [
+   9
+  ],
+  "go_ldap_admin": [
+   9,
+   16
+  ],
+  "gos": [
+   9
+  ],
+  "lisa": [
+   9
+  ],
+  "nornicdb": [
+   9
+  ],
+  "openase": [
+   9
+  ],
+  "paddlelabel": [
+   4,
+   9
+  ],
+  "pancrepal_xiaoyibao": [
+   3,
+   9
+  ],
+  "payrollengine": [
+   8,
+   9
+  ],
+  "hols": [
+   9
+  ],
+  "pegasus": [
+   9
+  ],
+  "pezzo": [
+   9
+  ],
+  "pmxt": [
+   8,
+   9
+  ],
+  "lorax": [
+   9
+  ],
+  "shardbrowser": [
+   9
+  ],
+  "pwndoc": [
+   9
+  ],
+  "pyspur": [
+   9
+  ],
+  "osproxy": [
+   9
+  ],
+  "qingwave_weave": [
+   9
+  ],
+  "qwen_code": [
+   9
+  ],
+  "crater": [
+   9
+  ],
+  "openflare": [
+   9
+  ],
+  "insightflare": [
+   9
+  ],
+  "reactive_resume": [
+   4,
+   9
+  ],
+  "reshapr": [
+   9,
+   16
+  ],
+  "rill": [
+   9
+  ],
+  "scriberr": [
+   9
+  ],
+  "openwa": [
+   9
+  ],
+  "comfyui_openclaw": [
+   9
+  ],
+  "kubernikus": [
+   9
+  ],
+  "kafsiem": [
+   9,
+   16
+  ],
+  "rustchain": [
+   9
+  ],
+  "seekstorm": [
+   9,
+   16
+  ],
+  "valkyrie": [
+   9
+  ],
+  "seranking": [
+   9
+  ],
+  "distill": [
+   9
+  ],
+  "mcpproxy_go": [
+   9
+  ],
+  "soda_api": [
+   9,
+   11
+  ],
+  "delfin": [
+   9,
+   11
+  ],
+  "strato": [
+   9,
+   11
+  ],
+  "sourcefuse_loopback4": [
+   9
+  ],
+  "spacexland": [
+   9
+  ],
+  "speaches": [
+   9
+  ],
+  "sqlmesh": [
+   9
+  ],
+  "openclaw_managed_agents": [
+   9
+  ],
+  "starwhale": [
+   9
+  ],
+  "nopcommerce_api": [
+   9
+  ],
+  "freehire": [
+   4,
+   9
+  ],
+  "deepscrape": [
+   9
+  ],
+  "supallm": [
+   9
+  ],
+  "cosmos_liquidity": [
+   8,
+   9
+  ],
+  "tensorlake": [
+   9
+  ],
+  "tezedge": [
+   8,
+   9
+  ],
+  "open_wearables": [
+   3,
+   9
+  ],
+  "openagent": [
+   9
+  ],
+  "quivr": [
+   9
+  ],
+  "soul": [
+   9
+  ],
+  "threagile": [
+   9
+  ],
+  "thunderid": [
+   9,
+   16
+  ],
+  "timeplus_proton": [
+   9
+  ],
+  "timescale_ghost": [
+   9
+  ],
+  "goanalysis": [
+   9
+  ],
+  "e2a": [
+   9
+  ],
+  "opentonapi": [
+   8,
+   9
+  ],
+  "nussknacker": [
+   9
+  ],
+  "trpc_agent_go": [
+   9
+  ],
+  "trueforge": [
+   9
+  ],
+  "zealot": [
+   9
+  ],
+  "inertia": [
+   9
+  ],
+  "umdio": [
+   4,
+   9
+  ],
+  "unirate_api": [
+   8,
+   9
+  ],
+  "unlock_locksmith": [
+   8,
+   9
+  ],
+  "context7": [
+   9
+  ],
+  "lotus": [
+   8,
+   9
+  ],
+  "dot_ai": [
+   9
+  ],
+  "weave_gitops": [
+   9
+  ],
+  "prophecis": [
+   9
+  ],
+  "webhookx": [
+   9
+  ],
+  "moneyflow": [
+   8,
+   9
+  ],
+  "attachmentav": [
+   9
+  ],
+  "vproxy": [
+   9
+  ],
+  "product_integrator_mi": [
+   9
+  ],
+  "wukongim": [
+   9
+  ],
+  "xata": [
+   9,
+   16
+  ],
+  "xerj": [
+   9
+  ],
+  "sage_wiki": [
+   9
+  ],
+  "xrdebug": [
+   9
+  ],
+  "xregistry": [
+   9
+  ],
+  "memory_sdk_ts": [
+   9
+  ],
+  "mtranserver": [
+   9
+  ],
+  "clawmanager": [
+   9
+  ],
+  "cloudpods": [
+   9
+  ],
+  "idsphere": [
+   9,
+   16
+  ],
+  "shinpuru": [
+   9
+  ],
+  "kitaru": [
+   9
+  ],
+  "predator": [
+   9
+  ],
+  "fame": [
+   9
   ]
  },
  "sources_per_goal": {
   "1": 74,
   "2": 171,
-  "3": 197,
-  "4": 180,
+  "3": 205,
+  "4": 190,
   "5": 53,
   "6": 64,
   "7": 122,
-  "8": 141,
-  "9": 841,
+  "8": 156,
+  "9": 1129,
   "10": 90,
-  "11": 131,
+  "11": 136,
   "12": 171,
   "13": 243,
   "14": 97,
   "15": 139,
-  "16": 317,
+  "16": 336,
   "17": 282
  }
 }
