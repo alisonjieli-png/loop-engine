@@ -104,6 +104,22 @@ Supply lines (each writes library_supply_candidate/v1 records)
 │   │   or TSV files keyed by a field or by their row number)
 │   └── the upstream file byte for byte, its licence text beside it, a loader that refuses a
 │       changed file or a row that breaks the schema
+├── publisher_tables: one data table per series or table an official publisher serves at its own address
+│   ├── kind code_module, form data_table; collections in publisher_table_sources.json; the table half
+│   │   (shapes, schema, loader, tests) is data_tables.py's, the fact half is publisher_tables.py's
+│   ├── facts: the exact bytes at an HTTPS address on the collection's declared hosts (an archive member
+│   │   the declaration names), their SHA-256 and retrieval time; GitHub is never read
+│   ├── licence bound to the exact series or release with its evidence address: a World Development
+│   │   Indicators series by its own metadata's License_Type ("CC BY-4.0" alone maps, to CC-BY-4.0; SIPRI
+│   │   terms and CC BY 3.0 IGO refuse the series by name); the O*NET 31.0 Database by its licence page and
+│   │   the release's own Read Me together; the legal code from creativecommons.org as UPSTREAM-LICENSE
+│   ├── one package per series or table, never per country or year; the job key is the publisher and the
+│   │   series (schema.json), so a series retrieved again is the same job
+│   ├── SDG goals by a rule that is data (wdi_sdg_goals.json: the longest code prefix, else the series'
+│   │   topic, each with its reason; O*NET: goals 4 and 8 for the release), in the candidate's repository
+│   │   record and in the run's sdg-goals.json; proposals for reviewers, nothing granted
+│   └── a data file above the 256 KiB file bound kept as parts cut at record ends that join to the exact
+│       bytes; a table whose package would pass the 2 MiB bound refused as table_above_review_bound
 ├── function_extracts: one documented function of a permissive library with exactly the code it needs
 │   ├── kind code_module, form function; libraries in function_sources.json; generator 1.2.0; a
 │   │   library row that says withheld, with the measured reason, is declared and not read
@@ -206,6 +222,9 @@ PYTHONPATH=src:tools python tools/build_library_supply.py programs \
 PYTHONPATH=src:tools python tools/build_library_supply.py data-tables \
   --run-folder /home/username/baltor-library/supply/data-tables/DATE \
   --authorize-network-reads --authorize-store-writes [--table ID]
+PYTHONPATH=src:tools python tools/build_library_supply.py publisher-tables --collection world_bank_wdi \
+  --run-folder /home/username/baltor-library/supply/publisher-tables/DATE \
+  --authorize-network-reads --authorize-store-writes [--series CODE] [--maximum-series N]
 PYTHONPATH=src:tools python tools/build_library_supply.py curated-schemas \
   --run-folder /home/username/baltor-library/supply/json-schemas/DATE \
   --authorize-network-reads --authorize-store-writes [--source ID]
