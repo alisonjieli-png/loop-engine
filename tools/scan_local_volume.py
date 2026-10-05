@@ -534,12 +534,16 @@ def main(argv=None) -> int:
     if not volume.is_dir():
         print(f"not a folder: {volume}", file=sys.stderr)
         return 2
-    if output == volume or volume in output.parents:
-        print("write the inventory outside the scanned volume", file=sys.stderr)
-        return 2
     if args.root and any(Path(root).is_absolute() or ".." in Path(root).parts
                          or not (volume / root).resolve().is_relative_to(volume) for root in args.root):
         print("a selected root must stay within the named volume", file=sys.stderr)
+        return 2
+    # The inventory must never be walked into itself. Without selected roots every top-level folder is walked, so the
+    # output must lie outside the volume; with selected roots (a home folder walked by named roots, October 5, 2026)
+    # it may lie inside the volume when no selected root holds it.
+    walked = [(volume / root).resolve() for root in args.root] if args.root else [volume]
+    if any(output == folder or folder in output.parents for folder in walked):
+        print("write the inventory outside the scanned volume and every selected root", file=sys.stderr)
         return 2
     excluded_paths = {}
     for value in args.exclude_path:

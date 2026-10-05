@@ -87,6 +87,16 @@ class InventoryTest(unittest.TestCase):
                 self.assertEqual(scanner.main(["--volume", str(self.volume), "--root", root,
                                                "--output", str(self.root / "refused")]), 2)
         self.assertEqual(scanner.main(["--volume", str(self.volume), "--output", str(self.volume / "inventory")]), 2)
+        self.assertFalse((self.volume / "inventory").exists())
+        # With selected roots, the inventory may sit inside the volume, never inside a walked root.
+        self.assertEqual(scanner.main(["--volume", str(self.volume), "--root", "PROJECTS/resizer",
+                                       "--output", str(self.volume / "PROJECTS/resizer/inventory")]), 2)
+        self.assertFalse((self.volume / "PROJECTS/resizer/inventory").exists())
+        inside = self.volume / "private" / "inventory"
+        self.assertEqual(scanner.main(["--volume", str(self.volume), "--root", "PROJECTS/resizer",
+                                       "--output", str(inside)]), 0)
+        walked = {json.loads(line)["path"] for line in (inside / "files-001.jsonl").read_text().splitlines()}
+        self.assertFalse(any(path.startswith("private/") for path in walked))
 
     def test_inventory_excerpts_and_remotes_remove_credentials_and_skip_symlinks(self):
         token = "ghp_" + "x" * 30
