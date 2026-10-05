@@ -21,6 +21,7 @@ from contextlib import redirect_stdout
 import hashlib
 import json
 from io import BytesIO, StringIO
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -142,6 +143,67 @@ class DeltaUploadGuarantees(unittest.TestCase):
                 self.assertIn(delta.MACHINE, arguments)
                 self.assertNotIn("-r", arguments)
                 self.assertNotIn("-g", arguments)
+
+    @staticmethod
+    def _remote_folder(landed):
+        """A Machine whose release folder holds `landed`; it answers the read-back's summary and prefix listings."""
+        by_prefix = {}
+        for name in landed:
+            by_prefix.setdefault(name[:2], []).append(name)
+        calls = []
+
+        def execute(command, **kwargs):
+            calls.append(command)
+            if "for d in ??" in command:
+                return "\n".join(f"{prefix} {len(names)} {delta._names_digest(names)}"
+                                 for prefix, names in sorted(by_prefix.items()))
+            for prefix, names in by_prefix.items():
+                if f"/blobs/sha256/{prefix} " in command:
+                    return "\n".join(names)
+            return ""
+        return execute, calls
+
+    def test_a_large_read_back_is_one_bounded_answer_when_every_blob_landed(self):
+        expected = [hashlib.sha256(str(n).encode()).hexdigest() for n in range(70_000)]
+        execute, calls = self._remote_folder(expected)
+        with mock.patch.object(delta, "machine_exec", side_effect=execute):
+            self.assertEqual(delta.absent_blobs("delta-test", expected), [])
+        self.assertEqual(len(calls), 1)
+        self.assertLessEqual(len(execute(calls[0]).splitlines()), 256)
+
+    def test_known_wrong_only_a_prefix_that_differs_is_listed_and_never_the_whole_folder(self):
+        expected = [hashlib.sha256(str(n).encode()).hexdigest() for n in range(5_000)]
+        lost = expected[1234]
+        execute, calls = self._remote_folder([name for name in expected if name != lost] + ["f" * 64])
+        with mock.patch.object(delta, "machine_exec", side_effect=execute):
+            self.assertEqual(delta.absent_blobs("delta-test", expected), [lost])
+        listings = [command for command in calls if "for d in ??" not in command]
+        self.assertEqual(len(listings), 2)  # the lost blob's prefix and the prefix holding the stray file
+        self.assertTrue(any(f"/blobs/sha256/{lost[:2]} " in command for command in listings))
+        for command in calls:
+            self.assertNotRegex(command, r"find \S+/blobs/sha256 -type f")
+
+    def test_known_wrong_the_upload_never_asks_for_every_landed_name_at_once(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            blobs = {hashlib.sha256(str(n).encode()).hexdigest(): 4 for n in range(300)}
+            bundle = _bundle(Path(tmp), blobs)
+            execute, calls = self._remote_folder(list(blobs))
+            with mock.patch.object(delta, "machine_exec", side_effect=execute), \
+                    mock.patch.object(delta, "extract_archive"), mock.patch.object(delta, "fly", return_value=""):
+                self.assertIsNone(delta.upload_missing(bundle, sorted(blobs), "delta-test"))
+        self.assertTrue(calls)
+        for command in calls:
+            self.assertNotRegex(command, r"find \S+/blobs/sha256 -type f")
+
+    def test_the_summary_digest_matches_the_machine_shell(self):
+        names = [hashlib.sha256(str(n).encode()).hexdigest() for n in range(40)] + ["0" * 64, "a" * 64]
+        with tempfile.TemporaryDirectory() as tmp:
+            for name in names:
+                Path(tmp, name).write_bytes(b"")
+            shell = subprocess.run(["sh", "-c", f"find {tmp} -maxdepth 1 -type f -printf '%f\\n' | "
+                                    "LC_ALL=C sort | sha256sum | cut -c1-64"],
+                                   capture_output=True, text=True, check=True).stdout.strip()
+        self.assertEqual(delta._names_digest(names), shell)
 
     def test_an_unreadable_listing_is_an_error_and_never_an_empty_set(self):
         def refusing_exec(command, **kwargs):

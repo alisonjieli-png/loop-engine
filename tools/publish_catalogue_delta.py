@@ -224,12 +224,48 @@ def upload_missing(bundle: Path, missing: list[str], remote: str) -> None:
                   f"{sum(sizes.get(digest, 0) for digest in group) // 1024} KiB", flush=True)
     finally:
         shutil.rmtree(workdir, ignore_errors=True)
-    landed = machine_exec(
-        f"find {REMOTE_ROOT}/{remote}/blobs/sha256 -type f -printf '%f\\n' 2>/dev/null")
-    present = {name.strip() for name in landed.splitlines() if len(name.strip()) == 64}
-    absent = [digest for digest in missing if digest not in present]
+    absent = absent_blobs(remote, missing)
     if absent:
         raise RuntimeError(f"{len(absent)} blobs did not arrive, so nothing was published: {absent[:5]}")
+
+
+def _names_digest(names) -> str:
+    """SHA-256 of names sorted bytewise, one per line, as `find | LC_ALL=C sort | sha256sum` prints it."""
+    return hashlib.sha256("".join(f"{name}\n" for name in sorted(names)).encode()).hexdigest()
+
+
+def absent_blobs(remote: str, expected: list[str]) -> list[str]:
+    """The expected digests that are not in the remote release folder, read back in bounded pieces.
+
+    One command prints a line per two-character prefix folder: the prefix, its number of files and the
+    SHA-256 of their sorted names. Only a prefix whose line differs from the expected one is listed in
+    full. On October 5, 2026 the earlier single listing of all 61,205 uploaded names exceeded the Machines
+    API's 10 MiB exec response limit after every batch had landed, so a correct upload could not be
+    confirmed. This answer stays near 256 short lines at any release size.
+    """
+    folder = f"{REMOTE_ROOT}/{remote}/blobs/sha256"
+    groups: dict[str, list[str]] = {}
+    for digest in expected:
+        groups.setdefault(digest[:2], []).append(digest)
+    summary = machine_exec(
+        f"cd {folder} 2>/dev/null || exit 0; for d in ??; do [ -d \"$d\" ] || continue; "
+        f"n=$(find \"$d\" -maxdepth 1 -type f | wc -l); "
+        f"h=$(find \"$d\" -maxdepth 1 -type f -printf '%f\\n' | LC_ALL=C sort | sha256sum | cut -c1-64); "
+        f"echo \"$d $n $h\"; done")
+    seen = {}
+    for line in summary.splitlines():
+        parts = line.split()
+        if len(parts) == 3:
+            seen[parts[0]] = (parts[1], parts[2])
+    absent = []
+    for prefix, names in sorted(groups.items()):
+        if seen.get(prefix) == (str(len(names)), _names_digest(names)):
+            continue
+        listing = machine_exec(f"[ -d {folder}/{prefix} ] && find {folder}/{prefix} -maxdepth 1 -type f "
+                               f"-printf '%f\\n' || true")
+        present = {name.strip() for name in listing.splitlines()}
+        absent.extend(name for name in names if name not in present)
+    return absent
 
 
 def active_catalogue() -> dict:
