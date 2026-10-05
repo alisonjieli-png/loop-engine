@@ -24,6 +24,7 @@ lead with its reason) so the count of what the probes found stays complete.
 """
 from __future__ import annotations
 
+import json
 import re
 
 from supply_lines.records import ALLOWED_LICENCES, licence_allowed
@@ -166,3 +167,37 @@ def npm_route(candidate: dict) -> "tuple | None":
         return "programs", {"row": [None, candidate["title"], ["--version"], None, [], "unclassified"],
                             "npm": candidate["title"], "needs": "Homebrew formula, release and effects check"}
     return None
+
+
+def proposals(ledger, *, allowlisted_only: bool = True) -> dict:
+    """The routed candidates as rows in each supply line's own shape, one row per repository where the line keys
+    by repository, with the evidence that proposed it. Read-only over the ledger; the lines decide every licence
+    again from the licence text at the pinned commit, so this is a review queue, not an admission."""
+    where = "and allowlisted=1" if allowlisted_only else ""
+    out = {line: [] for line in LINES}
+    portal = []
+    merged: dict = {}
+    for key, route_, url, licence_reported, licence_lead_, payload in ledger.rows(
+            "select key, route, url, licence_reported, licence_lead, payload from candidates "
+            f"where route in ({','.join('?' * len(LINES))}) {where} order by first_seen_at", LINES):
+        proposal = (json.loads(payload or "{}") or {}).get("proposal") or {}
+        evidence = {"candidate": key, "url": url, "licence_reported": licence_reported, "licence_lead": licence_lead_}
+        if route_ == "data_tables" and proposal.get("source_kind") == "portal_distribution":
+            portal.append({**proposal, "evidence": evidence})
+            continue
+        if route_ in ("openapi_sources", "json_schema_sources") and proposal.get("repository"):
+            field = "paths" if route_ == "openapi_sources" else "schemas"
+            row = merged.setdefault((route_, proposal["repository"].lower()), {**proposal, field: [], "evidence": []})
+            for item in proposal.get(field) or []:
+                if item not in row[field]:
+                    row[field].append(item)
+            row["evidence"].append(evidence)
+            continue
+        out[route_].append({**proposal, "evidence": evidence})
+    for (line, _), row in merged.items():
+        out[line].append(row)
+    return {"record_type": "research_query_proposals/v1", "allowlisted_only": allowlisted_only,
+            "lines": out, "data_tables_portal_candidates": portal,
+            "counts": {**{line: len(rows) for line, rows in out.items()}, "data_tables_portal_candidates": len(portal)},
+            "note": "Proposed rows for review. Each line reads the source at a pinned commit and decides its licence "
+                    "from the licence text; a reported licence here is a lead."}

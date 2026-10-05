@@ -128,10 +128,22 @@ def command_report(options) -> dict:
     return out
 
 
+def command_proposals(options) -> dict:
+    from query_multiplier.routing import proposals
+    ledger = Ledger(Path(options.root))
+    value = proposals(ledger, allowlisted_only=not options.include_unlisted)
+    folder = ledger.day_folder() / "proposals"
+    folder.mkdir(parents=True, exist_ok=True)
+    path = folder / ("proposals-" + stamp().replace(":", "") + ".json")
+    path.write_text(json.dumps(value, indent=1, sort_keys=True), encoding="utf-8")
+    ledger.close()
+    return {"proposals": str(path), "counts": value["counts"]}
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     sub = parser.add_subparsers(dest="command", required=True)
-    for name in ("plan", "run", "import", "report"):
+    for name in ("plan", "run", "import", "report", "proposals"):
         command = sub.add_parser(name)
         command.add_argument("--plan", default=str(DEFAULT_PLAN))
         command.add_argument("--data-root", action="append", help="name=path for a table outside the repository (onet=...)")
@@ -154,9 +166,12 @@ def main(argv=None) -> int:
     reporting.add_argument("--bucket", type=int, default=25)
     reporting.add_argument("--with-plan", action="store_true")
     reporting.add_argument("--duty-hours", type=float, default=16.0, help="scheduled probing hours a day (hourly 40-minute passes: 16)")
+    sub.choices["proposals"].add_argument("--include-unlisted", action="store_true",
+                                          help="also rows whose reported licence is not on the allowlist")
     options = parser.parse_args(argv)
     try:
-        result = {"plan": command_plan, "run": command_run, "import": command_import, "report": command_report}[options.command](options)
+        result = {"plan": command_plan, "run": command_run, "import": command_import, "report": command_report,
+                  "proposals": command_proposals}[options.command](options)
     except (ValueError, PermissionError, OSError) as error:
         print(json.dumps({"status": "refused", "error_class": type(error).__name__, "detail": str(error)[:300]}))
         return 2
