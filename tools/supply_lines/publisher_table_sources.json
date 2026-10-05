@@ -26,6 +26,25 @@
   "16": "Peace, justice and strong institutions",
   "17": "Partnerships for the goals"
  },
+ "held": {
+  "un_sdg_global_database": {
+   "publisher": "United Nations Statistics Division",
+   "title": "Global SDG Indicators Database",
+   "address": "https://unstats.un.org/SDGAPI/v1/sdg/Series/Data",
+   "terms": "https://data.un.org/Host.aspx?Content=UNdataUse",
+   "terms_sha256": "163fcf2e2adb367237dd75a31878a4889bdedffbcbe18534127f771c07c303b0",
+   "held_on": "2026-10-05",
+   "reason": "UNdata's terms of use, read on October 5, 2026, say that its data 'may be copied freely, duplicated and further distributed provided that UNdata is cited as the reference'. That permission is not a licence on the owner's allowlist (MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC, 0BSD, CC0-1.0, CC-BY-4.0, Unlicense), so no series is read; whether such terms may be added is the owner's decision. World Development Indicators series and Our World in Data charts whose every origin is CC BY 4.0 cover many of the same indicators; Our World in Data marks origins it takes from UN agencies '(c) United Nations' (UNEP, UNFPA and WTO in the October 5 debug run), and the line refuses those charts by name."
+  },
+  "faostat": {
+   "publisher": "Food and Agriculture Organization of the United Nations",
+   "title": "FAOSTAT bulk downloads",
+   "address": "https://bulks-faostat.fao.org/production/datasets_E.json",
+   "manifest_sha256": "008f475c971a7770c69b1bc48f1c3a5fa8bf3873e762d6e1e9516bb0a700ebda",
+   "held_on": "2026-10-05",
+   "reason": "The bulk manifest, read on October 5, 2026, lists 69 datasets and names no licence for any of them; FAO's database terms are a general statement with exceptions for third-party data, which binds no licence to a dataset's exact bytes. The files are also large: only 4 of the 69 list fewer than 15,000 rows, about what the 2 MiB package bound holds. Held until FAO states a licence for each dataset; FAO data that the World Bank republishes under CC BY 4.0 (forest area, cereal yield, undernourishment) is supplied through World Development Indicators."
+  }
+ },
  "collections": {
   "world_bank_wdi": {
    "publisher": "The World Bank",

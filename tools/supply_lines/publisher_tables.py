@@ -177,6 +177,15 @@ def read_sources(path: Path = SOURCES_FILE) -> dict:
         raise ValueError("a licence text is an allowlisted licence's legal code and deed at HTTPS addresses")
     if sorted(record.get("sdg_goal_names") or {}, key=int) != [str(goal) for goal in range(1, 18)]:
         raise ValueError("sdg_goal_names names the 17 goals")
+    for name, source in (record.get("held") or {}).items():
+        # A held source is one the line could read but does not, until a licence decision changes: it names the
+        # publisher, what it would read, when it was held and why.
+        if not _IDENTIFIER.match(name) or not isinstance(source, dict) or not is_https(source.get("address", "")) \
+                or any(not str(source.get(field) or "").strip() for field in ("publisher", "title", "held_on", "reason")):
+            raise ValueError(f"publisher_table_sources.json: held source {name} names its publisher, title, address, "
+                             "date and reason")
+        if name in record["collections"]:
+            raise ValueError(f"publisher_table_sources.json: {name} is both held and supplied")
     for collection_id, collection in record["collections"].items():
         problems = _collection_problems(collection, texts) if _IDENTIFIER.match(collection_id) else ["its name"]
         problems += [f"covered_by {name!r} is not a declared series catalogue" for name in
@@ -1012,6 +1021,7 @@ def generate(reader, collection_id: str, *, code_revision: str, licence_text: by
                        + [answer for _address, answer in row["licence"].get("more_evidence", [])]):
             facts[answer.sha256] = answer.body
     summary["kept_per_goal"] = {str(goal): kept_goals[goal] for goal in sorted(kept_goals, key=str)}
+    summary["held_sources"] = sorted(sources.get("held") or {})
     return built, refused, facts, summary
 
 

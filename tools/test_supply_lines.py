@@ -1453,6 +1453,8 @@ class PublisherTableLineTest(unittest.TestCase):
         record = json.loads(line.SOURCES_FILE.read_text(encoding="utf-8"))
         self.assertEqual(sorted(line.read_sources()["collections"]), ["onet_database", "our_world_in_data",
                                                                        "world_bank_wdi"])
+        # The UN SDG Global Database stays held: UNdata's terms are not a licence on the allowlist.
+        self.assertEqual(sorted(line.read_sources()["held"]), ["faostat", "un_sdg_global_database"])
         wrong = []
         bad = copy.deepcopy(record)
         bad["collections"]["world_bank_wdi"]["licence"]["values"]["CC BY 3.0 IGO"] = "CC-BY-3.0-IGO"
@@ -1473,6 +1475,12 @@ class PublisherTableLineTest(unittest.TestCase):
         wrong.append(bad)
         bad = copy.deepcopy(record)
         bad["collections"]["our_world_in_data"]["covered_by"] = ["onet_database"]
+        wrong.append(bad)
+        bad = copy.deepcopy(record)
+        bad["held"]["un_sdg_global_database"]["reason"] = ""
+        wrong.append(bad)
+        bad = copy.deepcopy(record)
+        bad["held"]["world_bank_wdi"] = dict(bad["held"]["faostat"])
         wrong.append(bad)
         bad = copy.deepcopy(record)
         del bad["collections"]["our_world_in_data"]["goal_pages"]["17"]
