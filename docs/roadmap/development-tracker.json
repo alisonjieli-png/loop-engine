@@ -4,7 +4,7 @@
   "done": 49,
   "next": 15,
   "now": 68,
-  "waiting": 133
+  "waiting": 134
  },
  "lanes": {
   "blocked": [
@@ -4159,6 +4159,25 @@
     "waiting_on": [
      "S-4.8"
     ]
+   },
+   {
+    "acceptance": "An agent receives useful current intelligence under the lower-priced plan, and a full-library account also retrieves and reuses executable material, without changing either account's other permissions.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.214",
+     "S-6.24",
+     "S-6.216"
+    ],
+    "id": "S-6.218",
+    "next_local_work": "Map the existing billing, entitlement and maintained-knowledge contracts; implement explicit offering membership and on-demand intelligence first, then the daily feed and opt-in receiver. Keep pricing changes in test mode until end-to-end qualification.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Two offerings: maintained intelligence for agents, and intelligence with the full reusable library",
+    "waiting_on": [
+     "S-6.214",
+     "S-6.24",
+     "S-6.216"
+    ]
    }
   ]
  },
@@ -5425,5 +5444,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:a65c18d3fccd8b70b475ddea269e26453ec285a4f4993b1ee24325f753eb95f7"
+ "source_fingerprint": "sha256:15f3e474d67f7ede14fb2df63c94ab3ff61d7d6e1e9a6e24439c065fc330bd92"
 }

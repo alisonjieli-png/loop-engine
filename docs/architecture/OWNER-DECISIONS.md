@@ -12,6 +12,36 @@ Kind: current decision route with retained dated decisions. The owner's current 
 - Local or browser execution does not imply that no information leaves the device. Record inference, rendering, external assets and telemetry separately. Current approved privacy terms govern public behavior.
 - The roadmap remains authoritative. Reconciliation changes priorities and evidence descriptions; a new design alone does not complete a task.
 
+## Intelligence and full-library offerings, October 6, 2026
+
+The owner requests two offerings. The lower-priced offering is a maintained
+intelligence service for agents, developers and harnesses: current research,
+comparisons, lists of compatible services and tools, and context files. It
+should support on-demand retrieval, daily briefings and opt-in updates relevant
+to the subscriber's declared work. The higher-priced offering includes that
+intelligence and the full library of functions, code, tools and reusable files.
+
+Use one catalogue, identity service and delivery contract. Offering access is
+separate from review tier, source family and file extension. A Markdown file
+inside a code package does not make that package part of the cheaper offering.
+Public Good free-account grants remain independent of either paid plan.
+
+Preserve existing full-library access while implementing this split. No new
+price is approved or active merely because this direction is recorded. The
+existing Baltor Pro price remains unchanged until a tested plan change ships.
+Do not advertise the new offering as available before its access and delivery
+paths work. Keep public directory metadata available; the paid intelligence
+value must come from maintained, source-backed work and useful context, not
+from renaming an existing free directory.
+
+Every update states when its source was checked, what changed, what is unknown
+and when to review it again. Daily delivery is not a claim of real-time source
+coverage. Push requires an explicit subscription and a supported receiver;
+receiving a notice never executes its contents. Task-specific subscriptions
+use information the customer deliberately supplies, not automatic inspection
+of their project or conversation. Roadmap S-6.214 owns maintained intelligence;
+the existing subscription and delivery boundaries own the offering split.
+
 ## Public Good access, September 30, 2026
 
 The owner requested free harness components for everyone, including people

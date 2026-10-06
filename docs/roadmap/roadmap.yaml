@@ -4825,6 +4825,24 @@ steps:
     acceptance: "A builder reads what appeared yesterday in papers, skills, plugins, protocol servers, services and repositories in the format they prefer, and installs the useful parts as components."
     evidence: "September 26, 2026, the owner: 'we could distill daily papers, daily skills, daily plugins, daily saas, daily MCP ... daily github repos, served in a variety of formats from summary, to RSS, to JSON, to downloadable component'. Existing pieces: the protocol server directory refreshed daily (/directory), the model directory (/models), the research watch over 17 sources (research-watch.yml), and the Codex source discovery timer with at most ten public reads four times a day. September 26 late evening: The extended collector now covers papers, skills, plugins, protocol servers, services, repositories, packages and news. Private exports retain source identities and coverage and omit abstracts. Bounded coverage rotation and cursor continuation are implemented. Source reading, original public summaries, continuous model interrogation, public RSS/JSON routes and admission remain separate unfinished work."
     next_local_work: "September 30: the community registry includes 29 requested design, game, modeling and adjacent sources. Two authorized Reddit34 API reads succeeded; the integrated aigamedev read converted 25 posts into 20 source-linked research work orders, not components. The adapter uses the keyring, durable dispatch reservations, bounded responses and observed quota; no recurring Reddit timer, model expansion or publication was activated. Preserve earlier failed source trials, review and pin the scheduler to committed code, and qualify evidence before candidate generation. Additional reddapi, reddit3 and Searx services still need verified endpoint contracts and allowance. Continue public day/RSS/JSON views and independent admission through the existing knowledge radar; see docs/roadmap/DELIVERY-SEQUENCE.md."
+  - id: S-6.218
+    phase: 6
+    title: "Two offerings: maintained intelligence for agents, and intelligence with the full reusable library"
+    status: proposed
+    depends_on: [S-6.214, S-6.24, S-6.216]
+    boundary: [src/loop_engine/core/service_runtime, tools/knowledge_radar, tools]
+    verify:
+      - "one authenticated account can hold intelligence-only or full-library access, while existing full-library grants and Public Good free-account grants keep their behavior"
+      - "offering membership is explicit and source-bound per package version; file extensions, prose, search tags and review tier cannot grant a paid entitlement"
+      - "the intelligence offering retrieves dated context, comparisons and service directories on demand, with source versions, evidence status, coverage gaps, expiry and corrections retained"
+      - "the daily briefing, structured feed and context-file views use the same admitted records and stable update identities, not separate competing inventories"
+      - "task-specific updates use an explicit customer-supplied profile; no project files, conversation history or model credentials are read automatically"
+      - "push is opt-in, bounded and revocable, with a supported receiver, duplicate suppression, failed-delivery records and no automatic execution of notification content"
+      - "both plans pass search, manifest, exact-file read and billing tests before any new live price or availability claim; the public directory stays public"
+    adversarial: "An intelligence-only account cannot fetch a code package through a Markdown wrapper, alternate path, old snapshot or cached reference. An unsubscribed receiver gets no push. A failed source refresh cannot become a current briefing."
+    acceptance: "An agent receives useful current intelligence under the lower-priced plan, and a full-library account also retrieves and reuses executable material, without changing either account's other permissions."
+    evidence: "October 6, 2026: the owner requested a cheaper newsletter and intelligence service for agents, developers and harnesses, with OKF/Markdown context, lists, comparisons, on-demand reads and updates relevant to their work, plus a more expensive offering with all reusable files. This is the product direction, not an implemented plan split or price approval. Existing Pro access remains unchanged. See docs/architecture/OWNER-DECISIONS.md."
+    next_local_work: "Map the existing billing, entitlement and maintained-knowledge contracts; implement explicit offering membership and on-demand intelligence first, then the daily feed and opt-in receiver. Keep pricing changes in test mode until end-to-end qualification."
   - id: S-6.215
     phase: 6
     title: "One million served harness component files: deterministic supply lines, test-based admission with a sampled independent review, a serving engine with delta releases, and full-package delivery"
