@@ -1,7 +1,8 @@
 """Reuse named Baltor credentials from Secret Service without exporting secrets.
 
 Run with system Python. Inventory and configuration output contain references
-only. The headers command is a machine-only Claude Code headersHelper; never
+only, plus a service key's recorded identity and expiry, which are not secret.
+The headers command is a machine-only Claude Code headersHelper; never
 run it in a chat tool or save its output. Operator use is not a runtime grant.
 """
 from __future__ import annotations
@@ -19,6 +20,12 @@ import time
 
 ROOT = Path(__file__).resolve().parents[1]
 REFERENCES = Path(__file__).with_suffix(".json")
+#: Facts about a saved service-access key that are not the key: which key the service issued and when it was issued
+#: and expires, in epoch seconds. tools/reissue_service_keys.py writes them as attributes of the keyring item, beside
+#: the secret, each time it stores a key, so a check can tell an expired key from a refused one without asking anyone.
+KEY_FACTS = ("key_id", "expires_at", "issued_at")
+KEY_FACT_PATTERNS = {"key_id": re.compile(r"[0-9a-f]{32}"), "expires_at": re.compile(r"[0-9]{1,12}"),
+                     "issued_at": re.compile(r"[0-9]{1,12}")}
 
 
 class CredentialError(RuntimeError):
@@ -133,6 +140,25 @@ def renew(item, spec, held, now, refresh=request_refresh):
     updated = {**held, "token_response": {**previous, **result}, "expires_at": int((now + result["expires_in"]) * 1000)}
     item.set_secret(json.dumps(updated).encode())
     return updated
+
+
+def key_facts(name, saved=None, data=None):
+    """The recorded facts of one saved service-access key, never its value.
+
+    Returns the `KEY_FACTS` the keyring item carries as attributes, `key_id` as text and the two times as integers.
+    A fact that is missing or not in its exact form is left out rather than guessed, so an item saved by hand or
+    before the facts were written answers an empty record."""
+    data = data or references()
+    spec = data["api_keys"].get(name)
+    if spec is None or spec.get("purpose") != "service-access":
+        raise CredentialError("only_service_access_keys_carry_key_facts")
+    attributes = select_item(saved or collection(), name, data).get_attributes()
+    facts = {}
+    for field in KEY_FACTS:
+        value = attributes.get(field)
+        if isinstance(value, str) and KEY_FACT_PATTERNS[field].fullmatch(value):
+            facts[field] = value if field == "key_id" else int(value)
+    return facts
 
 
 def resolve(name, saved=None, data=None):
@@ -282,6 +308,11 @@ def main(argv=None):
                 else:
                     validate_api_token(item.get_secret().decode(), data["api_keys"][name])
                     row["format_valid"] = True
+                    if data["api_keys"][name].get("purpose") == "service-access":
+                        facts = key_facts(name, saved, data)
+                        if "expires_at" in facts:
+                            row.update(key_id=facts.get("key_id"), expires_at=facts["expires_at"],
+                                       expired=facts["expires_at"] <= time.time())
             except CredentialError as error:
                 row = {"reference": name, "present": False, "reason": str(error)}
             rows.append(row)

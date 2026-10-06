@@ -32,6 +32,17 @@ class Saved:
         self.items.append(Item(value,label))
 
 
+class KeyItem(Item):
+    """A saved service key with the attributes the keyring holds beside it."""
+    def __init__(self, value, attributes):
+        super().__init__(value, "Baltor operator / baltor-pilot-owner"); self.attributes = dict(attributes)
+    def get_attributes(self): return dict(self.attributes)
+
+
+KEY_ATTRIBUTES = {"application": "loop-engine", "service": "baltor-pilot.fly.dev", "account": "pilot-owner",
+                  "purpose": "service-access", "xdg:schema": "org.freedesktop.Secret.Generic"}
+
+
 class CredentialTests(unittest.TestCase):
     def setUp(self):
         self.data = tool.references()
@@ -51,6 +62,22 @@ class CredentialTests(unittest.TestCase):
             self.assertNotIn("env", row)
             if row["type"] == "http" and name not in self.data["native_mcp"]:
                 self.assertIn("headers " + name, row["headersHelper"])
+
+    def test_key_facts_read_the_recorded_identity_and_expiry_never_the_key(self):
+        secret = b"le_fixture_service_key_that_is_never_a_fact_000000"
+        item = KeyItem(secret, {**KEY_ATTRIBUTES, "key_id": "a" * 32, "expires_at": "1791848094",
+                                "issued_at": "1791243294", "token": secret.decode()})
+        facts = tool.key_facts("baltor-pilot-owner", Saved([item]), self.data)
+        self.assertEqual(facts, {"key_id": "a" * 32, "expires_at": 1791848094, "issued_at": 1791243294})
+        self.assertNotIn(secret.decode(), json.dumps(facts), "an attribute outside the facts is never returned")
+
+    def test_known_wrong_key_facts_leave_out_what_is_not_in_its_exact_form(self):
+        # A key saved by hand, or before the renewal wrote its facts, answers no expiry instead of a guess.
+        item = KeyItem(b"le_value", {**KEY_ATTRIBUTES, "key_id": "not-a-key-id", "expires_at": "soon"})
+        self.assertEqual(tool.key_facts("baltor-pilot-owner", Saved([item]), self.data), {})
+        self.assertEqual(tool.key_facts("baltor-pilot-owner", Saved([KeyItem(b"le_value", KEY_ATTRIBUTES)]), self.data), {})
+        with self.assertRaisesRegex(tool.CredentialError, "only_service_access"):
+            tool.key_facts("stripe-test", Saved([item]), self.data)
 
     def test_native_authorization_stays_with_client_and_exports_no_token(self):
         config=tool.claude_configuration()["mcpServers"]["baltor-namecheap"]
