@@ -1,0 +1,74 @@
+{
+  "record_type": "catalogue_publication_record/v1",
+  "application_release": 68,
+  "operator_source_revision": "5aa146791fda952c3140446a6f2e698fb78ad21f",
+  "previous_release_id": "76e970a98201e0cd17be65c8696c09c9d336453441595d0e3c0043819b2f1516",
+  "release_id": "8806a9975412ff0ddedb217f455425fbb040052a630cdf4cf0af6652625765a6",
+  "release_record_type": "catalogue_release/v2",
+  "bundle_digest": "1229026c635af2241c70409539e72a5247acb9bb1a1c5e1a43ca499cce89ee76",
+  "reconciliation_digest": "fcd43c3aa0aa6108d4b35bc9f0078d7fe56dd8e14460b93bbf91469099936a47",
+  "content_digest": "2eeed4ed6f11b261c707c75a96f63beba53ac164cfdc05d1c267192976782761",
+  "packages_added": 50,
+  "packages_changed": 0,
+  "packages_withdrawn": 0,
+  "previous_exact_versions_preserved": 92923,
+  "total_packages": 92973,
+  "total_distinct_files": 370994,
+  "new_distinct_files": 201,
+  "new_body_bytes": 425993,
+  "segments_written": 387,
+  "item_versions_written": 50,
+  "qualification": {
+    "basis": "deterministic_qualification_independent_review_ongoing",
+    "packages_fully_qualified_before_admission": 50,
+    "source": "python-validators/validators",
+    "source_revision": "70de324322def13a49a93d222f798ec1ab700885",
+    "generator_revision": "d45ede181dbe945cec4f747fd50d4735003abbc4",
+    "licence": "MIT notices retained; no licence grant for unrelated handoff packages"
+  },
+  "preservation_checks": {"expected_search_items_lost": 0, "public_good_grants_orphaned": 0, "verdict": "conservative_over_judged_queries"},
+  "serving": {
+    "expected_release_and_content_digest_observed": true,
+    "ready_after_swap": true,
+    "index_swap_seconds": 189.505,
+    "publisher_confirmation_wait_minutes": 5,
+    "completed_staging_copy_removed": true,
+    "local_source_and_bundle_preserved": true,
+    "rollback_image_requires_catalogue_state_version": 3
+  },
+  "live_target_verification": {
+    "packages": ["slug", "ipv6", "sha256"],
+    "files_read_back_exactly": 18,
+    "http_calls": 21,
+    "supplied_test_suites_passed_in_sandbox": 3,
+    "component_network_calls": 0,
+    "credential_printed": false
+  },
+  "additional_diagnostic": {
+    "check": "hosted catalogue disclosure, verified-only searches",
+    "passed_before_interruption": 3,
+    "planned": 11,
+    "failure": "TimeoutError during a narrowed search",
+    "repair_status": "Checked tier-projection prefilter developed; fresh deployed check required."
+  },
+  "independent_audit_attempt": {
+    "reviewer": "ollama.glm-5.3",
+    "producer_family": "openai",
+    "physical_model_calls": 6,
+    "provider_reported_input_tokens": 105439,
+    "provider_reported_output_tokens": 124300,
+    "status": "calibration_incomplete",
+    "output_limit_failures": 2,
+    "usable_package_decisions": 0,
+    "withdrawals": 0,
+    "generator_holds_added": 0,
+    "approval_claimed": false
+  },
+  "limits": [
+    "Package, file and semantic capability counts are different populations.",
+    "Live readback and sandbox tests cover three representative packages, not every harness or real consumer task.",
+    "The large API wave is unpublished. Its proposed total is not a live count.",
+    "The wider-pool ranking experiment remains private and is not the production default."
+  ],
+  "private_evidence_root": "/home/username/baltor-private/component-expansion-20261005-ZtoE9L/small-segmented"
+}

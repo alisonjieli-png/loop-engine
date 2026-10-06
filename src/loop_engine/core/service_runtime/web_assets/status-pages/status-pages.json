@@ -5,6 +5,20 @@
   "releases": [
    {
     "kind": "service",
+    "number": 68,
+    "at": "2026-10-06T03:59:38Z",
+    "lines": [
+     "Deployment readiness requires the exact image and a passing Machine probe from its current boot before the public health gate.",
+     "The source tree includes bounded research query planning, source executors, refresh scheduling and stored-result recovery. The research worker runs separately on the development workstation, not as a hosted product feature.",
+     "The scheduled research wrapper inherits credentials and never evaluates a shell profile.",
+     "Research status values reuse their existing owners; exact source/protocol audit exceptions retain owners and expiry dates.",
+     "Release 67's failed grant step, recovery and measured disk-index activation are retained in the release record."
+    ],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
     "number": 67,
     "at": "2026-10-06T02:33:05Z",
     "lines": [

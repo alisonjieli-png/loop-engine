@@ -2,8 +2,7 @@
 
 Kind: product architecture with measured local implementation and proposed hosting.
 Date: 2026-09-19. The [current deployment](#current-deployment) section was
-added on 2026-09-20 and last checked on 2026-10-05, after Fly release 67 and
-its disk-index recovery (October 6 UTC).
+added on 2026-09-20 and last checked on 2026-10-06, after Fly release 68.
 
 The hosted product manages accounts, subscriptions, and access to intelligence.
 The customer runs Loop Engine and the selected harnesses. A hosted intelligence
@@ -48,7 +47,32 @@ from the newest release record, follow the release record and correct this
 section. Update this section in the same change that records a new release.
 It describes a private pilot. It does not describe a qualified paid service.
 
-The running image is Fly release 67, from
+The running image is Fly release 68, from
+`5aa146791fda952c3140446a6f2e698fb78ad21f`, image
+`sha256:9663e9e6664ca7ac411d77c7c886aca42beb3f01f697e3419a00be44f7d022d8`.
+CI `37410413469` and guarded deployment `37411375142` passed. The workflow
+checked the exact new image and a fresh Machine probe before public readiness;
+packaged grants and billing-policy application then passed. The gate is off.
+All ten hosts pass 2,118 read-only browser assertions. The service retained its
+prepared disk index and the unchanged 92,923-package, 370,793-file catalogue.
+The [release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-68.json)
+keeps the exact steps, source-discovery schedule and untested boundaries.
+Release 67 is the rollback image and understands catalogue state versions 1,
+2 and 3. The wider-pool retrieval experiment and the large API wave remain
+unpublished. No brand, domain or DNS change is part of this release.
+
+A subsequent [segmented catalogue publication](../../artifacts/architecture-audit-2026-09-19/catalogue-segmented-first-2026-10-06.json)
+added 50 qualified validation-function packages, with all existing versions
+preserved and no orphaned Public Good grants. Active catalogue `8806a997…`
+holds 92,973 packages and 370,994 distinct files. Eighteen files from three
+representative packages matched live readback and passed their supplied tests
+in the sandbox. The independent audit stopped at incomplete calibration after
+two output-limit failures; no usable package decisions or independent approval
+are claimed. A verified-only disclosure diagnostic timed out; its separate
+performance repair must pass a fresh deployed check. The larger API wave stays
+held by its recorded retrieval comparison.
+
+The preceding running image was Fly release 67, from
 `3f4714662602a5871783ff6bd9ca3aaeefada8b7`, image
 `sha256:0244fa5bc9099c2782270da245e200aeb0768323be0d8d2617cf21caf9b9f2d7`.
 CI `37402791077` passed. Deployment `37404412829` installed the image but
