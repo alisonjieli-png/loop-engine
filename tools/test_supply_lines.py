@@ -34,6 +34,7 @@ from loop_engine.core.library_ingestion.provenance import (  # noqa: E402
 from loop_engine.core.library_ingestion.record_rules import canonical_json  # noqa: E402
 
 from licensed_import.storage import NAMESPACE, SUPPLY_NAMESPACE  # noqa: E402
+from component_qualification.sandbox import SandboxSettings as _FunctionSandboxSettings  # noqa: E402
 from supply_lines import mcp_registry, packaging, records  # noqa: E402
 from supply_lines.packaging import LICENCE_NAME, PackageFile, SupplyPackage, build  # noqa: E402
 from supply_lines.records import SupplyRecordError, licence_allowed, read_supply_candidate  # noqa: E402
@@ -1813,7 +1814,6 @@ class OpenApiDirectoryTest(unittest.TestCase):
 
     def test_a_licence_file_address_is_decided_by_its_repository_and_must_agree_with_the_declared_name(self):
         from supply_lines import openapi_directory as line
-        from supply_lines.licences import RepositoryLicence
 
         class Reader:
             def __init__(self, licence):
@@ -2552,7 +2552,76 @@ def _extract(files: dict, **source) -> tuple:
     return packages, {row["subject"].rsplit(" ", 1)[-1]: row["reason"] for row in refused}
 
 
+class FunctionExtractsSandboxAvailabilityTest(unittest.TestCase):
+    def test_missing_sandbox_refuses_without_running_extracted_code(self):
+        with mock.patch("supply_lines.function_extracts.SandboxSettings.available", return_value=(False, "missing")):
+            packages, refused = _extract({"lib/core.py": LIBRARY_CORE, "lib/helpers.py": LIBRARY_HELPERS})
+        self.assertEqual(packages, {})
+        self.assertEqual(refused["chunk_pairs"], "sandbox_unavailable")
+
+
+@unittest.skipUnless(_FunctionSandboxSettings().works(), "function extraction needs the real qualification sandbox")
 class FunctionExtractsTest(unittest.TestCase):
+    def test_mutation_sandbox_outage_is_not_a_passing_control(self):
+        from supply_lines import function_extracts as line
+        original = line.run_component
+        calls = []
+
+        def interrupted(component, settings, work):
+            calls.append(component)
+            if len(calls) == 2:
+                return {"ran": False, "reason": "no_driver_report", "timed_out": False}
+            return original(component, settings, work)
+
+        with mock.patch.object(line, "run_component", side_effect=interrupted):
+            packages, refused = _extract({"lib/core.py": '''
+def add_one(value):
+    """Add one to an integer.
+
+    >>> add_one(2)
+    3
+    """
+    return value + 1
+'''})
+        self.assertEqual(len(calls), 2)
+        self.assertEqual(packages, {})
+        self.assertEqual(refused["add_one"], "sandbox_failed")
+
+    def test_extracted_examples_cannot_read_the_generator_environment(self):
+        source = '''import os
+
+def host_value():
+    """Read a value supplied only to the generator process.
+
+    >>> host_value()
+    'generator-only-fixture'
+    """
+    return os.environ['BALTOR_EXTRACTION_TEST_VALUE']
+'''
+        with mock.patch.dict(os.environ, {"BALTOR_EXTRACTION_TEST_VALUE": "generator-only-fixture"}):
+            packages, refused = _extract({"lib/host.py": source})
+        self.assertNotIn("host_value", packages)
+        self.assertEqual(refused["host_value"], "examples_failed")
+
+    def test_extracted_examples_cannot_read_host_files(self):
+        with tempfile.TemporaryDirectory() as private:
+            target = Path(private) / "host-only.txt"
+            target.write_text("host-only-fixture", encoding="utf-8")
+            source = f'''from pathlib import Path
+
+def host_value():
+    """Read a file supplied only to the generator process.
+
+    >>> host_value()
+    'host-only-fixture'
+    """
+    return Path({str(target)!r}).read_text()
+'''
+            packages, refused = _extract({"lib/host.py": source})
+            self.assertNotIn("host_value", packages)
+            self.assertEqual(refused["host_value"], "examples_failed")
+            self.assertEqual(target.read_text(), "host-only-fixture")
+
     def test_documented_functions_are_copied_with_their_closure_and_tested(self):
         from supply_lines import function_extracts as line
         from loop_engine.core.library_ingestion.record_rules import git_blob_identity

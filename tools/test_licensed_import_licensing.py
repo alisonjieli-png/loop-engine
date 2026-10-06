@@ -21,7 +21,7 @@ from __future__ import annotations
 import unittest
 
 import test_licensed_import_support as support
-from loop_engine.core.library_ingestion.licences import LicencePolicy
+from loop_engine.core.library_ingestion.licences import LicencePolicy, licence_words, match_licence
 from loop_engine.core.library_ingestion.provenance import OUTLINE_ONLY, REFUSED, VERBATIM
 
 from licensed_import.licensing import (
@@ -37,6 +37,20 @@ def _decide(members, licences, *, primary="skills/demo/SKILL.md", github="MIT", 
 
 
 class LicenceRuleChecks(unittest.TestCase):
+    def test_wrapped_copyright_disclaimer_is_not_a_holder_notice(self):
+        # This wrapping occurs in python-validators/validators' MIT licence.
+        text = support.MIT.replace("COPYRIGHT HOLDERS", "\nCOPYRIGHT HOLDERS")
+        self.assertEqual(licence_words(text), licence_words(support.MIT))
+        self.assertEqual(match_licence(text).spdx, "MIT")
+        result = _decide({"skills/demo/SKILL.md": support.skill("demo")}, {"LICENSE": text})
+        self.assertEqual(result.decision, VERBATIM)
+
+    def test_a_copyright_holder_restriction_is_not_discarded_as_a_notice(self):
+        text = support.MIT + "\nCopyright holders prohibit commercial redistribution.\n"
+        self.assertIsNone(match_licence(text).spdx)
+        result = _decide({"skills/demo/SKILL.md": support.skill("demo")}, {"LICENSE": text})
+        self.assertNotEqual(result.decision, VERBATIM)
+
     def test_the_policy_is_exactly_the_owners_allowlist(self):
         self.assertEqual(POLICY.accepted, ALLOWED_LICENCES)
         self.assertEqual(set(ALLOWED_LICENCES), {"MIT", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause", "ISC", "0BSD",

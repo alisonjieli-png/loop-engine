@@ -17,7 +17,7 @@ function_sources.json: repository, branch, package folder, the modules to read
 │   │   licence other than the repository's
 │   ├── effects: read from the syntax tree of the copied code and of every docstring example the tests run
 │   │   (files opened, written or listed, processes started, network modules), never from its words
-│   └── tests: the examples run as doctests with the network closed; then a known-wrong control, the same
+│   └── tests: the examples run as doctests in the qualification sandbox; then a known-wrong control, the same
 │       function raising NotImplementedError under its own docstring, must fail them
 └── package: <module>.py (the closure), test_<module>.py, README.md (the whole signature, the docstring's own
     description, the other definitions the module holds, the examples its tests run), LICENSE (Baltor's, for
@@ -53,9 +53,13 @@ import tokenize
 import typing
 from dataclasses import dataclass, field
 from pathlib import Path
+from types import MappingProxyType
+
+from component_qualification.components import GeneratedComponent
+from component_qualification.sandbox import SandboxSettings, run_component
+from loop_engine.core.service_runtime.catalogue_packages import CataloguePackage, CataloguePackageFile
 
 from .licences import repository_licence
-from .openapi_operations import run_tests
 from .packaging import LICENCE_NAME, UPSTREAM_LICENCE_NAME, PackageFile, SupplyPackage, build, notice_files
 from .reading import RAW_HOST, github_blob_address, https_address, pinned_files, repository_notice
 from .records import (
@@ -64,7 +68,7 @@ from .records import (
 
 SOURCES_FILE = Path(__file__).with_name("function_sources.json")
 SOURCES_RECORD_TYPE = "library_supply_function_sources/v1"
-GENERATOR_VERSION = "1.2.0"
+GENERATOR_VERSION = "1.3.0"
 NATIVE_FORMAT = "python_function"
 HOSTS = (RAW_HOST,)
 #: The most lines one extracted closure may hold; a larger one is not a function-level component.
@@ -810,6 +814,38 @@ def test_text(module: str) -> str:
             'if __name__ == "__main__":\n    unittest.main()\n')
 
 
+def run_tests(folder: Path, module: str) -> tuple:
+    """Run extracted upstream code only through the existing qualification sandbox.
+
+    The two files are copied into a fresh workspace for every run, including
+    the known-wrong control. A missing or failed sandbox never falls back to
+    importing the code into the generator process.
+    """
+    settings = SandboxSettings()
+    available, reason = settings.available()
+    if not available:
+        raise ExtractRefused("sandbox_unavailable", reason)
+    payloads = {name: (folder / name).read_bytes() for name in (f"{module}.py", f"test_{module}.py")}
+    package = CataloguePackage(tuple(CataloguePackageFile(
+        name, hashlib.sha256(body).hexdigest(), len(body), "text/x-python", "executable_tool")
+        for name, body in payloads.items()))
+    component = GeneratedComponent(module, "1", MappingProxyType({}), package, MappingProxyType(payloads))
+    try:
+        report = run_component(component, settings, folder / "sandbox")
+    except OSError as error:
+        raise ExtractRefused("sandbox_unavailable", type(error).__name__) from error
+    if not report.get("ran") or report.get("timed_out"):
+        raise ExtractRefused("sandbox_failed", report.get("reason", "sandbox did not finish"))
+    tests = report.get("tests") or {}
+    imports = report.get("imports", ())
+    if tests.get("timed_out") or any(row.get("timed_out") for row in imports):
+        raise ExtractRefused("sandbox_failed", "extracted code exceeded its time limit")
+    passed = (tests.get("passed", False) and tests.get("ran", 0) > 0
+              and all(row["ok"] for row in imports))
+    detail = "\n".join(row.get("tail", "") for row in imports if not row["ok"])
+    return passed, tests.get("ran", 0), (detail + tests.get("tail", ""))[-800:]
+
+
 def generate(reader, sources, *, code_revision: str, licence_text: bytes, generated_on: str, staging: Path,
              repository_facts: "dict | None" = None) -> tuple:
     """(built, refusals, facts, summary): every documented function of every declared library, tested."""
@@ -922,13 +958,15 @@ def _package(node, path, modules, source, pinned, licence, commit, generator, li
     folder.mkdir(parents=True, exist_ok=True)
     (folder / f"{module}.py").write_text(text, encoding="utf-8")
     (folder / f"test_{module}.py").write_text(tests, encoding="utf-8")
-    passed, count, output = run_tests(folder, module)
-    if not passed:
-        raise ExtractRefused(EXAMPLES_FAILED, output[-300:])
-    docstring = ast.get_docstring(node, clean=False) or ""
-    (folder / f"{module}.py").write_text(mutant_text(text, node.name, docstring), encoding="utf-8")
-    mutant_passed, _count, _output = run_tests(folder, module)
-    shutil.rmtree(folder, ignore_errors=True)  # a test that starts processes may leave compiled files behind
+    try:
+        passed, count, output = run_tests(folder, module)
+        if not passed:
+            raise ExtractRefused(EXAMPLES_FAILED, output[-300:])
+        docstring = ast.get_docstring(node, clean=False) or ""
+        (folder / f"{module}.py").write_text(mutant_text(text, node.name, docstring), encoding="utf-8")
+        mutant_passed, _count, _output = run_tests(folder, module)
+    finally:
+        shutil.rmtree(folder, ignore_errors=True)
     if mutant_passed:
         raise ExtractRefused(EXAMPLES_DO_NOT_EXERCISE, node.name)
     segments = [[statement.module, statement.start, statement.end] for statement in closure.statements]
@@ -979,7 +1017,7 @@ def _package(node, path, modules, source, pinned, licence, commit, generator, li
                      "scope": "project", "support": "unverified"}],
         effects=code_effects(text), credentials=[],
         tests={"files": [f"test_{module}.py"], "command": f"python -m unittest test_{module}", "result": "passed",
-               "tests_run": count, "network": False,
+               "tests_run": count, "network": False, "sandbox_engine": SandboxSettings().engine,
                "known_wrong_control": "the function raising NotImplementedError under its own docstring fails"},
         repository={"name": source["repository"], "stars": stars, "module": path, "function": node.name,
                     "segments": segments},

@@ -57,6 +57,7 @@ LICENCE_FILE = ROOT / "LICENSE"
 #: The code the generators run: a stored package must name a revision where all of it is committed. Generated
 #: views elsewhere in the tree (a regenerated status page) do not change what a generator writes.
 GENERATOR_PATHS = ("tools/supply_lines", "tools/build_library_supply.py", "tools/licensed_import",
+                   "tools/component_qualification",
                    "src/loop_engine/core/library_ingestion", "src/loop_engine/core/service_runtime/catalogue_attributes.py",
                    "src/loop_engine/core/service_runtime/catalogue_packages.py", "src/loop_engine/data/library_composition.json",
                    "LICENSE")

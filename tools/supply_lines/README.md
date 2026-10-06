@@ -127,7 +127,7 @@ Supply lines (each writes library_supply_candidate/v1 records)
 │   └── a data file above the 256 KiB file bound kept as parts cut at record ends that join to the exact
 │       bytes; a table whose package would pass the 2 MiB bound refused as table_above_review_bound
 ├── function_extracts: one documented function of a permissive library with exactly the code it needs
-│   ├── kind code_module, form function; libraries in function_sources.json; generator 1.2.0; a
+│   ├── kind code_module, form function; libraries in function_sources.json; generator 1.3.0; a
 │   │   library row that says withheld, with the measured reason, is declared and not read
 │   ├── the function and its closure copied whole statement by statement across the package's own
 │   │   modules, names only annotations read among them; standard library imports written as imports;
@@ -135,8 +135,8 @@ Supply lines (each writes library_supply_candidate/v1 records)
 │   ├── refused by name as well: a module's own test or demonstration, a docstring without words, a
 │   │   copied module that states a licence other than the repository's
 │   ├── effects read from the syntax tree of the code and of its docstring examples, never from words
-│   └── its docstring examples run as doctests, and the same function raising NotImplementedError
-│       under its own docstring must fail them
+│   └── its docstring examples run as doctests in the qualification sandbox, and the same function raising
+│       NotImplementedError under its own docstring must fail them in a fresh sandbox
 └── json_schemas: one JSON Schema with schema_check.py (a small validator) and tests
     ├── kind contract_schema, form schema
     ├── SchemaStore mode (json_schemas.py): the latest version of each schema family with the
@@ -267,6 +267,30 @@ keeps it a candidate.
 ```bash
 PYTHONPATH=src:tools python -m unittest tools.test_supply_lines
 ```
+
+## Generator 1.3.0 of function_extracts
+
+Extracted upstream functions and their examples run through the existing
+`component_qualification.sandbox` engine. Every ordinary test and known-wrong
+control gets a fresh workspace, cleared environment, hidden home and mounted
+volumes, no network, and the engine's resource limits. The generator no longer
+imports upstream code into its own process. A missing sandbox is
+`sandbox_unavailable`; a sandbox startup failure or timeout is `sandbox_failed`.
+Neither outcome can pass the known-wrong control. The candidate's test record
+names the sandbox engine; later qualification remains a separate operation.
+
+The source inventory now includes validators, w3lib and webcolors. The first
+trial extracted 50 validators functions; w3lib and webcolors were refused by
+the existing licence-text check. Their source declarations remain available
+for investigation. Boltons and Toolz were considered but not added because
+GitHub's licence interface returned `NOASSERTION`. No licence threshold or
+allowlist changed.
+
+The trial also found that the licence normalizer discarded a wrapped
+`COPYRIGHT HOLDERS` disclaimer as if it were an authorship notice. Holder
+notices now require a copyright mark or a year; disclaimer lines remain in
+the text compared with the template. The validators MIT text then matched.
+The original notice and licence bytes still travel with every package.
 
 ## Generator 1.2.0 of function_extracts
 
