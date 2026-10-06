@@ -605,8 +605,8 @@ class DiskSearchIndex:
     engine = ENGINE_ID
 
     def __init__(self, base, schema=EMPTY_SCHEMA, policy=None, *, removed=frozenset(), delta=None):
-        from ..retrieval_backends import RetrievalRankingPolicy
-        self.policy = policy if policy is not None else RetrievalRankingPolicy()
+        from .catalogue_search import CATALOGUE_RANKING_POLICY
+        self.policy = policy if policy is not None else CATALOGUE_RANKING_POLICY
         self.schema = schema
         self.base, self.delta = base, delta
         numpy = base.numpy

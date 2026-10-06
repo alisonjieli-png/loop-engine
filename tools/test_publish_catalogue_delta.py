@@ -145,7 +145,7 @@ class DeltaUploadGuarantees(unittest.TestCase):
                 self.assertNotIn("-g", arguments)
 
     @staticmethod
-    def _remote_folder(landed):
+    def _remote_folder(landed, kind="blobs"):
         """A Machine whose release folder holds `landed`; it answers the read-back's summary and prefix listings."""
         by_prefix = {}
         for name in landed:
@@ -158,18 +158,21 @@ class DeltaUploadGuarantees(unittest.TestCase):
                 return "\n".join(f"{prefix} {len(names)} {delta._names_digest(names)}"
                                  for prefix, names in sorted(by_prefix.items()))
             for prefix, names in by_prefix.items():
-                if f"/blobs/sha256/{prefix} " in command:
+                if f"/{kind}/sha256/{prefix} " in command:
                     return "\n".join(names)
             return ""
         return execute, calls
 
     def test_a_large_read_back_is_one_bounded_answer_when_every_blob_landed(self):
         expected = [hashlib.sha256(str(n).encode()).hexdigest() for n in range(70_000)]
-        execute, calls = self._remote_folder(expected)
-        with mock.patch.object(delta, "machine_exec", side_effect=execute):
-            self.assertEqual(delta.absent_blobs("delta-test", expected), [])
-        self.assertEqual(len(calls), 1)
-        self.assertLessEqual(len(execute(calls[0]).splitlines()), 256)
+        for kind in ("blobs", "segments", "items"):
+            with self.subTest(kind=kind):
+                execute, calls = self._remote_folder(expected, kind)
+                with mock.patch.object(delta, "machine_exec", side_effect=execute):
+                    self.assertEqual(delta.absent_blobs("delta-test", expected, kind=kind), [])
+                self.assertEqual(len(calls), 1)
+                self.assertLessEqual(len(execute(calls[0]).splitlines()), 256)
+                self.assertIn(f"/{kind}/sha256", calls[0])
 
     def test_known_wrong_only_a_prefix_that_differs_is_listed_and_never_the_whole_folder(self):
         expected = [hashlib.sha256(str(n).encode()).hexdigest() for n in range(5_000)]
@@ -204,6 +207,26 @@ class DeltaUploadGuarantees(unittest.TestCase):
                                     "LC_ALL=C sort | sha256sum | cut -c1-64"],
                                    capture_output=True, text=True, check=True).stdout.strip()
         self.assertEqual(delta._names_digest(names), shell)
+
+    def test_a_segment_cannot_stand_in_for_an_item_with_the_same_digest(self):
+        digest = hashlib.sha256(b"object").hexdigest()
+        relative = f"items/sha256/{digest[:2]}/{digest}"
+        with tempfile.TemporaryDirectory() as tmp:
+            bundle = Path(tmp)
+            target = bundle / relative
+            target.parent.mkdir(parents=True)
+            target.write_bytes(b"object")
+
+            def execute(command, **kwargs):
+                # The old combined listing loses whether the file was an item or a segment.
+                if "/segments " in command and "/items " in command:
+                    return f"sha256/{digest[:2]}/{digest}\n"
+                return ""  # the actual items directory is empty
+
+            with mock.patch.object(delta, "machine_exec", side_effect=execute), \
+                    mock.patch.object(delta, "extract_archive"), mock.patch.object(delta, "fly", return_value=""):
+                with self.assertRaises(RuntimeError):
+                    delta.upload_missing(bundle, [], "delta-test", extra_paths=[relative])
 
     def test_an_unreadable_listing_is_an_error_and_never_an_empty_set(self):
         def refusing_exec(command, **kwargs):

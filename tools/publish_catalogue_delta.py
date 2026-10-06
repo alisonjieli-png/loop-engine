@@ -69,6 +69,8 @@ EXEC_TIMEOUT = 600
 #: How many bytes one sftp put carries. One put per blob is 1,500 round trips; one put for the whole
 #: bundle is the 386 MB upload this tool exists to remove.
 BATCH_BYTES = 24 * 1024 * 1024
+#: Content-addressed object directories in the supported catalogue bundle formats.
+BLOB_OBJECT, SEGMENT_OBJECT, ITEM_OBJECT = UPLOAD_OBJECT_KINDS = ("blobs", "segments", "items")
 #: How long to wait for the pointer to move before reporting that nothing was published.
 POINTER_WAIT_SECONDS = 120 * 60
 
@@ -249,6 +251,12 @@ def upload_missing(bundle: Path, missing: list[str], remote: str, extra_paths=()
     download later.
     """
     extra_paths = list(extra_paths)
+    extra_groups = {}
+    for relative in extra_paths:
+        match = re.fullmatch(r"(segments|items)/sha256/([0-9a-f]{2})/([0-9a-f]{64})", relative)
+        if match is None or match[2] != match[3][:2]:
+            raise ValueError("a segmented upload must name an exact item or segment digest path")
+        extra_groups.setdefault(match[1], []).append(match[3])
     if not missing and not extra_paths:
         return
     sizes = {path.name: path.stat().st_size
@@ -276,19 +284,10 @@ def upload_missing(bundle: Path, missing: list[str], remote: str, extra_paths=()
     absent = absent_blobs(remote, missing)
     if absent:
         raise RuntimeError(f"{len(absent)} blobs did not arrive, so nothing was published: {absent[:5]}")
-    if extra_paths:
-        landed = machine_exec(
-            f"find {REMOTE_ROOT}/{remote}/segments {REMOTE_ROOT}/{remote}/items -type f -printf '%P\\n' 2>/dev/null; true")
-        roots = {"segments": "segments/", "items": "items/"}
-        present = set()
-        for line in landed.splitlines():
-            line = line.strip()
-            for prefix in roots.values():
-                present.add(prefix + line)
-        absent = [relative for relative in extra_paths if relative not in present]
+    for kind, expected in sorted(extra_groups.items()):
+        absent = absent_blobs(remote, expected, kind=kind)
         if absent:
-            raise RuntimeError(f"{len(absent)} segments or item lines did not arrive, so nothing was published: "
-                               f"{absent[:5]}")
+            raise RuntimeError(f"{len(absent)} {kind} did not arrive, so nothing was published: {absent[:5]}")
 
 
 def _names_digest(names) -> str:
@@ -296,7 +295,7 @@ def _names_digest(names) -> str:
     return hashlib.sha256("".join(f"{name}\n" for name in sorted(names)).encode()).hexdigest()
 
 
-def absent_blobs(remote: str, expected: list[str]) -> list[str]:
+def absent_blobs(remote: str, expected: list[str], *, kind: str = BLOB_OBJECT) -> list[str]:
     """The expected digests that are not in the remote release folder, read back in bounded pieces.
 
     One command prints a line per two-character prefix folder: the prefix, its number of files and the
@@ -305,7 +304,11 @@ def absent_blobs(remote: str, expected: list[str]) -> list[str]:
     API's 10 MiB exec response limit after every batch had landed, so a correct upload could not be
     confirmed. This answer stays near 256 short lines at any release size.
     """
-    folder = f"{REMOTE_ROOT}/{remote}/blobs/sha256"
+    if kind not in UPLOAD_OBJECT_KINDS:
+        raise ValueError("an upload has a declared object kind")
+    if not expected:
+        return []
+    folder = f"{REMOTE_ROOT}/{remote}/{kind}/sha256"
     groups: dict[str, list[str]] = {}
     for digest in expected:
         groups.setdefault(digest[:2], []).append(digest)

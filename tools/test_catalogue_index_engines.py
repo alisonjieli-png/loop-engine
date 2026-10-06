@@ -95,6 +95,13 @@ class JudgedQueries(unittest.TestCase):
             self.assertEqual(differing, [], f"{mode}: the disk engine ranked these requests differently")
             self.assertEqual(_metrics(self.memory, self.judgements, mode), _metrics(self.disk, self.judgements, mode))
 
+    def test_disk_defaults_and_explicit_policy_match_the_catalogue_policy(self):
+        from loop_engine.core.retrieval_backends import RetrievalRankingPolicy
+        self.assertEqual(self.disk.policy, self.memory.policy)
+        selected = RetrievalRankingPolicy(candidate_pool_multiplier=3)
+        custom = DiskSearchIndex(self.disk.base, EMPTY_SCHEMA, policy=selected)
+        self.assertIs(custom.policy, selected)
+
     def test_an_overlay_keeps_the_judged_metrics_within_the_tolerance(self):
         for mode in ("lexical", "hybrid"):
             fresh, overlay = _metrics(self.disk, self.judgements, mode), _metrics(self.overlay, self.judgements, mode)

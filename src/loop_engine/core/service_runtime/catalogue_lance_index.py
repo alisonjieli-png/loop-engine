@@ -150,8 +150,8 @@ class LanceSearchIndex:
 
     def __init__(self, folder, schema=EMPTY_SCHEMA, policy=None, *, version=None):
         import lancedb
-        from ..retrieval_backends import RetrievalRankingPolicy
-        self.policy = policy if policy is not None else RetrievalRankingPolicy()
+        from .catalogue_search import CATALOGUE_RANKING_POLICY
+        self.policy = policy if policy is not None else CATALOGUE_RANKING_POLICY
         self.schema = schema
         try:
             self.marker = json.loads((Path(folder) / MARKER_FILE).read_text())

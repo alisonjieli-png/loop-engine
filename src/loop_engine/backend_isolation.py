@@ -25,7 +25,8 @@ PROVIDER_ISOLATION = {
     "ibis": frozenset(),
     "datafusion": frozenset(),
     "polars": frozenset(),
-    "pyarrow": frozenset(),
+    "pyarrow": frozenset({"core/service_runtime/catalogue_lance_index.py"}),
+    "lancedb": frozenset({"core/retrieval.py", "core/service_runtime/catalogue_lance_index.py"}),
 }
 
 #: Modules that must import without any optional backend installed.
@@ -123,11 +124,14 @@ def self_test() -> dict:
     with tempfile.TemporaryDirectory() as tmp:
         with open(os.path.join(tmp, "leaky.py"), "w",
                   encoding="utf-8") as handle:
-            handle.write("import duckdb\n")
+            handle.write("import duckdb\nimport pyarrow\nimport lancedb\n")
         violations = provider_leak_violations(tmp)
         check("provider_leak_detector_fires_on_planted_violation",
               any(v["provider"] == "duckdb" for v in violations),
               "a duckdb import outside its adapter boundary must be detected")
+        check("lance_libraries_stay_inside_their_declared_adapter",
+              {"pyarrow", "lancedb"} <= {v["provider"] for v in violations},
+              "both data libraries are refused outside the catalogue index adapter")
 
     live = provider_leak_violations()
     check("live_tree_has_no_provider_leaks", not live, str(live)[:300])
