@@ -27,8 +27,9 @@ with GET requests only. Steps 1 to 4 below were completed on September 21,
 What Managed Payments means for your customers, from
 <https://docs.stripe.com/payments/managed-payments/how-it-works>: checkout
 says "Sold through Link" and adds sales tax for the customer's billing address
-before they pay; Link emails every receipt, invoice and refund notice with the
-PDF attached, whatever your receipt settings say; the card statement reads
+before they pay; Link emails the payment confirmation, the invoice and any
+refund notice for every charge with the PDF attached, whatever your own email
+settings in the Dashboard say; the card statement reads
 `LINK.COM* BALTOR.AI`; customers can also cancel or change their subscription
 on link.com, and Baltor follows that change through the same notifications.
 Link support answers payment questions and may contact you about one. If you
