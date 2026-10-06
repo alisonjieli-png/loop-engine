@@ -50,6 +50,7 @@ from . import staff_work
 from .model_directory_pages import moved_answer, rendered_page
 from . import library_page
 from . import public_good_page
+from . import catalogue_feed
 from . import dot_pages
 from . import public_good_files
 from . import red_team_page
@@ -2197,9 +2198,11 @@ class ServiceHttpApplication:
                 if status == 401 or code == "insufficient_scope":
                     response.headers["WWW-Authenticate"] = self._oauth_challenge(code)
             cacheable_asset = (request.method in ("GET", "HEAD")
-                               and request.url.path in CACHEABLE_WEB_ASSETS
+                               and (request.url.path in CACHEABLE_WEB_ASSETS or request.url.path in catalogue_feed.FORMATS)
                                and response.status_code in (200, 304))
             response.headers["Cache-Control"] = PUBLIC_ASSET_CACHE_CONTROL if cacheable_asset else "no-store"
+            if cacheable_asset and request.url.path in catalogue_feed.FORMATS:
+                response.headers["Cache-Control"] = catalogue_feed.CACHE_CONTROL
             response.headers["X-Content-Type-Options"] = "nosniff"
             await response(scope, receive, send)
         return Starlette(routes=[Mount("/", app=transport)], lifespan=lifespan)
@@ -2267,6 +2270,24 @@ class ServiceHttpApplication:
     async def _web_route(self, request, Response, JSONResponse):
         path, method, status_code = request.url.path, request.method, 200
         completions = []
+        if path in catalogue_feed.FORMATS:
+            if method not in ("GET", "HEAD") or request.url.query:
+                raise ServiceHttpError("invalid_feed_request", 400)
+            view = self.provisioning.current_view()
+            try:
+                record = await self._work(lambda: catalogue_feed.snapshot(self.runtime, view))
+                from .web_pages import packaged_site_map
+                from .model_directory_pages import canonical
+                body, media_type = catalogue_feed.render(record, path, canonical(packaged_site_map(), ""))
+            except ServiceRuntimeError as error:
+                code = "catalogue_feed_updating" if error.code == "catalogue_feed_updating" else "catalogue_feed_unavailable"
+                raise ServiceHttpError(code, 503) from None
+            headers = {**self._page_headers(), "ETag": asset_etag(body)}
+            if validator_matches(request.headers.get("if-none-match", ""), headers["ETag"]):
+                return Response(status_code=304, headers=headers)
+            if method == "HEAD":
+                headers["Content-Length"] = str(len(body))
+            return Response(b"" if method == "HEAD" else body, media_type=media_type, headers=headers)
         # The Host was checked against the allowed hosts before this route ran,
         # so it only chooses which page a hostname shows at its root address.
         # A page that shows the library's size shows the count served now, not the packaged one.
@@ -2282,6 +2303,8 @@ class ServiceHttpApplication:
                                           self.configuration.display_name, request.headers.get("host"))
         if asset is None:
             asset = public_good_page.rendered(path, method, self.configuration.display_name, request.headers.get("host"))
+        if asset is None:
+            asset = catalogue_feed.rendered_page(path, method, self.configuration.display_name, request.headers.get("host"))
         if asset is None:
             asset = dot_pages.rendered(path, method, self.configuration.display_name, request.headers.get("host"))
         if asset is None:

@@ -1464,6 +1464,37 @@ Metadata-only key scopes also narrow the returned `body_allowed` projection.
 
 ## Catalogue releases
 
+### Public Feeds preview
+
+`/feeds` introduces Feeds and Components without creating a paid plan.
+`/feeds/catalogue.json`, `/feeds/catalogue.rss` and `/feeds/catalogue.md` expose
+one current-state notice in JSON Feed 1.1, RSS 2.0 and Markdown. These are public
+aggregate metadata, not anonymous package downloads, complete history,
+personalized delivery or validated OKF files. Existing access rules remain
+unchanged. The candidate-only knowledge radar remains separate from this
+projection of already published catalogue records.
+
+`catalogue_feed_snapshot/v1` binds release, content digest, state revision,
+state-change time, served package/file counts and original publication change
+counts. The state record owns its timestamp; a restart does not invent a new
+notice. Rollback and withdrawal change the notice identity. Original-release
+change counts do not pretend to describe later transitions. Pointer/view
+skew, missing records and incomplete populations return 503, not an empty
+success. The renderer reads no package body, operator note or account record.
+
+GET and HEAD support representation-specific ETags; a matching conditional
+request returns 304. Successful metadata responses are public-cacheable for
+60 seconds, while failures are not cached. Query parameters and other methods
+are refused. Tests cover actual loopback HTTP, stale-view refusal, rollback,
+withdrawal, restart stability, no body reads, deterministic formats and links.
+
+This is the first feed, not completion of roadmap S-6.214. Source-backed
+ecosystem intelligence, daily snapshots, complete replay, explicit offering
+membership, paid checkout, personalized subscriptions and opt-in push remain
+separate acceptance work.
+
+### Catalogue source and storage
+
 This section describes the source in this repository. A deployment serves it
 only after a release that includes it. The design, the prior art and the
 decision record are in

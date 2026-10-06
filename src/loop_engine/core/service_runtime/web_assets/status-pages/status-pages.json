@@ -822,6 +822,11 @@
     "group": "Product",
     "pages": [
      {
+      "address": "/feeds",
+      "title": "Feeds",
+      "description": "Public catalogue updates for AI agents and harnesses, in JSON Feed, RSS and Markdown. Broader paid intelligence and personalized push remain planned."
+     },
+     {
       "address": "/public-good",
       "title": "Public Good",
       "description": "Browse useful component files for sustainable development and public-benefit work. Downloads require a Baltor account, not a paid subscription."

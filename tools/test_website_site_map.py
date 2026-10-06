@@ -526,13 +526,17 @@ def served_site():
     """The website this checkout serves, read through the service's own served address table."""
     from urllib.parse import unquote
 
-    from loop_engine.core.service_runtime import dot_pages, library_page, public_good_page, red_team_page, status_pages
+    from loop_engine.core.service_runtime import catalogue_feed, dot_pages, library_page, public_good_page, red_team_page, status_pages
     from loop_engine.core.service_runtime.model_directory_pages import rendered_page
     from loop_engine.core.service_runtime.public_links import PublicListLinks
     site_map = load_site_map()
     counted_links = PublicListLinks()
 
     def serve(address):
+        if address in catalogue_feed.FORMATS:
+            # Route declaration only. The actual anonymous HTTP, HEAD,
+            # conditional-read and unavailable states run in test_catalogue_feed.
+            return "", catalogue_feed.FORMATS[address]
         # The transport answers the model directory's rendered pages after the served address table, then the library
         # page from the catalogue it serves; no catalogue runs here, so the library page is rendered from an empty view.
         # The decision red team page and the three pages nothing links to (changelog, features, open work) come last,
@@ -541,6 +545,7 @@ def served_site():
                   or rendered_page(address, "GET", site_map.display_name)
                   or library_page.rendered(library_page.empty_view(), address, "GET", site_map.display_name)
                   or public_good_page.rendered(address, "GET", site_map.display_name)
+                  or catalogue_feed.rendered_page(address, "GET", site_map.display_name)
                   or dot_pages.rendered(address, "GET", site_map.display_name)
                   or red_team_page.rendered(address, "GET", site_map.display_name)
                   or status_pages.rendered(address, "GET", site_map.display_name))

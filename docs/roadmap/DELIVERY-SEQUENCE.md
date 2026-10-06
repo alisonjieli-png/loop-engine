@@ -20,11 +20,11 @@ separate completion conditions.
 | --- | --- | --- |
 | Payment and connection repairs | Live in release 70 | Ten hosts passed 2,118 browser checks; five token quickstarts and the 15-step real Claude Code OAuth journey passed. |
 | Search and intake repairs | Release 71 deployed; live checks complete | Exact source `ec1df775`; CI `37487555685`; deployment `37488883326`. The repaired search preserves all 70 previously found expectations and finds 95 in the retained before/after comparison. |
-| Million-file publication | Preflight passed; one publication running | Current base: 92,973 packages / 370,994 distinct files. Candidate: 218,127 packages / 1,352,837 distinct files. Current-base planning found no lost judged match, replacement, withdrawal or orphaned Public Good grant. The publisher will transfer 981,843 new bodies in 283 batches, then verify and activate the result. Do not count the candidate as live yet. |
+| Million-file publication | Native publication committed; serving-index readback pending | The native receipt confirms 218,127 packages, 125,154 additions and 981,843 new distinct bodies, with no replacement or withdrawal. The expected file population is 1,352,837. The website still serves its previous index while the new index builds. All 301 compressed body/metadata archives arrived; the two earlier transfer attempts and their recovery records remain retained. Do not claim the target as live before served readback. |
 | Storage headroom | Done | Existing Fly volume extended from 25 to 50 GB, with 39 GB free at readback and no restart. Added provisioned storage: $3.75/month; traffic and snapshots are separate. |
 | Empty Public Good goals | Additive policy prepared; waiting for publication | The live 419-package policy still has empty goals 1, 2, 3, 5 and 17. Five qualified public-data selections passed 25 fresh sandbox methods and current source-licence checks. The prepared 424-package policy preserves all existing grants and limits. It is not applied yet. |
-| Cloudflare | R2 host integration in main; no production cutover | R2 has a 20,000-object Worker-binding prototype; a fresh 200-read check passed. The S3 adapter now connects to serving, publication, disk indexing and Public Good maintenance behind host-source version 3. Local kits and host checks pass. Actual R2 S3 credentials and its production canary remain missing; D1 is not selected. |
-| Feeds and Components | Owner direction recorded | No new paid plan, push service or availability claim is active. |
+| Cloudflare | Real S3 canary passed; no production cutover | The owner-supplied credentials are stored only in the system keyring. Six real S3 checks passed: existing object read, conditional write, exact readback, duplicate write, wrong digest and wrong size. The earlier Worker-binding probes remain separate evidence. Host-source version 3 is integrated; a full mirror and production-profile delivery checks still precede selection. D1 is not selected. |
+| Feeds and Components | First feed preview in local acceptance | Current-catalogue metadata is implemented in JSON Feed, RSS and Markdown with restart/rollback/withdrawal checks, plus a Feeds page. It is not deployed. No new paid plan, personalized push or OKF compatibility claim is active. |
 
 ### Priority and phase-based Gantt view
 
@@ -36,10 +36,10 @@ delay a ready publication or exhaust memory, storage or provider allowances.
 
 | Workstream | Prepared or verified | Now | After catalogue readback | Following cycle |
 | --- | --- | --- | --- | --- |
-| Million-file library | Build/check passed | ACTIVE: verify, upload and publish once | GATE: count, bytes, search, access | Maintain and audit |
+| Million-file library | Build, transfer and native publish passed | ACTIVE: build and switch serving index | GATE: count, bytes, search, access | Maintain and audit |
 | Public Good coverage | Five gap selections and 25 sandbox methods | Policy prepared; wait for exact live versions | NEXT: apply free grants; verify all goals | Broaden useful coverage |
-| Cloudflare | Existing probes and local storage integration | Actual S3 canary needs a scoped credential | R2 and static-edge acceptance | Staged production cutover |
-| Feeds | Existing radar and directory work | Map product contracts and useful source records | Pull API and context exports | Daily delivery, then opt-in push |
+| Cloudflare | Worker probes, local integration and real S3 canary | Prepare mirror and production-profile checks | R2 mirror and static-edge acceptance | Staged production cutover |
+| Feeds | Existing radar plus tested catalogue-state projection | Finish preview release checks | Deploy the current-state pull feed | Full history, daily delivery, then opt-in push |
 | Two offerings | Names and access constraints recorded | Define explicit membership | Test Feeds-only and full access | Activate tested pricing |
 | OpenAI distribution | Candidate package preserved | Policy/UX findings remain | Test deployed presentation | Identity/legal/review gates |
 | Remaining handoffs | Bundles and patches preserved | Small tested fixes as capacity permits | Native examples and all-goal originals | Repeat the release cycle |
@@ -61,6 +61,8 @@ folder named by `/home/username/START-HERE-BALTOR.md`.
 - [x] Finish the publisher's dry run against the current live base.
 - [x] Verify release 71, the deployment gate and the publication lock before
   starting the one publication. Do not deploy while it runs.
+- [x] Complete transfer and native publication. The exact receipt records
+  result `50b666f56b043ce085d20f46efed01444f257917467199992799ad49cdb03127`.
 - [ ] Complete the running publication of the exact prepared command. If its result is uncertain,
   inspect the remote result and active pointer before any retry.
 - [ ] Read back the active release, complete distinct-file population, package
@@ -135,6 +137,8 @@ Migration procedure:
 2. Keep the integrated host-source version 3 adapter and its refusal tests
    current. The volume engine remains selectable. Qualify the real S3
    transport separately from the R2 Worker probe before a production selection.
+   The six-check real S3 canary has passed. Its one original test object is
+   retained; no bucket or object was deleted and no public-access setting changed.
 3. Mirror immutable bodies by digest, with progress checkpoints and bounded
    requests. Verify complete membership, byte integrity, missing objects and
    interruption recovery. Preserve the source copy.
@@ -188,6 +192,86 @@ do not duplicate the whole catalogue or split sign-in to create a new label.
 - [ ] Qualify both paid journeys before creating new live prices or promising
   availability. Daily delivery and near-real-time source coverage are separate
   claims. Measure useful retrieval and completed work, not notification volume.
+
+#### Customer customization and agent assignments
+
+Decision: customization belongs in Feeds itself, not only in the expensive
+Components plan. Both offerings use one account and the same feed controls.
+Components adds the entitled reusable library. Higher limits can differ by
+plan; a Markdown wrapper never makes a restricted component freely readable.
+These controls are designed, not implemented by the current-state preview.
+
+The customer journey is **create a feed, preview it, assign agents, choose
+delivery, then inspect delivery history**. Start with a template such as MCP
+service changes, Python maintenance, public-data updates or a named project.
+The customer can edit its structured settings without writing a prompt:
+
+| Control | Meaning | Boundary |
+| --- | --- | --- |
+| Topics and exclusions | Named services, packages, categories, languages, runtime and project tags | Use catalogue identifiers and bounded text; do not upload a private repository or infer its contents by default. |
+| Sources and evidence | Select reviewed sources, source types, licence needs and required evidence state | Public metadata, documented capability and executed behavior remain different. Unknown source status stays visible. |
+| Update types | New release, breaking change, deprecation, security advisory, correction, withdrawal or comparison | Do not call every repository commit useful news, or present an unverified advisory as a confirmed exploit. |
+| Freshness and delivery | On demand, daily digest or opt-in change notifications; timezone, quiet hours and item/byte limits | Show source checked time, last successful refresh and partial/stale coverage. Fast delivery cannot make a slow source real time. |
+| Output | Human digest, JSON, Markdown/context and separately validated OKF | Preserve source links, evidence, version/digest and caveats in every format. Byte limits are enforced; any token estimate names its tokenizer or approximation. |
+| Agent assignments | Choose which registered agent reads which saved feeds | Each agent gets an independently revocable credential and explicit read grants. No sharing the owner's account password or master API key. |
+| Context policy | Maximum items, age, total bytes and whether to replace or append context | Feed text is untrusted data, never an instruction to install, run, grant access or change the harness's policy. |
+
+For example, a coding agent can receive Python dependency changes daily while
+a research agent reads public-data revisions on demand. A single feed can be
+assigned to both, with separate cursors and delivery histories. Users can
+pause one assignment without deleting the feed or affecting the other agent.
+
+Implementation order and owners:
+
+1. Extend the existing typed service contracts and durable records with a
+   versioned saved feed definition, versioned agent assignment and delivery
+   receipt. Reuse the identity, credential, entitlement, event and storage
+   owners; do not build a second account or notification registry.
+2. Separate selection from permission. A read requires the intersection of
+   account entitlement, feed access, agent assignment and exact item access.
+   A topic filter cannot grant access. A revoked agent, expired plan or
+   withdrawn item is checked before every pull and delivery.
+3. Add account controls to create, edit, clone, preview, pause and delete a
+   saved definition or assignment. Preview explains why each item matches
+   and displays exclusions, stale sources and estimated usage. It does not
+   activate a subscription, upload project files or authorize a receiver.
+4. Deliver pull first through authenticated HTTP and the existing MCP service.
+   Bind a cursor to the feed identity, definition version, immutable snapshot,
+   filter digest and order. Editing a filter starts an explicit new cursor;
+   it cannot silently skip or replay an old population. Keep ETag reads cheap.
+5. Build daily snapshots from a shared admitted source/event population, then
+   select each customer's view. Reuse one update across assignments; do not
+   regenerate research separately for every agent. Record immutable snapshots
+   in private R2 when that storage route is qualified.
+6. Add opt-in signed notifications only after destination verification and
+   bounded egress checks. Deliver event identities, not executable commands.
+   Recipients pull the content with their own credentials. Enforce host and
+   redirect rules, deny private-network targets, use an outbox, idempotency
+   keys, bounded retries and a dead-letter state. Recheck revocation at retry.
+7. Introduce the cheaper Feeds subscription and full Components subscription
+   through the existing billing owner. Existing full access stays full; free
+   Public Good delivery remains independent. Set quotas from measured cost
+   and usage, not the number of generated encodings. Test upgrades,
+   downgrades, cancellation, renewal failure and all alternate read paths
+   before new live prices are offered.
+
+Acceptance checklist:
+
+- [ ] Two agents assigned different feeds receive only their own allowed data.
+- [ ] Cross-account identifiers, shared cursors and an unassigned feed refuse.
+- [ ] Revocation, downgrade and withdrawal also close cached/exported retrieval
+  paths under our control. Previously downloaded user copies are not remotely erasable.
+- [ ] Empty, stale, partially searched, failed and quota-limited feeds differ.
+- [ ] Filter changes, out-of-order events, retries and restart produce neither
+  silent omissions nor duplicate notifications beyond the declared at-least-once contract.
+- [ ] A malicious source cannot change a profile, call a tool or exfiltrate
+  context. Custom source URLs receive the same bounded source admission.
+- [ ] Users can pause, unsubscribe, export their settings and inspect receipt
+  history; only minimum necessary preference and delivery metadata is stored.
+- [ ] Personal-data retention and any new use fit the approved privacy notice,
+  or remain held for owner approval before collection begins.
+- [ ] Measure useful agent retrieval, cost per delivered update and unsubscribe
+  or correction rates. Raw notification counts are not evidence of value.
 
 ### Release and iteration procedure
 

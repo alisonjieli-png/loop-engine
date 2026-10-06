@@ -1,5 +1,35 @@
 schema: hardcoding_allowlist/v1
 entries:
+- finding_id: hardcoding.d9d12849eb32ce7b19b611c9
+  owner: loop_engine.core.service_runtime.catalogue_feed
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 6, 2026: JSON Feed 1.1 requires this exact version identifier. It is serialized as a format discriminator, never fetched or selected as a provider. The format test checks the identifier and parses the actual HTTP response. Changing it requires reviewing the feed contract."
+  created_on: '2026-10-06'
+  expires_on: '2027-01-06'
+- finding_id: hardcoding.8a8604698a9b0117df98e802
+  owner: loop_engine.core.service_runtime.catalogue_feed:_origin
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 6, 2026: this regex refuses a non-HTTPS or path-bearing canonical origin before formatting feed links. It does not select a host; the existing site map supplies that setting. Malformed-origin fixtures exercise the refusal."
+  created_on: '2026-10-06'
+  expires_on: '2027-01-06'
+- finding_id: hardcoding.6357933cd21aadc97e6c64fa
+  owner: tools.operator_credentials.json:api_keys.cloudflare-r2-management.environment
+  classification: DEPLOYMENT_CONFIGURATION
+  rationale: "Reviewed October 6, 2026: this is the environment reference name in the existing credential-source registry, not a credential value. The operator credential resolver obtains the owner's token from the system keyring or its declared environment. Real R2 qualification records no secret values."
+  created_on: '2026-10-06'
+  expires_on: '2027-01-06'
+- finding_id: hardcoding.9477b4349ada24ae93a7792a
+  owner: tools.operator_credentials.json:api_keys.cloudflare-r2-sample-access-id.environment
+  classification: DEPLOYMENT_CONFIGURATION
+  rationale: "Reviewed October 6, 2026: this names the R2 S3 access-id environment binding at the existing credential-source registry. The value stays in the system keyring. The historical sample label describes initial use, not provider-enforced scope; the owner supplied account-wide R2 credentials."
+  created_on: '2026-10-06'
+  expires_on: '2027-01-06'
+- finding_id: hardcoding.329cfaec76241d32a6887733
+  owner: tools.operator_credentials.json:api_keys.cloudflare-r2-sample-secret.environment
+  classification: DEPLOYMENT_CONFIGURATION
+  rationale: "Reviewed October 6, 2026: this names the R2 S3 secret environment binding at the existing credential-source registry. It contains no secret. The resolver reads the keyring value only inside the authorized operator process; source, reports and public feeds contain no credential values."
+  created_on: '2026-10-06'
+  expires_on: '2027-01-06'
 - finding_id: hardcoding.51b52b0ab7018290fe35b650
   owner: "loop_engine.core.service_runtime.service_engine_body_store"
   classification: STRATEGY_OR_PROVIDER_BINDING

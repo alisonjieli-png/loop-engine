@@ -1,7 +1,7 @@
 {
   "record_type": "service_web_site_map/v3",
-  "decided_on": "2026-09-29",
-  "decided_by": "engineering, preserving earlier design and hostname direction and applying the owner's September 29 Engineers, Designers and AI Agents entry paths",
+  "decided_on": "2026-10-06",
+  "decided_by": "engineering, preserving earlier design, hostnames and audience paths, and adding the owner's Feeds direction as a clearly limited catalogue-metadata preview",
   "display_name": "Baltor",
   "canonical_hostname": "baltor.ai",
   "groups": [
@@ -12,6 +12,18 @@
     "Account"
   ],
   "pages": [
+    {
+      "address": "/feeds",
+      "view": "feeds",
+      "title": "Feeds",
+      "description": "Public catalogue updates for AI agents and harnesses, in JSON Feed, RSS and Markdown. Broader paid intelligence and personalized push remain planned.",
+      "group": "Product",
+      "linked_from": ["header", "footer"],
+      "unlinked_reason": "",
+      "scroll_budget": "page",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
     {
       "address": "/dot-context",
       "view": "context",
@@ -967,6 +979,7 @@
         "label": "Library",
         "href": "/library"
       },
+      {"role": "link", "label": "Feeds", "href": "/feeds"},
       {
         "role": "link",
         "label": "Public Good",
@@ -1019,6 +1032,7 @@
         "label": "Library",
         "href": "/library"
       },
+      {"role": "link", "label": "Feeds", "href": "/feeds"},
       {
         "role": "link",
         "label": "Public Good",
@@ -1061,6 +1075,7 @@
         "label": "Library",
         "href": "/library"
       },
+      {"role": "link", "label": "Feeds", "href": "/feeds"},
       {
         "role": "link",
         "label": "Public Good",
@@ -1139,6 +1154,7 @@
             "label": "Browse the library",
             "href": "/library"
           },
+          {"role": "link", "label": "Feeds", "href": "/feeds"},
           {
             "role": "link",
             "label": "Public Good",
