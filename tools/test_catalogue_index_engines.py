@@ -132,5 +132,95 @@ class JudgedQueries(unittest.TestCase):
         self.assertTrue(differing, "a float32 vector stage must not pass as exact")
 
 
+class VerifiedTierPrefilterTests(unittest.TestCase):
+    """A checked tier projection narrows work, never grants access or changes matching order."""
+
+    @classmethod
+    def setUpClass(cls):
+        from loop_engine.core.service_runtime.catalogue_attributes import TIER_ATTRIBUTE
+        from loop_engine.core.service_runtime.catalogue_schema import CatalogueAttributeSchema
+        from loop_engine.core.service_runtime.catalogue_bundle import item_version_document
+        from loop_engine.core.service_runtime.catalogue_packages import CataloguePackage
+        from loop_engine.core.service_runtime.catalogue_release_checks import bundle_line
+        from loop_engine.core.practitioner_runtime.provisioning import _item
+        cls.temp = tempfile.TemporaryDirectory()
+        cls.schema = CatalogueAttributeSchema.from_dict(
+            {"record_type":"catalogue_attribute_schema/v1","attributes":[TIER_ATTRIBUTE]})
+        cls.rows = []
+        for number in range(2001):
+            identity = f"a_community_{number:04d}" if number < 2000 else "z_keeper"
+            tier = "community" if number < 2000 else "verified"
+            purpose = "shared query"
+            line = bundle_line(identity, [("SKILL.md",purpose.encode(),"text/markdown","skill_definition")],
+                               purpose=purpose,attributes={"tier":tier})
+            record = item_version_document(_item(line["reference"]),CataloguePackage.from_dict(line["package"]),
+                                           line["approval"]["approval_ref"],{"tier":tier},tier)
+            cls.rows.append((IndexEntry(identity,purpose,{"tier":tier},tier),str(number),record))
+        cls.memory = ReleaseSearchIndex([row[0] for row in cls.rows],cls.schema)
+        cls.disk = DiskSearchIndex(DiskIndex(build_disk_index(Path(cls.temp.name)/"index",cls.rows,cls.schema)),cls.schema)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.temp.cleanup()
+
+    def search(self,index,*,community="excluded"):
+        from types import SimpleNamespace
+        from loop_engine.core.service_runtime.catalogue_search import authorized_hits
+        read=[]
+        def authorize(candidates):
+            read.extend(candidates)
+            return {identity:{"library_tier":"verified"} for identity in candidates if identity=="z_keeper"}
+        view=SimpleNamespace(schema=self.schema,search_index=lambda:index)
+        hits,_=authorized_hits(view,{"query":"shared query","top_n":50},authorize,community_items=community)
+        return [row[0] for row in hits],read
+
+    def test_both_engines_authorize_only_the_matching_verified_candidate(self):
+        for index in (self.memory,self.disk):
+            self.assertTrue(index.tier_filter_complete)
+            hits,read=self.search(index)
+            self.assertEqual(hits,["z_keeper"])
+            self.assertEqual(read,["z_keeper"])
+
+    def test_removed_projection_optimization_keeps_answer_but_exposes_widening(self):
+        with mock.patch.object(catalogue_disk_index.DiskIndex,"tier_filter_complete",
+                               new_callable=mock.PropertyMock,return_value=False):
+            hits,read=self.search(self.disk)
+        self.assertEqual(hits,["z_keeper"])
+        self.assertGreater(len(read),2000,"the known-wrong widening must read the excluded population")
+
+    def test_included_community_scope_is_not_narrowed(self):
+        hits,read=self.search(self.disk,community="included")
+        self.assertEqual(hits,["z_keeper"])
+        self.assertGreater(len(read),2000)
+
+    def test_mismatched_and_missing_tags_disable_narrowing(self):
+        import copy
+        for name,value in (("mismatch","community"),("missing",None)):
+            rows=copy.deepcopy(self.rows[-2:])
+            entry,version,record=rows[-1]
+            values={} if value is None else {"tier":value}
+            rows[-1]=(IndexEntry(entry.identity,entry.text,values,entry.tier),version,
+                      {**record,"attributes":values})
+            memory=ReleaseSearchIndex([row[0] for row in rows],self.schema)
+            disk=DiskSearchIndex(DiskIndex(build_disk_index(Path(self.temp.name)/name,rows,self.schema)),self.schema)
+            for index in (memory,disk):
+                self.assertFalse(index.tier_filter_complete)
+                self.assertEqual(self.search(index)[0],["z_keeper"])
+
+    def test_undeclared_or_search_only_tags_are_not_authority(self):
+        entries=[IndexEntry("only","shared query",{"tier":"verified"})]
+        self.assertFalse(ReleaseSearchIndex(entries,EMPTY_SCHEMA).tier_filter_complete)
+        disk=DiskIndex(build_disk_index(Path(self.temp.name)/"search-only",entries,self.schema))
+        self.assertFalse(disk.tier_filter_complete)
+
+    def test_prefilter_still_cannot_grant_a_candidate(self):
+        from types import SimpleNamespace
+        from loop_engine.core.service_runtime.catalogue_search import authorized_hits
+        view=SimpleNamespace(schema=self.schema,search_index=lambda:self.disk)
+        hits,_=authorized_hits(view,{"query":"shared query","top_n":50},lambda candidates:{},
+                               community_items="excluded")
+        self.assertEqual(hits,[])
+
+
 if __name__ == "__main__":
     unittest.main()

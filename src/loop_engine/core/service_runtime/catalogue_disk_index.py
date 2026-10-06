@@ -395,6 +395,8 @@ class DiskIndex:
                 if _file_digest(self.folder / name) != digest:
                     _refuse("search_index_unavailable", "a disk index file differs from its build record")
         self.marker = marker
+        self._tier_filter_complete = None
+        self._tier_projection_lock = threading.Lock()
         self.size = marker["entries"]
         self.total_tokens = marker["total_tokens"]
         self.release_id = marker["release_id"]
@@ -423,6 +425,36 @@ class DiskIndex:
             held.execute(f"PRAGMA cache_size={READER_CACHE_PAGES}")
             self._local.connection = held
         return held
+
+    @property
+    def tier_filter_complete(self):
+        """Whether every indexed tier tag equals its stored approval, checked once without parsing packages.
+
+        The current index format stores both fields already. A search-only index, a missing tag or a database
+        without JSON support returns False, so the caller retains the full authorization path.
+        """
+        if self._tier_filter_complete is None:
+            with self._tier_projection_lock:
+                if self._tier_filter_complete is None:
+                    self._tier_filter_complete = self._verified_tier_projection()
+        return self._tier_filter_complete
+
+    def _verified_tier_projection(self):
+        from .catalogue_bundle import ITEM_VERSION_RECORD_TYPE, COMMUNITY_ITEM_VERSION_RECORD_TYPE
+        from ..provisioning_server import VERIFIED_TIER, COMMUNITY_TIER
+        try:
+            mismatch = self.connection().execute(
+                "SELECT 1 FROM entries WHERE CASE WHEN NOT json_valid(record) THEN 1 "
+                "WHEN json_extract(record, '$.record_type') = ? "
+                "THEN json_extract(record, '$.attributes.tier') IS NOT ? "
+                "WHEN json_extract(record, '$.record_type') = ? THEN "
+                "json_extract(record, '$.library_tier') IS NOT ? OR "
+                "json_extract(record, '$.attributes.tier') IS NOT ? ELSE 1 END LIMIT 1",
+                (ITEM_VERSION_RECORD_TYPE, VERIFIED_TIER, COMMUNITY_ITEM_VERSION_RECORD_TYPE,
+                 COMMUNITY_TIER, COMMUNITY_TIER)).fetchone()
+            return mismatch is None and "tier" in self._keyword
+        except sqlite3.Error:
+            return False
 
     def identity_at(self, positions):
         """Identities of positions, in the order given."""
@@ -621,6 +653,10 @@ class DiskSearchIndex:
     def identities(self):
         """A sized view for callers that only count; the identities themselves stay on disk."""
         return _SizedIdentities(self.size)
+
+    @property
+    def tier_filter_complete(self):
+        return self.base.tier_filter_complete and (self.delta is None or self.delta.tier_filter_complete)
 
     def stats(self):
         value = self.base.stats()

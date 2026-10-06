@@ -1545,6 +1545,14 @@ internal attribute is refused with `search_filter_not_allowed`. Each hit adds
 `attributes`, with shown public attributes only, and `package`, with the file
 list of a store item. The result names `catalogue_release`.
 
+A request that excludes community items can narrow the index before loading
+candidate descriptors. This optimization applies only when the index checked
+that every tier attribute agrees with its stored approval. Missing or
+conflicting tags keep the existing authorization path. Every returned candidate
+still passes provisioning authorization; a tag alone grants nothing. This
+avoids parsing the whole community catalogue when a verified-only request asks
+for more results than its small matching population contains.
+
 **Packages.** An item's files each carry a placement path, digest, size, media
 type and role. A one-file UTF-8 text package serves the file itself. Any other
 package serves its canonical `catalogue_package/v1` document, and

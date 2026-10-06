@@ -37,10 +37,11 @@ import re
 import sqlite3
 import threading
 
-from ..provisioning_server import TIER_ORDER, VERIFIED_TIER
+from ..provisioning_server import COMMUNITY_EXCLUDED, TIER_ORDER, VERIFIED_TIER
 from ..retrieval import _bucket, hash_vector, record_search_text
 from ..retrieval_backends import RetrievalRankingPolicy
 from ..store_serve import StoreRecord
+from .catalogue_attributes import TIER_ATTRIBUTE
 from .catalogue_schema import DATE, EMPTY_SCHEMA, KEYWORD_LIST, NUMBER
 from .records import ServiceRuntimeError
 
@@ -131,6 +132,10 @@ class ReleaseSearchIndex:
         self.schema = schema
         entries = tuple(entries)
         self.identities = tuple(entry.identity for entry in entries)
+        # This is a checked projection, never an authorization grant. A missing or conflicting attribute keeps
+        # tier narrowing at the provisioning boundary instead of hiding a permitted item from search.
+        self.tier_filter_complete = bool(entries) and all(
+            entry.values.get(TIER_ATTRIBUTE["name"]) == entry.tier for entry in entries)
         if len(set(self.identities)) != len(self.identities):
             raise ServiceRuntimeError("catalogue_index_invalid", "an index holds each identity once")
         self._lock = threading.Lock()
@@ -166,6 +171,7 @@ class ReleaseSearchIndex:
                     for element in (value if attribute.type == KEYWORD_LIST else (value,)):
                         table.setdefault(element, set()).add(position)
             self._sets[attribute.name] = table
+        self.tier_filter_complete = self.tier_filter_complete and TIER_ATTRIBUTE["name"] in self._sets
 
     def stats(self):
         return {"record_type": INDEX_RECORD_TYPE, "entries": len(self.identities),
@@ -256,7 +262,7 @@ def fuse(pools, allowed, policy, top_n):
     return [(identity, round(score, 5), sorted(modes)) for identity, (score, modes) in ordered]
 
 
-def authorized_hits(view, fields, authorize):
+def authorized_hits(view, fields, authorize, *, community_items=None):
     """Rank in the view's index, keep what `authorize` returns, and widen the pool until it is full.
 
     `authorize` receives candidate identities and returns the provisioning rows
@@ -265,7 +271,9 @@ def authorized_hits(view, fields, authorize):
     without touching the index.
     """
     index = view.search_index()
-    conditions = view.schema.filter_request(fields.get("filters"))
+    conditions = list(view.schema.filter_request(fields.get("filters")))
+    if community_items == COMMUNITY_EXCLUDED and getattr(index, "tier_filter_complete", False) is True:
+        conditions.append((TIER_ATTRIBUTE["name"], "any_of", (VERIFIED_TIER,)))
     eligible = index.eligible(conditions) if conditions else None
     top_n, mode = fields.get("top_n", 10), fields.get("mode", LEXICAL_MODE)
     pool = max(1, top_n * index.policy.candidate_pool_multiplier)

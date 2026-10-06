@@ -1566,7 +1566,7 @@ class ServiceHttpApplication:
                                                              candidates=candidates, community_items=community,
                                                              authority_effects=fields.get("authority_effects", ()))
             return {row["identity"]: row for row in listing["items"]}
-        ranked, rows = authorized_hits(view, fields, authorize)
+        ranked, rows = authorized_hits(view, fields, authorize, community_items=community)
         hits = []
         for identity, score, modes in ranked:
             row = rows[identity]
