@@ -75,7 +75,10 @@ BLOB_OBJECT, SEGMENT_OBJECT, ITEM_OBJECT = UPLOAD_OBJECT_KINDS = ("blobs", "segm
 #: How long to wait for the pointer to move before reporting that nothing was published.
 POINTER_WAIT_SECONDS = 120 * 60
 MAXIMUM_UPLOAD_WORKERS = 4
+MAXIMUM_UPLOAD_ATTEMPTS = 3
 STAGING_CONTEXT = "upload-context.json"
+#: Transfer-state sentinels emitted by the remote file-presence probe below.
+STAGING_DISPATCHED, STAGING_UNBOUND = "dispatched", "unbound"
 
 
 def fly(*arguments: str, timeout: int = EXEC_TIMEOUT) -> str:
@@ -244,6 +247,31 @@ def extract_archive(archive: str, digest: str, destination: str) -> None:
     raise RuntimeError("archive extraction outcome is uncertain; inspect its status before retrying")
 
 
+def put_archive(archive, remote_archive, digest):
+    """Bounded recovery of one staging upload, never of a catalogue publication.
+
+    A lost SFTP acknowledgement is reconciled by a read-only remote hash.
+    Retrying sends the same bytes to the same task-owned archive path. No
+    extraction starts here, and failed recovery leaves the stage intact.
+    """
+    for attempt in range(1, MAXIMUM_UPLOAD_ATTEMPTS + 1):
+        try:
+            fly("ssh", "sftp", "put", str(archive), remote_archive,
+                "--machine", MACHINE, "--app", APP, timeout=EXEC_TIMEOUT)
+            return
+        except RuntimeError:
+            try:
+                measured = machine_exec(f"test ! -f {remote_archive} || sha256sum {remote_archive}").split()
+            except RuntimeError:
+                measured = []
+            if measured and measured[0] == digest:
+                return
+            if attempt == MAXIMUM_UPLOAD_ATTEMPTS:
+                raise
+            print(f"  staging upload acknowledgement not confirmed; retry {attempt + 1}/{MAXIMUM_UPLOAD_ATTEMPTS}", flush=True)
+            time.sleep(2 * attempt)
+
+
 def upload_missing(bundle: Path, missing: list[str], remote: str, extra_paths=(), *, workers=1, compress=False) -> None:
     """Put the missing blobs into the remote release folder, then prove every one arrived whole.
 
@@ -283,9 +311,9 @@ def upload_missing(bundle: Path, missing: list[str], remote: str, extra_paths=()
                     relative = name if "/" in name else blob_path(name)
                     stream.add(stage / relative, arcname=relative, recursive=False)
             remote_archive = f"{REMOTE_ROOT}/{remote}/{archive.name}"
-            fly("ssh", "sftp", "put", str(archive), remote_archive,
-                "--machine", MACHINE, "--app", APP, timeout=EXEC_TIMEOUT)
-            extract_archive(remote_archive, hashlib.sha256(archive.read_bytes()).hexdigest(),
+            archive_digest = hashlib.sha256(archive.read_bytes()).hexdigest()
+            put_archive(archive, remote_archive, archive_digest)
+            extract_archive(remote_archive, archive_digest,
                             f"{REMOTE_ROOT}/{remote}")
             return {"number": number, "objects": len(group), "archive_bytes": archive.stat().st_size,
                     "payload_bytes": sum(sizes.get(name, 0) for name in group)}
@@ -325,12 +353,12 @@ def bind_staging(remote, context, *, resume=False, adopt_unmarked=False):
     recovery only; the exact native publication and its checks are unchanged.
     """
     folder = f"{REMOTE_ROOT}/{remote}"
-    state = machine_exec(f"if test -e {folder}/publish-result.json; then echo dispatched; "
+    state = machine_exec(f"if test -e {folder}/publish-result.json; then echo {STAGING_DISPATCHED}; "
                          f"elif test -f {folder}/{STAGING_CONTEXT}; then head -c 8193 {folder}/{STAGING_CONTEXT}; "
-                         "else echo unbound; fi")
-    if state == "dispatched":
+                         f"else echo {STAGING_UNBOUND}; fi")
+    if state == STAGING_DISPATCHED:
         raise RuntimeError("publication was already dispatched; reconcile its result and active pointer before recovery")
-    if state != "unbound":
+    if state != STAGING_UNBOUND:
         try:
             held = json.loads(state)
         except ValueError:
@@ -382,6 +410,10 @@ def absent_blobs(remote: str, expected: list[str], *, kind: str = BLOB_OBJECT) -
         f"n=$(find \"$d\" -maxdepth 1 -type f | wc -l); "
         f"h=$(find \"$d\" -maxdepth 1 -type f -printf '%f\\n' | LC_ALL=C sort | sha256sum | cut -c1-64); "
         f"echo \"$d $n $h\"; done")
+    if not summary:
+        # An empty kind has no prefixes to inspect. Avoid 256 identical empty
+        # remote calls during recovery of a transfer still uploading bodies.
+        return list(expected)
     seen = {}
     for line in summary.splitlines():
         parts = line.split()
@@ -437,8 +469,14 @@ def base_digests(folder: Path) -> set[str]:
     return {file["digest"] for row in rows for file in row["package"]["files"]}
 
 
-def publication_inputs(bundle, digest, base_bundle, base_release, reconciliation_digest, body_roots, accepted_licenses):
-    """Read-only exact preservation and complete local-byte qualification before remote effects."""
+def publication_inputs(bundle, digest, base_bundle, base_release, reconciliation_digest, body_roots, accepted_licenses,
+                       *, verify_local_bodies=True):
+    """Validate exact metadata and preservation before effects.
+
+    Initial/adopted transfers also recheck all local bytes. Only recovery of
+    an exactly bound stage reuses that earlier local-byte check. Complete
+    native byte verification before activation is never optional.
+    """
     from reconcile_catalogue_bundle import (PROOF_FILE, check_proof, load_bundle, read_control, verify_files)
     if (base_bundle is None or not isinstance(base_release, str) or not re.fullmatch(r"[0-9a-f]{64}", base_release)
             or not isinstance(reconciliation_digest, str) or not re.fullmatch(r"[0-9a-f]{64}", reconciliation_digest)):
@@ -452,9 +490,16 @@ def publication_inputs(bundle, digest, base_bundle, base_release, reconciliation
     changes = check_proof(base, candidate, proof)
     if changes.base_release != base_release:
         raise ValueError("publication and build name different base releases")
-    held = verify_files(base, body_roots)
-    roots = tuple(root for root in (base.folder / "blobs", *body_roots) if Path(root).is_dir())
-    verify_files(candidate, roots)
+    if verify_local_bodies:
+        held = verify_files(base, body_roots)
+        roots = tuple(root for root in (base.folder / "blobs", *body_roots) if Path(root).is_dir())
+        verify_files(candidate, roots)
+    else:
+        # Only the exact marked recovery path selects this mode. That stage
+        # was bound after the full local check; metadata/proof checks above
+        # still rerun. Native publication always verifies the complete bytes
+        # before activation, including objects reused from this transfer.
+        held = {file.digest for item in base.items for file in item.package.files}
     return base, changes, proof, set(held)
 
 
@@ -476,8 +521,9 @@ def publish(name: str, bundle: Path, digest: str, *, base_bundle: Path | None = 
         raise ValueError("the expected bundle digest must match the local header before upload")
     from reconcile_catalogue_bundle import load_bundle, require_live_base
     from loop_engine.core.service_runtime.catalogue_segments import bundle_record_type, negotiate_bundle_format
+    reuse_local_verification = bool(resume_staging and not adopt_unmarked_staging)
     base, changes, proof, present = publication_inputs(bundle, digest, base_bundle, base_release,
-        reconciliation_digest, body_roots, accepted_licenses)
+        reconciliation_digest, body_roots, accepted_licenses, verify_local_bodies=not reuse_local_verification)
     require_live_base(base, changes, active_catalogue())
     # The service must read this bundle's version; this read changes nothing on the Machine.
     record_type = bundle_record_type(bundle)
@@ -512,7 +558,9 @@ def publish(name: str, bundle: Path, digest: str, *, base_bundle: Path | None = 
             "batches": len(group_batches(missing, sizes)), "base_release": base_release,
             "reconciliation_digest": reconciliation_digest, "bundle_record_type": record_type,
             "segments_and_item_lines": len(extra_paths), "resumed_staged_bodies": resumed_bodies,
-            "resumed_staged_metadata": resumed_metadata, "upload_workers": upload_workers, "compressed": compress}
+            "resumed_staged_metadata": resumed_metadata, "upload_workers": upload_workers, "compressed": compress,
+            "local_body_verification": "reused_exact_marked_stage" if reuse_local_verification else "fresh_full_check",
+            "native_complete_byte_verification": "required_before_activation"}
     print(json.dumps(plan, indent=2), flush=True)
     # A declared withdrawal-only/no-op snapshot can have no new local blobs.
     if extra_paths:

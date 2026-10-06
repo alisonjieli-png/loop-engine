@@ -15,6 +15,32 @@ from test_publish_catalogue_delta import DeltaPublishOrder
 
 
 class TransferTests(unittest.TestCase):
+    def test_a_lost_upload_acknowledgement_is_resolved_by_hash_without_resending(self):
+        with mock.patch.object(tool, "fly", side_effect=RuntimeError("lost acknowledgement")) as upload, \
+                mock.patch.object(tool, "machine_exec", return_value="a" * 64 + " archive"), \
+                mock.patch.object(tool, "extract_archive") as extract:
+            tool.put_archive(Path("owned.tar.gz"), "/data/incoming/delta-test/owned.tar.gz", "a" * 64)
+        self.assertEqual(upload.call_count, 1)
+        extract.assert_not_called()
+
+    def test_unconfirmed_upload_retries_are_bounded_and_never_start_extraction(self):
+        with mock.patch.object(tool, "fly", side_effect=RuntimeError("transport unavailable")) as upload, \
+                mock.patch.object(tool, "machine_exec", side_effect=RuntimeError("probe unavailable")), \
+                mock.patch.object(tool.time, "sleep"), mock.patch.object(tool, "extract_archive") as extract:
+            with self.assertRaisesRegex(RuntimeError, "transport unavailable"):
+                tool.put_archive(Path("owned.tar.gz"), "/data/incoming/delta-test/owned.tar.gz", "a" * 64)
+        self.assertEqual(upload.call_count, tool.MAXIMUM_UPLOAD_ATTEMPTS)
+        extract.assert_not_called()
+
+    def test_an_empty_staging_namespace_needs_one_bounded_inventory_request(self):
+        expected = [hashlib.sha256(str(n).encode()).hexdigest() for n in range(1000)]
+        with mock.patch.object(tool, "machine_exec", return_value="") as remote:
+            self.assertEqual(tool.absent_blobs("delta-test", expected, kind="items"), expected)
+            self.assertEqual(remote.call_count, 1)
+        with mock.patch.object(tool, "machine_exec", side_effect=RuntimeError("transport failed")):
+            with self.assertRaisesRegex(RuntimeError, "transport failed"):
+                tool.absent_blobs("delta-test", expected, kind="items")
+
     def test_four_compressed_transfers_preserve_bytes_and_own_distinct_receipts(self):
         with tempfile.TemporaryDirectory() as directory:
             bundle = Path(directory)
@@ -133,6 +159,8 @@ class PublishRecoveryTests(DeltaPublishOrder):
             answer = tool.publish("slot", self.output, self.digest, **self.kwargs,
                                   resume_staging=remote, upload_workers=4, compress=True)
         self.assertTrue(answer["published"])
+        self.assertEqual(answer["local_body_verification"], "reused_exact_marked_stage")
+        self.assertEqual(answer["native_complete_byte_verification"], "required_before_activation")
         self.assertEqual(answer["resumed_staged_bodies"], 1)
         self.assertEqual(upload.call_args.args[1:3], ([], remote))
         commits = [command for command in self.commands if "nohup loop-engine service publish-catalogue" in command]
