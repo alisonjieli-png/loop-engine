@@ -24,6 +24,21 @@ SUBSCRIPTIONS_PATH = "/v1/subscriptions"
 INVOICE_PAID = "paid"
 
 
+def invoice_paid(invoice):
+    """Whether an expanded invoice is paid, read from its `status`.
+
+    Stripe removed the Invoice `paid` field in API version 2025-03-31.basil,
+    which is also the earliest version this reader can serve, because the
+    period end it reads moved onto the subscription item in the same release.
+    Reading the removed field made every paid invoice look unpaid, so no paying
+    customer was ever granted downloads. That was observed against the Stripe
+    test environment on October 5, 2026, with an active subscription whose
+    latest invoice had `status` "paid" and no `paid` field. The changelog entry:
+    https://docs.stripe.com/changelog/basil/2025-03-31/add-support-for-multiple-partial-payments-on-invoices
+    """
+    return invoice.get("status") == INVOICE_PAID
+
+
 class _NoRedirect(HTTPRedirectHandler):
     def redirect_request(self, req, fp, code, msg, headers, newurl):
         raise ServiceRuntimeError("stripe_redirect_refused")
@@ -132,8 +147,7 @@ class StripeSubscriptionReader:
                         raise ServiceRuntimeError("invalid_stripe_subscription_item")
                     periods.append((item["price"].get("id"), item.get("current_period_end")))
                 invoice = row.get("latest_invoice")
-                paid = (invoice.get("paid") is True and invoice.get("status") == INVOICE_PAID
-                        if isinstance(invoice, dict) else None)
+                paid = invoice_paid(invoice) if isinstance(invoice, dict) else None
                 if isinstance(invoice, dict) and invoice.get("customer") != customer_id:
                     raise ServiceRuntimeError("invoice_customer_mismatch")
                 subscriptions.append(StripeSubscriptionState(row.get("id"), customer_id,

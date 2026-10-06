@@ -305,17 +305,21 @@ def run_checks():
 
 
 def provider_checks():
+    from unittest.mock import patch
     tests = []
     def check(name, value): tests.append({"test": name, "passed": bool(value)})
     calls, secrets = [], []
     config = StripeProviderConfig("acct_fixture", API, "env:TEST", allow_network=True)
-    def transport(request, key):
+    # The subscription list in the shape Stripe answers from API version 2025-03-31.basil on: the period end sits on
+    # each item and the expanded invoice has a `status` and no `paid` field. The shape was read from the Stripe test
+    # environment on October 5, 2026; `invoice_status` changes only the status.
+    def transport(request, key, invoice_status="paid"):
         calls.append(request)
         if request.path == "/v1/account": return {"id": "acct_fixture"}
         return {"object": "list", "has_more": False, "data": [{"object": "subscription",
             "id": "sub_fixture", "customer": "cus_fixture", "livemode": False, "status": "active",
             "items": {"has_more": False, "data": [{"price": {"id": "price_fixture"}, "current_period_end": 2000}]},
-            "latest_invoice": {"customer": "cus_fixture", "paid": True, "status": "paid"},
+            "latest_invoice": {"customer": "cus_fixture", "status": invoice_status},
             "pause_collection": None, "trial_end": None}]}
     reader = StripeSubscriptionReader(config, lambda ref: secrets.append(ref) or SECRET, transport=transport)
     result = reader.resolve("cus_fixture")
@@ -323,6 +327,19 @@ def provider_checks():
           result.complete and result.account_id == config.account_id and result.customer_id == "cus_fixture"
           and result.api_version == API and result.subscriptions[0].latest_invoice_paid is True
           and dict(calls[-1].query)["status"] == "all")
+    for status in ("open", "draft", "void", "uncollectible"):
+        unpaid = StripeSubscriptionReader(config, lambda ref: SECRET,
+                                          transport=lambda request, key, status=status: transport(request, key, status))
+        check("provider_reader_reads_a_" + status + "_invoice_as_unpaid",
+              unpaid.resolve("cus_fixture").subscriptions[0].latest_invoice_paid is False)
+    # Known-wrong control: the rule this release replaced read the `paid` field that Stripe removed, so with the
+    # current answer shape it called every paid invoice unpaid and no paying customer was granted downloads.
+    from . import stripe_provider as provider_module
+    with patch.object(provider_module, "invoice_paid",
+                      lambda invoice: invoice.get("paid") is True and invoice.get("status") == provider_module.INVOICE_PAID):
+        check("removed_field_rule_reads_a_paid_invoice_as_unpaid_and_is_detected",
+              StripeSubscriptionReader(config, lambda ref: SECRET, transport=transport)
+              .resolve("cus_fixture").subscriptions[0].latest_invoice_paid is False)
     calls.clear();secrets.clear()
     denied = StripeSubscriptionReader(replace(config, allow_network=False), lambda ref: secrets.append(ref), transport=transport)
     check("provider_network_denial_precedes_secret_or_transport",
@@ -331,7 +348,6 @@ def provider_checks():
     check("provider_wrong_account_refuses", refuses(lambda: wrong.resolve("cus_fixture"), "stripe_account_mismatch"))
     check("provider_refuses_redirect_before_following_it", refuses(lambda: _NoRedirect().redirect_request(
         None, None, 302, "redirect", {}, "https://other.example"), "stripe_redirect_refused"))
-    from unittest.mock import patch
     # The opener classes come from the provider module, which holds the
     # network registration; this checks file needs none of its own.
     from . import stripe_provider as provider
