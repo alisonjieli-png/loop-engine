@@ -1,0 +1,231 @@
+{
+ "account": "pilot-owner",
+ "body_text_kept": false,
+ "capabilities_error": null,
+ "capabilities_status": 503,
+ "catalogue_release": "76e970a98201e0cd17be65c8696c09c9d336453441595d0e3c0043819b2f1516",
+ "checked_at": "2026-10-06T02:44:40.085338+00:00",
+ "checker_sha256": "456374d5b28aa589dcf7787c4c96f97dd52ca52ff42596e60dbbfdcfcd798a97",
+ "credential": {
+  "account": "pilot-owner",
+  "expires_at": "2026-10-12T23:52:16+00:00",
+  "expires_in_seconds": 594455,
+  "key_id": "91ac15841d3a473c8406eee6c3228cff",
+  "reference": "baltor-pilot-owner"
+ },
+ "credential_printed": false,
+ "credential_warning": null,
+ "failure_code": "quickstart_failed",
+ "http_calls": 5,
+ "origin": "https://app.baltor.ai",
+ "passed": false,
+ "physical_model_calls": 0,
+ "protocol_versions": null,
+ "published_base": "https://app.baltor.ai",
+ "published_base_source": "origin",
+ "query": "review inputs",
+ "quickstarts": [
+  {
+   "catalogue_release": null,
+   "digest_prefix": null,
+   "harness": "Claude Code",
+   "hits": 0,
+   "http_calls": 0,
+   "id": "claude-code",
+   "identity": null,
+   "page": "docs/guides/quickstart-claude-code.md",
+   "passed": false,
+   "request_id": null,
+   "step_effects": null,
+   "steps": [
+    {
+     "detail": "https://baltor.ai/mcp; https://baltor.ai/assets/baltor-library/$file; https://baltor.ai/assets/baltor-library/SHA256SUMS; https://baltor.ai/api/v1/session",
+     "name": "page_names_the_published_base",
+     "passed": false
+    },
+    {
+     "detail": "review inputs",
+     "name": "page_documents_the_first_search",
+     "passed": true
+    },
+    {
+     "detail": "the service publishes no claude-code recipe",
+     "name": "page_matches_the_published_recipe",
+     "passed": false
+    },
+    {
+     "detail": "the service names no handshake protocol version",
+     "name": "connected",
+     "passed": false
+    }
+   ],
+   "wire_path": "protocol"
+  },
+  {
+   "catalogue_release": null,
+   "digest_prefix": null,
+   "harness": "Codex",
+   "hits": 0,
+   "http_calls": 0,
+   "id": "codex",
+   "identity": null,
+   "page": "docs/guides/quickstart-codex.md",
+   "passed": false,
+   "request_id": null,
+   "step_effects": null,
+   "steps": [
+    {
+     "detail": "https://baltor.ai/mcp; https://baltor.ai/assets/baltor-library/$file; https://baltor.ai/assets/baltor-library/SHA256SUMS; https://baltor.ai/api/v1/session",
+     "name": "page_names_the_published_base",
+     "passed": false
+    },
+    {
+     "detail": "review inputs",
+     "name": "page_documents_the_first_search",
+     "passed": true
+    },
+    {
+     "detail": "the service publishes no codex recipe",
+     "name": "page_matches_the_published_recipe",
+     "passed": false
+    },
+    {
+     "detail": "the service names no handshake protocol version",
+     "name": "connected",
+     "passed": false
+    }
+   ],
+   "wire_path": "protocol"
+  },
+  {
+   "catalogue_release": null,
+   "digest_prefix": null,
+   "harness": "OpenCode",
+   "hits": 0,
+   "http_calls": 0,
+   "id": "opencode",
+   "identity": null,
+   "page": "docs/guides/quickstart-opencode.md",
+   "passed": false,
+   "request_id": null,
+   "step_effects": null,
+   "steps": [
+    {
+     "detail": "https://baltor.ai/mcp; https://baltor.ai/assets/baltor-library/$file; https://baltor.ai/assets/baltor-library/SHA256SUMS; https://baltor.ai/api/v1/session; https://baltor.ai/mcp",
+     "name": "page_names_the_published_base",
+     "passed": false
+    },
+    {
+     "detail": "review inputs",
+     "name": "page_documents_the_first_search",
+     "passed": true
+    },
+    {
+     "detail": "the service publishes no opencode recipe",
+     "name": "page_matches_the_published_recipe",
+     "passed": false
+    },
+    {
+     "detail": "the service names no handshake protocol version",
+     "name": "connected",
+     "passed": false
+    }
+   ],
+   "wire_path": "protocol"
+  },
+  {
+   "catalogue_release": null,
+   "digest_prefix": null,
+   "harness": "Pi",
+   "hits": 0,
+   "http_calls": 1,
+   "id": "pi",
+   "identity": null,
+   "page": "docs/guides/quickstart-pi.md",
+   "passed": false,
+   "request_id": null,
+   "step_effects": null,
+   "steps": [
+    {
+     "detail": "https://baltor.ai/mcp; https://baltor.ai/assets/pi/baltor.ts; https://baltor.ai/mcp; https://baltor.ai/api/v1/session",
+     "name": "page_names_the_published_base",
+     "passed": false
+    },
+    {
+     "detail": "review inputs",
+     "name": "page_documents_the_first_search",
+     "passed": true
+    },
+    {
+     "detail": "the service publishes no pi recipe",
+     "name": "page_matches_the_published_recipe",
+     "passed": false
+    },
+    {
+     "detail": "the session answered 503",
+     "name": "connected",
+     "passed": false,
+     "status": 503
+    }
+   ],
+   "wire_path": "extension"
+  },
+  {
+   "catalogue_release": "76e970a98201e0cd17be65c8696c09c9d336453441595d0e3c0043819b2f1516",
+   "digest_prefix": null,
+   "harness": "Baltor Harness",
+   "hits": 3,
+   "http_calls": 2,
+   "id": "baltor-harness",
+   "identity": null,
+   "page": "docs/guides/quickstart-baltor-harness.md",
+   "passed": false,
+   "request_id": null,
+   "step_effects": null,
+   "steps": [
+    {
+     "detail": "https://baltor.ai/mcp; https://baltor.ai/api/v1/session; https://baltor.ai/api/v1/retrieval; https://baltor.ai/api/v1/download",
+     "name": "page_names_the_published_base",
+     "passed": false
+    },
+    {
+     "detail": "review inputs",
+     "name": "page_documents_the_first_search",
+     "passed": true
+    },
+    {
+     "detail": "the service publishes no baltor-harness recipe",
+     "name": "page_matches_the_published_recipe",
+     "passed": false
+    },
+    {
+     "detail": "service_session/v1",
+     "name": "connected",
+     "passed": true
+    },
+    {
+     "detail": "scopes provisioning:metadata, provisioning:read, usage:read",
+     "name": "listed",
+     "passed": true
+    },
+    {
+     "detail": "no hit is readable within the download limit of 0 bytes",
+     "name": "searched",
+     "passed": false
+    }
+   ],
+   "wire_path": "direct"
+  }
+ ],
+ "quickstarts_passed": 0,
+ "quickstarts_planned": 5,
+ "recipes_error": null,
+ "recipes_record_type": null,
+ "recipes_reviewed_at": null,
+ "recipes_status": 503,
+ "record_type": "quickstart_live_check/v1",
+ "request_ids": [],
+ "request_ids_not_confirmed": [],
+ "served_items": null,
+ "usage_records_added": 0
+}
