@@ -183,6 +183,9 @@ class OAuthAccessContext:
     subject: str
     resource: str
     grant_id: str = field(repr=False)
+    #: The presentation of `/mcp` this delegation's client reads, from its registered redirects (see
+    #: `chatgpt_app.profile_for_client`). Presentation only: the scopes above are the whole authority.
+    client_profile: str = ""
 
 
 class OAuthAuthorizationProvider:
@@ -619,8 +622,11 @@ class OAuthAuthorizationProvider:
             scopes = tuple(sorted(set(token["scopes"]) & set(principal.scopes) & set(self.policy.allowed_scopes)))
             if not scopes:
                 return None
+            _client_row, client = self._client(store, token["client_id"])
+            from .chatgpt_app import profile_for_client
             return OAuthAccessContext(principal, scopes, token["expires_at"], token["client_id"], token["subject"],
-                                      token["resource"], token["grant_id"])
+                                      token["resource"], token["grant_id"],
+                                      client_profile=profile_for_client(client.redirect_uris if client else ()))
 
     async def access_context(self, raw):
         return await asyncio.to_thread(self.resolve_access, raw)

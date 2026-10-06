@@ -66,7 +66,8 @@ def default_provider(runtime, browser_identity, configuration):
         return None
     origin = configuration.public_base_url
     policy = OAuthAuthorizationPolicy(origin, origin + "/mcp", browser_identity.configuration.project_url + "/auth/v1",
-        origin + CONSENT_PATH, redirect_uris=("https://chatgpt.com/connector_platform_oauth_redirect",),
+        origin + CONSENT_PATH, redirect_uris=("https://chatgpt.com/connector_platform_oauth_redirect",
+                                              *getattr(configuration, "openai_oauth_redirect_uris", ())),
         redirect_uri_prefixes=(OPENAI_CALLBACK_PREFIX,),
         native_loopback_paths=("/callback", "/oauth/callback", "/auth/callback", "/mcp/oauth/callback"))
     return OAuthAuthorizationProvider(runtime, policy)
@@ -179,7 +180,13 @@ class OAuthHttp:
                     if value["token_endpoint_auth_method"] != "none":
                         return refusal("invalid_client_metadata")
                     value.setdefault("client_name", "MCP client")
-                    value.setdefault("grant_types", ["authorization_code", "refresh_token"])
+                    # Every registered client may refresh: a client that asks for the code grant alone is registered
+                    # for both, as RFC 7591 lets a server do, so ChatGPT's connector is not refused for its choice.
+                    grants = value.get("grant_types", ["authorization_code", "refresh_token"])
+                    if (not isinstance(grants, list) or "authorization_code" not in grants
+                            or set(grants) - {"authorization_code", "refresh_token"}):
+                        return refusal("invalid_client_metadata")
+                    value["grant_types"] = ["authorization_code", "refresh_token"]
                     value.setdefault("response_types", ["code"])
                     body = json.dumps(value, allow_nan=False).encode("utf-8")
                 else:

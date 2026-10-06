@@ -1273,6 +1273,11 @@
       "description": "The terms of service of Baltor, operated by Baltor.AI."
      },
      {
+      "address": "/support",
+      "title": "Support",
+      "description": "How to reach Baltor for help with your account, a connection, ChatGPT, downloads or the library."
+     },
+     {
       "address": "/deck",
       "title": "Deck",
       "description": "The Baltor deck: the problem, the product, the market and the plan, with every number tied to a saved record."

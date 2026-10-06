@@ -13842,6 +13842,12 @@ entries:
   classification: SECRET_OR_CREDENTIAL_REFERENCE
   created_on: '2026-10-07'
   expires_on: '2027-10-07'
+- finding_id: hardcoding.2a2de8252e5a00650c2824e3
+  owner: "loop_engine.core.service_runtime.chatgpt_app"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5 for the ChatGPT app: the text rule that reads an HTTPS address (host, port, path) without importing a network module. It is a parser shape, not an endpoint or provider; is_openai_redirect and the package and live checks share this one rule, and tools/test_chatgpt_app.py holds it to known-wrong addresses. No source or file-wide exemption."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
 excluded_paths:
 - path: src/loop_engine/core/service_runtime/web_assets/creative-arena/arena.js
   owner: examples.32_creative_arena

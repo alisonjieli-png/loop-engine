@@ -526,7 +526,8 @@ def served_site():
     """The website this checkout serves, read through the service's own served address table."""
     from urllib.parse import unquote
 
-    from loop_engine.core.service_runtime import catalogue_feed, dot_pages, feed_source_collections, library_page, public_good_page, red_team_page, status_pages
+    from loop_engine.core.service_runtime import (catalogue_feed, dot_pages, feed_source_collections, library_page,
+                                                  public_good_page, red_team_page, status_pages, support_page)
     from loop_engine.core.service_runtime.model_directory_pages import rendered_page
     from loop_engine.core.service_runtime.public_links import PublicListLinks
     site_map = load_site_map()
@@ -542,8 +543,8 @@ def served_site():
             return "", catalogue_feed.FORMATS[address]
         # The transport answers the model directory's rendered pages after the served address table, then the library
         # page from the catalogue it serves; no catalogue runs here, so the library page is rendered from an empty view.
-        # The decision red team page and the three pages nothing links to (changelog, features, open work) come last,
-        # each from its packaged record.
+        # The decision red team page and the three pages nothing links to (changelog, features, open work) come next,
+        # each from its packaged record, and the support page last.
         answer = (web_pages.served_asset(address, "GET", site_map.display_name)
                   or rendered_page(address, "GET", site_map.display_name)
                   or library_page.rendered(library_page.empty_view(), address, "GET", site_map.display_name)
@@ -551,7 +552,8 @@ def served_site():
                   or catalogue_feed.rendered_page(address, "GET", site_map.display_name)
                   or dot_pages.rendered(address, "GET", site_map.display_name)
                   or red_team_page.rendered(address, "GET", site_map.display_name)
-                  or status_pages.rendered(address, "GET", site_map.display_name))
+                  or status_pages.rendered(address, "GET", site_map.display_name)
+                  or support_page.rendered(address, "GET", site_map.display_name))
         if answer is None:
             return ("", COUNTED_LINK_ANSWER) if counted_links.destination(unquote(address)) else None
         return (answer[0].decode("utf-8"), answer[1]) if answer[1] == HTML else ("", answer[1])

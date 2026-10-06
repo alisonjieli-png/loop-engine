@@ -742,6 +742,20 @@
       "indexed": true
     },
     {
+      "address": "/support",
+      "view": "support",
+      "title": "Support",
+      "description": "How to reach Baltor for help with your account, a connection, ChatGPT, downloads or the library.",
+      "group": "Company",
+      "linked_from": [
+        "footer"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "documentation",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
       "address": "/deck",
       "view": "deck",
       "title": "Deck",
@@ -1314,6 +1328,11 @@
             "role": "link",
             "label": "Terms of service",
             "href": "/terms"
+          },
+          {
+            "role": "link",
+            "label": "Support",
+            "href": "/support"
           },
           {
             "role": "link",

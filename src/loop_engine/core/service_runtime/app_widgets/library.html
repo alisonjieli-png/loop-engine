@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Baltor library</title>
+<style>
+:root{color-scheme:light dark;--d-bg:#ffffff;--d-bg2:#f4f5f7;--d-text:#16181d;--d-muted:#4b5563;--d-line:#dfe2e7;
+--d-accent:#1f4fbf;--d-on-accent:#ffffff;--d-warn-bg:#fff4e5;--d-warn-text:#7a4a00}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--d-bg:#212121;--d-bg2:#2a2a2a;--d-text:#f3f4f6;
+--d-muted:#c4c8cf;--d-line:#3c3f45;--d-accent:#8cb4ff;--d-on-accent:#10131a;--d-warn-bg:#3a2e1c;--d-warn-text:#ffd79a}}
+:root[data-theme="dark"]{color-scheme:dark;--d-bg:#212121;--d-bg2:#2a2a2a;--d-text:#f3f4f6;--d-muted:#c4c8cf;
+--d-line:#3c3f45;--d-accent:#8cb4ff;--d-on-accent:#10131a;--d-warn-bg:#3a2e1c;--d-warn-text:#ffd79a}
+:root[data-theme="light"]{color-scheme:light}
+:root{--b-bg:var(--color-background-primary,var(--d-bg));--b-bg2:var(--color-background-secondary,var(--d-bg2));
+--b-text:var(--color-text-primary,var(--d-text));--b-muted:var(--color-text-secondary,var(--d-muted));
+--b-line:var(--color-border-primary,var(--d-line));--b-accent:var(--d-accent);--b-on-accent:var(--d-on-accent);
+--b-warn-bg:var(--d-warn-bg);--b-warn-text:var(--d-warn-text);--b-radius:var(--border-radius-md,10px);
+--b-font:var(--font-sans,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif);
+--b-mono:var(--font-mono,ui-monospace,SFMono-Regular,Menlo,Consolas,monospace)}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:transparent}
+body{font-family:var(--b-font);font-size:var(--font-text-md-size,15px);line-height:1.45;color:var(--b-text)}
+main{padding:12px;display:flex;flex-direction:column;gap:10px;max-width:100%}
+h2{font-size:var(--font-heading-sm-size,17px);margin:0;line-height:1.3}
+h3{font-size:var(--font-text-md-size,15px);margin:0;line-height:1.3;overflow-wrap:anywhere}
+p{margin:0}
+.muted{color:var(--b-muted);font-size:var(--font-text-sm-size,13px)}
+.card{background:var(--b-bg);border:1px solid var(--b-line);border-radius:var(--b-radius);padding:12px;display:flex;flex-direction:column;gap:6px}
+.purpose{display:-webkit-box;-webkit-line-clamp:3;line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.facts{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:12px;border:1px solid var(--b-line);border-radius:999px;padding:1px 8px;color:var(--b-muted);white-space:nowrap}
+.effects{background:var(--b-warn-bg);color:var(--b-warn-text);border-radius:8px;padding:6px 8px;font-size:13px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:2px}
+button{font:inherit;font-size:14px;min-height:36px;padding:6px 14px;border-radius:999px;border:1px solid var(--b-line);background:var(--b-bg2);color:var(--b-text);cursor:pointer}
+button.primary{background:var(--b-accent);border-color:var(--b-accent);color:var(--b-on-accent)}
+button:focus-visible{outline:2px solid var(--b-accent);outline-offset:2px}
+button[disabled]{opacity:.6;cursor:default}
+.files{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;border:1px solid var(--b-line);border-radius:8px}
+.files li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;padding:7px 10px}
+.files li + li{border-top:1px solid var(--b-line)}
+.path{font-family:var(--b-mono);font-size:13px;overflow-wrap:anywhere}
+.digest{grid-column:1/-1;font-family:var(--b-mono);font-size:11px;color:var(--b-muted);overflow-wrap:anywhere}
+.size{font-size:12px;color:var(--b-muted);white-space:nowrap}
+dl.where{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 12px;margin:0}
+dl.where dt{font-weight:600;font-size:13px}dl.where dd{margin:0;font-family:var(--b-mono);font-size:13px;overflow-wrap:anywhere}
+.section{display:flex;flex-direction:column;gap:6px}
+a{color:var(--b-accent)}
+.state{padding:8px 2px}
+@media (max-width:420px){main{padding:8px}.card{padding:10px}}
+</style>
+</head>
+<body>
+<main id="root" aria-live="polite"><p class="state muted" id="state">Loading Baltor results…</p></main>
+<script>
+"use strict";
+(() => {
+  const root = document.getElementById("root");
+  const host = {ready: false, pending: new Map(), next: 1, context: {}};
+  const openai = () => (typeof window !== "undefined" ? window.openai : undefined);
+  let current = null, history = [];
+
+  function post(message) { window.parent.postMessage(message, "*"); }
+  function request(method, params) {
+    const id = host.next++;
+    post({jsonrpc: "2.0", id, method, params});
+    return new Promise((resolve, reject) => {
+      host.pending.set(id, {resolve, reject});
+      setTimeout(() => { if (host.pending.has(id)) { host.pending.delete(id); reject(new Error("timeout")); } }, 30000);
+    });
+  }
+  function notify(method, params) { post({jsonrpc: "2.0", method, params}); }
+
+  function applyContext(context) {
+    if (!context || typeof context !== "object") return;
+    host.context = {...host.context, ...context};
+    const theme = host.context.theme;
+    if (theme === "light" || theme === "dark") document.documentElement.dataset.theme = theme;
+    const variables = host.context.styles && host.context.styles.variables;
+    if (variables && typeof variables === "object") {
+      for (const [name, value] of Object.entries(variables)) {
+        if (/^--[a-z0-9-]+$/.test(name) && typeof value === "string" && value.length < 200) document.documentElement.style.setProperty(name, value);
+      }
+    }
+  }
+
+  function el(tag, attributes, ...parts) {
+    const node = document.createElement(tag);
+    for (const [key, value] of Object.entries(attributes || {})) {
+      if (value === undefined || value === null || value === false) continue;
+      if (key === "class") node.className = value; else if (key === "text") node.textContent = value;
+      else if (key.startsWith("on")) node.addEventListener(key.slice(2), value); else node.setAttribute(key, value === true ? "" : value);
+    }
+    for (const part of parts.flat()) if (part !== null && part !== undefined && part !== false)
+      node.append(typeof part === "string" ? document.createTextNode(part) : part);
+    return node;
+  }
+  function show(node, nodes) { node.textContent = ""; node.append(...nodes); }
+  const text = value => (typeof value === "string" ? value : value === undefined || value === null ? "" : String(value));
+  function size(bytes) {
+    const n = Number(bytes) || 0;
+    if (n < 1024) return n + " B";
+    if (n < 1048576) return (n / 1024).toFixed(n < 10240 ? 1 : 0) + " KB";
+    return (n / 1048576).toFixed(1) + " MB";
+  }
+  const effectWords = {reads_fs: "read project files", writes_fs: "write project files", spawns_process: "run commands",
+    network: "use the network", reads_secret: "read secrets"};
+  function sentenceList(words) {
+    return words.length < 2 ? words.join("") : words.slice(0, -1).join(", ") + " and " + words[words.length - 1];
+  }
+  function effectsLine(item) {
+    const listed = (Array.isArray(item.effects_to_declare) ? item.effects_to_declare : [])
+      .map(effect => effectWords[effect] || effect.replace(/_/g, " "));
+    return listed.length ? el("p", {class: "effects", text: "When a harness uses it, its steps " + sentenceList(listed) + "."}) : null;
+  }
+  function facts(item) {
+    return el("div", {class: "facts"},
+      [item.kind && item.kind.replace(/_/g, " "), item.library_tier, item.licence,
+       (item.file_count === 1 ? "1 file" : (item.file_count || 0) + " files"),
+       size(typeof item.files_bytes === "number" ? item.files_bytes : item.size_bytes)]
+        .filter(Boolean).map(value => el("span", {class: "chip", text: text(value)})));
+  }
+
+  function renderSearch(value) {
+    const results = Array.isArray(value.results) ? value.results : [];
+    const heading = results.length === 0 ? "No library items matched" :
+      (results.length === 1 ? "1 library item" : results.length + " library items") + " for “" + text(value.query) + "”";
+    const cards = results.map(item => el("article", {class: "card", "aria-label": text(item.name)},
+      el("h3", {text: text(item.name)}), facts(item), el("p", {class: "purpose", text: text(item.purpose)}), effectsLine(item),
+      el("div", {class: "actions"}, el("button", {class: "primary", type: "button", text: "Show files",
+        "aria-label": "Show the files of " + text(item.name), onclick: event => openPackage(item, event.currentTarget)}))));
+    return [el("h2", {text: heading}),
+      results.length === 0 ? el("p", {class: "muted", text: text(value.ask_for_material || "Try other words.")}) : null, ...cards];
+  }
+
+  function renderPackage(value) {
+    const item = value.package || {};
+    const files = Array.isArray(item.files) ? item.files : [];
+    const shown = files.slice(0, 12);
+    const list = el("ul", {class: "files", "aria-label": "Files"}, shown.map(fileRow));
+    const more = files.length > shown.length ? el("button", {type: "button", text: "Show all " + files.length + " files",
+      onclick: event => { show(list, files.map(fileRow)); event.currentTarget.remove(); }}) : null;
+    const hidden = (item.file_count || 0) - files.length;
+    const load = value.load_into_a_harness || {};
+    const where = Array.isArray(load.folders) && load.folders.length ? el("dl", {class: "where"},
+      load.folders.flatMap(row => [el("dt", {text: text(row.harness)}), el("dd", {text: text(row.where)})])) : null;
+    return [
+      history.length ? el("div", {class: "actions"}, el("button", {type: "button", text: "Back to results", onclick: back})) : null,
+      el("section", {class: "card", "aria-label": text(item.name)},
+        el("h2", {text: text(item.name)}), facts(item), el("p", {text: text(item.purpose)}),
+        item.source ? el("p", {class: "muted", text: "Source: " + text(item.source)}) : null, effectsLine(item),
+        el("div", {class: "actions"}, el("button", {class: "primary", type: "button", text: "Download files",
+          "aria-label": "Ask to download the files of " + text(item.name), onclick: () => askToDownload(item)}))),
+      el("section", {class: "section", "aria-label": "Files"}, el("h3", {text: "Files and SHA-256 digests"}), list, more,
+        hidden > 0 ? el("p", {class: "muted", text: hidden + " more files are listed when the files are downloaded."}) : null),
+      el("section", {class: "section", "aria-label": "Load it into a harness"}, el("h3", {text: "Load it into a harness"}),
+        el("p", {class: "muted", text: text(load.summary)}), where,
+        load.setup_url ? el("p", {class: "muted"}, "Connect a harness to Baltor: ",
+          el("a", {href: load.setup_url, target: "_blank", rel: "noopener noreferrer", text: "baltor.ai/setup",
+            onclick: event => { event.preventDefault(); openLink(load.setup_url); }})) : null)];
+  }
+  function fileRow(file) {
+    return el("li", {}, el("span", {class: "path", text: text(file.path)}), el("span", {class: "size", text: size(file.size_bytes)}),
+      el("span", {class: "digest", title: "SHA-256 " + text(file.sha256), text: "sha256 " + text(file.sha256)}));
+  }
+
+  function render(value, isError, message) {
+    const nodes = [];
+    if (isError) nodes.push(el("p", {class: "state", role: "alert", text: text(message || "Baltor could not complete this request.")}));
+    else if (value && value.view === "search") nodes.push(...renderSearch(value));
+    else if (value && value.view === "package") nodes.push(...renderPackage(value));
+    else nodes.push(el("p", {class: "state muted", text: "Nothing to show."}));
+    show(root, nodes.filter(Boolean));
+    current = value;
+    reportSize();
+  }
+  function fromResult(result) {
+    if (!result) return;
+    const value = result.structuredContent;
+    const refusal = value && value.error;
+    if (result.isError || refusal) render(null, true, refusal && (refusal.message + (refusal.next_action ? " " + refusal.next_action : "")));
+    else render(value, false);
+  }
+
+  async function callTool(name, args) {
+    if (host.ready) return request("tools/call", {name, arguments: args});
+    const bridge = openai();
+    if (bridge && typeof bridge.callTool === "function") return bridge.callTool(name, args);
+    throw new Error("no host");
+  }
+  async function openPackage(item, button) {
+    if (button) { button.disabled = true; button.textContent = "Opening…"; }
+    try {
+      const result = await callTool("get_package", {identity: item.identity, expected_digest: item.expected_digest});
+      history.push(current);
+      fromResult(result);
+    } catch (_) {
+      if (button) { button.disabled = false; button.textContent = "Show files"; }
+      root.prepend(el("p", {class: "state", role: "alert", text: "The package could not be opened. Ask in the conversation instead."}));
+      reportSize();
+    }
+  }
+  function back() { const previous = history.pop(); if (previous) render(previous, false); }
+  async function askToDownload(item) {
+    const prompt = "Download the files of " + text(item.name) + " (" + text(item.identity) + ") from Baltor.";
+    try {
+      if (host.ready) { await request("ui/message", {role: "user", content: {type: "text", text: prompt}}); return; }
+    } catch (_) {}
+    const bridge = openai();
+    if (bridge && typeof bridge.sendFollowUpMessage === "function") bridge.sendFollowUpMessage({prompt});
+  }
+  async function openLink(url) {
+    try { if (host.ready) { await request("ui/open-link", {url}); return; } } catch (_) {}
+    const bridge = openai();
+    if (bridge && typeof bridge.openExternal === "function") bridge.openExternal({href: url});
+  }
+
+  let lastHeight = 0;
+  function reportSize() {
+    const height = Math.ceil(document.documentElement.scrollHeight);
+    if (Math.abs(height - lastHeight) < 2) return;
+    lastHeight = height;
+    if (host.ready) notify("ui/notifications/size-changed", {width: Math.ceil(document.documentElement.scrollWidth), height});
+    const bridge = openai();
+    if (bridge && typeof bridge.notifyIntrinsicHeight === "function") bridge.notifyIntrinsicHeight(height);
+  }
+  if (typeof ResizeObserver === "function") new ResizeObserver(reportSize).observe(document.body);
+
+  window.addEventListener("message", event => {
+    if (event.source !== window.parent) return;
+    const message = event.data;
+    if (!message || message.jsonrpc !== "2.0") return;
+    if (message.id !== undefined && !message.method) {
+      const waiting = host.pending.get(message.id);
+      if (waiting) { host.pending.delete(message.id); message.error ? waiting.reject(message.error) : waiting.resolve(message.result); }
+      return;
+    }
+    switch (message.method) {
+      case "ui/notifications/tool-input": {
+        const args = message.params && message.params.arguments;
+        if (!current && args && args.query) show(root, [el("p", {class: "state muted", text: "Searching the library for “" + text(args.query) + "”…"})]);
+        break;
+      }
+      case "ui/notifications/tool-result": history = []; fromResult(message.params); break;
+      case "ui/notifications/tool-cancelled": render(null, true, "The request was cancelled."); break;
+      case "ui/notifications/host-context-changed": applyContext(message.params); reportSize(); break;
+      case "ui/resource-teardown": if (message.id !== undefined) post({jsonrpc: "2.0", id: message.id, result: {}}); break;
+      default: if (message.id !== undefined) post({jsonrpc: "2.0", id: message.id, error: {code: -32601, message: "Method not found"}});
+    }
+  });
+  window.addEventListener("openai:set_globals", () => { const bridge = openai(); if (!current && bridge && bridge.toolOutput) fromResult({structuredContent: bridge.toolOutput}); });
+
+  (async () => {
+    try {
+      const result = await request("ui/initialize", {protocolVersion: "2026-01-26", clientInfo: {name: "baltor-library-view", version: "1.0.0"},
+        appCapabilities: {availableDisplayModes: ["inline"]}});
+      host.ready = true;
+      applyContext(result && result.hostContext);
+      notify("ui/notifications/initialized", {});
+    } catch (_) {
+      const bridge = openai();
+      if (bridge && bridge.toolOutput && !current) fromResult({structuredContent: bridge.toolOutput});
+    }
+    reportSize();
+  })();
+})();
+</script>
+</body>
+</html>

@@ -56,7 +56,9 @@ from . import dot_pages
 from . import public_good_files
 from . import red_team_page
 from . import status_pages
+from . import support_page
 from . import oauth_http
+from . import chatgpt_app
 from .web_pages import (CACHEABLE_WEB_ASSETS, CREATIVE_PREVIEW_PATH, GENERATED_WEB_FILES, HTML_MEDIA_TYPE, PUBLIC_ASSET_CACHE_CONTROL,
                         WEB_ASSETS, asset_etag, missing_address_page, served_asset, server_error_page,
                         validator_matches)
@@ -207,6 +209,8 @@ ADMIN_SIGN_UP_LINKS_PATH = "/api/v1/admin/sign-up-links"
 #: reads usage counts reads it, as does an operator with the administration scope.
 ADMIN_FEEDBACK_PATH = "/api/v1/admin/feedback"
 ADMIN_FEEDBACK_SUMMARY_PATH = "/api/v1/admin/feedback/summary"
+#: Where OpenAI's plugin portal reads the domain verification token: the exact token as plain text, nothing else.
+OPENAI_APPS_CHALLENGE_PATH = "/.well-known/openai-apps-challenge"
 # Every address the interface router answers, with the methods it answers for
 # it. The router reads this before it asks who is calling, so that an address
 # the service does not serve is a missing page rather than a credential
@@ -220,6 +224,7 @@ API_ROUTES = {
     oauth_http.CONSENT_API_PATH: ("GET", "POST"),
     "/.well-known/oauth-protected-resource": ("GET",),
     "/.well-known/oauth-protected-resource/mcp": ("GET",),
+    OPENAI_APPS_CHALLENGE_PATH: ("GET",),
     "/api/v1/health": ("GET",),
     "/api/v1/capabilities": ("GET",),
     public_good_page.COLLECTION_PATH: ("GET",),
@@ -308,6 +313,14 @@ class ServiceHttpConfiguration:
     maximum_transport_concurrency: int = field(default=MAXIMUM_TRANSPORT_CONCURRENCY, kw_only=True)
     maximum_staff_work_request_bytes: int = field(default=524_288, kw_only=True)
     maximum_staff_work_response_bytes: int = field(default=1_048_576, kw_only=True)
+    #: The exact token OpenAI's plugin portal shows for domain verification, served as plain text at
+    #: `/.well-known/openai-apps-challenge`; empty serves nothing there. Public by design, so it lives in the host file.
+    openai_apps_challenge: str = field(default="", kw_only=True)
+    #: Further exact HTTPS redirect addresses on an OpenAI host that OAuth client registration accepts, for a
+    #: redirect OpenAI's management page shows beyond the two documented ChatGPT callbacks.
+    openai_oauth_redirect_uris: tuple[str, ...] = field(default=(), kw_only=True)
+    #: The address that reaches Baltor support, shown on /support once mail to it is delivered; empty shows none.
+    support_email: str = field(default="", kw_only=True)
     request_timeout_seconds: float = 30.0
     allow_loopback_http: bool = False
     request_limits: ServiceRequestLimits = ServiceRequestLimits()
@@ -353,6 +366,17 @@ class ServiceHttpConfiguration:
             raise ValueError("transport concurrency must be an integer from 2 through 128")
         if self.maximum_inline_body_bytes > self.maximum_download_bytes:
             raise ValueError("inline body allowance cannot exceed download allowance")
+        if (not isinstance(self.openai_apps_challenge, str) or len(self.openai_apps_challenge) > 512
+                or not re.fullmatch(r"[A-Za-z0-9._~+/=-]*", self.openai_apps_challenge)):
+            raise ValueError("the OpenAI apps challenge must be one bounded token")
+        redirects = self.openai_oauth_redirect_uris
+        if (not isinstance(redirects, (tuple, list)) or len(redirects) > 8 or len(set(redirects)) != len(redirects)
+                or any(not chatgpt_app.is_openai_redirect(value) or "?" in value for value in redirects)):
+            raise ValueError("OpenAI redirect addresses must be distinct exact HTTPS addresses on an OpenAI host")
+        object.__setattr__(self, "openai_oauth_redirect_uris", tuple(redirects))
+        if (not isinstance(self.support_email, str) or len(self.support_email) > 254 or (self.support_email and
+                not re.fullmatch(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+", self.support_email))):
+            raise ValueError("the support address must be one plain email address")
         for name in ("maximum_staff_work_request_bytes", "maximum_staff_work_response_bytes"):
             if type(getattr(self, name)) is not int or not 1 <= getattr(self, name) <= 1_048_576:
                 raise ValueError("staff work transport limits must be between one byte and one MiB")
@@ -1873,6 +1897,178 @@ class ServiceHttpApplication:
             raise ServiceHttpError("request_identity_required")
         return operation, fields, tiered
 
+    async def _protocol_output(self, context, name, arguments, effects, completions):
+        """The record one harness protocol tool answers with, or the refusal it raises.
+
+        Both presentations of `/mcp` call this one dispatch: the harness presentation by the tool's own name, and the
+        OpenAI host presentation (`chatgpt_app`) by the harness tool each of its tools maps to. `effects` are the step
+        effects the client's configuration states (`step_effects`); `completions` collects the Public Good deliveries
+        the caller finishes once it knows the answer's size."""
+        from jsonschema import validate
+        if name == "intelligence_search":
+            fields, step = effect_selection(self._validate_search(arguments, versioned=False), effects)
+            return await self._tenant_work(context, lambda: invoke_http_retrieval_as_loop(
+                lambda: self._search(context, fields, step)))
+        if name == public_good_files.PROTOCOL_TOOL:
+            validate(arguments, public_good_files.query_schema())
+            return await self._tenant_work(context, lambda: invoke_http_retrieval_as_loop(
+                lambda: self._public_good_collection(arguments, authentication=context)))
+        if name == REPORT_TOOL:
+            validate(arguments, feedback_schema())
+            return await self._tenant_work(context, lambda: invoke_http_service_as_loop(
+                "catalogue_" + REPORT_OPERATION, lambda: self._feedback(context, REPORT_OPERATION, arguments)))
+        if name in customer_feedback.FEEDBACK_TOOLS:
+            operation = customer_feedback.FEEDBACK_TOOLS[name]
+            validate(arguments, customer_feedback.request_schema(operation))
+            return await self._tenant_work(context, lambda: invoke_http_service_as_loop(operation,
+                lambda: self._customer_feedback(context, operation, arguments)))
+        if name == customer_feedback.REVIEW_TOOL:
+            validate(arguments, {"type": "object", "additionalProperties": False, "properties": {}})
+            return await self._work(lambda: invoke_http_service_as_loop("feedback_summary",
+                lambda: self._staff_feedback_summary(context)),
+                shares=(context.principal.tenant_id, EXTERNAL_PROVIDER_SHARE))
+        if name in ("staff_work_read", "staff_work_submit"):
+            validate(arguments, staff_work.request_schema() if name == "staff_work_submit" else staff_work.read_schema())
+            return await self._work(lambda: invoke_http_service_as_loop("staff_work",
+                lambda: self._staff_work(context, arguments, write=name == "staff_work_submit")),
+                shares=(context.principal.tenant_id, EXTERNAL_PROVIDER_SHARE))
+        operation = TOOL_OPERATIONS.get(name)
+        if operation is None:
+            raise ServiceHttpError("unsupported_operation")
+        if operation == LIST_OPERATION:
+            paging_request(arguments)
+        validate(arguments, protocol_tool_schema(operation))
+        if operation == READ_OPERATION and not arguments.get("request_id"):
+            raise ServiceHttpError("request_identity_required")
+        # What the tool shows and what its step may fetch are separate: see `effect_selection`. A
+        # summary counts every item the account may see, whatever effects it declares.
+        if operation == DISCOVER_OPERATION:
+            arguments, step = {**arguments, "authority_effects": list(EFFECTS)}, None
+        else:
+            arguments, step = effect_selection(arguments, effects)
+        # Protocol tools serve harnesses, which read each item's tier and label in the answer. A read
+        # delivers a package's files as well as a single file's text.
+        return await self._tenant_work(context, lambda: invoke_http_service_as_loop(operation,
+            (lambda: self._protocol_read(context, arguments, step, completions)) if operation == READ_OPERATION else
+            (lambda: self._invoke(context, operation, arguments, tiered=True,
+                                  encoding=PROTOCOL_ENCODING, step=step))))
+
+    def _protocol_library(self):
+        """Refuse the whole application when the installed protocol library cannot speak a version the host serves."""
+        from mcp.types.version import HANDSHAKE_PROTOCOL_VERSIONS as LIBRARY_HANDSHAKE
+        from mcp.types.version import MODERN_PROTOCOL_VERSIONS as LIBRARY_PER_REQUEST
+        configuration = self.configuration
+        unserved = ([value for value in configuration.handshake_protocol_versions if value not in LIBRARY_HANDSHAKE]
+                    + [value for value in configuration.per_request_protocol_versions
+                       if value not in LIBRARY_PER_REQUEST])
+        if unserved:
+            raise ValueError("the installed protocol library does not serve " + ", ".join(unserved))
+
+    def _openai_sdk_server(self):
+        """The protocol library's server for the OpenAI host presentation of `/mcp` (see `chatgpt_app`).
+
+        The same versions, authentication, scopes and operations as `_sdk_server`; eight tools named for the person
+        in the conversation, their output schemas, the library view as one MCP Apps resource, and answers that carry
+        no internal identifiers. Every tool calls `_protocol_output` with the harness tool it maps to."""
+        import mcp.types as types
+        from mcp.server.caching import CacheHint
+        from mcp.server.lowlevel import Server
+        from mcp.shared.exceptions import MCPError
+        from mcp.types import INVALID_PARAMS
+        from jsonschema import validate, ValidationError
+        self._protocol_library()
+        configuration, base = self.configuration, self.configuration.public_base_url
+        listed = [types.Tool.model_validate(chatgpt_app.descriptor(tool)) for tool in chatgpt_app.TOOLS]
+        template = chatgpt_app.template_html()
+        template_meta = chatgpt_app.template_meta(base)
+
+        async def list_tools(ctx, _params):
+            self.authenticator.revalidate(ctx.request.scope["service_authentication"])
+            return types.ListToolsResult(tools=listed)
+
+        async def list_resources(ctx, _params):
+            self.authenticator.revalidate(ctx.request.scope["service_authentication"])
+            return types.ListResourcesResult(resources=[types.Resource(uri=chatgpt_app.TEMPLATE_URI,
+                name=chatgpt_app.TEMPLATE_NAME, title=chatgpt_app.TEMPLATE_NAME,
+                description=chatgpt_app.TEMPLATE_DESCRIPTION, mime_type=chatgpt_app.TEMPLATE_MIME_TYPE,
+                meta=template_meta)])
+
+        async def read_resource(ctx, params):
+            self.authenticator.revalidate(ctx.request.scope["service_authentication"])
+            if str(params.uri) != chatgpt_app.TEMPLATE_URI:
+                raise MCPError(INVALID_PARAMS, "Resource not found")
+            return types.ReadResourceResult(contents=[types.TextResourceContents(uri=chatgpt_app.TEMPLATE_URI,
+                mime_type=chatgpt_app.TEMPLATE_MIME_TYPE, text=template, meta=template_meta)])
+
+        async def call_tool(ctx, params):
+            name, arguments = params.name, params.arguments or {}
+            scope = ctx.request.scope
+            tool = chatgpt_app.TOOLS_BY_NAME.get(name)
+            details = None
+            completions = []
+            try:
+                context = scope["service_authentication"]
+                if tool is None:
+                    raise ServiceHttpError("unsupported_operation")
+                validate(arguments, tool.input_schema)
+                output = await self._protocol_output(context, tool.internal_tool,
+                                                     chatgpt_app.internal_arguments(tool, arguments), (), completions)
+                package, kind = None, ""
+                if tool.name == "get_package":
+                    manifest = output["result"]
+                    package = self.provisioning.current_view().package_summary(manifest["identity"])
+                    # A catalogue refresh between the two reads could serve another version's files; then none are
+                    # listed rather than the wrong ones.
+                    if package is not None and package.get("package_digest") not in (None, manifest["digest"]):
+                        package = None
+                elif tool.name == "download_package_files" and output["result"].get("record_type") != PACKAGE_READ_VERSION:
+                    held = self.provisioning.current_view().catalogue.items.get(output["result"]["identity"])
+                    kind = getattr(held, "kind", "") or ""
+                value = chatgpt_app.presented_result(tool, arguments, output, base_url=base, package=package, kind=kind)
+                response = types.CallToolResult(content=[types.TextContent(type="text",
+                    text=chatgpt_app.answer_text(value))], structuredContent=value, isError=False)
+                response_bytes = len(response.model_dump_json(by_alias=True).encode())
+                if response_bytes > configuration.maximum_response_bytes:
+                    raise ServiceHttpError("response_limit_exceeded", 413)
+                for reservation, authentication, view in completions:
+                    await self._tenant_work(context, lambda: self._finish_public_good(reservation, authentication, view,
+                                                                                     response_bytes))
+                return response
+            except ValidationError:
+                status, code = 400, "invalid_request"
+            except Exception as error:
+                status, code = _status(error)
+                details = (error.details if isinstance(error, ServiceHttpError)
+                           else _retry_refusal(code) if code in RETRY_AFTER_SECONDS else None)
+            await self._record_failure(scope, ctx.request, code, status)
+            reference = scope.get(SCOPE_REFERENCE_KEY)
+            refused = chatgpt_app.presented_refusal(
+                _error_record(code, status, details, reference.value if reference is not None else None), base_url=base)
+            challenge = {}
+            if self.oauth_http is not None and status in (401, 403) and code in (
+                    "unauthorized", "invalid_token", "insufficient_scope", "scope_required"):
+                needed = tool.scopes[0] if tool is not None else "provisioning:metadata"
+                challenge = {"_meta": {"mcp/www_authenticate": [self._oauth_challenge(code, needed)]}}
+            return types.CallToolResult(content=[types.TextContent(type="text", text=chatgpt_app.answer_text(refused))],
+                                        structuredContent=refused, isError=True, **challenge)
+
+        hint = CacheHint(ttl_ms=PROTOCOL_CACHE_TTL_MS, scope=PROTOCOL_CACHE_SCOPE)
+        sdk = Server(chatgpt_app.SERVER_NAME, version="1.0.0", title=chatgpt_app.SERVER_TITLE,
+                     description=chatgpt_app.SERVER_DESCRIPTION, instructions=chatgpt_app.INSTRUCTIONS,
+                     website_url=base, on_list_tools=list_tools, on_call_tool=call_tool,
+                     on_list_resources=list_resources, on_read_resource=read_resource,
+                     cache_hints={"tools/list": hint, "server/discover": hint})
+        # MCP Apps: the view is offered to hosts that render `text/html;profile=mcp-app` resources.
+        sdk.extensions = {**(getattr(sdk, "extensions", None) or {}), chatgpt_app.MCP_APPS_EXTENSION: {}}
+
+        async def discover(ctx, _params):
+            self.authenticator.revalidate(ctx.request.scope["service_authentication"])
+            return types.DiscoverResult(supported_versions=list(reversed(configuration.protocol_versions)),
+                                        capabilities=sdk.get_capabilities(protocol_version=ctx.protocol_version))
+        sdk.add_request_handler("server/discover", types.RequestParams, discover)
+        sdk.middleware = []
+        return sdk
+
     def _sdk_server(self):
         """The protocol library's server, bound to exactly the versions this host serves.
 
@@ -1884,15 +2080,9 @@ class ServiceHttpApplication:
         import mcp.types as types
         from mcp.server.caching import CacheHint
         from mcp.server.lowlevel import Server
-        from mcp.types.version import HANDSHAKE_PROTOCOL_VERSIONS as LIBRARY_HANDSHAKE
-        from mcp.types.version import MODERN_PROTOCOL_VERSIONS as LIBRARY_PER_REQUEST
-        from jsonschema import validate, ValidationError
+        from jsonschema import ValidationError
         configuration = self.configuration
-        unserved = ([value for value in configuration.handshake_protocol_versions if value not in LIBRARY_HANDSHAKE]
-                    + [value for value in configuration.per_request_protocol_versions
-                       if value not in LIBRARY_PER_REQUEST])
-        if unserved:
-            raise ValueError("the installed protocol library does not serve " + ", ".join(unserved))
+        self._protocol_library()
 
         async def list_tools(ctx, _params):
             self.authenticator.revalidate(ctx.request.scope["service_authentication"])
@@ -1965,54 +2155,7 @@ class ServiceHttpApplication:
             try:
                 context = scope["service_authentication"]
                 effects = step_effects(ctx.request.headers)
-                if name == "intelligence_search":
-                    fields, step = effect_selection(self._validate_search(arguments, versioned=False), effects)
-                    output = await self._tenant_work(context, lambda: invoke_http_retrieval_as_loop(
-                        lambda: self._search(context, fields, step)))
-                elif name == public_good_files.PROTOCOL_TOOL:
-                    validate(arguments, public_good_files.query_schema())
-                    output = await self._tenant_work(context, lambda: invoke_http_retrieval_as_loop(
-                        lambda: self._public_good_collection(arguments, authentication=context)))
-                elif name == REPORT_TOOL:
-                    validate(arguments, feedback_schema())
-                    output = await self._tenant_work(context, lambda: invoke_http_service_as_loop(
-                        "catalogue_" + REPORT_OPERATION, lambda: self._feedback(context, REPORT_OPERATION, arguments)))
-                elif name in customer_feedback.FEEDBACK_TOOLS:
-                    operation = customer_feedback.FEEDBACK_TOOLS[name]
-                    validate(arguments, customer_feedback.request_schema(operation))
-                    output = await self._tenant_work(context, lambda: invoke_http_service_as_loop(operation,
-                        lambda: self._customer_feedback(context, operation, arguments)))
-                elif name == customer_feedback.REVIEW_TOOL:
-                    validate(arguments, {"type": "object", "additionalProperties": False, "properties": {}})
-                    output = await self._work(lambda: invoke_http_service_as_loop("feedback_summary",
-                        lambda: self._staff_feedback_summary(context)),
-                        shares=(context.principal.tenant_id, EXTERNAL_PROVIDER_SHARE))
-                elif name in ("staff_work_read", "staff_work_submit"):
-                    validate(arguments, staff_work.request_schema() if name == "staff_work_submit" else staff_work.read_schema())
-                    output = await self._work(lambda: invoke_http_service_as_loop("staff_work",
-                        lambda: self._staff_work(context, arguments, write=name == "staff_work_submit")),
-                        shares=(context.principal.tenant_id, EXTERNAL_PROVIDER_SHARE))
-                else:
-                    operation = TOOL_OPERATIONS.get(name)
-                    if operation is None:
-                        raise ServiceHttpError("unsupported_operation")
-                    if operation == LIST_OPERATION:
-                        paging_request(arguments)
-                    validate(arguments, protocol_tool_schema(operation))
-                    if operation == READ_OPERATION and not arguments.get("request_id"):
-                        raise ServiceHttpError("request_identity_required")
-                    # What the tool shows and what its step may fetch are separate: see `effect_selection`. A
-                    # summary counts every item the account may see, whatever effects it declares.
-                    if operation == DISCOVER_OPERATION:
-                        arguments, step = {**arguments, "authority_effects": list(EFFECTS)}, None
-                    else:
-                        arguments, step = effect_selection(arguments, effects)
-                    # Protocol tools serve harnesses, which read each item's tier and label in the answer. A read
-                    # delivers a package's files as well as a single file's text.
-                    output = await self._tenant_work(context, lambda: invoke_http_service_as_loop(operation,
-                        (lambda: self._protocol_read(context, arguments, step, completions)) if operation == READ_OPERATION else
-                        (lambda: self._invoke(context, operation, arguments, tiered=True,
-                                              encoding=PROTOCOL_ENCODING, step=step))))
+                output = await self._protocol_output(context, name, arguments, effects, completions)
                 response = types.CallToolResult(content=[types.TextContent(type="text", text=_json_bytes(output).decode())],
                                                 structuredContent=output, isError=False)
                 response_bytes = len(response.model_dump_json(by_alias=True).encode())
@@ -2076,10 +2219,14 @@ class ServiceHttpApplication:
         from mcp.server.streamable_http_manager import StreamableHTTPSessionManager
         from mcp.server.transport_security import TransportSecuritySettings
         config = self.configuration
+        security = TransportSecuritySettings(allowed_hosts=list(config.allowed_hosts),
+                                             allowed_origins=list(config.allowed_origins))
         manager = StreamableHTTPSessionManager(self._sdk_server(), stateless=True,
-            security_settings=TransportSecuritySettings(allowed_hosts=list(config.allowed_hosts),
-                                                       allowed_origins=list(config.allowed_origins)),
-            max_request_body_size=config.maximum_request_bytes)
+            security_settings=security, max_request_body_size=config.maximum_request_bytes)
+        # One endpoint, two presentations of the same tools: the harness presentation, and the one an OpenAI host
+        # reads (`chatgpt_app`). Each request is routed after it is authenticated, by its OAuth client or header.
+        managers = {"": manager, chatgpt_app.PROFILE: StreamableHTTPSessionManager(self._openai_sdk_server(),
+            stateless=True, security_settings=security, max_request_body_size=config.maximum_request_bytes)}
 
         @asynccontextmanager
         async def lifespan(_app):
@@ -2088,7 +2235,7 @@ class ServiceHttpApplication:
             renewal.start()
             self.public_links.start()
             try:
-                async with manager.run(), self._catalogue_refresh():
+                async with manager.run(), managers[chatgpt_app.PROFILE].run(), self._catalogue_refresh():
                     yield
             finally:
                 await schedule.stop()
@@ -2121,6 +2268,10 @@ class ServiceHttpApplication:
                         "Access-Control-Allow-Headers": "Authorization, Content-Type, MCP-Protocol-Version, Stripe-Signature"})
                 elif request.url.path == PROTOCOL_PATH:
                     context = await self._authenticated(request)
+                    try:
+                        profile = chatgpt_app.selected_profile(getattr(context, "client_profile", ""), request.headers)
+                    except chatgpt_app.ProfileRequestError:
+                        raise ServiceHttpError("unsupported_client_profile") from None
                     if request.method != "POST":
                         # One POST endpoint in both kinds of version: this
                         # service keeps no session, so there is no stream to
@@ -2130,6 +2281,10 @@ class ServiceHttpApplication:
                     payload = _parse_json(body) if body else {}
                     if not isinstance(payload, dict):
                         raise ServiceHttpError("object_required")
+                    if profile and CAPTURED_BODY_KEY in scope:
+                        # An OpenAI host sends hints with each call (a coarse location, a locale, anonymous user and
+                        # conversation identifiers). The service uses none of them, so a captured body keeps none.
+                        scope[CAPTURED_BODY_KEY] = _json_bytes(chatgpt_app.without_host_hints(payload))
                     # The version is chosen here, before the protocol library
                     # or any effect, and the library is told the choice in the
                     # header it routes on. Every later request is checked
@@ -2157,7 +2312,7 @@ class ServiceHttpApplication:
                                            **cors, "Cache-Control": "no-store",
                                            "X-Content-Type-Options": "nosniff"}.items()]}
                         await send(message)
-                    await manager.handle_request(scope, replay, protocol_send)
+                    await managers[profile].handle_request(scope, replay, protocol_send)
                     return
                 else:
                     response = await self._web_route(request, Response, JSONResponse)
@@ -2333,6 +2488,10 @@ class ServiceHttpApplication:
         if asset is None:
             # The changelog, the feature list and the open work, three pages nothing links to, from their packaged record.
             asset = status_pages.rendered(path, method, self.configuration.display_name, request.headers.get("host"))
+        if asset is None:
+            # The support page, with the support address the host file names once mail to it is delivered.
+            asset = support_page.rendered(path, method, self.configuration.display_name, request.headers.get("host"),
+                                          self.configuration.support_email)
         if asset is not None:
             body, media_type = asset
             headers = self._page_headers(creative_preview=path == CREATIVE_PREVIEW_PATH)
@@ -2403,6 +2562,13 @@ class ServiceHttpApplication:
                     return oauth_http.refusal(status=408)
             return await self._async_work(lambda: self.oauth_http.handle(request, b"".join(chunks)),
                                           shares=("oauth_authorization",))
+        if path == "/.well-known/openai-apps-challenge" and method == "GET":
+            # OpenAI's domain verification: the exact token from the host file, as plain text and nothing more. A host
+            # that names no token serves no page here.
+            if not self.configuration.openai_apps_challenge:
+                raise ServiceHttpError("route_unavailable", 404)
+            return Response(self.configuration.openai_apps_challenge.encode("ascii"), media_type="text/plain",
+                            headers={"X-Robots-Tag": "noindex"})
         if path in ("/.well-known/oauth-protected-resource", "/.well-known/oauth-protected-resource/mcp") and method == "GET":
             if self.oauth_authorization is not None:
                 return JSONResponse({"resource": self.oauth_authorization.policy.resource_url,

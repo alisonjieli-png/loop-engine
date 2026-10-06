@@ -95,6 +95,8 @@ CODE_GUIDANCE = {
                              "Open your account page and start a subscription, or ask for a beta invitation."),
     "item_unavailable": ("No item with that identity is available to this account.",
                          "Search again and take the identity from the result, then retry."),
+    "unsupported_client_profile": ("The Baltor-Client-Profile header names a presentation this service does not serve.",
+                                   "Leave the header out, or send openai_apps, then retry."),
     "route_unavailable": ("This service has no page or interface at that address.",
                           "Check the address against the setup guide, or start again from the home page."),
     "invalid_query": ("The search text was empty, too long, or not a string.",

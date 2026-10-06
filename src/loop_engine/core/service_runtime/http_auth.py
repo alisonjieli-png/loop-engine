@@ -145,6 +145,10 @@ class AuthenticatedHttpRequest:
     #: The provider facts a browser session was admitted with, or None. Only
     #: the browser identity adapter sets it; a staff role is read from it.
     identity: object = field(default=None, repr=False, compare=False)
+    #: The presentation of `/mcp` an OAuth delegation's client reads: `openai_apps` for a client registered to
+    #: redirect to an OpenAI host, "" otherwise (`chatgpt_app.profile_for_client`). It names a presentation only
+    #: and grants nothing.
+    client_profile: str = field(default="", compare=False)
 
     @property
     def effective_scopes(self):
@@ -269,7 +273,8 @@ class ServiceHttpAuthenticator:
             if held is None:
                 raise HttpAuthenticationError()
             return AuthenticatedHttpRequest(held.principal, credential, OAUTH_ACCESS_AUTHENTICATION,
-                                            held.expires_at, held.scopes)
+                                            held.expires_at, held.scopes,
+                                            client_profile=getattr(held, "client_profile", ""))
         if HOST_KEY_AUTHENTICATION not in self.configuration.modes:
             return None
         from .records import ServiceRuntimeError

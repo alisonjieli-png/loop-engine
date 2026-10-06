@@ -63,9 +63,11 @@ def _web_checks(check, root):
             from .public_good_page import ADDRESS as public_good_address
             from .catalogue_feed import PAGE as feed_page_address
             from .dot_pages import ROUTES as dot_routes
+            from .support_page import handles as _rendered_support_page
             linked = {value for value in _re.findall(r'(?:href|src)="(/[^"#?]*)"', page)}
             # The model directory's pages are rendered from its records after the page table finds nothing, the
-            # library page from the catalogue the service serves, and the decision red team page from its packaged record.
+            # library page from the catalogue the service serves, the decision red team page from its packaged record,
+            # and the support page from the site map and the host's support address.
             unserved = sorted(value for value in linked
                               if value not in WEB_ASSETS and not _rendered_by_the_model_directory(value)
                               and not _rendered_from_the_served_catalogue(value)
@@ -73,6 +75,7 @@ def _web_checks(check, root):
                               and value != public_good_address
                               and value != feed_page_address
                               and value not in dot_routes
+                              and not _rendered_support_page(value)
                               and not value.startswith("/api/")
                               and not value.startswith("/.well-known/") and value != "/mcp")
             check("every_internal_address_on_the_page_is_served", not unserved)
