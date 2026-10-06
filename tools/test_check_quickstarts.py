@@ -97,6 +97,8 @@ class State:
         self.undeclared_first = False
         #: The protocol resource the service publishes for itself on every hostname, as the live service does.
         self.resource = PUBLISHED_BASE + "/mcp"
+        #: Every address answers 503, as the live service did while a deploy restarted it on October 6, 2026.
+        self.unavailable = False
         self.__dict__.update(changes)
 
 
@@ -159,6 +161,8 @@ class Handler(BaseHTTPRequestHandler):
         return self._json(200, {**wrapped(operation, value), "record_type": self.state.direct_wrapper_type})
 
     def do_GET(self):
+        if self.state.unavailable:
+            return self._refused(503, "service_starting")
         if self.path == "/assets/client-recipes.json":
             # A public file of the website, served without a key, as the live service serves it.
             if self.state.recipes is None:
@@ -180,6 +184,8 @@ class Handler(BaseHTTPRequestHandler):
         self._refused(404, "route_unavailable")
 
     def do_POST(self):
+        if self.state.unavailable:
+            return self._refused(503, "service_starting")
         if not self._authorized():
             return
         payload = json.loads(self.rfile.read(int(self.headers.get("Content-Length") or 0)) or b"{}")
@@ -768,11 +774,24 @@ class QuickstartCheckTests(unittest.TestCase):
             port = probe.getsockname()[1]
         record = tool.run_all(f"http://127.0.0.1:{port}", KEY, published_base=PUBLISHED_BASE, repository=ROOT,
                               credential={"expires_at": 1})
-        self.assertEqual(record["failure_code"], tool.SERVICE_UNREACHABLE)
+        self.assertEqual(record["failure_code"], tool.SERVICE_UNAVAILABLE)
         # The direct paths' sessions did not complete; the protocol paths never learned a handshake version.
         for quickstart in ("pi", "baltor-harness"):
             self.assertTrue(step(record, quickstart, "connected").get("did_not_complete"), quickstart)
         self.assertIsNotNone(record["capabilities_error"])
+
+    def test_known_wrong_a_service_answering_503_everywhere_is_unavailable_not_a_failed_quickstart(self):
+        # On October 6, 2026 at 02:42 UTC a deploy left every address answering 503 and the run was named
+        # quickstart_failed, as if a harness had broken.
+        record = run(State(unavailable=True))
+        self.assertEqual(record["failure_code"], tool.SERVICE_UNAVAILABLE)
+        self.assertEqual(record["capabilities_status"], 503)
+        for quickstart in ("pi", "baltor-harness"):
+            self.assertEqual(step(record, quickstart, "connected")["status"], 503)
+        self.assertNotIn("blocked", tool.summary(record), "an outage is not a credential failure")
+        self.assertEqual(tool.failure_code(record["quickstarts"], None, __import__("datetime").datetime.now(),
+                                           capabilities_unavailable=False), tool.QUICKSTART_FAILED,
+                         "the protocol paths count as unavailable only because the capabilities were")
 
     def test_a_key_close_to_its_expiry_is_reported_while_the_run_passes(self):
         from datetime import datetime, timezone

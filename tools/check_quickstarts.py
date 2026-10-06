@@ -79,8 +79,9 @@ revoked or saved without that fact. The quickstarts are listed as blocked, not
 failed. ``tools/reissue_service_keys.py --renew-within`` renews the key before
 it expires and records its facts; a key with less than three days left is
 reported as ``credential_expires_soon`` while the run still passes. A run in
-which no connection completed is ``service_unreachable``, and any other
-failure is ``quickstart_failed``.
+which no connection completed because the service could not be reached or
+answered a server error, as during a deploy, is ``service_unavailable``, and
+any other failure is ``quickstart_failed``.
 
 Run it once, writing a dated record under ``artifacts/quickstart-checks/``:
 
@@ -158,7 +159,7 @@ NUMBER_WORDS = {word: number for number, word in enumerate(
 DEFAULT_CREDENTIAL = "baltor-pilot-owner"
 #: The run's failure codes. A credential failure is not a harness failure and exits with its own status.
 CREDENTIAL_EXPIRED, CREDENTIAL_REFUSED = "credential_expired", "credential_refused"
-SERVICE_UNREACHABLE, QUICKSTART_FAILED = "service_unreachable", "quickstart_failed"
+SERVICE_UNAVAILABLE, QUICKSTART_FAILED = "service_unavailable", "quickstart_failed"
 CREDENTIAL_FAILURES = (CREDENTIAL_EXPIRED, CREDENTIAL_REFUSED)
 EXIT_CREDENTIAL_FAILED = 3
 #: A key that expires sooner than this is reported, so a renewal that stopped is seen days before checks go blind.
@@ -820,14 +821,15 @@ def service_published_base(capabilities: dict):
     return base
 
 
-def failure_code(rows: list, credential: dict, now: datetime, capabilities_unreachable: bool = False):
+def failure_code(rows: list, credential: dict, now: datetime, capabilities_unavailable: bool = False):
     """Why a run failed, as one code, or None when it passed.
 
     When every quickstart's connection was refused with 401, the credential failed, not a harness: the code is
     `credential_expired` when the key's recorded expiry has passed and `credential_refused` otherwise, for a key that
-    was revoked or whose expiry is not recorded. When no connection completed, the service could not be reached; a
-    protocol path that never learned its handshake version because the capabilities did not arrive counts as one
-    that did not complete. Any other failure is a quickstart's own."""
+    was revoked or whose expiry is not recorded. When no connection completed because the service could not be
+    reached or answered a server error (5xx), it is `service_unavailable`; a protocol path that never learned its
+    handshake version because the capabilities were unavailable counts as one of those. Any other failure is a
+    quickstart's own."""
     if all(row["passed"] for row in rows):
         return None
     connected = [next((step for step in row["steps"] if step["name"] == "connected"), None) for row in rows]
@@ -835,8 +837,10 @@ def failure_code(rows: list, credential: dict, now: datetime, capabilities_unrea
         expires_at = (credential or {}).get("expires_at")
         return CREDENTIAL_EXPIRED if type(expires_at) is int and expires_at <= now.timestamp() else CREDENTIAL_REFUSED
     if connected and all(step is not None and not step["passed"]
-                         and (step.get("did_not_complete") or capabilities_unreachable) for step in connected):
-        return SERVICE_UNREACHABLE
+                         and (step.get("did_not_complete") or (step.get("status") or 0) >= 500
+                              or (step.get("status") is None and capabilities_unavailable))
+                         for step in connected):
+        return SERVICE_UNAVAILABLE
     return QUICKSTART_FAILED
 
 
@@ -885,7 +889,8 @@ def run_all(origin: str, key: str, *, published_base: str = None, repository: Pa
     downloads = [row["request_id"] for row in rows if _delivered(row)]
     #: Sent but not delivered: refused, cut off or unanswered. A refusal is not measured; a cut-off answer may be.
     not_confirmed = [row["request_id"] for row in rows if row["request_id"] and not _delivered(row)]
-    code = failure_code(rows, credential, now, capabilities_unreachable=capabilities_error is not None)
+    code = failure_code(rows, credential, now, capabilities_unavailable=capabilities_error is not None
+                        or (type(status) is int and status >= 500))
     if code in CREDENTIAL_FAILURES:
         for row in rows:
             row["blocked_by"] = code

@@ -63,8 +63,9 @@ full run adds five usage records to that account and none to any customer.
 Since October 5, 2026 every record names its `failure_code`: none when it passed,
 `credential_expired` when every quickstart's connection was refused with 401 and the
 expiry recorded beside the key in the keyring has passed, `credential_refused` for the
-same refusal with a later or unrecorded expiry, `service_unreachable` when no connection
-completed, and `quickstart_failed` otherwise. A credential failure marks every quickstart
+same refusal with a later or unrecorded expiry, `service_unavailable` when no connection
+completed because the service could not be reached or answered a server error (5xx), as
+during a deploy, and `quickstart_failed` otherwise. A credential failure marks every quickstart
 `blocked_by` that code and lists it as blocked, not failed, in the one-line summary, and
 the exit status is 3. `credential` holds the key's reference, account, `key_id`, expiry
 and seconds left, read from the keyring item's attributes, never the key;
