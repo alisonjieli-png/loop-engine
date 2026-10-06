@@ -221,6 +221,28 @@ class VerifiedTierPrefilterTests(unittest.TestCase):
                                community_items="excluded")
         self.assertEqual(hits,[])
 
+    def test_stratified_candidates_preserve_verified_recall_without_authorizing_them(self):
+        from types import SimpleNamespace
+        from loop_engine.core.service_runtime.catalogue_search import authorized_hits
+        for index in (self.memory, self.disk):
+            view = SimpleNamespace(schema=self.schema, search_index=lambda:index)
+            def authorize(names):
+                return {name:{"library_tier":"verified" if name=="z_keeper" else "community"} for name in names}
+            fields = {"query":"shared query", "top_n":1}
+            hits, _ = authorized_hits(view, fields, authorize, community_items="included")
+            self.assertEqual(hits[0][0], "z_keeper")
+            restricted = {**fields, "filters":{"tier":{"equals":"community"}}}
+            hits, _ = authorized_hits(view, restricted, authorize, community_items="included")
+            self.assertNotIn("z_keeper", [row[0] for row in hits])
+            hits, _ = authorized_hits(view, fields, lambda names:{}, community_items="included")
+            self.assertEqual(hits, [])
+        # The old unsupplemented pool has matching Community rows to fill the answer before it sees z_keeper.
+        with mock.patch.object(catalogue_disk_index.DiskIndex,"tier_filter_complete",
+                               new_callable=mock.PropertyMock,return_value=False):
+            view = SimpleNamespace(schema=self.schema, search_index=lambda:self.disk)
+            hits, _ = authorized_hits(view, fields, authorize, community_items="included")
+        self.assertNotEqual(hits[0][0], "z_keeper")
+
 
 class CatalogueRelevancePolicyTests(unittest.TestCase):
     def setUp(self):
@@ -261,7 +283,7 @@ class CatalogueRelevancePolicyTests(unittest.TestCase):
 
     def test_exact_floor_boundary_is_inclusive(self):
         result = fuse({"lexical": [("strong", 4.0), ("relevant", 1.0), ("weak", 0.999)]},
-                      self.allowed, self.policy, 10)
+                      self.allowed, CatalogueRankingPolicy(lexical_score_floor_ratio=0.25), 10)
         self.assertEqual([row[0] for row in result], ["relevant", "strong"])
 
     def test_invalid_policy_and_authorized_scores_refuse(self):
@@ -272,6 +294,8 @@ class CatalogueRelevancePolicyTests(unittest.TestCase):
         for multiplier in (0, -1, True, 1.5):
             with self.assertRaises(ValueError):
                 CatalogueRankingPolicy(lexical_pool_multiplier=multiplier)
+            with self.assertRaises(ValueError):
+                CatalogueRankingPolicy(lexical_tier_pool_multiplier=multiplier)
         for score in (-1.0, True, float("nan"), float("inf"), "1"):
             with self.assertRaises(ServiceRuntimeError) as caught:
                 fuse({"lexical": [("strong", score)]}, self.allowed, self.policy, 10)

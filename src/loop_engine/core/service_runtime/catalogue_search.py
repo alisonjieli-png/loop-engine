@@ -124,12 +124,15 @@ class CatalogueRankingPolicy(RetrievalRankingPolicy):
     """
 
     lexical_pool_multiplier: int = 50
-    lexical_score_floor_ratio: float = 0.25
+    lexical_score_floor_ratio: float = 0.2
+    lexical_tier_pool_multiplier: int = 10
 
     def __post_init__(self):
         super().__post_init__()
         if type(self.lexical_pool_multiplier) is not int or self.lexical_pool_multiplier < 1:
             raise ValueError("the lexical pool multiplier is a positive integer")
+        if type(self.lexical_tier_pool_multiplier) is not int or self.lexical_tier_pool_multiplier < 1:
+            raise ValueError("the lexical tier pool multiplier is a positive integer")
         ratio = self.lexical_score_floor_ratio
         if type(ratio) not in (int, float) or not math.isfinite(ratio) or not 0 <= ratio <= 1:
             raise ValueError("the lexical score floor ratio is a finite number from zero to one")
@@ -322,15 +325,34 @@ def authorized_hits(view, fields, authorize, *, community_items=None):
     pool = candidate_pool_size(index.policy, top_n, mode)
     from .catalogue_index_engines import index_size
     total = max(1, index_size(index))
+    supplement = []
+    tier_multiplier = getattr(index.policy, "lexical_tier_pool_multiplier", 0)
+    if (mode == LEXICAL_MODE and community_items != COMMUNITY_EXCLUDED and tier_multiplier
+            and getattr(index, "tier_filter_complete", False) is True):
+        # The existing review-tier preference is applied after relevance and authorization. Give its tier a
+        # bounded candidate pool so a large Community addition cannot crowd it out before either check.
+        # Intersect with every caller filter. The checked projection is not permission to return any item.
+        tier_conditions = [*conditions, (TIER_ATTRIBUTE["name"], "any_of", (VERIFIED_TIER,))]
+        extra, _ = index.rank(fields["query"], mode=mode, pool=max(1, top_n * tier_multiplier),
+                              eligible=index.eligible(tier_conditions))
+        supplement = extra.get(LEXICAL_MODE, [])
     while True:
         pools, exhausted = index.rank(fields["query"], mode=mode, pool=pool, eligible=eligible)
+        primary_lexical = pools.get(LEXICAL_MODE, [])
+        if supplement:
+            merged = dict(primary_lexical)
+            for identity, score in supplement:
+                if identity in merged and merged[identity] != score:
+                    raise ServiceRuntimeError("search_index_unavailable", "one lexical index returned conflicting scores")
+                merged[identity] = score
+            pools = {**pools, LEXICAL_MODE: sorted(merged.items(), key=lambda row: (-row[1], row[0]))}
         candidates = tuple(dict.fromkeys(identity for rows in pools.values() for identity, _score in rows))
         rows = authorize(candidates) if candidates else {}
         hits = fuse(pools, rows, index.policy, top_n)
         floor = lexical_relevance_floor(pools, rows, index.policy)
         # A best-first lexical pool that already reaches below the floor cannot gain another qualifying
         # candidate by widening. If nothing was authorized, keep widening: a hidden high score sets no floor.
-        below_floor = floor is not None and pools.get(LEXICAL_MODE) and pools[LEXICAL_MODE][-1][1] < floor
+        below_floor = floor is not None and primary_lexical and primary_lexical[-1][1] < floor
         if len(hits) >= top_n or exhausted or pool >= total or below_floor:
             return hits, rows
         pool = min(total, pool * 4)
