@@ -1,0 +1,72 @@
+{
+  "record_type": "pilot_release_record/v1",
+  "release": 70,
+  "app": "baltor-pilot",
+  "source_revision": "e9648c896519c3480d348e2710071a2afbcf63f5",
+  "image": "registry.fly.io/baltor-pilot@sha256:7158b6e1c135f326b20562766bfcc460cae8e00b49d46f270feed8feeaf3264e",
+  "rollback_release": 69,
+  "rollback_image": "registry.fly.io/baltor-pilot@sha256:8f8598f7116ae30f3097d76346b6c0504ce21663a2b350ed5fbf952058fc235e",
+  "rollback_catalogue_state_versions": [1, 2, 3],
+  "owner_local_date": "2026-10-06",
+  "deployed_at": "2026-10-06T14:35:56Z",
+  "deployed_at_basis": "Fly release record CreatedAt",
+  "ci_run": 37478490822,
+  "ci_conclusion": "success",
+  "deploy_run": 37479866030,
+  "deploy_workflow_conclusion": "success",
+  "deploy_workflow_completed_at": "2026-10-06T14:36:44Z",
+  "deployment_gate_after": false,
+  "changes": [
+    "Copied harness settings use the declared canonical OAuth resource on every hostname; malformed or unavailable discovery offers no copyable endpoint.",
+    "Quickstart checks distinguish expired credentials and service outages, and the saved renewal and real-client OAuth checks are integrated.",
+    "The Stripe reader uses Invoice.status after the pinned API removed Invoice.paid. Paid renewals retain bounded access during the draft interval; cancellation and failed payment remain separate.",
+    "Concurrent billing deliveries preserve unknown versus pending outcomes. No billing policy or live Stripe object was changed."
+  ],
+  "local_checks": {
+    "quickstart_and_credential_methods": 118,
+    "related_tool_and_document_methods": 153,
+    "billing_provider_session_runtime_checks": 236,
+    "targeted_connection_browser_checks": 13,
+    "website_checks": 971,
+    "website_removed_guard_controls_detected": 197,
+    "website_snapshot_limit": "The broad local browser run started before the billing integration; its hashes are an end-of-run snapshot. Exact integration CI and frozen-source live checks passed separately.",
+    "stripe_test_renewal": {"passed": 6, "total": 6},
+    "additional_stripe_failed_renewal_attempt": {"passed": 3, "executed": 4, "outcome": "stopped at a second sandbox authentication challenge before payment; test session read back open and unpaid with no subscription"},
+    "conformance": "passed",
+    "generated_views": "unchanged",
+    "new_blocking_scoped_audit_findings": 0
+  },
+  "catalogue": {
+    "release_id": "8806a9975412ff0ddedb217f455425fbb040052a630cdf4cf0af6652625765a6",
+    "packages": 92973,
+    "distinct_files": 370994,
+    "search_engine": "sqlite_disk_index",
+    "changed_by_this_application_release": false
+  },
+  "hostnames_checked": 10,
+  "hostnames_passed": 10,
+  "service_checks_passed": 2118,
+  "service_checks_total": 2118,
+  "live_quickstarts": {"passed": 5, "planned": 5, "origin": "https://baltor.ai", "usage_records_added": 5},
+  "live_claude_oauth": {"passed": 15, "planned": 15, "callback_delivered_by": "listener", "usage_records_added": 1, "refresh_and_revocation_passed": true},
+  "separate_live_stripe_read": {"customers": 0, "subscriptions": 0, "both_lists_complete": true, "charges_enabled": true, "payouts_enabled": true, "requirements_due": 0, "writes": 0},
+  "subsequent_capacity_change": {
+    "volume": "vol_r7yg7go3n15mgqnr",
+    "before_gb": 25,
+    "after_gb": 50,
+    "filesystem_readback_gb": 50,
+    "free_gb_rounded": 39,
+    "restart_required": false,
+    "incremental_provisioned_storage_usd_per_month": 3.75,
+    "price_source": "https://docs.fly.io/about/pricing",
+    "price_checked": "2026-10-06",
+    "limit": "Storage-only increment at the published rate; traffic and changed snapshot bytes remain metered separately. No increase to the recorded budget was made."
+  },
+  "limits": [
+    "The million-file publication is not live. Its retrieval and metadata repairs still need exact current-base reconciliation.",
+    "Two offerings and opt-in intelligence updates are a new owner direction, not available plans or a notification service in this release.",
+    "Cloudflare's existing management connection and R2 Worker probe work, but production serving has not migrated.",
+    "No live charge, new account, new price, DNS cutover, public plugin listing or legal-notice change was made."
+  ],
+  "private_evidence_root": "/home/username/baltor-private/takeover-20261006-HyJ5E4"
+}

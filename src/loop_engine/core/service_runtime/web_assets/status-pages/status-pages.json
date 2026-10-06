@@ -5,6 +5,19 @@
   "releases": [
    {
     "kind": "service",
+    "number": 70,
+    "at": "2026-10-06T14:35:56Z",
+    "lines": [
+     "Copied harness settings use the declared canonical OAuth resource on every hostname; malformed or unavailable discovery offers no copyable endpoint.",
+     "Quickstart checks distinguish expired credentials and service outages, and the saved renewal and real-client OAuth checks are integrated.",
+     "The Stripe reader uses Invoice.status after the pinned API removed Invoice.paid. Paid renewals retain bounded access during the draft interval; cancellation and failed payment remain separate.",
+     "Concurrent billing deliveries preserve unknown versus pending outcomes. No billing policy or live Stripe object was changed."
+    ],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
     "number": 69,
     "at": "2026-10-06T05:30:13Z",
     "lines": [

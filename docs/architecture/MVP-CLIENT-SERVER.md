@@ -2,7 +2,7 @@
 
 Kind: product architecture with measured local implementation and proposed hosting.
 Date: 2026-09-19. The [current deployment](#current-deployment) section was
-added on 2026-09-20 and last checked on 2026-10-06, after Fly release 69.
+added on 2026-09-20 and last checked on 2026-10-06, after Fly release 70.
 
 The hosted product manages accounts, subscriptions, and access to intelligence.
 The customer runs Loop Engine and the selected harnesses. A hosted intelligence
@@ -47,7 +47,26 @@ from the newest release record, follow the release record and correct this
 section. Update this section in the same change that records a new release.
 It describes a private pilot. It does not describe a qualified paid service.
 
-The running image is Fly release 69, from
+The running image is Fly release 70, from
+`e9648c896519c3480d348e2710071a2afbcf63f5`, image
+`sha256:7158b6e1c135f326b20562766bfcc460cae8e00b49d46f270feed8feeaf3264e`.
+CI `37478490822` and guarded deployment `37479866030` passed. All ten hosts
+pass 2,118 browser assertions. Five live token quickstarts and the real Claude
+Code OAuth journey pass, including exact-file readback, refresh and revocation.
+Copied settings use the canonical OAuth resource on every hostname. The Stripe
+reader uses the pinned API's invoice status and handles the renewal draft
+interval. A sandbox renewal passed; a separate failed-renewal attempt stopped
+at bank authentication and is retained as incomplete. No live charge was made.
+The catalogue remains 92,973 packages and 370,994 distinct files. The gate is
+off and release 69 is the compatible rollback image. The existing volume was
+subsequently extended to 50 GB for staging and index headroom; the file system
+reports 39 GB free without a restart. The additional provisioned storage is
+$3.75 per month at the checked rate, with traffic and snapshots separate.
+The [release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-70.json)
+states the complete checks and limits. Cloudflare migration, the large catalogue
+wave and the proposed intelligence offering are not part of this release.
+
+The preceding running image was Fly release 69, from
 `8c6d8033c3f981629d3a13c11d5ad8ab62fe2d25`, image
 `sha256:8f8598f7116ae30f3097d76346b6c0504ce21663a2b350ed5fbf952058fc235e`.
 CI `37417517147` and guarded deployment `37418592047` passed. All ten hosts
