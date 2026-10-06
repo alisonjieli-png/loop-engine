@@ -500,7 +500,7 @@ def publication_inputs(bundle, digest, base_bundle, base_release, reconciliation
         # still rerun. Native publication always verifies the complete bytes
         # before activation, including objects reused from this transfer.
         held = {file.digest for item in base.items for file in item.package.files}
-    return base, changes, proof, set(held)
+    return base, candidate, changes, proof, set(held)
 
 
 def publish(name: str, bundle: Path, digest: str, *, base_bundle: Path | None = None,
@@ -519,16 +519,15 @@ def publish(name: str, bundle: Path, digest: str, *, base_bundle: Path | None = 
         raise ValueError("adoption needs one explicit previous staging folder")
     if not re.fullmatch(r"[0-9a-f]{64}", digest) or hashlib.sha256((bundle / "bundle.json").read_bytes()).hexdigest() != digest:
         raise ValueError("the expected bundle digest must match the local header before upload")
-    from reconcile_catalogue_bundle import load_bundle, require_live_base
+    from reconcile_catalogue_bundle import require_live_base
     from loop_engine.core.service_runtime.catalogue_segments import bundle_record_type, negotiate_bundle_format
     reuse_local_verification = bool(resume_staging and not adopt_unmarked_staging)
-    base, changes, proof, present = publication_inputs(bundle, digest, base_bundle, base_release,
+    base, candidate, changes, proof, present = publication_inputs(bundle, digest, base_bundle, base_release,
         reconciliation_digest, body_roots, accepted_licenses, verify_local_bodies=not reuse_local_verification)
     require_live_base(base, changes, active_catalogue())
     # The service must read this bundle's version; this read changes nothing on the Machine.
     record_type = bundle_record_type(bundle)
     negotiate_bundle_format(remote_formats(), preference=(record_type,))
-    candidate = load_bundle(bundle, accepted_licenses)
     extra_paths = segmented_uploads(base, candidate)
     remote = resume_staging or f"delta-{name}-{uuid.uuid4().hex[:12]}"
     result_path = f"{REMOTE_ROOT}/{remote}/publish-result.json"
@@ -644,12 +643,11 @@ def main() -> int:
             return 2
     if arguments.dry_run:
         try:
-            from reconcile_catalogue_bundle import load_bundle
             licences = tuple(arguments.accept_license) or ("MIT",)
-            _base, _changes, _proof, present = publication_inputs(bundle, arguments.bundle_digest,
+            _base, candidate, _changes, _proof, present = publication_inputs(bundle, arguments.bundle_digest,
                 arguments.base_bundle, arguments.base_release, arguments.reconciliation_digest,
                 tuple(arguments.body_root), licences)
-            extra_paths = segmented_uploads(_base, load_bundle(bundle, licences))
+            extra_paths = segmented_uploads(_base, candidate)
         except (OSError, ValueError, RuntimeError) as error:
             print(f"the delta plan refused: {error}", file=sys.stderr)
             return 1
