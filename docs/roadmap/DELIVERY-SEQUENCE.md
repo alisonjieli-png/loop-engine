@@ -1,9 +1,234 @@
 # Baltor delivery and business plan
 
-Kind: current execution order. Updated September 30, 2026. The
+Kind: current execution order. Updated October 6, 2026. The
 [roadmap](roadmap.yaml) owns task status, the [north star](../architecture/NORTH-STAR.md)
 owns product direction, and [AGENTS.md](../../AGENTS.md#commit-push-and-release-authority)
 owns authority. This page orders that work and states what each stage must prove.
+
+## Active execution plan, October 6
+
+This section is the working view of the existing roadmap, not another task
+registry. Update it after each release, publication or failed gate. The
+[deployment record](../architecture/MVP-CLIENT-SERVER.md#current-deployment)
+owns live application facts. The active catalogue owns served-file counts.
+An implementation, a test, a deployment and a useful customer result are
+separate completion conditions.
+
+### Current position
+
+| Work | State | Evidence or remaining gate |
+| --- | --- | --- |
+| Payment and connection repairs | Live in release 70 | Ten hosts passed 2,118 browser checks; five token quickstarts and the 15-step real Claude Code OAuth journey passed. |
+| Search and intake repairs | Release 71 deployed; live checks complete | Exact source `ec1df775`; CI `37487555685`; deployment `37488883326`. The repaired search preserves all 70 previously found expectations and finds 95 in the retained before/after comparison. |
+| Million-file publication | Final preflight running | Current base: 92,973 packages / 370,994 distinct files. Candidate: 218,127 packages / 1,352,837 distinct files. Current-base planning found no lost judged match, replacement, withdrawal or orphaned Public Good grant. All existing bodies verified; the segmented delta is built. |
+| Storage headroom | Done | Existing Fly volume extended from 25 to 50 GB, with 39 GB free at readback and no restart. Added provisioned storage: $3.75/month; traffic and snapshots are separate. |
+| Empty Public Good goals | Not resolved | The live 419-package grant policy still has empty goals 1, 2, 3, 5 and 17. Prepared original packages and qualified public-data packages need selection, publication and exact-version grants. |
+| Cloudflare | Prototypes verified; no production cutover | R2 has a 20,000-object prototype; a fresh 200-read check passed. D1 and edge-site Workers exist. The R2 adapter is not yet connected to the production host loader; D1 is not selected. |
+| Feeds and Components | Owner direction recorded | No new paid plan, push service or availability claim is active. |
+
+### Priority and phase-based Gantt view
+
+Columns show sequence and overlap, not promised dates or equal durations.
+`ACTIVE` means work is running; `NEXT` is ready after its dependency; `GATE`
+requires the named acceptance checks. Keep the first two rows on the critical
+path. Research and candidate work may run alongside them when it does not
+delay a ready publication or exhaust memory, storage or provider allowances.
+
+| Workstream | Now | After bundle preflight | After catalogue readback | Following cycle |
+| --- | --- | --- | --- | --- |
+| Million-file library | ACTIVE: build/check | NEXT: upload and publish once | GATE: count, bytes, search, access | Maintain and audit |
+| Public Good coverage | Prepare qualified selections | Wait for exact published versions | NEXT: apply free grants; verify all goals | Broaden useful coverage |
+| Cloudflare | Review adapters and migration checks | Shadow mirror / canary preparation | R2 and static-edge acceptance | Staged production cutover |
+| Feeds | Existing-contract mapping | Source-backed feed records | Pull API and context exports | Daily delivery, then opt-in push |
+| Two offerings | Preserve existing access | Define explicit membership | Test Feeds-only and full access | Activate tested pricing |
+| OpenAI distribution | Preserve prepared package | Repair remaining policy/UX findings | Test deployed presentation | Identity/legal/review gates |
+| Remaining handoffs | Preserve and classify | Small tested fixes as capacity permits | Native examples and all-goal originals | Repeat the release cycle |
+
+### Checklist 1: publish the million-file library
+
+Roadmap owner: S-6.215. Current operation records are in the private takeover
+folder named by `/home/username/START-HERE-BALTOR.md`.
+
+- [x] Preserve Claude's work and the shared checkout's private history.
+- [x] Reconcile the active release and use its complete segmented metadata.
+- [x] Keep the 23 API packages outside the host licence policy excluded.
+- [x] Repair API/function form labels from their qualified declarations,
+  preserving package bytes, licences and approvals.
+- [x] Compare the same judged queries before and after the additions. Preserve
+  the failed earlier experiments as well as the passing comparison.
+- [x] Build the delta with every existing version retained and all required
+  local bodies verified.
+- [ ] Finish the publisher's dry run against the current live base.
+- [ ] Verify release 71, the deployment gate and the publication lock before
+  starting the one publication. Do not deploy while it runs.
+- [ ] Publish the exact prepared command once. If its result is uncertain,
+  inspect the remote result and active pointer before any retry.
+- [ ] Read back the active release, complete distinct-file population, package
+  count, source/index state and representative exact file hashes.
+- [ ] Test searches across old and new families, explicit effect declarations,
+  refused reads and a normal account's download path.
+- [ ] Record the accepted result and rollback bindings. Keep local sources,
+  old releases and failure evidence; only the publisher's redundant successful
+  staging copy is eligible for its normal cleanup.
+
+Completion: the live service, not a local folder, reports more than one million
+distinct payload digests and the named acceptance checks pass. This does not
+mean one million semantic capabilities, remote APIs executed, independent
+reviews completed or customer outcomes proven. Balanced supply and native-use
+coverage remain separate roadmap work.
+
+### Checklist 2: remove genuine Public Good coverage gaps
+
+Roadmap owners: S-6.216 and S-6.217. Zero is not a rendering error when no
+eligible exact version has a free grant.
+
+- [ ] Read all 17 live goal counts and the currently applied policy digest.
+- [ ] Prioritize goals 1, 2, 3, 5 and 17. Reuse qualified relevant components
+  and public-data packages; review the prepared originals without recreating
+  the same generic helpers.
+- [ ] Check each package's beneficiary task, licence, source, limitations and
+  actual tests. Fetch and verify method references that were only recalled
+  during preparation. Do not claim official SDG-indicator implementation.
+- [ ] Publish any new package through the same catalogue path, against the
+  then-current base. Do not silently insert it into an already checked bundle.
+- [ ] Bind free grants to exact versions and useful paths. Preserve every
+  existing grant, account requirement, quota and expiry unless deliberately
+  changed under the existing policy owner.
+- [ ] Plan and apply the policy with its expected digest and release binding.
+- [ ] Verify each formerly empty goal in the API and browser. Use an enabled
+  account without a paid plan to retrieve an exact file. Verify anonymous,
+  disabled-account and ineligible-version refusals and unchanged paid usage.
+- [ ] Review the end-of-October grant expirations before they lapse.
+
+Completion: all 17 goals have relevant, usable, actually free published
+material. Counts remain files and packages, not impact measurements.
+
+### Checklist 3: adopt Cloudflare where it helps
+
+Keep every implementation behind its existing typed edge. Cloudflare can host
+our own code; using it does not require adopting a vendor's search-ranking
+product. Our initial choice is hybrid, with custom search and authoritative
+accounting retained on Fly until an alternative passes equivalent checks.
+
+| System | Proposed placement | Benefit and constraint |
+| --- | --- | --- |
+| Public pages and static assets | Cloudflare Static Assets / edge | Reduce origin work and keep public material reachable during origin maintenance. Static-asset requests have no request charge; Worker invocations are priced separately. [Static Assets](https://developers.cloudflare.com/workers/static-assets/billing-and-limitations/) |
+| Immutable component bodies and feed snapshots | Private R2 | Object storage independent of a Machine volume, with no R2 egress charge. Storage and operation charges still apply. Standard storage is $0.015/GB-month before allowances, compared with Fly volumes at $0.15/GB-month; this is not a tenfold whole-system saving. [R2](https://developers.cloudflare.com/r2/pricing/), [Fly](https://docs.fly.io/about/pricing) |
+| Lightweight routing and feed delivery | Workers | Run our own handlers near users. Streaming and bounded memory are required; standard Workers have a 128 MB isolate limit. Keep large index construction and native-process work outside that profile. [Workers limits](https://developers.cloudflare.com/workers/platform/limits/) |
+| Feed metadata or catalogue projections | D1, if qualified | Managed SQL and read replication may help. Query cost depends on rows read, and replicated reads need a deliberate consistency/session policy. Do not assume the existing custom index is cheaper or better there. [D1 pricing](https://developers.cloudflare.com/d1/platform/pricing/), [replication](https://developers.cloudflare.com/d1/best-practices/read-replication/) |
+| Public, replaceable cached metadata | KV | Useful for distributed read-heavy caches. Eventual consistency makes it unsuitable as the sole authority for immediate revocation, billing or transactional quotas. [KV consistency](https://developers.cloudflare.com/kv/concepts/how-kv-works/) |
+| Feed jobs and notifications | Queues / Workflows, after qualification | Separate production from delivery and handle retries. Queues can deliver a message more than once, so event identities and duplicate suppression belong in our receiver. [Queues](https://developers.cloudflare.com/queues/reference/delivery-guarantees/) |
+| Staff access | Cloudflare Access | Add an authentication layer and access policy in front of internal tools using an identity provider. This does not replace Baltor's customer account, plan, OAuth scopes or object permissions. [Access](https://developers.cloudflare.com/learning-paths/clientless-access/access-application/create-access-app/) |
+| Browser abuse protection | Turnstile, if needed | Add a challenge to appropriate browser forms. It is not a customer identity system; do not place an interactive challenge in ordinary authenticated MCP traffic. [Turnstile](https://developers.cloudflare.com/turnstile/) |
+| Custom search, retrieval, authoritative records and audit log | Fly initially | Retain native Python, control over indexes, transactions, process lifecycle and a durable local volume. Cloudflare Containers are another candidate, but their disk is ephemeral by default and snapshots/FUSE are not a transparent replacement for this live database. [Containers](https://developers.cloudflare.com/containers/faq/) |
+
+Cloudflare traffic logs can supplement our observability. They do not replace
+the application records that bind an authorization, catalogue version,
+metered result and uncertain write outcome. Keep the approved metadata-only
+diagnostic policy; no new capture of customer bodies is implied.
+
+Migration procedure:
+
+1. Preserve the current host configuration, image, catalogue, policies and
+   rollback procedure. Inventory existing Cloudflare resources before creating
+   another one.
+2. Finish the body-store loader integration and its refusal tests. Keep the
+   current volume engine selectable. Qualify the real transport separately
+   from the R2 Worker probe.
+3. Mirror immutable bodies by digest, with progress checkpoints and bounded
+   requests. Verify complete membership, byte integrity, missing objects and
+   interruption recovery. Preserve the source copy.
+4. Test authenticated reads, revocation, quotas, oversized/missing/corrupt
+   bodies and provider outages through the normal service contract. Keep the
+   bucket private. Do not exchange live authorization checks for public links.
+5. Update the edge-site export from a pinned release. Test public assets,
+   dynamic API failures, canonical OAuth URLs, cookies, redirects, origin
+   binding and client-address handling. Cache no private account response.
+6. Run a canary, measure latency, errors, resource use and projected total cost,
+   then change one production boundary at a time. A prototype score is not a
+   cutover result. Recheck every affected hostname and harness path.
+7. Keep Fly's custom search and authoritative state until any proposed
+   replacement passes the same functional, concurrency, recovery and privacy
+   tests. Preserve the rollback route before removing redundant infrastructure.
+
+### Checklist 4: Feeds and Components
+
+Roadmap owner: S-6.214 with the existing subscription and delivery owners.
+
+**Feeds** are maintained streams of useful information: changes, comparisons,
+service directories, research and task-relevant updates. They can produce
+Markdown, structured data, context files and OKF outputs. **Components** are
+reusable harness files: functions, code, tools, configurations, data, assets
+and production material. A feed may produce a component; a file extension
+does not determine an offering or grant access.
+
+- [ ] Define a versioned feed record: identity, source references, checked and
+  published times, changes, applicability, rights, evidence state, review due
+  date and correction/withdrawal links.
+- [ ] Reuse the existing source-discovery and knowledge-radar work. Convert
+  leads into admitted material; do not publish unverified collector output as
+  a checked recommendation.
+- [ ] Deliver one useful feed through the existing authenticated service,
+  with a human view, a structured pull interface and exact context-file
+  exports. Distinguish plain Markdown from validated OKF compatibility.
+- [ ] Add daily snapshots and stable cursors. Test duplicates, missing updates,
+  changed filters, stale sources, failure versus empty results and replay.
+- [ ] Add opt-in task profiles and supported notification receivers. Test
+  destination authorization, request bounds, retries, withdrawal and
+  unsubscribe. Receiving a notification cannot execute its content.
+- [ ] Implement explicit Feeds-only versus full Components membership through
+  the same entitlement system. Preserve existing full access and Public Good
+  exceptions. Test alternate paths, cached references and Markdown wrappers.
+- [ ] Qualify both paid journeys before creating new live prices or promising
+  availability. Daily delivery and near-real-time source coverage are separate
+  claims. Measure useful retrieval and completed work, not notification volume.
+
+### Release and iteration procedure
+
+One cycle ends with a checked live outcome, a recorded failure with a changed
+next action, or an explicit owner-only gate. Engineering owns ordinary fixes,
+merges, tests, pushes and guarded releases. Personal identity/bank verification,
+new legal commitments and spending outside the recorded allowance remain
+owner decisions under AGENTS.md.
+
+1. Read the entry pointer, coordination note, current Git state and active
+   operations. Work in a detached checkout; preserve unowned changes.
+2. Select one bounded failure or outcome at its existing owner. Search for
+   reusable work. Write the discriminating positive and negative checks.
+3. Implement, test the owning boundaries and run the applicable release gates.
+   Keep all attempts. Do not turn a timeout, missing evidence or quota failure
+   into a pass.
+4. Push reviewed work to main. Release only an exact CI-passed main revision
+   through the guarded workflow. Close the deployment gate afterward.
+5. Verify all affected live paths, exact bytes and state. Record the source,
+   image, data/policy versions, rollback bindings and untested boundaries.
+6. Update the roadmap, this execution view and the private checkpoint. Choose
+   the next bottleneck from observed failures and user outcomes.
+
+Recurring checks: site readiness, exact-version delivery, credentials before
+expiry, source freshness, Public Good expiry, storage headroom, total provider
+usage, dependency changes and failed audit calibration. Existing jobs keep
+their measured source pins and limits. No automatic publication follows a
+source-discovery result.
+
+### Remaining handoffs and honest completion
+
+After the critical publication and Public Good work, reconcile Cloudflare,
+OpenAI presentation/submission, the payment test-driver's repeated challenge,
+value-proof runs, original SDG packages, source/idea integrations, program and
+schema repairs, the disabled daily publication train and creative/native
+examples. Each needs its own source, tests, rights and actual consumer check.
+Do not rerun or discard a stream merely because its summary is old.
+
+For OpenAI distribution, finish the deployed tool presentation, dedicated
+review account, support route, domain challenge, walkthrough and policy checks.
+Identity verification, any new legal notice and directory approval are not
+engineering test passes. The retained app handoff and the distribution section
+below name the specific remaining work.
+
+The current cycle is not "all done" while the million-file candidate is only
+local, an SDG has no eligible free material, Cloudflare is only a prototype,
+or Feeds/Components are only marketing labels. Report those states explicitly.
 
 ## Product and revenue
 
