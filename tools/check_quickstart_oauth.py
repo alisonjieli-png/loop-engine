@@ -77,7 +77,10 @@ QUICKSTART = next(item for item in quickstarts.QUICKSTARTS if item.id == "claude
 JOURNEY_RECORD = "fresh_account_journey/v1"
 ACCOUNT_FILE, CLAUDE_FOLDER, PROJECT_FOLDER, EVIDENCE_FOLDER = "account.json", "claude-config", "project", "evidence"
 CHALLENGE = re.compile(r'Bearer\s+resource_metadata="([^"]+)"')
-AUTHORIZATION_ADDRESS = re.compile(r"https://[^\s\"'<>\x07\x1b]+/authorize\?[^\s\"'<>\x07\x1b]+")
+#: The query of an address printed in a terminal: everything up to a space, a quote, an angle bracket or a control code.
+ADDRESS_QUERY = r"\?[^\s\"'<>\x07\x1b]+"
+#: The only variables a child process inherits: what Claude Code, Node and Chrome need, never a key or a token.
+INHERITED_ENVIRONMENT = ("HOME", "PATH", "LANG", "USER", "LOGNAME", "TMPDIR")
 #: Terminal control sequences: colours and cursor moves, and operating-system commands such as hyperlinks.
 TERMINAL_CODES = re.compile(r"\x1b\][^\x07\x1b]*(?:\x07|\x1b\\)|\x1b\[[0-9;?]*[ -/]*[@-~]|\x1b[=>()][0-9A-Za-z]?")
 #: What Claude Code prints once it waits for the redirect at its prompt.
@@ -198,10 +201,19 @@ def create_account(origin: str, folder: Path, node: str, environment: dict, evid
     return {"journey_report": str(report)}
 
 
+def inherited_environment() -> dict:
+    """The declared variables of this process's environment that a child may see."""
+    return {name: os.environ[name] for name in INHERITED_ENVIRONMENT if name in os.environ}
+
+
+def authorization_address(endpoint: str):
+    """The pattern of an authorization address on the endpoint the authorization server publishes."""
+    return re.compile(re.escape(endpoint) + ADDRESS_QUERY)
+
+
 def claude_environment(folder: Path) -> dict:
     """Only what Claude Code needs, with its own configuration folder and no traffic beyond the connection."""
-    environment = {name: os.environ[name] for name in ("HOME", "PATH", "LANG", "USER", "LOGNAME") if name in os.environ}
-    return {**environment, "CLAUDE_CONFIG_DIR": str(folder / CLAUDE_FOLDER), "TERM": "xterm-256color",
+    return {**inherited_environment(), "CLAUDE_CONFIG_DIR": str(folder / CLAUDE_FOLDER), "TERM": "xterm-256color",
             "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1", "NO_COLOR": "1"}
 
 
@@ -219,20 +231,20 @@ def server_status(listing: str, endpoint: str):
     return None
 
 
-def check_authorization_address(address: str, published_base: str, offered_scopes) -> dict:
+def check_authorization_address(address: str, authorization_endpoint: str, resource: str, offered_scopes) -> dict:
     """The facts of the authorization request Claude Code built, or the reason it is not the published profile."""
     parts = urllib.parse.urlsplit(address)
     query = dict(urllib.parse.parse_qsl(parts.query, keep_blank_values=True))
     redirect = urllib.parse.urlsplit(query.get("redirect_uri", ""))
     scopes = query.get("scope", "").split()
     problems = []
-    if parts.scheme + "://" + parts.netloc != published_base or parts.path != "/authorize":
-        problems.append("the address is not the published base's /authorize")
+    if urllib.parse.urlunsplit((parts.scheme, parts.netloc, parts.path, "", "")) != authorization_endpoint:
+        problems.append("the address is not the published authorization endpoint")
     if query.get("response_type") != "code":
         problems.append("response_type is not code")
     if query.get("code_challenge_method") != "S256" or not re.fullmatch(r"[A-Za-z0-9_-]{43}", query.get("code_challenge", "")):
         problems.append("no S256 code challenge")
-    if query.get("resource") != published_base + quickstarts.PROTOCOL_PATH:
+    if query.get("resource") != resource:
         problems.append("the resource is {!r}".format(query.get("resource")))
     if redirect.scheme != "http" or redirect.hostname not in ("localhost", "127.0.0.1", "::1") or not redirect.path:
         problems.append("the redirect is not a loopback address")
@@ -262,11 +274,12 @@ def check_callback(callback_url: str, request: dict, published_base: str):
         raise CheckFailed("the consent page named the issuer {!r}".format(query.get("iss")))
 
 
-def drive_login(command, environment, cwd, answer, seconds=LOGIN_SECONDS, listener_seconds=LISTENER_SECONDS):
+def drive_login(command, environment, cwd, answer, *, address_pattern, seconds=LOGIN_SECONDS,
+                listener_seconds=LISTENER_SECONDS):
     """Run Claude Code's login in a pseudo-terminal, as a person in a terminal does.
 
-    `answer(address)` runs the consent for the authorization address Claude Code prints and returns the redirect
-    address, which the browser has already taken to Claude Code's own listener. When Claude Code is still waiting
+    `answer(address)` runs the consent for the authorization address Claude Code prints, the first match of
+    `address_pattern`, and returns the redirect address, which the browser has already taken to Claude Code's own listener. When Claude Code is still waiting
     at its prompt after `listener_seconds`, the redirect is pasted there instead. Returns the exit status, the
     address, how the redirect arrived and the transcript text."""
     master, slave = os.openpty()
@@ -292,7 +305,7 @@ def drive_login(command, environment, cwd, answer, seconds=LOGIN_SECONDS, listen
                 break
             text = plain(transcript)
             if address is None and PASTE_PROMPT in text.lower():
-                found = AUTHORIZATION_ADDRESS.search(text)
+                found = address_pattern.search(text)
                 if found is None:
                     break
                 address = found.group(0)
@@ -361,7 +374,7 @@ def run_check(origin: str, folder: Path, *, claude: str, node: str, create: bool
     rows, facts, secrets = [], {"account": None, "client": None, "consent": None, "callback_delivered_by": None,
                                 "identity": None, "digest_prefix": None, "request_id": None,
                                 "catalogue_release": None}, []
-    tokens = {}
+    tokens, endpoints = {}, {}
 
     def step(name, passed, detail=""):
         rows.append({"name": name, "passed": bool(passed), "detail": scrubbed(str(detail), *secrets)[:300]})
@@ -414,12 +427,14 @@ def run_check(origin: str, folder: Path, *, claude: str, node: str, create: bool
             raise CheckFailed("the resource metadata names {!r} at {!r}".format((resource or {}).get("resource"), issuer))
         _status, _headers, server = http.json("GET", issuer + "/.well-known/oauth-authorization-server")
         server = server or {}
+        endpoints = {name: server.get(name + "_endpoint") for name in ("authorization", "token", "revocation")}
         wanted = {"issuer": server.get("issuer") == issuer,
+                  "endpoints on the issuer": all(isinstance(address, str) and address.startswith(issuer + "/")
+                                                 for address in endpoints.values()),
                   "S256": "S256" in (server.get("code_challenge_methods_supported") or []),
                   "registration": bool(server.get("registration_endpoint")),
                   "public clients": "none" in (server.get("token_endpoint_auth_methods_supported") or []),
-                  "refresh": "refresh_token" in (server.get("grant_types_supported") or []),
-                  "revocation": bool(server.get("revocation_endpoint"))}
+                  "refresh": "refresh_token" in (server.get("grant_types_supported") or [])}
         missing = [name for name, held in wanted.items() if not held]
         if missing:
             raise CheckFailed("the authorization server metadata lacks " + ", ".join(missing))
@@ -444,7 +459,7 @@ def run_check(origin: str, folder: Path, *, claude: str, node: str, create: bool
         outcome = {}
 
         def answer_consent(address):
-            request = check_authorization_address(address, published_base, offered)
+            request = check_authorization_address(address, endpoints["authorization"], endpoint, offered)
             secrets.append(request["state"])
             facts["client"] = {"client_id_prefix": request["client_id"][:8], "redirect_uri": request["redirect_uri"],
                                "scopes_requested": request["scopes"]}
@@ -461,7 +476,7 @@ def run_check(origin: str, folder: Path, *, claude: str, node: str, create: bool
             return consented["callback_url"]
 
         result = login([claude, "mcp", "login", SERVER, "--no-browser"], environment, folder / PROJECT_FOLDER,
-                       answer_consent)
+                       answer_consent, address_pattern=authorization_address(endpoints["authorization"]))
         facts["callback_delivered_by"] = result["delivered_by"]
         if result["address"] is None:
             raise CheckFailed("claude mcp login printed no authorization address: " +
@@ -493,7 +508,7 @@ def run_check(origin: str, folder: Path, *, claude: str, node: str, create: bool
         if not all(row["passed"] for row in protocol_rows):
             raise CheckFailed(None)
 
-        status, _headers, rotated = http.json("POST", published_base + "/token", form={
+        status, _headers, rotated = http.json("POST", endpoints["token"], form={
             "grant_type": "refresh_token", "refresh_token": tokens["refresh"], "client_id": tokens["client_id"],
             "resource": endpoint})
         rotated = rotated or {}
@@ -502,7 +517,7 @@ def run_check(origin: str, folder: Path, *, claude: str, node: str, create: bool
         previous, tokens = tokens, {**tokens, "access": rotated["access_token"], "refresh": rotated.get("refresh_token", "")}
         secrets.extend(value for value in (tokens["access"], tokens["refresh"]) if value)
         accepted = initialize(http, endpoint, tokens["access"], version)
-        status, _headers, reused = http.json("POST", published_base + "/token", form={
+        status, _headers, reused = http.json("POST", endpoints["token"], form={
             "grant_type": "refresh_token", "refresh_token": previous["refresh"], "client_id": tokens["client_id"],
             "resource": endpoint})
         if accepted != 200 or status != 400 or (reused or {}).get("error") != "invalid_grant" \
@@ -515,8 +530,8 @@ def run_check(origin: str, folder: Path, *, claude: str, node: str, create: bool
             step(_next_step(rows), False, failure if isinstance(failure, CheckFailed)
                  else "{}: {}".format(type(failure).__name__, failure))
     finally:
-        if tokens.get("refresh") and tokens.get("client_id"):
-            revoked = revoke(http, published_base, endpoint, tokens, version)
+        if tokens.get("refresh") and tokens.get("client_id") and endpoints.get("revocation"):
+            revoked = revoke(http, endpoints["revocation"], endpoint, tokens, version)
             step("revoked", revoked == "", revoked or "revocation ended the delegation; the access token is refused")
     passed = bool(rows) and all(row["passed"] for row in rows) and [row["name"] for row in rows] == STEPS
     return {"record_type": RECORD_TYPE, "checked_at": now.isoformat(), "origin": origin,
@@ -540,10 +555,10 @@ def _next_step(rows):
     return next((name for name in STEPS if name not in done and name != "revoked"), "revoked")
 
 
-def revoke(http: Http, published_base: str, endpoint: str, tokens: dict, version: str) -> str:
+def revoke(http: Http, revocation_endpoint: str, endpoint: str, tokens: dict, version: str) -> str:
     """End the delegation and confirm the access token is refused; an empty text when both happened."""
     try:
-        status, _headers, _raw = http.request("POST", published_base + "/revoke", form={
+        status, _headers, _raw = http.request("POST", revocation_endpoint, form={
             "token": tokens["refresh"], "token_type_hint": "refresh_token", "client_id": tokens["client_id"]})
         if status != 200:
             return "the revocation answered {}".format(status)
@@ -555,10 +570,9 @@ def revoke(http: Http, published_base: str, endpoint: str, tokens: dict, version
 
 def run_consent(node, address, callback_prefix, account_path, evidence):
     """The browser consent, delivered to Claude Code's own listener, through tools/oauth_consent_browser.mjs."""
-    environment = {name: os.environ[name] for name in ("HOME", "PATH", "LANG", "USER", "LOGNAME", "TMPDIR")
-                   if name in os.environ}
     completed = subprocess.run([node, str(ROOT / "tools/oauth_consent_browser.mjs"), address, callback_prefix,
-                                str(account_path), str(evidence), "approve", "deliver"], cwd=ROOT, env=environment,
+                                str(account_path), str(evidence), "approve", "deliver"], cwd=ROOT,
+                               env=inherited_environment(),
                                capture_output=True, text=True, timeout=CONSENT_SECONDS)
     line = completed.stdout.strip().splitlines()[-1:] or [""]
     try:

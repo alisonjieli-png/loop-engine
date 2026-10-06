@@ -80,6 +80,7 @@ class Service(oauth.Http):
             return self.answer(200, {"resource": ENDPOINT, "authorization_servers": [BASE], "scopes_supported": SCOPES})
         if method == "GET" and path == "/.well-known/oauth-authorization-server":
             return self.answer(200, {"issuer": BASE, "code_challenge_methods_supported": ["S256"],
+                                     "authorization_endpoint": BASE + "/authorize",
                                      "registration_endpoint": BASE + "/register", "token_endpoint": BASE + "/token",
                                      "token_endpoint_auth_methods_supported": ["none"], "scopes_supported": SCOPES,
                                      "grant_types_supported": ["authorization_code", "refresh_token"],
@@ -133,7 +134,8 @@ class Harness:
             return 0, "2.1.290 (Claude Code)\n"
         return 1, ""
 
-    def login(self, command, environment, cwd, answer, **_options):
+    def login(self, command, environment, cwd, answer, *, address_pattern, **_options):
+        assert address_pattern.fullmatch(self.login_address), "the login is given the published endpoint's pattern"
         redirect = answer(self.login_address)
         store = self.folder / oauth.CLAUDE_FOLDER / ".credentials.json"
         store.write_text(json.dumps({"mcpOAuth": {"baltor|fixture": {
@@ -284,21 +286,38 @@ class OAuthCheckTests(unittest.TestCase):
             oauth.private_folder(shared)
 
     def test_the_authorization_address_checks_name_each_problem(self):
-        request = oauth.check_authorization_address(address(), BASE, SCOPES)
+        request = oauth.check_authorization_address(address(), BASE + "/authorize", ENDPOINT, SCOPES)
         self.assertEqual(request["callback_prefix"], "http://localhost:57853/callback")
         for changes, reason in (({"code_challenge_method": "plain"}, "S256"), ({"resource": None}, "resource"),
                                 ({"redirect_uri": "https://example.invalid/callback"}, "loopback"),
                                 ({"scope": "provisioning:metadata access:manage"}, "scopes"),
                                 ({"state": None}, "state"), ({"response_type": "token"}, "code")):
             with self.subTest(changes=changes), self.assertRaisesRegex(oauth.CheckFailed, reason):
-                oauth.check_authorization_address(address(**changes), BASE, SCOPES)
-        with self.assertRaisesRegex(oauth.CheckFailed, "published base"):
-            oauth.check_authorization_address(address().replace(BASE, "https://app.baltor.ai"), BASE, SCOPES)
+                oauth.check_authorization_address(address(**changes), BASE + "/authorize", ENDPOINT, SCOPES)
+        with self.assertRaisesRegex(oauth.CheckFailed, "authorization endpoint"):
+            oauth.check_authorization_address(address().replace(BASE, "https://app.baltor.ai"), BASE + "/authorize",
+                                              ENDPOINT, SCOPES)
+
+    def test_known_wrong_metadata_naming_an_endpoint_off_the_issuer_fails_discovery(self):
+        class Elsewhere(Service):
+            def request(self, method, url, **options):
+                status, headers, raw = super().request(method, url, **options)
+                if url.endswith("/.well-known/oauth-authorization-server"):
+                    value = json.loads(raw)
+                    value["token_endpoint"] = "https://tokens.example.invalid/token"
+                    raw = json.dumps(value).encode()
+                return status, headers, raw
+        record = check(self.folder, Harness(Elsewhere(), self.folder))
+        discovery = step(record, "discovery_matches")
+        self.assertFalse(discovery["passed"])
+        self.assertIn("endpoints on the issuer", discovery["detail"])
 
     def test_terminal_output_is_read_as_text_and_its_address_found_once(self):
         url = address()
         text = oauth.plain(TRANSCRIPT.format(url=url).encode())
-        self.assertEqual(oauth.AUTHORIZATION_ADDRESS.findall(text), [url], "the hyperlink copy is removed with its codes")
+        pattern = oauth.authorization_address(BASE + "/authorize")
+        self.assertEqual(pattern.findall(text), [url], "the hyperlink copy is removed with its codes")
+        self.assertIsNone(oauth.authorization_address("https://other.invalid/authorize").search(text))
         self.assertIn(oauth.PASTE_PROMPT, text.lower())
         self.assertNotIn("\x1b", text)
 
@@ -356,7 +375,8 @@ class TerminalDriverTests(unittest.TestCase):
 
     def drive(self, answer, **options):
         command = [sys.executable, str(self.folder / "claude.py"), str(self.port), self.url, str(self.outcome)]
-        return oauth.drive_login(command, {"PATH": os.environ.get("PATH", "")}, self.folder, answer, seconds=40, **options)
+        return oauth.drive_login(command, {"PATH": os.environ.get("PATH", "")}, self.folder, answer, seconds=40,
+                                 address_pattern=oauth.authorization_address(BASE + "/authorize"), **options)
 
     def test_a_redirect_delivered_to_the_listener_completes_the_login(self):
         def answer(found):
