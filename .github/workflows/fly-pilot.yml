@@ -175,13 +175,17 @@ jobs:
           flyctl deploy --app "${FLY_APP}" --primary-region "${FLY_PRIMARY_REGION}" \
             --config fly.toml --image "${exact}" --ha=false --strategy immediate \
             --max-concurrent 1 --deploy-retries 0 --no-public-ips --wait-timeout 5m --yes
-          # The replaced Machine is still starting when flyctl returns, and release 13
-          # failed here because one read came a second too early. The shared gate is
-          # read every five seconds for up to two minutes; it must pass once, and a
-          # gate that never passes still fails the release.
+          # The proxy can still answer from the old process immediately after deploy.
+          # Require the exact image and a passing Machine check from its current boot
+          # before reading public readiness. October 5's cold catalogue start otherwise
+          # let apply-grants build a second large view while the web process was starting.
+          # The first large cold build can take minutes on shared CPUs. A later restart
+          # opens its prepared disk index; the same bounded gate applies to both.
           ready=false
-          for attempt in $(seq 1 24); do
-            if curl --fail --silent --show-error --max-time 20 \
+          for attempt in $(seq 1 120); do
+            if flyctl machine list --app "${FLY_APP}" --json \
+                | python3 tools/check_fly_deployed_machine.py --image "${exact}" \
+                && curl --fail --silent --show-error --max-time 20 \
               "https://${FLY_APP}.fly.dev/api/v1/health" | jq -e "${SERVICE_READINESS_GATE}" >/dev/null; then
               ready=true
               break

@@ -861,6 +861,76 @@ class FlyDeploymentTests(unittest.TestCase):
         self.assertFalse(deploy_readiness_is_polled(loose), "a loop whose failure is ignored must be refused")
 
 
+class CurrentImageReadinessTests(unittest.TestCase):
+    """A healthy predecessor and a cached prior-boot probe cannot release a new image."""
+
+    def setUp(self):
+        from check_fly_deployed_machine import exact_machine_ready
+        self.ready = exact_machine_ready
+        self.digest = "sha256:" + "a" * 64
+        self.image = "registry.fly.io/example-pilot@" + self.digest
+        import datetime
+        started = datetime.datetime.fromisoformat("2026-10-06T00:00:00+00:00").timestamp() * 1000
+        self.machine = {"state": "started", "image_ref": {"registry": "registry.fly.io",
+            "repository": "example-pilot", "digest": self.digest},
+            "events": [{"type": "start", "status": "started", "timestamp": started}],
+            "checks": [{"name": "servicecheck-00-http-8080", "status": "passing",
+                        "updated_at": "2026-10-06T00:00:01.100Z"}]}
+
+    def test_exact_current_image_and_fresh_probe_pass(self):
+        self.assertTrue(self.ready([self.machine], self.image))
+
+    def test_wrong_image_state_and_ambiguous_machine_refuse(self):
+        for field, value in (("digest", "sha256:" + "b" * 64), ("repository", "other-app"),
+                             ("registry", "example.org")):
+            row = copy.deepcopy(self.machine)
+            row["image_ref"][field] = value
+            self.assertFalse(self.ready([row], self.image), field)
+        for state in ("starting", "created", "stopped", None):
+            self.assertFalse(self.ready([{**self.machine, "state": state}], self.image))
+        for rows in ([], [self.machine, self.machine], {}, None):
+            self.assertFalse(self.ready(rows, self.image))
+
+    def test_old_missing_failed_or_malformed_probe_refuses(self):
+        for value in ("2026-10-05T23:59:59Z", "2026-10-06T00:00:01", "invalid", None, [], 123):
+            row = copy.deepcopy(self.machine)
+            row["checks"][0]["updated_at"] = value
+            self.assertFalse(self.ready([row], self.image), repr(value))
+        for field, value in (("name", "unrelated-check"), ("status", "critical")):
+            row = copy.deepcopy(self.machine)
+            row["checks"][0][field] = value
+            self.assertFalse(self.ready([row], self.image))
+        for field in ("events", "checks", "image_ref"):
+            row = copy.deepcopy(self.machine)
+            row.pop(field)
+            self.assertFalse(self.ready([row], self.image))
+
+    def test_previous_boot_health_refuses_even_with_an_older_start_event(self):
+        row = copy.deepcopy(self.machine)
+        row["events"].append({"type": "start", "status": "started",
+                              "timestamp": row["events"][0]["timestamp"] + 10000})
+        self.assertFalse(self.ready([row], self.image))
+
+    def test_workflow_requires_machine_gate_before_public_readiness(self):
+        workflow = yaml.load((ROOT / ".github/workflows/fly-pilot.yml").read_text(), Loader=yaml.BaseLoader)
+        run = next(row["run"] for row in workflow["jobs"]["pilot"]["steps"] if row["name"] == DEPLOY_STEP)
+        gate = 'python3 tools/check_fly_deployed_machine.py --image "${exact}"'
+        def guarded(source):
+            block = source[source.index("ready=false"):]
+            return bool(re.search(re.escape(gate) + r"\s*\\\s*&& curl", block))
+        self.assertTrue(guarded(run))
+        self.assertFalse(guarded(run.replace(gate, "true")), "removed guard is known wrong")
+        self.assertFalse(guarded(run.replace("&& curl", "; curl")), "ignored refusal is known wrong")
+
+    def test_command_refuses_bad_input_without_printing_machine_config(self):
+        script = ROOT / "tools/check_fly_deployed_machine.py"
+        for value, expected in (([self.machine], 0), ([], 1), ({"secret": "synthetic-marker"}, 1)):
+            result = subprocess.run([sys.executable, str(script), "--image", self.image],
+                                    input=json.dumps(value), capture_output=True, text=True, timeout=5)
+            self.assertEqual(result.returncode, expected)
+            self.assertEqual(result.stdout + result.stderr, "")
+
+
 class StorageTargetGuardTests(unittest.TestCase):
     """The deployment target check reads the structured provider listing.
 
