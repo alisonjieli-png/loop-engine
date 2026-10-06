@@ -21,13 +21,8 @@ if [ "${1:-}" = "--finish" ]; then
 fi
 minutes="${QUERY_MULTIPLIER_MINUTES:-20}"
 python="${QUERY_MULTIPLIER_PYTHON:-$HOME/loop-engine/.venv/bin/python}"
-if [ -z "${OLLAMA_API_KEY:-}" ] && [ -f "$HOME/.bashrc" ]; then
-  # The owner's existing Ollama key is exported in ~/.bashrc, which returns early for shells that are not
-  # interactive. Read that one export line only, never the rest of the file, and never print it. Without it the
-  # web search lane refuses with key_not_in_environment and every other lane runs.
-  line="$(grep -E '^export OLLAMA_API_KEY=' "$HOME/.bashrc" | tail -n 1 || true)"
-  if [ -n "$line" ]; then eval "$line"; fi
-fi
+# Credentials come only from the invoking environment. Never source a shell profile or evaluate an export:
+# even one assignment can contain command substitution. A missing key holds that lane; public lanes still run.
 if [ -e "$root/state/pause" ]; then
   printf '{"status": "paused", "pause_file": "%s"}\n' "$root/state/pause"
   exit 0

@@ -10,6 +10,7 @@ import json
 import math
 import os
 import shutil
+import shlex
 import signal
 import subprocess
 import sys
@@ -886,6 +887,44 @@ class ProposalTests(Temporary):
         self.assertEqual(len(rows), 1)
         self.assertEqual(sorted(rows[0]["paths"]), ["a/openapi.yaml", "b/openapi.json"])
         self.assertEqual(len(rows[0]["evidence"]), 2)
+
+
+class ScheduledCredentialBoundaryTests(unittest.TestCase):
+    def test_wrapper_inherits_keys_without_executing_shell_profile_assignments(self):
+        source = (ROOT / "tools/query_multiplier/scheduled-run.sh").read_text()
+        with tempfile.TemporaryDirectory() as temporary:
+            folder = Path(temporary)
+            scripts = folder / "tools/query_multiplier"
+            scripts.mkdir(parents=True)
+            marker = folder / "profile-executed"
+            (folder / ".bashrc").write_text('export OLLAMA_API_KEY="$(touch ' + shlex.quote(str(marker))
+                                            + '; printf synthetic-fixture-key)"\n')
+            probe = folder / "python-probe"
+            probe.write_text("#!/usr/bin/env python3\nimport json,os\n"
+                             "print(json.dumps({'key_present':'OLLAMA_API_KEY' in os.environ}))\n")
+            probe.chmod(0o700)
+            wrapper = scripts / "scheduled-run.sh"
+            environment = {"HOME": str(folder), "PATH": os.environ["PATH"],
+                           "QUERY_MULTIPLIER_ROOT": str(folder / "evidence"),
+                           "QUERY_MULTIPLIER_PYTHON": str(probe)}
+            for present in (False, True):
+                wrapper.write_text(source)
+                selected = {**environment, **({"OLLAMA_API_KEY": "inherited-fixture"} if present else {})}
+                result = subprocess.run(["bash", str(wrapper)], env=selected, capture_output=True,
+                                        text=True, timeout=10)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(json.loads(result.stdout), {"key_present": present})
+                self.assertFalse(marker.exists())
+            # Known wrong: even evaluating only an apparent export assignment executes its substitution.
+            broken = source.replace('minutes="${QUERY_MULTIPLIER_MINUTES:-20}"',
+                'eval "$(grep -E \'^export OLLAMA_API_KEY=\' \"$HOME/.bashrc\")"\n'
+                'minutes="${QUERY_MULTIPLIER_MINUTES:-20}"')
+            self.assertNotEqual(broken, source)
+            wrapper.write_text(broken)
+            result = subprocess.run(["bash", str(wrapper)], env=environment, capture_output=True,
+                                    text=True, timeout=10)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertTrue(marker.exists(), "the known-wrong wrapper must execute the seeded substitution")
 
 
 if __name__ == "__main__":
