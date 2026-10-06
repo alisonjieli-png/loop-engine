@@ -1,5 +1,23 @@
 schema: hardcoding_allowlist/v1
 entries:
+- finding_id: hardcoding.27a4a645b74420c53fd6ef92
+  owner: tools.connection_endpoint_checks.mjs:url
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 6, 2026: a deliberately insecure .invalid URL in a browser refusal fixture. It is never contacted; the test confines all requests to its loopback service. Production addresses still come from the service capabilities record."
+  created_on: '2026-10-06'
+  expires_on: '2027-01-06'
+- finding_id: hardcoding.2f0d0079da16c8645c3409f3
+  owner: tools.connection_endpoint_checks.mjs:url
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 6, 2026: the synthetic canonical resource differs from the browser's loopback origin to detect the alias defect. The browser never connects to it. A removed-guard control proves the comparison detects using the origin instead."
+  created_on: '2026-10-06'
+  expires_on: '2027-01-06'
+- finding_id: hardcoding.62f7940cc153d62c880cd76a
+  owner: tools.connection_endpoint_checks.mjs:url
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 6, 2026: a malformed .invalid resource with a query is refused before copied settings are offered. The value is an inert negative fixture, not a credential or request destination; no general source-file exclusion applies."
+  created_on: '2026-10-06'
+  expires_on: '2027-01-06'
 - finding_id: hardcoding.94bb745967e9ef9320aae79a
   owner: "tools.knowledge_radar.engines_network:GitHubSearch.read"
   classification: STRATEGY_OR_PROVIDER_BINDING
