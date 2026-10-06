@@ -73,6 +73,12 @@ read and the dated report that feeds the weekly number and the idea matrix.
 Its fields, records, addresses and refusal codes are held to the service
 source by `tools/test_feedback_report.py`.
 
+The [ChatGPT app guide](chatgpt-app.md) lists what OpenAI's plugin directory
+requires of Baltor in ChatGPT and Codex, with the source and the date each
+requirement was read, what the live service did before, what was built, the
+end-to-end proof, and the steps left for the release owner and the owner. The
+submission package is in `integrations/chatgpt-app/`.
+
 The [service failure diagnosis guide](service-failure-diagnosis.md) is the
 operator procedure for the deployed service: the reference that names one
 request in both the customer's refusal and the durable record, the read-only

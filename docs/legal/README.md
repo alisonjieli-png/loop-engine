@@ -29,6 +29,7 @@ October 8, 2026; verify the current deployment before treating this edit as live
 | [Privacy notice](PRIVACY-NOTICE.md) | Published. Approved by the owner on September 22, 2026. The website serves the same text at `/privacy`, linked from the footer of every page. |
 | [Terms of service](TERMS-OF-SERVICE.md) | Owner-approved text, including the October 8 flexible pricing amendment. The website must serve the same text at `/terms`, linked from every footer and signup. Last changed: October 8, 2026. |
 | [Beta terms draft](BETA-TERMS-DRAFT.md) | History. The draft that engineering wrote and the owner read and approved. It keeps its original words and is not the published text. |
+| [ChatGPT app notice changes](CHATGPT-APP-NOTICE-CHANGES-DRAFT.md) | Draft, October 5, 2026. Retention timelines, OpenAI as a recipient when a person connects Baltor to ChatGPT or Codex, and the support page in the contact section, as OpenAI's directory asks. Not published; it waits for the owner. |
 
 ## The published terms and the approved draft
 
