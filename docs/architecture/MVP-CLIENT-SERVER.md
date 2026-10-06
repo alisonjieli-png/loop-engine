@@ -2,7 +2,7 @@
 
 Kind: product architecture with measured local implementation and proposed hosting.
 Date: 2026-09-19. The [current deployment](#current-deployment) section was
-added on 2026-09-20 and last checked on 2026-10-06, after Fly release 70.
+added on 2026-09-20 and last checked on 2026-10-06, after Fly release 71.
 
 The hosted product manages accounts, subscriptions, and access to intelligence.
 The customer runs Loop Engine and the selected harnesses. A hosted intelligence
@@ -47,7 +47,29 @@ from the newest release record, follow the release record and correct this
 section. Update this section in the same change that records a new release.
 It describes a private pilot. It does not describe a qualified paid service.
 
-The running image is Fly release 70, from
+The running image is Fly release 71, from
+`ec1df775e1fd17077d36cb04d90b7350b07e9273`, image
+`sha256:2f82e576b8207781d5a038d4ec1e679850eb02904f87af2936cf4ace8afdc42e`.
+CI `37487555685` and guarded deployment `37488883326` passed. All ten hosts
+pass 2,118 browser assertions. The bounded lexical candidate pool preserves
+the checked verified tier alongside broad Community matches, with filters and
+authorization retained. The exact before/after replay preserves all 70
+previously found expectations and finds 95 with the selected policy. Explicit
+component forms survive admission instead of inheriting the file format's
+default. The gate is off; release 70 is the compatible image rollback.
+The [release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-71.json)
+records the source, evidence and limitations.
+
+The application release leaves catalogue `8806a997...` unchanged at 92,973
+packages and 370,994 distinct files. A separate, current-base publication is
+running after its complete preflight. Its expected 1,352,837-file result is
+not a live count until activation and readback pass. Do not deploy or apply
+Public Good grants during that operation. The existing Fly volume is 50 GB.
+Cloudflare serving and the Feeds/Components offering split remain incomplete.
+The [active plan](../roadmap/DELIVERY-SEQUENCE.md#active-execution-plan-october-6)
+states their dependencies and acceptance checks.
+
+The preceding running image was Fly release 70, from
 `e9648c896519c3480d348e2710071a2afbcf63f5`, image
 `sha256:7158b6e1c135f326b20562766bfcc460cae8e00b49d46f270feed8feeaf3264e`.
 CI `37478490822` and guarded deployment `37479866030` passed. All ten hosts

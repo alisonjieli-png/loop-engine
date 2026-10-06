@@ -20,7 +20,7 @@ separate completion conditions.
 | --- | --- | --- |
 | Payment and connection repairs | Live in release 70 | Ten hosts passed 2,118 browser checks; five token quickstarts and the 15-step real Claude Code OAuth journey passed. |
 | Search and intake repairs | Release 71 deployed; live checks complete | Exact source `ec1df775`; CI `37487555685`; deployment `37488883326`. The repaired search preserves all 70 previously found expectations and finds 95 in the retained before/after comparison. |
-| Million-file publication | Final preflight running | Current base: 92,973 packages / 370,994 distinct files. Candidate: 218,127 packages / 1,352,837 distinct files. Current-base planning found no lost judged match, replacement, withdrawal or orphaned Public Good grant. All existing bodies verified; the segmented delta is built. |
+| Million-file publication | Preflight passed; one publication running | Current base: 92,973 packages / 370,994 distinct files. Candidate: 218,127 packages / 1,352,837 distinct files. Current-base planning found no lost judged match, replacement, withdrawal or orphaned Public Good grant. The publisher will transfer 981,843 new bodies in 283 batches, then verify and activate the result. Do not count the candidate as live yet. |
 | Storage headroom | Done | Existing Fly volume extended from 25 to 50 GB, with 39 GB free at readback and no restart. Added provisioned storage: $3.75/month; traffic and snapshots are separate. |
 | Empty Public Good goals | Not resolved | The live 419-package grant policy still has empty goals 1, 2, 3, 5 and 17. Prepared original packages and qualified public-data packages need selection, publication and exact-version grants. |
 | Cloudflare | Prototypes verified; no production cutover | R2 has a 20,000-object prototype; a fresh 200-read check passed. D1 and edge-site Workers exist. The R2 adapter is not yet connected to the production host loader; D1 is not selected. |
@@ -34,9 +34,9 @@ requires the named acceptance checks. Keep the first two rows on the critical
 path. Research and candidate work may run alongside them when it does not
 delay a ready publication or exhaust memory, storage or provider allowances.
 
-| Workstream | Now | After bundle preflight | After catalogue readback | Following cycle |
+| Workstream | Completed prerequisite | Now | After catalogue readback | Following cycle |
 | --- | --- | --- | --- | --- |
-| Million-file library | ACTIVE: build/check | NEXT: upload and publish once | GATE: count, bytes, search, access | Maintain and audit |
+| Million-file library | Build/check passed | ACTIVE: verify, upload and publish once | GATE: count, bytes, search, access | Maintain and audit |
 | Public Good coverage | Prepare qualified selections | Wait for exact published versions | NEXT: apply free grants; verify all goals | Broaden useful coverage |
 | Cloudflare | Review adapters and migration checks | Shadow mirror / canary preparation | R2 and static-edge acceptance | Staged production cutover |
 | Feeds | Existing-contract mapping | Source-backed feed records | Pull API and context exports | Daily delivery, then opt-in push |
@@ -58,10 +58,10 @@ folder named by `/home/username/START-HERE-BALTOR.md`.
   the failed earlier experiments as well as the passing comparison.
 - [x] Build the delta with every existing version retained and all required
   local bodies verified.
-- [ ] Finish the publisher's dry run against the current live base.
-- [ ] Verify release 71, the deployment gate and the publication lock before
+- [x] Finish the publisher's dry run against the current live base.
+- [x] Verify release 71, the deployment gate and the publication lock before
   starting the one publication. Do not deploy while it runs.
-- [ ] Publish the exact prepared command once. If its result is uncertain,
+- [ ] Complete the running publication of the exact prepared command. If its result is uncertain,
   inspect the remote result and active pointer before any retry.
 - [ ] Read back the active release, complete distinct-file population, package
   count, source/index state and representative exact file hashes.

@@ -1,0 +1,63 @@
+{
+  "record_type": "pilot_release_record/v1",
+  "release": 71,
+  "app": "baltor-pilot",
+  "source_revision": "ec1df775e1fd17077d36cb04d90b7350b07e9273",
+  "image": "registry.fly.io/baltor-pilot@sha256:2f82e576b8207781d5a038d4ec1e679850eb02904f87af2936cf4ace8afdc42e",
+  "rollback_release": 70,
+  "rollback_image": "registry.fly.io/baltor-pilot@sha256:7158b6e1c135f326b20562766bfcc460cae8e00b49d46f270feed8feeaf3264e",
+  "rollback_catalogue_state_versions": [1, 2, 3],
+  "owner_local_date": "2026-10-06",
+  "deployed_at": "2026-10-06T15:38:52Z",
+  "deployed_at_basis": "Fly release record CreatedAt, freshly read back after deployment",
+  "ci_run": 37487555685,
+  "ci_conclusion": "success",
+  "deploy_run": 37488883326,
+  "deploy_workflow_conclusion": "success",
+  "deploy_workflow_completed_at": "2026-10-06T15:39:34Z",
+  "deployment_gate_after": false,
+  "changes": [
+    "Lexical search adds a bounded checked-tier candidate pool while preserving caller filters, per-item authorization and stable identity ties.",
+    "The selected relevance floor is 0.2; only authorized scores determine the floor, and conflicting scores for the same identity refuse.",
+    "Admission preserves a declared component form independently of its payload format, including api_operation for Python wrappers.",
+    "The owner's Feeds and Components direction is recorded without changing prices or current entitlements."
+  ],
+  "local_checks": {
+    "index_engine_methods": 19,
+    "plan_index_form_methods": 32,
+    "admission_related_methods": 75,
+    "final_form_methods": 3,
+    "method_counts_are_separate_suites_not_summed_unique_tests": true,
+    "conformance": "all gates passed",
+    "new_blocking_scoped_audit_findings": 0,
+    "generated_views": "consistent"
+  },
+  "retrieval_replay": {
+    "queries": 354,
+    "previous_policy_before_hits": 70,
+    "selected_policy_before_hits": 95,
+    "selected_policy_after_hits": 95,
+    "lost_previous_or_constant_policy_expected_matches": 0,
+    "current_base_consequence_verdict": "conservative_over_judged_queries",
+    "limits": "Authored expectations and retained metadata projections, not human relevance ratings or remote API execution. Earlier failed policies remain retained."
+  },
+  "catalogue": {
+    "release_id": "8806a9975412ff0ddedb217f455425fbb040052a630cdf4cf0af6652625765a6",
+    "packages": 92973,
+    "distinct_files": 370994,
+    "search_engine": "sqlite_disk_index",
+    "changed_by_this_application_release": false
+  },
+  "hostnames_checked": 10,
+  "hostnames_passed": 10,
+  "service_checks_passed": 2118,
+  "service_checks_total": 2118,
+  "limits": [
+    "The million-file catalogue publication is a separate operation; these release counts do not claim its result.",
+    "The five token and fifteen real Claude OAuth checks belong to release 70, not a new release-71 replay.",
+    "Cloudflare production serving, new paid offerings, feed push delivery and empty Public Good goals are not completed by this application release.",
+    "No live charge, new price, DNS cutover or legal-notice change was made."
+  ],
+  "private_evidence_root": "/home/username/baltor-private/takeover-20261006-HyJ5E4",
+  "live_evidence": "live-release71-hosts/summary.json"
+}
