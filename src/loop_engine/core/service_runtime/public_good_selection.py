@@ -14,7 +14,6 @@ from ..provisioning_server import ProvisioningItemBinding, ProvisioningQualifica
 from . import catalogue_releases as releases
 from .catalogue_bundle import BUNDLE_ITEM_RECORD_TYPE, item_version_tier, validate_item
 from .catalogue_grants import require_served_state
-from .catalogue_packages import VolumeBodyStore, require_body_store
 from .catalogue_serving import STORE_SOURCE, _approved_resolver
 from .public_good import PublicGoodGrant
 from .records import ServiceRuntimeError
@@ -91,7 +90,7 @@ def load_selection(binding, settings, grants, *, expected_release, license_polic
     _require(isinstance(grants, (tuple, list)) and len(grants) <= MAXIMUM_SELECTION, "public_good_selection_limit")
     _require(all(isinstance(grant, PublicGoodGrant) for grant in grants), "public_good_selection_invalid")
     _require(len({grant.binding.identity for grant in grants}) == len(grants), "public_good_grant_not_current")
-    body_store = require_body_store(VolumeBodyStore(settings.body_store_root))
+    body_store = settings.body_store()
     with binding.store() as store:
         state_row, state = releases.read_state(binding, store)
         pointer_row, pointer = releases.read_pointer(binding, store)

@@ -556,8 +556,9 @@ class CatalogueOperatorContext:
 
     binding: ServiceCatalogBinding
     body_store_root: str
+    body_store_engine: object = None
 
     def body_store(self, *, write=False):
-        from .catalogue_body_flush import ExactFlushVolumeBodyStore
-        from .catalogue_packages import require_body_store
-        return require_body_store(ExactFlushVolumeBodyStore(self.body_store_root, writes_authorized=write), write=write)
+        from .service_engine_body_store import open_body_store
+        record = dict(self.body_store_engine) if self.body_store_engine is not None else None
+        return open_body_store(record, write=write, root_fallback=self.body_store_root)

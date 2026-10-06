@@ -1474,8 +1474,10 @@ measurements behind them are in
 
 A host can add, change and withdraw harness intelligence items while the
 service runs. The host file's `catalogue` section, record
-`service_catalogue_source/v1` or `service_catalogue_source/v2`, chooses the
-source; version 2 also names the search index engine and its index folder:
+`service_catalogue_source/v1`, `service_catalogue_source/v2` or
+`service_catalogue_source/v3`, chooses the source. Version 2 also names the
+search index engine and its index folder. Version 3 independently selects
+the immutable body engine:
 
 ```text
 Catalogue source
@@ -1507,9 +1509,45 @@ start and never replaced. With
 instead of copying `starter_identities` once, so the host file names no
 starter identities.
 
+A version 3 store section may add `body_store_engine`, an exact
+`catalogue_body_store_engine/v1` record read by `service_engine_body_store`.
+Omitting it preserves the volume engine. The volume engine still requires
+`body_store_root`; R2 may omit that local path. Older source versions refuse
+the new field, and image-backed catalogues cannot select it. The setting is
+copied and frozen when parsed, so changing the input dictionary cannot change
+an existing selection.
+
+`r2_object_storage` names a private bucket, its documented account S3
+endpoint, bucket-scoped credential references and bounded file/read limits.
+Credentials are resolved at request time, not during discovery. Serving opens
+a read-only engine. The existing host publication command alone opens it for
+writing. In-memory serving, disk-index construction and reads, rollback and
+selected Public Good maintenance use that same setting. Every returned body
+still passes size and digest checks. Missing credentials, missing objects,
+corrupt bytes or provider outages refuse; they do not switch to a local copy.
+
+These source paths pass local signed-S3 and host-integration checks. That is
+not a production R2 cutover or qualification of the S3 transport against R2.
+The separate real R2 Worker-binding probe does not establish S3 compatibility.
+Before selecting R2 in production, mirror and verify the complete exact body
+population, qualify its actual credentials and transport, measure full-size
+publication/index work and check the ordinary authorization/download paths.
+The current serial body verification can be expensive over a remote store;
+do not extrapolate a small probe into a million-object rebuild time. Preserve
+the volume and a version-3-capable rollback image before changing the host.
+
+`tools/mirror_catalogue_bodies.py` is dry-run by default. `--bundle` requires
+`--bundle-digest` and the explicit accepted licence labels; both complete
+version 1 and segmented version 2 metadata are read through the native
+readers. A write run verifies objects already listed at the destination, not
+just their lengths. A failed object prevents the resume cursor from moving
+past it, even when later parallel copies succeed. A dry run's inventory
+matches are not byte verification. No mirror admits or grants a package.
+
 ```text
 Catalogue modules
 ├── catalogue_packages.py   packages of any harness file type, and the body store edge catalogue_body_store/v1
+├── service_engine_body_store.py  body engine selection; catalogue_object_store.py implements private R2 storage
 ├── catalogue_body_flush.py the body store the writers use: it flushes only what their own deferred writes changed
 ├── catalogue_schema.py     the attribute schema catalogue_attribute_schema/v1
 ├── catalogue_bundle.py     the release bundle an operator publishes, read with the manifest rules

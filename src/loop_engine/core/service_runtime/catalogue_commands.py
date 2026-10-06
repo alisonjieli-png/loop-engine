@@ -55,7 +55,7 @@ def _host(path, *, needs_bodies=False):
         _refuse("catalogue_section_required",
                 "declare the catalogue section in the host file before any catalogue state is written, so that "
                 "an image which predates catalogue state refuses this host file")
-    if needs_bodies and not settings.body_store_root:
+    if needs_bodies and not settings.body_store_root and settings.body_store_engine is None:
         _refuse("catalogue_section_required", "the catalogue section names its body store root")
     config = ServiceRuntimeConfig(**configuration["runtime"])
     catalogue_state_gate(config, settings)
@@ -67,7 +67,7 @@ def operator_context(path, *, needs_bodies=False):
     from .catalogue_releases import CatalogueOperatorContext
     from .http_entrypoint import host_family_policy, host_license_policy
     configuration, settings, config = _host(path, needs_bodies=needs_bodies)
-    context = CatalogueOperatorContext(ServiceCatalogBinding(config), settings.body_store_root)
+    context = CatalogueOperatorContext(ServiceCatalogBinding(config), settings.body_store_root, settings.body_store_engine)
     return context, config, host_license_policy(configuration), host_family_policy(configuration)
 
 

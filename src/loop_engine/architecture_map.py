@@ -73,6 +73,7 @@ MODULE_MAP = {
         "protocol_checks",
         "retention", "retention_checks", "waitlist_source_checks",
         "catalogue_packages", "catalogue_body_flush", "catalogue_schema", "catalogue_attributes", "catalogue_bundle",
+        "service_engine_body_store", "catalogue_object_store", "object_store_fake", "catalogue_body_store_checks",
         "catalogue_releases",
         "catalogue_search", "catalogue_serving", "catalogue_grants", "catalogue_commands",
         "catalogue_release_checks", "catalogue_serving_checks", "catalogue_tiers", "catalogue_tier_checks",

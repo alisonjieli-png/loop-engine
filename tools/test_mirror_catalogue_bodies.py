@@ -127,15 +127,45 @@ class Mirror(unittest.TestCase):
         self.assertEqual(report["written"], len(BODIES) - 1)
 
     def test_a_bundle_scope_copies_only_the_files_the_bundle_lists(self):
-        bundle = Path(self.temp.name) / "bundle"
-        bundle.mkdir()
+        from test_reconcile_catalogue_bundle import bundle, line
+        folder = Path(self.temp.name) / "bundle"
         listed = [self.digests[1], self.digests[4]]
-        sizes = {sha256_hex(body): len(body) for body in BODIES}
-        lines = [{"package": {"files": [{"digest": digest, "size_bytes": sizes[digest]}]}} for digest in listed]
-        (bundle / "items.jsonl").write_text("".join(json.dumps(line) + "\n" for line in lines))
-        report = tool.mirror(self.source, self.destination(write=True), tool.bundle_objects(bundle), write=True)
+        bodies = [body.decode() for body in BODIES if sha256_hex(body) in listed]
+        native = bundle(folder, [line(f"fixture_{n}", body) for n, body in enumerate(bodies)], bodies)
+        report = tool.mirror(self.source, self.destination(write=True),
+                             tool.bundle_objects(folder, expected_digest=native.digest), write=True)
         self.assertEqual(report["written"], 2)
         self.assertEqual(self.stored(), sorted(listed))
+        with self.assertRaisesRegex(ValueError, "header differs"):
+            tool.bundle_objects(folder, expected_digest="0" * 64)
+
+    def test_same_size_corrupt_existing_object_is_not_a_successful_mirror_or_resume_point(self):
+        objects = tool.volume_objects(self.root)
+        first = objects[0]
+        self.fake.objects[VolumeBodyStore.object_key(first[0])] = b"!" * first[1]
+        report = tool.mirror(self.source, self.destination(write=True), objects, write=True, workers=4)
+        self.assertEqual(report["refused_by_reason"], {"body_digest_mismatch": 1})
+        self.assertEqual(report["already_present"], 0)
+        self.assertEqual(report["last_digest"], "")
+        self.assertTrue(report["resume_cursor_blocked_by_failure"])
+        self.assertEqual(report["verified_objects"], len(BODIES) - 1)
+        self.assertEqual(self.fake.objects[VolumeBodyStore.object_key(first[0])], b"!" * first[1])
+
+    def test_segmented_bundle_scope_is_complete_and_missing_membership_refuses(self):
+        from test_reconcile_catalogue_bundle import bundle, line, observation, request
+        import reconcile_catalogue_bundle as reconcile
+        from loop_engine.core.service_runtime.catalogue_segments import SEGMENTED_BUNDLE_RECORD_TYPE
+        root = Path(self.temp.name)
+        base = bundle(root / "base", [line("one", "one"), line("two", "two")], ["one", "two"])
+        output = root / "segmented"
+        result = reconcile.write_reconciled(base, (), request(base), output, observation(base),
+                                            bundle_format=SEGMENTED_BUNDLE_RECORD_TYPE, segment_target=16)
+        expected = sorted((sha256_hex(body), len(body)) for body in (b"one", b"two"))
+        self.assertEqual(tool.bundle_objects(output, expected_digest=result["bundle_digest"]), expected)
+        member = next((output / "items/sha256").glob("*/*"))
+        member.unlink()
+        with self.assertRaisesRegex(ValueError, "every exact carried item"):
+            tool.bundle_objects(output, expected_digest=result["bundle_digest"])
 
     def test_the_command_is_a_dry_run_without_authorization_and_contacts_nothing_without_an_inventory(self):
         record = {"record_type": "catalogue_body_store_engine/v1", "engine": "r2_object_storage",

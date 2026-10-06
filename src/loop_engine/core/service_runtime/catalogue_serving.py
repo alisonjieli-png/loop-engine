@@ -1,14 +1,14 @@
 """The catalogue a running service serves, and how it changes without a redeploy.
 
 The host chooses the catalogue source in the `catalogue` section of its host
-file, record `service_catalogue_source/v1`, or `service_catalogue_source/v2`,
-which also names the search index engine (`catalogue_index_engines`) and the
-folder that engine keeps its index files in:
+file. `service_catalogue_source/v1` names the source; version 2 also selects
+the search index and its folder. Version 3 can independently select the body
+store through `service_engine_body_store`, shared by serving and maintenance:
 
 ```text
 Catalogue source
 ├── image   the reviewed manifest packaged in the image; today's behaviour and the bootstrap
-└── store   the active release in the service store, with bodies in the declared body folder
+└── store   the active release in the service store, with the selected immutable body engine
 ```
 
 Whatever the source, the service serves one immutable view: the catalogue,
@@ -31,11 +31,12 @@ import asyncio
 from dataclasses import dataclass, field, replace
 import threading
 import time
+from types import MappingProxyType
 
 from ..harness_intelligence import HarnessIntelligenceCatalogue
 from ..provisioning_server import (QUALIFICATION_APPROVED, RUNNABLE_EFFECT, ProvisioningItemBinding,
                                    ProvisioningQualification, ProvisioningQualificationResolver)
-from .catalogue_packages import FILE_BODY, CataloguePackage, VolumeBodyStore, require_body_store
+from .catalogue_packages import FILE_BODY, CataloguePackage
 from .catalogue_schema import EMPTY_SCHEMA
 from .records import ServiceRuntimeError
 from .storage import ServiceCatalogBinding
@@ -43,7 +44,9 @@ from .storage import ServiceCatalogBinding
 SOURCE_SETTINGS_VERSION = "service_catalogue_source/v1"
 #: Version 2 adds the search index engine and its index folder; version 1 keeps the in-memory baseline.
 SOURCE_SETTINGS_VERSION_2 = "service_catalogue_source/v2"
-SOURCE_SETTINGS_VERSIONS = (SOURCE_SETTINGS_VERSION, SOURCE_SETTINGS_VERSION_2)
+#: Version 3 also selects the immutable body store independently of the search engine.
+SOURCE_SETTINGS_VERSION_3 = "service_catalogue_source/v3"
+SOURCE_SETTINGS_VERSIONS = (SOURCE_SETTINGS_VERSION, SOURCE_SETTINGS_VERSION_2, SOURCE_SETTINGS_VERSION_3)
 SOURCES = ("image", "store")
 IMAGE_SOURCE, STORE_SOURCE = SOURCES
 #: A view built directly in code, as local fixtures build one, rather than by a host source.
@@ -68,11 +71,20 @@ class CatalogueSourceSettings:
     record_type: str = SOURCE_SETTINGS_VERSION
     search_engine: str = "in_memory_view_index"
     index_root: str = ""
+    body_store_engine: object = field(default=None, repr=False)
 
     def __post_init__(self):
         from .catalogue_index_engines import DEFAULT_ENGINE, DISK_ENGINE, ENGINES
         if self.record_type not in SOURCE_SETTINGS_VERSIONS:
             _refuse("unsupported_catalogue_source", f"this release reads {SOURCE_SETTINGS_VERSIONS} only")
+        if self.body_store_engine is not None:
+            from .service_engine_body_store import read_host_record
+            if self.record_type != SOURCE_SETTINGS_VERSION_3 or self.source != STORE_SOURCE:
+                _refuse("unsupported_catalogue_source", "a selected body engine needs version 3 and the store source")
+            # Freeze a separate copy: editing the caller's host record cannot change a captured view's selection.
+            record = read_host_record(dict(self.body_store_engine) if isinstance(self.body_store_engine, MappingProxyType)
+                                      else self.body_store_engine)
+            object.__setattr__(self, "body_store_engine", MappingProxyType(record))
         if self.record_type == SOURCE_SETTINGS_VERSION and (self.search_engine != DEFAULT_ENGINE or self.index_root):
             _refuse("unsupported_catalogue_source", f"{SOURCE_SETTINGS_VERSION} names no search engine; "
                                                     f"use {SOURCE_SETTINGS_VERSION_2}")
@@ -93,8 +105,16 @@ class CatalogueSourceSettings:
             _refuse("unsupported_catalogue_source", "new_accounts_follow_release is an explicit Boolean")
         if not isinstance(self.body_store_root, str) or (self.body_store_root and not self.body_store_root.startswith("/")):
             _refuse("unsupported_catalogue_source", "the body store root is an absolute folder")
-        if self.source == STORE_SOURCE and not self.body_store_root:
+        engine = self.body_store_engine or {}
+        from .service_engine_body_store import DEFAULT_ENGINE
+        if self.source == STORE_SOURCE and not self.body_store_root and engine.get("engine", DEFAULT_ENGINE) == DEFAULT_ENGINE:
             _refuse("unsupported_catalogue_source", "the store source names its body store root")
+
+    def body_store(self, *, write=False):
+        """Open exactly the selected body engine; never silently fall back to the local volume."""
+        from .service_engine_body_store import open_body_store
+        record = dict(self.body_store_engine) if self.body_store_engine is not None else None
+        return open_body_store(record, write=write, root_fallback=self.body_store_root)
 
 
 def catalogue_settings(configuration):
@@ -103,8 +123,10 @@ def catalogue_settings(configuration):
         return None
     value = configuration["catalogue"]
     allowed = {"record_type", "source", "body_store_root", "refresh_seconds", "new_accounts_follow_release"}
-    if isinstance(value, dict) and value.get("record_type") == SOURCE_SETTINGS_VERSION_2:
+    if isinstance(value, dict) and value.get("record_type") in (SOURCE_SETTINGS_VERSION_2, SOURCE_SETTINGS_VERSION_3):
         allowed = allowed | {"search_engine", "index_root"}
+    if isinstance(value, dict) and value.get("record_type") == SOURCE_SETTINGS_VERSION_3:
+        allowed = allowed | {"body_store_engine"}
     if not isinstance(value, dict) or "record_type" not in value or set(value) - allowed:
         _refuse("unsupported_catalogue_source", "the catalogue section names its record version and known fields only")
     return CatalogueSourceSettings(**value)
@@ -338,7 +360,7 @@ def store_view(config, settings, *, license_policy, family_policy, prepare_searc
     from .catalogue_releases import load_release, read_pointer, read_state, verify_release_bodies, withdrawal_notes
     from .catalogue_search import IndexEntry, ReleaseSearchIndex, entry_text
     binding = ServiceCatalogBinding(config)
-    body_store = require_body_store(VolumeBodyStore(settings.body_store_root))
+    body_store = settings.body_store()
     with binding.store() as store:
         _state_row, state = read_state(binding, store)
         _pointer_row, pointer = read_pointer(binding, store)

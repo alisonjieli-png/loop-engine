@@ -51,8 +51,8 @@ import urllib.parse
 import urllib.request
 
 from . import catalogue_object_store, service_engine_body_store
-from .catalogue_object_store import (EMPTY_PAYLOAD_DIGEST, ERROR_BODY_BYTES, ObjectStoreBodyStore, amz_date_of,
-                                     authorization_header, presigned_query, signature, uri_encode)
+from .catalogue_object_store import (EMPTY_PAYLOAD_DIGEST, ERROR_BODY_BYTES, ObjectStoreBodyStore, SigningKey,
+                                     amz_date_of, authorization_header, presigned_query, signature, uri_encode)
 from .catalogue_packages import (BODY_STORE_CAPABILITIES_VERSION, BODY_STORE_EDGE_VERSION, VolumeBodyStore,
                                  require_body_store, sha256_hex)
 from .object_store_fake import ObjectStoreFake
@@ -351,8 +351,7 @@ class _UrllibStore(ObjectStoreBodyStore):
                   "x-amz-content-sha256": payload_hash}
         signed["Authorization"] = authorization_header(
             method=method, path=path, query=query, headers=signed, payload_hash=payload_hash,
-            access_key_id=access_key_id, secret_access_key=secret, region=self.location.region, service="s3",
-            amz_date=amz_date)
+            key=SigningKey(access_key_id, secret, self.location.region, "s3"), amz_date=amz_date)
         request = urllib.request.Request(self.location.origin + uri_encode(path, keep_slash=True), data=body,
                                          headers={k: v for k, v in signed.items() if k != "host"}, method=method)
         try:
@@ -600,7 +599,8 @@ def _r2_record(**changes):
 
 
 def _records_read_exactly():
-    jurisdictions = [SAMPLE_R2_ENDPOINT.replace(".r2.", ".eu.r2."), SAMPLE_R2_ENDPOINT.replace(".r2.", ".fedramp.r2.")]
+    jurisdictions = [SAMPLE_R2_ENDPOINT.replace(".r2.", "." + jurisdiction + ".r2.")
+                     for jurisdiction in ("eu", "us", "fedramp")]
     accepted = all(read_host_record(_r2_record(endpoint=endpoint))["endpoint"] == endpoint
                    for endpoint in [SAMPLE_R2_ENDPOINT, *jurisdictions])
     wrong = [{"record_type": "catalogue_body_store_engine/v2", **{k: v for k, v in _r2_record().items() if k != "record_type"}},
@@ -609,7 +609,7 @@ def _records_read_exactly():
              _r2_record(endpoint="https://evil.example.com"), _r2_record(endpoint="http://" + SAMPLE_R2_ENDPOINT[8:]),
              _r2_record(endpoint=SAMPLE_R2_ENDPOINT.replace("0123", "012", 1)),
              _r2_record(endpoint=SAMPLE_R2_ENDPOINT.upper()), _r2_record(endpoint=SAMPLE_R2_ENDPOINT + "/bucket"),
-             _r2_record(endpoint=SAMPLE_R2_ENDPOINT.replace(".r2.", ".us.r2.")),
+             _r2_record(endpoint=SAMPLE_R2_ENDPOINT.replace(".r2.", ".unlisted.r2.")),
              _r2_record(region="us-east-1"), _r2_record(maximum_file_bytes=0), _r2_record(maximum_file_bytes="8"),
              {"record_type": HOST_RECORD_VERSION, "engine": "service_volume_files", "endpoint": SAMPLE_R2_ENDPOINT},
              "r2_object_storage", None, ["r2_object_storage"]]

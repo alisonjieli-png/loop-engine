@@ -1,5 +1,11 @@
 schema: hardcoding_allowlist/v1
 entries:
+- finding_id: hardcoding.51b52b0ab7018290fe35b650
+  owner: "loop_engine.core.service_runtime.service_engine_body_store"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 6, 2026: the documented R2 account endpoint pattern is the provider validation rule of this named storage adapter, not a selected account or embedded credential. Account, bucket and credential references come from the strict host record. Invalid-host fixtures and a removed-endpoint-guard control cover this exact rule; no file-wide exclusion applies."
+  created_on: '2026-10-06'
+  expires_on: '2027-01-06'
 - finding_id: hardcoding.27a4a645b74420c53fd6ef92
   owner: tools.connection_endpoint_checks.mjs:url
   classification: STRATEGY_OR_PROVIDER_BINDING

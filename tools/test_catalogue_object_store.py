@@ -22,12 +22,15 @@ import os
 from pathlib import Path
 import sys
 import unittest
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT / "src") not in sys.path:
     sys.path.insert(0, str(ROOT / "src"))
 
 from loop_engine.core.service_runtime import catalogue_body_store_checks as kit  # noqa: E402
+from loop_engine.core.service_runtime import catalogue_object_store as objects  # noqa: E402
+from loop_engine.core.service_runtime.records import ServiceRuntimeError  # noqa: E402
 
 EXTERNAL = ("LE_OBJECT_STORE_KIT_ENDPOINT", "LE_OBJECT_STORE_KIT_BUCKET", "LE_OBJECT_STORE_KIT_ACCESS_KEY_ID_REF",
             "LE_OBJECT_STORE_KIT_SECRET_ACCESS_KEY_REF")
@@ -59,6 +62,29 @@ class BodyStoreKit(unittest.TestCase):
                                 region=os.environ.get("LE_OBJECT_STORE_KIT_REGION", "auto"))
         print(f"\nexternal store: {sum(passed for _name, passed in rows)} of {len(rows)} checks passed", file=sys.stderr)
         self.assertEqual([name for name, passed in rows if not passed], [])
+
+
+class ObjectListingGuards(unittest.TestCase):
+    def test_non_listing_missing_flag_entities_negative_sizes_and_duplicate_keys_refuse(self):
+        cases = [b"<Other/>", b"<ListBucketResult/>",
+                 b'<!DOCTYPE x [<!ENTITY sample "data">]><ListBucketResult><IsTruncated>false</IsTruncated></ListBucketResult>',
+                 b"<ListBucketResult><IsTruncated>false</IsTruncated><Contents><Key>x</Key><Size>-1</Size></Contents></ListBucketResult>",
+                 b"<ListBucketResult><IsTruncated>false</IsTruncated>" +
+                 b"<Contents><Key>x</Key><Size>1</Size></Contents>" * 2 + b"</ListBucketResult>"]
+        for document in cases:
+            with self.subTest(document=document), self.assertRaises(ServiceRuntimeError) as error:
+                objects._listing(document)
+            self.assertEqual(error.exception.code, "body_unreadable")
+
+    def test_repeated_cursor_refuses_instead_of_repeating_provider_requests(self):
+        body = b"<ListBucketResult><IsTruncated>true</IsTruncated><NextContinuationToken>same</NextContinuationToken></ListBucketResult>"
+        store = objects.ObjectStoreBodyStore("http://127.0.0.1:1", "fixture-bucket",
+            access_key_id_ref="env:FIXTURE_ID", secret_access_key_ref="env:FIXTURE_SECRET")
+        with mock.patch.object(store, "_request", return_value=(200, body)) as request:
+            with self.assertRaises(ServiceRuntimeError) as error:
+                list(store.stored_objects())
+            self.assertEqual(request.call_count, 2)
+        self.assertEqual(error.exception.code, "body_unreadable")
 
 
 if __name__ == "__main__":

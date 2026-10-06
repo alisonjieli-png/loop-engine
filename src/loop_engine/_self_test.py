@@ -98,6 +98,7 @@ def self_test() -> dict:
         "core.service_runtime.catalogue_report_checks",
         "core.service_runtime.catalogue_segment_checks",
         "core.service_runtime.catalogue_index_checks",
+        "core.service_runtime.catalogue_body_store_checks",
     ]
     import importlib as _importlib
     import importlib.util as _importlib_util

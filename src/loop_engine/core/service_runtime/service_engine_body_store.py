@@ -26,7 +26,7 @@ A host names its engine in a `catalogue_body_store_engine/v1` record:
 ```
 
 The record is read exactly: an unknown key, version or engine is refused, an R2
-endpoint must be the account's S3 endpoint (or its documented `eu` or `fedramp`
+endpoint must be the account's S3 endpoint (or its documented `eu`, `us` or `fedramp`
 jurisdiction endpoint), and the named engine is never replaced by another one;
 an engine that cannot be opened is a refusal at start, not a quiet fall back to
 the volume. Opening an engine reads no environment and opens no connection;
@@ -51,8 +51,8 @@ ENGINE_KINDS = ("image_files", "private_object_storage")
 VOLUME_KIND, OBJECT_STORAGE_KIND = ENGINE_KINDS
 OBJECT_STORAGE_ENGINE = "r2_object_storage"
 DEFAULT_ENGINE = VOLUME_ENGINE
-#: The R2 S3 endpoint of one account, and of its documented jurisdictions: <account id>[.eu|.fedramp].r2.cloudflarestorage.com.
-R2_ENDPOINT = re.compile(r"https://[0-9a-f]{32}(?:\.(?:eu|fedramp))?\.r2\.cloudflarestorage\.com")
+#: Account endpoints and jurisdictions documented at developers.cloudflare.com/r2/api/tokens/ on October 6, 2026.
+R2_ENDPOINT = re.compile(r"https://[0-9a-f]{32}(?:\.(?:eu|us|fedramp))?\.r2\.cloudflarestorage\.com")
 _RECORD_FIELDS = {"record_type", "engine", "endpoint", "bucket", "region", "access_key_id_ref",
                   "secret_access_key_ref", "timeout_seconds", "maximum_file_bytes"}
 #: The fields each engine reads; a field another engine reads is refused, so a record says one thing.
@@ -107,8 +107,8 @@ ENGINES = {
     OBJECT_STORAGE_ENGINE: BodyStoreEngine(
         OBJECT_STORAGE_ENGINE, "1.0.0", OBJECT_STORAGE_KIND,
         "One private Cloudflare R2 bucket through its S3-compatible API, keys sha256/<first two>/<digest>",
-        requires=("r2_enabled_on_the_account", "bucket_scoped_object_read_write_token"),
-        needs_the_owner="R2 must be purchased (a payment method on the Cloudflare account) before a token exists"),
+        requires=("r2_enabled_on_the_account", "bucket_scoped_object_credentials"),
+        needs_the_owner="A configured bucket-scoped credential needs read access for serving and write access for publication"),
 }
 
 
@@ -136,7 +136,7 @@ def read_host_record(record):
         endpoint = record["endpoint"]
         if not isinstance(endpoint, str) or not R2_ENDPOINT.fullmatch(endpoint):
             _refuse("unsupported_body_store_engine",
-                    "the R2 endpoint is https://<32 hex account id>.r2.cloudflarestorage.com, or its eu or fedramp form")
+                    "the R2 endpoint is https://<32 hex account id>.r2.cloudflarestorage.com, or its eu, us or fedramp form")
         if record.get("region", "auto") != "auto":
             _refuse("unsupported_body_store_engine", "the R2 region is auto")
     return dict(record)

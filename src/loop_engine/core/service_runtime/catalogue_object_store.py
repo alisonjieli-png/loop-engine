@@ -57,7 +57,7 @@ from __future__ import annotations
 
 import base64
 from collections import Counter
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import hashlib
 import hmac
 import http.client
@@ -162,13 +162,23 @@ def signature(*, method, path, query, headers, payload_hash, secret_access_key, 
     return hmac.new(key, string_to_sign.encode("utf-8"), hashlib.sha256).hexdigest(), signed
 
 
-def authorization_header(*, method, path, query, headers, payload_hash, access_key_id, secret_access_key,
-                         region, service, amz_date):
+@dataclass(frozen=True)
+class SigningKey:
+    """One access key with the scope it signs for; the secret is never represented."""
+
+    access_key_id: str
+    secret_access_key: str = field(repr=False)
+    region: str = DEFAULT_REGION
+    service: str = SERVICE
+
+
+def authorization_header(*, method, path, query, headers, payload_hash, key, amz_date):
     """The Authorization header value for a request whose `headers` already hold every signed header."""
     value, signed = signature(method=method, path=path, query=query, headers=headers, payload_hash=payload_hash,
-                              secret_access_key=secret_access_key, region=region, service=service, amz_date=amz_date)
-    scope = f"{amz_date[:8]}/{region}/{service}/{SIGNING_TERMINATOR}"
-    return f"{SIGNING_ALGORITHM} Credential={access_key_id}/{scope}, SignedHeaders={signed}, Signature={value}"
+                              secret_access_key=key.secret_access_key, region=key.region, service=key.service,
+                              amz_date=amz_date)
+    scope = f"{amz_date[:8]}/{key.region}/{key.service}/{SIGNING_TERMINATOR}"
+    return f"{SIGNING_ALGORITHM} Credential={key.access_key_id}/{scope}, SignedHeaders={signed}, Signature={value}"
 
 
 def presigned_query(*, method, host, path, expires_seconds, access_key_id, secret_access_key, region, service,
@@ -422,7 +432,7 @@ class ObjectStoreBodyStore:
         """Every (key, size) the bucket holds under `prefix`, one ListObjectsV2 page at a time."""
         if not isinstance(prefix, str) or len(prefix) > 64:
             _refuse("body_store_root_invalid", "a listing prefix is short text")
-        token = None
+        token, seen = None, set()
         while True:
             query = [("list-type", "2"), ("prefix", prefix), ("max-keys", str(LISTING_PAGE_KEYS))]
             if token:
@@ -433,6 +443,10 @@ class ObjectStoreBodyStore:
             if status != 200 or len(payload) > MAXIMUM_LISTING_BYTES:
                 _refuse("body_unreadable", f"the object store answered a listing with status class {status // 100}xx")
             rows, token = _listing(payload)
+            if token is not None:
+                if token in seen:
+                    _refuse("body_unreadable", "the object store repeated its listing cursor")
+                seen.add(token)
             yield from rows
             if not token:
                 return
@@ -519,8 +533,7 @@ class ObjectStoreBodyStore:
                   "x-amz-content-sha256": payload_hash}
         signed["Authorization"] = authorization_header(
             method=method, path=path, query=query, headers=signed, payload_hash=payload_hash,
-            access_key_id=access_key_id, secret_access_key=secret, region=self.location.region, service=SERVICE,
-            amz_date=amz_date)
+            key=SigningKey(access_key_id, secret, self.location.region, SERVICE), amz_date=amz_date)
         target = uri_encode(path, keep_slash=True) + (f"?{canonical_query(query)}" if query else "")
         for attempt in (1, 2):
             connection, reused = self._connection()
@@ -572,6 +585,8 @@ def _error_code(document):
 
 def _listing(document):
     """The (key, size) rows and the next continuation token of one ListObjectsV2 page."""
+    if b"<!DOCTYPE" in document.upper() or b"<!ENTITY" in document.upper():
+        _refuse("body_unreadable", "the object store listing cannot declare XML entities")
     try:
         root = ElementTree.fromstring(document)
     except ElementTree.ParseError:
@@ -579,19 +594,28 @@ def _listing(document):
 
     def local(tag):
         return tag.rsplit("}", 1)[-1]
-    rows, token, truncated = [], None, False
+    if local(root.tag) != "ListBucketResult":
+        _refuse("body_unreadable", "the object store answered another XML document")
+    rows, token, truncated, seen_keys = [], None, None, set()
     for element in root:
         name = local(element.tag)
         if name == "Contents":
-            fields = {local(child.tag): (child.text or "") for child in element}
+            fields = {local(node.tag): (node.text or "") for node in element}
             try:
-                rows.append((fields["Key"], int(fields["Size"])))
+                key, size = fields["Key"], int(fields["Size"])
+                if not key or size < 0 or key in seen_keys:
+                    raise ValueError()
+                seen_keys.add(key)
+                rows.append((key, size))
             except (KeyError, ValueError):
                 _refuse("body_unreadable", "the object store answered a listing row without a key or size")
         elif name == "IsTruncated":
-            truncated = (element.text or "").strip() == "true"
+            flag = (element.text or "").strip()
+            if flag not in ("true", "false") or truncated is not None:
+                _refuse("body_unreadable", "the object store answered an invalid truncation flag")
+            truncated = flag == "true"
         elif name == "NextContinuationToken":
             token = (element.text or "").strip() or None
-    if truncated and not token:
+    if truncated is None or truncated and not token:
         _refuse("body_unreadable", "the object store answered a truncated listing without a continuation token")
     return rows, (token if truncated else None)

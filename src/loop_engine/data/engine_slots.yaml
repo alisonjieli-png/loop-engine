@@ -2090,7 +2090,7 @@ slots:
     release_edge: ""
     interactions: [core.interaction.service.read_approved_body]
     unavailable_result: {form: typed_refusal, value: item_unavailable, answer_exists: true}
-    conformance_suite: core.service_runtime.http_checks
+    conformance_suite: core.service_runtime.catalogue_body_store_checks
     component_folder: src/loop_engine/core/service_runtime
     folder_move_package: ""
     nested_under: []
@@ -2106,9 +2106,7 @@ slots:
     requirement_comparison: ""
     descriptor_projection: core.service_runtime.service_engine_body_store.describe
     factory_table: core.service_runtime.service_engine_body_store
-    planned_symbols: [core.service_runtime.service_engine_body_store.BodyReader,
-                      core.service_runtime.service_engine_body_store.describe,
-                      core.service_runtime.service_engine_body_store]
+    planned_symbols: []
     selection_mode: one_of
     dispatch_key: ""
     derived_from: ""
@@ -2121,11 +2119,16 @@ slots:
     bindings:
       - {context: hosted_service, selection_phase: host_start,
          binding_site: service_application_attribute, host_must_bind: true}
-    declaration_source: The host manifest; files in the image until private object storage (D-05).
+    declaration_source: >-
+      The version 3 catalogue section names a catalogue_body_store_engine/v1
+      record. Volume bodies remain the default. R2 serving, publication, disk
+      index construction and selected Public Good maintenance use the same selection.
     retired_engines: []
     known_direct_construction_sites: []
     existing_checks:
       - core.service_runtime.http_checks:selected_digest_mismatch_refuses_before_body_read_and_metering
+      - core.service_runtime.catalogue_body_store_checks:a_body_store_engine_record_is_read_exactly_or_refused_before_anything_opens
+      - core.service_runtime.catalogue_body_store_checks:without_a_body_store_record_the_volume_engine_serves_as_before
     planned_checks: [body_store_engine_switch_serves_identical_digests]
   - record_type: engine_slot/v1
     slot_id: catalogue_search_index

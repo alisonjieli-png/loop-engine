@@ -514,13 +514,12 @@ def ensure_release_index(config, settings, *, license_policy, family_policy, ver
     root's build lock (`build_lock`); `wait=False` refuses with `search_index_building` while another process holds
     it. After a build, the indexes of releases no longer kept are removed (`prune_indexes`).
     """
-    from .catalogue_packages import VolumeBodyStore, require_body_store
     from .catalogue_releases import (load_release_header, read_pointer, read_state, segment_reader,
                                      withdrawal_keys)
     from .catalogue_segments import SegmentedRelease
     root = Path(settings.index_root)
     binding = ServiceCatalogBinding(config)
-    body_store = require_body_store(VolumeBodyStore(settings.body_store_root))
+    body_store = settings.body_store()
     fingerprint = policy_fingerprint(license_policy, family_policy)
     with binding.store() as store:
         _state_row, state = read_state(binding, store)
@@ -667,7 +666,6 @@ def disk_store_view(config, settings, *, license_policy, family_policy, verify_b
 
     `wait_for_index=False` (the refresher) refuses with `search_index_building` while another process holds the
     index root's build lock, so the current view keeps serving instead of a second build starting."""
-    from .catalogue_packages import VolumeBodyStore, require_body_store
     from .catalogue_releases import withdrawal_notes
     header, descriptor, state = ensure_release_index(config, settings, license_policy=license_policy,
                                                      family_policy=family_policy, verify_bodies=verify_bodies,
@@ -696,7 +694,7 @@ def disk_store_view(config, settings, *, license_policy, family_policy, verify_b
     excluded_keys = {tuple(pair) for pair in descriptor.get("excluded", ())}
     index = DiskSearchIndex(base, header.schema, removed=frozenset(position for position, _v, _r
                                                                    in removed_rows.values()), delta=delta)
-    body_store = require_body_store(VolumeBodyStore(settings.body_store_root))
+    body_store = settings.body_store()
     template = CatalogueView(HarnessIntelligenceCatalogue(), _approved_resolver(STORE_RESOLVER_ID, {}), None,
                              source=STORE_SOURCE, release_id=header.release_id,
                              content_digest=header.content_digest, schema=header.schema,
