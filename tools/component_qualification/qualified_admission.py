@@ -193,7 +193,7 @@ def admit_qualified(qualification_folder: Path, store_root: "Path | None", decis
                 _refuse("store_changed", f"{identity}: the stored package differs from the qualified package")
             reference = reference_for(component)
             files = tuple(NativeReviewFile(file, component.payloads[file.path]) for file in component.package.files)
-            spec = {"title": component.candidate.get("name") or identity,
+            spec = {"title": component.candidate.get("name") or identity, "component_form": component.form,
                     "provenance": {"harness_kind": component.kind}}
             attributes, engines = item_attributes(reference, spec, component.package, files, is_import=True)
             body_path = f"bodies/{identity}.md"

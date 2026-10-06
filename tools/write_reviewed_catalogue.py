@@ -141,9 +141,11 @@ def item_attributes(reference: dict, spec: dict, package, files, *, is_import: b
     facets = FACET_TAGGER.tag(FacetMaterial(*fields))
     styles = tuple(reference.get("styles") or ())
     # The licensed import writes (harness kind, native format) as the styles; the form follows from those typed
-    # fields and the file roles (component_form/v1), never from the item's words.
+    # fields and the file roles (component_form/v1), never from the item's words. Generated admission carries
+    # the qualified form explicitly; a native language such as Python must not erase an API-operation declaration.
     native_format = styles[1] if len(styles) >= 2 and styles[0] in HARNESS_KINDS else ""
-    attributes = {"harness_kind": kind, "component_form": component_form_of(kind, roles, native_format),
+    attributes = {"harness_kind": kind,
+                  "component_form": component_form_of(kind, roles, native_format, spec.get("component_form", "")),
                   **tags.attribute_values(), **facets.attribute_values()}
     engines = ({"step_functions": {"engine_id": tags.engine_id, "engine_version": tags.engine_version}}
                if tags.functions else {})
