@@ -20,9 +20,9 @@ separate completion conditions.
 | --- | --- | --- |
 | Payment and connection repairs | Live in release 70 | Ten hosts passed 2,118 browser checks; five token quickstarts and the 15-step real Claude Code OAuth journey passed. |
 | Search and intake repairs | Release 71 deployed; live checks complete | Exact source `ec1df775`; CI `37487555685`; deployment `37488883326`. The repaired search preserves all 70 previously found expectations and finds 95 in the retained before/after comparison. |
-| Million-file publication | Native publication committed; serving-index readback pending | The native operation record confirms 218,127 packages, 125,154 additions and 981,843 new distinct bodies, with no replacement or withdrawal. The expected file population is 1,352,837. The website still serves its previous index while the new index builds. All 301 compressed body/metadata archives arrived; the two earlier transfer attempts and their recovery records remain retained. Do not claim the target as live before served readback. |
+| Million-file publication | Live; legacy-list diagnostic still needs repair | Exact release `50b666f5...` serves 218,127 packages and 1,352,837 distinct files, with complete population and matching content digest. It adds 981,843 distinct files and preserves all prior versions. Final staging cleanup was reconciled after its client timeout; no publication was replayed. The 50-request all-host pulse passed. Two legacy version-1 list checks timed out; neither is a successful full catalogue diagnostic. |
 | Storage headroom | Done | Existing Fly volume extended from 25 to 50 GB, with 39 GB free at readback and no restart. Added provisioned storage: $3.75/month; traffic and snapshots are separate. |
-| Empty Public Good goals | Additive policy prepared; waiting for publication | The live 419-package policy still has empty goals 1, 2, 3, 5 and 17. Five qualified public-data selections passed 25 fresh sandbox methods and current source-licence checks. The prepared 424-package policy preserves all existing grants and limits. It is not applied yet. |
+| Empty Public Good goals | All 17 populated and new delivery verified | Policy `118639cb...` has 424 packages / 1,056 distinct useful files. Five additions preserve all 419 prior grants and limits. The 25 fresh sandbox methods, current licence checks, 64 no-plan delivery checks and 27 desktop/mobile browser checks passed. The no-plan account downloaded 25 exact files with no paid-usage increase. |
 | Cloudflare | Real S3 canary passed; no production cutover | The owner-supplied credentials are stored only in the system keyring. Six real S3 checks passed: existing object read, conditional write, exact readback, duplicate write, wrong digest and wrong size. The earlier Worker-binding probes remain separate evidence. Host-source version 3 is integrated; a full mirror and production-profile delivery checks still precede selection. D1 is not selected. |
 | Feeds and Components | First feed preview in local acceptance | Current-catalogue metadata is implemented in JSON Feed, RSS and Markdown with restart/rollback/withdrawal checks, plus a Feeds page. It is not deployed. No new paid plan, personalized push or OKF compatibility claim is active. |
 
@@ -36,8 +36,8 @@ delay a ready publication or exhaust memory, storage or provider allowances.
 
 | Workstream | Prepared or verified | Now | After catalogue readback | Following cycle |
 | --- | --- | --- | --- | --- |
-| Million-file library | Build, transfer and native publish passed | ACTIVE: build and switch serving index | GATE: count, bytes, search, access | Maintain and audit |
-| Public Good coverage | Five gap selections and 25 sandbox methods | Policy prepared; wait for exact live versions | NEXT: apply free grants; verify all goals | Broaden useful coverage |
+| Million-file library | Live count and exact publication verified | ACTIVE: repair legacy-list latency | GATE: full search/list regression replay | Maintain and audit |
+| Public Good coverage | All 17 goals and no-plan delivery verified | DONE: additive 424-package policy | Preserve access through next release | Broaden useful coverage |
 | Cloudflare | Worker probes, local integration and real S3 canary | Prepare mirror and production-profile checks | R2 mirror and static-edge acceptance | Staged production cutover |
 | Feeds | Existing radar plus tested catalogue-state projection | Finish preview release checks | Deploy the current-state pull feed | Full history, daily delivery, then opt-in push |
 | Two offerings | Names and access constraints recorded | Define explicit membership | Test Feeds-only and full access | Activate tested pricing |
@@ -63,13 +63,13 @@ folder named by `/home/username/START-HERE-BALTOR.md`.
   starting the one publication. Do not deploy while it runs.
 - [x] Complete transfer and native publication. The exact operation record names
   result `50b666f56b043ce085d20f46efed01444f257917467199992799ad49cdb03127`.
-- [ ] Complete the running publication of the exact prepared command. If its result is uncertain,
-  inspect the remote result and active pointer before any retry.
-- [ ] Read back the active release, complete distinct-file population, package
+- [x] Complete publication and reconcile the final cleanup timeout against
+  the native result, live serving view and absent staging folder. No replay.
+- [x] Read back the active release, complete distinct-file population, package
   count, source/index state and representative exact file hashes.
 - [ ] Test searches across old and new families, explicit effect declarations,
   refused reads and a normal account's download path.
-- [ ] Record the accepted result and rollback bindings. Keep local sources,
+- [x] Record the accepted publication result and compatible rollback bindings. Keep local sources,
   old releases and failure evidence; only the publisher's redundant successful
   staging copy is eligible for its normal cleanup.
 
@@ -84,7 +84,7 @@ coverage remain separate roadmap work.
 Roadmap owners: S-6.216 and S-6.217. Zero is not a rendering error when no
 eligible exact version has a free grant.
 
-- [ ] Read all 17 live goal counts and the currently applied policy digest.
+- [x] Read all 17 live goal counts and the currently applied policy digest.
 - [x] Select qualified public-data packages for goals 1, 2, 3, 5 and 17.
 - [ ] Review the prepared original components without recreating the same
   generic helpers.
@@ -93,13 +93,15 @@ eligible exact version has a free grant.
   during preparation. Do not claim official SDG-indicator implementation.
 - [ ] Publish any new package through the same catalogue path, against the
   then-current base. Do not silently insert it into an already checked bundle.
-- [ ] Bind free grants to exact versions and useful paths. Preserve every
+- [x] Bind free grants to exact versions and useful paths. Preserve every
   existing grant, account requirement, quota and expiry unless deliberately
   changed under the existing policy owner.
-- [ ] Plan and apply the policy with its expected digest and release binding.
-- [ ] Verify each formerly empty goal in the API and browser. Use an enabled
-  account without a paid plan to retrieve an exact file. Verify anonymous,
-  disabled-account and ineligible-version refusals and unchanged paid usage.
+- [x] Plan and apply the policy with its expected digest and release binding.
+- [x] Verify each formerly empty goal in the API and browser. The enabled
+  no-plan account downloaded all 25 new useful files with exact hashes.
+  Anonymous and wrong-version requests refused; paid usage stayed zero.
+- [ ] Repeat a live disabled-account refusal without changing a real account
+  merely to create the fixture. Existing automated refusal checks remain separate.
 - [ ] Review the end-of-October grant expirations before they lapse.
 
 Completion: all 17 goals have relevant, usable, actually free published

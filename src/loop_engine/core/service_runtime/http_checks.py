@@ -61,6 +61,7 @@ def _web_checks(check, root):
             from .library_page import handles as _rendered_from_the_served_catalogue
             from .red_team_page import handles as _rendered_from_the_red_team_record
             from .public_good_page import ADDRESS as public_good_address
+            from .catalogue_feed import PAGE as feed_page_address
             from .dot_pages import ROUTES as dot_routes
             linked = {value for value in _re.findall(r'(?:href|src)="(/[^"#?]*)"', page)}
             # The model directory's pages are rendered from its records after the page table finds nothing, the
@@ -70,10 +71,13 @@ def _web_checks(check, root):
                               and not _rendered_from_the_served_catalogue(value)
                               and not _rendered_from_the_red_team_record(value)
                               and value != public_good_address
+                              and value != feed_page_address
                               and value not in dot_routes
                               and not value.startswith("/api/")
                               and not value.startswith("/.well-known/") and value != "/mcp")
             check("every_internal_address_on_the_page_is_served", not unserved)
+            check("the_declared_feed_page_is_actually_served",
+                  httpx.get(base + feed_page_address, trust_env=False).status_code == 200)
             # The addresses are read from the page; a page that names none
             # would pass the check above without proving anything.
             check("the_page_names_internal_addresses_of_both_kinds",

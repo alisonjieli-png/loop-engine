@@ -60,12 +60,19 @@ default. The gate is off; release 70 is the compatible image rollback.
 The [release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-71.json)
 records the source, evidence and limitations.
 
-The application release leaves catalogue `8806a997...` unchanged at 92,973
-packages and 370,994 distinct files. A separate, current-base publication is
-running after its complete preflight. Its expected 1,352,837-file result is
-not a live count until activation and readback pass. Do not deploy or apply
-Public Good grants during that operation. The existing Fly volume is 50 GB.
-Cloudflare serving and the Feeds/Components offering split remain incomplete.
+The separate October 6 catalogue publication is live at
+`50b666f56b043ce085d20f46efed01444f257917467199992799ad49cdb03127`, with
+218,127 packages and 1,352,837 distinct files. The complete served population
+and content digest match the native operation record. The final cleanup
+request timed out, but subsequent readback confirms the staging folder was
+removed and the original local sources and live bodies remain. No publication
+was replayed. Public Good has 424 packages and 1,056 distinct useful files;
+all 17 goals have material. An existing no-plan account downloaded 25 exact
+new files with no paid-usage increase. The 50-request all-host pulse passed.
+The older version-1 whole-library listing diagnostic still times out and is
+not accepted. The [publication record](../../artifacts/architecture-audit-2026-09-19/catalogue-million-and-public-good-2026-10-06.json)
+retains the failed attempts and scope. The existing Fly volume is 50 GB.
+Cloudflare production serving and the Feeds/Components offering split remain incomplete.
 The [active plan](../roadmap/DELIVERY-SEQUENCE.md#active-execution-plan-october-6)
 states their dependencies and acceptance checks.
 

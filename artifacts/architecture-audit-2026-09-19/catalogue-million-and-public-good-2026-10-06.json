@@ -1,0 +1,79 @@
+{
+  "record_type": "catalogue_publication_record/v1",
+  "application_release": 71,
+  "operator_source_revision": "0957f1c0c660bcaacfb5a58bbc7bed84c50954d0",
+  "previous_release_id": "8806a9975412ff0ddedb217f455425fbb040052a630cdf4cf0af6652625765a6",
+  "release_id": "50b666f56b043ce085d20f46efed01444f257917467199992799ad49cdb03127",
+  "release_record_type": "catalogue_release/v2",
+  "bundle_digest": "736ef9fbf7f0f91f1d86d9dd0ab67ad505ea01a41f308c6dc4c48bf5469c9214",
+  "reconciliation_digest": "15a530e86593a384e0f6b626cb349771c66b50134db936b5eacf762a891c36a1",
+  "content_digest": "079e7529b5a2eb3f6adc6d94a293168bc49d3bb538dbf24cb0be5e010c1eddfc",
+  "packages_added": 125154,
+  "packages_changed": 0,
+  "packages_withdrawn": 0,
+  "previous_exact_versions_preserved": 92973,
+  "total_packages": 218127,
+  "total_distinct_files": 1352837,
+  "distinct_file_bytes": 7938617324,
+  "file_placements": 1839897,
+  "duplicate_file_placements": 487060,
+  "new_distinct_files": 981843,
+  "new_body_bytes": 7097684238,
+  "file_population_complete": true,
+  "segments_written": 519,
+  "item_versions_written": 125154,
+  "qualification": {
+    "basis": "deterministic_qualification_independent_review_ongoing",
+    "limits": "Qualified generated API operations, functions and public-data tables. Counts do not establish distinct capabilities, upstream execution, independent review of every package or measured customer benefit.",
+    "source_licence_exclusions_preserved": 23
+  },
+  "preservation_checks": {
+    "expected_search_matches_lost_in_current_base_plan": 0,
+    "public_good_grants_orphaned": 0,
+    "verdict": "conservative_over_judged_queries"
+  },
+  "serving": {
+    "expected_release_and_content_digest_observed": true,
+    "state_revision": 37,
+    "index_swap_seconds": 1039.973,
+    "driver_exit_code": 1,
+    "driver_failure": "Final redundant-staging cleanup request timed out after publication and the serving switch.",
+    "reconciliation": "Fresh readback confirms the exact kept operation record and complete served population. The named staging folder is absent and no cleanup process remains. No publication was replayed.",
+    "local_source_and_live_bodies_preserved": true,
+    "all_host_pulse": "50 requests across ten hostnames passed; identity-provider health also answered 200."
+  },
+  "public_good": {
+    "policy_version": "118639cb7433480cbe3fc2b271742735",
+    "policy_file_digest": "099588644a28a8a94b27f937c04b1b089dc54614bb2d81fd98ba8d1be09cf959",
+    "previous_grants_preserved": 419,
+    "grants_added": 5,
+    "packages": 424,
+    "distinct_useful_files": 1056,
+    "all_17_goals_nonempty": true,
+    "previously_empty_goals": [1, 2, 3, 5, 17],
+    "fresh_source_licence_checks": 5,
+    "fresh_sandbox_methods_passed": 25,
+    "selected_file_placements_verified_by_host": 2107,
+    "no_plan_account_files_read_back_exactly": 25,
+    "no_plan_delivery_checks_passed": 64,
+    "paid_usage_records_before": 0,
+    "paid_usage_records_after": 0,
+    "browser_checks_passed": 27,
+    "browser_widths": [1440, 390],
+    "limits": "The five additions are aggregate World Bank series with metadata and tested loaders, not official-indicator implementations or evidence of public-good impact. Existing quotas and grant expirations are unchanged. Disabled-account behavior was not newly tested live."
+  },
+  "retained_failures": [
+    "Original and four-worker transfers stopped; recovery used the same exact staged bytes and two bounded workers.",
+    "No-plan checks first found two operator-test assumptions, then a transport failure after fourteen files; the complete later run passed.",
+    "The first public browser run passed 26 checks before a navigation timeout; the later full run passed 27.",
+    "Two legacy hosted-catalogue diagnostics timed out during the initial version-1 list. Only one of eleven planned checks passed in each run; this listing path still needs repair."
+  ],
+  "not_completed_by_this_record": [
+    "Cloudflare production cutover",
+    "Feeds preview application deployment",
+    "Personalized feeds, two paid offerings or opt-in push",
+    "Full live search and legacy-list acceptance after expansion"
+  ],
+  "private_evidence_root": "/home/username/baltor-private/takeover-20261006-HyJ5E4",
+  "evidence": ["growth/publication-reconciled.json", "growth/live-pulse.json", "public-good-five/host-apply.json", "public-good-five/live-delivery-04.json", "public-good-five/browser-02/report.json"]
+}
