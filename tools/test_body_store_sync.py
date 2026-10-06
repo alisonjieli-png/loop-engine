@@ -30,9 +30,9 @@ from loop_engine.core.service_runtime.records import ServiceRuntimeError  # noqa
 REAL_OPEN, REAL_FSYNC = os.open, os.fsync
 #: Where the rule below looks for body store writers: the package and the development tools, tests left out.
 SCANNED = (ROOT / "src" / "loop_engine", ROOT / "tools")
-#: The writers that defer their flush, each of which must build the exact-flush store.
-DEFERRING_WRITERS = ("src/loop_engine/core/service_runtime/catalogue_releases.py",
-                     "src/loop_engine/core/service_runtime/catalogue_bundle.py", "tools/licensed_import/storage.py")
+#: These writers construct the adapter directly. Catalogue publication selects
+#: it through the host factory and is exercised through that actual path below.
+DEFERRING_WRITERS = ("src/loop_engine/core/service_runtime/catalogue_bundle.py", "tools/licensed_import/storage.py")
 
 
 @contextlib.contextmanager
@@ -183,6 +183,51 @@ class ExactFlushTests(unittest.TestCase):
 
 
 class DeferringWriterTests(unittest.TestCase):
+    def test_actual_catalogue_publication_flushes_its_destination(self):
+        from loop_engine.core.service_runtime.catalogue_release_checks import Fixture
+        with tempfile.TemporaryDirectory(prefix="publish-exact-flush-") as directory:
+            case = Fixture(directory)
+            payload = b"a new published body"
+            target = str(case.root / "bodies" / VolumeBodyStore.object_key(sha256_hex(payload)))
+            with recorded_flushes() as flushed:
+                case.publish([case.line("one", payload.decode())])
+            self.assertIn(target, flushed)
+            changed = b"another published body"
+            changed_target = str(case.root / "bodies" / VolumeBodyStore.object_key(sha256_hex(changed)))
+            with mock.patch.object(ExactFlushVolumeBodyStore, "sync", return_value=None), recorded_flushes() as missing:
+                case.publish([case.line("two", changed.decode())])
+            self.assertNotIn(changed_target, missing, "removed-flush control must lose the publication durability predicate")
+
+    def test_host_publication_factory_defers_and_flushes_only_its_written_paths(self):
+        from loop_engine.core.service_runtime.catalogue_releases import CatalogueOperatorContext
+        from loop_engine.core.service_runtime.records import ServiceRuntimeConfig
+        from loop_engine.core.service_runtime.storage import ServiceCatalogBinding
+        with tempfile.TemporaryDirectory(prefix="host-exact-flush-") as directory:
+            root = Path(directory)
+            binding = ServiceCatalogBinding(ServiceRuntimeConfig(str(root / "service.db"), writes_authorized=True))
+            for ordinal, record in enumerate((None, {"record_type": "catalogue_body_store_engine/v1",
+                                                     "engine": "service_volume_files"})):
+                folder = root / str(ordinal)
+                folder.mkdir()
+                context = CatalogueOperatorContext(binding, str(folder), record)
+                store = context.body_store(write=True)
+                self.assertIsInstance(store, ExactFlushVolumeBodyStore)
+                with recorded_flushes() as flushed:
+                    stored = store.put(b"host deferred body", durable=False)
+                    self.assertEqual(flushed, [])
+                    store.sync()
+                self.assertIn(str(folder / VolumeBodyStore.object_key(stored["digest"])), flushed)
+                self.assertTrue(all(path == str(folder) or path.startswith(str(folder) + os.sep) for path in flushed))
+                self.assertEqual(context.body_store().read(stored["digest"], stored["size_bytes"]), b"host deferred body")
+            # Known-wrong control at the new factory boundary, not a substring
+            # assertion that would forbid an otherwise valid storage adapter.
+            with mock.patch("loop_engine.core.service_runtime.catalogue_body_flush.ExactFlushVolumeBodyStore",
+                            VolumeBodyStore):
+                wrong = CatalogueOperatorContext(binding, str(folder)).body_store(write=True)
+                wrong.put(b"wrong host flush", durable=False)
+                with recorded_flushes(), self.assertRaises(AssertionError):
+                    wrong.sync()
+
     def test_no_module_builds_a_write_enabled_base_store_and_calls_sync(self):
         problems = []
         for folder in SCANNED:

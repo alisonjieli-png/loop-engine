@@ -22,8 +22,8 @@ separate completion conditions.
 | Search and intake repairs | Release 71 deployed; live checks complete | Exact source `ec1df775`; CI `37487555685`; deployment `37488883326`. The repaired search preserves all 70 previously found expectations and finds 95 in the retained before/after comparison. |
 | Million-file publication | Preflight passed; one publication running | Current base: 92,973 packages / 370,994 distinct files. Candidate: 218,127 packages / 1,352,837 distinct files. Current-base planning found no lost judged match, replacement, withdrawal or orphaned Public Good grant. The publisher will transfer 981,843 new bodies in 283 batches, then verify and activate the result. Do not count the candidate as live yet. |
 | Storage headroom | Done | Existing Fly volume extended from 25 to 50 GB, with 39 GB free at readback and no restart. Added provisioned storage: $3.75/month; traffic and snapshots are separate. |
-| Empty Public Good goals | Not resolved | The live 419-package grant policy still has empty goals 1, 2, 3, 5 and 17. Prepared original packages and qualified public-data packages need selection, publication and exact-version grants. |
-| Cloudflare | Prototypes verified; no production cutover | R2 has a 20,000-object prototype; a fresh 200-read check passed. D1 and edge-site Workers exist. The R2 adapter is not yet connected to the production host loader; D1 is not selected. |
+| Empty Public Good goals | Additive policy prepared; waiting for publication | The live 419-package policy still has empty goals 1, 2, 3, 5 and 17. Five qualified public-data selections passed 25 fresh sandbox methods and current source-licence checks. The prepared 424-package policy preserves all existing grants and limits. It is not applied yet. |
+| Cloudflare | R2 host integration in main; no production cutover | R2 has a 20,000-object Worker-binding prototype; a fresh 200-read check passed. The S3 adapter now connects to serving, publication, disk indexing and Public Good maintenance behind host-source version 3. Local kits and host checks pass. Actual R2 S3 credentials and its production canary remain missing; D1 is not selected. |
 | Feeds and Components | Owner direction recorded | No new paid plan, push service or availability claim is active. |
 
 ### Priority and phase-based Gantt view
@@ -34,15 +34,15 @@ requires the named acceptance checks. Keep the first two rows on the critical
 path. Research and candidate work may run alongside them when it does not
 delay a ready publication or exhaust memory, storage or provider allowances.
 
-| Workstream | Completed prerequisite | Now | After catalogue readback | Following cycle |
+| Workstream | Prepared or verified | Now | After catalogue readback | Following cycle |
 | --- | --- | --- | --- | --- |
 | Million-file library | Build/check passed | ACTIVE: verify, upload and publish once | GATE: count, bytes, search, access | Maintain and audit |
-| Public Good coverage | Prepare qualified selections | Wait for exact published versions | NEXT: apply free grants; verify all goals | Broaden useful coverage |
-| Cloudflare | Review adapters and migration checks | Shadow mirror / canary preparation | R2 and static-edge acceptance | Staged production cutover |
-| Feeds | Existing-contract mapping | Source-backed feed records | Pull API and context exports | Daily delivery, then opt-in push |
-| Two offerings | Preserve existing access | Define explicit membership | Test Feeds-only and full access | Activate tested pricing |
-| OpenAI distribution | Preserve prepared package | Repair remaining policy/UX findings | Test deployed presentation | Identity/legal/review gates |
-| Remaining handoffs | Preserve and classify | Small tested fixes as capacity permits | Native examples and all-goal originals | Repeat the release cycle |
+| Public Good coverage | Five gap selections and 25 sandbox methods | Policy prepared; wait for exact live versions | NEXT: apply free grants; verify all goals | Broaden useful coverage |
+| Cloudflare | Existing probes and local storage integration | Actual S3 canary needs a scoped credential | R2 and static-edge acceptance | Staged production cutover |
+| Feeds | Existing radar and directory work | Map product contracts and useful source records | Pull API and context exports | Daily delivery, then opt-in push |
+| Two offerings | Names and access constraints recorded | Define explicit membership | Test Feeds-only and full access | Activate tested pricing |
+| OpenAI distribution | Candidate package preserved | Policy/UX findings remain | Test deployed presentation | Identity/legal/review gates |
+| Remaining handoffs | Bundles and patches preserved | Small tested fixes as capacity permits | Native examples and all-goal originals | Repeat the release cycle |
 
 ### Checklist 1: publish the million-file library
 
@@ -83,9 +83,9 @@ Roadmap owners: S-6.216 and S-6.217. Zero is not a rendering error when no
 eligible exact version has a free grant.
 
 - [ ] Read all 17 live goal counts and the currently applied policy digest.
-- [ ] Prioritize goals 1, 2, 3, 5 and 17. Reuse qualified relevant components
-  and public-data packages; review the prepared originals without recreating
-  the same generic helpers.
+- [x] Select qualified public-data packages for goals 1, 2, 3, 5 and 17.
+- [ ] Review the prepared original components without recreating the same
+  generic helpers.
 - [ ] Check each package's beneficiary task, licence, source, limitations and
   actual tests. Fetch and verify method references that were only recalled
   during preparation. Do not claim official SDG-indicator implementation.
@@ -132,9 +132,9 @@ Migration procedure:
 1. Preserve the current host configuration, image, catalogue, policies and
    rollback procedure. Inventory existing Cloudflare resources before creating
    another one.
-2. Finish the body-store loader integration and its refusal tests. Keep the
-   current volume engine selectable. Qualify the real transport separately
-   from the R2 Worker probe.
+2. Keep the integrated host-source version 3 adapter and its refusal tests
+   current. The volume engine remains selectable. Qualify the real S3
+   transport separately from the R2 Worker probe before a production selection.
 3. Mirror immutable bodies by digest, with progress checkpoints and bounded
    requests. Verify complete membership, byte integrity, missing objects and
    interruption recovery. Preserve the source copy.
@@ -161,6 +161,12 @@ Markdown, structured data, context files and OKF outputs. **Components** are
 reusable harness files: functions, code, tools, configurations, data, assets
 and production material. A feed may produce a component; a file extension
 does not determine an offering or grant access.
+
+Brand decision for the first implementation: keep Baltor, with Feeds and
+Components as separate offerings on the same site and account. A sister site
+would add another discovery surface, not another entitlement system. Revisit
+it after measuring which audience and message actually bring useful use;
+do not duplicate the whole catalogue or split sign-in to create a new label.
 
 - [ ] Define a versioned feed record: identity, source references, checked and
   published times, changes, applicability, rights, evidence state, review due
