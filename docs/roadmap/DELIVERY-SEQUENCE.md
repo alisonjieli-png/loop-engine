@@ -20,7 +20,7 @@ separate completion conditions.
 | --- | --- | --- |
 | Payment and connection repairs | Live in release 70 | Ten hosts passed 2,118 browser checks; five token quickstarts and the 15-step real Claude Code OAuth journey passed. |
 | Search and intake repairs | Release 71 deployed; live checks complete | Exact source `ec1df775`; CI `37487555685`; deployment `37488883326`. The repaired search preserves all 70 previously found expectations and finds 95 in the retained before/after comparison. |
-| Million-file publication | Native publication committed; serving-index readback pending | The native receipt confirms 218,127 packages, 125,154 additions and 981,843 new distinct bodies, with no replacement or withdrawal. The expected file population is 1,352,837. The website still serves its previous index while the new index builds. All 301 compressed body/metadata archives arrived; the two earlier transfer attempts and their recovery records remain retained. Do not claim the target as live before served readback. |
+| Million-file publication | Native publication committed; serving-index readback pending | The native operation record confirms 218,127 packages, 125,154 additions and 981,843 new distinct bodies, with no replacement or withdrawal. The expected file population is 1,352,837. The website still serves its previous index while the new index builds. All 301 compressed body/metadata archives arrived; the two earlier transfer attempts and their recovery records remain retained. Do not claim the target as live before served readback. |
 | Storage headroom | Done | Existing Fly volume extended from 25 to 50 GB, with 39 GB free at readback and no restart. Added provisioned storage: $3.75/month; traffic and snapshots are separate. |
 | Empty Public Good goals | Additive policy prepared; waiting for publication | The live 419-package policy still has empty goals 1, 2, 3, 5 and 17. Five qualified public-data selections passed 25 fresh sandbox methods and current source-licence checks. The prepared 424-package policy preserves all existing grants and limits. It is not applied yet. |
 | Cloudflare | Real S3 canary passed; no production cutover | The owner-supplied credentials are stored only in the system keyring. Six real S3 checks passed: existing object read, conditional write, exact readback, duplicate write, wrong digest and wrong size. The earlier Worker-binding probes remain separate evidence. Host-source version 3 is integrated; a full mirror and production-profile delivery checks still precede selection. D1 is not selected. |
@@ -61,7 +61,7 @@ folder named by `/home/username/START-HERE-BALTOR.md`.
 - [x] Finish the publisher's dry run against the current live base.
 - [x] Verify release 71, the deployment gate and the publication lock before
   starting the one publication. Do not deploy while it runs.
-- [x] Complete transfer and native publication. The exact receipt records
+- [x] Complete transfer and native publication. The exact operation record names
   result `50b666f56b043ce085d20f46efed01444f257917467199992799ad49cdb03127`.
 - [ ] Complete the running publication of the exact prepared command. If its result is uncertain,
   inspect the remote result and active pointer before any retry.
@@ -225,7 +225,7 @@ Implementation order and owners:
 
 1. Extend the existing typed service contracts and durable records with a
    versioned saved feed definition, versioned agent assignment and delivery
-   receipt. Reuse the identity, credential, entitlement, event and storage
+   record. Reuse the identity, credential, entitlement, event and storage
    owners; do not build a second account or notification registry.
 2. Separate selection from permission. A read requires the intersection of
    account entitlement, feed access, agent assignment and exact item access.
@@ -266,7 +266,7 @@ Acceptance checklist:
   silent omissions nor duplicate notifications beyond the declared at-least-once contract.
 - [ ] A malicious source cannot change a profile, call a tool or exfiltrate
   context. Custom source URLs receive the same bounded source admission.
-- [ ] Users can pause, unsubscribe, export their settings and inspect receipt
+- [ ] Users can pause, unsubscribe, export their settings and inspect delivery
   history; only minimum necessary preference and delivery metadata is stored.
 - [ ] Personal-data retention and any new use fit the approved privacy notice,
   or remain held for owner approval before collection begins.
