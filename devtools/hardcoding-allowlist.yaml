@@ -1,5 +1,329 @@
 schema: hardcoding_allowlist/v1
 entries:
+- finding_id: hardcoding.94bb745967e9ef9320aae79a
+  owner: "tools.knowledge_radar.engines_network:GitHubSearch.read"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5, 2026, query integration. This exact canonical GitHub URL prefix is used to refuse rows whose repository identity disagrees with their public URL. The source adapter's declared contract controls requests; this comparison does not select another provider. Private, ambiguous and mismatched-result fixtures cover the guard."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.99c315ff3fee8fb7fd487f03
+  owner: "tools.knowledge_radar.query_matrix:default_matrix"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5, 2026, query integration. This exact URL is the plan's dated documentation citation for GitHub search semantics, not a dispatch destination or instruction. The named source adapter and its bounded network contract control requests separately."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.1e06f625a22a04af5e374f76
+  owner: "tools.query_multiplier.data.dimensions-v1.json:dimensions[2].source.url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5, 2026, query integration. This exact URL is provenance or licence-evidence metadata in a versioned, digest-bound dimension catalogue. The dimension loader reads local pinned data and does not fetch this field or execute source text. Future source changes remain new findings; no file-wide exclusion is applied."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.28b863dff3771ef5b0d59ffc
+  owner: "tools.query_multiplier.data.dimensions-v1.json:dimensions[12].source.url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5, 2026, query integration. This exact URL is provenance or licence-evidence metadata in a versioned, digest-bound dimension catalogue. The dimension loader reads local pinned data and does not fetch this field or execute source text. Future source changes remain new findings; no file-wide exclusion is applied."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.4e7e5e0e965c3dd65bc0dc02
+  owner: "tools.query_multiplier.data.dimensions-v1.json:dimensions[3].source.url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5, 2026, query integration. This exact URL is provenance or licence-evidence metadata in a versioned, digest-bound dimension catalogue. The dimension loader reads local pinned data and does not fetch this field or execute source text. Future source changes remain new findings; no file-wide exclusion is applied."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.6aa391890e01b07a255d5bb6
+  owner: "tools.query_multiplier.data.dimensions-v1.json:dimensions[11].source.url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5, 2026, query integration. This exact URL is provenance or licence-evidence metadata in a versioned, digest-bound dimension catalogue. The dimension loader reads local pinned data and does not fetch this field or execute source text. Future source changes remain new findings; no file-wide exclusion is applied."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.ef99ad7b0139700bac0861ca
+  owner: "tools.query_multiplier.data.dimensions-v1.json:dimensions[13].source.url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5, 2026, query integration. This exact URL is provenance or licence-evidence metadata in a versioned, digest-bound dimension catalogue. The dimension loader reads local pinned data and does not fetch this field or execute source text. Future source changes remain new findings; no file-wide exclusion is applied."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.1538dae09fa1c4c094caaa24
+  owner: "tools.query_multiplier.data.geography-wikidata-v1.json:sources.regions.endpoint"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5, 2026, query integration. This exact URL is provenance or licence-evidence metadata in a versioned, digest-bound dimension catalogue. The dimension loader reads local pinned data and does not fetch this field or execute source text. Future source changes remain new findings; no file-wide exclusion is applied."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.2977a1f9cab2a3095c3ebea6
+  owner: "tools.query_multiplier.data.geography-wikidata-v1.json:sources.countries_or_areas.licence_evidence"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5, 2026, query integration. This exact URL is provenance or licence-evidence metadata in a versioned, digest-bound dimension catalogue. The dimension loader reads local pinned data and does not fetch this field or execute source text. Future source changes remain new findings; no file-wide exclusion is applied."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.c016d49b348f9509fd0d3774
+  owner: "tools.query_multiplier.data.geography-wikidata-v1.json:sources.countries_or_areas.endpoint"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5, 2026, query integration. This exact URL is provenance or licence-evidence metadata in a versioned, digest-bound dimension catalogue. The dimension loader reads local pinned data and does not fetch this field or execute source text. Future source changes remain new findings; no file-wide exclusion is applied."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.c3cbf89db2303c22095a05a3
+  owner: "tools.query_multiplier.data.geography-wikidata-v1.json:sources.regions.licence_evidence"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5, 2026, query integration. This exact URL is provenance or licence-evidence metadata in a versioned, digest-bound dimension catalogue. The dimension loader reads local pinned data and does not fetch this field or execute source text. Future source changes remain new findings; no file-wide exclusion is applied."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.20d779dd5cdd506044328b77
+  owner: "tools.query_multiplier.data.languages-wikidata-v1.json:sources.languages.licence_evidence"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5, 2026, query integration. This exact URL is provenance or licence-evidence metadata in a versioned, digest-bound dimension catalogue. The dimension loader reads local pinned data and does not fetch this field or execute source text. Future source changes remain new findings; no file-wide exclusion is applied."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.c82ab74bf01ce7e772a29d77
+  owner: "tools.query_multiplier.data.languages-wikidata-v1.json:sources.languages.endpoint"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5, 2026, query integration. This exact URL is provenance or licence-evidence metadata in a versioned, digest-bound dimension catalogue. The dimension loader reads local pinned data and does not fetch this field or execute source text. Future source changes remain new findings; no file-wide exclusion is applied."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.13df735338ff0937d4f1e8c2
+  owner: "tools.query_multiplier.data.sdg-vocabulary-v1.json:reference"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5, 2026, query integration. This exact URL is provenance or licence-evidence metadata in a versioned, digest-bound dimension catalogue. The dimension loader reads local pinned data and does not fetch this field or execute source text. Future source changes remain new findings; no file-wide exclusion is applied."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.1094460b3d5419880648a607
+  owner: "tools.query_multiplier.dimensions:load_wikidata_languages"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 5, 2026, query integration. This exact token selects the English-label branch of the documented two-mode Wikidata language loader. It is a source-format parameter value, not a Baltor runtime role, model preference or user taxonomy. Native labels remain a separate branch; the dimensional fixture checks both catalogues. Keep this exception limited to this comparison."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.424eb443ed34050afc96a089
+  owner: "tools.query_multiplier.executors:canonical_url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5, 2026, query integration. This exact HTTP scheme token is used in source-URL normalization. It is syntax, not a provider binding, and normalization does not itself fetch a URL or verify source truth. The transport separately enforces its host policy."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.95fea5912226be9bc6e2a66b
+  owner: "tools.query_multiplier.executors:canonical_url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5, 2026, query integration. This exact HTTP scheme token is used in source-URL normalization. It is syntax, not a provider binding, and normalization does not itself fetch a URL or verify source truth. The transport separately enforces its host policy."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.b9fdc5710144479b7a8f2318
+  owner: "tools.query_multiplier.executors"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5, 2026, query integration. This exact pattern or canonical URL prefix belongs to the named public-source adapter and its candidate-identity parser. It recognizes or constructs source evidence links; it does not pick an arbitrary provider, fetch linked content or grant redistribution rights. Cross-source identity, rejected-row and parser fixtures cover the edge."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.388fcc1ccadb6aa0c5c01373
+  owner: "tools.query_multiplier.executors"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5, 2026, query integration. This exact pattern or canonical URL prefix belongs to the named public-source adapter and its candidate-identity parser. It recognizes or constructs source evidence links; it does not pick an arbitrary provider, fetch linked content or grant redistribution rights. Cross-source identity, rejected-row and parser fixtures cover the edge."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.8dff90e999e98b21b62588d2
+  owner: "tools.query_multiplier.executors"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5, 2026, query integration. This exact pattern or canonical URL prefix belongs to the named public-source adapter and its candidate-identity parser. It recognizes or constructs source evidence links; it does not pick an arbitrary provider, fetch linked content or grant redistribution rights. Cross-source identity, rejected-row and parser fixtures cover the edge."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.7668eba23d5ba9ea24bd714e
+  owner: "tools.query_multiplier.executors"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5, 2026, query integration. This exact pattern or canonical URL prefix belongs to the named public-source adapter and its candidate-identity parser. It recognizes or constructs source evidence links; it does not pick an arbitrary provider, fetch linked content or grant redistribution rights. Cross-source identity, rejected-row and parser fixtures cover the edge."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.3b8682e8d9993c67add20ed4
+  owner: "tools.query_multiplier.executors:github_repository_row"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5, 2026, query integration. This exact pattern or canonical URL prefix belongs to the named public-source adapter and its candidate-identity parser. It recognizes or constructs source evidence links; it does not pick an arbitrary provider, fetch linked content or grant redistribution rights. Cross-source identity, rejected-row and parser fixtures cover the edge."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.acc8fc09d6fb3753ec016073
+  owner: "tools.query_multiplier.executors"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5, 2026, query integration. This exact pattern or canonical URL prefix belongs to the named public-source adapter and its candidate-identity parser. It recognizes or constructs source evidence links; it does not pick an arbitrary provider, fetch linked content or grant redistribution rights. Cross-source identity, rejected-row and parser fixtures cover the edge."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.cf2e1d1fbce4f5447ae98464
+  owner: "tools.query_multiplier.executors:HuggingFaceModels.parse"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5, 2026, query integration. This exact pattern or canonical URL prefix belongs to the named public-source adapter and its candidate-identity parser. It recognizes or constructs source evidence links; it does not pick an arbitrary provider, fetch linked content or grant redistribution rights. Cross-source identity, rejected-row and parser fixtures cover the edge."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.6b9c69904154c2e02beab6d4
+  owner: "tools.query_multiplier.executors:OpenAlexWorks.parse"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5, 2026, query integration. This exact pattern or canonical URL prefix belongs to the named public-source adapter and its candidate-identity parser. It recognizes or constructs source evidence links; it does not pick an arbitrary provider, fetch linked content or grant redistribution rights. Cross-source identity, rejected-row and parser fixtures cover the edge."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.5fc222c9b09a327f455c00e0
+  owner: "tools.query_multiplier.executors:OpenAlexWorks.parse"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 5, 2026, query integration. The exact dataset discriminator belongs to OpenAlex's source record parser. It distinguishes dataset metadata from paper metadata without asserting dataset reuse rights. Provider-parser fixtures cover the returned candidate kind."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.c267211cffaf458401f47203
+  owner: "tools.query_multiplier.executors:OpenverseImages.parse"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 5, 2026, query integration. The exact images discriminator is the two-media-type Openverse adapter branch. Its paired audio engine uses the same parser edge and preserves licence metadata. It is not a global media taxonomy or an authorization to fetch media."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.9f05e8b473a25a31b54f84b5
+  owner: "tools.query_multiplier.executors:GbifDatasets.parse"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5, 2026, query integration. This exact pattern or canonical URL prefix belongs to the named public-source adapter and its candidate-identity parser. It recognizes or constructs source evidence links; it does not pick an arbitrary provider, fetch linked content or grant redistribution rights. Cross-source identity, rejected-row and parser fixtures cover the edge."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.126ebf7a3430f0d0e45b5c2f
+  owner: "tools.query_multiplier.executors:DataEuropaDatasets.parse"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5, 2026, query integration. This exact pattern or canonical URL prefix belongs to the named public-source adapter and its candidate-identity parser. It recognizes or constructs source evidence links; it does not pick an arbitrary provider, fetch linked content or grant redistribution rights. Cross-source identity, rejected-row and parser fixtures cover the edge."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.0474e94bcb6884c641ff77ba
+  owner: "tools.query_multiplier.executors"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5, 2026, query integration. This exact URI is an XML namespace identifier in the arXiv/Atom parser, not a network address it fetches. Namespace-sensitive parser fixtures require the standard spellings."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.feb139b92a03a56037815a21
+  owner: "tools.query_multiplier.executors"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5, 2026, query integration. This exact URI is an XML namespace identifier in the arXiv/Atom parser, not a network address it fetches. Namespace-sensitive parser fixtures require the standard spellings."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.f2b9b86acb5a0a95d8199757
+  owner: "tools.query_multiplier.executors"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5, 2026, query integration. This exact URI is an XML namespace identifier in the arXiv/Atom parser, not a network address it fetches. Namespace-sensitive parser fixtures require the standard spellings."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.47b248b9b6fd3484770be707
+  owner: "tools.query_multiplier.executors:Arxiv.parse"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5, 2026, query integration. This exact HTTP scheme token is used in source-URL normalization. It is syntax, not a provider binding, and normalization does not itself fetch a URL or verify source truth. The transport separately enforces its host policy."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.5778e13f97d9db1c910c4214
+  owner: "tools.query_multiplier.executors:Arxiv.parse"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5, 2026, query integration. This exact HTTP scheme token is used in source-URL normalization. It is syntax, not a provider binding, and normalization does not itself fetch a URL or verify source truth. The transport separately enforces its host policy."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.91cc2b55b19af5f9e281bf11
+  owner: "tools.query_multiplier.executors:Arxiv.parse"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5, 2026, query integration. This exact HTTP scheme token is used in source-URL normalization. It is syntax, not a provider binding, and normalization does not itself fetch a URL or verify source truth. The transport separately enforces its host policy."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.b0f751a21b87d6a5762706f7
+  owner: "tools.query_multiplier.executors:Arxiv.parse"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5, 2026, query integration. This exact HTTP scheme token is used in source-URL normalization. It is syntax, not a provider binding, and normalization does not itself fetch a URL or verify source truth. The transport separately enforces its host policy."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.d4f6fed6d66946057057dd46
+  owner: "tools.query_multiplier.executors:NpmSearch.parse"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5, 2026, query integration. This exact pattern or canonical URL prefix belongs to the named public-source adapter and its candidate-identity parser. It recognizes or constructs source evidence links; it does not pick an arbitrary provider, fetch linked content or grant redistribution rights. Cross-source identity, rejected-row and parser fixtures cover the edge."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.3f1b761d8cb6bce7ad245db8
+  owner: "tools.query_multiplier.executors:OllamaWebSearch"
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  rationale: "Reviewed October 5, 2026, query integration. This is the environment variable name required by the named Ollama web-search adapter, not a credential value. Transport reads it only at dispatch and strips it from stored request evidence; the scheduled wrapper never evaluates a profile. Missing-key and secret-redaction tests cover the boundary. No new credential source or effect authority is granted."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.4f52ed39d0c1f5f68dbee7e0
+  owner: "tools.query_multiplier.reference_tables"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5, 2026, query integration. This is the named Wikidata reference-table builder's fixed official source or licence-evidence address. The builder requires its explicit network-read flag, requests only its declared reference queries, and records response digests. It is a provider-specific adapter, not a universal network endpoint or a permission grant."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.e3cf98469cfe9714e64fd9f5
+  owner: "tools.query_multiplier.reference_tables"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5, 2026, query integration. This is the named Wikidata reference-table builder's fixed official source or licence-evidence address. The builder requires its explicit network-read flag, requests only its declared reference queries, and records response digests. It is a provider-specific adapter, not a universal network endpoint or a permission grant."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.695dc70f61bf172f69ad2c02
+  owner: "tools.query_multiplier.report:report"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 5, 2026, query integration. This exact value is a persisted attempt-state token of research_query_evidence/v1, written by evidence.py and counted by the report. It is wire/storage vocabulary, not a selectable strategy. Stored/folded and intent/not-stored/unknown-outcome populations stay distinct; interrupted-attempt and accounting tests cover them."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.a1b62d477b31528ae3ac433f
+  owner: "tools.query_multiplier.report:report"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 5, 2026, query integration. This exact value is a persisted attempt-state token of research_query_evidence/v1, written by evidence.py and counted by the report. It is wire/storage vocabulary, not a selectable strategy. Stored/folded and intent/not-stored/unknown-outcome populations stay distinct; interrupted-attempt and accounting tests cover them."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.1bcaa1797b3f43fb9319c656
+  owner: "tools.query_multiplier.report:report"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 5, 2026, query integration. This exact value is a persisted attempt-state token of research_query_evidence/v1, written by evidence.py and counted by the report. It is wire/storage vocabulary, not a selectable strategy. Stored/folded and intent/not-stored/unknown-outcome populations stay distinct; interrupted-attempt and accounting tests cover them."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.ae4272f47fc6f83c8a50f0aa
+  owner: "tools.query_multiplier.report:report"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 5, 2026, query integration. This exact value is a persisted attempt-state token of research_query_evidence/v1, written by evidence.py and counted by the report. It is wire/storage vocabulary, not a selectable strategy. Stored/folded and intent/not-stored/unknown-outcome populations stay distinct; interrupted-attempt and accounting tests cover them."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.d68cdde2fbc1ad6daa24c663
+  owner: "tools.query_multiplier.report:report"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 5, 2026, query integration. This exact value is a persisted attempt-state token of research_query_evidence/v1, written by evidence.py and counted by the report. It is wire/storage vocabulary, not a selectable strategy. Stored/folded and intent/not-stored/unknown-outcome populations stay distinct; interrupted-attempt and accounting tests cover them."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.8aba7fd6823c6a260a0c4a40
+  owner: "tools.query_multiplier.routing:route"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 5, 2026, query integration. This exact kind is a candidate-record discriminator produced by the source parsers. The routing edge uses it only to propose a supply line or pool; it does not approve rights, install a dependency or execute a result. Source parser and proposal tests retain unsupported and incomplete results."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.d3f07ce5aebfc0540631d149
+  owner: "tools.query_multiplier.routing:route"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 5, 2026, query integration. This exact kind is a candidate-record discriminator produced by the source parsers. The routing edge uses it only to propose a supply line or pool; it does not approve rights, install a dependency or execute a result. Source parser and proposal tests retain unsupported and incomplete results."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.90618ee6e8974b169fefe809
+  owner: "tools.query_multiplier.routing:route"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 5, 2026, query integration. This exact kind is a candidate-record discriminator produced by the source parsers. The routing edge uses it only to propose a supply line or pool; it does not approve rights, install a dependency or execute a result. Source parser and proposal tests retain unsupported and incomplete results."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.91ab005dd2dcd0465d1dd517
+  owner: "tools.query_multiplier.routing:route"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 5, 2026, query integration. This exact kind is a candidate-record discriminator produced by the source parsers. The routing edge uses it only to propose a supply line or pool; it does not approve rights, install a dependency or execute a result. Source parser and proposal tests retain unsupported and incomplete results."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.0904aa544fef75643c712cd4
+  owner: "tools.query_multiplier.runner:Lane.loop"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 5, 2026, query integration. This exact refusal code ends a bounded lane when its daily allowance or disk floor is reached. It is closed stop-condition vocabulary, not an open-ended priority policy. Ceiling, low-disk and interrupted-cursor fixtures keep these refusals explicit."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.a7cdbd515967aacea57adb33
+  owner: "tools.query_multiplier.runner:Lane.loop"
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  rationale: "Reviewed October 5, 2026, query integration. This exact refusal code ends a bounded lane when its daily allowance or disk floor is reached. It is closed stop-condition vocabulary, not an open-ended priority policy. Ceiling, low-disk and interrupted-cursor fixtures keep these refusals explicit."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.0c7b23626f78cf0a9663edc7
+  owner: "tools.query_multiplier.transport:Transport.graphql_licences"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5, 2026, query integration. This exact GitHub API address labels the result of the named gh-backed read adapter. Requests remain limited to the declared GitHub host, repository/code-search paths or bounded licence GraphQL query, with rate and byte limits. A result URL does not grant another request or expose the gh credential."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.fd968484198e3c90ebb361f8
+  owner: "tools.query_multiplier.transport:Transport.graphql_licences"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5, 2026, query integration. This exact GitHub API address labels the result of the named gh-backed read adapter. Requests remain limited to the declared GitHub host, repository/code-search paths or bounded licence GraphQL query, with rate and byte limits. A result URL does not grant another request or expose the gh credential."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.e99575901363f4432ec51cb6
+  owner: "tools.query_multiplier.transport:Transport._gh"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5, 2026, query integration. This exact GitHub API address labels the result of the named gh-backed read adapter. Requests remain limited to the declared GitHub host, repository/code-search paths or bounded licence GraphQL query, with rate and byte limits. A result URL does not grant another request or expose the gh credential."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
 - finding_id: hardcoding.35bd5888ea82b0e3a86211a0
   owner: "tools.supply_lines.json_schemas"
   classification: STRATEGY_OR_PROVIDER_BINDING

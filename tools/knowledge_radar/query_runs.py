@@ -18,7 +18,7 @@ from uuid import uuid4
 from loop_engine.core.library_ingestion.request_log import RequestBudget, RequestLog
 from loop_engine.loop.service_loop_envelope import ServiceLoopSpec, run_service_operation
 from .community_store import CommunityStore
-from .engines import ReadContext, default_registry
+from .engines import FAILED, GONE, OK, PARTIAL, ReadContext, default_registry
 from .engines_network import RadarNetwork
 from .query_matrix import GATES, PAGE, QUERY, QUERY_PARAMETERS, compile_query, cursor_for, digest, integer, page, strict, words
 from .records import SourceBinding, read_observation, read_registry
@@ -326,9 +326,9 @@ def execute_queued(store, matrix, repository, network, *, maximum_queries=5, per
             answer = run_service_operation(store.runtime, ServiceLoopSpec("research_query_read", "practitioner.code_execution",
                 QUERY, "knowledge_radar_source_answer/v1", ("reads_fs", "writes_fs", "network", "spawns_process"),
                 "Read public repository metadata for one bounded research hypothesis.", "research_query_failed"), collect)
-            if answer.status not in ("ok", "partial", "failed", "gone") or len(answer.observations) > 10:
+            if answer.status not in (OK, PARTIAL, FAILED, GONE) or len(answer.observations) > 10:
                 raise ValueError("query_answer_contract")
-            if answer.status in ("failed", "gone") and answer.observations:
+            if answer.status in (FAILED, GONE) and answer.observations:
                 raise ValueError("query_failed_answer_has_observations")
             observations = [read_observation(observation.to_dict()).to_dict() for observation in answer.observations]
             if any(observation["engine_id"] != engine or observation["engine_version"] != original.parser_version for observation in observations):

@@ -13,6 +13,7 @@ import statistics
 from collections import defaultdict
 
 from .evidence import Ledger, parse_stamp
+from .executors import EMPTY, OK, PARTIAL
 
 
 def _by(rows):
@@ -47,13 +48,13 @@ def product_yields(ledger: Ledger, run_id: "str | None" = None) -> dict:
     for product_id, assignment, items, new_unique, status in rows:
         entry = products[product_id]
         entry[0] += 1
-        entry[1] += status == "empty"
+        entry[1] += status == EMPTY
         entry[2] += new_unique or 0
         entry[3] += items or 0
         for name, value in json.loads(assignment or "{}").items():
             key = (name, "with_value" if value is not None else "null")
             presence[key][0] += 1
-            presence[key][1] += status == "empty"
+            presence[key][1] += status == EMPTY
             presence[key][2] += new_unique or 0
     by_product = {name: {"executions": n, "empty_share": round(empty / n, 3), "new_unique_per_execution": round(new / n, 2),
                          "rows_per_execution": round(rows_ / n, 2)} for name, (n, empty, new, rows_) in sorted(products.items())}
@@ -88,9 +89,9 @@ def report(ledger: Ledger, executors: dict, *, run_id: "str | None" = None, prod
         row["cost_units"] += cost or 0
         row["responses_stored"] += state in ("stored", "folded")
         row["not_stored"] += state in ("not_stored", "abandoned_unknown_outcome", "intent")
-        executed = state == "folded" and parse_status in ("ok", "empty", "partial")
+        executed = state == "folded" and parse_status in (OK, EMPTY, PARTIAL)
         row["queries_executed"] += executed
-        row["empty_executions"] += executed and parse_status == "empty"
+        row["empty_executions"] += executed and parse_status == EMPTY
         row["raw_results"] += items or 0
         row["new_unique_candidates"] += new_unique or 0
         row["http_" + str(status)] += 1
