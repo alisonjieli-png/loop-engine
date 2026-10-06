@@ -15,4 +15,5 @@ forbidden_contents:
 adapters:
   - claude-code
   - codex
+  - chatgpt-app
 

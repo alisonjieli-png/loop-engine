@@ -13842,10 +13842,88 @@ entries:
   classification: SECRET_OR_CREDENTIAL_REFERENCE
   created_on: '2026-10-07'
   expires_on: '2027-10-07'
+- finding_id: hardcoding.e1c6a65f7c8eb6ea20f7c565
+  owner: "integrations.chatgpt-app.mcp.json:$schema"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5 for the ChatGPT app: the Agent Plugins MCP configuration schema identifier, a fixed name OpenAI's plugin upload requires verbatim in mcp.json. Validators compare it exactly; nothing fetches it at run time. No source or file-wide exemption."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.df449ea6d139434f5a2aa24a
+  owner: "integrations.chatgpt-app.mcp.json:mcpServers.baltor.url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5 for the ChatGPT app: the one protocol server the Baltor plugin package declares for OpenAI's directory. The package manifest is the owner of this binding; tools/build_chatgpt_app_package.py compares it with the site map's canonical host and the transport's PROTOCOL_PATH, so a drift fails the package check. No source or file-wide exemption."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.c10bbd821a3378295053fab7
+  owner: "integrations.chatgpt-app.plugin.json:$schema"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5 for the ChatGPT app: the Agent Plugins manifest schema identifier, a fixed name OpenAI's plugin upload requires verbatim in plugin.json. Validators compare it exactly; nothing fetches it at run time. No source or file-wide exemption."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.9b77c995929ecd2f3708596d
+  owner: "integrations.chatgpt-app.plugin.json:author.url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5 for the ChatGPT app: the publisher address of the Baltor plugin package. The package manifest is the owner of its listing addresses; OpenAI reads them from this file at upload, and the package check requires HTTPS. No source or file-wide exemption."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.97b6fc0b28126efac0042170
+  owner: "integrations.chatgpt-app.plugin.json:extensions.com.openai.interface.privacyPolicyURL"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5 for the ChatGPT app: the privacy notice address OpenAI's directory listing requires. The package manifest is the owner of its listing addresses; the live check reads the page, and the package check requires HTTPS. No source or file-wide exemption."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.98c9cff6a8501ad206eaf0ab
+  owner: "integrations.chatgpt-app.plugin.json:extensions.com.openai.interface.supportURL"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5 for the ChatGPT app: the support page address OpenAI's directory listing requires. The package manifest is the owner of its listing addresses; the site map lists /support, and the package check requires HTTPS. No source or file-wide exemption."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.258ec705059347f123ab723d
+  owner: "integrations.chatgpt-app.plugin.json:extensions.com.openai.interface.termsOfServiceURL"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5 for the ChatGPT app: the terms of service address OpenAI's directory listing requires. The package manifest is the owner of its listing addresses; the package check requires HTTPS. No source or file-wide exemption."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.01139e2010c02c29375a39f3
+  owner: "integrations.chatgpt-app.plugin.json:extensions.com.openai.interface.websiteURL"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5 for the ChatGPT app: the product website address OpenAI's directory listing requires. The package manifest is the owner of its listing addresses; the package check requires HTTPS. No source or file-wide exemption."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.9b8a686f4849f0ffa0f150d8
+  owner: "integrations.chatgpt-app.plugin.json:homepage"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5 for the ChatGPT app: the package homepage of the Baltor plugin manifest. The package manifest is the owner of its listing addresses; the package check requires HTTPS. No source or file-wide exemption."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.866d2d398bd7bfb7d94f0de4
+  owner: "integrations.chatgpt-app.plugin.json:repository"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5 for the ChatGPT app: the source repository the plugin manifest names, the same address pyproject.toml publishes. The manifest is the owner of its own metadata; nothing fetches it. No source or file-wide exemption."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
 - finding_id: hardcoding.2a2de8252e5a00650c2824e3
   owner: "loop_engine.core.service_runtime.chatgpt_app"
   classification: STRATEGY_OR_PROVIDER_BINDING
   rationale: "Reviewed October 5 for the ChatGPT app: the text rule that reads an HTTPS address (host, port, path) without importing a network module. It is a parser shape, not an endpoint or provider; is_openai_redirect and the package and live checks share this one rule, and tools/test_chatgpt_app.py holds it to known-wrong addresses. No source or file-wide exemption."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.3b88d4c9f5bddf0d9709fbb6
+  owner: "tools.build_chatgpt_app_package"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5 for the ChatGPT app: the Agent Plugins schema identifiers OpenAI's upload requires verbatim in plugin.json and mcp.json. The package check compares each manifest's $schema with them exactly and never fetches them. No source or file-wide exemption."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.51b95112e8cb8e34795f1060
+  owner: "tools.build_chatgpt_app_package"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5 for the ChatGPT app: the Agent Plugins schema identifiers OpenAI's upload requires verbatim in plugin.json and mcp.json. The package check compares each manifest's $schema with them exactly and never fetches them. No source or file-wide exemption."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.5dd694e53e587a2102596357
+  owner: "tools.check_chatgpt_app_live"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5 for the ChatGPT app: the loopback redirect address a native OAuth client registers, on the /callback path the service's policy permits. The consent helper answers it inside the browser, so nothing listens on the port and no request leaves the machine. No source or file-wide exemption."
   created_on: '2026-10-05'
   expires_on: '2027-01-05'
 excluded_paths:

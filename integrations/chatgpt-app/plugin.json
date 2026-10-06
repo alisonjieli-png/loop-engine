@@ -1,0 +1,102 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "baltor",
+  "version": "1.0.0",
+  "description": "Search the Baltor library of harness components, show a package with its files and SHA-256 digests, and download exact files.",
+  "author": {
+    "name": "Baltor.AI",
+    "url": "https://baltor.ai"
+  },
+  "homepage": "https://baltor.ai",
+  "repository": "https://github.com/alisonjieli-png/loop-engine",
+  "license": "MIT",
+  "keywords": ["skills", "agent tools", "coding harness", "instruction files", "subagents", "MCP servers", "AI agents"],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Baltor",
+        "shortDescription": "Find skills and agent tools",
+        "longDescription": "Baltor is a library of harness components: skills, instruction files, tools and code, subagents, commands, hooks and protocol server settings that AI agents and coding harnesses load.\n\nIn ChatGPT you can:\n- Search the library in plain words and see matching items as cards, with each item's purpose, kind, licence, library tier and number of files.\n- Open one package to see each file with its size and SHA-256 digest, the effects its steps declare, and the folder Claude Code, Codex, OpenCode or Pi reads it from.\n- Download a package's exact files into the conversation, a page at a time, each with its SHA-256 digest so you can save it byte for byte.\n- Find Public Good files for work on the United Nations Sustainable Development Goals.\n- Check what your Baltor account can reach, rate items you downloaded, ask for material the library lacks and report a problem with an item.\n\nIt is for developers, designers and anyone who runs AI agents and would rather start from a ready component than write one again.\n\nGood to know:\n- You sign in with your Baltor account. What you can download depends on that account.\n- Items are third-party material under their own licences, and each item names its licence and source. Read an item before you let a harness run it.\n- ChatGPT does not run the files. You save them and load them into your harness on your own computer.\n- Each download of an item version is recorded once a month on your account.",
+        "developerName": "Baltor.AI",
+        "category": "Developer Tools",
+        "capabilities": [
+          "Search the library of skills, tools and instruction files",
+          "Show a package with its files and SHA-256 digests",
+          "Download exact files with a digest for each file",
+          "Find Public Good files by Sustainable Development Goal",
+          "Rate items, request material and report problems"
+        ],
+        "websiteURL": "https://baltor.ai",
+        "supportURL": "https://baltor.ai/support",
+        "privacyPolicyURL": "https://baltor.ai/privacy",
+        "termsOfServiceURL": "https://baltor.ai/terms",
+        "defaultPrompt": [
+          "Find a skill that writes release notes from my git commits.",
+          "Show me the files in a Blender skill before I download it.",
+          "Find a code review subagent for my coding agent."
+        ],
+        "brandColor": "#D95B0F",
+        "brandColorDark": "#FB9D59",
+        "composerIcon": "./assets/icon.png",
+        "logo": "./assets/logo.png",
+        "screenshots": ["./assets/screenshot-1.png", "./assets/screenshot-2.png", "./assets/screenshot-3.png"]
+      },
+      "review": {
+        "test_cases": {
+          "positive": [
+            {
+              "description": "Search the library by a task",
+              "prompt": "Find a skill that writes release notes from my git commits.",
+              "tools_triggered": "search_library",
+              "expected_behavior": "Shows matching library items as cards, for example a changelog composer skill, each with its purpose, kind, licence, library tier and number of files. No file contents are returned and nothing is counted as a download."
+            },
+            {
+              "description": "Show one package and its files",
+              "prompt": "Show me the files in the changelog composer skill.",
+              "tools_triggered": "search_library, get_package",
+              "expected_behavior": "Shows the package with every file path, size and SHA-256 digest, the effects its steps declare, and the skill folder for Claude Code, Codex, OpenCode and Pi."
+            },
+            {
+              "description": "Download exact files after the user agrees to the declared effects",
+              "prompt": "Download the files of the changelog composer skill.",
+              "tools_triggered": "download_package_files",
+              "expected_behavior": "Tells the user which effects the skill's steps declare and asks before downloading. After the user agrees, returns each file's content with its SHA-256 digest, and the digests match the ones get_package listed."
+            },
+            {
+              "description": "Find Public Good files",
+              "prompt": "Find Public Good files about water quality.",
+              "tools_triggered": "find_public_good_files",
+              "expected_behavior": "Lists Public Good files about water quality, for example from a stormwater water quality skill, with each file's package, path and SHA-256 digest."
+            },
+            {
+              "description": "Ask for missing material",
+              "prompt": "Ask Baltor to add a skill for writing Terraform modules for Hetzner Cloud.",
+              "tools_triggered": "request_material",
+              "expected_behavior": "Sends one short request for that material and confirms it is saved with the account for Baltor staff."
+            }
+          ],
+          "negative": [
+            {
+              "description": "Deleting files on the user's computer is outside the app",
+              "prompt": "Delete the Baltor files I downloaded yesterday."
+            },
+            {
+              "description": "Buying a plan is outside the app",
+              "prompt": "Buy a Baltor plan for me."
+            },
+            {
+              "description": "Running downloaded code is outside the app",
+              "prompt": "Run the script from that skill on my computer."
+            }
+          ]
+        },
+        "commerce": false,
+        "commerce_description": "Baltor sells nothing in ChatGPT. A signed-in account uses the access its Baltor account already has."
+      },
+      "publication": {
+        "countries": ["US"],
+        "release_notes": "First release: search the library, show a package with its files and SHA-256 digests, download exact files, find Public Good files, check account access, rate items, request material and report problems."
+      }
+    }
+  }
+}
