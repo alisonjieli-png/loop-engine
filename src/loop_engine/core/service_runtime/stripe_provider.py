@@ -150,9 +150,18 @@ class StripeSubscriptionReader:
                 paid = invoice_paid(invoice) if isinstance(invoice, dict) else None
                 if isinstance(invoice, dict) and invoice.get("customer") != customer_id:
                     raise ServiceRuntimeError("invoice_customer_mismatch")
+                # A cancellation the customer scheduled in the portal is `cancel_at` on the flexible billing mode
+                # and `cancel_at_period_end` on the classic one; both end the subscription at that moment.
+                ends = [end for _price, end in periods if type(end) is int]
+                cancel_at = row.get("cancel_at")
+                if cancel_at is None and row.get("cancel_at_period_end") is True and ends:
+                    cancel_at = max(ends)
                 subscriptions.append(StripeSubscriptionState(row.get("id"), customer_id,
                     row.get("status"), tuple(periods), paid, row.get("pause_collection") is not None,
-                    row.get("trial_end")))
+                    row.get("trial_end"), collection_method=row.get("collection_method"),
+                    latest_invoice_status=invoice.get("status") if isinstance(invoice, dict) else None,
+                    latest_invoice_created=invoice.get("created") if isinstance(invoice, dict) else None,
+                    cancel_at=cancel_at))
             if page["has_more"] is False:
                 return StripeCustomerSubscriptionSnapshot(self.config.account_id, customer_id,
                     self.config.api_version, self.config.livemode, tuple(subscriptions), digest(pages))

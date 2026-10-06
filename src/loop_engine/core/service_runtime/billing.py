@@ -15,7 +15,7 @@ import re
 import uuid
 
 from .billing_records import (
-    BillingEventResult, EVENT_TYPES, StripeCustomerSubscriptionSnapshot,
+    AUTOMATIC_COLLECTION, BillingEventResult, EVENT_TYPES, INVOICE_DRAFT, StripeCustomerSubscriptionSnapshot,
     StripeEntitlementPolicy, StripeSubscriptionResolver, StripeWebhookConfig,
     SUBSCRIPTION_ACTIVE, SUBSCRIPTION_TRIALING,
 )
@@ -27,6 +27,60 @@ BILLING_EVENT = "service_stripe_event"
 BILLING_EVENT_VERSION = "service_stripe_event/v1"
 PENDING, APPLIED, IGNORED = "pending", "applied", "ignored"
 EVENT_OBJECT = "event"
+#: How long paid access outlasts the paid period while the renewal is settled. Stripe moves the period on at the
+#: renewal moment, keeps the new invoice a draft for about an hour, and then charges the card; the events that
+#: follow decide access (`invoice.paid` extends it, `invoice.payment_failed` and the past-due update end it). The
+#: allowance only matters when those events are late: Stripe retries a webhook delivery for up to three days in live
+#: mode (https://docs.stripe.com/webhooks#automatic-retries), so a paying customer never loses access because a
+#: delivery was retried, and an account whose renewal events never arrive loses it three days after the period.
+RENEWAL_GRACE_SECONDS = 3 * 86400
+#: How many times one delivery starts when concurrent deliveries for the same account race. Stripe sends
+#: `customer.subscription.created` and `invoice.paid` within the same second for every new subscription. In the Stripe
+#: test journey of October 5, 2026 one of the pair was refused on every first payment, leaving a failed delivery for
+#: Stripe to retry; on loopback the two raced in their first write in 5 of 6 trials, and the loser was answered 409.
+BEGIN_ATTEMPTS = 3
+
+
+def renewal_payment_pending(subscription):
+    """True for an active subscription whose newest invoice is the renewal draft Stripe has not yet tried to charge.
+
+    The period has already moved on, so the previous period was paid: a subscription whose earlier payment failed
+    is past due, not active. Only automatic collection qualifies. A `send_invoice` subscription is active before its
+    invoice is paid, so its draft says nothing about payment.
+    """
+    return (subscription.status == SUBSCRIPTION_ACTIVE and subscription.collection_method == AUTOMATIC_COLLECTION
+            and subscription.latest_invoice_status == INVOICE_DRAFT and subscription.latest_invoice_created is not None)
+
+
+def paid_access_until(subscription, policy, now):
+    """The moment one subscription's paid access ends, or None when it grants none now.
+
+    - Active with a paid newest invoice: the end of the paid period, plus the renewal allowance.
+    - Active while the renewal invoice is still a draft: as long as the allowance from that invoice's creation, never
+      past the period; the charge that follows decides the rest.
+    - Trialing, only when the owner's policy allows trials: until the trial or the period ends.
+    - Anything else, an unconfigured price, or paused collection: none.
+
+    A cancellation the customer scheduled ends access at its own moment, with no allowance, because no renewal
+    follows it. The terms of service promise access until the end of the paid month.
+    """
+    allowed = set(policy.allowed_price_ids)
+    ends = [end for price, end in subscription.price_periods if price in allowed]
+    if not ends or subscription.collection_paused:
+        return None
+    end = max(ends)
+    if subscription.status == SUBSCRIPTION_ACTIVE and subscription.latest_invoice_paid is True:
+        until = end + RENEWAL_GRACE_SECONDS
+    elif renewal_payment_pending(subscription):
+        until = min(end, subscription.latest_invoice_created + RENEWAL_GRACE_SECONDS)
+    elif (subscription.status == SUBSCRIPTION_TRIALING and policy.allow_trialing is True
+          and subscription.trial_end is not None):
+        until = min(end, subscription.trial_end)
+    else:
+        return None
+    if subscription.cancel_at is not None:
+        until = min(until, subscription.cancel_at)
+    return until if until > now else None
 
 
 def _json(body):
@@ -168,19 +222,13 @@ class StripeEventProcessor:
                 or snapshot.account_id != self.config.account_id or snapshot.api_version != self.config.api_version
                 or snapshot.livemode is not self.config.livemode):
             raise ServiceRuntimeError("billing_snapshot_unavailable")
-        allowed = set(self.policy.allowed_price_ids)
+        now = self.runtime._now()
         expiry = []
         selected = []
         for subscription in snapshot.subscriptions:
-            ends = [end for price, end in subscription.price_periods if price in allowed and end > self.runtime._now()]
-            if not ends or subscription.collection_paused:
-                continue
-            if subscription.status == SUBSCRIPTION_ACTIVE and subscription.latest_invoice_paid is True:
-                expiry.append(max(ends))
-                selected.append(subscription.subscription_id)
-            elif (subscription.status == SUBSCRIPTION_TRIALING and self.policy.allow_trialing is True
-                  and subscription.trial_end is not None and subscription.trial_end > self.runtime._now()):
-                expiry.append(min(max(ends), subscription.trial_end))
+            until = paid_access_until(subscription, self.policy, now)
+            if until is not None:
+                expiry.append(until)
                 selected.append(subscription.subscription_id)
         return max(expiry) if expiry else None, tuple(selected)
 
@@ -204,10 +252,17 @@ class StripeEventProcessor:
             "event_digest", "body_digest", "customer_id")})
 
     def _process(self, event):
-        try:
-            prepared = self._begin(event)
-        except ServiceCommitUnknown:
-            return BillingEventResult(event["id"], "commit_unknown", None, diagnostic_code="commit_unknown")
+        for attempt in range(BEGIN_ATTEMPTS):
+            try:
+                prepared = self._begin(event)
+                break
+            except ServiceCommitUnknown:
+                return BillingEventResult(event["id"], "commit_unknown", None, diagnostic_code="commit_unknown")
+            except ServiceRuntimeError as error:
+                # Another delivery for the same account committed first and changed a record this one read. The
+                # refused batch wrote nothing, so this delivery starts again from the records as they are now.
+                if error.code != "concurrent_update" or attempt == BEGIN_ATTEMPTS - 1:
+                    raise
         if isinstance(prepared, BillingEventResult):
             return prepared
         if self._resolver is None:

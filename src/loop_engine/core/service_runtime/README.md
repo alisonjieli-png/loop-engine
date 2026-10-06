@@ -1658,10 +1658,57 @@ a delayed response cannot overwrite a concurrent newer decision.
 [Stripe webhook guidance](https://docs.stripe.com/webhooks#event-ordering)
 
 An active subscription grants body access only when an owner-configured Price
-is present, the current period is valid, and the expanded latest invoice is
-paid. Trial access needs an explicit policy choice. Incomplete, unknown,
-unpaid, paused, canceled, expired, or unconfigured states do not grant access.
-[Stripe subscription event guidance](https://docs.stripe.com/billing/subscriptions/webhooks)
+is present and one of two payment facts holds, which `paid_access_until` in
+`billing.py` decides:
+
+```text
+Paid access of one subscription
+├── active, newest invoice paid             until the period end plus three days
+├── active, automatic collection, newest    until three days after that invoice
+│   invoice a draft (the renewal hour)       was created, never past the period
+├── trialing, only when the policy allows   until the trial or the period ends
+├── a cancellation the customer scheduled   access ends at that moment, no allowance
+└── anything else                           none: incomplete, past due, unpaid,
+                                            paused, canceled, an open, void or
+                                            uncollectible invoice, an unconfigured
+                                            price, a send_invoice draft
+```
+
+The invoice is read by its `status`. Stripe removed the Invoice `paid` field
+in API version 2025-03-31.basil, the earliest version the reader serves, and
+until October 5, 2026 the reader still read it, so every paid invoice looked
+unpaid and no paying customer was granted downloads. The renewal draft rule
+and the three days answer what that day showed. Observed in the Stripe test
+environment on a test clock: at each renewal Stripe moves the period on, keeps
+the new invoice a draft for about an hour and sends
+`customer.subscription.updated`, and the old rule took downloads away from the
+paying account until `invoice.paid`. Read from the code and Stripe's renewal
+timing: the old rule ended access exactly at the period end, about an hour
+before Stripe charges the renewal. The three days match the time Stripe keeps retrying a webhook
+delivery in live mode, so a late event never costs a paying customer access,
+and an account whose renewal events never arrive loses it three days after
+its period.
+[Stripe subscription event guidance](https://docs.stripe.com/billing/subscriptions/webhooks),
+[renewal invoices](https://docs.stripe.com/billing/invoices/subscription),
+[the removed field](https://docs.stripe.com/changelog/basil/2025-03-31/add-support-for-multiple-partial-payments-on-invoices)
+
+Two deliveries for one account can race: Stripe sends
+`customer.subscription.created` and `invoice.paid` within the same second for
+every new subscription. A delivery whose first write loses that race wrote
+nothing, so it starts again from current records, up to `BEGIN_ATTEMPTS`
+times. A delivery whose final decision loses to a newer reconciliation for the
+same account answers `billing_reconciliation_pending`, and the provider's
+retry reconciles it from current state; only an unconfirmed write answers
+`billing_commit_unknown`.
+
+`tools/check_stripe_test_journey.py` proves the paid path against the Stripe
+test environment with the service's own host loader, routes and adapters:
+sign-up, refusal with the plan offer over HTTP and over MCP, checkout in a real
+browser with a Stripe test card, the signed events, downloads over HTTP and
+MCP, usage, the portal's invoice history and cancellation, refund, the renewal
+draft hour and a failed renewal on a Stripe test clock. Its offline checks are
+`tools/test_check_stripe_test_journey.py`; the guide
+`docs/guides/subscription-journey.md` names the reports.
 
 `StripeSubscriptionReader` can read the exact account and all customer
 subscriptions using bounded pagination. Its network flag defaults to false,

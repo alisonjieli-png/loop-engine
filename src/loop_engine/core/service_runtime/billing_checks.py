@@ -16,6 +16,7 @@ import threading
 
 from ...catalog.protocol import CatalogBatchAcknowledgment
 from ...catalog.stores.sqlite_store import SQLiteRecordStore
+from . import billing as billing_module
 from .billing import StripeEventProcessor
 from .billing_records import (
     StripeCustomerSubscriptionSnapshot, StripeEntitlementPolicy, StripeProviderConfig,
@@ -44,15 +45,28 @@ def signature(payload, timestamp=1000, secret=SECRET):
     return f"t={timestamp},v1=" + hmac.new(secret.encode(), signed, hashlib.sha256).hexdigest()
 
 
-def snapshot(*, status="active", paid=True, price="price_fixture", expiry=2000, **changes):
-    row = StripeSubscriptionState("sub_fixture", "cus_fixture", status, ((price, expiry),), paid)
+def snapshot(*, status="active", paid=True, price="price_fixture", expiry=2000, invoice=None, **changes):
+    """One subscription of the fixture customer. `invoice` sets the subscription's own fields that arrived with the
+    renewal rule (collection method, newest invoice status and creation, scheduled cancellation)."""
+    row = StripeSubscriptionState("sub_fixture", "cus_fixture", status, ((price, expiry),), paid,
+                                  collection_method="charge_automatically",
+                                  latest_invoice_status="paid" if paid is True else None)
+    if invoice:
+        row = replace(row, **invoice)
     base = StripeCustomerSubscriptionSnapshot("acct_fixture", "cus_fixture", API, False, (row,), "a" * 64)
     return replace(base, **changes)
 
 
-def fixture(folder, *, resolver=True, allow_trialing=False, price_ids=("price_fixture",)):
+def granted_until(runtime):
+    """The `valid_until` of the fixture account's entitlement record, or None."""
+    with runtime._catalog.store() as store:
+        row = runtime._catalog.read(store, "service_entitlement", "tenant")
+    return None if row is None else row["payload"].get("valid_until")
+
+
+def fixture(folder, *, resolver=True, allow_trialing=False, price_ids=("price_fixture",), now=1000):
     config = ServiceRuntimeConfig(str(Path(folder) / "billing.sqlite"), writes_authorized=True)
-    runtime = ServiceRuntime(config, clock=lambda: 1000)
+    runtime = ServiceRuntime(config, clock=lambda: now)
     runtime.register_tenant(TenantRegistration("tenant", "tenant-space"))
     key = runtime.issue_key(TenantKeyIssue("tenant", "fixture"))
     runtime.bind_billing_customer(BillingCustomerBindingRequest("tenant", "cus_fixture", "acct_fixture"))
@@ -71,7 +85,8 @@ def fixture(folder, *, resolver=True, allow_trialing=False, price_ids=("price_fi
 
 
 def deliver(processor, payload):
-    return processor.handle(payload, signature(payload))
+    """Deliver one signed event, signed at the processor's own clock as the provider signs at delivery."""
+    return processor.handle(payload, signature(payload, timestamp=int(processor.runtime._now())))
 
 
 def refuses(action, code=None):
@@ -220,17 +235,91 @@ def run_checks():
             return result.status == "pending" and runtime.authenticate_key(key.key).entitlement == "metadata"
         check("snapshot_" + label + "_cannot_grant_entitlement", snapshot_mismatch)
 
-    for label, data in (("unpaid", snapshot(paid=False)), ("canceled", snapshot(status="canceled")),
-                        ("unconfigured_price", snapshot(price="price_other")),
-                        ("expired_period", snapshot(expiry=500)), ("unknown_invoice", snapshot(paid=None)),
-                        ("paused_collection", snapshot(subscriptions=(replace(snapshot().subscriptions[0], collection_paused=True),))),
-                        ("trial_not_authorized", snapshot(status="trialing", subscriptions=(replace(snapshot().subscriptions[0], status="trialing", trial_end=1500),)))):
-        def no_access(folder, data=data):
-            runtime, processor, key, current, _ = fixture(folder)
+    # The period ended longer ago than the renewal allowance: the clock stands one second past both.
+    beyond = 2000 + billing_module.RENEWAL_GRACE_SECONDS + 1
+    draft = {"latest_invoice_status": "draft", "latest_invoice_created": 1000}
+    for label, data, now in (("unpaid", snapshot(paid=False), 1000), ("canceled", snapshot(status="canceled"), 1000),
+                        ("unconfigured_price", snapshot(price="price_other"), 1000),
+                        ("expired_period", snapshot(expiry=2000), beyond), ("unknown_invoice", snapshot(paid=None), 1000),
+                        ("paused_collection", snapshot(subscriptions=(replace(snapshot().subscriptions[0], collection_paused=True),)), 1000),
+                        ("trial_not_authorized", snapshot(status="trialing", subscriptions=(replace(snapshot().subscriptions[0], status="trialing", trial_end=1500),)), 1000),
+                        ("open_invoice", snapshot(paid=False, invoice={"latest_invoice_status": "open"}), 1000),
+                        ("void_invoice", snapshot(paid=False, invoice={"latest_invoice_status": "void"}), 1000),
+                        ("uncollectible_invoice", snapshot(paid=False, invoice={"latest_invoice_status": "uncollectible"}), 1000),
+                        ("draft_invoice_of_a_send_invoice_subscription",
+                         snapshot(paid=False, invoice={**draft, "collection_method": "send_invoice"}), 1000),
+                        ("draft_invoice_of_an_unknown_collection_method",
+                         snapshot(paid=False, invoice={**draft, "collection_method": None}), 1000),
+                        ("draft_invoice_of_a_past_due_subscription", snapshot(status="past_due", paid=False, invoice=draft), 1000),
+                        ("renewal_draft_older_than_the_allowance",
+                         snapshot(paid=False, expiry=10_000_000, invoice=draft), 1000 + billing_module.RENEWAL_GRACE_SECONDS + 1)):
+        def no_access(folder, data=data, now=now):
+            runtime, processor, key, current, _ = fixture(folder, now=now)
             current[0] = data
             result = deliver(processor, body())
             return result.entitlement == "metadata" and runtime.authenticate_key(key.key).entitlement == "metadata"
         check(label + "_does_not_grant_paid_access", no_access)
+
+    def paid_period_and_allowance(folder):
+        runtime, processor, key, _, _ = fixture(folder)
+        deliver(processor, body())
+        return (runtime.authenticate_key(key.key).entitlement == "bodies"
+                and granted_until(runtime) == 2000 + billing_module.RENEWAL_GRACE_SECONDS)
+    check("paid_access_lasts_the_paid_period_and_the_renewal_allowance", paid_period_and_allowance)
+
+    def just_ended(folder, now=2500):
+        runtime, processor, key, _, _ = fixture(folder, now=now)
+        deliver(processor, body())
+        return runtime.authenticate_key(key.key).entitlement == "bodies"
+    check("a_period_that_just_ended_stays_paid_while_the_renewal_is_settled", just_ended)
+
+    def renewal_draft(folder):
+        runtime, processor, key, current, _ = fixture(folder)
+        current[0] = snapshot(paid=False, expiry=10_000_000, invoice=draft)
+        result = deliver(processor, body())
+        return (result.entitlement == "bodies" and runtime.authenticate_key(key.key).entitlement == "bodies"
+                and granted_until(runtime) == 1000 + billing_module.RENEWAL_GRACE_SECONDS)
+    check("renewal_draft_keeps_paid_access_for_the_allowance_from_its_creation", renewal_draft)
+
+    def scheduled_cancellation(folder):
+        runtime, processor, key, current, _ = fixture(folder)
+        current[0] = snapshot(invoice={"cancel_at": 2000})
+        deliver(processor, body())
+        return runtime.authenticate_key(key.key).entitlement == "bodies" and granted_until(runtime) == 2000
+    check("a_scheduled_cancellation_ends_paid_access_at_its_own_moment", scheduled_cancellation)
+
+    from unittest.mock import patch
+
+    def lost_race(folder):
+        """Another delivery for the same account commits while this one is starting, as Stripe's two first events do."""
+        runtime, processor, key, _, calls = fixture(folder)
+        original, raced = runtime._catalog.commit, []
+        def commit(store, records, guards, removals=()):
+            if not raced:
+                raced.append(True)
+                deliver(processor, body("evt_first_to_commit", kind="customer.subscription.created"))
+            return original(store, records, guards, removals)
+        with patch.object(type(runtime._catalog), "commit", side_effect=commit):
+            try:
+                result = deliver(processor, body("evt_lost_the_race", kind="invoice.paid"))
+            except ServiceRuntimeError as error:
+                return False if error.code == "concurrent_update" else None
+        return (result.status == "applied" and result.committed is True and len(calls) == 2
+                and runtime.authenticate_key(key.key).entitlement == "bodies")
+    check("a_delivery_that_loses_a_race_with_a_concurrent_one_starts_again_and_applies", lost_race)
+
+    # Removed-guard controls. Each reruns a named scenario with one rule patched away and requires that scenario's
+    # own predicate to answer False. A scenario that raises instead fails its control, because an error says nothing
+    # about the rule. Before October 5, 2026 the first rule was missing: Stripe's renewal draft hour took downloads
+    # away from every paying account each month, as the Stripe test-clock journey observed.
+    for name, scenario, attribute, value in (
+            ("removed_renewal_draft_rule_is_detected", renewal_draft, "renewal_payment_pending", lambda subscription: False),
+            ("removed_renewal_allowance_is_detected", just_ended, "RENEWAL_GRACE_SECONDS", 0),
+            ("removed_restart_after_a_lost_race_is_detected", lost_race, "BEGIN_ATTEMPTS", 1)):
+        def control(folder, scenario=scenario, attribute=attribute, value=value):
+            with patch.object(billing_module, attribute, value):
+                return scenario(folder) is False
+        check(name, control)
 
     def trial(folder):
         runtime, processor, key, current, _ = fixture(folder, allow_trialing=True)
@@ -313,20 +402,31 @@ def provider_checks():
     # The subscription list in the shape Stripe answers from API version 2025-03-31.basil on: the period end sits on
     # each item and the expanded invoice has a `status` and no `paid` field. The shape was read from the Stripe test
     # environment on October 5, 2026; `invoice_status` changes only the status.
-    def transport(request, key, invoice_status="paid"):
+    def transport(request, key, invoice_status="paid", **subscription):
         calls.append(request)
         if request.path == "/v1/account": return {"id": "acct_fixture"}
         return {"object": "list", "has_more": False, "data": [{"object": "subscription",
             "id": "sub_fixture", "customer": "cus_fixture", "livemode": False, "status": "active",
+            "collection_method": "charge_automatically", "cancel_at": None, "cancel_at_period_end": False,
             "items": {"has_more": False, "data": [{"price": {"id": "price_fixture"}, "current_period_end": 2000}]},
-            "latest_invoice": {"customer": "cus_fixture", "status": invoice_status},
-            "pause_collection": None, "trial_end": None}]}
+            "latest_invoice": {"customer": "cus_fixture", "status": invoice_status, "created": 1500},
+            "pause_collection": None, "trial_end": None, **subscription}]}
     reader = StripeSubscriptionReader(config, lambda ref: secrets.append(ref) or SECRET, transport=transport)
     result = reader.resolve("cus_fixture")
     check("provider_reader_binds_account_customer_version_mode_and_complete_items",
           result.complete and result.account_id == config.account_id and result.customer_id == "cus_fixture"
           and result.api_version == API and result.subscriptions[0].latest_invoice_paid is True
           and dict(calls[-1].query)["status"] == "all")
+    state = result.subscriptions[0]
+    check("provider_reader_keeps_the_collection_method_and_the_newest_invoice",
+          state.collection_method == "charge_automatically" and state.latest_invoice_status == "paid"
+          and state.latest_invoice_created == 1500 and state.cancel_at is None)
+    for label, change, expected in (("cancel_at", {"cancel_at": 1800}, 1800),
+                                    ("cancel_at_period_end", {"cancel_at_period_end": True}, 2000)):
+        scheduled = StripeSubscriptionReader(config, lambda ref: SECRET,
+            transport=lambda request, key, change=change: transport(request, key, **change))
+        check("provider_reader_reads_a_cancellation_scheduled_by_" + label,
+              scheduled.resolve("cus_fixture").subscriptions[0].cancel_at == expected)
     for status in ("open", "draft", "void", "uncollectible"):
         unpaid = StripeSubscriptionReader(config, lambda ref: SECRET,
                                           transport=lambda request, key, status=status: transport(request, key, status))

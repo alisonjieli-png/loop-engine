@@ -28,6 +28,12 @@ EVENT_TYPES = ("customer.subscription.created", "customer.subscription.updated",
                "customer.subscription.deleted", "invoice.paid", "invoice.payment_failed")
 SUBSCRIPTION_ACTIVE = "active"
 SUBSCRIPTION_TRIALING = "trialing"
+#: Stripe charges the saved payment method by itself. The other method, `send_invoice`, emails an invoice to pay,
+#: and its subscription is active before that invoice is paid.
+AUTOMATIC_COLLECTION = "charge_automatically"
+#: A renewal invoice stays a draft for about an hour before Stripe finalizes it and charges the card
+#: (https://docs.stripe.com/billing/invoices/subscription, "Subscription renewal invoices").
+INVOICE_DRAFT = "draft"
 SUBSCRIPTION_STATES = ("incomplete", "incomplete_expired", SUBSCRIPTION_TRIALING,
                        SUBSCRIPTION_ACTIVE, "past_due", "canceled", "unpaid", "paused")
 
@@ -120,6 +126,16 @@ class StripeCustomerProjection:
 
 @dataclass(frozen=True)
 class StripeSubscriptionState:
+    """One subscription as the provider reports it now, with the facts the paid-access rule reads.
+
+    The last four fields arrived on October 5, 2026, each with a default that
+    grants nothing: `collection_method` says whether Stripe charges the card by
+    itself, `latest_invoice_status` and `latest_invoice_created` describe the
+    newest invoice, and `cancel_at` is the moment a scheduled cancellation ends
+    the subscription. A status or method this release does not know is kept as
+    written, and the rule treats it as granting nothing.
+    """
+
     subscription_id: str
     customer_id: str
     status: str
@@ -127,6 +143,10 @@ class StripeSubscriptionState:
     latest_invoice_paid: bool | None
     collection_paused: bool = False
     trial_end: int | None = None
+    collection_method: str | None = None
+    latest_invoice_status: str | None = None
+    latest_invoice_created: int | None = None
+    cancel_at: int | None = None
 
     def __post_init__(self):
         identifier(self.subscription_id, "subscription identity")
@@ -142,6 +162,12 @@ class StripeSubscriptionState:
                 raise ServiceRuntimeError("invalid_subscription_period")
         if self.trial_end is not None and (type(self.trial_end) is not int or self.trial_end <= 0):
             raise ServiceRuntimeError("invalid_trial_period")
+        for value in (self.collection_method, self.latest_invoice_status):
+            if value is not None and (not isinstance(value, str) or not re.fullmatch(r"[a-z_]{1,40}", value)):
+                raise ServiceRuntimeError("invalid_invoice_state")
+        for moment in (self.latest_invoice_created, self.cancel_at):
+            if moment is not None and (type(moment) is not int or moment <= 0):
+                raise ServiceRuntimeError("invalid_subscription_period")
 
 
 @dataclass(frozen=True)

@@ -2408,9 +2408,12 @@ class ServiceHttpApplication:
             body = await self._body(request)
             output = await self._work(lambda: invoke_http_service_as_loop("billing_webhook",
                 lambda: self.billing_processor.handle(body, request.headers["stripe-signature"]).to_dict()))
-            if output["result"]["committed"] is not True:
+            # Unknown is only an unconfirmed write (`committed` None). A delivery whose decision lost to a concurrent,
+            # newer reconciliation for the same account wrote nothing of its own (`committed` False): it is pending,
+            # and the provider's retry reconciles it again from current state.
+            if output["result"]["committed"] is None:
                 raise ServiceHttpError("billing_commit_unknown", 503, details=output["result"])
-            if output["result"]["status"] == "pending":
+            if output["result"]["status"] == "pending" or output["result"]["committed"] is not True:
                 raise ServiceHttpError("billing_reconciliation_pending", 503, details=output["result"])
         elif path == "/api/v1/capabilities" and method == "GET":
             output = self.capabilities()
