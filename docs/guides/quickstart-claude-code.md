@@ -56,7 +56,7 @@ Run this in the project folder, in the terminal where the token is set:
 claude mcp list
 ```
 
-The list shows a status next to `baltor`. If the status is Pending approval, start `claude` in this folder once and approve the server. If the list warns about a missing environment variable, set the token before you start Claude Code. In a session, enter `/mcp` and confirm that Baltor's six tools are listed: `intelligence_search`, `provisioning_discover`, `provisioning_list`, `provisioning_manifest`, `provisioning_read` and `provisioning_report`.
+The list shows a status next to `baltor`. If the status is Pending approval, start `claude` in this folder once and approve the server. If the list warns about a missing environment variable, set the token before you start Claude Code. In a session, enter `/mcp` and confirm that Baltor's tools are listed, among them `intelligence_search` and `provisioning_read`, which this page uses. The list also holds tools for Public Good files, ratings, problem reports and material requests, and tools for Baltor staff that refuse a customer's token.
 
 ## Your first search
 

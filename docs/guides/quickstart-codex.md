@@ -50,7 +50,7 @@ Search always shows every item your account may use, with its `declared_effects`
 codex mcp list
 ```
 
-This command shows configuration, not a completed handshake. In a Codex session, inspect `/mcp` and confirm that Baltor's six tools are available before asking it to search: `intelligence_search`, `provisioning_discover`, `provisioning_list`, `provisioning_manifest`, `provisioning_read` and `provisioning_report`.
+This command shows configuration, not a completed handshake. In a Codex session, inspect `/mcp` and confirm that Baltor's tools are available before asking it to search, among them `intelligence_search` and `provisioning_read`, which this page uses. The list also holds tools for Public Good files, ratings, problem reports and material requests, and tools for Baltor staff that refuse a customer's token.
 
 ## Your first search
 

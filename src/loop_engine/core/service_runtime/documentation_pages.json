@@ -47,24 +47,24 @@
   },
   "quickstart-claude-code": {
    "body_address": "/assets/docs/quickstart-claude-code.html",
-   "body_digest": "c054a66e90435b2dcce24105abcc234dc1bf7db091a493e3665eecd05ddba9f1",
+   "body_digest": "4c91d3ba6f16bc9ff924b99f2127cbf65487f1b85704ef1d67142be8ccfe6553",
    "heading": "Claude Code quickstart",
    "id": "quickstart-claude-code",
    "kind_line": "Kind: customer quickstart for Claude Code. It repeats the connection entry that Get set up publishes for Claude Code and adds the first search, the first download and the check that it worked.",
    "record_type": "website_documentation_page/v1",
    "repository_path": "docs/guides/quickstart-claude-code.md",
-   "source_digest": "111c0dd4a42a439fb8fa1e16384634287c8cc3c9d894872ff2a321c96780f725",
+   "source_digest": "8f2eb1775b315f75ed48f4e468bfb303e4934c88515ce9aa8e0bc8b4c26ecd9a",
    "title": "Claude Code quickstart"
   },
   "quickstart-codex": {
    "body_address": "/assets/docs/quickstart-codex.html",
-   "body_digest": "8b633bd503f46f1722921d55ae54d7990494b52cd96c3e63579993d5803354c1",
+   "body_digest": "5a250575d2faf90556f971dd12edf3b754e91b8d3a6e61b5705f8a9a4c66b177",
    "heading": "Codex quickstart",
    "id": "quickstart-codex",
    "kind_line": "Kind: customer quickstart for Codex. It repeats the connection table that Get set up publishes for Codex and adds the first search, the first download and the check that it worked.",
    "record_type": "website_documentation_page/v1",
    "repository_path": "docs/guides/quickstart-codex.md",
-   "source_digest": "70201f8cc8431b944fed9113aca7c8312205514b10899862e13c87237cef1f06",
+   "source_digest": "3fcea9e0cded6108156ebfb96ba38d9771a209f9734e34f80894393dc1c4c68c",
    "title": "Codex quickstart"
   },
   "quickstart-opencode": {

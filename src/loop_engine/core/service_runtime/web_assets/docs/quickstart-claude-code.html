@@ -26,7 +26,7 @@ export BALTOR_SERVICE_TOKEN</code></pre>
 <h2 id="check-the-connection">Check the connection</h2>
 <p>Run this in the project folder, in the terminal where the token is set:</p>
 <pre><code class="language-bash">claude mcp list</code></pre>
-<p>The list shows a status next to <code>baltor</code>. If the status is Pending approval, start <code>claude</code> in this folder once and approve the server. If the list warns about a missing environment variable, set the token before you start Claude Code. In a session, enter <code>/mcp</code> and confirm that Baltor's six tools are listed: <code>intelligence_search</code>, <code>provisioning_discover</code>, <code>provisioning_list</code>, <code>provisioning_manifest</code>, <code>provisioning_read</code> and <code>provisioning_report</code>.</p>
+<p>The list shows a status next to <code>baltor</code>. If the status is Pending approval, start <code>claude</code> in this folder once and approve the server. If the list warns about a missing environment variable, set the token before you start Claude Code. In a session, enter <code>/mcp</code> and confirm that Baltor's tools are listed, among them <code>intelligence_search</code> and <code>provisioning_read</code>, which this page uses. The list also holds tools for Public Good files, ratings, problem reports and material requests, and tools for Baltor staff that refuse a customer's token.</p>
 <h2 id="your-first-search">Your first search</h2>
 <p>The first search is <code>review inputs</code>. In a session, ask in plain words:</p>
 <pre><code class="language-text">Search Baltor for review inputs with the intelligence_search tool. Show the top three references with their identity, source and body digest.</code></pre>

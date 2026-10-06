@@ -21,7 +21,7 @@ Baltor-Step-Effects = "reads_fs, writes_fs, spawns_process, network"</code></pre
 <p>Search always shows every item your account may use, with its <code>declared_effects</code> and its <code>effects_to_declare</code>: the effects your header does not declare. Such an item's download is refused with <code>step_effects_required</code>, and the refusal's <code>details</code> name the effects to add. Without the header, your steps hold <code>reads_fs</code> only.</p>
 <h2 id="check-the-connection">Check the connection</h2>
 <pre><code class="language-bash">codex mcp list</code></pre>
-<p>This command shows configuration, not a completed handshake. In a Codex session, inspect <code>/mcp</code> and confirm that Baltor's six tools are available before asking it to search: <code>intelligence_search</code>, <code>provisioning_discover</code>, <code>provisioning_list</code>, <code>provisioning_manifest</code>, <code>provisioning_read</code> and <code>provisioning_report</code>.</p>
+<p>This command shows configuration, not a completed handshake. In a Codex session, inspect <code>/mcp</code> and confirm that Baltor's tools are available before asking it to search, among them <code>intelligence_search</code> and <code>provisioning_read</code>, which this page uses. The list also holds tools for Public Good files, ratings, problem reports and material requests, and tools for Baltor staff that refuse a customer's token.</p>
 <h2 id="your-first-search">Your first search</h2>
 <p>The first search is <code>review inputs</code>. In a session, ask in plain words:</p>
 <pre><code class="language-text">Search Baltor for review inputs with the intelligence_search tool. Show the top three references with their identity, source and body digest.</code></pre>
