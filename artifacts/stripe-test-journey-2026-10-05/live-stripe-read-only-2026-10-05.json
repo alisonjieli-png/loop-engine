@@ -1,0 +1,105 @@
+{
+ "account": {
+  "status": 200,
+  "id": "acct_1UHZ972IF9bCskLc",
+  "charges_enabled": true,
+  "payouts_enabled": true,
+  "details_submitted": true,
+  "requirements_currently_due": 0,
+  "requirements_past_due": 0,
+  "disabled_reason": null,
+  "statement_descriptor": "BALTOR.AI",
+  "business_url": "Baltor.AI"
+ },
+ "webhook_endpoint": {
+  "status": 200,
+  "endpoint_status": "enabled",
+  "url": "https://app.baltor.ai/api/v1/billing/webhook",
+  "api_version": "2025-03-31.basil",
+  "enabled_events": [
+   "customer.subscription.created",
+   "customer.subscription.deleted",
+   "customer.subscription.updated",
+   "invoice.paid",
+   "invoice.payment_failed"
+  ]
+ },
+ "webhook_endpoints": [
+  {
+   "id": "we_1UI5ZI2IF9bCskLc19SrJ4lq",
+   "url": "https://app.baltor.ai/api/v1/billing/webhook",
+   "status": "enabled",
+   "api_version": "2025-03-31.basil"
+  }
+ ],
+ "price": {
+  "status": 200,
+  "active": true,
+  "unit_amount": 2900,
+  "currency": "usd",
+  "recurring": "month",
+  "lookup_key": "baltor_pro_monthly_usd",
+  "livemode": true
+ },
+ "active_prices": [
+  {
+   "id": "price_1UI5ZH2IF9bCskLc80Biijf3",
+   "unit_amount": 2900,
+   "interval": "month",
+   "lookup_key": "baltor_pro_monthly_usd",
+   "product": "prod_VIgx0CcSOKXvgs"
+  }
+ ],
+ "product": {
+  "status": 200,
+  "name": "Baltor Pro",
+  "active": true,
+  "tax_code": "txcd_10103101"
+ },
+ "portal_configuration": {
+  "status": 200,
+  "active": true,
+  "business_profile": {
+   "headline": true,
+   "privacy_policy_url": true,
+   "terms_of_service_url": true
+  },
+  "subscription_cancel": true,
+  "cancel_mode": "at_period_end",
+  "payment_method_update": true,
+  "invoice_history": true,
+  "subscription_update": false
+ },
+ "subscriptions": {
+  "status": 200,
+  "count_first_page": 0,
+  "has_more": false,
+  "by_status": {}
+ },
+ "customers": {
+  "status": 200,
+  "count_first_page": 0,
+  "has_more": false,
+  "with_tenant_metadata": 0
+ },
+ "recent_events": {
+  "status": 200,
+  "count": 20,
+  "by_type": {
+   "checkout.session.expired": 2,
+   "customer.deleted": 5,
+   "billing_portal.session.created": 2,
+   "customer.created": 5,
+   "product.updated": 1,
+   "billing_portal.configuration.created": 1,
+   "price.created": 1,
+   "plan.created": 1,
+   "product.created": 1,
+   "capability.updated": 1
+  },
+  "api_versions": [
+   "2026-08-26.dahlia"
+  ],
+  "newest_created": 1789991164
+ }
+}

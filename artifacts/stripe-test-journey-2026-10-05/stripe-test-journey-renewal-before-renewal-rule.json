@@ -1,0 +1,180 @@
+{
+ "all_passed": false,
+ "deliveries": [
+  {
+   "event_id": "evt_1UNLnCCCxLfArYEDQBvdmfNd",
+   "statuses": [
+    503
+   ],
+   "type": "invoice.paid"
+  },
+  {
+   "event_id": "evt_1UNLnDCCxLfArYEDAOU6uLki",
+   "statuses": [
+    200
+   ],
+   "type": "customer.subscription.created"
+  },
+  {
+   "event_id": "evt_1UNLnNCCxLfArYEDI5oTNqY4",
+   "statuses": [
+    200
+   ],
+   "type": "customer.subscription.updated"
+  },
+  {
+   "event_id": "evt_1UNLnnCCxLfArYED0twfE1pC",
+   "statuses": [
+    200
+   ],
+   "type": "invoice.paid"
+  }
+ ],
+ "limitations": [
+  "Stripe test mode only: no live account, card or money is involved.",
+  "The identity provider is the loopback stand-in the website checks use; production sign-up is not exercised.",
+  "A test clock moves Stripe's time only. The service keeps its own clock, so an access period that lapses with no event at all is not observed here; the renewal steps observe the events Stripe sends.",
+  "Events reach the service through `stripe listen`, in the account's default API version, not through a registered endpoint."
+ ],
+ "listener_api_version": "2026-08-26.dahlia",
+ "listener_lines": [
+  "<claude-code-hint v=\"1\" type=\"plugin\" value=\"stripe@claude-plugins-official\" />",
+  "Checking for new versions...",
+  "",
+  "A newer version of the Stripe CLI is available, please update to: v1.53.0",
+  "Getting ready...",
+  "Ready! You are using Stripe API Version [2026-08-26.dahlia]. Your webhook signing secret is whsec_[removed] (^C to quit)",
+  "2026-10-05 19:59:39   --> invoice.paid [evt_1UNLnCCCxLfArYEDQBvdmfNd]",
+  "2026-10-05 19:59:39   --> customer.subscription.created [evt_1UNLnDCCxLfArYEDAOU6uLki]",
+  "2026-10-05 19:59:39  <--  [503] POST http://127.0.0.1:35645/api/v1/billing/webhook [evt_1UNLnCCCxLfArYEDQBvdmfNd]",
+  "2026-10-05 19:59:40  <--  [200] POST http://127.0.0.1:35645/api/v1/billing/webhook [evt_1UNLnDCCxLfArYEDAOU6uLki]",
+  "2026-10-05 19:59:50   --> customer.subscription.updated [evt_1UNLnNCCxLfArYEDI5oTNqY4]",
+  "2026-10-05 19:59:51  <--  [200] POST http://127.0.0.1:35645/api/v1/billing/webhook [evt_1UNLnNCCxLfArYEDI5oTNqY4]",
+  "2026-10-05 20:00:15   --> invoice.paid [evt_1UNLnnCCxLfArYED0twfE1pC]",
+  "2026-10-05 20:00:17  <--  [200] POST http://127.0.0.1:35645/api/v1/billing/webhook [evt_1UNLnnCCxLfArYED0twfE1pC]",
+  ""
+ ],
+ "livemode": false,
+ "observed_at": "2026-10-05T23:59:13.486643+00:00",
+ "part": "renewal",
+ "passed": 5,
+ "record_type": "stripe_test_journey_report/v1",
+ "sandbox_objects": {
+  "currency": "usd",
+  "plan_label": "Baltor Pro",
+  "plan_ref": "pro-monthly",
+  "portal_configuration_id": "bpc_1UNLOICCxLfArYEDVq73Jv1h",
+  "price_id": "price_1UNLOFCCxLfArYEDLSYsBUWA",
+  "unit_amount": 2900
+ },
+ "service_refusals": [
+  {
+   "at": 1791244803,
+   "method": "POST",
+   "refusal_code": "plan_required",
+   "route": "/api/v1/download",
+   "status": 403
+  },
+  {
+   "at": 1791244779,
+   "method": "POST",
+   "refusal_code": "billing_commit_unknown",
+   "route": "/api/v1/billing/webhook",
+   "status": 503
+  }
+ ],
+ "steps": [
+  {
+   "checks": {
+    "billing_policy_current": true,
+    "billing_sessions_installed": true,
+    "billing_webhook_installed": true
+   },
+   "passed": true,
+   "seconds": 0.0,
+   "step": "service_reports_billing_installed"
+  },
+  {
+   "activation_status": 200,
+   "founding_offer": "limit_reached",
+   "link_verified": 200,
+   "passed": true,
+   "password_set": 200,
+   "seconds": 0.2,
+   "signed_in": 200,
+   "signup_status": 202,
+   "step": "sign_up_with_email_link_and_password",
+   "tenant_id": "journey-customers.acaecf03d9a39ea4144414ead45407dec612cb1e46c22e938f3e0e8bec26af34"
+  },
+  {
+   "clock": "clock_1UNLmsCCxLfArYEDgZvN7isv",
+   "customer": "cus_VO82wzn9okXEGo",
+   "passed": true,
+   "seconds": 0.6,
+   "step": "customer_on_a_test_clock_bound_by_the_host"
+  },
+  {
+   "checkout_status": 200,
+   "entitlement": "bodies",
+   "error": null,
+   "passed": true,
+   "seconds": 23.8,
+   "step": "paid_at_checkout_for_the_clock_customer",
+   "subscription": "sub_1UNLnACCxLfArYED2KL5RV1l"
+  },
+  {
+   "clock_advanced": true,
+   "download_status": 403,
+   "entitlement": "metadata",
+   "events": [
+    {
+     "event_id": "evt_1UNLnNCCxLfArYEDI5oTNqY4",
+     "statuses": [
+      200
+     ],
+     "type": "customer.subscription.updated"
+    }
+   ],
+   "latest_invoice_status": "draft",
+   "passed": false,
+   "refusal": {
+    "code": "plan_required",
+    "details": {
+     "account_url": "http://127.0.0.1:35645/account",
+     "founding_offer_open": false,
+     "founding_places_remaining": null,
+     "get_started_url": "http://127.0.0.1:35645/get-started",
+     "plan": "Baltor Pro",
+     "pricing_url": "http://127.0.0.1:35645/pricing",
+     "record_type": "service_plan_required/v1"
+    }
+   },
+   "seconds": 45.9,
+   "step": "access_continues_while_the_renewal_invoice_is_a_draft",
+   "subscription_status": "active"
+  },
+  {
+   "download_status": 200,
+   "entitlement": "bodies",
+   "events": [
+    "evt_1UNLnnCCxLfArYED0twfE1pC"
+   ],
+   "latest_invoice_status": "paid",
+   "passed": true,
+   "seconds": 60.6,
+   "step": "paid_renewal_extends_access_to_the_next_month"
+  }
+ ],
+ "stopped": "RuntimeError: stripe_test_api_refused:invalid_request_error",
+ "stripe_account": "acct_1UHZ9KCCxLfArYED",
+ "stripe_objects_created": [
+  {
+   "id": "clock_1UNLmsCCxLfArYEDgZvN7isv",
+   "kind": "test_clock"
+  }
+ ],
+ "stripe_objects_removed": [
+  "clock_1UNLmsCCxLfArYEDgZvN7isv"
+ ],
+ "total": 6
+}

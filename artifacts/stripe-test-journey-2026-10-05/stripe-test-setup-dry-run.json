@@ -1,0 +1,107 @@
+{
+  "account_id": "acct_1UHZ9KCCxLfArYED",
+  "api_version": "2025-03-31.basil",
+  "automatic_retries": 0,
+  "committed_provider_writes": 0,
+  "coupon": {
+    "duration": "once",
+    "id": null,
+    "idempotency_key": null,
+    "percent_off": 40,
+    "state": "missing"
+  },
+  "detail": null,
+  "failure": null,
+  "host_billing_block": null,
+  "host_billing_block_kind": "service_http_host_configuration/v1 billing block",
+  "limitations": [
+    "These checks cover the Stripe test environment only. A live account needs the owner's identity and bank verification.",
+    "The report does not show that a checkout, a portal visit or a webhook delivery works. Run those journeys separately.",
+    "The signing secret is in the workstation keyring only. The running service does not hold it until an operator sets it.",
+    "A live portal configuration also needs a business profile with a privacy policy address and a terms of service address.",
+    "One Stripe account holds one signing secret for the service. A second endpoint address needs the first one removed first.",
+    "A run that created the endpoint and could not keep its signing secret leaves an endpoint to delete at Stripe before the next run.",
+    "The report shows that the coupon and its promotion code exist. It does not show a checkout that applied the discount."
+  ],
+  "livemode": false,
+  "mode": "dry_run",
+  "observed_at": "2026-10-05T23:33:46+00:00",
+  "outcome": "dry_run_nothing_written",
+  "plan": {
+    "coupon_id": "baltor_invitation",
+    "currency": "usd",
+    "interval": "month",
+    "interval_count": 1,
+    "price_lookup_key": "baltor_pro_monthly_usd",
+    "product_name": "Baltor Pro",
+    "promotion_code": "BALTORFOUNDING40",
+    "record_type": "stripe_sandbox_plan/v1",
+    "unit_amount": 2900
+  },
+  "portal_configuration": {
+    "id": null,
+    "idempotency_key": null,
+    "state": "missing"
+  },
+  "price": {
+    "id": null,
+    "idempotency_key": null,
+    "state": "missing"
+  },
+  "product": {
+    "id": null,
+    "idempotency_key": null,
+    "state": "missing"
+  },
+  "promotion_code": {
+    "carried_by": "an invitation sent to one reviewed waiting list entry",
+    "code": "BALTORFOUNDING40",
+    "id": null,
+    "idempotency_key": null,
+    "state": "missing"
+  },
+  "provider_origin": "https://api.stripe.com",
+  "provider_requests": 7,
+  "provider_status": 200,
+  "provider_writes": 0,
+  "record_type": "stripe_sandbox_setup_report/v1",
+  "service_environment_names": {
+    "api_key": "STRIPE_API_KEY",
+    "webhook_signing_secret": "STRIPE_WEBHOOK_SECRET"
+  },
+  "signing_secret": {
+    "in_keyring": false,
+    "keyring_attributes": {
+      "account": "acct_1UHZ9KCCxLfArYED",
+      "purpose": "webhook-signing",
+      "service": "stripe"
+    },
+    "keyring_label": "Baltor operator / stripe-test-webhook-secret",
+    "keyring_reference": "stripe-test-webhook-secret",
+    "manifest_entry": {
+      "account": "acct_1UHZ9KCCxLfArYED",
+      "endpoint_url": "https://app.baltor.ai/api/v1/billing/webhook",
+      "environment": "STRIPE_WEBHOOK_SECRET",
+      "purpose": "webhook-signing",
+      "required_prefixes": [
+        "whsec_"
+      ],
+      "service": "stripe",
+      "value_pattern": "whsec_[A-Za-z0-9+/=_-]{16,256}"
+    },
+    "value_recorded": false
+  },
+  "webhook_endpoint": {
+    "enabled_events": [
+      "customer.subscription.created",
+      "customer.subscription.updated",
+      "customer.subscription.deleted",
+      "invoice.paid",
+      "invoice.payment_failed"
+    ],
+    "id": null,
+    "idempotency_key": null,
+    "state": "missing",
+    "url": "https://app.baltor.ai/api/v1/billing/webhook"
+  }
+}

@@ -1,0 +1,322 @@
+{
+ "all_passed": true,
+ "deliveries": [
+  {
+   "event_id": "evt_1UNM6LCCxLfArYEDV85cRgp8",
+   "statuses": [
+    503
+   ],
+   "type": "invoice.paid"
+  },
+  {
+   "event_id": "evt_1UNM6LCCxLfArYEDNzYNUbE7",
+   "statuses": [
+    200
+   ],
+   "type": "customer.subscription.created"
+  },
+  {
+   "event_id": "evt_1UNM6bCCxLfArYEDvEcOeME0",
+   "statuses": [
+    200
+   ],
+   "type": "customer.subscription.updated"
+  },
+  {
+   "event_id": "evt_1UNM6hCCxLfArYED0AS3L4oR",
+   "statuses": [
+    200
+   ],
+   "type": "customer.subscription.deleted"
+  }
+ ],
+ "limitations": [
+  "Stripe test mode only: no live account, card or money is involved.",
+  "The identity provider is the loopback stand-in the website checks use; production sign-up is not exercised.",
+  "A test clock moves Stripe's time only. The service keeps its own clock, so an access period that lapses with no event at all is not observed here; the renewal steps observe the events Stripe sends.",
+  "Events reach the service through `stripe listen`, in the account's default API version, not through a registered endpoint."
+ ],
+ "listener_api_version": "2026-08-26.dahlia",
+ "listener_lines": [
+  "<claude-code-hint v=\"1\" type=\"plugin\" value=\"stripe@claude-plugins-official\" />",
+  "Checking for new versions...",
+  "",
+  "A newer version of the Stripe CLI is available, please update to: v1.53.0",
+  "Getting ready...",
+  "Ready! You are using Stripe API Version [2026-08-26.dahlia]. Your webhook signing secret is whsec_[removed] (^C to quit)",
+  "2026-10-05 20:19:25   --> invoice.paid [evt_1UNM6LCCxLfArYEDV85cRgp8]",
+  "2026-10-05 20:19:25   --> customer.subscription.created [evt_1UNM6LCCxLfArYEDNzYNUbE7]",
+  "2026-10-05 20:19:26  <--  [503] POST http://127.0.0.1:39015/api/v1/billing/webhook [evt_1UNM6LCCxLfArYEDV85cRgp8]",
+  "2026-10-05 20:19:27  <--  [200] POST http://127.0.0.1:39015/api/v1/billing/webhook [evt_1UNM6LCCxLfArYEDNzYNUbE7]",
+  "2026-10-05 20:19:41   --> customer.subscription.updated [evt_1UNM6bCCxLfArYEDvEcOeME0]",
+  "2026-10-05 20:19:42  <--  [200] POST http://127.0.0.1:39015/api/v1/billing/webhook [evt_1UNM6bCCxLfArYEDvEcOeME0]",
+  "2026-10-05 20:19:47   --> customer.subscription.deleted [evt_1UNM6hCCxLfArYED0AS3L4oR]",
+  "2026-10-05 20:19:48  <--  [200] POST http://127.0.0.1:39015/api/v1/billing/webhook [evt_1UNM6hCCxLfArYED0AS3L4oR]",
+  ""
+ ],
+ "livemode": false,
+ "observed_at": "2026-10-06T00:18:45.698489+00:00",
+ "part": "checkout",
+ "passed": 18,
+ "record_type": "stripe_test_journey_report/v1",
+ "sandbox_objects": {
+  "currency": "usd",
+  "plan_label": "Baltor Pro",
+  "plan_ref": "pro-monthly",
+  "portal_configuration_id": "bpc_1UNLOICCxLfArYEDVq73Jv1h",
+  "price_id": "price_1UNLOFCCxLfArYEDLSYsBUWA",
+  "unit_amount": 2900
+ },
+ "service_refusals": [
+  {
+   "at": 1791245989,
+   "method": "POST",
+   "refusal_code": "plan_required",
+   "route": "/mcp",
+   "status": 403
+  },
+  {
+   "at": 1791245989,
+   "method": "POST",
+   "refusal_code": "plan_required",
+   "route": "/api/v1/download",
+   "status": 403
+  },
+  {
+   "at": 1791245966,
+   "method": "POST",
+   "refusal_code": "billing_reconciliation_pending",
+   "route": "/api/v1/billing/webhook",
+   "status": 503
+  },
+  {
+   "at": 1791245944,
+   "method": "POST",
+   "refusal_code": "plan_required",
+   "route": "/mcp",
+   "status": 403
+  },
+  {
+   "at": 1791245943,
+   "method": "POST",
+   "refusal_code": "plan_required",
+   "route": "/api/v1/download",
+   "status": 403
+  }
+ ],
+ "steps": [
+  {
+   "checks": {
+    "billing_policy_current": true,
+    "billing_sessions_installed": true,
+    "billing_webhook_installed": true
+   },
+   "passed": true,
+   "seconds": 0.0,
+   "step": "service_reports_billing_installed"
+  },
+  {
+   "activation_status": 200,
+   "founding_offer": "limit_reached",
+   "link_verified": 200,
+   "passed": true,
+   "password_set": 200,
+   "seconds": 0.2,
+   "signed_in": 200,
+   "signup_status": 202,
+   "step": "sign_up_with_email_link_and_password",
+   "tenant_id": "journey-customers.d816467f9e1d41c4cb4f95f7173ce03665e876f3e9ee7804732ee695206b8677"
+  },
+  {
+   "access_source": "none",
+   "entitlement": "metadata",
+   "passed": true,
+   "seconds": 0.2,
+   "status": 200,
+   "step": "new_account_holds_no_plan",
+   "tenant_id": "journey-customers.d816467f9e1d41c4cb4f95f7173ce03665e876f3e9ee7804732ee695206b8677"
+  },
+  {
+   "hits": 3,
+   "passed": true,
+   "seconds": 0.3,
+   "step": "search_is_free_without_a_plan"
+  },
+  {
+   "code": "plan_required",
+   "offer_paths": [
+    "/account",
+    "/get-started",
+    "/pricing"
+   ],
+   "passed": true,
+   "seconds": 0.4,
+   "status": 403,
+   "step": "download_refused_with_the_plan_offer"
+  },
+  {
+   "passed": true,
+   "seconds": 0.5,
+   "status": 200,
+   "step": "client_key_issued_for_a_harness"
+  },
+  {
+   "code": "plan_required",
+   "is_error": true,
+   "offer": "service_plan_required/v1",
+   "passed": true,
+   "pricing_url_path": "/pricing",
+   "seconds": 0.6,
+   "step": "mcp_read_refused_with_the_plan_offer"
+  },
+  {
+   "passed": true,
+   "plans": [
+    {
+     "label": "Baltor Pro",
+     "plan_ref": "pro-monthly"
+    }
+   ],
+   "seconds": 0.7,
+   "step": "plans_offer_checkout_and_no_portal_before_payment",
+   "unavailable_reason": ""
+  },
+  {
+   "customer": "cus_VO8MigbPvuyjBa",
+   "passed": true,
+   "seconds": 4.8,
+   "session": "cs_test_a1wirAWmpi6Zfq7ybXJn0n9AgV6Ia5Ui13VSA1FB5tVIcgw6qr2SM429K4",
+   "status": 200,
+   "step": "checkout_session_created_with_one_customer_for_the_account"
+  },
+  {
+   "error": null,
+   "page_terms": [
+    "By subscribing, you agree to Link's Terms and Privacy Policy and authorize Link to charge you for the described subscription until you cancel. This subscription is provided by Baltor sandbox in accordance with their terms.",
+    "Sold through"
+   ],
+   "passed": true,
+   "returned_path": "/app",
+   "screenshot": null,
+   "seconds": 24.5,
+   "step": "paid_on_the_stripe_page_with_a_test_card",
+   "tax_lines": [
+    "Sales Tax (6%)"
+   ],
+   "total_due_text": "$30.74per month"
+  },
+  {
+   "access_source": "subscription",
+   "deliveries": [
+    {
+     "event_id": "evt_1UNM6LCCxLfArYEDV85cRgp8",
+     "statuses": [
+      503
+     ],
+     "type": "invoice.paid"
+    },
+    {
+     "event_id": "evt_1UNM6LCCxLfArYEDNzYNUbE7",
+     "statuses": [
+      200
+     ],
+     "type": "customer.subscription.created"
+    }
+   ],
+   "entitlement": "bodies",
+   "latest_invoice_status": "paid",
+   "passed": true,
+   "seconds": 25.0,
+   "status": 200,
+   "step": "signed_events_grant_downloads",
+   "subscription": "sub_1UNM6ICCxLfArYEDM6Ltfg3h",
+   "subscription_status": "active",
+   "tenant_id": "journey-customers.d816467f9e1d41c4cb4f95f7173ce03665e876f3e9ee7804732ee695206b8677"
+  },
+  {
+   "passed": true,
+   "refusal": null,
+   "seconds": 25.1,
+   "status": 200,
+   "step": "paid_account_downloads_over_http"
+  },
+  {
+   "code": null,
+   "is_error": false,
+   "passed": true,
+   "seconds": 25.2,
+   "step": "paid_account_reads_over_mcp"
+  },
+  {
+   "current_period_records": 1,
+   "passed": true,
+   "records": 1,
+   "seconds": 25.2,
+   "step": "downloads_are_recorded_as_usage"
+  },
+  {
+   "passed": true,
+   "portal_available": true,
+   "seconds": 26.5,
+   "status": 200,
+   "step": "portal_session_created_after_payment"
+  },
+  {
+   "after_cancel_text": [
+    "Cancels Nov 6",
+    "Don't cancel subscription"
+   ],
+   "error": null,
+   "next_billing_line": "Your next billing date is November 6, 2026.",
+   "passed": true,
+   "price_lines": [
+    "$30.74 per month",
+    "$30.74"
+   ],
+   "seconds": 41.6,
+   "shows_invoice_history": true,
+   "shows_paid_invoice": true,
+   "step": "portal_lists_the_paid_invoice_and_cancels_at_the_period_end"
+  },
+  {
+   "cancel_at": 1793924358,
+   "cancel_at_period_end": false,
+   "download_status": 200,
+   "entitlement": "bodies",
+   "events": [
+    "evt_1UNM6bCCxLfArYEDvEcOeME0"
+   ],
+   "passed": true,
+   "period_end": 1793924358,
+   "seconds": 42.1,
+   "step": "access_continues_until_the_paid_month_ends"
+  },
+  {
+   "access_source": "none",
+   "amount": 3074,
+   "download_status": 403,
+   "entitlement": "metadata",
+   "events": [
+    "evt_1UNM6hCCxLfArYED0AS3L4oR"
+   ],
+   "mcp_code": "plan_required",
+   "passed": true,
+   "refund": "re_3UNM6GCCxLfArYED0RtgD6vs",
+   "refund_status": "succeeded",
+   "seconds": 45.9,
+   "step": "refund_and_cancellation_end_access",
+   "subscription_status": "canceled"
+  }
+ ],
+ "stripe_account": "acct_1UHZ9KCCxLfArYED",
+ "stripe_objects_created": [
+  {
+   "id": "cus_VO8MigbPvuyjBa",
+   "kind": "customer"
+  }
+ ],
+ "stripe_objects_removed": [
+  "cus_VO8MigbPvuyjBa"
+ ],
+ "total": 18
+}
