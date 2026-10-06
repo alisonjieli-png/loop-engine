@@ -12,14 +12,16 @@ Kind: current decision route with retained dated decisions. The owner's current 
 - Local or browser execution does not imply that no information leaves the device. Record inference, rendering, external assets and telemetry separately. Current approved privacy terms govern public behavior.
 - The roadmap remains authoritative. Reconciliation changes priorities and evidence descriptions; a new design alone does not complete a task.
 
-## Intelligence and full-library offerings, October 6, 2026
+## Feeds and Components offerings, October 6, 2026
 
-The owner requests two offerings. The lower-priced offering is a maintained
-intelligence service for agents, developers and harnesses: current research,
+The owner requests two offerings with distinct customer-facing names. **Feeds**
+is the lower-priced maintained intelligence service for agents, developers and harnesses: current research,
 comparisons, lists of compatible services and tools, and context files. It
 should support on-demand retrieval, daily briefings and opt-in updates relevant
 to the subscriber's declared work. The higher-priced offering includes that
-intelligence and the full library of functions, code, tools and reusable files.
+intelligence and the full **Components** library of functions, code, tools and reusable files.
+Feeds can produce Markdown, context, OKF and other files. A feed and a reusable
+component are different product concepts even when both have file outputs.
 
 Use one catalogue, identity service and delivery contract. Offering access is
 separate from review tier, source family and file extension. A Markdown file
@@ -41,6 +43,16 @@ receiving a notice never executes its contents. Task-specific subscriptions
 use information the customer deliberately supplies, not automatic inspection
 of their project or conversation. Roadmap S-6.214 owns maintained intelligence;
 the existing subscription and delivery boundaries own the offering split.
+
+The owner also requests an active checklist, procedures and a Gantt-style
+working plan, with iterative implementation through reconciliation. The
+[delivery plan](../roadmap/DELIVERY-SEQUENCE.md#active-execution-plan-october-6)
+provides the ordered view over the existing roadmap. The owner explicitly
+permits website downtime during this optimization work. That permits a
+planned interruption when useful; it does not waive content integrity,
+authorization, scope, recovery or post-change verification. Prefer the measured
+bottleneck and record the result instead of promising a universally optimal
+architecture.
 
 ## Public Good access, September 30, 2026
 
