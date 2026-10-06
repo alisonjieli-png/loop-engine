@@ -1,0 +1,349 @@
+{
+ "account": "pilot-owner",
+ "body_text_kept": false,
+ "capabilities_error": null,
+ "capabilities_status": 200,
+ "catalogue_release": "76e970a98201e0cd17be65c8696c09c9d336453441595d0e3c0043819b2f1516",
+ "checked_at": "2026-10-06T00:17:05.821533+00:00",
+ "checker_sha256": "456374d5b28aa589dcf7787c4c96f97dd52ca52ff42596e60dbbfdcfcd798a97",
+ "credential": {
+  "account": "pilot-owner",
+  "expires_at": "2026-10-12T23:52:16+00:00",
+  "expires_in_seconds": 603310,
+  "key_id": "91ac15841d3a473c8406eee6c3228cff",
+  "reference": "baltor-pilot-owner"
+ },
+ "credential_printed": false,
+ "credential_warning": null,
+ "failure_code": null,
+ "http_calls": 24,
+ "origin": "https://app.baltor.ai",
+ "passed": true,
+ "physical_model_calls": 0,
+ "protocol_versions": [
+  "2025-11-25",
+  "2026-07-28"
+ ],
+ "published_base": "https://baltor.ai",
+ "published_base_source": "service_resource",
+ "query": "review inputs",
+ "quickstarts": [
+  {
+   "catalogue_release": "76e970a98201e0cd17be65c8696c09c9d336453441595d0e3c0043819b2f1516",
+   "digest_prefix": "13c13dbc0592",
+   "harness": "Claude Code",
+   "hits": 5,
+   "http_calls": 5,
+   "id": "claude-code",
+   "identity": "orient_on_a_task_and_write_its_contracts",
+   "page": "docs/guides/quickstart-claude-code.md",
+   "passed": true,
+   "request_id": "quickstart-claude-code-20261006-38899161c59b",
+   "step_effects": "reads_fs, writes_fs, spawns_process, network",
+   "steps": [
+    {
+     "detail": "https://baltor.ai",
+     "name": "page_names_the_published_base",
+     "passed": true
+    },
+    {
+     "detail": "review inputs",
+     "name": "page_documents_the_first_search",
+     "passed": true
+    },
+    {
+     "detail": "the claude-code recipe reviewed 2026-09-27",
+     "name": "page_matches_the_published_recipe",
+     "passed": true
+    },
+    {
+     "detail": "protocol 2025-11-25",
+     "name": "connected",
+     "passed": true
+    },
+    {
+     "detail": "12 tools",
+     "name": "listed",
+     "passed": true
+    },
+    {
+     "detail": "every tool the page names is listed",
+     "name": "page_names_listed_tools",
+     "passed": true
+    },
+    {
+     "detail": "5 hits",
+     "name": "searched",
+     "passed": true
+    },
+    {
+     "detail": "2861 bytes, metered True",
+     "name": "downloaded",
+     "passed": true
+    },
+    {
+     "detail": "sha256 13c13dbc0592… promised 13c13dbc0592…",
+     "name": "digest_matches",
+     "passed": true
+    }
+   ],
+   "wire_path": "protocol"
+  },
+  {
+   "catalogue_release": "76e970a98201e0cd17be65c8696c09c9d336453441595d0e3c0043819b2f1516",
+   "digest_prefix": "13c13dbc0592",
+   "harness": "Codex",
+   "hits": 5,
+   "http_calls": 5,
+   "id": "codex",
+   "identity": "orient_on_a_task_and_write_its_contracts",
+   "page": "docs/guides/quickstart-codex.md",
+   "passed": true,
+   "request_id": "quickstart-codex-20261006-f2094d193dc1",
+   "step_effects": "reads_fs, writes_fs, spawns_process, network",
+   "steps": [
+    {
+     "detail": "https://baltor.ai",
+     "name": "page_names_the_published_base",
+     "passed": true
+    },
+    {
+     "detail": "review inputs",
+     "name": "page_documents_the_first_search",
+     "passed": true
+    },
+    {
+     "detail": "the codex recipe reviewed 2026-09-27",
+     "name": "page_matches_the_published_recipe",
+     "passed": true
+    },
+    {
+     "detail": "protocol 2025-11-25",
+     "name": "connected",
+     "passed": true
+    },
+    {
+     "detail": "12 tools",
+     "name": "listed",
+     "passed": true
+    },
+    {
+     "detail": "every tool the page names is listed",
+     "name": "page_names_listed_tools",
+     "passed": true
+    },
+    {
+     "detail": "5 hits",
+     "name": "searched",
+     "passed": true
+    },
+    {
+     "detail": "2861 bytes, metered True",
+     "name": "downloaded",
+     "passed": true
+    },
+    {
+     "detail": "sha256 13c13dbc0592… promised 13c13dbc0592…",
+     "name": "digest_matches",
+     "passed": true
+    }
+   ],
+   "wire_path": "protocol"
+  },
+  {
+   "catalogue_release": "76e970a98201e0cd17be65c8696c09c9d336453441595d0e3c0043819b2f1516",
+   "digest_prefix": "13c13dbc0592",
+   "harness": "OpenCode",
+   "hits": 5,
+   "http_calls": 5,
+   "id": "opencode",
+   "identity": "orient_on_a_task_and_write_its_contracts",
+   "page": "docs/guides/quickstart-opencode.md",
+   "passed": true,
+   "request_id": "quickstart-opencode-20261006-0e35c26cea2c",
+   "step_effects": "reads_fs, writes_fs, spawns_process, network",
+   "steps": [
+    {
+     "detail": "https://baltor.ai",
+     "name": "page_names_the_published_base",
+     "passed": true
+    },
+    {
+     "detail": "review inputs",
+     "name": "page_documents_the_first_search",
+     "passed": true
+    },
+    {
+     "detail": "the opencode recipe reviewed 2026-09-27",
+     "name": "page_matches_the_published_recipe",
+     "passed": true
+    },
+    {
+     "detail": "protocol 2025-11-25",
+     "name": "connected",
+     "passed": true
+    },
+    {
+     "detail": "12 tools",
+     "name": "listed",
+     "passed": true
+    },
+    {
+     "detail": "every tool the page names is listed",
+     "name": "page_names_listed_tools",
+     "passed": true
+    },
+    {
+     "detail": "5 hits",
+     "name": "searched",
+     "passed": true
+    },
+    {
+     "detail": "2861 bytes, metered True",
+     "name": "downloaded",
+     "passed": true
+    },
+    {
+     "detail": "sha256 13c13dbc0592… promised 13c13dbc0592…",
+     "name": "digest_matches",
+     "passed": true
+    }
+   ],
+   "wire_path": "protocol"
+  },
+  {
+   "catalogue_release": "76e970a98201e0cd17be65c8696c09c9d336453441595d0e3c0043819b2f1516",
+   "digest_prefix": "13c13dbc0592",
+   "harness": "Pi",
+   "hits": 5,
+   "http_calls": 4,
+   "id": "pi",
+   "identity": "orient_on_a_task_and_write_its_contracts",
+   "page": "docs/guides/quickstart-pi.md",
+   "passed": true,
+   "request_id": "quickstart-pi-20261006-10b80191a486",
+   "step_effects": "reads_fs, writes_fs, spawns_process, network",
+   "steps": [
+    {
+     "detail": "https://baltor.ai",
+     "name": "page_names_the_published_base",
+     "passed": true
+    },
+    {
+     "detail": "review inputs",
+     "name": "page_documents_the_first_search",
+     "passed": true
+    },
+    {
+     "detail": "the pi recipe reviewed 2026-09-27",
+     "name": "page_matches_the_published_recipe",
+     "passed": true
+    },
+    {
+     "detail": "service_session/v1",
+     "name": "connected",
+     "passed": true
+    },
+    {
+     "detail": "download at /api/v1/download, search service_retrieval_request/v2",
+     "name": "listed",
+     "passed": true
+    },
+    {
+     "detail": "5 hits",
+     "name": "searched",
+     "passed": true
+    },
+    {
+     "detail": "13c13dbc0592…",
+     "name": "manifest_matches",
+     "passed": true
+    },
+    {
+     "detail": "2861 bytes",
+     "name": "downloaded",
+     "passed": true
+    },
+    {
+     "detail": "sha256 13c13dbc0592… promised 13c13dbc0592… header 13c13dbc0592…",
+     "name": "digest_matches",
+     "passed": true
+    }
+   ],
+   "wire_path": "extension"
+  },
+  {
+   "catalogue_release": "76e970a98201e0cd17be65c8696c09c9d336453441595d0e3c0043819b2f1516",
+   "digest_prefix": "13c13dbc0592",
+   "harness": "Baltor Harness",
+   "hits": 3,
+   "http_calls": 3,
+   "id": "baltor-harness",
+   "identity": "orient_on_a_task_and_write_its_contracts",
+   "page": "docs/guides/quickstart-baltor-harness.md",
+   "passed": true,
+   "request_id": "quickstart-baltor-harness-20261006-49df137b1e6c",
+   "step_effects": "reads_fs, writes_fs, spawns_process, network",
+   "steps": [
+    {
+     "detail": "https://baltor.ai",
+     "name": "page_names_the_published_base",
+     "passed": true
+    },
+    {
+     "detail": "review inputs",
+     "name": "page_documents_the_first_search",
+     "passed": true
+    },
+    {
+     "detail": "the baltor-harness recipe reviewed 2026-09-27",
+     "name": "page_matches_the_published_recipe",
+     "passed": true
+    },
+    {
+     "detail": "service_session/v1",
+     "name": "connected",
+     "passed": true
+    },
+    {
+     "detail": "scopes provisioning:metadata, provisioning:read, usage:read",
+     "name": "listed",
+     "passed": true
+    },
+    {
+     "detail": "3 hits",
+     "name": "searched",
+     "passed": true
+    },
+    {
+     "detail": "2861 bytes",
+     "name": "downloaded",
+     "passed": true
+    },
+    {
+     "detail": "sha256 13c13dbc0592… promised 13c13dbc0592… header 13c13dbc0592…",
+     "name": "digest_matches",
+     "passed": true
+    }
+   ],
+   "wire_path": "direct"
+  }
+ ],
+ "quickstarts_passed": 5,
+ "quickstarts_planned": 5,
+ "recipes_error": null,
+ "recipes_record_type": "website_client_recipes/v2",
+ "recipes_reviewed_at": "2026-09-27",
+ "recipes_status": 200,
+ "record_type": "quickstart_live_check/v1",
+ "request_ids": [
+  "quickstart-claude-code-20261006-38899161c59b",
+  "quickstart-codex-20261006-f2094d193dc1",
+  "quickstart-opencode-20261006-0e35c26cea2c",
+  "quickstart-pi-20261006-10b80191a486",
+  "quickstart-baltor-harness-20261006-49df137b1e6c"
+ ],
+ "request_ids_not_confirmed": [],
+ "served_items": 92923,
+ "usage_records_added": 5
+}

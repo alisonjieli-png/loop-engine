@@ -1,0 +1,213 @@
+{
+ "account": "pilot-owner",
+ "body_text_kept": false,
+ "capabilities_error": null,
+ "capabilities_status": 200,
+ "catalogue_release": null,
+ "checked_at": "2026-10-05T23:34:36.718541+00:00",
+ "checker_sha256": "f195e005a4c3904a91c0f8e79012a87d4d5ce928532fd2b2485d304be7363ea8",
+ "credential_printed": false,
+ "http_calls": 7,
+ "origin": "https://baltor.ai",
+ "passed": false,
+ "physical_model_calls": 0,
+ "protocol_versions": [
+  "2025-11-25",
+  "2026-07-28"
+ ],
+ "published_base": "https://baltor.ai",
+ "query": "review inputs",
+ "quickstarts": [
+  {
+   "catalogue_release": null,
+   "digest_prefix": null,
+   "harness": "Claude Code",
+   "hits": 0,
+   "http_calls": 1,
+   "id": "claude-code",
+   "identity": null,
+   "page": "docs/guides/quickstart-claude-code.md",
+   "passed": false,
+   "request_id": null,
+   "step_effects": "reads_fs, writes_fs, spawns_process, network",
+   "steps": [
+    {
+     "detail": "https://baltor.ai",
+     "name": "page_names_the_published_base",
+     "passed": true
+    },
+    {
+     "detail": "review inputs",
+     "name": "page_documents_the_first_search",
+     "passed": true
+    },
+    {
+     "detail": "the claude-code recipe reviewed 2026-09-27",
+     "name": "page_matches_the_published_recipe",
+     "passed": true
+    },
+    {
+     "detail": "initialize answered 401: {\"record_type\":\"service_http_error/v1\",\"error\":{\"code\":\"unauthorized\",\"message\":\"The service did not accept the credential on this request.\",\"next_action\":\"Chec",
+     "name": "connected",
+     "passed": false
+    }
+   ],
+   "wire_path": "protocol"
+  },
+  {
+   "catalogue_release": null,
+   "digest_prefix": null,
+   "harness": "Codex",
+   "hits": 0,
+   "http_calls": 1,
+   "id": "codex",
+   "identity": null,
+   "page": "docs/guides/quickstart-codex.md",
+   "passed": false,
+   "request_id": null,
+   "step_effects": "reads_fs, writes_fs, spawns_process, network",
+   "steps": [
+    {
+     "detail": "https://baltor.ai",
+     "name": "page_names_the_published_base",
+     "passed": true
+    },
+    {
+     "detail": "review inputs",
+     "name": "page_documents_the_first_search",
+     "passed": true
+    },
+    {
+     "detail": "the codex recipe reviewed 2026-09-27",
+     "name": "page_matches_the_published_recipe",
+     "passed": true
+    },
+    {
+     "detail": "initialize answered 401: {\"record_type\":\"service_http_error/v1\",\"error\":{\"code\":\"unauthorized\",\"message\":\"The service did not accept the credential on this request.\",\"next_action\":\"Chec",
+     "name": "connected",
+     "passed": false
+    }
+   ],
+   "wire_path": "protocol"
+  },
+  {
+   "catalogue_release": null,
+   "digest_prefix": null,
+   "harness": "OpenCode",
+   "hits": 0,
+   "http_calls": 1,
+   "id": "opencode",
+   "identity": null,
+   "page": "docs/guides/quickstart-opencode.md",
+   "passed": false,
+   "request_id": null,
+   "step_effects": "reads_fs, writes_fs, spawns_process, network",
+   "steps": [
+    {
+     "detail": "https://baltor.ai",
+     "name": "page_names_the_published_base",
+     "passed": true
+    },
+    {
+     "detail": "review inputs",
+     "name": "page_documents_the_first_search",
+     "passed": true
+    },
+    {
+     "detail": "the opencode recipe reviewed 2026-09-27",
+     "name": "page_matches_the_published_recipe",
+     "passed": true
+    },
+    {
+     "detail": "initialize answered 401: {\"record_type\":\"service_http_error/v1\",\"error\":{\"code\":\"unauthorized\",\"message\":\"The service did not accept the credential on this request.\",\"next_action\":\"Chec",
+     "name": "connected",
+     "passed": false
+    }
+   ],
+   "wire_path": "protocol"
+  },
+  {
+   "catalogue_release": null,
+   "digest_prefix": null,
+   "harness": "Pi",
+   "hits": 0,
+   "http_calls": 1,
+   "id": "pi",
+   "identity": null,
+   "page": "docs/guides/quickstart-pi.md",
+   "passed": false,
+   "request_id": null,
+   "step_effects": "reads_fs, writes_fs, spawns_process, network",
+   "steps": [
+    {
+     "detail": "https://baltor.ai",
+     "name": "page_names_the_published_base",
+     "passed": true
+    },
+    {
+     "detail": "review inputs",
+     "name": "page_documents_the_first_search",
+     "passed": true
+    },
+    {
+     "detail": "the pi recipe reviewed 2026-09-27",
+     "name": "page_matches_the_published_recipe",
+     "passed": true
+    },
+    {
+     "detail": "the session answered 401",
+     "name": "connected",
+     "passed": false
+    }
+   ],
+   "wire_path": "extension"
+  },
+  {
+   "catalogue_release": null,
+   "digest_prefix": null,
+   "harness": "Baltor Harness",
+   "hits": 0,
+   "http_calls": 1,
+   "id": "baltor-harness",
+   "identity": null,
+   "page": "docs/guides/quickstart-baltor-harness.md",
+   "passed": false,
+   "request_id": null,
+   "step_effects": "reads_fs, writes_fs, spawns_process, network",
+   "steps": [
+    {
+     "detail": "https://baltor.ai",
+     "name": "page_names_the_published_base",
+     "passed": true
+    },
+    {
+     "detail": "review inputs",
+     "name": "page_documents_the_first_search",
+     "passed": true
+    },
+    {
+     "detail": "the baltor-harness recipe reviewed 2026-09-27",
+     "name": "page_matches_the_published_recipe",
+     "passed": true
+    },
+    {
+     "detail": "the session answered 401",
+     "name": "connected",
+     "passed": false
+    }
+   ],
+   "wire_path": "direct"
+  }
+ ],
+ "quickstarts_passed": 0,
+ "quickstarts_planned": 5,
+ "recipes_error": null,
+ "recipes_record_type": "website_client_recipes/v2",
+ "recipes_reviewed_at": "2026-09-27",
+ "recipes_status": 200,
+ "record_type": "quickstart_live_check/v1",
+ "request_ids": [],
+ "request_ids_not_confirmed": [],
+ "served_items": 39710,
+ "usage_records_added": 0
+}

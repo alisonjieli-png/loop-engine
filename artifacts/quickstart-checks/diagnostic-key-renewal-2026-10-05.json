@@ -1,0 +1,96 @@
+{
+ "record_type": "diagnostic_key_renewal_evidence/v1",
+ "written_at": "2026-10-06T00:21:00Z",
+ "kind": "Evidence for the October 5, 2026 repair of the nightly quickstart check. Metadata only: key identities, times, scopes and states from the service's administration view and the keyring item's own timestamps; no key value was read into this record or printed.",
+ "cause": {
+  "nightly_log": "~/.le-ci-tmp/quickstart-cron.log: 5 of 5 passed at 05:40 UTC on September 27, 28 and 29; 0 of 5 from September 30 to October 5, every quickstart stopping at connected with 401 unauthorized.",
+  "saved_key": {
+   "reference": "baltor-pilot-owner",
+   "account": "pilot-owner",
+   "keyring_item_last_written": "2026-09-22T18:02:01Z"
+  },
+  "administration_view_before_renewal": {
+   "active_tokens": 0,
+   "pilot-owner": {
+    "key_id": "77c98e912aa74bc78fe57b5bc60bb732",
+    "label": "hosted verification",
+    "scopes": [
+     "provisioning:metadata",
+     "provisioning:read",
+     "usage:read"
+    ],
+    "created_at": "2026-09-22T18:02:01Z",
+    "expires_at": "2026-09-29T18:02:01Z",
+    "state": "expired"
+   },
+   "pilot-boundary": {
+    "key_id": "336a32918fc34d8390c92e4de412bd8c",
+    "label": "hosted verification",
+    "scopes": [
+     "provisioning:metadata",
+     "provisioning:read",
+     "usage:read"
+    ],
+    "created_at": "2026-09-22T18:02:01Z",
+    "expires_at": "2026-09-29T18:02:01Z",
+    "state": "expired"
+   }
+  },
+  "session_with_the_saved_keys": {
+   "pilot-owner": 401,
+   "pilot-boundary": 401
+  },
+  "conclusion": "The keys issued on September 22 for seven days expired on September 29 at 18:02:01 UTC and nothing renewed them. The keyring item was last written at the second the service created the expired key, no later key existed, and a key issued for the same account on October 5 passed all five quickstarts at once."
+ },
+ "documented_path_renewal": {
+  "command": "tools/reissue_service_keys.py --origin https://baltor-pilot.fly.dev --account pilot-owner --account pilot-boundary --lifetime-seconds 604800 --confirm-reissue",
+  "ran_at": "2026-10-05T23:34:54Z",
+  "issued": {
+   "pilot-owner": {
+    "key_id": "a44fbc7bedb94109884947de29059188",
+    "expires_at": "2026-10-12T23:34:54Z"
+   },
+   "pilot-boundary": {
+    "key_id": "4ba2acb61b4d479a9991c2ef7f42a1dc",
+    "expires_at": "2026-10-12T23:34:54Z"
+   }
+  },
+  "quickstarts_before": "quickstart-check-2026-10-05-2.json: 0 of 5, connected 401",
+  "quickstarts_after": "quickstart-check-2026-10-05-3.json: 5 of 5"
+ },
+ "renewal_mode_proof": {
+  "dry_run_at": "2026-10-05T23:52:04Z",
+  "dry_run": "both saved keys accepted, expiring 2026-10-12T23:34:54Z, not due within 345600 seconds, nothing to revoke",
+  "forced_renewal": "tools/reissue_service_keys.py ... --renew-within 604799 --revoke-replaced --confirm-reissue, run once to exercise issue, store, confirm and revoke on the live service",
+  "ran_at": "2026-10-05T23:52:15Z",
+  "renewed": {
+   "pilot-owner": {
+    "key_id": "91ac15841d3a473c8406eee6c3228cff",
+    "expires_at": "2026-10-12T23:52:16Z",
+    "revoked": [
+     "a44fbc7bedb94109884947de29059188"
+    ]
+   },
+   "pilot-boundary": {
+    "key_id": "0875de56db4042398e4a6952bba32462",
+    "expires_at": "2026-10-12T23:52:19Z",
+    "revoked": [
+     "4ba2acb61b4d479a9991c2ef7f42a1dc"
+    ]
+   }
+  },
+  "end_state": "Administration view: two active keys, one for each account, both accepted by /api/v1/session; the replaced keys revoked; the keyring items carry key_id, expires_at and issued_at as attributes; the administrator item untouched since 2026-09-20T02:51:29Z."
+ },
+ "unattended_renewal": {
+  "timer": "baltor-diagnostic-keys.timer (systemd user unit), daily at 05:10 UTC, Persistent=true",
+  "command": "tools/reissue_service_keys.py --origin https://baltor-pilot.fly.dev --account pilot-owner --account pilot-boundary --lifetime-seconds 604800 --renew-within 345600 --revoke-replaced --confirm-reissue",
+  "sandbox_dry_run_at": "2026-10-06T00:14:54Z",
+  "first_unit_run_at": "2026-10-06T00:15:03Z",
+  "first_unit_run": "kept both keys, exit 0",
+  "log": "~/.le-ci-tmp/quickstarts/renewal.log",
+  "disable": "systemctl --user disable --now baltor-diagnostic-keys.timer"
+ },
+ "dependency": "The renewal signs with the baltor-admin key, which no renewal can replace. The takeover checkpoint of September 20, 2026 records that it expires on October 20, 2026; the service reports no expiry for host keys. After that date the renewal exits 3 with administrator_credential_refused and the diagnostic keys lapse within seven days.",
+ "secret_printed": false,
+ "secret_values_in_this_record": false
+}

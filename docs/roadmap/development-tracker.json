@@ -2226,7 +2226,7 @@
      "S-6.182"
     ],
     "id": "S-6.202",
-    "next_local_work": "Add the three harnesses, write the nightly connection job beside the browser nightly, and wire its result into the page.",
+    "next_local_work": "Add the three harnesses, show the canonical https://baltor.ai/mcp as the Get set up endpoint on every hostname, give the OAuth check the Public Good download path for an account without a plan, and wire the nightly results into the page.",
     "phase": 6,
     "status": "proposed",
     "title": "Quickstarts that are checked every night: one copy-paste setup per harness on Get set up, each run against the live endpoint",
@@ -5425,5 +5425,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:34611e4285696602315d4b86cab935ffe08bce4f78e5e6e5d6bbf5af6c32adc7"
+ "source_fingerprint": "sha256:a65c18d3fccd8b70b475ddea269e26453ec285a4f4993b1ee24325f753eb95f7"
 }

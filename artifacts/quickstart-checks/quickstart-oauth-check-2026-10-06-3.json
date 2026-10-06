@@ -1,0 +1,125 @@
+{
+ "account": {
+  "access_source": "founding_free_monthly",
+  "authentication_mode": "browser_identity",
+  "entitlement": "bodies",
+  "signed_up_at": "2026-10-06T00:07:06.631Z",
+  "tenant_id": "customer.cac8d8104f29d6ae17585f7fddaaff375b05b4b75e74807952d4827cff14cb40"
+ },
+ "body_text_kept": false,
+ "callback_delivered_by": "listener",
+ "catalogue_release": "76e970a98201e0cd17be65c8696c09c9d336453441595d0e3c0043819b2f1516",
+ "checked_at": "2026-10-06T00:15:21.561458+00:00",
+ "checker_sha256": "e74a0debe212a68a759dc1e1aa04f147b727a85c319e0a490707bb31d6e72a35",
+ "claude_code_version": "2.1.290 (Claude Code)",
+ "client": {
+  "client_id_prefix": "55b89515",
+  "redirect_uri": "http://localhost:57853/callback",
+  "scopes_requested": [
+   "provisioning:metadata",
+   "provisioning:read",
+   "usage:read"
+  ]
+ },
+ "consent": {
+  "client_name": "Claude Code (baltor)",
+  "destination": "http://localhost:57853/callback",
+  "heading": "Connect your app to Baltor",
+  "phone_no_horizontal_overflow": true,
+  "scopes": [
+   "Search and inspect your component library, rate downloaded material and send requests for material to staff.",
+   "Download permitted files and report problems with material you have used.",
+   "Read your own recorded library usage."
+  ]
+ },
+ "credential_printed": false,
+ "digest_prefix": "13c13dbc0592",
+ "failed_step": null,
+ "harness": "Claude Code",
+ "http_calls": 15,
+ "identity": "orient_on_a_task_and_write_its_contracts",
+ "origin": "https://baltor.ai",
+ "passed": true,
+ "physical_model_calls": 0,
+ "published_base": "https://baltor.ai",
+ "record_type": "quickstart_oauth_check/v1",
+ "request_id": "quickstart-claude-code-20261006-ee03948a479c",
+ "steps": [
+  {
+   "detail": "customer.cac8d8104f2 signed up through Get started at 2026-10-06T00:07:06.631Z, access founding_free_monthly",
+   "name": "account_ready",
+   "passed": true
+  },
+  {
+   "detail": "https://baltor.ai/.well-known/oauth-protected-resource/mcp",
+   "name": "challenge_names_the_resource",
+   "passed": true
+  },
+  {
+   "detail": "issuer https://baltor.ai, scopes provisioning:metadata provisioning:read usage:read",
+   "name": "discovery_matches",
+   "passed": true
+  },
+  {
+   "detail": "! Needs authentication",
+   "name": "claude_code_needs_authentication",
+   "passed": true
+  },
+  {
+   "detail": "client 55b89515…, redirect http://localhost:57853/callback, scopes provisioning:metadata provisioning:read usage:read",
+   "name": "claude_code_authorization_requested",
+   "passed": true
+  },
+  {
+   "detail": "client 'Claude Code (baltor)', 3 scopes shown",
+   "name": "consented",
+   "passed": true
+  },
+  {
+   "detail": "access and refresh token stored; redirect taken by listener",
+   "name": "claude_code_token_issued",
+   "passed": true
+  },
+  {
+   "detail": "✔ Connected",
+   "name": "claude_code_connected",
+   "passed": true
+  },
+  {
+   "detail": "protocol 2025-11-25",
+   "name": "connected",
+   "passed": true
+  },
+  {
+   "detail": "12 tools",
+   "name": "listed",
+   "passed": true
+  },
+  {
+   "detail": "5 hits",
+   "name": "searched",
+   "passed": true
+  },
+  {
+   "detail": "2861 bytes, metered True",
+   "name": "downloaded",
+   "passed": true
+  },
+  {
+   "detail": "sha256 13c13dbc0592… promised 13c13dbc0592…",
+   "name": "digest_matches",
+   "passed": true
+  },
+  {
+   "detail": "the pair rotated; the old refresh token is refused with invalid_grant",
+   "name": "refreshed",
+   "passed": true
+  },
+  {
+   "detail": "revocation ended the delegation; the access token is refused",
+   "name": "revoked",
+   "passed": true
+  }
+ ],
+ "usage_records_added": 1
+}
