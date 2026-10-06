@@ -464,6 +464,7 @@ class LaneRefusalTests(Temporary):
         ledger = self.ledger()
         opener = self.Opener()
         run = Run(library=library, products=[built], executors=executors, ledger=ledger, minutes=1, resolve_licences=False,
+                  minimum_free_bytes=0,
                   transport=Transport(load_policy(), opener=opener, environment=environment))
         return run, run.lanes[0], ledger, opener
 
