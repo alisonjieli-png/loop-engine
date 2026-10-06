@@ -135,13 +135,13 @@
   },
   "usage-and-what-you-pay-for": {
    "body_address": "/assets/docs/usage-and-what-you-pay-for.html",
-   "body_digest": "cac6d17cbbddd84f8cf785e0a22ff68e549e077fbb3922d065a48642976529c8",
+   "body_digest": "8af15e47801a435a44eb526cce55f80ea0a5204a44c3660fe447701b50593e82",
    "heading": "Usage and what you pay for",
    "id": "usage-and-what-you-pay-for",
    "kind_line": "Kind: customer guide to the plan, download usage and uncertain outcomes.",
    "record_type": "website_documentation_page/v1",
    "repository_path": "docs/guides/service-usage-and-what-you-pay-for.md",
-   "source_digest": "a6715ae8614b44e10e9598a0a12619990bbe2ecc5cc25a6db9114517c8389ad8",
+   "source_digest": "0cd6759f96958243b370e7ee3d97b00628b6a8b542bc3d4420270d8f1bf65904",
    "title": "Usage and what you pay for"
   },
   "what-baltor-is": {
@@ -157,13 +157,13 @@
   },
   "your-account": {
    "body_address": "/assets/docs/your-account.html",
-   "body_digest": "8f717149850e8bfb43d915d698503d9b74612b85461c00f7ebed9aaca460ec18",
+   "body_digest": "2eec6505820262fd3e0541b9d39cead2cfd99e890c56ed26a7d758bdb505e076",
    "heading": "Your account",
    "id": "your-account",
    "kind_line": "Kind: customer guide to sign-in, personal client tokens and access decisions.",
    "record_type": "website_documentation_page/v1",
    "repository_path": "docs/guides/service-your-account.md",
-   "source_digest": "0e8f4f701ff533ef5d3b7e9c5695651b75f7f7ff30d00212a2cabc4fbd2ff697",
+   "source_digest": "27c05a71ee3f27e37622ce2f98725c191fac47a9aa91180ade1af8af8e9029e7",
    "title": "Your account"
   }
  },
