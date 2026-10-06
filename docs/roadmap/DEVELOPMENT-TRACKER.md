@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:15f3e474d67f7ede14fb2df63c94ab3ff61d7d6e1e9a6e24439c065fc330bd92`.
+Source fingerprint: `sha256:a65c18d3fccd8b70b475ddea269e26453ec285a4f4993b1ee24325f753eb95f7`.
 
 ## Where things stand
 
@@ -11,7 +11,7 @@ Source fingerprint: `sha256:15f3e474d67f7ede14fb2df63c94ab3ff61d7d6e1e9a6e24439c
 |---|---:|
 | Being built now | 68 |
 | Can start next | 15 |
-| Waiting on earlier work | 134 |
+| Waiting on earlier work | 133 |
 | Blocked | 3 |
 | Done | 49 |
 
@@ -245,7 +245,6 @@ Source fingerprint: `sha256:15f3e474d67f7ede14fb2df63c94ab3ff61d7d6e1e9a6e24439c
 | S-4.16 | Define the deployment in the repository, not in a console | ready | S-4.13 |
 | S-4.8 | Cloud capacity within a client budget, quotas, and spin-up policy | proposed | S-2.23, S-4.2 |
 | S-4.9 | Administrator surfaces for system and client administrators | proposed | S-4.8 |
-| S-6.218 | Two offerings: maintained intelligence for agents, and intelligence with the full reusable library | proposed | S-6.214, S-6.24, S-6.216 |
 
 ## Blocked
 
