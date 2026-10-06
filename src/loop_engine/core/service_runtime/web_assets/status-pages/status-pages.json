@@ -5,6 +5,18 @@
   "releases": [
    {
     "kind": "service",
+    "number": 71,
+    "at": "2026-10-06T15:38:52Z",
+    "lines": [
+     "Lexical search adds a bounded checked-tier candidate pool while preserving caller filters, per-item authorization and stable identity ties.",
+     "The selected relevance floor is 0.2; only authorized scores determine the floor, and conflicting scores for the same identity refuse.",
+     "The owner's Feeds and Components direction is recorded without changing prices or current entitlements."
+    ],
+    "seen_after_release": "",
+    "not_shown": 1
+   },
+   {
+    "kind": "service",
     "number": 70,
     "at": "2026-10-06T14:35:56Z",
     "lines": [
