@@ -49,7 +49,7 @@
     "passed_before_interruption": 3,
     "planned": 11,
     "failure": "TimeoutError during a narrowed search",
-    "repair_status": "Checked tier-projection prefilter developed; fresh deployed check required."
+    "repair_status": "Release 69 deployed the checked tier-projection prefilter; the fresh diagnostic passed all 11 checks. The original timeout remains recorded."
   },
   "independent_audit_attempt": {
     "reviewer": "ollama.glm-5.3",
@@ -59,6 +59,20 @@
     "provider_reported_output_tokens": 124300,
     "status": "calibration_incomplete",
     "output_limit_failures": 2,
+    "usable_package_decisions": 0,
+    "withdrawals": 0,
+    "generator_holds_added": 0,
+    "approval_claimed": false
+  },
+  "subsequent_independent_audit_attempt": {
+    "reviewer": "ollama.mistral-large-3",
+    "producer_family": "openai",
+    "physical_model_calls": 6,
+    "provider_reported_input_tokens": 123253,
+    "provider_reported_output_tokens": 5161,
+    "single_calibration": "failed_calibration",
+    "mixed_calibration": "qualified",
+    "single_negative_controls_falsely_approved": 1,
     "usable_package_decisions": 0,
     "withdrawals": 0,
     "generator_holds_added": 0,

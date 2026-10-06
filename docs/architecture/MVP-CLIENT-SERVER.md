@@ -2,7 +2,7 @@
 
 Kind: product architecture with measured local implementation and proposed hosting.
 Date: 2026-09-19. The [current deployment](#current-deployment) section was
-added on 2026-09-20 and last checked on 2026-10-06, after Fly release 68.
+added on 2026-09-20 and last checked on 2026-10-06, after Fly release 69.
 
 The hosted product manages accounts, subscriptions, and access to intelligence.
 The customer runs Loop Engine and the selected harnesses. A hosted intelligence
@@ -47,7 +47,21 @@ from the newest release record, follow the release record and correct this
 section. Update this section in the same change that records a new release.
 It describes a private pilot. It does not describe a qualified paid service.
 
-The running image is Fly release 68, from
+The running image is Fly release 69, from
+`8c6d8033c3f981629d3a13c11d5ad8ab62fe2d25`, image
+`sha256:8f8598f7116ae30f3097d76346b6c0504ce21663a2b350ed5fbf952058fc235e`.
+CI `37417517147` and guarded deployment `37418592047` passed. All ten hosts
+pass 2,118 browser assertions; the previously timing-out catalogue disclosure
+check passes all eleven checks. The repair narrows verified-only searches
+through a checked tier projection, with authorization still required and no
+change to relevance ordering. The gate is off. The
+[release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-69.json)
+retains the timeout, repair, exact image and limits. Active catalogue `8806a997…`
+holds 92,973 packages and 370,994 distinct files. Release 68 is the compatible
+image rollback target. The large API wave and the private ranking experiment
+remain unpublished.
+
+The preceding running image was Fly release 68, from
 `5aa146791fda952c3140446a6f2e698fb78ad21f`, image
 `sha256:9663e9e6664ca7ac411d77c7c886aca42beb3f01f697e3419a00be44f7d022d8`.
 CI `37410413469` and guarded deployment `37411375142` passed. The workflow
@@ -68,9 +82,11 @@ holds 92,973 packages and 370,994 distinct files. Eighteen files from three
 representative packages matched live readback and passed their supplied tests
 in the sandbox. The independent audit stopped at incomplete calibration after
 two output-limit failures; no usable package decisions or independent approval
-are claimed. A verified-only disclosure diagnostic timed out; its separate
-performance repair must pass a fresh deployed check. The larger API wave stays
-held by its recorded retrieval comparison.
+are claimed. A second reviewer passed its mixed controls but failed a
+single-item negative control, so it supplied no usable package decision either.
+A verified-only disclosure diagnostic timed out; release 69's separate
+performance repair passed the fresh eleven-check diagnostic. The larger API
+wave stays held by its recorded retrieval comparison.
 
 The preceding running image was Fly release 67, from
 `3f4714662602a5871783ff6bd9ca3aaeefada8b7`, image

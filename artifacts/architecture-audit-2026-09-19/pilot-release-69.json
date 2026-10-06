@@ -1,0 +1,53 @@
+{
+  "record_type": "pilot_release_record/v1",
+  "release": 69,
+  "app": "baltor-pilot",
+  "source_revision": "8c6d8033c3f981629d3a13c11d5ad8ab62fe2d25",
+  "image": "registry.fly.io/baltor-pilot@sha256:8f8598f7116ae30f3097d76346b6c0504ce21663a2b350ed5fbf952058fc235e",
+  "rollback_release": 68,
+  "rollback_image": "registry.fly.io/baltor-pilot@sha256:9663e9e6664ca7ac411d77c7c886aca42beb3f01f697e3419a00be44f7d022d8",
+  "rollback_catalogue_state_versions": [1, 2, 3],
+  "owner_local_date": "2026-10-06",
+  "deployed_at": "2026-10-06T05:30:13Z",
+  "deployed_at_basis": "Fly release record CreatedAt",
+  "ci_run": 37417517147,
+  "ci_conclusion": "success",
+  "deploy_run": 37418592047,
+  "deploy_workflow_conclusion": "success",
+  "deploy_workflow_completed_at": "2026-10-06T05:30:59Z",
+  "deployment_gate_after": false,
+  "changes": [
+    "Verified-only search narrows the index before candidate loading only when every indexed tier tag matches the stored approval.",
+    "Missing, conflicting or unsupported tier projections keep the original authorization path. Every candidate still passes provisioning authorization.",
+    "The disk projection check is cached and serialized within each index. It uses existing record data and requires no index format change.",
+    "Relevance ordering is unchanged; the private wider-pool experiment was not deployed."
+  ],
+  "local_checks": {
+    "owning_tests": 74,
+    "index_engine_and_prefilter_tests_in_owning_population": 11,
+    "conformance": "passed",
+    "new_blocking_scoped_audit_findings": 0,
+    "live_index_projection_read_only_probe_seconds": 0.4508997989996715,
+    "live_index_projection_agreed_with_stored_approvals": true
+  },
+  "catalogue": {
+    "release_id": "8806a9975412ff0ddedb217f455425fbb040052a630cdf4cf0af6652625765a6",
+    "release_record_type": "catalogue_release/v2",
+    "packages": 92973,
+    "distinct_files": 370994,
+    "search_engine": "sqlite_disk_index",
+    "changed_by_this_application_release": false
+  },
+  "hostnames_checked": 10,
+  "hostnames_passed": 10,
+  "service_checks_passed": 2118,
+  "service_checks_total": 2118,
+  "catalogue_disclosure_checks": {"passed": 11, "total": 11, "offered_verified_items": 33, "withheld_for_undeclared_authority": 9, "body_reads": 0},
+  "previous_disclosure_attempt": {"passed_before_interruption": 3, "executed": 4, "planned": 11, "error": "TimeoutError", "retained": true},
+  "limits": [
+    "Checks cover the recorded public browser and diagnostic-account paths, not all customer tasks or all harness runtimes.",
+    "The large API publication remains held by its retrieval comparison and must be rebased on the current segmented catalogue before reconsideration.",
+    "No newsletter, brand, domain, DNS, account, paid charge or Cloudflare production migration was introduced."
+  ],
+  "private_evidence_root": "/home/username/baltor-private/component-expansion-20261005-ZtoE9L"
+}

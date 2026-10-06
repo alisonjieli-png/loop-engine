@@ -5,6 +5,19 @@
   "releases": [
    {
     "kind": "service",
+    "number": 69,
+    "at": "2026-10-06T05:30:13Z",
+    "lines": [
+     "Verified-only search narrows the index before candidate loading only when every indexed tier tag matches the stored approval.",
+     "Missing, conflicting or unsupported tier projections keep the original authorization path. Every candidate still passes provisioning authorization.",
+     "The disk projection check is cached and serialized within each index. It uses existing record data and requires no index format change.",
+     "Relevance ordering is unchanged; the private wider-pool experiment was not deployed."
+    ],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
     "number": 68,
     "at": "2026-10-06T03:59:38Z",
     "lines": [
