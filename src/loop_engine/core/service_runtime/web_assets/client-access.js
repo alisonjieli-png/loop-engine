@@ -1,6 +1,18 @@
 "use strict";
 /* Customer credentials use the existing authenticated request boundary. */
 window.BaltorClientAccess = {
+  // Copy settings only after discovery. OAuth clients must use the declared resource, even on a website alias.
+  protocolEndpoint(capabilities, origin) {
+    const oauth = capabilities?.authorization_server;
+    if (capabilities?.record_type !== "service_capabilities/v1" || oauth?.record_type !== "service_oauth_server_capabilities/v1") return null;
+    if (oauth.available === false) return origin + "/mcp";
+    if (oauth.available !== true || typeof oauth.resource !== "string") return null;
+    try {
+      const address = new URL(oauth.resource);
+      return address.protocol === "https:" && address.href === oauth.resource && !address.username && !address.password
+        && !address.search && !address.hash && address.pathname === "/mcp" ? oauth.resource : null;
+    } catch (_) { return null; }
+  },
   /* said and failureState come from service.js: the service's own sentences for a refusal, and whether the status line shows a
      refusal or a failure. Without them a failure shows its short message, as before. */
   create({request, element, message, current, said = error => error.message, failureState = () => true}) {

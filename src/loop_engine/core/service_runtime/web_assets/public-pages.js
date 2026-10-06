@@ -138,8 +138,9 @@
 
   /* The protocol page names the versions the service reports and its own address, never a copy kept in this file. */
   async function readProtocol() {
-    document.querySelectorAll("[data-protocol-endpoint]").forEach(node => { node.textContent = location.origin + "/mcp"; });
     const capabilities = capabilitiesFrom(await readRecord("/api/v1/capabilities").catch(() => null));
+    const endpoint = window.BaltorClientAccess?.protocolEndpoint(capabilities, location.origin);
+    document.querySelectorAll("[data-protocol-endpoint]").forEach(node => { node.textContent = endpoint || "Connection address unavailable"; });
     const versions = capabilities && Array.isArray(capabilities.protocol?.versions) ? capabilities.protocol.versions.filter(value => typeof value === "string") : [];
     if (versions.length) document.querySelectorAll("[data-protocol-versions]").forEach(node => { node.textContent = versions.join(" and "); });
   }

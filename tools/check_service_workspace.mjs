@@ -4,6 +4,7 @@ import {runSignupSessionBoundaries} from "./signup_session_boundary_checks.mjs";
 import {heroProblems,heroCheckRejectsItsKnownWrongCases,checkAudiences,keepsThePerStepOptionOut} from "./homepage_audience_checks.mjs";
 import {runShowcasePageChecks,showcasePaths,showcaseScreenshotSuffixes} from "./showcase_page_checks.mjs";
 import {runDirectoryChecks} from "./directory_browser_checks.mjs";
+import {runConnectionEndpointChecks} from "./connection_endpoint_checks.mjs";
 import {internalTerms,publicVocabulary,retiredAccessWords,invitationWords,unpublishedTerms,cardStatusWords,retiredPhrases} from "./public_wording_rules.mjs";
 import {chromium} from "../showcase/node_modules/playwright-core/index.mjs";
 import {spawn} from "node:child_process";
@@ -705,6 +706,7 @@ try {
   browser=await chromium.launch({executablePath:"/opt/google/chrome/chrome",headless:true,args:["--no-sandbox"]});
   const context=await browser.newContext({viewport:{width:1440,height:1000},acceptDownloads:true,reducedMotion:"reduce"});
   await context.route("**/*",localOnly); routeBrowseAsset(context);
+  await runConnectionEndpointChecks(context, fixture.base, check);
   const page=await context.newPage(); page.on("pageerror",error=>errors.push(safeError(error.message)));
   await page.goto(fixture.base+"/"); await page.waitForFunction(()=>document.querySelector("#service-status").textContent.includes("Service available"));
   check("public_landing_has_real_routes_and_configured_brand",(await page.title()).startsWith("Baltor |")&&await page.locator('[data-view="home"]').isVisible());

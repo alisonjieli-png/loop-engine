@@ -354,7 +354,10 @@ try{
   await page.locator("#assignment-build").focus();await page.keyboard.press("End");
   check("live_task_explorer_supports_keyboard_selection",await page.locator("#assignment-verify").getAttribute("aria-selected")==="true");
   await page.goto(origin+"/connect");await page.waitForFunction(()=>document.querySelectorAll('#client-tabs [role="tab"]').length>0);
-  check("guided_setup_uses_deployed_origin",(await page.locator("#client-configuration").innerText()).includes(origin+"/mcp"));
+  const expectedEndpoint = liveCapabilities.authorization_server?.available === true ? liveCapabilities.authorization_server.resource : origin + "/mcp";
+  await page.waitForFunction(() => !document.querySelector("#copy-configuration").disabled);
+  check("guided_setup_uses_declared_connection_endpoint",(await page.locator("#client-configuration").innerText()).includes(expectedEndpoint)
+    && await page.locator("#protocol-url").inputValue() === expectedEndpoint && await page.locator("#setup-endpoint").textContent() === expectedEndpoint);
   /* Every harness the hero names as one "Baltor sets up" has steps of its own on the guide, as the homepage's questions promise. */
   const liveTabs=await page.locator('#client-tabs [role="tab"]').evaluateAll(items=>items.map(item=>item.textContent.replace(/\s+/g," ").trim()));
   check("live_every_harness_the_hero_names_has_steps_on_the_guide",setsUpEveryNamedHarness(heroHarnesses,liveTabs));

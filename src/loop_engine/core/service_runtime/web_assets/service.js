@@ -1044,11 +1044,13 @@ const applyPaymentState = name => {
   $("copy-token").addEventListener("click", async () => { try { await navigator.clipboard.writeText($("issued-token").value); message("admin-message", "Token copied. Store it privately."); } catch (_) { $("issued-token").type = "text"; $("issued-token").select(); message("admin-message", "Copy the selected token, then clear it from this page."); } });
   $("clear-token").addEventListener("click", () => { $("issued-token").value = ""; $("issued-token").type = "password"; $("issued-access").hidden = true; });
   $("copy-endpoint").addEventListener("click", async () => { try { await navigator.clipboard.writeText($("protocol-url").value); $("copy-endpoint").textContent = "Endpoint copied"; } catch (_) { $("protocol-url").select(); $("copy-endpoint").textContent = "Select and copy the endpoint"; } });
-  $("protocol-url").value = location.origin + "/mcp";
-  $("setup-endpoint").textContent = location.origin + "/mcp";
+  let connectionEndpoint = null;
+  $("protocol-url").value = "";
+  $("copy-endpoint").disabled = true;
+  $("setup-endpoint").textContent = "Checking the connection address";
   // A connection recipe is reviewed data that a person copies into a client. It may name the environment
   // variable that holds the service token. It may never carry a token, and the only address it may use is
-  // the origin that served this page. A record that breaks a rule is refused as a whole and nothing from it is shown.
+  // the service's declared connection address. A record that breaks a rule is refused as a whole and nothing from it is shown.
   // The rules list the few forms that a configuration text may take and refuse every other text. A new way to
   // write a key or an address is therefore refused without a rule of its own.
   // The limit of these rules is one plain word under an ordinary name. The page cannot tell a setting word from a short
@@ -1137,7 +1139,7 @@ const applyPaymentState = name => {
   const recipeTabs = () => [...$("client-tabs").querySelectorAll('[role="tab"]')];
   // The configuration text of a reviewed recipe, with this service's own address in place of the placeholder.
   const configurationText = recipe => {
-    const endpoint = location.origin + "/mcp";
+    const endpoint = connectionEndpoint;
     const fill = value => value === endpointPlaceholder ? endpoint : Array.isArray(value) ? value.map(fill) : value && typeof value === "object" ? Object.fromEntries(Object.entries(value).map(([key, item]) => [key, fill(item)])) : value;
     const configuration = fill(recipe.configuration);
     return recipe.format === "toml" ? tomlText(configuration) : JSON.stringify(configuration, null, 2);
@@ -1159,6 +1161,11 @@ const applyPaymentState = name => {
   function renderRecipe() {
     const selected = recipes?.recipes.find(item => item.id === chosenRecipe);
     if (!selected) return;
+    if (!connectionEndpoint) {
+      $("client-configuration").textContent = "Connection settings are unavailable until the service reports a valid address.";
+      $("copy-configuration").disabled = true;
+      return;
+    }
     $("client-configuration").textContent = configurationText(selected);
     $("configuration-location").textContent = selected.configuration_location; renderNote(selected.configuration_note);
     $("client-verify-command").textContent = selected.verification_command; $("client-verify-note").textContent = selected.verification_note;
@@ -1166,6 +1173,10 @@ const applyPaymentState = name => {
     $("client-revoke-note").textContent = recipes.revocation_note; $("client-removal-note").textContent = selected.removal_note;
     $("client-source").href = selected.source_url; $("client-source").textContent = "Open the " + selected.name + " guide";
     $("copy-configuration").disabled = false; $("copy-configuration").textContent = "Copy configuration without secrets"; message("setup-message", "");
+  }
+  function renderHomeRecipe() {
+    const entry = document.querySelector("[data-home-recipe]"), recipe = recipes?.recipes.find(item => item.id === entry?.dataset.homeRecipe);
+    if (entry && recipe) entry.textContent = connectionEndpoint ? configurationText(recipe) : "Connection settings are unavailable until the service reports a valid address.";
   }
   function chooseRecipe(id, focus) {
     chosenRecipe = id;
@@ -1202,8 +1213,7 @@ const applyPaymentState = name => {
     chooseRecipe(value.recipes[0].id, false);
     // The homepage shows one reviewed entry. The page is served with the public address written in; once the record has passed
     // every rule above, the entry is written again from the record with this service's own address, as the Get started page shows it.
-    const homeEntry = document.querySelector("[data-home-recipe]"), homeRecipe = value.recipes.find(recipe => recipe.id === homeEntry?.dataset.homeRecipe);
-    if (homeEntry && homeRecipe) homeEntry.textContent = configurationText(homeRecipe);
+    renderHomeRecipe();
   }).catch(error => {
     recipes = null; $("setup-message").dataset.refusal = error.refusal || "unavailable";
     chosenRecipe = ""; $("client-tabs").replaceChildren(); $("copy-configuration").disabled = true; $("client-file").hidden = true; $("configuration-location").textContent = "No connection settings are shown";
@@ -1247,6 +1257,11 @@ const applyPaymentState = name => {
   else keptSession.clear();
   request("/api/v1/capabilities", null, false).then(value => {
     capabilities = value; $("service-status").textContent = "Service available";
+    connectionEndpoint = window.BaltorClientAccess?.protocolEndpoint(value, location.origin) || null;
+    $("protocol-url").value = connectionEndpoint || "";
+    $("setup-endpoint").textContent = connectionEndpoint || "Connection address unavailable";
+    $("copy-endpoint").disabled = !connectionEndpoint;
+    renderRecipe(); renderHomeRecipe();
     applyLibraryCount(value);
     clientAccess.connectionChanged();
     waitlistOffer(value);
@@ -1258,9 +1273,9 @@ const applyPaymentState = name => {
     /* Public statements are read last and only from the record version this page was written against. An unexpected version keeps the careful state. */
     if (value.record_type === CAPABILITIES_RECORD_TYPE) {
       const oauth=value.authorization_server;
-      const oauthAvailable=oauth?.record_type==='service_oauth_server_capabilities/v1'&&oauth.available===true&&typeof oauth.resource==='string';
+      const oauthAvailable=oauth?.record_type==='service_oauth_server_capabilities/v1'&&oauth.available===true&&Boolean(connectionEndpoint);
       $('setup-oauth').hidden=!oauthAvailable;
-      $('setup-oauth-endpoint').textContent=oauthAvailable?oauth.resource:'';
+      $('setup-oauth-endpoint').textContent=oauthAvailable?connectionEndpoint:'';
       $('setup-authentication').textContent=oauthAvailable?'OAuth sign-in or a scoped service token':'Scoped service token';
       registrationOpen = value.website.registration_available === true;
       applyAccessState(value.website.registration_available === true);
