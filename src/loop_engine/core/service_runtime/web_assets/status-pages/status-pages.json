@@ -5,6 +5,19 @@
   "releases": [
    {
     "kind": "service",
+    "number": 67,
+    "at": "2026-10-06T02:33:05Z",
+    "lines": [
+     "Segmented catalogue release and bundle version 2 support, with format negotiation before upload.",
+     "Selectable SQLite disk index behind the existing catalogue search edge.",
+     "Shared ranking policy for the memory and disk engines, bounded per-object-kind upload readback, streaming qualification and scanner repairs.",
+     "Two shared CPUs and 4 GB retained; the preceding 8 GB setting was refused by the platform."
+    ],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
     "number": 62,
     "at": "2026-10-05T01:27:30Z",
     "lines": [

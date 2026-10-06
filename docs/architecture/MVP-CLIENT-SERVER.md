@@ -2,7 +2,8 @@
 
 Kind: product architecture with measured local implementation and proposed hosting.
 Date: 2026-09-19. The [current deployment](#current-deployment) section was
-added on 2026-09-20 and last checked on 2026-10-01, after Fly release 61.
+added on 2026-09-20 and last checked on 2026-10-05, after Fly release 67 and
+its disk-index recovery (October 6 UTC).
 
 The hosted product manages accounts, subscriptions, and access to intelligence.
 The customer runs Loop Engine and the selected harnesses. A hosted intelligence
@@ -47,7 +48,34 @@ from the newest release record, follow the release record and correct this
 section. Update this section in the same change that records a new release.
 It describes a private pilot. It does not describe a qualified paid service.
 
-The latest image deployment is Fly release 62, completed on October 4, 2026
+The running image is Fly release 67, from
+`3f4714662602a5871783ff6bd9ca3aaeefada8b7`, image
+`sha256:0244fa5bc9099c2782270da245e200aeb0768323be0d8d2617cf21caf9b9f2d7`.
+CI `37402791077` passed. Deployment `37404412829` installed the image but
+failed at the grant supervisor's deadline during a slow cold start. The
+readiness gate had advanced before the replacement Machine started. Both the
+web and grant processes then built an in-memory catalogue. The failure and
+recovery remain separate in the
+[release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-67.json).
+
+The service recovered with its original catalogue. An operator prepared and
+verified the disk index, preserved the host configuration and its permissions,
+then selected `sqlite_disk_index` through `service_catalogue_source/v2`.
+All 32 index-file digests and the exact population matched; the prepared-index
+command reopened it in 0.6 seconds. The first post-restart public probe passed.
+The web process sampled 188 MiB RSS, compared with about 1.9 GiB before the
+switch. These samples are not a load or peak-memory benchmark.
+
+All ten hosts pass 2,118 read-only browser assertions. Health is ready, the
+deployment gate is off, and the catalogue still holds 92,923 packages and
+370,793 distinct files. Readback found the packaged grant's existing
+release-following configuration intact; the uncertain operation was closed
+without replay. No successful grant application is claimed for that workflow.
+Release 65 is the pre-migration image rollback target, with the preserved
+version 1 host file restored first. After a segmented catalogue publication,
+an image rollback must understand catalogue state version 3.
+
+An earlier image deployment was Fly release 62, completed on October 4, 2026
 in the owner's time zone (October 5 UTC), from
 `75e3cabde6b4f25f4a7f015312f7aead7eafd009`, image
 `sha256:e95ee07238da5abe51d3a53ae4b1092d522b972da4924a34dc0a7dda8cc3ab3c`.
