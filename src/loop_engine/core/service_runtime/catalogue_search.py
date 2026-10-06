@@ -114,14 +114,38 @@ def index_for_items(items):
     return ReleaseSearchIndex(tuple(IndexEntry(item.identity, entry_text(item), {}) for item in items), EMPTY_SCHEMA)
 
 
-#: Catalogue search draws a top-n answer from `candidate_pool_multiplier` times n ranked candidates and then
-#: puts verified items first. With the shared default of 2, a verified item ranked 21st never reaches a top
-#: ten, and every catalogue release that adds documents shifts the lexical weights. On October 5, 2026 the
-#: judged queries in examples/30_search_quality found 55 of 119 expected items in the top ten at 2x over the
-#: live 30,757 items and 52 after 8,953 additions; at 10x they found 71 and 71, and 70 over 92,923 items. 20x
-#: and 50x found more of this judged set but put weakly matching verified items ahead of strong community
-#: matches on queries nobody judged, so 10x is the catalogue default until a larger judged set says otherwise.
-CATALOGUE_RANKING_POLICY = RetrievalRankingPolicy(candidate_pool_multiplier=10)
+@dataclass(frozen=True)
+class CatalogueRankingPolicy(RetrievalRankingPolicy):
+    """Catalogue-only lexical discovery bounds; explicit generic policies keep their own behavior.
+
+    The floor is relative to the best authorized lexical score in this query,
+    not a correctness probability. Hybrid candidate selection is unchanged.
+    Index contents, raw engine scores and the permission boundary stay fixed.
+    """
+
+    lexical_pool_multiplier: int = 50
+    lexical_score_floor_ratio: float = 0.25
+
+    def __post_init__(self):
+        super().__post_init__()
+        if type(self.lexical_pool_multiplier) is not int or self.lexical_pool_multiplier < 1:
+            raise ValueError("the lexical pool multiplier is a positive integer")
+        ratio = self.lexical_score_floor_ratio
+        if type(ratio) not in (int, float) or not math.isfinite(ratio) or not 0 <= ratio <= 1:
+            raise ValueError("the lexical score floor ratio is a finite number from zero to one")
+
+
+#: A larger lexical pool keeps relevant candidates visible as the catalogue grows. The query-local score
+#: floor removes incidental matches before review-tier ordering; it never reads an unauthorized candidate's
+#: score. The fixed 354-query comparison over 218,127 proposed items and its limits are recorded separately.
+CATALOGUE_RANKING_POLICY = CatalogueRankingPolicy(candidate_pool_multiplier=10)
+
+
+def candidate_pool_size(policy, top_n, mode):
+    """The caller's explicit policy, with a separate lexical bound only when its policy declares one."""
+    multiplier = (getattr(policy, "lexical_pool_multiplier", policy.candidate_pool_multiplier)
+                  if mode == LEXICAL_MODE else policy.candidate_pool_multiplier)
+    return max(1, top_n * multiplier)
 
 
 class ReleaseSearchIndex:
@@ -237,13 +261,32 @@ class ReleaseSearchIndex:
         return [(self.identities[position], score) for score, position in best[:pool]], len(best) <= pool
 
 
+def lexical_relevance_floor(pools, allowed, policy):
+    """A query-local floor over authorized lexical scores, or None for an unfiltered or hybrid request."""
+    ratio = getattr(policy, "lexical_score_floor_ratio", 0) if set(pools) == {LEXICAL_MODE} else 0
+    if not ratio:
+        return None
+    scores = [score for identity, score in pools[LEXICAL_MODE] if identity in allowed]
+    if not scores:
+        return None
+    if any(type(score) not in (int, float) or not math.isfinite(score) or score < 0 for score in scores):
+        raise ServiceRuntimeError("search_index_unavailable", "the lexical index returned an invalid score")
+    return max(scores) * ratio
+
+
 def fuse(pools, allowed, policy, top_n):
     """Reciprocal rank fusion over the authorized candidates only, as `Retriever.search` fuses.
 
-    Verified items come before community items; within a tier the fused score
-    orders them. `allowed` maps each authorized identity to its provisioning
-    row, whose library tier the provisioning authority stated.
+    Verified items come before community items among relevant authorized
+    candidates; within a tier the fused score orders them. A lexical-only
+    request may apply its policy's query-local relevance floor first. `allowed`
+    maps identities to the provisioning authority's rows. No other identity
+    contributes to the floor or to a returned score.
     """
+    floor = lexical_relevance_floor(pools, allowed, policy)
+    if floor is not None:
+        pools = {LEXICAL_MODE: [(identity, score) for identity, score in pools[LEXICAL_MODE]
+                               if identity in allowed and score >= floor]}
     fused = {}
     for name, rows in pools.items():
         rank = 0
@@ -276,7 +319,7 @@ def authorized_hits(view, fields, authorize, *, community_items=None):
         conditions.append((TIER_ATTRIBUTE["name"], "any_of", (VERIFIED_TIER,)))
     eligible = index.eligible(conditions) if conditions else None
     top_n, mode = fields.get("top_n", 10), fields.get("mode", LEXICAL_MODE)
-    pool = max(1, top_n * index.policy.candidate_pool_multiplier)
+    pool = candidate_pool_size(index.policy, top_n, mode)
     from .catalogue_index_engines import index_size
     total = max(1, index_size(index))
     while True:
@@ -284,6 +327,10 @@ def authorized_hits(view, fields, authorize, *, community_items=None):
         candidates = tuple(dict.fromkeys(identity for rows in pools.values() for identity, _score in rows))
         rows = authorize(candidates) if candidates else {}
         hits = fuse(pools, rows, index.policy, top_n)
-        if len(hits) >= top_n or exhausted or pool >= total:
+        floor = lexical_relevance_floor(pools, rows, index.policy)
+        # A best-first lexical pool that already reaches below the floor cannot gain another qualifying
+        # candidate by widening. If nothing was authorized, keep widening: a hidden high score sets no floor.
+        below_floor = floor is not None and pools.get(LEXICAL_MODE) and pools[LEXICAL_MODE][-1][1] < floor
+        if len(hits) >= top_n or exhausted or pool >= total or below_floor:
             return hits, rows
         pool = min(total, pool * 4)

@@ -31,7 +31,7 @@ from loop_engine.core.service_runtime.catalogue_disk_index import (DiskIndex, Di
                                                                    build_disk_index)
 from loop_engine.core.service_runtime.catalogue_schema import EMPTY_SCHEMA  # noqa: E402
 from loop_engine.core.service_runtime.catalogue_search import (IndexEntry, ReleaseSearchIndex, entry_text,  # noqa: E402
-                                                               fuse)
+                                                               CatalogueRankingPolicy, candidate_pool_size, fuse)
 
 TOP_N = 10
 #: An overlay may move the mean reciprocal rank by at most this much against a fresh build of the same items.
@@ -39,7 +39,7 @@ OVERLAY_MRR_TOLERANCE = 0.05
 
 
 def _ranked(index, query, mode):
-    pool = TOP_N * index.policy.candidate_pool_multiplier
+    pool = candidate_pool_size(index.policy, TOP_N, mode)
     pools, _exhausted = index.rank(query, mode=mode, pool=pool)
     allowed = {identity: {} for rows in pools.values() for identity, _score in rows}
     return [identity for identity, _score, _modes in fuse(pools, allowed, index.policy, TOP_N)]
@@ -82,7 +82,7 @@ class JudgedQueries(unittest.TestCase):
 
     def _differing_pools(self, mode):
         """Requests whose candidate pools, identities and scores, differ between the two engines."""
-        pool = TOP_N * self.memory.policy.candidate_pool_multiplier
+        pool = candidate_pool_size(self.memory.policy, TOP_N, mode)
         return [judgement.query for judgement in self.judgements
                 if self.memory.rank(judgement.query, mode=mode, pool=pool)
                 != self.disk.rank(judgement.query, mode=mode, pool=pool)]
@@ -220,6 +220,85 @@ class VerifiedTierPrefilterTests(unittest.TestCase):
         hits,_=authorized_hits(view,{"query":"shared query","top_n":50},lambda candidates:{},
                                community_items="excluded")
         self.assertEqual(hits,[])
+
+
+class CatalogueRelevancePolicyTests(unittest.TestCase):
+    def setUp(self):
+        self.policy = CatalogueRankingPolicy(candidate_pool_multiplier=10)
+        self.allowed = {"strong": {"library_tier": "community"},
+                        "relevant": {"library_tier": "verified"},
+                        "weak": {"library_tier": "verified"}}
+
+    def test_lexical_pool_expands_without_changing_hybrid_or_explicit_generic_policy(self):
+        from loop_engine.core.retrieval_backends import RetrievalRankingPolicy
+        self.assertEqual(candidate_pool_size(self.policy, 10, "lexical"), 500)
+        self.assertEqual(candidate_pool_size(self.policy, 10, "hybrid"), 100)
+        explicit = RetrievalRankingPolicy(candidate_pool_multiplier=3)
+        self.assertEqual(candidate_pool_size(explicit, 10, "lexical"), 30)
+        self.assertEqual(candidate_pool_size(explicit, 10, "hybrid"), 30)
+
+    def test_incidental_verified_match_does_not_displace_strong_community_match(self):
+        pools = {"lexical": [("strong", 100.0), ("relevant", 40.0), ("weak", 0.1)]}
+        result = [row[0] for row in fuse(pools, self.allowed, self.policy, 10)]
+        self.assertEqual(result, ["relevant", "strong"])
+        wrong = CatalogueRankingPolicy(candidate_pool_multiplier=10, lexical_score_floor_ratio=0)
+        self.assertIn("weak", [row[0] for row in fuse(pools, self.allowed, wrong, 10)])
+
+    def test_unauthorized_high_score_does_not_set_the_relevance_floor(self):
+        pools = {"lexical": [("hidden", 10000.0), ("strong", 1.0), ("relevant", 0.4), ("weak", 0.001)]}
+        result = [row[0] for row in fuse(pools, self.allowed, self.policy, 10)]
+        self.assertEqual(result, ["relevant", "strong"])
+        # Known wrong: treating the hidden identity as authorized makes its score suppress the real matches.
+        wrong = {**self.allowed, "hidden": {"library_tier": "community"}}
+        self.assertNotEqual([row[0] for row in fuse(pools, wrong, self.policy, 10)], result)
+
+    def test_hybrid_fusion_and_explicit_generic_policy_remain_unchanged(self):
+        from loop_engine.core.retrieval_backends import RetrievalRankingPolicy
+        explicit = RetrievalRankingPolicy(candidate_pool_multiplier=10)
+        pools = {"lexical": [("strong", 100.0), ("weak", 0.1)], "vector": [("weak", 0.2), ("strong", 0.1)]}
+        self.assertEqual(fuse(pools, self.allowed, self.policy, 10), fuse(pools, self.allowed, explicit, 10))
+        self.assertIn("weak", [row[0] for row in fuse({"lexical": pools["lexical"]}, self.allowed, explicit, 10)])
+
+    def test_exact_floor_boundary_is_inclusive(self):
+        result = fuse({"lexical": [("strong", 4.0), ("relevant", 1.0), ("weak", 0.999)]},
+                      self.allowed, self.policy, 10)
+        self.assertEqual([row[0] for row in result], ["relevant", "strong"])
+
+    def test_invalid_policy_and_authorized_scores_refuse(self):
+        from loop_engine.core.service_runtime.records import ServiceRuntimeError
+        for ratio in (-0.1, 1.1, True, float("nan"), float("inf")):
+            with self.assertRaises(ValueError):
+                CatalogueRankingPolicy(lexical_score_floor_ratio=ratio)
+        for multiplier in (0, -1, True, 1.5):
+            with self.assertRaises(ValueError):
+                CatalogueRankingPolicy(lexical_pool_multiplier=multiplier)
+        for score in (-1.0, True, float("nan"), float("inf"), "1"):
+            with self.assertRaises(ServiceRuntimeError) as caught:
+                fuse({"lexical": [("strong", score)]}, self.allowed, self.policy, 10)
+            self.assertEqual(caught.exception.code, "search_index_unavailable")
+
+    def test_below_floor_ends_widening_but_unauthorized_candidates_do_not(self):
+        from types import SimpleNamespace
+        from loop_engine.core.service_runtime.catalogue_search import authorized_hits
+        calls = []
+        def low_rank(query, *, mode, pool, eligible):
+            calls.append(pool)
+            return {"lexical": [("strong", 100.0), ("weak", 0.1)]}, False
+        index = SimpleNamespace(policy=self.policy, size=5000, rank=low_rank)
+        view = SimpleNamespace(schema=EMPTY_SCHEMA, search_index=lambda:index)
+        hits, _ = authorized_hits(view, {"query":"example","top_n":10}, lambda names:self.allowed)
+        self.assertEqual([row[0] for row in hits], ["strong"])
+        self.assertEqual(calls, [500])
+        calls.clear()
+        def hidden_rank(query, *, mode, pool, eligible):
+            calls.append(pool)
+            return ({"lexical":[("hidden",10000.0)]}, False) if len(calls)==1 else (
+                {"lexical":[("hidden",10000.0),("strong",1.0)]}, True)
+        index.rank = hidden_rank
+        hits, _ = authorized_hits(view, {"query":"example","top_n":10},
+                                  lambda names:{name:self.allowed[name] for name in names if name in self.allowed})
+        self.assertEqual([row[0] for row in hits], ["strong"])
+        self.assertEqual(calls, [500,2000])
 
 
 if __name__ == "__main__":
