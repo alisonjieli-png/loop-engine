@@ -24,6 +24,7 @@ import unittest
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import check_quickstarts as tool  # noqa: E402
+from loop_engine.core.service_runtime.protocol_checks import _EXPECTED_TOOLS  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 KEY = "le_fixture_key_that_must_never_be_recorded"
@@ -31,7 +32,8 @@ BODY = "# Review inputs\n\nRead every input once before you hand the work over.\
 DIGEST = hashlib.sha256(BODY.encode("utf-8")).hexdigest()
 IDENTITY = "review_inputs_before_handing_over"
 VERSION = "2025-11-25"
-TOOLS = ("provisioning_discover", "provisioning_list", "provisioning_manifest", "provisioning_read", "intelligence_search")
+#: The tools the live service lists to every caller, as the service's own protocol self-check holds them.
+TOOLS = tuple(sorted(_EXPECTED_TOOLS))
 PUBLISHED_BASE = "https://baltor.ai"
 RECIPES_FILE = ROOT / "src/loop_engine/core/service_runtime/web_assets/client-recipes.json"
 PI_EXTENSION = ROOT / "src/loop_engine/core/service_runtime/web_assets/pi/baltor.ts"
@@ -93,6 +95,8 @@ class State:
         self.step_effect_headers = []
         #: The search offers, first, an item whose effects the quickstart's configuration does not declare.
         self.undeclared_first = False
+        #: The protocol resource the service publishes for itself on every hostname, as the live service does.
+        self.resource = PUBLISHED_BASE + "/mcp"
         self.__dict__.update(changes)
 
 
@@ -113,6 +117,8 @@ def capabilities():
     return {"record_type": "service_capabilities/v1",
             "protocol": {"transport": "streamable_http", "versions": [VERSION, "2026-07-28"],
                          "handshake_versions": [VERSION], "per_request_versions": ["2026-07-28"]},
+            "authorization_server": {"record_type": "service_oauth_server_capabilities/v1", "available": True,
+                                     "resource": Handler.state.resource},
             "library": {"served_items": 1},
             "retrieval": {"request_record_type": "service_retrieval_request/v2"},
             "delivery": {"inline_body_bytes": 16384, "download_bytes": 1048576,
@@ -158,6 +164,9 @@ class Handler(BaseHTTPRequestHandler):
             if self.state.recipes is None:
                 return self._refused(404, "route_unavailable")
             return self._json(200, self.state.recipes)
+        if self.path == "/api/v1/capabilities":
+            # Public on the live service too: a refused key still learns the handshake version.
+            return self._json(200, wrapped("capabilities", capabilities()))
         if not self._authorized():
             return
         if self.path == "/api/v1/session":
@@ -168,8 +177,6 @@ class Handler(BaseHTTPRequestHandler):
             return self._direct("session", {
                 "record_type": "service_session/v1", "authentication_mode": "host_key",
                 "principal": {"tenant_id": "fixture", "scopes": ["provisioning:metadata", "provisioning:read", "usage:read"]}})
-        if self.path == "/api/v1/capabilities":
-            return self._json(200, wrapped("capabilities", capabilities()))
         self._refused(404, "route_unavailable")
 
     def do_POST(self):
@@ -424,6 +431,8 @@ class QuickstartCheckTests(unittest.TestCase):
                              ["page_names_the_published_base", "page_documents_the_first_search",
                               "page_matches_the_published_recipe", "connected"])
         self.assertEqual(record["usage_records_added"], 3, "the three protocol paths still download")
+        self.assertEqual(record["failure_code"], tool.QUICKSTART_FAILED,
+                         "a session route that refuses while the protocol accepts the key is not a credential failure")
 
     def test_known_wrong_a_direct_answer_without_the_result_wrapper_fails_connected(self):
         # Both paths answer the wrapper. A direct answer that is the bare record is not the live service either.
@@ -721,6 +730,116 @@ class QuickstartCheckTests(unittest.TestCase):
         self.assertIn("expected_digest", downloaded["detail"])
         self.assertIsNone(row(record, "baltor-harness")["request_id"], "a request the page cannot bind is never sent")
         self.assertEqual(record["request_ids_not_confirmed"], [])
+
+    def test_known_wrong_a_key_refused_everywhere_is_a_credential_failure_not_a_harness_failure(self):
+        # Before this test an expired key read as five harness failures at connected for six days in a row.
+        from datetime import datetime, timezone
+        now = datetime(2026, 10, 5, 5, 40, tzinfo=timezone.utc)
+        expired = {"key_id": "7" * 32, "expires_at": int(datetime(2026, 9, 29, 18, 2, tzinfo=timezone.utc).timestamp())}
+        with FixtureService() as origin:
+            record = tool.run_all(origin, "le_an_expired_key_the_service_refuses", published_base=PUBLISHED_BASE,
+                                  repository=ROOT, now=now, credential=expired, account="pilot-owner")
+        self.assertEqual(record["failure_code"], tool.CREDENTIAL_EXPIRED)
+        self.assertEqual(record["credential"]["expires_at"], "2026-09-29T18:02:00+00:00")
+        self.assertLess(record["credential"]["expires_in_seconds"], 0)
+        for quickstart in tool.QUICKSTARTS:
+            self.assertEqual(row(record, quickstart.id)["blocked_by"], tool.CREDENTIAL_EXPIRED)
+            self.assertEqual(step(record, quickstart.id, "connected")["status"], 401)
+            self.assertTrue(step(record, quickstart.id, "page_matches_the_published_recipe")["passed"],
+                            "the page steps need no key and still run")
+        line = tool.summary(record)
+        self.assertEqual((line["failure_code"], line["failed"], len(line["blocked"])), (tool.CREDENTIAL_EXPIRED, [], 5))
+        self.assertEqual(record["usage_records_added"], 0)
+        self.assertNotIn("le_an_expired_key_the_service_refuses", json.dumps(record))
+
+    def test_a_refused_key_whose_expiry_has_not_passed_or_is_not_recorded_is_named_refused(self):
+        from datetime import datetime, timezone
+        now = datetime(2026, 10, 5, 5, 40, tzinfo=timezone.utc)
+        for facts in ({"key_id": "7" * 32, "expires_at": int(now.timestamp()) + 86400}, {}, None):
+            with self.subTest(facts=facts), FixtureService() as origin:
+                record = tool.run_all(origin, "le_a_revoked_key", published_base=PUBLISHED_BASE, repository=ROOT,
+                                      now=now, credential=facts)
+                self.assertEqual(record["failure_code"], tool.CREDENTIAL_REFUSED)
+
+    def test_known_wrong_a_service_nobody_can_reach_is_not_called_a_credential_failure(self):
+        import socket
+        with socket.socket() as probe:
+            probe.bind(("127.0.0.1", 0))
+            port = probe.getsockname()[1]
+        record = tool.run_all(f"http://127.0.0.1:{port}", KEY, published_base=PUBLISHED_BASE, repository=ROOT,
+                              credential={"expires_at": 1})
+        self.assertEqual(record["failure_code"], tool.SERVICE_UNREACHABLE)
+        # The direct paths' sessions did not complete; the protocol paths never learned a handshake version.
+        for quickstart in ("pi", "baltor-harness"):
+            self.assertTrue(step(record, quickstart, "connected").get("did_not_complete"), quickstart)
+        self.assertIsNotNone(record["capabilities_error"])
+
+    def test_a_key_close_to_its_expiry_is_reported_while_the_run_passes(self):
+        from datetime import datetime, timezone
+        now = datetime(2026, 10, 5, 5, 40, tzinfo=timezone.utc)
+        with FixtureService() as origin:
+            soon = tool.run_all(origin, KEY, published_base=PUBLISHED_BASE, repository=ROOT, now=now,
+                                credential={"key_id": "a" * 32, "expires_at": int(now.timestamp()) + 2 * 86400})
+            later = tool.run_all(origin, KEY, published_base=PUBLISHED_BASE, repository=ROOT, now=now,
+                                 credential={"key_id": "a" * 32, "expires_at": int(now.timestamp()) + 5 * 86400})
+        self.assertTrue(soon["passed"] and later["passed"])
+        self.assertEqual((soon["credential_warning"], later["credential_warning"]), (tool.CREDENTIAL_EXPIRES_SOON, None))
+        self.assertEqual(tool.summary(soon)["credential_warning"], tool.CREDENTIAL_EXPIRES_SOON)
+        self.assertIsNone(soon["failure_code"])
+
+    def test_another_hostname_is_held_to_the_base_the_service_publishes(self):
+        # A run against app.baltor.ai or baltor-pilot.fly.dev holds the pages to https://baltor.ai, the base the
+        # service names for its protocol resource on every hostname.
+        with FixtureService() as origin:
+            record = tool.run_all(origin, KEY, repository=ROOT)
+        self.assertEqual((record["published_base"], record["published_base_source"]), (PUBLISHED_BASE, "service_resource"))
+        self.assertTrue(record["passed"], json.dumps(record["quickstarts"], indent=1))
+
+    def test_known_wrong_without_a_published_resource_the_origin_is_the_base_and_the_pages_fail_it(self):
+        with FixtureService(State(resource=None)) as origin:
+            record = tool.run_all(origin, KEY, repository=ROOT)
+        self.assertEqual(record["published_base_source"], "origin")
+        self.assertFalse(step(record, "claude-code", "page_names_the_published_base")["passed"])
+        self.assertEqual(record["failure_code"], tool.QUICKSTART_FAILED)
+
+    def test_only_an_exact_https_resource_names_the_published_base(self):
+        for resource, base in (("https://baltor.ai/mcp", "https://baltor.ai"), ("http://baltor.ai/mcp", None),
+                               ("https://baltor.ai/other/mcp", None), ("https://baltor.ai/api", None),
+                               ("https://user@baltor.ai/mcp", None), (None, None)):
+            self.assertEqual(tool.service_published_base({"authorization_server": {"resource": resource}}), base, resource)
+
+    def test_known_wrong_a_page_that_states_another_tool_count_fails_page_names_listed_tools(self):
+        # The Claude Code and Codex pages said "Baltor's six tools" while the service listed twelve.
+        page = (ROOT / "docs/guides/quickstart-claude-code.md").read_text(encoding="utf-8")
+        wrong = page.replace("`/mcp` and confirm", "`/mcp` and confirm that Baltor's six tools are listed, and confirm", 1)
+        self.assertNotEqual(page, wrong)
+        record = run(page_texts={"claude-code": wrong})
+        named = step(record, "claude-code", "page_names_listed_tools")
+        self.assertFalse(named["passed"])
+        self.assertIn("six tools and the service lists {}".format(len(TOOLS)), named["detail"])
+        self.assertTrue(step(record, "claude-code", "downloaded")["passed"], "the service steps still run")
+        self.assertTrue(row(record, "codex")["passed"])
+
+    def test_known_wrong_a_page_naming_a_tool_the_service_does_not_list_fails(self):
+        page = (ROOT / "docs/guides/quickstart-codex.md").read_text(encoding="utf-8")
+        wrong = page.replace("`intelligence_search`", "`intelligence_search_everything`", 1)
+        self.assertNotEqual(page, wrong)
+        record = run(page_texts={"codex": wrong})
+        named = step(record, "codex", "page_names_listed_tools")
+        self.assertFalse(named["passed"])
+        self.assertIn("intelligence_search_everything", named["detail"])
+
+    def test_field_names_and_codes_are_not_read_as_tools(self):
+        text = "Use `body_digest`, `request_id`, `step_effects_required`, `provisioning_body/v3` and `provisioning:read`."
+        self.assertEqual(tool.page_tool_disagreement(text, TOOLS), "")
+        self.assertIn("provisioning_frobnicate", tool.page_tool_disagreement("`provisioning_frobnicate`", TOOLS))
+
+    def test_the_committed_protocol_pages_name_only_listed_tools(self):
+        for quickstart in tool.QUICKSTARTS:
+            if quickstart.wire_path == tool.PROTOCOL:
+                with self.subTest(page=quickstart.page):
+                    text = (ROOT / quickstart.page).read_text(encoding="utf-8")
+                    self.assertEqual(tool.page_tool_disagreement(text, TOOLS), "")
 
     def test_main_refuses_an_origin_that_is_not_https(self):
         with self.assertRaises(SystemExit) as refused:

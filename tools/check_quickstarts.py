@@ -31,6 +31,16 @@ service, the record the Get set up page reads, with the endpoint placeholder
 filled the way that page fills it. A JSON configuration must parse to the
 same value; the Codex table must be the same TOML text, line for line, that
 the page renders. A quickstart's identity is the identity of its recipe.
+On the protocol path a fourth page step follows the tool list: every tool the
+page names must be one the service lists, and a count the page states, such as
+"Baltor's six tools", must be the number it lists.
+
+The published base is the base the service publishes for itself: its
+authorization server's ``resource`` without ``/mcp``. Every hostname of the
+deployment publishes the same one, so a run against ``app.baltor.ai`` or
+``baltor-pilot.fly.dev`` still holds the pages to ``https://baltor.ai``.
+``--published-base`` names another; a service that publishes none is held to
+its own origin.
 
 For every quickstart the record says, separately, whether each page step
 passed, whether the service answered the connection, listed its operations,
@@ -61,11 +71,23 @@ The diagnostic key resolves from this workstation's system keyring through
 ``tools/operator_credentials.py``. It is sent only in the request header and
 never printed, and any error text is scrubbed before it is recorded.
 
+A run in which every quickstart's connection was refused with 401 failed on
+its credential, not on a harness. The record and its one-line summary name
+that once as ``failure_code``: ``credential_expired`` when the expiry recorded
+beside the key in the keyring has passed, ``credential_refused`` for a key
+revoked or saved without that fact. The quickstarts are listed as blocked, not
+failed. ``tools/reissue_service_keys.py --renew-within`` renews the key before
+it expires and records its facts; a key with less than three days left is
+reported as ``credential_expires_soon`` while the run still passes. A run in
+which no connection completed is ``service_unreachable``, and any other
+failure is ``quickstart_failed``.
+
 Run it once, writing a dated record under ``artifacts/quickstart-checks/``:
 
     PYTHONPATH=src:tools python tools/check_quickstarts.py --origin https://baltor.ai
 
-The exit status is zero when every quickstart passed.
+The exit status is 0 when every quickstart passed, 3 for a credential failure,
+2 when the key could not be read from the keyring and 1 for any other failure.
 """
 from __future__ import annotations
 
@@ -126,7 +148,22 @@ SERVICE_PATHS = ("/mcp", "/api/", "/assets/")
 ADDRESS = re.compile(r"https?://[^\s\"'`<>)\]]+")
 FENCE = re.compile(r"^```")
 CODE_SPAN = re.compile(r"`([^`\n]+)`")
+#: A code span written like a protocol tool's name, lower-case words joined by underscores.
+TOOL_SPAN = re.compile(r"[a-z][a-z0-9]*(?:_[a-z0-9]+)+")
+#: The page's statement of how many tools the service lists, as the quickstarts phrase it.
+STATED_TOOL_COUNT = re.compile(r"\bBaltor's ([A-Za-z]+|[0-9]+) tools\b")
+NUMBER_WORDS = {word: number for number, word in enumerate(
+    "zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen "
+    "eighteen nineteen twenty".split())}
 DEFAULT_CREDENTIAL = "baltor-pilot-owner"
+#: The run's failure codes. A credential failure is not a harness failure and exits with its own status.
+CREDENTIAL_EXPIRED, CREDENTIAL_REFUSED = "credential_expired", "credential_refused"
+SERVICE_UNREACHABLE, QUICKSTART_FAILED = "service_unreachable", "quickstart_failed"
+CREDENTIAL_FAILURES = (CREDENTIAL_EXPIRED, CREDENTIAL_REFUSED)
+EXIT_CREDENTIAL_FAILED = 3
+#: A key that expires sooner than this is reported, so a renewal that stopped is seen days before checks go blind.
+CREDENTIAL_WARNING_SECONDS = 3 * 86400
+CREDENTIAL_EXPIRES_SOON = "credential_expires_soon"
 TIMEOUT = 60
 
 
@@ -149,7 +186,14 @@ QUICKSTARTS = (
 
 
 class StepFailed(Exception):
-    """One documented step did not do what the page says. The message is the detail recorded."""
+    """One documented step did not do what the page says. The message is the detail recorded.
+
+    `status` is the HTTP status when the step failed on a refused request. A run in which every quickstart's
+    connection was refused with 401 failed on its credential, not on a harness, and says so by its own code."""
+
+    def __init__(self, message, status=None):
+        super().__init__(message)
+        self.status = status
 
 
 class TransportFailed(StepFailed):
@@ -245,6 +289,28 @@ def toml_text(table: dict, path: tuple = ()) -> str:
     blocks = [("[" + ".".join(key(part) for part in path) + "]\n" if path else "") + "\n".join(own)] if own else []
     blocks += [toml_text(item, path + (name,)) for name, item in table.items() if isinstance(item, dict)]
     return "\n\n".join(blocks)
+
+
+def page_tool_disagreement(text: str, listed) -> str:
+    """Why the page's claims about the tool list are not what the service lists, or an empty text when they are.
+
+    A code span names a tool when it is written like one and begins with the family of a listed tool, the text
+    before its first underscore, such as `provisioning_read`. Every tool the page names must be listed, and a
+    count the page states as "Baltor's six tools" must be the number the service lists. Field names such as
+    `body_digest` belong to no tool family and are not read as tools."""
+    listed = [name for name in listed if isinstance(name, str)]
+    families = {name.split("_", 1)[0] for name in listed if "_" in name}
+    named = sorted({span for span in CODE_SPAN.findall(text)
+                    if TOOL_SPAN.fullmatch(span) and span.split("_", 1)[0] in families})
+    problems = []
+    unknown = [name for name in named if name not in listed]
+    if unknown:
+        problems.append("the page names tools the service does not list: " + ", ".join(unknown))
+    for stated in STATED_TOOL_COUNT.findall(text):
+        number = int(stated) if stated.isdigit() else NUMBER_WORDS.get(stated.lower())
+        if number is not None and number != len(listed):
+            problems.append("the page says {} tools and the service lists {}".format(stated, len(listed)))
+    return "; ".join(problems)
 
 
 def canonical(value) -> str:
@@ -364,7 +430,8 @@ class Service:
         if "id" not in message:
             return status, None
         if status != 200:
-            raise StepFailed(f"{message['method']} answered {status}: {scrub(raw.decode('utf-8', 'replace')[:160], self._key)}")
+            raise StepFailed(f"{message['method']} answered {status}: {scrub(raw.decode('utf-8', 'replace')[:160], self._key)}",
+                             status)
         return status, protocol_result(status, headers_out.get("content-type", ""), raw, message["id"])
 
 
@@ -379,7 +446,7 @@ def result_of(answer):
 def wrapped_result(status: int, answer, what: str) -> dict:
     """The record inside one direct answer: the `result` of its `service_http_result/v1` wrapper."""
     if status != 200:
-        raise StepFailed(f"the {what} answered {status}")
+        raise StepFailed(f"the {what} answered {status}", status)
     if not isinstance(answer, dict) or answer.get("record_type") != RESULT_WRAPPER or not isinstance(answer.get("result"), dict):
         named = answer.get("record_type") if isinstance(answer, dict) else type(answer).__name__
         raise StepFailed("the {} answered {!r}, not a {} record with a result".format(what, named, RESULT_WRAPPER))
@@ -445,13 +512,13 @@ def run_quickstart(service: Service, quickstart: Quickstart, page_text: str, pub
              problem or "the {} recipe reviewed {}".format(quickstart.id, recipes.get("reviewed_at")))
     try:
         if quickstart.wire_path == PROTOCOL:
-            _run_protocol(service, quickstart, capabilities, stamp, step, facts)
+            _run_protocol(service, quickstart, capabilities, stamp, step, facts, page_text=page_text)
         elif quickstart.wire_path == EXTENSION:
             _run_direct(service, quickstart, capabilities, stamp, step, facts, extension=True, page_text=page_text)
         else:
             _run_direct(service, quickstart, capabilities, stamp, step, facts, extension=False, page_text=page_text)
     except StepFailed as failure:
-        steps[-1] = {**steps[-1], "passed": False, "detail": scrub(str(failure), service._key)[:300]}
+        steps[-1] = failed_row(steps[-1], failure, service._key)
     service.step_effects = None
     rows = _collapse(steps)
     return {"id": quickstart.id, "harness": quickstart.harness, "page": quickstart.page,
@@ -459,7 +526,36 @@ def run_quickstart(service: Service, quickstart: Quickstart, page_text: str, pub
             "http_calls": service.calls - calls_before, "passed": bool(rows) and all(row["passed"] for row in rows)}
 
 
-def _run_protocol(service, quickstart, capabilities, stamp, step, facts):
+def failed_row(row: dict, failure: StepFailed, key: str) -> dict:
+    """The pending row of the step a failure decided, with its scrubbed reason and what kind of failure it was:
+    `status` for a refused request and `did_not_complete` for a request that did not complete."""
+    decided = {**row, "passed": False, "detail": scrub(str(failure), key)[:300]}
+    if failure.status is not None:
+        decided["status"] = failure.status
+    if isinstance(failure, TransportFailed):
+        decided["did_not_complete"] = True
+    return decided
+
+
+def protocol_steps(service: Service, quickstart: Quickstart, capabilities: dict, stamp: str):
+    """The protocol path's service steps alone, for a caller that brings its own credential, such as an OAuth token.
+
+    The rows and facts are those a quickstart records: connected, listed, searched, downloaded and digest_matches,
+    then the identity read, its digest prefix and its request_id."""
+    steps, facts = [], {"request_id": None, "identity": None, "digest_prefix": None, "hits": 0,
+                        "catalogue_release": None}
+
+    def step(name, passed, detail=""):
+        steps.append({"name": name, "passed": bool(passed), "detail": detail})
+
+    try:
+        _run_protocol(service, quickstart, capabilities, stamp, step, facts)
+    except StepFailed as failure:
+        steps[-1] = failed_row(steps[-1], failure, service._key)
+    return _collapse(steps), facts
+
+
+def _run_protocol(service, quickstart, capabilities, stamp, step, facts, page_text=None):
     handshake = (capabilities.get("protocol") or {}).get("handshake_versions") or []
     if not handshake:
         step("connected", False, "the service names no handshake protocol version")
@@ -482,6 +578,9 @@ def _run_protocol(service, quickstart, capabilities, stamp, step, facts):
     if missing:
         raise StepFailed("the tool list lacks " + ", ".join(missing))
     step_pass(step, "listed", f"{len(names)} tools")
+    if page_text is not None:
+        problem = page_tool_disagreement(page_text, names)
+        step("page_names_listed_tools", not problem, problem or "every tool the page names is listed")
     step("searched", False, QUERY)
     _status, called = service.protocol({"jsonrpc": "2.0", "id": "qs-search", "method": "tools/call",
         "params": {"name": SEARCH_TOOL, "arguments": {"query": QUERY, "top_n": SEARCH_RESULTS}}}, version)
@@ -681,7 +780,8 @@ def _run_direct(service, quickstart, capabilities, stamp, step, facts, *, extens
     facts["request_id"] = new_request_id(quickstart, stamp)
     status, headers, raw = service.exchange("/api/v1/download", {**download, "request_id": facts["request_id"]})
     if status != 200:
-        raise StepFailed(f"the download answered {status}: {scrub(raw.decode('utf-8', 'replace')[:160], service._key)}")
+        raise StepFailed(f"the download answered {status}: {scrub(raw.decode('utf-8', 'replace')[:160], service._key)}",
+                         status)
     if headers.get(RECORD_HEADER) != DOWNLOAD_RECORD:
         raise StepFailed("the download names another record than " + DOWNLOAD_RECORD)
     step_pass(step, "downloaded", f"{len(raw)} bytes")
@@ -704,15 +804,73 @@ def _collapse(steps: list) -> list:
     return list(rows.values())
 
 
+def service_published_base(capabilities: dict):
+    """The base the service publishes for itself: its protocol resource without the protocol path, or None.
+
+    The service names one canonical resource on every hostname it answers, in its authorization server record; a
+    client uses it as the OAuth `resource`. The quickstart pages document that base, so a check run against another
+    hostname of the same deployment still holds the pages to it."""
+    resource = (capabilities.get("authorization_server") or {}).get("resource") if isinstance(capabilities, dict) else None
+    if not isinstance(resource, str) or not resource.endswith(PROTOCOL_PATH):
+        return None
+    base = resource[:-len(PROTOCOL_PATH)]
+    parts = urllib.parse.urlsplit(base)
+    if parts.scheme != "https" or not parts.hostname or parts.path or parts.query or parts.fragment or parts.username:
+        return None
+    return base
+
+
+def failure_code(rows: list, credential: dict, now: datetime, capabilities_unreachable: bool = False):
+    """Why a run failed, as one code, or None when it passed.
+
+    When every quickstart's connection was refused with 401, the credential failed, not a harness: the code is
+    `credential_expired` when the key's recorded expiry has passed and `credential_refused` otherwise, for a key that
+    was revoked or whose expiry is not recorded. When no connection completed, the service could not be reached; a
+    protocol path that never learned its handshake version because the capabilities did not arrive counts as one
+    that did not complete. Any other failure is a quickstart's own."""
+    if all(row["passed"] for row in rows):
+        return None
+    connected = [next((step for step in row["steps"] if step["name"] == "connected"), None) for row in rows]
+    if connected and all(step is not None and not step["passed"] and step.get("status") == 401 for step in connected):
+        expires_at = (credential or {}).get("expires_at")
+        return CREDENTIAL_EXPIRED if type(expires_at) is int and expires_at <= now.timestamp() else CREDENTIAL_REFUSED
+    if connected and all(step is not None and not step["passed"]
+                         and (step.get("did_not_complete") or capabilities_unreachable) for step in connected):
+        return SERVICE_UNREACHABLE
+    return QUICKSTART_FAILED
+
+
+def credential_view(reference: str, account: str, credential: dict, now: datetime) -> dict:
+    """What the record says about the credential: its reference and account, and the key facts the keyring holds
+    beside it, never the key."""
+    view = {"reference": reference, "account": account, "key_id": (credential or {}).get("key_id"),
+            "expires_at": None, "expires_in_seconds": None}
+    expires_at = (credential or {}).get("expires_at")
+    if type(expires_at) is int:
+        view["expires_at"] = datetime.fromtimestamp(expires_at, timezone.utc).isoformat()
+        view["expires_in_seconds"] = int(expires_at - now.timestamp())
+    return view
+
+
 def run_all(origin: str, key: str, *, published_base: str = None, repository: Path = ROOT, opener=None,
-            page_texts: dict = None, now: datetime = None, account: str = "") -> dict:
-    """Every quickstart against one service, as one typed record."""
+            page_texts: dict = None, now: datetime = None, account: str = "", credential: dict = None,
+            credential_reference: str = DEFAULT_CREDENTIAL) -> dict:
+    """Every quickstart against one service, as one typed record.
+
+    `credential` holds the key facts the keyring records beside the key (`key_id`, `expires_at`), never the key.
+    Without `published_base` the pages are held to the base the service publishes for itself, or to the origin
+    when it publishes none."""
     now = now or datetime.now(timezone.utc)
     stamp = now.strftime("%Y%m%d")
-    published_base = (published_base or origin).rstrip("/")
     service = Service(origin, key, opener)
     status, answer, capabilities_error = _fetch(service, "/api/v1/capabilities")
     capabilities = result_of(answer) or {}
+    if published_base:
+        published_base, base_source = published_base.rstrip("/"), "argument"
+    elif service_published_base(capabilities):
+        published_base, base_source = service_published_base(capabilities), "service_resource"
+    else:
+        published_base, base_source = origin.rstrip("/"), "origin"
     recipes_status, recipes, recipes_error = _fetch(service, RECIPES_ADDRESS)
     if recipes_status != 200 or not isinstance(recipes, dict):
         recipes = None
@@ -727,8 +885,16 @@ def run_all(origin: str, key: str, *, published_base: str = None, repository: Pa
     downloads = [row["request_id"] for row in rows if _delivered(row)]
     #: Sent but not delivered: refused, cut off or unanswered. A refusal is not measured; a cut-off answer may be.
     not_confirmed = [row["request_id"] for row in rows if row["request_id"] and not _delivered(row)]
+    code = failure_code(rows, credential, now, capabilities_unreachable=capabilities_error is not None)
+    if code in CREDENTIAL_FAILURES:
+        for row in rows:
+            row["blocked_by"] = code
+    view = credential_view(credential_reference, account, credential, now)
+    warning = (CREDENTIAL_EXPIRES_SOON if code not in CREDENTIAL_FAILURES and view["expires_in_seconds"] is not None
+               and view["expires_in_seconds"] < CREDENTIAL_WARNING_SECONDS else None)
     return {"record_type": RECORD_TYPE, "checked_at": now.isoformat(), "origin": origin,
-            "published_base": published_base, "account": account, "query": QUERY,
+            "published_base": published_base, "published_base_source": base_source, "account": account,
+            "query": QUERY, "failure_code": code, "credential": view, "credential_warning": warning,
             "capabilities_status": status, "capabilities_error": capabilities_error,
             "recipes_status": recipes_status, "recipes_error": recipes_error,
             "recipes_record_type": (recipes or {}).get("record_type"),
@@ -778,11 +944,22 @@ def write_record(record: dict, directory: Path, now: datetime) -> Path:
 
 
 def summary(record: dict) -> dict:
-    return {"passed": record["passed"], "quickstarts_passed": record["quickstarts_passed"],
+    """The one line a nightly log keeps. A credential failure is named once, with the expiry it was recorded with,
+    and its quickstarts are listed as blocked, not as failed harnesses."""
+    blocked = record.get("failure_code") in CREDENTIAL_FAILURES
+    line = {"passed": record["passed"], "failure_code": record.get("failure_code"),
+            "quickstarts_passed": record["quickstarts_passed"],
             "quickstarts_planned": record["quickstarts_planned"], "origin": record["origin"],
-            "usage_records_added": record["usage_records_added"],
-            "failed": [{"id": row["id"], "step": next((step["name"] for step in row["steps"] if not step["passed"]), None)}
-                       for row in record["quickstarts"] if not row["passed"]]}
+            "published_base": record.get("published_base"), "usage_records_added": record["usage_records_added"],
+            "credential_expires_at": (record.get("credential") or {}).get("expires_at"),
+            "failed": [] if blocked else [
+                {"id": row["id"], "step": next((step["name"] for step in row["steps"] if not step["passed"]), None)}
+                for row in record["quickstarts"] if not row["passed"]]}
+    if blocked:
+        line["blocked"] = [row["id"] for row in record["quickstarts"]]
+    if record.get("credential_warning"):
+        line["credential_warning"] = record["credential_warning"]
+    return line
 
 
 def main(argv=None) -> int:
@@ -792,11 +969,14 @@ def main(argv=None) -> int:
                         help="The keyring reference in tools/operator_credentials.json that holds the diagnostic key")
     parser.add_argument("--record-dir", type=Path, default=ROOT / RECORD_DIRECTORY)
     parser.add_argument("--repository", type=Path, default=ROOT)
+    parser.add_argument("--published-base", help="The base the pages must name. By default the base the service "
+                        "publishes for its protocol resource, so another hostname of the deployment is held to it too")
     arguments = parser.parse_args(argv)
-    origin = urllib.parse.urlsplit(arguments.origin)
-    if (origin.scheme != "https" or not origin.hostname or origin.username or origin.password
-            or origin.path not in ("", "/") or origin.query or origin.fragment):
-        parser.error("an HTTPS origin with no path is required")
+    for address in (arguments.origin, arguments.published_base):
+        parts = urllib.parse.urlsplit(address) if address is not None else None
+        if parts is not None and (parts.scheme != "https" or not parts.hostname or parts.username or parts.password
+                                  or parts.path not in ("", "/") or parts.query or parts.fragment):
+            parser.error("an HTTPS origin with no path is required")
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     import operator_credentials
     references = operator_credentials.references()
@@ -805,16 +985,21 @@ def main(argv=None) -> int:
         parser.error("the credential reference must name a service-access key")
     try:
         key = operator_credentials.resolve(arguments.credential_ref, data=references)
+        # The facts beside the key, never the key: they tell an expired key from a refused one.
+        facts = operator_credentials.key_facts(arguments.credential_ref, data=references)
     except Exception as error:  # noqa: BLE001 - the reason is the sanitized code, never a value
         print(json.dumps({"passed": False, "credential": arguments.credential_ref,
                           "error": type(error).__name__ + ": " + str(error)[:120]}))
         return 2
     now = datetime.now(timezone.utc)
-    record = run_all(arguments.origin, key, repository=arguments.repository.resolve(), now=now,
-                     account=spec.get("account", ""))
+    record = run_all(arguments.origin, key, published_base=arguments.published_base,
+                     repository=arguments.repository.resolve(), now=now, account=spec.get("account", ""),
+                     credential=facts, credential_reference=arguments.credential_ref)
     path = write_record(record, arguments.record_dir, now)
     print(json.dumps({**summary(record), "record": str(path)}))
-    return 0 if record["passed"] else 1
+    if record["passed"]:
+        return 0
+    return EXIT_CREDENTIAL_FAILED if record["failure_code"] in CREDENTIAL_FAILURES else 1
 
 
 if __name__ == "__main__":
