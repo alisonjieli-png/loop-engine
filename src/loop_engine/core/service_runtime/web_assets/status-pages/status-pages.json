@@ -824,7 +824,7 @@
      {
       "address": "/feeds",
       "title": "Feeds",
-      "description": "Public catalogue updates for AI agents and harnesses, in JSON Feed, RSS and Markdown. Broader paid intelligence and personalized push remain planned."
+      "description": "Public catalogue updates for AI agents and harnesses, in JSON Feed, RSS and Markdown. This preview does not include a paid plan or personalized push."
      },
      {
       "address": "/public-good",
