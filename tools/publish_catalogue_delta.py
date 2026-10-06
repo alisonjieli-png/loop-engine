@@ -44,6 +44,7 @@ no live request, so it is not a current-live publication permission.
 from __future__ import annotations
 
 import argparse
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import hashlib
 import json
 import re
@@ -73,6 +74,8 @@ BATCH_BYTES = 24 * 1024 * 1024
 BLOB_OBJECT, SEGMENT_OBJECT, ITEM_OBJECT = UPLOAD_OBJECT_KINDS = ("blobs", "segments", "items")
 #: How long to wait for the pointer to move before reporting that nothing was published.
 POINTER_WAIT_SECONDS = 120 * 60
+MAXIMUM_UPLOAD_WORKERS = 4
+STAGING_CONTEXT = "upload-context.json"
 
 
 def fly(*arguments: str, timeout: int = EXEC_TIMEOUT) -> str:
@@ -241,7 +244,7 @@ def extract_archive(archive: str, digest: str, destination: str) -> None:
     raise RuntimeError("archive extraction outcome is uncertain; inspect its status before retrying")
 
 
-def upload_missing(bundle: Path, missing: list[str], remote: str, extra_paths=()) -> None:
+def upload_missing(bundle: Path, missing: list[str], remote: str, extra_paths=(), *, workers=1, compress=False) -> None:
     """Put the missing blobs into the remote release folder, then prove every one arrived whole.
 
     Each put carries a checksum-verified archive of blobs at their relative paths. Extraction is detached
@@ -250,6 +253,8 @@ def upload_missing(bundle: Path, missing: list[str], remote: str, extra_paths=()
     and compared: a put that was cut short is a failure here, not a body that fails a customer's
     download later.
     """
+    if type(workers) is not int or not 1 <= workers <= MAXIMUM_UPLOAD_WORKERS or type(compress) is not bool:
+        raise ValueError("upload workers are 1 to 4 and compression is an explicit Boolean")
     extra_paths = list(extra_paths)
     extra_groups = {}
     for relative in extra_paths:
@@ -263,24 +268,41 @@ def upload_missing(bundle: Path, missing: list[str], remote: str, extra_paths=()
              for path in (bundle / "blobs" / "sha256").glob("*/*") if path.is_file()}
     sizes.update({relative: (bundle / relative).stat().st_size for relative in extra_paths})
     groups = group_batches(list(missing) + extra_paths, sizes)
-    workdir = Path(tempfile.mkdtemp(prefix="catalogue-delta-"))
-    try:
-        for number, group in enumerate(groups, 1):
+    def send(number, group):
+        # Each transfer owns its stage, archive and remote receipt. A failed
+        # worker cannot delete or replace another worker's local files.
+        with tempfile.TemporaryDirectory(prefix="catalogue-delta-") as temporary:
+            workdir = Path(temporary)
             stage = stage_batch(bundle, group, workdir)
-            archive = workdir / f"batch-{number}.tar"
-            with tarfile.open(archive, "w") as stream:
+            suffix = ".tar.gz" if compress else ".tar"
+            # Unique archive names also separate a resumed run from old receipts.
+            archive = workdir / f"batch-{number}-{uuid.uuid4().hex[:12]}{suffix}"
+            options = {"compresslevel": 1} if compress else {}
+            with tarfile.open(archive, "w:gz" if compress else "w", **options) as stream:
                 for name in group:
                     relative = name if "/" in name else blob_path(name)
                     stream.add(stage / relative, arcname=relative, recursive=False)
-            remote_archive = f"{REMOTE_ROOT}/{remote}/batch-{number}.tar"
+            remote_archive = f"{REMOTE_ROOT}/{remote}/{archive.name}"
             fly("ssh", "sftp", "put", str(archive), remote_archive,
                 "--machine", MACHINE, "--app", APP, timeout=EXEC_TIMEOUT)
             extract_archive(remote_archive, hashlib.sha256(archive.read_bytes()).hexdigest(),
                             f"{REMOTE_ROOT}/{remote}")
-            print(f"  batch {number}/{len(groups)}: {len(group)} blobs, "
-                  f"{sum(sizes.get(digest, 0) for digest in group) // 1024} KiB", flush=True)
-    finally:
-        shutil.rmtree(workdir, ignore_errors=True)
+            return {"number": number, "objects": len(group), "archive_bytes": archive.stat().st_size,
+                    "payload_bytes": sum(sizes.get(name, 0) for name in group)}
+    with ThreadPoolExecutor(max_workers=workers, thread_name_prefix="catalogue-upload") as pool:
+        futures = [pool.submit(send, number, group) for number, group in enumerate(groups, 1)]
+        try:
+            for completed, future in enumerate(as_completed(futures), 1):
+                result = future.result()
+                print(f"  batch {completed}/{len(groups)} complete (batch {result['number']}): "
+                      f"{result['objects']} objects, {result['payload_bytes'] // 1024} KiB payload, "
+                      f"{result['archive_bytes'] // 1024} KiB transfer", flush=True)
+        except BaseException:
+            for future in futures:
+                future.cancel()
+            # Started transfers finish before the failure returns; their
+            # receipts can then be reconciled without another writer racing.
+            raise
     absent = absent_blobs(remote, missing)
     if absent:
         raise RuntimeError(f"{len(absent)} blobs did not arrive, so nothing was published: {absent[:5]}")
@@ -293,6 +315,49 @@ def upload_missing(bundle: Path, missing: list[str], remote: str, extra_paths=()
 def _names_digest(names) -> str:
     """SHA-256 of names sorted bytewise, one per line, as `find | LC_ALL=C sort | sha256sum` prints it."""
     return hashlib.sha256("".join(f"{name}\n" for name in sorted(names)).encode()).hexdigest()
+
+
+def bind_staging(remote, context, *, resume=False, adopt_unmarked=False):
+    """Bind a transfer folder before any upload; never resume a dispatched publication.
+
+    An old unmarked folder needs an explicit adoption after the operator has
+    stopped its prior uploader and reconciled its outcome. This is transfer
+    recovery only; the exact native publication and its checks are unchanged.
+    """
+    folder = f"{REMOTE_ROOT}/{remote}"
+    state = machine_exec(f"if test -e {folder}/publish-result.json; then echo dispatched; "
+                         f"elif test -f {folder}/{STAGING_CONTEXT}; then head -c 8193 {folder}/{STAGING_CONTEXT}; "
+                         "else echo unbound; fi")
+    if state == "dispatched":
+        raise RuntimeError("publication was already dispatched; reconcile its result and active pointer before recovery")
+    if state != "unbound":
+        try:
+            held = json.loads(state)
+        except ValueError:
+            raise RuntimeError("staging context is unreadable; nothing was uploaded") from None
+        if held != context:
+            raise RuntimeError("staging belongs to another exact publication; nothing was uploaded")
+        return
+    if resume and not adopt_unmarked:
+        raise RuntimeError("unmarked staging requires explicit adoption after the previous uploader has stopped")
+    with tempfile.TemporaryDirectory(prefix="catalogue-staging-") as temporary:
+        marker = Path(temporary) / STAGING_CONTEXT
+        marker.write_text(json.dumps(context, sort_keys=True) + "\n", encoding="utf-8")
+        fly("ssh", "sftp", "put", str(marker), f"{folder}/{STAGING_CONTEXT}", "--machine", MACHINE, "--app", APP)
+        measured = machine_exec(f"sha256sum {folder}/{STAGING_CONTEXT}").split()
+        if not measured or measured[0] != hashlib.sha256(marker.read_bytes()).hexdigest():
+            raise RuntimeError("staging context upload did not verify; nothing was published")
+
+
+def remaining_uploads(remote, missing, extra_paths):
+    """Use staged names only as a transfer optimization; native publication still verifies every body."""
+    remaining = absent_blobs(remote, missing)
+    extras = []
+    for kind in (SEGMENT_OBJECT, ITEM_OBJECT):
+        selected = [path for path in extra_paths if path.startswith(kind + "/")]
+        absent = set(absent_blobs(remote, [path.rsplit("/", 1)[-1] for path in selected], kind=kind))
+        extras.extend(path for path in selected if path.rsplit("/", 1)[-1] in absent)
+    return remaining, extras
 
 
 def absent_blobs(remote: str, expected: list[str], *, kind: str = BLOB_OBJECT) -> list[str]:
@@ -395,10 +460,18 @@ def publication_inputs(bundle, digest, base_bundle, base_release, reconciliation
 
 def publish(name: str, bundle: Path, digest: str, *, base_bundle: Path | None = None,
             base_release: str | None = None, reconciliation_digest: str | None = None,
-            body_roots=(), accepted_licenses=("MIT",)) -> dict:
+            body_roots=(), accepted_licenses=("MIT",), upload_workers=1, compress=False,
+            resume_staging=None, adopt_unmarked_staging=False) -> dict:
     """Upload what is missing, write the release folder, and move the pointer by the ordinary command."""
     if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,95}", name):
         raise ValueError("a release name must be one safe path segment")
+    if type(upload_workers) is not int or not 1 <= upload_workers <= MAXIMUM_UPLOAD_WORKERS or type(compress) is not bool:
+        raise ValueError("upload workers are 1 to 4 and compression is an explicit Boolean")
+    if resume_staging is not None and (not isinstance(resume_staging, str)
+            or not re.fullmatch(r"delta-" + re.escape(name) + r"-[0-9a-f]{12}", resume_staging)):
+        raise ValueError("resume names one exact staging folder for this publication name")
+    if type(adopt_unmarked_staging) is not bool or adopt_unmarked_staging and resume_staging is None:
+        raise ValueError("adoption needs one explicit previous staging folder")
     if not re.fullmatch(r"[0-9a-f]{64}", digest) or hashlib.sha256((bundle / "bundle.json").read_bytes()).hexdigest() != digest:
         raise ValueError("the expected bundle digest must match the local header before upload")
     from reconcile_catalogue_bundle import load_bundle, require_live_base
@@ -411,15 +484,25 @@ def publish(name: str, bundle: Path, digest: str, *, base_bundle: Path | None = 
     negotiate_bundle_format(remote_formats(), preference=(record_type,))
     candidate = load_bundle(bundle, accepted_licenses)
     extra_paths = segmented_uploads(base, candidate)
-    remote = f"delta-{name}-{uuid.uuid4().hex[:12]}"
+    remote = resume_staging or f"delta-{name}-{uuid.uuid4().hex[:12]}"
     result_path = f"{REMOTE_ROOT}/{remote}/publish-result.json"
     kept_receipt = f"{REMOTE_ROOT}/{remote}.publish.json"
     machine_exec(f"mkdir -p {REMOTE_ROOT}/{remote}/blobs/sha256")
+    if resume_staging:
+        context = {"record_type": "catalogue_upload_staging/v1", "name": name, "bundle_digest": digest,
+                   "base_release": base_release, "reconciliation_digest": reconciliation_digest,
+                   "result_release": proof["result_release"], "result_content_digest": proof["result_content_digest"]}
+        bind_staging(remote, context, resume=True, adopt_unmarked=adopt_unmarked_staging)
 
     local = blob_digests(bundle)
     sizes = {path.name: path.stat().st_size
              for path in (bundle / "blobs" / "sha256").glob("*/*") if path.is_file()}
     missing = [value for value in local if value not in present]
+    resumed_bodies, resumed_metadata = 0, 0
+    if resume_staging:
+        rest, extra_rest = remaining_uploads(remote, missing, extra_paths)
+        resumed_bodies, resumed_metadata = len(missing) - len(rest), len(extra_paths) - len(extra_rest)
+        missing, extra_paths = rest, extra_rest
     total_bytes = sum(sizes.values())
     missing_bytes = sum(sizes[value] for value in missing)
     plan = {"release": remote, "local_blobs": len(local),
@@ -428,13 +511,14 @@ def publish(name: str, bundle: Path, digest: str, *, base_bundle: Path | None = 
             "share_of_full_upload": round(missing_bytes / total_bytes, 4) if total_bytes else None,
             "batches": len(group_batches(missing, sizes)), "base_release": base_release,
             "reconciliation_digest": reconciliation_digest, "bundle_record_type": record_type,
-            "segments_and_item_lines": len(extra_paths)}
+            "segments_and_item_lines": len(extra_paths), "resumed_staged_bodies": resumed_bodies,
+            "resumed_staged_metadata": resumed_metadata, "upload_workers": upload_workers, "compressed": compress}
     print(json.dumps(plan, indent=2), flush=True)
     # A declared withdrawal-only/no-op snapshot can have no new local blobs.
     if extra_paths:
-        upload_missing(bundle, missing, remote, extra_paths)
+        upload_missing(bundle, missing, remote, extra_paths, workers=upload_workers, compress=compress)
     else:
-        upload_missing(bundle, missing, remote)
+        upload_missing(bundle, missing, remote, workers=upload_workers, compress=compress)
     listing = "release-segments.jsonl" if extra_paths or (bundle / "release-segments.jsonl").exists() else "items.jsonl"
     for filename in ("bundle.json", listing):
         fly("ssh", "sftp", "put", str(bundle / filename), f"{REMOTE_ROOT}/{remote}/{filename}",
@@ -498,6 +582,11 @@ def main() -> int:
     parser.add_argument("--accept-license", action="append", default=[], help="Repeat the host's accepted licence labels")
     parser.add_argument("--dry-run", action="store_true",
                         help="report the delta and write nothing")
+    parser.add_argument("--upload-workers", type=int, default=1, choices=range(1, MAXIMUM_UPLOAD_WORKERS + 1))
+    parser.add_argument("--compress", action="store_true", help="gzip transfer archives; catalogue bytes do not change")
+    parser.add_argument("--resume-staging", help="resume one exact stopped transfer; a dispatched publication refuses")
+    parser.add_argument("--adopt-unmarked-staging", action="store_true",
+                        help="bind an older unmarked transfer only after its uploader has stopped and been reconciled")
     arguments = parser.parse_args()
     bundle = arguments.bundle_folder
     segmented = (bundle / "release-segments.jsonl").exists()
@@ -534,7 +623,10 @@ def main() -> int:
                                  base_bundle=arguments.base_bundle, base_release=arguments.base_release,
                                  reconciliation_digest=arguments.reconciliation_digest,
                                  body_roots=tuple(arguments.body_root),
-                                 accepted_licenses=tuple(arguments.accept_license) or ("MIT",)), indent=2))
+                                 accepted_licenses=tuple(arguments.accept_license) or ("MIT",),
+                                 upload_workers=arguments.upload_workers, compress=arguments.compress,
+                                 resume_staging=arguments.resume_staging,
+                                 adopt_unmarked_staging=arguments.adopt_unmarked_staging), indent=2))
     except (OSError, ValueError, RuntimeError) as error:
         print(f"the delta publish failed: {error}", file=sys.stderr)
         return 1
