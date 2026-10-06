@@ -195,6 +195,66 @@ To find the account behind a provider customer, read its
 an account, read the account's billing customer binding through
 `billing_customer_for`.
 
+## When paid access starts and ends
+
+`paid_access_until` in `billing.py` decides it from the subscription the
+provider reports at the moment of each event. The rule and its reasons are in
+[the service runtime README](../../src/loop_engine/core/service_runtime/README.md#stripe-event-and-provider-contracts).
+In the customer's terms:
+
+| Moment | Downloads |
+|---|---|
+| Checkout completes and Stripe confirms the first payment | allowed, until the end of the paid month plus three days |
+| The month renews and Stripe holds the new invoice as a draft for about an hour | still allowed |
+| The renewal is paid | allowed until the end of the new month plus three days |
+| The renewal payment fails and the subscription is past due | ended at that event |
+| The customer cancels in the portal | allowed until the end of the paid month, then ended |
+| The operator refunds and cancels the subscription at once | ended at the deletion event |
+
+The three days only count when Stripe's events are late. Stripe retries a
+webhook delivery for up to three days in live mode, so a retried delivery never
+costs a paying customer access, and an account whose renewal events never
+arrive loses access three days after its month.
+
+## Proven against the Stripe test environment
+
+`tools/check_stripe_test_journey.py` runs the real service on a loopback
+socket, composed by the host loader the deployment uses, against the Stripe
+test account `acct_1UHZ9KCCxLfArYED`. The identity provider is the loopback
+stand-in the website checks use; everything else is the real boundary. Each
+part fits the five minutes that `tools/operator_credentials.py run` allows:
+
+```bash
+/usr/bin/python3 tools/operator_credentials.py run --ref stripe-test --timeout 300 -- \
+  .venv/bin/python tools/check_stripe_test_journey.py --part checkout --report /new/path/checkout.json
+```
+
+The parts are `checkout`, `renewal` and `failed_renewal`. The reports of
+October 5, 2026 are in
+[artifacts/stripe-test-journey-2026-10-05](../../artifacts/stripe-test-journey-2026-10-05/).
+
+| Step | Observed |
+|---|---|
+| Sign-up with an email link and a password opens an account with no plan | yes |
+| Search works without a plan; a download is refused with `plan_required` and the plan offer, over HTTP and over MCP | yes |
+| The plans record offers checkout and no portal before payment | yes |
+| Checkout creates one customer for the account and a Stripe-hosted session; a real browser pays with test card 4242 | yes |
+| The signed events grant downloads; HTTP and MCP reads succeed and the download is recorded as usage | yes, after the reader repair; before it the account stayed at `metadata` |
+| The portal lists the paid invoice and cancels at the end of the period; access continues until then | yes |
+| A refund and an immediate cancellation end access over HTTP and MCP | yes |
+| On a test clock, access continues while the renewal invoice is a draft | yes, after the renewal rule; before it the account lost access |
+| A paid renewal extends access to the next month | yes |
+| A renewal charged to a card that needs the cardholder fails, the subscription is past due and access ends | yes |
+
+What the journey showed about the Stripe account itself: the test account
+sells through Stripe's Managed Payments. Checkout reads "Sold through Link",
+adds sales tax for the billing address (6 percent for a Pennsylvania address,
+$30.74 in all), and Stripe's test authentication page names the merchant
+`LINK.COM* BALTOR SANDB`, the form a card statement takes; Stripe refuses
+to change the payment method of such a subscription through the API, so a
+customer changes it in the portal. The live account has Managed Payments
+switched on as well, as the live payments record of September 21, 2026 states.
+
 ## Proven and not proven
 
 Observed facts come from checks that ran on this branch. Every check uses an
@@ -225,9 +285,9 @@ made, no account was created and no money moved.
 | A bound account reaches checkout at the new provider account after a host release | `a_released_account_reaches_checkout_at_the_provider_account_the_service_now_uses` | Observed |
 | A release refuses unless it names the exact provider account the account holds | `a_release_refuses_unless_it_names_the_exact_provider_account_the_account_holds` | Observed |
 | A binding this request did not make is reported with its own record version and the customer it really holds | `a_binding_this_request_did_not_make_is_reported_with_its_own_record_and_its_real_customer` | Observed |
-| The same behaviour against the real provider | none | Not proven. No provider call was made. |
-| A person completing a payment and receiving an entitlement | none | Not proven end to end. The event path has its own checks in `billing_checks.py`, and nobody has run the whole journey against a real account. |
-| The browser journey from the sign-in page to the provider page | none | Not proven. `web_assets/service.js` already reads the plans record and posts the checkout request, and the route checks drive the real HTTP path, but no browser run of the whole journey was recorded here. |
+| The same behaviour against the real provider | `tools/check_stripe_test_journey.py`, part checkout | Observed in the Stripe test environment on October 5, 2026: the first checkout created one customer carrying the account identifier and bound it. The live account is not exercised. |
+| A person completing a payment and receiving an entitlement | the same journey | Observed in the Stripe test environment on October 5, 2026, after the reader repair described in [the paid access rule](#when-paid-access-starts-and-ends). Before it, the same journey paid and was never granted downloads. |
+| The browser journey from the sign-in page to the provider page | the same journey and `tools/check_service_workspace.mjs` | Partly observed. The journey drives sign-up and the routes over HTTP and the Stripe-hosted Checkout and portal pages in a real browser; the website's own pages are driven against a stand-in provider by the workspace check. No single browser run covers both. |
 
 ### Removed-guard controls
 
@@ -316,9 +376,10 @@ current behaviour as covering them.
   created by hand outside this path, unless its metadata names the account.
 - Nothing cancels a subscription from inside the service. The provider portal
   is the only route, and it needs a bound customer.
-- The live pilot recorded on September 20, 2026 has checkout and the billing
-  webhook switched off. Switching them on is host configuration work and a
-  release, and it is not done by merging this code.
+- The live service reports the billing webhook, checkout and the portal as
+  available. Read from `https://baltor.ai/api/v1/capabilities` on October 5,
+  2026; the live webhook endpoint is enabled at API version 2025-03-31.basil,
+  read through the live key with GET requests only.
 
 ## Refusals and what they mean
 

@@ -11,18 +11,46 @@ Invited beta users are not charged.
 
 ## What is true today
 
-Observed on September 21, 2026 by reading the account through its interface.
+Observed on October 5, 2026, reading the live account through its interface
+with GET requests only. Steps 1 to 4 below were completed on September 21,
+2026 and are kept as the record of how.
 
 | Fact | State |
 |---|---|
-| Account reached by the stored test credential | `acct_1UHZ9KCCxLfArYED`, display name Baltor sandbox |
-| Products in it | None |
-| Prices in it | None |
-| Webhook endpoints in it | None |
-| Live charging | Not possible from this account until the step below is done |
+| Live account | `acct_1UHZ972IF9bCskLc`, charges and payouts enabled, nothing outstanding |
+| What is sold | Baltor Pro, one active price, 29 United States dollars a month |
+| Customer portal | cancels at the end of the paid month, updates the card, shows every invoice; your privacy and terms addresses are set |
+| Payment notifications | one endpoint, enabled, for exactly the five events the service reads |
+| Customers and subscriptions | none yet, so nobody has been charged |
+| How the account sells | through Stripe's Managed Payments: Stripe, as Link, is the seller of record |
 
-The account is empty, so nothing you do now can disturb existing customers
-or existing charges. There are none.
+What Managed Payments means for your customers, from
+<https://docs.stripe.com/payments/managed-payments/how-it-works>: checkout
+says "Sold through Link" and adds sales tax for the customer's billing address
+before they pay; Link emails every receipt, invoice and refund notice with the
+PDF attached, whatever your receipt settings say; the card statement reads
+`LINK.COM* BALTOR.AI`; customers can also cancel or change their subscription
+on link.com, and Baltor follows that change through the same notifications.
+Link support answers payment questions and may contact you about one. If you
+do not answer within 48 hours, Stripe may refund the customer without asking
+you.
+
+## The two things only you can do now
+
+1. **Keep your support email address current.** Open
+   <https://dashboard.stripe.com/settings/business-details>. Link support sends
+   every escalation about a Baltor payment to this address, and the 48 hours
+   start when it is sent.
+2. **Choose your renewal reminders.** Open
+   <https://dashboard.stripe.com/settings/billing/subscriptions>. With
+   Upcoming renewals switched on, Stripe emails each customer before every
+   monthly renewal; switched off, it emails only before the yearly
+   anniversary. Engineering's choice, if you leave it: switch it on, because a
+   reminder before each charge prevents disputes from people who forgot they
+   subscribed.
+
+Everything else about taking payments is in place, and a customer paying
+through the website is the product working.
 
 ## Step 1: know which account will take real money
 

@@ -454,10 +454,53 @@ remove an entitlement that has already been recorded. Cancel the subscription
 in Stripe, or let the customer cancel it in the portal, and the recorded
 entitlement follows the next event.
 
+## The paid path, proven in test mode on October 5, 2026
+
+`tools/check_stripe_test_journey.py` drives the whole paid path against the
+Stripe test account with the service's own host loader and adapters. What it
+proves, the parts it runs and the reports are in
+[the subscription journey guide](subscription-journey.md#proven-against-the-stripe-test-environment).
+It needs the product, the price and the portal configuration of the plan above.
+On October 5, 2026 they were created in the test account with exactly the
+parameters `tools/setup_stripe_sandbox.py` sends (product `baltor_pro`, price
+`price_1UNLOFCCxLfArYEDLSYsBUWA` with lookup key `baltor_pro_monthly_usd`,
+portal configuration `bpc_1UNLOICCxLfArYEDVq73Jv1h`), so a later run of that
+command finds them and creates only the coupon, the promotion code and an
+endpoint. The journey uses `stripe listen` instead of a registered endpoint,
+because a test-mode endpoint at the production address would send every test
+event to the live service, which refuses it.
+
+The journey found and the release of that day repaired two faults that every
+paying customer would have met:
+
+| Fault | Effect | Repair |
+|---|---|---|
+| The subscription reader read the Invoice `paid` field, which Stripe removed in 2025-03-31.basil, the version the live webhook endpoint uses | every paid invoice read as unpaid: a customer paid and was never granted downloads | `invoice_paid` in `stripe_provider.py` reads the invoice `status` |
+| Paid access ended at the period end, and the renewal draft read as unpaid | at every renewal the paying account lost downloads until the renewal was charged, about an hour later | `paid_access_until` in `billing.py`: the renewal draft keeps access, and paid access lasts three days past the period |
+
+It also showed that the account sells through Stripe's Managed Payments, with
+Stripe as the merchant of record: Checkout says "Sold through Link" and adds
+sales tax for the billing address before the customer pays, so a Pennsylvania
+customer pays $30.74 for the $29 plan. The public pages keep the price as the
+owner worded it on September 23, 2026, "$29 a month", because a pre-tax price
+with the tax shown at checkout before payment is the usual way to state a
+subscription price in the United States; the customer guide
+[usage and what you pay for](service-usage-and-what-you-pay-for.md) says that
+sales tax is added where it applies.
+
+Live state on October 5, 2026, read with GET requests only through the live
+key: the account takes charges and payouts with nothing outstanding; the one
+active price is $29 a month; the portal configuration cancels at the period
+end, updates the payment method and shows the invoice history, with the
+business profile's privacy and terms addresses set; the webhook endpoint is
+enabled at API version 2025-03-31.basil for exactly the five event types; the
+account holds no customer and no subscription, so nobody has been charged.
+
 ## What this guide does not prove
 
-- No live payment has been taken. The commands above touch the Stripe test
-  environment only.
+- No live payment has been taken. On October 5, 2026 the live account held no
+  customer and no subscription. The commands above, and the journey check,
+  touch the Stripe test environment only.
 - The checks for `tools/setup_stripe_sandbox.py` use an injected transport.
   They prove the local contract, the refusals and the ordering. They do not
   prove that Stripe accepts these parameters on the live API.

@@ -100,6 +100,14 @@ When available, the account page opens checkout or the customer portal. Account
 creation and checkout are separate capabilities; available checkout does not
 mean public registration is open.
 
+Stripe adds sales tax at checkout where your billing address requires it, and
+shows it before you pay. Downloads open when Stripe confirms the first payment,
+usually within seconds; coming back from the checkout page does not open them
+by itself. The customer portal lists every invoice with its receipt. If you
+cancel there, downloads stay open until the end of the month you paid for. If
+a renewal payment fails, downloads close until you update the payment method in
+the portal and Stripe collects the payment.
+
 Model access and provider charges remain yours. See
 [Usage and what you pay for](service-usage-and-what-you-pay-for.md) for download
 records, or [Troubleshooting](service-troubleshooting.md) for a refusal.
