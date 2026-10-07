@@ -1,0 +1,48 @@
+{
+  "record_type": "pilot_release_record/v1",
+  "release": 72,
+  "app": "baltor-pilot",
+  "source_revision": "3476032b7c00326c1e97f137ccc6dfb72bd860e5",
+  "image": "registry.fly.io/baltor-pilot@sha256:ea62f93ec7740731b25fd899d90cc5eefa6e991a3b080445fb30c93a31ad4a00",
+  "rollback_release": 71,
+  "rollback_image": "registry.fly.io/baltor-pilot@sha256:2f82e576b8207781d5a038d4ec1e679850eb02904f87af2936cf4ace8afdc42e",
+  "rollback_catalogue_state_versions": [1, 2, 3],
+  "owner_local_date": "2026-10-06",
+  "deployed_at": "2026-10-06T20:08:42Z",
+  "deployed_at_basis": "Fly release CreatedAt read back on October 7",
+  "observed_at": "2026-10-07T20:21:21Z",
+  "ci_run": 37522202775,
+  "ci_conclusion": "success",
+  "deploy_run": 37523228643,
+  "deploy_workflow_conclusion": "success",
+  "deployment_gate_after": false,
+  "deployment_gate_closed_at": "2026-10-07T20:21:21Z",
+  "deployment_gate_note": "The completed release left the gate enabled. The October 7 review closed it after verifying no deployment was running.",
+  "changes": [
+    "Public catalogue-state notices in JSON Feed, RSS and Markdown with the Feeds page.",
+    "Optional R2 body-store host integration; production R2 is not selected.",
+    "Recorded million-file publication, all-goal Public Good delivery and the active execution checklist."
+  ],
+  "catalogue": {
+    "release_id": "50b666f56b043ce085d20f46efed01444f257917467199992799ad49cdb03127",
+    "packages": 218127,
+    "distinct_files": 1352837,
+    "distinct_file_bytes": 7938617324,
+    "search_engine": "sqlite_disk_index",
+    "changed_by_this_application_release": false
+  },
+  "hostnames_checked": 10,
+  "hostnames_passed": 10,
+  "service_checks_passed": 50,
+  "service_checks_total": 50,
+  "service_check_kind": "read_only_live_pulse_not_full_browser_acceptance",
+  "nightly_browser": {"run": 37629753716, "passed": 967, "total": 971, "mutants_detected": 197, "mutants": 197, "conclusion": "failure", "finding": "Four header and menu expectations omit the new Feeds link."},
+  "limits": [
+    "Personalized feeds, agent assignments, push delivery and a new paid Feeds plan are not implemented by the preview.",
+    "The legacy version-1 full catalogue listing diagnostic remains unaccepted until the separate performance repair is released and checked live.",
+    "No Cloudflare production cutover or customer identity migration is claimed.",
+    "The October 7 pulse does not replace the failed nightly browser result."
+  ],
+  "private_evidence_root": "/home/username/baltor-private/repo-disk-review-20261007-1uZpT8",
+  "live_evidence": "live-pulse.json"
+}

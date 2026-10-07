@@ -2,7 +2,7 @@
 
 Kind: product architecture with measured local implementation and proposed hosting.
 Date: 2026-09-19. The [current deployment](#current-deployment) section was
-added on 2026-09-20 and last checked on 2026-10-06, after Fly release 71.
+added on 2026-09-20 and last checked on 2026-10-07, after Fly release 72.
 
 The hosted product manages accounts, subscriptions, and access to intelligence.
 The customer runs Loop Engine and the selected harnesses. A hosted intelligence
@@ -47,7 +47,21 @@ from the newest release record, follow the release record and correct this
 section. Update this section in the same change that records a new release.
 It describes a private pilot. It does not describe a qualified paid service.
 
-The running image is Fly release 71, from
+The running image is Fly release 72, from
+`3476032b7c00326c1e97f137ccc6dfb72bd860e5`, image
+`sha256:ea62f93ec7740731b25fd899d90cc5eefa6e991a3b080445fb30c93a31ad4a00`.
+Exact CI `37522202775` and guarded deployment `37523228643` passed. The
+catalogue-state Feeds preview and optional R2 body adapter are installed;
+production body storage has not switched to R2. The fresh October 7 pulse
+passed 50 read-only requests across all ten hosts. The nightly browser suite
+passed 967 of 971 assertions and all 197 removed-guard controls; four header
+expectations omitted the new Feeds link and are under repair. The deployment
+gate was found enabled after the completed workflow and closed on October 7.
+Release 71 is the compatible image rollback. The
+[release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-72.json)
+separates the completed deployment, fresh pulse and outstanding browser repair.
+
+The preceding running image was Fly release 71, from
 `ec1df775e1fd17077d36cb04d90b7350b07e9273`, image
 `sha256:2f82e576b8207781d5a038d4ec1e679850eb02904f87af2936cf4ace8afdc42e`.
 CI `37487555685` and guarded deployment `37488883326` passed. All ten hosts
@@ -73,7 +87,7 @@ The older version-1 whole-library listing diagnostic still times out and is
 not accepted. The [publication record](../../artifacts/architecture-audit-2026-09-19/catalogue-million-and-public-good-2026-10-06.json)
 retains the failed attempts and scope. The existing Fly volume is 50 GB.
 Cloudflare production serving and the Feeds/Components offering split remain incomplete.
-The [active plan](../roadmap/DELIVERY-SEQUENCE.md#active-execution-plan-october-6)
+The [active plan](../roadmap/DELIVERY-SEQUENCE.md#active-execution-plan-october-7)
 states their dependencies and acceptance checks.
 
 The preceding running image was Fly release 70, from

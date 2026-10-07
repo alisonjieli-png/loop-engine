@@ -1,11 +1,11 @@
 # Baltor delivery and business plan
 
-Kind: current execution order. Updated October 6, 2026. The
+Kind: current execution order. Updated October 7, 2026. The
 [roadmap](roadmap.yaml) owns task status, the [north star](../architecture/NORTH-STAR.md)
 owns product direction, and [AGENTS.md](../../AGENTS.md#commit-push-and-release-authority)
 owns authority. This page orders that work and states what each stage must prove.
 
-## Active execution plan, October 6
+## Active execution plan, October 7
 
 This section is the working view of the existing roadmap, not another task
 registry. Update it after each release, publication or failed gate. The
@@ -24,7 +24,10 @@ separate completion conditions.
 | Storage headroom | Done | Existing Fly volume extended from 25 to 50 GB, with 39 GB free at readback and no restart. Added provisioned storage: $3.75/month; traffic and snapshots are separate. |
 | Empty Public Good goals | All 17 populated and new delivery verified | Policy `118639cb...` has 424 packages / 1,056 distinct useful files. Five additions preserve all 419 prior grants and limits. The 25 fresh sandbox methods, current licence checks, 64 no-plan delivery checks and 27 desktop/mobile browser checks passed. The no-plan account downloaded 25 exact files with no paid-usage increase. |
 | Cloudflare | Real S3 canary passed; no production cutover | The owner-supplied credentials are stored only in the system keyring. Six real S3 checks passed: existing object read, conditional write, exact readback, duplicate write, wrong digest and wrong size. The earlier Worker-binding probes remain separate evidence. Host-source version 3 is integrated; a full mirror and production-profile delivery checks still precede selection. D1 is not selected. |
-| Feeds and Components | First feed preview in local acceptance | Current-catalogue metadata is implemented in JSON Feed, RSS and Markdown with restart/rollback/withdrawal checks, plus a Feeds page. It is not deployed. No new paid plan, personalized push or OKF compatibility claim is active. |
+| Feeds and Components | Catalogue-state preview live in release 72 | JSON Feed, RSS and Markdown describe the same current served state. Customer-defined feeds, agent assignments, a paid Feeds plan and push delivery are not implemented by this preview. |
+| Repository reconciliation | Inventory and recovery copies complete; integration active | 190 registered worktrees, 180 existing, 72 dirty and two stashes were inspected. The shared checkout has 129 staged paths, of which 83 exactly match public main. Private history and unresolved merge stages are preserved outside public source. |
+| Workstation storage | Verified relocation active | Large inactive data files are copied to Expansion, read back by SHA-256 and linked at their original paths. The existing archive image was remounted and the task database is accessible again. Transfer records own the current count. |
+| Release follow-up | Release 72 reconciled; listing repair in acceptance | The deployment succeeded from `3476032b`. Its gate was left enabled and was closed on October 7. The browser suite's four stale header expectations are being corrected to include Feeds. |
 
 ### Priority and phase-based Gantt view
 
@@ -34,15 +37,73 @@ requires the named acceptance checks. Keep the first two rows on the critical
 path. Research and candidate work may run alongside them when it does not
 delay a ready publication or exhaust memory, storage or provider allowances.
 
-| Workstream | Prepared or verified | Now | After catalogue readback | Following cycle |
+| Workstream | Prepared or verified | Current release cycle | Following cycle | Acceptance |
 | --- | --- | --- | --- | --- |
-| Million-file library | Live count and exact publication verified | ACTIVE: repair legacy-list latency | GATE: full search/list regression replay | Maintain and audit |
+| Ten-million-file supply | 1,352,837 distinct files live | ACTIVE: repair listing and map useful supply | Expand qualified code, data, native assets and source-backed feeds | GATE: 10,000,000 distinct served digests with preserved access and useful family coverage |
 | Public Good coverage | All 17 goals and no-plan delivery verified | DONE: additive 424-package policy | Preserve access through next release | Broaden useful coverage |
-| Cloudflare | Worker probes, local integration and real S3 canary | Prepare mirror and production-profile checks | R2 mirror and static-edge acceptance | Staged production cutover |
-| Feeds | Existing radar plus tested catalogue-state projection | Finish preview release checks | Deploy the current-state pull feed | Full history, daily delivery, then opt-in push |
-| Two offerings | Names and access constraints recorded | Define explicit membership | Test Feeds-only and full access | Activate tested pricing |
+| Cloudflare storage and delivery | Existing resources and real S3 canary verified | ACTIVE: integrate the preserved edge work and prepare the R2 mirror | Move qualified public pages and immutable bodies | GATE: live integrity, authorization, failure recovery and measured cost |
+| Internal repository and paper intelligence | Existing radar and query executor contracts | ACTIVE: pin sources, observations, ranking rules and worker deployment | Cloudflare acquisition, private raw storage and checked production | GATE: repeatable current-source results and recovery from duplicate delivery |
+| Feeds | Catalogue-state pull preview live | Implement saved definitions and per-agent assignments | Shared dated snapshots, filters, cursors and account controls | GATE: two customers and two agents remain isolated through edit and revocation |
+| Two offerings | One account and existing full access | Define Feeds membership separately from Components | Test the cheaper information plan and full library access | GATE: paid journeys and all alternate retrieval paths before pricing activation |
+| Customer identity | Existing Supabase sign-up and Baltor OAuth work | Compare a Cloudflare-hosted identity engine and migration burden | Qualify email ownership, recovery, sessions and existing accounts | GATE: migrate only after equivalent security and account-recovery checks |
 | OpenAI distribution | Candidate package preserved | Policy/UX findings remain | Test deployed presentation | Identity/legal/review gates |
 | Remaining handoffs | Bundles and patches preserved | Small tested fixes as capacity permits | Native examples and all-goal originals | Repeat the release cycle |
+
+### Working procedure for every iteration
+
+The owner on October 7 requested faster implementation, a ten-million-file
+target, wider component families, customer feed customization and aggressive
+Cloudflare adoption where it improves the system. Maintenance downtime is
+permitted. That permission does not remove the preservation, integrity,
+authorization or rollback checks.
+
+1. Choose a bounded deliverable from the existing roadmap. Record its source,
+   dependencies, acceptance checks and effects before starting it.
+2. Preserve overlapping work and integrate from the current public revision.
+   Distinguish already-published patches, unfinished implementations, old
+   generated views and private research. Do not publish a private history as
+   an incidental parent of a release.
+3. Reproduce the defect or establish the current baseline. Keep the failing
+   attempt and test a known-wrong control when a guard changes.
+4. Implement at the existing typed boundary, using selectable engines. Run
+   focused checks, owning checks and the release gates on the candidate tree.
+5. Update roadmap evidence and generated views. Commit reviewed work to main,
+   push it, require exact-revision CI, and deploy through the guarded workflow.
+6. Read back the image, configuration, catalogue and policy identities. Check
+   every affected hostname and customer path, close the deployment gate, and
+   record the rollback and any remaining limitation.
+7. Continue with the next dependency-ready deliverable. A failed source read,
+   deployment or publication is reconciled before another attempt can repeat
+   an external effect.
+
+The phase table is the Gantt-style dependency view. Its cells are completion
+gates, not invented dates or a percentage inferred from file counts.
+
+### Immediate checklist and review comments
+
+- [x] Inventory branches, worktrees, stashes, historical refs and unresolved
+  merge stages; preserve patches, index objects and untracked work.
+- [x] Reconcile release 72 and close its deployment gate.
+- [x] Restore access to the existing offloaded task database.
+- [ ] Complete the selected byte-verified OS-to-Expansion transfers and record
+  the resulting free space. Keep active databases and Unix source trees on
+  a filesystem with their required semantics.
+- [ ] Release the narrowed legacy listing and corrected Feeds navigation
+  checks, then repeat live customer retrieval.
+- [ ] Repair conversation mining and dimension generation before integrating
+  their pending code. Normal conversation titles, malformed records, source
+  references and sensitive-term refusals need end-to-end coverage.
+- [ ] Finish the Cloudflare source, storage and delivery acceptance below.
+- [ ] Implement the customer customization checklist below before selling a
+  personalized Feeds service.
+- [ ] Expand supply through distinct useful implementations and qualified
+  native files. Keep raw sources, query permutations, generated candidates,
+  payload placements and distinct served digests separately counted.
+
+Review comments: the old repository-map draft names two missing conformance
+modules; the paired value study is an instrument, not measured benefit; the
+saved Stripe challenge driver has synthetic tests but no successful new live
+failed-renewal result. Preserve these streams and their remaining checks.
 
 ### Checklist 1: publish the million-file library
 

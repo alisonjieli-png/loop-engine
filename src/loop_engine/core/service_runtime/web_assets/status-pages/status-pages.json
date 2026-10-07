@@ -5,6 +5,18 @@
   "releases": [
    {
     "kind": "service",
+    "number": 72,
+    "at": "2026-10-06T20:08:42Z",
+    "lines": [
+     "Public catalogue-state notices in JSON Feed, RSS and Markdown with the Feeds page.",
+     "Optional R2 body-store host integration; production R2 is not selected.",
+     "Recorded million-file publication, all-goal Public Good delivery and the active execution checklist."
+    ],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
     "number": 71,
     "at": "2026-10-06T15:38:52Z",
     "lines": [
@@ -2135,7 +2147,7 @@
      },
      {
       "step": "S-6.215",
-      "title": "One million served harness component files: deterministic supply lines, test-based admission with a sampled independent review, a serving engine with delta releases, and full-package delivery",
+      "title": "Ten million served component files across useful code, data, native assets and maintained feeds, with qualified supply and complete delivery",
       "status": "In progress"
      },
      {

@@ -295,6 +295,30 @@ class DiskCatalogueView(CatalogueView):
 
     disk: object = field(default=None, repr=False, compare=False)
 
+    def listing_candidates(self, fields):
+        """Narrow an excluded-Community list through the checked tier projection.
+
+        The request's default excludes Community. Candidates still pass the
+        normal authorization checks. An incomplete projection keeps the full walk.
+        """
+        from ..provisioning_server import COMMUNITY_EXCLUDED, VERIFIED_TIER
+        from .catalogue_attributes import TIER_ATTRIBUTE
+        if fields.get("community_items", COMMUNITY_EXCLUDED) != COMMUNITY_EXCLUDED:
+            return None
+        index = self.search_index()
+        if index.tier_filter_complete is not True:
+            return None
+        conditions = [(TIER_ATTRIBUTE["name"], "any_of", (VERIFIED_TIER,))]
+        base_mask, delta_mask = index.eligible(conditions)
+        if index.removed_mask is not None:
+            base_mask = base_mask & index.removed_mask
+        selected = set(index.base.identity_at(index.base.numpy.flatnonzero(base_mask).tolist()))
+        if index.delta is not None:
+            selected.update(index.delta.identity_at(index.delta.numpy.flatnonzero(delta_mask).tolist()))
+        selected.difference_update(self.disk.left_out)
+        # An all-Verified view keeps its paged walk and cache locality.
+        return tuple(sorted(selected)) if len(selected) < len(self.catalogue.items) else None
+
     def file_population(self):
         population = self.disk.population()
         if not population:

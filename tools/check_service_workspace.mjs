@@ -355,7 +355,7 @@ const menuState=target=>target.evaluate(()=>({links:[...document.querySelectorAl
   primary:Boolean(document.getElementById("header-primary")?.getClientRects().length),open:document.getElementById("menu-button")?.getAttribute("aria-expanded")==="true",
   focusMark:getComputedStyle(document.querySelector("header .menu-button")||document.body).outlineStyle,path:location.pathname}));
 /* The signed-out menu, in the order of the site map's signed-out header: the pages, the guide and Sign in. */
-const menuLinks=["How it works","Use cases","Library","Public Good","Pricing","Docs","Get set up","Sign in"];
+const menuLinks=["How it works","Use cases","Library","Feeds","Public Good","Pricing","Docs","Get set up","Sign in"];
 const menuWorks=states=>states.closed.links.length===0&&states.closed.primary&&!states.closed.open
   &&JSON.stringify(states.pressed.links)===JSON.stringify(menuLinks)&&states.pressed.open&&states.pressed.primary
   &&!states.escaped.open&&states.escaped.links.length===0
@@ -2027,7 +2027,7 @@ try {
      removed-guard controls serve the page script without the step that hides the signed-out entries and without the step that
      brings them back. */
   const signedOutHeader=[...menuLinks,accessLabels.closed];
-  const signedInHeader=["Workspace","Get set up","Library","Public Good","Docs","Account","Sign out"];
+  const signedInHeader=["Workspace","Get set up","Library","Feeds","Public Good","Docs","Account","Sign out"];
   const headerEntries=async (target,width)=>{
     await target.setViewportSize({width,height:1000});
     const button=target.locator("header .menu-button"),folded=await button.isVisible();

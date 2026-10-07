@@ -182,6 +182,10 @@ class CatalogueView:
                 approved[identity] = binding
         return approved
 
+    def listing_candidates(self, fields):
+        """Optional immutable-view prefilter; None keeps the complete authorization walk."""
+        return None
+
     def search_index(self):
         """The view's one reusable index; a direct view rebuilds it only when its items change."""
         if self.index is not None:

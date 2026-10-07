@@ -4,6 +4,16 @@ Kind: current product direction. Updated October 1, 2026 under the owner's reque
 
 ## Current direction
 
+The owner's October 7 target is ten million useful served component files,
+with broader executable, data, creative and maintained-information families.
+The owner asks for faster iterative releases, customer-defined feeds assigned
+to individual agents, and Cloudflare as the preferred host wherever measured
+behavior and cost justify the move. Keep custom search, retrieval and
+authoritative application records under our control. Maintenance downtime is
+permitted; preservation, authorization, byte integrity and rollback remain
+required. The [active execution plan](../roadmap/DELIVERY-SEQUENCE.md#active-execution-plan-october-7)
+tracks implementation and acceptance separately from this target.
+
 The [delivery and business plan](../roadmap/DELIVERY-SEQUENCE.md) orders the
 next work: customer first use, a controlled benefit comparison, complete
 packages, the creative proof, traceable retrieval, reference-video recreation,

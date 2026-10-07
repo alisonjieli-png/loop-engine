@@ -128,6 +128,8 @@ class DurableProvisioningBinding:
         required = PROVISIONING_READ_SCOPE if operation == "read" else PROVISIONING_METADATA_SCOPE
         if required not in current.scopes:
             raise ServiceRuntimeError("scope_required")
+        if operation == "list" and candidates is None:
+            candidates = view.listing_candidates(fields)
         grants, grant_guard = self.runtime.grant_snapshot(current)
         scope = grant_scope(operation, fields, candidates)
         if not isinstance(grants, tuple):

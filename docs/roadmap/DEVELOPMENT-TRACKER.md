@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:a65c18d3fccd8b70b475ddea269e26453ec285a4f4993b1ee24325f753eb95f7`.
+Source fingerprint: `sha256:cf954dbae17b70562b807b70ce3da84ee76b0d8ddbbff5209139bdb35bb9b85f`.
 
 ## Where things stand
 
@@ -43,7 +43,7 @@ Source fingerprint: `sha256:a65c18d3fccd8b70b475ddea269e26453ec285a4f4993b1ee243
 | S-6.211 | User Feedback Intelligence on the hosted service: a rating of each download, requests for material and search gap counts, read by staff and turned into generation ideas | building | S-6.199, S-6.120 |
 | S-6.212 | Unlinked public changelog, feature list and todo pages generated from the release records and the roadmap | building | S-6.67, S-6.35 |
 | S-6.214 | Daily distillations: new papers, skills, plugins, protocol servers, services and repositories, each served as a summary page, RSS, JSON and downloadable components | building | S-6.213, S-6.81, S-6.197 |
-| S-6.215 | One million served harness component files: deterministic supply lines, test-based admission with a sampled independent review, a serving engine with delta releases, and full-package delivery | building | S-6.40, S-6.213 |
+| S-6.215 | Ten million served component files across useful code, data, native assets and maintained feeds, with qualified supply and complete delivery | building | S-6.40, S-6.213 |
 | S-6.81 | Source scouts: search tools for skills, plugins, protocol servers and harness files | building | S-6.40, S-6.76 |
 | S-6.216 | Account-required Public Good collection, header-linked browsing and 1,000 useful components across all SDGs | building | S-6.40, S-6.81, S-6.199 |
 | S-6.217 | Library candidates from the owner's Dot direction: review and persona packs, rubrics, briefs, templates and worked examples, one per distinct job | building | S-6.215, S-6.216 |
