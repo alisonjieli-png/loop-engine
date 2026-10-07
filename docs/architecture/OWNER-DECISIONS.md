@@ -46,7 +46,7 @@ the existing subscription and delivery boundaries own the offering split.
 
 The owner also requests an active checklist, procedures and a Gantt-style
 working plan, with iterative implementation through reconciliation. The
-[delivery plan](../roadmap/DELIVERY-SEQUENCE.md#active-execution-plan-october-6)
+[delivery plan](../roadmap/DELIVERY-SEQUENCE.md#active-execution-plan-october-7)
 provides the ordered view over the existing roadmap. The owner explicitly
 permits website downtime during this optimization work. That permits a
 planned interruption when useful; it does not waive content integrity,
