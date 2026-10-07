@@ -47,7 +47,21 @@ from the newest release record, follow the release record and correct this
 section. Update this section in the same change that records a new release.
 It describes a private pilot. It does not describe a qualified paid service.
 
-The running image is Fly release 72, from
+The running image is Fly release 73, from
+`61ae2bbe8b9cd5ee7f023f260d265d17785f6059`, image
+`sha256:fbca37b9f5e977da19cefb3dfe5356f93e620a94be5670817fb0897e849d10d2`.
+Exact CI `37685774464` and guarded deployment `37687661934` passed.
+The default Community-excluded legacy listing uses the complete checked-tier
+projection before the unchanged per-item authorization. All ten hostnames
+passed 2,118 browser assertions and fifty health/readiness reads. The
+owner-account catalogue disclosure diagnostic passed eleven checks, without
+body reads or usage writes. The local browser suite passed 971 assertions and
+all 197 removed-guard controls. The gate is closed. Release 72 is the image
+rollback. The [release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-73.json)
+also retains the two unsuccessful diagnostic-account attempts. The catalogue
+population and production storage selection are unchanged.
+
+The preceding running image was Fly release 72, from
 `3476032b7c00326c1e97f137ccc6dfb72bd860e5`, image
 `sha256:ea62f93ec7740731b25fd899d90cc5eefa6e991a3b080445fb30c93a31ad4a00`.
 Exact CI `37522202775` and guarded deployment `37523228643` passed. The
@@ -83,8 +97,9 @@ removed and the original local sources and live bodies remain. No publication
 was replayed. Public Good has 424 packages and 1,056 distinct useful files;
 all 17 goals have material. An existing no-plan account downloaded 25 exact
 new files with no paid-usage increase. The 50-request all-host pulse passed.
-The older version-1 whole-library listing diagnostic still times out and is
-not accepted. The [publication record](../../artifacts/architecture-audit-2026-09-19/catalogue-million-and-public-good-2026-10-06.json)
+The older version-1 whole-library listing diagnostic timed out before release
+73. Its owner-account continuation passes after the listing repair; the
+boundary-account continuation is still not accepted. The [publication record](../../artifacts/architecture-audit-2026-09-19/catalogue-million-and-public-good-2026-10-06.json)
 retains the failed attempts and scope. The existing Fly volume is 50 GB.
 Cloudflare production serving and the Feeds/Components offering split remain incomplete.
 The [active plan](../roadmap/DELIVERY-SEQUENCE.md#active-execution-plan-october-7)

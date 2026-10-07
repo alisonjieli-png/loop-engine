@@ -8,6 +8,13 @@ table belongs to one service process. It is not shared between machines and
 it is empty again after a restart. The limit is active only when the host
 states where the client address comes from; it never guesses, because behind
 a proxy the socket peer is the proxy and every caller would share one count.
+
+Version 2 of the settings record (`ForwardedRequestLimits`) adds a trusted
+forwarding proxy in front of the platform proxy, such as Cloudflare in front
+of Fly (`forwarding_proxy.py`). The connecting address is found exactly as in
+version 1; only when it lies inside the proxy's pinned address ranges is the
+proxy's own header, `CF-Connecting-IP`, read for the counted address. Version 1
+stays the default and never reads that header.
 """
 from __future__ import annotations
 
@@ -19,8 +26,13 @@ import math
 import re
 import threading
 import time
+from typing import ClassVar
+
+from .forwarding_proxy import ServiceForwardingProxy
 
 REQUEST_LIMITS_RECORD_TYPE = "service_request_limits/v1"
+#: Version 2: every version 1 field and a trusted forwarding proxy whose header names the client address.
+FORWARDED_REQUEST_LIMITS_RECORD_TYPE = "service_request_limits/v2"
 PUBLISHED_LIMIT_RECORD_TYPE = "service_failed_attempt_limit/v1"
 REFUSAL_RECORD_TYPE = "service_request_limit_refusal/v1"
 LIMIT_REACHED_CODE = "failed_attempt_limit_reached"
@@ -50,9 +62,12 @@ class ServiceRequestLimits:
     maximum_tracked_addresses: int = 4096
     ipv6_prefix_bits: int = 64
     record_type: str = REQUEST_LIMITS_RECORD_TYPE
+    #: Version 1 names no forwarding proxy; version 2, `ForwardedRequestLimits`, names one.
+    forwarding_proxy = None
+    RECORD_TYPE: ClassVar[str] = REQUEST_LIMITS_RECORD_TYPE
 
     def __post_init__(self):
-        if self.record_type != REQUEST_LIMITS_RECORD_TYPE:
+        if self.record_type != type(self).RECORD_TYPE:
             raise ValueError("unsupported request limit settings")
         for name, lowest, highest in (("failures_allowed", 1, 1000), ("maximum_tracked_addresses", 1, 65_536),
                                       ("ipv6_prefix_bits", 32, 128)):
@@ -74,14 +89,20 @@ class ServiceRequestLimits:
 
     @classmethod
     def from_host(cls, value):
-        """Accept the typed record, or the exact versioned mapping from a host file."""
-        if isinstance(value, cls):
+        """Accept a typed record of either version, or the exact versioned mapping from a host file.
+
+        Each version reads exactly its own fields: a version 1 mapping that
+        names a forwarding proxy is refused, and so is a version 2 mapping
+        without one.
+        """
+        if isinstance(value, ServiceRequestLimits):
             return value
-        names = {item.name for item in fields(cls)}
-        if (not isinstance(value, Mapping) or set(value) - names
-                or value.get("record_type") != REQUEST_LIMITS_RECORD_TYPE):
+        chosen = _VERSIONS.get(value.get("record_type")) if isinstance(value, Mapping) else None
+        if chosen is None or set(value) - {item.name for item in fields(chosen)}:
             raise ValueError("request limits need the typed record or its exact versioned fields")
-        return cls(**value)
+        if chosen is ForwardedRequestLimits:
+            value = {**value, "forwarding_proxy": ServiceForwardingProxy.from_host(value.get("forwarding_proxy"))}
+        return chosen(**value)
 
     @property
     def active(self):
@@ -107,6 +128,37 @@ class ServiceRequestLimits:
                 "state": "memory_of_one_service_process"}
 
 
+@dataclass(frozen=True)
+class ForwardedRequestLimits(ServiceRequestLimits):
+    """Version 2: the version 1 settings behind a trusted forwarding proxy in front of the platform proxy.
+
+    The address the host's source names (the platform header, or the socket
+    peer) is the connecting address. Only when it lies inside the proxy's
+    pinned ranges does the proxy's header name the counted address; from
+    anywhere else that header is ignored, so a caller can never choose its key.
+    The published projection is the version 1 projection: it never names the
+    proxy, its header or its ranges.
+    """
+
+    forwarding_proxy: ServiceForwardingProxy = None
+    record_type: str = FORWARDED_REQUEST_LIMITS_RECORD_TYPE
+    RECORD_TYPE: ClassVar[str] = FORWARDED_REQUEST_LIMITS_RECORD_TYPE
+
+    def __post_init__(self):
+        super().__post_init__()
+        if not isinstance(self.forwarding_proxy, ServiceForwardingProxy):
+            raise ValueError("version 2 request limits name their forwarding proxy")
+        if self.client_address_source not in (SOCKET_PEER_SOURCE, HEADER_SOURCE):
+            raise ValueError("a forwarding proxy needs a stated client address source")
+        if self.forwarding_proxy.client_address_header.casefold() == self.client_address_header.casefold():
+            raise ValueError("the forwarding proxy's header and the platform header are different headers")
+
+
+#: The settings record versions a host file may name, each read with exactly its own fields.
+_VERSIONS = {REQUEST_LIMITS_RECORD_TYPE: ServiceRequestLimits,
+             FORWARDED_REQUEST_LIMITS_RECORD_TYPE: ForwardedRequestLimits}
+
+
 class FailedAttemptLimiter:
     """Remember refused attempts for each address, inside one process only.
 
@@ -130,7 +182,7 @@ class FailedAttemptLimiter:
         with self._lock:
             return len(self._failures)
 
-    def address_key(self, peer_host, header_values=()):
+    def address_key(self, peer_host, header_values=(), proxy_header_values=()):
         """Name the counted address, or name none while the host has declared no source.
 
         The header counts only when it appears exactly once and holds exactly
@@ -142,27 +194,51 @@ class FailedAttemptLimiter:
         proxy itself, so one key would stand for every caller. The empty key
         says that, and every counter that receives it records that it took no
         count instead of counting everyone together.
+
+        Settings of version 2 name a forwarding proxy. The address found above
+        is then the connecting address, and only when it lies inside the
+        proxy's pinned ranges does the proxy's header name the counted
+        address, under the same exactly-once rule. A missing, repeated, listed
+        or malformed proxy header counts the connecting address itself, and
+        from outside the ranges the proxy header is never read.
         """
         if not self.settings.active:
             return ""
         values = tuple(header_values) if self.settings.client_address_source == HEADER_SOURCE else ()
-        named = self._canonical(values[0]) if len(values) == 1 else ""
-        return named or self._canonical(peer_host) or UNKNOWN_PEER_KEY
+        connecting = self._address(values[0]) if len(values) == 1 else None
+        if connecting is None:
+            connecting = self._address(peer_host)
+        proxy = self.settings.forwarding_proxy
+        if proxy is not None and connecting is not None and proxy.trusts(connecting):
+            forwarded = tuple(proxy_header_values)
+            visitor = self._address(forwarded[0]) if len(forwarded) == 1 else None
+            if visitor is not None:
+                return self._key(visitor)
+        return self._key(connecting) if connecting is not None else UNKNOWN_PEER_KEY
 
-    def _canonical(self, value):
+    @staticmethod
+    def _address(value):
+        """One exact address from one header value or socket peer, an IPv4-mapped form unwrapped, or None."""
         if not isinstance(value, str) or not 0 < len(value) <= _LONGEST_ADDRESS_TEXT:
-            return ""
+            return None
         try:
             address = ipaddress.ip_address(value)
         except ValueError:
-            return ""
+            return None
         if isinstance(address, ipaddress.IPv6Address) and address.ipv4_mapped is not None:
             address = address.ipv4_mapped
+        return address
+
+    def _key(self, address):
         if isinstance(address, ipaddress.IPv4Address):
             return str(address)
         # One subscriber usually controls a whole IPv6 prefix, so the prefix is the address.
         unused = 128 - self.settings.ipv6_prefix_bits
         return str(ipaddress.IPv6Network((int(address) >> unused << unused, self.settings.ipv6_prefix_bits)))
+
+    def _canonical(self, value):
+        address = self._address(value)
+        return self._key(address) if address is not None else ""
 
     def retry_after(self, key):
         """Whole seconds this address must wait, or zero when it may try now."""

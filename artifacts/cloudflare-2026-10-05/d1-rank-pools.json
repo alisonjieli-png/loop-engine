@@ -1,0 +1,17 @@
+{
+ "queries": 11,
+ "modes": {
+  "lexical": {
+   "same_identities_and_order": 11,
+   "bit_identical_scores": 0,
+   "largest_relative_score_difference": 4.744269845494586e-16,
+   "filtered_queries_identical": 3
+  },
+  "hybrid": {
+   "same_identities_and_order": 11,
+   "bit_identical_scores": 0,
+   "largest_relative_score_difference": 4.744269845494586e-16,
+   "filtered_queries_identical": 3
+  }
+ }
+}

@@ -1,0 +1,22 @@
+{
+ "all_354_lexical": {
+  "requests_with_a_relevant_item_in_the_catalogue": 107,
+  "mrr": 0.6269,
+  "hit_at_10": 0.6636
+ },
+ "all_354_hybrid": {
+  "requests_with_a_relevant_item_in_the_catalogue": 107,
+  "mrr": 0.6392,
+  "hit_at_10": 0.6916
+ },
+ "stride_3_measured_lexical": {
+  "requests_with_a_relevant_item_in_the_catalogue": 37,
+  "mrr": 0.6622,
+  "hit_at_10": 0.7027
+ },
+ "stride_3_measured_hybrid": {
+  "requests_with_a_relevant_item_in_the_catalogue": 37,
+  "mrr": 0.6593,
+  "hit_at_10": 0.7297
+ }
+}

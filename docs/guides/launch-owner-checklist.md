@@ -1,27 +1,31 @@
-# Owner actions for the first release
+# Founder actions for customer onboarding
 
-Kind: operating guide. Provider documentation checked: September 19, 2026.
-These actions support the [continuation plan](../roadmap/CONTINUATION-AND-LAUNCH.md).
-They do not mean that the hosted integrations are qualified or that a public
-launch is ready.
+Kind: operating guide. Current pilot summary updated October 7, 2026.
+Use the [dated launch schedule](../roadmap/DELIVERY-SEQUENCE.md#customer-launch-schedule)
+for customer recruitment, demonstrations, funding preparation and scaling.
+The [authority section](../../AGENTS.md#commit-push-and-release-authority)
+owns permissions; this guide does not create another approval policy.
 
-The current Baltor pilot already has Fly, Supabase, Stripe and Resend accounts.
-Do not repeat account creation. The main HTML's owner cards distinguish
-prepared accounts, engineering-owned setup and missing consent.
+The current Baltor pilot already has Fly, Cloudflare, Supabase, Stripe and
+Resend accounts. Do not repeat account creation or treat the fresh-install
+reference below as unfinished founder work. Public registration is open;
+the [deployment record](../architecture/MVP-CLIENT-SERVER.md#current-deployment)
+names the exact verified release and its remaining limits.
 
 | Current preparation | What remains |
 |---|---|
 | Fly pilot running in `iad` under the recorded allowance. The [current deployment](../architecture/MVP-CLIENT-SERVER.md#current-deployment) section names the running release. | Engineering completes customer integration and recovery qualification. |
-| Supabase project, database, storage and key access prepared | Exact authentication-settings management permission, real customer integration and private storage checks. |
-| Baltor sandbox runtime test credential verified | Engineering prepares and tests products, checkout, portal, webhooks and reconciliation. |
-| Resend sender created and verification started | Engineering confirms verification, configures mail and tests controlled recipients. |
-| Cloudflare write access and Namecheap authorization verified | The Free zone is active and nameservers are switched. Engineering verifies remaining mail and account integration; no manual domain setup remains. |
+| Customer sign-up uses Supabase, with Baltor account-origin controls and its own OAuth service | Engineering compares Cloudflare-hosted identity without losing accounts, recovery or entitlements. The provider settings connection still needs the provider's sign-in before it can be used. |
+| Existing Stripe checkout, portal and billing integration | Engineering preserves the qualified journeys and completes the remaining failed-renewal scenario before claiming full lifecycle acceptance. |
+| Resend is the existing transactional sender | Engineering qualifies any alternative before changing account mail delivery. |
+| Cloudflare zone and prototype resources exist; R2 S3 canary passed | Engineering owns the qualified edge and storage migration. The owner does not need to create another bucket or supply the same saved credentials again. |
 
-The owner still approves genuinely private access, controlled test recipients,
-model-test authority, support and privacy choices, public prices and a later
-paid-release decision. Engineering must request missing permission through
-authorization or a protected reference and perform routine configuration.
-Live payments and unapproved model calls remain disabled.
+The founder's current work is to recruit a small customer cohort, observe
+their tasks, supply accurate company and funding facts, and use personal
+accounts for posts, sign-ins and applications that require them. Engineering
+prepares the material, tests, deployments and measurements. Existing approved
+prices, privacy wording, registration and model access follow the authority
+section rather than the September 19 fresh-install examples below.
 
 Start with the [step-by-step setup runbook](launch-setup-runbook.md) for the
 recommended initial hosting shape, secret locations, local commands and
@@ -237,6 +241,7 @@ tests, evidence, deployment procedures, rollback preparation, status artifact,
 and implementation of the approved account and product choices. Account
 questions must not stop unrelated local work.
 
-External outreach, accelerator applications, investor introductions, partner
-submissions, and acquisition discussions require a separate instruction.
-Researching these opportunities does not send a message or submit an application.
+Outreach and application actions follow the authority section and the current
+task. Preparing a funding draft is not a submitted application. Founder
+identity, tax and banking declarations, personal posts and the founder's YC
+submission remain founder actions.

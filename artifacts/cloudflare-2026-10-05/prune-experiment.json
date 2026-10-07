@@ -1,0 +1,37 @@
+[
+ {
+  "threshold": 1.0,
+  "matches_scanned_per_query": 13154,
+  "answerable": 107,
+  "mrr_top10_lexical_only": 0.3655,
+  "hit_at_10": 0.4766
+ },
+ {
+  "threshold": 0.5,
+  "matches_scanned_per_query": 11701,
+  "answerable": 107,
+  "mrr_top10_lexical_only": 0.3655,
+  "hit_at_10": 0.4766
+ },
+ {
+  "threshold": 0.2,
+  "matches_scanned_per_query": 4244,
+  "answerable": 107,
+  "mrr_top10_lexical_only": 0.3682,
+  "hit_at_10": 0.4673
+ },
+ {
+  "threshold": 0.1,
+  "matches_scanned_per_query": 2777,
+  "answerable": 107,
+  "mrr_top10_lexical_only": 0.3689,
+  "hit_at_10": 0.4673
+ },
+ {
+  "threshold": 0.05,
+  "matches_scanned_per_query": 1822,
+  "answerable": 107,
+  "mrr_top10_lexical_only": 0.3689,
+  "hit_at_10": 0.4766
+ }
+]

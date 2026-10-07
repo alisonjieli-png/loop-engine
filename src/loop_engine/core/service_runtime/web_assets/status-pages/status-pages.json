@@ -5,6 +5,18 @@
   "releases": [
    {
     "kind": "service",
+    "number": 73,
+    "at": "2026-10-07T21:15:05Z",
+    "lines": [
+     "Default Community-excluded legacy listings use the complete checked-tier projection before per-item authorization; incomplete projections still use the full view.",
+     "Signed-in and signed-out browser navigation expectations include Feeds.",
+     "Release 72 and the working delivery plan are reconciled; the roadmap target is ten million distinct useful served files."
+    ],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
     "number": 72,
     "at": "2026-10-06T20:08:42Z",
     "lines": [

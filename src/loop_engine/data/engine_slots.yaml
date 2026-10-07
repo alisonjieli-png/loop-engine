@@ -2129,6 +2129,11 @@ slots:
       - core.service_runtime.http_checks:selected_digest_mismatch_refuses_before_body_read_and_metering
       - core.service_runtime.catalogue_body_store_checks:a_body_store_engine_record_is_read_exactly_or_refused_before_anything_opens
       - core.service_runtime.catalogue_body_store_checks:without_a_body_store_record_the_volume_engine_serves_as_before
+      - core.service_runtime.catalogue_body_store_checks:the_object_store_engine_stores_a_body_once_under_its_digest_and_reads_it_back_verified
+      - core.service_runtime.catalogue_body_store_checks:the_object_store_engine_never_overwrites_an_object_holding_other_bytes
+      - core.service_runtime.catalogue_body_store_checks:every_body_engine_states_the_same_capability_keys_and_speaks_the_reader_protocol
+      - core.service_runtime.catalogue_body_store_checks:the_object_store_signer_reproduces_the_published_signature_version_4_vectors
+      - core.service_runtime.catalogue_body_store_checks:a_host_that_names_the_object_store_never_reads_the_volume
     planned_checks: [body_store_engine_switch_serves_identical_digests]
   - record_type: engine_slot/v1
     slot_id: catalogue_search_index
@@ -2158,7 +2163,7 @@ slots:
     joined_with: []
     engine_protocol: core.service_runtime.catalogue_index_engines.CatalogueSearchIndexEngine
     engine_protocol_version: catalogue_search_index/v1
-    engine_kinds: [in_memory_index, disk_index, object_store_index]
+    engine_kinds: [in_memory_index, disk_index, object_store_index, edge_database_index]
     engine_kind_groups: {}
     native_registry: core.service_runtime.catalogue_index_engines.ENGINES
     native_declaration: core.service_runtime.catalogue_index_engines.CatalogueIndexEngine
@@ -2193,6 +2198,8 @@ slots:
       - core.service_runtime.catalogue_index_checks:the_disk_view_answers_manifest_read_list_and_discover_as_the_in_memory_view
       - core.service_runtime.catalogue_index_checks:a_manifest_or_read_on_the_disk_view_parses_only_the_record_it_names
       - core.service_runtime.catalogue_index_checks:a_refresher_never_builds_an_index_another_process_is_building
+      - core.service_runtime.catalogue_d1_index_checks:the_edge_worker_ranks_a_published_release_exactly_as_the_in_memory_engine
+      - core.service_runtime.catalogue_d1_index_checks:the_edge_worker_ranks_every_judged_request_exactly_as_the_in_memory_engine
     planned_checks: [an_object_store_engine_passes_the_same_kit]
   - record_type: engine_slot/v1
     slot_id: catalogue_qualification_resolver
@@ -2358,6 +2365,9 @@ slots:
     existing_checks:
       - core.service_runtime.request_limit_checks:a_caller_controlled_header_is_the_known_wrong_case
       - core.service_runtime.capacity_checks:the_real_serve_command_stops_before_it_serves_the_public_without_the_limit
+      - core.service_runtime.forwarding_proxy_checks:a_forged_forwarding_proxy_header_from_outside_the_ranges_never_moves_the_count
+      - core.service_runtime.forwarding_proxy_checks:visitors_behind_one_cloudflare_address_are_counted_separately
+      - core.service_runtime.forwarding_proxy_checks:version_1_behind_the_cloudflare_proxy_puts_every_visitor_in_one_count_the_known_wrong_case
     planned_checks: [multi_machine_service_refuses_an_in_process_limit_engine]
   - record_type: engine_slot/v1
     slot_id: failure_journal
@@ -2535,7 +2545,10 @@ slots:
     release_reason: >-
       Chosen by the operator when a release is prepared; a proxy change moves
       which header carries the client address, so it is never switched at run
-      time.
+      time. The content_network_proxy engine is Cloudflare in front of the
+      origin: edge/site_edge_worker.js passes what it does not serve, and a
+      service_request_limits/v2 host file reads CF-Connecting-IP only from
+      Cloudflare's pinned ranges (forwarding_proxy).
     release_edge: Plain traffic to the service port with the original host name.
     interactions: []
     unavailable_result: {form: release_refused, value: engine_not_bound, answer_exists: false}
@@ -2570,7 +2583,11 @@ slots:
     declaration_source: The release record, with an engines map in its planned second version.
     retired_engines: []
     known_direct_construction_sites: []
-    existing_checks: []
+    existing_checks:
+      - core.service_runtime.forwarding_proxy_checks:the_version_2_host_file_mapping_activates_the_forwarding_proxy_through_the_real_host_loader
+      - core.service_runtime.forwarding_proxy_checks:a_changed_copy_of_the_pinned_ranges_is_refused_when_it_is_read
+      - core.service_runtime.static_site_checks:requests_the_edge_does_not_serve_reach_the_origin_unchanged
+      - core.service_runtime.static_site_checks:a_platform_failure_page_from_the_origin_becomes_the_services_unavailable_answer
     planned_checks: []
   - record_type: engine_slot/v1
     slot_id: compute_host
@@ -2742,7 +2759,7 @@ slots:
     release_edge: The page table of the service, the client recipes and strict page headers.
     interactions: []
     unavailable_result: {form: release_refused, value: engine_not_bound, answer_exists: false}
-    conformance_suite: ""
+    conformance_suite: core.service_runtime.static_site_checks
     component_folder: src/loop_engine/core/service_runtime
     folder_move_package: ""
     nested_under: []
@@ -2770,10 +2787,16 @@ slots:
     bindings:
       - {context: release, selection_phase: release, binding_site: release_record,
          host_must_bind: true}
-    declaration_source: The release record, with an engines map in its planned second version.
+    declaration_source: >-
+      The release record, with an engines map in its planned second version.
+      static_content_network is the export of static_site_export served by
+      edge/site_edge_worker.js; service_process_pages stays the default.
     retired_engines: []
     known_direct_construction_sites: []
-    existing_checks: []
+    existing_checks:
+      - core.service_runtime.static_site_checks:every_page_asset_and_hostname_root_the_edge_serves_equals_the_services_own_answer
+      - core.service_runtime.static_site_checks:with_the_origin_down_pages_keep_serving_and_other_requests_get_the_unavailable_answer
+      - core.service_runtime.static_site_checks:a_read_only_edge_never_passes_a_change_to_the_origin
     planned_checks: []
   - record_type: engine_slot/v1
     slot_id: customer_client_recipe

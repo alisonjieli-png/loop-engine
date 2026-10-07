@@ -1,0 +1,32 @@
+{
+ "record_type": "site_edge_outage_measurement/v1",
+ "worker": "https://baltor-web-edge-outage.baltor-ai.workers.dev",
+ "pages": 79,
+ "pages_served_exactly": 79,
+ "page_ms": {
+  "p50": 99.4,
+  "p95": 219.7,
+  "mean": 114.8,
+  "count": 79
+ },
+ "requests_needing_the_origin": {
+  "/api/v1/capabilities": {
+   "status": 503,
+   "retry_after": "30",
+   "edge": "origin_unavailable",
+   "code": "service_unavailable"
+  },
+  "/library": {
+   "status": 503,
+   "retry_after": "30",
+   "edge": "origin_unavailable",
+   "code": null
+  },
+  "/api/v1/health": {
+   "status": 503,
+   "retry_after": "30",
+   "edge": "origin_unavailable",
+   "code": "service_unavailable"
+  }
+ }
+}

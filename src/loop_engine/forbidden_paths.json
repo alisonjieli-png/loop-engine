@@ -213,7 +213,13 @@
     "core/service_runtime/account_administration_checks.py",
     "core/service_runtime/staff_sign_up_link_checks.py",
     "core/service_runtime/catalogue_report_checks.py",
-    "core/service_runtime/list_paging_checks.py"
+    "core/service_runtime/list_paging_checks.py",
+    "core/service_runtime/catalogue_object_store.py",
+    "core/service_runtime/object_store_fake.py",
+    "core/service_runtime/catalogue_body_store_checks.py",
+    "core/service_runtime/catalogue_d1_index.py",
+    "core/service_runtime/catalogue_d1_index_checks.py",
+    "core/service_runtime/static_site_checks.py"
   ],
   "notes": [
     "The two exact source-line fragments for core/task_material_packages.py preserve current deployed client-v2 interoperability, not public prose or a new record. They read the independently released client's literal record type and filename without renaming its bytes. Every other term occurrence and source path stays scanned; unsupported transfer versions refuse.",
@@ -558,7 +564,9 @@
     "core/workspace_optional.py",
     "loop/loop_handoff.py",
     "core/library_ingestion/processes.py",
-    "core/ontology_change/open_ontologies_engine.py"
+    "core/ontology_change/open_ontologies_engine.py",
+    "core/service_runtime/catalogue_d1_index_checks.py",
+    "core/service_runtime/static_site_checks.py"
   ],
   "suite_collection_exceptions": {
     "code_nodes/complex_task_published_evidence.py": "the public complex_task_benchmark facade calls this helper self_test and adds validation of the current reviewed catalog; folding both modules would count the same contract checks twice.",
@@ -893,6 +901,12 @@
     "core/service_runtime/account_administration_checks.py": "Loopback-only checks of staff roles and account administration: an owned key set for signed browser tokens and the real service over an owned loopback socket. The provider user list is an injected stand-in; no provider or external network is used.",
     "core/service_runtime/staff_sign_up_link_checks.py": "Loopback-only checks of staff sign-up links: an owned key set for signed browser tokens and the real service over an owned loopback socket. The identity provider and its outbox are the in-process stand-in project; no provider, mailbox or external network is used.",
     "core/service_runtime/catalogue_report_checks.py": "Loopback-only acceptance of customer reports, staff flags and the withdrawal rule over the owned fixture service from http_test_fixtures, with temporary records; no provider or external network is used.",
-    "core/service_runtime/list_paging_checks.py": "Loopback-only acceptance of the paged list over the owned fixture services from http_test_fixtures, through the web address and the official protocol client, with temporary records; no provider or external network is used."
+    "core/service_runtime/list_paging_checks.py": "Loopback-only acceptance of the paged list over the owned fixture services from http_test_fixtures, through the web address and the official protocol client, with temporary records; no provider or external network is used.",
+    "core/service_runtime/catalogue_object_store.py": "The r2_object_storage engine of the catalogue body store slot: signed S3 requests over http.client to the one https endpoint a host record names (an R2 account endpoint, checked at the slot's factory table), with timeouts, bounded reads and no redirect followed. urllib is used only to quote paths. It is reached only when a host selects the engine.",
+    "core/service_runtime/object_store_fake.py": "The body store kit's S3-compatible fake: a loopback-only listener on 127.0.0.1 that verifies signatures; it opens no outbound connection.",
+    "core/service_runtime/catalogue_body_store_checks.py": "The body store slot's conformance kit: loopback-only requests to the owned fake, and a known-wrong urllib client that must be refused; an external bucket is reached only from tools/test_catalogue_object_store.py when its variables name one.",
+    "core/service_runtime/catalogue_d1_index.py": "Engine (d) of the catalogue search index slot: signed JSON requests to the one https Worker origin a host would name (loopback only when a check starts the Worker itself), with a deadline, a bounded answer and no redirect followed. It is reached only when a host selects the engine, and the engine is planned.",
+    "core/service_runtime/catalogue_d1_index_checks.py": "The D1 edge index kit: loopback-only requests to the Worker it starts under Node and to the owned fixture service from http_test_fixtures; no Cloudflare account or external network is used.",
+    "core/service_runtime/static_site_checks.py": "The edge website kit: loopback-only requests to the site Worker it starts under Node and to the owned fixture service from http_test_fixtures; no Cloudflare account or external network is used."
   }
 }

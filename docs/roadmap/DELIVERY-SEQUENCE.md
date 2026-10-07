@@ -14,20 +14,24 @@ owns live application facts. The active catalogue owns served-file counts.
 An implementation, a test, a deployment and a useful customer result are
 separate completion conditions.
 
+The [October 7 source and Cloudflare research](../research/REPOSITORY-INTELLIGENCE-AND-CLOUDFLARE-2026-10-07.md)
+records discovery systems, current API corrections, free allowances and the
+internal/customer separation behind this plan.
+
 ### Current position
 
 | Work | State | Evidence or remaining gate |
 | --- | --- | --- |
 | Payment and connection repairs | Live in release 70 | Ten hosts passed 2,118 browser checks; five token quickstarts and the 15-step real Claude Code OAuth journey passed. |
 | Search and intake repairs | Release 71 deployed; live checks complete | Exact source `ec1df775`; CI `37487555685`; deployment `37488883326`. The repaired search preserves all 70 previously found expectations and finds 95 in the retained before/after comparison. |
-| Million-file publication | Live; legacy-list diagnostic still needs repair | Exact release `50b666f5...` serves 218,127 packages and 1,352,837 distinct files, with complete population and matching content digest. It adds 981,843 distinct files and preserves all prior versions. Final staging cleanup was reconciled after its client timeout; no publication was replayed. The 50-request all-host pulse passed. Two legacy version-1 list checks timed out; neither is a successful full catalogue diagnostic. |
+| Million-file publication | Live; owner-account listing accepted after release 73 | Exact release `50b666f5...` serves 218,127 packages and 1,352,837 distinct files, with complete population and matching content digest. It adds 981,843 distinct files and preserves all prior versions. Final staging cleanup was reconciled after its client timeout; no publication was replayed. The release-73 owner-account catalogue diagnostic passes 11 checks. Earlier failed diagnostic attempts remain recorded. |
 | Storage headroom | Done | Existing Fly volume extended from 25 to 50 GB, with 39 GB free at readback and no restart. Added provisioned storage: $3.75/month; traffic and snapshots are separate. |
 | Empty Public Good goals | All 17 populated and new delivery verified | Policy `118639cb...` has 424 packages / 1,056 distinct useful files. Five additions preserve all 419 prior grants and limits. The 25 fresh sandbox methods, current licence checks, 64 no-plan delivery checks and 27 desktop/mobile browser checks passed. The no-plan account downloaded 25 exact files with no paid-usage increase. |
 | Cloudflare | Real S3 canary passed; no production cutover | The owner-supplied credentials are stored only in the system keyring. Six real S3 checks passed: existing object read, conditional write, exact readback, duplicate write, wrong digest and wrong size. The earlier Worker-binding probes remain separate evidence. Host-source version 3 is integrated; a full mirror and production-profile delivery checks still precede selection. D1 is not selected. |
 | Feeds and Components | Catalogue-state preview live in release 72 | JSON Feed, RSS and Markdown describe the same current served state. Customer-defined feeds, agent assignments, a paid Feeds plan and push delivery are not implemented by this preview. |
 | Repository reconciliation | Inventory and recovery copies complete; integration active | 190 registered worktrees, 180 existing, 72 dirty and two stashes were inspected. The shared checkout has 129 staged paths, of which 83 exactly match public main. Private history and unresolved merge stages are preserved outside public source. |
 | Workstation storage | Verified relocation active | Large inactive data files are copied to Expansion, read back by SHA-256 and linked at their original paths. The existing archive image was remounted and the task database is accessible again. Transfer records own the current count. |
-| Release follow-up | Release 72 reconciled; listing repair in acceptance | The deployment succeeded from `3476032b`. Its gate was left enabled and was closed on October 7. The browser suite's four stale header expectations are being corrected to include Feeds. |
+| Release follow-up | Release 73 verified live | Exact source `61ae2bbe`, CI `37685774464`, deployment `37687661934`; 2,118 browser assertions on ten hosts and fifty pulse reads pass. The gate is closed. Local browser checks pass 971 assertions and all 197 removed-guard controls. |
 
 ### Priority and phase-based Gantt view
 
@@ -88,7 +92,7 @@ gates, not invented dates or a percentage inferred from file counts.
 - [ ] Complete the selected byte-verified OS-to-Expansion transfers and record
   the resulting free space. Keep active databases and Unix source trees on
   a filesystem with their required semantics.
-- [ ] Release the narrowed legacy listing and corrected Feeds navigation
+- [x] Release the narrowed legacy listing and corrected Feeds navigation
   checks, then repeat live customer retrieval.
 - [ ] Repair conversation mining and dimension generation before integrating
   their pending code. Normal conversation titles, malformed records, source
@@ -104,6 +108,193 @@ Review comments: the old repository-map draft names two missing conformance
 modules; the paired value study is an instrument, not measured benefit; the
 saved Stripe challenge driver has synthetic tests but no successful new live
 failed-renewal result. Preserve these streams and their remaining checks.
+
+### Customer launch schedule
+
+Start onboarding a small supported cohort before the ten-million-file target.
+The schedule below is an engineering estimate, not a service promise. It
+assumes one engineering lead, existing provider access, and 6 to 10 founder
+hours each week. Keep one production migration in progress at a time. Review
+dates every Friday against completed customer tasks, incidents and costs.
+
+```mermaid
+gantt
+    title Baltor launch working schedule
+    dateFormat YYYY-MM-DD
+    axisFormat %b %d
+    section Engineering
+    Release 73 and live checks       :done, r73, 2026-10-07, 1d
+    Cloudflare edge and R2 canaries  :active, edge, 2026-10-08, 5d
+    Supported onboarding and demos  :onboard, 2026-10-08, 7d
+    Saved feeds and agent isolation :feeds, 2026-10-13, 10d
+    Creative import and media jobs  :creative, 2026-10-15, 14d
+    Benchmark and source adapters   :sources, 2026-10-22, 14d
+    Cost and recovery qualification :scale, 2026-10-29, 14d
+    section Founder
+    Recruit and interview prospects :founder1, 2026-10-08, 8d
+    Regional funding eligibility    :fund1, 2026-10-08, 5d
+    Big Idea application deadline   :milestone, 2026-10-16, 0d
+    Supported customer cohort       :founder2, 2026-10-15, 14d
+    Weekly demo and customer stories :founder3, 2026-10-15, 28d
+    YC facts and founder video      :yc, 2026-10-19, 11d
+    YC application deadline         :milestone, 2026-11-02, 0d
+```
+
+The dates allow overlapping customer work and engineering, not a hidden team
+of full-time engineers. The feed beta depends on account isolation and
+revocation tests. A creative campaign depends on permitted assets and a
+repeatable finished result. Broader acquisition depends on measured support
+capacity and retention. Shift those activities if their gates fail; funding
+deadlines themselves do not move with our implementation.
+
+| Founder task | Target and estimated effort | Done when | Engineering prepares |
+| --- | --- | --- | --- |
+| Pick the first customer problem through interviews | October 8 to 10; 2 hours to select 20 relevant people, then five 20-minute conversations | Five actual tasks and current workarounds recorded, with consent; no invented demand | Two demo paths: a coding harness using exact reusable files, and an editable image-to-video workflow |
+| Recruit a supported first cohort | October 10 to 15; 2 hours | Five willing testers each have a task and a booked onboarding session | Setup links, a short task brief, support routing and account diagnostics |
+| Watch onboarding | October 15 to 22; five 30-minute sessions | Each person signs in, connects one harness, obtains a file or feed, completes a task and repeats one task without engineering driving | Instrumented funnel and failure records; no raw customer content added to analytics |
+| Publish the first evidence-backed demonstrations | Start October 15; 2 hours weekly | Two useful posts and one finished demonstration each week, with working source/package links | Editable video, images, captions, accessibility text and supported claims; the founder posts from personal accounts |
+| Capture willingness to pay and return use | October 22 to 29; 2 hours | Real acceptance, refusals and seven-day return behavior recorded separately; payment only through the normal customer checkout | Existing plan flow, proposed Feeds entitlement tests and cohort report |
+| Assemble funding facts | October 8 to 14; 2 to 4 hours | Legal entity, incorporation date, business location, founders, ownership, prior funding and prior credit awards verified by the founder | A concise problem/product brief, live demo, architecture/cost evidence and a claims-checked data room |
+| Apply for relevant credits and funding | Regional competition before October 16 if eligible; YC by November 2 at 8 pm Pacific; 3 to 6 hours total | Founder checks declarations and submits under their own identity; confirmation saved privately | Application drafts, milestone budget, competitive analysis and demo links |
+| Decide whether to widen acquisition | November 5 to 12; 1 hour | Onboarding failures, useful repeat use, support time and marginal costs reviewed; new acquisition has an explicit cap | Cohort dashboard, incident review and load/recovery results |
+
+The first paid acquisition experiment comes after useful return use is
+observed. The founder owns advertising spend. An application, a page view,
+an installed harness and a successful customer task are four different events.
+Record the denominator for conversion and retention, including dropouts.
+
+### Funding shortlist and application checks
+
+Checked October 7, 2026. These are preparation tasks, not submitted
+applications or promises of funding.
+
+- **Cloudflare for Startups:** the current program lists a $10,000 tier for
+  bootstrapped companies, larger partner-funded tiers, and one-year credits.
+  Verify company eligibility and prior participation. Its general eligibility
+  wording also mentions recent funding, so confirm how that applies to the
+  bootstrapped tier. R2 and Workers AI have separate caps; AI Gateway is
+  excluded. Budget for expiry and overages. [Program and conditions](https://www.cloudflare.com/startups/)
+- **Ben Franklin Central and Northern Pennsylvania:** check the actual company
+  location against its county footprint. The current Big Idea announcement
+  gives October 16, 2026 as the application deadline. Read the linked contest
+  rules and verify revenue, funding and prior-award restrictions before
+  submitting. [Competition announcement](https://cnp.benfranklin.org/ben-franklins-50000-big-idea-contest-is-back/)
+  Its separate investment program typically takes three to six months and
+  includes matching and payback obligations; do not describe it as an
+  unrestricted grant. [Investment process](https://cnp.benfranklin.org/early-stage-funding/)
+- **Y Combinator Winter 2027:** application deadline November 2 at 8 pm Pacific,
+  with an on-time decision date of December 11. The January to March batch is
+  in San Francisco. Prepare the founder video, actual customer evidence and
+  a clear explanation of the product; verify attendance and company details
+  personally. [Current application page](https://www.ycombinator.com/apply)
+- **NSF America's Seed Fund:** pursue only if a specific technical hypothesis
+  needs substantial research, such as demonstrated improvements from qualified
+  capability selection. A content catalogue, ordinary migration or marketing
+  work alone is not the research proposal. Begin with the current suitability
+  assessment and Project Pitch; verify the active window and company/team
+  eligibility. [Project Pitch criteria](https://seedfund.nsf.gov/apply/project-pitch/)
+
+### Replit decision
+
+Use Replit as an optional customer demo and remix environment. Do not migrate
+the authoritative catalogue or customer database there in this release.
+Its value to Baltor would be a runnable example that a prospect can open,
+change and keep without configuring a local machine. Qualify one small,
+public, licence-cleared sample before adding an Open in Replit action.
+
+Replit offers Autoscale, Static, Reserved VM and Scheduled deployment types.
+Autoscale suits intermittent web requests; Reserved VM suits continuous
+background processes. That is another host choice, not proof that our volume,
+custom index and recovery procedures will transfer unchanged.
+[Deployment types](https://docs.replit.com/features/publishing/deployment-types)
+
+The current platform documents Clerk Auth separately from Replit Auth. Neither
+replaces Baltor account entitlements merely by being added to a demo. Keep
+existing Baltor sign-in as the customer authority, use scoped credentials,
+and never put catalogue administration or customer data in a remixed project.
+[Authentication options](https://docs.replit.com/features/auth-and-identity/clerk-auth)
+
+Run a two-hour comparison using the same small demo locally, on Cloudflare,
+and in Replit if an existing account permits it. Measure time to first useful
+result, reproducibility after remix, export back to Git, cold-start behavior,
+credential handling and actual credits used. Adopt the integration only if
+the onboarding improvement justifies another paid dependency. Current pricing
+pages and the February plan announcement differ in how they show monthly and
+annual prices; verify the live checkout before any purchase. No Replit
+subscription or deployment is activated by this plan.
+[Pricing](https://replit.com/pricing), [plan announcement](https://replit.com/blog/pro-plan)
+
+### Creative assets and repeatable component marketing
+
+Roadmap owners: S-6.215 and S-6.217, with the existing creative production and
+customer-evidence steps. The October 7 additions are queued here under those
+owners; they do not create another runtime or approval system.
+
+- [ ] Reconcile the last 36 hours of accessible Codex and Claude owner
+  requests into these tasks. Separate real requests, pasted source material,
+  command output and automatic task notifications. Preserve a private
+  source-to-task mapping; do not publish transcripts or treat old tool output
+  as new authority. Another_Transfer's active video session owns its edits.
+- [ ] Inventory local TensorArt exports and image metadata, deduplicate exact
+  bytes, and preserve originals on Expansion with verified readback. Keep
+  generation identity, prompt, negative prompt, seed, sampler, dimensions,
+  checkpoint, LoRAs, model versions, timestamps and source links where
+  available. Missing settings stay missing. A downloaded image is not proof
+  that all account history was recovered.
+- [ ] Prepare an account-history adapter only against a verified accessible
+  interface. TensorArt's documented TAMS job API concerns generation jobs;
+  it does not by itself establish access to the consumer account's complete
+  gallery. Never reconstruct credentials from browser storage.
+  [TAMS integration contract](https://tams-docs.tensor.art/docs/api/guide/integration-faq/)
+- [ ] Import media privately before public admission. Record output rights,
+  source/model restrictions, likeness concerns and sensitive material. Do not
+  assume account ownership grants unrestricted commercial rights to every
+  input, model or output.
+- [ ] Expand useful families: masks, layered composition manifests, image
+  sequences, materials, shader graphs, motion curves, typography layouts,
+  captions, audio stems, camera rigs, editable Blender/GLB scenes, image-to-video
+  and image-to-mesh recipes, environment locks and verification fixtures.
+  Reuse unchanged files; label stylistic variants as variants.
+- [ ] Add a showcase job to each eligible component or solution version. Its
+  input names exact packages, a customer task, permitted assets, supported
+  claims and output formats. Its outputs include editable sources, a poster,
+  captions, a finished demonstration, and short excerpts labelled as excerpts.
+  Begin rendering with the first 20 customer-relevant packages; keep the rest
+  queued or generate on demand within cost limits.
+- [ ] Drive media through existing selectable engines. Cloudflare dispatches
+  and serves jobs; native FFmpeg, Blender and GPU-dependent work use qualified
+  execution environments. Ordinary Workers do not run arbitrary native
+  rendering processes. Use existing Ollama Cloud access for bounded briefs,
+  scripts and component generation, with recorded usage. Tactical remains an
+  optional separately qualified decision engine, not silent failover.
+- [ ] Run the same creative task with and without Baltor, using the same
+  model, input assets, allowed tools, time/cost budget and acceptance rubric.
+  Preserve every attempt, failure and revision. Randomize display order for
+  review and include the no-extra-material baseline. Publish measured benefits
+  only after the independent evaluation, not from a hand-picked best image.
+- [ ] Validate each marketing export: accurate claims, licence notices,
+  working package links, captions, safe zones, readable phone-size text,
+  audio and replay from the editable project. Keep public social publication
+  separate from generation and review.
+
+### Ten-million throughput checkpoints
+
+The live baseline is 1,352,837 distinct files. The remaining gap is 8,647,163.
+The following figures are arithmetic scenarios for planning, not measured
+factory throughput or dates promised to customers.
+
+| Sustained net admitted and served files per day | Days to close the current gap |
+| --- | --- |
+| 50,000 | 173 |
+| 100,000 | 87 |
+| 250,000 | 35 |
+| 500,000 | 18 |
+
+Measure a 48-hour supply run before selecting a target date. Report source
+reads, unique inputs, generated files, duplicate files, rejected candidates,
+independently admitted packages, useful family coverage, served distinct
+digests, cost and customer-task success. Ten million text permutations are
+not an acceptable substitute for ten million useful served files.
 
 ### Checklist 1: publish the million-file library
 

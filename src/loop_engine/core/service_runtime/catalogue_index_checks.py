@@ -456,11 +456,13 @@ def _build_coordination_checks(check, root):
 
 def _selection_checks(check):
     from . import catalogue_index_engines
-    from .catalogue_index_engines import DISK_ENGINE, IN_MEMORY_ENGINE, OBJECT_STORE_ENGINE, describe, select_engine
+    from .catalogue_index_engines import (DISK_ENGINE, EDGE_DATABASE_ENGINE, IN_MEMORY_ENGINE, OBJECT_STORE_ENGINE,
+                                          describe, select_engine)
     from .catalogue_serving import CatalogueSourceSettings
     check("the_baseline_engine_is_always_selectable", select_engine(IN_MEMORY_ENGINE).engine_id == IN_MEMORY_ENGINE)
     check("the_slot_describes_its_engines_in_declared_order",
-          [row["engine_id"] for row in describe()] == [IN_MEMORY_ENGINE, DISK_ENGINE, OBJECT_STORE_ENGINE])
+          [row["engine_id"] for row in describe()] == [IN_MEMORY_ENGINE, DISK_ENGINE, OBJECT_STORE_ENGINE,
+                                                         EDGE_DATABASE_ENGINE])
     unavailable = catalogue_index_engines.CatalogueIndexEngine(
         DISK_ENGINE, "1.0.0", "disk_index", "disk", True, availability=lambda: {"available": False,
                                                                                 "reason": "numpy_not_installed"})

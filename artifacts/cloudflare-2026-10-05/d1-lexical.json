@@ -1,0 +1,59 @@
+{
+ "record_type": "catalogue_d1_index_measurement/v1",
+ "build_id": "d06943061495207dcaeb1c21f5d4162c3bc1a7e4a8e5af23e972944b92f01366",
+ "release_id": "e817bec22796bba8af9fb28ed34baf9714fa2b97758e415108f906d7d6a5a6ca",
+ "entries": 30757,
+ "worker": "https://baltor-catalogue-search.baltor-ai.workers.dev",
+ "measured_at": 1791243430,
+ "repeat": 1,
+ "queries": 118,
+ "query_stride": 3,
+ "in_memory_build_seconds": 6.12,
+ "network_round_trip_ms": {
+  "p50": 62.5,
+  "p95": 102.2,
+  "route": "GET /v1/ping on one kept-alive TLS connection"
+ },
+ "modes": {
+  "lexical": {
+   "requests": 118,
+   "failures": [],
+   "differing_answers": [],
+   "in_memory_ms": {
+    "p50": 27.1,
+    "p95": 62.4
+   },
+   "edge_round_trip_ms": {
+    "p50": 170.0,
+    "p95": 261.0
+   },
+   "edge_worker_ms": {
+    "p50": 75.0,
+    "p95": 95.0
+   },
+   "edge_d1_ms": {
+    "p50": 75.0,
+    "p95": 95.0
+   },
+   "edge_kv_ms": {
+    "p50": 0.0,
+    "p95": 0.0
+   },
+   "rows_read": {
+    "p50": 28160,
+    "p95": 40046,
+    "total": 3280440
+   },
+   "judged_edge": {
+    "answerable": 115,
+    "mrr": 0.213,
+    "hit_at_10": 0.2261
+   },
+   "judged_in_memory": {
+    "answerable": 115,
+    "mrr": 0.213,
+    "hit_at_10": 0.2261
+   }
+  }
+ }
+}

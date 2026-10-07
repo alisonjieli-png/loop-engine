@@ -1077,10 +1077,17 @@ class ServiceHttpApplication:
                 "cancellation": "bounded_response_wait; running callbacks may finish; no automatic replay"}
 
     def _address_key(self, request):
-        """Name the address whose source the host declared, or no address when it declared none."""
-        name = self.configuration.request_limits.client_address_header
-        return self.request_limiter.address_key(request.client.host if request.client else None,
-                                                request.headers.getlist(name) if name else ())
+        """Name the address whose source the host declared, or no address when it declared none.
+
+        Settings that name a trusted forwarding proxy also hand over that proxy's header; the limiter reads it only
+        for a request whose connecting address lies inside the proxy's pinned ranges."""
+        settings = self.configuration.request_limits
+        name, peer = settings.client_address_header, (request.client.host if request.client else None)
+        values = request.headers.getlist(name) if name else ()
+        if settings.forwarding_proxy is None:
+            return self.request_limiter.address_key(peer, values)
+        return self.request_limiter.address_key(
+            peer, values, request.headers.getlist(settings.forwarding_proxy.client_address_header))
 
     @asynccontextmanager
     async def _limited(self, request):

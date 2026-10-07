@@ -41,10 +41,10 @@ EDGE_VERSION = "catalogue_search_index/v1"
 #: pool could add anything out.
 QUERY_CONTRACT, POOLS_CONTRACT = "catalogue_search_index_query/v1", "catalogue_search_index_pools/v1"
 DESCRIPTOR_VERSION = "catalogue_search_index_engine/v1"
-ENGINE_KINDS = ("in_memory_index", "disk_index", "object_store_index")
-IN_MEMORY_KIND, DISK_KIND, OBJECT_STORE_KIND = ENGINE_KINDS
-IN_MEMORY_ENGINE, DISK_ENGINE, OBJECT_STORE_ENGINE = (
-    "in_memory_view_index", "sqlite_disk_index", "lance_object_store_index")
+ENGINE_KINDS = ("in_memory_index", "disk_index", "object_store_index", "edge_database_index")
+IN_MEMORY_KIND, DISK_KIND, OBJECT_STORE_KIND, EDGE_DATABASE_KIND = ENGINE_KINDS
+IN_MEMORY_ENGINE, DISK_ENGINE, OBJECT_STORE_ENGINE, EDGE_DATABASE_ENGINE = (
+    "in_memory_view_index", "sqlite_disk_index", "lance_object_store_index", "d1_edge_index")
 DEFAULT_ENGINE = IN_MEMORY_ENGINE
 #: An engine's state, in the slot registry's own words (core/engines/slots.IMPLEMENTATION_STATES): a candidate can
 #: be selected by a host; a planned engine is described and never selected.
@@ -109,6 +109,11 @@ def _lance_availability():
     return availability()
 
 
+def _edge_availability():
+    from .catalogue_d1_index import availability
+    return availability()
+
+
 #: The factory table of the slot, in declared order. The planned engine is described, never selectable.
 ENGINES = {
     IN_MEMORY_ENGINE: CatalogueIndexEngine(
@@ -125,6 +130,17 @@ ENGINES = {
         "Columnar fragments in object storage, one dataset version for each release",
         holds_items_on_disk=True, requires=("lancedb", "pyarrow", "numpy"), state=PLANNED_STATE,
         availability=_lance_availability),
+    # Engine (d), catalogue_d1_index: one release's FTS5 index in a Cloudflare D1 database and its hash-vector columns
+    # in KV, answered by a Worker. Measured on workers.dev against the 30,757-item release (docs/architecture/
+    # CLOUDFLARE-HOSTING-2026-10-05.md): the same identities and order as engine (a) on every measured request, with
+    # D1's bm25 one or two units in the last place away from local SQLite for some scores, so it claims no
+    # exactness. It stays planned: its server half is a Worker and a D1 database, and D1 bills the rows an OR query
+    # scans, so its cost grows with the library.
+    EDGE_DATABASE_ENGINE: CatalogueIndexEngine(
+        EDGE_DATABASE_ENGINE, "0.1.0", EDGE_DATABASE_KIND,
+        "FTS5 in a Cloudflare D1 database and hash-vector columns in KV, answered by a Worker",
+        holds_items_on_disk=True, requires=("cryptography", "cloudflare_d1", "cloudflare_kv", "cloudflare_worker"),
+        state=PLANNED_STATE, availability=_edge_availability),
 }
 
 

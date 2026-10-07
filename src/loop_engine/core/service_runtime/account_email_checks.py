@@ -254,6 +254,32 @@ def _configuration_checks(check):
           == "Fly-Client-IP"
           and settings.email_attempt_limits().active is True
           and settings.email_attempt_limits().failures_allowed == settings.attempts_for_each_email)
+    # Version 2 of the limit names a forwarding proxy. The address table must keep it, or sign-up and recovery
+    # behind the Cloudflare proxy would count every visitor under the edge address the sign-in limit no longer uses.
+    from .forwarding_proxy import ServiceForwardingProxy
+    from .request_limits import ForwardedRequestLimits
+    forwarded = ForwardedRequestLimits(client_address_source=HEADER_SOURCE, client_address_header="Fly-Client-IP",
+        forwarding_proxy=ServiceForwardingProxy("cloudflare", "cloudflare-2026-10-05", "CF-Connecting-IP"))
+
+    def keeps_the_proxy():
+        table = settings.address_attempt_limits(forwarded)
+        return (type(table) is ForwardedRequestLimits and table.forwarding_proxy == forwarded.forwarding_proxy
+                and table.failures_allowed == settings.attempts_for_each_address
+                and table.window_seconds == settings.attempt_window_seconds
+                and table.maximum_tracked_addresses == settings.tracked_addresses
+                and settings.address_attempt_limits(ServiceRequestLimits()) == ServiceRequestLimits(
+                    failures_allowed=settings.attempts_for_each_address, window_seconds=settings.attempt_window_seconds,
+                    maximum_tracked_addresses=settings.tracked_addresses))
+    check("the_address_table_keeps_a_stated_forwarding_proxy", keeps_the_proxy())
+
+    def version_1_copy(self, stated):
+        """The known-wrong rule: rebuild a version 1 record from the stated source, dropping the proxy."""
+        return ServiceRequestLimits(client_address_source=stated.client_address_source,
+            client_address_header=stated.client_address_header, ipv6_prefix_bits=stated.ipv6_prefix_bits,
+            failures_allowed=self.attempts_for_each_address, window_seconds=self.attempt_window_seconds,
+            maximum_tracked_addresses=self.tracked_addresses)
+    with patch.object(AccountEmailConfiguration, "address_attempt_limits", version_1_copy):
+        check("removed_forwarding_proxy_carry_over_is_detected", not keeps_the_proxy())
 
 
 def _address_and_password_checks(check):

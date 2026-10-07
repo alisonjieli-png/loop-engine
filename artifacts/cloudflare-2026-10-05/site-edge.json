@@ -1,0 +1,47 @@
+{
+ "record_type": "site_edge_measurement/v1",
+ "export_id": "614cfb51eff99a3694f9761402d5f8e485d8c88fdcbd83837f9f3fafa4ed551d",
+ "worker": "https://baltor-web-edge.baltor-ai.workers.dev",
+ "origin": "https://baltor-pilot.fly.dev",
+ "measured_at": 1791244606,
+ "rounds": 3,
+ "addresses": 79,
+ "edge_statuses": {
+  "200": 237
+ },
+ "edge_marks": {
+  "static": 237
+ },
+ "edge_bodies_differing_from_the_export": [],
+ "origin_failures": [],
+ "edge_ms": {
+  "p50": 101.1,
+  "p95": 199.1,
+  "mean": 109.9,
+  "count": 237
+ },
+ "origin_ms": {
+  "p50": 95.2,
+  "p95": 201.1,
+  "mean": 102.6,
+  "count": 237
+ },
+ "edge_first_byte_ms": {
+  "p50": 73.6,
+  "p95": 155.4,
+  "mean": 83.5,
+  "count": 237
+ },
+ "origin_first_byte_ms": {
+  "p50": 63.3,
+  "p95": 138.0,
+  "mean": 74.6,
+  "count": 237
+ },
+ "page_bytes": {
+  "p50": 233543,
+  "p95": 233635,
+  "mean": 159237.0,
+  "count": 79
+ }
+}

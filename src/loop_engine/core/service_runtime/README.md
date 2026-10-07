@@ -845,6 +845,98 @@ built before this limit existed. Such a release refuses a host file that
 contains `request_limits`, and it does not start. At the time of writing these
 are release 8 and every earlier release. A rollback is the usual case.
 
+### Behind the Cloudflare proxy: version 2 of the settings record
+
+This section describes code built on October 5, 2026. No host file names it,
+so no running service uses it. With Cloudflare's proxy in front of Fly,
+`Fly-Client-IP` holds a Cloudflare address, and version 1 of the record would
+put every visitor in the few counts of Cloudflare's edge addresses. Version 2,
+`ForwardedRequestLimits` in `request_limits.py`, adds a trusted forwarding
+proxy (`forwarding_proxy.py`):
+
+```json
+"request_limits": {
+  "record_type": "service_request_limits/v2",
+  "client_address_source": "header",
+  "client_address_header": "Fly-Client-IP",
+  "forwarding_proxy": {
+    "record_type": "service_forwarding_proxy/v1",
+    "provider": "cloudflare",
+    "address_ranges": "cloudflare-2026-10-05",
+    "client_address_header": "CF-Connecting-IP"
+  }
+}
+```
+
+```text
+Counted address, version 2
+├── connecting address: the stated header exactly once, else the socket peer        as in version 1
+├── connecting address inside the pinned ranges
+│   ├── CF-Connecting-IP exactly once, holding one address    the visitor's address, IPv6 by its prefix
+│   └── missing, repeated, listed or malformed                the connecting address: one shared count,
+│                                                             never an address the caller chose
+└── connecting address outside the pinned ranges              the connecting address; CF-Connecting-IP
+                                                              is never read
+```
+
+The ranges are pinned in `data/forwarding_proxy_ranges.json` as the set
+`cloudflare-2026-10-05`: 15 IPv4 and 7 IPv6 ranges read at 22:50 UTC that day
+from Cloudflare's interface (`/client/v4/ips`, etag
+`38f79d050aa027e3be3865e495dcc9bc`) and its two text lists, which agreed, with
+the digest of each document and of the range lists. The service refuses to
+start on a version 2 record that names a set the image does not pin, another
+provider, or a header other than the one the set names, so neither
+`X-Forwarded-For`, which a caller can extend, nor `True-Client-IP` can be
+named. It refuses a pinned file whose ranges differ from their digest, or that
+holds a private, loopback, link-local, unspecified, multicast or reserved
+range, or one wider than /8 for IPv4 or /16 for IPv6. New ranges arrive only
+with a new image: `tools/check_forwarding_proxy_ranges.py
+--authorize-network-reads` compares Cloudflare's published lists with the
+pinned set and prints a verified candidate set when they differ. The published
+projection keeps its record type and keys and names neither the proxy, its
+header nor the set.
+
+What the range check does and does not prove:
+
+- A `CF-Connecting-IP` header from any address outside the ranges is ignored,
+  and through Fly the connecting address is `Fly-Client-IP`, which the Fly
+  proxy overwrites. Checks send 32 refused attempts with a different forged
+  header each and require status 429 after 30.
+- Cloudflare's [header documentation](https://developers.cloudflare.com/fundamentals/reference/http-headers/)
+  (updated May 5, 2026) says that `CF-Connecting-IP` carries the client
+  address to the origin, that for a Worker subrequest to an origin outside
+  Cloudflare it reflects the actual client address and only `x-real-ip` can be
+  altered, and that a cross-zone Worker subrequest carries
+  `2a06:98c0:3600::103`. That address lies inside `2a06:98c0::/29`, so every
+  such request shares one /64 count.
+- The ranges prove that a request came from Cloudflare's network, not that it
+  passed through Baltor's own zone. Authenticated Origin Pulls, mutual TLS
+  from Cloudflare to the origin, would prove that. It is a follow-up and is not
+  built.
+- Cloudflare's Pseudo IPv4 setting in its overwrite mode replaces the header
+  of an IPv6 visitor with a class E address, which loses the prefix grouping.
+  Keep it off, its default.
+- An image built before this change refuses a version 2 record at start with
+  an unsupported version. Restore the version 1 mapping before such a rollback.
+
+Version 2 is safe with or without the proxy: a request that does not come
+from the ranges is counted exactly as version 1 counts it. Switching it on
+needs the lead, because proxying a hostname changes a domain record:
+
+1. Run the range check. On drift, release an image with the candidate set first.
+2. Back up the host file, replace the `request_limits` mapping with the block
+   above, restart, and read the capabilities record on every hostname
+   (`active` true, `client_address_source` `header`).
+3. Repeat steps 3 and 4 of the switching procedure above against the Fly
+   hostname with forged `CF-Connecting-IP` values. Every count must stay where
+   it was under version 1.
+4. Proxy one hostname. From one network, send one more refused attempt than
+   `failures_allowed`: the last must be refused with 429. From a second
+   network, one refused attempt must answer 401, not 429. If it answers 429,
+   the visitors share a count: switch the proxy off for that hostname.
+5. Only then proxy the other hostnames. To undo, switch the proxy off first and
+   restore the version 1 mapping afterwards, never the other way round.
+
 ### Limits of this design
 
 - The limit does nothing until the host states the address source. A host
@@ -862,7 +954,8 @@ are release 8 and every earlier release. A rollback is the usual case.
   Fly. Name a header that the new outermost proxy overwrites, and repeat the
   hosted checks above. Today the domain records are not proxied.
   `docs/guides/launch-setup-runbook.md` says that Cloudflare proxying can be
-  considered separately.
+  considered separately. Version 2 of the settings record, described above,
+  is that change for Cloudflare.
 - With the `header` source, a request whose header is missing, repeated,
   listed or malformed is counted for the socket peer address. Behind a proxy
   that address is the proxy. If the configured header stops arriving in a

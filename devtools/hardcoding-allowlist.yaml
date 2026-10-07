@@ -384,6 +384,36 @@ entries:
   rationale: "Reviewed October 4 for release62: exact example.org URI in FORMAT_VALUES is inert synthetic format-example content, not a requested endpoint or provider selection. The generator checks examples locally and does not fetch this value. No source or file-wide exemption."
   created_on: '2026-10-04'
   expires_on: '2027-01-04'
+- finding_id: hardcoding.f70e13be3fe7d49b6ffe6f24
+  owner: "loop_engine.data.forwarding_proxy_ranges.json:sets[0].sources[0].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5, 2026: the provenance address the pinned set cloudflare-2026-10-05 was read from, recorded beside the digest of the body read there. The service never requests it; tools/check_forwarding_proxy_ranges.py reads it only with --authorize-network-reads to report drift. Finding-specific; no file-wide exemption."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.fb9069d78e1301a4584c0416
+  owner: "loop_engine.data.forwarding_proxy_ranges.json:sets[0].sources[1].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5, 2026: the provenance address the pinned set cloudflare-2026-10-05 was read from, recorded beside the digest of the body read there. The service never requests it; tools/check_forwarding_proxy_ranges.py reads it only with --authorize-network-reads to report drift. Finding-specific; no file-wide exemption."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.c6b028c5f5de91e9237855b1
+  owner: "loop_engine.data.forwarding_proxy_ranges.json:sets[0].sources[2].url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5, 2026: the provenance address the pinned set cloudflare-2026-10-05 was read from, recorded beside the digest of the body read there. The service never requests it; tools/check_forwarding_proxy_ranges.py reads it only with --authorize-network-reads to report drift. Finding-specific; no file-wide exemption."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.79b4bbd3a9a1336678be643c
+  owner: "loop_engine.core.service_runtime.service_engine_body_store"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5, 2026: the R2 S3 endpoint form is the r2_object_storage engine's provider binding, stated once at the catalogue_body_store slot's factory table; it only validates a host record and is never fetched or chosen by it. Account id, bucket and credentials come from the host record. No file-wide exemption."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
+- finding_id: hardcoding.a2301c246b1fadf63e4696d8
+  owner: "loop_engine.core.service_runtime.edge.local_worker_host.mjs:url"
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  rationale: "Reviewed October 5, 2026: the conformance kits' loopback host gives an edge Worker the request's own Host header as its hostname, as the edge does; the scheme names the loopback listener the kit starts, never an endpoint the product calls. Finding-specific; no file-wide exemption."
+  created_on: '2026-10-05'
+  expires_on: '2027-01-05'
 - finding_id: hardcoding.9bc95f9090bbbd5eaaa6efa5
   owner: "tools.supply_lines.json_schemas"
   classification: STRATEGY_OR_PROVIDER_BINDING

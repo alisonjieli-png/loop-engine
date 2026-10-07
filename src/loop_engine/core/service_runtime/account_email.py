@@ -39,7 +39,7 @@ chooses without limit.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, field, fields as dataclass_fields
+from dataclasses import dataclass, field, fields as dataclass_fields, replace
 import hashlib
 import json
 import math
@@ -287,12 +287,12 @@ class AccountEmailConfiguration:
         The table follows the address source that the host stated for the
         service. With no stated source every caller behind a proxy shares one
         key, so counting would refuse everyone at once; the table then stays
-        inactive, exactly as the sign-in limit does.
+        inactive, exactly as the sign-in limit does. A stated forwarding proxy
+        (version 2 of the record) is kept, so the table counts the same address
+        the sign-in limit counts.
         """
-        return ServiceRequestLimits(client_address_source=stated.client_address_source,
-            client_address_header=stated.client_address_header, ipv6_prefix_bits=stated.ipv6_prefix_bits,
-            failures_allowed=self.attempts_for_each_address, window_seconds=self.attempt_window_seconds,
-            maximum_tracked_addresses=self.tracked_addresses)
+        return replace(stated, failures_allowed=self.attempts_for_each_address,
+                       window_seconds=self.attempt_window_seconds, maximum_tracked_addresses=self.tracked_addresses)
 
     def email_attempt_limits(self):
         """Settings for the table that counts attempts for one email address.

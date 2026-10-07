@@ -1,0 +1,50 @@
+{
+  "record_type": "pilot_release_record/v1",
+  "release": 73,
+  "app": "baltor-pilot",
+  "source_revision": "61ae2bbe8b9cd5ee7f023f260d265d17785f6059",
+  "image": "registry.fly.io/baltor-pilot@sha256:fbca37b9f5e977da19cefb3dfe5356f93e620a94be5670817fb0897e849d10d2",
+  "rollback_release": 72,
+  "rollback_image": "registry.fly.io/baltor-pilot@sha256:ea62f93ec7740731b25fd899d90cc5eefa6e991a3b080445fb30c93a31ad4a00",
+  "rollback_catalogue_state_versions": [1, 2, 3],
+  "owner_local_date": "2026-10-07",
+  "deployed_at": "2026-10-07T21:15:05Z",
+  "ci_run": 37685774464,
+  "ci_conclusion": "success",
+  "deploy_run": 37687661934,
+  "deploy_workflow_conclusion": "success",
+  "deployment_gate_after": false,
+  "deployment_gate_closed_at": "2026-10-07T21:16:38.282147+00:00",
+  "changes": [
+    "Default Community-excluded legacy listings use the complete checked-tier projection before per-item authorization; incomplete projections still use the full view.",
+    "Signed-in and signed-out browser navigation expectations include Feeds.",
+    "Release 72 and the working delivery plan are reconciled; the roadmap target is ten million distinct useful served files."
+  ],
+  "catalogue": {
+    "release_id": "50b666f56b043ce085d20f46efed01444f257917467199992799ad49cdb03127",
+    "packages": 218127,
+    "distinct_files": 1352837,
+    "distinct_file_bytes": 7938617324,
+    "search_engine": "sqlite_disk_index",
+    "changed_by_this_application_release": false
+  },
+  "checks": {
+    "local_browser": {"passed": 971, "total": 971, "mutants_detected": 197, "mutants": 197},
+    "live_browser": {"hosts": 10, "passed": 2118, "total": 2118},
+    "live_pulse": {"passed": 50, "total": 50},
+    "live_catalogue_owner_account": {"passed": 11, "total": 11, "body_reads": 0, "usage_records_added": 0},
+    "retained_failed_attempts": [
+      "An older diagnostic credential was refused with 401; it was not modified.",
+      "The boundary account listed zero granted items and its subsequent diagnostic read timed out. It is not a successful catalogue diagnostic.",
+      "The first pushed source 21c40624 failed CI on a stale documentation fragment. Revision 61ae2bbe repaired the link and all exact-revision CI jobs passed."
+    ]
+  },
+  "hostnames": ["baltor.ai", "www.baltor.ai", "docs.baltor.ai", "status.baltor.ai", "examples.baltor.ai", "demo.baltor.ai", "app.baltor.ai", "deck.baltor.ai", "redteam.baltor.ai", "baltor-pilot.fly.dev"],
+  "limits": [
+    "The served catalogue population is unchanged by this application release.",
+    "Personalized feeds, new paid offerings and Cloudflare production cutover are not claimed.",
+    "Browser assertions and transport checks do not establish customer-task benefit or complete model/hardware benchmark coverage."
+  ],
+  "private_evidence_root": "/home/username/baltor-private/repo-disk-review-20261007-1uZpT8",
+  "evidence": ["first-deployment.json", "release-73-browser/summary.json", "release-73-pulse.json", "release-73-catalogue-owner.json", "release-73-catalogue.json", "release-73-catalogue-boundary.json"]
+}

@@ -1,0 +1,56 @@
+{
+  "record_type": "forwarding_proxy_range_sets/v1",
+  "sets": [
+    {
+      "record_type": "forwarding_proxy_range_set/v1",
+      "set_id": "cloudflare-2026-10-05",
+      "provider": "cloudflare",
+      "client_address_header": "CF-Connecting-IP",
+      "retrieved_at": "2026-10-05T22:50:04Z",
+      "sources": [
+        {
+          "url": "https://api.cloudflare.com/client/v4/ips",
+          "etag": "38f79d050aa027e3be3865e495dcc9bc",
+          "body_sha256": "f3d0a35768afd4a9a8307aa1033d50b9fa011b73836c9235c170aa31acac5efd"
+        },
+        {
+          "url": "https://www.cloudflare.com/ips-v4",
+          "last_modified": "Mon, 05 Oct 2026 11:46:25 GMT",
+          "body_sha256": "f02c6d83bc01ab0ae8577160e036d700c7455359bce054df884e5d7d9e4e9e7b"
+        },
+        {
+          "url": "https://www.cloudflare.com/ips-v6",
+          "last_modified": "Mon, 05 Oct 2026 06:00:13 GMT",
+          "body_sha256": "9e9d39e3e83bad00c4decafd53c63fa62029f3d95db68de937d2be28234ca0a9"
+        }
+      ],
+      "ipv4": [
+        "173.245.48.0/20",
+        "103.21.244.0/22",
+        "103.22.200.0/22",
+        "103.31.4.0/22",
+        "141.101.64.0/18",
+        "108.162.192.0/18",
+        "190.93.240.0/20",
+        "188.114.96.0/20",
+        "197.234.240.0/22",
+        "198.41.128.0/17",
+        "162.158.0.0/15",
+        "104.16.0.0/13",
+        "104.24.0.0/14",
+        "172.64.0.0/13",
+        "131.0.72.0/22"
+      ],
+      "ipv6": [
+        "2400:cb00::/32",
+        "2606:4700::/32",
+        "2803:f800::/32",
+        "2405:b500::/32",
+        "2405:8100::/32",
+        "2a06:98c0::/29",
+        "2c0f:f248::/32"
+      ],
+      "ranges_sha256": "71ab24caf7a2252145555d0d4bbfba2d61acb3ced88ab8108eec406667b0aa7b"
+    }
+  ]
+}

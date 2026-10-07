@@ -232,7 +232,7 @@ def _setting_checks(check):
     chosen = _header(failures_allowed=5, window_seconds=30)
     stored = json.loads(json.dumps(asdict(ServiceHttpConfiguration(ORIGIN, (HOST,), request_limits=chosen))))
     inexact = ({key: value for key, value in asdict(chosen).items() if key != "record_type"},
-               {**asdict(chosen), "record_type": "service_request_limits/v2"},
+               {**asdict(chosen), "record_type": "service_request_limits/v9"},
                {**asdict(chosen), "trust_forwarded_for": True}, [3, 60], "30 per minute", None)
     check("host_file_limits_need_the_exact_versioned_fields",
           ServiceHttpConfiguration(**stored).request_limits == chosen
@@ -778,7 +778,7 @@ def _host_file_checks(check, root):
           settings == _header() and (published["active"], published["client_address_source"]) == (True, HEADER_SOURCE)
           and earlier_settings == ServiceRequestLimits()
           and (earlier["active"], earlier["client_address_source"]) == (False, NOT_CONFIGURED_SOURCE))
-    inexact = ({"client_address_header": PROXY_HEADER}, {**stated, "record_type": "service_request_limits/v2"},
+    inexact = ({"client_address_header": PROXY_HEADER}, {**stated, "record_type": "service_request_limits/v9"},
                {**stated, "client_address_source": SOCKET_PEER_SOURCE}, {**stated, "trust_forwarded_for": True})
     check("an_inexact_host_file_mapping_stops_the_host_loader_before_it_serves",
           all(_refuses(lambda row=row: load({"request_limits": row})) for row in inexact))
@@ -786,9 +786,11 @@ def _host_file_checks(check, root):
 
 def run_checks(check, root):
     from .capacity_checks import run_checks as capacity_checks
+    from .forwarding_proxy_checks import run_checks as forwarding_proxy_checks
     _setting_checks(check)
     _host_file_checks(check, root / "host-file")
     capacity_checks(check, root / "capacity")
     _limiter_checks(check)
     _address_checks(check)
     _transport_checks(check, root)
+    forwarding_proxy_checks(check, root / "forwarding-proxy")

@@ -94,6 +94,10 @@ def self_test() -> dict:
         "core.outcome_vector", "core.model_capabilities", "core.contract_matching", "core.model_response_admission",
         "core.model_response_admission_checks", "core.custom_endpoint", "core.custom_endpoint_checks",
         "core.provider_failure_classes", "loop.effect_approval", "loop.loop_profile_ontology",
+        # Engine (d) of the catalogue search index slot: one release's index in Cloudflare D1, served by a Worker.
+        "core.service_runtime.catalogue_d1_index_checks",
+        # The static_content_network engine of web page delivery: the website served at the edge.
+        "core.service_runtime.static_site_checks",
         "core.service_runtime.catalogue_release_checks",
         "core.service_runtime.catalogue_report_checks",
         "core.service_runtime.catalogue_segment_checks",
@@ -121,6 +125,9 @@ def self_test() -> dict:
         "core.mcp_sdk_transport": ("mcp",),
         "core.service_runtime.http_checks": ("mcp", "starlette", "uvicorn", "httpx", "jwt", "cryptography"),
         "core.service_runtime.stripe_sessions": ("mcp", "starlette", "uvicorn", "httpx", "jwt", "cryptography"),
+        # The D1 edge index signs requests with Ed25519 and compares its answers with the service's own.
+        "core.service_runtime.catalogue_d1_index_checks": ("starlette", "uvicorn", "httpx", "cryptography"),
+        "core.service_runtime.static_site_checks": ("starlette", "uvicorn", "httpx", "cryptography"),
         "core.decisions.jev": ("httpx",),
         "core.decisions.system_one": ("httpx",),
         "code_nodes.decision_tools": ("mcp", "anyio"),
