@@ -179,8 +179,11 @@ facebook.com and instagram.com, stackoverflow.com pages, and two piracy hosts.
 A request goes only to its executor's one declared host. GitHub is read only
 through `gh`, which holds the login; the Ollama key is read from the environment
 at send time and never enters a request record, a stored response, the ledger or
-a report. The scheduled wrapper inherits that environment. It does not read or
-evaluate a shell profile to recover a key. If the key is absent, the Ollama lane
+a report. The scheduled wrapper inherits that environment. The installer can
+bind `--ollama-credential ollama-cloud-search` to the existing operator keyring
+helper, which resolves the named credential for each run and suppresses it
+from command output. The unit contains only that reference. It does not read
+or evaluate a shell profile to recover a key. If the key is absent, the Ollama lane
 holds with `key_not_in_environment` while the public lanes continue.
 
 A 429, or a 403 with no allowance left, holds the lane until the provider's reset.

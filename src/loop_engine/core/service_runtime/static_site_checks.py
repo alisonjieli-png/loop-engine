@@ -26,10 +26,11 @@ ALIAS = "edge.test"
 COMPARED_HEADERS = ("content-type", "content-security-policy", "x-frame-options", "referrer-policy",
                     "permissions-policy", "x-robots-tag", "cache-control", "etag", "x-content-type-options")
 SITE_MUTATIONS = {
+    "replace_robot_directives": ('  const prior = headers.get("x-robots-tag") || "";', '  const prior = "";'),
     "no_root_meta": ("  if (entry.head && root !== \"/\") bytes = withRootMeta(bytes, root);\n", ""),
     "no_page_headers": ("  const headers = new Headers(kind.headers);\n  headers.set(\"content-type\", entry.media_type);",
                         "  const headers = new Headers();\n  headers.set(\"content-type\", entry.media_type);"),
-    "no_read_only_guard": ('  if (env.ORIGIN_MODE !== "all" && request.method !== "GET" && request.method !== "HEAD") {',
+    "no_read_only_guard": ('  if ((aliased || env.ORIGIN_MODE !== "all") && request.method !== "GET" && request.method !== "HEAD") {',
                            "  if (false) {"),
     "no_unavailable_answer": ("  } catch {\n    return unavailable(request, env, manifest, aliased);\n  }",
                               "  } catch {\n    return new Response(\"origin failed\", { status: 500 });\n  }"),
@@ -205,6 +206,14 @@ def _site_checks(check, root, node):
             check("a_hostname_the_site_map_does_not_name_is_shown_noindex",
                   aliased[0] == 200 and aliased[1].get("x-robots-tag") == "noindex"
                   and aliased[2] == compared[static.index("/pricing")][1][2])
+            private_index = [(_fetch(site.port, "GET", address, ALIAS),
+                              _fetch(origin_port, "GET", address, "baltor.ai"))
+                             for address in ("/dot-context", "/dot-context.json", "/dot-feedback", "/dot-feedback.json")]
+            check("alias_noindex_preserves_every_existing_robot_directive",
+                  all(_same(*pair) for pair in private_index))
+            check("aliased_preview_never_passes_changes_when_canonical_hosts_allow_them",
+                  _fetch(site.port, "POST", "/api/v1/retrieval", ALIAS,
+                         {**fixture.headers(), "Content-Type": "application/json"}, request)[0] == 403)
         with local_site(root / "edge-read-only", folder, export.export_id, base, node=node, mode="read_only") as site:
             refused = _fetch(site.port, "POST", "/api/v1/retrieval", "baltor.ai",
                              {**fixture.headers(), "Content-Type": "application/json"}, request)
@@ -223,6 +232,16 @@ def _site_checks(check, root, node):
                 probe = [(_fetch(site.port, "GET", address, host), _fetch(origin_port, "GET", address, host))
                          for host in HOSTS[:2] for address in ["/", "/pricing", "/docs"]]
                 check(name, not all(_same(*pair) for pair in probe))
+        with local_site(root / "edge-robot-control", folder, export.export_id, base, node=node,
+                        source=site_worker("replace_robot_directives")) as site:
+            check("removed_alias_robot_directive_preservation_is_detected",
+                  not _same(_fetch(site.port, "GET", "/dot-context", ALIAS),
+                            _fetch(origin_port, "GET", "/dot-context", "baltor.ai")))
+        with local_site(root / "edge-alias-control", folder, export.export_id, base, node=node,
+                        source=site_worker("no_read_only_guard")) as site:
+            check("removed_aliased_preview_write_refusal_is_detected",
+                  _fetch(site.port, "POST", "/api/v1/retrieval", ALIAS,
+                         {**fixture.headers(), "Content-Type": "application/json"}, request)[0] == 200)
     # The origin is stopped now: the closed socket is what a release that rebuilds its view looks like from the edge.
     pages = ["/", "/pricing", "/docs", static[-1]]
     with local_site(root / "edge-down", folder, export.export_id, base, node=node) as site:

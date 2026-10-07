@@ -7,8 +7,8 @@
 // machine), pages keep serving and a request that needs the origin gets the service's own unavailable page or
 // refusal record with Retry-After.
 //
-// Bindings: ORIGIN (the origin's https origin), ORIGIN_MODE ("all" passes every method; "read_only" passes GET
-// and HEAD only, for a prototype that must never become a second way to change production), EXPORT_ID, and
+// Bindings: ORIGIN (the origin's https origin), ORIGIN_MODE ("all" passes every method on canonical hosts;
+// "read_only" and aliased preview hosts pass GET and HEAD only), EXPORT_ID, and
 // either ASSETS (Workers static assets holding __edge/manifest.json and __edge/files/<sha256>) or SITE (a KV
 // namespace holding <export>/manifest and <export>/f/<sha256>). HOST_ALIASES (JSON) maps hostnames that are not
 // in the site map, such as a workers.dev name, to the hostname whose pages they show; such a hostname is also
@@ -110,6 +110,14 @@ function hostOf(request, env) {
   return { host: aliases[host] || host, aliased: host in aliases };
 }
 
+function markAliased(headers, aliased) {
+  if (!aliased) return;
+  const prior = headers.get("x-robots-tag") || "";
+  if (!prior.split(",").some((part) => part.trim().toLowerCase() === "noindex")) {
+    headers.set("x-robots-tag", prior ? `${prior}, noindex` : "noindex");
+  }
+}
+
 async function staticAnswer(request, env, manifest, path, host, aliased) {
   if (request.method !== "GET" && request.method !== "HEAD") return null;
   if (manifest.origin_prefixes.some((prefix) => path.startsWith(prefix)) || manifest.origin_addresses.includes(path)) return null;
@@ -123,7 +131,7 @@ async function staticAnswer(request, env, manifest, path, host, aliased) {
   const kind = manifest.classes[entry.class];
   const headers = new Headers(kind.headers);
   headers.set("content-type", entry.media_type);
-  if (aliased) headers.set("x-robots-tag", "noindex");
+  markAliased(headers, aliased);
   headers.set("x-baltor-edge", `static ${manifest.export_id.slice(0, 12)}`);
   if (kind.etag) {
     const etag = `"${entry.sha256}"`;
@@ -150,7 +158,7 @@ async function unavailable(request, env, manifest, aliased) {
     headers.set("content-type", "text/html; charset=utf-8");
     headers.set("retry-after", String(stated.retry_after_seconds));
     headers.set("x-baltor-edge", "origin_unavailable");
-    if (aliased) headers.set("x-robots-tag", "noindex");
+    markAliased(headers, aliased);
     return textResponse(request.method === "HEAD" ? null : bytes, stated.status, headers);
   }
   const record = { record_type: "service_http_error/v1",
@@ -166,7 +174,7 @@ const HOP_BY_HOP = ["connection", "keep-alive", "proxy-authenticate", "proxy-aut
   "transfer-encoding", "upgrade", "host"];
 
 async function toOrigin(request, env, manifest, aliased) {
-  if (env.ORIGIN_MODE !== "all" && request.method !== "GET" && request.method !== "HEAD") {
+  if ((aliased || env.ORIGIN_MODE !== "all") && request.method !== "GET" && request.method !== "HEAD") {
     const record = { record_type: "service_http_error/v1",
       error: { code: "edge_prototype_read_only", message: "This edge prototype passes only reads to the origin.",
                next_action: "Use the service's own address for this request." },
@@ -203,7 +211,7 @@ async function toOrigin(request, env, manifest, aliased) {
   // Dynamic responses may contain accounts, scoped results, or OAuth state.
   answer.headers.set("cache-control", "no-store");
   answer.headers.set("x-baltor-edge", "origin");
-  if (aliased) answer.headers.set("x-robots-tag", "noindex");
+  markAliased(answer.headers, aliased);
   return answer;
 }
 

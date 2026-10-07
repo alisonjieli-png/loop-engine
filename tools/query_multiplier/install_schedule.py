@@ -46,7 +46,7 @@ Environment=TMPDIR={home}/.le-ci-tmp/tmp/querymult
 Environment=QUERY_MULTIPLIER_ROOT={root}
 Environment=QUERY_MULTIPLIER_MINUTES={minutes}
 ExecStartPre=/usr/bin/mkdir -p {home}/.le-ci-tmp/tmp/querymult
-ExecStart=/bin/bash {checkout}/tools/query_multiplier/scheduled-run.sh
+ExecStart={start_command}
 ExecStopPost=/bin/bash {checkout}/tools/query_multiplier/scheduled-run.sh --finish
 Nice=10
 IOSchedulingClass=idle
@@ -71,6 +71,23 @@ Unit={unit}.service
 [Install]
 WantedBy=timers.target
 """
+
+
+def start_command(checkout, timeout, credential=None, *, references=None):
+    """Bind the optional Ollama reference without putting its value in the unit."""
+    command = f"/bin/bash {checkout}/tools/query_multiplier/scheduled-run.sh"
+    if credential is None:
+        return command
+    if references is None:
+        references = json.loads((REPOSITORY / "tools/operator_credentials.json").read_text())
+    spec = references.get("api_keys", {}).get(credential)
+    if (not isinstance(credential, str) or not credential or any(
+            char not in "abcdefghijklmnopqrstuvwxyz0123456789-" for char in credential)
+            or not isinstance(spec, dict) or spec.get("environment") != "OLLAMA_API_KEY"
+            or spec.get("service") != "ollama-cloud"):
+        raise ValueError("an explicit Ollama operator credential reference is required")
+    return (f"/usr/bin/python3 {checkout}/tools/operator_credentials.py run --ref {credential} "
+            f"--timeout {timeout} -- {command}")
 
 
 def pin(revision: str) -> Path:
@@ -98,6 +115,7 @@ def main(argv=None) -> int:
     parser.add_argument("--on-calendar", default="*-*-* *:07:00")
     parser.add_argument("--root", default=str(Path.home() / "baltor-library" / "query-runs"))
     parser.add_argument("--enable", action="store_true", help="enable and start the timer (after one complete manual pass)")
+    parser.add_argument("--ollama-credential", help="Named system-keyring reference for the existing Ollama subscription; never a key value.")
     options = parser.parse_args(argv)
     if not 5 <= options.minutes <= 55:
         raise SystemExit("a pass lasts 5 to 55 minutes, so an hourly timer never overlaps itself")
@@ -105,7 +123,10 @@ def main(argv=None) -> int:
     SYSTEMD.mkdir(parents=True, exist_ok=True)
     home = str(Path.home())
     service = SERVICE.format(short=checkout.name, checkout=checkout, home=home, root=options.root,
-                             minutes=options.minutes, timeout=(options.minutes + 15) * 60)
+                             minutes=options.minutes, timeout=(options.minutes + 15) * 60,
+                             start_command=start_command(checkout, (options.minutes + 14) * 60,
+                                                         options.ollama_credential,
+                                                         references=json.loads((checkout / "tools/operator_credentials.json").read_text())))
     (SYSTEMD / (UNIT + ".service")).write_text(service, encoding="utf-8")
     (SYSTEMD / (UNIT + ".timer")).write_text(TIMER.format(calendar=options.on_calendar, unit=UNIT), encoding="utf-8")
     subprocess.run(["systemctl", "--user", "daemon-reload"], check=True)

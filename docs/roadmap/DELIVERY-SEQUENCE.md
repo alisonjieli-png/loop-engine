@@ -27,11 +27,11 @@ internal/customer separation behind this plan.
 | Million-file publication | Live; owner-account listing accepted after release 73 | Exact release `50b666f5...` serves 218,127 packages and 1,352,837 distinct files, with complete population and matching content digest. It adds 981,843 distinct files and preserves all prior versions. Final staging cleanup was reconciled after its client timeout; no publication was replayed. The release-73 owner-account catalogue diagnostic passes 11 checks. Earlier failed diagnostic attempts remain recorded. |
 | Storage headroom | Done | Existing Fly volume extended from 25 to 50 GB, with 39 GB free at readback and no restart. Added provisioned storage: $3.75/month; traffic and snapshots are separate. |
 | Empty Public Good goals | All 17 populated and new delivery verified | Policy `118639cb...` has 424 packages / 1,056 distinct useful files. Five additions preserve all 419 prior grants and limits. The 25 fresh sandbox methods, current licence checks, 64 no-plan delivery checks and 27 desktop/mobile browser checks passed. The no-plan account downloaded 25 exact files with no paid-usage increase. |
-| Cloudflare | Real S3 canary passed; no production cutover | The owner-supplied credentials are stored only in the system keyring. Six real S3 checks passed: existing object read, conditional write, exact readback, duplicate write, wrong digest and wrong size. The earlier Worker-binding probes remain separate evidence. Host-source version 3 is integrated; a full mirror and production-profile delivery checks still precede selection. D1 is not selected. |
+| Cloudflare | Static Assets canary deployed; R2 mirror resumed | Release 74 carries the edge and D1 engines. The canary serves 2,501 public export files; four alias robots headers exposed a defect now repaired in the next candidate. The R2 recovery reserves unknown crash requests against the original ceiling and verifies stored bytes before conditional writes. Production body selection and D1 selection remain pending. |
 | Feeds and Components | Catalogue-state preview live in release 72 | JSON Feed, RSS and Markdown describe the same current served state. Customer-defined feeds, agent assignments, a paid Feeds plan and push delivery are not implemented by this preview. |
 | Repository reconciliation | Inventory and recovery copies complete; integration active | 190 registered worktrees, 180 existing, 72 dirty and two stashes were inspected. The shared checkout has 129 staged paths, of which 83 exactly match public main. Private history and unresolved merge stages are preserved outside public source. |
-| Workstation storage | Verified relocation active | Large inactive data files are copied to Expansion, read back by SHA-256 and linked at their original paths. The existing archive image was remounted and the task database is accessible again. Transfer records own the current count. |
-| Release follow-up | Release 73 verified live | Exact source `61ae2bbe`, CI `37685774464`, deployment `37687661934`; 2,118 browser assertions on ten hosts and fifty pulse reads pass. The gate is closed. Local browser checks pass 971 assertions and all 197 removed-guard controls. |
+| Workstation storage | Selected transfer complete | All 29 selected files, 75,444,467,760 bytes, have independent SHA-256 readback records. All original-path links and destination sizes were checked again after the crash. The OS filesystem has about 91 GiB free at recovery. |
+| Release follow-up | Release 74 verified live | Exact source `69ac103c`, CI `37692918322`, deployment `37693844836`; the recovery pass completed 2,118 browser assertions on ten hosts. Fifty pulse reads pass and the gate is closed. The interrupted four-host attempt remains preserved. |
 
 ### Priority and phase-based Gantt view
 
@@ -43,9 +43,9 @@ delay a ready publication or exhaust memory, storage or provider allowances.
 
 | Workstream | Prepared or verified | Current release cycle | Following cycle | Acceptance |
 | --- | --- | --- | --- | --- |
-| Ten-million-file supply | 1,352,837 distinct files live | ACTIVE: repair listing and map useful supply | Expand qualified code, data, native assets and source-backed feeds | GATE: 10,000,000 distinct served digests with preserved access and useful family coverage |
+| Ten-million-file supply | 1,352,837 distinct files live; listing repaired | NEXT: publish the next independently qualified family batch | Expand qualified code, data, native assets and source-backed feeds | GATE: 10,000,000 distinct served digests with preserved access and useful family coverage |
 | Public Good coverage | All 17 goals and no-plan delivery verified | DONE: additive 424-package policy | Preserve access through next release | Broaden useful coverage |
-| Cloudflare storage and delivery | Existing resources and real S3 canary verified | ACTIVE: integrate the preserved edge work and prepare the R2 mirror | Move qualified public pages and immutable bodies | GATE: live integrity, authorization, failure recovery and measured cost |
+| Cloudflare storage and delivery | Edge integration deployed in release 74 | ACTIVE: complete R2 mirroring, alias repair and live origin checks | Route qualified public pages and select verified bodies | GATE: live integrity, authorization, failure recovery and measured cost |
 | Internal repository and paper intelligence | Existing radar and query executor contracts | ACTIVE: pin sources, observations, ranking rules and worker deployment | Cloudflare acquisition, private raw storage and checked production | GATE: repeatable current-source results and recovery from duplicate delivery |
 | Feeds | Catalogue-state pull preview live | Implement saved definitions and per-agent assignments | Shared dated snapshots, filters, cursors and account controls | GATE: two customers and two agents remain isolated through edit and revocation |
 | Two offerings | One account and existing full access | Define Feeds membership separately from Components | Test the cheaper information plan and full library access | GATE: paid journeys and all alternate retrieval paths before pricing activation |
@@ -89,14 +89,22 @@ gates, not invented dates or a percentage inferred from file counts.
   merge stages; preserve patches, index objects and untracked work.
 - [x] Reconcile release 72 and close its deployment gate.
 - [x] Restore access to the existing offloaded task database.
-- [ ] Complete the selected byte-verified OS-to-Expansion transfers and record
+- [x] Complete the selected byte-verified OS-to-Expansion transfers and record
   the resulting free space. Keep active databases and Unix source trees on
   a filesystem with their required semantics.
 - [x] Release the narrowed legacy listing and corrected Feeds navigation
   checks, then repeat live customer retrieval.
-- [ ] Repair conversation mining and dimension generation before integrating
-  their pending code. Normal conversation titles, malformed records, source
-  references and sensitive-term refusals need end-to-end coverage.
+- [x] Repair conversation mining and dimension generation. Eighteen focused
+  checks cover titles, malformed records, source references, timestamps,
+  sensitive-term refusals and their accounting. Release gates remain distinct.
+- [x] Reconcile the interrupted release-74 verification and complete all ten
+  hosts. Preserve the first attempt and the deployment's exact source.
+- [x] Diagnose the unattended Ollama lane: the last scheduled run sent no
+  requests because its environment lacked the existing key. Persist that
+  supplied key in the system keyring and add an explicit timer reference.
+  The bounded manual proof completed twelve real searches; no model was called.
+- [ ] Install the reviewed scheduler revision with that reference, then verify
+  the unattended run and each source lane before claiming daily web coverage.
 - [ ] Finish the Cloudflare source, storage and delivery acceptance below.
 - [ ] Implement the customer customization checklist below before selling a
   personalized Feeds service.
@@ -108,6 +116,49 @@ Review comments: the old repository-map draft names two missing conformance
 modules; the paired value study is an instrument, not measured benefit; the
 saved Stripe challenge driver has synthetic tests but no successful new live
 failed-renewal result. Preserve these streams and their remaining checks.
+
+The recovery intake covers accessible local Codex and Claude owner messages
+from October 6 at 10:34 UTC through October 7 at 22:34 UTC: 108 user-role
+records, 39 context-only records and 65 unique remaining messages. The counts
+are not 65 new Baltor tasks. Repeated requests, reference material, replies,
+Rollwatch work and Another_Transfer work retain their current owners. The
+private source mapping must retain long-message sections and explicit gaps;
+the bounded keyword miner alone does not complete semantic reconciliation.
+
+The existing discovery timer's October 7 22:08 to 22:29 UTC run found new
+research leads through multiple specialist sources. Ollama's empty lane was
+an operational credential-binding defect, not a provider outage. The repaired
+operator path retains the existing 300-search daily ceiling. The later
+one-minute proof used the existing ledger, so its twelve calls count against
+the same allowance. Source leads still require rights, usefulness and
+independent admission before they become served components.
+
+### Daily options research as a feed
+
+Reuse the separately maintained Rollwatch collector and evidence contracts.
+The October 7 local service is healthy and its catalogue names 5,974 listed
+optionable stocks and funds and 2,223,885 retained contracts. Those are
+reference identities, not complete fresh options observations. The existing
+system identifies possible rolls and records public-source business context;
+its active session owns its application changes and scheduling.
+
+Under S-6.214, prepare an adapter that exposes dated research leads with the
+underlying symbol, exact contracts, observation times, source links, coverage,
+candidate explanations, contradictory evidence and follow-up status. Separate
+unusual activity, possible linked legs, a possible roll, direction and later
+open-interest evidence. Public delayed aggregates do not prove common
+ownership, opening versus closing or trade intent.
+
+- [ ] Verify the current collector schedule and successful run populations.
+- [ ] Qualify independently selectable search engines and browser reads;
+  deduplicate syndicated stories and keep inaccessible sources visible.
+- [ ] Research earnings, filings, corporate events and ordinary alternative
+  explanations, including hedges, spreads, closing trades and data corrections.
+- [ ] Freeze the day's hypotheses and revisit them after the next relevant
+  open-interest update. Measure revisions and missing evidence.
+- [ ] Deliver a research feed scoped to its assigned agent; preserve source
+  rights and keep account-specific research private. No trade execution is
+  part of this feed.
 
 ### Customer launch schedule
 
@@ -255,6 +306,14 @@ owners; they do not create another runtime or approval system.
   captions, audio stems, camera rigs, editable Blender/GLB scenes, image-to-video
   and image-to-mesh recipes, environment locks and verification fixtures.
   Reuse unchanged files; label stylistic variants as variants.
+- [ ] Check visual continuity across text, slide and layout changes. Keep
+  background motion and camera state continuous unless the edit explicitly
+  calls for a cut. Include the reported jumping-background failure in the
+  creative acceptance examples.
+- [ ] Compare browser-native and WebAssembly visualization engines for one
+  identical editable scene. Measure startup, export fidelity, memory and
+  device coverage before selecting an engine; retain the native renderer
+  when its required features are absent in the browser.
 - [ ] Add a showcase job to each eligible component or solution version. Its
   input names exact packages, a customer task, permitted assets, supported
   claims and output formats. Its outputs include editable sources, a poster,

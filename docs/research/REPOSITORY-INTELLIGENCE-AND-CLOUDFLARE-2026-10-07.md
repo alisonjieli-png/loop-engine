@@ -288,3 +288,45 @@ must be chosen by the actual supported product and eligibility. Register each
 adapter's source contract, attribution, response bounds, quota, credential
 reference and retention rules before enabling dispatch. A failed provider
 does not authorize scraping its website or silently switching engines.
+
+### Search-engine activation order
+
+The installed bounded query timer completed its October 7 22:08 to 22:29 UTC
+run successfully. Its code provides Ollama web search and specialist API
+adapters for repositories, models, datasets, papers, packages and licensed
+media. A successful scheduled process is not proof that every source lane
+succeeded; inspect the per-lane report and recorded holds. Its Ollama lane
+made zero calls because the timer lacked the key in the interactive session.
+The recovered keyring binding and a later one-minute, twelve-search proof
+establish the repair path. That proof used the same ledger and daily ceiling;
+the new unattended binding still needs installation and a successful run.
+
+Use the existing Ollama subscription first, then qualify Brave and an
+authorized SearXNG instance against the same research-query contract. The
+owner's spelling "Sxring" is treated as a probable reference to SearXNG, not
+as a verified provider identity. SearXNG needs JSON enabled, and public
+instances often disable it. Its configured engines have separate availability
+and source terms; do not treat a metasearch response as independent evidence
+from every underlying search engine.
+[SearXNG API](https://docs.searxng.org/dev/search_api.html)
+
+Brave's current search plan lists $5 per thousand requests and $5 of monthly
+credits. Its ordinary integration uses an API key in a request header.
+Configure a daily ceiling and inspect the actual account allowance before
+activation. A RapidAPI integration names the exact subscribed product,
+endpoint, quota and redistribution terms; the marketplace itself is not a
+search engine. [Brave pricing](https://api-dashboard.search.brave.com/documentation/pricing),
+[authentication](https://api-dashboard.search.brave.com/documentation/guides/authentication)
+
+Do not build a new default on Google's Custom Search JSON API. Its current
+documentation says it is closed to new customers and existing customers must
+transition before January 1, 2027. An already-entitled account can be evaluated
+as a time-limited adapter, with the sunset recorded. Recheck the exact
+supported alternative and its eligibility before implementation.
+[Google service notice](https://developers.google.com/custom-search/v1/overview?hl=en)
+
+Browser extraction follows an authorized page read when an API or published
+feed is insufficient. Record retrieval time, content digest, parser, source
+URL, result lineage, failures and actual request cost. Host acquisition jobs
+on Cloudflare where their runtime and source policies permit; keep native
+browser and rendering work in an execution environment that supports it.

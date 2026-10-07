@@ -5,6 +5,18 @@
   "releases": [
    {
     "kind": "service",
+    "number": 74,
+    "at": "2026-10-07T22:08:46Z",
+    "lines": [
+     "Integrates the preserved Cloudflare static website, trusted forwarding profile and D1 search adapter behind existing selectable engines.",
+     "Bounds actual proxy request bodies, pins forwarded requests to the configured origin and prevents caching of dynamic account responses.",
+     "Records the source research, customer launch schedule, founder checklist and funding preparation."
+    ],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
     "number": 73,
     "at": "2026-10-07T21:15:05Z",
     "lines": [

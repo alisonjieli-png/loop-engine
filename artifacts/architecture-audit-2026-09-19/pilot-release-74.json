@@ -1,0 +1,48 @@
+{
+  "record_type": "pilot_release_record/v1",
+  "release": 74,
+  "app": "baltor-pilot",
+  "source_revision": "69ac103c53c800e96806f5c3f690f234ed6e19b6",
+  "image": "registry.fly.io/baltor-pilot@sha256:6dc54d00f4d41db737d176eee8de24d2da8148189bc26ef175d808b0847bcb06",
+  "rollback_release": 73,
+  "rollback_image": "registry.fly.io/baltor-pilot@sha256:fbca37b9f5e977da19cefb3dfe5356f93e620a94be5670817fb0897e849d10d2",
+  "rollback_catalogue_state_versions": [1, 2, 3],
+  "owner_local_date": "2026-10-07",
+  "deployed_at": "2026-10-07T22:08:46Z",
+  "ci_run": 37692918322,
+  "ci_conclusion": "success",
+  "deploy_run": 37693844836,
+  "deploy_workflow_conclusion": "success",
+  "deployment_gate_after": false,
+  "deployment_gate_closed_at": "2026-10-07T22:10:21.967139+00:00",
+  "changes": [
+    "Integrates the preserved Cloudflare static website, trusted forwarding profile and D1 search adapter behind existing selectable engines.",
+    "Bounds actual proxy request bodies, pins forwarded requests to the configured origin and prevents caching of dynamic account responses.",
+    "Records the source research, customer launch schedule, founder checklist and funding preparation."
+  ],
+  "catalogue": {
+    "release_id": "50b666f56b043ce085d20f46efed01444f257917467199992799ad49cdb03127",
+    "packages": 218127,
+    "distinct_files": 1352837,
+    "distinct_file_bytes": 7938617324,
+    "search_engine": "sqlite_disk_index",
+    "changed_by_this_application_release": false
+  },
+  "checks": {
+    "live_browser": {"hosts": 10, "passed": 2118, "total": 2118},
+    "live_pulse": {"passed": 50, "total": 50},
+    "retained_failed_attempts": [
+      "The first browser pass was interrupted after four passing hosts. A separately recorded recovery pass completed all ten hosts.",
+      "The first Cloudflare asset attempt opened an upload session but stopped before uploading a batch or deploying a Worker. The second attempt deployed the canary successfully.",
+      "Canary readback matched all 2,501 body digests but only 2,497 full header sets: alias noindex overwrote the existing nofollow directive on four Dot routes. The next candidate repairs this; no production route was cut over on this evidence."
+    ]
+  },
+  "hostnames": ["baltor.ai", "www.baltor.ai", "docs.baltor.ai", "status.baltor.ai", "examples.baltor.ai", "demo.baltor.ai", "app.baltor.ai", "deck.baltor.ai", "redteam.baltor.ai", "baltor-pilot.fly.dev"],
+  "limits": [
+    "D1, R2 production body selection, personalized feeds and a paid Feeds plan are not activated by this release.",
+    "The later Cloudflare forwarding configuration uses request-limit version 2; restore the saved version-1 host mapping before image rollback to release 73.",
+    "Browser and transport checks do not establish task benefit or complete options, model or hardware data coverage."
+  ],
+  "private_evidence_root": "/home/username/baltor-private/repo-disk-review-20261007-1uZpT8",
+  "evidence": ["second-deployment.json", "release-74-browser-recovery-01/summary.json", "release-74-pulse.json", "cloudflare-site-deployment/events.jsonl", "cloudflare-site-deployment-02/events.jsonl", "cloudflare-site-readback-01.json", "cloudflare-origin-profile-readback.json"]
+}

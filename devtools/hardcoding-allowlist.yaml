@@ -13014,6 +13014,84 @@ entries:
   classification: STRATEGY_OR_PROVIDER_BINDING
   created_on: '2026-10-05'
   expires_on: '2027-10-05'
+- finding_id: hardcoding.2af2b49fd40598fe5055acdf
+  owner: tools.conversation_mining.extract:extract_references
+  rationale: HTTPS scheme added to explicitly recognized public reference shorthand. This offline parser makes no request; the existing public_url validator still refuses credentials, private hosts and unsafe query fields.
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  created_on: '2026-10-07'
+  expires_on: '2027-10-07'
+- finding_id: hardcoding.52f6cc02ed0414fffd6cc99e
+  owner: tools.query_multiplier.generate_dimensions:generate
+  rationale: Exact operation discriminator of the bounded offline vocabulary derivation grammar. Unknown operations are refused; it selects no provider or runtime authority.
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  created_on: '2026-10-07'
+  expires_on: '2027-10-07'
+- finding_id: hardcoding.6efb9b7a2179c36d8a53187b
+  owner: tools.query_multiplier.generate_dimensions:generate
+  rationale: Exact template operation discriminator of the same closed derivation grammar. Named bindings are validated, values screened and generated dimension counts bounded.
+  classification: CLOSED_CONTROLLED_VOCABULARY
+  created_on: '2026-10-07'
+  expires_on: '2027-10-07'
+- finding_id: hardcoding.c14d2aed91d91f0782504021
+  owner: .github.workflows.edge-acceptance.yml:True.workflow_dispatch.inputs.origin.options[0]
+  rationale: Exact existing canary hostname offered by the manually dispatched second-network acceptance check. The Python observer independently checks the same bounded origin set and sends no real credential.
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  created_on: '2026-10-07'
+  expires_on: '2027-10-07'
+- finding_id: hardcoding.b2a8dc9b1942a8f292a5fe88
+  owner: .github.workflows.edge-acceptance.yml:True.workflow_dispatch.inputs.origin.options[1]
+  rationale: Exact existing documentation hostname for the first production edge cutover. This manual diagnostic sends only bounded invalid-authentication reads.
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  created_on: '2026-10-07'
+  expires_on: '2027-10-07'
+- finding_id: hardcoding.0f1566866a4f7f065c2edbfb
+  owner: .github.workflows.edge-acceptance.yml:True.workflow_dispatch.inputs.origin.options[2]
+  rationale: Exact current public product hostname for qualified edge migration; no arbitrary input destination or credential is accepted.
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  created_on: '2026-10-07'
+  expires_on: '2027-10-07'
+- finding_id: hardcoding.a1ee61a335e00fcfa458542e
+  owner: .github.workflows.edge-acceptance.yml:True.workflow_dispatch.inputs.origin.options[3]
+  rationale: Exact existing technical origin for the direct-path control in the manual forwarding diagnostic.
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  created_on: '2026-10-07'
+  expires_on: '2027-10-07'
+- finding_id: hardcoding.0efc662da25d9bb94c0356df
+  owner: tools.check_live_forwarded_limits
+  rationale: Canary origin in this operator diagnostic's closed destination list. Origin and sample bounds are tested before any request.
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  created_on: '2026-10-07'
+  expires_on: '2027-10-07'
+- finding_id: hardcoding.8b974a16fcf0636883149c88
+  owner: tools.check_live_forwarded_limits
+  rationale: Current documentation origin in the bounded cutover diagnostic. It grants no access and carries no real user credential.
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  created_on: '2026-10-07'
+  expires_on: '2027-10-07'
+- finding_id: hardcoding.8d6ce8568b736f2f644d79a5
+  owner: tools.check_live_forwarded_limits
+  rationale: Current product origin in the bounded cutover diagnostic; arbitrary destinations remain refused.
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  created_on: '2026-10-07'
+  expires_on: '2027-10-07'
+- finding_id: hardcoding.f06d524ad8672ab61fd9a1a9
+  owner: tools.check_live_forwarded_limits
+  rationale: Existing technical Fly origin for the direct-path diagnostic control, separate from Cloudflare routing.
+  classification: STRATEGY_OR_PROVIDER_BINDING
+  created_on: '2026-10-07'
+  expires_on: '2027-10-07'
+- finding_id: hardcoding.94539a80a309b294de8f9389
+  owner: tools.operator_credentials.json:api_keys.ollama-cloud-search.environment
+  rationale: Environment-variable name only. The existing operator resolver reads the owner's supplied value from the system keyring into the selected bounded search process; no value is stored in this manifest or the timer unit.
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  created_on: '2026-10-07'
+  expires_on: '2027-10-07'
+- finding_id: hardcoding.b6e18e20d4b546e4e59391f0
+  owner: tools.query_multiplier.install_schedule:start_command
+  rationale: Exact provider-variable binding guard. A selected operator reference must name the Ollama service and its expected environment variable before the timer can use it; a foreign provider is tested and refused.
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  created_on: '2026-10-07'
+  expires_on: '2027-10-07'
 excluded_paths:
 - path: src/loop_engine/core/service_runtime/web_assets/creative-arena/arena.js
   owner: examples.32_creative_arena

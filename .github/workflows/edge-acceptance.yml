@@ -1,0 +1,42 @@
+name: Cloudflare separate-network acceptance
+
+on:
+  workflow_dispatch:
+    inputs:
+      origin:
+        description: Exact existing hostname to observe with an invalid synthetic credential
+        required: true
+        type: choice
+        options:
+          - https://baltor-web-edge.baltor-ai.workers.dev
+          - https://docs.baltor.ai
+          - https://baltor.ai
+          - https://baltor-pilot.fly.dev
+
+permissions:
+  contents: read
+
+jobs:
+  observe:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Observe separate network
+        env:
+          PROBE_ORIGIN: ${{ inputs.origin }}
+        run: >-
+          python tools/check_live_forwarded_limits.py
+          --origin "$PROBE_ORIGIN" --output edge-peer-observations.json
+          --authorize-network-reads
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: edge-peer-observations
+          path: edge-peer-observations.json
+          if-no-files-found: error
+          retention-days: 7

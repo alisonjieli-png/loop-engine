@@ -2,7 +2,7 @@
 
 Kind: product architecture with measured local implementation and proposed hosting.
 Date: 2026-09-19. The [current deployment](#current-deployment) section was
-added on 2026-09-20 and last checked on 2026-10-07, after Fly release 72.
+added on 2026-09-20 and last checked on 2026-10-07, after Fly release 74.
 
 The hosted product manages accounts, subscriptions, and access to intelligence.
 The customer runs Loop Engine and the selected harnesses. A hosted intelligence
@@ -47,7 +47,29 @@ from the newest release record, follow the release record and correct this
 section. Update this section in the same change that records a new release.
 It describes a private pilot. It does not describe a qualified paid service.
 
-The running image is Fly release 73, from
+The running image is Fly release 74, from
+`69ac103c53c800e96806f5c3f690f234ed6e19b6`, image
+`sha256:6dc54d00f4d41db737d176eee8de24d2da8148189bc26ef175d808b0847bcb06`.
+Exact CI `37692918322` and guarded deployment `37693844836` passed.
+All ten hosts passed 2,118 browser assertions in the completed recovery pass;
+the first pass stopped after four hosts. Fifty pulse reads passed and the
+deployment gate is closed. The release installs Cloudflare edge and D1
+engines, while the custom SQLite search and volume body engine remain selected.
+The [release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-74.json)
+keeps the deployment, interrupted checks and canary findings separate.
+
+The Cloudflare Static Assets canary now holds 2,501 public export files.
+All body digests matched, but four alias robots headers differed and need
+the next source repair before production routing. The pinned R2 mirror was
+resumed after reconciling its interrupted prefix, within the original request
+and wall-time ceilings. It is not yet complete or selected for serving.
+The live origin now uses the version-2 trusted Cloudflare forwarding profile;
+thirty post-restart readiness, capabilities and catalogue reads passed.
+Live refusal isolation and the production route checks remain separate gates.
+Restore the saved version-1 host mapping before rolling the image back to
+release 73. Customer sign-up remains on Supabase.
+
+The preceding running image was Fly release 73, from
 `61ae2bbe8b9cd5ee7f023f260d265d17785f6059`, image
 `sha256:fbca37b9f5e977da19cefb3dfe5356f93e620a94be5670817fb0897e849d10d2`.
 Exact CI `37685774464` and guarded deployment `37687661934` passed.
