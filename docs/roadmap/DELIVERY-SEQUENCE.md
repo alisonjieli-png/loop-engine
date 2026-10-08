@@ -44,12 +44,22 @@ The next release cycle follows this checklist:
 - [x] Complete candidate prechecks and global exact-body comparison: 31,474
   candidates passed seven prechecks; 120,090 distinct payloads are absent from
   the live library. Semantic comparison and content admission remain open.
-- [x] Complete combined code checks, exact CI and guarded releases 79 and 80; all ten
+- [x] Complete combined code checks, exact CI and guarded releases 79 through 81; all ten
   hosts, 2,544 exported files and the full public route map pass.
 - [x] Publish available local overnight tools as Preview and remove future-feature
   marketing. The hosted Supervised Runs tier remains internal unfinished work.
-- [ ] Qualify the replacement Ollama default after the previous model returned
-  HTTP 410. Keep both failed attempts and the separate customer token ceiling.
+- [x] Repair the retired Ollama default and setup instructions. Preserve both
+  HTTP 410 attempts and the single post-repair `usage_limit_reached` result.
+- [ ] Qualify generation when an authorized route has allowance; no retry or
+  budget reset is scheduled, and the earlier customer token ceiling is unchanged.
+- [x] Prepare the owner's three-card design at $14.99/$29.99/$49.99 and check
+  four desktop/mobile layouts. This is not live billing or hosted supervision.
+- [x] Record the owner's approval and prepare the flexible pricing clause;
+  keep canonical and served text identical, with paid-period and consent guards.
+- [ ] Deploy that clause, then reconcile the new-signup Stripe Price, host policy and
+  public copy; preserve existing subscription prices and free grants.
+- [ ] Implement and qualify the third paid run service before publishing its
+  purchase card. Keep the available local tools usable for free.
 - [ ] Independently admit useful candidates; publish and verify exact customer
   downloads while preserving previous versions and access.
 - [ ] Qualify R2 delivery, including missing/corrupt body, unauthorized request,
@@ -94,12 +104,14 @@ gantt
     Demo and founder-ready material :launch, after creative, 4d
 ```
 
-Release 80 is deployed from `3c96b6b3` and its gate is closed. The ten-host
+Release 81 is deployed from `e51c083b` and its gate is closed. The ten-host
 browser pass has 2,134 passing assertions. All nine product hostnames use
 the existing Cloudflare Worker. All 2,544 exported public files passed exact
 body/header readback on baltor.ai; the final all-host pulse passed fifty reads.
-The route-map audit passed 67 pages, 277 actual-theme views and 436 links.
-The release-80 focused offering/layout matrix passed 345 assertions.
+The route-map audit passed 67 pages, 277 actual-theme views and 416 links.
+The release-81 focused offering/layout matrix passed 345 assertions. The first
+readback's seventeen mismatched export markers and one initial browser mutant
+failure are retained; complete repeats and atomic canary measurement pass.
 Local overnight tools use the owner's Preview label and link their runnable
 setup. Future-feature notices do not appear in marketing.
 
@@ -289,19 +301,54 @@ than losing them to a similarity filter.
 - [x] Finish exact R2 coverage of the current catalogue in two verified scopes.
 - [ ] Qualify customer delivery and failure/revocation checks before selecting R2.
 
-### Proposed third offering: Supervised Runs
+### Three-product direction: Overnight / AFK Work
 
-The owner's October 8 question proposes overnight or unattended work using
-customers' own cheap or local model access. This is a product proposal, not
-an approved new price, entitlement, hosted feature or completion guarantee.
-Keep the existing two-offering launch work moving while proving the added
-value. Do not charge for the basic ability to run the local harness.
+The owner's latest October 8 direction requires three distinct product cards,
+each with a different price and design. The third combines Agent Feeds,
+Harness Files and Overnight / AFK Work using customer-held model access.
+The owner subsequently sets the monthly prices to $14.99, $29.99 and $49.99,
+replacing the earlier prices and the interim $99 engineering suggestion.
+Agent Feeds stays free through December 31, 2026 Eastern, with paid opt-in.
+The three-card design is prepared privately at the new prices. The existing
+live checkout still uses $29, so the new prices are not published as active
+billing until copy, the price clause, provider price and host policy agree.
+Checkout currently sells only the library plan, and hosted run coordination
+is not implemented. Those are delivery work, not copy changes. Do not charge
+for the basic ability to run the local harness or advertise future features
+with a coming-soon card.
 
 | Offering | Customer purpose | Commercial state |
 | --- | --- | --- |
-| Agent Feeds | Decide what to build, use or improve from dated external evidence | Owner-set standard price $4.99/month, free through December 31, 2026 Eastern; future paid enrollment is opt-in |
-| Agent Feeds + Harness Files | Carry out the decision using reusable working files | Existing $29/month library plan; model access stays with the customer |
-| Supervised Runs | Keep a permitted job progressing, preserve checked work and explain what remains | Proposed pilot; hosted coordination and limits must be proven before choosing a price |
+| Agent Feeds | Decide what to build, use or improve from dated external evidence | New owner-set standard price $14.99/month; free through December 31, 2026 Eastern; paid enrollment is opt-in |
+| Agent Feeds + Harness Files | Carry out the decision using reusable working files | New-signup target $29.99/month; current $29 subscriptions and free grants are preserved |
+| Overnight / AFK Work, including Feeds and Harness Files | Keep a permitted job progressing, preserve checked work and explain what remains | Owner-set $49.99/month; not sold until coordination, recovery, customer isolation and checkout pass |
+
+Implementation order for the third offering:
+
+1. Fix the typed job, paired-worker, lease/fence and event contracts against
+   the existing runtime owners; keep customer model keys on the worker.
+2. Wire account-isolated job state, bounded run queues, pause/cancel and
+   explicitly authorized recovery. Reconcile unknown external effects before retry.
+3. Prove an ordinary customer's run, interruption, provider refusal, stale
+   worker, duplicate delivery and revocation; preserve failed attempts.
+4. Add the separate plan entitlement and Stripe price in the qualified release;
+   verify checkout/cancel without charging an engineering account.
+5. Publish the three differentiated cards and the matching signup/account
+   surfaces together. Keep the local free tools and all existing grants intact.
+
+The owner has approved a flexible pricing clause for section 6; canonical and
+served text are updated and need the guarded release. No further price-clause
+approval is waiting. Other terms and privacy uses are unchanged.
+
+The immediate price migration creates a new recurring Price for future library
+signups, retains the old Price in entitlement recognition, and changes no
+existing subscription, charge or free grant. Publish the flexible price clause
+before activation. No engineering checkout may make a live charge.
+
+The October 8 repaired-model qualification is held by `usage_limit_reached`.
+It made one call after two retired-model failures, with no retry or purchase.
+This does not qualify hosted supervision or change the earlier customer's
+120,000-token ceiling.
 
 The proposed paid value is hosted coordination, saved run state, notifications
 and recovery across a supported paired worker—not bundled model tokens or

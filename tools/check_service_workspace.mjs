@@ -1570,7 +1570,12 @@ try {
      same evening: section 2 no longer calls the service a beta, and section 6 states the price as "$29 a month" without free
      search or invited beta users. The page is also read for a retired word and an invitation word outside the approved text.
      Removed-guard controls serve changed bytes in memory, never a source file, and each must fail its own named check. */
-  const termsOperatorLine="Operator: "+privacyOperator+", "+privacyAddress+".",termsDate="Last changed: September 23, 2026";
+  const termsOperatorLine="Operator: "+privacyOperator+", "+privacyAddress+".";
+  const termsDate=readFileSync(resolve(root,"docs/legal/TERMS-OF-SERVICE.md"),"utf8").match(/^Last changed: [^\r\n]+$/m)?.[0];
+  if(!termsDate)throw new Error("Approved terms must name their last-changed date");
+  const termsDateMarkup=readFileSync(resolve(root,"src/loop_engine/core/service_runtime/web_assets/index.html"),"utf8")
+    .match(/<p class="caption terms-date" id="terms-last-changed">([\s\S]*?)<\/p>/)?.[1];
+  if(!termsDateMarkup)throw new Error("The served terms date must be available to the removed-date control");
   const termsLink='<a href="/terms" data-page="terms">Terms of service</a>';
   const termsState=async opened=>opened.evaluate(()=>{
     const terms=document.querySelector("[data-terms-of-service]"),shown=[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden);
@@ -1609,7 +1614,7 @@ try {
     {name:"remove_the_terms_link_from_the_footer",path:"/",find:termsLink,replacement:"",run:checkTermsFooterLink,expected:["the_footer_links_to_the_terms_of_service_from_the_homepage"]},
     {name:"say_again_in_the_footer_that_the_terms_are_not_published",path:"/",find:termsLink,replacement:"<span>Terms of service: not yet published</span>",run:checkTermsFooterLink,expected:["homepage_does_not_say_the_terms_are_unpublished","the_footer_links_to_the_terms_of_service_from_the_homepage"]},
     {name:"change_one_word_in_the_served_terms",path:"/terms",find:"three months",replacement:"twelve months",run:checkTerms,expected:["terms_of_service_says_the_same_words_as_the_approved_text"]},
-    {name:"drop_the_date_of_the_last_change_from_the_served_terms",path:"/terms",find:'Last changed: <time datetime="2026-09-23">September 23, 2026</time>',replacement:"",run:checkTerms,expected:["terms_of_service_name_the_operator_and_the_date_of_the_last_change","terms_of_service_says_the_same_words_as_the_approved_text"]},
+    {name:"drop_the_date_of_the_last_change_from_the_served_terms",path:"/terms",find:termsDateMarkup,replacement:"",run:checkTerms,expected:["terms_of_service_name_the_operator_and_the_date_of_the_last_change","terms_of_service_says_the_same_words_as_the_approved_text"]},
     {name:"drop_the_operator_from_the_served_terms",path:"/terms",find:'<strong>Operator:</strong> '+privacyOperator+", "+privacyAddress+".",replacement:"",run:checkTerms,expected:["terms_of_service_name_the_operator_and_the_date_of_the_last_change","terms_of_service_says_the_same_words_as_the_approved_text"]},
     {name:"drop_the_privacy_link_from_the_served_terms",path:"/terms",find:'The <a href="/privacy" data-page="privacy">privacy notice</a> says',replacement:"The privacy notice says",run:checkTerms,expected:["terms_of_service_link_the_privacy_notice"]},
     {name:"write_a_retired_word_beside_the_approved_terms",path:"/terms",find:'<p class="eyebrow">Terms</p>',replacement:'<p class="eyebrow">Terms</p><p>Join the private beta.</p>',run:checkTerms,expected:["terms_page_carries_no_retired_word_outside_the_approved_text"]},

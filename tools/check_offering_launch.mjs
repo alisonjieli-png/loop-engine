@@ -18,8 +18,11 @@ mkdirSync(output,{mode:0o700});
 const checks=[],views=[],errors=[],blocked=[];
 const check=(name,passed,detail={})=>checks.push({name,passed:passed===true,detail});
 const files=["src/loop_engine/core/service_runtime/web_assets/index.html","src/loop_engine/core/service_runtime/web_assets/service.css",
- "src/loop_engine/core/service_runtime/web_pages.py","src/loop_engine/core/service_runtime/library_page.py","src/loop_engine/core/service_runtime/catalogue_feed.py"];
+ "src/loop_engine/core/service_runtime/web_pages.py","src/loop_engine/core/service_runtime/library_page.py","src/loop_engine/core/service_runtime/catalogue_feed.py","docs/legal/TERMS-OF-SERVICE.md"];
 const sourceDigests=Object.fromEntries(files.map(path=>[path,createHash("sha256").update(readFileSync(resolve(root,path))).digest("hex")]));
+const termsWords=readFileSync(resolve(root,"docs/legal/TERMS-OF-SERVICE.md"),"utf8")
+ .replace(/\[([^\]]*)\]\([^)]*\)/g,"$1").replace(/\*\*/g,"").replace(/^#+\s/gm," ").split(/\s+/).filter(Boolean);
+const sameTerms=words=>words.length>0&&JSON.stringify(words)===JSON.stringify(termsWords);
 const profiles=[{name:"desktop-80",width:1800,height:1125,scale:.8},{name:"desktop-100",width:1440,height:900,scale:1},
  {name:"desktop-125",width:1152,height:720,scale:1.25},{name:"tablet",width:1024,height:768,scale:1},
  {name:"phone",width:390,height:844,scale:1},{name:"phone-narrow",width:320,height:740,scale:1},
@@ -70,7 +73,7 @@ with TemporaryDirectory() as folder:
    return allowed?route.continue():route.abort();
   });
   const page=await context.newPage();page.on("pageerror",error=>errors.push({profile:profile.name,theme,message:String(error)}));
-  const paths=["/",...(["desktop-100","phone"].includes(profile.name)?["/pricing","/overnight","/feeds","/library"]:[])];
+  const paths=["/","/terms",...(["desktop-100","phone"].includes(profile.name)?["/pricing","/overnight","/feeds","/library"]:[])];
   for(const path of paths){
    const where={profile:profile.name,theme,path};
    const response=await page.goto(base+path);await page.evaluate(()=>document.fonts.ready);await page.evaluate(()=>scrollTo(0,0));
@@ -82,6 +85,12 @@ with TemporaryDirectory() as folder:
    check("header_and_all_visible_controls_stay_inside_viewport",headerFits(state),{...where,header:state.header,brand:state.brand});
    check("page_has_no_horizontal_overflow",state.overflow<=1,{...where,overflow:state.overflow});
    check("headline_is_not_hidden_by_header",inside(state.heading,state.width)&&state.heading.top>=state.header.bottom-1,where);
+   if(path==="/terms"){
+    const shown=(await page.locator("#terms-of-service").innerText()).split(/\s+/).filter(Boolean);
+    check("terms_match_the_owner_approved_canonical_document",sameTerms(shown),where);
+    check("terms_guard_rejects_a_changed_clause_or_missing_date",!sameTerms([...shown,"unapproved"])
+      &&!sameTerms(shown.filter(word=>word!=="Last")),where);
+   }
    if(path==="/"){
     check("short_outcome_hero_keeps_audiences_and_product",heroProblems(state.heroCopy).length===0&&heroCheckRejectsItsKnownWrongCases(state.heroCopy),where);
     check("both_offers_show_price_period_consent_and_scope",offeringProblems(state.offerings).length===0,{...where,offers:state.offerings});
@@ -100,18 +109,19 @@ with TemporaryDirectory() as folder:
     if(profile.name==="phone-narrow"){
      const number=page.locator("[data-library-file-count]");
      const previous=await number.textContent();
-     const measure=()=>number.evaluate(node=>{
+     const measure=text=>number.evaluate((node,value)=>{
+       // Mutation and measurement share one browser task. A late catalogue
+       // response must not replace a planted canary between two evaluations.
+       if(value!==undefined)node.textContent=value;
        const range=document.createRange();range.selectNodeContents(node);
        return {parent:node.parentElement.getBoundingClientRect().toJSON(),lines:[...range.getClientRects()].map(rect=>rect.toJSON())};
-     });
+     },text);
      const fits=value=>value.lines.length===1&&value.lines.every(line=>line.left>=value.parent.left-1&&line.right<=value.parent.right+1);
      // Display fixture only. Do not mutate any service population or preserve
      // a screenshot that could be mistaken for a ten-million served count.
-     await number.evaluate(node=>{node.textContent="10,000,000";});
-     await number.scrollIntoViewIfNeeded();const measured=await measure();
+     await number.scrollIntoViewIfNeeded();const measured=await measure("10,000,000");
      check("ten_million_display_fits_one_line_at_320_pixels",fits(measured),{...where,fixture_only:true,measured});
-     await number.evaluate(node=>{node.textContent="10,000,000".repeat(10);});
-     check("number_bound_rejects_known_wrong_overflow",!fits(await measure()),where);
+     check("number_bound_rejects_known_wrong_overflow",!fits(await measure("10,000,000".repeat(10))),where);
      await number.evaluate((node,text)=>{node.textContent=text;},previous);await page.evaluate(()=>scrollTo(0,0));
     }
    }

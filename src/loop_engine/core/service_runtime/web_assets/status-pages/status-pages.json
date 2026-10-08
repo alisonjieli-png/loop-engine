@@ -5,6 +5,19 @@
   "releases": [
    {
     "kind": "service",
+    "number": 81,
+    "at": "2026-10-08T21:14:14Z",
+    "lines": [
+     "Replace the retired Ollama Flash default with the currently listed existing Pro route without loosening context/output checks.",
+     "Generate provider setup suggestions from the configured route and preserve settings paths; remove stale model pins from the README and platform quickstarts.",
+     "Classify an HTTP 410 retirement only when it names the requested model; retain unknown reported identity and usage.",
+     "Record release80's live Preview wording. This release does not implement the subsequent three-card offering or new price migration."
+    ],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
     "number": 80,
     "at": "2026-10-08T20:28:26Z",
     "lines": [

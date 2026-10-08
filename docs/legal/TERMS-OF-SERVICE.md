@@ -2,7 +2,7 @@
 
 Operator: Baltor.AI, 1428 Bryn Mawr St, Saxton, PA 16678, United States.
 
-Last changed: September 23, 2026
+Last changed: October 8, 2026
 
 1. **The service.** Baltor gives your tools access to reviewed material over
    the internet. You run your own tools and models on your own computer.
@@ -19,9 +19,19 @@ Last changed: September 23, 2026
 5. **Acceptable use.** Do not try to read material that your account may not
    read, do not share keys outside your organization, and do not overload
    the service.
-6. **Price.** One plan, Baltor Pro, at $29 a month, charged by Stripe. You
-   can cancel at any time from the billing page and keep access until the end
-   of the paid month.
+6. **Plans, prices and billing.** The price, currency, billing period and
+   applicable taxes for your chosen plan are shown before you subscribe.
+   Paid subscriptions renew at the agreed billing interval unless cancelled.
+   Baltor may introduce or change plans and prices for future purchases and
+   renewals. A price change does not change a billing period you have already
+   paid for. Before changing the price of an existing subscription, we will
+   give advance notice of the new price, its effective date and how to cancel,
+   and obtain any consent required by law. You can cancel from your account
+   page before a change to your subscription takes effect and keep access
+   until the end of the paid period. Free or promotional access does not
+   become a paid subscription automatically; paid enrollment requires your
+   explicit opt-in. Changing these terms does not by itself change your
+   subscription price.
 7. **Ending.** You can stop using the service at any time. Baltor can suspend
    an account that breaks these terms.
 8. **Liability.** To the extent the law allows, Baltor's liability is limited

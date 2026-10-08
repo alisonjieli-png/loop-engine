@@ -2,7 +2,7 @@
 
 Kind: product architecture with measured local implementation and proposed hosting.
 Date: 2026-09-19. The [current deployment](#current-deployment) section was
-added on 2026-09-20 and last checked on 2026-10-08, after Fly release 80.
+added on 2026-09-20 and last checked on 2026-10-08, after Fly release 81.
 
 The hosted product manages accounts, subscriptions, and access to intelligence.
 The customer runs Loop Engine and the selected harnesses. A hosted intelligence
@@ -48,22 +48,22 @@ section. Update this section in the same change that records a new release.
 Public registration is enabled. The site offers the existing monthly plan;
 these deployment checks alone do not establish a fully qualified paid service.
 
-The running image is Fly release 80, from
-`3c96b6b363ec60a9a606b3c1af8fcbfbcb99493b`, image
-`sha256:7e3d22d655b8d50de6bb7cc3eeeea09e9422455b66522c9e0bba2943abde2b39`.
-Exact CI `37837777639` and guarded deployment `37839313658` passed; the gate
+The running image is Fly release 81, from
+`e51c083b95c045f8b4430d8ac683252f1dd3fdfe`, image
+`sha256:825861e0044a016a8c9585f685de409411e24ddf2b6736c7a3df1a5f1fb5f5cb`.
+Exact CI `37844049480` and guarded deployment `37844947486` passed; the gate
 is closed. All ten hosts passed 2,134 browser assertions. The full route map
-passed 67 pages, 277 views and 436 links with actual light/dark appearance
+passed 67 pages, 277 views and 416 links with actual light/dark appearance
 selected and checked. The final all-host pulse passed fifty reads with no
 slow response. The live offering/layout matrix passed 345 checks.
 
 All nine product hostnames now serve public assets through Cloudflare and
 forward dynamic requests to Fly. The technical Fly hostname remains a direct
-fallback. Export `e6eb15d28cf25...` contains 2,544 files, all verified on
+fallback. Export `580ab3245bfb...` contains 2,544 files, all verified on
 `baltor.ai` against their exact bodies and required headers. Disable proxying on the saved DNS
 records to recover the direct paths; do not delete the routes or resources.
 
-The hero and library use files-first language. Agent Feeds shows the owner's
+The hero and library use files-first language. Agent Feeds still shows the earlier
 $4.99 monthly standard price, free through December 31, 2026 Eastern, with
 explicit future opt-in and no automatic charge. No new provider price or
 subscription was created; the existing full-library plan remains $29.
@@ -71,16 +71,29 @@ Approved Terms retain their original wording. Thirteen curated decision-source
 collections and a live catalogue specimen are available. Local per-agent
 reading profiles are implemented; hosted saved preferences, agent assignments
 and personalized research delivery remain unfinished. The proposed Supervised
-Runs tier is not active. The [release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-80.json)
+Runs tier is not active. The [release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-81.json)
 binds the application, public export, live checks and separate follow-ups.
-Release 79 is the compatible image rollback, at
-`sha256:38e2ac1be655c49fe4f51e1c2783c8f02f18ddbca5cfb0331d148919cb34b3ac`.
+Release 80 is the compatible image rollback, at
+`sha256:7e3d22d655b8d50de6bb7cc3eeeea09e9422455b66522c9e0bba2943abde2b39`.
 This source includes the model-directory refresh, repaired private supply
 journals, isolated constraint-case generation, bounded overnight operator and
 account handoff. Available local overnight tools are labelled Preview, with
 run limits, task checkpoints, morning reports and a runnable guide. Marketing
 pages contain no future-feature teaser. It does not select another body store, change identity,
 publish candidates or activate hosted Supervised Runs.
+The default model/setup repair is deployed; one post-repair provider call
+returned `usage_limit_reached`, so successful model generation is not proved.
+The earlier two retired-model failures remain recorded. The first edge check
+found seventeen mismatched export markers with correct bodies and required
+headers; full readback subsequently passed. One browser mutant initially
+failed to trigger, then passed on a repeat and with atomic mutation/measurement.
+These attempts are retained in the release record.
+
+The owner's subsequent three-product prices are $14.99, $29.99 and $49.99
+monthly. The private three-card design is prepared, not deployed. The current
+checkout still uses $29. Reconcile the price clause and a new-signup Price
+without changing existing subscriptions or grants. Hosted Overnight / AFK
+Work needs actual coordination, isolation, recovery and checkout before sale.
 The separate October 8 catalogue addition now serves 218,151 entries and
 1,353,029 distinct files, release `1694fb4a5b35...`. It adds 24 independently
 reviewed SDG tools and 192 distinct files, preserving every previous version.

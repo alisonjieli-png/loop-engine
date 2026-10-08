@@ -4,6 +4,7 @@ The approved terms remain an exact legal record. Billing identifiers and past
 provider invoices are not display copy and are not renamed by these checks.
 """
 from pathlib import Path
+import hashlib
 import json
 import re
 import unittest
@@ -149,7 +150,37 @@ class OfferingCopyTests(unittest.TestCase):
         terms = [row["text"] for row in read_marked(page)
                  if row["attrs"].get("data-view") == "terms"]
         self.assertEqual(len(terms), 1)
-        self.assertIn("One plan, Baltor Pro, at $29 a month", terms[0])
+        self.assertIn("Last changed: October 8, 2026", terms[0])
+        self.assertNotIn("One plan, Baltor Pro, at $29 a month", terms[0])
+        for fact in ("shown before you subscribe", "future purchases and renewals",
+                     "billing period you have already paid for", "advance notice",
+                     "consent required by law", "requires your explicit opt-in",
+                     "cancel from your account page"):
+            self.assertIn(fact, terms[0])
+
+    def test_pricing_clause_is_flexible_without_repricing_existing_periods(self):
+        terms = (ROOT / "docs/legal/TERMS-OF-SERVICE.md").read_text()
+        clause = re.search(r"(?ms)^6\. (.*?)(?=^7\.)", terms).group(1)
+        clause = re.sub(r"\s+", " ", clause)
+        self.assertNotRegex(clause, r"\$\d|One plan")
+        self.assertIn("billing period you have already paid for", clause)
+        self.assertIn("before a change to your subscription takes effect", clause)
+        self.assertIn("keep access until the end of the paid period", clause)
+        # The owner's October 8 approval changes pricing, not the service
+        # definition or permission to collect data for hosted execution.
+        self.assertIn("Baltor does not run your tasks", terms)
+        self.assertIn("to the amount you paid in the three months", terms)
+
+    def test_the_pricing_approval_does_not_rewrite_other_legal_sections(self):
+        text = (ROOT / "docs/legal/TERMS-OF-SERVICE.md").read_text()
+        untouched = re.sub(r"(?m)^Last changed:.*\n", "", text)
+        untouched = re.sub(r"(?ms)^6\..*?(?=^7\.)", "", untouched)
+        # Exact remaining bytes of the September 23 approved document at
+        # e51c083b, excluding only the authorized price clause and date.
+        expected = "10753d7160c3b0961349f4d917aa7ce77f206a1d0b3320ae32b62ce9615a4d20"
+        self.assertEqual(hashlib.sha256(untouched.encode()).hexdigest(), expected)
+        self.assertNotEqual(hashlib.sha256(untouched.replace(
+            "three months", "one month").encode()).hexdigest(), expected)
 
 
 if __name__ == "__main__":

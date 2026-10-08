@@ -279,7 +279,9 @@ try{
   const legalWords=file=>readFileSync(resolve(root,file),"utf8").replace(/\[([^\]]*)\]\([^)]*\)/g,"$1").replace(/`/g,"").replace(/\*\*/g,"").replace(/^#+\s/gm," ").replace(/^\|[-| :]+\|\s*$/gm," ").replace(/\|/g," ").replace(/^\s*- /gm," ").split(/\s+/).filter(Boolean);
   const termsWords=legalWords("docs/legal/TERMS-OF-SERVICE.md"),privacyWords=legalWords("docs/legal/PRIVACY-NOTICE.md");
   const sameWords=(shown,approved)=>shown.length>0&&JSON.stringify(shown)===JSON.stringify(approved);
-  const termsOperator="Operator: Baltor.AI, 1428 Bryn Mawr St, Saxton, PA 16678, United States.",termsDate="Last changed: September 23, 2026";
+  const termsOperator="Operator: Baltor.AI, 1428 Bryn Mawr St, Saxton, PA 16678, United States.";
+  const termsDate=readFileSync(resolve(root,"docs/legal/TERMS-OF-SERVICE.md"),"utf8").match(/^Last changed: [^\r\n]+$/m)?.[0];
+  if(!termsDate)throw new Error("Approved terms must name their last-changed date");
   const deepTerms=await page.request.get(origin+"/terms",{maxRedirects:0});
   check("live_terms_address_is_served_directly",deepTerms.status()===200&&(deepTerms.headers()["content-type"]||"").startsWith("text/html"));
   await page.goto(origin+applicationAddress);await page.waitForFunction(()=>document.querySelector("#service-status").textContent.includes("Service available"));

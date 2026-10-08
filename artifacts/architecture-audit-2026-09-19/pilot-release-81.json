@@ -1,0 +1,153 @@
+{
+  "record_type": "pilot_release_record/v1",
+  "release": 81,
+  "app": "baltor-pilot",
+  "source_revision": "e51c083b95c045f8b4430d8ac683252f1dd3fdfe",
+  "image": "registry.fly.io/baltor-pilot@sha256:825861e0044a016a8c9585f685de409411e24ddf2b6736c7a3df1a5f1fb5f5cb",
+  "rollback_release": 80,
+  "rollback_image": "registry.fly.io/baltor-pilot@sha256:7e3d22d655b8d50de6bb7cc3eeeea09e9422455b66522c9e0bba2943abde2b39",
+  "owner_local_date": "2026-10-08",
+  "deployed_at": "2026-10-08T21:14:14Z",
+  "ci_run": 37844049480,
+  "ci_conclusion": "success",
+  "deploy_run": 37844947486,
+  "deploy_workflow_conclusion": "success",
+  "deployment_gate_after": false,
+  "catalogue": {
+    "release_id": "1694fb4a5b355fb2db15f4b815ccc8d34fc74e0f09707aa58804b3bcac4f3403",
+    "packages": 218151,
+    "distinct_files": 1353029,
+    "distinct_file_bytes": 7939862307,
+    "changed_by_this_application_release": false
+  },
+  "changes": [
+    "Replace the retired Ollama Flash default with the currently listed existing Pro route without loosening context/output checks.",
+    "Generate provider setup suggestions from the configured route and preserve settings paths; remove stale model pins from the README and platform quickstarts.",
+    "Classify an HTTP 410 retirement only when it names the requested model; retain unknown reported identity and usage.",
+    "Record release80's live Preview wording. This release does not implement the subsequent three-card offering or new price migration."
+  ],
+  "cloudflare": {
+    "worker": "baltor-web-edge",
+    "export_id": "580ab3245bfb23e0abe657c762368d3326412bd99ccf5730fab9f13a5862f3a4",
+    "worker_deployment": "c17c5c4764c0438b9cf5ba6c15470b4c",
+    "static_files": 2544,
+    "static_bytes": 75740456,
+    "production_hostnames": [
+      "baltor.ai",
+      "www.baltor.ai",
+      "app.baltor.ai",
+      "docs.baltor.ai",
+      "status.baltor.ai",
+      "examples.baltor.ai",
+      "demo.baltor.ai",
+      "deck.baltor.ai",
+      "redteam.baltor.ai"
+    ],
+    "direct_fallback_hostname": "baltor-pilot.fly.dev",
+    "origin_tls": "strict",
+    "customer_identity": "Supabase",
+    "custom_search": "sqlite_disk_index",
+    "body_storage_selected": "Fly volume",
+    "production_routes_changed": false,
+    "rollback_export_id": "e6eb15d28cf25b639659b5f222d09b29ee43e49184636387654a0b2a7e9af682",
+    "rollback_worker_deployment": "a0aab80329c4404fb6edccce58490a98"
+  },
+  "checks": {
+    "offline_self_test": {
+      "passed": 3948,
+      "total": 3948
+    },
+    "service_smoke": {
+      "passed": 766,
+      "total": 766
+    },
+    "focused": 87,
+    "removed_guard_controls": {
+      "detected": 3,
+      "total": 3
+    },
+    "conformance": "All 32 gates pass.",
+    "hardcoding": "Full audit passes without changing the baseline or allowances.",
+    "readme_offline_journey": {
+      "passed": 12,
+      "total": 12
+    },
+    "exact_source_ci": "success",
+    "live_host_browser": {
+      "hosts": 10,
+      "passed": 2134,
+      "total": 2134
+    },
+    "live_offering_matrix": {
+      "first_passed": 344,
+      "first_total": 345,
+      "first_failure": "One narrow-dark known-wrong number overflow control did not trigger; no actual page-layout assertion failed.",
+      "repeat_passed": 345,
+      "repeat_total": 345,
+      "atomic_mutation_measurement_passed": 345,
+      "atomic_mutation_measurement_total": 345,
+      "checker_followup": "Keep canary mutation and measurement in one browser evaluation so late page state cannot interleave."
+    },
+    "live_route_map": {
+      "pages": 67,
+      "views": 277,
+      "links": 416,
+      "problems": 0,
+      "actual_theme_selection_checked": true
+    },
+    "edge_readback_on_baltor_ai": {
+      "first_passed": 2527,
+      "first_total": 2544,
+      "first_failed_export_markers": 17,
+      "first_failed_rows_had_exact_bodies_and_required_headers": true,
+      "first_raw_marker_values_not_recorded": true,
+      "repeat_passed": 2544,
+      "repeat_total": 2544,
+      "scope": "exact bodies, required headers and expected edge export marker"
+    },
+    "final_pulse": {
+      "reads": 50,
+      "problems": 0,
+      "slow": 0
+    }
+  },
+  "limits": [
+    "No successful model generation or hosted supervision is claimed; the post-repair qualification hit the existing provider allowance.",
+    "Subsequent owner direction requests three differentiated products at 14.99, 29.99 and 49.99 USD monthly. The private design is prepared; this release still serves the preceding 4.99/free-through-2026 and 29-dollar presentation and existing checkout.",
+    "No subscription, price, grant, catalogue, identity provider or body-store selection was changed by this release."
+  ],
+  "private_evidence": [
+    "release81-deployment.json",
+    "cloudflare-site-deployment-09",
+    "release81-edge-readback-01.json",
+    "release81-edge-readback-02.json",
+    "release-81-browser/summary.json",
+    "release-81-offerings-live-01/report.json",
+    "release-81-offerings-live-02/report.json",
+    "release-81-offerings-atomic-canary-03/report.json",
+    "release-81-all-pages-people-01/report.json",
+    "release-81-pulse-final.json"
+  ],
+  "provider_readiness": {
+    "previous_investigation": {
+      "model": "deepseek-v4-flash:0731",
+      "attempts": 2,
+      "outcome": "HTTP 410; retired September 25"
+    },
+    "post_repair": {
+      "model": "deepseek-v4-pro:0813",
+      "attempts": 1,
+      "outcome": "usage_limit_reached",
+      "elapsed_seconds": 0.396811
+    },
+    "total_attempts": 3,
+    "input_tokens": null,
+    "output_tokens": null,
+    "usage_accounting_complete": false,
+    "provider_integration_proven": false,
+    "retries": 0,
+    "failover": 0,
+    "new_purchase": false,
+    "earlier_customer_token_ceiling_unchanged": 120000
+  }
+}
