@@ -108,6 +108,7 @@ class SummariseChecks(unittest.TestCase):
 
     def test_interrupt_checkpoint_at_the_top_of_runs_dir_is_read(self):
         self._write(self.runs / "checkpoint.json", {
+            "record_type": "run_checkpoint/v1",
             "attempts": ["a", "b"], "retained": "/x/attempt-1",
             "retained_is_ranked": True, "reason": "interrupted by SIGTERM"})
         result = overnight_queue.summarise(self.workspace, self.runs)
@@ -118,9 +119,9 @@ class SummariseChecks(unittest.TestCase):
 
     def test_the_newest_of_both_locations_wins(self):
         self._write(self.runs / "checkpoint.json",
-                    {"attempts": ["old"], "reason": "old"}, age=120)
+                    {"record_type": "run_checkpoint/v1", "attempts": ["old"], "reason": "old"}, age=120)
         self._write(self.runs / "run-1" / "checkpoint.json",
-                    {"attempts": ["a", "b", "c"], "reason": "run completed"})
+                    {"record_type": "run_checkpoint/v1", "attempts": ["a", "b", "c"], "reason": "run completed"})
         result = overnight_queue.summarise(self.workspace, self.runs)
         self.assertEqual(result["attempts"], 3)
         self.assertEqual(result["reason"], "run completed")

@@ -229,6 +229,10 @@ class ManifestCheck:
                 findings.append(("no_python_module", "a code component holds at least one root-level module"))
             if not tests:
                 findings.append(("no_test_module", "a code component holds at least one root-level test_*.py"))
+        try:
+            constraint_group(component, policy, replay=True)
+        except Exception as error:
+            findings.append(("constraint_group_invalid", type(error).__name__))
         return _result(self, findings)
 
 
@@ -807,6 +811,14 @@ def licence_paths(record) -> set:
 def distinctive_text(component, policy) -> str:
     """What makes a component itself: its code, schema, README and connection record, not the licence texts,
     the upstream notice files, the attribution or the tests, which every member of a line shares by construction."""
+    try:
+        group = constraint_group(component, policy)
+    except (ValueError, KeyError, TypeError):
+        group = None
+    if group is not None:
+        # The contract, runner and licences are shared dependencies. Only
+        # declared case work distinguishes two groups of that contract.
+        return "\n".join(component.text(row["path"]) or "" for row in sorted(group["cases"], key=lambda row: row["job_id"]))
     skip = licence_paths(component.candidate)
     parts = []
     for entry in component.package.files:
@@ -846,6 +858,13 @@ def job_key(component, policy) -> "str | None":
     two revisions of one specification name one job). A rule whose own parts find nothing names no job, or
     uses its ``otherwise`` rule: a generated API component schema copies no upstream file, so its job is its
     specification and the schema's title."""
+    try:
+        group = constraint_group(component, policy)
+        if group is not None:
+            from supply_lines.constraint_case_runtime import group_key
+            return component.line + "|constraint_group|" + group_key(group)
+    except (ValueError, KeyError, TypeError):
+        return None  # ManifestCheck refuses the invalid group, never a fallback identity.
     rule = policy["lines"].get(component.line, {}).get("job_key")
     if not rule:
         return None
@@ -854,6 +873,56 @@ def job_key(component, policy) -> "str | None":
     except (ValueError, SyntaxError, IndexError, TypeError):
         return None
     return None if parts is None else "|".join([component.line] + parts)
+
+
+def constraint_group(component, policy, *, replay=False):
+    rule = policy["lines"].get(component.line, {}).get("constraint_groups")
+    if rule is None:
+        return None
+    present = rule["manifest"] in component.payloads
+    expected = component.generator.get("identity") == rule["generator_identity"]
+    if not present:
+        if expected:
+            raise ValueError("constraint_group_manifest_missing")
+        return None
+    if not expected:
+        try:
+            marker = json.loads(component.text(rule["manifest"]) or "null")
+        except ValueError:
+            return None
+        if not isinstance(marker, dict) or marker.get("record_type") != rule["record_type"]:
+            return None
+    from supply_lines.constraint_case_runtime import read_group
+    group = read_group(component.payloads, independent=replay, replay_cases=replay)
+    if group["record_type"] != rule["record_type"]:
+        raise ValueError("constraint_group_version")
+    return group
+
+
+def constraint_jobs(component, policy):
+    try:
+        group = constraint_group(component, policy)
+    except (ValueError, KeyError, TypeError):
+        return ()
+    return tuple(sorted(row["job_id"] for row in group["cases"])) if group else ()
+
+
+def require_declared_producer_family(component, producer_family):
+    """A case group's declared authoring family cannot be replaced by a CLI default."""
+    from supply_lines.constraint_case_runtime import GROUP_FILE, GROUP_TYPE, read_group
+    if GROUP_FILE not in component.payloads:
+        return
+    marker = json.loads(component.text(GROUP_FILE) or "null")
+    if not isinstance(marker, dict) or marker.get("record_type") != GROUP_TYPE:
+        return
+    group = read_group(component.payloads)
+    declared = group["producer_family"]
+    if (producer_family != declared
+            or component.candidate.get("repository", {}).get("producer_family") != declared):
+        raise ValueError("constraint_group_producer_family_mismatch")
+
+
+CONSTRAINT_CASE_JOB_PREFIX = "constraint_case_job:"
 
 
 def _json_fields(value, fields) -> list:
@@ -906,9 +975,9 @@ def _job_parts(component, rule) -> "list | None":
 
 def duplicate_findings(components, policy, *, known_digests=None) -> dict:
     """Population-level duplicates of components; see duplicate_findings_from."""
-    return duplicate_findings_from(((component.identity, component.package.package_digest,
-                                     distinctive_text(component, policy), job_key(component, policy))
-                                    for component in components), policy, known_digests=known_digests)
+    return duplicate_findings_hashed(((component.identity, component.package.package_digest,
+        *comparison_parts(distinctive_text(component, policy)), job_key(component, policy), constraint_jobs(component, policy))
+        for component in components), policy, known_digests=known_digests)
 
 
 def comparison_parts(text: str) -> tuple:
@@ -944,8 +1013,15 @@ def duplicate_findings_hashed(subjects, policy, *, known_digests=None, scratch=N
     known_digests = dict(known_digests or {})
     ordered = sorted(subjects, key=lambda subject: subject[0])
     findings = {subject[0]: [] for subject in ordered}
-    by_package, by_text, by_job, documents = {}, {}, {}, {}
-    for identity, digest, text_digest, tokens, key in ordered:
+    by_package, by_text, by_job, by_case, documents = {}, {}, {}, {}, {}
+    for subject in ordered:
+        identity, digest, text_digest, tokens, key = subject[:5]
+        cases = subject[5] if len(subject) == 6 else ()
+        overlaps = [(case, known_digests.get(CONSTRAINT_CASE_JOB_PREFIX + case) or by_case.get(case)) for case in cases]
+        overlaps = [(case, owner) for case, owner in overlaps if owner is not None]
+        if overlaps:
+            findings[identity].append(("overlapping_constraint_case_jobs", f"{len(overlaps)} jobs; first {overlaps[0][0]} from {overlaps[0][1]}"))
+            continue
         if digest in known_digests:
             findings[identity].append(("exact_copy_of_existing", known_digests[digest]))
             continue
@@ -961,6 +1037,7 @@ def duplicate_findings_hashed(subjects, policy, *, known_digests=None, scratch=N
         by_package[digest], by_text[text_digest] = identity, identity
         if key is not None:
             by_job[key] = identity
+        by_case.update((case, identity) for case in cases)
         documents[identity] = tokens
     numerator, denominator = policy["near_duplicate_threshold"].split("/")
     threshold = Fraction(int(numerator), int(denominator))

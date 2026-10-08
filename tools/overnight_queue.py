@@ -1,79 +1,49 @@
 #!/usr/bin/env python3
-"""Run a queue of tasks overnight, bounded, resumable, and never blocking.
+"""Local operator queue around canonical `loop-engine solve`, not a new runtime.
 
-Loop Engine solves one task per invocation.  "Solve tasks overnight" needs
-several, a spend bound that holds across all of them, and the property that one
-task's failure does not end the night.  This driver supplies that without
-touching the engine: each task is a separate `loop-engine solve`, so a crash,
-a hang, or a provider outage costs one task rather than the queue.
-
-It lives outside ``src/loop_engine`` deliberately -- it is an operator tool,
-not a runtime capability, and it adds no conformance surface.
-
-Design notes worth stating, because each is a decision rather than an oversight:
-
-* **Per-task wall clock.** The engine has no deadline of its own
-  (``DEADLINE_EXHAUSTED`` exists in solve_terminal.py and nothing raises it),
-  so a task that hangs would otherwise hold the night.  Here a timeout ends
-  the task and the queue moves on: SIGTERM first, so the engine's interrupt
-  checkpoint (installed for SIGTERM, SIGINT and SIGHUP) can be written, then
-  SIGKILL after ``--grace-seconds``.  ``subprocess.run(timeout=...)`` sent
-  SIGKILL at once, which no handler can catch, so an abandoned task left no
-  checkpoint at all.  ``--grace-seconds 0`` restores the immediate kill.
-* **A queue-wide call ceiling.** ``--max-total-tokens`` is unusable on the
-  Ollama route (model_token_preflight.py:196 raises token_bound_unavailable
-  when no resolver exists), so model CALLS are the honest spend bound.
-* **Resume by skipping completed work**, not by replaying reasoning.  Provider
-  state was never captured, so a resumed task starts over; what resume buys is
-  not repeating tasks that already finished.
-* **Never blocks.** ``--unattended`` is passed always: there is nobody to ask.
-
-Usage:
-    python3 tools/overnight_queue.py tasks.txt --runs-dir DIR --workspace-root DIR
-    (tasks.txt: one task file path per line, blank lines and # comments ignored)
+V2 binds manifest bytes, tasks and limits; reserves the remaining call allowance
+durably before dispatch; and holds unknown outcomes for explicit reconciliation.
+Reservations are conservatively charged in full, never claimed as observed
+provider usage. They are not refunded after failed or interrupted children.
+Completed tasks are skipped, not resumed reasoning. See OVERNIGHT-QUEUE.md.
 """
 from __future__ import annotations
 
 import argparse
+from contextlib import contextmanager
 import json
 import os
+import selectors
 import signal
+import shutil
 import subprocess
 import sys
 import time
 from pathlib import Path
 
-STATE_FILENAME = "overnight-queue.json"
+from overnight_queue_state import (
+    LOCK_FILENAME, MAX_MANIFEST_BYTES, MAX_TASK_BYTES, STATE_FILENAME,
+    QueueBinding, QueueLimits, QueueRefusal, bytes_digest, calls_allocated,
+    load_state, new_state, parse, plain_path, queue_lock, read_bytes, require,
+    save_state, sync_directory, validate_reconciliation, validate_state,
+)
+
+STOP_WAIT_SECONDS = 2.0
+SUMMARY_FILE_LIMIT = 10000
 
 
 def load_tasks(manifest: Path) -> list[Path]:
-    """Read the task list, ignoring blanks and comments."""
+    """Read every declared task; missing or duplicate inputs fail closed."""
     tasks = []
-    for line in manifest.read_text(encoding="utf-8").splitlines():
+    for line in read_bytes(manifest, MAX_MANIFEST_BYTES).decode("utf-8").splitlines():
         text = line.strip()
         if not text or text.startswith("#"):
             continue
-        path = Path(text).expanduser()
-        if not path.is_file():
-            print(f"  ! skipping missing task file: {path}", flush=True)
-            continue
+        path = plain_path(Path(text).expanduser())
+        require(path.is_file() and path not in tasks, "task_missing_or_duplicate")
         tasks.append(path)
+    require(bool(tasks), "tasks_required")
     return tasks
-
-
-def load_state(state_path: Path) -> dict:
-    try:
-        return json.loads(state_path.read_text(encoding="utf-8"))
-    except (OSError, ValueError):
-        return {"completed": {}, "calls_used": 0}
-
-
-def save_state(state_path: Path, state: dict) -> None:
-    state_path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = state_path.with_suffix(".tmp")
-    temporary.write_text(json.dumps(state, indent=1, sort_keys=True),
-                         encoding="utf-8")
-    os.replace(temporary, state_path)
 
 
 def checkpoint_candidates(runs_dir: Path) -> list:
@@ -85,10 +55,18 @@ def checkpoint_candidates(runs_dir: Path) -> list:
     runs_dir/checkpoint.json when the interruption came before the run id
     was known.  Both are read; the newest wins.
     """
-    found = [path for path in runs_dir.glob("*/checkpoint.json")
-             if path.is_file()]
+    found = []
+    if not runs_dir.is_symlink() and runs_dir.is_dir():
+        with os.scandir(runs_dir) as entries:
+            for count, entry in enumerate(entries):
+                if count >= SUMMARY_FILE_LIMIT:
+                    break
+                if entry.is_dir(follow_symlinks=False):
+                    path = Path(entry.path) / "checkpoint.json"
+                    if path.is_file() and not path.is_symlink():
+                        found.append(path)
     direct = runs_dir / "checkpoint.json"
-    if direct.is_file():
+    if direct.is_file() and not direct.is_symlink():
         found.append(direct)
 
     def modified(path: Path) -> float:
@@ -106,14 +84,36 @@ def summarise(workspace: Path, runs_dir: Path) -> dict:
     data = {}
     if candidates:
         try:
-            data = json.loads(candidates[-1].read_text(encoding="utf-8"))
+            # Metadata only: do not traverse arbitrary checkpoint-named trees
+            # during shutdown. Artifact verification belongs to the checkpoint
+            # owner's separately authorized read, never this budget projection.
+            from loop_engine.core.run_checkpoint import read_checkpoint
+            read_bytes(candidates[-1])
+            data = read_checkpoint(candidates[-1].parent, verify_digests=False)
+            if data.get("record_type") != "run_checkpoint/v1":
+                data = {}
         except (OSError, ValueError):
             data = {}
+    count, examined = 0, 0
+    pending = [workspace] if workspace.is_dir() and not workspace.is_symlink() else []
+    while pending and examined < SUMMARY_FILE_LIMIT:
+        directory = pending.pop()
+        with os.scandir(directory) as entries:
+            for entry in entries:
+                examined += 1
+                if entry.is_file(follow_symlinks=False) and entry.name.endswith(".py"):
+                    count += 1
+                elif entry.is_dir(follow_symlinks=False):
+                    pending.append(Path(entry.path))
+                if examined >= SUMMARY_FILE_LIMIT:
+                    break
     return {
         "attempts": len(data.get("attempts") or ()),
         "retained": data.get("retained", ""),
         "ranked": bool(data.get("retained_is_ranked")),
-        "files": len(list(workspace.rglob("*.py"))) if workspace.is_dir() else 0,
+        "files": count,
+        "files_truncated": examined >= SUMMARY_FILE_LIMIT,
+        "checkpoint_digests_verified": False,
         # Which file the numbers above came from, and why the run ended,
         # so a morning reader can tell an interrupted task from a finished one.
         "checkpoint": str(candidates[-1]) if candidates else "",
@@ -121,7 +121,8 @@ def summarise(workspace: Path, runs_dir: Path) -> dict:
     }
 
 
-def run_task(command: list, *, timeout: float, grace_seconds: float = 30.0):
+def run_task(command: list, *, timeout: float, grace_seconds: float = 30.0,
+             pass_fds: tuple = ()):
     """Run one task; a hung one is asked to stop before it is killed.
 
     Returns ``(exit_code, stdout_tail, how_it_ended)``.  ``how_it_ended`` is
@@ -131,7 +132,8 @@ def run_task(command: list, *, timeout: float, grace_seconds: float = 30.0):
     """
     process = subprocess.Popen(
         command, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-        text=True, shell=False, start_new_session=True)
+        stdin=subprocess.DEVNULL, shell=False, start_new_session=True,
+        pass_fds=pass_fds)
 
     def signal_owned_group(number):
         try:
@@ -139,28 +141,223 @@ def run_task(command: list, *, timeout: float, grace_seconds: float = 30.0):
         except ProcessLookupError:
             pass
 
-    try:
-        stdout, _ = process.communicate(timeout=timeout)
-        signal_owned_group(signal.SIGKILL)
-        return process.returncode, (stdout or "")[-400:], "finished"
-    except subprocess.TimeoutExpired:
-        pass
-    ended = "killed (SIGKILL sent at once; --grace-seconds is 0)"
-    if grace_seconds > 0:
-        signal_owned_group(signal.SIGTERM)
+    tail = bytearray()
+    with selectors.DefaultSelector() as selector:
+        for pipe in (process.stdout, process.stderr):
+            os.set_blocking(pipe.fileno(), False)
+            selector.register(pipe, selectors.EVENT_READ)
+
+        def drain_until(deadline):
+            while time.monotonic() < deadline:
+                if process.poll() is not None and not selector.get_map():
+                    return True
+                for key, _ in selector.select(min(0.1, max(0, deadline - time.monotonic()))):
+                    chunk = os.read(key.fd, 65536)
+                    if not chunk:
+                        selector.unregister(key.fileobj)
+                        continue
+                    if key.fileobj is process.stdout:
+                        tail.extend(chunk)
+                        del tail[:-400]
+            return process.poll() is not None and not selector.get_map()
+
         try:
-            stdout, _ = process.communicate(timeout=grace_seconds)
+            if drain_until(time.monotonic() + timeout):
+                signal_owned_group(signal.SIGKILL)
+                return process.returncode, tail.decode("utf-8", errors="replace"), "finished"
+            ended = "killed (SIGKILL sent at once; --grace-seconds is 0)"
+            if grace_seconds > 0:
+                signal_owned_group(signal.SIGTERM)
+                if drain_until(time.monotonic() + grace_seconds):
+                    ended = f"terminated (SIGTERM honoured within {grace_seconds:g}s)"
+                else:
+                    ended = f"killed (SIGTERM ignored for {grace_seconds:g}s)"
             signal_owned_group(signal.SIGKILL)
-            return 124, (stdout or "")[-400:], (
-                f"terminated (SIGTERM honoured within {grace_seconds:g}s)")
-        except subprocess.TimeoutExpired:
-            ended = f"killed (SIGTERM ignored for {grace_seconds:g}s)"
-    signal_owned_group(signal.SIGKILL)
-    stdout, _ = process.communicate()
-    return 124, (stdout or "")[-400:], ended
+            process.wait(timeout=STOP_WAIT_SECONDS)
+            return 124, tail.decode("utf-8", errors="replace"), ended
+        except BaseException:
+            # Cleanup never converts cancellation into a successful attempt.
+            signal_owned_group(signal.SIGTERM)
+            try:
+                process.wait(timeout=grace_seconds)
+            except subprocess.TimeoutExpired:
+                pass
+            signal_owned_group(signal.SIGKILL)
+            try:
+                process.wait(timeout=STOP_WAIT_SECONDS)
+            except subprocess.TimeoutExpired:
+                pass
+            raise
+        finally:
+            process.stdout.close()
+            process.stderr.close()
 
 
-def main() -> int:
+def bind_queue(args):
+    manifest = plain_path(args.manifest)
+    paths = load_tasks(manifest)
+    tasks = []
+    for path in paths:
+        raw = read_bytes(path, MAX_TASK_BYTES)
+        require(raw.strip(), "empty_task_refused")
+        raw.decode("utf-8")
+        tasks.append({"path": str(path), "sha256": bytes_digest(raw), "size_bytes": len(raw)})
+    python = shutil.which(args.python)
+    require(bool(python), "python_unavailable")
+    limits = QueueLimits(args.max_calls_per_task, args.queue_call_budget, args.max_passes,
+                         args.task_timeout, args.grace_seconds, args.queue_timeout)
+    return QueueBinding(str(manifest), bytes_digest(read_bytes(manifest, MAX_MANIFEST_BYTES)),
+                        tuple(tasks), str(plain_path(args.runs_dir)), str(plain_path(args.workspace_root)),
+                        str(Path(python).absolute()), str(Path.cwd().resolve()), limits)
+
+
+def persist(path, state):
+    now = time.time()
+    require(now >= state["updated_at"], "clock_moved_backwards")
+    state["updated_at"] = now
+    state["revision"] += 1
+    save_state(path, state)
+
+
+def attempt_paths(state, attempt):
+    binding = state["binding"]
+    return (Path(binding["workspace_root"]) / attempt["id"],
+            Path(binding["runs_root"]) / attempt["id"])
+
+
+def attempts_for_report(state):
+    """All attempts, including held/failed ones; not an alternate budget store."""
+    validate_state(state)
+    entries = []
+    for attempt in state["attempts"]:
+        workspace, runs = attempt_paths(state, attempt)
+        outcome = attempt["outcome"] or {}
+        entries.append({"workspace": str(workspace), "runs_dir": str(runs),
+            "task_file": state["binding"]["tasks"][attempt["task_index"]]["path"],
+            "index": attempt["task_index"] + 1, "attempt_id": attempt["id"],
+            "queue_status": attempt["status"], "allocation": attempt["allocation"],
+            "exit": outcome.get("exit"), "seconds": outcome.get("seconds"),
+            **outcome.get("summary", {})})
+    return entries
+
+
+def status_record(state):
+    return {"record_type": "overnight_queue_status/v2", "binding_sha256": state["binding_sha256"],
+            "calls_allocated": calls_allocated(state), "observed_model_calls": None,
+            "call_budget": state["binding"]["limits"]["queue_call_budget"],
+            "deadline": state["deadline"], "attempts": attempts_for_report(state)}
+
+
+def reconcile(state, request):
+    matches = [attempt for attempt in state["attempts"] if attempt["id"] == request.get("attempt_id")]
+    require(len(matches) == 1 and matches[0]["status"] in ("reserved", "unknown"), "attempt_not_unresolved")
+    attempt = matches[0]
+    validate_reconciliation(request, state, attempt)
+    raw = read_bytes(request["evidence_path"])
+    require(bytes_digest(raw) == request["evidence_sha256"], "reconciliation_evidence_changed")
+    attempt["status"] = "reconciled"
+    attempt["reconciliation"] = request
+    # No refund, no provider replay, and no dispatch in a reconcile invocation.
+
+
+@contextmanager
+def interruption_handlers():
+    previous = {}
+    def stop(_number, _frame):
+        raise KeyboardInterrupt
+    try:
+        for name in ("SIGINT", "SIGTERM", "SIGHUP"):
+            number = getattr(signal, name)
+            previous[number] = signal.signal(number, stop)
+        yield
+    finally:
+        for number, handler in previous.items():
+            signal.signal(number, handler)
+
+
+def run_queue(args, *, runner=run_task):
+    require(not args.fresh, "fresh_allowance_reset_forbidden")
+    binding = bind_queue(args)
+    runs_root = Path(binding.runs_root)
+    state_path = runs_root / STATE_FILENAME
+    with queue_lock(runs_root) as lock_fd:
+        if state_path.exists():
+            state = load_state(state_path, binding)
+        else:
+            require(not args.status and not args.reconcile, "queue_state_missing")
+            require(not any(path.name != LOCK_FILENAME for path in runs_root.iterdir()),
+                    "state_missing_in_nonempty_runs_root")
+            state = new_state(binding, time.time())
+            save_state(state_path, state)
+        require(time.time() >= state["updated_at"], "clock_moved_backwards")
+        if args.status:
+            print(json.dumps(status_record(state)))
+            return 0
+        if args.reconcile:
+            require(args.authorize_reconcile, "reconciliation_authority_required")
+            request = parse(read_bytes(args.reconcile))
+            require(type(request) is dict, "reconciliation_record_required")
+            reconcile(state, request)
+            persist(state_path, state)
+            print(json.dumps(status_record(state)))
+            return 0
+        require(not args.authorize_reconcile, "reconciliation_record_required")
+        require(not any(row["status"] in ("reserved", "unknown") for row in state["attempts"]),
+                "unknown_outcome_requires_reconciliation")
+        monotonic_deadline = time.monotonic() + max(0, state["deadline"] - time.time())
+        for index, task in enumerate(binding.tasks):
+            previous = [row for row in state["attempts"] if row["task_index"] == index]
+            if previous and not (previous[-1]["status"] == "reconciled"
+                    and previous[-1]["reconciliation"]["action"] == "retry"):
+                continue
+            remaining = binding.limits.queue_call_budget - calls_allocated(state)
+            seconds = min(state["deadline"] - time.time(), monotonic_deadline - time.monotonic())
+            if remaining <= 0 or seconds <= binding.limits.grace_seconds + STOP_WAIT_SECONDS:
+                break
+            raw = read_bytes(task["path"], MAX_TASK_BYTES)
+            require(bytes_digest(raw) == task["sha256"], "task_changed_before_dispatch")
+            allocation = min(binding.limits.max_calls_per_task, remaining)
+            attempt = {"id": f"attempt-{len(state['attempts']) + 1:06d}", "task_index": index,
+                       "allocation": allocation, "reserved_at": time.time(), "status": "reserved",
+                       "outcome": None, "reconciliation": None}
+            state["attempts"].append(attempt)
+            persist(state_path, state)  # Must succeed durably before any child can start.
+            workspace, task_runs = attempt_paths(state, attempt)
+            began = time.monotonic()
+            try:
+                task_runs.mkdir(mode=0o700)
+                snapshot = task_runs / "task.txt"
+                with snapshot.open("xb") as handle:
+                    handle.write(raw)
+                    handle.flush()
+                    os.fsync(handle.fileno())
+                sync_directory(task_runs)
+                command = [binding.python, "-m", "loop_engine", "solve", "--file", str(snapshot),
+                    "--quickstart", "--unattended", "--authorize-model-calls", "--workspace", str(workspace),
+                    "--runs-dir", str(task_runs), "--max-passes", str(binding.limits.max_passes),
+                    "--max-model-calls", str(allocation), "--quiet-model-io"]
+                code, _tail, ended = runner(command,
+                    timeout=min(binding.limits.task_timeout, seconds - binding.limits.grace_seconds - STOP_WAIT_SECONDS),
+                    grace_seconds=binding.limits.grace_seconds, pass_fds=(lock_fd,))
+                attempt["outcome"] = {"exit": code, "ended": ended,
+                    "seconds": round(time.monotonic() - began, 3), "summary": summarise(workspace, task_runs),
+                    "observed_model_calls": None}
+                attempt["status"] = "finished" if code == 0 and ended == "finished" else "unknown"
+                persist(state_path, state)
+                if attempt["status"] == "unknown":
+                    print(json.dumps(status_record(state)))
+                    return 2
+            except BaseException:
+                # Even an exception before Popen retains its full reservation.
+                # A process crash can occur after dispatch but before a PID save.
+                attempt["status"] = "unknown"
+                persist(state_path, state)
+                raise
+        print(json.dumps(status_record(state)))
+        return 0
+
+
+def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("manifest", help="file listing one task file per line")
     parser.add_argument("--runs-dir", required=True)
@@ -177,83 +374,25 @@ def main() -> int:
     parser.add_argument("--queue-call-budget", type=int, default=1200,
                         help="ceiling across the whole night")
     parser.add_argument("--max-passes", type=int, default=6)
+    parser.add_argument("--queue-timeout", type=float, default=43200,
+                        help="cumulative wall seconds from first initialization, not renewed on resume")
     parser.add_argument("--fresh", action="store_true",
-                        help="ignore prior state and rerun every task")
-    args = parser.parse_args()
-
-    manifest = Path(args.manifest).expanduser()
-    runs_root = Path(args.runs_dir).expanduser()
-    workspace_root = Path(args.workspace_root).expanduser()
-    state_path = runs_root / STATE_FILENAME
-    state = {"completed": {}, "calls_used": 0} if args.fresh else load_state(state_path)
-
-    tasks = load_tasks(manifest)
-    if not tasks:
-        print("no runnable tasks in the manifest")
-        return 1
-
-    print(f"queue: {len(tasks)} task(s), "
-          f"{len(state.get('completed') or {})} already completed, "
-          f"budget {args.queue_call_budget} calls")
-    started = time.time()
-    for index, task in enumerate(tasks, 1):
-        key = str(task.resolve())
-        if key in (state.get("completed") or {}):
-            print(f"[{index}/{len(tasks)}] skip (done): {task.name}", flush=True)
-            continue
-        if state.get("calls_used", 0) >= args.queue_call_budget:
-            print(f"[{index}/{len(tasks)}] STOP: queue call budget exhausted "
-                  f"({state['calls_used']}/{args.queue_call_budget})", flush=True)
-            break
-
-        workspace = workspace_root / f"task-{index:03d}"
-        task_runs = runs_root / f"task-{index:03d}"
-        print(f"[{index}/{len(tasks)}] {task.name} -> {workspace}", flush=True)
-        command = [
-            args.python, "-m", "loop_engine", "solve", "--file", str(task),
-            "--quickstart", "--unattended", "--authorize-model-calls",
-            "--workspace", str(workspace), "--runs-dir", str(task_runs),
-            "--max-passes", str(args.max_passes),
-            "--max-model-calls", str(args.max_calls_per_task),
-            "--quiet-model-io",
-        ]
-        began = time.time()
-        code, tail, ended = run_task(
-            command, timeout=args.task_timeout,
-            grace_seconds=args.grace_seconds)
-        if ended != "finished":
-            tail = f"abandoned after {args.task_timeout}s: {ended}"
-        elapsed = round(time.time() - began, 1)
-
-        result = summarise(workspace, task_runs)
-        state.setdefault("completed", {})[key] = {
-            "exit": code, "seconds": elapsed,
-            # Record where this ran. Downstream tooling should never have to
-            # infer the mapping from a naming convention.
-            "workspace": str(workspace), "runs_dir": str(task_runs),
-            "task_file": key, "index": index, "ended": ended,
-            **result,
-        }
-        # A task's call count is not reported back, so charge the ceiling: the
-        # budget must never under-count, or the night can overrun it.
-        state["calls_used"] = state.get("calls_used", 0) + args.max_calls_per_task
-        save_state(state_path, state)
-        mark = "ok" if code == 0 else f"exit {code}"
-        retained = (result["retained"] or "").rsplit("/", 1)[-1] or "none"
-        print(f"    {mark} in {elapsed}s | files {result['files']} | "
-              f"attempts {result['attempts']} | retained {retained}"
-              f"{'' if result['ranked'] else ' (unranked)'}", flush=True)
-        if tail.strip() and code != 0:
-            print(f"    last output: {tail.strip().splitlines()[-1][:120]}", flush=True)
-
-    total = round(time.time() - started, 1)
-    done = state.get("completed") or {}
-    solved = sum(1 for v in done.values() if v.get("exit") == 0)
-    with_work = sum(1 for v in done.values() if v.get("files"))
-    print(f"\nnight finished in {total}s: {len(done)} task(s) run, "
-          f"{solved} exited clean, {with_work} produced files")
-    print(f"state: {state_path}")
-    return 0
+                        help="retired: always refuses; never resets an existing allowance")
+    parser.add_argument("--status", action="store_true", help="report current v2 state without dispatch")
+    parser.add_argument("--reconcile", type=Path, help="exact evidence-bound reconciliation record; starts no child")
+    parser.add_argument("--authorize-reconcile", action="store_true")
+    args = parser.parse_args(argv)
+    try:
+        require(not (args.status and args.reconcile), "queue_mode_conflict")
+        with interruption_handlers():
+            return run_queue(args)
+    except KeyboardInterrupt:
+        print("queue_refused: interrupted; reservations retained", file=sys.stderr)
+        return 130
+    except (QueueRefusal, OSError, UnicodeError) as error:
+        code = str(error) if isinstance(error, QueueRefusal) else "operator_io_failure"
+        print("queue_refused: " + code, file=sys.stderr)
+        return 2
 
 
 if __name__ == "__main__":

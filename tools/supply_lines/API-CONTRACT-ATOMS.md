@@ -1,5 +1,14 @@
 # Offline API contract atoms
 
+Current factory journals use `api_contract_supply_event/v2`. Resume verifies
+each event against its typed retained source record at the exact source-plan
+position, the candidate record and file bytes, and recomputed accounting.
+Changing the final event's outcome or reserved bytes cannot hide a candidate.
+Version-1 event journals remain historical evidence and are not automatically
+migrated. Output preflight checks every path, including staging and unlisted
+packages, for aliases or special files before generation. Exclusive ownership
+of that output tree remains required; this check is not a process sandbox.
+
 `build_library_supply.py api-contracts` extracts independently usable contracts
 for decoded parameter bundles, request bodies and response bodies. A harness
 can validate a value before passing it to another tool. The existing

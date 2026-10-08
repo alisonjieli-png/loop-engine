@@ -7,6 +7,7 @@ write is available. Exact packages remain inputs to the existing qualification.
 from __future__ import annotations
 
 from collections import Counter
+from enum import Enum
 import fcntl
 import hashlib
 import itertools
@@ -24,8 +25,16 @@ from . import api_contract_sources
 from .records import JSON_SCHEMAS, RUN_RECORD_TYPE, SupplyRecordError, read_supply_candidate
 
 PLAN_TYPE = "api_contract_supply_plan/v1"
-EVENT_TYPE = "api_contract_supply_event/v1"
+EVENT_TYPE = "api_contract_supply_event/v2"
+RETAINED_TYPE = "api_contract_retained_atom/v1"
 MAXIMUM_JOURNAL_BYTES = 64 * 1024 * 1024
+MAXIMUM_OUTPUT_PATHS = 1_000_000
+
+
+class AtomOutcome(str, Enum):
+    CANDIDATE = "candidate"
+    REUSED_SCHEMA = "reused_schema"
+    RETAINED_FINDING = "retained_finding"
 
 
 class ApiContractBatchError(RuntimeError):
@@ -38,6 +47,11 @@ class ApiContractBatchError(RuntimeError):
 
 
 def run_as_loop(args, *, revision, licence_text, generator_digest, ledger=None):
+    return run_batch_as_loop(args, revision=revision, licence_text=licence_text, generator_digest=generator_digest,
+                             ledger=ledger, worker=run, request_role="api_contract_supply_request/v1")
+
+
+def run_batch_as_loop(args, *, revision, licence_text, generator_digest, worker, request_role, ledger=None):
     """One canonical Starting Practitioner Loop per batch, never one per atom.
 
     Preview stays local discovery without output writes. The generation path
@@ -45,13 +59,13 @@ def run_as_loop(args, *, revision, licence_text, generator_digest, ledger=None):
     The caller still owns a wall-clock supervisor over the whole invocation.
     """
     if not args.authorize_output_writes:
-        return run(args, revision=revision, licence_text=licence_text, generator_digest=generator_digest)
+        return worker(args, revision=revision, licence_text=licence_text, generator_digest=generator_digest)
     from loop_engine.loop.loop_contract import contract_for_code_loop
     from loop_engine.loop.loop_role import LoopRelationship, LoopRole, LoopRoleIdentity
     from loop_engine.loop.recursive_loop import Loop, LoopConfig, StepOutcome
 
     contract = contract_for_code_loop("api_contract_supply_batch/v1",
-        input_roles=("api_contract_supply_request/v1",), output_roles=(RUN_RECORD_TYPE,),
+        input_roles=(request_role,), output_roles=(RUN_RECORD_TYPE,),
         effects=("reads_fs", "writes_fs", "spawns_process"), role="practitioner.code_execution")
     loop = Loop("Prepare one bounded batch of API contract candidates.",
         LoopConfig(framework="custom", custom_steps=("generate",), allowable_modes=("deterministic",),
@@ -65,7 +79,7 @@ def run_as_loop(args, *, revision, licence_text, generator_digest, ledger=None):
             raise RuntimeError("supply_batch_must_not_retry")
         held["attempted"] = True
         try:
-            held["result"] = run(args, revision=revision, licence_text=licence_text, generator_digest=generator_digest)
+            held["result"] = worker(args, revision=revision, licence_text=licence_text, generator_digest=generator_digest)
         except Exception as error:
             # Retain only the failure class. Parser/provider text is not a
             # safe error record; cancellation and system exits remain outside
@@ -98,6 +112,42 @@ def _safe_path(path):
     return path
 
 
+def _safe_output_tree(folder):
+    """Refuse aliases/special files anywhere, not just paths a journal names.
+
+    This is a preflight for an exclusively owned output tree, not a sandbox
+    against a concurrent privileged filesystem writer.
+    """
+    folder = _safe_path(folder)
+    if not folder.exists():
+        return folder
+    if not folder.is_dir():
+        raise ValueError("run_output_must_be_directory")
+    count = 0
+    for root, directories, files in os.walk(folder, followlinks=False):
+        for name in (*directories, *files):
+            path = _safe_path(Path(root) / name)
+            count += 1
+            if count > MAXIMUM_OUTPUT_PATHS or not (path.is_file() or path.is_dir()):
+                raise ValueError("run_output_tree_not_regular_or_bounded")
+    return folder
+
+
+def _staging_directory(folder):
+    staging = _safe_path(folder / "staging")
+    staging.mkdir(exist_ok=True)
+    if not staging.is_dir():
+        raise ValueError("run_staging_must_be_directory")
+    return _safe_path(staging)
+
+
+def _candidate_path(folder, name):
+    if (not isinstance(name, str) or not name or Path(name).name != name
+            or name in (".", "..") or "\\" in name):
+        raise ValueError("journal_candidate_path_invalid")
+    return _safe_path(folder / "packages" / name)
+
+
 def _write_exact(path, body):
     """A restart may reconcile identical bytes, never replace a different result."""
     path = _safe_path(path)
@@ -122,7 +172,7 @@ def _journal(path):
         if (type(row) is not dict or row.get("record_type") != EVENT_TYPE or row.get("sequence") != len(rows)
                 or row.get("previous_sha256") != previous
                 or row.get("record_path") != f"retained/{len(rows):08d}.json"
-                or row.get("outcome") not in ("candidate", "reused_schema", "retained_finding")):
+                or row.get("outcome") not in tuple(AtomOutcome)):
             raise ValueError("journal_chain_mismatch")
         for key in ("candidate_id", "reuse_candidate_id"):
             if key in row and (not isinstance(row[key], str) or Path(row[key]).name != row[key]
@@ -134,6 +184,7 @@ def _journal(path):
 
 
 def _append(path, rows, row):
+    path = _safe_path(path)
     event = {"record_type": EVENT_TYPE, "sequence": len(rows),
              "previous_sha256": atom_line.digest(rows[-1]) if rows else "", **row}
     raw = json.dumps(event, sort_keys=True, separators=(",", ":"), allow_nan=False).encode() + b"\n"
@@ -152,29 +203,91 @@ def _materialize(folder, payload, bodies):
     _write_exact(folder / "candidate.json", atom_line.json_bytes(payload))
 
 
-def _verify_existing(folder, rows):
-    """A recorded cursor alone is not proof its payloads survived the crash."""
-    for row in rows:
-        record = _safe_path(folder / row["record_path"])
-        if hashlib.sha256(record.read_bytes()).hexdigest() != row["record_sha256"]:
+def _checked_package(candidate):
+    from component_qualification.components import ComponentReadError, from_folder
+    candidate = _safe_path(candidate)
+    try:
+        component = from_folder(candidate)
+    except ComponentReadError:
+        raise ValueError("candidate_file_changed") from None
+    record_path = _safe_path(candidate / "candidate.json")
+    raw = record_path.read_bytes()
+    payload = read_supply_candidate(dict(component.candidate))
+    if payload["record_id"] != candidate.name:
+        raise ValueError("candidate_folder_identity_changed")
+    expected = {"candidate.json", *(entry["path"] for entry in payload["package"]["files"])}
+    paths = list(candidate.rglob("*"))
+    if any(_safe_path(path) != path for path in paths):
+        raise ValueError("candidate_symlink_refused")
+    actual = {path.relative_to(candidate).as_posix() for path in paths if path.is_file()}
+    if actual != expected:
+        raise ValueError("candidate_file_inventory_changed")
+    return payload, raw
+
+
+def _verify_existing(folder, rows, specifications, bindings):
+    """Derive each event from its retained source-bound record and actual bytes."""
+    source_stream, seen, recorded = iter(_stream(specifications)), {}, set()
+    for index, row in enumerate(rows):
+        source_index, source_atom = next(source_stream, (None, None))
+        raw = _safe_path(folder / row["record_path"]).read_bytes()
+        if hashlib.sha256(raw).hexdigest() != row["record_sha256"]:
             raise ValueError("retained_atom_changed")
-        if row["outcome"] != "candidate":
-            continue
-        candidate = _safe_path(folder / "packages" / row["candidate_id"])
-        payload = read_supply_candidate(json.loads(_safe_path(candidate / "candidate.json").read_bytes()))
-        if payload["package_digest"] != row["package_digest"]:
-            raise ValueError("candidate_digest_changed")
-        expected = {"candidate.json", *(entry["path"] for entry in payload["package"]["files"])}
-        paths = list(candidate.rglob("*"))
-        if any(path.is_symlink() for path in paths):
-            raise ValueError("candidate_symlink_refused")
-        actual = {path.relative_to(candidate).as_posix() for path in paths if path.is_file()}
-        if actual != expected:
-            raise ValueError("candidate_file_inventory_changed")
-        for entry in payload["package"]["files"]:
-            body = _safe_path(candidate / entry["path"]).read_bytes()
-            if len(body) != entry["size_bytes"] or hashlib.sha256(body).hexdigest() != entry["digest"]:
-                raise ValueError("candidate_file_changed")
+        retained = json.loads(raw)
+        if (retained.get("record_type") != RETAINED_TYPE or source_index is None
+                or retained.get("source") != bindings[source_index] or retained.get("atom") != source_atom):
+            raise ValueError("retained_atom_source_binding_changed")
+        event = retained.get("event")
+        if not isinstance(event, dict) or event.get("source_index") != source_index or event.get("source_pointer") != source_atom["pointer"]:
+            raise ValueError("retained_atom_event_binding_changed")
+        outcome = event.get("outcome")
+        common = {"source_index", "source_pointer", "outcome"}
+        size = len(raw)
+        if outcome == AtomOutcome.CANDIDATE:
+            if set(event) != common | {"semantic_sha256", "candidate_id", "package_digest", "tests_run"}:
+                raise ValueError("retained_atom_candidate_fields")
+            payload, candidate_bytes = _checked_package(_candidate_path(folder, event["candidate_id"]))
+            if (payload["package_digest"] != event["package_digest"]
+                    or hashlib.sha256(candidate_bytes).hexdigest() != retained.get("candidate_sha256")
+                    or event["tests_run"] != payload["tests"]["tests_run"]):
+                raise ValueError("candidate_digest_changed")
+            size += len(candidate_bytes) + sum(entry["size_bytes"] for entry in payload["package"]["files"])
+            seen[event["semantic_sha256"]] = event["candidate_id"]
+            recorded.add(event["candidate_id"])
+        elif outcome == AtomOutcome.REUSED_SCHEMA:
+            if (set(event) != common | {"semantic_sha256", "reuse_candidate_id"}
+                    or seen.get(event["semantic_sha256"]) != event["reuse_candidate_id"]):
+                raise ValueError("retained_atom_reuse_binding_changed")
+        elif outcome == AtomOutcome.RETAINED_FINDING:
+            if set(event) not in (common | {"finding"}, common | {"finding", "semantic_sha256"}):
+                raise ValueError("retained_atom_finding_fields")
+        else:
+            raise ValueError("retained_atom_outcome_invalid")
+        if "semantic_sha256" in event and atom_line.semantic_digest(retained["normalized_schema"]) != event["semantic_sha256"]:
+            raise ValueError("retained_atom_semantics_changed")
+        expected = {"record_type": EVENT_TYPE, "sequence": index,
+            "previous_sha256": atom_line.digest(rows[index - 1]) if index else "", **event,
+            "record_path": f"retained/{index:08d}.json", "record_sha256": hashlib.sha256(raw).hexdigest(),
+            "retained_and_candidate_bytes": size}
+        if atom_line.json_bytes(row) != atom_line.json_bytes(expected):
+            raise ValueError("journal_retained_event_accounting_mismatch")
+    # Complete candidates from a crash before its event can be reconciled on
+    # the next iteration, but never skipped at an exhausted source cursor.
+    package_root = _safe_path(folder / "packages")
+    pending_source = next(source_stream, None)
+    unrecorded = []
+    if package_root.exists():
+        for candidate in package_root.iterdir():
+            _checked_package(candidate)
+            if candidate.name not in recorded:
+                unrecorded.append(candidate)
+                if pending_source is None or len(unrecorded) > 1:
+                    raise ValueError("unrecorded_candidate_at_unexpected_cursor")
+                index, atom = pending_source
+                metadata = json.loads(_safe_path(candidate / "contract.schema.json").read_bytes())["x-baltor-contract"]
+                if (metadata["logical_selector"] != atom["pointer"]
+                        or metadata["source_sha256"] != bindings[index]["sha256"]):
+                    raise ValueError("unrecorded_candidate_parent_mismatch")
 
 
 def _stream(specifications):
@@ -227,7 +340,7 @@ def run(args, *, revision, licence_text, generator_digest):
     if not args.authorize_output_writes:
         return {"record_type": RUN_RECORD_TYPE, "line": JSON_SCHEMAS, "scope": atom_line.STATE_SCOPE,
                 "plan": plan, "written": False, "candidates": 0, "network_requests": 0}
-    folder = _safe_path(args.run_folder)
+    folder = _safe_output_tree(args.run_folder)
     folder.mkdir(parents=True, exist_ok=True)
     lock_path = _safe_path(folder / "run.lock")
     with lock_path.open("a") as lock:
@@ -243,14 +356,14 @@ def run(args, *, revision, licence_text, generator_digest):
         generated_on = header["started_at"][:10]
         events_path = _safe_path(folder / "events.jsonl")
         rows = _journal(events_path)
-        _verify_existing(folder, rows)
-        seen = {row["semantic_sha256"]: row["candidate_id"] for row in rows if row["outcome"] == "candidate"}
+        _verify_existing(folder, rows, specifications, bindings)
+        seen = {row["semantic_sha256"]: row["candidate_id"] for row in rows if row["outcome"] == AtomOutcome.CANDIDATE}
         existing = len(seen)
         started, attempted, exhausted = time.monotonic(), 0, False
         accounted_bytes = sum(row["retained_and_candidate_bytes"] for row in rows)
         stopped_by_bytes = False
         iterator = itertools.islice(_stream(specifications), len(rows), None)
-        (folder / "staging").mkdir(exist_ok=True)
+        _staging_directory(folder)
         while (len(seen) < args.maximum_atoms and len(rows) < args.maximum_attempts
                and attempted < args.batch_size and time.monotonic() - started < args.maximum_seconds):
             try:
@@ -260,7 +373,7 @@ def run(args, *, revision, licence_text, generator_digest):
                 break
             _source, spec = specifications[source_index]
             retained = {"source": bindings[source_index], "atom": atom}
-            event = {"source_index": source_index, "source_pointer": atom["pointer"], "outcome": "retained_finding"}
+            event = {"source_index": source_index, "source_pointer": atom["pointer"], "outcome": AtomOutcome.RETAINED_FINDING}
             pending = None
             try:
                 if "finding" in atom:
@@ -270,19 +383,23 @@ def run(args, *, revision, licence_text, generator_digest):
                 retained["normalized_schema"] = schema
                 event["semantic_sha256"] = semantic
                 if semantic in seen:
-                    event.update(outcome="reused_schema", reuse_candidate_id=seen[semantic])
+                    event.update(outcome=AtomOutcome.REUSED_SCHEMA, reuse_candidate_id=seen[semantic])
                 else:
                     examples = atom_line.cases(atom, schema)
                     retained["cases"] = examples
-                    with tempfile.TemporaryDirectory(prefix="contract-", dir=folder / "staging") as temporary:
+                    with tempfile.TemporaryDirectory(prefix="contract-", dir=_staging_directory(folder)) as temporary:
+                        _safe_path(temporary)
                         payload, bodies = atom_line.package(atom, schema, examples, spec, revision=revision,
                             generated_on=generated_on, licence_text=licence_text, staging=Path(temporary))
                     pending = (payload, bodies)
-                    event.update(outcome="candidate", candidate_id=payload["record_id"],
+                    event.update(outcome=AtomOutcome.CANDIDATE, candidate_id=payload["record_id"],
                                  package_digest=payload["package_digest"], tests_run=payload["tests"]["tests_run"])
             except (ValueError, LookupError, KeyError, TypeError, RecursionError, SupplyRecordError) as error:
                 event["finding"] = getattr(error, "code", type(error).__name__)
                 retained["diagnostic"] = str(error)[:400]
+            retained.update(record_type=RETAINED_TYPE, event=event)
+            if pending:
+                retained["candidate_sha256"] = hashlib.sha256(atom_line.json_bytes(pending[0])).hexdigest()
             record_path = f"retained/{len(rows):08d}.json"
             raw = atom_line.json_bytes(retained)
             size = len(raw) + (sum(entry["size_bytes"] for entry in pending[0]["package"]["files"])
@@ -299,10 +416,11 @@ def run(args, *, revision, licence_text, generator_digest):
             if pending:
                 seen[event["semantic_sha256"]] = pending[0]["record_id"]
             attempted += 1
+        _verify_existing(folder, rows, specifications, bindings)
         seconds = time.monotonic() - started
         files, useful, sizes = [], set(), {}
         for row in rows:
-            if row["outcome"] != "candidate":
+            if row["outcome"] != AtomOutcome.CANDIDATE:
                 continue
             payload = json.loads((folder / "packages" / row["candidate_id"] / "candidate.json").read_bytes())
             for entry in payload["package"]["files"]:

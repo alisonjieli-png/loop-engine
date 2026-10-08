@@ -17,6 +17,7 @@ from jsonschema import Draft202012Validator
 from jsonschema.exceptions import SchemaError
 
 from . import api_schemas, schema_check
+from .constraint_case_runtime import semantic_digest
 from .openapi_operations import (METHODS, OperationRefused, Resolver, SPECIFICATION_LICENCE_NAME,
                                 check_schema, clean_example, run_tests, synthesize)
 from .packaging import (LICENCE_NAME, UPSTREAM_LICENCE_NAME, PackageFile, SupplyPackage, build, notice_files)
@@ -161,27 +162,6 @@ def normalize_schema(raw, document):
     except SchemaError:
         raise ValueError("invalid_json_schema") from None
     return schema
-
-
-def semantic_digest(schema):
-    """Labels, provenance, dates and file paths cannot manufacture semantic novelty."""
-    def walk(node, named=False):
-        if isinstance(node, dict):
-            result = {}
-            for key, value in sorted(node.items()):
-                if not named and (key in ANNOTATIONS or key == "$schema" or key.startswith("x-")):
-                    continue
-                value = walk(value, key in MAPS)
-                if not named and key in ("allOf", "anyOf", "oneOf") and isinstance(value, list):
-                    value = sorted(value, key=json_bytes)
-                    if key != "oneOf":
-                        value = list({json_bytes(item): item for item in value}.values())
-                result[key] = value
-            return result
-        if isinstance(node, list):
-            return [walk(item) for item in node]
-        return node
-    return digest(walk(schema))
 
 
 def pointer(part):

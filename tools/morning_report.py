@@ -36,6 +36,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent / "src"))
 
 from loop_engine.core.solution_ratchet import rank_attempts  # noqa: E402
+from overnight_queue import attempts_for_report, load_state  # noqa: E402
 
 
 def read_json(path: Path) -> dict:
@@ -114,7 +115,7 @@ def classify(engine_ok: bool, evidence: dict, constraints: list) -> tuple:
     return "NOTHING", "artifacts exist but nothing independent supports them"
 
 
-ORDER = {"DISAGREEMENT": 0, "CHECK ME": 1, "READY": 2, "NOTHING": 3}
+ORDER = {"HELD": 0, "DISAGREEMENT": 1, "CHECK ME": 2, "READY": 3, "NOTHING": 4}
 
 
 def main() -> int:
@@ -126,11 +127,11 @@ def main() -> int:
 
     ws_root = Path(args.workspace_root)
     runs_root = Path(args.runs_root)
-    state = read_json(runs_root / "overnight-queue.json")
-    completed = state.get("completed") or {}
+    state_path = runs_root / "overnight-queue.json"
+    state = load_state(state_path) if state_path.exists() else None
 
     units = []
-    recorded = [v for v in completed.values() if v.get("workspace")]
+    recorded = attempts_for_report(state) if state is not None else []
     if recorded:
         # Preferred: the queue told us where each task ran, including the ones
         # that produced no directory at all. Those matter most in a morning
@@ -145,13 +146,15 @@ def main() -> int:
         name = (Path(info.get("task_file") or workspace.name).stem
                 if info else workspace.name)
         engine_ok = info.get("exit") == 0
-        evidence = (unit_evidence(workspace) if workspace.is_dir()
+        held = info.get("queue_status") in ("reserved", "unknown")
+        evidence = (unit_evidence(workspace) if workspace.is_dir() and not held
                     else {"attempts": 0, "files": 0, "agreement": "",
                           "retained": "", "unanimous": None})
         constraints = constraint_findings(runs) if runs and runs.is_dir() else []
-        bucket, why = classify(engine_ok, evidence, constraints)
+        bucket, why = (("HELD", "external outcome requires explicit reconciliation; allocation retained")
+                       if held else classify(engine_ok, evidence, constraints))
         units.append({"name": name, "bucket": bucket, "why": why,
-                      "engine": "success" if engine_ok else "failure",
+                      "engine": "unknown" if held else ("success" if engine_ok else "failure"),
                       "seconds": info.get("seconds"),
                       "evidence": evidence, "constraints": constraints,
                       "workspace": str(workspace)})
@@ -164,6 +167,7 @@ def main() -> int:
     lines.append("| outcome | units | what it means for you |")
     lines.append("|---|---|---|")
     for bucket, meaning in (
+            ("HELD", "unknown outcome; reconcile before any retry"),
             ("DISAGREEMENT", "**read first** - accepted but unsupported"),
             ("CHECK ME", "recovered work the engine called a failure"),
             ("READY", "verified; skim"),

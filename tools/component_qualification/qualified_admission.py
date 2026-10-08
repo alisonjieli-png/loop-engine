@@ -187,6 +187,8 @@ def admit_qualified(qualification_folder: Path, store_root: "Path | None", decis
             if record["qualifier"].get("uncommitted_changes", True):
                 _refuse("qualifier_uncommitted", f"{identity}: its qualifier's code was not committed")
             component = components[identity] if components is not None else reader.component(reader.row(identity))
+            from .checks import require_declared_producer_family
+            require_declared_producer_family(component, producer_family)
             if component.record_version != record["record_version"]:
                 _refuse("store_changed", f"{identity}: the stored metadata differs from the qualified store version")
             if component.package.package_digest != record["package_digest"]:

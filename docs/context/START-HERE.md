@@ -21,6 +21,12 @@ two defects that were found and fixed after the first claims of correctness.
 
 ## Current context route
 
+Read the [October 8 account and engineering handoff](SESSION-HANDOFF-2026-10-08.md)
+first for release 78, the stopped private factory, preserved queue repairs,
+provider setup and the current continuation plan. The owner's workstation
+pointer names the private closing checkpoint and local evidence. Recheck it
+before acting on an earlier running-job observation.
+
 Read the [owner direction from Dot](OWNER-DIRECTION-FROM-DOT-2026-10-05.md) for the standing directions and library plan drawn from the owner's Dot conversations of September 30 to October 5.
 
 Read the [release 62 handoff](SESSION-HANDOFF-2026-10-04-RELEASE62.md) first for

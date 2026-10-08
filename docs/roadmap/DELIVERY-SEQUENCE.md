@@ -20,6 +20,75 @@ internal/customer separation behind this plan.
 
 ### Current position
 
+October 8 afternoon continuation: the account-switch handoff is
+[recorded in the engineering handoff](../context/SESSION-HANDOFF-2026-10-08.md).
+The original private factory
+ended at 08:48 UTC with 42 complete and five held cohorts. Its morning lineage
+audit verified 31,474 candidate records across all 47 cohorts with no reported
+lineage finding. These are private candidates; the served count below is
+unchanged. Prechecks, global deduplication, generated tests, independent content
+admission and publication remain separate. Preserve the original v1 operation;
+do not restart it with the repaired v2 reader.
+
+The reviewed-in-progress integration contains the independently retested
+constraint-case accounting/path repair and the local overnight queue repair.
+The latter reserves a subprocess's remaining call allocation before dispatch,
+retains uncertain outcomes and refuses budget resets. Its 26 focused tests
+passed; hosted Supervised Runs and real model completion remain unproved.
+
+The next release cycle follows this checklist:
+
+- [x] Preserve inherited staged changes and the unfinished queue work.
+- [x] Reconcile the stopped factory's complete 47-cohort lineage.
+- [x] Prepare local account handoff and non-secret provider inventory.
+- [x] Complete candidate prechecks and global exact-body comparison: 31,474
+  candidates passed seven prechecks; 120,090 distinct payloads are absent from
+  the live library. Semantic comparison and content admission remain open.
+- [ ] Complete combined code checks, exact CI and guarded release.
+- [ ] Independently admit useful candidates; publish and verify exact customer
+  downloads while preserving previous versions and access.
+- [ ] Qualify R2 delivery, including missing/corrupt body, unauthorized request,
+  revocation, accounting, latency and rollback.
+- [ ] Implement saved customer feed definitions and two-account/two-agent
+  isolation through edit, export, cursor advancement and revocation.
+- [ ] Complete bounded model/native-harness proof, then interruption drills for
+  the proposed third offering.
+- [ ] Reconcile the latest 24/36-hour owner requests and action records against
+  this plan, retaining concurrent-project ownership and private source text.
+- [ ] Produce one rights-cleared creative project, meaningful revision, clean
+  reopen and matched comparison before its marketing render.
+- [ ] Review startup credit eligibility and post-credit costs, beginning with
+  the infrastructure already selected; retain provider caps and expiry.
+- [ ] Reconcile the preserved ChatGPT plugin candidate, run an actual OpenAI
+  client journey and prepare the complete review package.
+- [ ] Check new sources, strategies and engines against the existing ontology,
+  typed schemas, component guide map and engine slots before adding another
+  name, service or folder owner.
+
+The working windows below begin October 8 and show intended overlap, not
+guaranteed completion dates. Each transition requires the acceptance evidence
+in the workstream table.
+
+```mermaid
+gantt
+    title Baltor continuation windows
+    dateFormat YYYY-MM-DD
+    axisFormat %b %d
+    section Recovery
+    Handoff and reviewed repairs :active, recover, 2026-10-08, 2d
+    section Useful supply
+    Reconcile and independent review :review, 2026-10-08, 3d
+    Approved publication and customer proof :publish, after review, 2d
+    Broader measured supply :expand, after publish, 7d
+    section Customer features
+    R2 delivery canary :r2, 2026-10-09, 3d
+    Saved per-agent feeds :feeds, 2026-10-09, 6d
+    Bounded supervised-run proof :runs, 2026-10-10, 7d
+    section Launch
+    Creative revision and paired proof :creative, 2026-10-10, 6d
+    Demo and founder-ready material :launch, after creative, 4d
+```
+
 Release 78 is deployed from `f9dbb3d3` and its gate is closed. The ten-host
 browser pass has 2,126 passing assertions. All nine product hostnames use
 the existing Cloudflare Worker. All 2,530 exported public files passed exact

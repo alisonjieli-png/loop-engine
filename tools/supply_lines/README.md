@@ -215,6 +215,11 @@ what it no longer supplies.
 
 ## Commands
 
+[`constraint-cases`](CONSTRAINT-CASES.md) extends frozen version-2 contract
+candidates with isolated invalid-input cases. Each JSON case binds its schema,
+valid baseline and expected error. Groups share code and licence bytes and
+keep the existing candidate/qualification path.
+
 For an offline, resumable operation-contract pilot, use
 [`api-contracts`](API-CONTRACT-ATOMS.md). It reads an existing pinned fact
 cache and writes ordinary JSON Schema supply candidates. It has no network,

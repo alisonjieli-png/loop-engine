@@ -215,14 +215,19 @@ def component_from_row(row: dict, bodies) -> GeneratedComponent:
 
 def from_folder(folder) -> GeneratedComponent:
     """A component from ``candidate.json`` and the files beside it (check fixtures and inspection copies)."""
-    folder = Path(folder)
-    payload = json.loads((folder / "candidate.json").read_text(encoding="utf-8"))
+    folder = Path(folder).absolute()
+    if folder.resolve() != folder or not folder.is_dir():
+        raise ComponentReadError("folder_not_regular", "the component folder must not use filesystem aliases")
+    record = folder / "candidate.json"
+    if record.resolve() != record or not record.is_file() or record.stat().st_size > MAXIMUM_PACKAGE_BYTES:
+        raise ComponentReadError("record_not_regular_or_bounded", "the component record must be a bounded regular file")
+    payload = json.loads(record.read_text(encoding="utf-8"))
     identity = payload.get("record_id") or folder.name
 
     def read(entry):
         path = folder / entry.path
-        if path.is_symlink() or not path.is_file():
-            raise OSError("not a regular file")
+        if path.resolve() != path or not path.is_file() or path.stat().st_size != entry.size_bytes:
+            raise OSError("not an exact regular file")
         return path.read_bytes()
 
     return _component(identity, payload.get("version", {}).get("record_version", "") if isinstance(

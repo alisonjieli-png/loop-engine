@@ -44,6 +44,12 @@ KEY_ATTRIBUTES = {"application": "loop-engine", "service": "baltor-pilot.fly.dev
 
 
 class CredentialTests(unittest.TestCase):
+    def test_reddit_inventory_alias_reuses_the_native_reader_keyring_identity(self):
+        from knowledge_radar.rapidapi_reddit import REFERENCE
+        spec = tool.references()["api_keys"]["rapidapi-reddit34-primary"]
+        self.assertEqual({"application": "loop-engine", **{
+            name: spec[name] for name in ("service", "account", "purpose")}}, REFERENCE)
+
     def setUp(self):
         self.data = tool.references()
         self.spec = self.data["oauth"]["resend-management"]

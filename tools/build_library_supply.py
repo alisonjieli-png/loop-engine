@@ -470,17 +470,37 @@ def report(args) -> dict:
 def api_contracts(args) -> dict:
     """Offline, bounded operation-contract pilot; ordinary supply candidate output only."""
     import hashlib
-    from supply_lines import (api_contract_atoms, api_contract_run, api_contract_sources, api_schemas, declared_licences,
+    from component_qualification import components
+    from supply_lines import (api_contract_atoms, api_contract_run, api_contract_sources, api_schemas, constraint_case_runtime, declared_licences,
                               licences, openapi_directory, openapi_operations, packaging, reading, schema_check, swagger2)
     args.run_folder = _outside(args.run_folder)
     if args.authorize_output_writes and free_gigabytes(args.run_folder) < args.minimum_free_gigabytes:
         raise SystemExit("free_space_below_the_floor")
     revision = code_revision(False)
-    paths = tuple(Path(module.__file__) for module in (api_contract_atoms, api_contract_run, api_contract_sources, api_schemas,
+    paths = tuple(Path(module.__file__) for module in (components, api_contract_atoms, api_contract_run, api_contract_sources, api_schemas, constraint_case_runtime,
         declared_licences, licences, openapi_directory, openapi_operations, packaging, reading, records, schema_check, swagger2)) + (Path(__file__),)
     source_digest = hashlib.sha256(b"".join(path.read_bytes() for path in paths)).hexdigest()
     result = api_contract_run.run_as_loop(args, revision=revision, licence_text=LICENCE_FILE.read_bytes(),
                                           generator_digest=source_digest)
+    print(json.dumps(result, indent=1, sort_keys=True))
+    return result
+
+
+def constraint_cases(args) -> dict:
+    """Extend frozen parent contracts with digest-bound, isolated case data."""
+    import hashlib
+    from component_qualification import components
+    from supply_lines import (api_contract_run, constraint_case_run, constraint_case_construction,
+                              constraint_case_packages, constraint_case_runtime, packaging, schema_check)
+    args.run_folder = _outside(args.run_folder)
+    if args.authorize_output_writes and free_gigabytes(args.run_folder) < args.minimum_free_gigabytes:
+        raise SystemExit("free_space_below_the_floor")
+    revision = code_revision(False)
+    modules = (components, api_contract_run, constraint_case_run, constraint_case_construction, constraint_case_packages,
+               constraint_case_runtime, packaging, records, schema_check)
+    code = b"".join(Path(module.__file__).read_bytes() for module in modules) + Path(__file__).read_bytes()
+    result = constraint_case_run.run_as_loop(args, revision=revision, licence_text=LICENCE_FILE.read_bytes(),
+                                            generator_digest=hashlib.sha256(code).hexdigest())
     print(json.dumps(result, indent=1, sort_keys=True))
     return result
 
@@ -594,6 +614,16 @@ def parser() -> argparse.ArgumentParser:
     contracts.add_argument("--authorize-output-writes", action="store_true",
                            help="generate private candidates and run local checks (files/processes); no provider calls, admission or publication")
     contracts.add_argument("--minimum-free-gigabytes", type=float, default=MINIMUM_FREE_GIGABYTES)
+    cases = commands.add_parser("constraint-cases", help="local isolated constraint cases from frozen version-2 parent contracts")
+    cases.add_argument("--parent-run", action="append", required=True)
+    cases.add_argument("--run-folder", required=True)
+    cases.add_argument("--maximum-contracts", type=int, required=True)
+    cases.add_argument("--maximum-cases", type=int, required=True)
+    cases.add_argument("--maximum-candidate-bytes", type=int, default=64 * 1024 * 1024)
+    cases.add_argument("--batch-size", type=int, default=25, help="parent contracts per invocation")
+    cases.add_argument("--maximum-seconds", type=float, default=60)
+    cases.add_argument("--authorize-output-writes", action="store_true", help="generate local case files and run local checks; no provider call or publication")
+    cases.add_argument("--minimum-free-gigabytes", type=float, default=MINIMUM_FREE_GIGABYTES)
     five = commands.add_parser("report")
     five.add_argument("--store-root", default="/home/username/baltor-library/import-store")
     five.add_argument("--library-bundle", required=True, help="the served release bundle folder; a candidate whose "
@@ -617,6 +647,7 @@ def main(argv=None) -> int:
      "publisher-tables": publisher_tables,
      "functions": functions, "schemas": schemas, "curated-schemas": curated_schemas, "api-schemas": api_schemas,
      "api-contracts": api_contracts,
+     "constraint-cases": constraint_cases,
      "manim-scenes": manim_scenes, "api-tool-servers": api_tool_servers, "report": report}[args.command](args)
     return 0
 

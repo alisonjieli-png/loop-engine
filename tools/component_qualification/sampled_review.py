@@ -175,6 +175,8 @@ def review_request(component: GeneratedComponent, criteria, instructions_sha256:
     from tools.candidate_review.configuration import Producer
     from tools.candidate_review.native import NativePackageReviewRequest, NativeReviewFile
     from .excerpts import excerpt_for
+    from .checks import require_declared_producer_family
+    require_declared_producer_family(component, producer_family)
     package = component.package
     record = component.candidate
     provenance = record.get("provenance") or {}

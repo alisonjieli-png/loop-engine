@@ -412,6 +412,64 @@ class RunTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "partial_journal_needs_reconciliation"):
             self.invoke()
 
+    def test_last_event_cannot_relabel_a_candidate_or_lower_byte_accounting(self):
+        first = self.invoke(batch_size=30)
+        self.assertEqual(first["candidates"], 4)
+        journal = self.args.run_folder / "events.jsonl"
+        rows = [json.loads(line) for line in journal.read_bytes().splitlines()]
+        original = deepcopy(rows[-1])
+        for changes in ({"outcome": "retained_finding", "retained_and_candidate_bytes": 0},
+                        {"retained_and_candidate_bytes": 0}, {"unexpected": True}):
+            with self.subTest(changes=changes):
+                rows[-1] = {**original, **changes}
+                journal.write_text("".join(json.dumps(row) + "\n" for row in rows))
+                with self.assertRaisesRegex(ValueError, "journal_retained_event_accounting_mismatch"):
+                    self.invoke(batch_size=30)
+        rows[-1] = original
+        journal.write_text("".join(json.dumps(row) + "\n" for row in rows))
+        self.assertEqual(self.invoke(batch_size=30)["new_candidates_this_invocation"], 0)
+
+    def test_retained_atom_source_remains_bound_to_exact_plan_position(self):
+        self.invoke(batch_size=1)
+        journal = self.args.run_folder / "events.jsonl"
+        event = json.loads(journal.read_bytes())
+        path = self.args.run_folder / event["record_path"]
+        retained = json.loads(path.read_bytes())
+        retained["source"]["sha256"] = "a" * 64
+        raw = atoms.json_bytes(retained)
+        path.write_bytes(raw)
+        event["record_sha256"] = hashlib.sha256(raw).hexdigest()
+        journal.write_text(json.dumps(event) + "\n")
+        with self.assertRaisesRegex(ValueError, "retained_atom_source_binding_changed"):
+            self.invoke()
+
+    def test_atomic_staging_and_unlisted_output_aliases_refuse_before_generation(self):
+        for suffix in ("staging", "packages", "retained", "unlisted/nested"):
+            with self.subTest(suffix=suffix):
+                run_folder = self.root / ("refused-" + suffix.replace("/", "-"))
+                external = self.root / ("outside-" + suffix.replace("/", "-"))
+                external.mkdir()
+                (external / "unchanged").write_bytes(b"sentinel")
+                link = run_folder / suffix
+                link.parent.mkdir(parents=True)
+                link.symlink_to(external, target_is_directory=True)
+                with patch.object(atoms, "package") as package:
+                    with self.assertRaisesRegex(ValueError, "run_path_must_not_follow_symlinks"):
+                        self.invoke(run_folder=run_folder)
+                    package.assert_not_called()
+                self.assertEqual([(path.name, path.read_bytes()) for path in external.iterdir()], [("unchanged", b"sentinel")])
+
+    def test_prior_atomic_event_version_is_not_silently_migrated(self):
+        self.invoke(batch_size=1)
+        journal = self.args.run_folder / "events.jsonl"
+        event = json.loads(journal.read_bytes())
+        event["record_type"] = "api_contract_supply_event/v1"
+        raw = json.dumps(event).encode() + b"\n"
+        journal.write_bytes(raw)
+        with self.assertRaisesRegex(ValueError, "journal_chain_mismatch"):
+            self.invoke()
+        self.assertEqual(journal.read_bytes(), raw)
+
     def test_journal_cannot_redirect_a_retained_read(self):
         self.invoke()
         path = self.args.run_folder / "events.jsonl"

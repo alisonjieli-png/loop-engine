@@ -13476,6 +13476,30 @@ entries:
   classification: SECRET_OR_CREDENTIAL_REFERENCE
   created_on: '2026-10-07'
   expires_on: '2027-10-07'
+- finding_id: hardcoding.4fbe5991056b3884d3fe46ec
+  owner: tools.operator_credentials.json:api_keys.tensorart-owner-primary.environment
+  rationale: Environment-variable name only for the October 8 owner-supplied TensorArt key. Its value stays in Secret Service; the account binding and bounded read evidence remain in the private handoff.
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  created_on: '2026-10-08'
+  expires_on: '2027-10-08'
+- finding_id: hardcoding.bd05d4e6b4cbef04e1682c1b
+  owner: tools.operator_credentials.json:api_keys.anthropic-model-primary.environment
+  rationale: Environment-variable name only, resolved by the existing Secret Service operator. The account-handoff reference contains no key and enables no provider call or spending allowance.
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  created_on: '2026-10-08'
+  expires_on: '2027-10-08'
+- finding_id: hardcoding.3ae776c3a5b859b86540e79d
+  owner: tools.operator_credentials.json:api_keys.opencode-zen-primary.environment
+  rationale: Environment-variable name only for an optional owner-supplied Zen credential. The existing operator resolver owns access; native OpenCode Go credentials and subscriptions are separate.
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  created_on: '2026-10-08'
+  expires_on: '2027-10-08'
+- finding_id: hardcoding.8fb32dbb2b910e80ae897d8b
+  owner: tools.operator_credentials.json:api_keys.rapidapi-reddit34-primary.environment
+  rationale: Inventory alias for the existing fixed-host Reddit34 keyring identity. Only the environment-variable name is stored; the native reader's destination and account quota are unchanged.
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  created_on: '2026-10-08'
+  expires_on: '2027-10-08'
 - finding_id: hardcoding.b6e18e20d4b546e4e59391f0
   owner: tools.query_multiplier.install_schedule:start_command
   rationale: Exact provider-variable binding guard. A selected operator reference must name the Ollama service and its expected environment variable before the timer can use it; a foreign provider is tested and refused.

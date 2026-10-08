@@ -42,7 +42,8 @@ def _now() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-QUALIFIER_PATHS = ("tools/component_qualification", "tools/qualify_generated_components.py")
+QUALIFIER_PATHS = ("tools/component_qualification", "tools/qualify_generated_components.py",
+                   "tools/supply_lines/constraint_case_runtime.py", "tools/supply_lines/schema_check.py")
 
 
 def code_revision(repository: Path) -> str:
@@ -178,7 +179,8 @@ def _comparison(component, policy) -> dict:
     normalized distinctive text, its shingle hashes as bytes and its job key. The text itself never reaches the
     parent, which held every one until October 5, 2026 (about 38 KB each for a generated API client)."""
     text_digest, tokens = checks.comparison_parts(checks.distinctive_text(component, policy))
-    return {"text_digest": text_digest, "tokens": tokens.tobytes(), "job_key": checks.job_key(component, policy)}
+    return {"text_digest": text_digest, "tokens": tokens.tobytes(), "job_key": checks.job_key(component, policy),
+            "constraint_jobs": checks.constraint_jobs(component, policy)}
 
 
 class _TokenSpool:
@@ -194,7 +196,7 @@ class _TokenSpool:
         raw = row.pop("tokens")
         length = len(raw) // 8
         self.places.append((row["identity"], row["package_digest"], row.pop("text_digest"), row["job_key"],
-                            self.count, length))
+                            row.pop("constraint_jobs", ()), self.count, length))
         self.stream.write(raw)
         self.count += length
 
@@ -203,8 +205,8 @@ class _TokenSpool:
         self.stream.close()
         tokens = (numpy.memmap(self.path, dtype=numpy.uint64, mode="r", shape=(self.count,)) if self.count
                   else numpy.empty(0, dtype=numpy.uint64))
-        return [(identity, digest, text_digest, tokens[start:start + length], key)
-                for identity, digest, text_digest, key, start, length in self.places]
+        return [(identity, digest, text_digest, tokens[start:start + length], key, cases)
+                for identity, digest, text_digest, key, cases, start, length in self.places]
 
     def close(self) -> None:
         if not self.stream.closed:

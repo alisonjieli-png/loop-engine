@@ -98,9 +98,19 @@ def command_qualify(options) -> dict:
     def progress(done, total, seconds):
         print(json.dumps({"progress": done, "of": total, "seconds": round(seconds, 1)}), flush=True)
 
+    known = _known_digests(options.known_bundle)
+    from tools.component_qualification.components import from_folder
+    context = checks.QualificationContext.load(ROOT)
+    for known_folder in getattr(options, "known_constraint_groups", ()) or ():
+        component = from_folder(known_folder)
+        group = checks.constraint_group(component, context.policy, replay=True)
+        if group is None:
+            raise ValueError("known_constraint_group_required")
+        for job in checks.constraint_jobs(component, context.policy):
+            known[checks.CONSTRAINT_CASE_JOB_PREFIX + job] = component.identity
     summary = qualify.qualify_rows(rows, repository=ROOT, store_root=options.store_root,
                                    sandbox_settings=_sandbox(options), work_root=options.work_root,
-                                   workers=options.workers, known_digests=_known_digests(options.known_bundle),
+                                   workers=options.workers, known_digests=known,
                                    output=folder / "qualification.jsonl", progress=progress,
                                    reuse_paths=options.reuse, check_ids=_check_ids(options.checks))
     (folder / "run.json").write_text(json.dumps(summary, indent=1, sort_keys=True) + "\n")
@@ -170,6 +180,8 @@ def main(argv=None) -> int:
                                       "component's own code in a sandbox, which costs a sandbox per component.")
             command.add_argument("--known-bundle", type=Path,
                                  help="A release bundle whose served digests count as existing components.")
+            command.add_argument("--known-constraint-groups", type=Path, action="append", default=[],
+                                 help="Prior exact case-group candidate folders; replay and reject overlapping case jobs across runs.")
             command.add_argument("--reuse", action="append", default=[],
                                  help="An earlier qualification.jsonl; a component with the same record version and "
                                       "package digest, checked by this committed qualifier revision, keeps its "

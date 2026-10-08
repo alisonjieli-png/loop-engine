@@ -121,6 +121,11 @@
    }
   },
   "json_schemas": {
+   "constraint_groups": {
+    "manifest": "constraint-group.json",
+    "record_type": "api_constraint_group/v1",
+    "generator_identity": "tools/supply_lines/constraint_case_packages.py"
+   },
    "kinds": [
     "contract_schema"
    ],
