@@ -35,6 +35,13 @@ internal vocabulary to understand one page.
 - Keep claims narrow and testable.
 - State current behavior separately from planned behavior.
 
+On marketing pages, describe capabilities customers can use. Do not advertise
+unreleased features with "planned", "coming soon" or "in development" cards.
+The owner's October 8 direction uses "Preview" for usable early features,
+including local overnight tools. State their actual scope. Keep unfinished
+engineering work in the roadmap and preserve factual limitations in technical
+documentation, status reports and errors.
+
 ## Setup, system messages and source code
 
 A setup step explains what to do, where to do it, what success looks like and

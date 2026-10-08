@@ -9,7 +9,7 @@ import {existsSync,mkdirSync,writeFileSync,readFileSync} from "node:fs";
 import {createHash} from "node:crypto";
 import {resolve} from "node:path";
 import {setRequestedAppearance,readRequestedAppearance,appearanceProblems,appearanceKnownWrongControls} from "./browser_appearance_checks.mjs";
-import {offeringProblems,heroProblems,heroCheckRejectsItsKnownWrongCases} from "./homepage_audience_checks.mjs";
+import {offeringProblems,heroProblems,heroCheckRejectsItsKnownWrongCases,readOvernightTools,overnightToolsProblems} from "./homepage_audience_checks.mjs";
 
 const root=resolve(new URL("..",import.meta.url).pathname),output=resolve(process.argv[2]||"");
 let base=process.argv[3];
@@ -70,7 +70,7 @@ with TemporaryDirectory() as folder:
    return allowed?route.continue():route.abort();
   });
   const page=await context.newPage();page.on("pageerror",error=>errors.push({profile:profile.name,theme,message:String(error)}));
-  const paths=["/",...(["desktop-100","phone"].includes(profile.name)?["/pricing","/feeds","/library"]:[])];
+  const paths=["/",...(["desktop-100","phone"].includes(profile.name)?["/pricing","/overnight","/feeds","/library"]:[])];
   for(const path of paths){
    const where={profile:profile.name,theme,path};
    const response=await page.goto(base+path);await page.evaluate(()=>document.fonts.ready);await page.evaluate(()=>scrollTo(0,0));
@@ -115,9 +115,16 @@ with TemporaryDirectory() as folder:
      await number.evaluate((node,text)=>{node.textContent=text;},previous);await page.evaluate(()=>scrollTo(0,0));
     }
    }
+   if(["/","/pricing","/overnight"].includes(path)){
+    const preview=await readOvernightTools(page,path==="/"?"home":path.slice(1));
+    check("local_overnight_preview_is_visible_and_explained",overnightToolsProblems(preview).length===0,{...where,preview});
+    check("overnight_preview_known_wrong_controls",overnightToolsProblems({...preview,visible:false}).length>0
+      &&overnightToolsProblems({...preview,text:(preview.text||"")+" Coming soon"}).length>0
+      &&overnightToolsProblems({...preview,scope:"hosted"}).length>0,where);
+   }
    if(path==="/pricing"||path==="/feeds")check("feed_price_free_end_date_and_opt_in_are_explicit",/\$4\.99\s+a month/.test(state.visibleText)
     &&/Free through December 31, 2026 \(Eastern\)/.test(state.visibleText)&&/No automatic charge/.test(state.visibleText)&&/opt-in/.test(state.visibleText)
-    &&/in development/.test(state.visibleText)&&/\$29\s+a month/.test(state.visibleText),where);
+    &&/source collections/i.test(state.visibleText)&&/\$29\s+a month/.test(state.visibleText),where);
    if(path==="/library")check("library_hero_does_not_advertise_package_counts",!/\bpackages?\b/i.test(await page.locator(".lib-hero").innerText()),where);
    const filename=`${profile.name}-${theme}-${path==="/"?"home":path.slice(1)}.png`;
    await page.screenshot({path:resolve(output,filename),fullPage:false});

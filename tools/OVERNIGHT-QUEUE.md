@@ -8,6 +8,26 @@ that a task finishes successfully.
 
 ## Prerequisites
 
+Install the repository in a Python virtual environment. The queue and morning
+report are repository tools, so keep the checkout:
+
+```bash
+git clone https://github.com/alisonjieli-png/loop-engine.git
+cd loop-engine
+python3 -m venv .venv
+.venv/bin/python -m pip install -e .
+```
+
+Configure your model access using [providers and keys](../docs/guides/providers-and-keys.md)
+or [custom endpoints](../docs/guides/custom-endpoints.md). Ollama Cloud uses your
+existing account; running the queue locally does not require downloading a model.
+Inspect the supported settings and credential references without a provider call:
+
+```bash
+.venv/bin/python -m loop_engine configure
+.venv/bin/python tools/overnight_queue.py --help
+```
+
 Use a fixed reviewed checkout, a supported configured model provider and the
 existing effect authority. Keep task files and the manifest unchanged during a
 queue. Use a fresh, private runs directory for a newly authorized run. A new
@@ -21,10 +41,12 @@ No real model execution is established by the queue's offline tests.
 
 The manifest contains one absolute task-file path per line. Blank lines and
 lines beginning with `#` are ignored. Missing or duplicate tasks refuse before
-dispatch. From the reviewed repository root:
+dispatch. Create each task file with the objective, permitted inputs and the
+checks that determine success. Start with one short task before leaving a
+long queue unattended. From the reviewed repository root:
 
 ```bash
-PYTHONPATH=src python3 tools/overnight_queue.py /path/to/tasks.txt \
+PYTHONPATH=src .venv/bin/python tools/overnight_queue.py /path/to/tasks.txt \
   --runs-dir /path/to/new-private-runs \
   --workspace-root /path/to/private-workspaces \
   --max-calls-per-task 12 --queue-call-budget 24 \

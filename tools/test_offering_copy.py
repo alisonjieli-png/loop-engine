@@ -16,7 +16,9 @@ RUNTIME = ROOT / "src/loop_engine/core/service_runtime"
 ASSETS = RUNTIME / "web_assets"
 COMBINED = "Agent Feeds + Harness Files"
 RETIRED = re.compile(r"\bBaltor Pro\b|\bone plan\b|refresh(?:ing)? the context", re.I)
-FEED_FACTS = ("$4.99 a month", "Free through December 31, 2026 (Eastern)", "No automatic charge", "opt-in", "in development")
+FEED_FACTS = ("$4.99 a month", "Free through December 31, 2026 (Eastern)", "No automatic charge", "opt-in", "source collections")
+PREVIEW_FACTS = ("local", "overnight", "preview", "limits", "checkpoints", "morning report")
+FUTURE_MARKETING = re.compile(r"\bplanned\b|coming soon|in development|being qualified", re.I)
 
 
 def marketing_views(page):
@@ -37,7 +39,35 @@ def feed_price_problems(text):
     return problems
 
 
+def overnight_tools_problems(text):
+    problems = ["missing " + fact for fact in PREVIEW_FACTS if fact not in text.lower()]
+    if re.search(r"hosted supervision|guaranteed results|unlimited model", text, re.I) or FUTURE_MARKETING.search(text):
+        problems.append("unqualified hosted feature, result or future promise")
+    return problems
+
+
 class OfferingCopyTests(unittest.TestCase):
+    def test_local_overnight_preview_is_visible_with_a_working_setup_guide(self):
+        page = (ASSETS / "index.html").read_text()
+        tools = [row for row in read_marked(page) if "data-overnight-tools" in row["attrs"]]
+        self.assertEqual(len(tools), 3, "home, pricing and overnight must describe the usable local tools")
+        for row in tools:
+            self.assertEqual(row["attrs"]["data-overnight-tools"], "local")
+            self.assertEqual(overnight_tools_problems(row["text"]), [])
+        views = marketing_views(page)
+        for name in ("home", "pricing", "overnight", "use-cases", "for-designers"):
+            self.assertIsNone(FUTURE_MARKETING.search(views[name]), name)
+        self.assertIn('href="https://github.com/alisonjieli-png/loop-engine/blob/main/tools/OVERNIGHT-QUEUE.md"', page)
+        self.assertTrue((ROOT / "tools/OVERNIGHT-QUEUE.md").is_file())
+
+    def test_preview_guard_rejects_missing_scope_features_and_unqualified_promises(self):
+        valid = " ".join(PREVIEW_FACTS)
+        self.assertEqual(overnight_tools_problems(valid), [])
+        for fact in PREVIEW_FACTS:
+            self.assertTrue(overnight_tools_problems(valid.replace(fact, "")), fact)
+        for claim in ("Hosted supervision", "Guaranteed results", "Unlimited model calls", "Planned preview", "Coming soon"):
+            self.assertTrue(overnight_tools_problems(valid + " " + claim), claim)
+
     def test_every_application_view_uses_current_customer_names(self):
         views = marketing_views((ASSETS / "index.html").read_text())
         self.assertGreater(len(views), 20)
@@ -58,6 +88,7 @@ class OfferingCopyTests(unittest.TestCase):
         from loop_engine.core.service_runtime.catalogue_feed import page_body
         text = marketing_views('<section data-view="feeds">' + page_body() + '</section>')["feeds"]
         self.assertEqual(feed_price_problems(text), [])
+        self.assertIsNone(FUTURE_MARKETING.search(text))
         valid = " ".join(FEED_FACTS)
         for fact in FEED_FACTS:
             self.assertTrue(feed_price_problems(valid.replace(fact, "")), fact)

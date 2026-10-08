@@ -142,7 +142,9 @@ class FeedSourceCollectionsTests(unittest.TestCase):
         body = catalogue_feed.page_body()
         self.assertIn("Updates your agents can use.", body)
         self.assertIn("not live digests", body)
-        self.assertIn("Account-based feed settings", body)
+        self.assertIn("Your harness owns scheduling and source access.", body)
+        self.assertNotIn("personalized daily digests", body)
+        self.assertNotIn("in development", body)
         self.assertNotIn("refreshing its context", body)
         self.assertNotIn("Baltor Pro", body)
         for path in sources.formats():

@@ -19,7 +19,7 @@ export function audienceProblems(cards){
   if(JSON.stringify(cards.map(card=>card.id))!==JSON.stringify(Object.keys(audienceDestinations)))problems.push("missing or repeated audience");
   for(const card of cards){
     if(!card.title||card.href!==audienceDestinations[card.id])problems.push("missing heading or wrong destination");
-    if(card.id==="designers"&&!/in development/i.test(card.text))problems.push("creative availability is not disclosed");
+    if(card.id==="designers"&&!/playable.*demo/i.test(card.text))problems.push("the available creative demo is not identified");
   }
   return problems;
 }
@@ -37,6 +37,28 @@ export async function checkAudiences(page,check){
   check('offering_check_refuses_missing_paths_wrong_destinations_and_hidden_availability',
     offeringProblems(offerings.slice(1)).length>0&&offeringProblems(offerings.map(row=>({...row,href:'/'}))).length>0
     &&offeringProblems(offerings.map(row=>({...row,text:''}))).length>0);
+  const tools=await readOvernightTools(page,"home");
+  check("local_overnight_preview_names_usable_tools",overnightToolsProblems(tools).length===0);
+  check("overnight_preview_guard_rejects_hidden_scope_or_future_promises",
+    overnightToolsProblems({...tools,visible:false}).length>0
+    &&overnightToolsProblems({...tools,scope:"hosted"}).length>0
+    &&overnightToolsProblems({...tools,text:tools.text+" Coming soon"}).length>0);
+}
+
+export async function readOvernightTools(page,view){
+  const previews=await page.locator('[data-view="'+view+'"] [data-overnight-tools]').evaluateAll(items=>items.map(node=>({
+    scope:node.dataset.overnightTools,text:node.innerText,
+    visible:node.getClientRects().length>0&&getComputedStyle(node).visibility!=="hidden"&&!node.closest("[hidden]")
+  })));
+  return previews.length===1?previews[0]:{};
+}
+export function overnightToolsProblems(preview){
+  const required=[/local/i,/overnight/i,/preview/i,/limits/i,/checkpoints/i,/morning reports/i];
+  return [
+    ...(preview.visible===true&&preview.scope==="local"?[]:["overnight scope must be local and visible"]),
+    ...(required.every(rule=>rule.test(preview.text||""))?[]:["local overnight tools are not explained"]),
+    ...(/\bplanned\b|coming soon|in development|hosted supervision|guaranteed results|unlimited model/i.test(preview.text||"")?["unqualified feature or future promise"]:[])
+  ];
 }
 
 export function offeringProblems(cards){
@@ -48,8 +70,9 @@ export function offeringProblems(cards){
     if(card.id!==id||card.title!==title||card.href!==href)problems.push('offering identity or destination differs');
   }
   if(!/\$4\.99 a month/.test(cards[0].text)||!/Free through December 31, 2026 \(Eastern\)/.test(cards[0].text)
-    ||!/No automatic charge/.test(cards[0].text)||!/opt-in/.test(cards[0].text)||!/in development/.test(cards[0].text))problems.push('feed price, free period, consent or availability is missing');
+    ||!/No automatic charge/.test(cards[0].text)||!/opt-in/.test(cards[0].text)||!/source collections/i.test(cards[0].text))problems.push('feed price, free period, consent or current scope is missing');
   if(!/Agent Feeds \+ Harness Files/.test(cards[1].text)||!/\$29 a month/.test(cards[1].text))problems.push('full library price is missing');
+  if(!/local overnight/i.test(cards[1].text))problems.push('local overnight workflow scope is missing');
   return problems;
 }
 
@@ -58,7 +81,7 @@ export function useCaseProblems(groups){
   if(JSON.stringify(groups.map(group=>group.id))!==JSON.stringify(["engineers","designers","agents"]))problems.push("missing or repeated use-case audience");
   for(const group of groups){
     if(group.cases.length!==3||group.cases.some(row=>!row.title?.trim()||!row.href?.startsWith("/")))problems.push("each audience needs three linked use cases");
-    if(group.id==="designers"&&!/being qualified/i.test(group.text))problems.push("creative availability must remain clear");
+    if(group.id==="designers"&&!/editable prototypes/i.test(group.text))problems.push("creative prototype scope must remain clear");
   }
   return problems;
 }

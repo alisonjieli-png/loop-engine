@@ -27,7 +27,7 @@ const useCaseProblems=cards=>[...cardProblems(cards,["overnight","efficiency","l
 const heroActionProblems=state=>[...(JSON.stringify(state.primary)===JSON.stringify([["hero-primary","Get started","/get-started"]])?[]:["the hero's primary actions are "+JSON.stringify(state.primary)]),
   ...(JSON.stringify(state.secondary)===JSON.stringify([["hero-setup","Get set up","/setup"]])?[]:["the hero's secondary actions are "+JSON.stringify(state.secondary)]),...(state.journey===1?[]:[state.journey+" hero links lead into the access journey"]),
   ...(state.paths===""?[]:["the hero repeats its buttons in a line of text: "+JSON.stringify(state.paths)])];
-const pricingFacts=["Agent Feeds","Agent Feeds + Harness Files","$4.99 a month","Free through December 31, 2026 (Eastern)","No automatic charge","opt-in","in development","$29 a month","one downloaded item","Cancel from your account page."];
+const pricingFacts=["Agent Feeds","Agent Feeds + Harness Files","$4.99 a month","Free through December 31, 2026 (Eastern)","No automatic charge","opt-in","source collections","$29 a month","one downloaded item","Cancel from your account page."];
 const pricingProblems=text=>[...pricingFacts.filter(fact=>!text.includes(fact)).map(fact=>"missing "+fact),...(/\bsearch(?:ing)? is free\b/i.test(text)?["free search"]:[]),...(/\binvited\b/i.test(text)?["free invited accounts"]:[]),
   ...(/United States dollars|per month/i.test(text)?["another way of writing the price"]:[])];
 const paymentWords={accountFirst:{note:"Create your account, then subscribe from your account page. Cancel any time."},
