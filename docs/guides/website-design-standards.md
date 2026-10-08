@@ -41,6 +41,22 @@ Every colour, typeface, radius and shadow is a custom property in the token
 block at the top of `service.css`. `architecture.css` holds the components and
 reads the same tokens. A rule never writes a colour of its own.
 
+The homepage, account pages, directories and deck use the same selected
+appearance. The light palette uses warm neutrals and the ember accent; the
+dark palette uses the matching dark tokens. The homepage hero and header do
+not force a dark appearance over a light selection. Code samples keep their
+own code surface. `site-chrome.js` owns the appearance control and saves only
+`baltor.appearance` in this origin's browser storage. Full-page navigation and
+reload retain it; other tabs on the same origin follow changes. Unsupported
+or unavailable storage leaves the light default and a working control. No
+account preference or tracking request is created.
+
+`tools/check_site_appearance.mjs` checks both appearances at desktop and phone
+widths across the homepage, pricing, feeds, directories, Public Good and deck.
+It also checks system appearance, reload, tab synchronization, storage refusal
+and a known-wrong forced-dark hero. Colour contrast remains owned by
+`tools/test_design_tokens.py` and the website layout browser checks.
+
 | Use | Tokens |
 |---|---|
 | Grounds | `--bg`, `--ground`, `--paper`, `--band`, `--panel-head`, `--soft` |

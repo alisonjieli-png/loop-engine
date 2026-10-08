@@ -83,6 +83,7 @@ MODULE_MAP = {
         "catalogue_index_checks",
         "catalogue_follow_checks", "library_page",
         "catalogue_feed",
+        "feed_source_collections",
         "catalogue_reports", "catalogue_report_checks",
         "list_paging", "list_paging_checks",
         "commercial_relationship", "public_links",

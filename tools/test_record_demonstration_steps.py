@@ -61,6 +61,38 @@ class DemonstrationRecordTest(unittest.TestCase):
         self.assertIn("absent_", written, "the writer deleted a reference instead of reporting it")
         self.assertTrue(problems)
 
+    def test_expected_download_is_generated_from_its_named_packaged_reference(self):
+        shown = record._EXPECTED.search(self.page)
+        self.assertIsNotNone(shown)
+        planted = self.page[:shown.start()] + shown.group().replace(self.items[shown.group("identity")]["digest"], "0" * 64) + self.page[shown.end():]
+        corrected, problems = record._rewrite(planted)
+        self.assertEqual(problems, [])
+        self.assertEqual(corrected, self.page)
+
+    def test_every_scripted_reference_matches_the_same_manifest(self):
+        source = record.SCRIPT.read_text()
+        rewritten, problems = record._rewrite_script(source)
+        self.assertEqual(problems, [])
+        self.assertEqual(source, rewritten)
+        self.assertEqual(len(record._SCENARIO_REFERENCE.findall(source)), 7)
+        first = record._SCENARIO_REFERENCE.search(source)
+        planted = source[:first.start()] + first.group().replace(self.items[first.group("identity")]["digest"], "0" * 64) + source[first.end():]
+        corrected, problems = record._rewrite_script(planted)
+        self.assertEqual(problems, [])
+        self.assertEqual(corrected, source)
+        self.assertNotEqual(corrected, planted)
+
+    def test_script_writer_preserves_scenario_evidence_choices_and_refuses_unknown_reference(self):
+        source = record.SCRIPT.read_text()
+        rewritten, _ = record._rewrite_script(source)
+        for field in ("evidence_class", "evidence_label", "evidence_href", "evidence_link", "outcome", "query", "chosen"):
+            pattern = field + r': [^\n]+'
+            self.assertEqual(re.findall(pattern, source), re.findall(pattern, rewritten))
+        planted = source.replace('{name: "find_duplicate_records_with_blocking_keys"', '{name: "missing_reference"', 1)
+        rewritten, problems = record._rewrite_script(planted)
+        self.assertTrue(problems)
+        self.assertIn('name: "missing_reference"', rewritten)
+
 
 if __name__ == "__main__":
     unittest.main()

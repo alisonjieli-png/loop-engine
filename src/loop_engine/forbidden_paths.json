@@ -179,6 +179,7 @@
     "core/service_runtime/http_auth.py",
     "core/service_runtime/oauth_authorization.py",
     "core/service_runtime/oauth_http.py",
+    "core/service_runtime/feed_source_collections.py",
     "core/service_runtime/http_boundary_checks.py",
     "core/service_runtime/web_surface_checks.py",
     "core/service_runtime/http_checks.py",
@@ -864,6 +865,7 @@
     "maximum_total_bytes"
   ],
   "network_allowed_modules_reasons": {
+    "core/service_runtime/feed_source_collections.py": "Uses urllib.parse.urlsplit only to validate packaged source links. This release-curated projection creates no outbound client, socket or upstream request. tools/test_feed_source_collections.py restricts its network-related imports to that parser and detects added HTTP-client or socket imports with known-wrong controls.",
     "core/service_runtime/oauth_authorization.py": "Uses urllib.parse only to validate exact resource and registered callback addresses and construct redirects. It performs no outbound network request; existing browser identity and the host transport retain their authority. tools/test_oauth_http.py rejects outbound client imports in this module.",
     "core/service_runtime/oauth_http.py": "Uses urllib.parse only to parse bounded form fields and encode the public-client revocation workaround. Pinned MCP handlers process inbound requests; this module creates no outbound client. tools/test_oauth_http.py checks the restricted import boundary.",
     "core/service_runtime/waitlist_checks.py": "Real loopback-only waiting list acceptance. The fixtures use owned temporary listeners and temporary records; no identity, payment or mail provider is contacted and no address is sent anywhere.",

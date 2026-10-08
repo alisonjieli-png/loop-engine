@@ -148,7 +148,7 @@ with ExitStack() as stack:
     confirm_base,_=stack.enter_context(running_http(confirm,application_factory=lambda config:ServiceHttpApplication(confirm.runtime,confirm.provisioning,config,browser_identity=confirm_identity,account_email=account_email(config,project,confirm_identity_origin,confirm.runtime),client_access=confirm_access),display_name="Baltor",request_limits=stated))
     # An invited account on the billing service: an operator grant, the way an invitation gives paid access. The other account has none.
     billing.runtime.set_operator_entitlement("beta",valid_until=int(time.time())+30*86400,evidence_ref="browser fixture invitation")
-    # A third account holds free monthly Baltor Pro, written by the same rows a superadmin grant commits.
+    # A third account holds free monthly Agent Feeds + Harness Files, written by the same rows a superadmin grant commits.
     billing.runtime.register_tenant(TenantRegistration("gamma","tenant:gamma"))
     free_key=billing.runtime.issue_key(TenantKeyIssue("gamma","browser fixture free monthly"))
     with billing.runtime._catalog.store(write=True) as store:
@@ -511,6 +511,9 @@ const focusMarks=async (target,stops)=>{const marks=[];await target.evaluate(()=
     return {name:(node?.id||node?.textContent||node?.tagName||"").trim().slice(0,30),outline:shown?shown.outlineStyle:"none",width:shown?parseFloat(shown.outlineWidth):0};}));}
   return marks;};
 const unmarkedStops=marks=>marks.filter(mark=>mark.outline==="none"||mark.width<2);
+/* Appearance is the only non-secret local preference. Any other key or an invalid appearance value still fails. */
+const browserHasNoSavedCredentials=()=>Object.keys(localStorage).every(key=>key==="baltor.appearance"
+  &&["system","light","dark"].includes(localStorage.getItem(key)))&&sessionStorage.length===0;
 const boxesMoved=(served,after)=>Object.keys(served).filter(key=>!served[key]||!after[key]||served[key].some((value,index)=>Math.abs(value-after[key][index])>1));
 const withEndpoint=(value,endpoint)=>value===endpointMark?endpoint:Array.isArray(value)?value.map(item=>withEndpoint(item,endpoint)):value&&typeof value==="object"?Object.fromEntries(Object.entries(value).map(([key,item])=>[key,withEndpoint(item,endpoint)])):value;
 const ordered=value=>Array.isArray(value)?value.map(ordered):value&&typeof value==="object"?Object.fromEntries(Object.keys(value).sort().map(key=>[key,ordered(value[key])])):value;
@@ -825,13 +828,13 @@ try {
   check("category_line_check_rejects_a_shortened_line_a_missing_harness_a_status_and_a_new_order",categoryProblems({...categoryState,footer:"Optimized operation."}).length===1
     &&categoryProblems({...categoryState,harnesses:heroHarnesses.filter(name=>name!=="Pi")}).length===1&&categoryProblems({...categoryState,harnesses:heroHarnesses.map(name=>name==="Pi"?"Pi Planned":name)}).length===1
     &&categoryProblems({...categoryState,harnesses:[...heroHarnesses].reverse()}).length===1);
-  /* The price in the hero, as the owner decided on September 23, 2026: "Baltor Pro $29 a month", written the one way the design
+  /* The price in the hero, as the owner decided on September 23, 2026: "Agent Feeds + Harness Files $29 a month", written the one way the design
      standards allow. */
   const heroPrice=await page.evaluate(()=>document.querySelector('[data-view="home"] .hero-price')?.textContent.replace(/\s+/g," ").trim()||"");
-  const statesThePlanAndPrice=text=>/^Baltor Pro \$29 a month\b/.test(text)&&!/United States dollars|per month/i.test(text);
+  const statesThePlanAndPrice=text=>/^Agent Feeds \+ Harness Files \$29 a month\b/.test(text)&&!/United States dollars|per month/i.test(text);
   check("homepage_hero_states_the_plan_and_the_price",statesThePlanAndPrice(heroPrice),{price:heroPrice});
-  check("hero_price_check_rejects_a_missing_price_and_another_way_of_writing_it",!statesThePlanAndPrice("")&&!statesThePlanAndPrice("Baltor Pro")&&!statesThePlanAndPrice("Baltor Pro 29 United States dollars each month")
-    &&!statesThePlanAndPrice("Baltor Pro $29 per month")&&statesThePlanAndPrice("Baltor Pro $29 a month for the whole library"));
+  check("hero_price_check_rejects_a_missing_price_and_another_way_of_writing_it",!statesThePlanAndPrice("")&&!statesThePlanAndPrice("Agent Feeds + Harness Files")&&!statesThePlanAndPrice("Agent Feeds + Harness Files 29 United States dollars each month")
+    &&!statesThePlanAndPrice("Agent Feeds + Harness Files $29 per month")&&statesThePlanAndPrice("Agent Feeds + Harness Files $29 a month for the whole library"));
   /* Two actions in the hero, as the owner decided on September 23, 2026: Get started, the one primary action, which opens the
      funnel, and Get set up, the secondary action, which opens the guide, with one line under them that says how the two differ.
      No second way into the access journey anywhere in the hero. */
@@ -1254,7 +1257,7 @@ try {
      keeps, which the rule must leave alone. */
   const invitationKnownWrong=["Invitation only while we open in small groups.","Request an invitation","Invited accounts are free.","We invite people in small groups.","Join the waiting list.",
     "Search is free.","Searching is free, and each item your tools download appears here.","Being built","A key for each device from your account page is being prepared.","Planned"];
-  const invitationKept=["Get started","Create your account","One plan. The whole library.","The plan can change as you learn more.","Your account covers Baltor Pro.","Get set up connects your harness."];
+  const invitationKept=["Get started","Create your account","One plan. The whole library.","The plan can change as you learn more.","Your account covers Agent Feeds + Harness Files.","Get set up connects your harness."];
   check("invitation_word_check_rejects_a_known_wrong_page",invitationKnownWrong.every(claim=>invitationWords.test(claim))&&invitationKept.every(claim=>!invitationWords.test(claim)),{pages:invitationKnownWrong.length});
   /* The served-file reading is narrow in the same way. Each case is read on its own, so a page defect elsewhere cannot hide it: a
      message in a script string and a sentence in a documentation body are reported; a comment and a lowercase state name are
@@ -1453,10 +1456,10 @@ try {
   /* The pricing view is read as a person reads it: the amount and "a month" stand on two lines of the plan card, and a line break
      inside the price is a space. */
   const pricingText=(await page.locator('[data-view="pricing"]').innerText()).replace(/\s+/g," ");
-  /* The published facts in the pricing view's words since September 23, 2026: one plan, Baltor Pro, "$29 a month", the download
+  /* The published facts in the pricing view's words since September 23, 2026: one plan, Agent Feeds + Harness Files, "$29 a month", the download
      as the measured unit, and how to stop paying. The owner removed "Search is free" and the free invited accounts that day, and
      the price is written only "$29 a month", so each of those is a refused phrase with a known-wrong page of its own. */
-  const pricingFacts=[["feed offering","Agent Feeds"],["combined offering","Agent Feeds + Harness Files"],["feed availability","Free preview"],["plan name","Baltor Pro"],["price","$29 a month"],["measured unit","one downloaded item"],["how to stop paying","Cancel from your account page."]];
+  const pricingFacts=[["feed offering","Agent Feeds"],["combined offering","Agent Feeds + Harness Files"],["feed availability","Free preview"],["plan name","Agent Feeds + Harness Files"],["price","$29 a month"],["measured unit","one downloaded item"],["how to stop paying","Cancel from your account page."]];
   const refusedPricingPhrases=[["free search",/\bsearch(?:ing)? is free\b/i],["free invited accounts",/\binvited\b/i],["another way of writing the price",/United States dollars|per month|\$29\s*\/\s*mo/i]];
   const missingFacts=text=>[...pricingFacts.filter(([,fact])=>!text.includes(fact)).map(([name])=>name),...refusedPricingPhrases.filter(([,rule])=>rule.test(text)).map(([name])=>name)];
   check("pricing_view_states_every_published_fact",missingFacts(pricingText).length===0,{missing:missingFacts(pricingText)});
@@ -1689,7 +1692,7 @@ try {
      tag and the closing note read the same whether account creation is open or not, and none of them says invitation. The
      state itself still shows in each action's data-access-state, in the pricing view's note, in the personal-key wording and
      in the one panel that leads the guide. */
-  const accessWords={note:"for the whole library",tag:"One plan",closing:"Search the whole library from the harness you already use."};
+  const accessWords={note:"for the whole library",tag:"Full library",closing:"Search the whole library from the harness you already use."};
   const expectedAccess={waiting:{state:"waiting",href:accessPaths.closed,label:accessLabels.closed,...accessWords},open:{state:"open",href:accessPaths.open,label:accessLabels.open,...accessWords}};
   /* The thirteen actions that carry the state: the header, the hero, the plan on the homepage, the closing band, the pricing view,
      How it works, the first example, access and data, the documentation, the footer, and the one on each use-case page, which
@@ -2284,7 +2287,15 @@ try {
   check("wrong_key_does_not_enter_the_workspace",await page.locator("#query").isDisabled()&&await page.locator("#access-token").inputValue()==="");
   await page.fill("#access-token",fixture.token); await page.click("#connect-button"); await page.waitForFunction(()=>document.querySelector("#connection-state").textContent==="Connected");
   check("real_durable_tenant_authentication_reaches_the_workspace",(await page.locator("#identity-facts").innerText()).includes("alpha")&&await page.locator("#access-token").inputValue()==="");
-  check("credentials_are_not_persisted_in_browser_storage",await page.evaluate(()=>localStorage.length===0&&sessionStorage.length===0));
+  check("credentials_are_not_persisted_in_browser_storage",await page.evaluate(browserHasNoSavedCredentials));
+  const preferenceBefore=await page.evaluate(()=>localStorage.getItem("baltor.appearance"));
+  await page.evaluate(()=>localStorage.setItem("baltor.appearance","a value that is not an appearance"));
+  const wrongPreferenceRefused=!await page.evaluate(browserHasNoSavedCredentials);
+  await page.evaluate(value=>{if(value===null)localStorage.removeItem("baltor.appearance");else localStorage.setItem("baltor.appearance",value);},preferenceBefore);
+  await page.evaluate(()=>localStorage.setItem("unexpected-credential","synthetic credential"));
+  const wrongKeyRefused=!await page.evaluate(browserHasNoSavedCredentials);
+  await page.evaluate(()=>localStorage.removeItem("unexpected-credential"));
+  check("saved_credential_guard_accepts_only_the_exact_appearance_vocabulary",wrongPreferenceRefused&&wrongKeyRefused&&await page.evaluate(browserHasNoSavedCredentials));
   check("sign_in_returns_to_requested_setup_page",new URL(page.url()).pathname===getStartedPage);
   const protocolMethods=[]; const trackProtocol=request=>{if(new URL(request.url()).pathname==="/mcp")protocolMethods.push(request.postDataJSON()?.method);};page.on("request",trackProtocol);
   await page.click("#test-protocol"); await page.waitForFunction(()=>!document.querySelector("#test-protocol").disabled);
@@ -2483,7 +2494,7 @@ try {
   const generated=await page.inputValue("#issued-token"); secrets.push(generated);
   const generatedSession=await page.request.get(fixture.base+"/api/v1/session",{headers:{Authorization:"Bearer "+generated}});
   check("dashboard_creates_real_usable_test_token",generatedSession.status()===200&&(await page.locator("#access-list").innerText()).includes("Browser harness trial"));
-  check("generated_secret_not_in_page_text_or_browser_storage",!(await page.locator("body").innerText()).includes(generated)&&await page.evaluate(()=>localStorage.length===0&&sessionStorage.length===0));
+  check("generated_secret_not_in_page_text_or_browser_storage",!(await page.locator("body").innerText()).includes(generated)&&await page.evaluate(browserHasNoSavedCredentials));
   await page.click("#clear-token"); check("one_time_token_clear_removes_secret",await page.inputValue("#issued-token")==="");
   page.once("dialog",dialog=>dialog.accept()); await page.getByRole("button",{name:"Revoke Browser harness trial",exact:true}).click(); await page.waitForFunction(()=>document.querySelector("#admin-message").textContent==="Token revoked.");
   const revokedSession=await page.request.get(fixture.base+"/api/v1/session",{headers:{Authorization:"Bearer "+generated}});
@@ -2612,7 +2623,7 @@ try {
     note("a_password_chosen_first_by_someone_else_no_longer_opens_the_account",await standInSignIn(target,address,chosenFirst)===400&&await standInSignIn(target,address,owner)===200);
     /* While checkout is closed the plan step names the plan and its price and offers no control that starts a payment. Since
        September 23, 2026 it no longer says that payment is not open; the absent control is what the rule holds. */
-    note("get_started_funnel_offers_no_payment_while_checkout_is_closed",after.funnel.state==="plan"&&after.funnel.title==="Subscribe to Baltor Pro"&&after.funnel.text===unpaidPlanText&&after.funnel.subscribe===false,after.funnel);
+    note("get_started_funnel_offers_no_payment_while_checkout_is_closed",after.funnel.state==="plan"&&after.funnel.title==="Subscribe to Agent Feeds + Harness Files"&&after.funnel.text===unpaidPlanText&&after.funnel.subscribe===false,after.funnel);
     return {address,owner,link,signedIn:after.connected==="Connected"};
   };
   /* A used link says so plainly, changes nothing and offers a way to ask for another. */
@@ -2659,7 +2670,7 @@ try {
       field:box(document.getElementById("funnel-email")),action:box(document.getElementById("funnel-signup-button"))||box(document.getElementById("funnel-invite")),
       viewport:innerHeight,overflow:document.documentElement.scrollWidth>innerWidth+1,words:view?.innerText||""};
   });
-  const openSteps=["Create your account","Confirm your email","Choose a password","Subscribe to Baltor Pro","Get set up"];
+  const openSteps=["Create your account","Confirm your email","Choose a password","Subscribe to Agent Feeds + Harness Files","Get set up"];
   /* The funnel in each state a service can report. Where the service takes new accounts, by registration or by its request list,
      the card shows the one account form, #funnel-email with its one action and the sentence that links the terms and the privacy
      notice, and the first step reads "Create your account", in the same words in both states. Where it takes neither, the card
@@ -2721,7 +2732,7 @@ try {
     note("get_started_funnel_tells_a_second_request_from_the_same_address_that_it_is_registered",second.error&&second.message.startsWith("This address is already registered.")&&second.form&&!invitationWords.test(second.message),second);
   };
   /* Staff administration through the website. A superadmin named in the service's accounts policy signs in like anyone,
-     sees the Administration link, every account with its plan, and grants free monthly Baltor Pro to one of them. */
+     sees the Administration link, every account with its plan, and grants free monthly Agent Feeds \+ Harness Files to one of them. */
   /* Staff sign in like anyone: the identity provider's token address answers with the staff member's session. */
   const staffSignIn=async target=>{
     await target.route(fixture.identity_origin+"/auth/v1/token**",route=>route.fulfill({status:200,contentType:"application/json",headers:{"Access-Control-Allow-Origin":fixture.staff_base,"Access-Control-Allow-Headers":"*","Access-Control-Allow-Methods":"POST, OPTIONS"},body:JSON.stringify({access_token:fixture.staff_token,refresh_token:"local-fixture-refresh",expires_in:1800,token_type:"bearer",user:fixture.staff_user})}));
@@ -2733,7 +2744,7 @@ try {
     await target.waitForFunction(()=>document.querySelectorAll("#staff-accounts article").length>=2,null,{timeout:10000}).catch(()=>{});
   };
   /* Staff administration through the website. A superadmin named in the service's accounts policy signs in like anyone,
-     sees the Administration link, every account with its plan, and grants free monthly Baltor Pro to one of them. */
+     sees the Administration link, every account with its plan, and grants free monthly Agent Feeds \+ Harness Files to one of them. */
   const staffJourney=async (target,note)=>{
     await staffSignIn(target);
     const read=()=>target.evaluate(()=>({link:!document.getElementById("admin-nav")?.hidden,section:document.getElementById("staff-admin")?.hidden===false,
@@ -2764,7 +2775,7 @@ try {
       row:[...document.querySelectorAll("#staff-accounts article")].map(item=>item.innerText).find(text=>text.includes(address))||"",
       formWords:document.getElementById("staff-links-form")?.innerText||""}),address);
     note("a_superadmin_sends_a_sign_up_link_and_the_account_shows_as_waiting",form&&shown.message==="Link sent to "+address+"."
-      &&/Sign-up link sent/.test(shown.row)&&/Free monthly Baltor Pro starts when the account opens/.test(shown.row)&&/Not confirmed/.test(shown.row)
+      &&/Sign-up link sent/.test(shown.row)&&/Free monthly Agent Feeds \+ Harness Files starts when the account opens/.test(shown.row)&&/Not confirmed/.test(shown.row)
       &&!invitationWords.test(shown.message+" "+shown.row+" "+shown.formWords),{form,...shown});
   };
   /* The confirmation page keeps Confirm disabled, with a short note, until its sign-in settings have loaded, so a quick click
@@ -2964,11 +2975,11 @@ try {
       &&panel.controls&&panel.creator&&panel.focused==="client-token-label",{panel});
   };
   /* Finding 10 of the persona journeys of September 24, 2026: the price line under the Get started heading said "subscribe to Baltor
-     Pro for $29 a month" to an account that the founding offer already covered, the step list marked "Subscribe to Baltor Pro, $29 a
+     Pro for $29 a month" to an account that the founding offer already covered, the step list marked "Subscribe to Agent Feeds + Harness Files, $29 a
      month" as done for an account that never subscribed, and no page stated the founding offer before sign-up. The price line, the
      fourth step and the pricing page's free plan answer now follow the account's plan and the founding offer the service reports. */
-  const foundingSentence="While founding places last, a new account gets Baltor Pro free each month.";
-  const foundingPrice="Create your account and connect your harness. Baltor Pro is $29 a month, and while founding places last a new account gets it free each month.";
+  const foundingSentence="While founding places last, a new account gets Agent Feeds + Harness Files free each month.";
+  const foundingPrice="Create your account and connect your harness. Agent Feeds + Harness Files is $29 a month, and while founding places last a new account gets it free each month.";
   const planFacts=target=>target.evaluate(()=>{const shown=node=>Boolean(node&&node.getClientRects().length);
     return {price:document.getElementById("funnel-price")?.textContent||"",stepTitle:document.getElementById("funnel-step-plan-title")?.textContent||"",
       stepNote:document.getElementById("funnel-step-plan-note")?.textContent||"",stepDone:document.querySelector('[data-funnel-step="plan"]')?.classList.contains("is-done")===true,
@@ -2985,9 +2996,9 @@ try {
     const reported=(await (await target.request.get(base+"/api/v1/capabilities")).json()).result.website.founding_offer_open;
     if(open)note("pricing_and_get_started_state_the_founding_offer_while_places_remain",reported===true&&pricing.card
       &&JSON.stringify(pricing.founding)===JSON.stringify([foundingSentence,foundingSentence.trim()])&&pricing.answer.includes(foundingSentence)&&pricing.notes.length===0
-      &&funnel.price===foundingPrice&&funnel.price.includes("$29 a month")&&funnel.stepTitle==="Subscribe to Baltor Pro"&&funnel.stepNote==="$29 a month, or free each month while founding places last",{reported,pricing,funnel});
+      &&funnel.price===foundingPrice&&funnel.price.includes("$29 a month")&&funnel.stepTitle==="Subscribe to Agent Feeds + Harness Files"&&funnel.stepNote==="$29 a month, or free each month while founding places last",{reported,pricing,funnel});
     else note("no_page_states_the_founding_offer_when_the_service_reports_no_free_place",reported===false&&!pricing.card&&pricing.founding.length===0&&!/founding/i.test(pricing.answer)
-      &&funnel.price==="Create your account, subscribe to Baltor Pro for $29 a month and connect your harness."&&funnel.stepNote==="$29 a month, cancel any time",{reported,pricing,funnel});
+      &&funnel.price==="Create your account, subscribe to Agent Feeds + Harness Files for $29 a month and connect your harness."&&funnel.stepNote==="$29 a month, cancel any time",{reported,pricing,funnel});
   };
   const coveredPlan=(credential,source)=>async (target,note)=>{
     await target.goto(fixture.billing_base+"/login");await target.fill("#access-token",credential);await target.click("#connect-button");await waitConnected(target);
@@ -2995,10 +3006,10 @@ try {
     const funnel=await planFacts(target),steps=await target.evaluate(()=>[...document.querySelectorAll("[data-funnel-step] strong")].map(node=>node.textContent.trim()));
     await openInPage(target,"/pricing");
     const pricing=await planFacts(target);
-    const expected={founding_free_monthly:["Baltor Pro included","Free each month, as one of the first accounts","Your account holds a founding place, so Baltor Pro is free for it each month."],
-      free_monthly:["Baltor Pro included","Free each month for this account","Your account includes Baltor Pro free each month."]}[source];
-    note("get_started_and_pricing_follow_the_"+source+"_plan",funnel.price==="Your account includes Baltor Pro. Connect your harness to start."&&!/\$29|subscribe/i.test(funnel.price)
-      &&funnel.stepTitle===expected[0]&&funnel.stepNote===expected[1]&&funnel.stepDone&&!steps.includes("Subscribe to Baltor Pro")
+    const expected={founding_free_monthly:["Agent Feeds + Harness Files included","Free each month, as one of the first accounts","Your account holds a founding place, so Agent Feeds + Harness Files is free for it each month."],
+      free_monthly:["Agent Feeds + Harness Files included","Free each month for this account","Your account includes Agent Feeds + Harness Files free each month."]}[source];
+    note("get_started_and_pricing_follow_the_"+source+"_plan",funnel.price==="Your account includes Agent Feeds + Harness Files. Connect your harness to start."&&!/\$29|subscribe/i.test(funnel.price)
+      &&funnel.stepTitle===expected[0]&&funnel.stepNote===expected[1]&&funnel.stepDone&&!steps.includes("Subscribe to Agent Feeds + Harness Files")
       &&JSON.stringify(pricing.notes)===JSON.stringify([source])&&pricing.answer.includes(expected[2])&&pricing.founding.length===0&&!pricing.card,{funnel,steps,pricing});
   };
   /* Finding 8 of the persona journeys of September 24, 2026: nothing said who vets library items, or how. Security now has a "How
@@ -3104,18 +3115,18 @@ try {
     await target.waitForFunction(()=>document.querySelector("#connection-state")?.textContent==="Connected",null,{timeout:10000}).catch(()=>{});
     await target.evaluate(()=>{history.pushState({},"","/get-started");dispatchEvent(new PopStateEvent("popstate"));});
     const facts=await funnelFacts(target);
-    /* The owner's wording of September 23, 2026: an account with free monthly Baltor Pro, founding or granted, reads that its
-       account includes Baltor Pro, on the funnel and on the account page, with no invitation or trial word. */
+    /* The owner's wording of September 23, 2026: an account with free monthly Agent Feeds + Harness Files, founding or granted, reads that its
+       account includes Agent Feeds \+ Harness Files, on the funnel and on the account page, with no invitation or trial word. */
     if(covered&&freeMonthly){const plan=await target.evaluate(()=>({shown:document.getElementById("account-plan")?.hidden===false,text:document.getElementById("account-plan")?.textContent||""}));
-      note("get_started_funnel_tells_a_free_monthly_account_that_it_includes_baltor_pro",facts.state==="plan"&&facts.title==="Your account includes Baltor Pro"&&!facts.subscribe&&!invitationWords.test(facts.words)
-        &&facts.primaries.length===1&&facts.primaries[0].id==="funnel-setup-action"&&facts.primaries[0].href==="/setup"&&plan.shown&&plan.text==="Your account includes Baltor Pro.",{...facts,plan});return;}
-    if(covered){note("get_started_funnel_tells_a_granted_account_that_its_plan_is_covered",facts.state==="plan"&&facts.title==="Your account covers Baltor Pro"&&!facts.subscribe&&!invitationWords.test(facts.words)
+      note("get_started_funnel_tells_a_free_monthly_account_that_it_includes_baltor_pro",facts.state==="plan"&&facts.title==="Your account includes Agent Feeds + Harness Files"&&!facts.subscribe&&!invitationWords.test(facts.words)
+        &&facts.primaries.length===1&&facts.primaries[0].id==="funnel-setup-action"&&facts.primaries[0].href==="/setup"&&plan.shown&&plan.text==="Your account includes Agent Feeds + Harness Files.",{...facts,plan});return;}
+    if(covered){note("get_started_funnel_tells_a_granted_account_that_its_plan_is_covered",facts.state==="plan"&&facts.title==="Your account covers Agent Feeds + Harness Files"&&!facts.subscribe&&!invitationWords.test(facts.words)
       &&facts.primaries.length===1&&facts.primaries[0].id==="funnel-setup-action"&&facts.primaries[0].href==="/setup",facts);return;}
     let link="";
     if(facts.subscribe){await target.click("#funnel-subscribe");
       await target.waitForFunction(()=>document.querySelector("#funnel-plan-message a")!==null||document.getElementById("funnel-plan-message")?.classList.contains("error"),null,{timeout:10000}).catch(()=>{});
       link=await target.evaluate(()=>document.querySelector("#funnel-plan-message a")?.href||"");}
-    note("get_started_funnel_offers_checkout_to_an_account_without_paid_access",facts.state==="plan"&&facts.title==="Subscribe to Baltor Pro"&&facts.subscribe&&facts.primaries.length===1&&(await target.locator("#funnel-plan-text").textContent())===checkoutPlanText
+    note("get_started_funnel_offers_checkout_to_an_account_without_paid_access",facts.state==="plan"&&facts.title==="Subscribe to Agent Feeds + Harness Files"&&facts.subscribe&&facts.primaries.length===1&&(await target.locator("#funnel-plan-text").textContent())===checkoutPlanText
       &&facts.primaries[0].id==="funnel-subscribe"&&facts.primaries[0].text==="Subscribe for $29 a month"&&link.startsWith("https://checkout.stripe.com/"),{...facts,link});
   };
   /* A scenario that needs a second visit opens a second context, as a person opening the link on another device would. */
@@ -3154,14 +3165,14 @@ try {
     {name:"never_offer_account_creation_on_the_funnel",scenario:"funnel_open",path:"/assets/service.js",find:'(registrationOpen || waitingList) ? "register" : "invite"',replacement:'false ? "register" : "invite"',expected:["get_started_funnel_offers_account_creation_while_registration_is_open"]},
     {name:"always_offer_account_creation_on_the_funnel",scenario:"funnel_closed",path:"/assets/service.js",find:'(registrationOpen || waitingList) ? "register" : "invite"',replacement:'true ? "register" : "invite"',expected:["get_started_funnel_offers_sign_in_when_registration_and_the_request_list_are_closed"]},
     {name:"ignore_the_request_list_on_the_funnel",scenario:"funnel_waitlist",path:"/assets/service.js",find:'(registrationOpen || waitingList) ? "register" : "invite"',replacement:'registrationOpen ? "register" : "invite"',expected:["get_started_funnel_takes_the_address_where_the_service_keeps_a_request_list"]},
-    {name:"bring_back_free_search_in_the_funnel_price_line",scenario:"funnel_waitlist",path:"/get-started",find:'subscribe to Baltor Pro for $29 a month and connect your harness.</p>',replacement:'subscribe to Baltor Pro for $29 a month and connect your harness. Search is free.</p>',expected:["get_started_funnel_takes_the_address_where_the_service_keeps_a_request_list"]},
+    {name:"bring_back_free_search_in_the_funnel_price_line",scenario:"funnel_waitlist",path:"/get-started",find:'subscribe to Agent Feeds \+ Harness Files for $29 a month and connect your harness.</p>',replacement:'subscribe to Agent Feeds \+ Harness Files for $29 a month and connect your harness. Search is free.</p>',expected:["get_started_funnel_takes_the_address_where_the_service_keeps_a_request_list"]},
     {name:"send_no_address_to_the_request_list",scenario:"list_request",path:"/assets/service.js",find:'email:$("funnel-email").value.trim(),note:""',replacement:'email:"",note:""',expected:["get_started_funnel_puts_the_address_on_the_request_list_and_says_a_link_follows"]},
     {name:"take_no_request_on_the_funnel",scenario:"list_request",path:"/assets/service.js",find:"const listed = capabilities?.record_type === CAPABILITIES_RECORD_TYPE && capabilities.website?.waitlist_available === true;",replacement:"const listed = false;",expected:["get_started_funnel_puts_the_address_on_the_request_list_and_says_a_link_follows"]},
     {name:"push_the_first_step_below_the_first_screen_open",scenario:"funnel_open",path:"/assets/service.css",find:".funnel-band{padding:64px",replacement:".funnel-band{padding-top:900px!important;padding:64px",expected:["get_started_funnel_first_step_fits_the_first_screen_open_1440","get_started_funnel_first_step_fits_the_first_screen_open_390"]},
     {name:"push_the_first_step_below_the_first_screen_closed",scenario:"funnel_closed",path:"/assets/service.css",find:".funnel-band{padding:64px",replacement:".funnel-band{padding-top:900px!important;padding:64px",expected:["get_started_funnel_first_step_fits_the_first_screen_closed_1440","get_started_funnel_first_step_fits_the_first_screen_closed_390"]},
     {name:"push_the_first_step_below_the_first_screen_list",scenario:"funnel_waitlist",path:"/assets/service.css",find:".funnel-band{padding:64px",replacement:".funnel-band{padding-top:900px!important;padding:64px",expected:["get_started_funnel_first_step_fits_the_first_screen_list_1440","get_started_funnel_first_step_fits_the_first_screen_list_390"]},
     {name:"ignore_where_paid_access_comes_from",scenario:"invited",path:"/assets/service.js",find:"funnelPlans[accessSource] ||",replacement:"",expected:["get_started_funnel_tells_a_granted_account_that_its_plan_is_covered"]},
-    {name:"use_another_title_for_a_free_monthly_account",scenario:"free_monthly",path:"/assets/service.js",find:'free_monthly:{title:"Your account includes Baltor Pro"',replacement:'free_monthly:{title:"Your account covers Baltor Pro"',expected:["get_started_funnel_tells_a_free_monthly_account_that_it_includes_baltor_pro"]},
+    {name:"use_another_title_for_a_free_monthly_account",scenario:"free_monthly",path:"/assets/service.js",find:'free_monthly:{title:"Your account includes Agent Feeds + Harness Files"',replacement:'free_monthly:{title:"Your account covers Agent Feeds + Harness Files"',expected:["get_started_funnel_tells_a_free_monthly_account_that_it_includes_baltor_pro"]},
     {name:"hide_the_included_plan_on_the_account_page",scenario:"free_monthly",path:"/assets/service.js",find:'$("account-plan").hidden = !coveredSources.includes(accessSource);',replacement:'$("account-plan").hidden = true;',expected:["get_started_funnel_tells_a_free_monthly_account_that_it_includes_baltor_pro"]},
     {name:"hide_the_staff_accounts_view",scenario:"staff",path:"/assets/service.js",find:'$("staff-admin").hidden = false;',replacement:"",expected:["a_superadmin_sees_every_account_and_grants_free_monthly_in_the_administration_view"]},
     {name:"hide_the_sign_up_link_form",scenario:"staff_links",path:"/assets/service.js",find:'$("staff-links-form").hidden = !overview.permissions.includes("accounts.send_sign_up_links");',replacement:'$("staff-links-form").hidden = true;',expected:["a_superadmin_sends_a_sign_up_link_and_the_account_shows_as_waiting"]},

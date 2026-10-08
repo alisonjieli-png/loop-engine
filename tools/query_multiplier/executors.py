@@ -46,6 +46,7 @@ from urllib.parse import urlencode, urlsplit, urlunsplit
 from knowledge_radar.query_matrix import digest
 
 from .dimensions import Dimension, Value
+from .client_profiles import selected_profile
 
 TOPIC_DIMENSIONS = ("sdg_goal", "sdg_target", "onet_occupation", "onet_task", "industry", "harness_kind",
                     "step_function", "creative_domain", "algorithm")
@@ -149,10 +150,15 @@ class Executor:
     cost_unit = "request"
     #: Fixed public headers the transport adds; never a credential.
     static_headers: dict = {}
+    #: Explicit public HTTP header profile. None retains the established default request identity.
+    http_client_profile = None
 
     def identity(self) -> dict:
-        return {"executor": self.executor_id, "version": self.executor_version, "host": self.host,
-                "access": self.access, "per_page": self.per_page}
+        value = {"executor": self.executor_id, "version": self.executor_version, "host": self.host,
+                 "access": self.access, "per_page": self.per_page}
+        if self.http_client_profile is not None:
+            value["http_client_profile"] = selected_profile(self).to_record()
+        return value
 
     def supports_dimension(self, dimension: Dimension) -> bool:
         return dimension.id in self.renders
@@ -171,8 +177,11 @@ class Executor:
         raise NotImplementedError
 
     def request(self, path: str, params: list, *, page: int, method: str = "GET", body=None) -> dict:
-        return {"method": method, "host": self.host, "path": path, "params": [[str(k), str(v)] for k, v in params],
-                "body": body, "page": page}
+        request = {"method": method, "host": self.host, "path": path, "params": [[str(k), str(v)] for k, v in params],
+                   "body": body, "page": page}
+        if self.http_client_profile is not None:
+            request["http_client_profile"] = selected_profile(self).to_record()
+        return request
 
     def cost(self, request: dict) -> int:
         return 1
@@ -182,7 +191,10 @@ class Executor:
                 "host": self.host, "access": self.access, "available": self.available,
                 "unavailable_reason": self.unavailable_reason, "minimum_interval_seconds": self.minimum_interval,
                 "daily_ceiling": self.daily_ceiling, "refresh_days": self.refresh_days, "follow_pages": self.follow_pages,
-                "renders": sorted(self.renders), "cost_unit": self.cost_unit}
+                "renders": sorted(self.renders), "cost_unit": self.cost_unit,
+                "http_client_profile": selected_profile(self).to_record() if selected_profile(self) else None,
+                "http_profile_selection": "pinned" if self.http_client_profile is not None else "transport_default",
+                "http_profile_fallback": "none"}
 
 
 def _topic_phrases(assignment: dict, names=TOPIC_DIMENSIONS + ("geography", "natural_language", "natural_language_endonym")) -> list:

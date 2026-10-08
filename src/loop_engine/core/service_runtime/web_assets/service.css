@@ -551,33 +551,33 @@ main:has(> [data-view=pricing]:not([hidden])){max-width:none;padding:0}
 }
 /* Three paths share the library; their current availability is stated separately. */
 .audience-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;width:100%;text-align:left}
-.audience-card{display:flex;flex-direction:column;align-items:flex-start;gap:.9rem;min-width:0;padding:1.5rem;border:1px solid var(--night-rule);border-radius:var(--radius-card);background:color-mix(in srgb,var(--night-ink) 4%,var(--night));color:var(--night-ink)}
-.audience-card>*{margin:0}.audience-card .audience-label{font:500 .875rem var(--font-mono);color:var(--night-accent)}
-.audience-card h2{font-size:1.5rem;line-height:1.15;letter-spacing:-.02em}.audience-card>p:not(.audience-label){font-size:1rem;line-height:1.5;color:var(--night-muted)}
-.audience-card .audience-availability{font-size:.875rem}.audience-link{display:flex;align-items:center;justify-content:space-between;gap:1rem;width:100%;min-height:44px;margin-top:auto;padding-top:.5rem;font-size:1rem;font-weight:600;color:var(--night-ink);text-decoration:none;border-top:1px solid var(--night-rule)}
-.audience-link:focus-visible{outline:2px solid var(--night-accent);outline-offset:4px}.audience-link:hover{color:var(--night-accent)}
+.audience-card{display:flex;flex-direction:column;align-items:flex-start;gap:.9rem;min-width:0;padding:1.5rem;border:1px solid var(--border);border-radius:var(--radius-card);background:var(--paper);color:var(--ink)}
+.audience-card>*{margin:0}.audience-card .audience-label{font:500 .875rem var(--font-mono);color:var(--accent)}
+.audience-card h2{font-size:1.5rem;line-height:1.15;letter-spacing:-.02em}.audience-card>p:not(.audience-label){font-size:1rem;line-height:1.5;color:var(--muted)}
+.audience-card .audience-availability{font-size:.875rem}.audience-link{display:flex;align-items:center;justify-content:space-between;gap:1rem;width:100%;min-height:44px;margin-top:auto;padding-top:.5rem;font-size:1rem;font-weight:600;color:var(--ink);text-decoration:none;border-top:1px solid var(--border)}
+.audience-link:focus-visible{outline:2px solid var(--accent);outline-offset:4px}.audience-link:hover{color:var(--accent)}
 .creative-reference-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.5rem;max-width:850px;margin:0 auto 2rem}.creative-reference-grid figure{margin:0}.creative-reference-grid img{display:block;width:100%;height:auto;border-radius:16px}.creative-reference-grid figcaption{font-size:.875rem;line-height:1.5;margin:.65rem 0;color:var(--muted)}
 @media(max-width:760px){.audience-grid{grid-template-columns:1fr}.audience-card{padding:1.25rem;gap:.65rem}.audience-card h2{font-size:1.35rem}.creative-reference-grid{grid-template-columns:1fr;max-width:420px}}
 /* design: home */
 
 html [data-view="home"]>.home-band{padding-top:2rem;padding-bottom:2rem}
-html [data-view="home"]>.home-band.band-hero{padding:3rem max(var(--band-gutter),calc((100% - var(--content-max)) / 2)) 2.5rem;padding-left:max(var(--band-gutter),calc((100% - var(--content-max)) / 2));background:var(--night);background-image:none;color:var(--night-ink);border-top:0}
+html [data-view="home"]>.home-band.band-hero{padding:3rem max(var(--band-gutter),calc((100% - var(--content-max)) / 2)) 2.5rem;padding-left:max(var(--band-gutter),calc((100% - var(--content-max)) / 2));background:var(--ground);background-image:none;color:var(--ink);border-top:0}
 html [data-view="home"] .band-hero .hero.product-hero{display:flex;flex-direction:column;align-items:stretch;gap:2rem;max-width:none;margin:0;padding:0}
 html [data-view="home"] .band-hero .hero-copy{display:flex;flex-direction:column;align-items:center;gap:1.25rem;min-width:0;padding-top:0;text-align:center}
 html [data-view="home"] .band-hero .hero-copy>*{margin:0}
-html [data-view="home"] .band-hero .hero.product-hero h1{max-width:980px;color:var(--night-ink);font-size:clamp(2.75rem,5.4vw,4.875rem);font-weight:600;line-height:.98;letter-spacing:-.045em;text-wrap:balance}
-html [data-view="home"] .band-hero .hero-subhead{max-width:var(--lead-max,47.5rem);color:var(--night-muted);font-size:clamp(1.125rem,1.6vw,1.3125rem);font-weight:400;line-height:1.5;text-wrap:pretty}
-html [data-view="home"] .band-hero .hero-subhead a{color:var(--night-accent)}
+html [data-view="home"] .band-hero .hero.product-hero h1{max-width:980px;color:var(--ink);font-size:clamp(2.75rem,5.4vw,4.875rem);font-weight:600;line-height:.98;letter-spacing:-.045em;text-wrap:balance}
+html [data-view="home"] .band-hero .hero-subhead{max-width:var(--lead-max,47.5rem);color:var(--muted);font-size:clamp(1.125rem,1.6vw,1.3125rem);font-weight:400;line-height:1.5;text-wrap:pretty}
+html [data-view="home"] .band-hero .hero-subhead a{color:var(--accent)}
 html [data-view="home"] .band-hero .hero-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:.75rem}
 html [data-view="home"] .band-hero .hero-actions .button{min-height:52px;margin:0;padding:0 1.5rem;border-radius:var(--radius-button);font-size:1.0625rem;white-space:nowrap;flex:none}
-html [data-view="home"] .band-hero .button.primary{background:var(--night-button,var(--night-accent));border-color:var(--night-button,var(--night-accent));color:var(--night-button-ink,var(--night))}
-html [data-view="home"] .band-hero .button.primary:hover{background:var(--night-button-hover,var(--night-ink));border-color:var(--night-button-hover,var(--night-ink));color:var(--night-button-ink,var(--night))}
-html [data-view="home"] .band-hero .button.secondary.on-night{background:transparent;border-color:var(--night-rule);color:var(--night-ink)}
-html [data-view="home"] .band-hero .button.secondary.on-night:hover{border-color:var(--night-muted)}
+html [data-view="home"] .band-hero .button.primary{background:var(--button);border-color:var(--button);color:var(--button-ink)}
+html [data-view="home"] .band-hero .button.primary:hover{background:var(--button-hover);border-color:var(--button-hover);color:var(--button-ink)}
+html [data-view="home"] .band-hero .button.secondary.on-night{background:transparent;border-color:var(--line-strong);color:var(--ink)}
+html [data-view="home"] .band-hero .button.secondary.on-night:hover{border-color:var(--muted)}
 html [data-view="home"] .band-hero .hero-meta{padding:0;border:0}
-html [data-view="home"] .band-hero .hero-price{justify-content:center;color:var(--night-muted);font-size:.875rem}
-html [data-view="home"] .band-hero .hero-price strong,html [data-view="home"] .band-hero .hero-price-amount{color:var(--night-ink)}
-html [data-view="home"] .hero-terminal{min-width:0;margin:0;overflow:hidden;background:var(--night-rule);border:1px solid var(--night-rule);border-radius:var(--radius-card);text-align:left}
+html [data-view="home"] .band-hero .hero-price{justify-content:center;color:var(--muted);font-size:.875rem}
+html [data-view="home"] .band-hero .hero-price strong,html [data-view="home"] .band-hero .hero-price-amount{color:var(--ink)}
+html [data-view="home"] .hero-terminal{min-width:0;margin:0;overflow:hidden;background:var(--night-rule);color:var(--code-ink);border:1px solid var(--night-rule);border-radius:var(--radius-card);text-align:left}
 html [data-view="home"] .hero-terminal-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:0 1rem;background:var(--code-bg);border-bottom:1px solid var(--night-rule)}
 html [data-view="home"] .hero-terminal-tabs{display:flex;flex-wrap:wrap;min-width:0;max-width:100%}
 html [data-view="home"] .hero-terminal-tabs button{flex:none;min-height:44px;margin:0;padding:0 1.125rem;border:0;border-right:1px solid var(--night-rule);border-radius:0;background:transparent;color:var(--night-muted);font-family:var(--font-mono);font-size:.8125rem;font-weight:500;cursor:pointer}
@@ -587,6 +587,7 @@ html [data-view="home"] .hero-terminal-tabs button:focus-visible{outline:2px sol
 html [data-view="home"] .hero-terminal-label{display:inline-flex;align-items:center;gap:.5rem;min-height:44px;margin:0;padding:0 1.125rem;color:var(--night-live);font-family:var(--font-mono);font-size:.75rem}
 html [data-view="home"] .hero-terminal-label::before{content:"";flex:none;width:6px;height:6px;border-radius:999px;background:currentColor}
 html [data-view="home"] .hero-terminal-label.is-example{min-height:0;padding:0;color:var(--night-building)}
+html [data-view="home"] .hero-terminal-label a{color:var(--night-accent);text-decoration:underline;text-underline-offset:.18em}
 html [data-view="home"] .hero-panes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:1px}
 html [data-view="home"] .hero-pane{display:flex;flex-direction:column;gap:.75rem;min-width:0;margin:0;padding:1.25rem 1.5rem;background:var(--code-bg);border:0;border-radius:0;box-shadow:none;color:var(--code-ink);font-family:var(--font-mono);font-size:.8125rem;line-height:1.6}
 html [data-view="home"] .hero-pane>*{margin:0}
@@ -613,12 +614,12 @@ html [data-view="home"] .hero-directory-head{gap:.5rem 1rem}
 html [data-view="home"] .hero-tree{font-size:.8125rem;line-height:1.5;white-space:pre;overflow-x:auto;margin:0;padding:0}
 html [data-view="home"] .hero-tree .hero-tree-row{display:inline}
 html [data-view="home"] .hero-directory-note{padding-top:.75rem;font-family:var(--font-ui);font-size:.8125rem;line-height:1.5}
-html [data-view="home"] .hero-foot{margin-top:-1rem;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.25rem 1.5rem;color:var(--night-muted);font-size:.875rem}
+html [data-view="home"] .hero-foot{margin-top:-1rem;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.25rem 1.5rem;color:var(--muted);font-size:.875rem}
 html [data-view="home"] .hero-works{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem .75rem}
 html [data-view="home"] .hero-works p{margin:0}
 html [data-view="home"] .band-hero .hero-harnesses{gap:.375rem}
-html [data-view="home"] .band-hero .hero-harnesses li{min-height:28px;padding:0 .625rem;background:transparent;border-color:var(--night-rule);color:var(--night-ink);font-size:.8125rem;font-weight:500}
-html [data-view="home"] .hero-foot .text-link{display:inline-flex;align-items:center;min-height:44px;color:var(--night-accent);font-weight:500}
+html [data-view="home"] .band-hero .hero-harnesses li{min-height:28px;padding:0 .625rem;background:transparent;border-color:var(--border);color:var(--ink);font-size:.8125rem;font-weight:500}
+html [data-view="home"] .hero-foot .text-link{display:inline-flex;align-items:center;min-height:44px;color:var(--accent);font-weight:500}
 html [data-view="home"] .text-link::after,html .use-case-page .use-case-card .text-link::after{content:"\2192";margin-left:.4rem}
 html [data-view="home"] .home-band .section-title h2,html [data-view="home"] .trust h2,html [data-view="home"] .faq-intro h2{font-weight:600;letter-spacing:-.03em}
 html [data-view="home"] .demo-grid,html [data-view="home"] .use-case-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:1rem}
@@ -731,10 +732,9 @@ html [data-view="home"] .hero-directory-saves{color:var(--night-muted);font-size
 /* The harness with no skill folder says so in the tree, in the placement tool's own words. */
 /* The two harness groups read as two different claims, so each carries its own plain sentence. */
 html [data-view="home"] .hero-works-group{margin-top:.75rem}
-/* The hero band is the night surface, so these two group headings take the night ink. They inherited the
-   light-mode ink and measured 1.02:1 against the dark band, which the contrast gate refused. */
-html [data-view="home"] .hero-works-group>p{margin:0 0 .5rem;font-size:.8125rem;font-weight:700;color:var(--night-ink)}
-html [data-view="home"] .hero-works-group .hero-works-more{color:var(--night-muted)}
+/* The harness names share the selected page appearance; code samples keep their separate code surface. */
+html [data-view="home"] .hero-works-group>p{margin:0 0 .5rem;font-size:.8125rem;font-weight:700;color:var(--ink)}
+html [data-view="home"] .hero-works-group .hero-works-more{color:var(--muted)}
 html [data-view="home"] .hero-works-group .hero-works-more{margin-top:.5rem}
 /* Each worked step names what it produced, so the three are told apart at a glance instead of by their titles. */
 html [data-view="home"] .hero-scenarios button strong{display:block;font-weight:700}
@@ -748,7 +748,7 @@ html [data-view="home"] .hero-tree .hero-tree-reason{color:var(--night-muted)}
    terminal reads as one control strip rather than two competing ones. */
 html [data-view="home"] .hero-terminal-bar{display:flex;flex-wrap:wrap;align-items:stretch;gap:0;padding:0}
 html [data-view="home"] .hero-terminal-bar .hero-scenarios{margin:0;padding:0;border-left:0;width:100%;order:3}
-html [data-view="home"] .hero-terminal-bar .hero-terminal-label{margin:.5rem .75rem;flex:1 1 auto;min-width:0}
+html [data-view="home"] .hero-terminal-bar .hero-terminal-label{margin:.5rem .75rem;flex:1 1 auto;flex-wrap:wrap;min-width:0}
 @media (max-width:900px){
   html [data-view="home"] .hero-scenarios button{max-width:none;flex:1 1 0}
 }
@@ -770,8 +770,5 @@ html [data-view="home"] .hero-terminal-bar .hero-terminal-label{margin:.5rem .75
 .offering-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.5rem;width:100%;max-width:1080px;margin:0 auto}
 .offering-card{display:flex;flex-direction:column;align-items:flex-start;gap:1rem;min-width:0;padding:2rem;border:1px solid var(--border);border-radius:var(--radius-panel);background:var(--paper);color:var(--ink);text-align:left}
 .offering-card>*{margin:0}.offering-card h2{font-size:clamp(1.5rem,2.3vw,2rem);line-height:1.15;letter-spacing:-.025em}.offering-card p:not(.eyebrow){color:var(--muted);max-width:34rem}.offering-card ul{padding-left:1.15rem;line-height:1.7}.offering-card .offering-availability{font-size:.875rem}.offering-card .button{margin-top:auto}
-html [data-view="home"] .offering-card{background:var(--night-card);border-color:var(--night-rule);color:var(--night-ink)}
-html [data-view="home"] .offering-card p:not(.eyebrow){color:var(--night-muted)}
-html [data-view="home"] .offering-card .eyebrow{color:var(--night-accent)}
-html [data-view="home"] .offering-combined{border-color:var(--night-accent)}
+html [data-view="home"] .offering-combined{border-color:var(--accent)}
 @media(max-width:700px){.offering-grid{grid-template-columns:1fr}.offering-card{padding:1.5rem}.offering-card .button{width:100%;white-space:normal}}

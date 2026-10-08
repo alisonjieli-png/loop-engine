@@ -258,7 +258,7 @@ class BrowserIdentityAdapter:
         claims, identity = self._identity(credential)
         activation = self.runtime.ensure_subject_tenant(self.registration_for(claims["sub"]))
         # A sign-up link a superadmin sent is completed first, so free monthly
-        # Baltor Pro it asked for is held before the founding offer is weighed,
+        # Agent Feeds + Harness Files it asked for is held before the founding offer is weighed,
         # and a founding place is kept for someone who came on their own.
         from .staff_sign_up_links import PENDING, complete_on_activation
         try:

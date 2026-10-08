@@ -27,9 +27,9 @@ from pathlib import Path
 from urllib.parse import urlencode, urlunsplit
 
 from loop_engine.core.library_ingestion.processes import passthrough_environment, run_command
+from .client_profiles import USER_AGENT, observation, request_profile_matches, selected_profile
 
 POLICY = "research_query_host_policy/v1"
-USER_AGENT = "loop-engine query-multiplier/1.0 (read-only research probes; https://github.com/alisonjieli-png/loop-engine)"
 KEPT_HEADERS = ("x-ratelimit-limit", "x-ratelimit-remaining", "x-ratelimit-reset", "x-ratelimit-used",
                 "x-ratelimit-resource", "ratelimit", "ratelimit-policy", "retry-after", "x-ratelimit-cost-usd",
                 "x-ratelimit-credits-used", "x-ratelimit-remaining-usd", "x-ratelimit-available-anon_burst",
@@ -129,6 +129,15 @@ class Transport:
             raise RequestRefused("host_forbidden")
         if not request.get("path", "").startswith("/") or ".." in request["path"].split("/"):
             raise RequestRefused("path_not_absolute")
+        try:
+            profile = selected_profile(executor)
+            if not request_profile_matches(executor, request):
+                raise ValueError("query_http_profile_request_mismatch")
+            if profile is not None and any(name.lower() in ("user-agent", "accept-language")
+                                           for name in executor.static_headers):
+                raise ValueError("query_http_profile_static_override")
+        except ValueError as error:
+            raise RequestRefused("http_client_profile_refused") from error
         if executor.access == "https_post_key" and not self.environment.get(executor.key_variable):
             raise RequestRefused("key_not_in_environment")
 
@@ -147,7 +156,8 @@ class Transport:
 
     def _http(self, executor, request, method, data, secret_headers) -> Answer:
         target = target_of(request)
-        headers = {"User-Agent": USER_AGENT, "Accept": executor.accept, **executor.static_headers, **secret_headers}
+        profile = selected_profile(executor)
+        headers = {"Accept": executor.accept, **executor.static_headers, **profile.headers(), **secret_headers}
         started = time.monotonic()
         status, body, kept, error_class = None, b"", {}, ""
         try:
@@ -167,7 +177,7 @@ class Transport:
             secret_headers.clear()
         truncated = len(body) > self.maximum_bytes
         return Answer(status, kept, body[:self.maximum_bytes], (time.monotonic() - started) * 1000, truncated,
-                      error_class, True, target)
+                      error_class, True, target, {"http_client": observation(profile)})
 
     def graphql_licences(self, repositories) -> Answer:
         """The detected licence of up to fifty repositories in one GraphQL read through the gh login."""

@@ -195,8 +195,7 @@ pre{background:var(--bg);border-color:var(--border);border-radius:var(--radius-f
   .header .nav-sign-out{width:100%;min-height:48px;margin-top:.75rem;padding:0 .5rem;border:0;border-radius:0;background:none;color:var(--muted);font-size:1.0625rem;font-weight:500;text-align:left}
   .header .nav-sign-out:not(:disabled):hover{color:var(--ink);background:var(--tint)}
 }
-/* The dark tone. Only the bar's own tokens change, so every rule above holds in both tones. */
-body:has(main > [data-header-tone=dark]:not([hidden])) .header{--header-bg:var(--night-header-bg);--ink:var(--night-ink);--muted:var(--night-muted);--border:var(--night-rule);--line-strong:var(--night-rule);--tint:var(--night-card);--paper:var(--night);--accent:var(--night-accent);--button:var(--night-button);--button-hover:var(--night-button-hover);--button-ink:var(--night-button-ink);--panel-shadow:none;color-scheme:dark}
+/* The header follows the selected theme on every page, including the homepage. */
 /* A phone held sideways has a short screen, so the sticky bar is slimmer there. */
 @media(max-height:500px) and (max-width:1000px){.header{min-height:52px;padding-top:4px;padding-bottom:3px}}
 /* A link to a part of a page lands below the sticky bar, not behind it. */

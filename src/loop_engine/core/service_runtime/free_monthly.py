@@ -1,4 +1,4 @@
-"""Free monthly Baltor Pro: the founding offer and the grants a superadmin makes.
+"""Free monthly Agent Feeds + Harness Files: the founding offer and the grants a superadmin makes.
 
 Kind: internal service mechanics over the existing entitlement record. It adds
 no runtime type, no store and no graph vertex. A free monthly grant is the
@@ -10,7 +10,7 @@ this release renews it month by month until it is revoked. A release that
 predates renewal therefore honours at most one month and never more.
 
 ```text
-Free monthly Baltor Pro
+Free monthly Agent Feeds + Harness Files
 ├── founding_free_monthly: the first accounts that finish Baltor's sign-up
 │   ├── the count comes from the host file, ten by default
 │   ├── one counter record holds the accounts that hold the offer, and every
@@ -172,7 +172,7 @@ def consider_founding_offer(runtime, tenant_id, limit):
 
 
 def grant_rows(runtime, store, tenant_id, now, granted_by):
-    """The rows and guards of one superadmin grant of free monthly Baltor Pro."""
+    """The rows and guards of one superadmin grant of free monthly Agent Feeds + Harness Files."""
     catalog = runtime._catalog
     tenant_row, tenant = runtime._tenant(store, tenant_id)
     entitlement_row = catalog.read(store, ENTITLEMENT, tenant_id)

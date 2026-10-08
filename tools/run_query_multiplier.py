@@ -24,6 +24,7 @@ for entry in (ROOT / "src", ROOT / "tools", ROOT):
         sys.path.insert(0, str(entry))
 
 from query_multiplier import importers  # noqa: E402
+from query_multiplier.client_profiles import configure_executors, load_configuration  # noqa: E402
 from query_multiplier.dimensions import load_library  # noqa: E402
 from query_multiplier.evidence import Ledger, stamp  # noqa: E402
 from query_multiplier.executors import registry  # noqa: E402
@@ -46,8 +47,11 @@ def _roots(values) -> dict:
 
 def _load(options):
     plan_path = Path(options.plan)
-    library = load_library(data_roots=_roots(options.data_root), only=plan_dimensions(plan_path))
     executors = registry()
+    profiles = load_configuration(getattr(options, "http_client_profiles", None))
+    if profiles is not None:
+        configure_executors(profiles, executors)
+    library = load_library(data_roots=_roots(options.data_root), only=plan_dimensions(plan_path))
     products = load_plan(plan_path, library, executors)
     return library, executors, products, json.loads(plan_path.read_bytes())
 
@@ -148,6 +152,8 @@ def main(argv=None) -> int:
         command = sub.add_parser(name)
         command.add_argument("--plan", default=str(DEFAULT_PLAN))
         command.add_argument("--data-root", action="append", help="name=path for a table outside the repository (onet=...)")
+        if name in ("plan", "run", "report"):
+            command.add_argument("--http-client-profiles", help="Versioned public HTTP header configuration; overrides QUERY_MULTIPLIER_HTTP_PROFILES.")
         if name != "plan":
             command.add_argument("--root", required=True, help="private folder outside the repository")
     sub.choices["plan"].add_argument("--show", type=int, default=0)

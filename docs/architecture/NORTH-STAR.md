@@ -14,6 +14,16 @@ permitted; preservation, authorization, byte integrity and rollback remain
 required. The [active execution plan](../roadmap/DELIVERY-SEQUENCE.md#active-execution-plan-october-7)
 tracks implementation and acceptance separately from this target.
 
+The owner's later October 7 clarification separates the two offerings by
+purpose. Agent Feeds helps an agent make strategic decisions: initial design,
+architecture, provider and model selection, costs, market positioning and
+periodic improvement reviews. Agent Feeds + Harness Files adds the tactical
+materials that carry out those decisions. A release notice can trigger a
+review; a list of links alone is not a completed strategic brief. Keep the
+sources, comparison criteria, uncertainty and conditions for revisiting each
+decision visible. Explain this with concrete tasks rather than calling it
+"refresh the context" or implying that all web material is open source.
+
 The [delivery and business plan](../roadmap/DELIVERY-SEQUENCE.md) orders the
 next work: customer first use, a controlled benefit comparison, complete
 packages, the creative proof, traceable retrieval, reference-video recreation,

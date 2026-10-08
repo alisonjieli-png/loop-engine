@@ -45,7 +45,7 @@ belonging to another account.
 | `bodies` | Metadata and permitted body downloads. |
 
 A subscription or operator grant supplies the account entitlement. Creating a
-token does not upgrade it. An operator grant can make Baltor Pro free for an
+token does not upgrade it. An operator grant can make Agent Feeds + Harness Files free for an
 account.
 
 ### Scopes
@@ -95,7 +95,7 @@ support messages.
 
 ## Subscription and help
 
-Baltor Pro is $29 a month. Accounts with an operator grant use it free.
+Agent Feeds + Harness Files is $29 a month. Accounts with an operator grant use it free.
 When available, the account page opens checkout or the customer portal. Account
 creation and checkout are separate capabilities; available checkout does not
 mean public registration is open.

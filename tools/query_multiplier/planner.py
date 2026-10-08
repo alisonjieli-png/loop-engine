@@ -52,7 +52,7 @@ MAXIMUM_AXES = 8
 #: Gates every planned query carries: a query is a probe, never a package, a licence decision or a publication.
 GATES = MappingProxyType({"executed": "not_yet", "licence_decision": "not_made_by_the_planner",
                           "package_identity": "never_a_query_permutation", "publication": "not_authorized"})
-IMPLEMENTATION_FILES = ("planner.py", "dimensions.py", "executors.py")
+IMPLEMENTATION_FILES = ("planner.py", "dimensions.py", "executors.py", "client_profiles.py")
 
 
 class PlanError(ValueError):
@@ -277,6 +277,8 @@ def query_at(product: Product, k: int, library: Library, executor, *, page: int 
 def query_identity(executor_id: str, request: dict) -> str:
     """Stable identity of one probe: the executor and its exact rendered request (method, host, path, parameters).
 
+    An explicitly selected HTTP profile is part of the rendered request and
+    therefore its reuse identity. Provider quota/hold identity remains the executor.
     Labels, plan revision and enumeration order are not part of it, so the same request reached from two
     products, two plans or an imported queue is one query.
     """

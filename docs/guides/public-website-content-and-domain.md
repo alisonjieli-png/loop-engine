@@ -11,11 +11,19 @@ Use shared, release-bound facts so public copy and engineering status agree.
 
 ## Current positioning and presentation
 
-The buyer is one developer who already runs a coding tool that calls a model,
-who pays for those calls out of their own budget, and who is tired of their
-tools working out the same things again on every task. There is no team
-account, no shared workspace and one plan, so the page speaks to that person
-and not to an engineering manager.
+The website addresses engineers, designers and people connecting AI agents.
+Agent Feeds supplies information from sources such as GitHub, model providers,
+benchmarks and papers. Agent Feeds + Harness Files adds reusable code, tools,
+configuration and creative assets. Use concrete source names and tasks, not
+"refresh the context": readers can mistake that phrase for their private
+conversation history. Do not call all source material open source; each
+source keeps its own rights.
+
+Distinguish the currently available preview and curated directories from
+personalized saved feeds, automatic refresh and agent assignments. The latter
+remain in development until their acceptance checks pass. There is one
+existing paid subscription and no paid feed-only price yet. An offering name
+does not create another checkout, entitlement or team workspace.
 
 The line above the headline is the owner's category line, "Harness and agent
 optimized operation", written out in full. An earlier version of this
@@ -322,27 +330,23 @@ a Stripe credential and is not a Supabase customer access token.
 
 ## Pricing view
 
-The pricing view answers at `/pricing`. It states one plan and nothing else.
+The pricing view answers at `/pricing` and compares the two offerings.
 
 | Fact | Published wording |
 |---|---|
-| Plan | Baltor Pro |
-| Price | 29 United States dollars each month |
-| Free | Search is free |
+| Information | Agent Feeds, free preview |
+| Information and reusable files | Agent Feeds + Harness Files |
+| Paid price | $29 a month |
+| Other free access | Public Good files with an account; the open-source Baltor Harness |
 | Measured unit | One downloaded item |
-| Invited accounts | Invited accounts are free |
+| Existing account grants | State the account's actual grant, never promise a grant to everyone |
 
-These figures come from the owner's September 20 direction, recorded in
-`CLAUDE.md`. Engineering may not change a figure on the page alone. Change the
-recorded decision first, then the page, then the checks that hold the page to
-it.
-
-Two wordings changed on September 21, 2026 without changing a figure. The
-price now reads "29 United States dollars", which is the wording of the
-recorded decision itself and not the abbreviation the page had used. The
-entitlement row now reads "Invited accounts are free", because the owner asked
-that the word beta not appear on a customer page. The fact behind it, an
-operator entitlement that costs nothing, is unchanged.
+The October 7 owner direction changes the presentation, not the existing
+subscription price, billing identifiers or access rights. Historical provider
+records and the approved terms keep their original names. Do not create a new
+subscription to rename an existing one. Update the homepage, pricing, account,
+setup, refusal messages and generated guides together; the copy checks cover
+each application view and the generated guide population.
 
 The payment state is not written into the page. The view reads
 `billing.checkout` from `/api/v1/capabilities`. While that field is false the

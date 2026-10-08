@@ -26,6 +26,7 @@ ALIAS = "edge.test"
 COMPARED_HEADERS = ("content-type", "content-security-policy", "x-frame-options", "referrer-policy",
                     "permissions-policy", "x-robots-tag", "cache-control", "etag", "x-content-type-options")
 SITE_MUTATIONS = {
+    "no_feed_query_guard": ('  if (entry.class === "feed_source" && new URL(request.url).search) return null;\n', ""),
     "replace_robot_directives": ('  const prior = headers.get("x-robots-tag") || "";', '  const prior = "";'),
     "no_root_meta": ("  if (entry.head && root !== \"/\") bytes = withRootMeta(bytes, root);\n", ""),
     "no_page_headers": ("  const headers = new Headers(kind.headers);\n  headers.set(\"content-type\", entry.media_type);",
@@ -117,6 +118,22 @@ def _same(edge, origin):
             and all(edge[1].get(name) == origin[1].get(name) for name in COMPARED_HEADERS))
 
 
+def _same_feed_query_refusal(edge, origin, method):
+    """Compare the full refusal except its independently generated request reference."""
+    if (edge[0] != 400 or origin[0] != 400
+            or edge[1].get("cache-control") != "no-store" or origin[1].get("cache-control") != "no-store"
+            or any(edge[1].get(name) != origin[1].get(name) for name in COMPARED_HEADERS)):
+        return False
+    if method == "HEAD":
+        return edge[2] == origin[2] == b""
+    records = [json.loads(answer[2]) for answer in (edge, origin)]
+    if not all(isinstance(record.get("request_reference"), str) and record["request_reference"] for record in records):
+        return False
+    for record in records:
+        record.pop("request_reference")
+    return records[0] == records[1] and records[0].get("error", {}).get("code") == "invalid_feed_request"
+
+
 @contextmanager
 def _platform_failure_origin(status):
     """A loopback origin that answers every request with a platform's HTML failure page and `status`."""
@@ -192,6 +209,15 @@ def _site_checks(check, root, node):
             check("an_unchanged_asset_answers_not_modified_to_its_validator_as_the_service_does",
                   _fetch(site.port, "GET", asset, "baltor.ai", {"If-None-Match": tag})[0]
                   == _fetch(origin_port, "GET", asset, "baltor.ai", {"If-None-Match": tag})[0] == 304)
+            feed_paths = [address for address, entry in export.manifest["files"].items() if entry["class"] == "feed_source"]
+            feed_queries = [(method, address + "?source=https://private.invalid/&v=not-an-asset-version")
+                            for address in feed_paths for method in ("GET", "HEAD")]
+            feed_refusals = [(method, _fetch(site.port, method, address, "baltor.ai", {"If-None-Match": "*"}),
+                             _fetch(origin_port, method, address, "baltor.ai", {"If-None-Match": "*"}))
+                            for method, address in feed_queries]
+            check("every_source_feed_refuses_query_get_and_head_like_the_origin_before_validator_reuse",
+                  len(feed_refusals) == 2 * len(feed_paths) and bool(feed_paths)
+                  and all(_same_feed_query_refusal(edge, origin, method) for method, edge, origin in feed_refusals))
             request = json.dumps({"record_type": "service_retrieval_request/v2", "query": "alpha"}).encode()
             passed = [(_fetch(site.port, "GET", "/api/v1/capabilities", "baltor.ai"),
                        _fetch(origin_port, "GET", "/api/v1/capabilities", "baltor.ai")),
@@ -220,6 +246,13 @@ def _site_checks(check, root, node):
             check("a_read_only_edge_never_passes_a_change_to_the_origin",
                   refused[0] == 403 and json.loads(refused[2])["error"]["code"] == "edge_prototype_read_only"
                   and _fetch(site.port, "GET", "/api/v1/capabilities", "baltor.ai")[0] == 200)
+        with local_site(root / "edge-feed-query-control", folder, export.export_id, base, node=node,
+                        source=site_worker("no_feed_query_guard")) as site:
+            controls = [(method, _fetch(site.port, method, feed_queries[0][1], "baltor.ai", {"If-None-Match": "*"}),
+                         _fetch(origin_port, method, feed_queries[0][1], "baltor.ai", {"If-None-Match": "*"}))
+                        for method in ("GET", "HEAD")]
+            check("removed_source_feed_query_guard_is_detected_for_get_and_head",
+                  all(not _same_feed_query_refusal(edge, origin, method) for method, edge, origin in controls))
         with local_site(root / "edge-guard", folder, export.export_id, base, node=node, mode="read_only",
                         source=site_worker("no_read_only_guard")) as site:
             check("removed_read_only_guard_is_detected",

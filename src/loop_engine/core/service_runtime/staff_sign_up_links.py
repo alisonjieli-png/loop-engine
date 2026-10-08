@@ -24,7 +24,7 @@ One request from a superadmin
 │       generated, and one message names the staff member who sent it
 └── one write: a pending record for each link and the completed audit record
 When the account opens
-└── the pending record is completed, and free monthly Baltor Pro is granted
+└── the pending record is completed, and free monthly Agent Feeds + Harness Files is granted
     in the same write when the superadmin asked for it
 ```
 
@@ -265,7 +265,7 @@ def send_sign_up_links(administration, adapter, staff, request):
 
 
 def complete_on_activation(runtime, issuer, subject, tenant_id):
-    """Complete a pending sign-up link when its account opens, with free monthly Baltor Pro when it was asked for.
+    """Complete a pending sign-up link when its account opens, with free monthly Agent Feeds + Harness Files when it was asked for.
 
     The grant and the completed record commit together. An account that
     already holds free monthly or a paid plan keeps it, and the record names

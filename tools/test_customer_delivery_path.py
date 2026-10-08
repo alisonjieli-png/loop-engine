@@ -746,7 +746,7 @@ def no_plan_is_told_how_to_subscribe(service, key):
     return (error["code"] == "plan_required" and "pricing page" in error["next_action"]
             and "Ask the person who runs this service" not in error["next_action"]
             and error["details"]["pricing_url"] == service.base + "/pricing"
-            and error["details"]["plan"] == "Baltor Pro" and SINGLE[0][1] not in answer.content)
+            and error["details"]["plan"] == "Agent Feeds + Harness Files" and SINGLE[0][1] not in answer.content)
 
 
 class AnAccountWithoutAPlanIsToldHowToSubscribe(unittest.TestCase):

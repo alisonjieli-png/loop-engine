@@ -2,7 +2,7 @@
 
 Kind: product architecture with measured local implementation and proposed hosting.
 Date: 2026-09-19. The [current deployment](#current-deployment) section was
-added on 2026-09-20 and last checked on 2026-10-07, after Fly release 75.
+added on 2026-09-20 and last checked on 2026-10-07, after Fly release 76.
 
 The hosted product manages accounts, subscriptions, and access to intelligence.
 The customer runs Loop Engine and the selected harnesses. A hosted intelligence
@@ -47,7 +47,26 @@ from the newest release record, follow the release record and correct this
 section. Update this section in the same change that records a new release.
 It describes a private pilot. It does not describe a qualified paid service.
 
-The running image is Fly release 75, from
+The running image is Fly release 76, from
+`76ff12c2918910d659267e32676ccdd5cd12b950`, image
+`sha256:c963143b7ed9a054f7dee59a30c6234147a945ddd15b3a63699716997e4228bd`.
+Exact CI `37710042646` and guarded deployment `37711417924` passed; the gate
+is closed. All ten hosts passed 2,126 browser assertions, fifty pulse reads
+passed, and the owner-account catalogue diagnostic passed eleven checks.
+The documentation hostname uses Cloudflare export `6c0b81e6250d...`; all
+2,501 public files passed exact body and header readback.
+
+The initial two-offering cards are live. The owner then identified older
+plan labels elsewhere on the same pages, so that check population is not
+proof of complete copy consistency. The next candidate covers those labels,
+shared appearance and concrete decision-support collections. The
+[release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-76.json)
+records this limitation and the scheduler installation race separately from
+the successful application deployment. Release 75 is the compatible image
+rollback. The catalogue population, volume body store, custom SQLite search
+and Supabase identity remain unchanged.
+
+The preceding running image was Fly release 75, from
 `bc18a19f859bf691b97cba37666ecbd2b0163ec1`, image
 `sha256:5a3ba9481b479aec82b1712b4de90846faccc28fec78f7e29eb10f4b354aaf07`.
 Exact CI `37701122893` and guarded deployment `37702056291` passed; the gate

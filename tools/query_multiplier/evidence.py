@@ -35,8 +35,9 @@ import threading
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from uuid import uuid4
+from .client_profiles import validate_observation
 
-EVIDENCE = "research_query_evidence/v1"
+EVIDENCE = "research_query_evidence/v2"
 REPOSITORY = Path(__file__).resolve().parents[2]
 SCHEMA = """
 create table if not exists meta(key text primary key, value text);
@@ -45,13 +46,14 @@ create table if not exists cursors(product_id text primary key, product_digest t
 create table if not exists queries(query_id text primary key, executor_id text, product_id text, k integer, page integer,
   parent_query_id text, origin text, assignment text, request text, planned_at text, state text,
   executions integer default 0, last_attempt_id text, last_executed_at text, next_due_at text, last_status text,
-  results integer default 0, new_unique integer default 0, total_count integer, sequence integer);
+  results integer default 0, new_unique integer default 0, total_count integer, sequence integer,
+  cache_evidence_contract text, cache_evidence_executions integer);
 create index if not exists queries_state on queries(state, next_due_at);
 create index if not exists queries_executor on queries(executor_id, sequence);
 create table if not exists attempts(attempt_id text primary key, query_id text, executor_id text, run_id text,
   started_at text, finished_at text, state text, http_status integer, evidence_path text, evidence_sha256 text,
   body_sha256 text, body_bytes integer, stored_bytes integer, truncated integer, error_class text, cost integer,
-  items integer, new_unique integer, parse_status text, headers text);
+  items integer, new_unique integer, parse_status text, headers text, evidence_contract text);
 create index if not exists attempts_state on attempts(state);
 create table if not exists candidates(key text primary key, url text, kind text, title text, licence_reported text,
   licence_field text, licence_lead text, allowlisted integer, licence_basis text, route text, first_query_id text,
@@ -103,6 +105,15 @@ class Ledger:
         self.db.execute("pragma journal_mode=wal")
         self.db.execute("pragma synchronous=normal")
         self.db.executescript(SCHEMA)
+        # This is a cache eligibility projection, not a legacy evidence reader.
+        # Existing rows stay NULL and cannot satisfy the current contract.
+        for table, columns in (("queries", (("cache_evidence_contract", "text"),
+                                           ("cache_evidence_executions", "integer"))),
+                               ("attempts", (("evidence_contract", "text"),))):
+            present = {row[1] for row in self.db.execute(f"pragma table_info({table})")}
+            for name, kind in columns:
+                if name not in present:
+                    self.db.execute(f"alter table {table} add column {name} {kind}")
         self.db.commit()
 
     # ------------------------------------------------------------------ helpers
@@ -160,11 +171,22 @@ class Ledger:
         return row
 
     def within_refresh(self, query_id: str) -> "bool | None":
-        """True: executed and not yet due. False: due for a refresh. None: never executed."""
+        """True: current cached execution. False: due. None: unexecuted or version-ineligible."""
         row = self.query_state(query_id)
+        if row is not None and row[0] == "executed" and not self.cache_eligible(query_id):
+            return None
         if row is None or row[0] != "executed" or not row[1]:
             return None if row is None or row[0] != "executed" else False
         return parse_stamp(row[1]) > self.clock()
+
+    def cache_eligible(self, query_id: str) -> bool:
+        with self.lock:
+            row = self.db.execute("select cache_evidence_contract, cache_evidence_executions, executions "
+                                  "from queries where query_id=?", (query_id,)).fetchone()
+        # A previous runner may still know this ledger's ordinary columns.
+        # Its later success increments executions without this contract-bound
+        # counter, so it cannot relabel a v1 result as a current cache entry.
+        return bool(row and row[0] == EVIDENCE and row[1] == row[2])
 
     def due_queries(self, executor_id: str, *, limit: int = 20) -> list:
         """Executed queries of one executor whose refresh period has passed, most productive first."""
@@ -213,9 +235,9 @@ class Ledger:
         """The attempt exists before the request leaves; its cost is charged to the day's usage now."""
         attempt_id = uuid4().hex
         with self.lock:
-            self.db.execute("insert into attempts(attempt_id, query_id, executor_id, run_id, started_at, state, cost) "
-                            "values(?,?,?,?,?,?,?)", (attempt_id, query.query_id, query.executor_id, run_id,
-                                                       stamp(self.clock()), "intent", cost))
+            self.db.execute("insert into attempts(attempt_id, query_id, executor_id, run_id, started_at, state, cost, evidence_contract) "
+                            "values(?,?,?,?,?,?,?,?)", (attempt_id, query.query_id, query.executor_id, run_id,
+                                                         stamp(self.clock()), "intent", cost, EVIDENCE))
             self.db.execute("insert into daily_usage values(?,?,1,?) on conflict(executor_id, day) do update set "
                             "requests=requests+1, cost=cost+excluded.cost", (query.executor_id, self.day(), cost))
             self.db.execute("update queries set last_attempt_id=? where query_id=?", (attempt_id, query.query_id))
@@ -232,7 +254,8 @@ class Ledger:
                     "executor_id": query.executor_id, "request": request, "target": answer.target,
                     "status": answer.status, "headers": answer.headers, "elapsed_ms": round(answer.elapsed_ms, 1),
                     "truncated": answer.truncated, "error_class": answer.error_class, "stored_at": stamp(self.clock()),
-                    "body_sha256": hashlib.sha256(body).hexdigest(), "body_bytes": len(body)}
+                    "body_sha256": hashlib.sha256(body).hexdigest(), "body_bytes": len(body),
+                    "http_client": validate_observation(answer.extra.get("http_client"), request)}
         try:
             # Text bodies stay text, so gzip sees the JSON itself; anything else is kept exactly as base64.
             envelope["body_text"] = body.decode("utf-8")
@@ -267,12 +290,15 @@ class Ledger:
         """Only a stored, parsed 200 answer executes a query; its next refresh is due after the period."""
         due = self.clock() + timedelta(days=refresh_days)
         with self.lock:
-            state = self.db.execute("select state from attempts where attempt_id=?", (attempt_id,)).fetchone()
+            state = self.db.execute("select state, evidence_contract from attempts where attempt_id=?", (attempt_id,)).fetchone()
             if not state or state[0] not in ("stored", "folded"):
                 raise RuntimeError("query_not_executed_without_stored_response")
+            if state[1] != EVIDENCE:
+                raise ValueError("query_not_executed_from_prior_evidence_contract")
             self.db.execute("update queries set state='executed', executions=executions+1, last_executed_at=?, "
-                            "next_due_at=?, last_status=?, total_count=? where query_id=?",
-                            (stamp(self.clock()), stamp(due), parse_status, total_count, query.query_id))
+                            "next_due_at=?, last_status=?, total_count=?, cache_evidence_contract=?, "
+                            "cache_evidence_executions=executions+1 where query_id=?",
+                            (stamp(self.clock()), stamp(due), parse_status, total_count, EVIDENCE, query.query_id))
             self.db.execute("update attempts set parse_status=? where attempt_id=?", (parse_status, attempt_id))
             self.db.commit()
 
@@ -347,6 +373,14 @@ class Ledger:
         return {"items": len(items), "new_unique": new, "origins": origins}
 
     # ------------------------------------------------------------------ recovery
+    def require_current_unfinished_contract(self) -> None:
+        """A new reader cannot resolve a prior writer's uncertain attempts."""
+        with self.lock:
+            count = self.db.execute("select count(*) from attempts where state in ('intent','stored') "
+                                    "and coalesce(evidence_contract, '') != ?", (EVIDENCE,)).fetchone()[0]
+        if count:
+            raise ValueError("unfinished_prior_evidence_requires_pinned_runner_reconciliation")
+
     def unfinished(self) -> dict:
         """Attempts a crash left behind: intents with no stored response, stored responses not yet folded."""
         with self.lock:
@@ -371,6 +405,7 @@ class Ledger:
         envelope = json.loads(gzip.decompress(Path(path).read_bytes()))
         if envelope.get("record_type") != EVIDENCE:
             raise ValueError("evidence_version")
+        validate_observation(envelope["http_client"], envelope["request"])
         if "body_text" in envelope:
             envelope["body"] = envelope.pop("body_text").encode("utf-8")
         else:

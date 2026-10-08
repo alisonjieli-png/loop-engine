@@ -1,0 +1,13 @@
+{
+  "record_type": "research_query_http_profiles/v1",
+  "bindings": {
+    "ollama_web_search": {
+      "record_type": "web_http_client_profile/v1",
+      "profile_id": "baltor-research-en",
+      "revision": "1.0.0",
+      "user_agent": "Baltor/1.0 (+https://baltor.ai; research HTTP client)",
+      "accept_language": "en-US,en;q=0.9",
+      "digest": "49d8bb7bcc2ddc1f59df48e5e3744436414b15d0cb3f6c37d8a4b77b80e74b16"
+    }
+  }
+}

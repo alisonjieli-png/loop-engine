@@ -6,11 +6,36 @@ from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from query_multiplier.install_schedule import SERVICE, start_command
-from query_multiplier import scheduled_credentials
+from query_multiplier import scheduled_credentials, install_schedule
 from operator_credentials import CredentialError
 
 
 class ScheduleCredential(unittest.TestCase):
+    def test_active_timer_or_pass_is_refused_before_pinning_or_writes(self):
+        for active in ("active", "activating", "reloading", "deactivating"):
+            for suffix in ("timer", "service"):
+                def answer(command, **kwargs):
+                    from types import SimpleNamespace
+                    state = active if command[3].endswith("." + suffix) else "inactive"
+                    return SimpleNamespace(stdout="LoadState=loaded\nActiveState=" + state + "\n")
+                with self.subTest(active=active, suffix=suffix), patch.object(
+                        install_schedule.subprocess, "run", side_effect=answer), patch.object(
+                        install_schedule, "pin") as pin, self.assertRaises(SystemExit):
+                    install_schedule.main(["--revision", "HEAD"])
+                pin.assert_not_called()
+
+    def test_inactive_or_missing_units_allow_an_installation(self):
+        from types import SimpleNamespace
+        for load in ("loaded", "not-found"):
+            with patch.object(install_schedule.subprocess, "run", return_value=SimpleNamespace(
+                    stdout="LoadState=" + load + "\nActiveState=inactive\n")):
+                install_schedule.require_stopped_schedule()
+
+    def test_unknown_unit_state_is_not_treated_as_inactive(self):
+        from types import SimpleNamespace
+        with patch.object(install_schedule.subprocess, "run", return_value=SimpleNamespace(stdout="")), self.assertRaises(SystemExit):
+            install_schedule.require_stopped_schedule()
+
     def test_unconfigured_schedule_keeps_public_lanes_available(self):
         self.assertEqual(start_command('/pinned', 2040),
                          '/bin/bash /pinned/tools/query_multiplier/scheduled-run.sh')

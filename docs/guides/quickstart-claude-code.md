@@ -6,7 +6,7 @@ One page from an account to a checked download. Every address, field and command
 
 ## What you need
 
-- A [Baltor account](https://app.baltor.ai/get-started). Public Good files are free with an account; Baltor Pro adds the full library.
+- A [Baltor account](https://app.baltor.ai/get-started). Public Good files are free with an account; Agent Feeds + Harness Files adds the full library.
 - A client token from [your account page](https://app.baltor.ai/account), under Your client tokens. The service shows it once.
 - Claude Code installed, and a project folder that it opens. Check the version with `claude --version`.
 - A terminal where the token is set, because Claude Code reads it from the environment.
@@ -132,7 +132,7 @@ The answer's `result` is `service_session/v1`. Its `principal` names the account
 | --- | --- | --- |
 | `unauthorized` | 401 | The token is missing, wrong, expired or revoked. Set `BALTOR_SERVICE_TOKEN` in the terminal that starts Claude Code, then run the session check above. |
 | `insufficient_scope` | 403 | The token lacks the scope this operation needs. Create a token with `provisioning:read`. |
-| `plan_required` | 403 | Your account has no plan that includes downloads; search still works. Choose Baltor Pro on the [pricing page](https://baltor.ai/pricing). The refusal's `details` name that page, and the founding offer while places remain. |
+| `plan_required` | 403 | Your account has no plan that includes downloads; search still works. Choose Agent Feeds + Harness Files on the [pricing page](https://baltor.ai/pricing). The refusal's `details` name that page, and the founding offer while places remain. |
 | `step_effects_required` | 403 | The item declares effects your configuration does not declare. Add the `effects_to_declare` that the refusal's `details` name, if your harness may do them, or choose another item. |
 | `item_unavailable` | 404 | The identity is not in your library, or it was withdrawn. Search again and use a fresh reference. |
 | `request_identity_required` | 400 | A download needs a `request_id`. Give each logical download a new one. |

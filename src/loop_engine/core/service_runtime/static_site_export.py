@@ -79,7 +79,7 @@ def page_headers(identity_origin="", *, creative_preview=False):
 
 def static_addresses(*, include_model_details=True):
     """Every address the export renders, in a stable order."""
-    from . import catalogue_feed, dot_pages, model_directory_pages, public_good_page, red_team_page, status_pages
+    from . import catalogue_feed, dot_pages, feed_source_collections, model_directory_pages, public_good_page, red_team_page, status_pages
     from .web_pages import GENERATED_WEB_FILES, WEB_ASSETS
     addresses = list(WEB_ASSETS) + list(GENERATED_WEB_FILES)
     addresses += list(model_directory_pages.PAGES) + [model_directory_pages.SITEMAP_ADDRESS]
@@ -91,6 +91,7 @@ def static_addresses(*, include_model_details=True):
                 addresses.append(path)
     addresses += [catalogue_feed.PAGE, public_good_page.ADDRESS, red_team_page.ADDRESS,
                   *dot_pages.ROUTES, *status_pages.ADDRESSES]
+    addresses += list(feed_source_collections.formats())
     seen, ordered = set(), []
     for address in addresses:
         # The OAuth consent page and the sign-in callbacks stay with the origin, beside the routes they call.
@@ -102,9 +103,12 @@ def static_addresses(*, include_model_details=True):
 
 def render(address, host, display_name, library_population=None):
     """(bytes, media type) as the service's web route renders `address` for `host`, or None; the same order."""
-    from . import catalogue_feed, dot_pages, public_good_page, red_team_page, status_pages
+    from . import catalogue_feed, dot_pages, feed_source_collections, public_good_page, red_team_page, status_pages
     from .model_directory_pages import rendered_page
-    from .web_pages import served_asset
+    from .web_pages import packaged_site_map, served_asset
+    if address in feed_source_collections.formats():
+        from .model_directory_pages import canonical
+        return feed_source_collections.render(address, canonical(packaged_site_map(), ""))
     asset = served_asset(address, "GET", display_name, host, library_population=library_population)
     for renderer in (rendered_page, public_good_page.rendered, dot_pages.rendered, red_team_page.rendered,
                      status_pages.rendered, catalogue_feed.rendered_page):
@@ -122,12 +126,14 @@ def wire_content_type(media_type):
 
 
 def header_class(address, media_type):
-    from . import dot_pages
+    from . import dot_pages, feed_source_collections
     from .web_pages import CACHEABLE_WEB_ASSETS, CREATIVE_PREVIEW_PATH, HTML_MEDIA_TYPE
     if address == CREATIVE_PREVIEW_PATH:
         return "creative_preview"
     if address in dot_pages.ROUTES:
         return "page_private"
+    if address in feed_source_collections.formats():
+        return "feed_source"
     if media_type == HTML_MEDIA_TYPE and address.startswith("/assets/"):
         return "page_fragment"
     if address in CACHEABLE_WEB_ASSETS:
@@ -138,10 +144,12 @@ def header_class(address, media_type):
 def header_classes(identity_origin):
     """Each class's exact headers: the page headers, the robots rule, the cache rule and the validator rule."""
     from .web_pages import PUBLIC_ASSET_CACHE_CONTROL
+    from .feed_source_collections import CACHE_CONTROL as SOURCE_CACHE_CONTROL
     page = {**page_headers(identity_origin), "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff"}
     return {"page": {"headers": page, "etag": False},
             "page_fragment": {"headers": {**page, "X-Robots-Tag": "noindex"}, "etag": False},
             "page_private": {"headers": {**page, "X-Robots-Tag": "noindex, nofollow, noarchive"}, "etag": True},
+            "feed_source": {"headers": {**page, "Cache-Control": SOURCE_CACHE_CONTROL}, "etag": True},
             # The creative preview is an HTML file under /assets/, so it also carries the fragment's robots rule.
             "creative_preview": {"headers": {**page_headers(identity_origin, creative_preview=True),
                                              "X-Robots-Tag": "noindex", "Cache-Control": "no-store",

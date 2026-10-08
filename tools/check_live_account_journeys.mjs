@@ -13,7 +13,7 @@
    this step) opens Administration, revokes and grants free monthly for the other account, switches it
    off and on, and finally revokes free monthly for both, so the two checking accounts hold no founding
    place.
-   With --sign-up-link-step, the same superadmin sends one sign-up link with free monthly Baltor Pro to a new
+   With --sign-up-link-step, the same superadmin sends one sign-up link with free monthly Agent Feeds + Harness Files to a new
    disposable inbox from Administration. The person shows as pending, the message names the sender and links to
    the confirmation page, choosing a password opens the account with the staff grant (not a founding place), the
    account leaves the pending list, and a second link to the same address is refused with no second message.
@@ -192,7 +192,7 @@ const foundingPlaces = async page => { const text = (await page.locator("#staff-
 const accountCard = (page, email) => page.evaluate(address => {
   const node = [...document.querySelectorAll("#staff-accounts article")].find(card => card.querySelector("h3")?.textContent.trim() === address);
   return node ? {pending: /waiting for this person to choose a password/.test(node.textContent),
-                 free_monthly_on_opening: /Free monthly Baltor Pro starts when the account opens/.test(node.textContent)} : null; }, email);
+                 free_monthly_on_opening: /Free monthly Agent Feeds \+ Harness Files starts when the account opens/.test(node.textContent)} : null; }, email);
 
 let state = !freshOnly && existsSync(statePath) ? JSON.parse(readFileSync(statePath, "utf8")) : null;
 try {
@@ -226,7 +226,7 @@ try {
     const landed = message ? await choosePassword(await newPage(), confirmLink(message.text), personPassword) : {};
     step("links", "choosing_a_password_opens_the_account", Boolean(message) && landed.path !== "/auth/confirm", landed);
     step("links", "the_account_opens_with_the_staff_grant_of_baltor_pro",
-      /includes Baltor Pro/i.test(landed.planTitle || "") && /free for this account each month/i.test(landed.planText || ""),
+      /includes Agent Feeds \+ Harness Files/i.test(landed.planTitle || "") && /free for this account each month/i.test(landed.planText || ""),
       {title: landed.planTitle, text: (landed.planText || "").slice(0, 120)});
     state = {...state, linked: [...(state.linked || []), {address: person.address, password: personPassword}]};
     writeFileSync(statePath, JSON.stringify(state), {mode: 0o600});
@@ -252,7 +252,7 @@ try {
       link_host: message ? new URL(confirmLink(message.text)).host : null});
     const landed = message ? await choosePassword(page, confirmLink(message.text), freshPassword) : {};
     step("fresh", "choosing_a_password_signs_the_account_in", Boolean(message) && landed.path !== "/auth/confirm", landed);
-    step("fresh", "the_founding_offer_covers_baltor_pro", /includes Baltor Pro/i.test((landed.planTitle || "") + " " + (landed.planText || "")), {title: landed.planTitle});
+    step("fresh", "the_founding_offer_covers_baltor_pro", /includes Agent Feeds \+ Harness Files/i.test((landed.planTitle || "") + " " + (landed.planText || "")), {title: landed.planTitle});
     // Journey "provider_first"
     const first = await inbox(), firstPassword = password(), finalPassword = password();
     const providerSignup = await boundedFetch(identity.project_url + "/auth/v1/signup", {method: "POST",

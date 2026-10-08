@@ -1354,7 +1354,7 @@ interactions:
     consumer_kind: adapter
     operation: execute_research_query
     request_contract: research_query/v1
-    result_contract: research_query_evidence/v1
+    result_contract: research_query_evidence/v2
     relationship: spawned_by
     delivery: one_request_per_query_page_after_a_recorded_intent
     scheduling: one_lane_per_executor_within_its_source_limits

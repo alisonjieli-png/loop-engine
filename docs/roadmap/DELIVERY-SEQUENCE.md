@@ -20,17 +20,26 @@ internal/customer separation behind this plan.
 
 ### Current position
 
-Release 75 is deployed and its gate is closed. The first production edge
-hostname is `docs.baltor.ai`: all 2,501 public export files passed exact
-readback, its real-account catalogue check passed eleven checks and the
-all-host pulse passed fifty reads. The next candidate contains the explicit
-Agent Feeds / Agent Feeds + Harness Files interface, the governed HTTP client
-profile contract and the long-pass scheduler correction. The latter follows
-a real failed activation: the short operator helper's 300-second ceiling
-could not wrap a twenty-minute pass. The original public-lane timer is restored
-while that correction is reviewed; a supervised two-minute credential proof
-completed 29 real Ollama searches. This does not claim that the full new
-unattended schedule is qualified yet.
+Release 76 is deployed and its gate is closed. The ten-host browser pass has
+2,126 passing assertions; fifty pulse reads and eleven owner-account catalogue
+checks passed. The first production edge hostname is `docs.baltor.ai`, with
+2,501 exact public files verified on the updated export.
+
+The initial two-offering cards are live, but the owner found older Baltor Pro
+and One plan labels elsewhere. The next release is therefore a complete
+active-copy and appearance reconciliation, not another isolated homepage
+card. Three explicitly requested subagents work in detached checkouts on
+decision-support collections, actual collector engine profiles, and shared
+appearance plus competitor/customer research. The session integrates and
+independently checks them before release.
+
+The corrected long-pass scheduler passed its full twenty-minute service run
+from pinned `76ff12c2`: 282 Ollama searches returned 200 and the unit completed
+successfully. The earlier timer race remains recorded separately. Some other
+source lanes reached their daily ceiling or remained held, so this is not a
+claim of complete daily coverage. The new installer refuses replacement while
+a timer or service is active; HTTP-profile rollout follows its separate
+evidence-version and unfinished-attempt checks.
 
 | Work | State | Evidence or remaining gate |
 | --- | --- | --- |
@@ -43,7 +52,7 @@ unattended schedule is qualified yet.
 | Feeds and Components | Catalogue-state preview live in release 72 | JSON Feed, RSS and Markdown describe the same current served state. Customer-defined feeds, agent assignments, a paid Feeds plan and push delivery are not implemented by this preview. |
 | Repository reconciliation | Inventory and recovery copies complete; integration active | 190 registered worktrees, 180 existing, 72 dirty and two stashes were inspected. The shared checkout has 129 staged paths, of which 83 exactly match public main. Private history and unresolved merge stages are preserved outside public source. |
 | Workstation storage | Selected transfer complete | All 29 selected files, 75,444,467,760 bytes, have independent SHA-256 readback records. All original-path links and destination sizes were checked again after the crash. The OS filesystem has about 91 GiB free at recovery. |
-| Release follow-up | Release 75 verified live | Exact source `bc18a19f`, CI `37701122893`, deployment `37702056291`; 2,118 browser assertions passed before the documentation edge cutover. The post-cutover pulse passes fifty reads and the gate is closed. Intermediate failures remain in the release record. |
+| Release follow-up | Release 76 verified live; consistency repairs in the next candidate | Exact source `76ff12c2`, CI `37710042646`, deployment `37711417924`; 2,126 browser assertions, fifty pulse reads and eleven owner-account catalogue checks passed. The gate is closed. Older UI labels found by the owner remain a recorded limitation of that release. |
 
 ### Priority and phase-based Gantt view
 
@@ -59,8 +68,8 @@ delay a ready publication or exhaust memory, storage or provider allowances.
 | Public Good coverage | All 17 goals and no-plan delivery verified | DONE: additive 424-package policy | Preserve access through next release | Broaden useful coverage |
 | Cloudflare storage and delivery | Documentation pages and dynamic forwarding live | ACTIVE: complete R2 mirroring and qualify the remaining hostnames | Select verified bodies and measure the D1 alternative | GATE: live integrity, authorization, failure recovery and measured cost |
 | Internal repository and paper intelligence | Existing radar and query executor contracts | ACTIVE: pin sources, observations, ranking rules and worker deployment | Cloudflare acquisition, private raw storage and checked production | GATE: repeatable current-source results and recovery from duplicate delivery |
-| Feeds | Catalogue-state pull preview live | Implement saved definitions and per-agent assignments | Shared dated snapshots, filters, cursors and account controls | GATE: two customers and two agents remain isolated through edit and revocation |
-| Two offerings | One account and existing full access | Define Feeds membership separately from Components | Test the cheaper information plan and full library access | GATE: paid journeys and all alternate retrieval paths before pricing activation |
+| Feeds | Catalogue-state pull preview live | ACTIVE: named decision-support collections with source links, comparison fields and agent-readable exports | Saved definitions, dated snapshots, per-agent assignments and account controls | GATE: factual source review and two customers/two agents isolated through edit and revocation |
+| Two offerings and consistent design | Initial cards live in release 76; older labels identified by owner | ACTIVE: all active labels, shared colours and persistent appearance across page families | Separate Feeds membership from full reusable files; test both paid journeys | GATE: no retired marketing copy, responsive/contrast checks, live customer journeys before pricing activation |
 | Customer identity | Existing Supabase sign-up and Baltor OAuth work | Compare a Cloudflare-hosted identity engine and migration burden | Qualify email ownership, recovery, sessions and existing accounts | GATE: migrate only after equivalent security and account-recovery checks |
 | OpenAI distribution | Candidate package preserved | Policy/UX findings remain | Test deployed presentation | Identity/legal/review gates |
 | Remaining handoffs | Bundles and patches preserved | Small tested fixes as capacity permits | Native examples and all-goal originals | Repeat the release cycle |
@@ -73,6 +82,14 @@ backend production and Cloudflare services. The existing engine catalogue has
 55 slots: 39 candidate and 16 planned. These are design and qualification
 states, not 55 fully qualified production swaps. The current fixed-edge rule
 remains in the [functional component standard](../architecture/FUNCTIONAL-COMPONENT-STANDARD.md).
+
+The same direction distinguishes strategic information from tactical
+materials. Feeds support initial design and periodic review: architecture,
+provider selection, model and hardware constraints, cost comparisons, market
+positioning and improvement opportunities. Reusable harness files carry out
+the chosen work. Each decision collection should name the question, evidence,
+comparison dimensions, checked date, limits and next review trigger. A source
+directory is not a measured comparison or automatic opportunity detector.
 
 | Existing component boundary | Engine choices and current work | Acceptance before selection |
 | --- | --- | --- |
@@ -176,8 +193,10 @@ gates, not invented dates or a percentage inferred from file counts.
   requests because its environment lacked the existing key. Persist that
   supplied key in the system keyring and add an explicit timer reference.
   The bounded manual proof completed twelve real searches; no model was called.
-- [ ] Install the reviewed scheduler revision with that reference, then verify
-  the unattended run and each source lane before claiming daily web coverage.
+- [x] Install the reviewed scheduler revision with that reference and complete
+  its full service-run proof. Run `20261008T012946Z-4931a5` has 282 successful
+  Ollama searches, 2,786 result items and 2,481 new private research leads.
+  Other source limits and holds remain explicit; leads are not served files.
 - [ ] Finish the Cloudflare source, storage and delivery acceptance below.
 - [ ] Implement the customer customization checklist below before selling a
   personalized Feeds service.
@@ -234,6 +253,14 @@ ownership, opening versus closing or trade intent.
   part of this feed.
 
 ### Customer launch schedule
+
+The [strategic feed and customer-discovery research](../research/STRATEGIC-FEEDS-AND-CUSTOMER-DISCOVERY-2026-10-07.md)
+compares five adjacent products and records nine organization routes. The
+initial customer questions are choosing a stack and reviewing an existing
+one for cost, maintenance or capability changes. Treat these as hypotheses
+to test in interviews. The private organization export binds draft facts to
+existing source observations and a host suppression list; it does not scrape
+contacts, establish customer interest or authorize outreach.
 
 Start onboarding a small supported cohort before the ten-million-file target.
 The schedule below is an engineering estimate, not a service promise. It
@@ -302,7 +329,7 @@ applications or promises of funding.
   location against its county footprint. The current Big Idea announcement
   gives October 16, 2026 as the application deadline. Read the linked contest
   rules and verify revenue, funding and prior-award restrictions before
-  submitting. [Competition announcement](https://cnp.benfranklin.org/ben-franklins-50000-big-idea-contest-is-back/)
+  submitting. [Current competition and eligibility](https://cnp.benfranklin.org/programs-resources/bigidea/)
   Its separate investment program typically takes three to six months and
   includes matching and payback obligations; do not describe it as an
   unrestricted grant. [Investment process](https://cnp.benfranklin.org/early-stage-funding/)
@@ -414,6 +441,17 @@ owners; they do not create another runtime or approval system.
 The live baseline is 1,352,837 distinct files. The remaining gap is 8,647,163.
 The following figures are arithmetic scenarios for planning, not measured
 factory throughput or dates promised to customers.
+
+The October 7 next-batch audit found 312 distinct unserved candidate bodies,
+not millions of ready additions. The first proposed batch has 24 original MIT
+Python tools and 192 new bodies, including 72 code/contract files. Its existing
+non-producer review records match all 24 exact package bodies, but the aggregate
+panel remains incomplete. Fresh qualification and source-claim review precede
+any admission or publication. Six native project seeds and four session tools
+follow; already-served API and explainer files are excluded from these counts.
+At the current average bytes per distinct file, ten million files imply about
+58.7 GB of payload alone, before indexes and headroom. That is a planning
+estimate supporting R2 qualification, not a measured future storage bill.
 
 | Sustained net admitted and served files per day | Days to close the current gap |
 | --- | --- |

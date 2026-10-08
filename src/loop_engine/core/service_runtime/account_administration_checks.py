@@ -1,4 +1,4 @@
-"""Checks for staff roles, superadmin account administration, free monthly Baltor Pro and the founding offer.
+"""Checks for staff roles, superadmin account administration, free monthly Agent Feeds + Harness Files and the founding offer.
 
 Staff sign in with signed browser tokens from an owned loopback key set, as in
 `account_origin_checks.py`; the identity provider's user list is a stand-in

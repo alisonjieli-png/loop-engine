@@ -174,7 +174,7 @@ window.BaltorCatalogueBrowser = {
       item_withheld:"This item is no longer offered to this account. Load the library again to see what is there now.",
       item_unavailable:"This item is no longer available to this account. Load the library again to see what is there now.",
       body_forbidden:"This account may read the details of this item, not the file.",
-      plan_required:"This account has no plan that includes downloads. Choose Baltor Pro on the pricing page to fetch files.",
+      plan_required:"This account has no plan that includes downloads. Choose Agent Feeds + Harness Files on the pricing page to fetch files.",
       usage_store_busy:"The service was busy with other downloads, so it did not send the file and counted nothing. Try again in a moment.",
       step_effects_required:"This item declares effects this request did not declare, so the service did not send the file.",
       body_reader_unavailable:"This service cannot hand out files at the moment. The details above are unchanged.",

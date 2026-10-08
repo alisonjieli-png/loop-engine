@@ -131,13 +131,17 @@ def read_demonstration(page):
     items = [{"identity": item["attrs"]["data-demo-item"], "chosen": "is-chosen" in item["attrs"].get("class", "").split(),
               **facts("data-demo-item", item["attrs"]["data-demo-item"])} for item in in_order("data-demo-item")]
     download = next((item["attrs"]["data-demo-download"] for item in found if "data-demo-download" in item["attrs"]), "")
+    expected = next((item for item in found if "data-demo-expected-digest" in item["attrs"]), None)
     query = next((item["text"].strip() for item in found if "data-demo-query" in item["attrs"]), "")
     paths = [item["attrs"]["data-demo-path"] for item in in_order("data-demo-path")]
     # The harness's own files of the folder (its instruction file, its skill folder and its connection settings) are not
     # placed from the download; they are kept apart from the placed paths.
     harness_files = [" ".join(item["text"].split()) for item in found if "data-hero-file" in item["attrs"]]
     return {"stages": stages, "labels": labels, "items": items, "download": download, "query": query, "paths": paths,
-            "harness_files": harness_files}
+            "harness_files": harness_files,
+            "expected_digest": expected["attrs"]["data-demo-expected-digest"] if expected else "",
+            "expected_identity": expected["attrs"].get("data-demo-digest-for", "") if expected else "",
+            "expected_shown": expected["text"].strip().removesuffix("…") if expected else ""}
 
 
 def released_items():
@@ -198,6 +202,11 @@ def download_problems(demonstration, items):
     chosen = [item["identity"] for item in shown if item["chosen"]]
     if chosen != [identity]:
         problems.append(f"the download part names {identity}, and the search marks {chosen or 'nothing'} as chosen")
+    if demonstration.get("expected_identity") != identity or demonstration.get("expected_digest") != items[identity]["digest"]:
+        problems.append("download: the expected digest is not bound to the selected packaged reference")
+    shown_problem = digest_problem("download expected digest", demonstration.get("expected_shown", ""), items[identity]["digest"])
+    if shown_problem:
+        problems.append(shown_problem)
     body = (RELEASE / items[identity]["body_path"]).read_bytes()
     if hashlib.sha256(body).hexdigest() != items[identity]["digest"]:
         problems.append(f"download: the packaged body of {identity} does not have the digest its reference names")
@@ -519,6 +528,20 @@ class HomepageHeroTest(unittest.TestCase):
         placed = identity.replace("_", "-")
         self.assertEqual(len(hero_result_problems(_planted(self.page, 'data-demo-path=".claude/skills/' + placed + '/SKILL.md"',
                                                              'data-demo-path=".claude/skills/' + shown[1].replace("_", "-") + '/SKILL.md"'), self.items, harmful)), 1)
+
+    def test_the_expected_download_digest_has_both_full_and_visible_binding(self):
+        demonstration = read_demonstration(hero_markup(self.page))
+        self.assertEqual(download_problems(demonstration, self.items), [])
+        for field, wrong in (("expected_digest", "0" * 64), ("expected_identity", "another_reference"),
+                             ("expected_shown", "0" * 8)):
+            self.assertTrue(download_problems({**demonstration, field: wrong}, self.items), field)
+
+    def test_hero_task_outcomes_are_examples_not_unrecorded_measurements(self):
+        hero = hero_markup(self.page)
+        self.assertIn("task outcome is illustrative", hero)
+        self.assertIn("Example objective:", hero)
+        self.assertIn('data-hero-evidence-link href="/docs/searching-and-retrieving"', hero)
+        self.assertNotRegex(hero, r"17,000|15,940|1,060|04:12|no row deleted|without deleting a row|It replaced")
 
     def test_the_folder_shows_only_files_the_download_delivers(self):
         harmful = recorded_harm()

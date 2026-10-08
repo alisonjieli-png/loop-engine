@@ -1559,7 +1559,35 @@ Metadata-only key scopes also narrow the returned `body_allowed` projection.
 
 ### Public Feeds preview
 
-`/feeds` introduces Feeds and Components without creating a paid plan.
+`/feeds` distinguishes Agent Feeds from Agent Feeds + Harness Files without
+creating a new paid plan. The public source collections are release-curated
+references for coding, retrieval, cost, safety and hardware comparisons;
+model and platform changes; MCP services; papers; founder tools; product
+discovery; competitions; and financial context.
+
+`feed_source_collections.json` is a packaged website directory, not an
+intelligence admission store or a source-collection scheduler.
+`feed_source_collections.py` validates its strict versioned record and produces
+`/feeds/sources.json`, `/feeds/sources.md`, and JSON Feed and Markdown outputs
+under `/feeds/collections/` for each declared collection. The JSON Feed items
+are source references, never newly observed upstream articles or benchmark
+results. They deliberately omit upstream publication timestamps. The UTC date
+records source-documentation review; the directory digest binds its exact
+bytes. Each collection includes a research task and comparison fields, and
+each source includes access and reuse notes. Unknown versions, extra fields,
+duplicate identities, unsafe links and broken references are refused.
+
+These outputs require no account and read no account or catalogue records.
+GET and HEAD support exact representation ETags and a five-minute public
+cache; queries and writes are refused and failures are not cached. The existing
+static-site export renders the same bytes and headers for the Cloudflare
+website engine. A customer can give a different collection link to each
+agent today; their own harness controls polling and permitted research.
+This does not create a saved subscription or perform automatic research.
+
+The [source-selection record](../../../../docs/research/AGENT-FEED-SOURCE-COLLECTIONS-2026-10-08.md)
+records what was reused, source limits and the next acceptance gates.
+
 `/feeds/catalogue.json`, `/feeds/catalogue.rss` and `/feeds/catalogue.md` expose
 one current-state notice in JSON Feed 1.1, RSS 2.0 and Markdown. These are public
 aggregate metadata, not anonymous package downloads, complete history,
@@ -1581,8 +1609,8 @@ request returns 304. Successful metadata responses are public-cacheable for
 are refused. Tests cover actual loopback HTTP, stale-view refusal, rollback,
 withdrawal, restart stability, no body reads, deterministic formats and links.
 
-This is the first feed, not completion of roadmap S-6.214. Source-backed
-ecosystem intelligence, daily snapshots, complete replay, explicit offering
+These are a catalogue-state feed and curated source collections, not completion
+of roadmap S-6.214. Maintained ecosystem intelligence, daily snapshots, complete replay, explicit offering
 membership, paid checkout, personalized subscriptions and opt-in push remain
 separate acceptance work.
 

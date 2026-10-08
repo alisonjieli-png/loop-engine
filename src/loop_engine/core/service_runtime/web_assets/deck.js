@@ -152,15 +152,6 @@
   });
   stage.addEventListener("pointercancel", () => { start = null; });
 
-  /* The appearance control in the shared footer: the system's choice, light or dark, as on every other page. */
-  const themes = ["system", "light", "dark"], themeButton = $("theme");
-  let theme = root.dataset.theme || "system";
-  themeButton?.addEventListener("click", () => {
-    theme = themes[(themes.indexOf(theme) + 1) % themes.length];
-    if (theme === "system") delete root.dataset.theme; else root.dataset.theme = theme;
-    themeButton.textContent = "Appearance: " + theme;
-  });
-
   const opened = slideFromHash();
   show(opened >= 0 ? opened : 0);
   if (opened > 0) deck.scrollIntoView({block: "start"});

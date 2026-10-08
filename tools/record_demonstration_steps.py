@@ -34,6 +34,7 @@ from test_homepage_demonstration import shown_size  # noqa: E402
 
 ASSETS = Path(__file__).resolve().parents[1] / "src" / "loop_engine" / "core" / "service_runtime" / "web_assets"
 PAGE = ASSETS / "index.html"
+SCRIPT = ASSETS / "public-pages.js"
 RELEASE = (
     Path(__file__).resolve().parents[1]
     / "examples" / "29_intelligence_service" / "starter-catalogue" / "host-release"
@@ -50,6 +51,10 @@ _KIND = re.compile(r'(<span data-fact="kind">)(?P<value>.*?)(</span>)')
 _LICENCE = re.compile(r'(<span data-fact="licence">)(?P<value>.*?)(</span>)')
 _SIZE = re.compile(r'(<span data-fact="size">)(?P<value>.*?)(</span>)')
 _DIGEST = re.compile(r'(<span data-fact="digest">)(?P<value>[0-9a-f]{8,64})')
+_EXPECTED = re.compile(r'<span data-demo-expected-digest="[0-9a-f]{8,64}" '
+                       r'data-demo-digest-for="(?P<identity>[a-z0-9_]+)">[0-9a-f]{8,64}…</span>')
+_SCENARIO_REFERENCE = re.compile(r'\{name: "(?P<identity>[a-z0-9_]+)", kind: "[^"]+", licence: "[^"]+", '
+                                 r'size: "[^"]+", digest: "[0-9a-f]{64}"\}')
 
 
 def released_items() -> dict[str, dict[str, Any]]:
@@ -110,7 +115,40 @@ def _rewrite(html: str) -> tuple[str, list[str]]:
             problems.append(f"{identity}: {text}")
         return match.group("head") + body + match.group("tail")
 
-    return _ITEM.sub(one, html), problems
+    def expected(match):
+        identity = match.group("identity")
+        reference = items.get(identity)
+        if reference is None:
+            problems.append(f"this release has no download reference {identity}")
+            return match.group(0)
+        digest = reference["digest"]
+        return f'<span data-demo-expected-digest="{digest}" data-demo-digest-for="{identity}">{digest[:8]}…</span>'
+
+    return _EXPECTED.sub(expected, _ITEM.sub(one, html)), problems
+
+
+def _rewrite_script(source: str) -> tuple[str, list[str]]:
+    """Bind scenario references to the same manifest without changing the example's choices or claims."""
+    before, start, tail = source.partition("const HERO_SCENARIOS = {")
+    scenarios, end, after = tail.partition("\n  const heroScenarioButtons")
+    if not start or not end:
+        return source, ["the hero scenario reference block is missing"]
+    items, problems = released_items(), []
+
+    def one(match):
+        identity = match.group("identity")
+        reference = items.get(identity)
+        if reference is None:
+            problems.append(f"this release has no scenario reference {identity}")
+            return match.group(0)
+        values = (("name", identity), ("kind", reference["kind"]), ("licence", reference["license"]),
+                  ("size", shown_size(reference["size_bytes"])), ("digest", reference["digest"]))
+        return "{" + ", ".join(key + ": " + json.dumps(value) for key, value in values) + "}"
+
+    rewritten, count = _SCENARIO_REFERENCE.subn(one, scenarios)
+    if not count:
+        problems.append("the hero scenarios have no readable packaged references")
+    return before + start + rewritten + end + after, problems
 
 
 def main() -> int:
@@ -121,10 +159,16 @@ def main() -> int:
 
     page = PAGE.read_text(encoding="utf-8")
     written, problems = _rewrite(page)
-    changed = written != page
-    if args.write and changed:
-        PAGE.write_text(written, encoding="utf-8")
-    if args.check and changed:
+    script = SCRIPT.read_text(encoding="utf-8")
+    written_script, script_problems = _rewrite_script(script)
+    problems += script_problems
+    changed = written != page or written_script != script
+    if args.write:
+        if written != page:
+            PAGE.write_text(written, encoding="utf-8")
+        if written_script != script:
+            SCRIPT.write_text(written_script, encoding="utf-8")
+    if args.check and (changed or problems):
         print("the recorded demonstrations do not match this release's library:")
         for problem in problems[:20]:
             print("  ", problem)
@@ -133,7 +177,7 @@ def main() -> int:
         print("recorded demonstrations updated" if args.write else "recorded demonstrations are stale")
     else:
         print("recorded demonstrations already match this release")
-    return 1 if (args.check and changed) else 0
+    return 1 if (args.check and (changed or problems)) else 0
 
 
 if __name__ == "__main__":

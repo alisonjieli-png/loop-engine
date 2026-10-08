@@ -113,6 +113,25 @@ def pin(revision: str) -> Path:
     return checkout
 
 
+def require_stopped_schedule():
+    """Refuse replacement while a pass or timer can still select the old unit.
+
+    Stop only the timer, let its current pass finish, then install and verify
+    the pinned replacement before restarting the timer. Rewriting an active
+    unit can misattribute ExecStopPost to a revision that did not run.
+    """
+    for suffix in ("timer", "service"):
+        result = subprocess.run(
+            ["systemctl", "--user", "show", UNIT + "." + suffix,
+             "--property=LoadState", "--property=ActiveState", "--no-pager"],
+            capture_output=True, text=True, check=True)
+        state = dict(line.split("=", 1) for line in result.stdout.splitlines() if "=" in line)
+        if (state.get("LoadState") not in ("loaded", "not-found")
+                or state.get("ActiveState") not in ("inactive", "failed")):
+            raise SystemExit("Stop the query timer and let its current pass finish before installation. "
+                             "Restart the timer after the pinned replacement passes acceptance.")
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--revision", default="HEAD")
@@ -124,6 +143,7 @@ def main(argv=None) -> int:
     options = parser.parse_args(argv)
     if not 5 <= options.minutes <= 55:
         raise SystemExit("a pass lasts 5 to 55 minutes, so an hourly timer never overlaps itself")
+    require_stopped_schedule()
     checkout = pin(options.revision)
     SYSTEMD.mkdir(parents=True, exist_ok=True)
     home = str(Path.home())
@@ -132,6 +152,7 @@ def main(argv=None) -> int:
                              start_command=start_command(checkout, (options.minutes + 14) * 60,
                                                          options.ollama_credential,
                                                          references=json.loads((checkout / "tools/operator_credentials.json").read_text())))
+    require_stopped_schedule()
     (SYSTEMD / (UNIT + ".service")).write_text(service, encoding="utf-8")
     (SYSTEMD / (UNIT + ".timer")).write_text(TIMER.format(calendar=options.on_calendar, unit=UNIT), encoding="utf-8")
     subprocess.run(["systemctl", "--user", "daemon-reload"], check=True)

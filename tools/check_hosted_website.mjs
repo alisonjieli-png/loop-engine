@@ -19,7 +19,7 @@ const check=(name,passed)=>checks.push({name,passed:passed===true});
 const heroHarnesses=["Claude Code","Codex","OpenCode","Pi","Baltor Harness"];
 import {heroProblems,heroCheckRejectsItsKnownWrongCases,checkAudiences} from "./homepage_audience_checks.mjs";
 const categoryProblems=state=>[...(/^Harness and agent optimized operation\.$/m.test(state.footer)?[]:["the footer does not carry the category line in full"]),...(JSON.stringify(state.harnesses)===JSON.stringify(heroHarnesses)?[]:["the hero names "+JSON.stringify(state.harnesses)])];
-const statesThePlanAndPrice=text=>/^Baltor Pro \$29 a month\b/.test(text)&&!/United States dollars|per month/i.test(text);
+const statesThePlanAndPrice=text=>/^Agent Feeds \+ Harness Files \$29 a month\b/.test(text)&&!/United States dollars|per month/i.test(text);
 const cardProblems=(cards,order)=>[...(JSON.stringify(cards.map(card=>card.name))!==JSON.stringify(order)?["the cards are "+JSON.stringify(cards.map(card=>card.name))]:[]),
   ...cards.filter(card=>!card.shown||!card.title).map(card=>card.name+" is not shown under its own heading"),...cards.filter(card=>card.tags>0||cardStatusWords.test(card.text)).map(card=>card.name+" carries a status")];
 const useCaseTitles={overnight:"Solve complex problems overnight",efficiency:"More efficient operation",learning:"Learning and optimization, built in"};
@@ -27,7 +27,7 @@ const useCaseProblems=cards=>[...cardProblems(cards,["overnight","efficiency","l
 const heroActionProblems=state=>[...(JSON.stringify(state.primary)===JSON.stringify([["hero-primary","Get started","/get-started"]])?[]:["the hero's primary actions are "+JSON.stringify(state.primary)]),
   ...(JSON.stringify(state.secondary)===JSON.stringify([["hero-setup","Get set up","/setup"]])?[]:["the hero's secondary actions are "+JSON.stringify(state.secondary)]),...(state.journey===1?[]:[state.journey+" hero links lead into the access journey"]),
   ...(state.paths===""?[]:["the hero repeats its buttons in a line of text: "+JSON.stringify(state.paths)])];
-const pricingFacts=["Agent Feeds","Agent Feeds + Harness Files","Free preview","Baltor Pro","$29 a month","one downloaded item","Cancel from your account page."];
+const pricingFacts=["Agent Feeds","Agent Feeds + Harness Files","Free preview","Agent Feeds + Harness Files","$29 a month","one downloaded item","Cancel from your account page."];
 const pricingProblems=text=>[...pricingFacts.filter(fact=>!text.includes(fact)).map(fact=>"missing "+fact),...(/\bsearch(?:ing)? is free\b/i.test(text)?["free search"]:[]),...(/\binvited\b/i.test(text)?["free invited accounts"]:[]),
   ...(/United States dollars|per month/i.test(text)?["another way of writing the price"]:[])];
 const paymentWords={accountFirst:{note:"Create your account, then subscribe from your account page. Cancel any time."},
@@ -127,10 +127,10 @@ try{
   check("live_owner_category_line_stays_in_full_and_the_hero_names_the_harnesses",categoryProblems(liveCategory).length===0);
   check("category_line_check_rejects_a_shortened_line_a_missing_harness_and_a_status",categoryProblems({...liveCategory,footer:"Optimized operation."}).length===1
     &&categoryProblems({...liveCategory,harnesses:heroHarnesses.filter(name=>name!=="Pi")}).length===1&&categoryProblems({...liveCategory,harnesses:heroHarnesses.map(name=>name==="Pi"?"Pi Planned":name)}).length===1);
-  /* The price in the hero, "Baltor Pro $29 a month", the one way the design standards allow. */
+  /* The price in the hero, "Agent Feeds + Harness Files $29 a month", the one way the design standards allow. */
   const liveHeroPrice=await page.evaluate(()=>document.querySelector('[data-view="home"] .hero-price')?.textContent.replace(/\s+/g," ").trim()||"");
   check("live_homepage_hero_states_the_plan_and_the_price",statesThePlanAndPrice(liveHeroPrice));
-  check("hero_price_check_rejects_a_missing_price_and_another_way_of_writing_it",!statesThePlanAndPrice("")&&!statesThePlanAndPrice("Baltor Pro 29 United States dollars each month")&&!statesThePlanAndPrice("Baltor Pro $29 per month")&&statesThePlanAndPrice("Baltor Pro $29 a month for the whole library"));
+  check("hero_price_check_rejects_a_missing_price_and_another_way_of_writing_it",!statesThePlanAndPrice("")&&!statesThePlanAndPrice("Agent Feeds + Harness Files 29 United States dollars each month")&&!statesThePlanAndPrice("Agent Feeds + Harness Files $29 per month")&&statesThePlanAndPrice("Agent Feeds + Harness Files $29 a month for the whole library"));
   /* The bands of the design, in order, each set off from the next by a change of ground and a rule. */
   const liveBands=await page.locator('[data-view="home"]').evaluate(home=>{const bands=[...home.children],ground=node=>getComputedStyle(node).backgroundColor;
     return {names:bands.map(node=>node.dataset.band||""),apart:bands.slice(1).every((node,index)=>ground(node)!==ground(bands[index])&&parseFloat(getComputedStyle(node).borderTopWidth)>0)};});

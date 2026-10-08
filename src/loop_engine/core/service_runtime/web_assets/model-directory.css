@@ -82,6 +82,13 @@ code{font-family:var(--font-mono);font-size:.875em}
 .md-cards{list-style:none;margin:0 0 1.5rem;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,18rem),1fr));gap:1rem}
 .md-card{display:flex;flex-direction:column;gap:.5rem;min-width:0;padding:1.25rem;background:var(--paper);border:1px solid var(--border);border-radius:var(--radius-card)}
 .md-card p{margin:0}
+.feed-source-card h4{margin:0;font-size:1.125rem;line-height:1.35}
+.feed-source-card details{margin-top:.5rem}
+.feed-source-card summary{min-height:44px;cursor:pointer;font-weight:600}
+.feed-source-card details p{margin:.75rem 0}
+.feed-source-card .md-actions{margin-top:auto;padding-top:.75rem}
+.md-page[data-view="feeds"] .md-intro{padding-top:40px;padding-bottom:40px}
+.md-page[data-view="feeds"] #source-collections{padding-top:40px}
 .md-card>span{color:var(--muted);font-size:.875rem;margin-right:1rem}
 .md-styles{color:var(--ink);font-size:.9375rem}
 .md-links{display:flex;flex-wrap:wrap;gap:0 1rem}

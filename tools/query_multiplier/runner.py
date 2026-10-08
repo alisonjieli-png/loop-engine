@@ -34,6 +34,7 @@ from .executors import EMPTY, OK, PARTIAL
 from .planner import PlannedQuery, query_at, query_identity
 from .routing import licence_lead, route
 from .transport import RequestRefused, github_allowance
+from .client_profiles import request_profile_matches
 
 GITHUB_CORE_FLOOR = 1500
 SEARCH_RESERVE = {"github_repositories": ("search", 6), "github_code": ("code_search", 4)}
@@ -361,6 +362,12 @@ class Lane:
         for query_id, product_id, k, page, request, _ in ledger.due_queries(self.executor.executor_id, limit=5):
             if query_id in self.refreshed:
                 continue
+            # A changed header profile never refreshes a saved request under
+            # the previous profile's identity. The current product plans its
+            # own profile-bound query; both still share this executor's quota.
+            if not request_profile_matches(self.executor, json.loads(request)):
+                self.stats["refreshes_other_profile_skipped"] += 1
+                continue
             self.refreshed.add(query_id)
             stream = next((item for item in self.streams if getattr(item.product, "id", None) == product_id), None)
             if stream is None:
@@ -565,6 +572,7 @@ class Run:
 
     def reconcile(self) -> dict:
         """Before sending anything: adopt responses a crash stored, fold stored responses, abandon empty intents."""
+        self.ledger.require_current_unfinished_contract()
         unfinished = self.ledger.unfinished()
         adopted = abandoned = folded = 0
         for attempt_id, query_id, executor_id, _ in unfinished["intents"]:

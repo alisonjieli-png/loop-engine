@@ -19,7 +19,7 @@ Staff roles
 ```
 
 The same block holds the number of founding accounts: the first accounts
-that finish Baltor's sign-up receive Baltor Pro free each month. The default
+that finish Baltor's sign-up receive Agent Feeds + Harness Files free each month. The default
 is ten, the number the owner chose, and a host may set another number,
 including zero.
 """

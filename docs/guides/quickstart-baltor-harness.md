@@ -11,7 +11,7 @@ journey used loop-engine 0.1.0 and checked each of those steps.
 
 ## What you need
 
-- A [Baltor account](https://app.baltor.ai/get-started). Public Good files are free with an account; Baltor Pro adds the full library.
+- A [Baltor account](https://app.baltor.ai/get-started). Public Good files are free with an account; Agent Feeds + Harness Files adds the full library.
 - A client token from [your account page](https://app.baltor.ai/account), under Your client tokens. The service shows it once.
 - Python 3.10 or newer, `curl` and `sha256sum`.
 - A model you bring. The example below runs on Ollama Cloud with `OLLAMA_API_KEY` in your environment; a local model server works through the engine's own provider settings.
@@ -125,7 +125,7 @@ qualification records.
 | --- | --- | --- |
 | `unauthorized` | 401 | The token is missing, wrong, expired or revoked. Set `BALTOR_SERVICE_TOKEN` in this terminal, then run the session check again. |
 | `insufficient_scope` | 403 | The token lacks the scope this operation needs. Create a token with `provisioning:read`. |
-| `plan_required` | 403 | Your account has no plan that includes downloads; search still works. Choose Baltor Pro on the [pricing page](https://baltor.ai/pricing). The refusal's `details` name that page, and the founding offer while places remain. |
+| `plan_required` | 403 | Your account has no plan that includes downloads; search still works. Choose Agent Feeds + Harness Files on the [pricing page](https://baltor.ai/pricing). The refusal's `details` name that page, and the founding offer while places remain. |
 | `step_effects_required` | 403 | The item declares effects your configuration does not declare. Add the `effects_to_declare` that the refusal's `details` name, if your harness may do them, or choose another item. |
 | `item_unavailable` | 404 | The identity is not in your library, or it was withdrawn. Search again and use a fresh reference. |
 | `request_identity_required` | 400 | A download needs a `request_id`. Give each logical download a new one. |

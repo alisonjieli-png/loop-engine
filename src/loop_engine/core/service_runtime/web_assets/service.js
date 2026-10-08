@@ -123,9 +123,9 @@
      state shows in the note under the hero action, in the plan's tag, in the closing note and in the panel that leads the guide. */
   const CAPABILITIES_RECORD_TYPE = "service_capabilities/v1";
   const accessStates = {
-    open:{label:"Get started", href:"/get-started", note:"for the whole library", tag:"One plan",
+    open:{label:"Get started", href:"/get-started", note:"for the whole library", tag:"Full library",
           closing:"Search the whole library from the harness you already use."},
-    waiting:{label:"Get started", href:"/get-started", note:"for the whole library", tag:"One plan",
+    waiting:{label:"Get started", href:"/get-started", note:"for the whole library", tag:"Full library",
              closing:"Search the whole library from the harness you already use."}};
   const paymentStates = {
     open:{note:"Subscribe from your account page, and cancel any time.", teaser:"Cancel any time from your account page."},
@@ -188,7 +188,6 @@ const applyPaymentState = name => {
     $("offer-usage-keys").textContent = state.offer; $("plan-keys-detail").textContent = state.plan;
   };
   applyAccessState(false); applyPaymentState("closed"); applyClientAccessState(false);
-  const themes = ["system", "light", "dark"];
   const createIdentityClient = settings => window.BaltorIdentitySdk.createClient(settings.project_url, settings.publishable_key,
     {auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
   /* An email sign-in lasts as long as this browser tab. Once the service has opened the account, the page keeps the identity
@@ -212,8 +211,6 @@ const applyPaymentState = name => {
     },
     clear() { try { sessionStorage.removeItem(keptSessionKey); } catch (_) {} }
   };
-  let theme = "light";
-  $("theme").addEventListener("click", () => { theme = themes[(themes.indexOf(theme) + 1) % themes.length]; if (theme === "system") delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = theme; $("theme").textContent = "Appearance: " + theme; });
   /* The header follows the sign-in this page holds. Signed in, it shows the account entry and Sign out, and hides Sign in and the
      invitation action, which are for a visitor who is not signed in. The phone menu is the same navigation folded, so it follows
      too. The served page is the signed-out state; a reload in a tab that keeps an email sign-in opens it again. */
@@ -343,7 +340,7 @@ const applyPaymentState = name => {
   const tiles = (target, entries) => { facts(target, entries); for (const name of [...target.querySelectorAll("dt")]) { const value = name.nextElementSibling, group = document.createElement("div"); name.before(group); group.append(name, value); } };
   /* The plan tile of the account overview names what covers the account, as the session record states it, and what the
      account may do. A subscription is named as one, because the session record does not name its plan. */
-  const sourceNames = {founding_free_monthly:"Baltor Pro", free_monthly:"Baltor Pro", operator_grant:"Baltor Pro", subscription:"Subscription", promotion_code:"Promotion code", none:"No plan"};
+  const sourceNames = {founding_free_monthly:"Agent Feeds + Harness Files", free_monthly:"Agent Feeds + Harness Files", operator_grant:"Agent Feeds + Harness Files", subscription:"Subscription", promotion_code:"Promotion code", none:"No plan"};
   const sourceNotes = {founding_free_monthly:"A founding place, free each month.", free_monthly:"Free each month.", operator_grant:"Granted by Baltor.",
     subscription:"Paid through Stripe.", promotion_code:"From a redeemed code.", none:"Choose a plan under Subscription access."};
   const entitlementNotes = {bodies:"Search and download.", metadata:"Search only."};
@@ -386,7 +383,7 @@ const applyPaymentState = name => {
       if (authenticationMode === "browser_identity") keptSession.write(supplied);
       accessSource = typeof value.access_source === "string" ? value.access_source : "";
       staffRole = typeof value.staff_role === "string" ? value.staff_role : "";
-      $("account-plan").hidden = !coveredSources.includes(accessSource); $("account-plan").textContent = "Your account includes Baltor Pro.";
+      $("account-plan").hidden = !coveredSources.includes(accessSource); $("account-plan").textContent = "Your account includes Agent Feeds + Harness Files.";
       planTile(accessSource, value.principal.entitlement);
       const entries = [["Tenant", value.principal.tenant_id], ["Namespace", value.principal.namespace], ["Scopes", value.principal.scopes.join(", ")], ["Access", value.principal.entitlement]];
       facts($("identity-facts"), entries); facts($("account-facts"), entries);
@@ -612,27 +609,27 @@ const applyPaymentState = name => {
   showConfirmation();
   /* The Get started funnel. One card shows the step a visitor is on, beside the five steps, with one primary action in every
      state: account creation while the service reports it open, the invitation request while it does not, and for a
-     signed-in account the subscription, or the setup guide once an invitation, a code or a subscription covers Baltor Pro.
+     signed-in account the subscription, or the setup guide once an invitation, a code or a subscription covers Agent Feeds + Harness Files.
      Where paid access comes from is read from the session record. The page never guesses it, and it offers no payment
      control unless the service reports checkout open. */
   const funnelPlans = {
-    operator_grant:{title:"Your account covers Baltor Pro", text:"There is nothing to pay on this account. Search and downloads are open.", covered:true},
-    free_monthly:{title:"Your account includes Baltor Pro", text:"It is free for this account each month. Search and downloads are open to this account.", covered:true},
-    founding_free_monthly:{title:"Your account includes Baltor Pro", text:"As one of the first accounts, it is free each month. Search and downloads are open to this account.", covered:true},
-    promotion_code:{title:"A promotion code covers Baltor Pro", text:"There is nothing to pay while the code lasts. Search and downloads are open to this account.", covered:true},
-    subscription:{title:"You subscribe to Baltor Pro", text:"Manage or cancel the subscription from your account page.", covered:true},
-    checkout:{title:"Subscribe to Baltor Pro", text:"$29 a month. Cancel any time from your account page.", covered:false, subscribe:true},
-    unpaid:{title:"Subscribe to Baltor Pro", text:"$29 a month. Subscribe from your account page.", covered:false}};
+    operator_grant:{title:"Your account covers Agent Feeds + Harness Files", text:"There is nothing to pay on this account. Search and downloads are open.", covered:true},
+    free_monthly:{title:"Your account includes Agent Feeds + Harness Files", text:"It is free for this account each month. Search and downloads are open to this account.", covered:true},
+    founding_free_monthly:{title:"Your account includes Agent Feeds + Harness Files", text:"As one of the first accounts, it is free each month. Search and downloads are open to this account.", covered:true},
+    promotion_code:{title:"A promotion code covers Agent Feeds + Harness Files", text:"There is nothing to pay while the code lasts. Search and downloads are open to this account.", covered:true},
+    subscription:{title:"You subscribe to Agent Feeds + Harness Files", text:"Manage or cancel the subscription from your account page.", covered:true},
+    checkout:{title:"Subscribe to Agent Feeds + Harness Files", text:"$29 a month. Cancel any time from your account page.", covered:false, subscribe:true},
+    unpaid:{title:"Subscribe to Agent Feeds + Harness Files", text:"$29 a month. Subscribe from your account page.", covered:false}};
   const funnelOrder = ["account", "confirm", "password", "plan", "setup"];
   /* The price line under the heading, the fourth step and the pricing page's free plan answer follow the plan the account holds and
-     the founding offer the service reports, so no line says "subscribe for $29 a month" to an account that Baltor Pro already
+     the founding offer the service reports, so no line says "subscribe for $29 a month" to an account that Agent Feeds + Harness Files already
      covers, and no step is marked as a subscription that never happened. The founding offer is stated to a visitor who is not signed
      in, and only while the service reports a founding place free. The served words are the default and are kept here, so a signed-out
      page shows them again. Finding 10 of the persona journeys of September 24, 2026. */
   const servedFunnel = {price:$("funnel-price").textContent, title:$("funnel-step-plan-title").textContent, note:$("funnel-step-plan-note").textContent};
-  const coveredSteps = {founding_free_monthly:["Baltor Pro included", "Free each month, as one of the first accounts"],
-    free_monthly:["Baltor Pro included", "Free each month for this account"], operator_grant:["Baltor Pro included", "Covered for this account"],
-    promotion_code:["Baltor Pro included", "Covered by a promotion code"], subscription:["Subscribed to Baltor Pro", "Manage or cancel it from your account page"]};
+  const coveredSteps = {founding_free_monthly:["Agent Feeds + Harness Files included", "Free each month, as one of the first accounts"],
+    free_monthly:["Agent Feeds + Harness Files included", "Free each month for this account"], operator_grant:["Agent Feeds + Harness Files included", "Covered for this account"],
+    promotion_code:["Agent Feeds + Harness Files included", "Covered by a promotion code"], subscription:["Subscribed to Agent Feeds + Harness Files", "Manage or cancel it from your account page"]};
   function renderFunnel() {
     const signedIn = Boolean(token), checkout = capabilities?.record_type === CAPABILITIES_RECORD_TYPE && capabilities.billing?.checkout === true;
     const waitingList = capabilities?.record_type === CAPABILITIES_RECORD_TYPE && capabilities.website?.waitlist_available === true;
@@ -640,7 +637,7 @@ const applyPaymentState = name => {
     const plan = signedIn ? funnelPlans[accessSource] || (checkout ? funnelPlans.checkout : funnelPlans.unpaid) : null;
     const coveredStep = plan?.covered ? coveredSteps[accessSource] : null;
     $("funnel-price").textContent = coveredStep ? plan.title + ". Connect your harness to start."
-      : foundingOpen ? "Create your account and connect your harness. Baltor Pro is $29 a month, and while founding places last a new account gets it free each month." : servedFunnel.price;
+      : foundingOpen ? "Create your account and connect your harness. Agent Feeds + Harness Files is $29 a month, and while founding places last a new account gets it free each month." : servedFunnel.price;
     $("funnel-step-plan-title").textContent = coveredStep ? coveredStep[0] : servedFunnel.title;
     $("funnel-step-plan-note").textContent = coveredStep ? coveredStep[1] : foundingOpen ? "$29 a month, or free each month while founding places last" : servedFunnel.note;
     for (const sentence of document.querySelectorAll("[data-founding-offer]")) sentence.hidden = !foundingOpen;
@@ -668,14 +665,14 @@ const applyPaymentState = name => {
       if (place === here) item.setAttribute("aria-current", "step"); else item.removeAttribute("aria-current");
     }
     /* The card sits inside the step it serves, as the September 26, 2026 design draws the list: account creation or sign-in in the
-       first step, the subscription in the fourth, and the setup guide in the fifth once Baltor Pro is covered. The served page
+       first step, the subscription in the fourth, and the setup guide in the fifth once Agent Feeds + Harness Files is covered. The served page
        already holds it in the first step, so a visitor who is not signed in sees no move. A signed-in account is welcomed. */
     const holder = document.querySelector('[data-funnel-step="' + (signedIn ? (plan.covered ? "setup" : "plan") : "account") + '"]');
     if (holder && $("funnel-card").parentElement !== holder) holder.append($("funnel-card"));
     for (const item of document.querySelectorAll("[data-funnel-step]")) item.classList.toggle("holds-card", item === holder);
     $("funnel").dataset.funnelCovered = String(Boolean(plan?.covered));
     $("funnel-title").textContent = signedIn ? "Welcome to Baltor." : "Get started with Baltor.";
-    if (signedIn && !coveredStep) $("funnel-price").textContent = "Your account is open. Subscribe to Baltor Pro for $29 a month, then connect your harness.";
+    if (signedIn && !coveredStep) $("funnel-price").textContent = "Your account is open. Subscribe to Agent Feeds + Harness Files for $29 a month, then connect your harness.";
   }
   // Subscribing uses the checkout the account page uses, for the first plan the service offers; the host offers one plan.
   $("funnel-subscribe").addEventListener("click", async () => {
@@ -980,7 +977,7 @@ const applyPaymentState = name => {
       item.append(element("p", "Created " + when(row.created_at) + " · " + (row.email_confirmed ? "Confirmed" : "Not confirmed") + " · Last use " + when(row.last_item_at || row.last_sign_in_at)));
       if (row.founding) item.append(element("p", "Founding account", "caption"));
       if (row.sign_up_link?.state === "pending") item.append(element("p", "Sign-up link sent " + when(row.sign_up_link.sent_at) + ", waiting for this person to choose a password"
-        + (row.sign_up_link.free_monthly ? ". Free monthly Baltor Pro starts when the account opens." : "."), "caption"));
+        + (row.sign_up_link.free_monthly ? ". Free monthly Agent Feeds + Harness Files starts when the account opens." : "."), "caption"));
       if (row.enabled === false) item.append(element("p", "Switched off", "caption"));
       const free = row.plan_state === "free_monthly" || row.plan_state === "founding_free_monthly";
       const actions = !row.tenant_id ? [] : [[free ? "revoke_free_monthly" : "grant_free_monthly", free ? "Revoke free monthly" : "Grant free monthly"],

@@ -125,6 +125,9 @@ async function staticAnswer(request, env, manifest, path, host, aliased) {
   const address = path === "/" ? root : path;
   const entry = manifest.files[address];
   if (!entry) return null;
+  // Source-feed query parameters are refused by the origin, even with a
+  // matching validator. Do not turn an invalid request into a cached feed.
+  if (entry.class === "feed_source" && new URL(request.url).search) return null;
   let bytes = await fileBytes(env, entry.sha256, new URL(request.url).origin);
   if (!bytes) return null;
   if (entry.head && root !== "/") bytes = withRootMeta(bytes, root);

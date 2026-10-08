@@ -56,8 +56,12 @@ Redirects preserve that profile and retain public-HTTPS validation. The strict
 record reader refuses unknown fields, changed digests, control characters and
 credential assignments. A header override is an HTTP configuration; it does
 not instantiate a browser or reproduce its fingerprint. This belongs to the
-parked governed-fetch integration; the scheduled query collectors retain their own
-declared transport until a corresponding binding is qualified.
+parked governed-fetch integration. The
+[scheduled query collector](../../../tools/query_multiplier/README.md#http-client-profiles)
+also accepts the same profile record for its eleven HTTP-backed search
+executors. Its profile changes query reuse identity while retaining the
+executor's quota and holds. Offline transport checks cover the binding;
+activation on a particular scheduled revision still needs a recorded run.
 
 ## Custom Plugins
 

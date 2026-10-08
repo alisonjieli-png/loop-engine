@@ -1,4 +1,22 @@
 "use strict";
+/* Appearance belongs to the shared page frame. Only this local preference is persisted; no request or account data is sent.
+   Invalid or unavailable storage leaves the light default usable. System mode delegates the colours to the stylesheet. */
+(() => {
+  const choices = ["system", "light", "dark"], key = "baltor.appearance";
+  const root = document.documentElement, button = document.getElementById("theme");
+  let selected = "light";
+  const apply = value => {
+    selected = choices.includes(value) ? value : "light";
+    if (selected === "system") delete root.dataset.theme; else root.dataset.theme = selected;
+    if (button) button.textContent = "Appearance: " + selected;
+  };
+  try { apply(localStorage.getItem(key)); } catch (_) { apply("light"); }
+  button?.addEventListener("click", () => {
+    apply(choices[(choices.indexOf(selected) + 1) % choices.length]);
+    try { localStorage.setItem(key, selected); } catch (_) {}
+  });
+  addEventListener("storage", event => { if (event.key === key || event.key === null) apply(event.newValue); });
+})();
 /* The shared footer's behaviour, on every page that carries the shared header and footer: the one-page app, the pages the
    service renders on its own, the directory and the deck. September 26, 2026, from the owner's orange design.
 

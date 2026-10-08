@@ -16,11 +16,11 @@
       "address": "/feeds",
       "view": "feeds",
       "title": "Feeds",
-      "description": "Public catalogue updates for AI agents and harnesses, in JSON Feed, RSS and Markdown. This preview does not include a paid plan or personalized push.",
+      "description": "Source collections for benchmarks, models, MCP services, papers and founder tools, plus a live catalogue feed. Download JSON Feed or Markdown for your agents.",
       "group": "Product",
       "linked_from": ["header", "footer"],
       "unlinked_reason": "",
-      "scroll_budget": "page",
+      "scroll_budget": "long",
       "price_in_first_screen": false,
       "indexed": true
     },
@@ -127,7 +127,7 @@
       "address": "/get-started",
       "view": "start",
       "title": "Get started",
-      "description": "Create your Baltor account with your email address, choose a password, subscribe to Baltor Pro for $29 a month and connect your harness.",
+      "description": "Create your Baltor account with your email address, choose a password, subscribe to Agent Feeds + Harness Files for $29 a month and connect your harness.",
       "group": "Product",
       "linked_from": [
         "header",
@@ -184,7 +184,7 @@
       "address": "/pricing",
       "view": "pricing",
       "title": "Pricing",
-      "description": "One plan, Baltor Pro, $29 a month for the whole library. One downloaded item is the measured unit, with no overage billing.",
+      "description": "Agent Feeds has a free preview. Agent Feeds + Harness Files adds the full library for $29 a month. Downloads are measured, with no overage billing.",
       "group": "Product",
       "linked_from": [
         "header",

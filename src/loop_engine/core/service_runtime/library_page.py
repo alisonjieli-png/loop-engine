@@ -336,7 +336,7 @@ def library_body(view, rows=None) -> str:
              "account sees every file in one searchable table: its purpose, the kind of file, the kinds of "
              "step it supports, its licence and the effects it declares, with a search box and sortable columns. Each "
              "row opens to the file's details. Public Good files need an account but no paid plan; other files need the stated access.</p>"
-             + (f'<p class="lib-cta-price">Baltor Pro, {escape(price)}. <a href="{APP_LIBRARY_ADDRESS}">Sign in and '
+             + (f'<p class="lib-cta-price">Agent Feeds + Harness Files, {escape(price)}. <a href="{APP_LIBRARY_ADDRESS}">Sign in and '
                 'browse</a></p>' if price else "")
              + f'</div><div class="md-actions"><a class="button primary" href="{SIGN_UP_ADDRESS}">Get started</a></div>'
              "</div></div>")

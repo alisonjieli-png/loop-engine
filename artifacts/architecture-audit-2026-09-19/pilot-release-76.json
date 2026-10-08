@@ -1,0 +1,52 @@
+{
+  "record_type": "pilot_release_record/v1",
+  "release": 76,
+  "app": "baltor-pilot",
+  "source_revision": "76ff12c2918910d659267e32676ccdd5cd12b950",
+  "image": "registry.fly.io/baltor-pilot@sha256:c963143b7ed9a054f7dee59a30c6234147a945ddd15b3a63699716997e4228bd",
+  "rollback_release": 75,
+  "rollback_image": "registry.fly.io/baltor-pilot@sha256:5a3ba9481b479aec82b1712b4de90846faccc28fec78f7e29eb10f4b354aaf07",
+  "owner_local_date": "2026-10-07",
+  "deployed_at": "2026-10-08T01:11:45Z",
+  "ci_run": 37710042646,
+  "ci_conclusion": "success",
+  "deploy_run": 37711417924,
+  "deploy_workflow_conclusion": "success",
+  "deployment_gate_after": false,
+  "subsequent_scheduler_qualification": {"revision": "76ff12c2918910d659267e32676ccdd5cd12b950", "run_id": "20261008T012946Z-4931a5", "started_at": "2026-10-08T01:29:46Z", "finished_at": "2026-10-08T01:50:17Z", "unit_result": "success", "ollama_http_200": 282, "ollama_items": 2786, "ollama_new_private_leads": 2481, "catalogue_additions": 0, "scope": "Full bounded systemd service run; not complete coverage of every source."},
+  "catalogue": {"release_id": "50b666f56b043ce085d20f46efed01444f257917467199992799ad49cdb03127", "packages": 218127, "distinct_files": 1352837, "distinct_file_bytes": 7938617324, "changed_by_this_application_release": false},
+  "changes": [
+    "Homepage and pricing distinguish Agent Feeds from Agent Feeds + Harness Files, with the preview and unimplemented personalization stated separately.",
+    "Named HTTP client identity profiles bind the governed fetch request and result; that parked runtime path is not the periodic collector.",
+    "The fixed-command scheduler wrapper supports a bounded long pass without raising the generic operator command ceiling.",
+    "Cloudflare HEAD checks request identity encoding before comparing Content-Length to decoded bytes."
+  ],
+  "cloudflare": {
+    "worker": "baltor-web-edge",
+    "export_id": "6c0b81e6250dc047a9218dd5c4ffb6fd257582e1c7b3e4cd51c66de804d104ee",
+    "worker_deployment": "a55c048f84a14446b132eea90386ddf6",
+    "production_hostnames": ["docs.baltor.ai"],
+    "origin_tls": "strict",
+    "body_storage": "Fly volume; R2 mirror remains incomplete",
+    "customer_identity": "Supabase",
+    "custom_search": "sqlite_disk_index"
+  },
+  "checks": {
+    "live_browser": {"hosts": 10, "passed": 2126, "total": 2126},
+    "live_pulse": {"passed": 50, "total": 50},
+    "owner_catalogue": {"passed": 11, "planned": 11, "body_reads": 0, "usage_records_added": 0},
+    "edge_public_export": {"passed": 2501, "total": 2501, "scope": "exact bodies and required headers"},
+    "retained_failed_attempts": [
+      "The preceding053a1413 candidate failed CI on missing release metadata, derived records and a stale homepage assertion.76ff12c2 repairs those failures and passed exact CI.",
+      "The owner identified retained Baltor Pro and One plan labels after this deployment. Existing passing browser tests still required those labels, so they did not establish a complete offering-language migration.",
+      "The query timer started its older pinned executable just before the operator installed the corrected unit. That ongoing public-only pass is not evidence that the new keyring wrapper ran. A subsequent full pass must establish its actual revision and provider activity."
+    ]
+  },
+  "limits": [
+    "The two-offering presentation remains incomplete across older badges, account states and guides in this revision; the next candidate audits all active surfaces and shared appearance.",
+    "Named decision-support collections, personalized saved feeds, per-agent assignments and new feed-only billing are not activated by this release.",
+    "The application deployment adds no catalogue component files and does not meet the ten-million-file target."
+  ],
+  "private_evidence_root": "/home/username/baltor-private/repo-disk-review-20261007-1uZpT8",
+  "evidence": ["fourth-deployment.json", "release-76-browser/summary.json", "release-76-pulse.json", "release-76-catalogue.json", "cloudflare-site-deployment-04/events.jsonl", "cloudflare-site-readback-03.json"]
+}

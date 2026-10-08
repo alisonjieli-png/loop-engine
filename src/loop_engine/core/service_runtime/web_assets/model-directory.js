@@ -9,15 +9,6 @@
   const GIB = 1024 ** 3;
   const USES = ["coding", "reasoning", "classification", "embeddings", "rerank", "vision"];
 
-  /* The appearance switch and the service line of the shared footer, as the site's own page script drives them. */
-  const themes = ["system", "light", "dark"];
-  let theme = "light";
-  const themeButton = $("#theme");
-  if (themeButton) themeButton.addEventListener("click", () => {
-    theme = themes[(themes.indexOf(theme) + 1) % themes.length];
-    if (theme === "system") delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = theme;
-    themeButton.textContent = "Appearance: " + theme;
-  });
   /* The phone menu of the shared header: one button that shows and hides the navigation it controls and says which with
      aria-expanded; Escape closes it and returns focus to the button, as the site's other pages do. */
   const menuButton = $("#menu-button");

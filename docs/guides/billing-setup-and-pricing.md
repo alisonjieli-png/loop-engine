@@ -19,7 +19,12 @@ Current behaviour and planned behaviour are kept apart in every section.
 
 ## The price at launch
 
-One paid plan, named Baltor Pro, at 29.00 US dollars each month. Payment is
+Customer-facing name: Agent Feeds + Harness Files. The existing Stripe
+product identity remains `baltor_pro`; historical records and the approved
+terms call it Baltor Pro. The rename changes no price or entitlement.
+Agent Feeds has a free preview, not another paid subscription.
+
+One paid plan at 29.00 US dollars each month. Payment is
 in US dollars. There is no annual price, no seat price, and no second tier at
 launch.
 

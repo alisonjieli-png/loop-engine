@@ -31,11 +31,11 @@ def paid_access_source(runtime, tenant_id):
     """Where one account's paid access comes from now, read from its recorded source.
 
     `subscription` for a provider subscription snapshot, `founding_free_monthly`
-    and `free_monthly` for the two kinds of free monthly Baltor Pro,
+    and `free_monthly` for the two kinds of free monthly Agent Feeds + Harness Files,
     `operator_grant` for any other explicit host grant, `promotion_code` for a
     redeemed code, and `none` while the account holds no paid access. The
     account holder reads it on the session record, so the website can say that
-    the account includes Baltor Pro instead of offering a payment. It applies
+    the account includes Agent Feeds + Harness Files instead of offering a payment. It applies
     the entitlement rule the runtime's access source report applies, and reads
     the recorded `source` field; it never guesses from an expiry, a grant or a
     name.

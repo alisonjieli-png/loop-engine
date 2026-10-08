@@ -5,6 +5,18 @@
   "releases": [
    {
     "kind": "service",
+    "number": 76,
+    "at": "2026-10-08T01:11:45Z",
+    "lines": [
+     "Homepage and pricing distinguish Agent Feeds from Agent Feeds + Harness Files, with the preview and unimplemented personalization stated separately.",
+     "The fixed-command scheduler wrapper supports a bounded long pass without raising the generic operator command ceiling.",
+     "Cloudflare HEAD checks request identity encoding before comparing Content-Length to decoded bytes."
+    ],
+    "seen_after_release": "",
+    "not_shown": 1
+   },
+   {
+    "kind": "service",
     "number": 75,
     "at": "2026-10-07T23:27:31Z",
     "lines": [
@@ -872,7 +884,7 @@
      {
       "address": "/feeds",
       "title": "Feeds",
-      "description": "Public catalogue updates for AI agents and harnesses, in JSON Feed, RSS and Markdown. This preview does not include a paid plan or personalized push."
+      "description": "Source collections for benchmarks, models, MCP services, papers and founder tools, plus a live catalogue feed. Download JSON Feed or Markdown for your agents."
      },
      {
       "address": "/public-good",
@@ -892,7 +904,7 @@
      {
       "address": "/get-started",
       "title": "Get started",
-      "description": "Create your Baltor account with your email address, choose a password, subscribe to Baltor Pro for $29 a month and connect your harness."
+      "description": "Create your Baltor account with your email address, choose a password, subscribe to Agent Feeds + Harness Files for $29 a month and connect your harness."
      },
      {
       "address": "/setup",
@@ -907,7 +919,7 @@
      {
       "address": "/pricing",
       "title": "Pricing",
-      "description": "One plan, Baltor Pro, $29 a month for the whole library. One downloaded item is the measured unit, with no overage billing."
+      "description": "Agent Feeds has a free preview. Agent Feeds + Harness Files adds the full library for $29 a month. Downloads are measured, with no overage billing."
      },
      {
       "address": "/examples",

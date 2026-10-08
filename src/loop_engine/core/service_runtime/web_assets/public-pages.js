@@ -206,19 +206,22 @@
     if (button) pickHeroHarness(button.dataset.heroHarness);
   });
 
-  /* Three worked steps, not one small one. Each names the chain of components a step actually needs, the folder it
-     assembles, and what the step replaces. The first is the recorded run the service verified; the other two are
-     worked examples over components the library serves today, labelled as examples so no reader mistakes a planned
-     run for a measured one. Hovering or focusing a name swaps the whole terminal: the query, the search results, the
-     download, the file tree and the saving. */
+  /* The default search is checked against the packaged catalogue. The other
+     selections are worked examples using exact packaged references. Every
+     task outcome and folder remains illustrative; none is a customer run.
+     The release recorder updates reference facts from the packaged manifest. */
   const HERO_SCENARIOS = {
     "dedupe": {
       label: "Deduplicate a customer table",
-      outcome: "17,000 rows in, 15,940 out: 1,060 duplicates found and merged without deleting a row",
+      evidence_class: "recorded_catalogue",
+      evidence_label: "Recorded starter-catalogue results",
+      evidence_href: "/docs/searching-and-retrieving",
+      evidence_link: "Recorded reference scope",
+      outcome: "Example objective: identify duplicate candidates and propose merges for review",
       query: "find duplicate customer records",
       results: [
-        {name: "find_duplicate_records_with_blocking_keys", kind: "skill", licence: "MIT", size: "2.7 KB", digest: "f3f1d0ab00e67c537c026820534090f37aebde5247b7de2462babd9e08575329"},
-        {name: "score_duplicate_pairs_by_weakest_signal", kind: "skill", licence: "MIT", size: "2.6 KB", digest: "551771788f4a1236262de17e5c162f5e211559d1a88c6f895fac91a55fb8d62e"}
+        {name: "find_duplicate_records_with_blocking_keys", kind: "skill", licence: "MIT", size: "2.7 KB", digest: "984e29c538e36b5c894e50583e7839cdbf8222ff9f58efbe9f1fc7bd7f94a35b"},
+        {name: "score_duplicate_pairs_by_weakest_signal", kind: "skill", licence: "MIT", size: "2.6 KB", digest: "5f381262eb12f0c5c9067809b8532d366025a66c4b9f6a02a128d38714bb3df9"}
       ],
       chosen: 0,
       step: "step-3-find-duplicates",
@@ -226,26 +229,34 @@
       replaces: "reading the whole table by hand to decide which rows are the same customer"
     },
     "overnight": {
-      label: "Fix a failing metric overnight",
-      outcome: "a validation gap found and closed at 04:12, the run finished before anyone logged in",
+      label: "Investigate a validation gap",
+      evidence_class: "worked_example",
+      evidence_label: "Worked example: starter-catalogue references",
+      evidence_href: "/demo/kaggle#kaggle-step-3-title",
+      evidence_link: "Example walkthrough",
+      outcome: "Example objective: diagnose a validation gap and choose the next experiment",
       query: "choose metrics and read the validation gap",
       results: [
-        {name: "orient_on_a_task_and_write_its_contracts", kind: "skill", licence: "MIT", size: "2.9 KB", digest: "b757336f3b872c4e56798f1e56a689b747df6ac1254b98cf997f7fe102cccc87"},
-        {name: "read_the_train_validation_gap", kind: "skill", licence: "MIT", size: "2.8 KB", digest: "a1a18d104e7a61f01077e4ddbad049d2bbe29ad8254aef8973cdad65c033d0aa"},
-        {name: "decide_whether_a_step_needs_a_model", kind: "skill", licence: "MIT", size: "3.5 KB", digest: "c6d750c97d5164810c22f0a5d7f06d4a76069c8a32f957f7688a22d4346bdc3f"}
+        {name: "orient_on_a_task_and_write_its_contracts", kind: "skill", licence: "MIT", size: "2.9 KB", digest: "a1240b9bf0ad23a6ced689e91fa2347a6bddd08fc33a45f906bee3427c9c2efb"},
+        {name: "read_the_train_validation_gap", kind: "skill", licence: "MIT", size: "2.8 KB", digest: "523aba1921da63bd88424f440fbcc30ecdb478c93314cc602633ff20ad234213"},
+        {name: "decide_whether_a_step_needs_a_model", kind: "skill", licence: "MIT", size: "3.5 KB", digest: "cc93f27592d93fcfa74def1d616ce4087510d101bbc300f8912be8d82cf052f3"}
       ],
       chosen: 1,
       step: "step-2-close-the-validation-gap",
       tree: [["CLAUDE.md", 1], [".claude/skills/", 1], ["read-the-train-validation-gap/", 2], ["SKILL.md", 3], ["contracts/", 3], ["task.schema.json", 4], [".mcp.json", 1], [".baltor/step.lock.json", 1]],
-      replaces: "a whole night of reading notebooks to find why the score stopped moving"
+      replaces: "reading notebooks to find why the score stopped moving"
     },
     "handoff": {
       label: "Hand a finished result over",
-      outcome: "one page naming what was observed, what was derived, and what is still unknown",
+      evidence_class: "worked_example",
+      evidence_label: "Worked example: starter-catalogue references",
+      evidence_href: "/demo#task-step-5-title",
+      evidence_link: "Example walkthrough",
+      outcome: "Example objective: separate observed, derived and unknown findings in the handoff",
       query: "report what was observed and what is unknown",
       results: [
-        {name: "report_observed_derived_assumed_and_unknown", kind: "skill", licence: "MIT", size: "2.3 KB", digest: "2a75039705293bb4df330c52b21c0e569ceccdb1474b83b8d38cca6f1eb22be3"},
-        {name: "escalate_uncertain_values_with_candidates", kind: "skill", licence: "MIT", size: "2.6 KB", digest: "851631ab2b4fd27f9f87e614562a6c39f31a3a9d9e9921df04b28db3f816b803"}
+        {name: "report_observed_derived_assumed_and_unknown", kind: "skill", licence: "MIT", size: "2.3 KB", digest: "c711cce50211b92f9230281435a8bf9fe23ab9731aa76c2e9795dfe61a691d9b"},
+        {name: "escalate_uncertain_values_with_candidates", kind: "skill", licence: "MIT", size: "2.6 KB", digest: "0099be96a71d427974873df58fa2a887034175adf638cac6a150ad7f6c4d99da"}
       ],
       chosen: 0,
       step: "step-5-report-the-result",
@@ -261,6 +272,18 @@
     const selected = scenario.results[scenario.chosen];
     if (!selected || !/^[a-z][a-z0-9_]*$/.test(selected.name) || !/^[a-f0-9]{64}$/.test(selected.digest)) return;
     terminal.dataset.heroScenario = key;
+    terminal.dataset.heroEvidenceClass = scenario.evidence_class;
+    const evidence = scenario.evidence_class === "recorded_catalogue" ? "recorded" : "illustration";
+    const evidenceLabel = terminal.querySelector("[data-hero-evidence-text]");
+    if (evidenceLabel) {
+      evidenceLabel.textContent = scenario.evidence_label;
+      evidenceLabel.closest("[data-demo-label]").dataset.demoLabel = evidence;
+    }
+    terminal.querySelectorAll('[data-demo-stage="search"], [data-demo-stage="download"]').forEach(node => { node.dataset.demoEvidence = evidence; });
+    const evidenceLink = terminal.querySelector("[data-hero-evidence-link]");
+    if (evidenceLink) { evidenceLink.href = scenario.evidence_href; evidenceLink.textContent = scenario.evidence_link; }
+    const downloadStatus = terminal.querySelector("[data-hero-download-status]");
+    if (downloadStatus) downloadStatus.textContent = evidence === "recorded" ? "Packaged bytes match" : "Illustrated download request";
     heroScenarioButtons.forEach(button => {
       const on = button.dataset.heroScenario === key;
       button.setAttribute("aria-pressed", String(on));
@@ -306,7 +329,7 @@
     const requested = terminal.querySelector("[data-demo-download]");
     if (requested) { requested.dataset.demoDownload = selected.name; requested.textContent = selected.name; }
     const expected = terminal.querySelector("[data-demo-expected-digest]");
-    if (expected) { expected.dataset.demoExpectedDigest = selected.digest; expected.textContent = selected.digest.slice(0, 8) + "…"; }
+    if (expected) { expected.dataset.demoExpectedDigest = selected.digest; expected.dataset.demoDigestFor = selected.name; expected.textContent = selected.digest.slice(0, 8) + "…"; }
     const stepName = terminal.querySelector("[data-hero-step]");
     if (stepName) stepName.textContent = scenario.step + "/";
     const replaces = terminal.querySelector("[data-hero-replaces]");

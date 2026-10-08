@@ -526,13 +526,16 @@ def served_site():
     """The website this checkout serves, read through the service's own served address table."""
     from urllib.parse import unquote
 
-    from loop_engine.core.service_runtime import catalogue_feed, dot_pages, library_page, public_good_page, red_team_page, status_pages
+    from loop_engine.core.service_runtime import catalogue_feed, dot_pages, feed_source_collections, library_page, public_good_page, red_team_page, status_pages
     from loop_engine.core.service_runtime.model_directory_pages import rendered_page
     from loop_engine.core.service_runtime.public_links import PublicListLinks
     site_map = load_site_map()
     counted_links = PublicListLinks()
 
     def serve(address):
+        if address in feed_source_collections.formats():
+            body, media_type = feed_source_collections.render(address, "https://" + site_map.canonical_hostname)
+            return body.decode("utf-8"), media_type
         if address in catalogue_feed.FORMATS:
             # Route declaration only. The actual anonymous HTTP, HEAD,
             # conditional-read and unavailable states run in test_catalogue_feed.

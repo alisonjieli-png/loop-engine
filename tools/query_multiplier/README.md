@@ -70,7 +70,7 @@ Functional components
 │   ├── factorized_multiplier   planner.py (Baltor-native)
 │   ├── matrix_pages            knowledge_radar/query_matrix.py (the October 1 planner)
 │   └── queue_import            importers.py (earlier research queues as plans)
-└── research_query_executor     edge research_query/v1 -> research_query_evidence/v1
+└── research_query_executor     edge research_query/v1 -> research_query_evidence/v2
     └── one engine per source   executors.py, through transport.py and its host policy
 ```
 
@@ -195,6 +195,107 @@ for a query whose first page was at least half new. A GraphQL lane reads, fifty
 repositories at a time, the licence GitHub detects for repositories that code
 search and web search name without one.
 
+## HTTP client profiles
+
+The eleven HTTP-backed executors accept a named User-Agent and
+Accept-Language profile. The two GitHub search executors use `gh`, which owns
+their HTTP client. A profile for either GitHub executor is refused before any
+request. No profile causes a browser to start.
+
+Pass `--http-client-profiles FILE` to `plan` or `run`, or set
+`QUERY_MULTIPLIER_HTTP_PROFILES` to the file path in the scheduled process's
+environment. The explicit command-line path wins. The file must be a
+`research_query_http_profiles/v1` record whose `bindings` maps executor ids
+to complete `web_http_client_profile/v1` records. The reader checks every
+binding before changing any executor. Unknown executors, unsupported access,
+unknown fields or versions, changed digests, duplicate JSON fields and files
+larger than 64 KiB are refused. The example contains no credentials:
+
+```sh
+PYTHONPATH=src:tools python tools/run_query_multiplier.py plan --show 1 \
+  --http-client-profiles tools/query_multiplier/profiles/baltor-research-en-v1.json
+```
+
+The [example](profiles/baltor-research-en-v1.json) pins the Ollama search lane
+to an English-language HTTP profile. Other lanes keep their defaults. Edit
+profiles through `WebHttpClientProfile(...).to_record()` so the digest matches
+the exact public header values. Profile values must have no leading or
+trailing whitespace. They must identify Baltor or Loop Engine; known trusted
+bot claims, control characters and common credential assignments are refused.
+Do not put keys, cookies, user-specific identifiers or private text in these
+public fields. The sensitive-text checks are a guard, not a secret detector.
+
+The profile is part of the rendered request before the planner hashes it.
+Changing either header therefore changes query identity and cannot reuse a
+different profile's cached result. An expired query under another profile
+is skipped by the refresh selector; the current product plans its own query.
+The executor id still owns daily usage and rate-limit holds. Changing a
+profile grants no more requests and cannot clear a 401, 403 or 429 hold.
+Selection is pinned, with no automatic profile rotation or fallback. The
+default profile keeps the previous request identity when no file is supplied.
+
+Version-2 response evidence stores the exact profile and
+`client_realization: http_headers_only`. That describes the headers passed to
+the HTTP transport, not a browser fingerprint, authenticated identity or
+proof that a destination treated the client as a browser. GitHub evidence
+has `http_client: null` because these settings do not control `gh`.
+The transport rejects a mismatch between a planned profile and the installed
+profile before dispatch; the evidence store checks the binding again.
+
+Before upgrading a scheduled runner that writes version-1 evidence, finish
+or reconcile every unfinished attempt with that runner's pinned revision.
+The version-2 reader refuses version-1 records as runtime input. Historical
+files stay unchanged. Completed version-1 cache entries are ineligible for
+current result reuse, so a newly planned request fetches current evidence
+within the existing executor allowance. The ledger adds nullable contract
+and execution-count projections; it resets no query history, usage or holds.
+A new successful version-2 execution makes that query eligible again. An
+unfinished prior-version attempt stops the run before reconciliation or
+network dispatch and names the required pinned-runner reconciliation.
+Check the pinned source revision and a complete bounded
+pass before recording a profile as live. Shipping this configuration example
+does not enable it on an existing timer.
+
+Offline checks:
+
+```sh
+PYTHONPATH=src:tools python -m unittest tools.test_query_http_profiles \
+  tools.test_query_multiplier tools.test_query_multiplier_schedule
+```
+
+## Further provider integrations
+
+These decisions use provider documentation checked on October 8, 2026.
+The existing Ollama adapter keeps its
+[documented POST request and ten-result maximum](https://docs.ollama.com/capabilities/web-search).
+Its 300-request daily ceiling is Baltor's allowance, not a claim about an
+Ollama subscription limit.
+
+The [Brave API](https://api-dashboard.search.brave.com/api-reference/web/search/get)
+uses a different endpoint and `X-Subscription-Token`, so it needs its own
+adapter and bounded credential binding. Reuse the repository's Brave plugin
+contract when implementing it. That plugin marks results `persistable: false`
+until the account's storage rights are established; a scheduled adapter must
+preserve that restriction. The multiplier does not call Brave today.
+[SearXNG](https://docs.searxng.org/dev/search_api.html) requires a declared
+instance with JSON enabled; many public instances disable it. A public
+instance list is not an access grant or a fallback for a refused source.
+Neither provider is enabled by this profile configuration.
+
+[Cloudflare Browser Run](https://developers.cloudflare.com/browser-run/reference/automatic-request-headers/)
+allows custom User-Agent settings for Quick Actions and browser sessions,
+but not its crawl endpoint. Its platform and signature headers remain
+separate. A Browser Run adapter would own browser execution behind the
+existing web-research edge; it cannot be substituted for a search service
+without matching that service's request and result contract.
+
+Multiple API keys are credential instances of a provider, not new engines.
+The remaining integration needs declared initial and fallback order,
+provider/account quota ownership shared by all keys, attempt lineage,
+unsupported-capability refusals and independent per-engine conformance.
+There is no cross-provider failover in this collector. A rate-limit or access
+refusal must not trigger key cycling, profile rotation or browser escalation.
+
 ## Evidence
 
 ```text
@@ -279,6 +380,12 @@ limits a pass to named lanes. A file `<root>/state/stop` ends a running pass aft
 its current requests; `<root>/state/pause` makes scheduled passes exit at once.
 
 ## Schedule
+
+Stop the timer and let its current pass finish before replacing the unit.
+The installer refuses an active timer or service so an older executable cannot
+be recorded as the new revision. Keep the timer enabled but stopped while
+the replacement's manual acceptance pass runs; restart it after acceptance.
+Do not stop an in-flight provider request to force an upgrade.
 
 `python tools/query_multiplier/install_schedule.py --revision <commit>` pins that
 commit's `src` and `tools` under `~/baltor-scheduled/query-multiplier-<commit12>/`

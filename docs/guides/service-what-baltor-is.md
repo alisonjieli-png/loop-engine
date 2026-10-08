@@ -80,7 +80,7 @@ loading, use and acceptance are separate events.
 The hosted library does not supply a model subscription or run your task's
 model calls. Configure models in your harness or local engine. Those calls can
 go to a local endpoint, a server you operate or a hosted provider, within the
-permissions you set. Provider charges are separate from Baltor Pro.
+permissions you set. Provider charges are separate from Agent Feeds + Harness Files.
 
 ## Next steps
 

@@ -85,7 +85,7 @@ CODE_GUIDANCE = {
     "scope_denied": ("This token is not allowed to perform that operation.",
                      "Create a token that includes the operation you need, then retry with it."),
     "plan_required": ("This account has no plan that includes downloads, so it can search but not download.",
-                      "Choose Baltor Pro on the pricing page, then retry. The refusal's details name the pricing "
+                      "Choose Agent Feeds + Harness Files on the pricing page, then retry. The refusal's details name the pricing "
                       "page, and the founding offer while places remain."),
     "body_forbidden": ("This account may search for that item but may not download its body.",
                        "Ask the person who runs this service for download access to that item."),

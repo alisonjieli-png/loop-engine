@@ -27,6 +27,51 @@ Automated commercial Reddit access requires a platform-access review before
 activation. A public reply does not grant permission to redistribute its
 code, assets or prose. See [the source and engine record](../../docs/research/CREATIVE-COMPONENTS-AND-ENGINE-CONTROL-2026-09-29.md).
 
+## Private organization opportunity drafts
+
+`opportunities.py` is an offline projection of this radar's existing
+`knowledge_radar_observation/v1` records. It does not add a source engine,
+registry, store or sender. A research operator supplies a strict
+`organization_opportunity_request/v1`: organization identity, name, website
+origin, kind, a fit hypothesis, proposed proof, unknowns, exact observation
+keys/digests and selected fact keys. The optional contact reference must name
+one of those same observations, whose URL is an HTTPS page on the declared
+organization's domain. It never invents an email address or fetches that page.
+
+`organization_opportunity_brief/v1` carries the exact selected source facts,
+dates and digests, computed freshness and explicit unknown interest. An exact
+digest proves which observation was selected, not the truth of its claims or
+the semantic correctness of the operator's organization mapping. Source
+claims remain untrusted data. No output is approved for outreach or public
+delivery. Missing verification stays unknown; an old observation is never
+renewed by the export day. Dates are evaluated at day granularity. Freshness
+covers only the selected observations, not a complete source crawl or proof
+that a later source check succeeded.
+
+The caller supplies suppression domains separately from the request. A
+suppressed organization or subdomain has no exported contact route and stays
+suppressed even if source facts say otherwise. The command requires an
+explicit host-managed suppression export, including an empty list when
+appropriate. The existing observation reader restricts facts to scalars;
+nested objects and lists are refused before projection. Personal-contact
+field names, obvious email strings, credential assignments and the repository's
+secret patterns are refused; that screen is not a complete privacy classifier. The operator must
+select public organizational facts, not employee information or private data.
+
+Preview with `tools/export_organization_opportunities.py --requests REQUESTS
+--observations OBSERVATIONS --suppressed-domains SUPPRESSION --as-of YYYY-MM-DD`.
+The first two files are JSONL; suppression is a JSON list of lowercase domain
+names exported from the host's existing managed records. The preview prints
+only counts and scope. `--output NEW_PRIVATE_FILE --authorize-local-writes`
+writes a new mode-0600 JSONL file outside the repository, refuses overwrite and validates the whole
+bounded population first. It creates no recurring job or managed collection;
+durable operational drafts still belong in `RecordOperationService`.
+
+Offline checks: `PYTHONPATH=src:tools python -m unittest
+tools.test_organization_opportunities`. The
+[dated growth research](../../docs/research/STRATEGIC-FEEDS-AND-CUSTOMER-DISCOVERY-2026-10-07.md)
+records the intended Cloudflare adapter and customer/funding dependencies.
+
 ## Multidimensional query pages
 
 `tools/plan_knowledge_queries.py` extends this radar's discovery planning. It
