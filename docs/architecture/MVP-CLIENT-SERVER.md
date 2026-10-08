@@ -2,7 +2,7 @@
 
 Kind: product architecture with measured local implementation and proposed hosting.
 Date: 2026-09-19. The [current deployment](#current-deployment) section was
-added on 2026-09-20 and last checked on 2026-10-08, after Fly release 79.
+added on 2026-09-20 and last checked on 2026-10-08, after Fly release 80.
 
 The hosted product manages accounts, subscriptions, and access to intelligence.
 The customer runs Loop Engine and the selected harnesses. A hosted intelligence
@@ -48,18 +48,18 @@ section. Update this section in the same change that records a new release.
 Public registration is enabled. The site offers the existing monthly plan;
 these deployment checks alone do not establish a fully qualified paid service.
 
-The running image is Fly release 79, from
-`dc7b3ccda007c1d44bfcbfb0a58f9b6be6d1f8c6`, image
-`sha256:38e2ac1be655c49fe4f51e1c2783c8f02f18ddbca5cfb0331d148919cb34b3ac`.
-Exact CI `37824241860` and guarded deployment `37825297507` passed; the gate
-is closed. All ten hosts passed 2,126 browser assertions. The full route map
+The running image is Fly release 80, from
+`3c96b6b363ec60a9a606b3c1af8fcbfbcb99493b`, image
+`sha256:7e3d22d655b8d50de6bb7cc3eeeea09e9422455b66522c9e0bba2943abde2b39`.
+Exact CI `37837777639` and guarded deployment `37839313658` passed; the gate
+is closed. All ten hosts passed 2,134 browser assertions. The full route map
 passed 67 pages, 277 views and 436 links with actual light/dark appearance
 selected and checked. The final all-host pulse passed fifty reads with no
-slow response; two earlier health reads were slow during parallel QA.
+slow response. The live offering/layout matrix passed 345 checks.
 
 All nine product hostnames now serve public assets through Cloudflare and
 forward dynamic requests to Fly. The technical Fly hostname remains a direct
-fallback. Export `3939bb95ddb59...` contains 2,544 files, all verified on
+fallback. Export `e6eb15d28cf25...` contains 2,544 files, all verified on
 `baltor.ai` against their exact bodies and required headers. Disable proxying on the saved DNS
 records to recover the direct paths; do not delete the routes or resources.
 
@@ -71,13 +71,15 @@ Approved Terms retain their original wording. Thirteen curated decision-source
 collections and a live catalogue specimen are available. Local per-agent
 reading profiles are implemented; hosted saved preferences, agent assignments
 and personalized research delivery remain unfinished. The proposed Supervised
-Runs tier is not active. The [release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-79.json)
+Runs tier is not active. The [release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-80.json)
 binds the application, public export, live checks and separate follow-ups.
-Release 78 is the compatible image rollback, at
-`sha256:5e86ebd9ce9a835d7ba436d5ac29bb035450d7cb6ffabfd420733207c9efcc5d`.
+Release 79 is the compatible image rollback, at
+`sha256:38e2ac1be655c49fe4f51e1c2783c8f02f18ddbca5cfb0331d148919cb34b3ac`.
 This source includes the model-directory refresh, repaired private supply
 journals, isolated constraint-case generation, bounded overnight operator and
-account handoff. It does not select another body store, change identity,
+account handoff. Available local overnight tools are labelled Preview, with
+run limits, task checkpoints, morning reports and a runnable guide. Marketing
+pages contain no future-feature teaser. It does not select another body store, change identity,
 publish candidates or activate hosted Supervised Runs.
 The separate October 8 catalogue addition now serves 218,151 entries and
 1,353,029 distinct files, release `1694fb4a5b35...`. It adds 24 independently

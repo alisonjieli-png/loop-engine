@@ -83,6 +83,21 @@ least one provider answers.
 Provider checks make small live model calls. Run them only when those calls are
 authorized.
 
+The CLI commands `loop-engine configure` and `loop-engine doctor` inspect
+configuration without provider calls. Their suggested probe uses the selected
+registry's exact route and model, including an explicit settings-file path.
+On October 8, the former Ollama default returned HTTP 410 because it was
+retired. The default now uses the already-wired `deepseek-v4-pro:0813` route;
+the provider's current catalogue lists it and its recorded output capacity
+fits the existing context check. This is not a cost or quality comparison.
+Gemma remains a model choice that needs an appropriate qualified context and
+output allocation; changing the default must not bypass that preflight.
+
+A retirement response naming the exact requested model is classified as
+`model_not_found`. Retirement of an endpoint, account or another model does
+not prove that this model is gone. The gateway preserves unknown reported
+identity and usage instead of copying the requested identity into evidence.
+
 Every generation asks for the selected route's source-backed maximum output.
 Loop Engine does not substitute a convenient lower limit. A route with an
 unknown maximum stays unavailable until provider discovery or explicit custom

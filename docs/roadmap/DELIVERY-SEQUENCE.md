@@ -44,8 +44,12 @@ The next release cycle follows this checklist:
 - [x] Complete candidate prechecks and global exact-body comparison: 31,474
   candidates passed seven prechecks; 120,090 distinct payloads are absent from
   the live library. Semantic comparison and content admission remain open.
-- [x] Complete combined code checks, exact CI and guarded release 79; all ten
+- [x] Complete combined code checks, exact CI and guarded releases 79 and 80; all ten
   hosts, 2,544 exported files and the full public route map pass.
+- [x] Publish available local overnight tools as Preview and remove future-feature
+  marketing. The hosted Supervised Runs tier remains internal unfinished work.
+- [ ] Qualify the replacement Ollama default after the previous model returned
+  HTTP 410. Keep both failed attempts and the separate customer token ceiling.
 - [ ] Independently admit useful candidates; publish and verify exact customer
   downloads while preserving previous versions and access.
 - [ ] Qualify R2 delivery, including missing/corrupt body, unauthorized request,
@@ -90,13 +94,14 @@ gantt
     Demo and founder-ready material :launch, after creative, 4d
 ```
 
-Release 79 is deployed from `dc7b3ccd` and its gate is closed. The ten-host
-browser pass has 2,126 passing assertions. All nine product hostnames use
+Release 80 is deployed from `3c96b6b3` and its gate is closed. The ten-host
+browser pass has 2,134 passing assertions. All nine product hostnames use
 the existing Cloudflare Worker. All 2,544 exported public files passed exact
 body/header readback on baltor.ai; the final all-host pulse passed fifty reads.
 The route-map audit passed 67 pages, 277 actual-theme views and 436 links.
-The earlier release-78 focused offering/layout check passed 277 assertions;
-that separate result is not presented as a new release-79 run.
+The release-80 focused offering/layout matrix passed 345 assertions.
+Local overnight tools use the owner's Preview label and link their runnable
+setup. Future-feature notices do not appear in marketing.
 
 The active offering labels, shared light/dark appearance and thirteen
 decision-source collections are live. Approved Terms keep their original

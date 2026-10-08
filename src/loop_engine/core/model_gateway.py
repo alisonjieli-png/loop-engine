@@ -613,7 +613,7 @@ def _http_status(error: str) -> int:
     return int(match.group(1)) if match else 0
 
 
-def _error_code_for_status(status: int, low: str) -> str:
+def _error_code_for_status(status: int, low: str, requested_model: str = "") -> str:
     """The code a leading HTTP status names, or empty when the status alone
     does not settle it (400 bodies are read for their words below)."""
     if status in (401, 403):
@@ -624,6 +624,14 @@ def _error_code_for_status(status: int, low: str) -> str:
         return "model_not_found"
     if status == 408:
         return "timeout"
+    if status == 410:
+        # Ollama names an exact retired model without the word "model".
+        # Bind that wording to the requested identity; an expired endpoint
+        # or another resource is not evidence that this model was retired.
+        retired = (requested_model and re.search(
+            r"(?<![a-z0-9_.:/-])" + re.escape(requested_model.lower())
+            + r"['\"`]?\s+(?:was|is)\s+retired\b", low))
+        return "model_not_found" if retired else "provider_failed"
     if status == 413:
         # The request body itself is too large for the endpoint: this
         # request's fault, like a prompt past the context window.
@@ -643,7 +651,7 @@ def _error_code_for_status(status: int, low: str) -> str:
     return ""
 
 
-def _error_code(error: str) -> str:
+def _error_code(error: str, *, requested_model: str = "") -> str:
     low = str(error).lower()
     if "provider_attempt_contract_violated" in low:
         return "provider_attempt_contract_violated"
@@ -703,7 +711,7 @@ def _error_code(error: str) -> str:
     # runs that look like statuses; they are dropped before any bare-digit
     # rule below reads the text.
     low = _REFERENCE_ID.sub(" ", low)
-    status_code = _error_code_for_status(_http_status(low), low)
+    status_code = _error_code_for_status(_http_status(low), low, requested_model)
     if status_code:
         # The provider answered with a status: that settles the class
         # before any word in its body can, so a model named "monkey" is
@@ -1323,7 +1331,8 @@ class ModelGateway:
                     error = validation_error or "output failed validation"
                 if multiplicity_invalid:
                     error = "provider_attempt_contract_violated: adapter did not report exactly one attempt"
-                pre_accounting_error_code = verdict_code or _error_code(error)
+                pre_accounting_error_code = verdict_code or _error_code(
+                    error, requested_model=route.model)
                 transport_error_code = ""
                 if not transport_succeeded and error:
                     transport_error_code = pre_accounting_error_code

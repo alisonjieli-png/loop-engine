@@ -1,0 +1,110 @@
+{
+  "record_type": "pilot_release_record/v1",
+  "release": 80,
+  "app": "baltor-pilot",
+  "source_revision": "3c96b6b363ec60a9a606b3c1af8fcbfbcb99493b",
+  "image": "registry.fly.io/baltor-pilot@sha256:7e3d22d655b8d50de6bb7cc3eeeea09e9422455b66522c9e0bba2943abde2b39",
+  "rollback_release": 79,
+  "rollback_image": "registry.fly.io/baltor-pilot@sha256:38e2ac1be655c49fe4f51e1c2783c8f02f18ddbca5cfb0331d148919cb34b3ac",
+  "owner_local_date": "2026-10-08",
+  "deployed_at": "2026-10-08T20:28:26Z",
+  "ci_run": 37837777639,
+  "ci_conclusion": "success",
+  "deploy_run": 37839313658,
+  "deploy_workflow_conclusion": "success",
+  "deployment_gate_after": false,
+  "catalogue": {
+    "release_id": "1694fb4a5b355fb2db15f4b815ccc8d34fc74e0f09707aa58804b3bcac4f3403",
+    "packages": 218151,
+    "distinct_files": 1353029,
+    "distinct_file_bytes": 7939862307,
+    "changed_by_this_application_release": false
+  },
+  "changes": [
+    "Show available local overnight tools as Preview: run limits, task checkpoints and morning reports; link the runnable setup guide.",
+    "Remove future-feature notices from marketing. Do not advertise the unimplemented hosted Supervised Runs tier.",
+    "Describe current feed collections and available creative prototypes, preserving prices, opt-in language and approved Terms.",
+    "Correct the optional OpenCode Zen credential environment reference; no credential value enters source."
+  ],
+  "cloudflare": {
+    "worker": "baltor-web-edge",
+    "export_id": "e6eb15d28cf25b639659b5f222d09b29ee43e49184636387654a0b2a7e9af682",
+    "worker_deployment": "a0aab80329c4404fb6edccce58490a98",
+    "static_files": 2544,
+    "static_bytes": 75739672,
+    "production_hostnames": [
+      "baltor.ai",
+      "www.baltor.ai",
+      "app.baltor.ai",
+      "docs.baltor.ai",
+      "status.baltor.ai",
+      "examples.baltor.ai",
+      "demo.baltor.ai",
+      "deck.baltor.ai",
+      "redteam.baltor.ai"
+    ],
+    "direct_fallback_hostname": "baltor-pilot.fly.dev",
+    "origin_tls": "strict",
+    "customer_identity": "Supabase",
+    "custom_search": "sqlite_disk_index",
+    "body_storage_selected": "Fly volume",
+    "production_routes_changed": false,
+    "rollback_export_id": "3939bb95ddb5954ecd9faca02962c13812d456b3e7003e4479d21b01380311e5",
+    "rollback_worker_deployment": "a608a1e06dcb4e3f8a32894659c72740"
+  },
+  "checks": {
+    "focused": 92,
+    "service_smoke": {
+      "passed": 766,
+      "total": 766
+    },
+    "local_browser": {
+      "passed": 976,
+      "total": 976,
+      "mutants_refused": 197,
+      "mutants_total": 197
+    },
+    "conformance": "All 32 gates pass.",
+    "exact_source_ci": "success",
+    "live_host_browser": {
+      "hosts": 10,
+      "passed": 2134,
+      "total": 2134
+    },
+    "live_offering_matrix": {
+      "passed": 345,
+      "total": 345
+    },
+    "live_route_map": {
+      "pages": 67,
+      "views": 277,
+      "links": 436,
+      "problems": 0,
+      "actual_theme_selection_checked": true
+    },
+    "edge_readback_on_baltor_ai": {
+      "passed": 2544,
+      "total": 2544,
+      "scope": "exact bodies and required headers"
+    },
+    "final_pulse": {
+      "reads": 50,
+      "problems": 0,
+      "slow": 0
+    }
+  },
+  "limits": [
+    "Local queue tools are not hosted supervision or proof of model-driven overnight completion.",
+    "No catalogue publication, storage-engine switch, identity migration or new billing plan occurred.",
+    "Separate provider readiness checks found that the default Ollama Flash model is retired. That repair is not part of release80."
+  ],
+  "private_evidence": [
+    "release80-deployment.json",
+    "cloudflare-site-deployment-08",
+    "release80-edge-readback-01.json",
+    "release-80-browser/summary.json",
+    "release-80-offerings-live-01/report.json",
+    "release-80-all-pages-people-01",
+    "release-80-pulse-final.json"
+  ]
+}

@@ -28,12 +28,15 @@ export OLLAMA_API_KEY="your-key"
 loop-engine configure
 loop-engine models probe ollama_cloud \
   --model-route cloud.default \
-  --model-id deepseek-v4-flash:0731 \
   --authorize-model-calls \
   --max-model-calls 1 \
-  --max-total-tokens 70000
+  --allow-unbounded-total-tokens
 ```
 
+This permits one call without a total-token ceiling, at the route's known
+output capacity, and may incur charges. A strict `--max-total-tokens` limit
+requires a qualified exact-request bound; otherwise the probe refuses before
+dispatch. Do not remove an existing run's limit to make it proceed.
 Do not continue if the probe fails.
 
 ## Solve a task

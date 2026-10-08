@@ -5,6 +5,19 @@
   "releases": [
    {
     "kind": "service",
+    "number": 80,
+    "at": "2026-10-08T20:28:26Z",
+    "lines": [
+     "Show available local overnight tools as Preview: run limits, task checkpoints and morning reports; link the runnable setup guide.",
+     "Remove future-feature notices from marketing. Do not advertise the unimplemented hosted Supervised Runs tier.",
+     "Describe current feed collections and available creative prototypes, preserving prices, opt-in language and approved Terms.",
+     "Correct the optional OpenCode Zen credential environment reference; no credential value enters source."
+    ],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
     "number": 79,
     "at": "2026-10-08T18:37:16Z",
     "lines": [

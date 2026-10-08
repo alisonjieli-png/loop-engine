@@ -27,9 +27,11 @@ from .run_history_usage import optional_token
 ENDPOINT = "https://ollama.com/api/chat"
 #: Structured-output calls default to no reasoning; see chat().
 THINK_DEFAULT = False
-# Sanctioned, live default (kimi-k3 is forbidden per the model policy).
-# deepseek-v4-flash is fast/cheap for the loop; deepseek-v4-pro for hard calls.
-DEFAULT_MODEL = "deepseek-v4-flash:0731"
+# The former Flash default returned HTTP 410 on 2026-10-08. The same day's
+# catalogue still lists this already-wired route, whose declared output
+# capacity fits the existing context preflight. Availability is not a quality
+# or cost claim; callers may select a different qualified route explicitly.
+DEFAULT_MODEL = "deepseek-v4-pro:0813"
 CATALOG_ENDPOINT = "https://ollama.com/api/tags"
 FORBIDDEN_MODELS = ("kimi-k3",)
 OUTPUT_LIMIT_STOP_REASONS = frozenset((
@@ -746,7 +748,7 @@ def self_test() -> dict:
           not reduced.ok and "not the declared model maximum" in reduced.error)
 
     check("the_exact_live_observation_overrides_the_stale_family_value",
-          max_output_for(DEFAULT_MODEL) == 65536,
+          max_output_for("deepseek-v4-flash:0731") == 65536,
           "exact deepseek-v4-flash:0731 maximum is 65536")
 
     check("alternate_cloud_models_have_exact_observed_output_contracts",

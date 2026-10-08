@@ -47,7 +47,6 @@ Make one explicitly authorized provider probe:
 ```powershell
 loop-engine models probe ollama_cloud `
   --model-route cloud.default `
-  --model-id deepseek-v4-flash:0731 `
   --authorize-model-calls `
   --max-model-calls 1 `
   --allow-unbounded-total-tokens

@@ -299,11 +299,16 @@ Check the exact route with one authorized call:
 ```bash
 loop-engine models probe ollama_cloud \
   --model-route cloud.default \
-  --model-id deepseek-v4-flash:0731 \
   --authorize-model-calls \
   --max-model-calls 1 \
-  --max-total-tokens 70000
+  --allow-unbounded-total-tokens
 ```
+
+This permits one call without a total-token ceiling, at the route's known
+output capacity, and may incur charges. To enforce a strict total-token limit,
+use `--max-total-tokens` with a qualified exact-request bound; without one,
+the probe refuses before dispatch. Do not remove a limit from an existing run
+to make it proceed.
 
 Do not continue if the probe reports an authentication, rate-limit,
 output-limit or availability failure. A configured key is not proof that a

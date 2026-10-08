@@ -10,6 +10,7 @@ import getpass
 import json
 import os
 import re
+import shlex
 import sys
 from pathlib import Path
 
@@ -244,6 +245,25 @@ def completed_learning_producer(goal: str):
     return loop
 
 
+def _provider_probe_command(gateway, provider_id: str, *, settings_file: str = "") -> str:
+    """Describe a bounded probe of the selected registry; never call a provider."""
+    if provider_id not in gateway.providers:
+        return ""
+    routes = [route for route in gateway.registry.all()
+              if route.provider == provider_id and "counted_generation" in route.purposes]
+    if not routes:
+        return ""
+    preferred = _COMPILE_PROVIDER_ROUTE.get(provider_id)
+    route = next((item for item in routes if item.name == preferred), routes[0])
+    command = ["loop-engine", "models", "probe", provider_id,
+               "--model-route", route.name, "--model-id", route.model,
+               "--authorize-model-calls", "--max-model-calls", "1",
+               "--allow-unbounded-total-tokens"]
+    if settings_file:
+        command.extend(("--settings-file", settings_file))
+    return shlex.join(command)
+
+
 def run_configure(args) -> int:
     """Inspect provider configuration and print one safe next action."""
     from .core.settings_loader import load_runtime_settings
@@ -274,11 +294,9 @@ def run_configure(args) -> int:
             "Set one provider environment variable, then run configure again. "
             "For Ollama Cloud: export OLLAMA_API_KEY=your-key")
     elif len(present) == 1 and present[0]["provider_id"] == "ollama_cloud":
-        next_action = (
-            "loop-engine models probe ollama_cloud --model-route "
-            "cloud.default --model-id deepseek-v4-flash:0731 "
-            "--authorize-model-calls --max-model-calls 1 "
-            "--allow-unbounded-total-tokens")
+        next_action = _provider_probe_command(
+            gateway, "ollama_cloud", settings_file=args.settings_file or "") or (
+                "Configure a counted-generation route before probing this provider.")
     elif len(present) == 1 and present[0]["provider_id"] == "openrouter":
         next_action = (
             "Use --openrouter-api-key on solve to select a current exact "
@@ -355,11 +373,9 @@ def run_doctor(args) -> int:
             "generated_project_execution": (
                 "dependency_detected_not_runtime_verified" if docker_path
                 else "docker_not_found"),
-            "preferred_probe": (
-                "loop-engine models probe ollama_cloud --model-route "
-                "cloud.default --model-id deepseek-v4-flash:0731 "
-                "--authorize-model-calls --max-model-calls 1 "
-                "--allow-unbounded-total-tokens"),
+            "preferred_probe": _provider_probe_command(
+                gateway, "ollama_cloud",
+                settings_file=args.settings_file or ""),
         },
     }
     _emit_cli_result(args, report, [
