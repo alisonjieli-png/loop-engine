@@ -5,6 +5,18 @@
   "releases": [
    {
     "kind": "service",
+    "number": 75,
+    "at": "2026-10-07T23:27:31Z",
+    "lines": [
+     "Recovered private conversation intake, bounded vocabulary generation and the complete release-74 records.",
+     "Preview aliases preserve all existing robots directives and never forward writes, even when canonical hosts allow them.",
+     "Added explicit keyring binding for unattended Ollama search and a bounded separate-network acceptance observer. The first long scheduler activation exposed a separate helper-timeout incompatibility; that repair is the next candidate."
+    ],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
     "number": 74,
     "at": "2026-10-07T22:08:46Z",
     "lines": [
