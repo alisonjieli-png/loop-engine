@@ -48,48 +48,65 @@ section. Update this section in the same change that records a new release.
 Public registration is enabled. The site offers the existing monthly plan;
 these deployment checks alone do not establish a fully qualified paid service.
 
-The running image is Fly release 77, from
-`c43cb03c10619738b58414daaac226871ec50374`, image
-`sha256:f8251737963d3839c9d9fef5d5b323e5a43e02f013fca917161c021b245758a8`.
-Exact CI `37717122194` and guarded deployment `37717967418` passed; the gate
-is closed. All ten hosts passed 2,126 browser assertions. Each of the eight
-newly proxied product hosts then passed its post-cutover browser checks;
-the final all-host pulse passed fifty reads. The existing docs route was
-already included in the release pass. The owner-account catalogue diagnostic
-passed eleven checks, and source collection/browser downloads passed 58.
+The running image is Fly release 78, from
+`f9dbb3d34a112066456e6839b58be5eadbde9fd5`, image
+`sha256:5e86ebd9ce9a835d7ba436d5ac29bb035450d7cb6ffabfd420733207c9efcc5d`.
+Exact CI `37742381127` and guarded deployment `37743235600` passed; the gate
+is closed. All ten hosts passed 2,126 browser assertions. The full route map
+passed 67 pages, 277 views and 407 links with actual light/dark appearance
+selected and checked. The focused offering/layout pass passed 277 checks.
 
 All nine product hostnames now serve public assets through Cloudflare and
 forward dynamic requests to Fly. The technical Fly hostname remains a direct
-fallback. Export `82f56a5f1d3a...` contains 2,529 files, all verified against
-their exact bodies and required headers. Disable proxying on the saved DNS
+fallback. Export `a93a90e66404...` contains 2,530 files, all verified on
+`baltor.ai` against their exact bodies and required headers. Disable proxying on the saved DNS
 records to recover the direct paths; do not delete the routes or resources.
 
-Active offering copy now uses Agent Feeds and Agent Feeds + Harness Files.
-The monthly price, plan identifier and entitlements are unchanged. Approved
-Terms retain their original wording. Shared appearance and thirteen curated
-decision-source collections are live; personalized saved feeds and agent
-assignments remain unfinished. The homepage now separates recorded catalogue
-evidence from illustrative worked examples and omits unsupported outcomes.
-The [release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-77.json)
-binds the application, public export, cutovers, billing-label readback and
-their separate checks. Release 76 is the compatible image rollback.
-The subsequent October 8 catalogue addition now serves 218,151 entries and
+The hero and library use files-first language. Agent Feeds shows the owner's
+$4.99 monthly standard price, free through December 31, 2026 Eastern, with
+explicit future opt-in and no automatic charge. No new provider price or
+subscription was created; the existing full-library plan remains $29.
+Approved Terms retain their original wording. Thirteen curated decision-source
+collections and a live catalogue specimen are available. Local per-agent
+reading profiles are implemented; hosted saved preferences, agent assignments
+and personalized research delivery remain unfinished. The proposed Supervised
+Runs tier is not active. The [release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-78.json)
+binds the application, public export, live checks and separate follow-ups.
+Release 77 is the compatible image rollback.
+The separate October 8 catalogue addition now serves 218,151 entries and
 1,353,029 distinct files, release `1694fb4a5b35...`. It adds 24 independently
 reviewed SDG tools and 192 distinct files, preserving every previous version.
 No previously found expected result was lost across 354 saved queries, and
-all 424 Public Good grants remain valid. The [publication record](../../artifacts/architecture-audit-2026-09-19/catalogue-original-sdg-2026-10-08.json)
-separates native tests, serving, and the still-pending ordinary-account use.
+all previous Public Good grants remain valid. The [publication record](../../artifacts/architecture-audit-2026-09-19/catalogue-original-sdg-2026-10-08.json)
+separates native tests and serving. The release-78 follow-up additionally
+retrieves all nine exact files of the new statistical-release-timeliness
+tool as an ordinary no-plan customer, preserves paid usage and passes its
+isolated declared example, schemas and calendar-oracle checks.
 Volume body storage, custom SQLite search and Supabase identity remain
-selected. R2 has verified all 1,352,837 files of the preceding snapshot; the
-192 new bodies must also be verified before the new release can use R2.
+selected. R2 has verified the preceding 1,352,837 files and a separate
+192-body delta: complete current-catalogue coverage across two scopes, not
+a fresh full rerun or a body-engine switch. Public Good policy `9f0f5cfe...`
+preserves 424 grants and adds the 24 SDG tools, for 448 available groups and
+1,128 distinct useful files across all 17 goals. Limits are unchanged;
+new grants expire October 31 at 00:00 UTC. The complete granted group remains
+accessible; the useful-path list is a count/display label, not a path permission.
+
+An existing ordinary no-plan account retrieved three exact Public Good files,
+was refused staff access and a wrong digest, and ran the downloaded tool in
+an isolated custom harness with separate-process checkpoint continuation.
+Paid usage was unchanged. This deterministic proof made no model calls; the
+strict combined-token model-stage limit remains unsupported on the current
+route. It is not an OpenCode or unattended model-solving qualification.
+The new SDG closure was also placed and byte-verified in a private OpenCode
+project; that is not a native OpenCode loading or model-run result.
 
 The full route-map audit found a Cloudflare-injected analytics script blocked
 by the site's existing Content Security Policy. A narrow zone configuration
 now disables RUM injection on the nine product hostnames. No security policy
 was weakened or resource deleted. The repeat audit passed 67 pages, 277 views
-and 407 links without console errors or reported layout faults. That tool's
-OS-theme profiles did not prove the app's selected dark appearance; the next
-UI candidate tests actual theme selection and measured colours separately.
+and 407 links without console errors or reported layout faults. Release 78's
+new checks correct the older OS-theme-only coverage by selecting and checking
+the application's actual theme and sampled contrast.
 
 ### Earlier deployment observations
 

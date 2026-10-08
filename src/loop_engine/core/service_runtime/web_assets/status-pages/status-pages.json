@@ -5,6 +5,21 @@
   "releases": [
    {
     "kind": "service",
+    "number": 78,
+    "at": "2026-10-08T07:27:53Z",
+    "lines": [
+     "Short outcome-led hero, consistent appearance and files-first customer language; technical package contracts and approved legal text remain unchanged.",
+     "Agent Feeds standard price is USD4.99 a month, free through December31,2026 Eastern. Future paid enrollment requires opt-in. No new provider price, subscription mutation or charge was made; full library remains USD29.",
+     "Live catalogue-feed specimen and explicitly illustrative strategic example. Local per-agent reading profiles use existing curated source collections, without claiming hosted preferences or scheduled personalized delivery.",
+     "Interchangeable Brave, Exa and Tavily adapters, durable local account quota reservations and secret-reflection checks. These code paths were not newly activated in the existing scheduled collector.",
+     "Bounded Kaggle and Trendshift private source CLI tools, MCP setup candidate generation and pinned source-bound atomic API contracts. Discovery, candidate generation, independent admission and publication remain separate.",
+     "The Supervised Runs third offering is a proposal in the roadmap, not a live tier or a guarantee of completed overnight work."
+    ],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
     "number": 77,
     "at": "2026-10-08T02:30:39Z",
     "lines": [

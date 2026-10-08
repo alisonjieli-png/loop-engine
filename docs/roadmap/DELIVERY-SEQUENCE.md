@@ -20,35 +20,42 @@ internal/customer separation behind this plan.
 
 ### Current position
 
-Release 77 is deployed from `c43cb03c` and its gate is closed. The ten-host
-browser pass has 2,126 passing assertions. All nine product hostnames now use
-the existing Cloudflare Worker; the eight newly proxied hosts also passed
-post-cutover browser checks. The final all-host pulse passed fifty reads,
-the owner-account catalogue passed eleven checks, and all 2,529 exported
-public files passed exact body/header readback.
+Release 78 is deployed from `f9dbb3d3` and its gate is closed. The ten-host
+browser pass has 2,126 passing assertions. All nine product hostnames use
+the existing Cloudflare Worker. All 2,530 exported public files passed exact
+body/header readback on baltor.ai; the final all-host pulse passed fifty reads.
+The route-map audit passed 67 pages, 277 actual-theme views and 407 links;
+the focused offering/layout check passed 277 assertions.
 
 The active offering labels, shared light/dark appearance and thirteen
 decision-source collections are live. Approved Terms keep their original
-wording; account identifiers, the monthly price and entitlements are unchanged.
-Personalized feed delivery is still unfinished. The current detached work
-covers quota-safe interchangeable search engines, a live feed specimen,
-Trendshift/Kaggle research, MCP setup and an atomic supply factory. Each is
-reviewed and checked on the exact integrated tree before release.
+wording; the existing full-library plan remains $29. Feeds shows the owner's
+$4.99 standard monthly price and free access through December 31, 2026 Eastern,
+without automatic charging or a new provider price. Personalized hosted feed
+delivery is unfinished. Release 78 includes interchangeable search engines
+with durable local quotas, a live feed specimen, local per-agent reading
+profiles, Trendshift/Kaggle research tools, MCP setup and atomic supply code.
+New code does not itself activate a collector or grant content admission.
 
 The October 8 SDG publication is now live: release `1694fb4a...` adds 24
 original tools and 192 distinct file bodies, for 1,353,029 served files.
 All previous versions remain. The consequence check lost none of the
 previously found expectations across 354 judged queries and orphaned no
-Public Good grants. Its all-host pulse passed fifty checks; ordinary-customer
-use and new Public Good grants remain separate gates.
+Public Good grants. The additive free-access policy now has 448 groups and
+1,128 distinct useful files, preserving all 424 prior grants and limits.
+An ordinary no-plan account has separately proved exact delivery, isolated
+deterministic use and checkpoint continuation on an existing tool. The new SDG
+customer slice then retrieved and verified all nine files of the statistical-
+release timeliness tool and passed its isolated example, schemas and calendar
+checks. Private OpenCode placement was verified; native loading and model
+work were not.
 
 The original R2 mirror completed at 06:11 UTC with all 1,352,837 bodies in
-its pinned catalogue verified. A separate delta must cover the new 192;
-neither completion switches the serving engine. The full route-map browser
-retry passed 67 pages, 277 views and 407 links after Cloudflare analytics
-injection was disabled for the nine product hosts. That older checker did
-not prove actual dark-theme selection; the next interface check selects
-and verifies the application's own theme rather than only the OS preference.
+its pinned catalogue verified. The separate 192-body delta completed at
+07:15 UTC; neither operation switches the serving engine. The narrow
+Cloudflare analytics-injection repair remains in place without weakening CSP.
+Release 78's checks select the application's actual theme and sample contrast,
+correcting the earlier OS-preference-only coverage.
 
 The corrected long-pass scheduler passed its full twenty-minute service run
 from pinned `76ff12c2`: 282 Ollama searches returned 200 and the unit completed
@@ -62,14 +69,14 @@ evidence-version and unfinished-attempt checks.
 | --- | --- | --- |
 | Payment and connection repairs | Live in release 70 | Ten hosts passed 2,118 browser checks; five token quickstarts and the 15-step real Claude Code OAuth journey passed. |
 | Search and intake repairs | Release 71 deployed; live checks complete | Exact source `ec1df775`; CI `37487555685`; deployment `37488883326`. The repaired search preserves all 70 previously found expectations and finds 95 in the retained before/after comparison. |
-| Million-file publication | Live; owner-account listing accepted after release 73 | Exact release `50b666f5...` serves 218,127 packages and 1,352,837 distinct files, with complete population and matching content digest. It adds 981,843 distinct files and preserves all prior versions. Final staging cleanup was reconciled after its client timeout; no publication was replayed. The release-73 owner-account catalogue diagnostic passes 11 checks. Earlier failed diagnostic attempts remain recorded. |
+| Million-file publication | Milestone retained; additive SDG release live | The original `50b666f5...` milestone added 981,843 distinct files. Current release `1694fb4a...` serves 1,353,029 distinct files after 192 new SDG bodies, with every old version preserved. Earlier failed attempts and exact publication reconciliation remain recorded. |
 | Storage headroom | Done | Existing Fly volume extended from 25 to 50 GB, with 39 GB free at readback and no restart. Added provisioned storage: $3.75/month; traffic and snapshots are separate. |
-| Empty Public Good goals | All 17 populated and new delivery verified | Policy `118639cb...` has 424 packages / 1,056 distinct useful files. Five additions preserve all 419 prior grants and limits. The 25 fresh sandbox methods, current licence checks, 64 no-plan delivery checks and 27 desktop/mobile browser checks passed. The no-plan account downloaded 25 exact files with no paid-usage increase. |
-| Cloudflare | All nine product hostnames at the edge; R2 mirror supervised | Release 77 exports 2,529 verified public files. Dynamic requests retain the Fly origin and its authorization/accounting. Mirror recovery preserves the original ceilings and verifies bytes before conditional writes. Production body and D1 selection remain pending. |
+| Empty Public Good goals | All 17 populated; 24 more admitted tools now granted | Policy `9f0f5cfe...` preserves the previous 424 grants and limits, adding 24 Community tools and 72 useful bodies: 448 groups / 1,128 distinct useful files. Full groups remain accessible; useful-path labels do not create path-specific permissions. |
+| Cloudflare | All nine product hostnames at the edge; current R2 body coverage complete | Release 78 exports 2,530 verified public files. R2 coverage is two verified scopes, not a fresh full rerun. Dynamic requests retain the Fly origin and its authorization/accounting. Production body and D1 selection remain pending. |
 | Feeds and Components | Offering split and curated decision-source collections live | JSON Feed, RSS and Markdown describe current catalogue state; named collections expose source links and decision questions. Customer-defined feeds, agent assignments, a paid Feeds plan and push delivery remain separate work. |
 | Repository reconciliation | Inventory and recovery copies complete; integration active | 190 registered worktrees, 180 existing, 72 dirty and two stashes were inspected. The shared checkout has 129 staged paths, of which 83 exactly match public main. Private history and unresolved merge stages are preserved outside public source. |
 | Workstation storage | Selected transfer complete | All 29 selected files, 75,444,467,760 bytes, have independent SHA-256 readback records. All original-path links and destination sizes were checked again after the crash. The OS filesystem has about 91 GiB free at recovery. |
-| Release follow-up | Release 77 verified live; wider launch audit running | Exact source `c43cb03c`, CI `37717122194`, deployment `37717967418`; complete release and post-cutover evidence is in the current deployment record. The full page-map desktop/mobile, light/dark audit is a separate running check, not yet a claimed pass. |
+| Release follow-up | Release 78 verified live | Exact source `f9dbb3d3`, CI `37742381127`, deployment `37743235600`; all-host, route-map, actual light/dark theme and exact static-byte checks pass. Rendering coverage does not prove every marketing claim or a measured customer benefit. |
 
 ### Priority and phase-based Gantt view
 
@@ -81,12 +88,12 @@ delay a ready publication or exhaust memory, storage or provider allowances.
 
 | Workstream | Prepared or verified | Current release cycle | Following cycle | Acceptance |
 | --- | --- | --- | --- | --- |
-| Ten-million-file supply | 1,352,837 distinct files live; listing repaired | NEXT: publish the next independently qualified family batch | Expand qualified code, data, native assets and source-backed feeds | GATE: 10,000,000 distinct served digests with preserved access and useful family coverage |
-| Public Good coverage | All 17 goals and no-plan delivery verified | DONE: additive 424-package policy | Preserve access through next release | Broaden useful coverage |
-| Cloudflare storage and delivery | All nine product hostnames and dynamic forwarding live | ACTIVE: complete R2 mirroring and reconcile catalogue additions | Select verified bodies and measure the D1 alternative | GATE: live integrity, authorization, failure recovery and measured cost |
+| Ten-million-file supply | 1,353,029 distinct files live; listing repaired | ACTIVE: bounded private atom generation; independently review candidates | Expand qualified code, data, native assets and source-backed feeds | GATE: 10,000,000 distinct served digests with preserved access and useful family coverage |
+| Public Good coverage | All 17 goals; 448 groups / 1,128 useful files live | DONE: new SDG exact download and isolated deterministic customer use | Preserve access through next release | Broaden useful coverage |
+| Cloudflare storage and delivery | All nine product hostnames; all current file bodies mirrored | NEXT: qualify R2 customer delivery and failure/revocation behavior | Select verified bodies and measure the D1 alternative | GATE: live integrity, authorization, failure recovery and measured cost |
 | Internal repository and paper intelligence | Existing radar and query executor contracts | ACTIVE: pin sources, observations, ranking rules and worker deployment | Cloudflare acquisition, private raw storage and checked production | GATE: repeatable current-source results and recovery from duplicate delivery |
-| Feeds | Catalogue-state pull preview and thirteen source collections live | ACTIVE: live specimen and shared source acquisition | Saved definitions, dated snapshots, per-agent assignments and account controls | GATE: factual source review and two customers/two agents isolated through edit and revocation |
-| Two offerings and consistent design | Active copy and shared appearance live in release 77 | ACTIVE: full route-map and claim review | Separate Feeds membership from full reusable files; test both paid journeys | GATE: no retired marketing copy outside approved legal history, responsive/contrast checks, live customer journeys before pricing activation |
+| Feeds | Catalogue-state specimen and thirteen source collections live | Local per-agent source profiles implemented; hosted settings next | Saved definitions, dated snapshots, per-agent assignments and account controls | GATE: factual source review and two customers/two agents isolated through edit and revocation |
+| Two offerings and consistent design | Files-first hero and explicit Feeds promotion live in release 78 | DONE: route-map, responsive layout and sampled actual-theme contrast | Separate Feeds entitlement from full reusable files; test paid journeys | GATE: no unsupported availability claim, clear opt-in and live customer journeys before billing activation |
 | Customer identity | Existing Supabase sign-up and Baltor OAuth work | Compare a Cloudflare-hosted identity engine and migration burden | Qualify email ownership, recovery, sessions and existing accounts | GATE: migrate only after equivalent security and account-recovery checks |
 | OpenAI distribution | Candidate package preserved | Policy/UX findings remain | Test deployed presentation | Identity/legal/review gates |
 | Remaining handoffs | Bundles and patches preserved | Small tested fixes as capacity permits | Native examples and all-goal originals | Repeat the release cycle |
@@ -100,9 +107,14 @@ the longer-term north star remains ten million. Required net throughput is
 arithmetic, not observed generation, review or publication capacity.
 
 The planning window is October 8, 04:07–16:07 UTC (00:07–12:07 Eastern).
-The factory implementation and source work are active. The twelve-hour
-production supervisor is not active until its exact pilot, restart and
-resource-bound checks pass. Do not describe a planned background job as running.
+The bounded offline supervisor is active from frozen `f9dbb3d3` under the
+existing user service, with a 16:07 UTC deadline. Its 47 pinned source cohorts
+contain 166,231 enumerable atoms, not that many accepted files. It has no
+network, model, admission or publication authority. Per-cohort byte limits
+hold oversized batches without resetting their journals; other cohorts
+continue. Global exact/semantic reconciliation and independent admission
+remain separate. The observed source universe does not establish that the
+one-million-addition target can be achieved in this window.
 
 | Workstream | H0–2 | H2–4 | H4–8 | H8–12 | Completion evidence |
 | --- | --- | --- | --- | --- | --- |
@@ -187,16 +199,19 @@ than losing them to a similarity filter.
 - [x] Seven supplied research keys are stored in the keyring and had one
   bounded transport probe each. Existing local Kaggle access is also stored;
   an empty public metadata response does not prove account identity or scope.
-- [ ] Complete atomic pilot, compare its exact digests with served material,
-  validate restart and activate the bounded production supervisor.
-- [ ] Complete durable cross-process quotas and independent adversarial
-  search-adapter review before activating supplied engines unattended.
+- [x] Complete atomic pilot and exact-body comparison, test restart and activate
+  bounded private production. The 217-candidate pilot had 850 net-new bodies;
+  it was not admission or publication. A separate constraint-case extension
+  remains held after independent tampered-journal and staging-path findings.
+- [x] Implement durable local cross-process quotas and adversarial adapter
+  controls. Shared multi-host accounting and live engine qualification remain
+  required before activating supplied engines unattended.
 - [ ] Complete full page-map review, claim/terminology checks, setup journeys,
   rights-cleared video/deck proof and side-by-side task comparisons.
 - [ ] Retrieve newly served SDG files through the real customer boundary and
   reconcile counts; retain every failed or interrupted publication attempt.
-- [ ] Finish R2 completeness and failure/revocation checks before selecting it;
-  do not change its pinned inventory while its current mirror is running.
+- [x] Finish exact R2 coverage of the current catalogue in two verified scopes.
+- [ ] Qualify customer delivery and failure/revocation checks before selecting R2.
 
 ### Proposed third offering: Supervised Runs
 
