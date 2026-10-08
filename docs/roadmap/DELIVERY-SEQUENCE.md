@@ -1,6 +1,6 @@
 # Baltor delivery and business plan
 
-Kind: current execution order. Updated October 7, 2026. The
+Kind: current execution order. Updated October 8, 2026. The
 [roadmap](roadmap.yaml) owns task status, the [north star](../architecture/NORTH-STAR.md)
 owns product direction, and [AGENTS.md](../../AGENTS.md#commit-push-and-release-authority)
 owns authority. This page orders that work and states what each stage must prove.
@@ -20,18 +20,20 @@ internal/customer separation behind this plan.
 
 ### Current position
 
-Release 76 is deployed and its gate is closed. The ten-host browser pass has
-2,126 passing assertions; fifty pulse reads and eleven owner-account catalogue
-checks passed. The first production edge hostname is `docs.baltor.ai`, with
-2,501 exact public files verified on the updated export.
+Release 77 is deployed from `c43cb03c` and its gate is closed. The ten-host
+browser pass has 2,126 passing assertions. All nine product hostnames now use
+the existing Cloudflare Worker; the eight newly proxied hosts also passed
+post-cutover browser checks. The final all-host pulse passed fifty reads,
+the owner-account catalogue passed eleven checks, and all 2,529 exported
+public files passed exact body/header readback.
 
-The initial two-offering cards are live, but the owner found older Baltor Pro
-and One plan labels elsewhere. The next release is therefore a complete
-active-copy and appearance reconciliation, not another isolated homepage
-card. Three explicitly requested subagents work in detached checkouts on
-decision-support collections, actual collector engine profiles, and shared
-appearance plus competitor/customer research. The session integrates and
-independently checks them before release.
+The active offering labels, shared light/dark appearance and thirteen
+decision-source collections are live. Approved Terms keep their original
+wording; account identifiers, the monthly price and entitlements are unchanged.
+Personalized feed delivery is still unfinished. The current detached work
+covers quota-safe interchangeable search engines, a live feed specimen,
+Trendshift/Kaggle research, MCP setup and an atomic supply factory. Each is
+reviewed and checked on the exact integrated tree before release.
 
 The corrected long-pass scheduler passed its full twenty-minute service run
 from pinned `76ff12c2`: 282 Ollama searches returned 200 and the unit completed
@@ -48,11 +50,11 @@ evidence-version and unfinished-attempt checks.
 | Million-file publication | Live; owner-account listing accepted after release 73 | Exact release `50b666f5...` serves 218,127 packages and 1,352,837 distinct files, with complete population and matching content digest. It adds 981,843 distinct files and preserves all prior versions. Final staging cleanup was reconciled after its client timeout; no publication was replayed. The release-73 owner-account catalogue diagnostic passes 11 checks. Earlier failed diagnostic attempts remain recorded. |
 | Storage headroom | Done | Existing Fly volume extended from 25 to 50 GB, with 39 GB free at readback and no restart. Added provisioned storage: $3.75/month; traffic and snapshots are separate. |
 | Empty Public Good goals | All 17 populated and new delivery verified | Policy `118639cb...` has 424 packages / 1,056 distinct useful files. Five additions preserve all 419 prior grants and limits. The 25 fresh sandbox methods, current licence checks, 64 no-plan delivery checks and 27 desktop/mobile browser checks passed. The no-plan account downloaded 25 exact files with no paid-usage increase. |
-| Cloudflare | Documentation hostname at the edge; R2 mirror supervised | Release 75 fixes the alias headers. All 2,501 public export files pass exact readback, and docs.baltor.ai passes the real-account catalogue check. The narrow agent compatibility rule resolves standard Python client refusals. R2 recovery preserves the original ceiling and verifies bytes before conditional writes. Production body and D1 selection remain pending. |
-| Feeds and Components | Catalogue-state preview live in release 72 | JSON Feed, RSS and Markdown describe the same current served state. Customer-defined feeds, agent assignments, a paid Feeds plan and push delivery are not implemented by this preview. |
+| Cloudflare | All nine product hostnames at the edge; R2 mirror supervised | Release 77 exports 2,529 verified public files. Dynamic requests retain the Fly origin and its authorization/accounting. Mirror recovery preserves the original ceilings and verifies bytes before conditional writes. Production body and D1 selection remain pending. |
+| Feeds and Components | Offering split and curated decision-source collections live | JSON Feed, RSS and Markdown describe current catalogue state; named collections expose source links and decision questions. Customer-defined feeds, agent assignments, a paid Feeds plan and push delivery remain separate work. |
 | Repository reconciliation | Inventory and recovery copies complete; integration active | 190 registered worktrees, 180 existing, 72 dirty and two stashes were inspected. The shared checkout has 129 staged paths, of which 83 exactly match public main. Private history and unresolved merge stages are preserved outside public source. |
 | Workstation storage | Selected transfer complete | All 29 selected files, 75,444,467,760 bytes, have independent SHA-256 readback records. All original-path links and destination sizes were checked again after the crash. The OS filesystem has about 91 GiB free at recovery. |
-| Release follow-up | Release 76 verified live; consistency repairs in the next candidate | Exact source `76ff12c2`, CI `37710042646`, deployment `37711417924`; 2,126 browser assertions, fifty pulse reads and eleven owner-account catalogue checks passed. The gate is closed. Older UI labels found by the owner remain a recorded limitation of that release. |
+| Release follow-up | Release 77 verified live; wider launch audit running | Exact source `c43cb03c`, CI `37717122194`, deployment `37717967418`; complete release and post-cutover evidence is in the current deployment record. The full page-map desktop/mobile, light/dark audit is a separate running check, not yet a claimed pass. |
 
 ### Priority and phase-based Gantt view
 
@@ -66,13 +68,119 @@ delay a ready publication or exhaust memory, storage or provider allowances.
 | --- | --- | --- | --- | --- |
 | Ten-million-file supply | 1,352,837 distinct files live; listing repaired | NEXT: publish the next independently qualified family batch | Expand qualified code, data, native assets and source-backed feeds | GATE: 10,000,000 distinct served digests with preserved access and useful family coverage |
 | Public Good coverage | All 17 goals and no-plan delivery verified | DONE: additive 424-package policy | Preserve access through next release | Broaden useful coverage |
-| Cloudflare storage and delivery | Documentation pages and dynamic forwarding live | ACTIVE: complete R2 mirroring and qualify the remaining hostnames | Select verified bodies and measure the D1 alternative | GATE: live integrity, authorization, failure recovery and measured cost |
+| Cloudflare storage and delivery | All nine product hostnames and dynamic forwarding live | ACTIVE: complete R2 mirroring and reconcile catalogue additions | Select verified bodies and measure the D1 alternative | GATE: live integrity, authorization, failure recovery and measured cost |
 | Internal repository and paper intelligence | Existing radar and query executor contracts | ACTIVE: pin sources, observations, ranking rules and worker deployment | Cloudflare acquisition, private raw storage and checked production | GATE: repeatable current-source results and recovery from duplicate delivery |
-| Feeds | Catalogue-state pull preview live | ACTIVE: named decision-support collections with source links, comparison fields and agent-readable exports | Saved definitions, dated snapshots, per-agent assignments and account controls | GATE: factual source review and two customers/two agents isolated through edit and revocation |
-| Two offerings and consistent design | Initial cards live in release 76; older labels identified by owner | ACTIVE: all active labels, shared colours and persistent appearance across page families | Separate Feeds membership from full reusable files; test both paid journeys | GATE: no retired marketing copy, responsive/contrast checks, live customer journeys before pricing activation |
+| Feeds | Catalogue-state pull preview and thirteen source collections live | ACTIVE: live specimen and shared source acquisition | Saved definitions, dated snapshots, per-agent assignments and account controls | GATE: factual source review and two customers/two agents isolated through edit and revocation |
+| Two offerings and consistent design | Active copy and shared appearance live in release 77 | ACTIVE: full route-map and claim review | Separate Feeds membership from full reusable files; test both paid journeys | GATE: no retired marketing copy outside approved legal history, responsive/contrast checks, live customer journeys before pricing activation |
 | Customer identity | Existing Supabase sign-up and Baltor OAuth work | Compare a Cloudflare-hosted identity engine and migration burden | Qualify email ownership, recovery, sessions and existing accounts | GATE: migrate only after equivalent security and account-recovery checks |
 | OpenAI distribution | Candidate package preserved | Policy/UX findings remain | Test deployed presentation | Identity/legal/review gates |
 | Remaining handoffs | Bundles and patches preserved | Small tested fixes as capacity permits | Native examples and all-goal originals | Repeat the release cycle |
+
+### Twelve-hour atomic supply campaign, October 8
+
+The owner requested one million additional harness component files in about
+twelve hours. Starting from 1,352,837 served digests, that target is 2,352,837;
+the longer-term north star remains ten million. Required net throughput is
+83,333 additional files an hour, about 23.15 a second. These are target
+arithmetic, not observed generation, review or publication capacity.
+
+The planning window is October 8, 04:07–16:07 UTC (00:07–12:07 Eastern).
+The factory implementation and source work are active. The twelve-hour
+production supervisor is not active until its exact pilot, restart and
+resource-bound checks pass. Do not describe a planned background job as running.
+
+| Workstream | H0–2 | H2–4 | H4–8 | H8–12 | Completion evidence |
+| --- | --- | --- | --- | --- | --- |
+| Existing reviewed SDG material | ACTIVE: 24 admitted packages, sandbox proof, additive consequence plan | Reconcile exact base and Public Good access; coordinate with pinned R2 mirror | Publish and retrieve actual new payloads | Confirm counts and customer use | Current release plus byte-exact downloads; not an additions-only bundle |
+| Atomic API contracts | ACTIVE: 100–1,000-atom representative pilot from pinned licensed specs | Check positive/known-wrong instances, semantics, dedup and restart | Bounded resumable batches, expand only from measured rates | Reconcile approved batches and report shortfall if any | Source pointers, validation coverage, net-new digests and actual publication |
+| Kaggle and SDG tasks | ACTIVE: local token stored; bounded source discovery and three original private candidates | Inspect competition evidence and qualify reusable methods | Generate selected prompts, caveats, code, tests and offline configurations | Admit qualified material; keep missing rights and unsupported claims private | Exact sources, producer and review identities, observed tests |
+| Search engines | ACTIVE: three search adapters and independent failure review | Durable account quota/uncertain-outcome checks, then bounded live conformance | Select engines through existing collector; keep account-wide ceilings | Verify unattended recovery, source coverage and output usefulness | Every request reserved, failures retained, no raw secret/result logging |
+| Website and launch proof | ACTIVE: full route-map desktop/mobile light/dark audit | Repair visible and claim-level findings; integrate feed specimen | CI, guarded release, all-host/customer checks | One real use-case comparison and editable marketing specimen | Actual screenshots, outputs, revision/reopen and release evidence |
+| Creative, OCI and long-tail material | Inventory permitted local exports and official container contracts | Qualify small examples and task-specific recipes | Add useful native/media families alongside bulk schemas | Review rights, compatibility and count units | No image-layer copies or private media counted as served payloads |
+
+The programme continues from the same journal after this window if the target
+is unmet. Report the achieved population and bottleneck; do not extend a
+counter, restart an allowance or relabel raw permutations to claim completion.
+
+#### Atom and composition grid
+
+| Dimension | Useful examples | What makes the material specific |
+| --- | --- | --- |
+| Job and input | Deduplicate names; compare benchmark runs; resolve offline language resources; audit observation gaps | Stated input type, ambiguity and expected output |
+| Method or instruction | Parser, formula, prompt, selection rule, planning step or narrow role instruction | A distinct decision or operation, not a renamed copy |
+| Failure and caveat | Missing denominator; conflicting timestamps; unknown memory measurement; source withdrawal | A trigger, consequence and supported response |
+| Persona or audience | Accessibility reviewer, statistician, operator, educator or founder | Role-specific checks and information needs, not claims of expertise |
+| Constraints | Offline operation, hardware budget, supported language, locale, privacy, time or cost | Exact applicability and unknowns; incompatible combinations are recorded |
+| Native form | Plain string, Markdown, JSON Schema, example, test, script, template, OCI/service card | A named consuming step and a parse, retrieval or execution check |
+| Harness and engine | Supported harness settings, callable tool, model route, renderer or container | Pinned compatibility and declared effects; no extra Loop per passive file |
+| Composition | Prerequisite, alternative, follow-up, repair or verification edge | Typed inputs/outputs, dependency closure and contradiction checks |
+
+A word such as “date” can seed date parsing, timezone ambiguity, missing-date
+handling and scheduling research. Those become separate candidates only when
+their task and material differ. A purported “top 1,000 words” list needs its
+own source and ranking definition; an original seed list must be labelled as
+such. Word combinations and prompt mutations can be experiments without being
+new accepted capabilities. Preserve uncertain candidates with findings rather
+than losing them to a similarity filter.
+
+#### Factory run procedure and checkpoints
+
+1. Freeze the source manifest, generator revision, licence/notice records and
+   starting served digest inventory. Search existing candidates first. Use
+   approved caches before spending more source requests.
+2. Enumerate lazily through the existing idea matrix and supply owners. Give
+   each candidate a deterministic identity, parent source/operation, task,
+   scope, payload forms and reason to retrieve it. Keep equivalent-schema
+   relationships instead of copying common implementations into every package.
+3. Write to a private content-addressed output with a single append-only
+   accounting owner, atomic completion and resumable cursors. Retain attempted,
+   failed, partial, equivalent, qualified and pending states. No worker may
+   approve its own output or reset a provider allowance by changing engines.
+4. Start with a stratified pilot and measure files/second, useful payload mix,
+   errors, near-duplicates, bytes, memory and the slowest admission/publication
+   step. Include adversarial inputs and source-schema cases the converter
+   cannot interpret safely; record them without declaring valid contracts.
+5. Activate bounded local generation only after the pilot and interrupted-run
+   replay pass. Set a twelve-hour wall ceiling, worker/memory limits, output
+   byte ceiling and minimum free disk space in the run record. Initially use
+   deterministic extraction and original code; model generation or independent
+   review has its own named-model, request/token ceiling and usage record.
+6. Run the current admission policy on exact bytes. Retain producer family,
+   approval basis and independent review coverage. Static schema/format checks
+   do not establish successful live calls, task usefulness or every benchmark
+   claim. Execute qualified tools only in their declared sandbox.
+7. Reconcile approved additions against the complete current catalogue,
+   preserve old versions and Public Good grants, check judged retrieval, and
+   publish through the existing guarded operation. A supervisor may prepare
+   batches; it cannot infer new publication or spending authority from output.
+8. At each completed batch and at H2/H4/H8/H12, report candidates, placements,
+   distinct payloads, equivalent digests, admission outcomes, served additions,
+   costs and remaining source coverage. The active catalogue, not the factory
+   counter or R2 mirror, supplies the public total.
+
+#### Current concrete checkpoints
+
+- [x] Release 77 and all nine Cloudflare website routes are live; the previous
+  direct paths remain recoverable without resource deletion.
+- [x] Twenty-four original SDG packages passed current admission with a named
+  non-producer reviewer. All passed fresh isolated tests on two Python versions
+  and a schema-instrumented pass. They remain unserved pending reconciliation.
+- [x] Three additional original Kaggle-inspired candidates are prepared:
+  observation gaps, locale-resource fallback and memory residency arithmetic.
+  Their 25 distinct files include nine code/schema files; they are not admitted.
+- [x] Seven supplied research keys are stored in the keyring and had one
+  bounded transport probe each. Existing local Kaggle access is also stored;
+  an empty public metadata response does not prove account identity or scope.
+- [ ] Complete atomic pilot, compare its exact digests with served material,
+  validate restart and activate the bounded production supervisor.
+- [ ] Complete durable cross-process quotas and independent adversarial
+  search-adapter review before activating supplied engines unattended.
+- [ ] Complete full page-map review, claim/terminology checks, setup journeys,
+  rights-cleared video/deck proof and side-by-side task comparisons.
+- [ ] Retrieve newly served SDG files through the real customer boundary and
+  reconcile counts; retain every failed or interrupted publication attempt.
+- [ ] Finish R2 completeness and failure/revocation checks before selecting it;
+  do not change its pinned inventory while its current mirror is running.
 
 ### Engine and transport programme
 

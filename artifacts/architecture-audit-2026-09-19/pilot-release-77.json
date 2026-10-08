@@ -1,0 +1,86 @@
+{
+  "record_type": "pilot_release_record/v1",
+  "release": 77,
+  "app": "baltor-pilot",
+  "source_revision": "c43cb03c10619738b58414daaac226871ec50374",
+  "image": "registry.fly.io/baltor-pilot@sha256:f8251737963d3839c9d9fef5d5b323e5a43e02f013fca917161c021b245758a8",
+  "rollback_release": 76,
+  "rollback_image": "registry.fly.io/baltor-pilot@sha256:c963143b7ed9a054f7dee59a30c6234147a945ddd15b3a63699716997e4228bd",
+  "owner_local_date": "2026-10-07",
+  "deployed_at": "2026-10-08T02:30:39Z",
+  "machine_readback": "release-77-machine-readback.json",
+  "ci_run": 37717122194,
+  "ci_conclusion": "success",
+  "deploy_run": 37717967418,
+  "deploy_workflow_conclusion": "success",
+  "deployment_gate_after": false,
+  "catalogue": {
+    "release_id": "50b666f56b043ce085d20f46efed01444f257917467199992799ad49cdb03127",
+    "packages": 218127,
+    "distinct_files": 1352837,
+    "distinct_file_bytes": 7938617324,
+    "changed_by_this_application_release": false
+  },
+  "changes": [
+    "Active offering, account, setup and library copy distinguishes Agent Feeds from Agent Feeds + Harness Files. The existing plan identifier, price and entitlements are unchanged. Approved historical Terms retain their original wording.",
+    "Homepage, audience pages, directories and deck share the light/dark appearance tokens; the appearance preference stores only a theme enum per origin.",
+    "Thirteen decision-oriented source collections link twenty-eight primary references and expose twenty-eight JSON Feed/Markdown downloads. These are release-curated source directories, not daily findings or personalized subscriptions.",
+    "Homepage scenarios now distinguish recorded catalogue evidence from worked examples, use consistent exact-version digests and omit unsupported large-row/time outcome claims.",
+    "Source-directory faults no longer break unrelated health, homepage or account routes. The edge forwards unsupported query-bearing feed requests to the origin refusal.",
+    "HTTP client profiles are wired through the existing periodic collector executors; the separately installed scheduler remains pinned to the preceding revision pending explicit evidence-state migration.",
+    "The scheduler installer refuses replacement while its timer or service is active. The organizational opportunity projection remains private and sends no outreach."
+  ],
+  "billing_presentation": {
+    "host_label": "Agent Feeds + Harness Files",
+    "provider_product_label": "Agent Feeds + Harness Files",
+    "existing_monthly_usd": 29,
+    "plan_identifier_changed": false,
+    "price_created": false,
+    "subscription_mutations": 0,
+    "engineering_charges": 0,
+    "approved_legal_text_changed": false
+  },
+  "cloudflare": {
+    "worker": "baltor-web-edge",
+    "export_id": "82f56a5f1d3a4d67dbf4de1bbeff67b34ec98377ce28f87a6034cca55cf001a6",
+    "worker_deployment": "d1d25fb2e6cc4305ab1092306a373c10",
+    "production_hostnames": ["baltor.ai", "www.baltor.ai", "app.baltor.ai", "docs.baltor.ai", "status.baltor.ai", "examples.baltor.ai", "demo.baltor.ai", "deck.baltor.ai", "redteam.baltor.ai"],
+    "direct_fallback_hostname": "baltor-pilot.fly.dev",
+    "origin_tls": "strict",
+    "static_files": 2529,
+    "static_bytes": 75303312,
+    "dynamic_origin": "https://baltor-pilot.fly.dev",
+    "body_storage": "Fly volume; pinned R2 mirroring is incomplete and not selected for serving",
+    "customer_identity": "Supabase",
+    "custom_search": "sqlite_disk_index",
+    "route_rollback": "Disable proxying on the same saved DNS records; retain Worker, routes and stored objects."
+  },
+  "checks": {
+    "live_browser_before_host_cutovers": {"hosts": 10, "passed": 2126, "total": 2126},
+    "post_cutover_browser": {
+      "baltor.ai": {"passed": 230, "total": 230},
+      "www.baltor.ai": {"passed": 230, "total": 230},
+      "app.baltor.ai": {"passed": 230, "total": 230},
+      "status.baltor.ai": {"passed": 201, "total": 201},
+      "examples.baltor.ai": {"passed": 201, "total": 201},
+      "demo.baltor.ai": {"passed": 201, "total": 201},
+      "deck.baltor.ai": {"passed": 201, "total": 201},
+      "redteam.baltor.ai": {"passed": 201, "total": 201},
+      "scope": "Each newly proxied host was checked after its own cutover. The existing docs route was included in the ten-host release pass."
+    },
+    "live_pulse_after_all_host_cutovers": {"hosts": 10, "passed": 50, "total": 50, "identity_provider_status": 200},
+    "owner_catalogue": {"passed": 11, "planned": 11, "body_reads": 0, "usage_records_added": 0},
+    "source_feed_browser_and_downloads": {"passed": 58, "total": 58},
+    "edge_public_export": {"passed": 2529, "total": 2529, "scope": "exact bodies and required headers"},
+    "billing_label_readback": "Authenticated read of the existing plan reports Agent Feeds + Harness Files; no checkout or payment was performed."
+  },
+  "limits": [
+    "Personalized saved feeds, per-agent assignments, scheduled research delivery and a separate feed-only paid plan are not implemented by the offering copy.",
+    "The application and static export add no catalogue component files. Twenty-four separately reviewed SDG packages remain staged, not served.",
+    "The two-offering migration does not amend approved legal Terms. No customer-authentication provider migration was performed.",
+    "New search credentials have bounded transport probes only; their in-progress adapter/accounting work is not included in this release or activated in the scheduler.",
+    "The R2 mirror remains bound to the unchanged catalogue inventory and original request/time ceilings; copying existing files is not catalogue growth."
+  ],
+  "private_evidence_root": "/home/username/baltor-private/repo-disk-review-20261007-1uZpT8",
+  "evidence": ["fifth-deployment.json", "release-77-browser/summary.json", "release-77-all-edge-pulse.json", "release-77-catalogue.json", "release-77-feed-sources.json", "release-77-offering-label.json", "release-77-primary-edge.json", "release-77-www-edge.json", "release-77-app-edge.json", "release-77-status-edge.json", "release-77-examples-edge.json", "release-77-demo-edge.json", "release-77-deck-edge.json", "release-77-redteam-edge.json", "cloudflare-site-deployment-05/events.jsonl", "cloudflare-site-readback-04.json", "offering-label-applied.json", "stripe-offering-renamed.json"]
+}

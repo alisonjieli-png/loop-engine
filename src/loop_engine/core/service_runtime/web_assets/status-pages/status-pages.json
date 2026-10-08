@@ -5,6 +5,22 @@
   "releases": [
    {
     "kind": "service",
+    "number": 77,
+    "at": "2026-10-08T02:30:39Z",
+    "lines": [
+     "Active offering, account, setup and library copy distinguishes Agent Feeds from Agent Feeds + Harness Files. The existing plan identifier, price and entitlements are unchanged. Approved historical Terms retain their original wording.",
+     "Homepage, audience pages, directories and deck share the light/dark appearance tokens; the appearance preference stores only a theme enum per origin.",
+     "Thirteen decision-oriented source collections link twenty-eight primary references and expose twenty-eight JSON Feed/Markdown downloads. These are release-curated source directories, not daily findings or personalized subscriptions.",
+     "Homepage scenarios now distinguish recorded catalogue evidence from worked examples, use consistent exact-version digests and omit unsupported large-row/time outcome claims.",
+     "Source-directory faults no longer break unrelated health, homepage or account routes. The edge forwards unsupported query-bearing feed requests to the origin refusal.",
+     "HTTP client profiles are wired through the existing periodic collector executors; the separately installed scheduler remains pinned to the preceding revision pending explicit evidence-state migration.",
+     "The scheduler installer refuses replacement while its timer or service is active. The organizational opportunity projection remains private and sends no outreach."
+    ],
+    "seen_after_release": "",
+    "not_shown": 0
+   },
+   {
+    "kind": "service",
     "number": 76,
     "at": "2026-10-08T01:11:45Z",
     "lines": [

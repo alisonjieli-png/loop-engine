@@ -14,6 +14,24 @@ Kind: current decision route with retained dated decisions. The owner's current 
 
 ## Feeds and Components offerings, October 6, 2026
 
+October 8 pricing and language update: the owner states, "the agent feeds
+should be 4.99 but free Until 2027", and asks customer-facing marketing to say
+files rather than packages. Agent Feeds has a standard price of USD 4.99 a
+month and is free through December 31, 2026. Engineering interprets the date
+in the owner's Eastern timezone and will display the end date explicitly.
+No automatic charge or paid enrollment follows the free period without the
+customer's explicit consent. The existing USD 29 full-library offering is
+unchanged. This approval sets the price, not completion of personalized feeds.
+Public pages must distinguish currently available source/catalogue feeds
+from unfinished saved subscriptions and delivery.
+
+Marketing leads with useful files and distinct-file counts. Package remains
+the technical grouping for dependency closure, exact versions and complete
+retrieval; it is not a second headline inventory unit. Do not rename machine
+fields, change download accounting or amend approved legal text merely to
+simplify a marketing label. The same update requests a fresh hero and landing
+page design pass, full-page adversarial checks and actual customer examples.
+
 The owner requests two offerings with distinct customer-facing names. **Feeds**
 is the lower-priced maintained intelligence service for agents, developers and harnesses: current research,
 comparisons, lists of compatible services and tools, and context files. It
@@ -28,9 +46,10 @@ separate from review tier, source family and file extension. A Markdown file
 inside a code package does not make that package part of the cheaper offering.
 Public Good free-account grants remain independent of either paid plan.
 
-Preserve existing full-library access while implementing this split. No new
-price is approved or active merely because this direction is recorded. The
-existing Baltor Pro price remains unchanged until a tested plan change ships.
+Preserve existing full-library access while implementing this split. The
+October 8 price above supersedes the earlier undecided Feeds price. A live
+paid Feeds enrollment still waits for tested access and delivery paths. The
+existing full-library price remains unchanged until a tested plan change ships.
 Do not advertise the new offering as available before its access and delivery
 paths work. Keep public directory metadata available; the paid intelligence
 value must come from maintained, source-backed work and useful context, not

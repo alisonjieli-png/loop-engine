@@ -1,8 +1,41 @@
 # Baltor north star
 
-Kind: current product direction. Updated October 1, 2026 under the owner's request to reconcile counts, broaden the library and pursue the million-file and revenue goals. The [roadmap](../roadmap/roadmap.yaml) is the task authority. [AGENTS.md](../../AGENTS.md#commit-push-and-release-authority) governs authority.
+Kind: current product direction. Updated October 8, 2026 under the owner's request to broaden atomic harness materials, accelerate supply and reconcile launch readiness. The [roadmap](../roadmap/roadmap.yaml) is the task authority. [AGENTS.md](../../AGENTS.md#commit-push-and-release-authority) governs authority.
 
 ## Current direction
+
+On October 8 the owner requested a twelve-hour campaign toward one million
+additional harness component files, within the ten-million served-file target.
+Expand small task-specific instructions, prompts, personas, exact strings,
+schemas, caveats, examples, checks, code and harness settings alongside complete
+projects. A few carefully scoped words can be useful material; size or
+algorithmic novelty is not an eligibility test. State the intended consumer,
+trigger, contribution, source, use conditions and check for each atom.
+
+Build a constrained multidimensional factory using the existing idea matrix,
+supply lines, native preparation, review and publication owners. Common words
+can seed sense-specific use cases and research questions. Combinations must
+retain their dependencies and contradictions rather than implying that every
+Cartesian product is valid. Keep distinct imperfect candidates and their
+findings privately; reuse identical bytes and identify near-duplicates without
+silently deleting different material. Generated counts, check coverage,
+admission and net-new served digests stay separate. The twelve-hour target is
+not evidence of a measured production rate or completed publication.
+
+Index existing containers and services by small contract cards before reading
+whole implementations. Bind OCI recipes to an image digest and platform, with
+inputs, outputs, resource assumptions, declared effects, compatibility, licence
+and verification status. Pulling an image, executing it and qualifying its
+result are separate operations. Count Baltor's actual served contract/recipe
+files separately from layers that a customer later retrieves upstream. The
+existing code-asset, engine-slot and solution-graph owners remain authoritative.
+
+Launch work includes adversarial review of the complete page map, offering
+names, claims, setup guides, deck and subdomains, followed by actual customer
+journeys and rights-cleared marketing renders. A browser pass does not prove
+every claim, and a successful connection does not prove a task benefit. The
+[twelve-hour working sequence](../roadmap/DELIVERY-SEQUENCE.md#twelve-hour-atomic-supply-campaign-october-8)
+records the current gates and measured progress.
 
 The owner's October 7 target is ten million useful served component files,
 with broader executable, data, creative and maintained-information families.

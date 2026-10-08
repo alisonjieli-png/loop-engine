@@ -2,7 +2,7 @@
 
 Kind: product architecture with measured local implementation and proposed hosting.
 Date: 2026-09-19. The [current deployment](#current-deployment) section was
-added on 2026-09-20 and last checked on 2026-10-07, after Fly release 76.
+added on 2026-09-20 and last checked on 2026-10-07, after Fly release 77.
 
 The hosted product manages accounts, subscriptions, and access to intelligence.
 The customer runs Loop Engine and the selected harnesses. A hosted intelligence
@@ -45,9 +45,45 @@ may summarize these facts. When another document differs from this section,
 follow this section and correct the other document. When this section differs
 from the newest release record, follow the release record and correct this
 section. Update this section in the same change that records a new release.
-It describes a private pilot. It does not describe a qualified paid service.
+Public registration is enabled. The site offers the existing monthly plan;
+these deployment checks alone do not establish a fully qualified paid service.
 
-The running image is Fly release 76, from
+The running image is Fly release 77, from
+`c43cb03c10619738b58414daaac226871ec50374`, image
+`sha256:f8251737963d3839c9d9fef5d5b323e5a43e02f013fca917161c021b245758a8`.
+Exact CI `37717122194` and guarded deployment `37717967418` passed; the gate
+is closed. All ten hosts passed 2,126 browser assertions. Each of the eight
+newly proxied product hosts then passed its post-cutover browser checks;
+the final all-host pulse passed fifty reads. The existing docs route was
+already included in the release pass. The owner-account catalogue diagnostic
+passed eleven checks, and source collection/browser downloads passed 58.
+
+All nine product hostnames now serve public assets through Cloudflare and
+forward dynamic requests to Fly. The technical Fly hostname remains a direct
+fallback. Export `82f56a5f1d3a...` contains 2,529 files, all verified against
+their exact bodies and required headers. Disable proxying on the saved DNS
+records to recover the direct paths; do not delete the routes or resources.
+
+Active offering copy now uses Agent Feeds and Agent Feeds + Harness Files.
+The monthly price, plan identifier and entitlements are unchanged. Approved
+Terms retain their original wording. Shared appearance and thirteen curated
+decision-source collections are live; personalized saved feeds and agent
+assignments remain unfinished. The homepage now separates recorded catalogue
+evidence from illustrative worked examples and omits unsupported outcomes.
+The [release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-77.json)
+binds the application, public export, cutovers, billing-label readback and
+their separate checks. Release 76 is the compatible image rollback.
+The catalogue still has 218,127 packages and 1,352,837 distinct files.
+Volume body storage, custom SQLite search and Supabase identity remain
+selected; the bounded R2 mirror is incomplete. The newly supplied research
+credentials and staged SDG packages do not change that live population.
+
+### Earlier deployment observations
+
+The paragraphs below retain the state and limits observed at earlier releases;
+their prototypes and pending work do not override the current record above.
+
+The preceding running image was Fly release 76, from
 `76ff12c2918910d659267e32676ccdd5cd12b950`, image
 `sha256:c963143b7ed9a054f7dee59a30c6234147a945ddd15b3a63699716997e4228bd`.
 Exact CI `37710042646` and guarded deployment `37711417924` passed; the gate

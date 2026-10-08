@@ -13308,6 +13308,54 @@ entries:
   classification: SECRET_OR_CREDENTIAL_REFERENCE
   created_on: '2026-10-07'
   expires_on: '2027-10-07'
+- finding_id: hardcoding.af63548e338b90be41d9fd19
+  owner: tools.operator_credentials.json:api_keys.brave-search-primary.environment
+  rationale: The named keyring installation supplies the conventional Brave variable only to an explicitly selected trusted child. This is a non-secret reference, not a value or a new source/spend grant.
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  created_on: '2026-10-08'
+  expires_on: '2027-10-08'
+- finding_id: hardcoding.80b7c2a8d5447c56b9f96aaa
+  owner: tools.operator_credentials.json:api_keys.exa-search-primary.environment
+  rationale: The canonical Exa integration consumes this environment name through the existing keyring reference owner. The value is absent from source; selecting the reference does not activate scheduling or grant unbounded calls.
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  created_on: '2026-10-08'
+  expires_on: '2027-10-08'
+- finding_id: hardcoding.a6ccdfd359316191d166d495
+  owner: tools.operator_credentials.json:api_keys.tavily-search-primary.environment
+  rationale: The Tavily keyring installation declares its trusted-child variable once in the existing credential manifest. Limits, rights and effect selection remain separate.
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  created_on: '2026-10-08'
+  expires_on: '2027-10-08'
+- finding_id: hardcoding.6c0b09fcaca24848921b23c3
+  owner: tools.operator_credentials.json:api_keys.openalex-research-primary.environment
+  rationale: This names the owner-supplied OpenAlex reference for bounded source reads. There is no token value, URL credential or account quota encoded here.
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  created_on: '2026-10-08'
+  expires_on: '2027-10-08'
+- finding_id: hardcoding.08f26e208759d977aa283f40
+  owner: tools.operator_credentials.json:api_keys.huggingface-research-primary.environment
+  rationale: HF_TOKEN is the Hub client environment contract, supplied only from the explicitly selected keyring installation. The manifest narrows this use to metadata reads and does not authorize publishing or gated downloads.
+  classification: DEPLOYMENT_CONFIGURATION
+  created_on: '2026-10-08'
+  expires_on: '2027-10-08'
+- finding_id: hardcoding.5fe0770e059cc0c39ce3871e
+  owner: tools.operator_credentials.json:api_keys.serper-search-primary.environment
+  rationale: This is the selected Serper keyring reference's child-process variable. Shared provider-account limits and separate request ceilings remain required; no credential bytes are present.
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  created_on: '2026-10-08'
+  expires_on: '2027-10-08'
+- finding_id: hardcoding.6bee76f0b6ceaf358bce90d8
+  owner: tools.operator_credentials.json:api_keys.jina-research-primary.environment
+  rationale: The Jina installation declares its conventional child variable through the existing credential manifest. Reader, search, embeddings and reranking still need their own qualified operation and allowance.
+  classification: SECRET_OR_CREDENTIAL_REFERENCE
+  created_on: '2026-10-08'
+  expires_on: '2027-10-08'
+- finding_id: hardcoding.fefdd14c415dbc54773fd030
+  owner: tools.operator_credentials.json:api_keys.kaggle-research-primary.environment
+  rationale: The installed official Kaggle client supports this token environment contract. The existing local credential is retained in the system keyring; this reference authorizes neither competition-rule acceptance nor execution or bulk download.
+  classification: DEPLOYMENT_CONFIGURATION
+  created_on: '2026-10-08'
+  expires_on: '2027-10-08'
 excluded_paths:
 - path: src/loop_engine/core/service_runtime/web_assets/creative-arena/arena.js
   owner: examples.32_creative_arena
